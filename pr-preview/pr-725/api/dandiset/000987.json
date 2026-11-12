@@ -1,0 +1,1095 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000987",
+  "label": "DANDI:000987"
+ },
+ "page": "datasets/dandi/000987/",
+ "generated": "2026-11-12T21:34:29+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 2
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 8,
+  "partially_reproduced": 0,
+  "not_reproduced": 4,
+  "blocked": 6
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "mehrotra-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000987",
+    "version": "0.261003.2342",
+    "doi": "10.48324/dandi.000987/0.261003.2342",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000987"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000987",
+   "label": "DANDI:000987",
+   "dataset_version": "0.261003.2342",
+   "paper": "10.1016/j.cub.2024.05.048",
+   "paper_title": "Hyperpolarization-Activated Currents Drive Neuronal Activation Sequences in Sleep",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41254360058"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "mehrotra-2024",
+   "entry_title": "UP onset sequences in retrosplenial cortex and postsubiculum (Mehrotra, Levenstein et al. 2024)",
+   "summary": "The paper's main spiking findings held up, in this retrosplenial data and in its postsubiculum and frontal cortex recordings deposited elsewhere. Postsubiculum units enter the UP state in a dorsal-to-ventral sequence, ventral DOWN states last longer, and earlier-activating units show a larger firing overshoot at UP onset in all three regions. The traveling wave of high gamma LFP power did not reproduce, under LFP methods the paper leaves open. The DOWN-state reset of decoded head direction failed by one histogram bin, and its slower drift at UP onset on a step the Methods leave open. The Ih model and the ex vivo sag gradient were not tested: MATLAB was unavailable and the slice recordings are not deposited.",
+   "description": "Tests the findings of Mehrotra, Levenstein et al. (2024) on dandiset 000987, which holds the paper's retrosplenial cortex recordings (14 sessions, 3 mice), and, counted apart, on the paper's postsubiculum recordings in dandiset 000939. It measures the firing-rate overshoot and the delay with which units enter the UP state after a DOWN state, the dorsoventral sequence of these delays in postsubiculum, the longer ventral DOWN states, the head direction tuning along the probe, and the high gamma LFP at UP onset, the reset of the head direction signal by the DOWN state, and, on the rat frontal cortex data of CRCNS fcx-1, the same delay and overshoot relation. The model and the slice recordings are not tested.",
+   "notebooks": [
+    {
+     "path": "reproduce_mehrotra_2024.ipynb",
+     "title": "Mehrotra, Levenstein et al. (2024) on dandiset 000987 (retrosplenial cortex)",
+     "executed": null
+    },
+    {
+     "path": "posub_000939.ipynb",
+     "title": "The postsubiculum spike claims, on dandiset 000939",
+     "executed": null
+    },
+    {
+     "path": "posub_lfp_000939.ipynb",
+     "title": "The postsubiculum LFP claims, on dandiset 000939",
+     "executed": null
+    },
+    {
+     "path": "posub_ring_000939.ipynb",
+     "title": "The postsubiculum Isomap ring claims, on dandiset 000939",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "rsc-dataset",
+     "statement": "The RSC dataset holds 570 units recorded in 14 sessions from 3 mice.",
+     "source": "STAR Methods, Behavioral procedures, paragraph 2; Experimental model and study participant details, paragraph 2; Figure 5F legend",
+     "quote": "A total of 570 units were recorded from 14 sessions.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mehrotra_2024.ipynb",
+     "notes": "The dandiset holds 14 sessions from 3 mice (A7801 4 sessions, A7802 2, A7803 8), as stated, and 638 sorted units, 68 more than 570 (1.119 times), outside the 10% band of 513 to 627, so the criterion's partial outcome does not apply either. No unit selection of the Methods gives 570 (606 units with at least 0.5 Hz in wake, 412 below 10 Hz, 380 both). Exactly 570 units cross half their mean rate within 155 ms of DU and enter the Figure 5F test (fig5f-rsc-pmr-onset), so the paper's \"570 units were recorded\", repeated in the dandiset description, appears to count those units. The count per session ranges from 31 to 71, as the description says. No session is deposited twice.",
+     "deviations": [
+      "The wake epochs of the files are taken as the open field exploration for the rate selections, which are shown only to explain the count."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-rsc-pmr-onset",
+     "statement": "In retrosplenial cortex, as in PoSub, units with a larger firing-rate overshoot at UP state onset (peak-to-mean ratio, PMR) enter the UP state earlier; UP onset delay and PMR are negatively correlated (Kendall tau = -0.28, n = 570 units from 14 sessions in 3 mice, p = 6.76e-21).",
+     "source": "Figure 5F legend; Results, Post-DOWN rebound suggests a widespread role for Ih in neuronal activation at UP onset, paragraph 4",
+     "quote": "We found a similar relationship in the frontal cortex ... and RSC (data available at DANDI:000987) (Figure 5F).",
+     "statistics": [
+      {
+       "test": "Kendall tau rank correlation, UP onset delay against PMR",
+       "statistic": "tau = -0.28",
+       "p": 6.76e-21,
+       "n": "570 units from 14 sessions (3 mice)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mehrotra_2024.ipynb",
+     "notes": "Reading (a), all sorted units with the stored UP states, gives 570 entering units and Kendall tau = -0.2748 (p = 8.1e-21; paper -0.28, p = 6.76e-21), within the tolerance of 0.028. Re-detected UP states (detectDOWNs_RSC.py procedure, 95% to 99% of DOWN states matched within 10 ms) give -0.274 with 568 units; UP states starting inside the sleep epochs give -0.281 with 574 units. Tau is negative with p < 0.05 in each of the 14 sessions (-0.567 to -0.323) and in each mouse (-0.417, -0.369, -0.334). Onset thresholds of 0.3 to 0.7 give -0.259 to -0.238. Reading (b) cannot be run as written because the files hold no waveforms; its rate half (wake rate below 10 Hz, with or without the 0.5 Hz floor) gives -0.342 to -0.329 (p below 1e-18), negative and significant but outside the tolerance. The statement's link to PoSub (\"as in PoSub\") is tested by fig5c-posub-pmr-onset.",
+     "deviations": [
+      "Which units enter is open (criterion readings a and b). Reading (b), putative EX units by trough-to-peak above 0.35 ms and open field rate below 10 Hz, cannot be applied, as the units carry no waveform; only its rate half was run. The outcome rests on reading (a), all sorted units, as Figure5F.py does; the count of entering units (570) equals the n of the Figure 5F legend, which supports it.",
+      "pynapple 0.11.4 replaces the unpinned pynapple version of the paper's code (a standard choice the criterion allows); compute_eventcorrelogram takes the same arguments."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-posub-pmr-onset",
+     "statement": "In PoSub, PMR is negatively correlated with UP onset delay; earlier-activating EX units show a larger overshoot, and virtually no late-activating unit has a large PMR (Kendall tau = -0.19, n = 1,096, p = 8.34e-20).",
+     "source": "Figure 5C; Results, Post-DOWN rebound suggests a widespread role for Ih in neuronal activation at UP onset, paragraph 2",
+     "quote": "As predicted, PMR was negatively correlated with UP state onset timing, with earlierspiking cells showing a larger overshoot (Figure 5C). Critically, virtually no units with a late activation at UP onset had a large PMR.",
+     "statistics": [
+      {
+       "test": "Kendall tau rank correlation",
+       "statistic": "tau = -0.19",
+       "p": 8.34e-20,
+       "n": "1,096 EX units (1 of 1,097 excluded as it did not reach 50% of its mean rate within 150 ms)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "posub_000939.ipynb",
+     "notes": "On DANDI:000939, the 16 sessions hold 1,657 units and 1,097 EX units, the paper's counts, and 1,096 EX units enter, as in the Figure 5C legend. With the paper's event files, and the states of A3708-200317b re-detected, tau = -0.177 (p = 3.7e-17), within 0.019 of -0.19. Without A3708-200317b tau is -0.195 (1,049 units). With the event file of A3708-200317b as it is, tau is -0.126 (p = 2.0e-9), outside the tolerance; with all states re-detected (an approximation of detectDOWNs_PoSub.py without its accelerometer step), -0.077. Tau is negative in all 16 sessions, with p < 0.05 in 7. No unit with an onset of 75 ms or more (46 units) has a PMR above 1.5 (largest 1.32), against 39% of the 198 units with an onset below 25 ms, as the statement says. The DOWN starts re-detected from the spikes and those of the 15 other event files cross-correlate with a sharp peak at -2.5 to -17.5 ms (25 to 67 times the flanks), so no event file is offset by tens of ms.",
+     "deviations": [
+      "The DOWN and UP states are the paper's event files (Analysis/OutputFiles, commit 4ee34f3), which the criterion names. The event file of A3708-200317b does not share the clock of that session's NWB spikes (population rate inside its DOWN states 454.7 Hz, the same as for intervals shifted by 0.5 s; no shift from -6,000 to +6,000 s brings it below 309 Hz), so its states were re-detected from the spikes with the procedure of detectDOWNs_RSC.py on the file's NREM within the home cage epochs, UP states restricted to NREM as detectDOWNs_PoSub.py does. The outcome rests on this replacement; with the event file as it is, tau is outside the tolerance.",
+      "EX units are the file's is_excitatory flag; the code also requires a gd flag the files do not hold. The counts (1,097 EX, 1,096 entering) match the paper's.",
+      "NREM is the file's sleep_states NREM within the home cage epochs, as detectDOWNs_PoSub.py intersects the sleep scoring with the sleep epochs; it is used only for the re-detection of A3708-200317b."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939 (PoSub dataset, Duszkiewicz et al. 2024)",
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-isomap-pmr",
+     "statement": "An Isomap projection of the DU-aligned PETHs of all PoSub EX units shows a continuous gradation of profiles whose first dimension correlates strongly with PMR (Pearson R = 0.88, n = 1,096).",
+     "source": "Figure 5D; Results, Post-DOWN rebound suggests a widespread role for Ih in neuronal activation at UP onset, paragraph 3",
+     "quote": "Isomap decomposition of the DU-PETHs of all PoSub units (Figure 5D) revealed a continuous gradation of temporal profiles at the UP state onset, which was largely attributable to a single dimension strongly correlated with PMR",
+     "statistics": [
+      {
+       "test": "Pearson correlation, first Isomap dimension against PMR",
+       "statistic": "R = 0.88",
+       "p": 0,
+       "n": "1,096 EX units from 16 sessions (16 mice)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "posub_000939.ipynb",
+     "notes": "On the PETHs of the 1,096 units of fig5c-posub-pmr-onset, sklearn Isomap (2 components, 50 neighbours) gives a first dimension correlated with PMR with abs R = 0.865 (p printed as 0) over -250 to +250 ms, the Methods window, within 0.088 of 0.88; over the code's 0 to 155 ms window abs R = 0.875. The second dimension correlates with UP onset delay (R = -0.535 and -0.562).",
+     "deviations": [
+      "Uses the units and PETHs of fig5c-posub-pmr-onset, so it shares its replacement of the states of A3708-200317b."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-delay-range",
+     "statement": "PoSub neurons activate with reliable delays after the DU transition, ranging from 5 to 100 ms (99th percentile range).",
+     "source": "Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 1; Figures 1D to 1F",
+     "quote": "Unlike UD transitions, neurons activated with reliable delays with respect to the DU transition (Figures 1D-1F and S1I), ranging from 5 to 100 ms (99th percentile range)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "posub_000939.ipynb",
+     "notes": "Under reading (b), the 1st and 99th percentiles of the 1,096 pooled UP onset delays are 5 and 100 ms, the paper's range. Under reading (a), the 0.5th and 99.5th percentiles are 0 and 110 ms, the lower bound outside 4.5 to 5.5 ms. The delays lie on the 5 ms grid of the PETH, and the percentile method (linear, lower, higher, nearest) changes neither reading. The measured values are reading (b), the one that matches.",
+     "deviations": [
+      "The paper does not define \"99th percentile range\"; the criterion names two readings, and only (b), 1st to 99th percentile, matches."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-dv-sequence-du",
+     "statement": "At the DOWN-to-UP transition PoSub EX units activate in sequence, dorsal units entering the UP state before ventral ones; the per-session correlation of UP onset delay with depth is consistently non-zero for DU and not for UD transitions.",
+     "source": "Figure 1E to 1G; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 1",
+     "quote": "This sequential activity followed an anatomical pattern... dorsally located units tended to enter the UP state before ventrally located units (Figure 1G; one-sample Wilcoxon test; DU, W = 1, n = 16",
+     "statistics": [
+      {
+       "about": "DU correlation coefficients against 0",
+       "test": "one-sample Wilcoxon test",
+       "statistic": "W = 1",
+       "p": 6.1e-05,
+       "n": "16 sessions"
+      },
+      {
+       "about": "UD correlation coefficients against 0",
+       "test": "one-sample Wilcoxon test",
+       "statistic": "W = 38",
+       "p": 0.13,
+       "n": "16 sessions"
+      },
+      {
+       "about": "DU against UD correlation coefficients",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 52",
+       "p": 0.005,
+       "n": "16 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "posub_000939.ipynb",
+     "notes": "Per session, the Kendall tau of UP onset delay against position is negative in 15 of 16 sessions (median -0.309) and differs from 0 (one-sample Wilcoxon W = 1, p = 6.1e-5, the paper's values); the UD tau does not (W = 38, p = 0.13, the paper's values); DU and UD differ (Mann-Whitney U = 51, p = 0.0039; paper U = 52, p = 0.005). With the event file of A3708-200317b as it is (UD tau undefined there, 15 sessions) or without that session, the UD tau differs from 0 (W = 25, p = 0.048) and the claim would hold only in part; with all states re-detected it holds (UD p = 0.13, U p = 0.048). The result is fragile: the UD part rests on the re-detected states of the one session whose event file fails the clock check.",
+     "deviations": [
+      "The states of A3708-200317b are re-detected, as for fig5c-posub-pmr-onset; the UD part of the outcome rests on this.",
+      "Position is the rel_y of the unit's peak electrode (12.5 um steps), larger toward dorsal. The rel_y column is described only as \"xy coordinate in electrode group\"; the direction is from the probe description in the file (\"Channels sorted top to bottom of shank\"; electrode 0 has the largest rel_y in every session), and Figure1H.py also puts larger depth values dorsal.",
+      "The UD timing follows Figure1G.py (last bin above 0.5 between -150 and -5 ms of the PETH around DOWN starts, for units that also cross after +5 ms), with pynapple's correlogram in place of the code's crossCorr."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "fig1h-ventral-down-longer",
+     "statement": "DOWN states detected from ventral PoSub last longer than those detected from dorsal PoSub (Wilcoxon signed-rank test, W = 9, n = 16, p = 0.01).",
+     "source": "Figure 1H; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 1",
+     "quote": "we found that the DOWN state durations were significantly longer in the ventral half when detected separately from the dorsal half of PoSub (Figure 1H; p = 0.01, Wilcoxon signed-rank test).",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 9",
+       "p": 0.01,
+       "n": "16 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "posub_000939.ipynb",
+     "notes": "Ventral DOWN states are longer than dorsal ones with all units (median 107.5 against 97.5 ms, longer in 12 of 16 sessions, equal in 2; Wilcoxon W = 12, p = 0.011; paper W = 9, p = 0.01) and with EX units only (117.5 against 102.5 ms; W = 3, p = 0.0019). Both readings agree.",
+     "deviations": [
+      "The code's reading uses all units with a gd flag; the files hold no gd flag, so all units are used.",
+      "DOWN and UP states as for fig5c-posub-pmr-onset (A3708-200317b re-detected)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-no-dv-tuning-gradient",
+     "statement": "HD information, linear speed and angular head velocity tuning of PoSub EX cells do not vary with DV position; resultant vector length and peak rate show weak but significant correlations with it.",
+     "source": "Figure 1B; Figure S1D to S1F; Results, opening paragraph",
+     "quote": "Across all behavioral correlates tested, we saw either no significant correlations (Figures 1B and S1D) or, at most, weak but significant correlations with DV location (Figures S1E and S1F)",
+     "statistics": [
+      {
+       "about": "HD information against depth",
+       "test": "Kendall tau",
+       "statistic": "tau = -0.03",
+       "p": 0.13,
+       "n": "1,097 EX cells"
+      },
+      {
+       "about": "linear speed score against depth",
+       "test": "Kendall tau",
+       "statistic": "tau = -0.03",
+       "p": 0.18,
+       "n": "1,097 EX cells"
+      },
+      {
+       "about": "AHV score against depth",
+       "test": "Kendall tau",
+       "statistic": "tau = -0.02",
+       "p": 0.23,
+       "n": "1,097 EX cells"
+      },
+      {
+       "about": "resultant vector length against depth",
+       "test": "Kendall tau",
+       "statistic": "tau = 0.063",
+       "p": 0.002,
+       "n": "1,097 EX cells"
+      },
+      {
+       "about": "peak firing rate against depth",
+       "test": "Kendall tau",
+       "statistic": "tau = 0.075",
+       "p": 0.0002,
+       "n": "1,097 EX cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "posub_000939.ipynb",
+     "notes": "Over 1,097 EX cells in the square arena, speed score (tau = 0.029, p = 0.15) and AHV score (tau = 0.035, p = 0.081) do not vary with position; resultant vector length (tau = 0.061, p = 0.0026) and peak rate (tau = 0.077, p = 0.00014) increase toward larger rel_y, close to the paper's (0.063, p = 0.002; 0.075, p = 0.0002). HD information in bits per spike does not vary with position (tau = 0.034, p = 0.099); in bits per second, the formula as printed, it does (tau = 0.082, p = 5.1e-5), which would make the claim not reproduced. Figure 1B supports bits per spike: in the paper's PDF its axis of log10(HD info) runs from -2 to 1 with most cells between -0.5 and 0.5 and none beyond about 0.5; in bits per spike the median of log10 is 0.12 and the 99th percentile 0.46 (5 of 1,097 cells off the axis), in bits per second the median is 0.54, the 99th percentile 1.08, and 31 cells lie beyond 1. Figures 1B and S1D to S1F plot position from 0 (dorsal) to -0.8 mm (ventral), the direction of rel_y here, so resultant vector length and peak rate have the paper's positive sign; the three measures that do not vary have the opposite sign to the paper's (0.034, 0.029, 0.035 against -0.03, -0.03, -0.02), not significant here or in the paper, and no direction of the axis matches all five signs. Whether the criterion's \"measures as the Methods define them\" fixes the printed formula, in bits per second, is asked of a reader in questions/mehrotra-2024.yaml; the outcome is tested on the claims file as it is.",
+     "deviations": [
+      "HD information is taken in bits per spike. The Methods print the formula without division by the mean rate (bits per second) but use HD information in bits per spike to select cells for Isomap (\"exceeding 0.2 bins/spike\", Methods, Isomap Projection and Decoding, citing Duszkiewicz et al.; \"bins\" is read as a misprint for bits), and the range of Figure 1B (log10 HD info from -2 to 1, no cell beyond about 0.5) fits bits per spike and not bits per second; the outcome rests on this reading.",
+      "Resultant vector length and peak rate are not defined in the Methods; the standard definitions from the 1 degree tuning curve are used. Spikes are counted in the 100 Hz tracking frames.",
+      "Larger rel_y is dorsal: the probe description in the file says \"Channels sorted top to bottom of shank\", and electrode 0 has the largest rel_y in all 16 sessions.",
+      "The paper's tau is read with dorsal positive, as rel_y here: Figures 1B and S1D to S1F (read from the paper's PDF) plot \"D-V pos. (mm)\" from 0 at the top to -0.8 at the bottom. \"Positively correlated\" in the criterion is read in that direction; with ventral positive every tau changes sign (printed), and resultant vector length and peak rate would be negatively correlated."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "figs1j-dorsal-ventral-same-hd",
+     "statement": "During NREM sleep, dorsal and ventral PoSub represent the same HD; the decoded angular difference is not different from that with shuffled cell depths.",
+     "source": "Figure S1J; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 1",
+     "quote": "during NREM sleep, dorsal and ventral PoSub consistently represented the same HD",
+     "statistics": [
+      {
+       "test": "one-sample Wilcoxon test of z-scored difference from shuffle against 0",
+       "statistic": "W = 38",
+       "p": 0.13,
+       "n": "16 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "posub_000939.ipynb",
+     "notes": "Under all four readings (halves by equal-width depth bins or by the median; mean or median absolute difference), the z-scored dorsal-ventral decoded angular difference does not differ from the depth shuffles (W = 40, p = 0.46; W = 31, p = 0.19 over 14 sessions; W = 59, p = 0.98; W = 56, p = 0.82 over 15 sessions). The paper reports W = 38, p = 0.13 over 16. Sessions with fewer than 10 bins with 5 HD cells spiking in each half are left out (A3709-200601 and A3713-200909a with equal-width halves).",
+     "deviations": [
+      "The Bayesian decoder is reimplemented in matrix form (Poisson likelihood, uniform prior, as pynapple's decode_1d), with tuning curves in 60 bins from the square arena; the paper gives the bin size of the decoding (50 ms) but not the tuning curve bins (a standard choice).",
+      "HD cells are the file's is_head_direction flag. A session needs 10 kept bins to enter (a standard choice to avoid empty sessions)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "figs1i-du-more-stable",
+     "statement": "Across halves of a session, the delays of PoSub units at UP state onset are more stable than their timing at the UD transition (Wilcoxon signed-rank test, W = 4, n = 16, p = 0.0002).",
+     "source": "Figure S1I legend; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 1",
+     "quote": "Half-session correlation for UP state onset and the UD transition suggests that the UP state onset is overall more stable than the UD transition",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 4",
+       "p": 0.0002,
+       "n": "16 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "posub_000939.ipynb",
+     "notes": "DU delays are more stable across halves than UD timings under three readings (first and second half with Kendall, 12 of 16 sessions, W = 16, p = 0.0052; odd and even DOWN states with Pearson, 13 of 16, W = 19, p = 0.0092, or Kendall, 16 of 16, W = 0, p = 3.1e-5) and not under the fourth (first and second half with Pearson, 8 of 16, W = 52, p = 0.43). The criterion blocks the claim when the readings disagree. The paper has no code or Methods text for Figure S1I; what is open is how the session is halved and which correlation is used, and the question is recorded for the paper's authors. For each half the spikes are counted in all UP states (so that with odd and even halves the UP state before each DOWN start is kept) and divided by the rate in the half's UP states.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "figs1kl-not-firing-rate",
+     "statement": "UP onset delays of PoSub EX units are explained by DV position better than by NREM firing rate; per animal, the regression coefficients of delay on position exceed those on firing rate (Wilcoxon signed-rank, W = 19, n = 16, p = 0.009) and differ from 0 (one-sample Wilcoxon, W = 0, n = 16, p = 3.052e-5).",
+     "source": "Figure S1K and S1L legends; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 1",
+     "quote": "Finally, these neuronal activation sequences were not accounted for by differences in neuronal firing rates",
+     "statistics": [
+      {
+       "about": "position coefficients against firing-rate coefficients",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "W = 19",
+       "p": 0.009,
+       "n": "16 animals"
+      },
+      {
+       "about": "position coefficients against 0",
+       "test": "one-sample Wilcoxon test",
+       "statistic": "W = 0",
+       "p": 3.052e-05,
+       "n": "16 animals"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "posub_000939.ipynb",
+     "notes": "With z-scored predictors and signed coefficients the claim holds (position larger in 15 of 16, W = 9, p = 0.0010; position against 0 W = 0, p = 3.1e-5; paper W = 19, p = 0.009 and W = 0, p = 3.052e-5). With z-scored predictors and absolute coefficients the first test fails (12 of 16, W = 32, p = 0.065), and with raw predictors, whose coefficients per um and per Hz are on different scales, it fails too (0 of 16 and 9 of 16). The criterion blocks the claim when the readings disagree. The paper has no code or Methods text for Figure S1L; the question is recorded for the paper's authors.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-gamma-travels",
+     "statement": "The rise in high gamma (70 to 150 Hz) power at UP onset travels along the DV axis, while its drop at the UD transition is synchronous.",
+     "source": "Figure 2B to 2F; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 3",
+     "quote": "gh traveled in the DV direction during the UP state onset, mirroring the wave observed in single unit activity (Figures 2B- 2F; one-sample Wilcoxon test; DU, W = 21, n = 16, p = 0.013; UD, W = 68, n = 16, p = 1)",
+     "statistics": [
+      {
+       "about": "DU coefficients against 0",
+       "test": "one-sample Wilcoxon test",
+       "statistic": "W = 21",
+       "p": 0.013,
+       "n": "16 sessions"
+      },
+      {
+       "about": "UD coefficients against 0",
+       "test": "one-sample Wilcoxon test",
+       "statistic": "W = 68",
+       "p": 1,
+       "n": "16 sessions"
+      },
+      {
+       "about": "DU against UD",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 73",
+       "p": 0.04,
+       "n": "16 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "posub_lfp_000939.ipynb",
+     "notes": "No reading gives both parts of the claim. Main reading, the 13 sessions whose LFP is shown to share the clock of the spikes: aligned to DU (the Methods), the time of maximal slope of high gamma power depends on channel position (median tau -0.742 to -0.659; one-sample Wilcoxon W = 7 to 9, p = 0.0046 to 0.0081; paper W = 21, p = 0.013), but so does the time of maximal negative slope before the DOWN start (median tau -0.810 to -0.749, W = 0, p = 2.4e-4; paper p = 1), so the drop is not synchronous by this measure. Aligned to the delta peak (Figure 2D legend), the rise does not depend on position (p = 0.27 to 1.0). With the UD window written in the criterion (0 to 150 ms after the DOWN start) the delays are constant in 12 of 13 sessions and the UD test cannot be run. On all 16 sessions the picture is the same (DU p = 0.0017 to 0.0034; UD p = 3.1e-5 to 1.2e-4; delta peak DU p = 0.39 to 0.60). The delta-peak readings rest on 0.37 to 4.76 peaks per minute of NREM, so they are noisy. In A3708-200317b high gamma power rises neither after the re-detected DU (1.045 against 1.048 shifted) nor after the UP starts of its event file (0.997 against 0.998), so its LFP fits neither stream.",
+     "deviations": [
+      "The paper has no code for Figure 2. The readings of the criterion were all run (power as the absolute Hilbert transform or the square; DU or delta-peak alignment; two windows). For the UD measure the mirror window, -150 to 0 ms, was added, because the window as written lies after the drop.",
+      "The delta channel is the middle channel of the probe (a standard choice; the Methods name none) and faulty channels are left out. The LFP is downsampled by taking every second sample; filters run forward and backward within each NREM interval.",
+      "A3705-200306, A3708-200317b and A3711-200810b are left out of the main reading: their high gamma power rises after DU by no more than after the same times shifted by 0.5 s (rise over the shifted control 0.02 or less, against 0.053 to 0.357 in the other sessions), so their LFP is not shown to share the clock of the spikes. All 16 sessions are run as a variant.",
+      "The criterion blocks the claim when readings disagree; here every reading fails it, on different parts, so the outcome is not reproduced."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "figs2d-lfp-spike-agree",
+     "statement": "Per session, the delay-depth correlation computed from units agrees with that computed from high gamma LFP power (Pearson R = 0.62, n = 16, p = 0.01).",
+     "source": "Figure S2D legend; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 3",
+     "quote": "The correlation coefficients between UP onset delay and depth for individual sessions were well correlated between LFP and spikes (Figure S2D)",
+     "statistics": [
+      {
+       "test": "Pearson correlation",
+       "statistic": "R = 0.62",
+       "p": 0.01,
+       "n": "16 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "posub_lfp_000939.ipynb",
+     "notes": "On the 13 sessions whose LFP clock is shown, the per-session unit and LFP coefficients correlate positively with p < 0.05 under 7 of 8 LFP readings (R = 0.567 to 0.788), within 0.062 of 0.62 with p < 0.05 under three (R = 0.623, 0.567, 0.653, all delta-peak readings), and not under the eighth (square, delta peak, -250 to 250 ms, R = 0.553, p = 0.0502). On all 16 sessions 6 of 8 reach p < 0.05 (R = 0.506 to 0.761), one within the tolerance (R = 0.590, p = 0.016), and the two absolute-Hilbert delta-peak readings do not (R = 0.412, p = 0.13; R = 0.462, p = 0.071). The criterion blocks the claim when the readings disagree on significance. The open LFP details are those of fig2f-gamma-travels.",
+     "deviations": [
+      "The main reading leaves out the three sessions whose LFP is not shown to share the clock of the spikes, as for fig2f-gamma-travels; all 16 are run as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "figs2e-speed-similar",
+     "statement": "For sessions with a significant delay-depth correlation, the speed of the traveling UP onset is similar from spikes and from LFP (6.72 +/- 4.08 against 9.89 +/- 5.51 mm/s, Mann-Whitney U = 58, n = 13 and 15, p = 0.072).",
+     "source": "Figure S2E; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 3",
+     "quote": "the speed of the traveling activity for significant sessions was similar when computed using either the LFP or spiking activity",
+     "statistics": [
+      {
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 58",
+       "p": 0.072,
+       "n": "13 sessions (spikes) and 15 sessions (LFP)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "posub_lfp_000939.ipynb",
+     "notes": "13 sessions have a significant unit delay-depth correlation, as in the paper. With speed as the slope of depth on delay, units give 6.97 +/- 4.38 mm/s (paper 6.72 +/- 4.08). On the 13 sessions whose LFP clock is shown, the LFP gives 15.96 to 39.50 mm/s under the eight readings of fig2f-gamma-travels (paper 9.89 +/- 5.51, none within it), different from the units under 7 of 8 readings (Mann-Whitney p = 3.2e-5 to 0.017) and not under one (absolute Hilbert, delta peak, 0 to 150 ms, 7 sessions, p = 0.097). On all 16 sessions the LFP gives 17.87 to 40.96 mm/s, different under all 8 (p = 1.6e-5 to 0.028). With speed as the inverse slope of delay on depth, units give 37.3 +/- 18.0 mm/s, far from the paper's, and no difference under 6 of 8 readings. The measured LFP value is the first reading (absolute Hilbert, DU, 0 to 150 ms, 12 sessions). Depth is rel_y in mm.",
+     "deviations": [
+      "The outcome rests on the speed definition, the slope of depth on delay, which reproduces the paper's unit speeds; the inverse-slope reading does not.",
+      "The LFP side carries the open details of fig2f-gamma-travels, and fig2f-gamma-travels, on which this claim depends, is not reproduced.",
+      "The main reading leaves out the three sessions whose LFP is not shown to share the clock of the spikes, as for fig2f-gamma-travels."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "fig1j-down-resets-hd",
+     "statement": "The DOWN state resets the virtual HD signal; the angle at the start of an UP state is unrelated to the angle at the end of the previous UP state.",
+     "source": "Figure 1J; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 2",
+     "quote": "We found that the DOWN state resets this virtual HD signal, as there was no relationship between the angle represented at the end of an UP state and the beginning of the subsequent UP state (Figure 1J).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "posub_ring_000939.ipynb",
+     "notes": "Over 6,510 UP states of 16 sessions (up to 600 long UP states projected per session), the first above-threshold angle after DU is nearly unrelated to the last above-threshold angle before UD: the mean resultant length of the differences is 0.020, against 0.078 for the 99th percentile of 1,000 shuffles of the angle at UD. Under the criterion's test one of 20 bins lies outside the shuffles' minimum to maximum, a deficit at -0.47 rad (294 UP states, shuffle range 300 to 422), while the bin at zero difference is inside (409, range 368 to 491); so the outcome is not reproduced. With 10 bins one bin lies outside, with 36 two; with the mean angle of the last 150 ms before UD (5,043 UP states) two bins with 20 bins, one with 10 and none with 36. With this procedure a shuffle lies outside the range of the others in at least one of 20 bins 3.3% of the time. On the 14 sessions whose wake ring follows head direction (R >= 0.5; A3706-200313 0.114, A3730-210323b 0.328) two bins lie outside (resultant length 0.032). The outcome is fragile: with the rings fitted on two other random draws, one bin lies outside with seeds 3000 + k and none with seeds 2000 + k (resultant length 0.020 to 0.030 over the three draws, against shuffle 99th percentiles of 0.070 to 0.078), so the test fails by one bin in two of three draws. A run repeats exactly (the ring of A3701-191119 fitted twice with the same generator is identical). The absence of a relation holds in size; the envelope test fails by one bin. The wake ring follows head direction with R = 0.627 to 0.936 in the other 14 sessions, and the first threshold crossing after DU comes at a median of 35 to 75 ms per session (the Methods give 35 ms as the mode).",
+     "deviations": [
+      "The ring follows makeRing.py (commit 4ee34f3): HD cells by the file's is_head_direction flag (the code also needs a gd flag the files lack; the Methods' filter of 0.2 \"bins/spike\" (read as bits per spike) is not in the code), wake bins of 0.2 s above 2 cm/s, NREM steps of 10 ms with a 50 ms window around UP states longer than 0.5 s, square-root rates, Isomap with 2 components and 200 neighbours, the centre at the projection of an empty bin, and a radius threshold of one third of the mean wake radius.",
+      "For run time, the random half of the wake bins is capped at 2,500 bins and at most 600 long UP states per session are projected, drawn with a fixed generator per session (a standard choice). Two other draws (seeds 2000 + k and 3000 + k) are run to show the dependence on it.",
+      "Isomap uses the dense eigen solver in place of the default ARPACK, which starts from an unseeded random vector, so that the ring can come out rotated or reflected differently in each run (a standard choice that makes a run repeat). Each ring is oriented so that its angle increases with head direction in wake (7 of 16 reflected), as the solver's reflection is arbitrary and a reflection negates the angle differences; with the rings as the solver returns them one bin lies outside too.",
+      "The angle at UD is taken before the start of the DOWN state that ends at the UP state's start; the first post-DU angle is searched 0 to 150 ms after DU. Angle differences are pooled over sessions and the angle at UD is shuffled within each session."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "fig1k-hd-stable-at-onset",
+     "statement": "During the UP onset sequence the represented HD changes less rapidly than later in the UP state (diffusion coefficients, Mann-Whitney U test, U = 54, n = 16, p = 0.006).",
+     "source": "Figure 1K; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 2",
+     "quote": "Following the DOWN state, the represented HD maintained a specific direction throughout the duration of the UP onset sequence (Figure 1I) and changed less rapidly than later in the UP state (Figure 1K).",
+     "statistics": [
+      {
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 54",
+       "p": 0.006,
+       "n": "16 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "posub_ring_000939.ipynb",
+     "notes": "With the steps below the radius threshold left out, the diffusion coefficient during the traveling UP state is lower than in the control interval in 10 of 16 sessions (median 0.373 against 0.439 per s), and the two-sided Mann-Whitney test finds no difference (U = 98, p = 0.27; paper U = 54, p = 0.006). With the circular variance as 2 ln(1/R) it is lower in 12 of 16 (U = 87, p = 0.13); with per-UP-state slopes averaged, in 6 of 16 (p = 0.25); on the 14 sessions whose ring follows head direction, in 8 of 14 (U = 83, p = 0.51). With the rings of two other random draws it is not significant either (p = 0.10 and 0.21). Keeping the steps below the threshold gives 12 of 16, U = 76, p = 0.052 in the main draw and p = 0.025 and 0.044 in the other two, near the paper's result, so the outcome rests on leaving them out.",
+     "deviations": [
+      "The ring and UP states are those of fig1j-down-resets-hd.",
+      "Assumed: steps below the radius threshold are left out of the cumulative circular variance. The Methods use the threshold \"for computing angular direction\" and start the slope at 35 ms because the threshold crossing varies between UP states, which implies that angles below the threshold are not used. Keeping them gives p = 0.052, 0.025 and 0.044 over three draws of the ring. The variance is averaged over a session's UP states and the slope taken from 35 to 150 ms (185 to 300 ms for the control); averaging per-UP-state slopes is shown too.",
+      "The circular variance is 1 - R, scipy.stats.circvar since SciPy 1.8; the older 2 ln(1/R) is shown too, as the paper does not give its SciPy version."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:000939",
+     "proposed": null
+    },
+    {
+     "claim": "figs2g-adn-synchronous",
+     "statement": "At UP state onset ADN cells activate more synchronously than PoSub cells (s.d. of delays 10.38 +/- 5.74 ms against 15.54 +/- 5.42 ms), suggesting the PoSub sequence is generated locally.",
+     "source": "Figure S2F and S2G; Results, Neuronal activity at the DU transition travels along the PoSub DV axis and is locally generated, paragraph 4",
+     "quote": "At UP state onset, ADN cells activated more synchronously than in the PoSub (Figures S2F and S2G; standard deviation of delays, 10.38 \u00b1 5.74 ms in ADN versus 15.54 \u00b1 5.42 ms in PoSub",
+     "statistics": [
+      {
+       "about": "as printed in the Results",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 29",
+       "p": 0.016,
+       "n": "16 PoSub and 9 ADN sessions"
+      },
+      {
+       "about": "as printed in the Figure S2G legend",
+       "test": "Mann-Whitney U test",
+       "statistic": "U = 30",
+       "p": 0.019,
+       "n": "16 PoSub and 9 ADN sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The ADN recordings come from Peyrache et al. 2015, for which the paper names no archive. The paper's code names 9 ADN sessions (event files Mouse12-120806 to Mouse32-140822). DANDI:000056 (Peyrache et al. 2015, version 0.250624.0430) holds 8 of them (not Mouse32-140822), but its units table has only spike times (no location, shank or electrode), and its electrode locations read \"unknown\", so the ADN units cannot be told from the PoSub units recorded with them. CRCNS th-1 was not examined within the run. The PoSub half is available (fig1g-dv-sequence-du).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "PoSub at DANDI:000939; ADN from Peyrache et al. 2015 (ref. 14), for which the paper names no archive",
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-fc-pmr-onset",
+     "statement": "In rat frontal cortex, UP onset delay and PMR are also negatively correlated (Kendall tau = -0.22, n = 950 EX units from 25 sessions in 11 rats, p = 5e-21).",
+     "source": "Figure 5E legend; Results, Post-DOWN rebound suggests a widespread role for Ih in neuronal activation at UP onset, paragraph 4",
+     "quote": "We found a similar relationship in the frontal cortex (FC; data from Watson et al.",
+     "statistics": [
+      {
+       "test": "Kendall tau rank correlation",
+       "statistic": "tau = -0.22",
+       "p": 5e-21,
+       "n": "950 EX units from 25 sessions (11 rats)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mehrotra_2024.ipynb",
+     "notes": "With the EX units of the data set (CellIDs EAll) and its UP states (UPDOWNINtervals UPInts), 986 of 995 EX units over 27 sessions in 11 rats enter, and Kendall tau between UP onset delay and PMR is -0.221 (p = 2.3e-20; paper -0.22, p = 5e-21, n = 950 from 25 sessions), within the tolerance of 0.022. Without the two sessions with the fewest UP states (25 sessions, 965 units) tau is -0.221. With the spike-based ON intervals tau is -0.162 (p = 5.0e-11), outside the tolerance; with all units and UPInts -0.236. Tau is negative in 8 of the 10 rats where it is defined (p < 0.05 in 5) and in 21 of 27 sessions (p < 0.05 in 10). The DOWN and OFF intervals hold 0 to 15.6 Hz of population rate, against 5.8 to 182.6 Hz when shifted by 0.5 s. The 27 archives (88.9 GB) were streamed eight at a time and read in 965 s in the final run; in 18 the wide-band .eeg came before the members needed.",
+     "deviations": [
+      "Figure5E.py reads buzcode files (SlowWaves events, CellClass, spikes cellinfo) that CRCNS fcx-1 does not hold. The data set's own files stand in for them: UPInts of UPDOWNINtervals.mat for the SlowWaves UP states and EAll of CellIDs.mat for the CellClass EX units. The outcome rests on UPInts; the spike-based ON intervals give a tau outside the tolerance.",
+      "All 27 sessions are used; the paper used 25 (its dataset_DM.list is not in the code repository). The three sessions named by date (20140526_277um, 20140527_421um, 20140528_565um) are taken as one rat, which gives the paper's 11 rats.",
+      "The PETH, PMR and onset delay are those of fig5f-rsc-pmr-onset (Figure5F.py and Figure5E.py are the same procedure), with pynapple 0.11.4."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "CRCNS fcx-1 (Watson et al. 2016)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3-other-gradients-fail",
+     "statement": "In an adapting Wilson-Cowan array, gradients of excitability, recurrence or adaptation produce an inactivation sequence at the UD transition, not the observed activation sequence at DU only, over all parameter values tested.",
+     "source": "Figures 3B to 3D and S3B to S3D; Results, An Ih gradient can account for DV sequential activation at UP state onset, paragraph 2",
+     "quote": "we found that none of these parameter gradients were able to account for our primary observation... synchronous deactivation at the UD transition but sequential activation at UP state onset",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The model code (Model/Figure3.m, FigureS3b.m to FigureS3d.m, commit 4ee34f3) is MATLAB, which cannot be installed in the locked Python environment; neither MATLAB nor Octave is available on the runner. A port of the model to Python was not attempted.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "github.com/PeyracheLab/MehrotraLevenstein_2023 at commit 4ee34f3, Model/ (simulation code; no recorded data)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-ih-gradient",
+     "statement": "A gradient of an h current (Ih) in the model produces synchronous UD transitions and a DV activation sequence at DU, robustly over a range of parameters.",
+     "source": "Figure 3E, 3F and S3F; Results, An Ih gradient can account for DV sequential activation at UP state onset, paragraph 3",
+     "quote": "As a result, an Ih gradient led to synchronous UD and sequential activation at UP state onset at the DU transition, as observed in our recordings (Figure 3F). Importantly, this property of the network was robust to a wide range of parameters (Figure S3F).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "As fig3-other-gradients-fail; Model/Figure3.m and FigureS3f.m are MATLAB.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "github.com/PeyracheLab/MehrotraLevenstein_2023 at commit 4ee34f3, Model/",
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-sag-gradient",
+     "statement": "Ex vivo, the Ih-mediated voltage sag of layer III PoSub EX cells decreases along the DV axis (Pearson R2 = 0.22, n = 59 cells from 11 mice, p = 0.0004), and the gradient is abolished by the HCN blocker ZD-7288 (R2 = 0.05, n = 19 cells from 8 mice, p = 0.36).",
+     "source": "Figure 4D; Results, An Ih gradient can account for DV sequential activation at UP state onset, paragraph 4",
+     "quote": "We found a gradient of decreasing sag along the DV axis (Figure 4D) that was sensitive to an HCN-channel blocker",
+     "statistics": [
+      {
+       "about": "control",
+       "test": "Pearson correlation",
+       "statistic": "R2 = 0.22",
+       "p": 0.0004,
+       "n": "59 cells from 11 mice"
+      },
+      {
+       "about": "ZD-7288",
+       "test": "Pearson correlation",
+       "statistic": "R2 = 0.05",
+       "p": 0.36,
+       "n": "19 cells from 8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The ex vivo whole-cell recordings are not in dandiset 000987, which holds only extracellular recordings, nor in the paper's code repository; the paper's data availability statement names only the RSC dataset as deposited.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4-no-other-gradients",
+     "statement": "Resting potential, input resistance, membrane time constant, F-I slope and the fast time constant of sag do not vary with DV position in PoSub.",
+     "source": "Figure S4A to S4G; Results, An Ih gradient can account for DV sequential activation at UP state onset, paragraph 4",
+     "quote": "Critically, no other DV gradients in passive properties or excitability were found in PoSub cells (Figure S4).",
+     "statistics": [
+      {
+       "about": "resting membrane potential, control",
+       "test": "Pearson correlation",
+       "statistic": "R2 = 0.02",
+       "p": 0.27,
+       "n": "59 cells from 11 mice"
+      },
+      {
+       "about": "input resistance, control",
+       "test": "Pearson correlation",
+       "statistic": "R2 = 0.06",
+       "p": 0.06,
+       "n": "59 cells from 11 mice"
+      },
+      {
+       "about": "membrane time constant, control",
+       "test": "Pearson correlation",
+       "statistic": "R2 = 0.06",
+       "p": 0.07,
+       "n": "59 cells from 11 mice"
+      },
+      {
+       "about": "F-I slope",
+       "test": "Pearson correlation",
+       "statistic": "R2 = 0.009",
+       "p": 0.449,
+       "n": "59 cells from 11 mice"
+      },
+      {
+       "about": "fast time constant of sag decay",
+       "test": "Pearson correlation",
+       "statistic": "R2 = 0.021",
+       "p": 0.302,
+       "n": "59 cells from 11 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As fig4d-sag-gradient; the ex vivo recordings are not deposited.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset description says the 14 recordings hold 570 isolated units, as the paper's Methods do, but the files hold 638 units (31 to 71 per session). 570 is the number of units whose DOWN-to-UP PETH crosses half the mean rate within 155 ms, the units entering the paper's Figure 5F.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset description lists LFP in each file, but no file holds LFP or any other electrical series; only spike times, epochs, sleep scoring, DOWN and UP states and tracking.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Units carry no waveform, cell type, channel or depth, and the electrode table gives x, y and z as 0 for every channel, so the putative excitatory rule of the Methods (trough-to-peak and rate) cannot be applied and units cannot be placed on the probe.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "session_start_time is 2024-05-09 (the upload day) in every file, while the identifiers carry the recording dates (A7801-210225 and so on, 2021).",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In 9 of 14 sessions part of the SWS (NREM) epochs lies outside the sleep epochs; in A7803-210730 one SWS interval, 7,680 to 9,565 s, covers two whole wake (arena) epochs.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In DANDI:000939 (version 0.261016.2310) the NREM epochs of sleep_states lie partly outside the home cage epochs in the paper's sessions, and in A3711-200810b, A3717-201021 and A3723-201115 they run 3,508 to 5,092 s past the last spike of the recording.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In DANDI:000939 the LFP of A3705-200306 covers 11,168 s and that of A3711-200810b 9,499 s, while their spikes run to 16,199 s and 12,177 s; both LFPs have starting_time 0 and rate 1,250 Hz. In these two sessions and A3708-200317b high gamma power does not rise after the DOWN-to-UP transitions of the spikes (by 0.02 or less over shifted times, against 0.053 to 0.357 elsewhere), which suggests that their LFP and spikes do not share a clock. In A3708-200317b the LFP fits neither the spikes nor the session's event file in the paper's code (power after / before the event file's UP starts 0.997, 0.998 when shifted by 0.5 s); only 1,488 of the event file's 6,187 UP starts lie in the file's NREM within the home cage.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "In DANDI:000939 the electrode table gives x, y and z as NaN, and its rel_y column is described only as \"xy coordinate in electrode group\"; which way it runs is said only in the probe description (\"Channels sorted top to bottom of shank\", electrode 0 with the largest rel_y).",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "DANDI:000056, which holds 8 of the 9 ADN sessions the paper's code names, gives no location, shank or electrode for its units, so ADN units cannot be selected.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In DANDI:000939 the Isomap ring of the HD cells (makeRing.py) does not follow head direction in wake in A3706-200313 and A3730-210323b (mean resultant length of ring angle against head direction 0.114 and 0.328, against 0.627 to 0.936 in the other 14 sessions).",
+     "found": null,
+     "status": null,
+     "n": 22,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebooks of commit 2cbcfb2 (reproduce_mehrotra_2024.ipynb, posub_000939.ipynb, posub_lfp_000939.ipynb) with the conclusion cells and the summaries removed, the helper module and the claims file, with the paper. Problems it marked as not affecting a conclusion were also answered: problem 10 (the NREM epochs past the last spike lie outside the home cage epochs, now printed and discussed in the posub data check), problem 11 (the header tables now say which notebook tests each claim) and problem 12 (see fig5e-fc-pmr-onset).",
+     "agreed": 17,
+     "of": 22,
+     "disagreements": [
+      {
+       "claim": "fig1b-no-dv-tuning-gradient",
+       "outcome": "not_reproduced",
+       "reason": "HD information as the Methods formula gives it (bits/s) varies with depth, tau = 0.082, p = 5e-5; speed, AHV, RVL and peak rate behave as claimed (posub cell 23). The bits/spike variant is not significant (p = 0.099), so the outcome turns on the unit. Problem 5: the paper itself filters cells by HD information in bits/spike and cites Duszkiewicz et al. for it; under bits/spike all five correlations come out as the paper reports them; the claims file does not name this as an open detail, a gap in the claims file, not a coding error. It could not check bits/spike against the paper's figures."
+      },
+      {
+       "claim": "fig2f-gamma-travels",
+       "outcome": "blocked",
+       "reason": "DU-aligned readings: DU differs from 0, but UD also differs (p about 6e-5) wherever it can be tested. Delta-peak readings: DU does not differ (p 0.39 to 0.60). No reading meets the full criterion (lfp cell 7); it gives blocked, methods_underspecified. Problem 2: in A3705 and A3711 the LFP is shorter than the spike record and there is no gamma rise after DU (ratio 1.000 and 1.007, equal to the shifted control), A3708 the same; all three are still used, and their DU delays span the whole search window. Problem 9: the delta-peak readings yield only 0.37-4.76 peaks per minute and are noisy."
+      },
+      {
+       "claim": "fig5e-fc-pmr-onset",
+       "outcome": "blocked",
+       "reason": "Blocked (too_large), not established. The 66 min estimate assumes reading all 27 archives one after another from a single stream (main cell 15). It asked for the tar member order in one archive and a timing of parallel streams. Problem 12: load_fcx_session would use UPDOWNINtervals, whereas the criterion says SlowWaves events (as Figure5E.py); a deviation if fig5e were run."
+      },
+      {
+       "claim": "fig1j-down-resets-hd",
+       "outcome": "blocked",
+       "reason": "The block is not supported by the archive: DANDI:000939 holds spikes, HD, wake epochs and UP states, and makeRing.py exists in the code. The claim could be tested."
+      },
+      {
+       "claim": "fig1k-hd-stable-at-onset",
+       "outcome": "blocked",
+       "reason": "Same data as fig1j; the claim is testable."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebooks of commit 34bae66 (reproduce_mehrotra_2024.ipynb, posub_000939.ipynb, posub_lfp_000939.ipynb, posub_ring_000939.ipynb) with their conclusions and summaries, the helper module, the claims file and this record, with the paper. Its text corrections without an outcome change were also made: the 691 s of fig5e (main cell 20), the threshold range of fig5f (main cell 15, now -0.259 to -0.238), and the agreement wording of the posub Summary (the 15 event files share the clock of the spikes by the cross-correlogram peak, while in A3701, A3710 and A3716 only 423 to 769 file DOWN starts lie within 10 ms of a re-detected one). The optional check it suggested for A3708-200317b was added (posub_lfp_000939.ipynb): the LFP rises after neither the re-detected DU (1.045 against 1.048 shifted) nor the event file's UP starts (0.997 against 0.998), so the LFP fits neither stream.",
+     "agreed": 21,
+     "of": 22,
+     "disagreements": [
+      {
+       "claim": "fig1b-no-dv-tuning-gradient",
+       "outcome": "not_reproduced",
+       "reason": "The criterion fixes \"the measures as the Methods define them\". The printed formula gives bits per second, and under it the claim fails (tau = 0.082, p = 5.1e-5, posub cell 34). The bits-per-spike assumption is stated and plausible; its p = 0.099 and |tau| = 0.034 sit close to the paper's -0.03 and p = 0.13. The claims file does not name the unit as open, a gap the author has correctly sent to a reader. New point: the record leaves the direction of the depth axis unstated; the paper's three non-significant measures are negative and the two significant ones positive, while in the notebook all five are positive with dorsal as positive, so no single axis direction matches all five signs, and the \"positively correlated\" part rests on reading the paper's axis as dorsal-positive; the opposite direction is said to be reported but is not printed. The quotation \"0.2 bits/spike\" misquotes the paper's \"0.2 bins/spike\", and the Figure 1B axis range (-2 to 1, most cells near 0) is not supported by the materials it had (the text has no axis labels, and it could not render the PDF)."
+      }
+     ]
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure 5F. Which units enter the RSC test? All 638 sorted units give the legend's n of 570 entering units and tau = -0.275; the Methods say only EX units were analysed, which the deposited files cannot reproduce (no waveforms). This attempt assumed all units.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "In the paper's code (commit 4ee34f3), the DOWN and UP event file of PoSub session A3708-200317b does not fit the spikes of that session in DANDI:000939 (version 0.261016.2310); the population rate inside its DOWN states (454.7 Hz) equals that of shifted intervals (455.8 Hz), and no shift within 6,000 s fits. The other 15 event files fit (0.0 to 136.7 Hz inside DOWN states).",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "DANDI:000939 holds 31 mice; the paper used 16 sessions, and which ones is recorded only by the event files in the paper's code repository.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure 1B. Is HD information in bits per spike or bits per second? The formula printed in the Methods gives bits per second, which correlates with depth here (tau = 0.082, p = 5.1e-5); bits per spike, the unit used for the Isomap cell selection, does not (p = 0.099). This attempt assumed bits per spike.",
+     "found": null,
+     "status": null,
+     "n": 13,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure S1I. How is a session halved (first and second half, or alternating DOWN states), and which correlation is used? Three of four readings find DU more stable than UD; first and second half with Pearson's R does not (p = 0.40).",
+     "found": null,
+     "status": null,
+     "n": 14,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure S1L. Were the predictors (DV position and NREM firing rate) standardized, and are the coefficients compared signed or in absolute value? Only standardized predictors with signed coefficients reproduce both tests.",
+     "found": null,
+     "status": null,
+     "n": 15,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure 2 and S2D. How is high gamma power taken from the filtered LFP, is the UP onset delay measured from DU or from the delta peak, in which window is the maximal slope searched, and how is the UD timing measured on the LFP? Aligned to DU the rise travels but the drop before the DOWN start does too; aligned to the delta peak neither does.",
+     "found": null,
+     "status": null,
+     "n": 16,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure S2E. Is the speed the slope of depth on delay or the inverse of the slope of delay on depth? The first gives the paper's unit speeds (6.97 against 6.72 mm/s) and was assumed.",
+     "found": null,
+     "status": null,
+     "n": 17,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The paper's Figure 5E uses 25 sessions of CRCNS fcx-1, which holds 27; which 25 is recorded only in a list (dataset_DM.list) that the code repository does not hold.",
+     "found": null,
+     "status": null,
+     "n": 18,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "Figure5E.py (commit 4ee34f3) reads buzcode files of the frontal cortex data (SlowWaves events, CellClass and spikes cellinfo) that CRCNS fcx-1 does not hold; the data set gives spike times, cell classes and UP and DOWN states in other files (SStable, CellIDs, UPDOWNINtervals).",
+     "found": null,
+     "status": null,
+     "n": 19,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure 5E. Are the SlowWaves UP states of the code the UPInts of the data set's UPDOWNINtervals.mat, or the spike-based ON intervals, and which 25 sessions were used? UPInts give tau = -0.221 over 27 sessions, ON intervals -0.162. This attempt assumed UPInts.",
+     "found": null,
+     "status": null,
+     "n": 20,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors on Figure 1K. Are the time steps whose ring radius is below the threshold left out of the cumulative circular variance, and is the variance averaged over UP states before the slope is taken? Leaving them out gives no difference between the traveling and control intervals (p = 0.27 over 16 sessions, and 0.10 and 0.21 with the rings of two other random draws); keeping them gives p = 0.052, 0.025 and 0.044, near the paper's result. This attempt assumed they are left out.",
+     "found": null,
+     "status": null,
+     "n": 21,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "mehrotra-2024",
+   "type": "reproduction",
+   "title": "UP onset sequences in retrosplenial cortex and postsubiculum (Mehrotra, Levenstein et al. 2024)",
+   "description": "Tests the findings of Mehrotra, Levenstein et al. (2024) on dandiset 000987, which holds the paper's retrosplenial cortex recordings (14 sessions, 3 mice), and, counted apart, on the paper's postsubiculum recordings in dandiset 000939. It measures the firing-rate overshoot and the delay with which units enter the UP state after a DOWN state, the dorsoventral sequence of these delays in postsubiculum, the longer ventral DOWN states, the head direction tuning along the probe, and the high gamma LFP at UP onset, the reset of the head direction signal by the DOWN state, and, on the rat frontal cortex data of CRCNS fcx-1, the same delay and overshoot relation. The model and the slice recordings are not tested.",
+   "datasets": [
+    "dandi:000939",
+    "dandi:000987"
+   ],
+   "papers": [
+    "10.1016/j.cub.2024.05.048"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mehrotra_2024.ipynb",
+     "title": "Mehrotra, Levenstein et al. (2024) on dandiset 000987 (retrosplenial cortex)",
+     "executed": null
+    },
+    {
+     "path": "posub_000939.ipynb",
+     "title": "The postsubiculum spike claims, on dandiset 000939",
+     "executed": null
+    },
+    {
+     "path": "posub_lfp_000939.ipynb",
+     "title": "The postsubiculum LFP claims, on dandiset 000939",
+     "executed": null
+    },
+    {
+     "path": "posub_ring_000939.ipynb",
+     "title": "The postsubiculum Isomap ring claims, on dandiset 000939",
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 54,
+   "hashed": false
+  }
+ ]
+}
