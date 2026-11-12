@@ -112,7 +112,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-          fetch-depth: 0
+          fetch-depth: 1   # no step reads history, and all of it is ~930 MB (two jobs a run, eleven runs a chain)
 
       - name: Start from the attempt's branch if it exists
         id: start
@@ -131,7 +131,7 @@ jobs:
           { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; echo "TDIR=$TDIR"; } >> "$GITHUB_ENV"
           echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
-            git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
+            git fetch --depth 1 origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
             # The registry's tools as the workflow has them, not as the branch had them when its attempt began: a
             # branch made before a fix would otherwise run without it. Working files only, so they are never committed.
             git restore --worktree --source "$GITHUB_SHA" -- tools
@@ -152,7 +152,13 @@ jobs:
         run: |
           # The credential scrub runs the agent's commands in a sandbox built on bubblewrap and
           # socat. Bubblewrap needs unprivileged user namespaces; Ubuntu 24.04 restricts them.
-          sudo apt-get install -y -q bubblewrap socat
+          # The runner's DNS can fail for a few minutes (2026-11-11: six author runs stopped here in an hour, on
+          # "Temporary failure resolving archive.ubuntu.com"). Each download is tried again, then the whole install.
+          for try in 1 2 3 4; do
+            sudo apt-get install -y -q -o Acquire::Retries=3 bubblewrap socat && break
+            [ $try = 4 ] && { echo "::error::could not install bubblewrap and socat (the network?)"; exit 1; }
+            sleep $((try * 30)); sudo apt-get update -q || true
+          done
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           bwrap --ro-bind / / --unshare-all true && echo "bubblewrap works"
           npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
@@ -170,7 +176,8 @@ jobs:
         run: |
           # The paper match reads the dataset's papers; the other roles, the paper's, from each of its datasets.
           if [ "$ROLE" = paper-match ]; then tools/get_papers.sh "$FOLDER" paper
-          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper; fi
+          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper \
+                 "$(python tools/paper_records.py doi "$FOLDER")"; fi
 
       - name: Run the paper match's cheap checks
         id: checks
@@ -323,7 +330,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1   # no step reads history, and all of it is ~930 MB (two jobs a run, eleven runs a chain)
 
       - uses: actions/download-artifact@v4
         with:
@@ -339,13 +346,15 @@ jobs:
           # Take the archiving script from the workflow's own ref: a branch made before it existed lacks it.
           cp tools/archive_transcripts.sh "$RUNNER_TEMP/"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
-            git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
+            git fetch --depth 1 origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
           else
             git checkout -b "$BRANCH"
           fi
           # Refuse anything that is not this run's: a guard against results being mixed up.
-          if [ "$ROLE" = paper-match ]; then others=$(ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER")
-          else others=$(ls out/transcripts | grep -vx "$FOLDER"); fi
+          # `|| true`: grep finds nothing in a run that is all this one's, and fails, which `set -e` would stop on.
+          if [ "$ROLE" = paper-match ]; then
+            others=$({ ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER"; } || true)
+          else others=$(ls out/transcripts | grep -vx "$FOLDER" || true); fi
           others=$(echo "$others" | grep . || true)
           [ -z "$others" ] || { echo "::error::Transcripts for other datasets or papers: $others"; exit 1; }
           # The claims run starts an attempt: it moves an earlier attempt's transcripts aside first.

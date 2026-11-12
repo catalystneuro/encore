@@ -1,0 +1,983 @@
+schema_version: 3
+id: kim-2022-02
+datasets:
+- archive: dandi
+  id: "000489"
+  version: 0.230518.1811
+  doi: 10.48324/dandi.000489/0.230518.1811
+  relation: primary
+- archive: dandi
+  id: "000448"
+  version: 0.230421.1844
+  doi: 10.48324/dandi.000448/0.230421.1844
+  relation: primary
+missing_datasets:
+- archive: dandi
+  id: "000548"
+  name: Effect of the number of pulses on electroporation by unipolar and 50 % bipolar pulses
+  why: Names this paper (relatedResource) and its title is that of Fig. 3, but it is not among the
+    paper's datasets in papers/datasets/kim-2022.yaml and the claims file lists the Fig. 3 claims
+    under 000489; this attempt tested the datasets the claims name. Found by a search of the archive.
+- archive: dandi
+  id: "000549"
+  name: Effect of the pulse duration on electroporation by unipolar and 50% bipolar pulses
+  why: Names this paper and holds the pulse durations of Figs. 4 and 5, but is not among the paper's
+    datasets in papers/datasets/kim-2022.yaml; not used, as for 000548.
+- archive: dandi
+  id: "000550"
+  name: Pulse repetition rate
+  why: Names this paper and holds the repetition rates of Fig. 6, but is not among the paper's
+    datasets in papers/datasets/kim-2022.yaml; not used, as for 000548.
+paper: doi:10.1016/j.bioelechem.2022.108319
+date: 2026-11-10
+entry: kim-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42748694997
+outcomes:
+- claim: fig2a-uptake-rises-with-field
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2a-uptake-rises-with-field
+  notes: With the two dishes that share one YP image left out (unipolar and 25% with 2 dishes, 50%
+    with 5, 75% and 100% with 3), YP at the centre ROI (15.1 kV/cm) is higher than at the ROI 3 mm
+    out (5.0 kV/cm) for all five amplitudes, unpaired p = 0.0001 to 0.044; Spearman rho of mean YP
+    with field 0.96 to 0.99. The paired test passes for 3 of 5 (unipolar p = 0.12 and 25% p = 0.13,
+    2 dishes each). The weakest ROI at 2.4 mm and one-sided ROI give the same counts. Assigning the
+    shared image to the unipolar or the 25% group gives 4 of 5 by the unpaired test.
+  deviations:
+  - Fields from an exact two-dimensional two-cylinder solution for the geometry of Methods 2.3 (15.38
+    kV/cm at the centre for 5.75 kV), scaled to the paper's 15.1 kV/cm there; the paper's finite
+    element output is not deposited.
+  - ROI are contiguous 200 um squares tiled from the midpoint along bb' to 3 mm on both sides, the
+    claims file's reading (a), with the two ROI at the same distance averaged per dish; one side is
+    shown as reading (b). The outer limit of 3 mm (5.0 kV/cm) is this attempt's choice, as the
+    figure's field range is in the PDF only; 2.4 mm is shown as a variant.
+  - YP0 and MB0 are means over a 0.2 mm disc at the centre of each footprint (Methods 2.5 says only
+    within the electrodes' footprints); 0.1 and 0.3 mm discs are computed in the helper.
+  - Pixel size 0.65 um, from the camera and objective named in Methods 2.5 (6.5 um pixels, 10x); the
+    files give none. The measured electrode spacing (4.44 to 4.66 mm, Methods 4.5 mm) supports it.
+  - Assumption. Methods 2.5 names a two-sided Student's t-test without saying whether it is paired.
+    The unpaired test, the two-sample test the name denotes, is adopted; the paired result is shown.
+    The readings differ here (5 against 3 of 5).
+  - The dishes sub-Fig2-0-03 and sub-Fig2-25-04 share one YP image and are left out of the main
+    analysis; both assignments are shown.
+- claim: fig2a-vertical-scales
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2a-vertical-scales
+  notes: The largest unipolar mean is 651 a.u. (mean plus s.e.m. 754, within 1200, and above 250).
+    For 75% bipolar pulses the largest mean plus s.e.m. is 339 a.u. (311 to 372 over the readings),
+    above the 250 a.u. axis; the largest 75% mean alone is 263 a.u. The unit-free ratio of the
+    largest unipolar and 75% means is 2.47 (1.74 to 2.50 over the readings), against 4.8 for the
+    paper's axes; axis limits only bound the data, so the ratio points the same way without deciding
+    it.
+  deviations:
+  - The same ROI, field model and duplicate handling as fig2a-uptake-rises-with-field.
+  - Assumption. The image values are taken as the paper's units (16-bit counts, conversion 1.0,
+    footprint levels of 177 to 295 counts); the files are consistent with that but do not state it.
+    If they were rescaled on export the criterion blocks the absolute values.
+- claim: fig2b-exponential-same-slope
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2b-exponential-same-slope
+  notes: Under the adopted reading (8 kV/cm cutoff, nonlinear least squares) an exponential fits the
+    means with a lower residual sum of squares than a line for 3 of 5 amplitudes (unipolar and 50%
+    are better fitted by a line; the criterion needs 4), and no bipolar slope from per-dish fits
+    differs from the unipolar slopes (p = 0.12 to 0.80). The slope test has little power, as the
+    unipolar group has 2 dishes (k = 0.205 and 0.41). Slopes of the fits to the means are 0.189 +-
+    0.016 (50%) and 0.191 +- 0.014 (75%) against 0.263 +- 0.027 for unipolar, 0.72 times; 25% and
+    100% give 0.88 and 1.07 times. The outcome changes with the reading. At 7 and 6 kV/cm with
+    nonlinear fits the exponential is better for 4 and 5 of 5 and no slope differs (reproduced);
+    with log-linear fits at 7 and 6 kV/cm all 4 bipolar slopes differ (p = 0.004 to 0.042, not
+    reproduced) when the shared image is left out, and none when it is assigned to the unipolar
+    group.
+  deviations:
+  - Fits by nonlinear least squares in scipy, not Grapher 16.
+  - Assumption. The cutoff and the fitting method change the outcome. The criterion's main reading
+    is adopted, 8 kV/cm (the top of the legend's "6-8 kV/cm", which leaves out the low-signal ROI
+    of every amplitude) and nonlinear least squares on linear YP (the values the Fig. 2B legend
+    plots); every variant is shown in the notebook.
+  - The criterion does not say which outcome applies when the slopes agree but the exponential holds
+    for fewer than four amplitudes; partially reproduced is used, as one of the two parts holds.
+- claim: fig2c-max-inhibition-50-75
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2c-max-inhibition-50-75
+  measured: 49.3
+  notes: The ROI from 8.78 to 15.1 kV/cm (centre to 1.8 mm) are used. At all 10 the lower of the 50%
+    and 75% values is below the 25% and 100% values. The best amplitude is 50%, at 49.3% of unipolar
+    on average (reading a, recorded as measured) and 35.1% at its lowest (reading b), both outside 20
+    +- 2%. The p < 0.01 test does not hold at every field. Test (ii), the better of 50 or 75%
+    against both 25 and 100%, gives p < 0.01 at 7 of 10 fields; test (i), against unipolar with 2
+    unipolar dishes, at 3 of 10; either at 7 of 10. No variant reaches every field (assigning the
+    shared image, one side of the centre, footprint discs of 0.1 and 0.3 mm give 3 to 7 of 10 by
+    either comparison). If holding at most fields sufficed, the outcome would be partially
+    reproduced. Averaged over the 10 fields the 25% and 100% pulses give 110.0% and 118.1% of the
+    unipolar value (64 to 168% at single fields), so on average they do not inhibit in these dishes;
+    25% is below 100% at 7 of 10 fields. The 75% and 100% dishes were imaged on 2021-08-24 and the
+    two unipolar dishes analysed on 2021-07-29, with footprint YP0 of 177 to 227 a.u. against 236
+    and 292 a.u.
+  deviations:
+  - Assumption. The criterion runs the test at each field and does not say at how many fields it
+    must hold. It is taken to hold, like the ordering, at every field in the range; round 1 had
+    counted it as holding at most fields, a rule with no basis in the criterion or the paper.
+- claim: fig2c-inhibition-flat-above-8-7
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2c-inhibition-flat-above-8-7
+  notes: Percent of the unipolar mean at 8.78 against 15.1 kV/cm, unpaired, ROI on both sides; 25%
+    103.8 against 97.7 (p = 0.83), 50% 67.8 against 35.1 (p = 0.072), 75% 91.5 against 40.0 (p =
+    0.15), 100% 121.3 against 114.6 (p = 0.78). The 50% and 75% differences are large (+32.7 and
+    +51.5 points) with 5 and 3 dishes, so the absence rests on few dishes, not small effects. Paired
+    p = 0.11 to 0.89. Assigning the shared image and footprint discs of 0.1 and 0.3 mm also give 0
+    of 4. With one side of the centre only one amplitude differs, 100% under (b+) (p = 0.033) and
+    50% under (b-) (p = 0.036), which would make it not reproduced. Over every pair of ROI in the
+    range 19 of 180 comparisons differ at p < 0.05, against 9 expected by chance.
+  deviations:
+  - Assumption. The ROI placement changes the outcome. Reading (a), the ROI on both sides of the
+    centre averaged per dish, is adopted, as bb' runs from b to b' through the centre (Fig. 1C) and
+    the two halves have the same fields; one side only is shown.
+- claim: fig2c-weaker-at-6-7
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2c-weaker-at-6-7
+  notes: At the ROI closest to 6.7 kV/cm (2.4 mm, 6.63 kV/cm) 50% pulses give 198% of the unipolar
+    mean, against 35 to 68% at 8.78 to 15.1 kV/cm, and 100% pulses 283% against 93 to 139%, so the
+    percent is higher than at every higher field for both. Unpaired, 100% differs from each higher
+    field with p <= 0.022 and from the per-dish pooled value with p = 0.011; 50% does not reach p <
+    0.01 (p up to 0.082 against each field, 0.049 against the per-dish pooled value). Paired gives
+    the same (50% pooled p = 0.070, 100% p <= 0.035). The criterion as written pools the dish
+    values of all higher field ROI; taken literally, every dish and ROI value pooled, it gives 50% p
+    = 1.5e-09 and 100% p = 2.6e-09, and the outcome would be reproduced, under every variant shown.
+    That pooling counts each dish ten times, so the per-dish mean is used (a deviation from the
+    criterion's letter) and the outcome is partially reproduced. With one side of the centre, (b+)
+    gives the same outcome and (b-) passes neither amplitude (100% pooled p = 0.078). The
+    percentages above 100% mean more uptake than after unipolar pulses, not weaker inhibition in the
+    paper's sense; the unipolar mean at 2.4 mm is 19 a.u. (dishes 25 and 12), near background and
+    smaller than the spread of background between dishes (raw YP far from the electrodes minus YP0,
+    -7 to 127 a.u.). The 100% pass rests on this ratio to a near-background mean from 2 dishes; the
+    criterion counts it, and it is counted here.
+  deviations:
+  - Assumption. The unpaired test is adopted, as for fig2a-uptake-rises-with-field; the paired
+    result is shown.
+  - Pooled reading (ii) is taken per dish, each dish's mean percent over the higher field ROI, so
+    that the test counts dishes; round 1 pooled every dish and ROI value, which treats the ROI of a
+    dish as independent. This departs from the criterion's wording ("the dish values of all higher
+    field ROI pooled"), under which the outcome would be reproduced.
+  - Assumption. ROI reading (a), both sides of the centre, as for
+    fig2c-inhibition-flat-above-8-7; one side only is shown.
+- claim: fig7-unipolar-pole-polarization
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-unipolar-pole-polarization
+  notes: Over 5 unipolar cells, at 600 ns the cathode-facing pole is +22.1% (p = 0.0012) and the
+    anode-facing pole -20.7% (p = 0.0026), ratio of magnitudes 0.94; the 500 to 600 ns mean gives
+    +22.1 and -21.4%. Five variants of the pole regions give ratios 0.90 to 1.05, all p <= 0.013,
+    among them regions that leave out membrane facing a neighbouring cell (+22.1 and -20.4%, ratio
+    0.92). In all 9 cells the upper pole of the image rises and the lower falls during the first
+    pulse.
+  deviations:
+  - 5 of the paper's 18 unipolar cells are in the dandiset.
+  - Assumption. The paper does not say how the pole regions were drawn. They are the membrane
+    pixels (frame-averaged image above its 85th percentile, largest connected group) where the
+    outward normal of the smoothed cell outline is within 45 degrees of the image's vertical axis,
+    the axis of the response in every file; 80th and 90th percentiles and 30 and 60 degrees are
+    variants. Images are binned 2 x 2 on loading. The paper imaged individual cells or small groups
+    (Methods 2.6); where the group is several touching cells, the regions include some membrane at
+    cell contacts and notches that faces a neighbouring cell. A variant keeps only pole pixels with
+    no other part of the group beyond them along the field axis (61 to 100% of the pole pixels per
+    file).
+  - Assumption. The files do not say where the electrodes were. The pole that brightens is taken as
+    the cathode-facing one, as FluoVolt emission rises with depolarization and the cathode-facing
+    pole depolarizes (Results 3.5). This makes the sign of the cathodic change a premise; the test
+    is that the opposite pole changes the other way by a similar amount.
+  - The pulse onset is not in the files; it is the first forward-trial frame where the mean unipolar
+    upper-minus-lower signal exceeds its baseline by 5 SD (frame 43). The baseline is the 40 frames
+    before it (Methods 2.6). Dark frames (failed flashes) are left out. Reverse trials are reversed
+    and aligned to the forward trial by correlation (a lag of 74 frames in 8 cells and 75 in cell24)
+    before the two are averaged (Methods 2.6).
+- claim: fig7-charging-time-constant
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-charging-time-constant
+  measured:
+  - 191
+  - 23.2
+  - 613
+  - 22.7
+  notes: Over 5 unipolar cells, pooled points (125 for the charging fit over 0 to 600 ns, 120 for
+    the discharge over 600 to 1175 ns), the charging fit gives tau = 191 ns (within 200 +- 20) and A
+    = 23.2% (expected 31 +- 3.1); the discharge fit tau = 613 ns (expected 520 +- 52) from 22.7%
+    (expected 31.5 +- 3.15). r = 0.84 and 0.64, p < 1e-14; the mean trace gives the same parameters
+    with r = 0.998 and 0.997 and residuals of at most 1.4 points. Discharge over charge is 3.2,
+    against 2.5. The charging tau is not robust to the onset, which is known to a frame; moving it
+    by one frame gives 149 to 249 ns, and placing t = 0 half a frame earlier 216 ns. The discharge
+    tau (615 to 627 ns) and both amplitudes (21.9 to 24.7%) stay outside tolerance in every case.
+    Per cell, A ranges from 14.4 to 31.3% and discharge tau from 351 to 833 ns, so the subset of 5
+    cells of 18, and the assumed pole regions, may explain the difference. Leaving out the pole
+    membrane that faces a neighbouring cell gives the same fit (A = 23.2 and 22.8%, tau = 191 and
+    614 ns).
+  deviations:
+  - 5 of 18 cells, so 120 points per fit where the paper has 425.
+  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).
+  - Fits by nonlinear least squares in scipy, not Grapher 16; r is the correlation of the points
+    with the fit.
+- claim: fig7-later-pulses-same-tau-difference
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-later-pulses-same-tau-difference
+  notes: With the criterion's A(1 - exp(-t/tau)) form, discharge over charge is 7.9, 10.5, 8.9 and
+    9.1 for pulses 2 to 5, so the discharge constant is the larger for all four, but no ratio is
+    within 2.25 to 2.75 or within 10% of the first pulse's 3.22 (2.90 to 3.54). That form cannot
+    follow a pulse that starts from a charged membrane (charging tau 62 to 80 ns). With the
+    free-start variant the ratios are 2.99, 3.62, 2.88 and 2.97, the discharge constant again the
+    larger for all four; none is within 2.25 to 2.75 and pulses 2 and 5 are within 10% of the first
+    pulse's ratio (pulse 4 just below). Both forms give partially reproduced.
+  deviations:
+  - The free-start charging fit, V0 + (A - V0)(1 - exp(-t/tau)), is a variant added here, as
+    Results 3.5 says charging by later pulses "started with the partially charged membrane"; the
+    criterion's form is the main one.
+  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).
+- claim: fig7-bipolar-overshoot
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-bipolar-overshoot
+  notes: (i) At 600 ns the cathodic pole is 21.5% for 4 bipolar and 22.1% for 5 unipolar cells,
+    unpaired p = 0.855; the error-bar gap rule finds no difference. (ii) After the first phase the
+    bipolar mean falls to half in 150 ns (unipolar 475 ns) and to zero in 325 ns (unipolar not
+    within 600 ns). (iii) The bipolar mean reaches -8.1% at 1175 ns; cell values -6.7 to -9.9%,
+    p = 0.0012. That time was chosen on the mean of the same cells; the last frame of the second
+    phase, fixed in advance, is the same frame.
+  deviations:
+  - 4 of the paper's 17 bipolar cells and 5 of its 18 unipolar cells.
+  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).
+- claim: fig7-bipolar-alternation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-bipolar-alternation
+  notes: For each of the five pulses, over 4 bipolar cells, the cathodic pole is positive at the end
+    of the first phase (19.3 to 21.5%, p <= 0.0001) and negative at the second-phase minimum of the
+    mean (-8.1 to -9.1%, at 1150 to 1175 ns, p <= 0.0013). The value at 1175 ns of each period, a
+    time fixed in advance, gives -8.1 to -9.1% with p <= 0.0017.
+  deviations:
+  - 4 of 17 cells; pole regions, cathode side and onset as in fig7-unipolar-pole-polarization
+    (assumptions).
+- claim: fig7-summation-without-buildup
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-summation-without-buildup
+  notes: Over 5 unipolar cells, the peaks at the end of pulses 2 to 5 (23.4 to 24.3%) do not differ
+    from the first (22.1%) by the unpaired test (p = 0.61 to 0.75), and the trace before each of
+    pulses 2 to 5 stays above rest (8.8 to 9.9%, p = 0.009 to 0.017). The paired variant finds
+    pulses 2 to 4 1.7 to 2.2 points higher (p = 0.014 to 0.040), a build-up of 7.8 to 10.1% of the
+    first peak within cells; pulse 5 is 1.4 points (6.1%) higher, p = 0.089. The maximum within each pulse gives the
+    same picture (unpaired p = 0.72 to 0.78). With 5 cells the absence found by the unpaired test,
+    the test the criterion names, is weak evidence.
+  deviations:
+  - 5 of 18 cells; pole regions, cathode side and onset as in fig7-unipolar-pole-polarization
+    (assumptions).
+- claim: fig3-uptake-linear-in-pulse-number
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 5, 10 or 15 pulses (Fig. 3) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000548,
+    which names this paper and whose title and description match dishes given 5, 10 or 15 pulses (Fig. 3), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig3d-cancellation-independent-of-number
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 5, 10 or 15 pulses (Fig. 3) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000548,
+    which names this paper and whose title and description match dishes given 5, 10 or 15 pulses (Fig. 3), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4ac-ns-bipolar-20-25pct
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4d-1200ns-tenfold
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4eg-us-bipolar-30-50pct
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4h-us-stronger-at-low-field
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig5-ns-symmetric-along-aa
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The Fig. 4 dishes that Fig. 5 re-analyses along aa' are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match Fig. 4 dishes that Fig. 5 re-analyses along aa', likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig5-us-anode-stronger
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The Fig. 4 dishes that Fig. 5 re-analyses along aa' are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match Fig. 4 dishes that Fig. 5 re-analyses along aa', likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6ad-unipolar-833khz-enhanced
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6be-bipolar-khz-less-than-1hz
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6cf-833khz-thirtyfold
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6cf-cancellation-stronger-at-high-field
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig1e-heating
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The thermochromic sheet photographs are not in either dandiset. 000489's Fig1F file is a
+    sample of the cell staining (Fig. 1F), not thermometry. The titles and descriptions of the
+    other dandisets that name this paper (000548, 000549, 000550) do not mention thermometry; their
+    files were not opened.
+findings:
+- kind: data_missing
+  datasets: ['000489', '000448']
+  statement: 000489 holds only the 17 dishes of Fig. 2 and one sample image (Fig. 1F); 000448 holds
+    the strobe images of Fig. 7. The dishes of Figs. 3 to 6 and the thermometry of Fig. 1E are in
+    neither. Three more dandisets of the same lab name the paper in their metadata and match Figs.
+    3, 4 and 6 by title (000548, 000549, 000550); the registry's list of the paper's datasets and
+    the 000489 title, which the claims file follows, do not point to them, so their 12 claims are
+    blocked here and the thermometry claim is blocked as missing.
+- kind: data_missing
+  datasets: ['000448']
+  statement: 000448 holds 5 unipolar and 4 bipolar cells, where the paper reports 18 and 17. The
+    dandiset does not say how the 9 were chosen.
+- kind: metadata_error
+  datasets: ['000489']
+  statement: The YO-PRO-1 channel (index 1) of sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25%
+    bipolar) is the same image, value for value, while their MemBrite channels differ. One recording
+    was deposited under two dishes of different conditions, and nothing says which dish it belongs
+    to; the two files also give different session dates (2021-07-29 and 2021-07-26). With it left
+    out the unipolar and 25% groups have 2 dishes each.
+- kind: other
+  about: data
+  datasets: ['000489']
+  statement: The two channels of the 000489 sample image sub-Fig1F (MemBrite and YO-PRO-1 by its
+    session description) are the same image, value for value.
+- kind: metadata_insufficient
+  datasets: ['000489']
+  statement: The 000489 images give no pixel size (resolution -1), no electrode positions or
+    polarity, and no ROI positions or values; the analysis has to locate the footprints and assume
+    0.65 um per pixel, which the electrode spacing supports. The field of each ROI, from the paper's
+    finite element model, is not deposited.
+- kind: metadata_error
+  datasets: ['000489']
+  statement: The series description of the 17 Fig. 2 files of 000489 names "Channel1" for both filter sets and for MemBrite;
+    the data show index 0 is MemBrite and index 1 YO-PRO-1. It also describes 144 images (12 x 12)
+    of a well of a six-well plate, where Methods 2.5 describes 216 images of 35 mm dishes. Three
+    files name their series "Fig2_25" without the dish number.
+- kind: metadata_insufficient
+  datasets: ['000448']
+  statement: The 000448 files give no pole regions, no field direction relative to the image, and no
+    delay of each frame or frame of the pulse onset. Reverse-trial files store frames in acquisition
+    order (descending delay), and their response is offset by 74 frames (1.85 us) from the forward
+    trial of the same cell (75 frames for cell24); neither is documented.
+- kind: metadata_error
+  datasets: ['000448']
+  statement: 000448 counts 18 subjects, but each cell is two files (forward and reverse trial) with
+    different subject ids (for example 001_F and 001_R for cell09), so it holds 9 cells.
+- kind: other
+  about: data
+  datasets: ['000448']
+  statement: In 000448 the darkest frame of 10 of the 18 files is the first. Frames below half the
+    file's median frame mean (about 180 counts against medians of 300 to 500) occur in 5 files, at
+    frame 0 in 4 and at other frames in 3, consistent with failed laser flashes.
+- kind: methods_unavailable
+  statement: Question for the authors. How were the ROI placed along bb' (number, spacing, and
+    whether both sides of the centre were used), and was the t-test paired when ROI of the same
+    dishes were compared? This attempt tiled contiguous 200 um ROI from the centre to 3 mm on both
+    sides and used the unpaired test; the paired test changes fig2a-uptake-rises-with-field from 5 to
+    3 of 5 amplitudes, and using one side of the centre changes fig2c-inhibition-flat-above-8-7 and
+    fig2c-weaker-at-6-7.
+- kind: methods_unavailable
+  statement: Question for the authors. How were the cathode- and anode-facing pole regions drawn in
+    the strobe images, and where was the cathode relative to the image? This attempt took the
+    membrane within 45 degrees of the vertical axis and the brightening pole as cathodic. The
+    charging amplitude found (23% against 31%) may depend on the regions; leaving out membrane that
+    faces a neighbouring cell in the groups of touching cells does not change it. Were the poles of
+    a group taken on the group's outline or on each cell?
+- kind: format_error
+  datasets: ['000489']
+  statement: Each of the 18 files of 000489 stores its stitched two-channel image as one ImageSeries
+    with data of shape (22323, 22323, 2), a starting_time rate of 2.0 Hz and unit n.a. An ImageSeries
+    takes the first axis as time, so each file reads as 22323 frames of 22323 x 2 pixels; two
+    GrayscaleImage objects in an Images container, or a series of shape (1, 22323, 22323) per
+    channel, would describe the data. The three 25% files share the acquisition name Fig2_25.
+  found: on_prompt
+- kind: selection_undocumented
+  about: data
+  datasets: ['000489']
+  statement: The dish numbers in the subject ids of the 000489 Fig. 2 files run up to 18 (Fig2_50_18),
+    while 17 dishes are deposited (3 per amplitude, 5 at 50%), and neither the dandiset description
+    nor the files say which dishes were exposed, which were left out, or why. All unipolar dishes
+    have the session date 2021-07-29 and all 75% and 100% dishes 2021-08-24, a date with no unipolar
+    dish. Measured along bb', the 100% dishes take up more YP than the unipolar ones (largest mean
+    750.5 against 650.8 a.u.; higher at 9 of 11 ROI within 2 mm of the centre), where Fig. 2C shows
+    every second phase inhibiting uptake.
+  found: on_prompt
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (claude-opus-5-5, Claude Code, separate context, did
+    not write the notebook), round 1
+  reviewed: The executed notebook with the conclusion cells and the summary removed, the helper module
+    kim2022.py and the claims file, with the paper's full text. The verifier checked the blocked
+    claims against the DANDI API and tested the helper functions on synthetic inputs.
+  results:
+  - claim: fig2a-uptake-rises-with-field
+    agrees: true
+    outcome: reproduced
+    reason: Under the unpaired test, YP is higher at the strongest-field ROI with p<0.05 for 5/5
+      amplitudes (p 0.0001 to 0.044), and Spearman rho >= 0.96 for every amplitude. The paired test
+      passes only 3/5, failing for 0% and 25% where n=2 (df=1). The paper's test as written is
+      two-sample.
+    response: No change of outcome. The per-dish ROI values and footprint backgrounds are now printed.
+  - claim: fig2a-vertical-scales
+    agrees: true
+    outcome: not_reproduced
+    reason: For 75% the largest mean is 263 a.u. and the largest mean+sem is 339 a.u., both over 250.
+      The unit-free ratio of largest means (unipolar/75%) is 2.47, against 4.8 for the paper's axis
+      limits. This rests on the raw counts being the paper's units, which can't be proven.
+    response: Outcome kept and now marked as resting on the assumption that the counts are the
+      paper's units, stated as a deviation; the conclusion gives the unit-free ratio and says that
+      axis limits only bound the data.
+  - claim: fig2b-exponential-same-slope
+    agrees: false
+    outcome: not_reproduced
+    reason: Primary reading (8 kV/cm cutoff, NLS), the exponential beats a straight line for only 3/5
+      amplitudes, below the required 4, while 0/4 bipolar slopes differ from unipolar. The outcome
+      flips with the reading; at 6 or 7 kV/cm with NLS it is reproduced, and with log-linear fits at
+      6 or 7 kV/cm 4/4 slopes differ. The notebook neither adopts a reading with a reason nor blocks
+      the claim. The per-dish slope t-test has almost no power because unipolar has n=2, and the
+      slopes of the fits to the means for 50% and 75% are 0.72x unipolar.
+    response: The criterion's main reading (8 kV/cm, nonlinear least squares) is now adopted as an
+      assumption with its reason, and the outcome is marked assumed. Partially reproduced is kept,
+      and the disagreement recorded. The criterion names reproduced (both parts hold) and not
+      reproduced (a slope differs), but no outcome for this case, where the slope part holds and the
+      exponential part does not, and the protocol's partially reproduced covers a claim that holds
+      only in part. The notebook adds a semi-log plot of the fits, states the low power of the slope
+      test and gives the mean-fit slopes with their standard errors.
+  - claim: fig2c-max-inhibition-50-75
+    agrees: true
+    outcome: partially_reproduced
+    reason: The ordering holds at 10/10 fields, and reading (ii) gives p<0.01 at 7/10 fields. The
+      percent is 49.3% (reading a) or 35.1% (reading b), far outside 20+-2. The notebook prints
+      counts of fields passing but never applies the criterion's "test holds"; if it has to hold at
+      every field, the outcome is not_reproduced.
+    response: Changed to not reproduced, resting on an assumption. The criterion runs the test at
+      each field; it is now taken to hold, like the ordering, at every field, and it does not under
+      any comparison or variant (at most 7 of 10). The round-1 rule of most fields had no basis in
+      the criterion. The notebook applies the rule and prints it for every variant, including the
+      footprint discs of 0.1 and 0.3 mm.
+  - claim: fig2c-inhibition-flat-above-8-7
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced on the letter of the criterion, main ROI reading only. Under reading (a), 0/4
+      amplitudes differ, but the differences are large, +33 points for 50% (p=0.07) and +51 points
+      for 75% (p=0.15). Under the one-sided readings (b+ and b-), 1/4 amplitudes differ, and the
+      notebook does not decide between them. In the every-pair variant 19/180 pairs differ (10.6%),
+      about twice the 5% expected by chance; the absence comes from n=3 to 5 dishes, not from small
+      effects.
+    response: No change of outcome. Reading (a) is now adopted as an assumption, with its reason (bb'
+      runs through the centre and both halves have the same fields), and the outcome is marked
+      assumed. The conclusion and notes give the effect sizes, the one-sided results, the 9 pairs
+      expected by chance, and the footprint disc variants.
+  - claim: fig2c-weaker-at-6-7
+    agrees: false
+    outcome: partially_reproduced
+    reason: 100% passes on a valid test (per-ROI unpaired, max p=0.0215). 50% reaches p<0.01 only
+      through the pooled unpaired test (p=1.5e-9), which treats 50 ROI values from 5 dishes as
+      independent; its valid tests give per-ROI max p of 0.08 to 0.10 and a pooled paired p of 0.07.
+      The cell also ORs together the paired and unpaired variants. The low-field percents are not
+      meaningful, as the unipolar denominator rests on n=2 dishes near background, giving 198% and
+      283% of unipolar, which is bipolar uptake above unipolar, not weaker inhibition.
+    response: Changed to partially reproduced. Pooled reading (ii) now averages each dish over the
+      higher field ROI so that each dish counts once (50% p = 0.049, 100% p = 0.011); the pooling of
+      every dish and ROI value is shown only as a variant. The verdict uses the adopted unpaired test
+      alone, with the paired test shown. The notebook prints the per-dish backgrounds by imaging day
+      and the footprint disc variants, and the conclusion says that the percentages there exceed 100%
+      because the unipolar mean is near background.
+  - claim: fig3-uptake-linear-in-pulse-number
+    agrees: true
+    outcome: blocked
+    reason: Not in 000489 or 000448 (archive listing checked). DANDI:000548, "Effect of the number of
+      pulses...", likely holds it but is outside this attempt.
+    response: No change. The verifier noted that listing the Fig. 3 to 6 claims under 000489 is a
+      scoping issue in the claims file, not a misreading of the paper, so no reader question was
+      added; the three dandisets are under missing_datasets.
+  - claim: fig3d-cancellation-independent-of-number
+    agrees: true
+    outcome: blocked
+    reason: Same as fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig4ac-ns-bipolar-20-25pct
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets. DANDI:000549, "Effect of the pulse duration...", is a
+      candidate.
+    response: No change.
+  - claim: fig4d-1200ns-tenfold
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4ac-ns-bipolar-20-25pct.
+    response: No change.
+  - claim: fig4eg-us-bipolar-30-50pct
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4ac-ns-bipolar-20-25pct.
+    response: No change.
+  - claim: fig4h-us-stronger-at-low-field
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4ac-ns-bipolar-20-25pct.
+    response: No change.
+  - claim: fig5-ns-symmetric-along-aa
+    agrees: true
+    outcome: blocked
+    reason: Fig. 5 re-analyzes the Fig. 4 dishes, which are not in 000489. The aa' line can't be
+      measured on the Fig. 2 dishes in its place, because the claim is about other pulse durations.
+    response: No change.
+  - claim: fig5-us-anode-stronger
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5-ns-symmetric-along-aa.
+    response: No change.
+  - claim: fig6ad-unipolar-833khz-enhanced
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets. DANDI:000550, "Pulse repetition rate", is a candidate.
+    response: No change.
+  - claim: fig6be-bipolar-khz-less-than-1hz
+    agrees: true
+    outcome: blocked
+    reason: Same as fig6ad-unipolar-833khz-enhanced.
+    response: No change.
+  - claim: fig6cf-833khz-thirtyfold
+    agrees: true
+    outcome: blocked
+    reason: Same as fig6ad-unipolar-833khz-enhanced.
+    response: No change.
+  - claim: fig6cf-cancellation-stronger-at-high-field
+    agrees: true
+    outcome: blocked
+    reason: Same as fig6ad-unipolar-833khz-enhanced.
+    response: No change.
+  - claim: fig1e-heating
+    agrees: true
+    outcome: blocked
+    reason: Neither dataset holds thermometry photographs. Fig1F is a staining image.
+    response: No change.
+  - claim: fig7-unipolar-pole-polarization
+    agrees: true
+    outcome: reproduced
+    reason: At 600 ns the cathodic pole is +22.1% (p=0.0012) and the anodic pole -20.7% (p=0.0026),
+      ratio 0.94. This holds under all 4 pole-mask variants. n=5 cells against the paper's 18.
+      Taking the cathode as the upper pole, inferred from FluoVolt's sign, is reasonable and
+      consistent across all 9 cells.
+    response: No change.
+  - claim: fig7-charging-time-constant
+    agrees: true
+    outcome: not_reproduced
+    reason: The charging tau of 191 ns is inside tolerance; everything else is outside, amplitude
+      23.2% (vs 31+-3.1), discharge tau 613 ns (vs 520+-52), discharge amplitude 22.7%, and pooled r
+      0.84 (vs 0.93). Partial credit needs both tau inside tolerance. The charging window is frames
+      0 to 23 (0 to 575 ns) where the criterion says 0 to 600 ns, and t=0 is late by up to a frame;
+      the +-1-frame variant moves charging tau from 149 to 250 ns, so "in tolerance" isn't robust.
+      The verdict doesn't change.
+    response: No change of outcome. The charging window is now 0 to 600 ns (25 frames; the
+      parameters are unchanged), a fit with t = 0 half a frame earlier is added (216 ns), and the
+      conclusion says the charging tau is not robust to the onset. The fits are overlaid on the
+      points with their residuals.
+  - claim: fig7-later-pulses-same-tau-difference
+    agrees: true
+    outcome: partially_reproduced
+    reason: Discharge tau exceeds charging tau for 4/4 later pulses. No ratio falls in 2.25 to 2.75.
+      Within 10% of the pulse-1 ratio (3.21), 2/4 pulses with the free-start form, 0/4 with the
+      criterion's A(1-exp) form. The free-start form is the author's addition, not in the criterion;
+      both forms give partially_reproduced. The pulse-5 ratio of 2.887 sits just under the 10% bound.
+    response: No change of outcome. The criterion's form is now the main one and the free-start form
+      a variant labelled as added here. With the 0 to 600 ns window the pulse-1 ratio is 3.22 and the
+      free-start ratios 2.99, 3.62, 2.88 and 2.97, so pulses 2 and 5 are within 10% and pulse 4 just
+      below.
+  - claim: fig7-bipolar-overshoot
+    agrees: true
+    outcome: reproduced
+    reason: (i) bipolar and unipolar don't differ at 600 ns (21.5 vs 22.1%, p=0.86); (ii) the bipolar
+      trace returns sooner (50% decay at 150 vs 475 ns); (iii) the bipolar minimum is -8.1%
+      (p=0.0012). n=4 bipolar cells against the paper's 17. The time of the minimum is chosen on the
+      mean trace and then tested on the same cells; the effects are large.
+    response: No change of outcome. A variant at a time fixed in advance, the last frame of the second
+      phase, is added; it is the same frame and gives the same p.
+  - claim: fig7-bipolar-alternation
+    agrees: true
+    outcome: reproduced
+    reason: 5/5 pulses have a significant positive end of phase 1 and a significant negative minimum
+      in phase 2. The time of the minimum is chosen on the mean trace and tested on the same cells;
+      the effects are large (p <= 0.0013).
+    response: No change of outcome. The value at 1175 ns of each period, fixed in advance, is added
+      (-8.1 to -9.1%, p <= 0.0017).
+  - claim: fig7-summation-without-buildup
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced on the letter of the criterion. Under the unpaired test later peaks don't differ
+      from the first (p 0.61 to 0.75), and the pre-pulse values stay above zero (p <= 0.017). The
+      paired variant does show a build-up, pulses 2 to 4 are 1.7 to 2.2 points higher with p 0.014
+      to 0.04, at n=5; the claim of absence is weak.
+    response: No change of outcome; the conclusion and notes now say that the paired variant finds a
+      build-up of 6 to 10% of the first peak and that the absence rests on 5 cells.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (claude-opus-5-5, Claude Code, separate context, did
+    not write the notebook), round 2
+  reviewed: The full executed notebook with its conclusions and summary, the helper module
+    kim2022.py, the claims file and the attempt record, with the paper's full text.
+  results:
+  - claim: fig2a-uptake-rises-with-field
+    agrees: true
+    outcome: reproduced
+    reason: Unpaired test. Stated and reasonable. The paired test gives 3/5, and the record says so.
+      Comparisons between amplitudes are also comparisons between imaging days; this is disclosed
+      but unresolved.
+    response: No change of outcome. The imaging days cannot be separated from the amplitudes in
+      these dishes; the backgrounds by day stay printed and stated. In the 000489 data check, the
+      sentence that channel 1 is three to six times brighter between the electrodes now gives the
+      printed ratios (1.28 to 6.54, below 3 in 10 of 17); the series names, descriptions,
+      conversion and offset of every file, the dandiset description, and the draft against the
+      published versions (same assets; the drafts were modified on 2023-06-20, after publication,
+      which the header now says in place of the earlier claim) are printed. The summary now gives
+      Fig2_25_04 as imaged on 2021-07-26, and the duplicate finding adds that the two files sharing
+      one YP image give different session dates. The re-run showed that the two channels of the
+      Fig1F sample image are the same image, added as a finding.
+  - claim: fig2a-vertical-scales
+    agrees: true
+    outcome: not_reproduced
+    reason: Image counts are the paper's units. Stated and reasonable. The supporting fact
+      ("conversion 1.0, offset 0") is not in any printed output.
+    response: No change of outcome. The data check now prints the conversion, offset, resolution
+      and unit of every file (1.0, 0, -1, n.a.).
+  - claim: fig2b-exponential-same-slope
+    agrees: true
+    outcome: partially_reproduced
+    reason: The adopted reading (8 kV/cm, NLS) is the criterion's own main reading, so adopting it is
+      sound. The criterion names no outcome for "exponential fails, slopes agree", and partial is a
+      reasonable way to fill that gap. The gap is in the claims file. The slope "pass" comes from a
+      test with 2 unipolar dishes, while the slopes fitted to the means are 0.72x unipolar. The
+      record states both.
+    response: No change.
+  - claim: fig2c-max-inhibition-50-75
+    agrees: true
+    outcome: not_reproduced
+    reason: '"The test holds at every field". Stated and reasonable. It alone decides between
+      not_reproduced and partial, and the record says so. The notes give 273 a.u. as the YP0 of the
+      unipolar dishes, which is the mean of all 7 dishes imaged on 2021-07-29; the two unipolar
+      dishes analysed have 236 and 292. "The 25% and 100% pulses... do not inhibit" holds on
+      average, but 25% is below 100% at 6 of 10 fields.'
+    response: No change of outcome. The notes and the conclusion now give the YP0 of the two
+      unipolar dishes analysed (236 and 292 a.u.) and of the 75% and 100% dishes (177 to 227 a.u.).
+      The notebook now prints the means over the fields (25% 110.0%, 100% 118.1%) and the number of
+      fields where 25% is below 100%, which is 7 of 10 in the printed table (not 6); the text says
+      the pulses do not inhibit on average and gives that count.
+  - claim: fig2c-inhibition-flat-above-8-7
+    agrees: true
+    outcome: reproduced
+    reason: Agrees on the criterion's letter. ROI reading (a). Stated with a reason. The outcome flips
+      under (b+) and (b-), and the record says so. This outcome turns on one stated author rule
+      (reading a), which is acceptable as recorded.
+    response: No change.
+  - claim: fig2c-weaker-at-6-7
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, with caveats. The record does not say that the criterion as written gives a
+      different outcome. Its reading (ii) pools "the dish values of all higher field ROI"; under that
+      wording 50% passes (p = 1.5e-9), so the outcome would be reproduced. Averaging within each dish
+      first is the right correction, and the deviation is stated, but the record should say plainly
+      that the outcome would change. The 100% "pass" divides by a unipolar mean of 19 a.u. from 2
+      dishes; the record's own notes say this is not inhibition in the paper's sense, yet it still
+      counts the pass.
+    response: No change of outcome. The notes, the deviation and the conclusion now say that the
+      criterion's literal pooling gives reproduced (50% p = 1.5e-09, 100% p = 2.6e-09, and under
+      every variant, now printed), and that the per-dish mean departs from the criterion's letter.
+      The 100% pass is kept, as the criterion counts the percent at 6.7 kV/cm whatever its
+      denominator; the notes now say that it rests on a near-background unipolar mean from 2
+      dishes. The two caveats pull in opposite directions (the letter gives reproduced, discounting
+      100% would give not reproduced), and partially reproduced, which the verifier agreed with, is
+      kept.
+  - claim: fig7-unipolar-pole-polarization
+    agrees: true
+    outcome: reproduced
+    reason: Pole regions and cathode = brightening pole. Stated and reasonable. Several recordings are
+      clusters of 2 to 4 touching cells; the largest-connected-group mask spans the whole cluster and
+      includes membrane at cell-cell contacts. The record's pole-region assumption and its "5
+      unipolar cells" do not mention this. No outcome changes.
+    response: No change of outcome. The data check describes the groups of touching cells, and a
+      pole-region variant that keeps only pixels with no other part of the group beyond them along
+      the field axis is added (helper facing_out; figure and pixel counts in the notebook, 61 to
+      100% of pole pixels kept per file). It gives +22.1% and -20.4%, ratio 0.92. The assumption in
+      the record now mentions the groups. Also corrected from the report, the lag of the reverse
+      trials (74 frames in 8 cells, 75 in cell24) and the dark-frame finding, now with the printed
+      counts (darkest frame first in 10 of 18 files, frames below half the median in 5 files); the
+      dandiset description with the FluoVolt sensitivity is now printed.
+  - claim: fig7-charging-time-constant
+    agrees: true
+    outcome: not_reproduced
+    reason: Same assumptions. Fails on discharge tau and both amplitudes under every onset variant.
+      The cluster masks may bear on the 23% against 31% amplitude, which the record already
+      attributes to the pole regions.
+    response: No change of outcome. Under the variant that leaves out membrane facing a neighbouring
+      cell the fit is the same (A = 23.2 and 22.8%, tau = 191 and 614 ns), now printed and stated.
+  - claim: fig7-later-pulses-same-tau-difference
+    agrees: true
+    outcome: partially_reproduced
+    reason: Same assumptions. Under the criterion's form, "fewer" includes 0 of 4.
+    response: No change.
+  - claim: fig7-bipolar-overshoot
+    agrees: true
+    outcome: reproduced
+    reason: Same assumptions.
+    response: No change.
+  - claim: fig7-bipolar-alternation
+    agrees: true
+    outcome: reproduced
+    reason: Same assumptions.
+    response: No change.
+  - claim: fig7-summation-without-buildup
+    agrees: true
+    outcome: reproduced
+    reason: Agrees on the criterion's letter. Same assumptions. The paired build-up is disclosed. "a
+      small build-up of 6 to 10% of the first peak" is not supported; the 6% is pulse 5 (+1.36
+      points, paired p = 0.089, not significant), and pulses 2 to 4, which are significant, give 7.8
+      to 10.1%.
+    response: No change of outcome. The notes and the conclusion now give 7.8 to 10.1% for pulses 2
+      to 4 and pulse 5 separately (6.1%, p = 0.089); the percentages are printed.
+  - claim: fig3-uptake-linear-in-pulse-number
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets. The claims file assigns the Fig. 3 to 6 claims to 000489,
+      a scoping issue in the claims file; it stands unchanged.
+    response: No change. As a scoping matter of the claims file and the registry's list of
+      datasets, not a misreading of the paper, it was not added as a reader question.
+  - claim: fig3d-cancellation-independent-of-number
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig4ac-ns-bipolar-20-25pct
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig4d-1200ns-tenfold
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig4eg-us-bipolar-30-50pct
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig4h-us-stronger-at-low-field
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig5-ns-symmetric-along-aa
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig5-us-anode-stronger
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig6ad-unipolar-833khz-enhanced
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig6be-bipolar-khz-less-than-1hz
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig6cf-833khz-thirtyfold
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig6cf-cancellation-stronger-at-high-field
+    agrees: true
+    outcome: blocked
+    reason: Not in the two named datasets.
+    response: No change.
+  - claim: fig1e-heating
+    agrees: true
+    outcome: blocked
+    reason: No thermometry photographs in either dataset.
+    response: No change.
+reconciliation:
+  earlier: kim-2022-01
+  date: '2026-11-10'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that 000489 version 0.230518.1811 holds only the Fig. 2 dishes and the Fig1F
+      sample, that the dishes of Figs. 3 to 6 and the Fig. 1E thermometry are not in it, and that it
+      does not point to 000548, 000549 and 000550. The Fig. 7 data were used this time because the
+      registry now lists 000448 among the paper's datasets, not because 000489 changed.
+  - finding: 2
+    status: still_present
+    now: 3
+    note: Both find the YO-PRO-1 channel of sub-Fig2-0-03 and sub-Fig2-25-04 to be the same image while
+      their MemBrite channels differ, on the same version, leaving 2 unipolar dishes.
+  - finding: 3
+    status: still_present
+    now: 4
+    note: Both find the two channels of sub-Fig1F to be the same image.
+  - finding: 4
+    status: still_present
+    now: 12
+    note: In earlier_findings.ipynb all 18 files hold one ImageSeries of shape (22323, 22323, 2) with a
+      starting_time rate of 2.0 Hz and unit n.a., and the three 25% files share the acquisition name
+      Fig2_25. Only the shared name was reported in finding 6.
+  - finding: 5
+    status: still_present
+    now: 5
+    note: Both report that the images give no pixel size, electrode positions, ROI or field per ROI,
+      and both rely on 0.65 um per pixel, supported by the electrode spacing.
+  - finding: 6
+    status: still_present
+    now: 6
+    note: Both report the series description of 144 images (12 x 12) of a well of a six-well plate,
+      against the 216 images of 35 mm dishes in Methods 2.5.
+  - finding: 7
+    status: still_present
+    now: 13
+    note: In earlier_findings.ipynb the dish numbers run up to 18 with 17 dishes deposited, the dandiset
+      description says nothing of how dishes were chosen, unipolar dishes are all from 2021-07-29 and
+      75% and 100% dishes from 2021-08-24. The 100% dishes show more uptake than the unipolar ones
+      (largest mean 750.5 against 650.8 a.u. with this entry's ROI; 761.0 against 571.1 in the earlier
+      entry).
+  - finding: 8
+    status: still_present
+    now: 10
+    note: Finding 10 asks again how the ROI were placed along bb' and whether the t-test was paired,
+      questions (1) and (4) of the earlier five. The questions on the footprint areas, the Fig. 2B fit
+      method and the ROI fields are not asked again, though the blind attempt records its choices
+      for them as deviations; nothing in the dataset or the paper answers any of them.
+  outcomes:
+  - claim: fig2a-uptake-rises-with-field
+    earlier: partially_reproduced
+    note: A change in the claims file. The earlier file required the paired and unpaired tests to
+      agree and the earlier attempt found 3 of 5 amplitudes under both; the current file judges the
+      unpaired test, which passes for 5 of 5 here. Differences in method also move the unipolar and
+      25% unpaired tests below 0.05 (earlier p 0.11 and 0.15); YP0 and MB0 come from 0.2 mm discs
+      here against 0.5 mm discs, the 25% group has 2 dishes against 3, and the field is scaled to
+      15.1 kV/cm at the centre. The paired test passes for 3 of 5 in both.
+  - claim: fig2b-exponential-same-slope
+    earlier: not_reproduced
+    note: A change in the claims file. The earlier file ran 12 readings and the earlier attempt found
+      none meeting both parts; the current file fixes one reading (8 kV/cm, nonlinear least squares,
+      per-dish slopes), under which no slope differs and the exponential is better for 3 of 5. The
+      two attempts also map this case differently, the earlier to not reproduced and the blind one to
+      partially reproduced, as one part holds. The ROI method differences of fig2a-uptake-rises-with-field
+      apply too.
+  - claim: fig2c-inhibition-flat-above-8-7
+    earlier: not_reproduced
+    note: A difference in method. The earlier attempt found 50% and 75% differing under both tests (unpaired
+      p 0.0016 and 0.018), so the claims file's move to the unpaired test does not explain it. The high
+      field ROI is the centre ROI here and the ROI 0.2 mm out (15.24 kV/cm) there, and the smaller
+      footprint discs for YP0 and MB0 raise the unipolar mean at the low end of the range (87.9 a.u.
+      at 1.8 mm in earlier_findings.ipynb, against 47.7 a.u. at 8.94 kV/cm), which lowers the bipolar
+      percentages there.
+  - claim: fig2c-weaker-at-6-7
+    earlier: blocked
+    note: A difference in method. The earlier attempt blocked the claim because the unipolar mean at
+      6.75 kV/cm was -8.6 a.u., at background by its rule of twice the s.e.m.; with 0.2 mm footprint
+      discs the unipolar mean at 2.4 mm is 19 a.u. here, and the blind attempt applies no background
+      rule. The earlier attempt's variants with smaller background (left footprint, bottom side) also
+      gave a testable claim.
+  - claim: fig7-charging-time-constant
+    earlier: blocked
+    note: A change in the protocol. Under pilot-12 the earlier attempt tested 000489 alone and blocked
+      the Fig. 7 claims as resting on 000448; under pilot-14 the paper's datasets include 000448, which
+      the blind attempt used.
+  - claim: fig7-bipolar-overshoot
+    earlier: blocked
+    note: A change in the protocol, as for fig7-charging-time-constant; the data are in 000448, which the
+      earlier attempt did not use.
+  - claim: fig7-summation-without-buildup
+    earlier: blocked
+    note: A change in the protocol, as for fig7-charging-time-constant; the data are in 000448, which the
+      earlier attempt did not use.
+  protocol: Pilot-13 raised the limit on a notebook's run time from 30 to 60 minutes; neither attempt came
+    near it (the blind attempt's notebook ran in 514 s), so it changed nothing here. Pilot-14 filed records
+    by paper, with one claims file for the paper and one attempt that uses every dataset the paper rests
+    on. The claims file was written again for the paper, with three more Fig. 7 claims (25 against 22),
+    each claim naming its dataset, and single main readings (the unpaired test, one Fig. 2B cutoff and
+    fit) where the earlier file required readings to agree. The blind attempt therefore used 000448 and
+    tested the six Fig. 7 claims, three of which the earlier attempt blocked as outside 000489, and it
+    blocks the Figs. 3 to 6 claims as dataset_missing, listing 000548, 000549 and 000550 under
+    missing_datasets, where the earlier attempt blocked them as other.

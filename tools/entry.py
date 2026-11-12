@@ -27,6 +27,10 @@ notebook through a Jupyter kernel installed in that environment, in the entry
 directory. The executed copies
 go to --output-dir (default: executed/<name>/, which git ignores). A notebook
 that takes longer than --max-minutes fails, even if it ran without error.
+A run that passes leaves a stamp beside the executed copies (.clean-run.json):
+a hash of everything the run read (`hash` prints it) and of each executed
+copy. `run` asked again with nothing changed since reuses those copies and says
+so, without executing anything; --fresh executes all the same.
 
 `handover` builds what a verifier is given in its first round
 (docs/protocol.md): the executed notebooks with the conclusions removed (every
@@ -58,6 +62,9 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON_VERSION = "3.13"
 HARNESS = ["ipykernel", "nbconvert"]      # needed to execute, not part of the entry
+STAMP = ".clean-run.json"                 # beside the executed copies: what they were made from (entry_hash)
+RUN_VERSION = 1                           # raise when `run` changes in a way that changes what a run produces
+REUSE_DAYS = 30                           # executed copies older than this are made again
 MAX_LITERAL_NUMBERS = 200                 # more numbers than this in one literal is "embedded data"
 
 EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
@@ -195,6 +202,10 @@ def check(entry_dir: Path) -> Report:
     elif not lock.is_file():
         report.error(rel, "no requirements.lock.txt; run `tools/entry.py lock`")
     else:
+        locked_for = LOCK_VERSION.search(lock.read_text()[:2000])
+        if entry.get("python") and locked_for and locked_for.group(1) != str(entry["python"]):
+            report.error(rel / "requirements.lock.txt", f"locked for Python {locked_for.group(1)}, but entry.yaml "
+                         f"says {entry['python']}; run `tools/entry.py lock`")
         pinned = {re.split(r"[=<>!~\[ ]", line, maxsplit=1)[0].lower().replace("_", "-")
                   for line in lock.read_text().splitlines() if line and not line.startswith((" ", "#"))}
         for line in requirements.read_text().splitlines():
@@ -238,11 +249,13 @@ def check(entry_dir: Path) -> Report:
             _derivation_checks(report, rel / name, (entry_dir / name).read_text())
 
     # Claims and attempts that go with this entry.
-    claims_by_target, labels_used, kinds_by_target = {}, {}, {}
+    claims_by_target, labels_used, kinds_by_target, claims_checked = {}, {}, {}, {}
     for path in claims_paths():
         data = validate(report, path, "claims") or {}
         ids = {c["id"] for c in data.get("claims", [])}
         claims_by_target[claims_target(data)] = ids
+        claims_checked[claims_target(data)] = max((str(c.get("date") or "") for c in data.get("checks") or []),
+                                                  default="")
         kinds_by_target[claims_target(data)] = {
             c["id"]: c.get("data", "dataset") for c in data.get("claims", [])}
         labels_used[claims_target(data)] = any(
@@ -299,10 +312,33 @@ def check(entry_dir: Path) -> Report:
             report.error(where, "no claims file for this paper")
             continue
         recorded = [o.get("claim") for o in attempt.get("outcomes", [])]
+        # Claims read again since the attempt (a dataset added to its paper opens it again, and the checked claims
+        # reach main ahead of the repeat attempt: the checkpoint in docs/pipeline.md) are the next attempt's to test.
+        # Without this, main fails its own check from the checkpoint until that attempt merges, as it did for
+        # kim-2022 on 2026-11-10, and every other attempt's pull request fails with it.
+        reread = str(attempt.get("date") or "") < (lookup(claims_checked, attempt) or "")
         for claim in sorted(known - set(recorded)):
-            report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
+            if not reread:
+                report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
+        # A finding is about the data (its dataset's page) or the paper (the paper's page). Its kind says which,
+        # except for these two kinds, which must say; and in an attempt on several datasets a finding about the data
+        # names the datasets it is about (docs/protocol.md, the attempt record).
+        import datasets as archive_datasets
+        used = [archive_datasets.folder(archive_datasets.key_of(d["archive"], str(d["id"])))
+                for d in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else [])]
+        for n, f in enumerate(attempt.get("findings") or [], 1):
+            if f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
+            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
+                                                                   "paper_inconsistency") else "data")
+            if about == "data" and len(used) > 1 and not f.get("datasets"):
+                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
+                                    f"(`datasets:`, from {', '.join(used)})")
+            for d in f.get("datasets") or []:
+                if str(d) not in used:
+                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
         # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}
@@ -364,23 +400,153 @@ def _derivation_checks(report: Report, where, code: str) -> None:
 
 # --- lock and run -------------------------------------------------------------
 
-def lock(entry_dir: Path) -> int:
-    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
+LOCK_VERSION = re.compile(r"--python-version\s+(\d+\.\d+)")
+
+
+def python_of(entry_dir: Path) -> str:
+    """The Python version an entry runs on: its entry.yaml's `python`, else the version its lock was compiled for
+    (entries from before the field), else the registry's default for new entries, PYTHON_VERSION."""
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text()) or {}
+    if entry.get("python"):
+        return str(entry["python"])
+    lock_file = entry_dir / "requirements.lock.txt"
+    if lock_file.is_file():
+        m = LOCK_VERSION.search(lock_file.read_text()[:2000])
+        if m:
+            return m.group(1)
+    return PYTHON_VERSION
+
+
+def set_python(entry_dir: Path, version: str) -> None:
+    """Write `python: "<version>"` into entry.yaml, replacing the field or adding it after `license`."""
+    path = entry_dir / "entry.yaml"
+    text = path.read_text()
+    line = f'python: "{version}"'
+    if re.search(r"^python:.*$", text, re.M):
+        text = re.sub(r"^python:.*$", line, text, count=1, flags=re.M)
+    elif re.search(r"^license:.*$", text, re.M):
+        text = re.sub(r"^(license:.*)$", rf"\1\n{line}", text, count=1, flags=re.M)
+    else:
+        text = text.rstrip("\n") + f"\n{line}\n"
+    path.write_text(text)
+
+
+def lock(entry_dir: Path, version: str | None = None) -> int:
+    """Pin every package, with its hashes, for the entry's Python version, which entry.yaml then records."""
+    version = version or python_of(entry_dir)
+    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--generate-hashes", "--python-version", version,
                         "requirements.in", "-o", "requirements.lock.txt"], cwd=entry_dir)
     if r.returncode == 0:
-        print(f"wrote {(entry_dir / 'requirements.lock.txt').relative_to(ROOT)}")
+        set_python(entry_dir, version)
+        print(f"wrote {entry_dir.name}/requirements.lock.txt (Python {version}, with hashes)")
     return r.returncode
 
 
-def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+def tagged_outputs(notebook: Path) -> dict[str, str]:
+    """The text each claim-tagged cell of an executed notebook printed, by tag."""
+    import nbformat
+    nb = nbformat.read(notebook, as_version=4)
+    out = {}
+    for cell in nb.cells:
+        for tag in cell.get("metadata", {}).get("tags", []):
+            if tag.startswith("claim:"):
+                text = []
+                for o in cell.get("outputs", []):
+                    text.append(o.get("text") or (o.get("data") or {}).get("text/plain") or "")
+                out[tag] = "".join(t if isinstance(t, str) else "".join(t) for t in text)
+    return out
+
+
+def upgrade_python(entry_dir: Path, version: str, before: Path, output_dir: Path, timeout: int,
+                   max_minutes: float) -> int:
+    """Lock the entry for another Python version, run it, and compare what each claim's cells print with the run in
+    `before` (its executed notebooks). The entry moves to the new version only when nothing differs; otherwise
+    entry.yaml and the lock are put back and the differences are printed, for the attempt to record."""
+    saved = {f: (entry_dir / f).read_text() for f in ("entry.yaml", "requirements.lock.txt")
+             if (entry_dir / f).is_file()}
+    if lock(entry_dir, version) or run(entry_dir, output_dir, timeout, max_minutes, fresh=True):
+        for f, text in saved.items():
+            (entry_dir / f).write_text(text)
+        print(f"error: Python {version} could not lock or run the entry; it stays on {python_of(entry_dir)}",
+              file=sys.stderr)
+        return 1
     entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    differ = []
+    for nb in entry["notebooks"]:
+        old, new = before / nb["path"], output_dir / nb["path"]
+        if not old.is_file():
+            differ.append(f"{nb['path']}: no earlier executed copy in {before} to compare with")
+            continue
+        a, b = tagged_outputs(old), tagged_outputs(new)
+        for tag in sorted(set(a) | set(b)):
+            if a.get(tag) != b.get(tag):
+                differ.append(f"{nb['path']} {tag}: the output differs")
+    if differ:
+        for f, text in saved.items():
+            (entry_dir / f).write_text(text)
+        print(f"Python {version} changes what the claims print; the entry stays where it was:", file=sys.stderr)
+        for d in differ:
+            print(f"  {d}", file=sys.stderr)
+        return 1
+    print(f"{entry_dir.name}: every claim prints the same on Python {version}; entry.yaml and the lock now use it")
+    return 0
+
+
+def file_hash(path: Path) -> str:
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def entry_hash(entry_dir: Path) -> str:
+    """A hash of everything a run of the entry's notebooks reads from the repository: every file of the entry (its
+    notebooks, helpers, lock and entry.yaml, which names the Python and the dataset versions), the packages `run`
+    adds, and RUN_VERSION. Two runs from the same hash execute the same code on the same data versions."""
+    import hashlib
+    h = hashlib.sha256(f"run {RUN_VERSION}; harness {' '.join(HARNESS)}; python {python_of(entry_dir)}\n".encode())
+    for path in sorted(p for p in entry_dir.rglob("*") if p.is_file()):
+        rel = path.relative_to(entry_dir)
+        if any(part in ("__pycache__", ".ipynb_checkpoints", ".venv") or part.endswith(".pyc") for part in rel.parts):
+            continue
+        h.update(f"{rel.as_posix()}\0{file_hash(path)}\n".encode())
+    return h.hexdigest()
+
+
+def reusable(entry_dir: Path, output_dir: Path, max_minutes: float) -> dict | None:
+    """The stamp of executed copies that a run now would only make again: made from this hash, each copy still as
+    the run left it, each within the time limit asked for now, and not older than REUSE_DAYS. Else None."""
+    try:
+        stamp = json.loads((output_dir / STAMP).read_text())
+        entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+        if stamp["hash"] != entry_hash(entry_dir) or time.time() - stamp["finished"] > REUSE_DAYS * 86400:
+            return None
+        if [n["path"] for n in entry["notebooks"]] != [r["notebook"] for r in stamp["results"]]:
+            return None
+        for r in stamp["results"]:
+            if not r["ok"] or r["seconds"] > max_minutes * 60 or file_hash(output_dir / r["notebook"]) != r["sha256"]:
+                return None
+        return stamp
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
+def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float, fresh: bool = False) -> int:
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    stamp = None if fresh else reusable(entry_dir, output_dir, max_minutes)
+    if stamp:
+        when = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(stamp["finished"]))
+        for r in stamp["results"]:
+            print(f"pass  {r['notebook']}  ({r['seconds']} s, reused)")
+        print(f"reused the executed copies of {when}: nothing the run reads has changed since (hash "
+              f"{stamp['hash'][:12]}). Nothing was executed and no environment was built; --fresh runs it again.")
+        return 0
+    (output_dir / STAMP).unlink(missing_ok=True)   # whatever is there is no longer what a run left
     output_dir.mkdir(parents=True, exist_ok=True)
     venv = (output_dir / ".venv").resolve()
     python = venv / "bin" / "python"
     # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
     # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
     kernel = f"registry-{entry_dir.name}"
-    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
+    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", python_of(entry_dir), str(venv)],
                 ["uv", "pip", "install", "--quiet", "--python", str(python),
                  "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS],
                 [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
@@ -410,7 +576,12 @@ def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> 
         if not ok:
             print(error, file=sys.stderr)
     (output_dir / "result.json").write_text(json.dumps(
-        {"entry": entry["name"], "python": PYTHON_VERSION, "results": results}, indent=1) + "\n")
+        {"entry": entry["name"], "python": python_of(entry_dir), "results": results}, indent=1) + "\n")
+    if not failed and all((output_dir / r["notebook"]).is_file() for r in results):
+        (output_dir / STAMP).write_text(json.dumps({
+            "entry": entry["name"], "hash": entry_hash(entry_dir), "finished": round(time.time()),
+            "results": [{"notebook": r["notebook"], "ok": True, "seconds": r["seconds"],
+                         "sha256": file_hash(output_dir / r["notebook"])} for r in results]}, indent=1) + "\n")
     return 1 if failed else 0
 
 
@@ -460,13 +631,19 @@ def handover(entry_dir: Path, output_dir: Path) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover"])
+    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover", "upgrade-python", "hash"])
     parser.add_argument("entry", type=Path, nargs="+",
                         help="the entry directory, e.g. entries/000582-sargolini-2006; `check` takes several")
     parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
     parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
     parser.add_argument("--max-minutes", type=float, default=60,
                         help="a notebook that takes longer than this fails")
+    parser.add_argument("--fresh", action="store_true",
+                        help="run: execute even when the executed copies were made from the entry as it is now")
+    parser.add_argument("--python", help="lock: the Python version to lock for (default: the entry's); "
+                                         "upgrade-python: the version to move to")
+    parser.add_argument("--before", type=Path, help="upgrade-python: the executed notebooks to compare with "
+                                                    "(default: executed/<entry>)")
     args = parser.parse_args()
 
     if args.command == "check" and len(args.entry) > 1:
@@ -490,8 +667,17 @@ def main() -> int:
         parser.error(f"{args.entry} has no entry.yaml")
     output_dir = args.output_dir or ROOT / "executed" / entry_dir.name
 
+    if args.command == "hash":
+        print(entry_hash(entry_dir))
+        return 0
     if args.command == "lock":
-        return lock(entry_dir)
+        return lock(entry_dir, args.python)
+    if args.command == "upgrade-python":
+        if not args.python:
+            parser.error("upgrade-python needs --python VERSION")
+        before = args.before or ROOT / "executed" / entry_dir.name
+        return upgrade_python(entry_dir, args.python, before, output_dir.with_name(output_dir.name + f"-py{args.python}"),
+                              args.timeout, args.max_minutes)
     if args.command == "handover":
         return handover(entry_dir, output_dir)
     if args.command in ("check", "all"):
@@ -501,7 +687,7 @@ def main() -> int:
         print(f"{len(report.errors)} error(s)")
         if report.errors or args.command == "check":
             return 1 if report.errors else 0
-    return run(entry_dir, output_dir, args.timeout, args.max_minutes)
+    return run(entry_dir, output_dir, args.timeout, args.max_minutes, args.fresh)
 
 
 if __name__ == "__main__":

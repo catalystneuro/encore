@@ -34,9 +34,8 @@
 # the chain stops there instead, leaving $RUNNER_STATE/flagged-<dataset>, and the lane goes on to the
 # next dataset: for when the verified account has no budget left.
 #
-# Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time has main
-# merged in, recorded (the recorder role adds the pilot notes) and merged once its
-# checks pass; each lands on a main that has the ones before it.
+# Finishing has main merged in, the attempt recorded (the recorder role adds the pilot notes) and its pull
+# request merged once its checks pass. Chains finish side by side, each in a worktree of its own (see Finish).
 #
 # The paper match goes straight to main (merge_match.sh). When it leaves the dataset no usable paper the chain
 # stops: for a person to confirm or correct the verdicts (held), or for good (no_match, confirmed). A claims
@@ -60,7 +59,10 @@ here=$(cd "$(dirname "$0")" && pwd)
 export REGISTRY_ROOT=$PWD
 # A paper's key, or a dataset's folder name (000147 for DANDI, <archive>-<id> otherwise), names the chain's files
 # and branch; a dataset's name is replaced by its paper's once the paper match lists it for one.
-if [[ "$1" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*-[0-9]{4}(-[a-z0-9]+)?$ ]] && ! python "$here/describe.py" folder "$1" >/dev/null 2>&1; then
+# A paper is one main lists (papers/datasets/<key>.yaml); the dataset parser would take "holdgraf-2016" for archive
+# "holdgraf", so it cannot tell them apart.
+git fetch -q origin main 2>/dev/null || true
+if git cat-file -e "origin/main:papers/datasets/$1.yaml" 2>/dev/null; then
   d=$1; is_paper=1
 else
   d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: neither a paper nor a dataset"; exit 1; }
@@ -206,7 +208,7 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
     fi
     # A failure of the network or of the machine, not of the agent: a connection dropped or timed out, the runner
     # was shut down, or the run left no log. Tried twice more; an agent that ran out of time is not.
-    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication"; } \
+    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication|Temporary failure resolving|Could not resolve host|Unable to fetch some archives"; } \
        && ! echo "$runlog" | grep -q "timed out after" && [ $flaky -lt 2 ]; then
       flaky=$((flaky+1))
       reset_branch "$start" || { last_why="could not reset attempt/$d after a failed run"; log "STOPPED: $last_why"; return 1; }
@@ -346,46 +348,83 @@ if [ "$(records_on_branch | grep -c .)" -gt 1 ]; then
   step reconcile
 fi
 
-# Finish, one paper at a time.
-until mkdir "$STATE/finalize.lock" 2>/dev/null; do sleep 60; done
-trap 'rmdir "$STATE/finalize.lock" 2>/dev/null; notify' EXIT
+# Finish. Each chain finishes in a worktree of its own, with no lock: until 2026-11-11 one chain at a time finished,
+# holding $RUNNER_STATE/finalize.lock from the merge of main to the merge of its pull request, through the
+# pull request's checks (which run the entry's notebooks again, up to 80 minutes). With ten lanes the chains
+# queued for hours behind one another (kim-2022 for more than two and a half), and a lock left by a chain that
+# died stopped them all (2026-11-10). The lock was there for the clone's one checkout and so that each attempt
+# landed on a main that had the ones before it. The worktree does the first. For the second: an attempt adds its
+# own files, GitHub refuses a merge that conflicts, and the chain then merges main in again and waits for the
+# checks again (twice at most).
+work=$(mktemp -d "${TMPDIR:-/tmp}/finish-$d.XXXXXX")
+drop_work(){ git worktree remove --force "$work" >/dev/null 2>&1 || true; rm -rf "$work"; }
+trap 'drop_work; notify' EXIT
+# The attempt's branch in the worktree, with main merged in, pushed. Merge, not rebase: main already has the
+# checked claims (the checkpoint), so a rebase replays the branch's claims, claims-check and answer commits onto
+# them and stops on an add/add conflict. The branch's claims file is the same or later (the reader's answers),
+# so it is kept; any other conflict stops the chain. Returns 1 when it does not merge, 2 or 3 when git fails.
+merge_main(){
+  fetch
+  drop_work
+  git worktree add -q --detach "$work" "origin/attempt/$d" >/dev/null 2>&1 || return 2
+  if ! git -C "$work" merge -q --no-edit -m "Merge main into attempt/$d" origin/main >/dev/null 2>&1; then
+    git -C "$work" checkout -q HEAD -- "claims/$d.yaml" 2>/dev/null
+    if [ -n "$(git -C "$work" diff --name-only --diff-filter=U)" ]; then
+      git -C "$work" merge --abort; return 1
+    fi
+    git -C "$work" commit -q --no-edit || return 2
+  fi
+  git -C "$work" push -q origin "HEAD:refs/heads/attempt/$d" || return 3
+}
 log "finishing"
-fetch
-# A branch checked out in another worktree cannot be checked out here; carrying on would act on the wrong branch.
-git checkout -q -B "attempt/$d" origin/attempt/"$d" || { end "$d STOPPED: could not check out attempt/$d (is it checked out in another worktree?)"; exit 1; }
-# Merge main in, not rebase: main already has the checked claims (the checkpoint), so a rebase replays
-# the branch's claims, claims-check and answer commits onto them and stops on an add/add conflict. The
-# branch's claims file is the same or later (the reader's answers), so it is kept; any other conflict
-# stops the chain.
-if ! git merge -q --no-edit -m "Merge main into attempt/$d" origin/main >/dev/null; then
-  git checkout -q HEAD -- "claims/$d.yaml" 2>/dev/null
-  if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
-    git merge --abort; end "$d STOPPED: the branch does not merge with main"; exit 1
-  fi
-  git commit -q --no-edit
-fi
-git push -q origin "attempt/$d" || { end "$d STOPPED: could not push attempt/$d after merging main"; exit 1; }
-is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
-fetch; git checkout -q -B "attempt/$d" origin/attempt/"$d" || { end "$d STOPPED: could not check out attempt/$d after the recorder"; exit 1; }
-title=$(python "$here/describe.py" title "$d")
-pr=$(gh pr list --head "attempt/$d" --state open --json url --jq '.[0].url // empty')
-if [ -z "$pr" ]; then
-  pr=$(gh pr create --base main --head "attempt/$d" --title "$title" \
-    --body "$(python "$here/describe.py" body "$d")") || { end "$d STOPPED: could not open a pull request"; exit 1; }
-fi
-log "pull request $pr"
+round=0
 while true; do
-  # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end.
-  if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
-    last_why="$pr conflicts with main; merge main into attempt/$d, resolve the conflict, and start the chain again"
-    end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
+  round=$((round+1))
+  merge_main; case $? in
+    0) ;;
+    1) end "$d STOPPED: the branch does not merge with main"; exit 1;;
+    2) end "$d STOPPED: could not check out attempt/$d in a worktree"; exit 1;;
+    *) end "$d STOPPED: could not push attempt/$d after merging main"; exit 1;;
+  esac
+  is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
+  # The branch as the recorder left it, for the pull request's title and body (describe.py reads the tree).
+  fetch; git -C "$work" checkout -q --detach "origin/attempt/$d" \
+    || { end "$d STOPPED: could not check out attempt/$d after the recorder"; exit 1; }
+  title=$(REGISTRY_ROOT="$work" python "$here/describe.py" title "$d")
+  pr=$(gh pr list --head "attempt/$d" --state open --json url --jq '.[0].url // empty')
+  if [ -z "$pr" ]; then
+    pr=$(gh pr create --base main --head "attempt/$d" --title "$title" \
+      --body "$(REGISTRY_ROOT="$work" python "$here/describe.py" body "$d")") || { end "$d STOPPED: could not open a pull request"; exit 1; }
   fi
-  s=$(gh pr checks "$pr" --json bucket 2>/dev/null) || { sleep 60; continue; }
-  echo "$s" | jq -e 'length>0 and all(.bucket!="pending")' >/dev/null && break
-  sleep 60
+  log "pull request $pr"
+  # The checks waited for are those of the commit just pushed, asked for by that commit. GitHub can take minutes to
+  # start them when its runners are busy; until then the pull request still shows the checks of the commit before,
+  # finished. On 2026-11-10 wakhloo-2026 was stopped that way, at once, on the failure its push had been made to
+  # fix. The entry check (check.yml, job "check") must be among them: the dashboard's preview alone, which can
+  # start first, is not the checks.
+  head=$(git -C "$work" rev-parse HEAD)
+  again=""
+  while true; do
+    # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end. Another
+    # attempt merged since this one merged main in can conflict with it: main is merged in again.
+    if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
+      [ $round -lt 3 ] && { log "the pull request conflicts with main as it is now; merging main in again"; again=1; break; }
+      last_why="$pr conflicts with main; merge main into attempt/$d, resolve the conflict, and start the chain again"
+      end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
+    fi
+    s=$(gh api "repos/{owner}/{repo}/commits/$head/check-runs?per_page=100" \
+          --jq '[.check_runs[] | {name, status, conclusion}]' 2>/dev/null) || { sleep 60; continue; }
+    echo "$s" | jq -e 'any(.name=="check") and all(.status=="completed")' >/dev/null && break
+    sleep 60
+  done
+  [ -z "$again" ] || continue
+  if echo "$s" | jq -e 'all(.conclusion=="success" or .conclusion=="skipped" or .conclusion=="neutral")' >/dev/null; then
+    gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; end "$d MERGED $pr"; exit 0; }
+    # Main moved under it between the checks and the merge.
+    if [ $round -lt 3 ] && [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
+      log "merging $pr failed on a conflict with main as it is now; merging main in again"; continue
+    fi
+    end "$d STOPPED: merging $pr failed"; exit 1
+  fi
+  end "$d CHECKS FAILED $pr"; exit 1
 done
-if echo "$s" | jq -e 'all(.bucket=="pass" or .bucket=="skipping")' >/dev/null; then
-  gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; end "$d MERGED $pr"; exit 0; }
-  end "$d STOPPED: merging $pr failed"; exit 1
-fi
-end "$d CHECKS FAILED $pr"; exit 1
