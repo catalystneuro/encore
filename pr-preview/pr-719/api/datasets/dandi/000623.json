@@ -1,0 +1,1128 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000623",
+  "label": "DANDI:000623"
+ },
+ "page": "datasets/dandi/000623/",
+ "generated": "2026-11-12T03:38:46+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 25,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 3
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "keles-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000623",
+    "version": "0.240130.2108",
+    "doi": "10.48324/dandi.000623/0.240130.2108",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000623"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000623",
+   "label": "DANDI:000623",
+   "dataset_version": "0.240130.2108",
+   "paper": "10.1038/s41597-024-03029-1",
+   "paper_title": "Multimodal single-neuron, intracranial EEG, and fMRI brain responses during movie watching in human patients",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41151742895"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "keles-2024",
+   "entry_title": "Single-neuron, LFP and iEEG data during movie watching in human patients (Keles et al. 2024)",
+   "summary": "The paper's validation findings on the intracranial recordings held up in this data, and its fMRI checks could not be tested. The cohort, the spike-sorting quality of the 1450 neurons, gaze and recognition behaviour, and the per-area counts of memory-selective and scene-cut-selective neurons, LFP and iEEG channels all reproduced, most counts exactly. The fMRI head motion, signal-to-noise and inter-subject correlation checks are blocked: they need fMRIPrep outputs that are not deposited and could not be computed within the run's limits. The LFP files store a start time 10 s after their first sample, so without the paper's Usage Notes they read misaligned. A few quality and behaviour values match under only one of two readings the paper leaves open.",
+   "description": "Tests the findings of the data descriptor of Keles et al. (2024) on dandiset 000623, which holds 29 runs from 16 epilepsy patients watching an 8-min movie and then doing a recognition memory test, with spike-sorted units, microwire LFP, macro iEEG and eye tracking. It checks the cohort, the unit quality metrics, gaze, recognition behaviour, and the memory- and event-selective cells and channels of the Technical Validation. The fMRI data are on OpenNeuro.",
+   "notebooks": [
+    {
+     "path": "reproduce_keles_2024.ipynb",
+     "title": "Cohort, unit quality, gaze, behaviour and single-neuron selectivity",
+     "executed": "notebooks/keles-2024/reproduce_keles_2024.html"
+    },
+    {
+     "path": "hfb_keles_2024.ipynb",
+     "title": "HFB power of microwire LFP and macro iEEG, examples and modalities",
+     "executed": "notebooks/keles-2024/hfb_keles_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "cohort-emu-sessions",
+     "statement": "The electrophysiology data come from 16 participants and 29 EMU sessions (runs); 13 participants performed two runs and P44CS, P58CS and P60CS one, as Table 1 lists.",
+     "source": "Table 1; Technical Validation, Number of neurons isolated and spike-sorting quality metrics",
+     "quote": "We recorded 1450 neurons in total from the amygdala, hippocampus, vmPFC, ACC, and preSMA across 29 sessions involving 16 subjects",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "29 NWB files from 16 participants, 13 with two runs and P44CS, P58CS and P60CS with one, each as in Table 1.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-demographics",
+     "statement": "Of the 20 participants 11 are female, and their mean age is 37.75 years (SD 13.86); the age, sex and epilepsy diagnosis of each participant are as in Table 1.",
+     "source": "Table 1",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Read from Table 1, whose last row gives the totals; no sentence states the ages of the individual participants.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "The age, sex and diagnosis stored for each of the 16 EMU participants match Table 1, and both runs of a participant agree. With the four fMRI-only participants taken from Table 1, the 20 have 11 women and a mean age of 37.75 years, SD 13.86 (ddof 0; 14.22 with ddof 1). The 16 EMU participants alone have a mean age of 39.12.",
+     "deviations": [
+      "The four fMRI-only participants (P45CS, P46CS, P50CS, P59CS) are not in the dandiset; their values are those of Table 1, as gen_table1_subj_info.py enters them."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "The four fMRI-only participants (P45CS, P46CS, P50CS, P59CS) are not in the dandiset; their age and sex are in Table 1 and entered by hand in gen_table1_subj_info.py (commit 8c35290)",
+     "proposed": null
+    },
+    {
+     "claim": "neurons-total-and-areas",
+     "statement": "The dataset holds 1450 single units from amygdala (479), hippocampus (261), ACC (236), preSMA (299) and vmPFC (175).",
+     "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2h; Technical Validation, Neuronal responses (movie watching phase), paragraph 1",
+     "quote": "We recorded 1450 neurons in total from the amygdala, hippocampus, vmPFC, ACC, and preSMA across 29 sessions involving 16 subjects (Fig. 2h )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "1450 units have a spike in the movie (set U); by area amygdala 479, hippocampus 261, ACC 236, preSMA 299 and vmPFC 175, all exact. The files hold 1457 units; the 7 without a spike in the movie are 3 amygdala, 3 hippocampus and 1 preSMA unit. Area lookup by row position and by index agree.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "units-per-wire",
+     "statement": "There were on average 1.99 units per wire, counting only wires with at least one unit.",
+     "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2a",
+     "quote": "There were on average 1.99 units per wire (only counting wires with at least one isolated neuron)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "1.990 units per wire over 732 session and wire pairs with at least one unit (all 1457 units, as the code counts); 1.981 with the units of U.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "firing-rate",
+     "statement": "The mean firing rate of the neurons was 2.47 +- 3.32 spikes/s (mean +- s.d.).",
+     "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2b",
+     "quote": "the mean firing rate of neurons was 2.47 \u00b1 3.32 (mean \u00b1 standard deviation, s.d.; Fig. 2a,b )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Mean 2.471 and s.d. 3.326 spikes/s (ddof 0; 3.327 with ddof 1) over the 1450 units of U; range 0.002 to 37.86.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "isi-violations",
+     "statement": "The percentage of interspike intervals below 3 ms was 0.40% +- 0.53%.",
+     "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2c",
+     "quote": "the percentage of interspike intervals (ISIs) below 3 ms was 0.40% \u00b1 0.53% (Fig. 2c )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Reading (b), the 1426 units of U with isibelow below 3 (the set of Fig. 2c), gives 0.404% and s.d. 0.529%, both within tolerance. Reading (a), all 1450 units, gives 0.462% and 0.727%, both outside. 22 units are at or above 3%, up to 10.35%.",
+     "deviations": [
+      "The claims file names two readings of the units averaged (open detail 1); the result matches under reading (b) only, which the criterion accepts."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "waveform-snr",
+     "statement": "The peak SNR of the mean waveform was 5.95 +- 3.48 and the mean SNR of the whole waveform 2.07 +- 1.13.",
+     "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2d,e",
+     "quote": "the ratio between peak amplitude of the mean waveform of each cluster and the standard deviation of the noise was 5.95 \u00b1 3.48 (Fig. 2d ; peak SNR) and the mean SNR was 2.07 \u00b1 1.13",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Peak SNR 5.948 (s.d. 3.477) and mean SNR 2.066 (s.d. 1.128) over the 1450 units of U, ddof 0; ddof 1 changes the third decimal.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "projection-distance",
+     "statement": "The pairwise projection distance between neurons isolated on the same wire was 11.98 +- 8.93 s.d. units.",
+     "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2f",
+     "quote": "the pairwise projection distance in clustering space between all neurons isolated on the same wire was 11.98 \u00b1 8.93 (Fig. 2f , projection test; in units of s.d. of the signal)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "11.982, s.d. 8.933, over 1242 pairs from 403 wire entries of all sessions. The units per wire imply 1266 pairs. The gap is explained wire by wire. The 7 units with no waveform metrics (peakSNR and isolation distance NaN), which are the 7 units without a spike in the movie, are left out of their wires' entries (26 pairs fewer), and two wires of P58CS_R1 (ROFC4, ROFC8) hold one distance each but no unit in the file (2 pairs more).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "isolation-distance",
+     "statement": "The median isolation distance of the units was 24.90.",
+     "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2g",
+     "quote": "the median isolation distance was 24.90 (Fig. 2g )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Median 24.904 over 1001 units of U; 448 have no value (NaN) and one has 3.4e27, removed as the code does.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "gaze-missing-p53cs",
+     "statement": "Gaze data were missing for more than half of the movie only for P53CS (74% in run 1, 84% in run 2), whose gaze was excluded from the eye-tracking analysis.",
+     "source": "Technical Validation, Eye tracking data quality (behavior), paragraph 1",
+     "quote": "The gaze data was missing at more than half of the movie watching duration only for one participant (P53CS, the percentage of missing data was 74% in the first run and 84% in the second run of the movie watching phase)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Missing gaze is 73.6% in P53CS run 1 and 83.6% in run 2, and these are the only sessions at or above 50%; the next highest is far below.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "gaze-similarity",
+     "statement": "Each participant's gaze was highly correlated with the reference heatmap of the other participants (Pearson's r = 0.75 +- 0.12) and little gaze was missing (7% +- 8%).",
+     "source": "Technical Validation, Eye tracking data quality (behavior), paragraph 1; Fig. 3a",
+     "quote": "We found that the individual participant's gaze patterns were highly correlated with the reference visual salience (Pearson's r = 0.75 \u00b1 0.12, mean \u00b1 s.d., across participants and runs ... while having low percentages of missing gaze data (7% \u00b1 8%) (Fig. 3a )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Over the 27 sessions left, the correlation with the leave-participant-out reference is 0.751 with s.d. 0.122 (tanh of the mean and s.d. of the session z means, ddof 0). Missing gaze is 6.63% (s.d. 8.40%) over the 27 sessions, reading (a), within tolerance; over all 29, reading (b), 11.59% (s.d. 20.01%), outside. Per participant the correlation is 0.751, s.d. 0.099. Lagging gaze by 5 s lowers the correlation of the first six sessions from between 0.737 and 0.834 to between 0.290 and 0.317. Sigma is the mean pixels per degree over all 29 sessions (32.90), as code/ephys_qc/gen_figure3_eyetracking.py takes it (line 120) before removing the excluded sessions (line 130), lines quoted in the notebook; with sigma from the 27 kept sessions (33.35) r is 0.754, s.d. 0.123.",
+     "deviations": [
+      "The claims file names two readings of the sessions over which missing gaze is averaged (open detail 3); the result matches under reading (a) only."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "recognition-auc",
+     "statement": "Participants remembered the movie well; their recognition accuracy across confidence levels was 0.79 +- 0.19 AUC.",
+     "source": "Technical Validation, New-old task performance (behavior) in EMU, paragraph 1; Fig. 3b",
+     "quote": "Participants had excellent memory: their average accuracy across all confidence levels was 0.79 \u00b1 0.19 AUC (Fig. 3b )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Over the 29 sessions (reading a) the AUC is 0.789 with s.d. 0.189 (ddof 0; 0.192 with ddof 1). Over the 16 participants after averaging runs (reading b) it is 0.787 with s.d. 0.134, the s.d. outside tolerance.",
+     "deviations": [
+      "The claims file names two readings (open detail 4); the result matches under reading (a), the \"all sessions\" of the Fig. 3b legend."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "auc-run1-vs-run2",
+     "statement": "Memory accuracy did not differ between the first and second run for the 13 participants with two runs (0.79 +- 0.14 against 0.79 +- 0.24 AUC, p = 0.960, paired t-test).",
+     "source": "Technical Validation, New-old task performance (behavior) in EMU, paragraph 1",
+     "quote": "there was no significant difference in memory accuracy between the first and second run for the 13 participants who performed the two runs of movie watching and recognition memory tasks (run #1: 0.79 \u00b1 0.14; run #2: 0.79 \u00b1 0.24 AUC; p = 0.960, paired t-test)",
+     "statistics": [
+      {
+       "test": "paired t-test",
+       "p": 0.96,
+       "n": "13 participants"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "13 participants; run 1 AUC 0.788 (s.d. 0.138) and run 2 0.792 (s.d. 0.245), ddof 0, all within tolerance; paired t-test t = -0.054, p = 0.958, mean difference -0.004. The test does not find a difference.",
+     "deviations": [
+      "The paper names a paired t-test; two-sided is the default (open detail 7 of the claims file)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "confidence-accuracy",
+     "statement": "Recognition accuracy was significantly higher for high-confidence than for low-confidence judgments (p < 0.001, paired t-test).",
+     "source": "Technical Validation, New-old task performance (behavior) in EMU, paragraph 1; Fig. 3c legend",
+     "quote": "Accuracy was significantly different between high- versus low-confidence trials (p < 0.001, paired t-test)",
+     "statistics": [
+      {
+       "test": "paired t-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "sessions (one line per session in Fig. 3c)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "22 sessions pass check_inclusion, all with split 1. Accuracy is 89.9% for high and 72.0% for low confidence, higher in 18 of 22 sessions; paired t-test t = 4.364, p = 0.00027. The seven excluded sessions, with the responses per confidence level printed for every session, are P51CS_R2, P56CS_R2, P57CS_R1 and P57CS_R2 (AUC below 0.6), P44CS_R1 (no 'new' response), P56CS_R1 (two 'old' levels unused) and P41CS_R2 (only levels 1 and 6 used). The statement's \"higher\" is the claims file's; the paper says \"significantly different\" (asked of a reader in questions/keles-2024.yaml); high is above low, so the result holds under either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "memory-sessions-included",
+     "statement": "Of the 1450 neurons, 1266 entered the memory analysis; the rest came from runs excluded for poor behavior (P44CS run 1, P51CS run 2, P56CS run 2, P57CS runs 1 and 2).",
+     "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 1",
+     "quote": "Of the overall 1450 recorded neurons, 1266 were included in this analysis. The remainder was excluded based on these behavioral criteria ... Excluded patients and runs were P44CS run 1, P51CS run 2, P56CS run 2, P57CS runs 1 and 2",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Rule R, the five listed runs and the text two criteria all remove the same runs, P44CS run 1, P51CS run 2, P56CS run 2 and P57CS runs 1 and 2, and keep 1266 units. P44CS run 1 is removed for having no correct novel trial although its AUC is 0.726; P51CS run 2 has AUC 0.101.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "memory-cells-significant",
+     "statement": "Significant proportions of cells were memory selective in the amygdala (32/436, p = 0.015), ACC (22/186, p = 0.002) and vmPFC (14/150, p = 0.016).",
+     "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 1",
+     "quote": "Significant proportions of cells were memory selective in the amygdala (32/436, p = 0.015, permutation test with 2,000 shuffling of average firing rates across trials for each cell), ACC (22/186, p = 0.002), and vmPFC (14/150, p = 0.016)",
+     "statistics": [
+      {
+       "about": "amygdala",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.015,
+       "n": "436 cells"
+      },
+      {
+       "about": "ACC",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.002,
+       "n": "186 cells"
+      },
+      {
+       "about": "vmPFC",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.016,
+       "n": "150 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Amygdala 32/436 (permutation p = 0.0095), ACC 22/186 (p = 0.0005) and vmPFC 14/150 (p = 0.022, against a null 95th percentile of 12), each below 0.05, with the paper's counts and denominators. 99 of 1266 cells are selective, 35 with novel above familiar. The null on the code's rates gives higher p than the null on exact counts (0.0065, 0.0005, 0.014), with no decision changed.",
+     "deviations": [
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code.",
+      "The observed test of each cell uses the code's spike rates (count divided by 1.5 s) and its resamples, and gives the same p as a literal port of ms_test for all 1266 cells. The permutation null also runs on the rates; where resampled mean counts tie exactly, the difference is recomputed on the rates in the code's floating point (perm_null_counts)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "memory-cells-not-significant",
+     "statement": "The proportions of memory-selective cells in the hippocampus (14/238, p = 0.30) and preSMA (17/256, p = 0.17) were not significant.",
+     "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 1",
+     "quote": "but not the hippocampus (14/238, p = 0.30) and preSMA (17/256, p = 0.17)",
+     "statistics": [
+      {
+       "about": "hippocampus",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.3,
+       "n": "238 cells"
+      },
+      {
+       "about": "preSMA",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.17,
+       "n": "256 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "Hippocampus 14/238 (p = 0.282) and preSMA 17/256 (p = 0.182), neither below 0.05, with the paper counts; Monte Carlo s.e. 0.010 and 0.009. The null on exact counts gives 0.227 and 0.135.",
+     "deviations": [
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code.",
+      "The observed test of each cell uses the code's spike rates (count divided by 1.5 s) and its resamples, and gives the same p as a literal port of ms_test for all 1266 cells. The permutation null also runs on the rates; where resampled mean counts tie exactly, the difference is recomputed on the rates in the code's floating point (perm_null_counts)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "memory-lfp",
+     "statement": "For microwire LFP HFB power, significant proportions of channels were memory selective in the amygdala (37/368, p = 0.002), ACC (33/368, p = 0.028) and preSMA (40/368, p = 0.001), but not in the hippocampus (17/368, p = 0.90) or vmPFC (28/336, p = 0.05).",
+     "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 2",
+     "quote": "For the LFP, significant proportions of channels were memory selective in the amygdala (37/368, p = 0.002, permutation test with 2,000 shuffling of average HBF power across trials for each channel), ACC (33/368, p = 0.028), and preSMA (40/368, p = 0.001) but not hippocampus (17/368, p = 0.90) and vmPFC (28/336, p = 0.05)",
+     "statistics": [
+      {
+       "about": "amygdala",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.002,
+       "n": "368 channels"
+      },
+      {
+       "about": "ACC",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.028,
+       "n": "368 channels"
+      },
+      {
+       "about": "preSMA",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.001,
+       "n": "368 channels"
+      },
+      {
+       "about": "hippocampus",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.9,
+       "n": "368 channels"
+      },
+      {
+       "about": "vmPFC",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.05,
+       "n": "336 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "Amygdala 37/368 (p = 0.0015), ACC 32/368 (p = 0.0315) and preSMA 40/368 (p = 0.0005) below 0.05; hippocampus 17/368 (p = 0.896) and vmPFC 28/336 (p = 0.0645, Monte Carlo s.e. 0.0055) not. All counts within tolerance (four exact), denominators exact.",
+     "deviations": [
+      "HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score, mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's intermediate files; the line-noise power before and after the filters and per-channel HFB statistics are printed as checks of the steps.",
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "memory-ieeg",
+     "statement": "For macroelectrode iEEG HFB power, significant proportions of channels were memory selective in the ACC (41/368, p < 0.001), vmPFC (34/368, p = 0.012) and preSMA (45/368, p < 0.001), but not in the amygdala (25/368, p = 0.47) or hippocampus (32/368, p = 0.067).",
+     "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 2",
+     "quote": "At the iEEG level (macro channels), significant proportion of channels in the ACC (41/368, p < 0.001), vmPFC (34/368, p = 0.012), and preSMA (45/368, p < 0.001) but not the amygdala (25/368, p = 0.47) and hippocampus (32/368, p = 0.067) were memory selective for HFB power",
+     "statistics": [
+      {
+       "about": "ACC",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "368 channels"
+      },
+      {
+       "about": "vmPFC",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.012,
+       "n": "368 channels"
+      },
+      {
+       "about": "preSMA",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "368 channels"
+      },
+      {
+       "about": "amygdala",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.47,
+       "n": "368 channels"
+      },
+      {
+       "about": "hippocampus",
+       "test": "permutation test, 2,000 shuffles",
+       "p": 0.067,
+       "n": "368 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "ACC 41/368 (p = 0.0005), vmPFC 34/368 (p = 0.0155) and preSMA 45/368 (p = 0.0005) below 0.05; amygdala 25/368 (p = 0.468) and hippocampus 31/368 (p = 0.0935) not. Counts exact except hippocampus (31 against 32).",
+     "deviations": [
+      "HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score, mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's intermediate files; the line-noise power before and after the filters and per-channel HFB statistics are printed as checks of the steps.",
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "memory-modalities-differ",
+     "statement": "The areas with memory selectivity differ by modality; the ACC is selective in all three (cells, LFP, iEEG), the hippocampus in none, and the amygdala in cells and LFP but not iEEG.",
+     "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 3",
+     "quote": "For example, the ACC showed memory selectivity in all three modalities, the hippocampus showed selectivity in none of them, and the amygdala showed selectivity at the single-cell and LFP but not iEEG level",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "ACC is below 0.05 in cells (0.0005), LFP (0.0315) and iEEG (0.0005); hippocampus in none (0.282, 0.896, 0.0935); amygdala in cells (0.0095) and LFP (0.0015) but not iEEG (0.468).",
+     "deviations": [
+      "HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score, mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's intermediate files; the line-noise power before and after the filters and per-channel HFB statistics are printed as checks of the steps.",
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-examples",
+     "statement": "Example memory-selective units and channels; a preSMA neuron firing more to familiar images (p = 0.003), an ACC neuron firing more to novel images (p < 0.001), and a preSMA macro channel and an ACC microwire channel with higher HFB to novel images (both p < 0.001).",
+     "source": "Fig. 6 legend",
+     "quote": "Significance of selection criteria (bootstrap test, novel versus familiar) was p = 0.003 ( a ), p < 0.001( b ), p < 0.001 ( c ), p < 0.001 ( d )",
+     "statistics": [
+      {
+       "about": "Fig. 6a, preSMA neuron",
+       "test": "bootstrap test",
+       "p": 0.003
+      },
+      {
+       "about": "Fig. 6b, ACC neuron",
+       "test": "bootstrap test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "Fig. 6c, preSMA macro channel",
+       "test": "bootstrap test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "Fig. 6d, ACC micro channel",
+       "test": "bootstrap test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "P53CS_R1_11_1_3077 is a preSMA cell firing more to familiar images (-3.13 spikes/s, p = 0.0030); P58CS_R1_34_2_3239 an ACC cell firing more to novel images (1.69 spikes/s, p = 0.0002); macro channel P42CS_R2_RSMA3 (preSMA) and micro channel P58CS_R1_RACC2 (ACC) have higher HFB to novel images, p = 0.0002 each.",
+     "deviations": [
+      "HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score, mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's intermediate files; the line-noise power before and after the filters and per-channel HFB statistics are printed as checks of the steps."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "scenecut-labels",
+     "statement": "The movie has 80 continuity cuts and 13 scene changes, and the annotation file's cuts can be placed in each session through the frame times in the NWB files.",
+     "source": "Methods, Movie annotations, paragraph 2; Usage Notes, paragraph 1",
+     "quote": "The movie contained 80 continuity cuts and 13 scene changes",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "80 continuity cuts and 13 scene changes by rule S; every cut onset falls in the movie window in all 29 sessions, and the onsets from the frame times are 0 to 20 ms from the annotation file shot_start_t. Matched by frame number, with all 93 cuts placed (100%).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "event-cells",
+     "statement": "Significant proportions of cells were event selective (scene change against continuity cut) in the vmPFC (10/175, p = 0.005) and preSMA (20/299, p < 0.001), but not in the amygdala (15/479, p = 0.081), ACC (7/236, p = 0.224) or hippocampus (8/261, p = 0.199).",
+     "source": "Technical Validation, Neuronal responses (movie watching phase), paragraph 1",
+     "quote": "Significant proportions of cells were event selective in the vmPFC (10/175, p = 0.005, permutation test) and preSMA (20/299, p < 0.001) but not in the amygdala (15/479, p = 0.081), ACC (7/236, p = 0.224), and hippocampus (8/261, p = 0.199",
+     "statistics": [
+      {
+       "about": "vmPFC",
+       "test": "permutation test",
+       "p": 0.005,
+       "n": "175 cells"
+      },
+      {
+       "about": "preSMA",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "299 cells"
+      },
+      {
+       "about": "amygdala",
+       "test": "permutation test",
+       "p": 0.081,
+       "n": "479 cells"
+      },
+      {
+       "about": "ACC",
+       "test": "permutation test",
+       "p": 0.224,
+       "n": "236 cells"
+      },
+      {
+       "about": "hippocampus",
+       "test": "permutation test",
+       "p": 0.199,
+       "n": "261 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "vmPFC 10/175 (p = 0.0055) and preSMA 20/299 (p = 0.0005) below 0.05; amygdala 15/479 (p = 0.0865), ACC 7/236 (p = 0.229) and hippocampus 8/261 (p = 0.209) not. Every count is the paper's. In either direction 23 to 72 cells per area are selective, most with weaker responses to scene changes.",
+     "deviations": [
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code.",
+      "The observed test of each cell gives the same p as a literal port of scenechange_test for all 1450 cells (the 1-s window makes counts and rates equal); the permutation null runs on spike counts.",
+      "The code counts only scene change above continuity cut (open detail 6 of the claims file); the count in either direction is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "event-lfp",
+     "statement": "For microwire LFP HFB power, significant proportions of channels were event selective in all five areas; amygdala 20/448 (p = 0.005), hippocampus 40/448 (p < 0.001), ACC 33/448 (p < 0.001), vmPFC 15/400 (p = 0.015), preSMA 22/448 (p = 0.001).",
+     "source": "Technical Validation, Neuronal responses (movie watching phase), paragraph 2",
+     "quote": "For the LFP, significant proportions of channels were event selective in the amygdala (20/448, p = 0.005, permutation test), hippocampus (40/448, p < 0.001), ACC (33/448, p < 0.001), vmPFC (15/400, p = 0.015), and preSMA (22/448, p = 0.001)",
+     "statistics": [
+      {
+       "about": "amygdala",
+       "test": "permutation test",
+       "p": 0.005,
+       "n": "448 channels"
+      },
+      {
+       "about": "hippocampus",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "448 channels"
+      },
+      {
+       "about": "ACC",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "448 channels"
+      },
+      {
+       "about": "vmPFC",
+       "test": "permutation test",
+       "p": 0.015,
+       "n": "400 channels"
+      },
+      {
+       "about": "preSMA",
+       "test": "permutation test",
+       "p": 0.001,
+       "n": "448 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "Amygdala 20/448 (p = 0.0035), hippocampus 40/448 (p = 0.0005), ACC 33/448 (p = 0.0005), vmPFC 15/400 (p = 0.0175) and preSMA 22/448 (p = 0.0020), all counts exact and all below 0.05.",
+     "deviations": [
+      "HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score, mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's intermediate files; the line-noise power before and after the filters and per-channel HFB statistics are printed as checks of the steps.",
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code.",
+      "Scene change above continuity cut only, as the code; either direction shown as a variant (46 to 77 channels per area)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "event-ieeg",
+     "statement": "For macroelectrode iEEG HFB power, significant proportions of channels were event selective in all five areas; amygdala 67/448, hippocampus 41/448, ACC 25/448, vmPFC 33/449 (all p < 0.001) and preSMA 21/448 (p = 0.002).",
+     "source": "Technical Validation, Neuronal responses (movie watching phase), paragraph 2",
+     "quote": "At the iEEG level (macro channels), significant proportion of channels in the amygdala (67/448, p < 0.001), hippocampus (41/448, p < 0.001), ACC (25/448, p < 0.001), vmPFC (33/449, p < 0.001), and preSMA (21/448, p = 0.002) were event selective",
+     "statistics": [
+      {
+       "about": "amygdala",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "448 channels"
+      },
+      {
+       "about": "hippocampus",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "448 channels"
+      },
+      {
+       "about": "ACC",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "448 channels"
+      },
+      {
+       "about": "vmPFC",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "449 channels"
+      },
+      {
+       "about": "preSMA",
+       "test": "permutation test",
+       "p": 0.002,
+       "n": "448 channels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "Amygdala 66/448, hippocampus 41/448, ACC 25/448, vmPFC 33/448 and preSMA 21/448 (each p = 0.0005), all below 0.05; counts exact except amygdala (66 against 67). The vmPFC denominator is 448, where the paper prints 449; the criterion anticipates this misprint and reports the count found.",
+     "deviations": [
+      "HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score, mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's intermediate files; the line-noise power before and after the filters and per-channel HFB statistics are printed as checks of the steps.",
+      "The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says (\"Seed 0 is used as a standard choice\"), and within each shuffle one set of bootstrap resamples is drawn per session (per design) and applied to all its cells or channels, where the code draws one per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation of trials is per cell, as in the code.",
+      "Scene change above continuity cut only, as the code; either direction shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-examples",
+     "statement": "Example event-selective units and channels; a preSMA neuron (p = 0.024) and a vmPFC neuron (p = 0.030), a hippocampal macro channel (p = 0.026) and a preSMA microwire channel (p < 0.001), each responding differently to scene changes than to continuity cuts.",
+     "source": "Fig. 7 legend",
+     "quote": "Significance of selection criteria (bootstrap test, scene change versus continuity cut) was p = 0.024 ( a ), p = 0.030 ( b ), p = 0.026 ( c ), p < 0.001 ( d )",
+     "statistics": [
+      {
+       "about": "Fig. 7a, preSMA neuron",
+       "test": "bootstrap test",
+       "p": 0.024
+      },
+      {
+       "about": "Fig. 7b, vmPFC neuron",
+       "test": "bootstrap test",
+       "p": 0.03
+      },
+      {
+       "about": "Fig. 7c, hippocampus macro channel",
+       "test": "bootstrap test",
+       "p": 0.026
+      },
+      {
+       "about": "Fig. 7d, preSMA micro channel",
+       "test": "bootstrap test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "P42CS_R1_47_2_1347 (preSMA, p = 0.0244) and P47CS_R1_78_1_2233 (vmPFC, p = 0.0298), macro channel P62CS_R2_RHIP6 (hippocampus, p = 0.0258) and micro channel P51CS_R2_RSMA8 (preSMA, p = 0.0002), all with scene change above continuity cut.",
+     "deviations": [
+      "HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score, mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's intermediate files; the line-noise power before and after the filters and per-channel HFB statistics are printed as checks of the steps."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "nwb-contents",
+     "statement": "Each NWB file holds spike times of all sorted neurons, LFP from all microwires and field potentials from all macro contacts downsampled to 1000 Hz, behavior, electrode locations, spike-sorting quality metrics and eye-tracking data; spike times are referenced to movie start and the LFP starts 10 s before it.",
+     "source": "Data Records, Electrophysiology; Usage Notes, paragraph 1",
+     "quote": "Each NWB file includes various types of data: (1) spike times of all sorted neurons; (2) the LFP from all microwires, which were downsampled to 1000 Hz ... (3) the field potentials from all iEEG macroelectrodes, similarly downsampled to 1000 Hz; (4) behavior; (5) electrode locations; (6) spike sorting quality metrics; and (7) eye tracking data",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "hfb_keles_2024.ipynb",
+     "notes": "All 29 files have units with spike times, electrode ids and the four metrics, LFP_micro and LFP_macro at 1000 Hz, the trials table, electrode locations, pairwise distances, gaze and 11971 frame times, and the movie starts at 0 s. All 58 LFP series store a starting time at the movie start; read as the Usage Notes say (timepoints start 10 s before starting_time) the LFP begins 10 s before the movie and runs past the last trial in every file. With that 10-s offset 650 of 2192 micro and 683 of 2240 macro channels respond to recognition images, without it 18 and 20. Offsets of 9.9 to 10.25 s keep the count high (590 to 695 micro, 617 to 724 macro), and with the 10-s offset the HFB response reaches half its peak 200 ms (macro) and 350 ms (micro) after the image, against 300 ms for the spikes, which are on the trials' clock. The largest value before onset is 9% of the peak (micro), 7% (macro) and 10% (units). The counts keep rising to 10.25 s, and shifting the onsets also moves the window against the response, so the sweep bounds the offset only to roughly 9.9 to 10.25 s; the claim needs only 10 s against 0 s.",
+     "deviations": [
+      "The 10-s offset of the LFP is applied as the Usage Notes say and the code does (prep_filterLFP.py, LFP_PAD_us)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "scanner-questions",
+     "statement": "In the scanner, participants answered on average 5.97 +- 0.98 of seven questions on the movie correctly (across participants and runs).",
+     "source": "Methods, Task, paragraph 3",
+     "quote": "Participants answered on average 5.97 \u00b1 0.98 (mean \u00b1 s.d., across participants and runs) questions correctly",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_keles_2024.ipynb",
+     "notes": "A data elsewhere claim, tested on the in-scanner answers where the claims file says they are, not on the dandiset; it is counted apart from the dandiset's claims. From the code repository copy, 15 participants and 30 runs, 5.967 correct answers with s.d. 0.983 (ddof 0); the per-question answers sum to the totals.",
+     "deviations": [
+      "Read from assets/annotations/scanner_questionnaire.csv of the code repository at commit 8c35290, one of the two copies the claims file names; the Figshare copy was not read."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Figshare doi:10.6084/m9.figshare.25037045.v4 and the code repository's assets/annotations/scanner_questionnaire.csv at commit 8c35290",
+     "proposed": null
+    },
+    {
+     "claim": "fmri-motion",
+     "statement": "Participants moved little in the scanner; median framewise displacement 0.15 mm (per-participant medians 0.09 to 0.38 mm), with a median of 1.8% of volumes (0.2% to 14.8%) marked as motion outliers.",
+     "source": "Technical Validation, Imaging data quality, paragraph 1; Fig. 4a",
+     "quote": "participants exhibited minimal motion, with a low median framewise displacement of 0.15 mm (minimum median across participants was 0.09 mm, maximum was 0.38 mm, see Fig. 4a ), and a small percentage of volumes (median = 1.8%; min 0.2%, max 14.8%) marked as motion outliers by fMRIprep",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The fMRI data are on OpenNeuro, ds004798, as raw BIDS only: its top level holds sub-* folders and no derivatives folder. The claim rests on fMRIPrep 23.1.3 outputs, and running fMRIPrep on 15 participants and 30 runs needs its container and many CPU hours, beyond the sixty-minute notebook limit and the five-hour run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "OpenNeuro ds004798 (BIDS), after fMRIPrep 23.1.3 as the Methods describe",
+     "proposed": null
+    },
+    {
+     "claim": "fmri-tsnr",
+     "statement": "The mean whole-brain tSNR across participants was 67.56 +- 8.29, higher in dorsal areas and lower in anterior temporal, orbitofrontal and subcortical regions.",
+     "source": "Technical Validation, Imaging data quality, paragraph 2; Fig. 4b,c",
+     "quote": "The mean whole-brain tSNR across participants was 67.56 \u00b1 8.29, mean \u00b1 s.d., consistent with previous datasets",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The fMRI data are on OpenNeuro, ds004798, as raw BIDS only: its top level holds sub-* folders and no derivatives folder. The claim rests on fMRIPrep 23.1.3 outputs, and running fMRIPrep on 15 participants and 30 runs needs its container and many CPU hours, beyond the sixty-minute notebook limit and the five-hour run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "OpenNeuro ds004798 (BIDS), after fMRIPrep 23.1.3 as the Methods describe",
+     "proposed": null
+    },
+    {
+     "claim": "fmri-isc",
+     "statement": "Inter-subject correlation of BOLD responses to the movie was high in visual and auditory areas and elevated in social regions (precuneus, TPJ, MPFC).",
+     "source": "Technical Validation, Imaging data quality, paragraph 3; Fig. 5",
+     "quote": "The ISC analysis confirmed that the stimulus elicited comparable brain responses among participants, showing high ISC values in visual and auditory areas as expected for an audio-visual movie stimulus",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The fMRI data are on OpenNeuro, ds004798, as raw BIDS only: its top level holds sub-* folders and no derivatives folder. The claim rests on fMRIPrep 23.1.3 outputs, and running fMRIPrep on 15 participants and 30 runs needs its container and many CPU hours, beyond the sixty-minute notebook limit and the five-hour run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "OpenNeuro ds004798 (BIDS), after fMRIPrep 23.1.3 as the Methods describe",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files hold the movie frame times but no scene cuts or cut types; the 93 cuts (80 continuity cuts, 13 scene changes) used by the event analyses come from the annotation file of the paper code repository (also on Figshare), linked by frame number.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "format_error",
+     "statement": "Every LFP_micro and LFP_macro ElectricalSeries stores a starting_time at the movie start (near 0 s), while its first sample is 10 s before the movie. The paper's Usage Notes say so (\"start at 10 seconds before the starting time\") and the paper code subtracts 10 s, but NWB defines starting_time as the time of the first sample, so a reader of the file alone reads the LFP 10 s late. Without the offset 18 of 2192 micro and 20 of 2240 macro channels respond to recognition images; with it 650 and 683 do.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The units column isibelow is described as the proportion of inter-spike intervals below 3 ms, but its values are percentages (median 0.24, up to 10.35), as the paper reports them.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "448 of the 1450 units of the paper (455 of the 1457 in the files) have no isolation distance (NaN), and one has 3.4e27; the paper code removes both before the median.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The electrodes column pairwise_distances holds 1242 distances in all, where the units on each wire imply 1266 pairs. The pairs of the 7 units without waveform metrics are left out (26), and two wires of P58CS_R1 (ROFC4, ROFC8) with no unit in the file have one distance each (2).",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "P53CS run 2 has 34 recognition trials (17 novel, 17 familiar), where the Methods describe 40.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The dandiset holds the EMU data only. The fMRI data are on OpenNeuro ds004798 as raw BIDS, without the fMRIPrep derivatives the paper fMRI checks use, and the demographics of the four fMRI-only participants are only in the paper Table 1 and its code.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 1. The handover of the author run (executed notebooks reproduce and hfb with the conclusion cells and the summary removed), the helper module bmovie.py and the claims file, with the paper. The verifier tested observed_selection, perm_null_counts (shared against per-cell resamples, on synthetic data), heatmap, session_auc, confidence_accuracy and scenecuts on synthetic inputs. Report in transcripts/keles-2024/verifier-1-report.md. It disagrees with the record on scanner-questions, and gives a different blocked_by for the three fMRI claims.",
+     "agreed": 30,
+     "of": 31,
+     "disagreements": [
+      {
+       "claim": "scanner-questions",
+       "outcome": "blocked",
+       "reason": "Blocked (other: data not in the dandiset). The claims file marks it elsewhere, Not tested on the dandiset. The notebook tested it anyway on the code repository's CSV and got 5.967 +- 0.983, which matches. The result should be reported as outside data, not as a dandiset reproduction."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 2. The full executed notebooks (reproduce and hfb, with the conclusions and summaries), the helper module bmovie.py, the attempt record and README, and the claims file, with the paper. The verifier tested the rate and count paths of the permutation null on synthetic Poisson cells. Report in transcripts/keles-2024/verifier-2-report.md. It agrees with every outcome, with a reservation on the memory-cell null (point 3a), and quotes sentences the numbers do not support.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "selection_undocumented",
+     "statement": "The files hold 1457 units; the paper 1450 are those with at least one spike during the movie, a rule found only in the code. The 7 others are in P47CS, P48CS, P51CS, P54CS and P55CS, and they are also the 7 units with no waveform metrics (peakSNR, meanSNR and isolation distance NaN).",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The text excludes runs by a behavioral AUC criterion and by fewer than 10 correct trials per condition; the code applies only the trial count. Here both remove the same five runs (P44CS run 1 is removed with AUC 0.726, for having no correct novel trial).",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The paper gives 449 vmPFC macro channels for the event analysis; the data give 448, the count of every other area.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "keles-2024",
+   "type": "reproduction",
+   "title": "Single-neuron, LFP and iEEG data during movie watching in human patients (Keles et al. 2024)",
+   "description": "Tests the findings of the data descriptor of Keles et al. (2024) on dandiset 000623, which holds 29 runs from 16 epilepsy patients watching an 8-min movie and then doing a recognition memory test, with spike-sorted units, microwire LFP, macro iEEG and eye tracking. It checks the cohort, the unit quality metrics, gaze, recognition behaviour, and the memory- and event-selective cells and channels of the Technical Validation. The fMRI data are on OpenNeuro.",
+   "datasets": [
+    "dandi:000623"
+   ],
+   "papers": [
+    "10.1038/s41597-024-03029-1"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_keles_2024.ipynb",
+     "title": "Cohort, unit quality, gaze, behaviour and single-neuron selectivity",
+     "executed": "notebooks/keles-2024/reproduce_keles_2024.html"
+    },
+    {
+     "path": "hfb_keles_2024.ipynb",
+     "title": "HFB power of microwire LFP and macro iEEG, examples and modalities",
+     "executed": "notebooks/keles-2024/hfb_keles_2024.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 107,
+   "hashed": false
+  }
+ ]
+}
