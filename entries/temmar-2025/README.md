@@ -9,10 +9,11 @@ recorded on 303 days over 3.5 years.
 |---|---|
 | `signals.ipynb` | dataset counts and contents, throughput, SBP decline, active channels, participation ratio, bank and activity slopes, population drift, trajectories, tuning (Figures 2, 3, S2, S4, S5) |
 | `decoding.ipynb` | same-day and cross-day decoding with ridge regression and an LSTM, the shuffle baseline, irregular SBP shifts (Figure 4, Appendix C.1) |
-| `multiday.ipynb` | multi-day training (Figure 5A) and the size of the fine-tuning (Figure 5B) |
+| `multiday.ipynb` | multi-day training (Figure 5A) |
 
-The LSTM is trained on 20 of the 312 sessions and the multi-day comparison on 12 of 283 day-0 sessions,
-for time; the continual fine-tuning of Figure 5B is too large to run here. The outcomes, the reasons and
+The LSTM is trained on 20 of the 312 sessions (and on the 12 other sessions with the highest ridge
+regression R2, for one claim) and the multi-day comparison on 12 of 283 day-0 sessions, for time; the
+continual fine-tuning of Figure 5B is too large to run here. The outcomes, the reasons and
 the differences from the paper's method are in the attempt record,
 [`attempts/temmar-2025-01.yaml`](../../attempts/temmar-2025-01.yaml).
 

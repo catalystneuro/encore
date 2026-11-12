@@ -79,12 +79,17 @@ outcomes:
   output: claim:fig2a-irregular-shifts
   notes: Under the criterion's rule 38 of 42 days in July to November 2022 have at least five channels shifting
     on the same day (up to 66), so the shift part holds; but the rule flags 237 of the 243 other days that have
-    a 30-day baseline, so it does not single out that period. RR's median same-day R2 in the window is 0.321 (45
+    a 30-day baseline, so it does not single out that period (0.974 of window days and 0.975 of other days have
+    five or more; median 17 shifting channels a day in the window against 20 outside; with the 30 preceding
+    recording days as baseline, 0.952 against 0.903). RR's median same-day R2 in the window is 0.321 (45
     sessions), inside its 10th to 90th percentile range of 0.220 to 0.360. The LSTM's is 0.652 (3 sessions), just
-    above its 90th percentile of 0.651 over 20 sessions, so that part fails, in the direction of better decoding.
+    above its 90th percentile of 0.651 over 20 sessions, so that part fails, by 0.001, in the direction of better
+    decoding. Adding the 3 window sessions among the 12 highest-RR sessions, a selection biased towards high R2,
+    gives 0.659. An LSTM on all 45 window sessions was not run, for time.
   deviations:
   - The LSTM is trained on 20 of the 312 sessions (every 16th in date order, chosen before any result), for time;
-    one fit takes about 194 s with four at once, so all 312 would take about 4.2 hours of fitting.
+    one fit takes 77 s (round 1) to 148 s (round 2) with four at once, so all 312 would take 1.7 to 3.2 hours of
+    fitting, over the 60-minute limit of a notebook.
   - A day's 30-day baseline needs at least 3 earlier days; days with fewer have no shift count. This is a standard
     choice the criterion does not fix.
 - claim: fig2b-active-channels-decrease
@@ -123,7 +128,7 @@ outcomes:
   - Medial 1 and Medial 2 are taken as banks B and C, which the paper does not name; the two medial values match
     in that order.
 - claim: figs5-active-inactive-slopes
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: signals.ipynb
   output: claim:figs5-active-inactive-slopes
   measured:
@@ -133,7 +138,9 @@ outcomes:
     the tolerance of -1.29e-3, and inactive channels have the lower mean SBP (2.15 against 3.74). The inactive slope
     is -5.36e-04, the size of the supplement's 0.54e-3 with the opposite sign, so outside the tolerance. The negative
     sign agrees with Section 4.1, which says all categories decreased. With session means (reading b) the slopes
-    are -1.162e-03 and -4.50e-04.
+    are -1.162e-03 and -4.50e-04. The criterion reproduces the claim only when both slopes are within tolerance
+    and names no partial outcome, so the inactive slope decides it. Whether the supplement's +0.54e-3 lost its
+    minus sign is asked of a reader in questions/temmar-2025.yaml; against -0.54e-3 the claim would be reproduced.
   deviations:
   - Each session classifies its own channels and is one point in time; on the 9 two-session days both sessions are
     points.
@@ -144,7 +151,7 @@ outcomes:
   notes: 'The centroids move: the first and last quarters'' centroids are 17.04 apart against a mean within-quarter
     SD of 2.02. Three quarters (2021Q1, 2022Q3, 2023Q2) have a 3-PC SD more than 25% from the median of 1.83, where
     the rule allows two; at 50%, two quarters (2021Q1 at 4.27, 2022Q3 at 2.80) stand out, as the paper''s two exceptions
-    would. 2020Q2 has one session.'
+    would. 2020Q2 has one session. The failure is marginal, as 2023Q2 is 25.5% from the median.'
   deviations:
   - The PCA is computed from per-session sums of the SBP and its products, which gives the same components as fitting
     scikit-learn's PCA to the concatenated, z-scored matrix of all bins.
@@ -195,8 +202,10 @@ outcomes:
     2 of 32 are in the extension sector. With the array names swapped the pattern is close to the paper's (81.2%
     of file-lateral channels in the flexion sector, 92.2% of file-medial channels in the extension sector), though
     more of the flexion channels lie near IDX flexion (17) than near MRS flexion (11). The files' labels agree with
-    Figure S1 (channel 47 medial, row 5, column 5) and with Figure S4 (lowest SBP on the lateral bank), so the disagreement
-    is between the files and this sentence of the paper, or a sign convention of the paper's tuning angles.
+    Figure S1 (the electrodes table gives channel 47 as Medial, bank B, row 5, column 5) and with Figure S4 (lowest SBP on the lateral bank), so the disagreement
+    is between the files and this sentence of the paper, or a sign convention of the paper's tuning angles. The
+    verifier reports that the panels of Figure 3E and Figure 3C show the files' pattern, so the sentence of Section
+    4.2 and the figure disagree; whether the claim should follow the figure is asked of a reader.
   deviations:
   - The swapped-label reading is shown as a variant and does not decide the outcome.
 - claim: fig4a-sameday-stable
@@ -204,11 +213,13 @@ outcomes:
   notebook: decoding.ipynb
   output: claim:fig4a-sameday-stable
   notes: RR same-day R2 slope +0.0020 per year (p = 0.58, 312 sessions), LSTM +0.0064 per year (p = 0.56, 20 sessions);
-    Pearson r between the two over the 20 sessions 0.582 (p = 0.007). RR without input normalisation, as the code
-    fits it, gives +0.0019 per year (p = 0.58). Median R2, RR 0.296, LSTM 0.591.
+    Pearson r between the two over the 20 sessions 0.582 (p = 0.007); over all 32 sessions with an LSTM, which add
+    the 12 highest-RR sessions and are not a sample of the dataset, r = 0.807 (p = 2.4e-08). RR without input
+    normalisation, as the code fits it, gives +0.0019 per year (p = 0.58). Median R2, RR 0.296, LSTM 0.591.
   deviations:
   - The LSTM is trained on 20 of the 312 sessions (every 16th in date order, chosen before any result), for time;
-    one fit takes about 194 s with four at once, so all 312 would take about 4.2 hours of fitting.
+    one fit takes 77 s (round 1) to 148 s (round 2) with four at once, so all 312 would take 1.7 to 3.2 hours of
+    fitting, over the 60-minute limit of a notebook.
   - The LSTM's training noise is 0.1 white per bin and 0.2 bias per sequence and channel, as the Methods and the
     criterion state; the code's train_model passes the two to add_training_noise in the other order, so the code
     adds a bias of 0.1 and white noise of 0.2.
@@ -218,12 +229,16 @@ outcomes:
   outcome: reproduced
   notebook: decoding.ipynb
   output: claim:fig4a-lstm-beats-rr
-  notes: LSTM above RR on 20 of 20 sessions, by 0.223 to 0.385 (median 0.301), so no extra seeds were needed. RR's
-    highest same-day R2 over all 312 sessions, 0.467, is below the lowest LSTM R2 seen, 0.514; the other 292 sessions
-    were not tested with the LSTM.
+  notes: LSTM above RR on 20 of 20 every-16th sessions, by 0.223 to 0.385, and on all 12 of the other sessions with
+    the highest RR R2 (RR 0.390 to 0.467, LSTM higher by 0.182 to 0.300), 32 of 32 in all, so no extra seeds were
+    needed. The 12 include the session with the highest RR R2 of all 312 (0.467). The other 280 sessions were not
+    tested with the LSTM.
   deviations:
   - The LSTM is trained on 20 of the 312 sessions (every 16th in date order, chosen before any result), for time;
-    one fit takes about 194 s with four at once, so all 312 would take about 4.2 hours of fitting.
+    one fit takes 77 s (round 1) to 148 s (round 2) with four at once, so all 312 would take 1.7 to 3.2 hours of
+    fitting, over the 60-minute limit of a notebook.
+  - The 12 sessions with the highest RR same-day R2 outside the 20 were added after round 1 of the verification,
+    chosen by that rule before their LSTM result, as the sessions where the LSTM is likeliest to fall below RR.
 - claim: fig4bc-dof-accuracy
   outcome: reproduced
   notebook: decoding.ipynb
@@ -233,7 +248,8 @@ outcomes:
     62.8% (RR) and 75.0% (LSTM), MRS above IDX for both in 50.6% and 60.0%.
   deviations:
   - The LSTM is trained on 20 of the 312 sessions (every 16th in date order, chosen before any result), for time;
-    one fit takes about 194 s with four at once, so all 312 would take about 4.2 hours of fitting.
+    one fit takes 77 s (round 1) to 148 s (round 2) with four at once, so all 312 would take 1.7 to 3.2 hours of
+    fitting, over the 60-minute limit of a notebook.
 - claim: fig4d-cross-day-decay
   outcome: reproduced
   notebook: decoding.ipynb
@@ -242,10 +258,12 @@ outcomes:
     0.376, 0.186 and RR 0.294, 0.088, -0.005 at day 0, 1 to 5 days and 90 to 100 days; normalised curves correlate
     at r = 0.903. Under the other three pairs the LSTM is also better at every offset, but r is 0.887, 0.526 and
     0.391, and with the signed offset and test-day normalisation the sharp-then-stable part fails. With the training
-    day's normalisation RR's mean R2 is -13.4 to -17.9 past day 0.
+    day's normalisation RR's mean R2 is -13.4 to -17.9 past day 0. The pass is narrow; the LSTM's early drop
+    exceeds its later drop by 0.017 (0.207 against 0.190) and r exceeds 0.9 by 0.003, over 20 decoders.
   deviations:
   - The LSTM is trained on 20 of the 312 sessions (every 16th in date order, chosen before any result), for time;
-    one fit takes about 194 s with four at once, so all 312 would take about 4.2 hours of fitting.
+    one fit takes 77 s (round 1) to 148 s (round 2) with four at once, so all 312 would take 1.7 to 3.2 hours of
+    fitting, over the 60-minute limit of a notebook.
   - Both decoders' cross-day curves use the 20 LSTM sessions' decoders, each tested on every session within 100
     days (1,088 evaluations per decoder and normalisation), scored on every 5th test bin for time.
   - The criterion names two readings each of offset and normalisation; the outcome holds under one pair of the four.
@@ -258,10 +276,14 @@ outcomes:
   - -0.154
   notes: All shuffles give negative R2. Under reading (a), raw bins permuted, the LSTM median is -0.154 (20 sessions),
     inside -0.156 +- 0.0156, and RR's -0.223 (312 sessions), outside -0.166 +- 0.0166 (per-session range -0.363
-    to -0.149). Reading (b) gives -0.410 (RR) and -0.596 (LSTM); whole trials give -0.409 and -0.533.
+    to -0.149). Reading (b) gives -0.410 (RR) and -0.596 (LSTM); whole trials give -0.409 and -0.533. As the
+    paper used one session, single sessions were counted. Under (a) RR is within tolerance on 33 of 312 sessions,
+    and of the 20 LSTM sessions RR is within tolerance on 1, the LSTM on 8 and both on 1; under (b) and whole
+    trials, none.
   deviations:
   - The LSTM is trained on 20 of the 312 sessions (every 16th in date order, chosen before any result), for time;
-    one fit takes about 194 s with four at once, so all 312 would take about 4.2 hours of fitting.
+    one fit takes 77 s (round 1) to 148 s (round 2) with four at once, so all 312 would take 1.7 to 3.2 hours of
+    fitting, over the 60-minute limit of a notebook.
   - Judged on the median over sessions, as the criterion says, since the paper's one session is not named.
 - claim: fig5a-multiday-short-term
   outcome: reproduced
@@ -269,12 +291,17 @@ outcomes:
   output: claim:fig5a-multiday-short-term
   notes: Over 12 day-0 sessions, five training sessions against one raise mean R2 over relative days 1 to 5 from
     -0.502 to -0.251, shrink the drop from day 0 from 1.089 to 0.791, and lower day-0 R2 from 0.587 to 0.540 (lower
-    on 11 of 12). R2 after day 0 is negative because input normalisation is held at the training parameters. 283
-    day-0 sessions are eligible, as the legend reports, when the last session, with nothing after it, is left out.
+    on 11 of 12). R2 after day 0 is negative because input normalisation is held at the training parameters. With
+    the normalisation refit on each test session, the code's variant, the three also hold (days 1 to 5, 0.372 to
+    0.418; drop 0.215 against 0.086; day 0, 0.587 against 0.503), and R2 after day 0 is positive (mean 0.18 to
+    0.34 over days 6 to 180), near Figure 5A. 283 day-0 sessions are eligible, as the legend reports, when the
+    last session, with nothing after it, is left out.
   deviations:
   - 12 of the 283 day-0 sessions, evenly spaced and chosen before any result, and only 1 and 5 training sessions
-    (the two the criterion compares), for time; the paper trains 1415 LSTMs, about 19 hours here.
-  - Scored on every 5th test bin; the code's variant of the multi-day trainer was not run.
+    (the two the criterion compares), for time; the paper trains 1415 LSTMs, 7 to 15 hours here.
+  - Scored on every 5th test bin. Of the code's variant of the multi-day trainer, the refit of input
+    normalisation on the test data is run; its 90/10 split and training without noise would need the models
+    retrained and are not.
   - The last eligible session is left out as it has no later session to test on; this gives the legend's 283.
 - claim: fig5a-long-term-decay
   outcome: not_reproduced
@@ -286,18 +313,28 @@ outcomes:
     (-0.009 against 0.014). The long-term rates' 95% intervals overlap but are very wide (five sessions, -1.48 to
     1.50 per day). Residual RMS 0.40 and 0.65 on a curve that reaches -3.98. With 12 day-0 sessions the curve is
     likely too noisy for this fit; the raw comparison of fig5a-multiday-short-term does show the smaller early drop
-    with five sessions.
+    with five sessions. Two variants were run after round 1 of the verification. With the test day's
+    normalisation and the criterion's initial values, the initial rate is still not more negative for one session
+    (0.034 against 0.014). Started from the values printed in the Figure 5A panel (negative rates), the fits have
+    lower residuals and all three conditions hold under both normalisations (training day, initial rates -0.906
+    against -0.182, drop to day 5 1.237 against 0.416, long-term rates -0.0033 and 0.0010 with overlapping
+    intervals; test day, -0.601 against -0.535, drop 0.256 against 0.122, long-term rates -0.0046 and -0.0031,
+    overlapping). The outcome is the criterion's and rests on its initial values, which start from growing
+    components; whether they misread the code is asked of a reader.
   deviations:
   - Fit to the 12 day-0 sessions of fig5a-multiday-short-term in place of 283, for time; this may be why the fit
     fails.
 - claim: fig5b-finetune
   outcome: blocked
   blocked_by: too_large
-  notebook: multiday.ipynb
-  output: claim:fig5b-finetune
-  notes: Estimated from the 20 seed days, 32 to 85 later sessions each within 200 days (1146 in all), the four durations'
-    iterations and the two normalisation readings, 2,446,600 training iterations, about 16.5 hours at the measured
-    0.097 s per iteration with four fits at once, beyond the 60-minute notebook limit and the run. Not run.
+  notes: The 20 seed days are in the dataset and are followed by 32 to 85 sessions each within 200 days (1146 in
+    all). With the four durations' iterations and the two normalisation readings this is 2,446,600 training
+    iterations, 6.3 hours at the 0.037 s per iteration measured in round 1 with four fits at once, and about twice
+    that at round 2's fit times (148 s per 2000 iterations), beyond the 60-minute notebook limit and the run. The
+    30 s arm alone (20 seed fits and 1146 fine-tunes of 50 iterations, under both readings) was written as a
+    notebook after round 1 and started in this run; it had not finished after 52 minutes when the run's time
+    limit stopped it, so it is not in the entry and supplies no number. The 120 s and 300 s arms on 2 seed days
+    were not started. No part was tested.
 findings:
 - kind: metadata_error
   statement: ThresholdCrossings is stored with unit volts and conversion 1.0, but it holds integer counts of threshold
@@ -331,3 +368,267 @@ findings:
   statement: In bci_decoding/nn_utils.py, train_model calls add_training_noise(inputs, noise_neural_std, noise_bias_std),
     whose parameters are (x, bias_neural_std, noise_neural_std), so the code adds a bias of SD 0.1 and white noise
     of SD 0.2, the reverse of Appendix C.1 (noise 0.1, bias 0.2).
+verifications:
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: >-
+    The first executed notebooks (signals.ipynb, decoding.ipynb, multiday.ipynb) with the conclusion
+    cells and the summaries removed, the helper module link.py and the claims file, with the paper's full
+    text and supplement (the PDFs read for Figures 3, 5 and S1). The verifier listed the archive's assets
+    and version metadata through the DANDI API with the helper, and tested the helpers on synthetic inputs
+    (circ_median and circ_iqr across the wrap, channel_tuning, participation_ratio, trial_directions). It
+    had no attempt record and took the claims from the claims file.
+  results:
+  - claim: dataset-sessions
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [11]: 312 files, 303 days, span 1242 days, 9 two-session days (all CO+RD), and every
+      session has 375 trials. No implant date in the files, so the comparison with days 349 to 1591 is
+      skipped, as the criterion allows. Separately, the claims file's header says the data run to
+      "February 2024", but the data end on 2023-06-22, which fits the 1242-day span.
+    response: >-
+      No change to the outcome. The header's "February 2024" comes from Appendix B.1, where it is the
+      range of the candidate days before curation; it is asked of a reader in questions/temmar-2025.yaml.
+  - claim: dataset-contents
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      signals [13]: all series, trials columns and electrode columns are present except imp, which is
+      missing in 81 of 312 files. Bins are 0.02 s apart (within 1 ms) with gaps between runs. Velocity
+      matches the forward difference of position everywhere except the 72 bins before gaps. Appendix A.2
+      says impedances are left out when none was measured within 3 weeks of a session. The 81 files
+      without impedances fit the paper's own rule, which the dataset-contents criterion does not account
+      for.
+    response: >-
+      Outcome kept, as the criterion asks for the column in every file. Whether the criterion should
+      accept a session without impedances under the rule of Appendix A.2 is asked of a reader in
+      questions/temmar-2025.yaml.
+  - claim: figs2-throughput-improves
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [15]: the slope is positive with p < 0.05 under all three readings (a, +0.24 bits/s per
+      year, p = 6e-8; b, p = 8e-37; c, p = 3e-20). 998 trials shorter than the 750 ms hold become NaN
+      under readings (a) and (c); that is under 1% of trials, and reading (b) has none and is also
+      significant.
+    response: No change.
+  - claim: fig2a-sbp-decline
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [17]: reading (b) applies, because the stored unit is volts with conversion 1e-6, so stored
+      values are microvolts. That gives -0.0338 µV/month (tolerance -0.033 +- 0.0033) and -1.110e-3 per
+      day, the supplement's number. Reading (a) gives -0.0084.
+    response: No change.
+  - claim: fig2a-irregular-shifts
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      decoding [20]: the shift part holds (38 of 42 days in the window have 5 or more shifting
+      channels). RR's median in the window lies inside its 10th-90th percentile range. The LSTM's median
+      (0.652, from 3 sessions) lies just above its 90th percentile (0.651, from 20 sessions), so the
+      second part fails. The shift rule flags 5 or more channels on 237 of 243 days outside the window,
+      so it cannot pick out the July-November 2022 period, and the shift part holds trivially. The LSTM
+      part fails by 0.001, on 3 sessions, and in the "better" direction. It asked for per-day shift
+      counts compared with a baseline rate, and the reading where the 30-day window counts sessions.
+    response: >-
+      Outcome kept. The cell now prints the baseline rate (0.974 of window days and 0.975 of other days
+      have 5 or more shifting channels; median 17 against 20) and the variant with the 30 preceding
+      recording days as the window (0.952 against 0.903); neither singles out the period, which the notes
+      now say. The LSTM was added on the 12 highest-RR sessions (3 of them in the window), which gives a
+      window median of 0.659 from a selection biased towards high R2; an LSTM on all 45 window sessions
+      was not run, for time.
+  - claim: fig2b-active-channels-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [19]: slope -0.0177 channels/day, p = 2.6e-12. The first 30 days average 44.6 active
+      channels, the last 30 average 25.9.
+    response: No change.
+  - claim: fig2c-pr-decline
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [21]: -0.0708 PR/month (tolerance -0.07 +- 0.007). The every-session variant gives -0.0720.
+    response: No change.
+  - claim: fig2c-ten-dimensions
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [23]: reading (a) holds on 0.848 of days and reading (b) on 1.000. Reading (c) holds on
+      only 0.446.
+    response: No change.
+  - claim: figs4-bank-slopes
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [25], stored-µV reading: lateral -5.84e-4, medial 1 -1.34e-3, medial 2 -1.40e-3, all
+      channels -1.11e-3, all within tolerance. Lateral mean SBP (2.19) is below both medial banks (2.55,
+      3.57).
+    response: No change.
+  - claim: figs5-active-inactive-slopes
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      signals [27]: the active slope (-1.261e-3) is within tolerance, and inactive channels have lower
+      SBP. The inactive slope is -0.536e-3 against an expected +0.54e-3, so it is outside tolerance under
+      both fit readings. Its size matches to 1% with the opposite sign. The paper prints "0.54 x 10^-3"
+      for inactive channels, calls it "near 0", and says in Section 4.1 that all categories decreased;
+      the claims file reads the value as positive, which suggests a dropped minus sign. Under that
+      reading the claim would be reproduced.
+    response: >-
+      Outcome changed from partially_reproduced to not_reproduced, as the verifier gives it, because the
+      criterion reproduces the claim only when both slopes are within tolerance and names no partial
+      outcome. The sign of the printed slope is asked of a reader in questions/temmar-2025.yaml.
+  - claim: fig2d-population-drift
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      signals [29]: the centroid moves 17.0 between the first and last quarter, against a within-quarter
+      SD of 2.02, so movement holds. Three quarters (2021Q1, 2022Q3, 2023Q2) are more than 25% from the
+      median SD, where the rule allows at most two, so stable spread fails. 2023Q2 misses by only 0.01,
+      and 2020Q2 is a single session. The partial outcome is marginal.
+    response: Outcome kept; the notes now say the failure is marginal (2023Q2 is 25.5% from the median).
+  - claim: fig2e-trajectories-separable
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [31], main alignment: accuracy 0.212 in 2020 and 0.220 in 2023, against chance 1/8 (binomial
+      p < 1e-200 both years), above the majority class (0.16-0.18) and permuted labels (about 0.12). The
+      code variant also holds. With k_sd = 1 the onset is almost always the first bin after the baseline,
+      so trajectories are in effect aligned to trial start; this follows the paper's stated method. A PCA
+      fitted per day and trials of about 43 days pooled into one classifier can only lower accuracy.
+    response: No change; both points do not affect the conclusion, as the verifier says.
+  - claim: fig3b-two-channels
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [35]: channel 7's median angle is 81 degrees, its circular IQR 18.6 degrees, and its strength
+      0.0245 (median over channels 0.0070). Channel 32's IQR is 146.9 degrees, above the median IQR of 46.9.
+      Mean TCR is 3.1 Hz for channel 7 and 36.5 Hz for channel 32.
+    response: No change.
+  - claim: fig3cd-tuning-stable
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [37]: under the 90-degree reading, 0.771 of all channels and 0.774 of active channels have a
+      small IQR. Under the 45-degree reading it is 0.479 and 0.453.
+    response: No change.
+  - claim: fig3d-weak-channels-low-tcr
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      signals [39]: Spearman rho = 0.925 (p = 3e-41). Mann-Whitney p = 5e-11 (median TCR 0.40 Hz vs 0.87
+      Hz).
+    response: No change.
+  - claim: fig3e-array-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      signals [41]: only 3% of medial channels fall in the flexion sector, and only 6% of lateral channels
+      in the extension sector; medial medians cluster at about -130 degrees, lateral ones at 0-90. This is
+      the reverse of the sentence in Section 4.2, but it matches the paper's own Figures 3C and 3E. The
+      criterion follows the text; the Figure 3E panels are labelled the other way, and the claims file
+      does not mention the contradiction. It asked for channel 47's array_name, row and col, to check the
+      file labels against Figure S1.
+    response: >-
+      Outcome kept. The cell now prints channel 47 from the electrodes table (Medial, bank B, row 5,
+      column 5, as Figure S1 has it). Whether the claim should follow Figure 3E is asked of a reader in
+      questions/temmar-2025.yaml.
+  - claim: fig4a-sameday-stable
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      decoding [9]: neither slope is negative with p < 0.05 (RR over 312 sessions +0.002/yr, p = 0.58;
+      LSTM over 20 sessions +0.006/yr, p = 0.56). The RR-LSTM Pearson r is 0.582 (p = 0.007), but only over
+      20 sessions. The stated reason for the subset (4.3 h at 200 s per fit) conflicts with the measured
+      77 s per fit, which is about 1.7 h.
+    response: >-
+      Outcome kept. The time is corrected: fits took 77 s in round 1 and 148 s in this run, so all 312
+      would take 1.7 to 3.2 hours, still over the 60-minute notebook limit. The correlation over all 32
+      sessions with an LSTM is shown as a variant (r = 0.807), noted as not a sample of the dataset.
+  - claim: fig4a-lstm-beats-rr
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      decoding [11]: the LSTM beats RR on 20 of 20 sessions, by at least 0.223. The highest RR R2 on any
+      of the 312 sessions (0.467) is below the lowest LSTM R2 (0.514), but 292 sessions have no LSTM. 20
+      of 312 sessions is weak support for the universal "every day" claim. It asked for LSTM R2 on all
+      312 sessions, or at least on the sessions with the highest RR R2.
+    response: >-
+      Outcome kept. The LSTM is now trained on the 12 sessions with the highest RR R2 outside the 20,
+      including the highest of all 312; it beats RR on all 12 (by 0.182 to 0.300), 32 of 32 in all. All
+      312 were not run, for time.
+  - claim: fig4bc-dof-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      decoding [13]: for both decoders, both position medians exceed both velocity medians, and MRS
+      exceeds IDX for position and velocity.
+    response: No change.
+  - claim: fig4d-cross-day-decay
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      decoding [16]: holds only under absolute offsets with test-day normalisation, where the LSTM is
+      better at every offset, the short-term drop is 0.207 against a later drop of 0.190, and r = 0.903.
+      Signed offsets with test-day normalisation fail narrowly (drops 0.19 vs 0.21, r = 0.887). The pass
+      depends on one of four reading pairs, and on margins of 0.017 and 0.003, with 20 decoders.
+    response: Outcome kept; the notes now give the two margins and the number of decoders.
+  - claim: suppc1-shuffle-baseline
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      decoding [18], reading (a): the LSTM median is -0.154, within tolerance. The RR median is -0.223,
+      outside -0.166 +- 0.017. Reading (b) gives -0.60 and -0.41, both outside. All values are negative,
+      consistent with the paper's chance reference. It asked for the number of sessions where both
+      shuffled R2 values fall within tolerance, as the paper used a single unnamed session.
+    response: >-
+      Outcome kept. The cell now counts sessions within tolerance; under reading (a) RR is within it on
+      33 of 312 sessions, and of the 20 LSTM sessions both decoders are within it on 1; under reading (b)
+      and whole trials on none.
+  - claim: fig5a-multiday-short-term
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      multiday [8], 12 of 283 day-0 sessions, training-day normalisation; the comparisons of 5 against 1
+      session hold, but all these R2 values are far below Figure 5A. The criterion requires the code
+      variant (normalisation refit on the test day) to be shown, and it was not run; the 1-vs-5
+      comparisons could change under it. Only 12 day-0 sessions were run, giving 16 evaluations at days
+      1-5.
+    response: >-
+      Outcome kept. The models are now also evaluated with the normalisation refit on each test session.
+      All three comparisons hold under it too (days 1 to 5, 0.418 against 0.372; drop 0.086 against
+      0.215; day 0, 0.503 against 0.587), with R2 after day 0 near Figure 5A. The code's 90/10 split and
+      training without noise were not run, and the 12 day-0 sessions were kept, for time.
+  - claim: fig5a-long-term-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      multiday [10]: the initial rate is not more negative for 1 session, and the predicted drop to day 5
+      is not larger; the long-term intervals overlap. Both fits are degenerate, so this outcome tells us
+      little. The starting values (positive rates) come from the criterion, but the paper's legend shows
+      negative rates, and no fit was run from the legend's values. It asked for the fits recomputed with
+      the test-day normalisation, and a fit started from the legend's values.
+    response: >-
+      Outcome kept, as the criterion fixes the starting values. Both variants are now run. With test-day
+      normalisation and the criterion's values the initial rate is still not more negative for 1 session.
+      From the legend's values the fits have lower residuals and all three conditions hold under both
+      normalisations. The notes say the outcome rests on the starting values, and whether the criterion's
+      values misread the code is asked of a reader in questions/temmar-2025.yaml.
+  - claim: fig5b-finetune
+    agrees: true
+    outcome: blocked
+    reason: >-
+      multiday [12]: the full run is estimated at 6.3 h. The archive holds all 20 seed days and all 312
+      files (12.6 GB), so no data are missing, and part of the claim could have been run. The 30 s arm
+      alone (20 seed fits plus 1,146 fine-tunes of 50 iterations, about 15-25 min for both normalisation
+      readings) could have tested half of the criterion; a subset of seeds would have made 120 s and
+      300 s feasible. Neither was run.
+    response: >-
+      Not done. A notebook for the 30 s arm under both readings and one for the 120 s and 300 s arms on 2
+      seed days were written; the 30 s notebook ran 52 minutes in this run without finishing (fits were
+      about twice as slow as in round 1) and the run's time ran out, so neither is in the entry and the
+      claim stays blocked as too_large. The notes give the estimate with this run's fit times.

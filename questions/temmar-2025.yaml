@@ -1,0 +1,99 @@
+dandiset: "001201"
+paper: doi:10.52202/085713-4642
+questions:
+- claim: figs5-active-inactive-slopes
+  asked: 2026-11-12
+  question: >-
+    The claim expects the inactive channels' slope to be +0.54e-3 per day, the sign as Appendix C.2
+    prints it. The same paragraph calls that slope "near 0", and Section 4.1 says "All categories saw
+    steady decreases in average SBP over time", which covers the active and inactive groups of Figure
+    S5. A positive slope is not a decrease, so the printed value may have lost its minus sign. Should
+    the expected value be -0.54e-3, or should the claim keep +0.54e-3 and record the conflict with
+    Section 4.1?
+  passage: >-
+    "The slopes of the best-fit lines here were −1.29 × 10−3, and 0.54 × 10−3. As might be expected,
+    the slope for the inactive channels was near 0" (Appendix C.2, paragraph after Figure S3); "All
+    categories saw steady decreases in average SBP over time." (Section 4.1, paragraph 2).
+  why: >-
+    The data give -0.536e-3 per day for the inactive channels (channel-session points, stored values),
+    the printed size with the opposite sign. Against +0.54e-3 +- 0.054e-3 it is outside tolerance and
+    the claim is not reproduced; against -0.54e-3 it is inside, and with the active slope (-1.261e-3,
+    inside -1.29e-3 +- 0.129e-3) and the lower SBP of inactive channels the claim would be reproduced.
+- claim: fig3e-array-tuning
+  asked: 2026-11-12
+  question: >-
+    The criterion follows the sentence of Section 4.2: medial channels tuned to MRS flexion (some IDX
+    flexion), lateral channels to extension of both fingers. The verifier reports that the panels of
+    Figure 3E, which the claim cites as its source, show the reverse: the Lateral bank tuned to
+    flexion, and the Medial 1 and Medial 2 banks near -135 degrees (extension of both), and that Figure
+    3C agrees with the panels (channels 0 to 31 near 0 to 90 degrees, channels 32 to 95 near -135 to
+    -180). The claims file does not mention this contradiction. Should the claim follow the figure,
+    or keep the sentence and name the contradiction?
+  passage: >-
+    "it appears that channels in the medial array (see Figure 1) are mainly tuned to MRS flexion, with
+    some IDX flexion, while channels in the lateral array are more tuned to extension of both DOF."
+    (Section 4.2, paragraph 1); Figure 3E legend, "Per-channel tuning ranges across the dataset,
+    grouped by bank ... We separated each bank into separate plots."
+  why: >-
+    With the files' array labels (bank A = Lateral, which also gives the lowest SBP and the
+    shallowest slope of Figure S4, and places channel 47 on the medial array as Figure S1 does), 2 of
+    64 medial channels are in the flexion sector and 2 of 32 lateral channels in the extension sector,
+    so the claim as written is not reproduced. Read as the figure shows it, lateral channels tuned to
+    flexion and medial channels to extension, the data match: 81% of lateral channels are in the
+    flexion sector and 92% of medial channels in the extension sector.
+- claim: dataset-contents
+  asked: 2026-11-12
+  question: >-
+    The criterion asks for an electrodes table with an impedance column in every file, and partially
+    reproduces the claim when a few files lack a part. Appendix A.2 says that a session with no
+    impedance measured within three weeks has no impedances reported. Should the criterion accept a
+    session without impedances when none were measured within three weeks, as the paper describes the
+    deposit?
+  passage: >-
+    "Each electrode is labeled with the impedance measurement closest in time to the date of the
+    session. If no impedances were recorded within three weeks of a session, no impedances are
+    reported for that session." (Appendix A.2); "Impedance measurements as described above are
+    included in the imp column." (Appendix B.3, Electrodes).
+  why: >-
+    81 of 312 files have no imp column, and that alone makes the claim partially reproduced. Every
+    other part (the six series, the trials columns, bank, row and column, the 20 ms bins) is present
+    in every file. If a missing impedance is the documented behaviour, the claim would be reproduced,
+    provided the 81 sessions are the ones without a measurement within three weeks, which the files
+    do not let anyone check.
+- claim: dataset-sessions
+  asked: 2026-11-12
+  question: >-
+    The claims file's opening comment says the 312 sessions run from January 2020 to February 2024.
+    In Appendix B.1 that range describes the candidate days reviewed before curation (453 days), not
+    the final dataset. The final dataset spans 1,242 days (Section 3), which from January 2020 ends in
+    June 2023, and the files run from 2020-01-27 to 2023-06-22. Should the comment say the sessions run
+    from January 2020 to June 2023?
+  passage: >-
+    "we reviewed all experimental notes from Monkey N from January 2020 ... to February 2024 ... After
+    this first pass, we were left with 453 days spanning from January 2020 to February 2024."
+    (Appendix B.1, Initial Candidate Selection); "on 303 days spanning 1,242 days" (Section 3).
+  why: >-
+    It cannot change an outcome: no criterion uses the end date. It misdescribes the data the paper
+    used, so a reader of the claims file would look for sessions after June 2023 that are not in the
+    dataset or the paper.
+- claim: fig5a-long-term-decay
+  asked: 2026-11-12
+  question: >-
+    The criterion fits a*exp(b*x) + c*exp(d*x) from initial values (0.374, 0.00365, 0.134, 0.140),
+    which it gives as those of stability_plotter.ipynb. Both rates in these values are positive, so
+    the fit starts from two growing components. The fitted curves printed in the Figure 5A panel, as
+    the verifier read them, have negative rates (0.229e^-0.183x + 0.268e^-0.006x for one session and
+    0.134e^-0.140x + 0.374e^-0.004x for five), and the initial values are the five-session
+    coefficients with the signs of the rates dropped. That suggests the code fits a*exp(-b*x) +
+    c*exp(-d*x), so that the criterion's form, or its initial values, misread the code. Should the
+    criterion use the code's form, or start from negative rates?
+  passage: >-
+    "A double-exponential fit (Fig. 5A) to the single-session and 5-session conditions over all
+    evaluation sessions (within 180 days of day 0) show steeper decays in the single-session case"
+    (Section 4.3, paragraph 3), and the fitted equations printed in Figure 5A.
+  why: >-
+    From the criterion's initial values the fits are degenerate (a near-zero component with rate
+    +0.18 for one session, two growing components for five) and the claim is not reproduced. Started
+    from the panel's values, the fits have lower residuals and all three conditions of the criterion
+    hold, under both normalisations (training day, initial rates -0.906 against -0.182, drop to day 5
+    1.237 against 0.416, long-term intervals overlapping).
