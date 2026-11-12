@@ -266,6 +266,22 @@ def onset_20pct(t: np.ndarray, dtheta: np.ndarray, start: float, stop: float,
     return float(t[j]), float(t[ip]), float(peak), j, e
 
 
+def half_height_run(dtheta: np.ndarray, ip: int, j0: int, j1: int) -> tuple[int, int]:
+    """First and last index of the run of frames at or above half the turn's peak (Fig. S5A
+    measures a turn's peak width at half height) that contains the peak `ip`, of the rotation in
+    the turn's direction, within the 20% run j0..j1 of `onset_20pct`. Returns (-1, -1) when there
+    is no run."""
+    if j0 < 0 or ip < 0:
+        return -1, -1
+    s = np.sign(dtheta[ip]) * dtheta
+    a = b = ip
+    while a > j0 and s[a - 1] >= 0.5 * s[ip]:
+        a -= 1
+    while b < j1 and s[b + 1] >= 0.5 * s[ip]:
+        b += 1
+    return a, b
+
+
 def prepare_frames(frames: pd.DataFrame, opts: TurnOptions) -> pd.DataFrame:
     """Per-trajectory derived columns: smoothed vx (`vx_smooth`) and the smoothed predictors
     (`gradient_s`, `motion_s`, `intensity_s`, and their z-scores over all frames of the group,
@@ -324,6 +340,7 @@ def turn_table(prepared: pd.DataFrame, turns: pd.DataFrame, onset: str = "rule20
             i_on = np.searchsorted(t, r.start_time - 1e-9)
             i_off = min(np.searchsorted(t, r.stop_time + 1e-9) - 1, len(t) - 1)
             ip = np.searchsorted(t, tpk) if np.isfinite(tpk) else -1
+            h0, h1 = half_height_run(dth, ip, j0, j1)
             row = {"session": sess, "trj": trj, "cluster": f"{sess}:{trj}", "start": r.start_time,
                    "stop": r.stop_time, "onset20": on20, "t_peak": tpk, "peak_speed": pk,
                    "dtheta_peak": dth[ip] if ip >= 0 else np.nan,
@@ -332,6 +349,10 @@ def turn_table(prepared: pd.DataFrame, turns: pd.DataFrame, onset: str = "rule20
                    "theta_start": theta[i_on] if i_on < len(t) else np.nan, "theta_stop": theta[i_off],
                    "int_dtheta": float(np.nansum(dth[i_on:i_off + 1]) / fps) if i_off >= i_on else np.nan,
                    "int_dtheta_20": float(np.nansum(dth[j0:j1 + 1]) / fps) if j0 >= 0 else np.nan,
+                   "end20": float(t[j1]) if j1 >= 0 else np.nan,
+                   "int_dtheta_50": float(np.nansum(dth[h0:h1 + 1]) / fps) if h0 >= 0 else np.nan,
+                   "start50": float(t[h0]) if h0 >= 0 else np.nan,
+                   "end50": float(t[h1]) if h0 >= 0 else np.nan,
                    "onset20_unsigned": onu,
                    "int_dtheta_20_unsigned": float(np.nansum(dth[u0:u1 + 1]) / fps) if u0 >= 0 else np.nan,
                    "unsigned_run_reverses": bool(u0 >= 0 and ip >= 0
