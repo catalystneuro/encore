@@ -1,16 +1,36 @@
-I stopped without writing any claims, because the supplement is missing. `claims/temmar-2025.yaml` has not been created and nothing was changed.
+I've written `claims/temmar-2025.yaml` and the quote checker passes: 24 claims, 24 quotes, 0 problems. Nothing is committed.
 
-**Text read:** the version of record, the NeurIPS 2025 Datasets and Benchmarks proceedings PDF from Curran Associates (`paper/10.52202-085713-4642.txt`). It has 23 pages: main text pp. 1–10, references pp. 11–16, NeurIPS checklist pp. 17–23. That covers the abstract, Introduction, Related Work, Section 3 (the dataset), Section 4 (Analyses), Section 5 (Limitations and Discussion) and the figure legends for Figs 1–5. Each figure has a legend, but nothing beyond it.
+**Text read:** the version of record (the NeurIPS 2025 Datasets and Benchmarks proceedings PDF, as text), including the checklist, plus the supplement from OpenReview: Appendices A to C and Figures S1 to S6. Nothing the claims need is missing. I also read the paper's code, github.com/chesteklab/LINK_dataset at commit 5e1c36a.
 
-**Missing:** the supplement (the paper calls it "Supplemental materials" or "Supplementary Materials"), with Appendices A, B and C and Figures S1 to S5. The text is all 23 pages and ends with the checklist, so the supplement is not in it. Every analysis result depends on it:
-- **Appendix C.1, decoder training.** It fixes how the ridge penalty is chosen, the LSTM architecture and training, how the 300/75 trial split is formed, and how R² is computed and averaged across DOFs. Figs 4 and 5 rest on this: same-day R², decay across days, multi-session training with its double-exponential fit, and fine-tuning.
-- **Appendix C.2, preferred tuning.** It sets the regression form, the angle and strength decomposition, and the circular median and circular IQR (Fig 3).
-- **Appendix C.3, neural activity over time.** It covers the SBP trend model, the active-channel rule, participation ratio, the PCA centroids and the max-jerk alignment (Fig 2).
-- **Appendices A and B.** These give task and implant details and the curation stages.
-- **Figures S1 and S3 to S5.** Section 4.1 bases the per-bank and active/inactive SBP findings on Figs S4 and S5. Fig S3 shows low-strength channels having low TCR.
+**Claims:** 24, all with quotes and none marked `inferred`.
+- **Statistics:** none. The paper reports no statistical test or confidence interval for any finding.
+- **Expected values:** 6 claims carry them:
+  - the dataset counts, with zero tolerance because they count the deposit itself;
+  - the SBP slope of -0.033 µV per month;
+  - the participation-ratio slope of -0.07 per month;
+  - four per-bank SBP slopes and two active/inactive slopes;
+  - the shuffled-data R² values (RR -0.166, LSTM -0.156).
+- **Criteria:** all 24 have one. Where the paper judges something by eye ("appears", "visually separable", "relatively stable"), I set a decision rule and the criterion says it is not the paper's.
 
-The main text gives only sketches of these methods. The protocol requires every part of a criterion's method to come from the Methods, the supplement or the code, so the claims can't be written faithfully from the main text alone. I didn't read the linked code (github.com/chesteklab/LINK_dataset), because the missing supplement already blocks the claims and the code doesn't replace it.
+**Details the paper leaves open, with the readings named:**
+- **SBP unit in the NWB files:** either scale by 0.25, as the code does, or use the file's stated unit. This could change the slopes by a factor of 4.
+- **Figure S4/S5 slopes:** the line is fit either to every channel-day value or to per-day group means. The unit is read as µV/day, and the code for these figures is not in the repository.
+- **"Active" channels in the supplement:** it says "< 1 Hz", which I read as a typo for > 1 Hz. It also says the inactive-channel slope is positive, which contradicts the main text's "all categories decreased".
+- **"10 dimensions" capturing most of the variance:** read as a participation ratio of at most 10, or the top 10 PCs explaining more than 50%, or more than 80%.
+- **Fitts' law throughput:** the formula is only cited (Nason et al.). Three forms are named: with or without the hold time, and Euclidean distance versus a per-finger sum.
+- **"Small" circular IQR of tuning angle:** read as under 45° or under 90°, counting all channels or only active ones.
+- **Figure 4D:** day offsets signed or absolute, and test-day normalization either held from the training day or refit on the test day (the code makes both).
+- **Shuffled baseline:** the session is not named, so I judge it on the median over all sessions.
+- **Figure 5B:** the no-fine-tuning comparison is read as either the single-session curve of Figure 5A or the LSTM curve of Figure 4D.
 
-**To supply:** the NeurIPS 2025 supplementary PDF for this paper (Appendices A to C and Figs S1 to S5), put under `paper/`. The OpenReview or NeurIPS proceedings supplement, or an arXiv version that includes the appendices, would do.
+**Where the Methods and the code disagree:** I followed the Methods and named the code's choice as a variant.
+- RR inputs: the Methods z-score them; the code does not.
+- Movement onset: 1 SD in the Methods, 2 SD in the code, with a different trimming window.
+- Fig. 5A: the Methods exclude the first 10 sessions and hold the training-day normalization fixed. The code excludes only the first 5, splits each session 90/10, refits normalization on the test data and adds no training noise.
+- Fig. 5B: the code refits the input normalizer each day, which conflicts with the Methods sentence about Figure 5.
+- Test set: the code's ends one trial short (74 trials, not 75).
 
-**Counts:** 0 claims, 0 quotes, 0 statistics, 0 criteria. No open details were recorded, since no criteria were written.
+**Missing from the paper:**
+- No statistical tests for anything.
+- The phrase "long-term decay is not significantly affected" (Fig. 5A) names no test. The criterion uses overlap of the fitted decay rates' confidence intervals, which is my choice, not the paper's.
+- The Fig. 5A multi-day training depends on an outside library ("neuraldecoding") that is not in the repository.
