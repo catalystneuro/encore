@@ -20,7 +20,7 @@ training sessions are not in it.
 | Stable2 decoded better than rotation (seven ensembles) | Reproduced (assumption) |
 | Four ensembles prefer the room frame, two the arena frame | Reproduced (assumption) |
 | Frame preference anti-correlated with shock zone proximity | Partially reproduced |
-| Frame preference not biased by head direction | Reproduced (assumption) |
+| Frame preference not biased by head direction | Reproduced (assumption; change to not reproduced proposed) |
 | Head-direction pair correlations maintained | Reproduced |
 | All MEC pair correlations maintained (Figure S4) | Blocked: data missing |
 | Model-based head-direction information (Figure S5) | Blocked: data missing |
@@ -43,7 +43,7 @@ their margin without them. The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/park-2019-01.yaml`](../../attempts/park-2019-01.yaml).
 
-- `reproduce_park_2019.ipynb`: the analysis. It takes about two minutes, half of it streaming the
+- `reproduce_park_2019.ipynb`: the analysis. It takes about three minutes, half of it streaming the
   zip.
 - `hc20.py`: reading the TSD and tracker files from the zip in place, tuning measures, circular
   statistics, the repeated-measures ANOVA, the decoder of the paper's code, momentary directional
