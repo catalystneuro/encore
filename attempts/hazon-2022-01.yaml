@@ -84,10 +84,14 @@ outcomes:
     0.88), the out-of-field rate (0.15 to 0.25 against 0.034), the fitted FWHM (16.4 to 18.5 cm against
     37.8), the trial-by-trial variability (0.036 to 0.043 in event counts, 0.88 to 0.90 in the event trace,
     against 1.2) and the spatial information (0.15 to 0.16 by the footnote's formula read literally, 1.06
-    to 1.30 bits as log2(20) minus the entropy, against 0.24). The 'minimal spatial modulation' selection
-    (maximum rate above 20% of the SD over the track) keeps every fitted cell, so it equals all cells.
-    Gaussian fits failed for 1536 rightward and 1422 leftward tuning curves, and 195 widths above 1180
-    cm were dropped.
+    to 1.30 bits as log2(20) minus the entropy, against 0.24). The widths leave out 195 fits wider than
+    1180 cm (ten times the track). With no cap the mean FWHM over both directions is 37.6 cm (n 52,838),
+    within tolerance, which would give three values and a partial reproduction; that mean comes from the
+    195 runaway fits, as the median is 11.5 cm and the mean of fits up to the track length 15.5 cm. The
+    outcome rests on leaving those fits out. The minimal-modulation rule (maximum above 20% of the SD
+    of the tuning curve) keeps 27,715 rightward and 27,770 leftward of 27,898 cells, against the paper's
+    27,793, so it is the paper's rule and removes only silent cells; it does not move the width. Gaussian
+    fits failed for 1536 rightward and 1422 leftward tuning curves.
   deviations:
   - Readings run for the open details (criterion) are rates over running frames or the whole session;
     in-field within the fitted half-amplitude width or above half the peak; per-direction fits and fits
@@ -98,6 +102,11 @@ outcomes:
     scale.
   - The footnote formula for spatial information is garbled in the text; it was read literally ((1/N)
     sum p log2 p, sign dropped) and as log2(N) minus the entropy of the binned rate distribution.
+  - Assumed, Gaussian fits with a FWHM above 1180 cm (ten times the track) are fit failures and are left
+    out of the width; the paper names no cap. Without it the mean width is within tolerance (notes).
+  - The log2(N) minus entropy reading of spatial information assumes uniform occupancy over the 20 bins;
+    the literal footnote formula, H/20, cannot exceed log2(20)/20 = 0.216 and so cannot reach 0.24.
+  assumed: true
 - claim: fig1d-noise-correlation-by-field-distance
   outcome: reproduced
   notebook: reproduce_hazon_2022.ipynb
@@ -153,16 +162,17 @@ outcomes:
   - Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where
     the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.
 - claim: fig3f-signal-slope-beginning-vs-end
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_hazon_2022.ipynb
   output: claim:fig3f-signal-slope-beginning-vs-end
   notes: The signal slope is larger at the end of runs than at the beginning (pooled medians 0.208 and
-    0.313, 220 values). The legend's one-tailed test (beginning greater) gives p = 1.00 under both readings
-    (pooled and rightward only) and for 110 or 73 sessions. The code's test (beginning lower) gives p
-    = 1.1e-18 pooled over 110 sessions, as the code printed (2.19e-18), and p = 1.8e-09 for rightward
-    runs. Medians along the run are U-shaped, highest in the end bins. The significant difference holds
-    only in the code's direction, so the outcome rests on that reading; the legend's 'decreases' is contradicted.
-    The question is recorded for the authors.
+    0.313, 220 values). The code's test (beginning lower) gives p = 1.1e-18 pooled over 110 sessions,
+    as the code printed (2.19e-18), p = 1.8e-09 for rightward runs and 3.9e-15 over the 73 large-data
+    sessions. The legend's one-tailed test (beginning greater) gives p = 1.00 under every reading. The
+    criterion records an outcome that holds only in the code's direction as resting on that reading, so
+    the outcome is reproduced, resting on the code's direction; the claim statement's 'decreasing over
+    the run' does not hold. Medians along the run are U-shaped, highest in the end bins. The question
+    is recorded for the authors.
   deviations:
   - Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where
     the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.
@@ -200,6 +210,10 @@ outcomes:
     all sessions have, and a median 0.103 of each session's own sum; below one half either way. A preparatory
     run with 20 splits peaked at the 6th, so the peak index is sensitive to sampling between 6 and 7 (that
     run is not part of the record).
+  deviations:
+  - The SNR per component uses the first h trials of each direction (h the smaller count), not a random
+    set, and the session-mean curve is cut to the 14 components every session has. The values at components
+    6, 7 and 8 (0.0719, 0.0730, 0.0720) are within 1.5% of each other.
 - claim: fig4b-correlations-increase-noise-signal-overlap
   outcome: reproduced
   notebook: reproduce_hazon_2022.ipynb
@@ -261,17 +275,29 @@ outcomes:
     over the 38 pairs; the effective number of modes is read as (sum lambda)^2 / sum lambda^2 of the noise
     covariance of the first bin, and the two inverse sums of fourth powers as (sum cos^2)^2 / sum cos^4.
 - claim: pf-width-variance-not-predictive
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_hazon_2022.ipynb
   output: claim:pf-width-variance-not-predictive
-  notes: Paper's test on 73 sessions, variance of place-field widths against the asymptotic SNR ratio,
-    r = -0.240, p = 0.041, which reaches 0.05; across animals r = -0.571, p = 0.085. The effect has the
-    paper's size (r = -0.21, p = 0.082), and with the code's filters (69 sessions) p = 0.102 and across
-    animals p = 0.077. The variance of PF amplitudes correlates with the ratio across sessions (r = 0.327,
-    p = 0.005) and animals (r = 0.746, p = 0.013).
+  notes: With the filter of Supplementary Table 2 (values whose confidence interval is larger than the
+    value left out), 69 of 73 sessions, the variance of place-field widths against the asymptotic SNR
+    ratio gives r = -0.199, p = 0.102 across sessions and r = -0.583, p = 0.077 across animals, neither
+    below 0.05. The four sessions dropped (51, 83, 84, 92) are four of the six whose events do not track
+    the position. Intervals of 1, 1.645, 1.96, 2.576 and 3 standard errors keep 71 to 63 sessions and
+    give p = 0.056 to 0.139 across sessions and 0.077 to 0.085 across animals. Without the filter, r =
+    -0.240, p = 0.041 across sessions (r = -0.571, p = 0.085 across animals), which reaches 0.05; leaving
+    out any one of 11 of the 73 sessions brings p above 0.05. The paper's values are r = -0.21, p = 0.082.
+    The variance of PF amplitudes, which the text also names, correlates with the ratio across sessions
+    (r = 0.327, p = 0.005) and animals (r = 0.746, p = 0.013; filtered 0.774, p = 0.009), so the statement's
+    'or amplitudes' does not hold; the criterion only asks for it to be shown.
   deviations:
   - Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where
     the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.
+  - Assumed, the filter of Supplementary Table 2 ('excluded data points wherein the confidence interval
+    was larger than the estimated value', table note) applies to this test, as the row is in that table.
+    Its intervals are built here as delta-method intervals from the standard errors of the line slopes;
+    the paper's intervals over neuron subsets were not reproduced, and the result is shown for interval
+    widths of 1 to 3 standard errors.
+  assumed: true
 - claim: fig5cd-synthetic-narrow-widths-broader-nsv
   outcome: reproduced
   notebook: reproduce_hazon_2022.ipynb
@@ -302,7 +328,8 @@ outcomes:
     in 109 of 110 sessions (Wilcoxon p = 9.0e-20). Without the six misaligned sessions 9.14 and 4.78 cm.
     With C = 0.1, 1 and 10 on 12 sessions the medians are 8.52, 8.86 and 8.56 cm (ensemble) and 4.98,
     5.03 and 4.99 cm (shuffled). Six sessions whose event trace does not track position at lag 0 (data
-    check) are kept, as the paper's selection includes them.
+    check) are kept, as the paper's selection includes them. The decoder's docstring now gives C = 1,
+    the value used; it had said 100.
   deviations:
   - The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and
     majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA
@@ -338,8 +365,10 @@ outcomes:
   output: claim:fig2ef-imse-saturates-with-correlations
   notes: 110 sessions, I0 N higher for shuffled in 97 (Wilcoxon p = 3.5e-17), N in 94 (p = 5.2e-15); 12
     per-animal means p = 4.9e-04 and 1.5e-03, I0 N higher for shuffled in 12 of 12 animals. Median unshuffled
-    IMSE at all neurons is 0.49 of its fitted asymptote. 78 shuffled fits give N above 1e6 or below 0
-    (near-linear curves) and 7 unshuffled fits are degenerate.
+    IMSE at all neurons is 0.49 of its fitted asymptote. The fits follow the points (median R squared
+    0.986 unshuffled, 0.987 shuffled). 78 shuffled fits give N above 1e6 or below 0 (near-linear curves,
+    which fits 'no apparent bound'); of the 7 degenerate unshuffled fits, 6 are near-linear curves (N
+    above 1e9, R squared 0.968 to 0.994) and one is a misaligned session with a flat IMSE.
   deviations:
   - The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and
     majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA
@@ -373,11 +402,15 @@ outcomes:
   - 3076
   - 575
   - 16830
-  notes: Reading (a), 73 sessions, geometric-mean N per animal 30 to 886, 5% slope at 105 to 3,076 neurons,
+  notes: 'Reading (a), 73 sessions, geometric-mean N per animal 30 to 886, 5% slope at 105 to 3,076 neurons,
     19 N at 575 to 16,830; both bounds outside tolerance. Reading (b), 110 sessions, 105 to 4,918,374
     from degenerate fits (animals 2010 and 2029). A variant without the misaligned sessions and without
     fits with N outside 0 to 1e6 (65 sessions) gives 717 to 2,487 neurons, still outside tolerance. The
-    lowest animal (2011, N = 30) holds the misaligned sessions.
+    fit-check notebook repeats the fits with the paper''s 80 subsets on steps of 10 for 16 sessions (all
+    large-data sessions of Mouse2011 and Mouse2012 and one of Mouse2028): for the 13 sessions with two
+    non-degenerate fits N changes by a median factor of 1.09 (0.67 to 2.02), and without misaligned sessions
+    the per-animal N goes from 458 to 490 (Mouse2011) and 268 to 231 (Mouse2012), so the reduced repetitions
+    do not explain the failure. The low bound of reading (a) comes from Mouse2011''s misaligned sessions.'
   deviations:
   - The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and
     majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA
@@ -387,14 +420,18 @@ outcomes:
     plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons
     10), to fit the time limit.
 - claim: suppl11b-i0-vs-single-cell-snr
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_hazon_2022_decoding.ipynb
   output: claim:suppl11b-i0-vs-single-cell-snr
-  measured: 0.005
-  notes: Across 10 mice r = -0.071 (Methods reading), -0.114 (mean of per-pair ratios), -0.016 (median).
-    Animal 2011's mean I0 is 23.7 from degenerate fits; the others are 0.00005 to 0.00031. A variant without
-    the misaligned sessions and degenerate fits (65 sessions) gives r = 0.750, r squared 0.562, p = 0.0125,
-    positive but outside the r squared tolerance.
+  measured: 0.562
+  notes: 'On all 73 sessions, across 10 mice, r = -0.071 (Methods reading, r squared 0.005), -0.114 (mean
+    of per-pair ratios) and -0.016 (median). Animal 2011''s mean I0 is 23.7, from sessions whose events
+    do not track position; the others are 0.00005 to 0.00031. Leaving out the misaligned sessions and
+    fits with N outside 0 to 1e6 (65 sessions) gives r = 0.750, r squared 0.562, p = 0.0125: positive
+    and below 0.05, so partially reproduced, but not below 0.01 and r squared outside 0.73 +/- 0.073.
+    The fit-check notebook shows the excluded fits fail with the paper''s 80 subsets too (sessions 83
+    and 84 have flat IMSE curves, I0 = 241 and 230), and that without the misaligned sessions Mouse2011''s
+    mean I0 is 6.5e-05 with 4 subsets and 6.3e-05 with 80.'
   deviations:
   - The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and
     majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA
@@ -405,6 +442,9 @@ outcomes:
     10), to fit the time limit.
   - Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where
     the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.
+  - Assumed, fits on sessions whose events do not track position, and fits with N outside 0 to 1e6, are
+    failed fits and are left out of the per-mouse means; with them the correlation is absent.
+  assumed: true
 - claim: suppl11c-asymptotic-imse-vs-asymptotic-snr
   outcome: reproduced
   notebook: reproduce_hazon_2022_decoding.ipynb
@@ -431,10 +471,15 @@ outcomes:
   - 0.847
   - -0.054
   - 0.189
-  notes: 73 sessions. Performance against trials r = 0.847, p = 3.8e-21 (within tolerance). Asymptotic
+  notes: '73 sessions. Performance against trials r = 0.847, p = 3.8e-21 (within tolerance). Asymptotic
     accuracy (log10 I0 N) against trials r = -0.054 and against performance r = 0.189 (p = 0.11); linear
     I0 N r = -0.127 and -0.012. Path model, performance p = 1.0e-04, trials p = 3.5e-04 with a negative
-    coefficient. Performance ranges 0.40 to 0.99.
+    coefficient. Without the misaligned sessions and degenerate fits (65 sessions), performance against
+    trials r = 0.853, log10 I0 N against trials r = 0.231 (p = 0.064) and against performance r = 0.362
+    (p = 0.0031), path model performance p = 0.009 and trials p = 0.21: the path pattern holds, but two
+    r are outside tolerance and accuracy against trials is not significant, so that variant is not reproduced
+    either. The fit-check notebook shows the I0 and N fits change little with the paper''s 80 subsets.
+    Performance ranges 0.40 to 0.99.'
   deviations:
   - The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and
     majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA
@@ -498,7 +543,8 @@ findings:
     events lead by 80 to 90 frames (best lag error 5.4 and 2.8 cm); Mouse2011 105556 and 104511 show no
     position information at any lag within 200 frames; Mouse2026 115639 and Mouse2021 132808 are weaker
     at lag 0 (14.7 and 15.3 cm). The paper's code trims the first 350 frames of Mouse2026 115639, which
-    suggests a known offset there.
+    suggests a known offset there. Their IMSE curves are flat, so the IMSE fits give meaningless I0 and
+    N (Mouse2011 105556 and 104511 give I0 about 240 against a median 1e-4), with 80 subsets as with 4.
 - kind: format_error
   statement: Four sessions have position values far outside the track (Mouse2012 141832 down to -3.7e7
     pixels over 795 frames, Mouse2022 093722 down to -1.5e5, Mouse2024 090858&091446 a ramp from -12,628
@@ -525,4 +571,247 @@ findings:
     10 change the median error by less than 0.4 cm. (4) How were the Supplementary Table 1 values computed
     (rates over running or all frames, the in-field definition, the cells averaged, the spatial information
     formula, and whether trial-by-trial variability uses counts or the event trace)? None of the readings
-    tried gives more than two of the seven values.
+    tried gives more than two of the seven values. (5) How were the confidence intervals of the Supplementary
+    Table 2 filter computed? With delta-method intervals here the filter decides whether the variance
+    of PF widths reaches p < 0.05 (0.102 with it, 0.041 without).
+verifications:
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The executed notebooks reproduce_hazon_2022.ipynb and reproduce_hazon_2022_decoding.ipynb
+    with the conclusion cells and the summaries removed, the helper module hc30.py and the claims file,
+    with the paper's full text. The verifier listed the CRCNS bucket hc-30/ and tested helpers on synthetic
+    inputs (shuffle_tensor, fit_imse, jitter, select_trials). It could read only the text outputs, not
+    the figures, and could not read the paper's MATLAB code. It had no attempt record and took the claims
+    from the claims file.
+  results:
+  - claim: data-sessions-and-neurons
+    agrees: true
+    outcome: reproduced
+    reason: 'NB1 cell 10: 110 of 110 sessions meet the rule, 12 mice, 27,898 neurons, median 235, range
+      151 to 497. The >200 reading gives 73 large-data sessions from 10 mice.'
+    response: No change.
+  - claim: single-cell-variability
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12: the SD reading gives 0.7263 +/- 0.6117, an exact match. The 40-class SNR mean is
+      0.437, inside 0.41 +/- 0.041; its spread of 0.464 is outside, but the criterion judges means only.'
+    response: No change.
+  - claim: suppl-table1-place-field-properties
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 14: taking the best reading for each quantity, only 2 of 7 are within 10%: running rate
+      0.362 and max rate 1.461 (cells with >100 events per 10 min). The other five are far off. Problem
+      5: the ''modulated cells'' subset (max > 0.2 SD) does nothing; its n is identical to all cells,
+      and on synthetic non-negative data the test passes 100% of the time, so the minimal-modulation reading
+      was never applied. The 1180 cm width cap that drops 195 fits is the author''s own choice. Neither
+      can lift the width from 16 to 37.8 cm. Problem 6: the ''skaggs'' reading assumes uniform occupancy,
+      and the literal footnote formula, H/20, cannot exceed 0.216, so it can never reach 0.24.'
+    response: 'The cell now prints the cells the modulation rule keeps (27,715 and 27,770 of 27,898, against
+      the paper''s 27,793): the rule as the paper states it removes only silent cells, so it equals all
+      cells here as there. It also prints the width without the cap: the mean is 37.6 cm, within tolerance,
+      driven by the 195 runaway fits (median 11.5 cm, mean up to the track length 15.5 cm). The cap is
+      now recorded as an assumption, the outcome as resting on it, and the occupancy and footnote points
+      as a deviation. Outcome unchanged.'
+  - claim: fig1d-noise-correlation-by-field-distance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16: both directions pass. Distance 0 is 0.0386 / 0.0374, against means of 0.0064 / 0.0058
+      at distances >=10. The shuffled curve is separated from the unshuffled one, with non-overlapping
+      intervals, at distances 0 to 10, for both the session-mean and pooled-pair readings.'
+    response: No change.
+  - claim: noise-correlation-not-physical-distance
+    agrees: true
+    outcome: blocked
+    reason: I listed the bucket hc-30/. It holds only event_traces.mat, checksums.md5, filelist.txt and
+      the descriptor files. The descriptor lists four fields (mouse_name, session_ID, traces, position)
+      and no cell coordinates or footprints, so no part of this claim can be tested.
+    response: No change.
+  - claim: fig2d-rms-error-ensemble-vs-shuffled
+    agrees: true
+    outcome: reproduced
+    reason: 'NB2 cell 8: medians are 9.36 cm for the ensemble and 4.80 cm shuffled, both within tolerance;
+      the ensemble error is larger in 109 of 110 sessions. The shuffled IQR is outside tolerance but not
+      part of the criterion. Problem 4: the OvOLinearSVM docstring says C defaults to 100, but the notebook
+      uses C = 1.0, labelled assumed; C = 0.1 and 10 move the medians by about 0.3 cm, so no outcome flips.
+      The decoder also uses majority voting where MATLAB uses loss-weighted decoding. Problem 7: in 6
+      sessions the event trace does not follow position at lag 0; keeping them is right for the main reading,
+      as the paper probably used the same deposit.'
+    response: The docstring and the defaults of OvOLinearSVM and decode_once now give C = 1, the value
+      every call uses; no number changes. Voting was already a deviation. Outcome unchanged.
+  - claim: fig2cd-shuffle-better-in-all-bins
+    agrees: true
+    outcome: reproduced
+    reason: 'NB2 cell 12: the ensemble error is worse in 20 of 20 positions and 40 of 40 classes, and
+      the shuffled correct fraction is higher in 40 of 40 classes on the session average. Median misclassification
+      is 1 bin. The largest error with at least 1% of misclassified samples is 5 bins, against the paper''s
+      ''up to three'' (reported only).'
+    response: No change.
+  - claim: fig2ef-imse-saturates-with-correlations
+    agrees: true
+    outcome: reproduced
+    reason: 'NB2 cell 14: I0N has p = 3.5e-17 and N has p = 5.2e-15, shuffled higher in both, and shuffled
+      I0N is higher in 12 of 12 animals. Fits are often degenerate: 7 unshuffled and 78 shuffled fits
+      have N outside 0 to 1e6. For the shuffled data that fits ''no apparent bound''. A printed table
+      of each session''s fitted curve against its IMSE points would have let me judge fit quality directly.'
+    response: 'The cell now prints the R squared of every fit (median 0.986 unshuffled, 0.987 shuffled)
+      and the IMSE points against the fitted curve for the 7 degenerate unshuffled fits: 6 are near-linear
+      curves and one a misaligned session. The fit-check notebook prints the points and curves of 16 sessions
+      with 4 and with 80 subsets. Outcome unchanged.'
+  - claim: suppl7b-initial-slope-lower-with-correlations
+    agrees: true
+    outcome: reproduced
+    reason: 'NB2 cell 16: p = 9.8e-16. Median I0 is 0.00010 unshuffled and 0.00019 shuffled, so I0 is
+      lower with correlations.'
+    response: No change.
+  - claim: saturation-ensemble-size
+    agrees: true
+    outcome: not_reproduced
+    reason: 'NB2 cell 18: the 5% slope range is 105 to 3076 neurons under reading (a) and 105 to 4.9e6
+      under (b), against 346 to 1402. The cleaned variant gives 717 to 2487. Problem 1: 4 neuron subsets
+      per size (paper 80) on a 1, 25, 50 grid (paper 1, 10, 20) make the fits unstable; this drives the
+      failures of saturation-ensemble-size, suppl11b and suppl8. No check of how N depends on the number
+      of subsets was run, so these three outcomes may reflect the reduced repetitions and not the data.'
+    response: Added the fit-check notebook, which repeats the fits with 80 subsets on steps of 10 for
+      all 15 large-data sessions of Mouse2011 and Mouse2012 (the lowest animals) and one of Mouse2028.
+      N changes by a median factor of 1.09 (0.67 to 2.02); the failed fits are those of misaligned sessions
+      with either setting; without them the per-animal N goes from 458 to 490 and 268 to 231. The reduced
+      repetitions do not explain the failure. Outcome unchanged.
+  - claim: position-measurement-noise
+    agrees: true
+    outcome: reproduced
+    reason: 'NB1 cell 18: mean 0.277 cm, min 0.118 cm, max 1.001 cm; all three are within tolerance.'
+    response: No change.
+  - claim: fig3cd-signal-and-noise-growth
+    agrees: true
+    outcome: reproduced
+    reason: 'NB1 cell 22: the signal is identical by construction and was checked; the unshuffled noise
+      slope is positive in the median session with line R squared 0.983. The median ratio of shuffled
+      to unshuffled noise slope is 0.084, but only 72 of 110 sessions are below 0.1. Problem 9: (3) holds
+      for the median but in only 72 of 110 sessions, with 20 subsets against the paper''s 80.'
+    response: No change; the notes already give 72 of 110 and the 20 subsets as a deviation.
+  - claim: suppl10-asymptotic-snr-lower-with-correlations
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: p = 8.8e-20, shuffled higher in 110 of 110 sessions and in 12 of 12 mouse medians.'
+    response: No change.
+  - claim: fig3f-signal-slope-beginning-vs-end
+    agrees: false
+    outcome: reproduced
+    reason: 'Reproduced, resting on the code''s direction. Cell 28: the legend''s direction (beginning
+      greater) gives p = 1.0. The code''s direction gives p = 1.1e-18, against the code''s printed 2.19e-18.
+      The signal slope increases over the run, opposite to the claim statement.'
+    response: Outcome changed from partially_reproduced to reproduced, resting on the code's direction
+      (assumed), since the criterion says an outcome that holds only in the code's direction is recorded
+      as resting on that reading. The notes say the statement's decrease does not hold.
+  - claim: fig3g-noise-slope-decreases-over-run
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: beginning greater, p = 1.9e-9 on 110 sessions and 1.2e-10 on 73.'
+    response: No change.
+  - claim: fig3h-snr-higher-at-run-end
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: beginning lower, p = 2.8e-26 on 110 sessions and 5.7e-21 on 73. Rightward-only runs
+      also give p < 0.001.'
+    response: No change.
+  - claim: fig4a-snr-along-noise-pcs-peaks-at-6
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 34: the session-mean curve peaks at component 7, which the criterion counts as partial.
+      The curve is flat there: 0.0719 at 6, 0.0730 at 7, 0.0720 at 8. The first six components carry 0.36
+      of the 14 common components, so ''small'' holds. Problem 8: eigen_snr takes the first h trials of
+      each direction, not a random set, and the curve is truncated to the 14 components every session
+      shares; the peak at 7 against 6 is within about 1.5%.'
+    response: Both choices are now recorded as a deviation. Outcome unchanged.
+  - claim: fig4b-correlations-increase-noise-signal-overlap
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: the overlap change is positive in 73 of 73 sessions and in 10 of 10 animal means,
+      under both component readings and both matrix readings.'
+    response: No change.
+  - claim: fig4c-overlap-predicts-asymptotic-snr
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 38: r = -0.743, adjusted r squared 0.496, p = 0.0139. This matches the code''s printed
+      -0.744, 0.498 and 0.0136.'
+    response: No change.
+  - claim: fig5f-pf-width-variance-vs-nsv
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 40: r = -0.658, p = 0.0385, against -0.65 +/- 0.065.'
+    response: No change.
+  - claim: fig5hi-nsv-predicts-noise-correlation-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 42, unfiltered: across animals r = 0.869 (p = 0.0011), across sessions r = 0.716 (p
+      = 1e-12). The filtered reading gives the same result.'
+    response: No change.
+  - claim: suppl-table2-nsv-best-predictor
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 44: NSV has the highest adjusted R squared, 0.51 on all 73 sessions and 0.49 filtered;
+      the next best is 0.19 / 0.23. NSV at a fixed 200 neurons gives p = 2.2e-5 across sessions.'
+    response: No change.
+  - claim: pf-width-variance-not-predictive
+    agrees: false
+    outcome: reproduced
+    reason: 'Reproduced, resting on the confidence-interval filter. Cell 46: unfiltered, the session-level
+      test gives p = 0.041 (<0.05, so not reproduced). With the filter Supplementary Table 2 describes,
+      p = 0.10 for sessions and 0.077 for animals. The amplitude variance correlates across animals (r
+      = 0.75, p = 0.013), which goes against the text''s ''or amplitudes''. Problem 3: the intervals of
+      the filter are the author''s delta-method construction from slope standard errors, not the paper''s
+      method. It keeps 69 sessions where the code kept 72. The outcome depends on about 4 sessions.'
+    response: Outcome changed from not_reproduced to reproduced, resting on the filter (assumed), which
+      the table note states. The cell now shows intervals of 1 to 3 standard errors (63 to 71 sessions
+      kept, p = 0.056 to 0.139 across sessions, 0.077 to 0.085 across animals) and the sessions dropped,
+      which are four of the six misaligned sessions; and a leave-one-out on the 73 sessions (p >= 0.05
+      after dropping any one of 11). The interval construction is an assumption and a question for the
+      authors. The amplitude result is in the notes.
+  - claim: suppl11b-i0-vs-single-cell-snr
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'NB2 cell 22: the main reading gives r = -0.07, p = 0.84, because Mouse2011''s mean I0 is
+      23.7, set by one failed fit. Excluding failed fits and misaligned sessions gives r = 0.75, p = 0.0125:
+      positive and p < 0.05, but not p < 0.01, and r squared = 0.56 is outside 0.73 +/- 0.073.'
+    response: Outcome changed from not_reproduced to partially_reproduced, resting on leaving out failed
+      fits (assumed). The fit-check notebook shows those fits fail with 80 subsets too (flat IMSE curves
+      of misaligned sessions), and that without them Mouse2011's mean I0 is the same with 4 or 80 subsets
+      (6.5e-05 and 6.3e-05).
+  - claim: suppl11c-asymptotic-imse-vs-asymptotic-snr
+    agrees: true
+    outcome: reproduced
+    reason: 'NB2 cell 24, log10 reading: r = 0.894, r squared = 0.80 (inside 0.88 +/- 0.088), p = 4.8e-4.
+      The linear reading fails (r = 0.04) because of degenerate fits.'
+    response: No change.
+  - claim: suppl8-task-performance-and-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: 'NB2 cell 26: performance against trials gives r = 0.847, a match. Accuracy against trials
+      (r = -0.05) and against performance (r = 0.19, p = 0.11) do not match the paper, and in the path
+      model trials is significant (p = 3.5e-4). Problem 2: suppl8 is not run with failed fits and misaligned
+      sessions excluded, although cells 22 and 24 run that variant for 11b and 11c; degenerate I0N values
+      enter log10 I0N.'
+    response: 'Added that variant (65 sessions): r = 0.853, 0.231 (p = 0.064) and 0.362 (p = 0.0031),
+      path model performance p = 0.009 and trials p = 0.21. The path pattern holds, but two r are outside
+      tolerance and accuracy against trials is not significant, so the variant is not reproduced either.
+      The fit-check notebook addresses the repetitions (see saturation-ensemble-size). Outcome unchanged.'
+  - claim: suppl6-twenty-bins-near-optimal
+    agrees: true
+    outcome: reproduced
+    reason: 'NB2 cell 28: 11.84 cm with 20 bins and 11.94 cm with 30, both within tolerance. No bin count
+      is more than one SEM below 20 bins. This rests on only 2 repetitions per session.'
+    response: No change; the 2 repetitions are a deviation.
+  - claim: fig5cd-synthetic-narrow-widths-broader-nsv
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced, resting on the legend reading. NB1 cell 48: under the legend''s uniform widths,
+      narrow gives the higher NSV at 50 cells and up to 10,000. Under the Methods'' log-normal widths
+      the result reverses (0.0030 < 0.0044).'
+    response: No change.
+  - claim: suppl9-fit-recovers-saturation
+    agrees: true
+    outcome: reproduced
+    reason: 'NB2 cell 30: N = 704 +/- 554 (500 neurons) and 338 +/- 87 (2000 neurons); the intervals overlap.
+      This is a weak test because the 500-neuron interval is about +/-80%.'
+    response: No change.

@@ -171,13 +171,13 @@ class OvOLinearSVM:
 
     [claims] common method: fitcecoc one-vs-one of linear SVMs (templateLinear, lasso, Lambda
     0, SpaRSA). [assumed] Implemented with libsvm (scikit-learn SVC, linear kernel on a
-    precomputed Gram matrix), L2-regularized hinge loss with a large C (default 100) to
-    approximate the code's unregularized fit, and majority voting (MATLAB's default is
-    loss-weighted decoding). The MATLAB solver is not available here; the decoder's C is shown
-    as a variant in the notebook.
+    precomputed Gram matrix), L2-regularized hinge loss with C = 1 (libsvm's default; the
+    code's unregularized fit has no exact equivalent here), and majority voting (MATLAB's
+    default is loss-weighted decoding). The MATLAB solver is not available here; C = 0.1 and
+    10 are shown as variants in the decoding notebook.
     """
 
-    def __init__(self, C=100.0):
+    def __init__(self, C=1.0):
         self.C = C
 
     def fit(self, X, y):
@@ -192,7 +192,7 @@ class OvOLinearSVM:
         return self.m.predict(X @ self.Xtr.T)
 
 
-def decode_once(T, d, rng, shuffled, C=100.0, return_pred=False):
+def decode_once(T, d, rng, shuffled, C=1.0, return_pred=False):
     """Two-fold decoding of one random trial split ([claims] common method, code decode_all).
 
     Returns the two-fold MSE in cm^2 (bin error times 5.9 cm, squared, averaged over the two
@@ -502,11 +502,12 @@ def decode_full(T, d, seed, reps, C=1.0):
     return out
 
 
-def decode_series(T, d, seed, sizes, reps, C=1.0):
+def decode_series(T, d, seed, sizes, reps, C=1.0, shuffled=True):
     """IMSE against ensemble size ([claims] common method, code decode_series): for each size,
     `reps` random neuron subsets, each with new equalised trials and split; IMSE = 1/MSE per
     subset (MSE in cm^2), averaged over subsets. Returns arrays (sizes,) for unshuffled and
-    shuffled."""
+    shuffled; with shuffled=False only the unshuffled decoder runs and the second array is
+    None."""
     rng = np.random.default_rng(seed)
     N = T.shape[0]
     iu, is_ = [], []
@@ -517,10 +518,11 @@ def decode_series(T, d, seed, sizes, reps, C=1.0):
             sub = rng.choice(N, n, replace=False)
             Tc = T[sub][:, :, idx]
             a.append(1 / decode_once(Tc, d[idx], rng, False, C=C))
-            b.append(1 / decode_once(Tc, d[idx], rng, True, C=C))
+            if shuffled:
+                b.append(1 / decode_once(Tc, d[idx], rng, True, C=C))
         iu.append(np.mean(a))
-        is_.append(np.mean(b))
-    return np.array(iu), np.array(is_)
+        is_.append(np.mean(b) if shuffled else np.nan)
+    return np.array(iu), (np.array(is_) if shuffled else None)
 
 
 def decode_bins(sess, n_bins, seed, reps, C=1.0):

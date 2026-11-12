@@ -4,7 +4,8 @@ Tests the findings of [Hazon et al. (2022)](https://doi.org/10.1038/s41467-022-3
 [CRCNS hc-30](https://doi.org/10.6080/K0GH9G5X), which holds the event onsets and track positions
 of the paper's 110 working sessions (12 mice, 27,898 CA1 neurons). The helper `hc30.py` streams
 the one data file and rebuilds the paper's event trace, trials, activity tensor, trial shuffle,
-decoders and signal and noise measures, citing the paper or its code for each choice.
+decoders and signal and noise measures, citing the paper or its code for each choice. A third
+notebook repeats the IMSE fits with the paper's 80 neuron subsets for 16 sessions.
 
 | Claim | Outcome |
 |---|---|
@@ -16,7 +17,7 @@ decoders and signal and noise measures, citing the paper or its code for each ch
 | Position measurement noise 0.28 cm | Reproduced |
 | Signal and noise growth with ensemble size | Reproduced |
 | Asymptotic SNR lower with correlations | Reproduced |
-| Signal slope changes over the run (Fig. 3f) | Partially reproduced (larger at the end, as the code tests) |
+| Signal slope changes over the run (Fig. 3f) | Reproduced (larger at the end, as the code tests; the legend's decrease does not hold) |
 | Noise slope falls over the run | Reproduced |
 | SNR higher at the end of runs | Reproduced |
 | SNR along noise components peaks at the sixth | Partially reproduced (peak at the seventh) |
@@ -25,14 +26,14 @@ decoders and signal and noise measures, citing the paper or its code for each ch
 | PF width variance against NSV across animals | Reproduced |
 | NSV predicts the effect of correlations | Reproduced |
 | NSV is the best predictor (Supplementary Table 2) | Reproduced |
-| PF width variance does not predict the effect | Not reproduced |
+| PF width variance does not predict the effect | Reproduced (with the filter of Supplementary Table 2) |
 | Synthetic narrow width distributions have higher NSV | Reproduced (legend's widths) |
 | RMS error 9.38 against 5.15 cm | Reproduced |
 | Shuffled decoding better in every bin | Reproduced |
 | IMSE saturates with correlations, not without | Reproduced |
 | Initial slope I0 differs | Reproduced |
 | Saturation at 346 to 1402 neurons | Not reproduced |
-| I0 against single-cell SNR | Not reproduced |
+| I0 against single-cell SNR | Partially reproduced (failed fits left out) |
 | Asymptotic IMSE against asymptotic SNR | Reproduced (log scale) |
 | Task performance and decoding accuracy | Not reproduced |
 | Twenty bins near the smallest error | Reproduced |
