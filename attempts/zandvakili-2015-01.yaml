@@ -1,0 +1,370 @@
+schema_version: 3
+id: zandvakili-2015-01
+datasets:
+- archive: crcns
+  id: v1v2-1
+  version: unversioned
+  doi: 10.6080/K0B27SHN
+  relation: primary
+paper: doi:10.1016/j.neuron.2015.07.026
+date: 2026-11-12
+entry: zandvakili-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43258308217
+outcomes:
+- claim: fig4c-broad-ccg-peaks
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig4c-broad-ccg-peaks
+  notes: >-
+    All 31 site-average shuffle-corrected V1-V2 CCGs have a broad peak under both readings (mean over
+    -50 to 50 ms above the flank mean, and above zero), 16 of 16 sites with a narrow peak and 15 of
+    15 without. The across-site average peaks at 2 ms and is 68 ms wide at half its height above
+    the flank mean; it stays above half its height above zero over the whole +-125 ms.
+  deviations:
+  - >-
+    A site is a V2 tetrode in one session; the files hold no depth, so "all laminar locations" is
+    tested as sites with and without a narrow peak, as the criterion says.
+  - Spike times are in 1 ms bins in the files; the paper used 0.1 ms.
+- claim: fig4c-narrow-peak-sites
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig4c-narrow-peak-sites
+  measured: 0.516
+  notes: >-
+    16 of 31 V2 sites have a significant narrow peak in the site-average jitter-corrected CCG with
+    the 10 ms jitter window (reading j-a), 0.516 against 0.206 +/- 0.021; 22 of 31 (0.710) with a
+    25 ms window. Per animal 3 of 6, 5 of 11 and 8 of 14. With a 4 or 6 SD threshold, 22 and 13
+    sites. The data set holds 31 sites of the paper's 223 and 5 of its sessions; the paper says
+    some penetrations targeted middle-layer sites, so the fraction depends on which sessions were
+    deposited, which the documentation does not say.
+  deviations:
+  - >-
+    CCGs at 1 ms resolution (the files' resolution) against the paper's 0.1 ms. Equation 1 is
+    combined over the eight stimuli by summing coincidences and the normaliser, which weights each
+    stimulus by its V1 spike count (a standard choice).
+  - >-
+    The jitter correction subtracts the expected CCG under the jitter the claims file describes
+    for the divergence analysis (each spike redrawn from the neuron's spikes in the same window on
+    trials of the same stimulus), computed analytically for both neurons, with windows tiling the
+    trial from 0 ms (Pairwise V1-V2 Analysis cites Smith and Kohn 2008 for the jitter). The 25 ms
+    window is this attempt's choice for reading j-b, which the claims file leaves unnamed.
+  - The SNR >= 2 unit criterion cannot be applied (no waveforms); units below 0.5 sp/s are removed.
+- claim: fig4-narrow-peak-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The files hold no recording depth for any V2 site and no layer 6/white matter reference; the
+    descriptor lists spike rasters, stimulus codes, trial ids, unit codes and RF fits only.
+- claim: fig5a-rf-alignment
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5a-rf-alignment
+  notes: >-
+    RF centres are in pixels and the data set gives no pixel-to-degree scale and no fixation
+    point; the paper gives 1024 x 768 pixels at 110 cm without the screen size, so the 0.5 deg bins
+    of the criterion cannot be formed. Shown for information only, in pixels and the first eye,
+    the probability of a significant pair falls with RF offset (0.0165 at 0 to 25 px, 0.0136 at 25
+    to 50, 0.0106 at 50 to 75, 0.0034 at 75 to 100, 0 beyond 100 px; 15,463 pairs with both RFs
+    fitted).
+- claim: fig5-narrow-pairs-rare
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5-narrow-pairs-rare
+  measured:
+  - 0.0105
+  - 0.0105
+  notes: >-
+    171 of 16,308 V1-V2 pairs (0.0105) pass the 5 SD rule with 10 ms jitter, 185 (0.0113) with 25
+    ms, against 0.003 or 0.00355. Per session 0.0028 to 0.018; only 106r002p70 (6 of 2112, 0.0028)
+    is within tolerance. Narrow peaks remain rare (about 1% of pairs). The site fraction of
+    fig4c-narrow-peak-sites is 2.5 times the paper's, consistent with deposited sessions richer
+    in coupled sites than the paper's sample.
+  deviations:
+  - 1 ms bins against the paper's 0.1 ms; jitter as in fig4c-narrow-peak-sites.
+- claim: fig5b-v1v2-latency
+  outcome: partially_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5b-v1v2-latency
+  measured:
+  - 2.0
+  - 3.89
+  notes: >-
+    Of 171 significant V1-V2 pairs, 151 peak after zero lag, 5 at zero and 15 before; the offset
+    differs from zero with p < 0.001 under both readings (Wilcoxon p = 7.1e-20, sign test p =
+    1.9e-29). The median offset is 2.0 ms, outside 2.8 +/- 0.28 (per animal 3, 2 and 2 ms). The
+    peaks fall on whole milliseconds (23 at 1 ms, 55 at 2, 49 at 3, 18 at 4); a parabola through
+    the peak bins, a variant not in the paper, gives a median of 2.30 ms, also outside. The mean
+    width at half height is 3.89 +/- 0.07 ms on the smoothed CCG (reading a) and 3.09 +/- 0.09 ms
+    unsmoothed (reading b), both outside 3.71 +/- 0.1. The direction and significance of the
+    offset hold; its size and the width do not match.
+  deviations:
+  - >-
+    The files hold spike times in 1 ms bins, so offsets are whole milliseconds where the paper's
+    were at 0.1 ms resolution; this limits both the median and the width.
+- claim: fig5b-intra-areal-zero-lag
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5b-intra-areal-zero-lag
+  notes: >-
+    Both medians are 0.0 ms. V2-V2 (249 significant pairs of 2113) shows no difference from zero
+    under either reading (Wilcoxon p = 0.861, sign test p = 0.703). V1-V1 (2620 of 32,770) differs
+    under the Wilcoxon signed-rank test (p = 0.016 with zeros dropped, 0.027 Pratt, 0.028 zeros
+    split) and not under the sign test (p = 0.076); mean offset 0.104 ms, 978 positive, 900
+    negative, 742 zero. The readings give different outcomes, and the outcome takes the Wilcoxon
+    signed-rank test (see deviations). Without pairs on the same electrode, V1-V1 gives Wilcoxon p
+    = 0.009 and sign test p = 0.063, and V2-V2 (108 pairs) Wilcoxon p = 0.030 and sign test p =
+    0.033. Question for the authors, recorded as a finding; which test gave p = 0.45 and 0.42.
+  deviations:
+  - >-
+    Assumed that the paper's test of a median offset against zero is the Wilcoxon signed-rank test
+    (MATLAB signrank, documented as a test of zero median, the routine choice in a MATLAB-based
+    analysis such as the data set's own scripts). The paper names no test; the sign test gives the
+    opposite outcome for V1-V1 pairs.
+  - The lag sign within an area follows the order of the unit lists, as the criterion says; 1 ms bins.
+- claim: figs3-efficacy
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:figs3-efficacy
+  measured:
+  - 0.324
+  - 0.496
+  notes: >-
+    128 of 171 significant pairs have an offset above 1 ms (255 in the paper). Reading a,
+    jitter-corrected CCG, median 0.324% and mean 0.496 +/- 0.046%, below 0.39 +/- 0.039 and 0.69
+    +/- 0.12. Reading b, the raw CCG, gives median 6.494% and mean 9.479% uncorrected and median
+    0.820% and mean 1.268% shuffle-corrected, far above. Reading a per animal, median 0.334%,
+    0.559% and 0.258% (20, 31 and 77 pairs).
+  deviations:
+  - >-
+    The integral within 2.5 ms of the peak is the sum of the five 1 ms bins centred on the peak
+    lag (-2.5 to +2.5 ms at the files' resolution).
+- claim: fig6a-coordination-before-v2
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig6a-coordination-before-v2
+  notes: >-
+    88 V2 neurons at the 16 middle-layer sites (1,985,591 spikes from 50 ms; the paper 226 neurons).
+    Main reading (e-a, s-a, r-a, d-a) at 5, 10, 20, 40, 80 and 1280 ms, spike against control
+    divergence 4.05e-4 against 2.36e-4 bits at 5 ms up to 5.16e-3 against 2.12e-3 at 1280 ms, ratios
+    1.72 to 2.43, p < 0.001 at every window under p-a (no draw of 5000) and p-b (at most 0.00037).
+    All other readings (s-b, r-b with three realizations, d-b, and single bins at 2 or 3 ms for
+    e-b) give 6 of 6 windows. Per animal the ratio is 1.50 to 2.66.
+  deviations:
+  - >-
+    Reading e-b, one 1 ms bin centred 2.5 ms before the spike, cannot be formed from 1 ms data; it
+    is run as the bins centred 2 ms and 3 ms before, which bracket it.
+  - >-
+    The jitter pool includes the spike's own trial (the claims file says other trials), a
+    standard choice; one trial in 400 changes the pool little. Epochs falling before 50 ms are
+    dropped.
+  - Middle-layer sites are those of fig4c-narrow-peak-sites, 16 of 31, a larger share than the paper's.
+- claim: fig7a-threefold
+  outcome: partially_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig7a-threefold
+  measured: 1.906
+  notes: >-
+    Divergence before V2 spikes is about twice control, not three times. Main reading, ratios at 5
+    to 80 ms 1.716, 1.875, 1.923, 1.964 and 2.072; (a) geometric mean 1.906, (b) median 1.923, (c) 1
+    of 5 windows within 2 to 4. Other readings give geometric means of 1.790 to 1.995; the single
+    bin 3 ms before gives a median of 2.011 and 3 of 5 windows in range, and the bin 2 ms before a
+    median of 1.803. The effect is present and weaker than reported.
+  deviations:
+  - Reading e-b approximated by single bins 2 and 3 ms before the spike, as in fig6a-coordination-before-v2.
+- claim: fig7a-above-shuffle
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig7a-above-shuffle
+  notes: >-
+    Under all four readings (trials shuffled within orientation or across all trials; spike or
+    control epochs) and at every window from 5 to 80 ms, the shuffled divergence (1.82e-4 to
+    4.62e-4 bits) is below the lower 95% bootstrap bound of both the spike divergence (3.30e-4 to
+    1.36e-3) and the control divergence (2.01e-4 to 6.81e-4). The narrowest margin is at 5 ms,
+    control epochs, shuffle within orientation, 2.006e-4 against 2.013e-4, within the spread of a
+    single shuffle realization.
+  deviations:
+  - >-
+    One shuffle realization per reading, compared as a point value with the bootstrap bounds, as
+    the criterion says; the shuffled data are jittered with the same rule as the data.
+- claim: fig6b-not-after-v2
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig6b-not-after-v2
+  notes: >-
+    In epochs 1.5 to 3.5 ms after V2 spikes the divergence is above control at 80 ms under both
+    bootstrap readings in every reading of the method (main ratio 1.37, p-a no draw of 5000, p-b
+    0.0038; p-b 0.046 or less in the others), and at 40 ms under p-a (ratio 1.20, p-b 0.099). At 5
+    to 20 ms the ratios are 1.03 to 1.08 (p-a 0.10 to 0.48). The elevation after the spike is
+    smaller than before it (1.20 and 1.37 at 40 and 80 ms, against 1.96 and 2.07 before).
+- claim: fig6-slow-both-sides
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig6-slow-both-sides
+  notes: >-
+    At 1280 ms the divergence is above control before V2 spikes (5.16e-3 against 2.12e-3 bits,
+    ratio 2.43) and after them (4.13e-3 against 2.07e-3, ratio 2.00), p < 0.001 under both bootstrap
+    readings and in every reading of the method.
+- claim: fig7d-time-course
+  outcome: partially_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig7d-time-course
+  notes: >-
+    At all five windows the largest spike minus control difference is at the epoch centred 2.5 ms
+    before the V2 spike (reading a, 2 ms epochs) or the bin 3 ms before (reading b). Epochs after
+    the spike or more than 8 ms before it are also significant after Bonferroni correction over
+    offsets, with the paired bootstrap (p-a) at every window (2 to 20 epochs per window), and with
+    the independent bootstrap (p-b) at 80 ms only (6 epochs in reading a, 5 in reading b). At 80
+    ms the difference is 8.3e-4 bits 2.5 ms before the spike and 2.7e-4 bits 2.5 ms after.
+  deviations:
+  - >-
+    2000 bootstrap draws per offset (a standard choice for 310 comparisons); offsets beyond 15 ms
+    are not run; epochs falling before 50 ms are dropped.
+- claim: fig7b-nonmiddle-no-coordination
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs V2 sites superficial or deep to the middle-layer sites of the same penetration. Each
+    session holds one recording per V2 tetrode, with no depth and no penetration identity, so the
+    order of sites cannot be known. Using sites without a narrow peak would not be the claim's
+    group.
+- claim: fig7e-nonmiddle-time-course
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7b-nonmiddle-no-coordination, blocked for lack of V2 depths and penetrations.
+- claim: fig7c-offset-rf-no-coordination
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs V2 neurons 500 to 1000 um from the layer 6/white matter border, and RF offsets in
+    degrees. The files hold no depth, and RF positions are in pixels with no scale
+    (metadata_insufficient, as for fig5a-rf-alignment).
+- claim: figs2a-v2-single-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs each unit's SNR (waveform amplitude over noise SD). The files hold no waveforms or SNR,
+    and the unit sort codes do not mark single units.
+- claim: figs2b-v1-single-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs V1 unit SNR, which the files do not hold; it also depends on fig7b and fig7c, blocked for
+    lack of depths.
+- claim: figs4-partner-not-needed
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:figs4-partner-not-needed
+  notes: >-
+    39 middle-layer V2 neurons have a significant pair with a recorded V1 unit and 49 have none (73
+    and 153 in the paper). Both subsets have spike divergence above control at 5 of 5 windows from 5
+    to 80 ms under p-a, and under p-b at 5 of 5 with a partner and 4 of 5 without (5 ms p = 0.153).
+    The spike to control ratio is larger with a partner at all five windows (1.91 to 2.30 against
+    1.32 to 1.67).
+  deviations:
+  - Main reading of the shared divergence method only.
+- claim: figs5-middle-layer-relay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs spikes of V2 units in layers superficial or deep to the middle layers, which cannot be
+    identified without depths (fig7b-nonmiddle-no-coordination). Within a session the V2 units
+    are from one depth per tetrode.
+- claim: fig1-ffn-propagation
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: >-
+    A simulation (data elsewhere), with no published code. Writing and running a ten-layer
+    integrate-and-fire network from the Supplemental Experimental Procedures did not fit in this
+    attempt's five-hour run beside the claims on the data set; it was not attempted.
+- claim: fig3-divergence-correlation
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: >-
+    A simulation with no published code; not attempted within the run's time, as for
+    fig1-ffn-propagation.
+- claim: figs1-higher-order
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: >-
+    A simulation with no published code; not attempted within the run's time, as for
+    fig1-ffn-propagation.
+- claim: fig8-architecture
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: >-
+    A simulation with no published code; not attempted within the run's time, as for
+    fig1-ffn-propagation.
+- claim: rf-sizes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:rf-sizes
+  notes: >-
+    RF variances are in pixels with no pixel-to-degree scale in the data set or the paper. In
+    pixels, the mean diameter (4 SD) is 60.9 px for 431 V1 channels and 119.9 px for 77 V2 channels
+    (reading a; 60.4 and 118.9 under reading b). The ratio of V2 to V1 diameter, which needs no
+    scale, is 1.97 against 2.27 / 1.21 = 1.88 in the paper. A scale of 50 to 53 px/deg would match
+    both means, but nothing in the data set or the paper fixes it.
+findings:
+- kind: data_missing
+  statement: >-
+    The data set holds no V2 recording depth, penetration identity, unit SNR or waveforms. The
+    paper's layer groups (middle, superficial and deep V2), its depth of the narrow-peak sites,
+    its offset-RF group and its single-unit analyses cannot be repeated; 7 of the paper's claims
+    on the recordings are blocked for this.
+- kind: metadata_insufficient
+  statement: >-
+    Receptive field centres and variances (rfInfo) are in pixels, and neither the data set nor the
+    paper gives the pixel-to-degree scale or the fixation point (the paper gives 1024 x 768 pixels
+    at 110 cm without the screen size). In four sessions each channel has fits for two eyes, with V1
+    RF centres a median of 244 to 266 pixels apart horizontally. RF sizes and offsets in degrees,
+    which the paper reports, cannot be computed.
+- kind: selection_undocumented
+  about: data
+  statement: >-
+    The data set holds 5 sessions in 3 animals of the paper's recordings in 7 animals (31 V2
+    sites of 223). Its documentation does not say how they were chosen. They differ from the
+    paper's sample in a measure the paper reports, with a significant narrow V1-V2 peak at 16 of
+    31 sites (0.52, against 46 of 223) and in 1.05% of V1-V2 pairs (against 0.3%).
+- kind: metadata_error
+  statement: >-
+    The data description gives an average of 112.2 V1 units per session; the five files hold 159,
+    109, 88, 97 and 111 V1 units, an average of 112.8. The V2 average (29.4) matches.
+- kind: metadata_insufficient
+  statement: >-
+    The data description lists stimulus code 7 as a 135 deg grating, but the sessions description
+    gives 180 deg for session 105l001p16. The population responses agree with the sessions
+    description (code 7 correlates 0.911 with code 1, against 0.637 and 0.845 with codes 6 and 8).
+    The spike rasters are at 1 ms resolution, where the paper's CCGs used 0.1 ms; the description
+    does not say that the spike times were binned.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. Which test gave the p-values for the median CCG peak offsets against
+    zero (p < 0.001 for V1-V2; p = 0.45 and 0.42 for V1-V1 and V2-V2)? On this data set the
+    Wilcoxon signed-rank test finds the V1-V1 offsets different from zero (p = 0.016, mean 0.10
+    ms) and the sign test does not (p = 0.076); the attempt assumed the signed-rank test.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. How were the bootstrap p-values comparing divergence in spike and
+    control epochs computed, with the same resampled neurons for both (paired) or from the two
+    bootstrap distributions taken as independent? The paired reading finds after-spike epochs and
+    epochs far from the spike above control at many offsets (Figure 7D) where the independent one
+    finds them at the 80 ms window only. The outcomes here are the same under both except where
+    the notes say.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. The CCG jitter window used for the significance of narrow peaks is
+    given only for Figure 4C (10 ms); was it the same for all pairs and sites? With 25 ms, 22 of
+    31 sites and 185 pairs pass on this data set, against 16 and 171 with 10 ms.
