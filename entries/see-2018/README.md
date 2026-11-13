@@ -27,7 +27,7 @@ ripple noise (Figure 11A, B) or the 64-channel recordings (Figure 8).
 | STRF MI peaks at 10 to 15 ms bins | Not reproduced |
 | Fewer and larger cNEs with larger bins | Reproduced |
 | cNE STRFs have a higher peak-trough difference than members' | Reproduced |
-| cNE STRFs have a higher MI than members' | Not reproduced |
+| cNE STRFs have a higher MI than members' | Reproduced (on an assumption) |
 | cNE members' STRFs beat random groups | Reproduced |
 | Shuffled and PR models give fewer cNEs, DG more | Reproduced |
 | All models give smaller cNEs | Not reproduced |
@@ -44,8 +44,8 @@ functions, and several outcomes rest on the choices made here. The attempt recor
 reasons and the differences from the paper's method, is
 [`attempts/see-2018-01.yaml`](../../attempts/see-2018-01.yaml).
 
-- `reproduce_see_2018.ipynb`: the analysis. It takes about 35 minutes on four processes, most of
-  it the detection at eight bin sizes and the model runs.
+- `reproduce_see_2018.ipynb`: the analysis. It takes about 50 minutes on four processes, most of
+  it the detection at eight bin sizes, the random groups and the model runs.
 - `cne.py`: loading from the bucket, the cNE detection, pairwise correlation functions, STRFs and
   their mutual information, and the shuffled, PR and DG models. Other notebooks on this data set
   can import it.

@@ -30,8 +30,10 @@ Where the parameters come from:
   period (667 columns) after the last. Spikes outside it are left out. Spike times are put on the
   stimulus clock (`to_stim_ms`), interpolating between triggers, so that every binned train is
   aligned with the stimulus columns; this clock runs 0.05% slower than the recording clock.
-- PWCs (`pwc`) are histograms of spike-time differences on the recording clock, with the lag
-  bins and ranges of the claims file (1 ms over +-50 or +-100 ms). Sharpness is the median of
+- PWCs (`pwc`) are histograms of spike-time differences of the spikes inside the stimulus period,
+  on the stimulus clock, with the lag bins and ranges of the claims file (1 ms over +-50 or +-100
+  ms). The paper does not say whether a baseline was removed; `pair_table` also gives sharpness
+  after subtracting one of two baselines (variants, not readings of the claims file). Sharpness is the median of
   the absolute lag from the peak, weighted by the counts (Figure 6G to I legend); peak delay is
   the absolute lag of the maximum, the first maximum on ties.
 - STRFs are spike- or event-triggered averages of the stimulus envelope. The window and
@@ -181,13 +183,15 @@ def mp_bound(n: int, t: int) -> float:
     return (1.0 + np.sqrt(n / t)) ** 2
 
 
-def fastica(x: np.ndarray, seed: int, max_iter: int, tol: float) -> np.ndarray:
+def fastica(x: np.ndarray, seed: int, max_iter: int, tol: float, info: dict | None = None) -> np.ndarray:
     """Symmetric fastICA with the logcosh contrast (Hyvarinen and Oja 1997; the algorithm of
-    sklearn's FastICA) on whitened data x (N by T). Returns the unmixing matrix W (N by N)."""
+    sklearn's FastICA) on whitened data x (N by T). Returns the unmixing matrix W (N by N); the
+    number of iterations run is put in `info` when given."""
     rng = np.random.default_rng(seed)
     n, t = x.shape
     w = _sym_decorrelate(rng.standard_normal((n, n)))
-    for _ in range(max_iter):
+    it = 0
+    for it in range(1, max_iter + 1):
         g = np.tanh(w.astype(np.float32) @ x)
         w1 = (g @ x.T) / t - (1.0 - g ** 2).mean(axis=1)[:, None] * w
         w1 = _sym_decorrelate(w1.astype(np.float64))
@@ -195,6 +199,8 @@ def fastica(x: np.ndarray, seed: int, max_iter: int, tol: float) -> np.ndarray:
         w = w1
         if lim < tol:
             break
+    if info is not None:
+        info["iter"] = it
     return w
 
 
@@ -205,15 +211,17 @@ def _sym_decorrelate(w: np.ndarray) -> np.ndarray:
 
 
 def _ica_weights(z: np.ndarray, vals: np.ndarray, vecs: np.ndarray, seed: int,
-                 max_iter: int = 1000, tol: float = 1e-6) -> np.ndarray:
+                 max_iter: int = 1000, tol: float = 1e-6, info: dict | None = None) -> np.ndarray:
     """fastICA on the projection of z onto the PCs `vecs` (n by N) with eigenvalues `vals`, which
     are already uncorrelated, so whitening divides each by the square root of its eigenvalue.
     Returns the IC weights in unit space (n by N), each of unit length."""
     if vecs.shape[1] == 1:
+        if info is not None:
+            info["iter"] = 0
         return vecs / np.linalg.norm(vecs, axis=0, keepdims=True)
     scale = 1.0 / np.sqrt(vals)
     x = (vecs.T.astype(np.float32) @ z) * scale[:, None].astype(np.float32)
-    w = fastica(x, seed, max_iter, tol)
+    w = fastica(x, seed, max_iter, tol, info)
     weights = vecs @ (w * scale[None, :]).T
     return weights / np.linalg.norm(weights, axis=0, keepdims=True)
 
@@ -277,21 +285,26 @@ def detect(counts: np.ndarray, seed: int, n_shuffles: int = N_SHUFFLES, null: bo
     if k == 0:
         out["w"] = np.zeros((n, 0))
         return out
-    w = _ica_weights(z, vals[:k], vecs[:, :k], seed)
+    info = {}
+    w = _ica_weights(z, vals[:k], vecs[:, :k], seed, info=info)
     out["w"] = w
+    out["ica_iter"] = info["iter"]
     if not null:
         return out
-    shuf_w = []
+    shuf_w, shuf_iter = [], []
     act = {p: [] for p in PROJECTIONS}
     oriented = {r: orient(w, r) for r in SIGN_READINGS}
     for i in range(n_shuffles):
         zs = circular_shuffle(z, rng)
         sl, sv = pcs(zs)
-        shuf_w.append(_ica_weights(zs, sl[:k], sv[:, :k], seed + 1 + i, SHUFFLE_ICA_ITER, 1e-4))
+        si = {}
+        shuf_w.append(_ica_weights(zs, sl[:k], sv[:, :k], seed + 1 + i, SHUFFLE_ICA_ITER, 1e-4, si))
+        shuf_iter.append(si["iter"])
         if activity_null:
             for p in PROJECTIONS:
                 act[p].append(activity(zs, oriented["a"], p))
     out["shuffled_w"] = shuf_w
+    out["shuffle_ica_iter"] = np.array(shuf_iter)
     out["members"], out["thresholds"] = {}, {}
     for r in SIGN_READINGS:
         null_w = np.concatenate([orient(sw, r).ravel() for sw in shuf_w])
@@ -413,6 +426,22 @@ def strf_mi(z_all: np.ndarray, z_ev: np.ndarray, rng: np.random.Generator) -> fl
     return float(intercept)
 
 
+def strf_mi_heldout(stim: np.ndarray, idx: np.ndarray, lags: int, rng: np.random.Generator) -> float:
+    """STRF MI with the STRF estimated on the events of one half of the stimulus and the MI computed
+    (as in `strf_mi`) on the events of the other half, averaged over the two directions. Splitting
+    by time keeps neighbouring events, which share stimulus segments, on one side. A check of the
+    bias of estimating the STRF and the MI on the same events, which the paper does not describe."""
+    first = idx < stim.shape[1] // 2
+    halves = (idx[first], idx[~first])
+    out = []
+    for fit, test in (halves, halves[::-1]):
+        if len(fit) == 0 or len(test) < 2:
+            return np.nan
+        zall = projections(stim, sta(stim, fit, lags))
+        out.append(strf_mi(zall[lags - 1:], zall[test], rng))
+    return float(np.mean(out))
+
+
 # --- dichotomized Gaussian ---------------------------------------------------------------------
 
 _GL_X, _GL_W = np.polynomial.legendre.leggauss(40)
@@ -428,12 +457,13 @@ def bvn_cdf(h: np.ndarray, k: np.ndarray, r: np.ndarray) -> np.ndarray:
     return stats.norm.cdf(h) * stats.norm.cdf(k) + 0.5 * r * (dens * _GL_W).sum(axis=-1)
 
 
-def fit_dg(binary: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def fit_dg(binary: np.ndarray, info: dict | None = None) -> tuple[np.ndarray, np.ndarray]:
     """Dichotomized Gaussian fit to binary trains (units by bins): thresholds gamma and latent
     correlation matrix, matching each unit's mean and each pair's covariance (Macke et al. 2009, as
     findLatentGaussian01 of CorBinian does), by bisection on each pair's latent correlation. The
     latent matrix is made positive definite by clipping its eigenvalues at 1e-4 and rescaling to a
-    unit diagonal, as the fit may not be."""
+    unit diagonal, as the fit may not be. With `info`, the smallest eigenvalue before clipping and
+    the largest change the clipping makes to a latent correlation are put in it."""
     p = binary.mean(axis=1).clip(1e-6, 1 - 1e-6)
     gamma = stats.norm.ppf(p)
     joint = (binary @ binary.T) / binary.shape[1]
@@ -451,9 +481,14 @@ def fit_dg(binary: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     lam[iu] = (lo + hi) / 2
     lam[(iu[1], iu[0])] = (lo + hi) / 2
     vals, vecs = np.linalg.eigh(lam)
+    fitted = lam
     lam = (vecs * np.maximum(vals, 1e-4)) @ vecs.T
     d = np.sqrt(np.diag(lam))
-    return gamma, lam / np.outer(d, d)
+    lam = lam / np.outer(d, d)
+    if info is not None:
+        info["min_eigenvalue"] = float(vals.min())
+        info["max_change"] = float(np.abs(lam - fitted).max())
+    return gamma, lam
 
 
 def sample_dg(gamma: np.ndarray, lam: np.ndarray, n_bins: int, rng: np.random.Generator) -> np.ndarray:
@@ -521,24 +556,28 @@ def unit_strfs(site: dict, stim: np.ndarray, bin_ms: float, lags: int) -> list[n
 def run_binsizes(i: int, seed: int) -> dict:
     """Detection at each bin size (number, sizes) and, per cNE, the STRF MI of Figure 5A: activity
     interpolated to 1 ms, the 5000 largest samples (event reading a) or the 5000 largest local
-    peaks (event reading b) as events, STRF by event-triggered average."""
+    peaks (event reading b) as events, STRF by event-triggered average. Also, per cNE, the number
+    of distinct detection bins the events fall in, and the MI with the STRF from held-out events
+    (`strf_mi_heldout`)."""
     site = SITES[i]
     stim = STIM[(site["stim"], STRF_BIN_MS)]
     rng = np.random.default_rng(seed)
+    rng_ho = np.random.default_rng(seed + 100000)
     n_ms = int(stim_duration_ms(site))
     out = {}
     for b in BIN_SIZES:
         c = binned(site, b)
         d = detect(c, seed + b, activity_null=False)
         res = {"n": d["n"], "sizes_a": [len(m) for m in member_sets(d, "a")] if d["n"] else [],
-               "sizes_b": [len(m) for m in member_sets(d, "b")] if d["n"] else [], "mi": {}}
+               "sizes_b": [len(m) for m in member_sets(d, "b")] if d["n"] else [], "mi": {},
+               "mi_heldout": {}, "distinct_bins": {}}
         if d["n"]:
             z = zscore(c[d["kept"]])
             w = orient(d["w"], "a")
             for p in PROJECTIONS:
                 act = activity(z, w, p)
                 for er in ("a", "b"):
-                    mis = []
+                    mis, mis_ho, nd = [], [], []
                     for j in range(d["n"]):
                         a1 = interp_activity(act[j], b, n_ms)
                         if er == "a":
@@ -546,31 +585,46 @@ def run_binsizes(i: int, seed: int) -> dict:
                         else:
                             peaks = np.flatnonzero((a1[1:-1] > a1[:-2]) & (a1[1:-1] >= a1[2:])) + 1
                             ev = peaks[np.argsort(a1[peaks])[-N_EVENTS_5A:]]
+                        nd.append(len(np.unique(ev // b)))
                         idx = segment_index(ev + 0.5, STRF_BIN_MS, stim.shape[1], STRF_LAGS)
                         strf = sta(stim, idx, STRF_LAGS)
                         zall = projections(stim, strf)
                         mis.append(strf_mi(zall[STRF_LAGS - 1:], zall[idx], rng))
+                        mis_ho.append(strf_mi_heldout(stim, idx, STRF_LAGS, rng_ho))
                     res["mi"][(p, er)] = mis
+                    res["mi_heldout"][(p, er)] = mis_ho
+                    res["distinct_bins"][(p, er)] = nd
         out[b] = res
     return out
 
 
 def pair_table(i: int, det: dict, reading: str = "a") -> list[dict]:
     """All unit pairs of a recording with PWC measures (both lag readings), correlation coefficient
-    at 10 ms, distances, and whether they share a cNE."""
+    at 10 ms, distances, and whether they share a cNE. PWCs use the spikes inside the stimulus
+    period, on the stimulus clock, as the correlation coefficient does. Also, as variants the
+    claims file does not name, sharpness with a baseline subtracted and over +-10 and +-20 ms."""
     site = SITES[i]
     units = site["units"]
     c = binned(site, BIN_MS)
     r = np.corrcoef(c)
     sets = member_sets(det, reading) if det["n"] else []
+    spikes = [u["stim_ms"][np.isfinite(u["stim_ms"])] for u in units]
+    dur = stim_duration_ms(site)
     rows = []
     for a in range(len(units)):
-        ta = units[a]["spikes_ms"]
+        ta = spikes[a]
         for b in range(a + 1, len(units)):
-            tb = units[b]["spikes_ms"]
+            tb = spikes[b]
             h = pwc(ta, tb, 100.0)
             s100, d100 = pwc_measures(h)
             s50, d50 = pwc_measures(h[50:151])
+            # baseline readings: the count per 1-ms bin expected from the two rates, or the mean of
+            # the outer +-50 to 100 ms of the histogram, subtracted and the rest clipped at zero
+            ind = len(ta) * len(tb) / dur
+            flank = np.r_[h[:50], h[151:]].mean()
+            extra = {f"sharp_{lag}_{name}": pwc_measures(np.clip(h[100 - lag:101 + lag] - base, 0, None))[0]
+                     for lag in (50, 100) for name, base in (("ind", ind), ("flank", flank))}
+            extra.update({f"sharp_{lag}": pwc_measures(h[100 - lag:101 + lag])[0] for lag in (10, 20)})
             shared = sum(1 for m in sets if a in m and b in m)
             in_any = (any(a in m for m in sets), any(b in m for m in sets))
             rows.append({"site": site["site"], "a": a, "b": b, "r": r[a, b],
@@ -579,7 +633,7 @@ def pair_table(i: int, det: dict, reading: str = "a") -> list[dict]:
                          "depth_diff": abs(units[a]["depth"] - units[b]["depth"]),
                          "euclid": float(np.hypot(units[a]["x"] - units[b]["x"],
                                                   units[a]["depth"] - units[b]["depth"])),
-                         "n_shared": shared, "both_members": all(in_any)})
+                         "n_shared": shared, "both_members": all(in_any), **extra})
     return rows
 
 
@@ -609,12 +663,14 @@ def _strf_measures(times: np.ndarray, stim: np.ndarray, rng) -> tuple[float, flo
     return float(strf.max() - strf.min()), strf_mi(zall[STRF_LAGS - 1:], zall[idx], rng), len(idx)
 
 
-def run_cne_vs_members(i: int, det: dict, seed: int) -> list[dict]:
+def run_cne_vs_members(i: int, det: dict, seed: int, heldout: bool = True) -> list[dict]:
     """Figure 10B, C: STRF PTD and MI of each cNE and each of its members, after subsampling the
-    larger of the event and spike trains to equal counts."""
+    larger of the event and spike trains to equal counts. Also the MI with the STRF from held-out
+    events (`strf_mi_heldout`), on the same subsampled trains."""
     site = SITES[i]
     stim = STIM[(site["stim"], STRF_BIN_MS)]
     rng = np.random.default_rng(seed)
+    rng_ho = np.random.default_rng(seed + 100000)
     if det["n"] == 0:
         return []
     z = zscore(binned(site, BIN_MS)[det["kept"]])
@@ -635,9 +691,12 @@ def run_cne_vs_members(i: int, det: dict, seed: int) -> list[dict]:
                     sp_s = np.sort(rng.choice(sp, k, replace=False))
                     ptd_c, mi_c, _ = _strf_measures(ev_s, stim, rng)
                     ptd_n, mi_n, _ = _strf_measures(sp_s, stim, rng)
+                    ho = [strf_mi_heldout(stim, segment_index(t, STRF_BIN_MS, stim.shape[1], STRF_LAGS),
+                                          STRF_LAGS, rng_ho) if heldout else np.nan for t in (ev_s, sp_s)]
                     rows.append({"site": site["site"], "cne": j, "unit": m, "projection": p,
-                                 "events": er, "count": k, "ptd_cne": ptd_c / 1.0, "ptd_unit": ptd_n,
-                                 "mi_cne": mi_c, "mi_unit": mi_n})
+                                 "events": er, "count": k, "ptd_cne": ptd_c, "ptd_unit": ptd_n,
+                                 "mi_cne": mi_c, "mi_unit": mi_n, "mi_cne_heldout": ho[0],
+                                 "mi_unit_heldout": ho[1]})
     return rows
 
 
@@ -775,6 +834,28 @@ def model_context(site: dict) -> dict:
     gamma, lam = fit_dg(b5)
     return {"real": real, "pr10": pr_setup(site, 10), "pr5": pr_setup(site, 5),
             "gamma": gamma, "lam": lam, "n5": b5.shape[1]}
+
+
+def run_dg_check(i: int, seed: int) -> dict:
+    """How well the DG fit reproduces the real 5-ms binary trains: the clipping of `fit_dg`, and the
+    rates and pairwise covariances of one sampled run against the real ones."""
+    site = SITES[i]
+    b5 = np.minimum(binned(site, 5), 1)
+    info = {}
+    gamma, lam = fit_dg(b5, info)
+    sim = sample_dg(gamma, lam, b5.shape[1], np.random.default_rng(seed))
+    iu = np.triu_indices(len(gamma), 1)
+    cov_r, cov_s = np.cov(b5)[iu], np.cov(sim)[iu]
+    return {"site": site["site"], "min_eigenvalue": info["min_eigenvalue"], "max_change": info["max_change"],
+            "rate_max_abs_diff": float(np.abs(sim.mean(axis=1) - b5.mean(axis=1)).max()),
+            "rate_real_mean": float(b5.mean()),
+            "cov_r": float(np.corrcoef(cov_r, cov_s)[0, 1]),
+            "cov_slope": float(np.polyfit(cov_r, cov_s, 1)[0]),
+            "cov_median_abs_diff": float(np.median(np.abs(cov_s - cov_r))),
+            "cov_real_median_abs": float(np.median(np.abs(cov_r))),
+            "pr_dropped_spikes_10": sum(u["dropped"] for u in pr_setup(site, 10)),
+            "pr_dropped_spikes_5": sum(u["dropped"] for u in pr_setup(site, 5)),
+            "spikes": int(sum(np.isfinite(u["stim_ms"]).sum() for u in site["units"]))}
 
 
 def run_models(i: int, det: dict, seed: int, n_iter: int) -> dict:
