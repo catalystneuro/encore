@@ -1,0 +1,459 @@
+schema_version: 3
+id: dana-2016-01
+datasets:
+- archive: crcns
+  id: cai-2
+  version: unversioned
+  doi: 10.6080/K0W37T87
+  relation: primary
+paper: doi:10.7554/elife.12727
+date: '2026-11-13'
+entry: dana-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43422113748
+inputs:
+- what: Supplementary file 1 of the paper (RCaMP1h variant screen), streamed from https://cdn.elifesciences.org/articles/12727/elife-12727-supp1-v2.xlsx,
+    for screen-single-mutations-improved and culture-jrcamp1-sensitivity.
+  source: doi:10.7554/eLife.12727.030
+- what: Supplementary file 2 of the paper (R-GECO1 variant screen), streamed from https://cdn.elifesciences.org/articles/12727/elife-12727-supp2-v2.xlsx,
+    for screen-single-mutations-improved and culture-jrgeco1a-sensitivity.
+  source: doi:10.7554/eLife.12727.031
+outcomes:
+- claim: screen-single-mutations-improved
+  outcome: not_reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:screen-single-mutations-improved
+  measured:
+  - 230
+  - 934
+  - 58
+  - 692
+  notes: Supplementary file 1 holds 934 single-mutation RCaMP1h variants and file 2 holds 692 single-mutation R-GECO1
+    variants, within tolerance of 934 and 689. By the criterion's rule (1 AP ratio above 1, 1 AP p below 0.01) 230
+    RCaMP1h and 58 R-GECO1 variants are improved, against 353 and 187. Other rules do not reach them either (ratio
+    above 1 alone 637 and 207; ratio above 1 with p below 0.05, 334 and 91; any of 1, 3, 10 or 160 AP, 307 and 66;
+    all variant rows, 334 and 122). The claims check had found the same counts before the analysis.
+  deviations:
+  - The parent's own row, whose mutation column reads 'base', is not counted as a single mutation.
+- claim: culture-jrgeco1a-sensitivity
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:culture-jrgeco1a-sensitivity
+  measured: 8.57
+  notes: The jRGECO1a row of Supplementary file 2 gives a 1 AP ratio of 8.57 against R-GECO1 (p 2.3e-09), a 10 AP
+    half decay time ratio of 1.05 (p 0.32) and a 160 AP dF/F0 ratio of 1.10 (p 0.47), both inside 0.8 to 1.25 and
+    both with p at or above 0.01. The faster rise time in the statement is not in the table and is not tested.
+  deviations:
+  - Tested on the paper's supplementary table, not on recordings; the culture recordings are not deposited.
+- claim: culture-jrcamp1-sensitivity
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:culture-jrcamp1-sensitivity
+  measured:
+  - 24.02
+  - 12.96
+  notes: Supplementary file 1 gives 1 AP ratios of 24.02 for jRCaMP1a and 12.96 for jRCaMP1b against RCaMP1h; jRCaMP1a
+    has the larger 1 AP ratio and the larger 10 AP half decay ratio (3.13 against 1.15).
+  deviations:
+  - Tested on the paper's supplementary table, not on recordings; the culture recordings are not deposited.
+- claim: fig4-recorded-cells
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4-recorded-cells
+  measured:
+  - 11
+  - 6
+  - 10
+  - 5
+  notes: The file names give 11 jRGECO1a cells on 6 recording dates (27 files, 7 of them parts of three recordings)
+    and 10 jRCaMP1a cells on 5 dates (20 files, one a duplicate). The data set names no animals, so a mouse is a
+    recording date, as the criterion allows; that each date is one mouse is not shown by the files.
+  deviations:
+  - Mice are counted as recording dates; the data set has no animal identifier.
+- claim: fig4d-event-counts
+  outcome: partially_reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4d-event-counts
+  measured:
+  - 199
+  - 70
+  - 29
+  - 34
+  - 35
+  - 22
+  - 14
+  - 21
+  - 162
+  - 89
+  - 86
+  - 62
+  - 44
+  - 26
+  - 15
+  - 11
+  - 320
+  - 246
+  notes: Under the data set's script reading (isolation and noise) the nine jRGECO1a counts are exactly the paper's
+    (199, 70, 29, 34, 35, 22, 14, 21 events, 320 noise traces). Of the jRCaMP1a counts only 7 AP (15) and 8 AP (11)
+    are within tolerance; 1 to 6 AP are higher (162, 89, 86, 62, 44, 26 against 135, 65, 71, 52, 33, 20) and the
+    noise count is lower (246 against 274). That is 11 of 18, in the 10 to 14 band; the other eight combined readings
+    give 0 to 10. Isolation (a) gives 191, 62, 28, 30, 36, 20, 12, 17 for jRGECO1a and reading (b) far more events.
+    Counting the duplicate jRCaMP1a file twice raises the counts (169 one-spike events). A sweep of jRCaMP1a isolation
+    intervals (1 to 2 s before, 0.8 to 2 s after) matches at most 7 of the 8 event counts, and no noise rule tried
+    gives 274.
+  deviations:
+  - The script's reading (1 s before, 0.8 s after, a spike on each side, events past 315 s dropped; noise as one
+    trace per gap longer than the bin) is run as the main reading, as the claims file directs where the script settles
+    a detail. The script is written for jRGECO1a and is applied to jRCaMP1a with the jRCaMP1a bins of the Methods
+    and the 5 s noise bin of the Figure 4e legend.
+  - The duplicate jRCaMP1a recording data_20150526_cell2_002.mat is counted once (protocol, author step 1.2).
+  - Under readings (a) and (b) the start and end of a recording count as spikes for the isolation, a standard choice.
+- claim: fig4e-jrgeco1a-1ap-detection
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4e-jrgeco1a-1ap-detection
+  measured: 82.4
+  notes: Under the main reading (script events, noise traces and frame window, template from all events, 95th percentile
+    threshold) 82.4% of 199 single spikes are detected against 319 noise traces. Leave-one-out templates give 82.4%,
+    balanced accuracy 88.7%, the script's 99th percentile 60.8%. Of the 54 combinations of the claim's named segment
+    readings (a), (b), (c) with the isolation, noise and template readings, 1 is within tolerance (isolation a,
+    noise ii, segment b, 76.3%); they range from 0 to 76.3%. By recording date the main rate is 71.4 to 92.6% on
+    the five dates with 28 or more events (one event on 20150708).
+  deviations:
+  - Event isolation, noise traces and the projected frame window of the main reading are those of the data set's
+    script data_analysis_for_CRCNS_jRGECO1a.m with find_nspike_event.m and find_no_event.m (1 s before and 0.8 s
+    after the event, a spike needed on each side, events past sample 3.15e6 dropped; one noise trace per spike-free
+    gap longer than the bin, at its midpoint; 10 frames before to 20 frames after the frame nearest the event, interpolated
+    ten-fold, F0 from the 10 frames before, noise traces with |dF/F0| >= 0.3 dropped). The Methods (Simultaneous
+    electrophysiology and functional imaging in V1, paragraph 2) do not give the window, and the claims file names
+    the script's reading as the main one where it settles a detail.
+  - The detection threshold is the 95th percentile of the noise projections, the 5% false-positive rate the Results
+    and the criterion state; the script uses the 99th (prctile(proj_noise,99), '1% false positive'), shown as a
+    variant. The Methods come before the code (protocol, reader step 2).
+  - Segments of the named readings use the nominal 30 Hz frame rate for their length (120 frames for 4 s, 30 for
+    1 s), a standard choice; the recordings run at 29.6 to 30.0 Hz.
+- claim: fig4e-jrgeco1a-2ap-detection
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4e-jrgeco1a-2ap-detection
+  measured: 100.0
+  notes: Under the main reading all 70 two-spike events are detected (100%, inside 92 to 100%); the script's 99th
+    percentile gives 98.6%, balanced accuracy 97.5%. 15 of the 54 named-reading combinations are within tolerance.
+    Every recording date detects 100% of its events.
+  deviations:
+  - Event isolation, noise traces and the projected frame window of the main reading are those of the data set's
+    script data_analysis_for_CRCNS_jRGECO1a.m with find_nspike_event.m and find_no_event.m (1 s before and 0.8 s
+    after the event, a spike needed on each side, events past sample 3.15e6 dropped; one noise trace per spike-free
+    gap longer than the bin, at its midpoint; 10 frames before to 20 frames after the frame nearest the event, interpolated
+    ten-fold, F0 from the 10 frames before, noise traces with |dF/F0| >= 0.3 dropped). The Methods (Simultaneous
+    electrophysiology and functional imaging in V1, paragraph 2) do not give the window, and the claims file names
+    the script's reading as the main one where it settles a detail.
+  - The detection threshold is the 95th percentile of the noise projections, the 5% false-positive rate the Results
+    and the criterion state; the script uses the 99th (prctile(proj_noise,99), '1% false positive'), shown as a
+    variant. The Methods come before the code (protocol, reader step 2).
+- claim: fig4e-jrcamp1a-detection
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4e-jrcamp1a-detection
+  measured:
+  - 63.0
+  - 75.3
+  notes: Under the main reading the 1 AP and 2 AP detection rates are 63.0% (162 events) and 75.3% (89 events) against
+    242 noise traces, both within tolerance; the event counts are above the paper's 135 and 65 (fig4d-event-counts).
+    Leave-one-out gives 61.7% and 75.3%; the 99th percentile 25.3% and 56.2%. Under the claim's named segment readings
+    no combination puts the 1 AP rate within tolerance (at most 41.6%) and 9 of 54 put the 2 AP rate within it,
+    so the outcome rests on the script's frame window. By date the 1 AP rate is 85.7% on 20150605 (84 events) and
+    33.9% on 20150707 (59). Without the two recordings that failed the clock check the rates are 75.4% (130 events)
+    and 82.9% (76), the 1 AP rate then outside tolerance. Open for the paper's authors (see findings) is which window,
+    isolation and noise traces the jRCaMP1a analysis used.
+  deviations:
+  - Event isolation, noise traces and the projected frame window of the main reading are those of the data set's
+    script data_analysis_for_CRCNS_jRGECO1a.m with find_nspike_event.m and find_no_event.m (1 s before and 0.8 s
+    after the event, a spike needed on each side, events past sample 3.15e6 dropped; one noise trace per spike-free
+    gap longer than the bin, at its midpoint; 10 frames before to 20 frames after the frame nearest the event, interpolated
+    ten-fold, F0 from the 10 frames before, noise traces with |dF/F0| >= 0.3 dropped). The Methods (Simultaneous
+    electrophysiology and functional imaging in V1, paragraph 2) do not give the window, and the claims file names
+    the script's reading as the main one where it settles a detail.
+  - The detection threshold is the 95th percentile of the noise projections, the 5% false-positive rate the Results
+    and the criterion state; the script uses the 99th (prctile(proj_noise,99), '1% false positive'), shown as a
+    variant. The Methods come before the code (protocol, reader step 2).
+  - Assumed, that the jRCaMP1a analysis used the jRGECO1a script's frame window (10 frames before to 20 after),
+    which at 15 Hz is 0.67 s before to 1.33 s after the event. The paper's only analysis code is written for jRGECO1a;
+    using the same code for the second indicator is the reading best supported by the data description, which presents
+    it as the code for Figure 4. The Methods do not give the window, and the claim's named readings give 1 AP rates
+    of 0.6 to 41.6%.
+- claim: fig4df-jrgeco1a-better-than-jrcamp1a
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4df-jrgeco1a-better-than-jrcamp1a
+  notes: Under the main reading jRGECO1a has the higher median peak dF/F0 (1 s window and segment window) and the
+    higher d-prime (both formulas) for all 8 values of n; at 1 AP the median peak is 0.210 against 0.112 and d-prime
+    (i) 2.35 against 1.16, at 8 AP 1.185 against 0.375 and 3.86 against 2.23. Of 288 combined readings 152 give
+    all 8 and 84 give 6 or 7, including readings that use only the claim's named segments. The paper reports no
+    test and none is made.
+  deviations:
+  - Event isolation, noise traces and the projected frame window of the main reading are those of the data set's
+    script data_analysis_for_CRCNS_jRGECO1a.m with find_nspike_event.m and find_no_event.m (1 s before and 0.8 s
+    after the event, a spike needed on each side, events past sample 3.15e6 dropped; one noise trace per spike-free
+    gap longer than the bin, at its midpoint; 10 frames before to 20 frames after the frame nearest the event, interpolated
+    ten-fold, F0 from the 10 frames before, noise traces with |dF/F0| >= 0.3 dropped). The Methods (Simultaneous
+    electrophysiology and functional imaging in V1, paragraph 2) do not give the window, and the claims file names
+    the script's reading as the main one where it settles a detail.
+  - Peak dF/F0 of the script segment is the maximum over its samples after the event (frames 0 to 20); the script's
+    own amplitude, the maximum of the median trace, is printed as a variant.
+- claim: fig4g-jrgeco1a-faster
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4g-jrgeco1a-faster
+  notes: With 2 AP events preceded by 2 s without spikes and the 16 best-fitted traces, under the script and (a)
+    isolation readings jRGECO1a has the shorter mean half rise (19 against 50 ms, script), fitted half decay (172
+    against 969 ms) and trace half decay (135 against 176 ms). Under reading (b) the half rise is longer for jRGECO1a
+    (262 against 129 ms) and both decays are shorter. Fitting to 2 s after the first spike, all three measures are
+    shorter for jRGECO1a under every reading. 32 to 84 jRGECO1a and 54 to 86 jRCaMP1a events were fitted, depending
+    on the reading. Half rise times under one frame rest on interpolation with the frame before the spike. The fitted
+    jRCaMP1a decay is unstable (s.e.m. up to 1115 ms).
+  deviations:
+  - The fit ends at the first spike plus the 2 AP bin plus the post-event isolation (1 s, or 0.8 s for the script
+    reading), a standard choice the paper leaves open; a 2 s window is shown as a variant and gives the same result.
+  - The script's fitting function fit_dynamic_fitting is not in the data set, so the fit, the fit-error rule and
+    the half rise of the paper's code could not be followed; the claim's readings are used.
+- claim: fig4g-kinetics-like-gcamp6
+  outcome: blocked
+  blocked_by: other
+  notes: The comparison needs the GCaMP6f and GCaMP6s half rise and half decay times of Chen et al. (2013b). The
+    main text of that paper (PMC3777791, read in preparation) gives no in vivo rise or decay value; its Figure 3f
+    legend shows a half decay time and a rise time to peak, with values in a supplementary table this run did not
+    obtain in a form the notebook can read, and for a measure (time to peak) other than this claim's half rise.
+    The jRGECO1a and jRCaMP1a values it would use are in fig4g-jrgeco1a-faster. Chen et al.'s recordings are in
+    CRCNS cai-1, but the claim compares with their published values.
+- claim: culture-jrcamp1-dynamic-range
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The cultured neuron and purified protein measurements (Figure 2c and Figure 2, source data 1) are not in
+    cai-2, which holds only the Figure 4 recordings, and the paper names no other deposit for them. Looked in the
+    paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: culture-jrcamp1-brighter
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The purified protein brightness measurements (Figure 2, figure supplement 2b) are not in cai-2 and the
+    paper names no deposit for them. Looked in the paper's data statement (Materials and methods, Reagent distribution,
+    which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013
+    and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: photoswitching
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The purified protein droplet and cultured neuron photoswitching recordings (Figure 2, figure supplements
+    3 and 4) are not in cai-2 and the paper names no deposit for them. Looked in the paper's data statement (Materials
+    and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS bucket
+    (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: v1-half-decay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 drifting grating imaging (Figure 3) is not in cai-2, whose description says the visual stimulus
+    is not included even for the Figure 4 recordings; the paper deposits only the cell-attached data. Looked in
+    the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: v1-fraction-responsive-jrcamp1
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging of Figure 3e is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: v1-fraction-responsive-jrgeco1a
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging of Figure 3e is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: v1-response-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging of Figure 3f is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: v1-orientation-tuning-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging (Figure 3, figure supplement 1) is not in cai-2 and not deposited elsewhere. Looked
+    in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: v1-long-term-stable
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The long-term expression imaging and images (Figure 3, figure supplement 2) are not in cai-2 and not deposited
+    elsewhere. Looked in the paper's data statement (Materials and methods, Reagent distribution, which names only
+    CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom
+    et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: lysosome-punctae
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The fixed tissue images and the punctae ROI traces (Figure 4, figure supplement 1) are not in cai-2; its
+    files hold one soma ROI and one neuropil trace per recording. Looked in the paper's data statement (Materials
+    and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS bucket
+    (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: red-gecis-900nm
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The L4 imaging at 900 and 1040 nm (Figure 4, figure supplement 2) is not in cai-2 and not deposited elsewhere.
+    Looked in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: green-species-lower-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 900 and 1040 nm imaging of Figure 4, figure supplement 3 is not in cai-2 and not deposited elsewhere.
+    Looked in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: depth-decay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The depth stacks of L5 apical dendrites (Figure 5b) are not in cai-2 and not deposited elsewhere. Looked
+    in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: l6-imaging
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The NTSR1-cre L6 imaging (Figure 5c and 5d) is not in cai-2 and not deposited elsewhere. Looked in the
+    paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: dual-color-imaging
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dual-color L1 recordings (Figure 6, Videos 1 and 2) are not in cai-2 and not deposited elsewhere. Looked
+    in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: fly-improved-over-parents
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7) is not in cai-2; the paper deposits fly lines at Bloomington, not
+    data. Looked in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS
+    doi:10.6080/K0W37T87 for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al.
+    2012 GCaMP recordings, cai-3 another study).
+- claim: fly-single-ap-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: fly-decay-like-gcamp6f
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7d) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: fig7b-5hz-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7b) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: fig7c-frequency-tuning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7c) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: zebrafish-jrgeco1a-most-sensitive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The zebrafish trigeminal imaging (Figure 8) is not in cai-2 and not deposited elsewhere. Looked in the
+    paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: fig8b-zebrafish-improvement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The zebrafish trigeminal imaging (Figure 8) is not in cai-2 and not deposited elsewhere. Looked in the
+    paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: worm-ash
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The C. elegans ASH imaging (Figure 9b and 9c) is not in cai-2 and not deposited elsewhere. Looked in the
+    paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+- claim: worm-awc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The C. elegans AWC imaging (Figure 9d to 9f) is not in cai-2 and not deposited elsewhere. Looked in the
+    paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings,
+    cai-3 another study).
+findings:
+- kind: other
+  about: data
+  statement: Two jRCaMP1a files, data_20150526_cell2_001.mat and data_20150526_cell2_002.mat, hold the same recording,
+    with identical soma fluorescence and raw ephys, the same 75 spikes. Counted twice it adds 7 one-spike events
+    and 12 noise traces to the jRCaMP1a analysis.
+- kind: identifier_missing
+  statement: The files name the cell and the recording date but not the animal. The paper reports 6 and 5 mice,
+    which match the number of recording dates, but that each date is one mouse cannot be checked.
+- kind: other
+  about: data
+  statement: In data_20150707_cell1_001.mat (jRCaMP1a, 304 spikes) the corrected soma fluorescence shows no relation
+    to the spikes (peak correlation of spike counts with the fluorescence rise 0.028 at a lag of 14 frames, below
+    the 0.050 of shifted spike trains), and in data_20150605_cell7_003.mat (15 spikes) it falls just below it (0.047
+    against 0.048). The shared clock of spikes and frames could not be established for these two; all other 44 recordings
+    peak at lags of -1 to +1 frame, above the null. The first contributes 31 of the 162 jRCaMP1a one-spike events.
+- kind: other
+  about: data
+  statement: The analysis script data_analysis_for_CRCNS_jRGECO1a.m calls rawf2df_f and fit_dynamic_fitting, which
+    are not in the data set, so it cannot run as deposited; and there is no script for the jRCaMP1a files.
+- kind: code_mismatch
+  statement: The data set's Figure 4 script differs from the paper's Methods and Results in three places. Its detection
+    threshold is the 99th percentile of the noise projections (1% false positives) where the paper reports rates
+    at 5%; its events need more than 0.8 s without spikes after the last spike where the Methods say more than 1
+    s; and its noise traces are one per spike-free gap longer than 4 s, taken at the gap's midpoint and dropped
+    if any |dF/F0| reaches 0.3, which the Methods do not say. With the script's own threshold the jRGECO1a single-spike
+    rate is 60.8%, not the 82% reported; with the 5% threshold it is 82.4%.
+- kind: methods_unavailable
+  statement: For the paper's authors, on the jRCaMP1a analysis of Figure 4. Which isolation intervals, noise rule
+    and frame window were used? The jRGECO1a script reproduces the paper's jRGECO1a event and noise counts exactly,
+    but the same rule on the jRCaMP1a files gives 162, 89, 86, 62, 44, 26, 15 and 11 events and 246 noise traces
+    against the reported 135, 65, 71, 52, 33, 20, 14, 11 and 274. This attempt assumed the script's 30-frame window
+    for jRCaMP1a, which gives detection rates of 63.0% and 75.3% (reported 65% and 80%); the windows the Methods
+    allow (4 or 5 s after the event, or 1 s) give at most 41.6% for one spike.
+- kind: methods_unavailable
+  statement: For the paper's authors, on Figure 4g. How was the exponential fitted (from the peak or from the spike,
+    over what window), which fitting error selected the 16 traces, and how was the half rise time defined? The function
+    the script calls for this, fit_dynamic_fitting, is not in the data set. This attempt fitted from the peak to
+    the end of the isolation interval, kept the 16 traces with the smallest RMS residual, and measured the half
+    rise from the first spike by linear interpolation; jRGECO1a is faster under these and under a 2 s window.
+- kind: paper_inconsistency
+  statement: The Results say 353 of 934 single RCaMP1h mutations and 187 of 689 single R-GECO1 mutations improved
+    the 1 AP response (p < 0.01, Wilcoxon rank sum), citing Supplementary files 1 and 2. Those tables list 934 and
+    692 single mutants, but only 230 and 58 with a 1 AP ratio above 1 and a 1 AP p-value below 0.01, and no other
+    rule tried (p < 0.05, any stimulus, all variants) gives 353 and 187.
+- kind: data_missing
+  statement: cai-2 holds only the simultaneous imaging and cell-attached recordings of Figure 4, as its description
+    says, and not the visual stimulus of those recordings. The cultured neuron screen recordings, the purified protein
+    data, the V1 grating imaging (Figures 3, 5, 6 and the Figure 4 supplements), and the Drosophila, zebrafish and
+    C. elegans imaging are not in it, and the paper names no other deposit; 24 of the paper's 35 claims cannot be
+    tested.
