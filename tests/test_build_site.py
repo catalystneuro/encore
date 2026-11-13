@@ -331,15 +331,15 @@ def test_a_deprecated_attempt_counts_for_nothing():
 
 
 def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
-    # andrews-2024 reproduced a claim with a simulation run in its own environment: an outcome that is not blocked
-    # and names no notebook. The paper's page lists it with the claims not tested in a notebook.
+    # A record that gives a tested claim no notebook (andrews-2024 did) must not stop the build: the paper's page
+    # lists the claim with those no notebook tests, and says the record names none.
     data = site.collect()
     q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
     a = q["attempts"][0]
     moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
     moved["notebook"] = None
     page = site.page_paper(data, q)
-    assert "Not tested in a notebook" in page and "tested outside the notebooks" in page
+    assert "Not tested in a notebook" in page and "with no notebook named in the record" in page
     assert f'id="claim-{moved["claim"]}"' in page
 
 
