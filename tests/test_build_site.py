@@ -1167,6 +1167,30 @@ def test_the_datasets_list_is_for_curators_and_the_papers_list_finds_a_paper_by_
     assert 'papers/?found=' not in (out / "index.html").read_text()
 
 
+def test_the_datasets_list_says_how_many_papers_each_dataset_has(built):
+    data, out = built
+    rows = json.loads((out / "data" / "datasets.json").read_text())
+    theirs: dict = {}
+    for q in site.papers_of(data):
+        for k in q["datasets"]:
+            theirs.setdefault(k, []).append(q)
+    several = 0
+    for r in rows:
+        papers = theirs.get(r["id"], [])
+        # Every paper associated with the dataset, attempted or not, those with an attempt first.
+        assert r["n_papers"] == len(papers) == len(r["papers"])
+        assert {q["byline"] for q in papers} == {x["byline"] for x in r["papers"]}
+        assert [x["attempted"] for x in r["papers"]] == sorted((x["attempted"] for x in r["papers"]), reverse=True)
+        assert r["paper_count"] == ("one" if len(papers) == 1 else "several" if papers else None)
+        several += len(papers) > 1
+    assert several
+    config = json.loads((out / "datasets" / "index.html").read_text().split('id="list-config">')[1].split("</script>")[0])
+    assert {"key": "-n_papers", "label": "Most papers"} in config["sorts"]
+    assert {"key": "paper_count", "label": "Papers"} in config["facets"]
+    js = (site.ASSETS / "list.js").read_text()
+    assert "r.papers" in js and "not yet tested" in js
+
+
 def test_a_version_is_said_in_words(built):
     a = {"dataset_version": "0.240101.0000", "dataset": {"doi": "10.48324/dandi.000001/0.240101.0000"}}
     assert site.version_state(a) == "published" and site.version_plain(a) == "version 0.240101.0000"
