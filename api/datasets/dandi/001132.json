@@ -1,0 +1,1062 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001132",
+  "label": "DANDI:001132"
+ },
+ "page": "datasets/dandi/001132/",
+ "generated": "2026-11-13T22:16:07+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 26
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "andrews-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001132",
+    "version": "0.241130.1903",
+    "doi": "10.48324/dandi.001132/0.241130.1903",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001132"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001132",
+   "label": "DANDI:001132",
+   "dataset_version": "0.241130.1903",
+   "paper": "10.1038/s41593-024-01782-5",
+   "paper_title": "Multimodal evaluation of network activity and optogenetic interventions in human hippocampal slices",
+   "date": "2026-11-10",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/42839322834"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "andrews-2024",
+   "entry_title": "Optogenetic inhibition in human hippocampal slices on HD-MEAs (Andrews, Geng, Voitiuk et al. 2024)",
+   "summary": "None of the paper's main findings could be tested in this data: that light on the opsin HcKCR1 suppresses unit firing in human hippocampal slices across culture media and in closed loop, that kainic acid bursts show theta coherence and spread across the granule cell layer, and that waveform clusters over that layer are linked to an opto-response cluster. The dandiset holds raw voltage only, without the curated units these analyses rest on, the light times or labels for each recording's medium. Of the minor claims, the paper's network model, rerun from its code, reproduced the dampening of seizure-like events, and the cohort matches Table 1 except that no file records each slice's opsin.",
+   "description": "Tests the findings of Andrews, Geng, Voitiuk et al. (2024) on dandiset 001132, which holds 69 raw HD-MEA voltage recordings of 12 human hippocampal slices from 7 patients. The files hold no sorted units, light events or condition labels, so only the cohort claim is tested; the notebook surveys every recording, recovers light periods of slices 3C, 4C and 7D from the voltage, shows a threshold-crossing variant for those of 3C, and runs the paper's network model.",
+   "notebooks": [
+    {
+     "path": "reproduce_andrews_2024.ipynb",
+     "title": "Reproducing Andrews, Geng, Voitiuk et al. (2024) from dandiset 001132",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "table1-cohort",
+     "statement": "Recordings came from 12 hippocampal slices from 7 adult patients with refractory temporal lobe epilepsy (5 female, 2 male, aged 20 to 52), 8 slices transduced with HcKCR1, 2 with ChR2 and 2 with no opsin.",
+     "source": "Table 1",
+     "quote": "The sex, number and age of participants is detailed in Table 1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_andrews_2024.ipynb",
+     "notes": "The 69 files resolve, by their names, to 12 slices named as in Table 1 (1A to 12G) from 7 patients (A to G), 5 female and 2 male, aged 20 to 52, each patient's age and sex as in Table 1. The 8 HcKCR1 slices of Table 2 are present by name. The opsin of a slice is recorded neither in the files nor in the dandiset metadata, so the third expected value (8 HcKCR1 slices) cannot be measured from the dandiset; it follows only from reading the slice names against the paper's Table 1. Every object under general/ of every file was read; it holds the devices, the electrode table, experiment_description (the paper's title), institution, lab, source_script and the subject's age, sex, species and subject_id, with no virus, pharmacology, protocol, notes, optogenetics or genotype field and no opsin or virus word. Of the criterion's conditions, slices, patients, ages and sexes hold (checked against Table 1 in the notebook) and the opsins cannot be resolved, which is read here as partial.",
+     "deviations": [
+      "Assumed reading of the criterion's partial clause. \"Present and identifiable\" is read as present and identifiable by name, the slice names of the files matching those of Table 1 and Table 2, as no file or metadata field names a slice's opsin. Under a reading that requires each HcKCR1 slice to be identified as HcKCR1 from the dandiset itself, neither clause of the criterion holds.",
+      "Slices and patients are taken from the file and subject names (`3C-7` is recording 7 of slice 3C of patient C); `subject_id` itself names the recording, not the patient or slice."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "units-per-recording",
+     "statement": "After spike sorting and curation, the analysed recordings yielded 64 (3C), 65 (5C), 44 (7D) and 10 (8D) units in physiologic or bicuculline media; 17 (9E), 228 (10F), 23 (11G) and 9 (12G) in 0-mg media; 57, 212, 55 and 17 in 0-mg+KA; 30 in the ChR2 slice 4C.",
+     "source": "Extended Data Figs. 4, 5, 6 and 8 legends; Table 1 (UNITS)",
+     "quote": "Units refers to the maximum number of individual units recorded during experimental recordings after spike sorting and curation.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No file holds a units table, sorted spikes or a processing module; the files hold raw voltage only, and the paper does not say the curated units are deposited elsewhere. The claims file makes a re-sort with Kilosort2 a variant that decides nothing, and the manual curation cannot be repeated; no re-sort was run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "transduction-range",
+     "statement": "In areas of high transduction, 10 to 54% of NeuN-positive neurons expressed HcKCR1-eYFP (Table 2, per slice 45, 36, 12, 19, 24, 54, 22 and 10% for 3C, 5C, 7D, 8D, 9E, 10F, 11G, 12G).",
+     "source": "Results, Human hippocampus slice culture and neuronal transduction, paragraph 1; Table 2 (TRANSDUCTION %)",
+     "quote": "The proportion of neurons expressing eYFP in areas of high transduction ranged from 10 \u2013 54% ( Table 2 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Histology (NeuN and eYFP immunohistochemistry) is not in the dandiset, which holds only HD-MEA voltage, and the paper does not say it is deposited elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "reporter-gcl-pyramidal",
+     "statement": "HcKCR1-eYFP reporter expression was enriched in granule cells of the dentate gyrus and in pyramidal cells.",
+     "source": "Results, Human hippocampus slice culture and neuronal transduction, paragraph 1; Fig. 1e; Extended Data Fig. 1",
+     "quote": "Reporter expression was enriched in neurons of the granule cell layer and the dentate gyrus as well as pyramidal cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Histology is not in the dandiset (see transduction-range).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "patch-hckcr1-hyperpolarizing",
+     "statement": "Light (540 nm) activates hyperpolarizing currents in HcKCR1-transduced human hippocampal neurons in voltage clamp (3 cells from 2 slices).",
+     "source": "Results, Optogenetic control of human hippocampal network, paragraph 1; Extended Data Fig. 2",
+     "quote": "HcKCR1 activation results in hyperpolarizing currents in human hippocampal neurons ( Extended Data Fig. 2 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The patch-clamp recordings are not in the dandiset, which holds only HD-MEA voltage, and the paper does not say they are deposited elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "simulation-dampening",
+     "statement": "In a network model of dentate granule and basket cells, closed-loop activation of a kalium channel in less than 50% of granule cells dampens seizure-like events (10%, 25% and 50% expression shown).",
+     "source": "Results, Computational modeling of glutamatergic neuron inhibition; Extended Data Fig. 3; Methods, Simulation Prototype",
+     "quote": "In silico epileptiform activity could be dampened with optogenetic control of less than 50% of the granule cell population ( Extended data Fig. 3 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_andrews_2024.ipynb",
+     "notes": "The model needs NEST 3.4 with a neuron compiled by NESTML 5 (Simulation/environment.yml at commit 6865bf6, printed in the notebook). PyPI has no NEST 3.4 (its releases are 3.9.0.post0.dev14 and 3.10.0), and with NEST 3.10.0 and NESTML 5.3.0, the newest 5.x, the script's first step, generate_nest_target on the published model, fails (module 'nest.ll_api' has no attribute 'sli_func'). The outcome verified in round 2 was blocked (not_runnable) on that basis. In the final revision, as the round-2 verifier asked, NEST 3.4 is taken from conda-forge in a throwaway environment made with micromamba 2.10.0, with NESTML 5.3.0 and the other packages of the environment file. The model then fails to build twice, first because odetoolbox, unpinned in the environment file, resolves to a release NESTML 5.3.0 cannot call (analysis() got an unexpected keyword argument 'simplify_expression'), and with odetoolbox 2.5 at cmake, because the conda-forge nest-config prints an empty compiler. With nest-config made to print the environment's compiler the model builds, and Simulation/simulation.py runs unchanged, printing mean rates of 80.65, 60.06, 52.49 and 49.65 Hz at opsin fractions 0, 0.10, 0.25 and 0.50 (closed-loop light 0, 16, 11 and 9 times). Events are runs of 1 ms bins with more than 100 spikes over the 1012 cells, the script's opto_threshold. At the script's seed, 20, (a) the total event duration is 278, 124, 37 and 4 ms, (b) the number of events 10, 10, 10 and 4, and (c) the spikes in events 52,366, 17,594, 4,086 and 441. Readings (a) and (c) meet the criterion and (b) does not. With seeds 21, 23 and 24 (a check, the script has one seed), (a) and (c) are at most 0.70 of their value at 0 at every fraction. Seed 22 does not meet the criterion under any reading; the network spends 1 ms above threshold at fraction 0, and at 0.50 the event duration is the same and the spikes in events are 103 against 101 at 0. The verdict uses the script's seed. Reproduced was proposed in the final revision and the round-3 verifier agreed.",
+     "deviations": [
+      "The model is run in an environment built from conda-forge with micromamba, outside the entry's locked pip environment, in a throwaway directory. Besides the environment file's packages it holds cmake 3, a C++ compiler and make from conda-forge, which NESTML 5 needs to build the module, and braingeneers is pinned to 0.3.1.16 (unpinned in the environment file).",
+      "odetoolbox, which the environment file leaves unpinned, is set to 2.5 (October 2022, the release current when NESTML 5.2.0, the version the README cites, came out); the newest release fails with NESTML 5.3.0 in the notebook.",
+      "The conda-forge nest-config of NEST 3.4 prints an empty --compiler, which leaves the generated CMakeLists without a C++ compiler; it is changed to print the environment's compiler. The model and the script are not changed.",
+      "The script is run once as published (seed 20), and its sim() again with seeds 21 to 24, a check the paper does not make."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub braingeneers/AndrewsGengVoitiukEtAl_SourceCode at commit 6865bf68cc3c8ea36a9b4f853b9248288fa1e52b, Simulation directory (model code, rerun)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-spontaneous-reduction",
+     "statement": "In physiologic media (slice 3C), 10 s of continuous 530 nm light reduces the spontaneous firing of HcKCR1 slices; the rate after light-OFF is higher than during light-ON (ST2).",
+     "source": "Fig. 3a; Extended Data Fig. 4a,b; Supplemental Table ST2 (3C)",
+     "quote": "Constant illumination for 10 seconds reduces spontaneous firing rates ( Fig. 3a )",
+     "statistics": [
+      {
+       "about": "3C firing rate, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 4.77e-18,
+       "corrected": "Holm-Bonferroni",
+       "n": "64 units"
+      },
+      {
+       "about": "3C firing rate, light-ON against OFF",
+       "test": "two-tailed paired t-test",
+       "p": 1.26e-13,
+       "corrected": "Holm-Bonferroni",
+       "n": "64 units"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the curated units of 3C, which are not in the dandiset. The light events, also not stored (no GPIO bit or stimulation log), can be recovered for 3C from a step the LED leaves in the voltage of every channel; 3C-6 has 5 trials whose three windows lie in the file and 3C-7 has 6. The onsets of 3C-6 are 18 to 21 s apart, so some of its pre and OFF windows hold part of a neighbouring light period (printed in the notebook). A variant on multi-unit threshold crossings of 64 channels (decides nothing) finds crossings 86 to 90% lower during light in the single-trial files 3C-1 to 3C-5, and no change in 3C-6 (-16%, adjusted p 0.82) or 3C-7 (+6%, p 0.87). Light onset drives 81 to 94% of channels to the ends of the ADC range in the first 0.5 s. In 3C-7, seconds with over 1,000 crossings are 22 of the 54 seconds wholly inside light, 6 of the 12 that hold an onset or offset and 8 of the other 124. With the first second of each window left out, 26 to 52% of channels are still at the ends of the range in the next 0.5 s, crossings fall by 89 to 93% in 3C-1 to 3C-5 and by 18% in 3C-6 (adjusted p 0.77), and rise by 17% in 3C-7 (adjusted p 0.06). The crossings are confounded by saturation and transients either way.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "physio-bic-reduction-all-slices",
+     "statement": "In each of the four HcKCR1 slices in physiologic media or bicuculline (3C, 5C, 7D, 8D), unit firing rates were significantly lower during light-ON than in the 10 s before.",
+     "source": "Extended Data Fig. 4; Supplemental Table ST2; Results, Optical HcKCR1-mediated inhibition of network activity, paragraph 1",
+     "quote": "HcKCR1 activation suppressed activity in human hippocampal neurons across all experimental conditions of spontaneous and provoked activity",
+     "statistics": [
+      {
+       "about": "3C, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 4.77e-18,
+       "corrected": "Holm-Bonferroni",
+       "n": "64 units"
+      },
+      {
+       "about": "5C, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 3.07e-11,
+       "corrected": "Holm-Bonferroni",
+       "n": "65 units"
+      },
+      {
+       "about": "7D, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 5.15e-08,
+       "corrected": "Holm-Bonferroni",
+       "n": "44 units"
+      },
+      {
+       "about": "8D, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.041,
+       "corrected": "Holm-Bonferroni",
+       "n": "10 units"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units, which are not in the dandiset. Reading every channel group, light steps are found in four 7D files (7D-0, 7D-2, 7D-5, 7D-7). No 5C or 8D file shows a 10 s light step (5C-5 has one pair of steps 0.76 s apart in two groups), and no file says which recordings are in bicuculline.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "physio-bic-amplitude-unchanged",
+     "statement": "Spike amplitude did not change significantly between pre and light-ON in the physiologic and bicuculline slices; amplitude changes were less consistent than rate changes.",
+     "source": "Results, Optical HcKCR1-mediated inhibition of network activity, paragraph 1; Extended Data Fig. 4c,f,i,l; Supplemental Table ST2",
+     "quote": "Changes in spike amplitude were less consistent ( Extended Data Fig. 4 , Supplemental Table ST2 )",
+     "statistics": [
+      {
+       "about": "3C amplitude, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.195,
+       "corrected": "Holm-Bonferroni"
+      },
+      {
+       "about": "5C amplitude, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 1.0,
+       "corrected": "Holm-Bonferroni"
+      },
+      {
+       "about": "7D amplitude, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 1.0,
+       "corrected": "Holm-Bonferroni"
+      },
+      {
+       "about": "8D amplitude, pre against light-ON",
+       "test": "Fisher's exact test",
+       "p": 1.0,
+       "corrected": "Holm-Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs per-unit spike amplitudes of curated units, which are not in the dandiset; light events and conditions as in physio-bic-reduction-all-slices.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-fr-decrease-physio-bic",
+     "statement": "The share of units whose firing rate fell by at least 25, 50, 75 and 90% during light-ON was 83, 81, 70 and 65% in 3C; 96, 93, 86 and 72% in 5C; 82, 66, 49 and 36% in 7D; and 100% at every threshold in 8D.",
+     "source": "Table 2",
+     "quote": "The value in each column is the percentage of recorded units with a % decrease by greater-than or equal-to the threshold designated but the column header.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs per-unit firing rates of curated units, which are not in the dandiset; of the four physiologic and bicuculline slices, light events are recoverable for 3C and 7D only; no channel group of 5C or 8D shows a 10 s light step.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-fr-decrease-0mg",
+     "statement": "In 0-mg media, the share of units whose firing rate fell by at least 25, 50, 75 and 90% during light-ON was 56, 51, 44 and 40% in 9E; 39, 23, 13 and 8% in 10F; 47, 39, 28 and 15% in 11G; 46, 46, 44 and 40% in 12G, so that 15 to 40% of units in 11G and 12G fell by at least 90%.",
+     "source": "Table 2; Results, Optogenetic suppression in provoked hyperexcitability, paragraph 1",
+     "quote": "15 \u2013 40% of units in these slices had a decrease in firing rate of at least 90% during light-ON conditions ( Table 2 , 11G & 12G)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units, which are not in the dandiset. No light step is found in any channel group of any 10F or 11G file, nor in the first channel group of any 9E or 12G file (their other groups were not read), and no file says which recordings are in 0-mg or 0-mg+KA media.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "zero-mg-reduction",
+     "statement": "In 0-mg media, mean firing rates were lower during light-ON, significantly in 9E and 10F, while in the other two slices (11G, 12G) the grouped reduction did not reach significance.",
+     "source": "Results, Optogenetic suppression in provoked hyperexcitability, paragraph 1; Extended Data Fig. 5; Supplemental Table ST3",
+     "quote": "average firing rate reduction of the grouped unit activity in two slices did not meet statistical significance in the zero-magnesium media conditions",
+     "statistics": [
+      {
+       "about": "9E, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.041,
+       "corrected": "Holm-Bonferroni",
+       "n": "17 units"
+      },
+      {
+       "about": "10F, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 7.84e-18,
+       "corrected": "Holm-Bonferroni",
+       "n": "228 units"
+      },
+      {
+       "about": "11G, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.515,
+       "corrected": "Holm-Bonferroni",
+       "n": "23 units"
+      },
+      {
+       "about": "12G, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.233,
+       "corrected": "Holm-Bonferroni",
+       "n": "9 units"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As table2-fr-decrease-0mg; units, light events and condition labels are missing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "zero-mg-isolated-bursts",
+     "statement": "In 0-mg media, 2 of 4 slices showed clear spontaneous bursts of activity lasting under 1 s and several minutes apart, like interictal spikes. 10F is one; the second is 9E in Extended Data Fig. 9 and 11G in the Extended Data Fig. 5 legend.",
+     "source": "Results, Optogenetic suppression in provoked hyperexcitability, paragraph 1; Extended Data Fig. 9; Extended Data Fig. 5d,g",
+     "quote": "Clear, spontaneous bursts of activity were observed 2/4 slices bathed with 0-mg media",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The burst detector runs on the population rate of curated units, which are not in the dandiset. No file says which recordings are in 0-mg media (metadata_insufficient as a second reason).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ka-rhythmic-bursts",
+     "statement": "Adding kainic acid to 0-mg media raised firing rates acutely, and 2 of 4 slices (10F and 11G) developed rhythmic bursts of activity.",
+     "source": "Results, Optogenetic suppression in provoked hyperexcitability, paragraph 2; Fig. 3d,e; Extended Data Fig. 6d,g",
+     "quote": "The addition of KA resulted in acute elevations in firing rate, and in 2/4 slices recorded with KA, rhythmic bursts of activity occurred",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units for the burst detector and the rate comparison, and the 0-mg and 0-mg+KA recordings of each slice, which no file identifies (metadata_insufficient as a second reason).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ka-light-reduction",
+     "statement": "In 0-mg+KA, repeated 10 s illumination lowered firing rates during light-ON in all four slices.",
+     "source": "Results, Optogenetic suppression in provoked hyperexcitability, paragraph 2; Extended Data Fig. 6 legend; Supplemental Table ST4",
+     "quote": "All slices show reduced firing rates during light-ON conditions.",
+     "statistics": [
+      {
+       "about": "9E, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.033,
+       "corrected": "Holm-Bonferroni",
+       "n": "57 units"
+      },
+      {
+       "about": "10F, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 5.52e-14,
+       "corrected": "Holm-Bonferroni",
+       "n": "212 units"
+      },
+      {
+       "about": "11G, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.002,
+       "corrected": "Holm-Bonferroni",
+       "n": "55 units"
+      },
+      {
+       "about": "12G, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.028,
+       "corrected": "Holm-Bonferroni",
+       "n": "17 units"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units; no light step is found in 10F or 11G (every channel group) or in the first group of 9E and 12G, and the 0-mg+KA recordings are not identified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ka-bursts-during-light",
+     "statement": "Rhythmic bursts in 0-mg+KA were less common during light-ON, none occurring during light-ON in 11G, while in 10F they persisted during 3 of 10 trials (T6 to T8).",
+     "source": "Discussion, paragraph 3; Extended Data Fig. 6d,g",
+     "quote": "with none occurring during light-ON conditions in slice 11G ( Extended Data Fig. 6g ) and less common, but still present during 3 of 10 trials in slice 10F",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on ka-rhythmic-bursts, blocked; no light step is found in any channel group of 10F or 11G either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ka-theta-coherence",
+     "statement": "The slices with rhythmic bursting in 0-mg+KA showed increased LFP phase coherence during bursts, most clearly in the theta band, with non-random theta phase distributions during a burst and random ones outside it (slice 10F).",
+     "source": "Results, Optogenetic suppression in provoked hyperexcitability, paragraph 2; Fig. 3e-i; Methods, Kullback-Liebler divergence and phase coherence",
+     "quote": "Slices exhibiting this rhythmic bursting of unit activity also showed increased coherence across most frequency power bands, most clearly in the theta band",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The LFP can be derived from the raw voltage, but the claim depends on ka-rhythmic-bursts, which is blocked, and needs the 0-mg+KA recording of 10F, which no file identifies.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-firing-propagation",
+     "statement": "During a 0-mg+KA burst in slice 10F, the units exceeding 3 SD above baseline firing suggested a progression from the hilar aspect of the granule cell layer to its outer aspect.",
+     "source": "Results, Propagation of epileptiform activity, paragraph 1; Fig. 4a-c; Methods, Propagation of Epileptiform Activity by Firing Rate",
+     "quote": "Plotting the units with relative increases of >3 standard deviations above their baseline firing before the spike event suggested a progression from the hilar aspect of the GCL to the outer aspect",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units and depends on ka-rhythmic-bursts, blocked. The code's recording Hc112723_hckcr1_21841_120323_base cannot be matched to a file, as the files keep no original names; the hilar to outer axis needs the histology, which is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-theta-propagation",
+     "statement": "During rhythmic 0-mg+KA bursts, theta phase propagated as a wave across the granule cell layer from its hilar aspect to its outer aspect, in 10F and in a second slice from a different patient (11G).",
+     "source": "Results, Propagation of epileptiform activity, paragraph 1 and 2; Fig. 4d; Videos 3 and 4; Methods, Theta Waveform Videos",
+     "quote": "Plotting the relative change in the theta phase during these bursts of activity reveals clear propagation of theta waves from the hilar aspect to the outer aspect of the GCL",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on ka-rhythmic-bursts, blocked; the 0-mg+KA recordings of 10F and 11G are not identified, and the hilar axis needs the histology.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "closed-loop-bicuculline",
+     "statement": "Bicuculline raised firing rates above baseline, and closed-loop illumination, triggered when the array's 5-rms spike count over 10 s exceeded a threshold 2 to 4 times baseline, dramatically reduced unit firing, replicated in 3 HcKCR1 slices from 2 patients.",
+     "source": "Results, Optogenetic suppression in provoked hyperexcitability, paragraph 3; Fig. 3j-m; Methods, Activity detection algorithm and closed-loop optical intervention",
+     "quote": "This dramatically reduced the firing of recorded units ( Fig.3h - k , Video 2 ). This was replicated in n=3 HcKCR1-expressing slices derived from n=2 patients.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units; the closed-loop light events are not stored, and reading every channel group, no 10 s light step is found in any 5C or 8D file. The steps in 7D-0, 7D-2 and 7D-5 are 10 s periods at regular intervals (30 s in 7D-0 and 7D-2, 40 s in 7D-5), and 7D-7 has a single period; the files do not label them as closed loop or open loop. The baseline and bicuculline recordings are not identified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "intensity-threshold",
+     "statement": "The light intensity at which firing was suppressed was typically 26.2 to 31.2 mW/mm2, 40 to 50% of LED driver output; experiments used one step above (50 to 60%, 31.2 to 35.8 mW/mm2).",
+     "source": "Results, Optical HcKCR1-mediated inhibition of network activity, paragraph 1; Extended Data Fig. 7",
+     "quote": "The intensity threshold was typically between (26.2 mW/mm 2 - 31.2 mW/mm 2 ), correlating to 40\u201350% of the possible output from our drivers",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units and the intensity of each light step from the stimulation log, which is not in the dandiset. The 3C files 3C-1 to 3C-5 each hold one 10 s light period whose voltage step differs in size (90 to 153 counts), which fits an intensity sweep, but the intensities are not recorded; no 10 s light step is found in any channel group of 5C or 10F.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "chr2-increase",
+     "statement": "In a ChR2-transduced slice (4C), 470 nm light increased unit firing; the rate after light-OFF did not differ significantly from pre, and spike amplitude did not change significantly between pre and light-ON.",
+     "source": "Results, Optical HcKCR1-mediated inhibition of network activity, paragraph 1; Extended Data Fig. 8",
+     "quote": "which demonstrated an increase in unit activity with 470nm light illumination ( Extended Data Fig. 8 )",
+     "statistics": [
+      {
+       "about": "firing rate, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.001,
+       "corrected": "Holm-Bonferroni",
+       "n": "30 units"
+      },
+      {
+       "about": "firing rate, light-ON against OFF",
+       "test": "two-tailed paired t-test",
+       "p": 0.001,
+       "corrected": "Holm-Bonferroni",
+       "n": "30 units"
+      },
+      {
+       "about": "firing rate, pre against OFF",
+       "test": "two-tailed paired t-test",
+       "p": 0.106,
+       "corrected": "Holm-Bonferroni",
+       "n": "30 units"
+      },
+      {
+       "about": "amplitude, pre against light-ON",
+       "test": "two-tailed paired t-test",
+       "p": 0.254,
+       "corrected": "Holm-Bonferroni",
+       "n": "30 units"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units of 4C, which are not in the dandiset. Reading every channel group, light steps of 40 to 58 counts, split across two 10 ms bins and confined to groups 5 to 11, give six 10 s periods 20 s apart in 4C-1 and one in 4C-3, so 470 nm light events can be recovered for those two files; the first channel group alone shows none.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "transduction-not-explaining-response",
+     "statement": "Across the 8 HcKCR1 slices, the fraction of transduced neurons did not clearly explain the fraction of units with reduced firing during light-ON.",
+     "source": "Results, Optogenetic suppression in provoked hyperexcitability, paragraph 3; Supplemental Fig. S2",
+     "quote": "Fraction of neurons transduced in a recording area did not completely explain different fractions of neurons exhibiting reduced firing rates in light-ON conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on table2-fr-decrease-physio-bic and table2-fr-decrease-0mg, both blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s3-reduction-by-condition",
+     "statement": "The mean relative firing-rate reduction during light-ON was larger in physiologic and bicuculline media than in 0-mg or 0-mg+KA, which did not differ from each other.",
+     "source": "Supplemental Fig. S3; Results, Optogenetic suppression in provoked hyperexcitability, paragraph 3; Discussion, paragraph 3; Methods, Mean relative firing rate reduction",
+     "quote": "The magnitude of firing rate reductions in 0-mg and 0-mg+KA conditions was less than that observed in physiologic media and GABAergic blockade ( Supplemental Fig S3 )",
+     "statistics": [
+      {
+       "about": "Physio+Bic against 0-mg",
+       "test": "two-tailed Welch's t-test",
+       "p": 0.0095,
+       "n": "4 and 4 slices"
+      },
+      {
+       "about": "Physio+Bic against 0-mg+KA",
+       "test": "two-tailed Welch's t-test",
+       "p": 0.0053,
+       "n": "4 and 4 slices"
+      },
+      {
+       "about": "0-mg against 0-mg+KA",
+       "test": "two-tailed Welch's t-test",
+       "p": 0.2,
+       "n": "4 and 4 slices"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units, the light events of all eight HcKCR1 slices and the condition of each recording; of the HcKCR1 slices, light events can be recovered only for 3C and 7D.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "waveform-clusters",
+     "statement": "WaveMAP clustering of 3681 unit waveforms from 66 recordings of 12 slices gave 12 waveform clusters.",
+     "source": "Results, Waveform and opto-response clustering, paragraph 1; Fig. 5a,b; Methods, Waveform Clustering for Cell Typing",
+     "quote": "The total number of waveforms is 3681 gathered from 66 recordings on 12 slices.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the mean waveforms of curated units, which are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "waveform-gcl-association",
+     "statement": "Five waveform clusters (5, 6, 8, 9, 10) were significantly overrepresented in recordings over the dentate granule cell layer (3 slices) compared with 6 slices without it, with odds ratios of 10.2, 8.3, 8.4, 2.3 and 2.3; clusters 1, 2, 3, 4 and 11 were underrepresented.",
+     "source": "Results, Waveform and opto-response clustering, paragraph 1; Fig. 5 legend; Supplemental Table ST5; Methods, Waveform cluster association with GCL",
+     "quote": "Five waveform clusters were significantly overrepresented in the GCL recordings ( Fig. 5 , Supplemental Table ST5 )",
+     "statistics": [
+      {
+       "about": "cluster 5",
+       "test": "logistic regression",
+       "p": 2.658e-15,
+       "corrected": "Benjamini-Hochberg",
+       "ci": {
+        "level": 0.95,
+        "low": 5.81,
+        "high": 18.03
+       }
+      },
+      {
+       "about": "cluster 6",
+       "test": "logistic regression",
+       "p": 1.238e-10,
+       "corrected": "Benjamini-Hochberg",
+       "ci": {
+        "level": 0.95,
+        "low": 4.386,
+        "high": 15.685
+       }
+      },
+      {
+       "about": "cluster 8",
+       "test": "logistic regression",
+       "p": 5.951e-12,
+       "corrected": "Benjamini-Hochberg",
+       "ci": {
+        "level": 0.95,
+        "low": 4.614,
+        "high": 15.273
+       }
+      },
+      {
+       "about": "cluster 9",
+       "test": "logistic regression",
+       "p": 7.781e-05,
+       "corrected": "Benjamini-Hochberg",
+       "ci": {
+        "level": 0.95,
+        "low": 1.537,
+        "high": 3.493
+       }
+      },
+      {
+       "about": "cluster 10",
+       "test": "logistic regression",
+       "p": 0.0003634,
+       "corrected": "Benjamini-Hochberg",
+       "ci": {
+        "level": 0.95,
+        "low": 1.471,
+        "high": 3.682
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on waveform-clusters, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "opto-response-clusters",
+     "statement": "Clustering of units' peristimulus histograms gave 5 opto-response clusters, 4 of which (clusters 1 to 4) showed significant changes in mean firing rate and firing-rate variability between the 10 s before and during light-ON, while cluster 5 did not.",
+     "source": "Results, Waveform and opto-response clustering, paragraph 2; Fig. 6a-c and legend; Methods, Peristimulus Histogram Clustering",
+     "quote": "We found 5 distinct opto-response clusters ( Fig. 6 a , b ), 4 of which showed statistically significant reductions in mean firing rate and firing rate distribution with optogenetic activation ( Fig. 6 c )",
+     "statistics": [
+      {
+       "about": "cluster 1 mean rate, light-OFF against light-ON",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 2.5e-45
+      },
+      {
+       "about": "cluster 2 mean rate",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 0.0014
+      },
+      {
+       "about": "cluster 3 mean rate",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 7.29e-24
+      },
+      {
+       "about": "cluster 4 mean rate",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 1.36e-16
+      },
+      {
+       "about": "cluster 5 mean rate",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 0.0741
+      },
+      {
+       "about": "cluster 1 rate SD",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 6.43e-25
+      },
+      {
+       "about": "cluster 2 rate SD",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 0.0002
+      },
+      {
+       "about": "cluster 3 rate SD",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 1.28e-21
+      },
+      {
+       "about": "cluster 4 rate SD",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 9.38e-13
+      },
+      {
+       "about": "cluster 5 rate SD",
+       "test": "two-sided Kolmogorov-Smirnov",
+       "p": 0.174
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs curated units and the light trials of all HcKCR1 slices; of these, light events can be recovered only for 3C and 7D.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "opto-waveform-association",
+     "statement": "Opto-response and waveform cluster identities were not independent (chi-square p < 2.2e-16), and the GCL-associated waveform clusters together were overrepresented in opto-response cluster 3 (standardized residual 3.28) and underrepresented in cluster 2 (-5.53).",
+     "source": "Results, Waveform and opto-response clustering, paragraph 2; Supplemental Table ST6; Fig. 6 legend; Methods, Waveform cluster association with opto response clusters",
+     "quote": "There was indeed a significant association between the GCL waveform cluster and the opto-response cluster 3 ( Supplemental Table ST6 )",
+     "statistics": [
+      {
+       "about": "independence of waveform and opto-response clusters",
+       "test": "chi-square test of independence",
+       "p": 2.2e-16,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on waveform-clusters, waveform-gcl-association and opto-response-clusters, all blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "opto-cluster3-profile",
+     "statement": "Opto-response cluster 3, where GCL waveform clusters were overrepresented, had on average a high baseline firing rate and a modest reduction during illumination.",
+     "source": "Discussion, paragraph 5; Fig. 6b,c",
+     "quote": "which had on average a high baseline firing rate and modest reduction during slice illumination ( Fig. 6 b & c )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on opto-response-clusters, blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The 69 files hold raw HD-MEA voltage only. The sorted and curated units on which almost every result of the paper rests are not in the dandiset, nor public elsewhere, and the histology and patch-clamp data are not deposited. 27 of the 28 claims on the paper's recordings cannot be tested.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The light ON and OFF times, which the Methods say were stored in the MaxWell file's GPIO bit and in a stimulation log, are not in the files, nor are the light intensities. They can be recovered from a step the LED leaves in the voltage in the eight 3C recordings (on every channel) and in 4C-1, 4C-3, 7D-0, 7D-2, 7D-5 and 7D-7 (on part of the array, steps of 40 to 88 counts). No channel group of any 5C, 8D, 10F or 11G recording shows a 10 s light step, including 10F, which the paper illuminated for 10 trials, and 9E and 12G show none in the first channel group.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No file says which medium, drug or light protocol it was recorded under (physiologic, bicuculline, 0-mg, 0-mg plus kainic acid, closed loop, intensity sweep), which opsin its slice carries, or which of the paper's recordings it is. The session descriptions are empty and the files keep no original recording names, so the paper's per-condition analyses cannot be assigned to files.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Each file's subject_id is the recording (for example 3C-7), so the archive counts 69 subjects where the paper has 7 patients and 12 slices. Every session_start_time is 2024-09-28, the date of the NWB conversion, not of the recording.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The NWB fields for the experiment are empty or absent in every file. general/ holds no virus, pharmacology, protocol, notes, optogenetics, slices or surgery field and no subject genotype, strain or description; experiment_description is the paper's title in all 69 files, and the ElectricalSeries' description and comments are the converter's defaults.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In the 3C recordings, light onset drives 81 to 94% of the channels in the first 64-channel group to the ends of the 0 to 1023 range in the first 0.5 s, and some stay there through the light period. In at least one 5C recording, 34% of that channel group sits at the ends of the range in the median 100 ms bin.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Electrode location is \"unknown\" for every channel, and nothing places the array over the slice's anatomy (granule cell layer, hilus), which the paper's GCL and propagation analyses use.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The conversion to volts is 6.29 uV per count for slices 1A to 8D and 1.57 uV per count for 9E to 12G, a gain difference that the dandiset does not describe.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text under paper/. The verifier queried the DANDI API for the version's assets and metadata, checked Table 1 against cell 16 by hand, and tested light_steps, window_rates and reduce_chunk on synthetic inputs.",
+     "agreed": 29,
+     "of": 29,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, the helper module, the claims file and the attempt record with the author's conclusions, with the paper's full text under paper/; the verifier checked each number of the conclusions and the record against its cell.",
+     "agreed": 29,
+     "of": 29,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The proposed change of outcome for simulation-dampening and the analysis behind it (cells 27 to 30 of the executed notebook of the final revision), with the script at commit 6865bf6 read by the verifier.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": []
+  }
+ ],
+ "entries": [
+  {
+   "name": "andrews-2024",
+   "type": "reproduction",
+   "title": "Optogenetic inhibition in human hippocampal slices on HD-MEAs (Andrews, Geng, Voitiuk et al. 2024)",
+   "description": "Tests the findings of Andrews, Geng, Voitiuk et al. (2024) on dandiset 001132, which holds 69 raw HD-MEA voltage recordings of 12 human hippocampal slices from 7 patients. The files hold no sorted units, light events or condition labels, so only the cohort claim is tested; the notebook surveys every recording, recovers light periods of slices 3C, 4C and 7D from the voltage, shows a threshold-crossing variant for those of 3C, and runs the paper's network model.",
+   "datasets": [
+    "dandi:001132"
+   ],
+   "papers": [
+    "10.1038/s41593-024-01782-5"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_andrews_2024.ipynb",
+     "title": "Reproducing Andrews, Geng, Voitiuk et al. (2024) from dandiset 001132",
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 20,
+   "hashed": true
+  }
+ ],
+ "badge": null
+}
