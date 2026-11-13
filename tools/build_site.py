@@ -1142,6 +1142,7 @@ def author_rows(data: dict) -> list[dict]:
             "id": orcid, "name": a["name"], "family": a["name"].split()[-1] + ", " + " ".join(a["name"].split()[:-1]),
             "page": f"authors/{orcid}/", "n_papers": len(a["papers"]), "n_attempted": len(attempted),
             "n_datasets": len(a["datasets"]),
+            "badge": (author_badge(data, a) or {}).get("text"),
             "attempted": "yes" if attempted else "no",
             "as": [k for k, on in (("author", a["papers"]), ("contributor", a["datasets"])) if on],
             "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims"
@@ -1212,6 +1213,11 @@ def page_author(data: dict, author: dict) -> str:
               f'It may be a failure of the attempt.</p>') if n_claims else ""
     said = " · ".join(x for x in (f'{n} paper{"" if n == 1 else "s"}, {tried} attempted' if n else "",
                                   f'{m} dataset{"" if m == 1 else "s"}' if m else "") if x)
+    badge = author_badge(data, author)
+    badge_panel = badge_how(
+        badge, f"{root}badge/authors/{e(orcid)}.svg", "Badge for this page",
+        "It counts the findings of these papers reproduced in full by attempts an independent verifier has checked.",
+        "on a lab&rsquo;s site or a profile", f"{root}api/authors/{e(orcid)}.json") if badge else ""
     tabs = [("papers", "Papers", n), ("datasets", "Datasets", m)]
     tabs = [t for t in tabs if t[2]] or tabs[:1]
     tab_buttons = "".join(f'<button type="button" role="tab" data-panel="{k}" aria-selected="false">{label} '
@@ -1236,6 +1242,7 @@ def page_author(data: dict, author: dict) -> str:
 <main>
   <div class="tabs" role="tablist">{tab_buttons}</div>
   {"".join(panels[k] for k, _, _ in tabs)}
+  {badge_panel}
 </main>'''
     structured = {"@context": "https://schema.org", "@type": "Person", "name": name,
                   "identifier": f"https://orcid.org/{orcid}", "sameAs": f"https://orcid.org/{orcid}"}
@@ -1274,6 +1281,43 @@ def badge_of(data: dict, key: str) -> dict | None:
     return {"text": text, "reproduced": total, "papers": papers, "url": SITE_URL + page_of(key),
             "svg": SITE_URL + f"badge/{archive}/{ident}.svg",
             "alt": f"Encore: {text.replace(' · ', ', from ')}, from {dataset_label(key)}"}
+
+
+def author_badge(data: dict, author: dict) -> dict | None:
+    """The badge of a person (docs/badges.md): how many findings of their papers were reproduced, counted as a
+    dataset's badge counts them (claims on the datasets, reproduced in full, in current attempts an independent
+    verifier has checked), over all their papers in the registry. None when that is nothing."""
+    papers = []
+    for q in author["papers"]:
+        n = sum(outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+        if n:
+            papers.append({"doi": q["doi"], "key": q["key"], "byline": q["byline"], "title": q["title"],
+                           "reproduced": n, "url": SITE_URL + f'papers/{q["key"]}/'})
+    if not papers:
+        return None
+    papers.sort(key=lambda x: (-x["reproduced"], x["key"]))
+    total = sum(x["reproduced"] for x in papers)
+    text = (f'{total} finding{"" if total == 1 else "s"} reproduced'
+            + (f" · {len(papers)} papers" if len(papers) > 1 else ""))
+    return {"text": text, "reproduced": total, "papers": papers, "url": SITE_URL + f'authors/{author["orcid"]}/',
+            "svg": SITE_URL + f'badge/authors/{author["orcid"]}.svg',
+            "alt": f"Encore: {text.replace(' · ', ', from ')}, in the work of {author['name']}"}
+
+
+def badge_how(badge: dict, src: str, title: str, counts: str, where: str, json_href: str) -> str:
+    """The section of a page with its badge and what to paste to show it elsewhere, as HTML and as Markdown (for a
+    profile on GitHub, say)."""
+    as_html = f'<a href="{badge["url"]}"><img src="{badge["svg"]}" alt="{badge["alt"]}"></a>'
+    as_markdown = f'[![{badge["alt"]}]({badge["svg"]})]({badge["url"]})'
+    return f'''<details class="panel badge-how"><summary><h2>{title}</h2>
+    <img src="{src}" alt="{e(badge["alt"])}" height="22"></summary>
+    <p class="sub small">{counts} To show it {where}, linked to this page:</p>
+    <pre class="snippet"><code>{e(as_html)}</code></pre>
+    <p class="sub small">Or as Markdown:</p>
+    <pre class="snippet"><code>{e(as_markdown)}</code></pre>
+    <p class="sub small">The same numbers are in <a href="{json_href}">this page&rsquo;s JSON</a>, under
+    <code>badge</code> (<a href="{REPO_URL}/blob/main/docs/badges.md">how it is counted</a>).</p>
+  </details>'''
 
 
 # Widths of Verdana 11px, as badge services draw them, by character class: close enough to size a badge, and the
@@ -2683,16 +2727,11 @@ def page_dataset(data: dict, key: str) -> str:
     badge = badge_of(data, key)
     archive_, ident_ = split_key(key)
     # For the dataset's owner or its archive: the badge, and what to paste to show it.
-    embed = (f'<a href="{badge["url"]}"><img src="{badge["svg"]}" alt="{e(badge["alt"])}"></a>') if badge else ""
-    badge_panel = (f'''<details class="panel badge-how"><summary><h2>Badge for this dataset</h2>
-    <img src="{root}badge/{e(archive_)}/{e(ident_)}.svg" alt="{e(badge["alt"])}" height="22"></summary>
-    <p class="sub small">It counts the findings reproduced in full from this dataset by attempts an independent
-    verifier has checked, over every paper tested on it. To show it on the dataset&rsquo;s own page, linked to this
-    one:</p>
-    <pre class="snippet"><code>{e(embed)}</code></pre>
-    <p class="sub small">The same numbers are in <a href="{root}api/{page_of(key).rstrip("/")}.json">this dataset&rsquo;s
-    JSON</a>, under <code>badge</code> (<a href="{REPO_URL}/blob/main/docs/badges.md">how it is counted</a>).</p>
-  </details>''') if badge else ""
+    badge_panel = badge_how(
+        badge, f"{root}badge/{e(archive_)}/{e(ident_)}.svg", "Badge for this dataset",
+        "It counts the findings reproduced in full from this dataset by attempts an independent verifier has "
+        "checked, over every paper tested on it.", "on the dataset&rsquo;s own page",
+        f'{root}api/{page_of(key).rstrip("/")}.json') if badge else ""
     reproduced = (f'<p class="lede reproduced-line"><strong>{badge["reproduced"]}</strong> finding'
                   f'{"" if badge["reproduced"] == 1 else "s"} reproduced from this dataset'
                   + (f', in {len(badge["papers"])} papers' if len(badge["papers"]) > 1 else "")
@@ -3371,6 +3410,26 @@ def build(data: dict, output: Path) -> None:
     for orcid, author in author_index(data).items():
         (output / "authors" / orcid).mkdir(parents=True, exist_ok=True)
         (output / "authors" / orcid / "index.html").write_text(page_author(data, author))
+        badge = author_badge(data, author)
+        if badge:
+            (output / "badge" / "authors").mkdir(parents=True, exist_ok=True)
+            (output / "badge" / "authors" / f"{orcid}.svg").write_text(badge_svg(badge))
+        # For a lab's site or a profile (docs/badges.md): the person's papers and datasets here, and the badge.
+        (output / "api" / "authors").mkdir(parents=True, exist_ok=True)
+        counts = {x["id"]: x for x in r["papers"]}
+        (output / "api" / "authors" / f"{orcid}.json").write_text(json.dumps({
+            "orcid": orcid, "name": author["name"], "page": f"authors/{orcid}/", "url": SITE_URL + f"authors/{orcid}/",
+            "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+            "badge": badge,
+            "papers": [{"key": q["key"], "byline": q["byline"], "title": q["title"], "doi": q["doi"],
+                        "status": q["status"], "outcome_counts": counts.get(q["key"], {}).get("counts"),
+                        "tier": counts.get(q["key"], {}).get("tier"),
+                        "url": SITE_URL + f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims" else None}
+                       for q in author["papers"]],
+            "datasets": [{"key": d["key"], "label": dataset_label(d["key"]), "roles": d["roles"],
+                          "url": SITE_URL + page_of(d["key"]) if d["key"] in current_attempts(data) else None}
+                         for d in author["datasets"]],
+        }, indent=1) + "\n")
     for key in claims_only(data):
         # A dataset whose paper's claims are read and not yet attempted: the dataset's page, whose papers list
         # leads to the claims on the paper's page.
