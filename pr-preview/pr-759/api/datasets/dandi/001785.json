@@ -1,0 +1,1338 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001785",
+  "label": "DANDI:001785"
+ },
+ "page": "datasets/dandi/001785/",
+ "generated": "2026-11-13T22:22:37+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 7,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 2
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 14,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 6
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 2,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "fujimoto-2026-02",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001785",
+    "version": "0.260615.1835",
+    "doi": "10.48324/dandi.001785/0.260615.1835",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001785"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001785",
+   "label": "DANDI:001785",
+   "dataset_version": "0.260615.1835",
+   "paper": "10.1038/s41593-026-02301-4",
+   "paper_title": "Deep brain stimulation induces white matter remodeling and functional changes to brain-wide networks",
+   "date": "2026-11-03",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41690194181"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "fujimoto-2026-001785",
+   "entry_title": "White matter and network changes after subcallosal cingulate DBS in macaques (Fujimoto et al. 2026)",
+   "summary": "Most main findings hold in this data: stimulation raised fractional anisotropy in the stimulated cingulum bundle, lowered connectivity of the subcallosal seed with default mode, limbic and central executive hubs, and raised the share of myelinating oligodendrocytes in the mid-cingulate. The whole-brain connectivity matrices and the myelin g-ratio could not be tested, because the dataset has no fMRI time series and no hand axon measurements. The \"no change\" finding in the anterior cingulum did not reproduce, but it rests on the agent's own cell counting, since the paper does not describe its method. The white matter and connectivity results reuse the paper's own voxel selections, so they show the dataset holds the data, not that the regions would be found again. Among minor claims, the no-stimulation animal's foraging fell, unlike the reported null.",
+   "description": "Tests the findings of Fujimoto, Fujimoto, Elorette et al. (2026) on dandiset 001785, which holds per-session FA maps and normalized seed connectivity maps of two stimulated monkeys, one implanted control and three nonsurgical controls, with CC1 and DAPI immunofluorescence images and electron micrographs. Tract and ROI membership of voxels is taken from the paper's source data in DANDI:001773, and cells are counted from the images. The connectivity matrices and the hand-measured g-ratios cannot be tested from the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_fujimoto_2026.ipynb",
+     "title": "Reproducing Fujimoto et al. (2026) from dandiset 001785",
+     "executed": "notebooks/fujimoto-2026-001785/reproduce_fujimoto_2026.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "link-fc-voxels",
+     "statement": "The dandiset's seed connectivity maps can be linked, voxel by voxel, to the target ROI voxels listed in the paper's source data, and the dandiset's values at those voxels agree with the normalized z the source data give.",
+     "source": "Data and Code availability; DANDI:001773 version 0.260416.1939, source_data/dbs_FC25norm_mkNT_concatenated_all_data_a.xlsx and dbs_FC25norm_mkD_concatenated_all_data_a.xlsx",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "All 5087 listed voxels of each of the six maps (N, T and D, pre and post) fall on grid centres of the dandiset's maps once the AFNI coordinates are read as RAI (x and y sign-flipped), and the dandiset's value equals the source data's normalized z within 5e-7 at every one. The dandiset's FC files are therefore the paper's normalized seed maps. The voxel counts per ROI and side that follow from the lists equal Supplementary Table 8 (PCC 249, vmFC 109, STG 499, DLPFC 766 per side). Since the values are the paper's and every ROI selection is the paper's, the seed claims re-run the paper's statistics on its own data; they show that the dandiset holds the data behind them, not that the ROIs would be found again.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-fa-voxels",
+     "statement": "The tract and CB subregion voxels of the paper's FA source data can be located in the dandiset's FA maps.",
+     "source": "Data and Code availability; DANDI:001773 version 0.260416.1939, source_data/dbs_FA_wholetract_data_a.xlsx, dbs_FA_CB_subpart_data_a.xlsx, dbs_FA_wholetract_mkD_data_a.xlsx and dbs_FA_CB_subpart_mkD_data_a.xlsx",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "6332 of 6332 FA values of the four sheets are found in the map of their monkey and session, within 5e-7, 199 by exact float32 equality and 6133 as the nearest value within 1e-6. 641 values have more than one candidate voxel (17 exact, 624 within 1e-6), so for about one value in ten the voxel itself is not identified; the candidates' values differ by at most 1.6e-6, and the tests use values only. The lists repeat voxels in two ways. Within one monkey, session, side and tract there are 99 repeats in the whole-tract list of N and T, 44 in the subregion list, and 40 and 18 in the lists of D, each the same value listed twice in the paper's sheet. Across the tracts of one session, 233 voxels of the whole-tract list of N and T are listed in two or more tracts (2 across sides), most often UF with FM or CB with UF on one side, as are 71 voxels of the whole-tract list of D, 1 of the N and T subregion list and 18 of the D subregion list (dACC-CB with MCC-CB). Each carries the same value in every tract it is listed in; for 23, 12, 1 and 3 of them the value has more than one candidate voxel, so they may be two voxels of equal value, and the others are one voxel in two tract lists, where the paper's tracts overlap. No voxel is matched by two different values. So the paper's voxel n counts some voxels twice within a tract, and some voxels enter the tests in more than one tract. Pre and post values are both found in the deposited maps, although these lie each in their own space. Since the values are the paper's and every tract and subregion selection is the paper's, the FA claims re-run the paper's statistics on its own data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-if-counts",
+     "statement": "CC1 and DAPI counts computed from the dandiset's immunofluorescence images agree, field by field, with the counts of the paper's source data.",
+     "source": "Data and Code availability; DANDI:001773 version 0.260416.1939, source_data/CC1_MCC_CB_data_a.xlsx, CC1_dACC_CB_data_a.xlsx, CC1_UF-FMoverlap_data_a.xlsx and CC1_mkD_MCC_CB_data_a.xlsx",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "All 360 rows of the four sheets have their image, matched by section, hemisphere and field in the file name; the image N122 RW6 (UF-FM overlap) has no row. With the smallest object 10 pixels (IsoData; Otsu is the same to two digits) the per-field counts correlate with the paper's at r = 0.93 (CC1) and 0.79 (DAPI) in the MCC-CB of N and T, median ratios 1.01 and 0.84; 0.98 and 0.98, ratios 1.14 and 1.08, in the dACC-CB; 0.69 and 0.80, ratios 1.06 and 0.95, in the UF-FM overlap; 0.66 and 0.80, ratios 1.30 and 1.02, in the MCC-CB of D. With 50 pixels r is similar (0.71 to 0.98) and the counts 9 to 35% lower than the paper's (MCC-CB of D, r = 0.74 and 0.81, ratios 0.88 and 0.90). The link holds in three of the four regions, MCC-CB of N and T and dACC-CB at 10 pixels, MCC-CB of D at 50 pixels, and under no single reading in all four. In the UF-FM overlap it fails under every reading (CC1 r 0.69 at 10 pixels, CC1 ratio 0.755 at 50). Red is CC1 and blue DAPI; red counts follow the sheet's CC1 column and lie below the blue counts (median red 232 to 421, blue 302 to 581, per region). Scatter plots of the per-field counts are in the notebook. The counting is the author's approximation of the paper's FIJI counts (one global threshold per section and channel, 8-connected objects, no background subtraction or watershed, a size filter the paper does not give). The criterion of this link claim was written after the counts were first computed.",
+     "deviations": [
+      "The paper's thresholds were set by hand per section in FIJI and are not reported; here a threshold is computed per section and channel over all fields of the section (Methods, Immunofluorescence of myelinating oligodendrocytes, \"section-specific intensity thresholds for each channel\")."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed1-behavior-increase",
+     "statement": "In monkeys N and T, time spent moving and foraging in the home cage increased after 6 weeks of SCC-DBS (one-way ANOVA, movement F(1,236) = 34.61, foraging F(1,236) = 17.35).",
+     "source": "Results, SCC-DBS induces selective macroscale remodeling in the CB, paragraph 2; Extended Data Fig. 1",
+     "quote": "Time spent moving and foraging both increased after SCC-DBS, with concordant effects observed across subjects",
+     "statistics": [
+      {
+       "about": "movement, pre against post",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,236) = 34.61",
+       "p": 1.37e-08,
+       "n": "120 bins pre and 120 post (60 per animal per session)"
+      },
+      {
+       "about": "foraging, pre against post",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,236) = 17.35",
+       "p": 4.37e-05,
+       "n": "120 bins pre and 120 post"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "On the 240 bins of N and T, anovan with monkey x stim gives movement F(1,236) = 34.61, p = 1.4e-08, and foraging F(1,236) = 17.35, p = 4.4e-05, as reported. Post proportions exceed pre in N (movement 0.08 to 0.55, foraging 0.03 to 0.05) and T (0.20 to 0.38, 0.02 to 0.30). The data are the paper's binarized bins in DANDI:001773; the videos are not public. The sheet's own column headers (sec, movement, foraging, mk, stim, group), printed in the notebook, confirm which column is which.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001773 version 0.260416.1939, source_data/dbs_behavior_data_a.xlsx",
+     "proposed": null
+    },
+    {
+     "claim": "ed1-sham-no-behavior-change",
+     "statement": "The nonstimulation control animal (monkey D) showed no change in movement or foraging.",
+     "source": "Results, The impact of SCC-DBS lead insertion on functional and structural brain networks, paragraph 2; Extended Data Fig. 1",
+     "quote": "First, there was no change in the amount of movement or foraging in naturalistic behavior",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "In monkey D movement does not change (0.38 to 0.27 of bins, F(1,118) = 1.86, p = 0.18), but foraging falls (0.18 to 0.05, F(1,118) = 5.32, p = 0.023). The paper reports no test for D; by the test the claims file applies, one of the two behaviours changes, as a decrease.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001773 version 0.260416.1939, source_data/dbs_behavior_data_a.xlsx",
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-cb-fa-increase",
+     "statement": "After 6 weeks of SCC-DBS, FA increased in the cingulum bundle of the stimulated hemisphere (PrePost x side interaction F(1,3187) = 4.64, p = 0.0312; Tukey-Kramer pre against post in the stimulated CB, p = 0.022).",
+     "source": "Results, SCC-DBS induces selective macroscale remodeling in the CB, paragraph 3; Fig. 2a",
+     "quote": "We found there was a selective increase in FA in the CB in the stimulated hemisphere, particularly the mid-cingulate portion, after 6 weeks of SCC-DBS",
+     "statistics": [
+      {
+       "about": "PrePost x side interaction",
+       "test": "three-way ANOVA (DBS x side x tract, monkey as a fixed effect)",
+       "statistic": "F(1,3187) = 4.64, partial eta squared 0.0015",
+       "p": 0.0312
+      },
+      {
+       "about": "stimulated CB, pre against post",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.022,
+       "corrected": "Tukey-Kramer",
+       "n": "380 voxels pre and 380 post, pooled over monkeys N and T"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "PrePost x side F(1,3187) = 4.64, p = 0.031, partial eta squared 0.0015; the stimulated CB rises from 0.324 to 0.369 (Tukey-Kramer p = 0.022), as reported. The FA values are the dandiset's, at the voxels of the paper's lists (link-fa-voxels), so the voxel counts are the paper's and the statistics repeat the paper's.",
+     "deviations": [
+      "Tract membership of voxels is taken from the paper's source data, located in the dandiset's FA maps by value; the dandiset holds no tract masks, and the tracking, the registration and the lead-track exclusion were not redone. Both readings of the lead-track exclusion in the claims file therefore reduce to the paper's own exclusion.",
+      "The claim's data field was set to with_labels, and link-fa-voxels added to depends_on, since the tract labels come from outside the dandiset."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-no-other-tract-change",
+     "statement": "FA did not change consistently in the stimulated UF or FM, nor in any of the three tracts in the control hemisphere.",
+     "source": "Results, SCC-DBS induces selective macroscale remodeling in the CB, paragraph 3; Fig. 2a bottom; Extended Data Figs. 2 to 4",
+     "quote": "No consistent changes were apparent in either the stimulated UF or the FM ... or in the same tracts within the control hemisphere",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "None of the five other pre-post comparisons is significant (Tukey-Kramer p = 0.86 to 1.0; changes -0.037 to +0.009 in FA).",
+     "deviations": [
+      "Tract labels from the paper's source data, as for fig2a-cb-fa-increase."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2-cb-both-monkeys",
+     "statement": "Both stimulated monkeys showed an FA change in the same direction in the stimulated CB.",
+     "source": "Results, SCC-DBS induces selective macroscale remodeling in the CB, paragraph 3; Extended Data Fig. 2",
+     "quote": "Importantly, both monkeys exhibited changes in the same direction",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "Mean FA over the stimulated CB rises by 0.019 in N (0.311 to 0.330) and 0.079 in T (0.336 to 0.415).",
+     "deviations": [
+      "Tract labels from the paper's source data, as for fig2a-cb-fa-increase."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-mcc-cb-increase",
+     "statement": "Of four CB subregions, only the mid-cingulate part on the stimulated side showed an FA increase, in both animals (PrePost x side interaction F(1,1357) = 5.42, p = 0.020; Tukey-Kramer for the stimulated MCC-CB, p = 0.0017).",
+     "source": "Results, SCC-DBS induces selective macroscale remodeling in the CB, paragraph 4; Fig. 2b",
+     "quote": "Comparing the FA values before and after 6 weeks of DBS in four CB subregions revealed that only the mid-cingulate region on the stimulated side showed an increase in FA in both animals",
+     "statistics": [
+      {
+       "about": "PrePost x side interaction",
+       "test": "three-way ANOVA (DBS x side x subregion, monkey as a fixed effect)",
+       "statistic": "F(1,1357) = 5.42, partial eta squared 0.0040",
+       "p": 0.02
+      },
+      {
+       "about": "stimulated MCC-CB, pre against post",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.0017,
+       "corrected": "Tukey-Kramer",
+       "n": "55 voxels pre and 55 post, pooled over N and T"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "PrePost x side F(1,1357) = 5.42, p = 0.020; the stimulated MCC-CB rises from 0.416 to 0.551 (Tukey-Kramer p = 0.0018); none of the seven other comparisons rises significantly (p = 0.91 to 1.0); the stimulated MCC-CB rises in N (+0.081) and T (+0.205).",
+     "deviations": [
+      "CB subregions are the paper's own, from its source data located in the dandiset by value, in place of the D99 atlas; both readings of [CB-PARTS] in the claims file therefore reduce to the paper's assignment."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-cc1-dapi-ratio-mcc",
+     "statement": "The proportion of CC1-positive cells among DAPI-stained cells was higher in the MCC-CB of the stimulated hemisphere than in the control hemisphere, in both animals (F(1,108) = 9, p = 0.0034).",
+     "source": "Results, SCC-DBS induces increased myelinating oligodendrocytes and the degree of myelination, paragraph 1; Fig. 3b,c",
+     "quote": "The proportion of CC1 positive cells in the whole DAPI stained population was higher in the mid-cingulate portion of the CB on the stimulated side compared to the control side in both animals",
+     "statistics": [
+      {
+       "about": "side main effect on the CC1/DAPI ratio",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,108) = 9, partial eta squared 0.077",
+       "p": 0.0034,
+       "n": "56 fields per hemisphere (7 fields x 4 sections x 2 monkeys)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "Under all four counting readings the stimulated MCC-CB has the higher CC1/DAPI ratio, side F(1,108) = 9.5 to 14.4, p = 0.0002 to 0.0026, stimulated minus control 5.1 to 6.9 points, higher in N (5.1 to 8.1) and in T (5.0 to 5.8). With the paper's counts the same test gives F = 9.00, p = 0.0034, as reported.",
+     "deviations": [
+      "Cells counted here from the images (see link-if-counts); the smallest object size is not given by the paper and is run at 10 and 50 pixels, the threshold method at IsoData and Otsu. All four readings give the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5-cc1-count-dapi",
+     "statement": "In the MCC-CB the number of CC1-positive cells was higher on the stimulated side (F(1,108) = 6.22, p = 0.0142), while the number of DAPI-positive cells did not differ (F(1,108) = 0.55, p = 0.4617).",
+     "source": "Extended Data Fig. 5 legend",
+     "quote": "The main effect of side for the number of CC1 positive cells was significant ... while no significant difference was observed for the number of DAPI positive cells",
+     "statistics": [
+      {
+       "about": "CC1-positive count, side main effect",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,108) = 6.22, partial eta squared 0.054",
+       "p": 0.0142,
+       "n": "56 fields per hemisphere"
+      },
+      {
+       "about": "DAPI-positive count, side main effect",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,108) = 0.55, partial eta squared 0.0050",
+       "p": 0.4617,
+       "n": "56 fields per hemisphere"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "CC1 counts are higher on the stimulated side under all four readings (F(1,108) = 5.9 to 9.2, p = 0.0030 to 0.017), and DAPI counts do not differ (p = 0.39 to 0.97).",
+     "deviations": [
+      "Cells counted here, as for fig3c-cc1-dapi-ratio-mcc."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6a-dacc-cb-no-change",
+     "statement": "In the dACC portion of the CB, neither the CC1/DAPI ratio nor the CC1 or DAPI counts differed between hemispheres (ratio F(1,108) = 2.93, p = 0.0899).",
+     "source": "Results, SCC-DBS induces increased myelinating oligodendrocytes and the degree of myelination, paragraph 1; Extended Data Fig. 6a",
+     "quote": "No changes were observed in the anterior portion of CB, consistent with the lack of FA alterations there",
+     "statistics": [
+      {
+       "about": "CC1/DAPI ratio",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,108) = 2.93",
+       "p": 0.0899,
+       "n": "56 fields per hemisphere"
+      },
+      {
+       "about": "CC1-positive count",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,108) = 0",
+       "p": 0.9974
+      },
+      {
+       "about": "DAPI-positive count",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,108) = 1.22",
+       "p": 0.2718
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "Under all four readings the dACC-CB CC1/DAPI ratio differs between hemispheres (F(1,108) = 6.3 to 7.9, p = 0.0058 to 0.013), lower on the stimulated side by 3.4 to 4.0 points (eta squared 0.055 to 0.068); the CC1 and DAPI counts do not differ (p = 0.29 to 0.80). With the paper's own counts the ratio does not differ (F = 2.93, p = 0.090), as reported, so the difference comes from the counts made here; in this region they correlate with the paper's at r = 0.98 for each channel and run 8 to 14% higher with the smallest object 10 pixels (r = 0.94 and 0.98, 9 to 21% lower, with 50 pixels), and DAPI counts are higher on the stimulated side (by 9 to 13 cells per field), which lowers the ratio there. The link holds in this region at 10 pixels, but the counting only approximates the paper's (link-if-counts), so the difference may come from the method of counting, not the tissue.",
+     "deviations": [
+      "Cells counted here, as for fig3c-cc1-dapi-ratio-mcc."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6b-uf-fm-no-change",
+     "statement": "In the region where the UF and FM overlap, oligodendrocyte measures did not differ between hemispheres (CC1/DAPI ratio F(1,76) = 1.45, p = 0.2319).",
+     "source": "Results, SCC-DBS induces increased myelinating oligodendrocytes and the degree of myelination, paragraph 1; Extended Data Fig. 6b",
+     "quote": "Similarly, the region where the FM and UF overlap showed no oligodendrocyte changes",
+     "statistics": [
+      {
+       "about": "CC1/DAPI ratio",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,76) = 1.45",
+       "p": 0.2319,
+       "n": "40 fields per hemisphere (5 fields x 4 sections x 2 monkeys)"
+      },
+      {
+       "about": "CC1-positive count",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,76) = 0.79",
+       "p": 0.3778
+      },
+      {
+       "about": "DAPI-positive count",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,76) = 0",
+       "p": 0.9611
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "On the 40 fields per hemisphere of the paper's design (error df 76), neither the ratio, the CC1 count nor the DAPI count differs between hemispheres under any of the four counting readings (smallest p = 0.0685, the ratio under Otsu with 50 pixels; ratio p = 0.28 and 0.28 with 10 pixels, 0.070 and 0.069 with 50). The paper's counts give ratio F(1,76) = 1.45, p = 0.23, as reported, and DAPI F = 0.0038, p = 0.9511, where the paper prints 0.9611. With N122 RW6 added (variant, error df 77) the ratio under Otsu with 50 pixels is at p = 0.04997, so with that image the outcome would depend on the size filter. The counts in this region do not pass the link (link-if-counts).",
+     "deviations": [
+      "The test uses the fields of the paper's design, the rows of its sheet, 5 fields x 4 sections per hemisphere and animal (Methods, Immunofluorescence of myelinating oligodendrocytes, \"overlapped region of UF and FM, 20 images per hemisphere per animal, 5 fields x 4 sections\"; claims file n of 40 fields per hemisphere). N122 RW6, a sixth field of section N122 with no row in the sheet, is left out and shown as a variant.",
+      "Cells counted here, as for fig3c-cc1-dapi-ratio-mcc; all four readings give the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-gratio-decrease",
+     "statement": "The g-ratio of myelinated axons in the MCC-CB was lower in the stimulated than in the control hemisphere in both animals, meaning a greater degree of myelination (F(1,696) = 58.98, p = 5.42e-14).",
+     "source": "Results, SCC-DBS induces increased myelinating oligodendrocytes and the degree of myelination, paragraph 2; Fig. 3d-f",
+     "quote": "the MCC-CB g -ratio was decreased compared to the control hemisphere in both animals",
+     "statistics": [
+      {
+       "about": "side main effect on the g-ratio",
+       "test": "one-way ANOVA with monkey as a fixed effect",
+       "statistic": "F(1,696) = 58.98, partial eta squared 0.078",
+       "p": 5.42e-14,
+       "n": "350 axons per hemisphere, pooled over N and T"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The g-ratio rests on four hand measurements per axon of axons the raters chose in each image (Methods, Electron microscopy analysis of myelin thickness), verified by a second rater. The dandiset holds the 181 micrographs (all 180 images the paper's per-axon sheet names are among them; TR-1-8r is a copy of TR-1-8), but not the measurements or which axons were measured. The measurements are in DANDI:001773, which the claims file allows only for a link, not as the data of the test. Repeating them needs a rater; a quick automatic segmentation, tried outside the notebook, found few of the paper's axons in two test images and was not pursued. The per-axon sheet gives the image name and the four measurements per axon, and no position, so the measured axons cannot be found in the images. The reason is other, a repeat needs a rater's choices of axons.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-cortical-decrease-subcortical-increase",
+     "statement": "After SCC-DBS, cortico-cortical functional connectivity was broadly reduced and subcortico-subcortical connectivity increased.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 1; Fig. 4a,b",
+     "quote": "Broadly, we observed a reduction in cortico\u2013cortical functional connectivity and a concurrent increase in subcortico\u2013subcortical functional connectivity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The connectomes need the EPI residual time series (3dNetCorr on CHARM and SARM ROIs). The dandiset holds one seed map per session and no EPI data. DANDI:001773 holds only the group-average matrices (Source Data FC matrix.xlsx) and their labels (FC_ROI_label.xlsx), the paper's results, not data to test them on, and 001785 holds nothing to link them to; the per-subject, per-run connectomes are not public.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-dbs-widespread-roi-changes",
+     "statement": "SCC-DBS induced widespread changes in functional connectivity, with many CHARM and SARM ROIs showing a significant change from zero in their connectivity to the rest of the brain (Supplementary Table 1 lists 69 ROIs).",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 1; Fig. 4b; Supplementary Table 1",
+     "quote": "In contrast to the localized structural alterations observed in white matter, SCC-DBS induced widespread functional changes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As for fig4a-cortical-decrease-subcortical-increase; no EPI time series or per-subject connectomes in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-cortical-network-reduction",
+     "statement": "Sorted by cortical network membership, connectivity within and across cortical networks was reduced after SCC-DBS.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 1; Fig. 4c left",
+     "quote": "When the functional connectivity was sorted based on cortical networks membership, it was clear that connectivity within and across networks was reduced",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig4a-cortical-decrease-subcortical-increase, blocked for data missing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-control-no-systematic-pattern",
+     "statement": "In the nonsurgical control group, scans 6 to 7 weeks apart showed no systematic pattern of functional connectivity change like that after SCC-DBS.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 2; Fig. 4a-c bottom and right; Supplementary Table 2",
+     "quote": "In these control animals, a comparison conducted between scans acquired 6\u20137 weeks apart did not reveal a systematic pattern of functional changes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig4a-cortical-decrease-subcortical-increase; the control animals' EPI data are not in the dandiset either, only their seed maps.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-pre-scc-connectivity",
+     "statement": "Before stimulation, the SCC had positive connectivity with vmFC, dACC, PCC, STG, hippocampus, amygdala and DLPFC, and negative connectivity with the insula and somatosensory cortex.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 3; Fig. 5a top row; Extended Data Fig. 7 top row",
+     "quote": "Before stimulation, the SCC showed positive connectivity to the ventromedial frontal cortex (vmFC), dorsal anterior cingulate cortex (dACC), posterior cingulate cortex (PCC), superior temporal gyrus (STG), hippocampus (HIP), amygdala (AMY) and dorsolateral prefrontal cortex (DLPFC), as well as negative connectivity to the insula and somatosensory cortex",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "Before stimulation the mean normalized z over the pooled voxels of N and T is positive for vmFC (0.12), dACC (0.064), PCC (0.038), STG (0.099), HIP (0.038), AMY (0.041) and DLPFC (0.066) and negative for the anterior-dorsal insula (-0.014) and sensory cortex (-0.026) in the stimulated hemisphere; 9 of 9 signs hold under both readings, and in each monkey.",
+     "deviations": [
+      "Target ROIs are the paper's own voxel lists (link-fc-voxels), in place of the D99, CHARM and SARM atlases named in the claims file; the seed maps are the paper's, so the readings of [SEED] (runs and the normalizing maximum) are fixed by the deposited maps and cannot be varied."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-scc-decreases",
+     "statement": "After SCC-DBS, connectivity of the stimulated SCC fell with PCC, vmFC, STG, hippocampus, amygdala, DLPFC and dACC (PrePost x side interaction F(1,20279) = 186.48, p = 2.87e-42; Tukey-Kramer p < 0.001 in the stimulated hemisphere).",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 4; Fig. 5b; Extended Data Fig. 9; Supplementary Table 9",
+     "quote": "Following 6 weeks of SCC-DBS, there was a marked reduction in functional connectivity between the SCC and the PCC as well as the vmFC. Reductions were also apparent between the SCC and HIP, AMY and DLPFC",
+     "statistics": [
+      {
+       "about": "PrePost x side interaction",
+       "test": "three-way ANOVA (DBS x side x target ROI, monkey as a fixed effect)",
+       "statistic": "F(1,20279) = 186.48, partial eta squared 0.0091",
+       "p": 2.87e-42
+      },
+      {
+       "about": "stimulated-side PCC, pre against post",
+       "test": "Tukey-Kramer post hoc",
+       "p": 8.22e-12,
+       "corrected": "Tukey-Kramer",
+       "n": "249 voxels pre and 249 post"
+      },
+      {
+       "about": "stimulated-side vmFC",
+       "test": "Tukey-Kramer post hoc",
+       "p": 1e-300,
+       "p_relation": "<",
+       "corrected": "Tukey-Kramer",
+       "n": "109 voxels"
+      },
+      {
+       "about": "stimulated-side dACC",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.000475,
+       "corrected": "Tukey-Kramer",
+       "n": "162 voxels"
+      },
+      {
+       "about": "stimulated-side HIP",
+       "test": "Tukey-Kramer post hoc",
+       "p": 1.19e-05,
+       "corrected": "Tukey-Kramer",
+       "n": "132 voxels"
+      },
+      {
+       "about": "stimulated-side AMY",
+       "test": "Tukey-Kramer post hoc",
+       "p": 7.7e-06,
+       "corrected": "Tukey-Kramer",
+       "n": "111 voxels"
+      },
+      {
+       "about": "stimulated-side STG and DLPFC",
+       "test": "Tukey-Kramer post hoc (printed as 0 in Supplementary Table 9)",
+       "p": 0,
+       "corrected": "Tukey-Kramer",
+       "n": "499 and 766 voxels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "PrePost x side F(1,20279) = 186.48, p = 2.9e-42, as reported. In the stimulated hemisphere PCC, vmFC, STG, HIP, AMY, DLPFC and dACC all fall, Tukey-Kramer p = 4.5e-11 (PCC), 4.9e-04 (dACC), 1.3e-05 (HIP), 8.8e-06 (AMY), and at the floor of scipy's studentized range (about 1.4e-11) for vmFC, STG and DLPFC. The voxel counts of all 17 ROIs come from the paper's lists.",
+     "deviations": [
+      "ROIs and seed maps as for fig5a-pre-scc-connectivity. Tukey-Kramer p is computed with scipy's studentized range, which floors near 1.4e-11; the paper's values near 0 or 1e-300 are reported as at the floor."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-scc-increases",
+     "statement": "Connectivity of the stimulated SCC with the anterior-dorsal insula and somatosensory cortex increased after SCC-DBS (Tukey-Kramer p < 0.001).",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 5; Fig. 5a,b; Extended Data Fig. 9; Supplementary Table 9",
+     "quote": "The insula and somatosensory cortex exhibited increases in functional connectivity with the SCC following DBS",
+     "statistics": [
+      {
+       "about": "stimulated-side anterior-dorsal insula",
+       "test": "Tukey-Kramer post hoc",
+       "p": 4.42e-08,
+       "corrected": "Tukey-Kramer",
+       "n": "100 voxels"
+      },
+      {
+       "about": "stimulated-side sensory cortex",
+       "test": "Tukey-Kramer post hoc (printed as 0 in Supplementary Table 9)",
+       "p": 0,
+       "corrected": "Tukey-Kramer",
+       "n": "692 voxels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "The anterior-dorsal insula rises from -0.013 to 0.026 (p = 6.8e-08) and sensory cortex from -0.026 to 0.006 (p at the floor) in the stimulated hemisphere.",
+     "deviations": [
+      "As for fig5b-scc-decreases."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7-decreases-both-monkeys",
+     "statement": "The reductions in connectivity from the SCC were consistent across both stimulated monkeys.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 4; Extended Data Figs. 7 and 8",
+     "quote": "These reductions in functional connectivity from SCC were consistent across both monkeys",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "All seven ROIs fall in both N and T in the stimulated hemisphere (changes -0.0006 to -0.103); the smallest is the amygdala of N (-0.0006).",
+     "deviations": [
+      "As for fig5a-pre-scc-connectivity."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-bilateral-changes",
+     "statement": "Although stimulation was unilateral, connectivity changes with the stimulated SCC were also present in the unstimulated control hemisphere.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 5; Fig. 5b,c; Extended Data Figs. 8 and 9; Supplementary Table 9",
+     "quote": "Despite DBS being delivered unilaterally and white matter remodeling being confined to the stimulated hemisphere ... functional connectivity changes were also apparent in the unstimulated control hemisphere",
+     "statistics": [
+      {
+       "about": "control-side PCC",
+       "test": "Tukey-Kramer post hoc",
+       "p": 4.03e-07,
+       "corrected": "Tukey-Kramer"
+      },
+      {
+       "about": "control-side anterior-dorsal insula",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.0293,
+       "corrected": "Tukey-Kramer"
+      },
+      {
+       "about": "control-side vmFC, STG, dACC, DLPFC, area 25, area 32, sensory cortex",
+       "test": "Tukey-Kramer post hoc (printed as 0 in Supplementary Table 9)",
+       "p": 0,
+       "corrected": "Tukey-Kramer"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "On the control side vmFC, PCC, anterior-dorsal insula and dACC all change (p = 0.029 for the insula, below 1e-6 for the others). Eleven of 17 control-side ROIs are significant, the same eleven as Supplementary Table 9.",
+     "deviations": [
+      "As for fig5b-scc-decreases."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-control-group-no-reduction",
+     "statement": "The reductions in SCC connectivity, and bilateral changes, were absent in the nonsurgical control group over a comparable interval.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraphs 4 and 5; Fig. 5a bottom row; Extended Data Fig. 7 right column; Extended Data Fig. 8 bottom row",
+     "quote": "Notably, such reductions in connectivity were absent in the nonsurgical control group",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The claim is judged on a voxel-wise thresholded map with cluster correction. Reading (a) of the criterion needs per-run seed maps; the dandiset holds one map per animal and session (B, W and H are there, pre and post), and no EPI runs. Reading (b), a one-sample test of three per-animal changes per voxel, needs AFNI's 3dClustSim for the cluster-level correction, which is not in this environment. Reading (a) cannot be run, so the claims file's rule (block when the readings cannot both be run) applies. Reading (b) was run without the cluster-level correction, which can only add clusters, for the record. At two-sided P < 0.01 (df 2, |t| above 9.92), 385 voxels of 69517 pass the threshold with a negative change, in 346 clusters of at most 3 voxels (faces touching), none above 20 voxels, so no negative cluster covers PCC or vmFC; 313 positive voxels form clusters of at most 3. The per-animal mean change is negative in all three animals in the PCC voxels (B -0.025, W -0.018, H -0.004) and the vmFC voxels (-0.069, -0.002, -0.028), PCC and vmFC taken from the paper's ROI lists for N and T on the same grid.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-network-decreases",
+     "statement": "After SCC-DBS, connectivity between the stimulated SCC and the DMN, LIM and CEN hubs decreased significantly (PrePost x side interaction F(1,21967) = 51.09, p = 9.10e-13; Tukey-Kramer p < 0.001).",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 6; Fig. 5c",
+     "quote": "After chronic stimulation, the DMN, LIM and CEN showed significantly decreased functional connectivity with SCC",
+     "statistics": [
+      {
+       "about": "PrePost x side interaction",
+       "test": "three-way ANOVA (DBS x side x network, monkey as a fixed effect)",
+       "statistic": "F(1,21967) = 51.09, partial eta squared 0.0023",
+       "p": 9.1e-13
+      },
+      {
+       "about": "stimulated-side DMN, LIM and CEN, pre against post",
+       "test": "Tukey-Kramer post hoc",
+       "p": 1e-300,
+       "p_relation": "<",
+       "corrected": "Tukey-Kramer",
+       "n": "DMN 857, LIM 821, CEN 1102 voxels per side"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "PrePost x side F(1,21967) = 51.09, p = 9.1e-13, as reported; the stimulated-side DMN (-0.064), LIM (-0.025) and CEN (-0.035) fall with Tukey-Kramer p at the floor. With the Methods' LIM without area 25 the LIM still falls (-0.029; interaction F = 61.6, error df 21895), but its Tukey-Kramer p could not be computed (printed as 0 for every network, with scipy's warning that the integral is probably divergent).",
+     "deviations": [
+      "As for fig5b-scc-decreases. Networks as in the code (LIM with area 25), the Methods' LIM shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-smn-increase",
+     "statement": "Connectivity between the SCC and the sensorimotor network also changed after SCC-DBS, as an increase, though the SMN has limited direct CB connections.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 6; Fig. 5c; Discussion, Effect of SCC-DBS on functional networks, paragraph 2",
+     "quote": "There were, however, also changes in networks with limited direct CB connections, such as the SMN",
+     "statistics": [
+      {
+       "about": "stimulated-side SMN",
+       "test": "Tukey-Kramer post hoc",
+       "p": 2.83e-20,
+       "corrected": "Tukey-Kramer",
+       "n": "1239 voxels per side"
+      },
+      {
+       "about": "control-side SMN",
+       "test": "Tukey-Kramer post hoc",
+       "p": 1.21e-14,
+       "corrected": "Tukey-Kramer"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "The stimulated-side SMN rises from -0.017 to 0.003 (p at the floor; the paper reports 2.83e-20); the control side rises too.",
+     "deviations": [
+      "As for fig5b-scc-decreases."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "disc-no-motor-roi-change",
+     "statement": "Connectivity between the stimulated SCC and the primary motor cortex or the supplementary motor area did not change after SCC-DBS.",
+     "source": "Discussion, Effect of SCC-DBS on functional networks, paragraph 3; Extended Data Fig. 9; Supplementary Table 9",
+     "quote": "Notably, we found that there were no apparent changes in connectivity between the stimulated SCC and motor-related regions, including the primary motor cortex or supplementary motor area",
+     "statistics": [
+      {
+       "about": "stimulated-side motor cortex",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.999909913,
+       "corrected": "Tukey-Kramer",
+       "n": "446 voxels"
+      },
+      {
+       "about": "stimulated-side SMA",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.999989453,
+       "corrected": "Tukey-Kramer",
+       "n": "101 voxels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "On the stimulated side motor cortex (+0.006, p = 0.9999) and SMA (-0.002, p = 1.0) do not change; on the control side neither does (p = 0.999 and 1.0).",
+     "deviations": [
+      "As for fig5b-scc-decreases."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-vis-no-change",
+     "statement": "Connectivity between the SCC and the visual network, or areas within it, did not change.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 6; Fig. 5c; Extended Data Fig. 9; Supplementary Table 9",
+     "quote": "In comparison, there was no change in relation to the VIS or areas within the VIS",
+     "statistics": [
+      {
+       "about": "stimulated-side visual cortex (V1)",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.999989453,
+       "corrected": "Tukey-Kramer"
+      },
+      {
+       "about": "stimulated-side MT",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.998895555,
+       "corrected": "Tukey-Kramer"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "On the stimulated side VIS (p = 1.0), V1 (p = 1.0) and MT (p = 0.999) do not change. On the control side MT falls (p = 1.0e-06), as Supplementary Table 9 reports, and VIS does not (p = 0.65).",
+     "deviations": [
+      "As for fig5b-scc-decreases."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5bc-san-no-net-change",
+     "statement": "The salience network as a whole did not change its connectivity with the SCC, because its nodes changed in opposite directions, the anterior-dorsal insula increasing and the dACC decreasing.",
+     "source": "Results, Whole-brain functional connectivity changes following SCC-DBS, paragraph 6; Fig. 5b,c; Extended Data Fig. 9",
+     "quote": "Specifically, the anterior-dorsal insula exhibited increased connectivity with the SCC, whereas the dACC showed decreased connectivity following 6 weeks of DBS",
+     "statistics": [
+      {
+       "about": "stimulated-side SAN network",
+       "test": "Tukey-Kramer post hoc",
+       "p": 1.0,
+       "corrected": "Tukey-Kramer",
+       "n": "262 voxels per side"
+      },
+      {
+       "about": "control-side SAN network",
+       "test": "Tukey-Kramer post hoc",
+       "p": 6.2e-07,
+       "corrected": "Tukey-Kramer"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "The stimulated-side SAN does not change (+0.0002, p = 1.0), while the anterior-dorsal insula rises (p = 6.8e-08) and the dACC falls (p = 4.9e-04). The control-side SAN falls (p = 6.9e-07).",
+     "deviations": [
+      "As for fig5b-scc-decreases."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-sham-cb-fa-decrease",
+     "statement": "In the nonstimulation control animal (lead implanted, no stimulation), FA decreased in the CB of the implanted hemisphere (Tukey-Kramer p = 5.07e-09), with no change in the other tracts.",
+     "source": "Results, The impact of SCC-DBS lead insertion on functional and structural brain networks, paragraph 2; Fig. 6a; Extended Data Fig. 10a",
+     "quote": "Second, in direct contrast to the SCC-DBS animals, we saw a significant decrease in FA in the CB of the implanted hemisphere and no changes in any of our other target tracts",
+     "statistics": [
+      {
+       "about": "PrePost x side x tract interaction (printed as F 1,1238; the term has 2 df)",
+       "test": "three-way ANOVA",
+       "statistic": "F = 6.02, partial eta squared 0.0096",
+       "p": 0.0025
+      },
+      {
+       "about": "sham-side CB, pre against post",
+       "test": "Tukey-Kramer post hoc",
+       "p": 5.07e-09,
+       "corrected": "Tukey-Kramer",
+       "n": "162 voxels pre and 162 post"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "In D the sham-side CB falls from 0.362 to 0.245 (Tukey-Kramer p = 8.4e-09; reported 5.07e-09), and none of the other five comparisons is significant (smallest p = 0.088, control-side FM). The three-way interaction is F(2,1238) = 6.02, p = 0.0025, which bears out the claims file's reading of the printed F 1,1238 as a misprint.",
+     "deviations": [
+      "Tract labels from the paper's source data, as for fig2a-cb-fa-increase."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-sham-dacc-cb-decrease",
+     "statement": "In the nonstimulation control animal, the FA decrease lay in the dACC portion of the CB, more anterior than and opposite to the increase after stimulation, although diffuse reductions were seen across the CB (PrePost x side F(1,492) = 24.55, p = 9.97e-07; dACC-CB Tukey-Kramer p = 1.30e-08).",
+     "source": "Results, The impact of SCC-DBS lead insertion on functional and structural brain networks, paragraph 2; Fig. 6b",
+     "quote": "This decrease in FA is more anterior and the opposite direction of that observed in the stimulation group, although diffuse reductions were seen across the CB",
+     "statistics": [
+      {
+       "about": "PrePost x side interaction",
+       "test": "three-way ANOVA (DBS x side x subregion)",
+       "statistic": "F(1,492) = 24.55, partial eta squared 0.048",
+       "p": 9.97e-07
+      },
+      {
+       "about": "sham-side dACC-CB, pre against post",
+       "test": "Tukey-Kramer post hoc",
+       "p": 1.3e-08,
+       "corrected": "Tukey-Kramer",
+       "n": "58 voxels pre and 58 post"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "PrePost x side F(1,492) = 24.55, p = 1.0e-06; the sham-side dACC-CB falls from 0.413 to 0.230 (Tukey-Kramer p = 3.6e-08; reported 1.30e-08), and the sham-side MCC-CB does not rise (it falls, -0.115, p = 0.44). The other sham-side parts fall without significance (SCC -0.080, PCC -0.119).",
+     "deviations": [
+      "Subregions from the paper's source data, as for fig2b-mcc-cb-increase."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-sham-cc1-no-change",
+     "statement": "In the nonstimulation control animal, the CC1/DAPI ratio in the MCC-CB did not differ between the implanted and control hemispheres (paired t-test, t(27) = -0.99, p = 0.33).",
+     "source": "Results, The impact of SCC-DBS lead insertion on functional and structural brain networks, paragraph 2; Fig. 6c; Extended Data Fig. 10b",
+     "quote": "the ratio of myelinated oligodendrocytes (CC1/DAPI) in the MCC-CB did not differ between the implanted and control hemispheres",
+     "statistics": [
+      {
+       "test": "two-sided paired t-test",
+       "statistic": "t(27) = -0.9888, Cohen's dz = -0.19",
+       "p": 0.3316,
+       "n": "28 fields per hemisphere (7 fields x 4 sections)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "The smallest counted object, which the paper does not give, decides the outcome. With 10 pixels, t(27) = -1.04 (IsoData) and -1.03 (Otsu), p = 0.31, mean difference -1.7 points, dz = -0.20, which would be reproduced; with 50 pixels t(27) = -2.11 and -2.12, p = 0.044, dz = -0.40, which would be not reproduced. Neither size has a defensible basis. In this region the counts pass the link only at 50 pixels (CC1 median ratio 0.88, r = 0.74; at 10 pixels 1.30 and 0.66), while in the MCC-CB and dACC-CB of N and T they pass only at 10 pixels, and no single reading passes in every region; the paper used one counting method throughout, so a size chosen per region would not be its procedure. The paper's counts give t = -0.99, p = 0.33. The question is put to the paper's authors (finding methods_unavailable).",
+     "deviations": [
+      "Cells counted here, as for fig3c-cc1-dapi-ratio-mcc, under all four readings.",
+      "Fields are paired by section and field number in the file names, the rows of the paper's sheet."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10c-sham-subcortical-decrease",
+     "statement": "After lead implantation alone, whole-brain connectivity changes were less coherent; cortico-cortical changes looked random and subcortico-subcortical connectivity decreased, the opposite of SCC-DBS.",
+     "source": "Results, The impact of SCC-DBS lead insertion on functional and structural brain networks, paragraph 3; Extended Data Fig. 10c; Supplementary Table 10",
+     "quote": "Cortical-to-cortical connections showed more random connectivity changes, and subcortical-to-subcortical connections showed a consistent negative change, which is the opposite direction of what we saw after SCC-DBS",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the connectome of monkey D, as for fig4a-cortical-decrease-subcortical-increase; no EPI data in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-sham-scc-little-change",
+     "statement": "After lead implantation without stimulation, connectivity of the SCC changed little, apart from a local increase at the implantation site; among the DMN and SAN hubs only the sham-side vmFC and control-side anterior-dorsal insula changed (PrePost x side F(1,10106) = 4.58, p = 0.0323).",
+     "source": "Results, The impact of SCC-DBS lead insertion on functional and structural brain networks, paragraph 3; Fig. 6d; Extended Data Fig. 10d",
+     "quote": "Additionally, there was very little alteration in the functional connectivity associated with the SCC, except for a localized increase in connectivity at the site of implantation",
+     "statistics": [
+      {
+       "about": "PrePost x side interaction",
+       "test": "three-way ANOVA (DBS x side x target ROI)",
+       "statistic": "F(1,10106) = 4.58, partial eta squared 0.00045",
+       "p": 0.0323
+      },
+      {
+       "about": "sham-side vmFC",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.000783,
+       "corrected": "Tukey-Kramer",
+       "n": "66 voxels"
+      },
+      {
+       "about": "control-side anterior-dorsal insula",
+       "test": "Tukey-Kramer post hoc",
+       "p": 1.37e-12,
+       "corrected": "Tukey-Kramer",
+       "n": "51 voxels"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "In D the PrePost x side interaction is F(1,10106) = 4.58, p = 0.032, as reported. Two of the eight hub comparisons are significant, the sham-side vmFC (a decrease, p = 8.0e-04) and the control-side insula (an increase, p = 1.1e-11), and the sham-side PCC and dACC do not change (p = 1.0 and 1.0). Outside the hubs some ROIs change, among them the sham-side area 25 (the seed region), which rises (+0.18, p = 4.3e-12). The local increase at the lead site, which the criterion reports and does not judge, cannot be read from a thresholded map, since D has one map per session and no voxel test can be made. In the unthresholded change of D's map the ten largest increases (+0.17 to +0.30) lie at the midline next to the sham-side area 25, six inside its voxels and one in the sham-side vmFC, against a mean change over the brain of +0.0008.",
+     "deviations": [
+      "As for fig5b-scc-decreases, with the model of the mkD script (no monkey term)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-sham-no-network-reduction",
+     "statement": "After lead implantation without stimulation, the reductions in connectivity between the SCC and the DMN, LIM and CEN seen after SCC-DBS did not appear (PrePost x side F(1,10972) = 7.36, p = 0.0067).",
+     "source": "Results, The impact of SCC-DBS lead insertion on functional and structural brain networks, paragraph 3; Fig. 6e",
+     "quote": "Notably, the widespread reductions in connectivity that we saw in the DMN, LIM and CEN after SCC-DBS were not observed",
+     "statistics": [
+      {
+       "about": "PrePost x side interaction",
+       "test": "three-way ANOVA (DBS x side x network)",
+       "statistic": "F(1,10972) = 7.36, partial eta squared 0.00067",
+       "p": 0.0067
+      },
+      {
+       "about": "control-side DMN",
+       "test": "Tukey-Kramer post hoc",
+       "p": 8.2e-08,
+       "corrected": "Tukey-Kramer"
+      },
+      {
+       "about": "control-side CEN",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.0088,
+       "corrected": "Tukey-Kramer"
+      },
+      {
+       "about": "sham-side SMN",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.000138,
+       "corrected": "Tukey-Kramer"
+      },
+      {
+       "about": "control-side SAN",
+       "test": "Tukey-Kramer post hoc",
+       "p": 0.000106,
+       "corrected": "Tukey-Kramer"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujimoto_2026.ipynb",
+     "notes": "PrePost x side F(1,10972) = 7.36, p = 0.0067, as reported. On the sham side DMN, LIM and CEN do not change (p = 0.73, 1.0 and 0.76); the sham-side SMN rises (p = 1.4e-04). On the control side the DMN rises (p = 1.0e-07), the SAN rises (p = 1.1e-04) and the CEN falls (p = 0.0089).",
+     "deviations": [
+      "As for fig5b-scc-decreases, with the model of the mkD script."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "format_error",
+     "statement": "dataset_description.json is not valid JSON, so BIDS tools cannot read it; the second author name is in typographic quotes and a comma is missing after the Description value.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Nothing in the dandiset says what the MRI files hold. The files in MRI/FC are single volumes, the paper's normalized seed maps (Fisher z with the seed in area 25 of the stimulated or implanted hemisphere, divided by a session maximum), on a 1.5 mm grid in NMT space; the files in MRI/FA are FA maps, each in its own session's space. This was found only by matching the values to the paper's source data in DANDI:001773. The normalizing maximum is not in the deposited maps (their maxima are 0.55 to 1.38), and the seed of the control animals is not stated in the files.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "No tract masks, CB subregion masks or target ROI masks are deposited. Which voxels the paper analysed can be recovered only from the source data of DANDI:001773, by position for the seed maps and by matching FA values for the FA maps.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "No EPI data are deposited, only one seed map per animal and session, although the archive's description lists \"Functional MRI (EPI; FC) data\". The whole-brain connectivity findings (Fig. 4, Extended Data Fig. 10c) and the voxel-wise test of the control group cannot be tested.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The cell counts behind the immunofluorescence results and the per-axon measurements behind the g-ratio are not in the dandiset, which holds the images only. Counts made here automatically agree with the paper's in level for the MCC-CB of N and T and the dACC-CB, less well in the UF-FM overlap and for monkey D, and give a significant dACC-CB side difference the paper's counts do not.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "EM/TR-1-8r.tif is a byte-identical copy of EM/TR-1-8.tif (same blob); the paper's per-axon sheet names only TR-1-8.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "IF/IF_CC1_UF_FM_overlap_mkNT holds six fields for section N122, right hemisphere, where the design has five per section; the paper's sheet has no row for N122 RW6. Two other file names carry a suffix (N112 LW1B, N453-RW-6r) that the paper's sheets do not explain.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The immunofluorescence TIFFs carry no pixel size (the resolution tag is the default 72 per inch) and no channel names; red holding CC1 and blue holding DAPI is inferred from the paper's labels. The sections differ in bit depth (8-bit for N603, N613, N623; 16-bit elsewhere).",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "All six FA maps reach 1.21 to 1.22, above the bound of 1 that FA has by definition; these voxels lie outside the paper's tract lists.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier checked the archive for the blocked claims (including DANDI:001773) and tested tukey_kramer on synthetic unbalanced data against statsmodels. Report in transcripts/001785/verifier-1-report.md. It gave its own outcome for each of the 35 claims; 34 agree with the record as it then stood, and fig6c-sham-cc1-no-change does not.",
+     "agreed": 34,
+     "of": 35,
+     "disagreements": [
+      {
+       "claim": "fig6c-sham-cc1-no-change",
+       "outcome": "blocked",
+       "reason": "Blocked (methods_underspecified). Min-area 10 gives p about 0.31 and min-area 50 gives p about 0.044, so the two readings give opposite outcomes. In monkey D the link holds only at min 50, which would make this not reproduced. The smallest object size is the notebook's own assumption and here it decides the outcome; the notebook prints both results but does not say the readings disagree. Under the protocol this is methods_underspecified, not a pass (B1)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, the helper module, the claims file and the attempt record, with the paper. Report in transcripts/001785/verifier-2-report.md. The verifier agreed with all 35 outcomes, and listed six sentences the printed numbers do not support (2.1 to 2.6), all wording fixes; B3, the counting pipeline, it found unchanged and bearing on ed6a-dacc-cb-no-change and ed6b-uf-fm-no-change.",
+     "agreed": 35,
+     "of": 35,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the paper's authors, how were cells counted in FIJI? The Methods give \"section-specific intensity thresholds for each channel\" but not the threshold method, any background subtraction, size filter or watershed split. Here an automatic threshold per section and channel was used with objects of at least 10 or 50 pixels; no single reading matches the paper's counts in all four regions (10 pixels in the MCC-CB and dACC-CB of N and T, 50 pixels in the MCC-CB of D, neither in the UF-FM overlap). fig6c-sham-cc1-no-change depends on the size (p = 0.31 at 10 pixels, 0.044 at 50) and is blocked; ed6a-dacc-cb-no-change is not reproduced under every reading, though the paper's counts give p = 0.09.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's per-voxel FA lists repeat voxels. Within one tract, side and session the same value is listed twice (99 times in the whole-tract list of N and T, 44 in its subregion list, 40 and 18 in the lists of D), so the voxel n of the FA tests counts some voxels twice. Other voxels are listed, with the same value, in two or more tracts of one session (233 in the whole-tract list of N and T, mostly UF with FM or CB with UF on one side; 71, 1 and 18 in the other lists). The paper does not explain either kind of repeat.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Extended Data Fig. 6b legend gives the UF-FM DAPI side effect as F 1,76 = 0, P = 0.9611, partial eta squared 4.97e-05. The paper's own per-field counts (CC1_UF-FMoverlap_data_a.xlsx, DANDI:001773) give F(1,76) = 0.0038, p = 0.9511, and the stated partial eta squared fits F = 0.0038, so 0.9611 is a misprint for 0.9511.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "fujimoto-2026-001785",
+   "type": "reproduction",
+   "title": "White matter and network changes after subcallosal cingulate DBS in macaques (Fujimoto et al. 2026)",
+   "description": "Tests the findings of Fujimoto, Fujimoto, Elorette et al. (2026) on dandiset 001785, which holds per-session FA maps and normalized seed connectivity maps of two stimulated monkeys, one implanted control and three nonsurgical controls, with CC1 and DAPI immunofluorescence images and electron micrographs. Tract and ROI membership of voxels is taken from the paper's source data in DANDI:001773, and cells are counted from the images. The connectivity matrices and the hand-measured g-ratios cannot be tested from the dandiset.",
+   "datasets": [
+    "dandi:001773",
+    "dandi:001785"
+   ],
+   "papers": [
+    "10.1038/s41593-026-02301-4"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_fujimoto_2026.ipynb",
+     "title": "Reproducing Fujimoto et al. (2026) from dandiset 001785",
+     "executed": "notebooks/fujimoto-2026-001785/reproduce_fujimoto_2026.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 34,
+   "hashed": false
+  }
+ ],
+ "badge": {
+  "text": "7 findings reproduced",
+  "reproduced": 7,
+  "papers": [
+   {
+    "doi": "10.1038/s41593-026-02301-4",
+    "key": "fujimoto-2026",
+    "byline": "Fujimoto et al. 2026",
+    "title": "Deep brain stimulation induces white matter remodeling and functional changes to brain-wide networks",
+    "relation": "primary",
+    "reproduced": 7,
+    "url": "https://encorescience.org/papers/fujimoto-2026/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/dandi/001785/",
+  "svg": "https://encorescience.org/badge/dandi/001785.svg",
+  "alt": "Encore: 7 findings reproduced, from DANDI:001785"
+ }
+}
