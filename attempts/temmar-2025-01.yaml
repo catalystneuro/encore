@@ -74,7 +74,7 @@ outcomes:
   deviations:
   - The unit of SBP was open between two readings named in the criterion; reading (b) matches and (a) does not.
 - claim: fig2a-irregular-shifts
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: decoding.ipynb
   output: claim:fig2a-irregular-shifts
   notes: Under the criterion's rule 38 of 42 days in July to November 2022 have at least five channels shifting
@@ -82,26 +82,19 @@ outcomes:
     a 30-day baseline, so it does not single out that period (0.974 of window days and 0.975 of other days have
     five or more; median 17 shifting channels a day in the window against 20 outside; with the 30 preceding
     recording days as baseline, 0.952 against 0.903). RR's median same-day R2 in the window is 0.321 (45
-    sessions), inside its 10th to 90th percentile range of 0.220 to 0.360. The LSTM's is 0.652 (3 sessions), just
-    above its 90th percentile of 0.651 over 20 sessions, so that part fails, by 0.001, in the direction of better
-    decoding. Adding the 3 window sessions among the 12 highest-RR sessions, a selection biased towards high R2,
-    gives 0.659. After round 2, window.ipynb trains the LSTM on 24 of the 42 other window sessions and refits
-    the 20 every-16th sessions, which give the same R2 as in decoding.ipynb (10th to 90th percentile 0.529 to
-    0.651). The median over the 27 window sessions with an LSTM is 0.641, inside that range, so the LSTM part
-    holds there and with it both parts of the criterion; a change to reproduced is proposed. In the window, 11
-    of the 27 sessions are above the 90th percentile and 1 below the 10th; against the 17 every-16th sessions
-    outside the window (0.524 to 0.616) the median would be above the range, in the direction of better
-    decoding. The LSTM's margin over RR is the same in the window as elsewhere (median 0.303 against 0.301).
-  proposed:
-    outcome: reproduced
-    reason: >-
-      The verified outcome rests on the LSTM median of the 3 window sessions among the every-16th (0.652),
-      0.001 above the 90th percentile of the 20 every-16th sessions (0.651). Run on 27 of the 45 window
-      sessions (window.ipynb, added after round 2), the median is 0.641, inside the 10th to 90th percentile
-      range (0.529 to 0.651) of the same 20 reference sessions, refit there with the same R2. The shift
-      part and the RR part hold in decoding.ipynb, so both parts of the criterion hold. The pass depends on
-      the reference set; against the every-16th sessions outside the window alone (0.524 to 0.616) the
-      median would be above the range.
+    sessions), inside its 10th to 90th percentile range of 0.220 to 0.360. In decoding.ipynb the LSTM's median
+    over the 3 window sessions among the every-16th is 0.652, just above its 90th percentile of 0.651 over 20
+    sessions; adding the 3 window sessions among the 12 highest-RR sessions, a selection biased towards high R2,
+    gives 0.659. window.ipynb trains the LSTM on 24 of the 42 other window sessions and refits the 20 every-16th
+    sessions, whose 10th to 90th percentile range is the same as in decoding.ipynb (0.529 to 0.651; single
+    session values are not printed side by side). The median over the 27 window sessions with an LSTM is 0.641,
+    inside that range, so the LSTM part holds and with it both parts of the criterion. The pass is narrow
+    (0.010 below the 90th percentile, 18 window sessions unfitted). In the window, 11 of the 27 sessions are
+    above the 90th percentile and 1 below the 10th; against the 17 every-16th sessions outside the window
+    (0.524 to 0.616) the median would be above the range, in the direction of better decoding, and with the
+    percentiles over all 44 sessions fitted (0.541 to 0.665) it is inside. The LSTM's margin over RR is the
+    same in the window as elsewhere (median 0.303 against 0.301). The outcome was partially_reproduced after
+    round 2 and changed to reproduced after round 3 of the verification agreed.
   deviations:
   - The LSTM is trained on 20 of the 312 sessions (every 16th in date order, chosen before any result), for time;
     one fit takes 77 to 223 s with four at once, depending on the run (77 s in round 1, 207 to 223 s in round 2;
@@ -849,3 +842,35 @@ verifications:
     response: >-
       The notes now give about 18 hours at round 2's fit times, and say the 30 s run has no output and
       supplies no number, without the unverifiable duration. Outcome unchanged.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: >-
+    Round 3. The one proposed change of outcome, fig2a-irregular-shifts from partially_reproduced to
+    reproduced, and the analysis behind it: window.ipynb (added after round 2) and the fig2a cells of
+    decoding.ipynb, with the attempt record and the claims file.
+  results:
+  - claim: fig2a-irregular-shifts
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Both parts of the criterion now hold. The 20 every-16th reference sessions were trained again with
+      the same settings as decoding.ipynb; their 10th to 90th percentile range is 0.529 to 0.651, the same
+      as decoding.ipynb [27] prints. The LSTM R2 median over the 27 window sessions with an LSTM is 0.641,
+      inside that range. The RR part (0.321 inside 0.220 to 0.360) and the shift part (38 of 42 window
+      days) hold in decoding.ipynb [27]. The 24 new sessions are picked by a fixed rule (np.linspace over
+      the 42 window sessions not already fitted), which leaves no room for choice. The every-16th sample
+      is the right reading of "all sessions"; the failing variant over the 17 sessions outside the window
+      is not "all sessions" and should not decide the outcome, and the variant over all 44 fitted sessions
+      also passes. The reference sessions could have been reused from decoding.ipynb, which would have
+      left time to fit all 42 window sessions. The pass is narrow (0.010 below a 90th percentile from 20
+      sessions, 18 window sessions unfitted). The record says the refit sessions give "the same R2", but
+      only the summary percentiles are printed to show this. The shift rule flags at least five channels
+      on 237 of the 243 days outside the window, so the shift part holds trivially and does not pick out
+      July to November 2022; this is a weakness of the criterion, for a reader to judge.
+    response: >-
+      Outcome changed to reproduced and the proposal removed. The notes and the conclusions of
+      decoding.ipynb and window.ipynb now say that only the summary percentiles of the refit sessions
+      match, and that the pass is narrow. Whether the shift rule should be compared with a baseline rate
+      is asked of a reader in questions/temmar-2025.yaml. Fitting the remaining 18 window sessions is left
+      to a later attempt.
