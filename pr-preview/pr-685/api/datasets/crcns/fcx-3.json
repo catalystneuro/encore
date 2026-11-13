@@ -5,7 +5,7 @@
   "label": "CRCNS:fcx-3"
  },
  "page": "datasets/crcns/fcx-3/",
- "generated": "2026-11-11T02:54:01+00:00",
+ "generated": "2026-11-13T03:52:05+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 6,
@@ -573,55 +573,46 @@
      "kind": "metadata_error",
      "statement": "The data set's list of analysed channels (docs/summary_channel_analysis.csv) holds 187 channels where the paper reports 192 (Table 1). S4 has 5 right parietal channels (RLD6 to RLD8, RC10, RC11) where Table 1 gives 10. The list yields 1135 same-hemisphere PFC-parietal pairs, where the paper reports 1129; Table 1's counts would give 1165.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "The description says summary_file_trial.csv holds information about each trial, with 120 trials per subject. In S6 and S7 it holds only the trials kept after artifact rejection (101 and 90 rows, numbered up to 120), matching their derived epochs; in S1 to S5 it holds all 120. Single-trial accuracy over all 120 trials cannot be rebuilt for S6 and S7 (summary_file.csv gives it per condition).",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "A timing contrast between trials with 900-ms and 1150-ms delays (70-150 Hz amplitude) shows, in S2, S3 and S4, responses in the processing epoch of the 1150-ms trials 0.21 to 0.26 s later relative to the trial table's processing column than in the 900-ms trials, and in S4 the same shift in the encoding epoch, while the pretrial epochs show shifts of 0.03 s or less. This is consistent with the encoding and processing columns (computed at fixed offsets from the pretrial start) lying about 0.25 s before the events in 1150-ms trials, which would put the end of the cue in their processing window. The test is weak in the other subjects (S1, S5 and S6 show shifts of 0.28 to 0.35 s in the processing epoch that do not pass the shuffle test) and does not prove it. The ERP and power tests and the task-induced PSI on the 900-ms-delay trials alone are shown as variants. Power on those trials loses most effects, and so does power on a random draw of as many trials from both delays, so these tests cannot tell whether the timing affects the results.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The deposited psianalysis.m computes the cross-spectrum as the product of the two channels' Fourier coefficients without the conjugate, unlike the cross-spectral density of the Methods and of Nolte et al. (2008). The resulting normalised spectrum depends essentially on one channel's phase (it equals plus or minus exp(2i x the phase of the second channel)), and the PSI z it gives is not antisymmetric; on these data it is +58.67 (delta-theta maintenance, mean over subjects) with the PFC channel first and -55.47 (sign reversed) with the parietal channel first. Its null is also not the statistic it z-scores. It averages per-trial PSI and compares the average with the slope of the trial-mean normalised spectrum, frequency-shuffled with both factors permuted independently, whose spread shrinks with the number of trials. The Methods say the frequencies of one signal were shuffled and PSI recomputed. Even with the conjugate added, this null gives |z| > 1.96 in 90% (delta-theta) and 92% (alpha-beta) of pairs when each subject's PFC and parietal trials are shuffled against each other, where a calibrated z gives about 5%.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The deposited psi_compute.m does not run as written. It uses an undefined `freq` (the signature takes subid and elecs only), saves to an undefined `savDir`, and tests the electrode argument with `nargin > 2`. Its subfunction subtracterp.m selects temporal trials with `trialinfo(:,5)==2`, the delay column, which selects no trial.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "S7's derived epochs record a continuous recording of 431506 samples (hdr.nSamples) while the deposited data_primary.mat of S7 has 445952; the derived traces still match the deposited continuous data at the trial table's samples (r >= 0.9989). S3's elec_labels.mat is a MATLAB 5 file, the others MATLAB 7.3.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The electrode position files (s<n>_MNI_grid.csv) name grids and list positions in order, but do not say how the contact numbers of the channel labels map to grid positions, and S3's labels (RH1 to RH256) do not match the name of its grid (HD_Grid). The derived channels are bipolar, labelled by one contact, with the reference contact found here only from the data (the next contact on strips and depth leads, the next grid row on S3's and S6's grids).",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the paper's authors. Which electrodes were neighbours in the per-subject cluster tests (Methods, Event-Related Potentials, \"neighboring electrodes\"), and were clusters of each sign judged at 0.05 or 0.025? The deposited scripts hold no cluster test. The outcome of the ERP test depends on it here (adjacent contacts, S2 p = 0.041, significant at 0.05 per tail and not at 0.025; positions within 1.5 contact spacings, S5 p = 0.014). This attempt assumed contacts adjacent on the same lead and 0.05 per tail.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the paper's authors. Was task-induced and time-resolved PSI computed from cross-spectra averaged over trials (Nolte et al. 2008) or per trial and averaged, as psianalysis.m does, and with which channel first, given that the deposited code omits the conjugate? And was the null the frequency shuffle of one signal with PSI recomputed, as the Methods say, or the slope of the trial-mean spectrum, as psianalysis.m computes it? With the Methods' null, 1 (per trial) or 78 (trial-averaged) of 1135 pairs are directional in delta-theta, and 74 or 104 in alpha-beta, near the counts of trial-shuffled data; the paper reports 1008 and 984, which only the code's null reproduces (1014 and 1041), and that null gives about the same counts on trial-shuffled data. This attempt used the Methods' null and adopted the trial-averaged reading, whose z is calibrated on trial-shuffled data, where the readings give different outcomes; per-trial PSI with the Methods' null gives z offset from zero on data without coupling.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -658,6 +649,44 @@
      "agreed": 3,
      "of": 3,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The deposited psianalysis.m computes the cross-spectrum as the product of the two channels' Fourier coefficients without the conjugate, unlike the cross-spectral density of the Methods and of Nolte et al. (2008). The resulting normalised spectrum depends essentially on one channel's phase (it equals plus or minus exp(2i x the phase of the second channel)), and the PSI z it gives is not antisymmetric; on these data it is +58.67 (delta-theta maintenance, mean over subjects) with the PFC channel first and -55.47 (sign reversed) with the parietal channel first. Its null is also not the statistic it z-scores. It averages per-trial PSI and compares the average with the slope of the trial-mean normalised spectrum, frequency-shuffled with both factors permuted independently, whose spread shrinks with the number of trials. The Methods say the frequencies of one signal were shuffled and PSI recomputed. Even with the conjugate added, this null gives |z| > 1.96 in 90% (delta-theta) and 92% (alpha-beta) of pairs when each subject's PFC and parietal trials are shuffled against each other, where a calibrated z gives about 5%.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The deposited psi_compute.m does not run as written. It uses an undefined `freq` (the signature takes subid and elecs only), saves to an undefined `savDir`, and tests the electrode argument with `nargin > 2`. Its subfunction subtracterp.m selects temporal trials with `trialinfo(:,5)==2`, the delay column, which selects no trial.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. Which electrodes were neighbours in the per-subject cluster tests (Methods, Event-Related Potentials, \"neighboring electrodes\"), and were clusters of each sign judged at 0.05 or 0.025? The deposited scripts hold no cluster test. The outcome of the ERP test depends on it here (adjacent contacts, S2 p = 0.041, significant at 0.05 per tail and not at 0.025; positions within 1.5 contact spacings, S5 p = 0.014). This attempt assumed contacts adjacent on the same lead and 0.05 per tail.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. Was task-induced and time-resolved PSI computed from cross-spectra averaged over trials (Nolte et al. 2008) or per trial and averaged, as psianalysis.m does, and with which channel first, given that the deposited code omits the conjugate? And was the null the frequency shuffle of one signal with PSI recomputed, as the Methods say, or the slope of the trial-mean spectrum, as psianalysis.m computes it? With the Methods' null, 1 (per trial) or 78 (trial-averaged) of 1135 pairs are directional in delta-theta, and 74 or 104 in alpha-beta, near the counts of trial-shuffled data; the paper reports 1008 and 984, which only the code's null reproduces (1014 and 1041), and that null gives about the same counts on trial-shuffled data. This attempt used the Methods' null and adopted the trial-averaged reading, whose z is calibrated on trial-shuffled data, where the readings give different outcomes; per-trial PSI with the Methods' null gives z offset from zero on data without coupling.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }

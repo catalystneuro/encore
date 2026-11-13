@@ -5,7 +5,7 @@
   "label": "DANDI:001361"
  },
  "page": "datasets/dandi/001361/",
- "generated": "2026-11-11T02:54:01+00:00",
+ "generated": "2026-11-13T03:52:05+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 35,
@@ -1704,61 +1704,64 @@
      "kind": "other",
      "statement": "In version 0.250406.0045, the version the paper cites, every file of a mouse carries the behaviour (position, speed, licks, trials, rewards) of one and the same session: 152 files hold 11 distinct behaviour series, and the behaviour's length equals the imaging length in only 11 files. For example, every m11 file holds the behaviour of day 5 (zone A then C), whatever its scene name says. Imaging and behaviour cannot be aligned in the other 141 files. Version 0.251124.0550 has 152 distinct series, of the imaging's length (to one frame in 10 files), with zones that agree with the scene names. Version 0.250609.2249 has the same total size as 0.250406.0045.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The files' processing/ophys/Deconvolved series (unit 'lumens', no description) is not the deconvolved activity the paper analyses, which the Methods describe as OASIS on dF/F. Its median correlation with OASIS on dF/F computed from the files' F and neuropil is 0.47 per session (0.37 to 0.70). Spatial information on it marks 49.6% of cells as place cells, against 48.7% with OASIS on dF/F. The files hold no dF/F, so the paper's signals must be rebuilt from F and the code's parameters.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors: the place-cell fraction depends on details the Methods do not give. With the SI and shuffle of TwoPUtils (place_cells_calc; the rate map minus its minimum plus 0.001, position and its speed mask rolled per trial), read at a 2026 commit, 48.7% of cells are place cells, as in the paper; with the Methods' formula alone and activity rolled against fixed frames, 59.9%. The OASIS time constant (the run passed Suite2p's 'tau' setting) is not given either; tau 1.0 s gives 46.3% against 48.7% with 0.7 s. Taken apart, the 0.001 offset matters more than rolling position: activity rolled with the offset gives 51.0%, position rolled without it 56.4%. As the offset is not scale-free, the scale of the paper's deconvolved events matters too. Which TwoPUtils version and which tau were used, and on what scale were the events the SI was computed on?",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "data_missing",
      "statement": "The files hold no cross-day ROI matching, although the Methods say cells were followed across days by the IoU of their pixels. Figure 5 and Extended Data Fig. 6 are tested here on matches made by this attempt, after a rigid alignment of the days' mean images.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors: the Methods choose the matching threshold so that the best match always exceeds any second-best match, but TwoPUtils roi_matching (set_iou_threshold) takes the largest IoU left after zeroing every column that is some ROI's best match, and it registers the mean images with Suite2p first. Which rule, and which registration, gave the paper's matches? This attempt aligned the mean images by phase correlation (shifts up to 17 pixels) and used the largest second-best IoU of each day pair as the threshold, matching 59% of cells (median). With one threshold per mouse 55% of cells match (median); with the TwoPUtils rule on the rigid alignment 61%. The outcomes of Figure 5 and Extended Data Fig. 6 are the same under the three, except fig5f, whose slope is significant under the TwoPUtils rule only (p = 0.032, from a fit that did not converge).",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "data_missing",
      "statement": "The z-stack and the per-ROI depth estimates of single-plane mice (Methods, Estimation of anatomical location per ROI) are not in the dandiset, so the superficial-deep part of Extended Data Fig. 7 cannot be tested. The three fixed-condition mice (Extended Data Fig. 1d,f and 6d) are not in the dandiset either.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "Omitted rewards are not marked. The files give reward times, but an unrewarded trial can be an omission or a miss, which the paper treats differently (longer jitter after both, but only omissions in Figure 6). This attempt took unrewarded trials with licks in the zone as omissions; the trial sets with at least three omissions then match the paper's day counts per mouse exactly.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors: the Methods test field activity on 'raw, un-binned deconvolved activity' above 'its mean +1 s.d. across the 30 trials'. Following the code (Ext3_FieldQuant.md), with the s.d. of the raw events of the set, this attempt finds 76 RR cells with two fields before and after on day 3 (paper 31) and 84 on day 8 (paper 20). Which samples does the s.d. cover, and were the fields of Extended Data Fig. 3 restricted further?",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "The ROI pixel and voxel masks name their coordinates x and y, but 'x' is consistent with indexing the image rows and 'y' the columns. In all 152 files 'y' reaches 630 to 788, beyond the 512 image rows, while 'x' stays at or below 508 (images 512 rows by 796 columns). The 'reward_zone' series is described as 'reward zone entry (binary)' but takes values 0 to 8. It rises in all 10,342 rewarded trials and in 52 of the 1,874 unrewarded ones, so it does not by itself mark omissions.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The files do not say how the image axes map onto the medio-lateral and antero-posterior axes, which Extended Data Fig. 7 uses.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 10,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -1846,6 +1849,35 @@
      "agreed": 1,
      "of": 1,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors: the place-cell fraction depends on details the Methods do not give. With the SI and shuffle of TwoPUtils (place_cells_calc; the rate map minus its minimum plus 0.001, position and its speed mask rolled per trial), read at a 2026 commit, 48.7% of cells are place cells, as in the paper; with the Methods' formula alone and activity rolled against fixed frames, 59.9%. The OASIS time constant (the run passed Suite2p's 'tau' setting) is not given either; tau 1.0 s gives 46.3% against 48.7% with 0.7 s. Taken apart, the 0.001 offset matters more than rolling position: activity rolled with the offset gives 51.0%, position rolled without it 56.4%. As the offset is not scale-free, the scale of the paper's deconvolved events matters too. Which TwoPUtils version and which tau were used, and on what scale were the events the SI was computed on?",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors: the Methods choose the matching threshold so that the best match always exceeds any second-best match, but TwoPUtils roi_matching (set_iou_threshold) takes the largest IoU left after zeroing every column that is some ROI's best match, and it registers the mean images with Suite2p first. Which rule, and which registration, gave the paper's matches? This attempt aligned the mean images by phase correlation (shifts up to 17 pixels) and used the largest second-best IoU of each day pair as the threshold, matching 59% of cells (median). With one threshold per mouse 55% of cells match (median); with the TwoPUtils rule on the rigid alignment 61%. The outcomes of Figure 5 and Extended Data Fig. 6 are the same under the three, except fig5f, whose slope is significant under the TwoPUtils rule only (p = 0.032, from a fit that did not converge).",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors: the Methods test field activity on 'raw, un-binned deconvolved activity' above 'its mean +1 s.d. across the 30 trials'. Following the code (Ext3_FieldQuant.md), with the s.d. of the raw events of the set, this attempt finds 76 RR cells with two fields before and after on day 3 (paper 31) and 84 on day 8 (paper 20). Which samples does the s.d. cover, and were the fields of Extended Data Fig. 3 restricted further?",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }

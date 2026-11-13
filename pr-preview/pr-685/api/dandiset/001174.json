@@ -5,7 +5,7 @@
   "label": "DANDI:001174"
  },
  "page": "datasets/dandi/001174/",
- "generated": "2026-11-11T02:54:01+00:00",
+ "generated": "2026-11-13T03:52:05+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 9,
@@ -596,85 +596,55 @@
      "kind": "data_missing",
      "statement": "The dandiset holds no TTL or trial data and no raw traces. The Figure 2 and Figure S1 analyses, which align raw traces to TTL-marked target and movement onsets, cannot be run; six of the paper's findings are untestable. The Zenodo table of aligned activity holds the paper's z-scored windows, not the event times.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The trace in processing/ophys/Fluorescence/RoiResponseSeries is the CNMFe denoised trace (between events it decays by one constant factor per frame, in a median 90% and at least 77% of a file's samples), but is described only as \"Fluorescence data associated with spatial footprints\". EventAmplitude holds the deconvolved events as a dense frame by cell array without saying that zero means no event. ImagingPlane indicator and location are \"N/A\" in every file; the site is only in session_description.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "identifier_missing",
      "statement": "No cross-session cell identity is deposited. The dandiset gives each file's cells 0..n-1; the paper's Zenodo table gives a global id only at a cell's first session, and the spreadsheet the code reads for identity (Metadata_all_monkeys.xlsx) is not public. The fraction of cells tracked across sessions (18%) cannot be checked.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "The dandiset's events differ from the paper's per-cell table. The cells match (centroids within 3 pixels for 93.8%), but event rates agree within 1% for only 40.9% of cell-conditions and the table's are a median 4.2% higher (up to 50% at the 95th percentile); one-frame inter-event intervals are rarer in the dandiset (3.9% against 11.9% of cells with a one-frame median IEI), so some events of the paper's table are missing from the dandiset's event arrays. U SMA 2023-03-07 and 2023-03-14 differ by factors of 0.04 to 20; in both the dandiset has far fewer spontaneous events and a higher amplitude in every cell, which is not a swap of conditions and looks like a different event detection. With the dandiset's amplitudes the U task M1 against SMA difference is not significant (p = 0.099), with the table's it is (p = 0.014), and without those two sessions p = 0.041.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "U SMA 2023-03-14 is sampled at 20 Hz (both files), where the Methods give 10 Hz for all imaging.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "The dandiset has arm-reaching files for monkey V (both M1 sessions), and the paper's Jaccard and sequence code treat them as task, while the Results and Methods say only Q and U performed the task.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "The spontaneous file of Q's 2022-09-15 session is named sub-Q/sub-Q_ophys.nwb, without the session label the other 44 files carry.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "selection_undocumented",
-     "statement": "The dandiset holds cells the paper's analyses leave out. The paper's Jaccard table has pairs for 17 cells in Q 2022-10-03, 11 in Q 2022-12-01, 10 in V 2023-03-09 and 13 in V 2023-03-16, and its Figure 4D table counts 17, 11, 11 and 13, where the dandiset has 18, 13, 11 and 14 accepted cells. V 2023-03-09 is V's first session, yet the descriptors table lists 10 of its 11 cells. Which cells were left out, and why, is not stated.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "other",
-     "statement": "The paper's Jaccard table dates one F session \"20-Feb-23\"; F was imaged in 2024 and the dandiset's session is 2024-02-20.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The double-counting step of identify_sequences.m (eliminate_double_counting_v2) marks used events by writing 2 into the logical event array, which MATLAB stores as true, so its test for 2 never succeeds and it removes no repetition, contrary to its comments.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "1_JaccardIndexAnalysisAllSessions.R runs the SMA sessions with nperm = 10 shifts, where the Methods give 1000. On the dandiset, SMA spontaneous against task gives p = 0.077 with 10 shifts and 0.151 with 1000; the paper's p = 0.07 matches its own table (0.067).",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. Which values were passed to identify_sequences.m for Figure 4 (the time window tc, the minimal separation, min_num_reps, the sequence lengths), and does the 0.05 s of the Results apply to the window's lower bound, to the separation of repetitions, or both? Run on the dandiset's events under each reading, the port gives counts that follow the paper's Figure 4D table in rank (Spearman 0.87) but are about three times larger, or 0.4 times with the double-counting step as documented. No setting of 32 (window upper bound 0.25 to 2 s, separation 0.05 to 2 s, either double-counting step) puts more than 21.4% of slices within 10% of the table, even where the dandiset's events match the paper's.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. For \"no preferred spatial relation between cells involved in sequences\" (Figure 4C, Figure S2), which distributions were compared (centroid positions of cells in sequences against all cells, or distances between cells of the same sequence against all pair distances), and was a test used? On the dandiset the first comparison finds no difference and the second finds sequence pairs closer when pairs are pooled over sessions (medians 285 against 320 um) and not within sessions, unless the double-counting step removes repetitions as its comments describe.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "The paper's Figure 4D table gives n.a. for the first spontaneous 10 min of Q 2022-09-15 and 13 sequences for the second, the 13 of Figure 4A, while the dandiset's spontaneous file of that session lasts 10.05 min. Either more spontaneous recording was analysed than was deposited, or the table's segment label is wrong.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -696,6 +666,80 @@
      "agreed": 23,
      "of": 23,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The dandiset has arm-reaching files for monkey V (both M1 sessions), and the paper's Jaccard and sequence code treat them as task, while the Results and Methods say only Q and U performed the task.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds cells the paper's analyses leave out. The paper's Jaccard table has pairs for 17 cells in Q 2022-10-03, 11 in Q 2022-12-01, 10 in V 2023-03-09 and 13 in V 2023-03-16, and its Figure 4D table counts 17, 11, 11 and 13, where the dandiset has 18, 13, 11 and 14 accepted cells. V 2023-03-09 is V's first session, yet the descriptors table lists 10 of its 11 cells. Which cells were left out, and why, is not stated.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's Jaccard table dates one F session \"20-Feb-23\"; F was imaged in 2024 and the dandiset's session is 2024-02-20.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The double-counting step of identify_sequences.m (eliminate_double_counting_v2) marks used events by writing 2 into the logical event array, which MATLAB stores as true, so its test for 2 never succeeds and it removes no repetition, contrary to its comments.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "1_JaccardIndexAnalysisAllSessions.R runs the SMA sessions with nperm = 10 shifts, where the Methods give 1000. On the dandiset, SMA spontaneous against task gives p = 0.077 with 10 shifts and 0.151 with 1000; the paper's p = 0.07 matches its own table (0.067).",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which values were passed to identify_sequences.m for Figure 4 (the time window tc, the minimal separation, min_num_reps, the sequence lengths), and does the 0.05 s of the Results apply to the window's lower bound, to the separation of repetitions, or both? Run on the dandiset's events under each reading, the port gives counts that follow the paper's Figure 4D table in rank (Spearman 0.87) but are about three times larger, or 0.4 times with the double-counting step as documented. No setting of 32 (window upper bound 0.25 to 2 s, separation 0.05 to 2 s, either double-counting step) puts more than 21.4% of slices within 10% of the table, even where the dandiset's events match the paper's.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. For \"no preferred spatial relation between cells involved in sequences\" (Figure 4C, Figure S2), which distributions were compared (centroid positions of cells in sequences against all cells, or distances between cells of the same sequence against all pair distances), and was a test used? On the dandiset the first comparison finds no difference and the second finds sequence pairs closer when pairs are pooled over sessions (medians 285 against 320 um) and not within sessions, unless the double-counting step removes repetitions as its comments describe.",
+     "found": null,
+     "status": null,
+     "n": 13,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The paper's Figure 4D table gives n.a. for the first spontaneous 10 min of Q 2022-09-15 and 13 sequences for the second, the 13 of Figure 4A, while the dandiset's spontaneous file of that session lasts 10.05 min. Either more spontaneous recording was analysed than was deposited, or the table's segment label is wrong.",
+     "found": null,
+     "status": null,
+     "n": 14,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }
