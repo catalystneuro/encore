@@ -1700,9 +1700,14 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
     if o.get("quote"):
         cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
         body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
+    # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at
+    # the end of the claim's first line, and with a link to the claim once it is open.
+    ident = f'<code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
+    body += (f'<p class="claim-link small muted">Claim id <code>{e(o["claim"])}</code> &middot; '
+             f'<a href="#claim-{e(o["claim"])}">link to this claim</a></p>')
     # The chip is not a link here: inside the summary a click should open the claim.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
-            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}</div>'
+            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}{ident}</div>'
             f'<p class="statement">{e(o["statement"])}</p></summary>'
             f'<div class="claim-body">{body}</div></details></li>')
 
