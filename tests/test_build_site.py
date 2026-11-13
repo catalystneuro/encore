@@ -1009,3 +1009,10 @@ def test_the_contributors_file_names_people_given_name_first_with_roles_in_words
         assert len(ids) == len(set(ids)), key
         assert all(p["name"] and "," not in p["name"] and (p["orcid"] is None or contributors.ORCID.fullmatch(p["orcid"]))
                    for p in listed), key
+
+
+def test_a_lists_filters_open_again_when_a_narrow_window_is_widened():
+    # Closed under their bar on a narrow screen; a wide screen has no bar, so they are opened whenever it is wide,
+    # not only when the page loads (assets/list.js follows the media query).
+    js = (site.ASSETS / "list.js").read_text()
+    assert "narrow.addEventListener('change', fitFilters)" in js and "$('facets').open = !narrow.matches" in js
