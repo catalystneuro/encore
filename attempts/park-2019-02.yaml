@@ -501,6 +501,20 @@ findings:
   statement: The paper reports 142 simultaneously recorded head-direction pairs; the 115 deposited
     units form 146. 142 of them have a defined 5 s internally referenced curve in every condition,
     which may be the count the paper used.
+- kind: format_error
+  statement: In sessions 1009R029, 1015R029, 1023R029 and 1025R029 the room-frame and arena-frame TSD
+    tracks of the rotating trial disagree in distance from the arena centre (median 6.85 to 13.49 px
+    at the best constant lag), while the session's room and arena .dat files agree (0.31 px), as the
+    two TSD frames of 1022R029 do (0.31 px). Against the room .dat track the TSD tracks fall behind
+    more and more through the trial, by 705 to at least 1500 samples in the room frame and 354 to
+    828 samples in the arena frame at sample 48000, so the spikes cannot be aligned with both frames.
+  found: on_prompt
+- kind: paper_inconsistency
+  statement: The decoding window is 660 ms in the STAR Methods (20 samples of 33 ms, and num_samps =
+    20 in HD_Max_likelihood.py, 666 ms at the tracker's 30.02 samples/s) and 133 ms in the Figure 2
+    legend. The arena-frame error z is 289.63 in the Results and 153.24 and 230.58 in the Figure 5
+    legend, the z values the legend gives for the head-direction distributions.
+  found: on_prompt
 verifications:
 - date: '2026-11-13'
   kind: agent
@@ -907,3 +921,98 @@ verifications:
       the mean of 76.8, 0.1 and 1.6 below their lower neighbour; Rayleigh r 0.032 in the new run).
       The notes and result cell state both and call the match weak support. The 1 of 32 and 10 of
       32 counts are unchanged after the window-direction fix. Outcome unchanged.
+reconciliation:
+  earlier: park-2019-01
+  date: '2026-11-13'
+  blind: false
+  blind_note: The author's first run saw nothing of park-2019-01, and all 17 of its first findings and
+    the figs3 outcome were written then. In the author-answers run it printed questions/park-2019.yaml,
+    which the answer run had copied from main and which held the two questions of park-2019-01 with
+    that attempt's results (fig5 error r of 0.014 to 0.211, one of 14 figs3 tests at p = 0.0134 with n
+    the number of bins), and the first lines of the author-answers and author-revise-3 reports of
+    park-2019-01, left in transcripts/park-2019 (figs3 changed to not_reproduced, the outcomes of
+    fig1c-speed, fig4-internal-tuning-preserved and no-angular-velocity-tuning, and the topics of its
+    two methods_unavailable findings, among them the Tukey error term). In author-revise-2 it read the
+    round 3 verifier report of park-2019-01 (figs3 not reproduced with n the number of bins) and said
+    so in its report. It kept figs3 as reproduced, and the one finding added after these runs (number
+    15, on the Tukey error term) answers point 1 of its own round 1 verifier.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that the data set holds only the 115 head-direction cells, without the other MEC
+      cells of Table S1, the 921 modelled cells, the LFP, the waveforms and the training sessions, so
+      the claims of Figures 1A, 1C (LFP), S4, S5 and S6 cannot be tested.
+  - finding: 2
+    status: still_present
+    now: 2
+    note: Both report the stable2 column of 1121R157 shifted by one row for P11C2 to P9C3. The CON names
+      of the second sheet were not reported again; in earlier_findings.ipynb Sheet2 still lists
+      1020CONR035-cl.P11C3Rm, 1030CONR035-cl.P11C2Rm and 1030CONR035-cl.P11C3Rm, while the zip holds
+      only the SA2 files and no file named CON.
+  - finding: 3
+    status: still_present
+    now: 4
+    note: Both find that unit 1024R157 P9C1 has the same 2919 spike times in its stable1 and rotating
+      files; the earlier attempt took the rotating files to be wrong and the blind one the stable1 file.
+  - finding: 4
+    status: still_present
+    now: 3
+    note: Both find the room-frame rotating track of 1211R039 identical to that of 1212R039. The blind
+      attempt reports it with the identical stable2 tracks of 1015R029 and 1025R029.
+  - finding: 5
+    status: still_present
+    now: 19
+    note: In earlier_findings.ipynb the two TSD frames of 1009R029, 1015R029, 1023R029 and 1025R029
+      still differ by 6.85 to 13.49 px in distance from the centre at the best constant lag, against
+      0.31 px for their .dat files and for 1022R029, and their lag behind the room .dat track grows to
+      705 to 1500 samples (room) and 354 to 828 (arena) by sample 48000. The effect on the paper's
+      comparisons was not run again.
+  - finding: 6
+    status: still_present
+    now: 5
+    note: Both report the stable2 header of 1017R035 P11C2 with 2000 samples/s, a first timestamp of 5
+      and 54185 samples. The 614 spikes off the spike clock line are not reported again.
+  - finding: 7
+    status: still_present
+    now: 7
+    note: Both report that the stable2 file 1121SA2R157-cl1.P11C2Rm holds 26954 samples, about half a
+      trial.
+  - finding: 8
+    status: still_present
+    now: 9
+    note: Both find that spike times run ahead of the sample times computed from the header's rate and
+      first timestamp, and that the data descriptor does not say how they relate. The earlier attempt
+      gives about 25 samples (0.8 s) by the end of a trial, the blind one up to about 3 s.
+  - finding: 9
+    status: still_present
+    now: 10
+    note: Both find R029 with 40 cells against 41 in Table S1 and R523 with 2 against 1. The 146 pairs
+      against 142 in the Results are reported in finding 18.
+  - finding: 10
+    status: still_present
+    now: 12
+    note: Both ask for the Idir direction bins and probabilities, the SD of the 2 SD rule and the margin
+      for no frame preference, and both find the reported 4 room and 2 arena counts under 1 of 16
+      readings. Relative proximity and the n of the Figure S3 Rayleigh test are asked in findings 13
+      and 14.
+  - finding: 11
+    status: still_present
+    now: 15
+    note: Both ask whether the Tukey-Kramer tests used the repeated-measures error term, which decides
+      fig1c-directionality in both. Internally referenced tuning is asked in finding 16; how speed is
+      computed for Figure 1C is not asked again.
+  - finding: 12
+    status: still_present
+    now: 20
+    note: The paper's text is unchanged (660 ms in the STAR Methods, 133 ms in the Figure 2 legend, z =
+      289.63 in the Results and 153.24 and 230.58 in the Figure 5 legend), and in earlier_findings.ipynb
+      the paper's code sets num_samps = 20, 666 ms at 30.02 samples/s.
+  outcomes:
+  - claim: figs3-no-head-direction-bias
+    earlier: not_reproduced
+    note: A difference in method between the two notebooks, the n of the weighted Rayleigh test, which
+      the criterion leaves open. Both find an average r of 0.166 and one test of 14 below 0.05 with n
+      the number of bins (1121R157, room frame, p = 0.0134 and 0.014). The earlier attempt took n as
+      the number of bins (reading a) and the blind one as the sum of the weights (reading b, as in
+      CircStat), under which no test is significant.
