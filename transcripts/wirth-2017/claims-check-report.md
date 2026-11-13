@@ -1,23 +1,23 @@
-The checker reports `claims/wirth-2017.yaml: 28 claims, 28 quotes, 25 statistical values, 0 problems`, both before my edits and after. No claim id was changed, and nothing was committed.
+I've finished the check of `claims/wirth-2017.yaml` and the file is ready for an attempt. Nothing is committed.
+
+**Checker:** `claims/wirth-2017.yaml: 28 claims, 28 quotes, 25 statistical values, 0 problems` (the same before and after my edits). The file also passes the repository's schema; the only errors in a plain `yaml.safe_load` run were the `checks` dates, which both check entries share and the checker accepts.
+
+The file had already been checked once (2026-11-10). What is new since then is that hc-12 was added as a second dataset. That turns out to matter most: the paper's Supporting data section names a single CRCNS deposit, doi 10.6080/K0R49NQV, and the descriptors show that is hc-12. hc-12 holds 189 cells, the same number the paper analyses, all in new-maze sessions. hc-21 is a later deposit (2018, 101 cells) that adds a familiar maze the paper never describes, and it also names a second paper.
 
 **Changes, by claim**
-- **Header (Method W) and path-selectivity:** the file said no chance rate gives the paper's p = 0.37 for 1 of 42 cells. That was wrong. At a chance rate of 0.05, the chance of 1 or fewer is 0.372. I corrected both places; the value is still reported, not judged.
-- **gaze-anticipates-action and gaze-anticipates-landmarks:** the criteria demanded p < 0.001 in each monkey. The Results give a single p, so testing each monkey separately and pooling both monkeys are now two readings.
-- **probe-faster-criterion:** both readings were flawed.
-  - Reading (b), trials until the first correct trial from a new entry, is not the paper's learning criterion (lower confidence bound above 1/4).
-  - Reading (a) used the session's running learning curve, which in most sessions is already past criterion when the new entries come in (trials 37 and 60 in the S3C examples).
-  - The new readings start a learning curve when the new entries are introduced, using either all trials or only the trials from new entries.
-- **sparsity-state-vs-position (also used by sparsity-gaze-vs-state):** the per-cell significance level of 0.05 had no source in the paper. It is now two readings, 0.05 and 0.01.
-- **fields-per-cell and gaze-map-landmarks:** the source pointed to paragraph 4 of "What is encoded in hippocampal cell activity"; the sentences are in paragraph 3.
-- **gaze-map-landmarks:** the "excess activity" measure is not the paper's. It is now marked as a standard choice and a deviation.
-- **spatial-selectivity-fraction:** added a third reading, cells with significant position information among the 111 responsive cells.
-
-The other claims' statements, statistics, expected values and methods hold against the paper.
+- **Top level:** removed the `dataset: hc-21` entry. The schema says a paper's own claims file leaves it out, and with it in place the file was looked up as an hc-21-only file, so an attempt on both datasets would not have found it.
+- **Every claim:** added `datasets: [crcns-hc-12]`, for the reason above.
+- **Header:** rewrote the paragraph on the datasets. Also noted that the hc-12 descriptor lists the Matlab scripts the paper mentions.
+- **state-space-most-responsive:** added a third way to read the chi-squared test: a goodness-of-fit test of the four counts against equal counts, which fits the paper's wording ("significantly unequal"). The pairwise tests are now given for each reading.
+- **path-selectivity:** added the paper's count of one path-invariant cell to the expected values, accepted from 0 to 2 (a count of 1 cannot carry a 10% tolerance), and to the criterion.
+- **direction-center-vs-periphery:** the paper does not name its test, so the criterion now marks the Wilcoxon signed-rank test as a deviation.
+- **Checked, no change:** I recomputed the binomial readings in the header and they match the paper's p-values (0.0097, 0.81, 0.16 and 0.37). Every other claim checked out against the paper, and every main finding has a claim.
 
 **Still open**
-- **S1 Appendix is missing.** It is a DOCX and is not under `paper/`. Without it, fields-per-cell and dimensionality-control cannot be judged, and the two gaze-behaviour claims rest on the S2 Fig legend alone.
-- **Learning-curve method unknown.** The method comes from the paper's reference 60, but the stored text has no reference list, so it cannot be named.
-- **landmark-identity-distance:** the paper gives p < 0.001 for 14 of 111 interaction cells, but at a chance rate of 0.05 the value is 0.0013. The chance rate for these counts is unclear; the criterion does not judge this test.
-- **No claim for one minor finding:** that gaze was drawn to the rewarded path and the landmarks (Fig 1H). Its method is in S1 Appendix A1.
-
-**Ready:** yes. I marked the file `ready: true`; supplying S1 Appendix would settle the claims that depend on it.
+- The paper does not say whether any hc-21 new-maze sessions are its own. No claim rests on hc-21; testing on it would be a variant.
+- The S1 and S2 Appendices are not under `paper/`, and reference 60 (the learning-curve method) is not named. So these stay as open as the previous check left them:
+  - the methods of gaze-anticipates-action and gaze-anticipates-landmarks
+  - fields-per-cell and dimensionality-control
+  - the confidence bounds of the learning curves
+  - the chance rate in the binomial tests of landmark-identity-distance
+- I did not read the CRCNS scripts because they are files of the dataset. They might settle the map binning that the shared method leaves open.

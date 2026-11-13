@@ -1,0 +1,795 @@
+# Claims for Rich, Liaw & Lee (2014), Science 345:814-817, "Large environments reveal the
+# statistical structure governing hippocampal representations", tested on CRCNS data set hc-31.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-11, protocol as stated in docs/protocol.md (version pilot-14, Reader).
+#
+# Text read: the version of record (paper/10.1126-science.1255635.txt, PyMuPDF text of the
+# publisher PDF, supplied by a person) and its supplement (rich.sm.pdf: Materials and Methods,
+# Supplementary Text, Figs. S1 to S18 with legends, references). The supplement PDF was rendered
+# to read Figs. S5, S7, S15 and S17; the main PDF was rendered to read Fig. 3.
+# Missing from the text read: the last page of the article (p. 817) has a damaged content stream
+# in the PDF supplied. Its text columns survive, but Fig. 4 (panels A to C), the Fig. 4 legend,
+# references 30 and 31 and the acknowledgments neither render nor appear in the text. The Fig. 4
+# results are stated in the main text and its methods in the supplement, so those claims are
+# kept, but every detail the Fig. 4 legend would fix (the correlation used in Fig. 4A, the range
+# of sizes in Fig. 4B, what Fig. 4C plots) is named as open below.
+# Code: the paper links no analysis code; none was read. The data set's own example script is
+# part of the data set, not of the paper, and was not read.
+#
+# Data the paper used. Five adult male Long-Evans rats, one microdrive of 16 tetrodes over right
+# dorsal CA1 each; spikes (600-6000 Hz, 32 kHz) and LFP. Only tetrodes localized to CA1 by
+# histology. Units clustered in the PRE sleep session, kept only when isolated and tracked over
+# the whole day (PRE, RUN1, REST, RUN2, RUN3, POST); putative interneurons removed by high rates
+# and narrow waveforms. Putative pyramidal cells per animal 63, 58, 24, 57 and 51 (253 in all).
+# One day per rat, in a novel room: PRE, about 2 h of rest in a sleep box; RUN1, a 48 m elevated
+# linear track built in four sections of 3, 7, 12 and 26 m (track length 3, 10, 22 and 48 m in the
+# four epochs), each epoch 3 to 5 traversals, the animal confined at the start while the next
+# section was added; REST, at least 4 h in the sleep box; RUN2, 4 to 5 more laps of the full
+# track; RUN3, 10 to 25 min in a novel oval open field (about 40 x 100 cm) in another room; POST,
+# sleep. Position traced by hand from three overhead cameras and mapped onto a scale model of
+# the track (linearized position, 0 m at the start). Histological positions of tetrodes on the
+# septotemporal and proximodistal axes of CA1. The hc-31 description lists single units and LFP
+# from dorsal CA1 of five rats on the novel 48 m track, the repeat exposure, the open field and
+# the flanking sleep sessions.
+#
+# Shared method, from the supplement's Materials and Methods unless stated.
+# - Cells. The 253 putative pyramidal cells. A cell counts in every population figure, including
+#   those with no field.
+# - Novel exploration. Only times when the animal explored the section new in that epoch of RUN1
+#   (the whole first section in epoch 1; the added section in epochs 2 to 4); times confined at
+#   the start and times on sections from earlier epochs are left out. Fields are detected
+#   separately in each epoch (Fig. S4 legend) on that epoch's novel section, and a cell's number
+#   of fields is the sum over the four novel sections. RUN2 is not used for the main results.
+# - Rate maps. Per direction of travel (outbound and inbound, from the sign of the velocity),
+#   spikes and occupancy in 1 cm bins of linearized position, each smoothed with a Gaussian of SD
+#   10 cm, rate = smoothed spikes over smoothed occupancy; bins with occupancy not above 0.001
+#   s/cm dropped; only periods with velocity above 5 cm/s. Velocity is the net linear
+#   displacement in a sliding 1 s window; that the window is centred is a standard choice that
+#   cannot change the outcome.
+# - Place fields. At least 15 contiguous cm of a directional rate map above 2 Hz, bounded where
+#   the rate falls below 2 Hz, kept only when at least one spike fell in at least 50% of the
+#   passes through the field in that direction. Outbound and inbound fields are merged when
+#   either overlaps the other by at least 50% (of its own extent, the reading the sentence
+#   gives). The field location is the peak of the rate map within the field; for a merged field,
+#   the peak of the mean of the two directional maps. What counts as a pass is open: readings
+#   P-a, a traversal that enters the field at one edge and leaves at the other in the direction
+#   considered; P-b, any visit to the field's bins while moving in that direction.
+# - Open field (RUN3). 2D rate maps in 1 cm2 bins smoothed with a Gaussian of SD 5 cm; a field is
+#   at least 100 cm2 of contiguous bins above 2 Hz. A speed threshold and an occupancy threshold
+#   are not given for the open field: readings O-a, the track's 5 cm/s and 0.001 s per bin;
+#   O-b, no speed threshold with the same occupancy rule.
+# - Population models. Equal-rate Poisson, each cell's count Poisson with the mean count per
+#   cell (maximum likelihood); gamma-Poisson, a negative binomial with parameters r and p fitted
+#   by maximum likelihood to the counts per cell, with P(X = x) = Gamma(x + r) / (Gamma(r) x!)
+#   p^r (1 - p)^x (Supplementary Text; the text extraction garbles the formula, and this is the
+#   form whose mean, r(1 - p)/p = 3.5 for r = 0.57 and p = 0.14, agrees with the per-animal means
+#   of Fig. S7A). The rate per metre is gamma with shape r and rate beta = 48 p/(1 - p) metres,
+#   and the predicted recruitment curve (location of each cell's first field) is the Lomax
+#   distribution 1 - (beta/(beta + x))^r, never refitted to the recruitment data.
+# - Field set. Fields are recomputed from spikes and position by the method above (F-a). Where
+#   the data set holds the paper's own detected fields, the same analysis on them is shown as a
+#   variant (F-b); outcomes are judged on F-a and the notes say where the two differ.
+# Every criterion names the readings it rests on; the outcome is the one all its readings give.
+schema_version: 2
+paper: doi:10.1126/science.1255635
+claims:
+- id: cell-counts
+  statement: The study analysed 253 putative pyramidal cells from dorsal CA1 of five rats, 63, 58,
+    24, 57 and 51 per animal, each isolated in PRE sleep and tracked over the whole experiment.
+  source: Main text, paragraph 4; Materials and Methods, Spike sorting
+  quote: We recorded 253 putative pyramidal cells from dorsal CA1 (fig. S1) in the rats ... The
+    number of isolated putative pyramidal units from tetrodes localized to CA1 from each animal
+    was 63, 58, 24, 57, and 51
+  expected:
+  - quantity: putative pyramidal cells, all animals
+    value: 253
+    tolerance: 25.3
+  criterion: Cells as the data set marks the paper's putative pyramidal CA1 units isolated over
+    the whole experiment (Methods, Spike sorting). Reproduced when the total is within tolerance
+    and each animal's count is within 10% of 63, 58, 24, 57 and 51 under some one-to-one
+    assignment of the paper's counts to the five animals (the paper does not say which animal
+    has which count).
+- id: figs3-cluster-quality
+  statement: The number of fields per cell is not correlated with the cluster quality of the unit,
+    neither its L-ratio nor its isolation distance in RUN1.
+  source: Materials and Methods, Spike sorting; Figure S3B and S3C
+  quote: Across the population, the number of fields from each unit was uncorrelated with the
+    L-ratio (B; Spearman's ρ=-0.01, p=0.86) or the isolation distance (C; Spearman's ρ=0.07,
+    p=0.37) of each single unit cluster during RUN1
+  statistics:
+  - about: number of fields against L-ratio
+    test: Spearman correlation
+    statistic: rho = -0.01
+    p: 0.86
+    n: 253 cells
+  - about: number of fields against isolation distance
+    test: Spearman correlation
+    statistic: rho = 0.07
+    p: 0.37
+    n: 253 cells
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: A claim of absence, judged on the paper's test. L-ratio and isolation distance as
+    Schmitzer-Torbert et al. (2005) define them, computed on the peak amplitudes of the four
+    channels for RUN1 spikes (Methods). Spearman correlation of each with the number of novel
+    fields per cell (shared method). Reproduced when neither correlation has p < 0.05; not
+    reproduced when either does. Rho and p are reported. If the data set gives the paper's
+    cluster quality values in place of the spikes' amplitudes, those are used and the notes say
+    so.
+- id: fig1-recruitment-by-section
+  statement: In each new section of track, existing place cells formed additional fields and new
+    place cells were recruited from cells silent until then.
+  source: Main text, paragraph 5; Figure 1; Figures S4 i to v
+  quote: In each new section of track, existing place cells formed additional fields and new place
+    cells were recruited from the pool of silent cells
+  criterion: Fields by the shared method (F-a; readings P-a and P-b). For each of epochs 2, 3 and 4,
+    count the cells with at least one field in an earlier novel section that form a field in the
+    new section, and the cells with no earlier field that form their first. Reproduced when both
+    counts are at least one in every one of the three epochs, pooled over animals; partially
+    reproduced when that holds in one or two of them. Counts per animal are reported.
+- id: fig2-individual-poisson
+  statement: For the 61 of 253 cells with at least six fields, neither the field locations nor the
+    inter-field intervals differ from a Poisson process (uniform locations, exponential
+    intervals); no cell is significant by the Anderson-Darling test after false discovery rate
+    adjustment.
+  source: Main text, paragraph 5; Figure 2A; Materials and Methods, Poisson testing
+  quote: For cells with ≥6 fields (61/253), neither the spatial distributions of fields nor
+    interfield interval distributions differed from the Poisson model (Anderson-Darling test,
+    0/61 cells with P < 0.05, adjusted for false discovery rate)
+  expected:
+  - quantity: cells with at least 6 fields
+    value: 61
+    tolerance: 6.1
+  - quantity: cells significant after FDR adjustment, either test
+    value: 0
+    tolerance: 0
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: Fields by the shared method (F-a; P-a and P-b). Locations are the field locations in
+    metres from the start, tested against the uniform distribution on 0 to 48 m. Intervals are
+    the gaps between consecutive sorted field locations of the cell, merged fields counted once,
+    regardless of direction (Methods), tested against an exponential with the cell's mean
+    interval. Open, two details. How the exponential test treats the estimated mean (E-a, the
+    composite Anderson-Darling test with the mean estimated, as MATLAB's adtest does for the
+    exponential; E-b, a simple test with the cell's mean plugged in). Which p-values form a "set"
+    for the Benjamini-Hochberg adjustment (S-a, the 61 location tests and the 61 interval tests
+    separately; S-b, all 122 together). Reproduced when the count of cells with six or more
+    fields is within tolerance and no cell has an adjusted p < 0.05 under every reading;
+    partially reproduced when at most two cells (3%) do; not reproduced otherwise.
+- id: fig2bc-population-bias
+  statement: Across the cells with at least six fields there is no overall bias in field location
+    or interval; the median field location and the normalized deviation of the median inter-field
+    interval from its exponential expectation follow the distributions expected for uniform and
+    exponential fields.
+  source: Figure 2B and 2C; Materials and Methods, Poisson testing
+  quote: Distribution of median field location of all cells with ≥6 fields across animals (n = 61
+    cells from 5 rats) versus distribution expected for cells with uniformly distributed fields
+    (red curve)
+  depends_on:
+  - fig2-individual-poisson
+  criterion: Per cell (the cells of fig2-individual-poisson), the location of the median field,
+    and (median observed interval - mean interval x ln 2) / mean interval, the exponential
+    median being the mean times ln 2. Null, 5000 surrogate sets per cell with the cell's number of
+    fields, uniform on 0 to 48 m and exponential with the cell's mean interval (Methods), pooled
+    over cells. The paper reports no test of the comparison, so it is open. Readings C-a, a
+    two-sample Kolmogorov-Smirnov test of the 61 observed values against the pooled null values;
+    C-b, each cell's observed value expressed as its percentile in its own null, and a
+    one-sample Kolmogorov-Smirnov test of the 61 percentiles against uniform. Reproduced when
+    neither statistic differs from its null at p < 0.05 under both readings; not reproduced when
+    either differs under both; otherwise the result rests on the reading, as the notes say.
+- id: figs6-few-field-cells-uniform
+  statement: For cells with fewer than six fields, the pooled field locations of cells with the
+    same number of fields do not differ from uniform (0 of 5 groups significant).
+  source: Materials and Methods, Poisson testing; Figure S6C
+  quote: None of these distributions were significantly different from uniform (Anderson-
+    Darling test, 0/5 pFDR<0.05)
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: Fields by the shared method (F-a; P-a and P-b). For each of the groups of cells with
+    1, 2, 3, 4 and 5 fields, the field locations pooled over the group's cells, tested against
+    uniform on 0 to 48 m by the Anderson-Darling test, the five p-values adjusted by
+    Benjamini-Hochberg. Reproduced when no group has adjusted p < 0.05; partially reproduced when
+    one does; not reproduced otherwise. Intervals are not tested, as in the paper.
+- id: fig3b-overdispersion
+  statement: The number of fields per cell is overdispersed relative to the equal-rate Poisson
+    model, a few cells having many fields and many more cells than expected having few or none,
+    so that model fits the field counts poorly, in the pooled data and in each animal.
+  source: Main text, paragraph 7; Figure 3B; Figure S7A
+  quote: Instead, the observed number of fields per cell was overdispersed relative to the
+    equal-rate Poisson model (Fig. 3B and fig. S7A), indicating significant differences in the
+    spatial rate of field formation between cells
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: The counts per cell of fig3b-negbin-fit. The paper names no test of the poor fit, so
+    it is open. Readings D-a, the index-of-dispersion test (sum of squared deviations from the
+    mean over the mean, against chi-square with n - 1 degrees of freedom); D-b, a likelihood ratio
+    test of the negative binomial against the Poisson (half chi-square with one degree of
+    freedom, as the dispersion parameter sits on its boundary). Reproduced when the variance
+    exceeds the mean, the observed number of cells with no field exceeds the equal-rate Poisson
+    expectation (n exp(-mean), for the pooled cells and for each animal's), and the test gives p <
+    0.05 under both readings, pooled and in each of the five animals (Fig. S7A legend, "The fits
+    for individual animals are poor"); partially reproduced when it holds pooled but in fewer
+    animals.
+- id: figs7a-mean-fields-per-animal
+  statement: The mean number of fields per cell (the equal-rate Poisson rate) is 3.56, 4.19, 4.33,
+    2.29 and 2.48 in the five animals.
+  source: Figure S7A (panel labels)
+  quote: The equal-rate-Poisson fit is shown in gray, using the average number of fields per cell
+    (the rate parameter λ) from each animal. The fits for individual animals are poor
+  expected:
+  - quantity: mean fields per cell, ANM228899
+    value: 3.56
+    tolerance: 0.356
+  - quantity: mean fields per cell, ANM00190422
+    value: 4.19
+    tolerance: 0.419
+  - quantity: mean fields per cell, ANM228900
+    value: 4.33
+    tolerance: 0.433
+  - quantity: mean fields per cell, ANM212379
+    value: 2.29
+    tolerance: 0.229
+  - quantity: mean fields per cell, ANM204878
+    value: 2.48
+    tolerance: 0.248
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: The values are printed in the panels of Figure S7A beside each animal's identifier;
+    they were read from the figure. Mean count per cell in each animal, from the counts of
+    fig3b-negbin-fit. Reproduced when all five are within tolerance under one reading (F-a with P-a
+    or P-b); partially reproduced when three or four are.
+- id: fig3b-negbin-fit
+  statement: The number of fields per cell is well fit by a negative binomial distribution with r
+    = 0.57 and p = 0.14, which arises when each cell is a Poisson process whose rate is drawn from
+    a gamma distribution.
+  source: Main text, paragraph 8; Figure 3B; Figure S9; Materials and Methods, Population models
+  quote: The number of fields per cell was well fit with a negative binomial distribution (Fig. 3B,
+    parameters r, p = 0.57, 0.14), which can arise if each cell is an independent Poisson process
+    with its rate drawn from a gamma distribution
+  expected:
+  - quantity: negative binomial r
+    value: 0.57
+    tolerance: 0.057
+  - quantity: negative binomial p
+    value: 0.14
+    tolerance: 0.014
+  criterion: Counts of novel fields per cell over the four RUN1 sections for all 253 cells (shared
+    method, F-a; readings P-a and P-b), pooled over animals; negative binomial fitted by maximum
+    likelihood in the parameterization of the opening comment (that of MATLAB's nbinfit).
+    Reproduced when both parameters are within tolerance under one reading; partially reproduced
+    when one is. The paper gives no test of "well fit"; its support is the recruitment test of
+    fig3c-lomax-recruitment. The mean count r(1 - p)/p and the fitted values under each reading are
+    reported.
+- id: fig3c-recruitment-fraction
+  statement: Recruitment of cells into the representation reached only about 65% at 48 m (46 to 77%
+    across animals), far below the equal-rate Poisson prediction; about 35% of cells stayed silent.
+  source: Main text, paragraph 7; Figure 3C; Figure S7B
+  quote: The recruitment of neurons into the representation reached only ~65% at 48 m (range 46 to
+    77%, fig. S7B), greatly undershooting the equal-rate Poisson prediction
+  expected:
+  - quantity: fraction of the 253 cells with at least one field on the 48 m track
+    value: 65
+    tolerance: 6.5
+    unit: '%'
+  - quantity: lowest per-animal recruitment at 48 m
+    value: 46
+    tolerance: 4.6
+    unit: '%'
+  - quantity: highest per-animal recruitment at 48 m
+    value: 77
+    tolerance: 7.7
+    unit: '%'
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: Recruitment is the fraction of all cells with at least one novel field in RUN1
+    (shared method). The equal-rate Poisson prediction at 48 m is 1 - exp(-mean count per cell).
+    Reproduced when the pooled fraction is within tolerance, every animal's fraction lies inside
+    41.4 to 84.7% (the range widened by 10% of each bound), and the pooled fraction is below the
+    equal-rate prediction, under one reading of P.
+- id: fig3c-lomax-recruitment
+  statement: The recruitment curve (the location of each cell's field nearest the start) matches
+    the Lomax (Pareto type II) curve predicted by the gamma-Poisson model fitted to the field
+    counts (Kolmogorov-Smirnov statistic 0.05, P = 0.48), while the equal-rate Poisson model's
+    exponential curve fits poorly.
+  source: Main text, paragraphs 6 and 8; Figure 3C; Materials and Methods, Population models
+  quote: The predicted recruitment curve matched the observed one well (Fig. 3C;
+    Kolmogorov-Smirnov statistic = 0.05, P = 0.48)
+  statistics:
+  - test: Kolmogorov-Smirnov, adapted to censored data, Monte Carlo significance with 2000
+      surrogates
+    statistic: KS = 0.05
+    p: 0.48
+    n: 253 cells
+  expected:
+  - quantity: Kolmogorov-Smirnov statistic, gamma-Poisson recruitment curve
+    value: 0.05
+    tolerance: 0.005
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: Per cell, the location of its field nearest 0 m; cells with no field are censored at 48
+    m. The observed curve is the fraction of all 253 cells recruited by each distance. Predicted
+    curve, the Lomax CDF from r and p of fig3b-negbin-fit (opening comment). KS statistic, the
+    largest absolute difference between the two over 0 to 48 m (the valid region). Significance by
+    2000 surrogate samples of 253 cells drawn from the Lomax, censored at 48 m, each giving a KS
+    statistic against the same predicted curve; p is the fraction of surrogate statistics at or
+    above the observed one (Methods). Whether the surrogate parameters are refitted (the
+    Lilliefors approach of reference 37) is open, with readings K-a, fixed fitted parameters, as the
+    Methods describe; K-b, for each surrogate, field counts drawn from the fitted negative
+    binomial, the parameters refitted, and recruitment locations drawn from them. Reproduced when
+    the KS statistic is within tolerance and p > 0.05 under both readings and the equal-rate
+    Poisson curve (1 - exp(-mean x / 48)) lies above the observed curve at 48 m; partially
+    reproduced when p > 0.05 under both but the statistic is outside tolerance.
+- id: fig3c-extrapolation-500m
+  statement: Extrapolated, the gamma-Poisson recruitment curve reaches 90% recruitment at about 500
+    m.
+  source: Main text, paragraph 8; Figure 3C inset
+  quote: its extrapolation predicts 90% recruitment at ~500 m
+  expected:
+    quantity: track length at which the Lomax recruitment curve reaches 0.9
+    value: 500
+    tolerance: 50
+    unit: m
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: The length x solving 1 - (beta/(beta + x))^r = 0.9 with the parameters fitted in
+    fig3b-negbin-fit. Reproduced when it is within tolerance under one reading. Before any
+    analysis, note that the printed, rounded parameters (0.57, 0.14) give about 436 m, so the
+    result depends on the unrounded fit; this is recorded, not a change of the expected value.
+- id: fig3d-uniform-density
+  statement: Overall field density is uniform along the track; the distribution of all fields
+    across animals does not differ from a constant density (Kolmogorov-Smirnov statistic 0.03, P
+    = 0.36).
+  source: Main text, paragraph 9; Figure 3D
+  quote: overall field density was uniform over the environment (Fig. 3D; KolmogorovSmirnov
+    statistic = 0.03, P = 0.36)
+  statistics:
+  - test: Kolmogorov-Smirnov against uniform
+    statistic: KS = 0.03
+    p: 0.36
+    n: all fields of all 253 cells
+  expected:
+    quantity: Kolmogorov-Smirnov statistic, all field locations against uniform on 0 to 48 m
+    value: 0.03
+    tolerance: 0.003
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: All field locations of all cells, pooled over animals (shared method, F-a; P-a and
+    P-b), one-sample Kolmogorov-Smirnov test against uniform on 0 to 48 m. Reproduced when p >
+    0.05 and the statistic is within tolerance under one reading; partially reproduced when p >
+    0.05 but the statistic is outside tolerance; not reproduced when p < 0.05. Per-animal
+    statistics are reported.
+- id: figs10-no-track-or-speed-influence
+  statement: Field density is not influenced by local track features or running speed; the number
+    of fields against the angle of the track in the room, the distance to the nearest corner and
+    the animal's mean speed shows no consistent trend relative to a shuffle of field locations.
+  source: Main text, paragraph 9; Figure S10
+  quote: was uninfluenced by local track features or running speed (fig. S10)
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: A claim of absence. Fields by the shared method. (A) the direction of the track,
+    relative to the room, at each field's location in the direction of the field, a field of both
+    directions giving half a count to each; (B) the distance along the track from each field to
+    the nearest corner of the track; (C) the animal's mean velocity in 5 cm bins of the track
+    during novel exploration, and the number of fields in bins of each velocity. Null, the same
+    number of fields placed at random uniformly along the track, 2000 times, with the expected
+    value and the 95% interval per bin (legend). The bin widths of A to C (for C, of velocity) are
+    not given; standard choices (30 degree angle bins, 1 m distance bins, 5 cm/s velocity bins)
+    are used and each is a deviation. What counts as a corner is not given and changes the
+    distances measured, so it is open, with readings Y-a, every vertex of the track's scale model
+    (Methods, Position tracking) where the direction changes by 45 degrees or more; Y-b, by 90
+    degrees or more. The paper's judgement ("no consistent trend") names no test, so readings
+    are T-a, no more bins outside the 95% interval than a binomial test at p < 0.05 allows; T-b,
+    no Spearman correlation between bin centre and count residual (observed minus shuffle mean) at
+    p < 0.05 for B and C. Reproduced when all three panels pass under both readings of T (and of
+    Y for B); not reproduced when any panel fails under all of them.
+- id: figs11-propensity-stationary
+  statement: Field propensities are stationary along the track; the correlation of the number of
+    fields per cell in the first three sections with that in the last section (Spearman 0.67) does
+    not differ from that expected under the fitted gamma-Poisson model (p = 0.95).
+  source: Main text, paragraph 9; Figure S11 legend
+  quote: The correlation between the number of fields in the first three sections of track ... and
+    the last section of track ... did not significantly differ from that expected under the fitted
+    gamma-Poisson model (Spearman's ρ = 0.67, p = 0.95, 2000 simulations using the parameters from
+    the gamma-Poisson model)
+  statistics:
+  - test: Spearman correlation compared with 2000 gamma-Poisson simulations
+    statistic: rho = 0.67
+    p: 0.95
+    n: 253 cells
+  expected:
+    quantity: Spearman rho, fields in sections 1 to 3 against fields in section 4
+    value: 0.67
+    tolerance: 0.067
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: A claim of absence. Counts per cell in sections 1 to 3 (0 to 22 m) and in section 4 (22
+    to 48 m). Simulation, 253 cells each with a rate drawn from the fitted gamma and independent
+    Poisson counts over 22 m and 26 m, Spearman rho per simulation, 2000 times. The sidedness of p
+    is open, with readings Q-a, two-sided (twice the smaller tail); Q-b, one-sided for an observed rho
+    lower than simulated. Reproduced when rho is within tolerance and p > 0.05 under both
+    readings; not reproduced when p < 0.05 under both.
+- id: figs11-no-boundary-remapping
+  statement: There is no change in field propensity at section boundaries; the correlation of the
+    number of fields per cell across a section boundary does not differ from that within a
+    section (sections 3 and 4, 0.50 against 0.38, p = 0.07; sections 2 and 3, 0.32 against 0.34, p
+    = 0.84; sections 1 and 2, 0.28 against 0.25, p = 0.78).
+  source: Figure S11 legend
+  quote: there was no evidence of a change in propensities specifically at section boundaries as
+    might be expected to occur if there was remapping when entering different sections
+  statistics:
+  - about: sections 3 and 4
+    test: shuffle test, 8000 shuffles
+    statistic: rho across = 0.50, rho within = 0.38
+    p: 0.07
+  - about: sections 2 and 3
+    test: shuffle test, 8000 shuffles
+    statistic: rho across = 0.32, rho within = 0.34
+    p: 0.84
+  - about: sections 1 and 2
+    test: shuffle test, 8000 shuffles
+    statistic: rho across = 0.28, rho within = 0.25
+    p: 0.78
+  expected:
+  - quantity: rho across, sections 3 and 4
+    value: 0.50
+    tolerance: 0.05
+  - quantity: rho within, section 4
+    value: 0.38
+    tolerance: 0.038
+  - quantity: rho across, sections 2 and 3
+    value: 0.32
+    tolerance: 0.032
+  - quantity: rho within, section 3
+    value: 0.34
+    tolerance: 0.034
+  - quantity: rho across, sections 1 and 2
+    value: 0.28
+    tolerance: 0.028
+  - quantity: rho within, section 2
+    value: 0.25
+    tolerance: 0.025
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: A claim of absence. Three pieces per boundary, A (the earlier section), B (an equal
+    piece at the start of the later section) and C (the next equal, non-overlapping piece of the
+    later section); rho across = Spearman(A, B), rho within = Spearman(B, C), over cells. For
+    sections 2 and 3 a 7 m piece does not fit twice in the 12 m section 3, so the piece length is
+    open, with readings L-a, pieces as long as the earlier section, C cut at the end of the later
+    section when short; L-b, pieces of the earlier section's length or half the later section's,
+    whichever is shorter, A being the end of the earlier section. The shuffle is open, with readings
+    H-a, for each cell the counts of A and C swapped at random; H-b, for each cell the three
+    counts permuted at random; 8000 shuffles, two-sided p on rho across - rho within. Reproduced
+    when no boundary has p < 0.05 under every reading; not reproduced when one does under all
+    readings. The rho values are reported against their expected values.
+- id: figs12-pairs-uncorrelated
+  statement: Field locations are uncorrelated between pairs of cells; the correlations between the
+    numbers of fields two cells have across spatial bins match the null of independence at every
+    scale tested.
+  source: Main text, paragraph 9; Figure S12
+  quote: field locations were uncorrelated between pairs of cells (fig. S12)
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: A claim of absence. For each pair of cells from the same animal, the Pearson
+    correlation between their numbers of fields in 48, 24, 12, 6 or 3 equal bins of the track
+    (legend); pairs where either cell has the same count in every bin (as with no fields) have no
+    correlation and are left out, a standard choice. Null, each cell's bins shuffled independently,
+    2000 times (legend). No test of the comparison is reported, so readings are U-a, a two-sample
+    Kolmogorov-Smirnov test of the observed against the pooled null correlations; U-b, the mean
+    observed correlation against the 95% interval of the null means. Reproduced when the observed
+    distribution does not differ from the null at p < 0.05 at all five scales under both
+    readings; not reproduced when it differs at any scale under both. The observed and null means
+    are reported.
+- id: fig3e-memoryless-recruitment
+  statement: Recruitment is memoryless; recruitment curves started at evenly spaced points along
+    the track, ignoring earlier activity, have the same shape whatever the starting point, and the
+    same holds working back from the far end.
+  source: Main text, paragraph 10; Figure 3E; Figure S13
+  quote: These memoryless recruitment curves had the same shape regardless of the starting point
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: From each starting point s, for every cell, the location of its first field beyond s,
+    measured from s, over the 48 - s m that remain; the curve is the fraction of all cells
+    recruited. Reverse curves likewise from the far end toward the start (Fig. S13B). The spacing
+    of starting points is not given; Figure 3E shows curves about every 5 m, so starts at 0, 5, ...,
+    40 m are used (V-a), with every 10 m as a check (V-b). No test is reported. The test is that of
+    Fig. 3C, applied to each curve against the Lomax with the parameters of fig3b-negbin-fit,
+    censored at 48 - s (K-a). Reproduced when no forward or reverse curve differs at p < 0.05 after
+    Benjamini-Hochberg adjustment over the curves, under both spacings V-a and V-b; partially reproduced when
+    only curves over less than 10 m of track differ.
+- id: figs14-field-properties
+  statement: Field size (65 plus or minus 43 cm) and in-field rate (5 plus or minus 2 Hz) are not
+    correlated with location along the track (rho 0.05 and 0.01) or with the number of other fields
+    of the same cell (rho 0.05 and 0.05).
+  source: Figure S14 legend; main text, paragraph 11
+  quote: Basic parameters of individual fields, field size (65±43 cm, mean±s.d.) and in-field rate
+    (5±2 Hz), were not correlated with location along the track (Spearman's ρ=0.05,0.01,
+    p=0.11,0.75, A and C) or the number of other fields from the same cell (ρ=0.05,0.05,
+    p=0.14,0.17, B and D)
+  statistics:
+  - about: field size against location
+    test: Spearman correlation
+    statistic: rho = 0.05
+    p: 0.11
+  - about: in-field rate against location
+    test: Spearman correlation
+    statistic: rho = 0.01
+    p: 0.75
+  - about: field size against number of other fields
+    test: Spearman correlation
+    statistic: rho = 0.05
+    p: 0.14
+  - about: in-field rate against number of other fields
+    test: Spearman correlation
+    statistic: rho = 0.05
+    p: 0.17
+  expected:
+  - quantity: mean field size
+    value: 65
+    tolerance: 6.5
+    unit: cm
+  - quantity: SD of field size
+    value: 43
+    tolerance: 4.3
+    unit: cm
+  - quantity: mean in-field rate
+    value: 5
+    tolerance: 0.5
+    unit: Hz
+  - quantity: SD of in-field rate
+    value: 2
+    tolerance: 0.2
+    unit: Hz
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: The plus-or-minus values are spreads across fields, not uncertainties of the means, so
+    tolerances are 10%. Field size is the field width between the 2 Hz crossings; in-field rate
+    the mean of the rate map inside the field (Fig. S15A, "average in-field firing rate"). For a
+    merged field these are open, with readings M-a, width of the union of the two directional fields
+    and mean rate of the averaged directional maps over it; M-b, the mean of the two directional
+    widths and rates. The four correlations are claims of absence, judged on the paper's Spearman
+    test, reproduced when none has p < 0.05. The claim is reproduced when that holds and the four
+    values are within tolerance under one reading; partially reproduced when the correlations
+    hold but a value is out of tolerance.
+- id: figs15-higher-threshold
+  statement: Different criteria for place field detection do not change the results; with a higher
+    threshold (an in-field rate above 4.8 Hz, which about 50% of fields reach), the gamma-Poisson
+    model still describes the number of fields per cell and the recruitment of cells.
+  source: Main text, paragraph 11; Figure S15
+  quote: Different criteria for place field detection did not change the results (fig. S15)
+  expected:
+    quantity: fraction of fields with mean in-field rate above 4.8 Hz
+    value: 50
+    tolerance: 5
+    unit: '%'
+  depends_on:
+  - figs14-field-properties
+  criterion: Keep the fields whose mean in-field rate (as in figs14-field-properties, readings M-a
+    and M-b) exceeds 4.8 Hz (Fig. S15A legend; the threshold line of Fig. S15B lies at the same
+    rate). Refit the negative binomial to the counts per cell and test the recruitment curve as in
+    fig3c-lomax-recruitment (readings K-a and K-b). The legend says only that the model "remains a
+    good fit", so the test is that of Fig. 3C. Reproduced when the fraction kept is within
+    tolerance and the recruitment test gives p > 0.05 under both readings of K; not reproduced
+    when the recruitment test gives p < 0.05 under both. The refitted r and p, and the dispersion
+    tests of fig3b-overdispersion on the new counts, are reported.
+- id: figs16-anatomy
+  statement: The number of fields per cell is weakly related to the anatomical position of the cell
+    in the pooled data (septotemporal r = -0.20, p = 0.001; proximodistal r = -0.19, p = 0.002), but
+    the relation is not consistent within individual animals.
+  source: Figure S16D and S16E legend; main text, Fig. 4 discussion, paragraph 2
+  quote: Although there was a weak relationship in the pooled data (ST r = -0.20 p = 0.001, PD r =
+    -0.19 p = 0.002), this was not consistent within individual animals
+  statistics:
+  - about: number of fields against septotemporal position
+    test: correlation
+    statistic: r = -0.20
+    p: 0.001
+    n: 253 cells
+  - about: number of fields against proximodistal position
+    test: correlation
+    statistic: r = -0.19
+    p: 0.002
+    n: 253 cells
+  expected:
+  - quantity: correlation, fields against septotemporal position, pooled
+    value: -0.20
+    tolerance: 0.02
+  - quantity: correlation, fields against proximodistal position, pooled
+    value: -0.19
+    tolerance: 0.019
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: Each cell's relative septotemporal and proximodistal coordinates in CA1 from the
+    histology of its tetrode (Methods, Experiment). The correlation is named only "r"; readings
+    R-a, Pearson; R-b, Spearman. What "not consistent within individual animals" means is not
+    given; readings N-a, fewer than three of the five animals show a significant correlation (p <
+    0.05) of the pooled sign on that axis; N-b, at least one animal has a correlation of the
+    opposite sign on that axis. Reproduced when, under one reading of R, both pooled values are
+    within tolerance with p < 0.05 and, under one reading of N, the per-animal pattern holds on
+    both axes; partially reproduced when the pooled values hold and the per-animal pattern does
+    not.
+- id: fig4a-pre-sleep-rate
+  statement: Firing rates in slow-wave sleep before the animal experienced the maze are moderately
+    correlated with the later number of fields per cell (r = 0.45, P < 10^-13), evidence that
+    preexisting differences between cells contribute to field propensity.
+  source: Main text, page 817, paragraph 1; Figure 4A (figure and legend missing from the text read)
+  quote: Firing rates in slow-wave sleep (SWS) before the animal had experienced the maze were
+    moderately correlated with the subsequent number of fields per cell (Fig. 4A; r = 0.45, P <
+    10−13)
+  statistics:
+  - test: correlation
+    statistic: r = 0.45
+    p: 1.0e-13
+    p_relation: "<"
+    n: 253 cells
+  expected:
+    quantity: correlation, PRE slow-wave sleep firing rate against number of fields
+    value: 0.45
+    tolerance: 0.045
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: SWS in PRE by the Methods (PRE slow-wave sleep correlation), with immobility from the
+    accelerometer with 5 s added either side of movement, REM where the theta (6-10 Hz) to delta
+    (1-4 Hz) ratio smoothed over 2 s exceeds 2 for at least 0.5 s, ripples where the 150-250 Hz
+    amplitude exceeds 3 SD for at least 15 ms, and SWS the immobile non-REM periods with at least
+    0.2 ripples per second. How that background ripple rate is measured is not given; if the data
+    set holds the paper's SWS periods, they are used, else a 10 s sliding window is used (a
+    standard choice, a deviation). Rate per cell, spikes over total SWS time. The Fig. 4A legend
+    is missing, so the correlation is open, with readings W-a, Pearson on rates; W-b, Pearson on log10
+    rates (zero rates offset by the smallest positive rate); W-c, Spearman. With n = 253, r = 0.45
+    gives a Pearson p of about 5e-14, consistent with W-a. Reproduced when, under one reading, r is
+    within tolerance and p < 1e-13; partially reproduced when r is positive with p < 0.05 under
+    one reading but out of tolerance.
+- id: fig4b-single-field-proportion
+  statement: Under the gamma-distributed propensities the proportion of cells with a single field
+    would stay at about 5 to 10% over a wide range of environment sizes, which could allow a
+    simple readout of location.
+  source: Main text, page 817, paragraph 4; Figure 4B (figure and legend missing from the text read);
+    Materials and Methods, Active subset simulation
+  quote: But with the observed gamma-distributed propensities, the proportion of cells with single
+    fields would remain at ~5 to 10% over a wide range of environment sizes
+  expected:
+  - quantity: lowest single-field proportion over the range
+    value: 5
+    tolerance: 0.5
+    unit: '%'
+  - quantity: highest single-field proportion over the range
+    value: 10
+    tolerance: 1
+    unit: '%'
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: Computed exactly from the fitted model (Methods), for an environment of length L, the
+    count is negative binomial with r and p_L = 1 / (1 + (L/48)(1 - p)/p), and the single-field
+    proportion is r p_L^r (1 - p_L). The range of sizes Fig. 4B plots is not in the text read, so
+    the claim is judged on the widest interval of L over which the proportion stays inside 4.5 to
+    11% (the range widened by 10% of each bound). The paper puts no number on "a wide range", so
+    the width is taken from the paper's own model, the printed parameters (r 0.57, p 0.14) under
+    the same reading, less 10%. The denominator is open, with readings X-a, all cells (the formula
+    above); X-b, place cells, r p_L^r (1 - p_L) / (1 - p_L^r). The printed parameters keep the
+    proportion inside 4.5 to 11% from about 118 to 652 m under X-a (a factor of 5.5) and from about
+    171 to 748 m under X-b (a factor of 4.4). Reproduced when, under one reading, the interval from
+    the fitted model spans at least a factor of 5.0 in L under X-a, or 3.9 under X-b. Before any
+    analysis, note that the printed parameters under X-a give about 16% at 48 m and 20% at 10 to
+    20 m, with 5 to 10% for L of roughly 145 to 535 m (and near 1 to 2 m); the interval and its
+    position under each reading are reported.
+- id: fig4c-active-subsets
+  statement: Unlike equal propensities, which recruit all cells in large enough environments, the
+    observed distribution of propensities lets environments over a wider range of sizes be
+    distinguished by their active subsets, even with each cell's propensity fixed across
+    environments.
+  source: Main text, page 817, paragraph 4; Figure 4C (missing from the text read); Figure S18;
+    Materials and Methods, Active subset simulation
+  quote: Instead, the observed distribution of propensities allows environments with a wider range
+    of sizes to be distinguished based on their active subsets, even if one assumes each cell's
+    propensity to be permanently fixed (Fig. 4C and fig. S18)
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: The simulation of the Methods, 1000 cells, each with a rate fixed across environments
+    (drawn once from the fitted gamma, or the equal rate), 300 independent environments from 0.1
+    to 50 m, Poisson field counts per environment; for each pair of environments the proportion of
+    cells active in one and not the other (exclusive OR). The spacing of the 300 sizes is open, with
+    readings G-a, logarithmic; G-b, linear. The comparison of Fig. 4C is the gamma-Poisson against
+    the equal-rate model fitted to the data (Methods, "parameters ... estimated from the data";
+    Fig. S18 legend, the first two conditions "are the gamma-Poisson and equal-rate-Poisson models
+    shown in Fig. 4C"). The paper's measure is the range of sizes that can be distinguished, read
+    as the share of all pairs of different environments in which the exclusive-OR proportion is
+    above a level. Fig. 4C is missing, so the level is open, with readings K-a, 0.1; K-b, 0.2
+    (standard choices, a deviation). Reproduced when the gamma-Poisson share is higher than the
+    fitted equal-rate share under every reading of G and K; not reproduced when it is lower under
+    every one; otherwise the readings disagree and the author proceeds as in Author, step 1.6. The
+    mean exclusive-OR proportion over pairs both larger than 10 m is reported, not judged; the
+    fitted equal rate does not recruit all cells by 50 m, so it does not test the paper's
+    statement. The full matrices are shown. The low and high equal rates of Fig. S18 are not given;
+    half and twice the fitted mean are shown as variants, with the Fig. S18 legend's statement
+    that the high-rate proportion is almost zero between larger environments checked on the
+    twice-the-mean variant.
+- id: figs5-silent-cells-low-rate
+  statement: Cells without fields had very low firing rates in the environment (0.006 plus or minus
+    0.01 Hz), lower than cells with fields, and the number of fields and the run firing rate of a
+    cell are tightly correlated.
+  source: Materials and Methods, Place field determination; Figure S5
+  quote: Cells without fields had very low firing rates (0.006±0.01 Hz, mean±std) in the
+    environment, lower than cells with at least one place field (fig. S5)
+  expected:
+  - quantity: mean firing rate of cells without fields
+    value: 0.006
+    tolerance: 0.0006
+    unit: Hz
+  - quantity: SD of firing rate of cells without fields
+    value: 0.01
+    tolerance: 0.001
+    unit: Hz
+  depends_on:
+  - fig3b-negbin-fit
+  criterion: Run firing rate, spikes over time with speed above 5 cm/s (Fig. S5 legend). Which
+    track time counts as "in the environment" is open, with readings Z-a, novel-section exploration of
+    RUN1 only; Z-b, all RUN1 time on the track. The plus-or-minus value is a spread across cells,
+    so tolerances are 10%. "Lower than cells with at least one place field" and "tightly
+    correlated" name no test; the tests are a one-sided Mann-Whitney test of the rates of cells
+    without fields against those of cells with fields, and a Spearman correlation between rate
+    and number of fields, each at p < 0.05 in the stated direction, with rho reported. Reproduced
+    when, under one reading, both values are within tolerance and both tests hold.
+- id: figs8-silent-cells-form-fields
+  statement: Some cells that remained silent on the 48 m track formed clear place fields in a second
+    novel environment, the open field.
+  source: Main text, paragraph 7; Figure S8
+  quote: To see whether the ~35% of cells that remained silent were capable of forming fields at
+    all, we later exposed the animal to a second novel environment and found that some of these
+    cells formed clear place fields
+  depends_on:
+  - fig3c-recruitment-fraction
+  criterion: Cells with no novel field in RUN1 (shared method), and their fields in the RUN3 open
+    field (opening comment, readings O-a and O-b). Reproduced when at least two such cells (the
+    number Fig. S8 shows) have at least one open-field field under one reading. The number and
+    fraction of RUN1 silent cells with open-field fields are reported.
+- id: figs17-propensity-across-environments
+  statement: Field propensities are correlated across environments but not as strongly as within
+    one environment; the number of fields per cell in a window of the track correlates with the
+    rest of the track at Spearman rho about 0.41, the open field with the long track at about 0.22,
+    against about 0 for the shuffle.
+  source: Figure S17; Materials and Methods, Inter- and intramaze correlation comparison; main
+    text, page 817, paragraph 3
+  quote: Field propensities are correlated across environments but not as strongly as within a
+    single environment
+  expected:
+  - quantity: median Spearman rho, window of RUN1 against the rest of RUN1
+    value: 0.41
+    tolerance: 0.075
+  - quantity: median Spearman rho, RUN3 open field against the rest of RUN1
+    value: 0.22
+    tolerance: 0.015
+  depends_on:
+  - figs8-silent-cells-form-fields
+  criterion: Values read from Figure S17, where they are printed only as points with 95% intervals
+    (about 0.34 to 0.49 and 0.20 to 0.23); the tolerances are the half-widths of those intervals,
+    read from the figure, the paper's own spread. Procedure of the Methods, 2000 times, a random
+    start on the track, a window extended forward until it holds as many fields (over all cells)
+    as the open field; rho within, Spearman between counts per cell inside and outside the window;
+    rho between, Spearman between open-field counts and counts outside the window; median and 95%
+    interval of each. What happens when the window reaches the end of the track is open, with readings
+    J-a, the window wraps to the start; J-b, only starts from which the window fits are drawn.
+    Shuffle null, the open-field counts permuted across cells. Whether cells are pooled across
+    animals is not stated; pooled is the reading Figure S17's single points imply. Reproduced when,
+    under one reading of J and of O, both medians are within tolerance and the between median is
+    below the within median and above the shuffle's 95% interval; partially reproduced when the
+    ordering holds but a median is out of tolerance.
+checks:
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2-individual-poisson. Removed the statistics entry (Anderson-Darling, FDR, p 0.05 recorded as ">"); "0/61 cells with P < 0.05" counts cells by a threshold, a method and not a result. The count stays as the expected value 0.
+  - figs6-few-field-cells-uniform. Removed the statistics entry for the same reason; "0/5 pFDR<0.05" counts groups by a threshold. The criterion keeps the test.
+  - fig3b-overdispersion. The statement says the fit is poor in each animal (Fig. S7A legend, "The fits for individual animals are poor"), but the criterion accepted four of five; it now needs all five, and the zero-field expectation is computed per animal with that animal's n and mean.
+  - figs10-no-track-or-speed-influence. The corner definition (45 degrees) was called a standard choice, but it changes the distances panel B measures and the paper does not define a corner; it is now open, with readings Y-a (45 degrees) and Y-b (90 degrees).
+  - figs15-higher-threshold. Removed the condition that the counts stay overdispersed; the Fig. S15 legend says only that the gamma-Poisson model describes the counts and the recruitment as for all fields, and names no dispersion test. The dispersion tests are now reported.
+  - figs16-anatomy. "Not consistent within individual animals" was operationalized one way (fewer than three animals significant) as if the paper fixed it; it is now open, with readings N-a (that rule) and N-b (an animal with the opposite sign).
+  - fig4b-single-field-proportion. The criterion named X-a and X-b but judged on X-a only; it now judges under either and gives the X-b formula. The note on the printed parameters is corrected to 150 to 550 m and 1 to 2 m (r p_L^r (1 - p_L) with r 0.57, p 0.14 gives about 8.5% at 200 m, 4.7% at 600 m, 6% at 1 m and 10% at 2 m).
+  - fig4c-active-subsets. Removed the requirement that the fitted equal-rate proportion between environments over 20 m be below 0.05; the Fig. S18 legend says that of the high-rate condition, not of the fitted one, and the fitted equal rate (3.5 fields per 48 m) gives about 0.25 for 20 m against 50 m. The statement is now checked on the twice-the-mean variant.
+  - figs5-silent-cells-low-rate. The criterion required every cell without fields to lie below the median cell with fields and called that a Mann-Whitney test; the paper compares the groups only, so the test is now the Mann-Whitney test alone, named as a reading. Readings renamed Z-a and Z-b, as E-a and E-b were already used in fig2-individual-poisson.
+  - fig3e-memoryless-recruitment. Spacing readings renamed V-a and V-b, as S-a and S-b were already used in fig2-individual-poisson.
+  - figs17-propensity-across-environments. The tolerance of the between-environment median was 0.02, but the criterion sets it to the half-width of the interval it reads (0.20 to 0.23), 0.015; set to 0.015.
+  - Open. The values read from figures (Fig. S7A means per animal, the Fig. S17 points and intervals, the Fig. 3E spacing of about 5 m, the Fig. S15B threshold line) could not be checked; no PDF renderer was available in this run. They agree with what the text allows (the S7A means give a pooled mean between 3.2 and 3.6, against 3.5 from r and p).
+  - Open. fig3c-extrapolation-500m. The printed parameters give about 436 m (410 to 480 m within their rounding), outside the 10% tolerance of 500 m; the paper's "~500 m" is approximate and its inset cannot be read, so the tolerance is kept and the result rests on the unrounded fit.
+  - Open. fig4b-single-field-proportion. The factor of 10 in L that stands for "a wide range" is not from the paper, and the printed parameters give under a factor of 4 under either reading; the Fig. 4B legend, which would fix the range of sizes and the denominator, is missing from the text supplied.
