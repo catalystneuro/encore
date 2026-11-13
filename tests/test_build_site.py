@@ -330,6 +330,19 @@ def test_a_deprecated_attempt_counts_for_nothing():
     assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
 
 
+def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
+    # A record that gives a tested claim no notebook (andrews-2024 did) must not stop the build: the paper's page
+    # lists the claim with those no notebook tests, and says the record names none.
+    data = site.collect()
+    q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
+    a = q["attempts"][0]
+    moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
+    moved["notebook"] = None
+    page = site.page_paper(data, q)
+    assert "Not tested in a notebook" in page and "with no notebook named in the record" in page
+    assert f'id="claim-{moved["claim"]}"' in page
+
+
 def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
     data, out = built
     papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}

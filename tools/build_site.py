@@ -3141,7 +3141,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             reasons: dict = {}
             for o in blocked:
                 reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
-            why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
+            # A record can give a tested claim no notebook (andrews-2024 did, for a claim that was blocked until
+            # its last revision). `entry.py check` refuses such a record; the page says what the record says and
+            # does not fail, so that one record cannot stop the site's build.
+            why = ", ".join(f"{count} {(BLOCKED_BY.get(k, k) or 'with no notebook named in the record').lower()}"
+                            for k, count in reasons.items())
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
