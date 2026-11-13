@@ -26,15 +26,15 @@ of binned and normalized firing that the paper's scripts build from them, and th
 | DPG and LPAG bias toward the subnetwork | Reproduced |
 | 11 outcome clusters of 46 to 322 units | Partially reproduced |
 | Outcome PC1 (17.7%) is positive prediction error | Reproduced |
-| Phasic outcome network k1 to k3 | Reproduced (assumption) |
-| Tonic outcome network k6 to k9 | Reproduced (assumption) |
+| Phasic outcome network k1 to k3 | Partially reproduced |
+| Tonic outcome network k6 to k9 | Partially reproduced |
 | Network PCAs, 37.0% and 29.2% | Reproduced |
 | Outcome hubs | Reproduced |
 | Outcome network anatomy | Reproduced |
 | Outcome regression, k1 and k6 | Reproduced |
 | Outcome beta PCA, 53.7% and 33.4% | Reproduced |
 | Phasic and tonic lesions | Reproduced |
-| No anatomical bias of outcome networks | Reproduced |
+| No anatomical bias of outcome networks | Reproduced (assumption) |
 | Cue and outcome network membership independent | Reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -45,8 +45,8 @@ workbook, which every unit matches exactly. The attempt record, with the reasons
 differences from the paper's method, is
 [`attempts/strickland-2022-01.yaml`](../../attempts/strickland-2022-01.yaml).
 
-- `reproduce_strickland_2022.ipynb`: the analysis. It takes about two minutes, most of it reading
-  the 1812 unit files and the cube from the archive.
+- `reproduce_strickland_2022.ipynb`: the analysis. It takes about six minutes: reading the 1812 unit
+  files and the cube from the archive, then the 20 k-means solutions and their shuffles.
 - `bst3.py`: reading the zip in place, the cube and the unit files, and the measures of the paper's
   scripts (normalization, suppression ratios, PCA, shuffles, regression, latency). Other notebooks
   on this data set can import it.
