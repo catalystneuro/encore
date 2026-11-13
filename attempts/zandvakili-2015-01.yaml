@@ -1,0 +1,948 @@
+schema_version: 3
+id: zandvakili-2015-01
+datasets:
+- archive: crcns
+  id: v1v2-1
+  version: unversioned
+  doi: 10.6080/K0B27SHN
+  relation: primary
+paper: doi:10.1016/j.neuron.2015.07.026
+date: 2026-11-12
+entry: zandvakili-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43258308217
+outcomes:
+- claim: fig4c-broad-ccg-peaks
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig4c-broad-ccg-peaks
+  notes: >-
+    All 31 site-average shuffle-corrected V1-V2 CCGs have a broad peak under both readings (mean over
+    -50 to 50 ms above the flank mean, and above zero), 16 of 16 sites with a narrow peak and 15 of
+    15 without. The across-site average peaks at 2 ms and is 68 ms wide at half its height above
+    the flank mean; it stays above half its height above zero over the whole +-125 ms.
+  deviations:
+  - >-
+    A site is a V2 tetrode in one session; the files hold no depth, so "all laminar locations" is
+    tested as sites with and without a narrow peak, as the criterion says.
+  - Spike times are in 1 ms bins in the files; the paper used 0.1 ms.
+- claim: fig4c-narrow-peak-sites
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig4c-narrow-peak-sites
+  measured: 0.516
+  notes: >-
+    16 of 31 V2 sites have a significant narrow peak in the site-average jitter-corrected CCG with
+    the 10 ms jitter window (reading j-a), 0.516 against 0.206 +/- 0.021; 22 of 31 (0.710) with a
+    25 ms window. Per animal 3 of 6, 5 of 11 and 8 of 14. With a 4 or 6 SD threshold, 22 and 13
+    sites. The excess is in every session (2 of 5 to 5 of 7 sites), so no single session accounts
+    for it. The data set holds 31 sites of the paper's 223 and 5 of its sessions; the paper says
+    some penetrations targeted middle-layer sites, so the fraction may depend on which sessions
+    were deposited, which the documentation does not say. It may also come from this attempt's
+    method (1 ms bins, no SNR criterion, the jitter implementation). An excess in every session
+    fits either cause, and without depths the two cannot be separated.
+  deviations:
+  - >-
+    CCGs at 1 ms resolution (the files' resolution) against the paper's 0.1 ms. Equation 1 is
+    combined over the eight stimuli by summing coincidences and the normaliser, which weights each
+    stimulus by its V1 spike count (a standard choice).
+  - >-
+    The jitter correction subtracts the expected CCG under the jitter the claims file describes
+    for the divergence analysis (each spike redrawn from the neuron's spikes in the same window on
+    trials of the same stimulus), computed analytically for both neurons, with windows tiling the
+    trial from 0 ms (Pairwise V1-V2 Analysis cites Smith and Kohn 2008 for the jitter). The 25 ms
+    window is this attempt's choice for reading j-b, which the claims file leaves unnamed.
+  - The SNR >= 2 unit criterion cannot be applied (no waveforms); units below 0.5 sp/s are removed.
+- claim: fig4-narrow-peak-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The files hold no recording depth for any V2 site and no layer 6/white matter reference; the
+    descriptor lists spike rasters, stimulus codes, trial ids, unit codes and RF fits only.
+- claim: fig5a-rf-alignment
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5a-rf-alignment
+  notes: >-
+    RF centres are in pixels and the data set gives no pixel-to-degree scale and no fixation
+    point; the paper gives 1024 x 768 pixels at 110 cm without the screen size, so the 0.5 deg bins
+    of the criterion cannot be formed. Shown for information only, in pixels and the first eye,
+    the probability of a significant pair falls with RF offset (0.0165 at 0 to 25 px, 0.0136 at 25
+    to 50, 0.0106 at 50 to 75, 0.0034 at 75 to 100, 0 beyond 100 px; 15,463 pairs with both RFs
+    fitted). The V1 rfInfo row of a unit is taken as its electrode code minus 1, and sessions with
+    two eyes mapped use the first; 2 of 564 V1 units fall on a row with no fit, and the difference
+    in probability between offsets below 50 px and 75 px or more (0.0121) is larger than under any
+    of 200 random permutations of the V1 rows (median 0.0050, largest 0.0119), consistent with the
+    mapping.
+- claim: fig5-narrow-pairs-rare
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5-narrow-pairs-rare
+  measured:
+  - 0.0105
+  - 0.0105
+  notes: >-
+    171 of 16,308 V1-V2 pairs (0.0105) pass the 5 SD rule with 10 ms jitter, 185 (0.0113) with 25
+    ms, against 0.003 or 0.00355. Per session 0.0028 to 0.018; only 106r002p70 (6 of 2112, 0.0028)
+    is within tolerance. Narrow peaks remain rare (about 1% of pairs). The site fraction of
+    fig4c-narrow-peak-sites is 2.5 times the paper's, consistent with deposited sessions richer
+    in coupled sites than the paper's sample or with a difference in method.
+  deviations:
+  - 1 ms bins against the paper's 0.1 ms; jitter as in fig4c-narrow-peak-sites.
+- claim: fig5b-v1v2-latency
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5b-v1v2-latency
+  measured:
+  - 2.0
+  - 3.89
+  notes: >-
+    Of 171 significant V1-V2 pairs, 151 peak after zero lag, 5 at zero and 15 before; the offset
+    differs from zero with p < 0.001 under both readings (Wilcoxon p = 7.1e-20, sign test p =
+    1.9e-29). The median offset is 2.0 ms, outside 2.8 +/- 0.28 (per animal 3, 2 and 2 ms). The
+    peaks fall on whole milliseconds (23 at 1 ms, 55 at 2, 49 at 3, 18 at 4); a parabola through
+    the peak bins, a variant not in the paper, gives a median of 2.30 ms, also outside. The mean
+    width at half height is 3.89 +/- 0.07 ms on the smoothed CCG (reading a) and 3.09 +/- 0.09 ms
+    unsmoothed (reading b), both outside 3.71 +/- 0.1. The criterion needs the test at p < 0.001
+    and the median within tolerance; the direction and significance of the offset hold, its size
+    does not, so the outcome is not reproduced (changed from partially reproduced after the first
+    verification round, as the criterion defines no partial outcome).
+  deviations:
+  - >-
+    The files hold spike times in 1 ms bins, so offsets are whole milliseconds where the paper's
+    were at 0.1 ms resolution; this limits both the median and the width. Smoothing a single 1 ms
+    bin with the Gaussian of SD 1.5 ms alone gives a width at half height of 3.54 ms, so reading
+    (a) has little room below that, and the unsmoothed width of reading (b) is limited by the bin.
+- claim: fig5b-intra-areal-zero-lag
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig5b-intra-areal-zero-lag
+  notes: >-
+    Both medians are 0.0 ms. V2-V2 (249 significant pairs of 2113) shows no difference from zero
+    under either reading (Wilcoxon p = 0.861, sign test p = 0.703). V1-V1 (2620 of 32,770) differs
+    under the Wilcoxon signed-rank test (p = 0.016 with zeros dropped, 0.027 Pratt, 0.028 zeros
+    split) and not under the sign test (p = 0.076); mean offset 0.104 ms, 978 positive, 900
+    negative, 742 zero. The readings give different outcomes, and the outcome takes the Wilcoxon
+    signed-rank test (see deviations), under which V1-V1 pairs differ from zero, so the criterion
+    gives not reproduced. The outcome was not reproduced before the first verification round and
+    partially reproduced after it, the outcome the verifier gave, on the ground that the two
+    readings disagree. The second verifier pointed out that this does not follow from the
+    assumed test; the change back to not reproduced was proposed and the third verification
+    round agreed with it. The V1-V1 shift follows the order of the unit lists
+    (the claims file's pair order), so it is an ordering asymmetry, not a lead of one population.
+    Without pairs on the same electrode, V1-V1 gives Wilcoxon p = 0.009 and sign test p = 0.063,
+    and V2-V2 (108 pairs; 141 of the 249 share a tetrode) Wilcoxon p = 0.030 and sign test p =
+    0.033; the claims file uses all pairs. Question for the authors, recorded as a finding; which
+    test gave p = 0.45 and 0.42.
+  deviations:
+  - >-
+    Assumed that the paper's test of a median offset against zero is the Wilcoxon signed-rank test
+    (MATLAB signrank, documented as a test of zero median, the routine choice in a MATLAB-based
+    analysis such as the data set's own scripts). The paper names no test; the sign test gives the
+    opposite outcome for V1-V1 pairs.
+  - The lag sign within an area follows the order of the unit lists, as the criterion says; 1 ms bins.
+- claim: figs3-efficacy
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:figs3-efficacy
+  measured:
+  - 0.324
+  - 0.496
+  notes: >-
+    128 of 171 significant pairs have an offset above 1 ms, which at 1 ms resolution means 2 ms or
+    more (255 in the paper). Reading a,
+    jitter-corrected CCG, median 0.324% and mean 0.496 +/- 0.046%, below 0.39 +/- 0.039 and 0.69
+    +/- 0.12. Reading b, the raw CCG, gives median 6.494% and mean 9.479% uncorrected and median
+    0.820% and mean 1.268% shuffle-corrected, far above. Reading a per animal, median 0.334%,
+    0.559% and 0.258% (20, 31 and 77 pairs).
+  deviations:
+  - >-
+    The integral within 2.5 ms of the peak is the sum of the five 1 ms bins centred on the peak
+    lag (-2.5 to +2.5 ms at the files' resolution).
+- claim: fig6a-coordination-before-v2
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig6a-coordination-before-v2
+  notes: >-
+    88 V2 neurons at the 16 middle-layer sites (1,985,591 spikes from 50 ms; the paper 226 neurons).
+    Main reading (e-a, s-a, r-a, d-a) at 5, 10, 20, 40, 80 and 1280 ms, spike against control
+    divergence 4.05e-4 against 2.36e-4 bits at 5 ms up to 5.16e-3 against 2.12e-3 at 1280 ms, ratios
+    1.72 to 2.43, p < 0.001 at every window under p-a (no draw of 5000) and p-b (at most 0.00037).
+    All other readings (s-b, r-b with three realizations, d-b, and single bins at 2 or 3 ms for
+    e-b) give 6 of 6 windows. Per animal the ratio is 1.50 to 2.66.
+  deviations:
+  - >-
+    Reading e-b, one 1 ms bin centred 2.5 ms before the spike, cannot be formed from 1 ms data; it
+    is run as the bins centred 2 ms and 3 ms before, which bracket it.
+  - >-
+    The V2 spikes and the V1 states are both in 1 ms bins, so the epoch of the bins 2 and 3 ms
+    before the spike covers V1 activity from about 1 to 4 ms before it, wider than the paper's 1.5
+    to 3.5 ms; this may dilute the spike-epoch divergence and lower the spike to control ratio
+    (fig7a-threefold). Forced by the data.
+  - >-
+    The jitter pool includes the spike's own trial (the claims file says other trials), a
+    standard choice; one trial in 400 changes the pool little. Epochs falling before 50 ms are
+    dropped.
+  - Middle-layer sites are those of fig4c-narrow-peak-sites, 16 of 31, a larger share than the paper's.
+- claim: fig7a-threefold
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig7a-threefold
+  measured: 1.906
+  notes: >-
+    Divergence before V2 spikes is about twice control, not three times. Main reading, ratios at 5
+    to 80 ms 1.716, 1.875, 1.923, 1.964 and 2.072; (a) geometric mean 1.906, (b) median 1.923, (c) 1
+    of 5 windows within 2 to 4. The s-b, r-b and d-b readings give geometric means of 1.837 to
+    1.903, medians of 1.836 to 1.927 and 0 or 1 of 5 windows in range. Reading e-b cannot be
+    formed; of the single bins that bracket it, the bin 3 ms before gives a median of 2.011 and 3 of
+    5 windows in range, and the bin 2 ms before a median of 1.803 and 0 of 5. Only the first, a
+    stand-in for one side of reading e-b, reaches the edge of the tolerance, under the median
+    summary alone. The ratio is about 1.9, outside 3 +/- 1, so the outcome is not reproduced
+    (changed from partially reproduced after the first verification round: the claim is the size
+    of the effect, which fig6a-coordination-before-v2 tests the presence of, and the criterion
+    defines no partial outcome).
+  deviations:
+  - Reading e-b approximated by single bins 2 and 3 ms before the spike, as in fig6a-coordination-before-v2.
+  - >-
+    The 1 ms binning widens the spike epoch to about 1 to 4 ms before the spike (see
+    fig6a-coordination-before-v2), which may lower the ratio.
+- claim: fig7a-above-shuffle
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig7a-above-shuffle
+  notes: >-
+    Under all four readings (trials shuffled within orientation or across all trials; spike or
+    control epochs) and at every window from 5 to 80 ms, the shuffled divergence (1.82e-4 to
+    4.62e-4 bits) is below the lower 95% bootstrap bound of both the spike divergence (3.30e-4 to
+    1.36e-3) and the control divergence (2.01e-4 to 6.81e-4). The margin is thin at 5 ms with
+    trials shuffled within orientation. Over five shuffle realizations the shuffled value there
+    has mean 1.935e-4 (spike epochs) and 1.928e-4 (control epochs), SD about 1e-5, against a control
+    bound of 2.013e-4, and in each of these two readings one realization of five is above the bound
+    (2.073e-4 and 2.038e-4), which would leave 4 of 5 windows. At every other window and reading all
+    five realizations are below both bounds. The outcome rests on the first realization, as the
+    criterion compares one shuffled value; the mean of the five also gives 5 of 5 windows.
+  deviations:
+  - >-
+    The shuffled value is one realization per reading, compared as a point value with the
+    bootstrap bounds, as the criterion says; four more realizations show its spread. The shuffled
+    data are jittered with the same rule as the data.
+- claim: fig6b-not-after-v2
+  outcome: not_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig6b-not-after-v2
+  notes: >-
+    In epochs 1.5 to 3.5 ms after V2 spikes the divergence is above control at 80 ms under both
+    bootstrap readings in every reading of the method (main ratio 1.37, p-a no draw of 5000, p-b
+    0.0038; p-b 0.046 or less in the others), and at 40 ms under p-a (main ratio 1.20, p-b 0.099).
+    Under the main reading the ratios at 5 to 20 ms are 1.03 to 1.08 (p-a 0.10 to 0.48). The elevation after the spike is
+    smaller than before it (1.20 and 1.37 at 40 and 80 ms, against 1.96 and 2.07 before). In the
+    other readings the ratios at 5 to 20 ms range from 0.959 (s-b, 10 ms) to 1.12 (d-b, 20 ms, p-a
+    = 0.024). A null check compares two independent sets of control epochs. p-a gives p < 0.05 at
+    1 of 12 window and epoch combinations and at 13 of 150 time-course epochs (about 7.5 expected,
+    binomial tail P = 0.039 if the epochs were independent, which they are not), so it runs
+    somewhat above its nominal rate at 0.05; it gives no Bonferroni-significant epoch. p-b gives
+    p < 0.05 at none and is conservative. The main after-spike differences at 40 and 80 ms (1.2e-4
+    and 2.7e-4 bits) are well above the largest control-against-control difference (4.5e-5 and
+    5.2e-5 bits), so they are not an artefact of the test. p-b alone decides the outcome at 80 ms.
+- claim: fig6-slow-both-sides
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig6-slow-both-sides
+  notes: >-
+    At 1280 ms the divergence is above control before V2 spikes (5.16e-3 against 2.12e-3 bits,
+    ratio 2.43) and after them (4.13e-3 against 2.07e-3, ratio 2.00), p < 0.001 under both bootstrap
+    readings and in every reading of the method.
+- claim: fig7d-time-course
+  outcome: partially_reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:fig7d-time-course
+  notes: >-
+    Under the main, s-b, r-b and d-b readings of the method and both offset readings, the largest
+    spike minus control difference at each of the five windows is 2.5 to 3.5 ms before the V2
+    spike (main: the epoch centred 2.5 ms before in reading a, 2 ms epochs; the bin 3 ms before in
+    reading b). Epochs wholly after the spike or more than 8 ms before it are also significant
+    after Bonferroni correction over the 31 offsets. With the paired bootstrap (p-a) this holds at
+    every window in every reading (main reading a, 10 to 19 epochs per window). With the
+    independent bootstrap (p-b) it holds at 80 ms in the main, s-b and r-b readings (4 to 6 epochs;
+    main reading a, 1.5, 6.5, 7.5, 8.5 and 9.5 ms after) and at 40 and 80 ms in d-b. A null check
+    of two independent control sets finds no Bonferroni-significant epoch under either p reading
+    and p < 0.05 at 13 of 150 epochs under p-a (about 7.5 expected; 5 of 30 at the 5 ms window) and
+    0 under p-b, so p-a runs somewhat above its nominal rate at 0.05 but not at the Bonferroni
+    threshold. At 80 ms the difference is 8.3e-4 bits 2.5 ms before the spike and 2.7e-4
+    bits 2.5 ms after.
+  deviations:
+  - >-
+    2000 bootstrap draws per offset, a standard choice: the smallest p they give, 1/2000, is below
+    the Bonferroni threshold 0.05/31, and 5000 draws for the 1240 comparisons of each reading would
+    not fit the notebook's time. Offsets beyond 15 ms are not run; epochs falling before 50 ms are
+    dropped.
+  - >-
+    An epoch counts as after the spike when it lies wholly after it (centre -1 ms or less); the
+    epochs that hold the bin simultaneous with the spike (centre -0.5 ms for 2 ms epochs, 0 for 1
+    ms bins) are counted apart. Before the first verification round the 2 ms epoch at -0.5 ms
+    counted as after; the outcome does not change.
+- claim: fig7b-nonmiddle-no-coordination
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs V2 sites superficial or deep to the middle-layer sites of the same penetration. Each
+    session holds one recording per V2 tetrode, with no depth and no penetration identity, so the
+    order of sites cannot be known. Using sites without a narrow peak would not be the claim's
+    group.
+- claim: fig7e-nonmiddle-time-course
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7b-nonmiddle-no-coordination, blocked for lack of V2 depths and penetrations.
+- claim: fig7c-offset-rf-no-coordination
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs V2 neurons 500 to 1000 um from the layer 6/white matter border, and RF offsets in
+    degrees. The files hold no depth, and RF positions are in pixels with no scale
+    (metadata_insufficient, as for fig5a-rf-alignment).
+- claim: figs2a-v2-single-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs each unit's SNR (waveform amplitude over noise SD). The files hold no waveforms or SNR;
+    each file's neuralData has only spikeRasters, stim, trialId, unitCodes and rfInfo. The sort
+    codes in unitCodes (1 to 4 for V1, 1 to 13 for V2) number the units of an electrode and do not
+    mark single units; the data description says the units mix single units and multiunit
+    activity.
+- claim: figs2b-v1-single-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs V1 unit SNR, which the files do not hold; it also depends on fig7b and fig7c, blocked for
+    lack of depths.
+- claim: figs4-partner-not-needed
+  outcome: reproduced
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:figs4-partner-not-needed
+  notes: >-
+    39 middle-layer V2 neurons have a significant pair with a recorded V1 unit and 49 have none (73
+    and 153 in the paper). Under the main reading both subsets have spike divergence above control
+    at 5 of 5 windows from 5 to 80 ms under p-a, and under p-b at 5 of 5 with a partner and 4 of 5
+    without (5 ms p = 0.150). Across the six readings of the shared method, the subset with a
+    partner is above control at 5 of 5 windows under both p readings, and the subset without at 4
+    or 5 of 5 under p-a and 2 to 5 of 5 under p-b. One combination does not meet the criterion:
+    e-b2 (the single bin 2 ms before, a stand-in for one side of reading e-b) with p-b, where the
+    subset without a partner is above control at 2 of 5 windows. The outcome holds under the other
+    readings, and the criterion takes any reading. The spike
+    to control ratio is larger with a partner at all five windows in every reading (main 1.91 to
+    2.30 against 1.32 to 1.67).
+- claim: figs5-middle-layer-relay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Needs spikes of V2 units in layers superficial or deep to the middle layers, which cannot be
+    identified without depths (fig7b-nonmiddle-no-coordination). Within a session the V2 units
+    are from one depth per tetrode.
+- claim: fig1-ffn-propagation
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    Not attempted. A simulation (data elsewhere), with no published code; the claims file gives a
+    rerun criterion from the Supplemental Experimental Procedures, and nothing but the time this
+    attempt spent on the claims on the data set kept it from being run. Recorded as not_runnable
+    before the first verification round, which is not the reason, since nothing was tried.
+- claim: fig3-divergence-correlation
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    Not attempted. A simulation with no published code, which the claims file's criterion says to
+    rerun; blocked as fig1-ffn-propagation.
+- claim: figs1-higher-order
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    Not attempted. A simulation with no published code, which the claims file's criterion says to
+    rerun; blocked as fig1-ffn-propagation.
+- claim: fig8-architecture
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    Not attempted. A simulation with no published code, which the claims file's criterion says to
+    rerun; blocked as fig1-ffn-propagation.
+- claim: rf-sizes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_zandvakili_2015.ipynb
+  output: claim:rf-sizes
+  notes: >-
+    RF variances are in pixels with no pixel-to-degree scale in the data set or the paper. In
+    pixels, the mean diameter (4 SD) is 60.9 px for 431 V1 channels and 119.9 px for 77 V2 channels
+    (reading a; 60.4 and 118.9 under reading b). The ratio of V2 to V1 diameter, which needs no
+    scale, is 1.97 against 2.27 / 1.21 = 1.88 in the paper. A scale of 50 to 53 px/deg would match
+    both means, but nothing in the data set or the paper fixes it.
+findings:
+- kind: data_missing
+  statement: >-
+    The data set holds no V2 recording depth, penetration identity, unit SNR or waveforms. The
+    paper's layer groups (middle, superficial and deep V2), its depth of the narrow-peak sites,
+    its offset-RF group and its single-unit analyses cannot be repeated; 7 of the paper's claims
+    on the recordings are blocked for this.
+- kind: metadata_insufficient
+  statement: >-
+    Receptive field centres and variances (rfInfo) are in pixels, and neither the data set nor the
+    paper gives the pixel-to-degree scale or the fixation point (the paper gives 1024 x 768 pixels
+    at 110 cm without the screen size). In four sessions each channel has fits for two eyes, with V1
+    RF centres a median of 244 to 266 pixels apart horizontally. RF sizes and offsets in degrees,
+    which the paper reports, cannot be computed.
+- kind: selection_undocumented
+  about: data
+  statement: >-
+    The data set holds 5 sessions in 3 animals of the paper's recordings in 7 animals (31 V2
+    sites of 223). Its documentation does not say how they were chosen. This attempt finds a
+    significant narrow V1-V2 peak at 16 of 31 sites (0.52, against 46 of 223 in the paper) and in
+    1.05% of V1-V2 pairs (against 0.3%), in every session. The difference may come from which
+    sessions were deposited or from this attempt's method (1 ms bins, no SNR criterion, the jitter
+    implementation); the data cannot separate the two.
+- kind: metadata_error
+  statement: >-
+    The data description gives an average of 112.2 V1 units per session; the five files hold 159,
+    109, 88, 97 and 111 V1 units, an average of 112.8. The V2 average (29.4) matches.
+- kind: metadata_insufficient
+  statement: >-
+    The data description lists stimulus code 7 as a 135 deg grating, but the sessions description
+    gives 180 deg for session 105l001p16. The population responses agree with the sessions
+    description (code 7 correlates 0.911 with code 1, against 0.637 and 0.845 with codes 6 and 8).
+    The spike rasters are at 1 ms resolution, where the paper's CCGs used 0.1 ms; the description
+    does not say that the spike times were binned.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. Which test gave the p-values for the median CCG peak offsets against
+    zero (p < 0.001 for V1-V2; p = 0.45 and 0.42 for V1-V1 and V2-V2)? On this data set the
+    Wilcoxon signed-rank test finds the V1-V1 offsets different from zero (p = 0.016, mean 0.10
+    ms) and the sign test does not (p = 0.076); the attempt assumed the signed-rank test.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. How were the bootstrap p-values comparing divergence in spike and
+    control epochs computed, with the same resampled neurons for both (paired) or from the two
+    bootstrap distributions taken as independent? The paired reading finds after-spike epochs and
+    epochs far from the spike above control at many offsets (Figure 7D) where the independent one
+    finds them at the 80 ms window (and 40 ms in one reading). Comparing two independent control
+    sets on this data set, the paired reading runs somewhat above its nominal rate (13 of 150
+    epochs at p < 0.05, about 7.5 expected; none at the Bonferroni threshold) and the independent
+    one is conservative (0 of 150). The outcomes here are the same under
+    both.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. The CCG jitter window used for the significance of narrow peaks is
+    given only for Figure 4C (10 ms); was it the same for all pairs and sites? With 25 ms, 22 of
+    31 sites and 185 pairs pass on this data set, against 16 and 171 with 10 ms.
+verifications:
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 1. The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper. The verifier tested the helper
+    functions on synthetic inputs (CCG lag sign, jitter expectation, jitter_events, control_trials,
+    js_bits, pop_counts, half_width, both bootstrap p functions under the null, the Equation 1
+    normalisation) and read the text outputs, not the figures. It had no attempt record. It
+    reported no place where the claims file misreads the paper, so no question was added for a
+    reader. Report in transcripts/zandvakili-2015/verifier-1-report.md. Its outcomes disagree
+    with the record on three claims (fig5b-v1v2-latency, fig5b-intra-areal-zero-lag,
+    fig7a-threefold), and the record now gives its outcomes on all three. Its general points
+    were answered as follows. Point 9 (the jitter pool includes the spike's own trial) is stated
+    in the notebook and the record, unchanged. Point 11 (site and pair fractions 2.5 to 3.5 times
+    the paper's) is now shown per session, where the excess is in every session; with no depths
+    it cannot be examined further. Its request to show that the files hold no further fields is
+    met in the data check (only spikeRasters, stim, trialId, unitCodes and rfInfo; the sort codes
+    number units per electrode). Its rendered figures were not reviewed by it, and nothing was
+    changed for that.
+  results:
+  - claim: fig4c-broad-ccg-peaks
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Under both readings, 31 of 31 site-average shuffle-corrected CCGs have a broad peak, at sites
+      with (16 of 16) and without (15 of 15) a narrow peak. The width above the flank mean is 68 ms.
+    response: No change.
+  - claim: fig4c-narrow-peak-sites
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      16 of 31 sites, fraction 0.516, against 0.206 +/- 0.021. It stays outside at 4, 5 and 6 SD
+      (13 of 31 at 6 SD) and with the 25 ms jitter (0.710). The criterion notes that site sampling
+      may differ. Point 11, the site and pair fractions are about 2.5 to 3.5 times the paper's,
+      which fits a deposit drawn from sessions sampled more toward middle layers, but the notebook
+      does not examine it.
+    response: >-
+      Outcome kept. The notebook now prints the fraction per session (2 of 5 to 5 of 7), so the
+      excess is in every session and not one unusual session; without depths the sampling cannot
+      be examined further, which the notes say.
+  - claim: fig4-narrow-peak-depth
+    agrees: true
+    outcome: blocked
+    reason: The descriptor and the archive listing have no V2 depth and no layer 6/WM reference.
+    response: >-
+      No change. The data check now prints the fields of every file (spikeRasters, stim, trialId,
+      unitCodes, rfInfo), which shows there is no depth field.
+  - claim: fig5a-rf-alignment
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No pixel-to-degree scale exists in the paper or the data set. The scale-free part holds;
+      probability falls steadily with offset in pixels, from 1.65% in the first bin to 0 beyond 100
+      px. Point 10, the mapping from rfInfo row to electrode code minus 1 for V1 is assumed without
+      a check, and two-eye sessions use eye 1 only.
+    response: >-
+      Outcome kept. The notebook now checks the mapping: 2 of 564 V1 units fall on a row with no
+      fit, and the drop in coupling probability with RF offset (0.0121) is larger than under any of
+      200 random permutations of the V1 rows (largest 0.0119). The use of the first eye is stated in
+      the notebook and the notes.
+  - claim: fig5-narrow-pairs-rare
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      171 of 16,308 pairs, 0.0105, against 0.0039 or less under either target. Still 0.0059 at 6 SD.
+      Per session it ranges from 0.0028 to 0.018.
+    response: No change.
+  - claim: fig5b-v1v2-latency
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      The offset is positive and significant (Wilcoxon p = 7e-20, sign test p = 2e-29), but the
+      median is 2.0 ms (2.30 interpolated) against 2.8 +/- 0.28. The width is 3.89 ms smoothed and
+      3.09 ms unsmoothed, both outside 3.71 +/- 0.1. The criterion needs the median within
+      tolerance. Point 5, smoothing a single bin alone gives a FWHM of 3.54 ms, so the width test
+      has little room, and the unsmoothed width is limited by the bin size.
+    response: >-
+      Outcome changed from partially_reproduced to not_reproduced: the criterion needs the median
+      within tolerance and defines no partial outcome. The notebook now prints the 3.54 ms width of
+      a smoothed single bin and states the limit in the claim's text and the deviations.
+  - claim: fig5b-intra-areal-zero-lag
+    agrees: false
+    outcome: partially_reproduced
+    reason: >-
+      Both medians are 0.0 ms. V2-V2 shows no difference under either test (p = 0.86 and 0.70).
+      V1-V1 differs under the Wilcoxon reading (p = 0.016) but not under the sign test (p = 0.076),
+      so only reading (b) matches. Point 3, the V1-V1 Wilcoxon result depends on the claims file's
+      pair order (unit-list order); the mean offset is 0.10 ms, so this is an ordering asymmetry,
+      not a lead. Also, 141 of the 249 significant V2-V2 pairs share a tetrode, and excluding them
+      makes V2-V2 significant under both tests (p = 0.030 and 0.033).
+    response: >-
+      Outcome changed from not_reproduced to partially_reproduced, still resting on the assumed
+      Wilcoxon test: under it the claim holds for V2-V2 pairs and not for V1-V1 pairs, so it holds
+      in part. The notebook and the notes now say that the V1-V1 shift follows the unit-list order
+      and is not a lead, and report the same-tetrode sensitivity of V2-V2, which the claims file's
+      all-pairs rule does not use.
+  - claim: figs3-efficacy
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Reading (a), median 0.324% against 0.39 +/- 0.039 and mean 0.496% against 0.69 +/- 0.12.
+      Reading (b) is far off, 6.5% raw and 0.82% shuffle-corrected. All significant pairs give
+      0.334% and 0.494%, also out. Point 5, "offset above 1 ms" means a lag of 2 ms or more.
+    response: Outcome kept. The notebook and the notes now say that an offset above 1 ms is one of 2 ms or more.
+  - claim: fig6a-coordination-before-v2
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Spike divergence is above control at 6 of 6 windows under every reading (main, e-b2, e-b3,
+      s-b, r-b, d-b) and under both p-a and p-b. Point 4, 1 ms spike times smear the 1.5 to 3.5 ms
+      epoch to about 1 to 4 ms, and e-b has no 2.5 ms bin, which may dilute the spike-epoch
+      divergence and lower the fig7a ratio; the notebook does not mention it for the divergence
+      analyses.
+    response: >-
+      Outcome kept. The notebook (before the divergence analyses), the helper docstring and the
+      deviations of fig6a-coordination-before-v2 and fig7a-threefold now state the smear and its
+      possible effect.
+  - claim: fig7a-threefold
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      The ratios are 1.56 to 2.14. Geometric means are 1.79 to 2.00 and medians 1.80 to 2.01.
+      Reading (c) puts at most 3 of 5 windows in range. Only e-b3 with the median summary (2.011)
+      reaches the edge of the 2 to 4 range.
+    response: >-
+      Outcome changed from partially_reproduced to not_reproduced: the claim is the size of the
+      effect, about 1.9 against 3 +/- 1 under every reading that can be formed, and the criterion
+      defines no partial outcome. The e-b3 median is a stand-in for one side of reading e-b, which
+      cannot be formed at 1 ms; the notes say so.
+  - claim: fig7a-above-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      In all four shuffle and epoch readings, both lower bounds are above the shuffled value at 5 of
+      5 windows. The margin is thin at 5 ms under (a, d), 2.013e-4 against 2.006e-4. Point 8, the
+      bound is compared with a single shuffle and jitter realization, whose own variability is not
+      estimated; the 5 ms (a, d) margin is 0.3%.
+    response: >-
+      Outcome kept. The notebook now runs four more shuffle realizations per reading. At 5 ms with
+      trials shuffled within orientation one realization of five is above the control bound in
+      each epoch reading (2.073e-4 and 2.038e-4 against 2.013e-4), and the mean of the five (1.935e-4
+      and 1.928e-4) is below it; at every other window and reading all five are below both bounds.
+      The notes report this fragility; the outcome rests on the one realization the criterion
+      compares, and the mean agrees.
+  - claim: fig6b-not-after-v2
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Every reading has a significant window after the spike. Under the main reading, 80 ms gives
+      p-b = 0.004, and p-a = 0 at both 40 and 80 ms. Point 2, no null check shows whether the paired
+      bootstrap (p-a) is calibrated, for example two independent control-epoch sets compared with
+      each other; the outcome does not change, since p-b alone still fails at 80 ms, but the p-a
+      results are not interpretable without that check.
+    response: >-
+      Outcome kept. The notebook now runs that null check: two independent control sets give p-a <
+      0.05 at 1 of 12 window and epoch combinations and at 13 of 150 time-course epochs (about 7.5
+      expected), none Bonferroni-significant, and p-b at 0 of each. p-a is near its nominal level
+      and p-b is conservative, which the notes and the bootstrap finding now say.
+  - claim: fig6-slow-both-sides
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      At 1280 ms, spike divergence is above control both before (ratio about 2.4) and after (about
+      2.0) the spike, p = 0 under all readings.
+    response: No change.
+  - claim: fig7d-time-course
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      The peak is at 2.5 ms (reading a) or 3 ms (reading b) before the spike at every window. Under
+      p-b, the 80 ms window still has Bonferroni-significant epochs after the spike and more than 8
+      ms before it; under p-a, every window does. Point 2, the p-a results are not interpretable
+      without a null check. Point 6, it is run only under the main reading, although the header
+      asks for every reading, with 2000 draws instead of 5000, which can still resolve Bonferroni
+      at 0.05/30. Point 7, judge_tc counts the centre -0.5 (bins -1 and 0) as after, though bin 0
+      is simultaneous with the spike.
+    response: >-
+      Outcome kept. The time course is now run under the main, s-b, r-b and d-b readings (e-b is
+      its single-bin offset reading): the peak is 2.5 to 3.5 ms before the spike at every window in
+      all of them, and each has Bonferroni-significant epochs after the spike or far before it at
+      80 ms under p-b (and at 40 ms in d-b). An epoch now counts as after only when wholly after the
+      spike; the epochs holding the simultaneous bin are counted apart. The null check above
+      applies to the scan. The 2000 draws are kept and the reason is stated.
+  - claim: fig7b-nonmiddle-no-coordination
+    agrees: true
+    outcome: blocked
+    reason: Confirmed; there is one site per V2 electrode per session and no depth or penetration order.
+    response: No change.
+  - claim: fig7e-nonmiddle-time-course
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig7b.
+    response: No change.
+  - claim: fig7c-offset-rf-no-coordination
+    agrees: true
+    outcome: blocked
+    reason: Confirmed; no depth and no degree scale. Also, no V1-V2 RF offset in the data exceeds 200 px.
+    response: No change.
+  - claim: figs2a-v2-single-units
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Confirmed; there are no waveforms or SNR, and the descriptor says the units mix single units
+      and multiunit activity. It asked for the files' fields and the distribution of unitCodes sort
+      codes, which might give a proxy for single units.
+    response: >-
+      Outcome kept. The data check now prints the fields (spikeRasters, stim, trialId, unitCodes,
+      rfInfo) and the sort codes (1 to 4 for V1, 1 to 13 for V2), which number the units on an
+      electrode and give no single-unit label.
+  - claim: figs2b-v1-single-units
+    agrees: true
+    outcome: blocked
+    reason: Same reason as figs2a.
+    response: No change beyond figs2a-v2-single-units.
+  - claim: figs4-partner-not-needed
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Both subsets are above control at 5 of 5 windows under p-a, and at 5 and 4 of 5 under p-b. The
+      ratio is larger with a V1 partner at 5 of 5 windows, 1.9 to 2.3 against 1.3 to 1.7. Only the
+      main reading was run (point 6).
+    response: >-
+      Outcome kept. It is now run under all six readings: with a partner 5 of 5 windows under both p
+      readings, without a partner 4 or 5 of 5 under p-a and 2 to 5 of 5 under p-b, and the ratio
+      larger with a partner at all five windows in every reading.
+  - claim: figs5-middle-layer-relay
+    agrees: true
+    outcome: blocked
+    reason: Confirmed; it needs superficial and deep sites, and there is no depth.
+    response: No change.
+  - claim: fig1-ffn-propagation
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Blocked (other), not attempted. Point 1, the four simulation claims are blocked as
+      not_runnable, which is not an allowed reason; the claims file gives a rerun criterion for each
+      and only "data: elsewhere", so nothing blocks them except that they were not attempted. They
+      should be marked blocked (other: not attempted), not shown as untestable.
+    response: >-
+      blocked_by changed from not_runnable to other, with notes, notebook header and README saying
+      the simulation was not attempted.
+  - claim: fig3-divergence-correlation
+    agrees: true
+    outcome: blocked
+    reason: Same as fig1 (point 1).
+    response: As for fig1-ffn-propagation.
+  - claim: figs1-higher-order
+    agrees: true
+    outcome: blocked
+    reason: Same as fig1 (point 1).
+    response: As for fig1-ffn-propagation.
+  - claim: fig8-architecture
+    agrees: true
+    outcome: blocked
+    reason: Same as fig1 (point 1).
+    response: As for fig1-ffn-propagation.
+  - claim: rf-sizes
+    agrees: true
+    outcome: blocked
+    reason: >-
+      RF fits are in pixels with no scale. The scale-free V2/V1 diameter ratio is 1.97 against the
+      paper's 1.88.
+    response: No change; the rfInfo mapping check is reported under fig5a-rf-alignment.
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the revised run, with its conclusion cells and summary,
+    the helper module, the claims file, the attempt record and the paper. The verifier checked
+    every result sentence, the summary and the record's notes against the printed outputs, and
+    the status of each round-1 point. It did not review the rendered figures. It found no new
+    place where the claims file misreads the paper, so no question was added for a reader. Report
+    in transcripts/zandvakili-2015/verifier-2-report.md. Its general points were answered as
+    follows. The selection finding and the summary claimed that the deposited sessions cause the
+    excess of narrow-peak sites; they now say it may come from the sessions or from this
+    attempt's method, and that the data cannot separate the two. The wording that the paired
+    bootstrap is near its nominal level is replaced throughout (notebook, notes, bootstrap
+    finding): the null check now prints the binomial tail (P = 0.039 for 13 of 150, 0.016 for 5
+    of 30 at 5 ms), and the after-spike results are supported by the largest null difference, as
+    the verifier suggested. The README's row of non-middle-layer and related claims now says six,
+    and the run time is corrected. The rendered figures were not reviewed, and nothing was changed
+    for that.
+  results:
+  - claim: fig4c-broad-ccg-peaks
+    agrees: true
+    outcome: reproduced
+    reason: 31 of 31 under both readings (cell 11).
+    response: No change.
+  - claim: fig4c-narrow-peak-sites
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      0.516 against 0.206 +/- 0.021 (cell 8). Point 11, an excess in every session does not
+      separate sampling from method; the numbers show that this attempt's measure differs, not
+      that the cause is the sample and not the method (1 ms bins, no SNR filter, the jitter
+      implementation).
+    response: >-
+      Outcome kept. The result cell, the notes, the summary and the selection_undocumented finding
+      now say the difference may come from the deposited sessions or from this attempt's method,
+      and that the data cannot separate the two.
+  - claim: fig4-narrow-peak-depth
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The only fields are spikeRasters, stim, trialId, unitCodes and rfInfo (cell 5).
+    response: No change.
+  - claim: fig5a-rf-alignment
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agreed. Point 10 is partly resolved; the permutation check has a thin margin (0.0121 against
+      0.0119) and is for information only.
+    response: No change; the notes already give the check as information only, with both values.
+  - claim: fig5-narrow-pairs-rare
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.0105 (cell 15).
+    response: >-
+      Outcome kept. The note that the excess is consistent with sessions richer in coupled sites
+      now adds "or with a difference in method", as for fig4c-narrow-peak-sites.
+  - claim: fig5b-v1v2-latency
+    agrees: true
+    outcome: not_reproduced
+    reason: Median 2.0 ms (cell 18).
+    response: No change.
+  - claim: fig5b-intra-areal-zero-lag
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      The label yes, the basis no. The assumption (the Wilcoxon signed-rank test) is stated and
+      plausible but cannot be checked. The outcome does not follow from it: the criterion has
+      only "reproduced when no difference in both areas" and defines no partial outcome, and
+      under the assumed test V1-V1 differs (p = 0.016), so the outcome would be not_reproduced,
+      the rule the record applies to fig5b-v1v2-latency and fig7a-threefold. Its round-1 basis
+      for partially_reproduced was that the two readings disagree; the record says "as the
+      verifier gave it" but gives "one of two areas holds" as the reason. It recommends either
+      dropping the assumption and justifying the label by the readings disagreeing, or keeping
+      the assumption and recording not_reproduced.
+    response: >-
+      The verified outcome, partially_reproduced, is kept, and a change to not_reproduced is
+      proposed under `proposed`, with the analysis in the notebook's result cell. The assumption
+      is kept: author step 1.6 settles readings that give different outcomes by adopting the best
+      supported choice as an assumption, or by blocking, so disagreeing readings are not a basis
+      for an outcome of their own. The notes now give the round-1 basis as the verifier stated it
+      and no longer say "one of two areas holds".
+  - claim: figs3-efficacy
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.324% and 0.496% (cell 24).
+    response: No change.
+  - claim: fig6a-coordination-before-v2
+    agrees: true
+    outcome: reproduced
+    reason: 6 of 6 windows under every reading and both p readings (cell 30).
+    response: No change.
+  - claim: fig7a-threefold
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Only e-b3 with the median summary (2.011) reaches the range, and e-b3 is a stand-in.
+    response: No change.
+  - claim: fig7a-above-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Yes, but fragile. It rests on realization 0. Realization 3 of (a,c) and realization 2 of
+      (a,d) give 4 of 5 windows, which the criterion would call partial (cell 40). The record
+      says this.
+    response: No change; the notes already report the fragility.
+  - claim: fig6b-not-after-v2
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      p-b < 0.05 at 80 ms in every reading (cell 43). "Near its nominal level" for p-a is not
+      supported: 13 of 150 epochs below 0.05 against 7.5 expected, a binomial tail of about 0.04
+      ignoring the dependence, 5 of 30 at the 5 ms window; four null p-values cannot show
+      calibration. A better support is the largest null difference (4.5e-5 at 40 ms, 5.2e-5 at 80
+      ms), well below the after-spike differences (1.2e-4 and 2.7e-4). The notes' "at 5 to 20 ms
+      the ratios are 1.03 to 1.08 (p-a 0.10 to 0.48)" holds for the main reading only; s-b has
+      0.959 at 10 ms and d-b has p-a = 0.024 at 20 ms.
+    response: >-
+      Outcome kept. The notebook now prints the binomial tails; the result cell, the notes and the
+      bootstrap finding say p-a runs somewhat above its nominal rate at 0.05 and none of its null
+      epochs passes Bonferroni, and support the after-spike result with the largest null
+      difference. The 5 to 20 ms sentence is now qualified as the main reading, with the range of
+      the other readings.
+  - claim: fig6-slow-both-sides
+    agrees: true
+    outcome: reproduced
+    reason: Agreed.
+    response: No change.
+  - claim: fig7d-time-course
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      The peak is 2.5 to 3.5 ms before the spike in all 10 cells of every method. Under p-b there
+      are significant after-spike epochs at 80 ms, and also at 40 ms in d-b (cell 49). The "near
+      its nominal level" wording for p-a is not supported (see fig6b-not-after-v2).
+    response: >-
+      Outcome kept. The result cell and the notes now say p-a runs somewhat above its nominal rate
+      at 0.05 (13 of 150, 5 of 30 at 5 ms) and gives no Bonferroni-significant null epoch.
+  - claim: fig7b-nonmiddle-no-coordination
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing).
+    response: No change.
+  - claim: fig7e-nonmiddle-time-course
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing).
+    response: No change.
+  - claim: fig7c-offset-rf-no-coordination
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing).
+    response: No change.
+  - claim: figs2a-v2-single-units
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing).
+    response: No change.
+  - claim: figs2b-v1-single-units
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing).
+    response: No change.
+  - claim: figs4-partner-not-needed
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Yes, with a caveat. Under e-b2 with p-b, the subset without a partner is above control at 2
+      of 5 windows, not a majority, so this one combination fails the criterion (cell 52). The
+      record gives "2 in e-b2" but does not name it as a combination that fails. It is a stand-in
+      reading, so the outcome holds, consistent with how fig7a treats e-b3.
+    response: >-
+      Outcome kept. The result cell and the notes now name e-b2 with p-b as the one combination
+      that does not meet the criterion.
+  - claim: figs5-middle-layer-relay
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing).
+    response: No change.
+  - claim: fig1-ffn-propagation
+    agrees: true
+    outcome: blocked
+    reason: Agreed, blocked as other (not attempted); round-1 point 1 resolved.
+    response: No change.
+  - claim: fig3-divergence-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agreed, blocked as other (not attempted).
+    response: No change.
+  - claim: figs1-higher-order
+    agrees: true
+    outcome: blocked
+    reason: Agreed, blocked as other (not attempted).
+    response: No change.
+  - claim: fig8-architecture
+    agrees: true
+    outcome: blocked
+    reason: Agreed, blocked as other (not attempted).
+    response: No change.
+  - claim: rf-sizes
+    agrees: true
+    outcome: blocked
+    reason: Agreed (metadata_insufficient).
+    response: No change.
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 3. Only the proposed change of outcome, for fig5b-intra-areal-zero-lag, and the analysis
+    behind it (notebook cells 21 and 22, the record's notes and deviations for the claim), with the
+    claims file and the paper. Report in transcripts/zandvakili-2015/verifier-3-report.md. It found
+    no place where the claims file misreads the paper for this claim, so no question was added for
+    a reader.
+  results:
+  - claim: fig5b-intra-areal-zero-lag
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      The numbers come from the data (cell 21), and the result cell and the record's notes give
+      the same values. The assumption that the paper's test is the Wilcoxon signed-rank test is
+      stated in the deviations, was in place before round 2 and gives the less favourable of the
+      two outcomes, so it was not picked to get a match; the paper names no test and its p = 0.45
+      and 0.42 cannot tell the tests apart, so it stays plausible but cannot be checked, hence
+      assumed. The claims file says "Reproduced when the test finds no difference from zero in
+      both areas" and defines no partial outcome. Under the assumed test V1-V1 pairs differ from
+      zero (p = 0.016 < 0.05, and 0.027 and 0.028 under the other treatments of zeros), so the
+      criterion gives not_reproduced, the rule the record applies to fig5b-v1v2-latency and
+      fig7a-threefold. Partially reproduced, its round-1 outcome, rested on the two readings
+      disagreeing, a basis that no longer applies once the record adopts one test as an
+      assumption. Additional context that does not change the outcome. The V1-V1 shift follows
+      the order of the unit lists (mean 0.10 ms), an asymmetry from pair ordering. Without
+      same-electrode pairs V2-V2 also differs (108 pairs; Wilcoxon p = 0.030, sign test p = 0.033),
+      but the claims file uses all pairs. The 1 ms bins, against the paper's 0.1 ms, may
+      contribute to the difference from the paper's p-values.
+    response: >-
+      Outcome changed to not_reproduced and `proposed` removed. The notebook's result cell and
+      summary, the entry README and the record's notes now give not reproduced. The notes already
+      state the ordering asymmetry, the variant without same-electrode pairs and the 1 ms bins
+      (in the deviations).
