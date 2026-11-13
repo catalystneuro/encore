@@ -26,6 +26,11 @@ Where the parameters come from:
 - `MIN_RATE_HZ` (0.05 Hz) is the paper's rate threshold (Methods, Bits/spike: "Cells with a mean
   firing rate below 0.05 Hz above the speed threshold were excluded"). Without positions it is
   applied here over the whole recording, as a variant that decides no claim.
+- `GAP_S` (60 s), the shortest spike-free stretch reported as a possible boundary of the maze
+  session, and `PIECE`, the samples of Times.mat read at a time, are choices for a data check;
+  they decide no claim.
+- `CODE_REPO` and `CODE_COMMIT` are the paper's archived code at the commit the claims file
+  read, listed only to show what files it holds.
 """
 
 from __future__ import annotations
@@ -212,3 +217,86 @@ def duplicate_pairs(units: pd.DataFrame, spikes: dict[str, np.ndarray]) -> pd.Da
                     rows.append({"a": ks[i], "b": ks[j], "same_recording": False,
                                  "coincident_fraction": 1.0, "identical": True})
     return pd.DataFrame(rows, columns=["a", "b", "same_recording", "coincident_fraction", "identical"])
+
+
+CODE_REPO = "elifesciences-publications/data_analysis"
+CODE_COMMIT = "5c6320a9133b8ac551300efdd7abbbc44767c575"   # the archived commit the claims file read
+GAP_S = 60.0      # a spike-free stretch this long is reported as a candidate epoch boundary
+PIECE = 2**23     # samples of Times.mat read at a time
+
+
+def repo_files(repo: str = CODE_REPO, commit: str = CODE_COMMIT) -> pd.DataFrame:
+    """Every file of a GitHub repository at a commit, with its size in bytes, from the git tree."""
+    import requests
+
+    r = requests.get(f"https://api.github.com/repos/{repo}/git/trees/{commit}",
+                     params={"recursive": "1"}, timeout=60)
+    r.raise_for_status()
+    j = r.json()
+    if j.get("truncated"):
+        raise RuntimeError("the git tree listing was truncated")
+    df = pd.DataFrame([t for t in j["tree"] if t["type"] == "blob"])[["path", "size"]]
+    df["ext"] = df.path.str.extract(r"(\.[^./]+)$")[0].str.lower().fillna("(none)")
+    return df
+
+
+def times_intervals(keys) -> pd.DataFrame:
+    """Every sample interval of each recording in Times.mat, read in pieces of PIECE samples:
+    the median, how many intervals are not positive, more than 1.5 or less than 0.5 times the
+    median, the longest, and the distinct medians of the pieces (a change of sampling rate
+    inside a recording would show as more than one); where the long intervals start (not listed
+    below 1 ms sampling) and the first and last timestamps followed by one not later."""
+    rows = []
+    with fsspec.open(DATA + TIMES, block_size=2**24, cache_type="readahead") as f:
+        g = h5py.File(f, "r")["TIMEall"]
+        for k in keys:
+            d = g[k]
+            n = d.shape[0]
+            med = None
+            counts = {"not_positive": 0, "long": 0, "short": 0}
+            longest, longest_at, piece_medians, last = 0.0, np.nan, set(), None
+            long_at, repeat_at = [], []
+            for s in range(0, n, PIECE):
+                x = d[s:s + PIECE, 0]
+                y = x if last is None else np.concatenate([[last], x])
+                dt = np.diff(y)
+                last = x[-1]
+                if dt.size == 0:
+                    continue
+                pm = float(np.median(dt))
+                piece_medians.add(round(pm * 1e3, 4))
+                if med is None:
+                    med = pm
+                counts["not_positive"] += int(np.sum(dt <= 0))
+                repeat_at += [float(y[j]) for j in np.flatnonzero(dt <= 0)]
+                if med >= 1e-3:   # below 1 ms sampling the long intervals are jitter, too many to list
+                    long_at +=[round(float(y[j]), 1) for j in np.flatnonzero(dt > 1.5 * med)]
+                counts["long"] += int(np.sum(dt > 1.5 * med))
+                counts["short"] += int(np.sum((dt > 0) & (dt < 0.5 * med)))
+                i = int(np.argmax(dt))
+                if dt[i] > longest:
+                    longest, longest_at = float(dt[i]), float(y[i])
+            rows.append({"times_key": k, "samples": n, "dt_median_ms": 1e3 * med,
+                         "piece_medians_ms": sorted(piece_medians), **counts,
+                         "longest_ms": 1e3 * longest, "longest_at_s": longest_at,
+                         "long_at_s": long_at,
+                         "not_positive_from_s": min(repeat_at) if repeat_at else np.nan,
+                         "not_positive_to_s": max(repeat_at) if repeat_at else np.nan})
+    return pd.DataFrame(rows)
+
+
+def spike_gaps(units: pd.DataFrame, spikes: dict[str, np.ndarray], exclude=(),
+               gap_s: float = GAP_S) -> pd.DataFrame:
+    """For each recording, the spikes of all its clusters pooled (leaving out the keys in
+    exclude): the longest stretch with no spike, and every stretch of at least gap_s, with where
+    it starts."""
+    rows = []
+    for key, grp in units[~units.key.isin(set(exclude))].groupby("times_key"):
+        t = np.sort(np.concatenate([spikes[k] for k in grp.key]))
+        dt = np.diff(t)
+        long = np.flatnonzero(dt >= gap_s)
+        rows.append({"times_key": key, "clusters": len(grp), "spikes": t.size,
+                     "first_s": t[0], "last_s": t[-1], "longest_gap_s": float(dt.max()) if dt.size else np.nan,
+                     "gaps": len(long), "gap_starts_s": [round(float(t[i]), 1) for i in long],
+                     "gap_lengths_s": [round(float(dt[i]), 1) for i in long]})
+    return pd.DataFrame(rows)
