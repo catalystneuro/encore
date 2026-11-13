@@ -182,7 +182,11 @@ outcomes:
   notes: With 10 degree Idir bins and rotating-trial probabilities the average Rayleigh r is 0.166
     (expected 0.17 ± 0.02). With n the sum of the weights no test of 14 is significant (smallest p =
     0.35); with n the number of bins one is (1121R157 room frame, p = 0.014). The other Idir
-    readings give average r 0.180 to 0.264 and 1 to 5 significant tests of 14.
+    readings give average r 0.180 to 0.264 and 1 to 5 significant tests of 14. A question on the
+    claims file asked whether every test should have p > 0.17, the bound the paper reports; the
+    reader answered on 2026-11-13 that the criterion stands (non-significance at 0.05), so the
+    answer changed nothing here and the claim was not re-run. With the assumed n the smallest p is
+    0.35, so the tests would also meet that bound.
   deviations:
   - The n of the weighted Rayleigh test is taken as the sum of the weights, the convention of the
     weighted Rayleigh test in CircStat (circ_rtest), the field's standard MATLAB toolbox; the paper
@@ -269,17 +273,36 @@ outcomes:
   notebook: reproduce_park_2019.ipynb
   output: claim:fig5-error-inhomogeneous
   measured:
-  - 0.56
-  - 0.144
+  - 0.604
+  - 0.484
   - 0.0718
   - 0.36
-  notes: Under reading (b), the six-cell ensemble 0930R029 (20 samples), all four distributions are
-    non-uniform (Rayleigh p below 1e-6) and both Kuiper's tests have p below 1e-75; room-frame
-    error r 0.560 (expected 0.589) and arena-frame head-direction r 0.360 (0.378) are within
-    tolerance, arena-frame error r 0.144 (0.653) and room-frame head-direction r 0.072 (0.147) are
-    not. Four ensembles tie at six cells; the other three match none of the four values. Pooled
-    (reading a) the arena-frame error is not significantly non-uniform (p = 0.054) and no r is
-    within tolerance; reading (c) gives median error r 0.139 (room) and 0.100 (arena).
+  notes: A reader amended the criterion on 2026-11-13 in answer to a question
+    (questions/park-2019.yaml) so that it names three readings of what the error distribution is
+    over, (i) mean absolute error per 10 degree head-direction bin, (ii) head directions of windows
+    decoded within 15, 30 or 45 degrees, (iii) the signed error angles. Before the answer only
+    (iii) was run. The claim was re-run under all three with the three pooling readings and both
+    windows. Every test holds (all four distributions non-uniform, both Kuiper's tests at p <
+    0.05) in 75 of 80 combinations, but none has all four r within tolerance; the most is two. With
+    the six-cell ensemble 0930R029 (reading b) and 20-sample windows, the room-frame r is 0.604
+    under reading (ii) at 15 degrees, 0.555 at 30 degrees and 0.560 under reading (iii), within
+    tolerance of 0.589, and the arena-frame head-direction r is 0.360 (0.378); the arena-frame r is
+    0.484, 0.543 and 0.144 (0.653) and the room-frame head-direction r 0.072 (0.147). The measured
+    values are those of reading (ii) at 15 degrees, the first listed reading with two r within
+    tolerance. Reading (i) gives error r of 0.030 to 0.426 at 20 samples. Pooled (reading a) no r
+    is within tolerance under any reading, and the medians over ensembles (reading c) reach at most
+    0.343 (room) and 0.548 (arena, reading ii at 133 ms). The answer brings the arena-frame error r
+    closer to 0.653 but not within tolerance, and leaves the outcome as it was under reading (iii)
+    (partially reproduced, with measured values 0.560, 0.144, 0.0718 and 0.360). Four ensembles
+    tie at six cells; the other three match at most one value under any reading.
+  deviations:
+  - For reading (i) the paper does not give the n of the Rayleigh test; it is taken as the number
+    of decoded windows, as the paper's z = 236.36 at r = 0.589 implies about 680, and n = 36 bins
+    is shown as a variant (which leaves the arena-frame error uniform for every ensemble). Neither
+    choice changes the outcome, which readings (ii) and (iii) also give.
+  - For reading (i) Kuiper's test compares the error weights with the head-direction occupancy
+    over the same 10 degree bins, with n the number of windows on each side; the paper does not say
+    how the test was applied to this reading.
 - claim: fig5c-error-minima-at-cues
   outcome: reproduced
   assumed: true

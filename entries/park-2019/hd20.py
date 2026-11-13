@@ -263,6 +263,26 @@ def kuiper_two_sample(a: np.ndarray, b: np.ndarray) -> tuple[float, float]:
     return float(v), float(min(max(p, 0.0), 1.0))
 
 
+def kuiper_binned(w1: np.ndarray, w2: np.ndarray, n1: float, n2: float) -> tuple[float, float]:
+    """Kuiper's two-sample test on two weighted distributions over the same direction bins.
+
+    V is the Kuiper statistic of the two cumulative distributions over the bins, and n1, n2 the
+    sample sizes behind them, with the asymptotic p of `kuiper_two_sample`. Used for reading (i) of
+    fig5-error-inhomogeneous, where the error distribution is a set of weights over head-direction
+    bins; the paper does not say how it applied Kuiper's test, so this is an assumption.
+    """
+    f1 = np.cumsum(w1) / np.sum(w1)
+    f2 = np.cumsum(w2) / np.sum(w2)
+    v = (f1 - f2).max() + (f2 - f1).max()
+    ne = n1 * n2 / (n1 + n2)
+    lam = (np.sqrt(ne) + 0.155 + 0.24 / np.sqrt(ne)) * v
+    if lam < 0.4:
+        return float(v), 1.0
+    j = np.arange(1, 101)
+    p = 2 * np.sum((4 * j**2 * lam**2 - 1) * np.exp(-2 * j**2 * lam**2))
+    return float(v), float(min(max(p, 0.0), 1.0))
+
+
 def preferred(rate: np.ndarray) -> float:
     """Preferred direction, degrees: the centre of the bin of maximum rate."""
     return float(np.argmax(rate) * BIN_DEG + BIN_DEG / 2)
