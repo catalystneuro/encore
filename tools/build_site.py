@@ -1227,11 +1227,20 @@ def page_author(data: dict, author: dict) -> str:
     wrote_html = "".join(response_item(
         data, r, root, where=f' &middot; on <a href="{root}papers/{e(r["paper"])}/">{e(by_key[r["paper"]]["byline"])}</a>'
         if r["paper"] in by_key else "") for r in wrote)
-    badge = author_badge(data, author)
-    badge_panel = badge_how(
-        badge, f"{root}badge/authors/{e(orcid)}.svg", "Badge for this page",
-        "It counts the findings of these papers reproduced in full by attempts an independent verifier has checked.",
-        "on a lab&rsquo;s site or a profile", f"{root}api/authors/{e(orcid)}.json") if badge else ""
+    badge, every = author_badge(data, author), author_outcomes(data, author)
+    all_note = ("It counts every claim of these papers in a current attempt, verified or not, as the bar at the top "
+                "of this page does.")
+    styles = ([{"name": "Findings reproduced", "src": f"{root}badge/authors/{e(orcid)}.svg", "svg": badge["svg"],
+                "alt": badge["alt"], "url": badge["url"],
+                "counts": "It counts the findings of these papers reproduced in full by attempts an independent "
+                          "verifier has checked."}] if badge else [])
+    if every:
+        styles += [{"name": "All outcomes", "src": f"{root}badge/authors/{e(orcid)}-outcomes.svg",
+                    "svg": every["svg_outcomes"], "alt": every["alt"], "url": every["url"], "counts": all_note},
+                   {"name": "Card", "src": f"{root}badge/authors/{e(orcid)}-card.svg", "svg": every["svg_card"],
+                    "alt": every["alt"], "url": every["url"], "counts": all_note}]
+    badge_panel = badges_how(styles, "Badges for this page" if len(styles) > 1 else "Badge for this page",
+                             "on a lab&rsquo;s site or a profile", f"{root}api/authors/{e(orcid)}.json") if styles else ""
     tabs = [("papers", "Papers", n), ("datasets", "Datasets", m), ("responses", "Responses", len(wrote))]
     tabs = [t for t in tabs if t[2]] or tabs[:1]
     tab_buttons = "".join(f'<button type="button" role="tab" data-panel="{k}" aria-selected="false">{label} '
@@ -1264,7 +1273,7 @@ def page_author(data: dict, author: dict) -> str:
 </main>'''
     structured = {"@context": "https://schema.org", "@type": "Person", "name": name,
                   "identifier": f"https://orcid.org/{orcid}", "sameAs": f"https://orcid.org/{orcid}"}
-    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, TABS_JS, path=f"authors/{orcid}/",
+    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, TABS_JS + BADGE_PICK_JS, path=f"authors/{orcid}/",
                  description=f"Papers and datasets of {name} (ORCID {orcid}) in the Encore registry, and what "
                              f"attempts to reproduce the papers from their open data found.", structured=structured)
 
@@ -1322,17 +1331,123 @@ def author_badge(data: dict, author: dict) -> dict | None:
             "alt": f"Encore: {text.replace(' · ', ', from ')}, in the work of {author['name']}"}
 
 
+# The outcomes' colours as the site's bars have them (app.css), and each outcome in a word or two for a badge.
+OUTCOME_FILL = {"reproduced": "#0ca30c", "partially_reproduced": "#fab219", "not_reproduced": "#2b6cb0", "blocked": "#898781"}
+OUTCOME_SHORT = {"reproduced": "reproduced", "partially_reproduced": "partially", "not_reproduced": "not reproduced",
+                 "blocked": "blocked"}
+
+
+def author_outcomes(data: dict, author: dict) -> dict | None:
+    """Every outcome across a person's papers, as the bar at the top of their page has them: the claims that rest
+    on the papers' datasets, in every current attempt, verified or not. For the two badges that show all the
+    outcomes (docs/badges.md). None when no paper of theirs has an attempt."""
+    rows_ = {r["id"]: r for r in rows_cache(data)["papers"]}
+    counts = {k: sum((rows_.get(q["key"], {}).get("counts") or {}).get(k, 0) for q in author["papers"]) for k in OUTCOMES}
+    claims = sum(counts.values())
+    if not claims:
+        return None
+    papers = sum(1 for q in author["papers"] if sum((rows_.get(q["key"], {}).get("counts") or {}).values()))
+    said = ", ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items() if n)
+    base = SITE_URL + f'badge/authors/{author["orcid"]}'
+    return {"counts": counts, "claims": claims, "papers": papers, "name": author["name"],
+            "url": SITE_URL + f'authors/{author["orcid"]}/', "svg_outcomes": base + "-outcomes.svg",
+            "svg_card": base + "-card.svg",
+            "alt": f'Encore: {said}, of {claims} claim{"" if claims == 1 else "s"} in {papers} '
+                   f'paper{"" if papers == 1 else "s"} of {author["name"]}'}
+
+
+def _legend(counts: dict, x: float, y: float, gap: float = 14) -> tuple[str, float]:
+    """The outcomes in a row from x: a dot in the outcome's colour, then its count and name in ink (the dot carries
+    which outcome it is, the text stays readable). Returns the drawing and where it ends."""
+    out = ""
+    for k, n in counts.items():
+        if not n:
+            continue
+        text = f"{n} {OUTCOME_SHORT[k]}"
+        out += (f'<circle cx="{x + 4:.0f}" cy="{y - 4:.0f}" r="4" fill="{OUTCOME_FILL[k]}"/>'
+                f'<text x="{x + 13:.0f}" y="{y:.0f}" textLength="{_text_width(text):.0f}">{e(text)}</text>')
+        x += 13 + _text_width(text) + gap
+    return out, x - gap
+
+
+def outcomes_badge_svg(o: dict) -> str:
+    """One line with every outcome: "Encore", then each outcome's count."""
+    lw = _text_width("Encore") + 30
+    legend, end = _legend(o["counts"], lw + 10, 15)
+    w = round(end + 10)
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="22" viewBox="0 0 {w} 22" role="img" '
+            f'aria-label="{e(o["alt"])}"><title>{e(o["alt"])}</title>'
+            f'<clipPath id="r"><rect width="{w}" height="22" rx="4"/></clipPath>'
+            f'<g clip-path="url(#r)"><rect width="{lw:.0f}" height="22" fill="#2b2333"/>'
+            f'<rect x="{lw:.0f}" width="{w - lw:.0f}" height="22" fill="#f3f1f6"/></g>'
+            f'<g fill="none" stroke="#c4a3e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+            f'<circle cx="13" cy="11" r="5.6"/><path d="M10.4 11.2l1.9 1.9 3.3-3.8"/></g>'
+            f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11" font-weight="bold">'
+            f'<text x="24" y="15" fill="#fff" textLength="{_text_width("Encore"):.0f}">Encore</text>'
+            f'<g fill="#2b2333">{legend}</g></g></svg>\n')
+
+
+def card_badge_svg(o: dict) -> str:
+    """A card: the person's name, how many claims in how many papers, the outcomes as one bar, and each count."""
+    pad = 14
+    legend, end = _legend(o["counts"], pad, 80)
+    tested = f'{o["claims"]} claim{"" if o["claims"] == 1 else "s"} · {o["papers"]} paper{"" if o["papers"] == 1 else "s"}'
+    name_w = _text_width(o["name"]) * 1.18
+    w = round(max(end + pad, pad + 62 + _text_width(tested) + pad + 20, name_w + 2 * pad, 300))
+    # The bar: a segment for each outcome, in the site's order, with a gap of the card's colour between two.
+    span, x, bar_ = w - 2 * pad, pad, ""
+    shown = [(k, n) for k, n in o["counts"].items() if n]
+    room = span - 2 * (len(shown) - 1)
+    for i, (k, n) in enumerate(shown):
+        seg = max(3.0, room * n / o["claims"]) if i < len(shown) - 1 else pad + span - x
+        bar_ += f'<rect x="{x:.1f}" y="52" width="{seg:.1f}" height="8" rx="4" fill="{OUTCOME_FILL[k]}"/>'
+        x += seg + 2
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="96" viewBox="0 0 {w} 96" role="img" '
+            f'aria-label="{e(o["alt"])}"><title>{e(o["alt"])}</title>'
+            f'<rect x=".5" y=".5" width="{w - 1}" height="95" rx="6" fill="#fff" stroke="#d9d4e0"/>'
+            f'<g fill="none" stroke="#6a3d8f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+            f'<circle cx="{pad + 6}" cy="19" r="5.6"/><path d="M{pad + 3.4} 19.2l1.9 1.9 3.3-3.8"/></g>'
+            f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11">'
+            f'<text x="{pad + 17}" y="23" font-weight="bold" fill="#2b2333" textLength="{_text_width("Encore"):.0f}">Encore</text>'
+            f'<text x="{w - pad}" y="23" text-anchor="end" fill="#6b6475">{e(tested)}</text>'
+            f'<text x="{pad}" y="43" font-size="13" font-weight="bold" fill="#120e17">{e(o["name"])}</text>'
+            f'{bar_}<g font-weight="bold" fill="#2b2333">{legend}</g></g></svg>\n')
+
+
 def badge_how(badge: dict, src: str, title: str, counts: str, where: str, json_href: str) -> str:
     """The section of a page with its badge and what to paste to show it elsewhere, as HTML and as Markdown (for a
     profile on GitHub, say)."""
-    as_html = f'<a href="{badge["url"]}"><img src="{badge["svg"]}" alt="{badge["alt"]}"></a>'
-    as_markdown = f'[![{badge["alt"]}]({badge["svg"]})]({badge["url"]})'
+    return badges_how([{"name": "", "src": src, "svg": badge["svg"], "alt": badge["alt"], "url": badge["url"],
+                        "counts": counts}], title, where, json_href)
+
+
+BADGE_PICK_JS = """<script>(function(){
+document.querySelectorAll('.badge-how').forEach(function(box){
+var picks=[].slice.call(box.querySelectorAll('.badge-pick'));if(picks.length<2)return;
+function show(b){picks.forEach(function(p){p.setAttribute('aria-pressed',p===b);});
+box.querySelector('.badge-html').textContent=b.dataset.html;box.querySelector('.badge-md').textContent=b.dataset.md;
+box.querySelector('.badge-counts').textContent=b.dataset.counts;}
+picks.forEach(function(p){p.addEventListener('click',function(){show(p);});});});})();</script>"""
+
+
+def badges_how(styles: list[dict], title: str, where: str, json_href: str) -> str:
+    """The section of a page with its badges and what to paste to show one elsewhere, as HTML and as Markdown (for
+    a profile on GitHub, say). With several styles the reader picks one (BADGE_PICK_JS); the first is shown."""
+    for b in styles:
+        b["html"] = f'<a href="{b["url"]}"><img src="{b["svg"]}" alt="{b["alt"]}"></a>'
+        b["md"] = f'[![{b["alt"]}]({b["svg"]})]({b["url"]})'
+    first = styles[0]
+    picks = "".join(
+        f'<button type="button" class="badge-pick" aria-pressed="{str(b is first).lower()}" data-html="{e(b["html"])}" '
+        f'data-md="{e(b["md"])}" data-counts="{e(html.unescape(b["counts"]))}"><span class="small">{e(b["name"])}</span>'
+        f'<img src="{b["src"]}" alt="{e(b["alt"])}"></button>' for b in styles) if len(styles) > 1 else ""
     return f'''<details class="panel badge-how"><summary><h2>{title}</h2>
-    <img src="{src}" alt="{e(badge["alt"])}" height="22"></summary>
-    <p class="sub small">{counts} To show it {where}, linked to this page:</p>
-    <pre class="snippet"><code>{e(as_html)}</code></pre>
+    <img src="{first["src"]}" alt="{e(first["alt"])}" height="22"></summary>
+    {f'<div class="badge-picks" role="group" aria-label="Badge style">{picks}</div>' if picks else ""}
+    <p class="sub small"><span class="badge-counts">{first["counts"]}</span> To show it {where}, linked to this page:</p>
+    <pre class="snippet"><code class="badge-html">{e(first["html"])}</code></pre>
     <p class="sub small">Or as Markdown:</p>
-    <pre class="snippet"><code>{e(as_markdown)}</code></pre>
+    <pre class="snippet"><code class="badge-md">{e(first["md"])}</code></pre>
     <p class="sub small">The same numbers are in <a href="{json_href}">this page&rsquo;s JSON</a>, under
     <code>badge</code> (<a href="{REPO_URL}/blob/main/docs/badges.md">how it is counted</a>).</p>
   </details>'''
@@ -3528,9 +3643,13 @@ def build(data: dict, output: Path) -> None:
         (output / "authors" / orcid).mkdir(parents=True, exist_ok=True)
         (output / "authors" / orcid / "index.html").write_text(page_author(data, author))
         badge = author_badge(data, author)
+        every = author_outcomes(data, author)
+        (output / "badge" / "authors").mkdir(parents=True, exist_ok=True)
         if badge:
-            (output / "badge" / "authors").mkdir(parents=True, exist_ok=True)
             (output / "badge" / "authors" / f"{orcid}.svg").write_text(badge_svg(badge))
+        if every:
+            (output / "badge" / "authors" / f"{orcid}-outcomes.svg").write_text(outcomes_badge_svg(every))
+            (output / "badge" / "authors" / f"{orcid}-card.svg").write_text(card_badge_svg(every))
         # For a lab's site or a profile (docs/badges.md): the person's papers and datasets here, and the badge.
         (output / "api" / "authors").mkdir(parents=True, exist_ok=True)
         counts = {x["id"]: x for x in r["papers"]}
@@ -3538,6 +3657,11 @@ def build(data: dict, output: Path) -> None:
             "orcid": orcid, "name": author["name"], "page": f"authors/{orcid}/", "url": SITE_URL + f"authors/{orcid}/",
             "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
             "badge": badge,
+            # Every outcome across their papers, verified or not, and the badges that show them.
+            "outcome_counts": every["counts"] if every else None,
+            "badges": {"reproduced": badge["svg"] if badge else None,
+                       "outcomes": every["svg_outcomes"] if every else None,
+                       "card": every["svg_card"] if every else None},
             "papers": [{"key": q["key"], "byline": q["byline"], "title": q["title"], "doi": q["doi"],
                         "status": q["status"], "outcome_counts": counts.get(q["key"], {}).get("counts"),
                         "tier": counts.get(q["key"], {}).get("tier"),

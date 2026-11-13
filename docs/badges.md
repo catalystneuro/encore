@@ -125,6 +125,31 @@ form works in a profile README on GitHub:
 [![Encore: 129 findings reproduced, from 11 papers, in the work of György Buzsáki](https://encorescience.org/badge/authors/0000-0002-3100-4800.svg)](https://encorescience.org/authors/0000-0002-3100-4800/)
 ```
 
+### Styles with all the outcomes
+
+An author can choose between three styles. The first is the badge described above. The other two show every
+outcome, not only the findings reproduced.
+
+| Style | Address | What it shows |
+|---|---|---|
+| Findings reproduced | `badge/authors/<ORCID iD>.svg` | One number: the findings reproduced in full, in verified attempts. |
+| All outcomes | `badge/authors/<ORCID iD>-outcomes.svg` | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. |
+| Card | `badge/authors/<ORCID iD>-card.svg` | The person's name, the number of claims and papers, the outcomes as one bar, and the four counts. |
+
+![All outcomes](https://encorescience.org/badge/authors/0000-0002-3100-4800-outcomes.svg)
+
+![Card](https://encorescience.org/badge/authors/0000-0002-3100-4800-card.svg)
+
+The two styles with all the outcomes count differently from the first:
+
+- They count every claim of the person's papers in a current attempt, whether or not a verifier has checked the
+  attempt. This is the same count as the bar at the top of the person's page.
+- "Blocked" means the claim could not be tested, most often because the data it needs are not in the dataset.
+- A person has these two styles when at least one of their papers has an attempt, even if nothing was
+  reproduced.
+
+The "Badges for this page" section of the person's page shows all three, and gives the code for the one chosen.
+
 ### JSON
 
 ```
@@ -138,6 +163,8 @@ Every person with a page has this file. It allows requests from any origin. Its 
 | `orcid`, `name` | The person's ORCID iD and name. |
 | `url` | The person's page in the registry. |
 | `badge` | The badge, with the same fields as a dataset's `badge`, or `null`. Each entry in its `papers` list has no `relation` field. |
+| `outcome_counts` | The four counts of the styles with all the outcomes, or `null`. |
+| `badges` | The address of each style's image (`reproduced`, `outcomes`, `card`), or `null` for a style the person does not have. |
 | `papers` | Every paper of theirs in the registry: its key, byline, title and DOI, whether it has been attempted (`status`), its outcome counts, its verification tier and its page. |
 | `datasets` | Every dataset that names them as a contributor: its key, label, their roles and its page. |
 | `caution` | A sentence to show next to any outcome. |
