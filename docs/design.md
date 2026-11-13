@@ -177,6 +177,9 @@ The public site is static and is built from the files above by
 - **`api/datasets/<archive>/<id>.json`:** the same results for one dataset,
   for other sites to fetch (also at `api/dandiset/<id>.json` for DANDI, as
   before).
+- **`badge/<archive>/<id>.svg`:** a badge an archive can show on a dataset's
+  own page, with the number of findings reproduced from it. The same numbers
+  are in the dataset's JSON, under `badge` ([badges.md](badges.md)).
 - **Executed notebooks** under `notebooks/`, from CI.
 
 ## Repository layout
