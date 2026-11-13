@@ -82,3 +82,16 @@ def test_each_stop_that_needs_a_person_says_what_to_do(monkeypatch):
             ("STOPPED: could not push attempt/000147 after merging main", "GitHub is up")):
         text = notify.body("000147", f"000147 {status}", "", "", "")
         assert "**Why:** " in text and "**What you can do:**" in text and told in text, status
+
+
+def test_a_notebook_over_the_time_limit_before_a_role_is_told_apart(monkeypatch):
+    monkeypatch.setattr(notify, "branch_file", lambda folder, path: None)
+    monkeypatch.setattr(notify, "failed_run", lambda run, lines=30: {
+        "steps": ['job `run`, step "Prepare the verifier\'s materials, and remove the repository"'],
+        "log": "nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 3600 seconds.\n"
+               "FAIL  reproduce_x.ipynb  (3608 s)"})
+    text = notify.body("drieu-2018", "drieu-2018 STOPPED at verifier-2", "the run of verifier-2 failed", "5", "")
+    assert "ran over the time limit when it was run again before `verifier-2`" in text
+    assert "reproduce_x.ipynb, stopped after 60 minutes" in text and "had not started" in text
+    assert "put `drieu-2018` first in the runner's queue" in text
+
