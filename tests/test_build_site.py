@@ -317,6 +317,19 @@ def test_a_deprecated_attempt_counts_for_nothing():
     assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
 
 
+def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
+    # andrews-2024 reproduced a claim with a simulation run in its own environment: an outcome that is not blocked
+    # and names no notebook. The paper's page lists it with the claims not tested in a notebook.
+    data = site.collect()
+    q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
+    a = q["attempts"][0]
+    moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
+    moved["notebook"] = None
+    page = site.page_paper(data, q)
+    assert "Not tested in a notebook" in page and "tested outside the notebooks" in page
+    assert f'id="claim-{moved["claim"]}"' in page
+
+
 def test_a_deprecated_attempt_is_marked_on_its_page(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
@@ -1107,14 +1120,20 @@ def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_ver
     assert "Or as Markdown:" in (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
 
 
-def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
-    # andrews-2024 reproduced a claim with a simulation run in its own environment: an outcome that is not blocked
-    # and names no notebook. The paper's page lists it with the claims not tested in a notebook.
-    data = site.collect()
-    q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
-    a = q["attempts"][0]
-    moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
-    moved["notebook"] = None
-    page = site.page_paper(data, q)
-    assert "Not tested in a notebook" in page and "tested outside the notebooks" in page
-    assert f'id="claim-{moved["claim"]}"' in page
+def test_the_authors_list_sorts_by_findings_reproduced(built):
+    data, out = built
+    page = (out / "authors" / "index.html").read_text()
+    config = json.loads(page.split('id="list-config">')[1].split("</script>")[0])
+    assert {"key": "-n_reproduced", "label": "Most findings reproduced"} in config["sorts"]
+    rows = json.loads((out / "data" / "authors.json").read_text())
+    index = site.author_index(data)
+    # The number is the one the row's bar shows: the claims reproduced across the person's papers.
+    assert all(r["n_reproduced"] == (r["counts"] or {}).get("reproduced", 0) for r in rows)
+    assert max(r["n_reproduced"] for r in rows) > 0 and any(r["n_reproduced"] == 0 for r in rows)
+    # A row has the outcomes of all the person's papers as one bar, and their first few papers only.
+    papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
+    for r in rows[:200]:
+        total = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in index[r["id"]]["papers"]) for k in site.OUTCOMES}
+        assert r["counts"] == (total if sum(total.values()) else None)
+    js = (site.ASSETS / "list.js").read_text()
+    assert "miniBar(r.counts)" in js and "r.papers.slice(0, SHOWN)" in js and "and ${r.papers.length - SHOWN} more" in js
