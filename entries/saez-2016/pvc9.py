@@ -20,10 +20,17 @@ Where each parameter comes from:
 - Peak measure (M): from the claims file's opening comment, the peak of the deflection in the response's
   sign (depolarizing in current clamp, inward in voltage clamp) from the end of the stimulus artifact to
   50 ms after the stimulus, less the mean of the 10 ms before it; a 30 ms window is a variant. The stimulus
-  is found in each sweep as its largest step between 50 and 200 ms (the descriptor puts the pulse
-  "typically around 100 ms into the recordings"). The end of the artifact is found per file, as the trough
+  is found in each sweep from its largest step between 50 and 200 ms (the descriptor puts the pulse
+  "typically around 100 ms into the recordings"), and each sweep is aligned on the onset of that artifact (see
+  stimulus_indices). A sweep is measured only when it holds a stimulus artifact (see stimulus_ok); otherwise
+  the stimulus was not delivered, or a spike is the largest step, and there is no evoked response to measure,
+  so the sweep is dropped (a correction made after round 1 of verification: four post-pairing sweeps of IC13
+  had spikes or no stimulus and were measured as responses). The end of the artifact is found per file, as the trough
   between artifact and response in the median aligned trace, 0.5 to 3 ms after the stimulus (a standard
-  choice, as the claims file names no rule); fixed ends of 1 and 2 ms are variants.
+  choice, as the claims file names no rule); fixed ends of 1 and 2 ms are variants. Two baselines are run
+  as variants of (M) to check the alignment and the noise: the 10 ms ending 1 ms before the stimulus (so
+  that no artifact sample can enter the baseline if the step found is the artifact's second phase), and
+  the 50 ms before the stimulus.
 - Per-cell t-test (T): (a) two-sample Student's t-test (equal variance) on sweep amplitudes, (b) the same on
   1-min bin means, 12 sweeps per bin at 0.2 Hz (claims file, opening comment; Figure 1B legend, 60 s bins).
 - Classification: LTP when p < 0.05 and change > +15%, LTD when p < 0.05 and change < -15%, NC otherwise
@@ -96,11 +103,33 @@ def abf_from_bytes(buf: bytes, name: str = "mem.abf") -> pyabf.ABF:
         np.fromfile = real_fromfile
 
 
-def stimulus_indices(Y: np.ndarray, rate: int) -> np.ndarray:
-    """Sample of the stimulus pulse in each sweep: the largest step between 50 and 200 ms. The pulse is at
-    107.9 ms in most sweeps but earlier (88 to 99 ms) in some sweeps of some files, so it is found per sweep."""
+def stimulus_indices(Y: np.ndarray, rate: int) -> tuple:
+    """Sample of the stimulus in each sweep: the onset of the artifact, the first step in the 0.5 ms up to the
+    largest step between 50 and 200 ms that is at least a quarter of that largest step. The artifact is
+    biphasic and either phase can be the larger, so the largest step alone would put some sweeps of a file on
+    the first phase and others on the second (round 1 of verification). The pulse is at 107.9 ms in most
+    sweeps but earlier (88 to 99 ms) in some sweeps of some files, so it is found per sweep. Returns the
+    onsets, the signed step at the onset, the signed largest step, and the sample of the largest step."""
     lo, hi = int(0.05 * rate), int(0.2 * rate)
-    return lo + np.argmax(np.abs(np.diff(Y[:, lo:hi + 1], axis=1)), axis=1)
+    D = np.diff(Y[:, lo:hi + 1], axis=1)
+    k = np.argmax(np.abs(D), axis=1)
+    big = D[np.arange(len(D)), k]
+    w = int(0.5e-3 * rate)
+    onset = np.array([max(0, j - w) + int(np.argmax(np.abs(D[i, max(0, j - w):j + 1]) >= 0.25 * abs(big[i])))
+                      for i, j in enumerate(k)])
+    return lo + onset, D[np.arange(len(D)), onset], big, lo + k
+
+
+def stimulus_ok(onset: np.ndarray, step: np.ndarray, big: np.ndarray, rate: int) -> np.ndarray:
+    """Sweeps that hold a stimulus artifact: either the onset is within 0.5 ms of the file's median onset, or
+    the largest step is at least half the file's median and the step at the onset or the largest step has the
+    sign the file's artifact has there (the sign of the median); the second rule keeps the sweeps whose
+    stimulus moved earlier. A spike's upstroke away from the stimulus has the wrong sign at both, and a sweep
+    without a stimulus has no step at the usual time or of that size."""
+    on_time = np.abs(onset - np.median(onset)) <= 0.5e-3 * rate
+    s1, s2 = np.sign(step), np.sign(big)
+    like = ((s1 == np.sign(np.median(step))) | (s2 == np.sign(np.median(big)))) & (np.abs(big) >= 0.5 * np.median(np.abs(big)))
+    return on_time | like
 
 
 def aligned(Y: np.ndarray, stims: np.ndarray, rate: int, before_ms: float, after_ms: float) -> np.ndarray:
@@ -119,11 +148,14 @@ def artifact_end(trace: np.ndarray, rate: int, sign: int, before_ms: float) -> i
     return a + int(np.argmin(sign * trace[a:b])) - z
 
 
-def peak_amplitudes(A: np.ndarray, z: int, rate: int, sign: int, start: int, window_ms: float) -> tuple:
+def peak_amplitudes(A: np.ndarray, z: int, rate: int, sign: int, start: int, window_ms: float,
+                    base_ms: float = BASELINE_MS, gap_ms: float = 0.0) -> tuple:
     """Peak of the response in its sign from `start` samples after the stimulus to window_ms after it, less
-    the mean of the BASELINE_MS before the stimulus, on aligned sweeps A whose stimulus is at sample z.
-    Returns amplitudes (positive for a response in the expected sign) and peak latencies in ms."""
-    base = A[:, z - int(BASELINE_MS * rate / 1000):z].mean(axis=1)
+    the mean of the base_ms (BASELINE_MS unless a variant) ending gap_ms before the stimulus, on aligned
+    sweeps A whose stimulus is at sample z. Returns amplitudes (positive for a response in the expected sign)
+    and peak latencies in ms."""
+    e = z - int(gap_ms * rate / 1000)
+    base = A[:, e - int(base_ms * rate / 1000):e].mean(axis=1)
     seg = sign * (A[:, z + start:z + int(window_ms * rate / 1000) + 1] - base[:, None])
     k = np.argmax(seg, axis=1)
     return seg[np.arange(len(seg)), k], (start + k) * 1000.0 / rate
@@ -142,19 +174,27 @@ def reduce_abf(a: pyabf.ABF) -> dict:
     if Y.ndim != 2 or Y.shape[1] < int(0.3 * rate):
         return dict(head, sign=0, sweep_md5=[])
     sign = 1 if units == "mV" else -1
-    stims = stimulus_indices(Y, rate)
+    stims, step, big, kmax = stimulus_indices(Y, rate)
+    ok = stimulus_ok(stims, step, big, rate)
     before, after = 70.0, 60.0
     A = aligned(Y, stims, rate, before, after)
     z = int(before * rate / 1000)
-    med = np.median(A, axis=0)
+    med = np.median(A[ok], axis=0)
     end = artifact_end(med, rate, sign, before)
-    out = dict(head, sign=sign, stim_ms=stims * 1000.0 / rate, artifact_end_ms=end * 1000.0 / rate,
+    out = dict(head, sign=sign, stim_ms=stims * 1000.0 / rate, stim_step=step, stim_maxstep_ms=kmax * 1000.0 / rate,
+               stim_ok=ok, artifact_end_ms=end * 1000.0 / rate,
                base=A[:, z - int(BASELINE_MS * rate / 1000):z].mean(axis=1),
                sweep_md5=[hashlib.md5(y.astype(np.float32).tobytes()).hexdigest() for y in Y])
     for w in WINDOWS_MS:
         out[f"amp{int(w)}"], out[f"lat{int(w)}"] = peak_amplitudes(A, z, rate, sign, end, w)
     for fixed in (1, 2):
         out[f"amp50_end{fixed}ms"] = peak_amplitudes(A, z, rate, sign, int(fixed * rate / 1000), 50.0)[0]
+    out["amp50_guard"] = peak_amplitudes(A, z, rate, sign, end, 50.0, gap_ms=1.0)[0]
+    # the first version of this entry aligned each sweep on its largest step; kept as a variant
+    Ak = aligned(Y, kmax, rate, before, after)
+    out["amp50_maxstep"] = peak_amplitudes(Ak, z, rate, sign, artifact_end(np.median(Ak[ok], axis=0), rate, sign,
+                                                                           before), 50.0)[0]
+    out["amp50_base50"] = peak_amplitudes(A, z, rate, sign, end, 50.0, base_ms=50.0)[0]
     # the same measure on a stretch of equal length ending 5 ms before the stimulus: a reference for
     # whether the measured response is locked to the stimulus
     out["amp_prestim"] = peak_amplitudes(A, z - int(55e-3 * rate), rate, sign, end, 50.0)[0]
@@ -196,17 +236,26 @@ def stream_dataset(url: str = DATA_URL, keep=None) -> tuple[pd.DataFrame, dict]:
 # ------------------------------------------------------------------------------------------ spreadsheets
 
 
-def _is_red(wb, sheet, r, c) -> bool:
+def _fill(wb, sheet, r, c) -> str:
+    """The fill of a cell: 'none', 'red', 'green' or its RGB."""
     xf = wb.xf_list[sheet.cell_xf_index(r, c)]
     if not xf.background.fill_pattern:
-        return False
+        return "none"
     rgb = wb.colour_map.get(xf.background.pattern_colour_index)
-    return rgb is not None and rgb[0] > 200 and rgb[1] < 50
+    if rgb is not None and rgb[0] > 200 and rgb[1] < 50:
+        return "red"
+    if rgb is not None and rgb[1] > 200 and rgb[0] < rgb[1] and rgb[2] < rgb[1]:
+        return "green"
+    return str(rgb)
+
+
+def _is_red(wb, sheet, r, c) -> bool:
+    return _fill(wb, sheet, r, c) == "red"
 
 
 def read_summary(xls: bytes, group: str) -> pd.DataFrame:
-    """The Summary sheet: one row per recording with its name, whether its name is filled red (excluded, per
-    the data descriptor), and the change it lists (fraction)."""
+    """The Summary sheet: one row per recording with its name, the fill of its name cell, whether that fill
+    is red (excluded, per the data descriptor), and the change it lists (fraction)."""
     wb = xlrd.open_workbook(file_contents=xls, formatting_info=True)
     s = wb.sheet_by_name("Summary")
     rows = []
@@ -215,11 +264,20 @@ def read_summary(xls: bytes, group: str) -> pd.DataFrame:
         if not (isinstance(name, str) and re.fullmatch(group + r"\d+", name)):
             continue
         v = s.cell_value(r, 2)
-        rows.append(dict(cell=name, excluded=_is_red(wb, s, r, 1),
+        rows.append(dict(cell=name, fill=_fill(wb, s, r, 1), excluded=_is_red(wb, s, r, 1),
                          sheet_change=float(v) if isinstance(v, float) else np.nan,
                          note=" ".join(str(s.cell_value(r, c)) for c in range(3, min(s.ncols, 6))
                                        if isinstance(s.cell_value(r, c), str))))
     return pd.DataFrame(rows)
+
+
+def read_sheet_column(xls: bytes, cell: str, col: int) -> pd.DataFrame:
+    """The numeric values of one column of a cell's sheet, with their row and fill (green marks the sweeps the
+    authors used, per the data descriptor)."""
+    wb = xlrd.open_workbook(file_contents=xls, formatting_info=True)
+    s = wb.sheet_by_name(cell)
+    return pd.DataFrame([dict(row=r, value=s.cell_value(r, col), fill=_fill(wb, s, r, col))
+                         for r in range(1, s.nrows) if isinstance(s.cell_value(r, col), float)])
 
 
 def _expand_files(value, prefix: str | None) -> list[str]:
@@ -249,7 +307,8 @@ def read_cell_sheet(xls: bytes, cell: str) -> dict:
     counts or ranges, and the mean pre and post amplitudes and change the sheet computes."""
     wb = xlrd.open_workbook(file_contents=xls)
     s = wb.sheet_by_name(cell)
-    out = dict(files={}, pre_label=None, post_label=None, sheet_pre=np.nan, sheet_post=np.nan)
+    out = dict(files={}, pre_label=None, post_label=None, sheet_pre=np.nan, sheet_post=np.nan, sheet_p=None,
+               traces_compared=None)
     labels = {}
     for r in range(min(s.nrows, 60)):
         for c in range(14, s.ncols):
@@ -262,6 +321,11 @@ def read_cell_sheet(xls: bytes, cell: str) -> dict:
     if "POST" in labels:
         r, c = labels["POST"]
         out["post_label"] = s.cell_value(r, c + 1)
+    tc = labels.get("Traces compared")
+    out["traces_compared"] = s.cell_value(tc[0], tc[1] + 1) if tc else None
+    if "p (one-tail)" in labels:   # the cell to the right of the label
+        r, c = labels["p (one-tail)"]
+        out["sheet_p"] = s.cell_value(r, c + 1)
     amp_cols = [c for c in range(14, s.ncols) for r in range(min(s.nrows, 60))
                 if s.cell_value(r, c) == "EPSC amplitude"]
     if amp_cols:
@@ -302,9 +366,10 @@ def cell_table(files: pd.DataFrame, sheets: dict) -> pd.DataFrame:
         summ = read_summary(sheets[fname], group)
         for _, s in summ.iterrows():
             info = read_cell_sheet(sheets[fname], s.cell)
-            row = dict(group=group, cell=s.cell, excluded=s.excluded, sheet_change=s.sheet_change,
+            row = dict(group=group, cell=s.cell, fill=s.fill, excluded=s.excluded, sheet_change=s.sheet_change,
                        note=s.note, pre_label=info["pre_label"], post_label=info["post_label"],
-                       sheet_pre=info["sheet_pre"], sheet_post=info["sheet_post"])
+                       sheet_pre=info["sheet_pre"], sheet_post=info["sheet_post"], sheet_p=info["sheet_p"],
+                       traces_compared=info["traces_compared"])
             own = files[(files.folder == s.cell) & ~is_derived(files.file)].sort_values("start")
             if group == "IC":
                 fl = info["files"]
@@ -353,16 +418,21 @@ def is_derived(names: pd.Series) -> pd.Series:
     return names.str.contains(r"^Concatenate|_PRE|_POST", case=False, regex=True)
 
 
-def epoch_amplitudes(files: pd.DataFrame, rows: list, window: int = 50) -> np.ndarray:
+def epoch_amplitudes(files: pd.DataFrame, rows: list, window: int = 50, key: str | None = None) -> np.ndarray:
+    """Amplitudes of the sweeps of the given files in time order, `key` (default amp<window>), leaving out the
+    sweeps without a stimulus artifact (stim_ok)."""
     if not rows:
         return np.array([])
-    return np.concatenate([files.loc[i, f"amp{window}"] for i in sorted(rows, key=lambda i: files.loc[i, "start"])])
+    key = key or f"amp{window}"
+    order = sorted(rows, key=lambda i: files.loc[i, "start"])
+    return np.concatenate([files.loc[i, key][files.loc[i, "stim_ok"]] for i in order])
 
 
-def cell_epochs(files: pd.DataFrame, cell: pd.Series, window: int = 50, pre_reading: str = "last") -> dict:
+def cell_epochs(files: pd.DataFrame, cell: pd.Series, window: int = 50, pre_reading: str = "last",
+                key: str | None = None) -> dict:
     """Pre and post sweep amplitudes of one cell. pre_reading 'last' (main) or 'first' 120 baseline sweeps."""
-    pre_all = epoch_amplitudes(files, cell.pre_rows, window)
-    post_all = epoch_amplitudes(files, cell.post_rows, window)
+    pre_all = epoch_amplitudes(files, cell.pre_rows, window, key)
+    post_all = epoch_amplitudes(files, cell.post_rows, window, key)
     pre = pre_all[-N_PRE:] if pre_reading == "last" else pre_all[:N_PRE]
     return dict(pre=pre, n_pre_available=len(pre_all), post={
         "a": post_all, "b": post_all[:N_POST_WINDOW], "c": post_all[-N_POST_WINDOW:]})
@@ -394,11 +464,11 @@ def classify(pre: np.ndarray, post: np.ndarray, test: str = "a", alternative: st
 
 
 def classify_all(files: pd.DataFrame, cells: pd.DataFrame, window: int = 50, pre_reading: str = "last",
-                 alternative: str = "two-sided") -> pd.DataFrame:
+                 alternative: str = "two-sided", key: str | None = None) -> pd.DataFrame:
     """Every included cell with data, under every reading of (P) and (T)."""
     rows = []
     for _, c in cells[~cells.excluded & cells.has_data].iterrows():
-        ep = cell_epochs(files, c, window, pre_reading)
+        ep = cell_epochs(files, c, window, pre_reading, key)
         for P in "abc":
             for T in "ab":
                 r = classify(ep["pre"], ep["post"][P], T, alternative)

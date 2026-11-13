@@ -22,21 +22,23 @@ provenance:
     url: https://github.com/catalystneuro/encore/actions/runs/43398890109
 outcomes:
 - claim: dataset-size
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_saez_2016.ipynb
   output: claim:dataset-size
   measured:
-  - 10
-  - 10
+  - 14
+  - 14
   - 26
-  notes: The Summary sheets of the data set mark exactly 14 IC, 14 VC and 26 bicuculline recordings as
-    included and 9, 11 and 12 as excluded, the paper's numbers. Every bicuculline test file is in voltage
-    clamp (pA), as the Methods and Figure 2 say. The deposit holds complete recordings (baseline, pairing
-    and post-pairing) for all 26 bicuculline cells but for only 10 of the 14 VC and 10 of the 14 IC control
-    cells; measured values are these deposited counts, in the claim's order (VC, IC, bicuculline).
+  notes: The Summary sheets of the data set mark exactly 14 VC, 14 IC and 26 bicuculline recordings as included
+    and 11, 9 and 12 as excluded, the paper's numbers, and give a row and per-sweep amplitudes for each included
+    cell. Every bicuculline test file is in voltage clamp (pA), as the Methods and Figure 2 say. The deposit holds
+    complete recordings (baseline, pairing and post-pairing) for all 26 bicuculline cells but for only 10 of the
+    14 VC and 10 of the 14 IC control cells (a data_missing finding); this limits the control claims, not the count
+    of cells the paper analysed. Changed from partially reproduced after round 1 of verification.
   deviations:
-  - The counts of included cells come from the red and green fill of the Summary sheets, as the data
-    descriptor documents; completeness is judged from the files.
+  - 'The counts of included cells come from the fill of the Summary sheets: every excluded row is red, as the data
+    descriptor documents, and the included rows are unfilled (IC, VCB) or green (VC). Completeness is judged from
+    the files.'
 - claim: fig1c-control-outcomes
   outcome: partially_reproduced
   assumed: true
@@ -46,75 +48,95 @@ outcomes:
   - 3
   - 3
   - 22
-  notes: No reading of (P) and (T) gives 1 LTP, 3 LTD and 24 NC. On the 20 complete control cells the readings
-    give 2 to 4 LTP and 3 to 4 LTD, 6 to 8 plastic cells (30 to 40%, against 14% in the paper); the plastic VC
-    cells are 3 LTD and 1 or 2 LTP of 10. Counting the seven missing cells whose sheet change is below 15% as NC,
-    the counts out of 28 meet the partial criterion (plastic 2 to 6, NC within 2.4 of 24) under (a,a), (c,a)
-    and (c,b) if IC23 (sheet change -24.6%) is NC, giving 3 LTP, 3 LTD, 22 NC under (a,a), and under no
-    reading if IC23 is LTD. With the first 120 baseline sweeps 8 to 11 of the 20 cells are plastic, mostly
-    LTD. The 30 ms window and a one-sided t-test give 5 to 8 plastic cells.
+  notes: 'No reading of (P) and (T) gives 1 LTP, 3 LTD and 24 NC. On the 20 complete control cells the readings
+    give 1 to 3 LTP and 3 to 4 LTD, 5 to 7 plastic cells (25 to 35%, against 14% in the paper); the plastic VC cells
+    are 3 LTD and 1 or 2 LTP of 10. Counting the seven missing cells whose sheet change is below 15% as NC, the
+    counts out of 28 meet the partial criterion (plastic 2 to 6, NC within 2.4 of 24) under (a,a), (a,b), (c,a)
+    and (c,b) if IC23 (sheet change -24.6%) is NC, giving 3 LTP, 3 LTD, 22 NC under (a,a), and under (c,b) if IC23
+    is LTD. The partial outcome exists only through this bound, and the bound is loose: of the 16 measured cells
+    whose sheet change is below 15%, five (IC8, IC14, IC16, IC19, VC15) are plastic in some reading, two under (a,a).
+    The sheets store no p values. With the first 120 baseline sweeps 8 to 11 of the 20 cells are plastic, mostly
+    LTD. The 30 ms window, the alignment variants and a one-sided t-test give 5 to 7 plastic cells. IC13, LTP in
+    some readings in the first version, now changes by -10.9% (sheet -12.8%) and is NC in every reading.'
   deviations:
-  - Eight of the 28 control cells have no complete recording in the data set; they are not measured. To judge
-    counts out of 28, seven whose sheet change is below 15% in size are counted as NC (the paper's rule cannot
-    make them plastic) and IC23 is shown both ways.
-  - The pre-pairing epoch is the last 120 baseline sweeps where a cell has more (assumed; see
-    fig1-control-no-net-plasticity). Methods, Plasticity induction, "After the pre-pairing epoch was complete
-    (120 stimuli at 0.2 Hz)".
-  - Cells with two pairings (IC2, IC4, IC5, IC6, IC14) use the first pairing and the recording after it; the
-    paper describes one pairing per cell (Methods, Plasticity induction).
-  - The end of the stimulus artifact, which the claims file's measure (M) starts from, is found per file as
-    the trough between artifact and response 0.5 to 3 ms after the stimulus (a standard choice); the stimulus
-    is found per sweep because it moves to 87 to 99 ms in some sweeps of 12 files.
-  - Every sweep is used; the paper's analysis used sweeps selected in its spreadsheets (green), by a rule the
-    paper does not give.
+  - Eight of the 28 control cells have no complete recording in the data set; they are not measured. To judge counts
+    out of 28, seven whose sheet change is below 15% in size are counted as NC (the paper's rule cannot make them
+    plastic on the sheet's change) and IC23 is shown both ways.
+  - The pre-pairing epoch is the last 120 baseline sweeps where a cell has more (assumed; see fig1-control-no-net-plasticity).
+    Methods, Plasticity induction, "After the pre-pairing epoch was complete (120 stimuli at 0.2 Hz)".
+  - Cells with two pairings (IC2, IC4, IC5, IC6, IC14) use the first pairing and the recording after it; the paper
+    describes one pairing per cell (Methods, Plasticity induction).
+  - 'Each sweep is aligned on the onset of the stimulus artifact (the first step at least a quarter of the largest
+    step, within the 0.5 ms before it) and sweeps without a stimulus artifact are dropped (5 of 17319: four post-pairing
+    sweeps of IC13 and one VCB19 sweep pinned at -2000 pA); both are corrections made after round 1 of verification.
+    Aligning on the largest step, as the first version did, is shown as a variant.'
+  - The end of the stimulus artifact, which the claims file's measure (M) starts from, is found per file as the
+    trough between artifact and response 0.5 to 3 ms after the stimulus (a standard choice); the stimulus is found
+    per sweep because it moves to 87 to 99 ms in some sweeps of 12 files.
+  - Every sweep with a stimulus is used; the paper's analysis used sweeps selected in its spreadsheets (green),
+    by a rule the paper does not give.
 - claim: fig1-control-no-net-plasticity
   outcome: reproduced
   assumed: true
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig1-control-no-net-plasticity
-  notes: On the 20 complete control cells the mean change is -1.1% to -1.9% and the one-sample t-test against
-    0 gives p = 0.54 to 0.75 in readings (P)(a), (b) and (c). With the first 120 baseline sweeps the mean is
-    near -11% and readings (a) and (c) reach p = 0.050 and 0.035, so the outcome rests on the choice of the
-    last 120. Open question for the authors (see findings) on which baseline sweeps form the pre-pairing epoch.
+  notes: On the 20 complete control cells the mean change is -2.6% to -3.4% and the one-sample t-test against 0
+    gives p = 0.27 to 0.44 in readings (P)(a), (b) and (c). With the first 120 baseline sweeps the mean is -12.3%
+    to -13.3% and every reading reaches p < 0.05 (0.013 to 0.036), so the outcome rests on the choice of the last
+    120. Open question for the authors (see findings) on which baseline sweeps form the pre-pairing epoch.
   deviations:
-  - 'Assumption: the pre-pairing epoch is the 120 sweeps before pairing where a cell has more (36 of 46 cells
-    have more than 130). The Methods say pairing began "after the pre-pairing epoch was complete (120 stimuli
-    at 0.2 Hz)", and the data set''s sheets give pre-pairing means that match the last 120 sweeps (median
-    difference 3.8% over 36 cells) and not the first 120 (23.8%). The first 120 are shown as a variant.'
+  - 'Assumption: the pre-pairing epoch is the 120 sweeps before pairing where a cell has more (36 of 46 cells have
+    more than 130). The Methods say pairing began "after the pre-pairing epoch was complete (120 stimuli at 0.2
+    Hz)", and the data set''s sheets give pre-pairing means that match the last 120 sweeps (median difference 4.5%
+    over 36 cells) and not the first 120 (24.3%). The first 120 are shown as a variant.'
   - 20 of the paper's 28 control cells.
+  - 'Each sweep is aligned on the onset of the stimulus artifact (the first step at least a quarter of the largest
+    step, within the 0.5 ms before it) and sweeps without a stimulus artifact are dropped (5 of 17319: four post-pairing
+    sweeps of IC13 and one VCB19 sweep pinned at -2000 pA); both are corrections made after round 1 of verification.
+    Aligning on the largest step, as the first version did, is shown as a variant.'
 - claim: fig1-control-mean-change
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig1-control-mean-change
   measured:
-  - -4.36
-  - 0.46
-  - -1.95
-  - 14.13
-  notes: Under reading (P)(c) the three means are within tolerance (VC -4.36%, IC +0.46%, all -1.95%) and the
-    SD over cells (14.13%) is not (10.26 +/- 1.03). Readings (a) and (b) also miss the combined mean (-1.44,
-    -1.12). The means are over 10 VC and 10 IC cells. With the first 120 baseline sweeps the means are -9 to
-    -14% and none is within tolerance. The data set's sheets give, over all 28 cells, VC -3.14 +/- 13.40% and
-    IC -5.79 +/- 9.51%, which do not match the paper's VC -5.67 +/- 9.47% and IC -1.41 +/- 10.92%.
+  - -3.25
+  - -2.46
+  - -2.86
+  - 13.2
+  notes: Under readings (P)(a) and (P)(c) the three means are within tolerance ((a) VC -3.25%, IC -2.46%, all -2.86%;
+    (c) -4.03%, -2.68%, -3.35%) and the SD over cells (13.20% and 13.17%) is not (10.26 +/- 1.03); reading (b) misses
+    the VC mean (-2.56%). The means are over 10 VC and 10 IC cells. With the first 120 baseline sweeps the means
+    are -11.8% to -14.1% and none is within tolerance. The data set's sheets give, over all 28 cells, VC -3.14 +/-
+    13.40% and IC -5.79 +/- 9.51%, closer to the paper's values with the labels V-clamp and I-clamp exchanged; whether
+    the paper exchanged them is asked of a reader (questions/saez-2016.yaml). With them exchanged the IC mean is
+    outside tolerance in every reading and the claim would not be reproduced.
   deviations:
-  - 20 of the 28 control cells; the last 120 baseline sweeps (assumed, as in fig1-control-no-net-plasticity).
+  - 20 of the 28 control cells; the last 120 baseline sweeps (assumed, as in fig1-control-no-net-plasticity); sweeps
+    aligned on the artifact onset, as in fig1c-control-outcomes.
 - claim: fig1-vc-ic-same
   outcome: reproduced
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig1-vc-ic-same
-  notes: In every reading of (P) none of the four tests reaches p < 0.05; Shapiro-Wilk p = 0.20 to 0.85 (VC)
-    and 0.15 to 0.49 (IC), t-test p = 0.46 to 0.63 (VC minus IC mean -3.5 to -4.8 points), F-test p = 0.35 to
-    0.83. The first-120 variant gives the same (every p above 0.2).
+  notes: 'Under the adopted reading (P)(c) none of the four tests reaches p < 0.05: Shapiro-Wilk p = 0.68 (VC) and
+    0.20 (IC), t-test p = 0.83, F-test p = 0.59; (P)(b) agrees (smallest p 0.18). Under (P)(a) the Shapiro-Wilk
+    test of the IC changes gives p = 0.0497, so the readings differ and, as the claims file says for claims of absence,
+    the outcome is the one under the adopted reading. In the first version every reading agreed; the change came
+    with the onset alignment and the dropped IC13 sweeps. The first-120 variant has no test below 0.05 in any reading.'
   deviations:
   - 10 cells per clamp mode, not 14.
+  - 'Assumption: where the readings of (P) disagree on a claim of absence, (P)(c), the last 120 post-pairing sweeps,
+    is adopted. The Methods give "at least 10 more minutes of testing" after pairing; the 40 VC and VCB sheets that
+    state it compared 120 traces ("Traces compared", 120); and of the two 120-sweep readings (c) is closer to the
+    sheets'' changes (34 of 46 cells within 5 points, median 2.0 points; (b) 30 of 46, 3.7 points).'
+  assumed: true
 - claim: fig1fh-control-no-dependence-on-initial
   outcome: reproduced
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig1fh-control-no-dependence-on-initial
-  notes: Pearson correlation of initial amplitude and change, IC r = -0.38 to -0.43, p = 0.21 to 0.29; VC r =
-    0.40 to 0.55, p = 0.10 to 0.25, over the readings of (P); Spearman and the first-120 variant also stay
-    above 0.05. The paper's IC p > 0.9 is not matched.
+  notes: Pearson correlation of initial amplitude and change, IC r = -0.14 to -0.21, p = 0.56 to 0.69; VC r = 0.40
+    to 0.54, p = 0.11 to 0.26, over the readings of (P); Spearman (p of 0.19 or more) and the first-120 variant
+    (p of 0.45 or more) also stay above 0.05. The paper's IC p > 0.9 is not matched.
   deviations:
   - 10 cells per clamp mode, not 14; judged in each reading of (P), as the claims file's rule for absence says.
 - claim: fig1d-example-nc
@@ -122,12 +144,12 @@ outcomes:
   assumed: true
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig1d-example-nc
-  measured: -0.94
-  notes: IC6 changes by -0.94% with t-test p = 0.47 under (P)(a), (T)(a), and by -1.07% with p = 0.41 under
-    (P)(c). With the first 120 baseline sweeps IC6 changes by -22% and no IC cell matches.
+  measured: -0.93
+  notes: IC6 changes by -0.93% with t-test p = 0.47 under (P)(a), (T)(a), and by -1.06% with p = 0.41 under (P)(c).
+    With the first 120 baseline sweeps IC6 changes by -22% and no IC cell matches.
   deviations:
-  - IC6 is read from folder IC7, where its files are (the IC6 folder is empty); the files are the ones the IC6
-    sheet lists.
+  - IC6 is read from folder IC7, where its files are (the IC6 folder is empty); the files are the ones the IC6 sheet
+    lists.
   - The last 120 baseline sweeps (assumed, as in fig1-control-no-net-plasticity).
 - claim: fig2a-bicuculline-outcomes
   outcome: partially_reproduced
@@ -136,15 +158,19 @@ outcomes:
   output: claim:fig2a-bicuculline-outcomes
   measured:
   - 8
-  - 8
-  - 10
-  notes: No reading gives 7, 9 and 10. Readings (a,a) (8 LTP, 8 LTD, 10 NC), (a,b) (7, 7, 12), (c,a) and (c,b)
-    (7, 8, 11) meet the partial criterion; (b,a) and (b,b) have 6 and 5 LTD. Every reading has 13 to 16 plastic
-    cells of 26, of both signs. The 30 ms window and a one-sided t-test give the same counts. With the first
-    120 baseline sweeps the counts are 6 LTP and 11 to 14 LTD, outside the partial criterion.
+  - 9
+  - 9
+  notes: No reading gives 7, 9 and 10. Readings (a,a) (8 LTP, 9 LTD, 9 NC), (a,b) (7, 8, 11), (b,a) (8, 7, 11),
+    (c,a) and (c,b) (7, 8, 11) meet the partial criterion; (b,b) has 6 LTD. Every reading has 14 to 17 plastic cells
+    of 26, of both signs. The 30 ms window, the baseline ending 1 ms before the stimulus and a one-sided t-test
+    give the same counts; aligning on the largest step gives 8, 8, 10 under (a,a). With the first 120 baseline sweeps
+    the counts are 6 LTP and 11 to 14 LTD, outside the partial criterion.
   deviations:
   - The last 120 baseline sweeps (assumed, as in fig1-control-no-net-plasticity).
-  - Every sweep is used, including one sweep of VCB19 pinned at -2000 pA (amplitude 0).
+  - 'Each sweep is aligned on the onset of the stimulus artifact (the first step at least a quarter of the largest
+    step, within the 0.5 ms before it) and sweeps without a stimulus artifact are dropped (5 of 17319: four post-pairing
+    sweeps of IC13 and one VCB19 sweep pinned at -2000 pA); both are corrections made after round 1 of verification.
+    Aligning on the largest step, as the first version did, is shown as a variant.'
 - claim: bicuculline-increases-plastic-fraction
   outcome: partially_reproduced
   assumed: true
@@ -152,28 +178,29 @@ outcomes:
   output: claim:bicuculline-increases-plastic-fraction
   measured:
   - 6
-  - 16
-  notes: In every reading the plastic fraction is larger in bicuculline (13 to 16 of 26) than in control (6 to
-    8 of the 20 measured; 6 to 9 of 28 with the missing cells bounded as in fig1c-control-outcomes). The
-    bicuculline count is within 16 +/- 1.6 under (a,a), (c,a) and (c,b); the control count is never within
-    4 +/- 0.4. Fisher's exact test (variant) p = 0.005 to 0.27 against the bounded 28, p = 0.042 to 0.56
-    against the 20 measured cells.
+  - 17
+  notes: In every reading the plastic fraction is larger in bicuculline (14 to 17 of 26) than in control (5 to 7
+    of the 20 measured; 5 to 8 of 28 with the missing cells bounded as in fig1c-control-outcomes). The bicuculline
+    count is within 16 +/- 1.6 in every reading but (b,b) (14); the control count is never within 4 +/- 0.4. Fisher's
+    exact test (variant) p = 0.002 to 0.096 against the bounded 28, p = 0.036 to 0.24 against the 20 measured cells.
   deviations:
-  - Control counts as in fig1c-control-outcomes (20 measured, 8 bounded from the sheets); last 120 baseline
-    sweeps (assumed).
+  - Control counts as in fig1c-control-outcomes (20 measured, 8 bounded from the sheets); last 120 baseline sweeps
+    (assumed).
 - claim: fig2-subgroup-changes
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig2-subgroup-changes
   measured:
-  - 80.12
-  - -35.22
-  - -4.98
-  notes: Under (a,a), (a,b), (c,a) and (c,b) the LTD mean (-35.2 to -36.9%) and NC mean (-4.7 to -5.0%) are
-    within tolerance and the LTP mean (+80 to +89%) is not. VCB17 changes by about +400% with the claims
-    file's baseline-subtracted measure (+63% in its sheet, whose amplitude appears to include the holding
-    current); without it the LTP mean is +34.4 to +38.2% in every reading, within tolerance.
+  - 78.03
+  - -32.55
+  - -3.4
+  notes: 'In every reading but (b,b) the LTD mean (-32.6 to -36.6%) and NC mean (-3.4 to -4.6%) are within tolerance
+    and the LTP mean (+78 to +87%) is not; (b,b) has only the LTD mean within. VCB17 changes by about +390%. Its
+    response is real: before pairing its median trace has a 93 pA inward current 3 ms after the stimulus, after
+    pairing 473 pA; the change is +408% from the median traces and +388% with a 50 ms baseline; and its sheet''s
+    amplitudes less the holding current give +390%, so the sheet''s +62.9% includes the holding current. It is kept.
+    Without it the LTP mean is +33.4 to +37.1%, within tolerance under (a,b), (b,a) and (b,b).'
   deviations:
   - The last 120 baseline sweeps (assumed, as in fig1-control-no-net-plasticity).
 - claim: fig2-mean-unchanged-variance-increased
@@ -181,14 +208,13 @@ outcomes:
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig2-mean-unchanged-variance-increased
   measured:
-  - 11.9
-  - 84.63
-  notes: In every reading of (P) the means do not differ (t-test p = 0.45 to 0.52) and the bicuculline
-    variance is larger (F = 29 to 36, p below 0.01), so both tests hold, also with the first 120 baseline
-    sweeps; the bicuculline mean (+10.4 to +13.5%) and SD (83.5 to 84.6%) are outside tolerance because of
-    VCB17 (+400%). Without VCB17 the mean is -1.8 to -5.1% and the SD 29.1 to 31.6%, close to the paper's -3.8
-    +/- 34.3%, and the tests still hold. The data set's sheet values give -3.76 +/- 34.25%, the paper's
-    numbers.
+  - 11.56
+  - 82.51
+  notes: In every reading of (P) the means do not differ (t-test p = 0.40 to 0.47) and the bicuculline variance
+    is larger (F = 31 to 39, p below 0.01), so both tests hold, also with the first 120 baseline sweeps; the bicuculline
+    mean (+10.2 to +13.0%) and SD (81.4 to 82.5%) are outside tolerance because of VCB17 (+390%, a real response;
+    see fig2-subgroup-changes). Without VCB17 the mean is -1.8 to -5.0% and the SD 28.4 to 30.8%, and the tests
+    still hold. The data set's sheet values give -3.76 +/- 34.25%, the paper's numbers, with VCB17 at +62.9%.
   deviations:
   - The control group is 20 of the 28 cells.
 - claim: fig2cd-example-ltp-ltd
@@ -196,84 +222,236 @@ outcomes:
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig2cd-example-ltp-ltd
   measured:
-  - 60.11
-  - -36.94
-  notes: VCB29 changes by +60.1% (p = 2.6e-65, (a,a)) and VCB10 by -36.9% (p = 1.4e-34), with VCB7 (-36.4%)
-    also within the LTD tolerance, all p < 0.001; the match holds with the first 120 baseline sweeps. The
-    sweep-to-sweep SDs of these cells are 19 to 26% of the pre-pairing mean, of the order of the paper's
-    +/- values.
+  - 56.06
+  - -36.68
+  notes: VCB29 changes by +56.1% (p = 5.0e-65, (a,a)) and VCB10 by -36.7% (p = 1.4e-34), with VCB7 also within the
+    LTD tolerance, all p < 0.001; with the first 120 baseline sweeps the match holds under (P)(b). The sweep-to-sweep
+    SDs of these cells are 18 to 24% of the pre-pairing mean, of the order of the paper's +/- values.
 - claim: fig2f-bicuculline-no-dependence-on-initial
   outcome: reproduced
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig2f-bicuculline-no-dependence-on-initial
-  notes: Over the 26 bicuculline cells the Pearson correlation of initial EPSC and change is r = -0.15 to
-    -0.16, p = 0.44 to 0.48 in every reading of (P); Spearman p = 0.79 to 0.95; the first-120 variant also
-    stays above 0.05.
+  notes: Over the 26 bicuculline cells the Pearson correlation of initial EPSC and change is r = -0.14 to -0.16,
+    p = 0.44 to 0.48 in every reading of (P); Spearman p = 0.74 to 0.89; the first-120 variant also stays above
+    0.05.
 - claim: fig3a-ks-scs-vs-ecs
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_saez_2016.ipynb
   output: claim:fig3a-ks-scs-vs-ecs
-  notes: Needs the per-connection strength changes of the single-cell stimulation (SCS) experiments of the
-    paper's reference 17. The data set holds only the ECS recordings and their sheets; the paper gives no
-    location; the CRCNS bucket's pvc-1 to pvc-13 data sets were listed and only pvc-9 is by these authors.
-    No public copy was found.
+  notes: Needs the per-connection strength changes of the single-cell stimulation (SCS) experiments of the paper's
+    reference 17. The data set holds only the ECS recordings and their sheets; the paper gives no location; the
+    CRCNS bucket's pvc-1 to pvc-13 data sets were listed and only pvc-9 is by these authors. No public copy was
+    found.
 - claim: fig3c-random-mixing-narrower
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs the SCS pre- and post-pairing strengths of reference 17, which are not public (see
-    fig3a-ks-scs-vs-ecs).
+  notes: Needs the SCS pre- and post-pairing strengths of reference 17, which are not public (see fig3a-ks-scs-vs-ecs).
 - claim: fig3b-segregation-near-complete
   outcome: blocked
   blocked_by: data_missing
   notes: Depends on fig3c-random-mixing-narrower and the SCS data of reference 17, which are not public.
 findings:
 - kind: data_missing
-  statement: Eight of the 28 control recordings that the Summary sheets mark as included are missing or
-    incomplete. IC22, IC23, VC21 and VC25 have no folder (the archive has IC1 to IC21 and VC1 to VC17, while
-    the sheets list IC1 to IC23 and VC1 to VC25). VC10 and VC17 end with the pairing file and hold no
-    post-pairing recording. IC11's folder holds no post-pairing recording. IC7's listed post-pairing file
-    07305017 has no protocol name, no recording date and no evoked response at the usual time.
+  statement: Eight of the 28 control recordings that the Summary sheets mark as included are missing or incomplete.
+    IC22, IC23, VC21 and VC25 have no folder (the archive has IC1 to IC21 and VC1 to VC17, while the sheets list
+    IC1 to IC23 and VC1 to VC25). VC10 and VC17 end with the pairing file and hold no post-pairing recording. IC11's
+    folder holds no post-pairing recording. IC7's listed post-pairing file 07305017 has no protocol name, no recording
+    date and no evoked response at the usual time.
 - kind: metadata_error
-  statement: The IC6 folder is empty; the IC6 recording (files 07305007 to 07305011, as the IC6 sheet lists
-    them) is in the IC7 folder, together with IC7's own files.
+  statement: The IC6 folder is empty; the IC6 recording (files 07305007 to 07305011, as the IC6 sheet lists them)
+    is in the IC7 folder, together with IC7's own files.
 - kind: metadata_error
-  statement: The IC11 sheet lists 07315003 (a single sweep) as the pairing and 07315004 as the post-pairing
-    recording, but 07315004 is the 60-trial pairing file (protocol Extracellular pairing, 0.1 Hz).
+  statement: The IC11 sheet lists 07315003 (a single sweep) as the pairing and 07315004 as the post-pairing recording,
+    but 07315004 is the 60-trial pairing file (protocol Extracellular pairing, 0.1 Hz).
 - kind: metadata_error
-  statement: The data descriptor says each recording is "triggered once every 10 seconds"; the test sweeps
-    are every 5 s (0.2 Hz, as the paper's Methods say), and only the pairing trials are every 10 s.
+  statement: The data descriptor says each recording is "triggered once every 10 seconds"; the test sweeps are every
+    5 s (0.2 Hz, as the paper's Methods say), and only the pairing trials are every 10 s.
 - kind: metadata_error
-  statement: Four derived files (VCB12_POST, VCB13_PRE, VCB13_Post, VCB15_PRE) state 10 kHz and 1 s sweeps in
-    their headers; they hold the same 10000 samples per sweep as the 20 kHz, 0.5 s originals they copy.
+  statement: Four derived files (VCB12_POST, VCB13_PRE, VCB13_Post, VCB15_PRE) state 10 kHz and 1 s sweeps in their
+    headers; they hold the same 10000 samples per sweep as the 20 kHz, 0.5 s originals they copy.
 - kind: other
   about: data
-  statement: The recording folders also hold derived copies of the recordings (Concatenate*, *_PRE, *_POST),
-    whose sweeps are found one for one in the original files, and Clampfit .sta, .tmp and .bak files; the data
-    descriptor mentions none of them. A user counting files would count recordings twice.
+  statement: The recording folders also hold derived copies of the recordings (Concatenate*, *_PRE, *_POST), whose
+    sweeps are found one for one in the original files, and Clampfit .sta, .tmp and .bak files; the data descriptor
+    mentions none of them. A user counting files would count recordings twice.
 - kind: other
   about: data
-  statement: In seven files (of cells VCB7, VCB27, VCB30, VCB33 and VCB34) 26 to 89% of the sweeps have the
-    stimulus at 87 to 99 ms, not at 107.9 ms as in nearly all other sweeps; the descriptor gives only
-    "typically around 100 ms". A fixed analysis window misses these responses.
+  statement: In seven files (of cells VCB7, VCB27, VCB30, VCB33 and VCB34) 26 to 89% of the sweeps have the stimulus
+    at 87 to 99 ms, not at 107.9 ms as in nearly all other sweeps; the descriptor gives only "typically around 100
+    ms". A fixed analysis window misses these responses.
 - kind: metadata_insufficient
-  statement: The sheets mark the sweeps used per cell (green) and give PRE and POST ranges such as 1-120 and
-    182-421, but nothing says which rule chose the sweeps or which files the ranges refer to; the VC and VCB
-    sheets name no files. The amplitudes in some sheets (VCB17, near -579 pA on a holding current near -470
-    pA) appear to include the holding current, which the descriptor does not say.
+  statement: The sheets mark the sweeps used per cell (green) and give PRE and POST ranges such as 1-120 and 182-421,
+    but nothing says which rule chose the sweeps or which files the ranges refer to; the VC and VCB sheets name
+    no files. The VC and VCB sheets have a "p (one-tail)" label with no value, and the IC sheets none, so no per-cell
+    p is stored. The amplitudes in the VCB17 sheet include the holding current, which the descriptor does not say.
 - kind: other
   about: data
-  statement: The Summary sheets' per-cell changes reproduce the paper's bicuculline mean and SD (-3.76 +/-
-    34.25%, n = 26) but not its control values; the IC sheet gives -5.79 +/- 9.51% and the VC sheet -3.14 +/-
-    13.40% (n = 14 each), against the paper's I-clamp -1.41 +/- 10.92% and V-clamp -5.67 +/- 9.47%.
+  statement: The Summary sheets' per-cell changes reproduce the paper's bicuculline mean and SD (-3.76 +/- 34.25%,
+    n = 26) but not its control values; the IC sheet gives -5.79 +/- 9.51% and the VC sheet -3.14 +/- 13.40% (n
+    = 14 each), against the paper's I-clamp -1.41 +/- 10.92% and V-clamp -5.67 +/- 9.47%.
 - kind: methods_unavailable
-  statement: Question for the authors. Most cells have more than 120 baseline sweeps (up to 400). Which 120
-    form the pre-pairing epoch? This attempt used the 120 just before pairing, which the Methods' wording and
-    the sheets' pre-pairing means support; the first 120 change several outcomes (for control, 8 to 11 of 20
-    cells plastic and a mean change near -11%).
+  statement: Question for the authors. Most cells have more than 120 baseline sweeps (up to 400). Which 120 form
+    the pre-pairing epoch? This attempt used the 120 just before pairing, which the Methods' wording and the sheets'
+    pre-pairing means support; the first 120 change several outcomes (for control, 8 to 11 of 20 cells plastic and
+    a mean change near -13% that differs from 0 at p < 0.05).
 - kind: methods_unavailable
-  statement: Question for the authors. The paper does not give the post-pairing window used for the change
-    and the t-test (all post-pairing sweeps, the first 10 min, or the last 10 min), the form of the t-test
-    (on sweeps or on 1-min bins; the sheets say one-tailed), the peak search window and baseline, or the rule
-    by which sweeps were selected (the sheets mark selected sweeps in green). Each was run under every
-    reading the claims file names; the classification counts change by up to 3 cells between readings.
+  statement: Question for the authors. The paper does not give the post-pairing window used for the change and the
+    t-test (all post-pairing sweeps, the first 10 min, or the last 10 min), the form of the t-test (on sweeps or
+    on 1-min bins; the sheets say one-tailed), the peak search window and baseline, or the rule by which sweeps
+    were selected (the sheets mark selected sweeps in green). Each was run under every reading the claims file names;
+    the classification counts change by up to 3 cells between readings. Where the readings of the window disagree
+    on a claim of absence (fig1-vc-ic-same), this attempt adopted the last 10 min, as the sheets compare 120 traces
+    and their changes are closest to that window.
+- kind: other
+  about: data
+  statement: The VCB17 sheet computes the cell's change, +62.9%, from amplitudes that include the holding current
+    (pre-pairing -579 pA, post-pairing -943 pA, on a holding current near -485 pA). Less the holding current they
+    give -94 and -459 pA, a change of +390%, which the recording confirms (median traces 93 and 473 pA). The Summary
+    sheet's +62.9% enters the bicuculline mean and SD that the sheets share with the paper (-3.76 +/- 34.25%).
+verifications:
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the first executed notebook with the conclusion cells and the summary removed, the helper
+    module pvc9.py and the claims file, with the paper''s full text. The verifier listed the CRCNS bucket for pvc-9
+    itself and tested peak_amplitudes and stimulus_indices on synthetic inputs. It had no attempt record.'
+  results:
+  - claim: dataset-size
+    agrees: false
+    outcome: reproduced
+    reason: The Summary sheets mark exactly 14 IC, 14 VC and 26 VCB cells as included, and 9, 11 and 12 as excluded,
+      which matches the paper and the Methods. The VCB test files are in pA, so the bicuculline cells are voltage
+      clamp. The archive holds complete recordings for only 10 IC and 10 VC of the 28 control cells; that limits
+      the claims below, not this count. Inclusion is read from red fill only, green fill is never checked; the counts
+      match the paper exactly, so this is low risk (point 5).
+    response: 'Outcome changed to reproduced, measured 14, 14 and 26: the sheets give a row and per-sweep amplitudes
+      for every one of the 28 control cells, and the missing recordings are a data_missing finding that the control
+      claims carry. The claim now prints the fill of every Summary row: excluded rows are all red, included rows
+      unfilled (IC, VCB) or green (VC).'
+  - claim: fig1c-control-outcomes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Only 20 control cells could be measured: 2 to 4 LTP, 3 to 4 LTD and 12 to 14 NC depending on reading.
+      The counts out of 28 meet the partial clause (6 plastic, 22 NC) only under (a,a), (c,a) and (c,b), and only
+      if the 8 missing cells are filled in from the authors'' sheet values. Measured on its own, the plastic fraction
+      is 6 to 8 of 20, about twice the paper''s 4 of 28. The partial outcome exists only because of this fill-in
+      (point 2); IC13 is +20.8% measured against -12.8% in the sheet, with only 77 post-pairing sweeps, and no trace
+      inspection was done (point 6).'
+    response: 'Outcome unchanged. IC13 is explained: its last four post-pairing sweeps hold no stimulus (one) or
+      a spike (three) and were measured as 43 to 51 mV responses; the helper now drops sweeps without a stimulus
+      artifact, and IC13 changes by -10.9% (its sheet''s 73 post-pairing values match the first 73 measured sweeps,
+      r = 0.995). The notebook adds a per-cell table of all 28 control cells: the sheets store no p values (the
+      VC sheets'' p cells are empty), and five measured cells whose sheet change is below 15% are plastic in some
+      reading, so the fill-in is loose; the notes say the partial outcome rests on it. Counts are now 5 to 7 plastic
+      of 20; partial under (a,a), (a,b), (c,a) and (c,b).'
+  - claim: fig1-control-no-net-plasticity
+    agrees: true
+    outcome: reproduced
+    reason: 'One-sample t-test on n = 20: p = 0.65, 0.75 and 0.54 under (P) a, b and c, so no reading finds an effect.
+      This rests on using the last 120 baseline sweeps; with the first 120, p = 0.0496 and 0.035 in (a) and (c).
+      The Methods wording and the sheets (3.8% against 23.8% median difference) support the last 120, so the assumption
+      is reasonable, but readers should know the control outcomes depend on it (point 3).'
+    response: Outcome unchanged; after the alignment fix p = 0.27 to 0.44, and with the first 120 every reading
+      reaches p < 0.05. The notes, the summary and the README say the control outcomes depend on the choice of the
+      last 120, which stays an assumption with a question to the authors.
+  - claim: fig1-control-mean-change
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under (c), VC -4.36, IC +0.46 and combined -1.95 are all within tolerance, but the SD of 14.13 is outside
+      10.26 +/- 1.03. Computed on 20 of 28 cells. The sheets' own IC values (-5.79 +/- 9.51, n = 14) match the paper's
+      "V-clamp" figure (-5.67 +/- 9.47) more closely than its "I-clamp" one; the claims file does not raise this,
+      and under (c) the outcome is unchanged either way (point 7).
+    response: 'Outcome unchanged; after the alignment fix the three means are within tolerance under (a) and (c)
+      and the SD (13.2) is not. The possible label exchange is asked of a reader in questions/saez-2016.yaml, and
+      the notebook shows it as a variant: with the labels exchanged the IC mean is outside tolerance in every reading,
+      so it would change the outcome.'
+  - claim: fig1-vc-ic-same
+    agrees: true
+    outcome: reproduced
+    reason: No reading has any of the four tests below 0.05; the smallest p is Shapiro-Wilk on IC, 0.15. n = 10
+      + 10.
+    response: Outcome kept, now resting on an assumption. After the alignment fix and the dropped IC13 sweeps, reading
+      (P)(a) gives Shapiro-Wilk p = 0.0497 on IC, so the readings differ; the adopted reading (P)(c), supported
+      by the sheets' "Traces compared" of 120 and their closeness to (c), has no test below 0.05. Marked assumed.
+  - claim: fig1fh-control-no-dependence-on-initial
+    agrees: true
+    outcome: reproduced
+    reason: Pearson p ranges from 0.099 to 0.285 across modes and readings.
+    response: Outcome unchanged; Pearson p is now 0.11 to 0.69.
+  - claim: fig1d-example-nc
+    agrees: true
+    outcome: reproduced
+    reason: IC6 gives -0.94% (p = 0.47) under (a) and -1.07% (p = 0.41) under (c), both within -1 +/- 0.1%. With
+      the first-120 baseline variant, IC6 is -22%.
+    response: Outcome unchanged; IC6 is -0.93% (p = 0.47) and -1.06% (p = 0.41).
+  - claim: fig2a-bicuculline-outcomes
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading gives exactly 7/9/10. (a,a) gives 8/8/10, and (a,b), (c,a) and (c,b) also meet the partial
+      clause. Separately, stimulus_indices takes the largest |diff| and can locate a square artifact's offset, shifting
+      alignment and pulling artifact samples into the baseline; stimulus times rounded to 1 ms cannot show this
+      (point 4, unverified).
+    response: 'Outcome unchanged; with onset alignment (a,a) gives 8/9/9 and five of six readings meet the partial
+      clause. Point 4 was found in the data: the artifact is biphasic and the largest step fell 0 to 0.2 ms after
+      the onset, at different places in different sweeps of 41 of 115 files. Sweeps are now aligned on the artifact''s
+      onset (16351 sweeps at the file''s most common onset, 342 one sample away), and the notebook prints onset
+      times at 0.05 ms. Largest-step alignment changes one cell''s class (VCB33, LTD to NC in readings (a) and (b)),
+      and a baseline ending 1 ms before the stimulus changes none.'
+  - claim: bicuculline-increases-plastic-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: The bicuculline fraction is larger in every reading. The bicuculline count is within tolerance in four
+      readings (16 or 15 of 26), but the control count, at 6 to 9 of 28, is never within 4 +/- 0.4.
+    response: Outcome unchanged; the control count is now 5 to 8 of 28 and still never within tolerance.
+  - claim: fig2-subgroup-changes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'At most 2 of 3 means are within tolerance: LTD and NC are, but the LTP mean is 80 to 89% against 39.9%.
+      VCB17''s +400% causes the LTP failure. VCB17''s response after the stimulus is less than twice the same measure
+      before it, its baseline amplitude is 98 pA against -579 pA in the sheet, and on synthetic white noise (SD
+      30 pA, no response) the peak measure returns 83 to 99 pA, so its +400% is not a credible measurement; the
+      notebook has no rule for an unmeasurable response (point 1).'
+    response: Outcome unchanged; VCB17 is kept, with the evidence added to the data check. Its median pre-pairing
+      trace has a 93 pA inward current 3 ms after the stimulus, against a per-sweep noise reference of 50 pA, and
+      473 pA after pairing; the change is +408% from the median traces, +390% from the sweep means and +388% with
+      a 50 ms baseline; the holding current is steady (-486 and -484 pA); and the sheet's amplitudes less the holding
+      current give -94 and -459 pA, +390%. So the response is measurable and its change is real; the sheet's +62.9%
+      includes the holding current (a new finding). The variant without VCB17 is still shown.
+  - claim: fig2-mean-unchanged-variance-increased
+    agrees: true
+    outcome: partially_reproduced
+    reason: The t-test p is 0.45 to 0.52 in every reading (equal means hold), and the F-test p is far below 0.01
+      with the bicuculline variance larger. The bicuculline mean (+10 to +13) and SD (about 84) are far outside
+      tolerance, again because of VCB17. Without VCB17, reading (b) gives mean -1.77, SD 31.56, t p = 0.93 and F
+      p = 0.0026, and all parts would pass (point 1).
+    response: 'Outcome unchanged, as VCB17 is kept (see fig2-subgroup-changes): the bicuculline mean (+10.2 to +13.0)
+      and SD (81 to 83) stay outside tolerance; without VCB17 the values are within under (b).'
+  - claim: fig2cd-example-ltp-ltd
+    agrees: true
+    outcome: reproduced
+    reason: VCB29 gives +60.1% (p about 3e-65) under (a,a), and VCB10 gives -36.9% (p about 1e-34).
+    response: Outcome unchanged; with onset alignment VCB29 gives +56.1% and VCB10 -36.7%, both within tolerance.
+  - claim: fig2f-bicuculline-no-dependence-on-initial
+    agrees: true
+    outcome: reproduced
+    reason: Pearson p = 0.44, 0.44 and 0.48 under (P) a, b and c.
+    response: No change.
+  - claim: fig3a-ks-scs-vs-ecs
+    agrees: true
+    outcome: blocked
+    reason: The verifier listed the bucket itself. pvc-9/ holds only live/ (abfload.m, checksums.md5, data.tar.gz,
+      filelist.txt, docs/) and ftpup/crcns_data_description.docx, and filelist.txt agrees. The tar contains only
+      the three ECS folders and three xls files. Every test in this claim needs the SCS data, so no part can be
+      run.
+    response: No change.
+  - claim: fig3c-random-mixing-narrower
+    agrees: true
+    outcome: blocked
+    reason: 'Same reason: both the simulation and the input count need the SCS strengths.'
+    response: No change.
+  - claim: fig3b-segregation-near-complete
+    agrees: true
+    outcome: blocked
+    reason: Same reason.
+    response: No change.
