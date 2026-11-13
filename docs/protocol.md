@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-14`. Record this version in the attempt's provenance.
+Version: `pilot-15`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
