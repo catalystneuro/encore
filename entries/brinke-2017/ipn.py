@@ -191,14 +191,28 @@ def bootstrap_count(pairs, kinds, observed, sign, rng, reps=500, reading="shuffl
 
 def mixedlm(y, x, groups, slopes=True):
     """Linear mixed model y ~ x with random intercepts (and slopes when `slopes`) per cell
-    (Methods, Statistics; Supplementary file 1 says which terms each model has). Returns
-    (slope, SE, p) of the fixed effect of x, by statsmodels MixedLM (REML), Wald test."""
+    (Methods, Statistics; Supplementary file 1 says which terms each model has), by statsmodels
+    MixedLM (REML), Wald test. Returns a dict: slope, se, p of the fixed effect of x; `ok`, False
+    when the fit did not converge, its standard error is not finite or statsmodels warned of a
+    singular random-effects covariance, a Hessian that is not positive definite or an estimate on
+    the boundary of the parameter space;
+    and `warnings`, the distinct warning messages of this fit, shortened."""
+    import warnings
     import pandas as pd
     import statsmodels.formula.api as smf
     df = pd.DataFrame({"y": y, "x": x, "g": groups})
     model = smf.mixedlm("y ~ x", df, groups=df["g"], re_formula="~x" if slopes else "1")
-    fit = model.fit(reml=True, method=["lbfgs", "powell"])
-    return float(fit.params["x"]), float(fit.bse["x"]), float(fit.pvalues["x"]), bool(fit.converged)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        fit = model.fit(reml=True, method=["lbfgs", "powell"])
+    msgs = sorted({str(w.message).split(".")[0][:60] for w in caught
+                   if not issubclass(w.category, (DeprecationWarning, FutureWarning))})
+    se = float(fit.bse["x"])
+    # the first optimizer failing and the second being tried is reported but is not a failure of the fit
+    serious = [m for m in msgs if not m.startswith(("Maximum Likelihood optimization failed", "Retrying"))]
+    ok = bool(fit.converged) and np.isfinite(se) and not serious
+    return {"slope": float(fit.params["x"]), "se": se, "p": float(fit.pvalues["x"]), "ok": ok,
+            "warnings": "; ".join(msgs)}
 
 
 # ----------------------------------------------------------------------------- cell measures
@@ -214,7 +228,8 @@ def last200_windows(us, dset):
     """The last 200 ms of the CS-US interval. First dataset 50-250 ms. Second dataset: 12-212
     ms under the description's 212 ms interval, or 0-200 ms under the paper's 200 ms
     (claims file, opening comment); 0-212 ms is the window the data set's own `facilitation`
-    variable uses (found in the data check), shown as a third reading."""
+    variable uses in the second dataset (found in the data check), shown as a variant that is
+    not a reading of the claims file."""
     if dset == 1:
         return {"50-250": (us - 200, us)}
     return {"12-212": (us - 200, us), "0-200": (0, 200), "0-212": (0, us)}
@@ -227,8 +242,12 @@ def modulation(m, t, base, win):
     part of the baseline trace (mean over all baseline bins of max(b - mu, 0)).
     Reading (b): the same positive (negative) parts taken in both the window and the baseline.
     Reading (a+): as (a), with the above-baseline part averaged over the above-baseline bins
-    only (the Methods' "mean above-baseline activity within the baseline itself" allows both).
-    Reading (b) is what the data set's own `facilitation` variable computes (data check).
+    only (the Methods' "mean above-baseline activity within the baseline itself" allows it).
+    Reading (b), applied to single trials over the whole 0-212 ms CS-US interval, gives the data
+    set's own per-trial `facilitation` exactly in the second dataset; in the first dataset that
+    variable follows no window tried here exactly (data check). On the average trace, reading (b)
+    gives the per-cell 'Mean Facil Hz' of the paper's Source data 1 (Source data 1 comparison).
+    Reading (a+) is this attempt's own, not one the claims file names; it is shown as a variant.
     Returns dict with fac_a, sup_a, fac_ap, sup_ap, fac_b, sup_b; suppression as a positive
     depth."""
     b = m[..., idx(t, *base)]
@@ -430,18 +449,33 @@ def isi_cv(spikes, a, b):
     return float(np.std(isis) / np.mean(isis)) if len(isis) > 2 else np.nan
 
 
-def xcorr_lag(spk, eye, t, seg, maxlag=100, sign=1):
-    """Lag (ms) of the maximum (sign +1) or minimum (sign -1) correlation between the average
-    spike trace over `seg` and the average eyelid trace shifted by the lag; positive lags mean
-    spikes lead the eyelid. Segment and lag range are open (claims file,
-    fig2d-facilitation-leads-eyelid-ds1)."""
-    s = spk[idx(t, *seg)]
+def xcorr_lag(spk, eye, t, seg, maxlag=100, sign=1, estimator="xcov"):
+    """Lag (ms) of the maximum (sign +1) or minimum (sign -1) cross-correlation between the average
+    spike trace and the average eyelid trace over the segment `seg`; positive lags mean spikes lead
+    the eyelid. Segment and lag range are open (claims file, fig2d-facilitation-leads-eyelid-ds1).
+    The estimator is not given in the paper ("temporal cross-correlations between average spike and
+    eyelid traces", Results); it is an assumption, run two ways:
+    'xcov' (adopted): both traces cut to the segment and mean-subtracted, sum of s(t) e(t + lag) over
+    the overlapping samples divided by the product of the two norms, as MATLAB's
+    xcov(s, e, maxlag, 'coeff'), the field's standard cross-correlation of two traces;
+    'recut': Pearson r of the spike segment with the eyelid trace re-cut at segment + lag. Its r is
+    normalized afresh at each lag, so on ramp-shaped traces it is nearly flat across lags and its
+    maximum often falls at the edge of the lag range (verifier, round 1).
+    Returns (lag, r by lag from -maxlag to +maxlag)."""
     lags = np.arange(-maxlag, maxlag + 1)
+    s = spk[idx(t, *seg)]
     r = np.full(len(lags), np.nan)
-    for i, L in enumerate(lags):
-        e = eye[idx(t, seg[0] + L, seg[1] + L)]
-        if len(e) == len(s) and not np.isnan(e).any() and np.std(e) > 0 and np.std(s) > 0:
-            r[i] = np.corrcoef(s, e)[0, 1]
+    if estimator == "xcov":
+        e = eye[idx(t, *seg)]
+        s, e = s - s.mean(), e - e.mean()
+        n, norm = len(s), np.sqrt(np.dot(s, s) * np.dot(e, e))
+        for i, L in enumerate(lags):
+            r[i] = (np.dot(s[:n - L], e[L:]) if L >= 0 else np.dot(s[-L:], e[:n + L])) / norm
+    else:
+        for i, L in enumerate(lags):
+            e = eye[idx(t, seg[0] + L, seg[1] + L)]
+            if len(e) == len(s) and not np.isnan(e).any() and np.std(e) > 0 and np.std(s) > 0:
+                r[i] = np.corrcoef(s, e)[0, 1]
     k = np.nanargmax(sign * r)
     return int(lags[k]), r
 

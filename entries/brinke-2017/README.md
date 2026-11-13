@@ -11,11 +11,11 @@ cells only; a link claim checks that its cells are the data set's, in the same o
 |---|---|
 | source-data-1-link (link) | Reproduced |
 | firing-rate-depth | Reproduced |
-| fig1ijk-modulation-classes | Partially reproduced |
-| modulation-absolute-not-rate-dependent | Partially reproduced |
+| fig1ijk-modulation-classes | Not reproduced |
+| modulation-absolute-not-rate-dependent | Not reproduced |
 | fig1l-cells-with-behavior | Reproduced |
-| fig1m-modulation-grows-with-training | Reproduced |
-| fig1no-modulation-more-with-behavior | Reproduced |
+| fig1m-modulation-grows-with-training | Partially reproduced |
+| fig1no-modulation-more-with-behavior | Partially reproduced |
 | fig2a-facilitation-properties-ds1 | Partially reproduced |
 | fig2b-facilitation-trial-correlations-ds1 | Reproduced |
 | fig2b-lmm-ds1 | Reproduced |
@@ -56,12 +56,12 @@ cells only; a link claim checks that its cells are the data set's, in the same o
 | cs-pause-cells-have-us-pause | Reproduced |
 | fig6b-us-peak-pause-overlap | Partially reproduced |
 | fig6g-us-response-depth | Reproduced |
-| us-pause-declines-with-training | Reproduced |
-| fig6h-us-pause-trial-correlations | Reproduced |
+| us-pause-declines-with-training | Partially reproduced |
+| fig6h-us-pause-trial-correlations | Partially reproduced |
 | fig7-second-us-peak | Partially reproduced |
 | fig7-second-us-peak-dynamics | Partially reproduced |
 | fig7c-second-peak-cells-lower-cr | Partially reproduced |
-| fig7b-first-second-peak-correlated | Not reproduced |
+| fig7b-first-second-peak-correlated | Partially reproduced |
 | us-only-trials-ds2 | Blocked: data missing |
 | fig7s1c-us-only-second-peak-cs-pause-cells | Blocked: data missing |
 | fig7fg-us-pause-resembles-cs-pause | Blocked: data missing |
@@ -69,7 +69,8 @@ cells only; a link claim checks that its cells are the data set's, in the same o
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the
 differences from the paper's method.
 
-The paper links no analysis code, and several of its definitions are open; the notebook runs every reading the
+The outcomes above are those after the first verification round, which changed seven of them; the record gives
+the verifier's reasons and the replies. The paper links no analysis code, and several of its definitions are open; the notebook runs every reading the
 claims file names, and the classification of cells into facilitation, suppression and no modulation does not
 give the paper's counts under any of them. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/brinke-2017-01.yaml`](../../attempts/brinke-2017-01.yaml). The helper `ipn.py`
