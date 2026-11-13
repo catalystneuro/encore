@@ -17,12 +17,12 @@ healthy participants' data are not in the data set.
 | Regressors weakly correlated (mean R2 0.15) | Reproduced |
 | HFA encodes choice and outcome regressors (counts of Table S2) | Not reproduced |
 | Choice and outcome encoding delays and durations similar | Reproduced (assumption) |
-| HFA encodes the previous trial | Partially reproduced |
-| Past signals more sustained | Partially reproduced |
+| HFA encodes the previous trial | Partially reproduced (assumption) |
+| Past signals more sustained | Partially reproduced (assumption) |
 | Past trials do not affect choice | Not reproduced |
 | Encoding limited to the previous trial | Reproduced |
-| Sharp boundary between t-1 and t-2 | Reproduced |
-| All regressors significant in mixed-effects models | Not reproduced |
+| Sharp boundary between t-1 and t-2 | Reproduced (assumption) |
+| All regressors significant in mixed-effects models | Not reproduced (assumption) |
 | Stepwise selection similar to the 5-window selection | Partially reproduced (assumption) |
 | Risk over all trials explains more variance than over gamble trials | Not reproduced |
 | No encoding of response direction | Reproduced |
@@ -34,7 +34,9 @@ healthy participants' data are not in the data set.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The data set's "buttonpress" epoch behaves as locked to the outcome reveal, seven electrodes of s03
+The HFA is used as deposited, already baseline-corrected, as the authors' own correction; the claims
+file's two baseline readings are run as well and change the outcomes marked as resting on an
+assumption. The data set's "buttonpress" epoch behaves as locked to the outcome reveal, seven electrodes of s03
 are deposited twice, and the HFA trials carry no round number (they are matched to rounds through the
 authors' regressor file). The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/saez-2018-01.yaml`](../../attempts/saez-2018-01.yaml).

@@ -112,12 +112,19 @@ def round_regressors(r: pd.DataFrame) -> pd.DataFrame:
     return r
 
 
-def align_trials(rounds: pd.DataFrame, glob: pd.DataFrame) -> np.ndarray:
-    """Round index (0-based) of each HFA trial, by greedy matching on regressor values."""
+def align_trials(rounds: pd.DataFrame, glob: pd.DataFrame, reverse: bool = False) -> np.ndarray:
+    """Round index (0-based) of each HFA trial, by greedy matching on regressor values.
+
+    Forward, each trial takes the earliest remaining round that matches; with reverse=True, the
+    trials are matched from the last, each to the latest remaining round. When both give the
+    same rounds, no other order-preserving match exists.
+    """
     keys = ["winprob", "gamble_ind", "win_ind", "regret", "prev_winprob"]
     cand = np.where(~rounds.timeout.values)[0]
     rk = np.c_[rounds[keys[:4]].values, np.r_[-1.0, rounds["winprob"].values[:-1]]]
     gk = np.c_[glob[keys[:4]].values, np.nan_to_num(glob["previous_winprob"].values, nan=-1.0)]
+    if reverse:
+        cand, gk = cand[::-1], gk[::-1]
     idx, j = [], 0
     for t in range(len(gk)):
         while j < len(cand) and not np.allclose(rk[cand[j]], gk[t]):
@@ -126,7 +133,7 @@ def align_trials(rounds: pd.DataFrame, glob: pd.DataFrame) -> np.ndarray:
             raise ValueError("trial not matched")
         idx.append(cand[j])
         j += 1
-    return np.array(idx)
+    return np.array(idx[::-1] if reverse else idx)
 
 
 def past_regressors(rounds: pd.DataFrame, idx: np.ndarray, lag: int) -> pd.DataFrame:
@@ -152,11 +159,14 @@ def load_hfa(subject: str, rt_ms: np.ndarray | None = None, n_offset_trials: int
     or window arrays are identical; the grand mean trace. With rt_ms (the csv's button press
     minus game presentation, per trial), the offset between the two epochs is found for the
     first n_offset_trials trials as the shift that best superimposes the overlapping 1-kHz
-    samples of the first electrode (the smallest SD of their difference).
+    samples of the first electrode (the smallest SD of their difference); the mean difference at
+    that shift shows whether the two epochs carry the same per-trial offset. `keys` lists every
+    variable the file holds, with its shape.
     """
     z = _zip("data.zip")
     d = sio.loadmat(z.open(f"data/data_ephys/{subject}_ofc_hg_events.mat"))
     out = {e: d[f"{e}_window_events_hg"] for e in EPOCHS}
+    out["keys"] = {k: getattr(v, "shape", None) for k, v in d.items() if not k.startswith("__")}
     ne = out["game"].shape[2]
     for e in EPOCHS:
         raw = d[f"{e}_events_hg"]
@@ -178,16 +188,18 @@ def load_hfa(subject: str, rt_ms: np.ndarray | None = None, n_offset_trials: int
         g, p = d["game_events_hg"][:, :, 0].astype(float), d["buttonpress_events_hg"][:, :, 0].astype(float)
         offs = []
         for t in range(min(n_offset_trials, len(rt_ms))):
-            best = (None, np.inf)
+            best = (None, np.inf, np.nan)
             for s in range(0, 2700):
                 j = np.arange(0, 3001 - s)
                 if len(j) < 300:
                     break
-                v = np.std(g[t, j + s] - p[t, j])
+                dif = g[t, j + s] - p[t, j]
+                v = np.std(dif)
                 if v < best[1]:
-                    best = (s, v)
+                    best = (s, v, float(dif.mean()))
             offs.append({"trial": t, "rt_ms": int(rt_ms[t]), "offset_ms": best[0],
-                         "offset_minus_rt": best[0] - int(rt_ms[t]), "sd_diff": round(best[1], 3)})
+                         "offset_minus_rt": best[0] - int(rt_ms[t]), "sd_diff": round(best[1], 3),
+                         "mean_diff": round(best[2], 3)})
         out["offsets"] = pd.DataFrame(offs)
     del d
     return out
@@ -434,3 +446,54 @@ def scan_all(hfa: dict, regressor: dict, n_perm: int, rng: np.random.Generator) 
         out["perm_r2_enc"] = sum(p["perm_r2_enc"] for p in parts)
         out["perm_count_by_subject"] = {s: p["perm_encoding"].sum(1) for s, p in zip(hfa, parts)}
     return out
+
+
+# --- linear mixed model, electrode nested in patient, by REML in closed form ---
+
+def nested_lmm(blocks, n_fixed=None):
+    """REML fit of y = X b + u_patient + v_electrode(patient) + e, random intercepts only.
+
+    blocks: per patient (Y, X), Y trials x electrodes, X trials x p (with the intercept column),
+    the same X for every electrode of the patient, as here (the regressors are per trial). The
+    covariance of a patient's block then has three eigenspaces (within electrode, between its
+    electrodes, the patient mean), so the likelihood needs only per-patient sums. Returns the
+    fixed effects, their standard errors and two-sided Wald p (normal, as statsmodels MixedLM
+    reports), and the variances (residual, electrode, patient). Checked against statsmodels in
+    the notebook.
+    """
+    S = []
+    for Y, X in blocks:
+        T, E = Y.shape
+        xb = X.mean(0)
+        Xc = X - xb
+        yb = Y.mean(0)
+        Yc = Y - yb
+        S.append((T, E, Xc.T @ Xc, Xc.T @ Yc.sum(1), float((Yc * Yc).sum()),
+                  float(T * ((yb - yb.mean()) ** 2).sum()), xb, float(yb.mean())))
+    p = len(S[0][6])
+
+    def solve(theta):
+        s2, te, tp = np.exp(theta)
+        A = np.zeros((p, p))
+        b = np.zeros(p)
+        logdet = 0.0
+        for T, E, A1, b1, q1, q2, xb, ym in S:
+            l2, l3 = s2 + T * te, s2 + T * te + E * T * tp
+            A += E * A1 / s2 + T * E * np.outer(xb, xb) / l3
+            b += b1 / s2 + T * E * xb * ym / l3
+            logdet += E * (T - 1) * np.log(s2) + (E - 1) * np.log(l2) + np.log(l3)
+        beta = np.linalg.solve(A, b)
+        quad = 0.0
+        for T, E, A1, b1, q1, q2, xb, ym in S:
+            l2, l3 = s2 + T * te, s2 + T * te + E * T * tp
+            quad += (q1 - 2 * beta @ b1 + E * beta @ A1 @ beta) / s2 + q2 / l2 + T * E * (ym - xb @ beta) ** 2 / l3
+        return logdet + np.linalg.slogdet(A)[1] + quad, beta, A
+
+    v0 = np.log(max(np.mean([q1 / (E * (T - 1)) for T, E, A1, b1, q1, q2, xb, ym in S]), 1e-12))
+    res = optimize.minimize(lambda th: solve(th)[0], np.array([v0, v0 - 2, v0 - 2]), method="L-BFGS-B",
+                            bounds=[(v0 - 20, v0 + 5), (v0 - 30, v0 + 5), (v0 - 30, v0 + 5)])
+    _, beta, A = solve(res.x)
+    se = np.sqrt(np.diag(np.linalg.inv(A)))
+    z = beta / se
+    return {"beta": beta, "se": se, "p": 2 * stats.norm.sf(np.abs(z)), "var": np.exp(res.x),
+            "converged": bool(res.success)}

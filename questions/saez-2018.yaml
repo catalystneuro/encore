@@ -1,0 +1,30 @@
+# Questions from attempt saez-2018-01 (author revision after verifier round 1, 2026-11-13) about the
+# claims file claims/saez-2018.yaml. Asked under docs/protocol.md, Hand over for verification: the
+# verifier reported a place where the claims file may misread the paper. The attempt tested the
+# claim as the file has it and shows the paper's reading as a variant.
+dataset: crcns:ofc-3
+paper: doi:10.1016/j.cub.2018.07.045
+questions:
+- claim: fig3-present-encoding
+  also: [fig4-past-encoding, fig6-past-short-lived, figs3b-no-motor-encoding, tables2-patients-coverage]
+  asked: 2026-11-13
+  question: The criterion takes chance for each regressor as the share of electrodes classified as
+    encoding under the 1,000 label shuffles, and judges a regressor above chance when its count of
+    encoding electrodes exceeds the 95th percentile of that shuffled count. STAR Methods say the
+    shuffled distribution "was taken as the null for that particular regressor-electrode combination",
+    which describes a null per electrode, used in classifying each electrode. Should the encoding
+    rule be read as the 5-window rule tested against each electrode's own shuffled null (so that the
+    counts of Table S2 are electrodes that beat their own null), with the share under shuffles only a
+    false-positive rate?
+  passage: STAR Methods, ECoG analysis and behavioral regression, "False positive rate was determined
+    using a permutation strategy. For each regressor-HFA regression, we shuffled the relationship
+    between behavioral labels and HFA activity 1,000 times. The resulting distribution was taken as the
+    null for that particular regressor-electrode combination."
+  why: The plain 5-window rule classifies 18.2% of electrodes as encoding under shuffled labels, and
+    gives counts above Table S2 for all 8 current regressors (for example risk 84 against 50). Requiring
+    each electrode's longest run to exceed the 95th percentile of its own shuffled runs (the notebook's
+    own-null variant) gives 41, 31, 21, 12, 24, 15, 15 and 17, mostly below Table S2; it misses the
+    10% tolerance for 7 of 8 current and 7 of 8 past regressors, so the outcomes would not change on
+    the counts, but the above-chance conditions of fig3-present-encoding and fig4-past-encoding, and the
+    proportions behind fig6-past-short-lived and tables2-patients-coverage, would be judged on a
+    different selection.
