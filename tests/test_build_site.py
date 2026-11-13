@@ -1026,6 +1026,26 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
     assert 'href="papers/"' in nav and 'href="datasets/"' in nav and 'class="menu"' not in nav
 
 
+def test_links_are_underlined_except_where_nearly_every_word_is_one():
+    """Links keep the browser's underline by default. Only the dense areas (the datasets table, list rows, crumbs,
+    attempts, footer) quiet it, each with one scoped rule, and there it comes back on hover and keyboard focus."""
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    # The base rule colours links and does not remove their underline.
+    assert re.search(r"^a\{color:var\(--link\)\}$", css, re.M)
+    assert not re.search(r"^a\{[^}]*text-decoration", css, re.M)
+    quiet = re.search(r"^:where\((.*?)\) a:not\(\[class\]\)\{text-decoration:none\}$", css, re.M)
+    thin = re.search(r"^:where\((.*?)\) a:not\(\[class\]\)\{text-decoration:underline;", css, re.M)
+    back = re.search(r"^:where\((.*?)\) a:not\(\[class\]\):is\(:hover,:focus-visible\)\{text-decoration:underline", css, re.M)
+    assert quiet and thin and back
+    assert {".sets th", ".row .id", ".row .meta"} <= set(quiet[1].split(","))
+    assert {".crumbs", "footer"} <= set(thin[1].split(","))
+    assert {".sets", ".row .meta", ".crumbs", ".timeline", "footer"} <= set(back[1].split(","))
+    # Running text is never in the scope, and keyboard focus keeps its outline.
+    for prose in (".lede", ".notes", ".caution", ".about", ".claim", ".sub"):
+        assert prose not in quiet[1] + thin[1] + back[1]
+    assert ":focus-visible{outline:2px solid var(--accent)" in css and "outline:none" not in css
+
+
 def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
     """DANDI:000978 names no paper, so no archive list has it; wakhloo-2026 reuses it (targets/reuse.yaml)."""
     data = site.collect()
