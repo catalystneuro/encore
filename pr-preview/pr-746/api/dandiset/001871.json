@@ -1,0 +1,716 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001871",
+  "label": "DANDI:001871"
+ },
+ "page": "datasets/dandi/001871/",
+ "generated": "2026-11-13T16:01:02+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 3,
+  "not_reproduced": 3,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 13
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 2
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "brudner-2026-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001871",
+    "version": "0.260630.1657",
+    "doi": "10.48324/dandi.001871/0.260630.1657",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001871"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001871",
+   "label": "DANDI:001871",
+   "dataset_version": "0.260630.1657",
+   "paper": "10.1073/pnas.2608896123",
+   "paper_title": null,
+   "date": "2026-11-12",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43153520832"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "brudner-2026",
+   "entry_title": "Odor gradient and motion cues across two plumes (Brudner, Zhou et al. 2026)",
+   "summary": "None of the paper's main findings was fully confirmed in this data, and most could not be tested. The plume-specific organization of gradient and motion cues, the networks and the navigating agents could not be tested, because the smooth plume movie is not in the dataset. In the complex plume, motion predicted the centerline side better than the gradient, but the model values missed the paper's. Fly turns followed the gradient in the smooth plume, but the complex-plume motion effect did not hold in every reading and its dominance held only in part, as the dataset holds two undocumented complex-plume file sets. Minor claims on cue robustness and turn size (about 21 against 34 degrees) did not reproduce.",
+   "description": "Tests the findings of Brudner, Zhou et al. (2026) that dandiset 001871 can test. It holds the walking trajectories and turn events of flies navigating a projected smooth plume and a complex smoke plume, and a 1500-frame window of the complex plume movie. The turn-direction regressions and cue dominance of Fig. 5, the turn angles of Fig. S5C, the centerline logistic models of Fig. 2 in the complex plume and the resolution analysis of Fig. S1F-G are tested. The smooth plume movie is not in the dandiset, so the claims on it, on the trained networks and on the navigating agents are blocked.",
+   "notebooks": [
+    {
+     "path": "reproduce_brudner_2026.ipynb",
+     "title": "Reproducing Brudner, Zhou et al. (2026) from dandiset 001871",
+     "executed": "notebooks/brudner-2026/reproduce_brudner_2026.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1eh-snapshot-organization",
+     "statement": "In single snapshots, the crosswind gradient feature has opposite signs on the two sides of the centerline in the smooth plume but not in the complex plume, while the motion feature is organized antisymmetrically in the complex plume but not in the smooth plume.",
+     "source": "Results, Directional Odor Features Have Plume-Specific, Antisymmetric Organization Around the Centerline, paragraph 2; Figure 1E to 1H",
+     "quote": "In the smooth plume, the gradient feature had opposite signs on opposite sides of the centerline while in the complex plume, it did not exhibit this antisymmetric organization across the centerline ... In summary, the gradient and motion features exhibited complementary distributions, with each organized antisymmetrically around the centerline in one plume type but not the other",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig1il-zscore-reliability and figs1-antisymmetry-index, which are blocked because the smooth plume cannot be read (see fig1il-zscore-reliability). The complex plume window is in the dandiset, but the code's published complex snapshot (frame 2900) lies outside it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71 (10302017_10cms_bounded_2.h5); complex plume in the dandiset",
+     "proposed": null
+    },
+    {
+     "claim": "fig1il-zscore-reliability",
+     "statement": "Averaged over time and divided by its SD at each location, the gradient feature has higher z-scores in the smooth plume than in the complex plume, and the motion feature has higher z-scores in the complex plume than in the smooth plume.",
+     "source": "Results, Directional Odor Features Have Plume-Specific, Antisymmetric Organization Around the Centerline, paragraph 3; Figure 1I to 1L",
+     "quote": "However, the odor gradients have higher z-scores in the smooth plume than in the complex one, while the odor motion has higher z-scores in the complex plume than in the smooth one",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Needs the smooth plume movie, which is not in the dandiset. It is public on Dryad (doi:10.5061/dryad.g27mq71, file 10302017_10cms_bounded_2.h5, version 1863), but Dryad answers 401 to downloads without an API token (printed in the notebook's data check), and the file was not staged for this run (docs/archives.md, Dryad). The paper's Yale Dataverse deposit (doi:10.60600/YU/590UBV) holds behavior tables only. The complex plume half could be computed from the dandiset's window but cannot decide a comparison between plumes, so it was not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71 (10302017_10cms_bounded_2.h5, /dataset2); complex plume in the dandiset",
+     "proposed": null
+    },
+    {
+     "claim": "figs1-antisymmetry-index",
+     "statement": "The cue antisymmetry index (log ratio of motion to gradient antisymmetric organization) increases monotonically with wind speed across the freestream plumes; the smooth plume lies near the low end of that range and the complex plume has the highest index.",
+     "source": "Figure S1, column v, legend; Results, Directional Odor Features Have Plume-Specific, Antisymmetric Organization Around the Centerline, paragraph 1",
+     "quote": "Across the freestream plumes the index increases monotonically with wind speed. The smooth plume index falls near the low end of this range and the complex plume index is the highest measured",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "Needs the smooth plume (see fig1il-zscore-reliability); the criterion places the smooth index below the 10 cm/s one. The other parts were computed (notebook, Parts of the blocked Fig. S1 claims). From the dandiset's deposited freestream maps (mean vertical gradient and motion cue), with Otsu masks (bias 55) and centerlines (row of maximum mean intensity at the source, rows 488, 491, 492) from every 25th frame of each window, the index log2(s_motion / s_gradient) is -2.93, -1.53 and +0.04 at 5, 10 and 20 cm/s; from the complex window it is 4.40 (centerline 590) or 4.26 (row 563), under both bias readings and with the intensities rescaled between their 1st and 99th percentiles. So the index rises with wind speed and the complex index is above every freestream one. s_gradient is 11.7, 16.2 and 16.3 and s_motion 1.5, 5.6 and 16.8. The deposited maps scale with the one-pixel cues computed from the windows by similar factors, 0.169 to 0.172 for the gradient (r 0.94 to 0.95) and 0.196 to 0.221 for motion, whose fits are loose (r 0.24 to 0.46), so their ratio is roughly on the scale of the complex window's cues.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71; freestream and complex plumes in the dandiset",
+     "proposed": null
+    },
+    {
+     "claim": "figs1-temporal-statistics",
+     "statement": "The smooth plume has odor encounter frequency and intermittency like the slow freestream plumes; the fast freestream plume has lower intermittency and higher frequency; the complex plume has the highest encounter frequencies.",
+     "source": "Figure S1, column ii, legend",
+     "quote": "The distribution of frequency and intermittency values at slow freestream speeds was similar to the distribution of values in the smooth plume. In the fast freestream plume, intermittency was relatively lower and frequency relatively higher. In the complex plume we observed the highest arrival frequencies",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "Needs the smooth plume (see fig1il-zscore-reliability); the criterion compares the smooth medians with the 5 and 10 cm/s ones. The other parts were computed. From the dandiset's deposited Fig. S1 points (1000 per plume) the median frequency is 0.08, 0.40 and 1.08 Hz and the median intermittency 0.784, 0.609 and 0.433 at 5, 10 and 20 cm/s; from the complex window, each pixel binarized at 40% of its maximum within the Otsu mask, the median frequency is 2.08 Hz (bias subtracted) or 2.28 Hz (percentage) and the intermittency 0.173 or 0.201. So the complex plume has the highest median frequency of the four, and the 20 cm/s plume has a higher frequency and lower intermittency than the 5 cm/s plume.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71; freestream and complex plumes in the dandiset",
+     "proposed": null
+    },
+    {
+     "claim": "figs1fg-resolution-robustness",
+     "statement": "The spatial organization of the gradient and motion cues in the complex plume stays consistent when sensor spacing is increased from 3 to 12 pixels or the motion delay is lengthened to about 150 ms, changing only when sampled more coarsely than the smooth plume.",
+     "source": "Results, Directional Odor Features Have Plume-Specific, Antisymmetric Organization Around the Centerline, paragraph 3; Discussion, paragraph 2; Figure S1F and S1G",
+     "quote": "Relatedly, the complex plume's cue organization was robust to reduced sampling resolution, only changing when sampled more coarsely than the smooth plume",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "On the dandiset's complex window (1500 frames), the time-averaged gradient map of sensor pairs 6, 9 and 12 pixels apart correlates with the 3-pixel map at r = 0.817, 0.703 and 0.613 (0.816, 0.702, 0.610 in the Otsu mask), against about 0.89 at 12 pixels in Fig. S1F and the criterion's 0.8; with every frame smoothed by a Gaussian of SD 1.5 pixels (a variant) the gradient r is 0.968, 0.911 and 0.809. The motion maps against the 3-pixel, 1-frame map of the same reading fail under all six readings (three cue forms, frames as stored or smoothed): at a 4-frame delay r is 0.729 to 0.820 as stored and 0.780 to 0.855 smoothed, below 0.8 at 3 pixels in every reading (the lowest r over delays 1 to 4 is 0.729 to 0.784), against r near 1 in Fig. S1G. The r at 8 and 15 frames is below the 4-frame value at every spacing in every reading. The centered form of the Fig. 1 cue and the two-sensor correlator differ by at most 0.001 in every value printed; the backward form gives 0.731 to 0.745 at 4 frames as stored.",
+     "deviations": [
+      "The motion cue for a sensor spacing and a delay is not defined in the paper or its code. Three forms were run, the Fig. 1 cue -(dI/dy)(dI/dt) with centered differences and the spacing and the delay widened (Fig. S1 column iv is that cue), the same with a backward difference in time, and the correlator A(t - tau) B(t) - A(t) B(t - tau) of the SI's motion feature; all fail the criterion.",
+      "Whether the Fig. S1F-G maps are of smoothed frames is not stated; each map is computed from the frames as stored and from frames smoothed by the antennae's Gaussian (SD 1.5 pixels), as the code smooths its Fig. 1 cue panels. The motion part fails under both.",
+      "Maps use every 4th column (432 of 1728), a standard choice that cannot change the result, since the cues are crosswind and columns are computed independently; Pearson r is over all those pixels, and over the Otsu mask as a variant.",
+      "Sensor pairs are aligned on the row between them (rows y - floor(d/2) and y + ceil(d/2)), and 6 rows are cropped at each edge so maps of every spacing share their pixels."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-smooth-auc",
+     "statement": "In the smooth plume, a logistic model on the odor gradient feature predicts the side of the centerline better (ROC AUC about 0.85) than one on the motion feature (about 0.54), and the odor sum has no predictive power (AUC 0.5).",
+     "source": "Results, Plume-Specific Features Predict Centerline Direction, paragraph 2; Figure 2B; SI Figure S2A",
+     "quote": "Models that used odor gradient to predict the smooth plume centerline direction had higher AUCs than models that used odor motion for the same task ... In both plume conditions, the bilateral sum ROC AUC values were 0.5",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claim's data are elsewhere (Dryad, doi:10.5061/dryad.g27mq71). Dryad answers 401 to downloads without an API token and the file was not staged for this run, so it could not be read; the Yale Dataverse deposit holds no plume movie.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71, or as rescaled by the paper if its Yale Dataverse deposit (doi:10.60600/YU/590UBV) holds it; the paper's training and test arrays were not deposited (code, REPRODUCE_FIGURES_1_3.md)",
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-complex-auc",
+     "statement": "In the complex plume, a logistic model on the odor motion feature predicts the side of the centerline better (ROC AUC about 0.62) than one on the gradient feature (about 0.54), and the odor sum has no predictive power.",
+     "source": "Results, Plume-Specific Features Predict Centerline Direction, paragraph 2; Figure 2C; SI Figure S2B",
+     "quote": "In the complex plume, the opposite was true, so that odor motion was more predictive than odor gradients in determining the centerline direction ... In both plume conditions, the bilateral sum ROC AUC values were 0.5",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "Means over 10 repeats, region mean intensity above 5, mirror-balanced samples split at random (the reading recorded under measured). Motion AUC 0.603 (SD 0.006) against 0.618 +/- 0.005, gradient 0.560 against 0.537 +/- 0.012, sum 0.500 (SD 0). Over the eight readings (two regions, four samplings) the motion AUC is 0.600 to 0.603 and the gradient AUC 0.553 to 0.561, so motion exceeds the gradient under every reading and neither value is within tolerance under any; with the centerline at row 571 (the row of maximum mean intensity at the source) they are 0.598 and 0.564. The sum AUC is 0.500 under both mirror-balanced samplings and 0.620 to 0.663 under the two samplings the claims file names, as the deposited plume is not symmetric about row 590. Under those two the criterion's sum condition fails, which would make the outcome not reproduced; under the mirror-balanced ones the ordering and the sum hold and the values do not, which is partially reproduced. Splitting the mirror-balanced samples by location, so that no test window is a training window, gives the same AUCs (motion 0.601, gradient 0.561, region mean above 5).",
+     "deviations": [
+      "Assumed that the samples are balanced by mirroring each sample (antennae swapped, label flipped). The paper does not say how samples are drawn or balanced. Its Fig. 2B-C and the code's published table give a sum AUC of exactly 0.5 with SD 0 over 100 repeats and a sum weight of 0.000 'as expected' (Results, Plume-Specific Features Predict Centerline Direction, paragraph 3), which only a sample symmetric under the mirror gives; on the deposited plume the samplings the claims file names give a sum AUC of 0.62 to 0.66. The two named samplings are shown, and the mirror-balanced one is run with the windows split at random and by location.",
+      "10 repeats per reading, not the paper's 100; each repeat draws 1000 new locations and 2,400,000 training and 600,000 test samples, as the SI (Plume movies, Logistic regression models).",
+      "The two antennae are at rows r and r + 3 of column c, the label is whether r + 1.5 is above row 590 (SI, centerline of the complex plume), and frames are filtered by a Gaussian of SD 1.5 pixels before sampling (SI). Which antenna is left is a convention that changes no AUC. Row 571 is run as a variant.",
+      "The Otsu region is the mask of figs1-antisymmetry-index with the bias of 48 subtracted from the Otsu threshold (0.841 of pixels); the region of mean intensity above 5 covers 0.890.",
+      "The complex window is used as stored (0 to 255). Its provenance (printed in the notebook) names a preprocessing run 'bgsub_gauss3_fullslice_p001_p99', which may differ from the movie the paper analysed; this cannot be undone here."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2c-one-frame-delay",
+     "statement": "In both plumes, the motion feature with a one-frame delay gives higher ROC AUC than motion features with longer delays.",
+     "source": "Results, Plume-Specific Features Predict Centerline Direction, paragraph 2; SI Figure S2C",
+     "quote": "In both plume types, odor motion features with one-frame delays had higher ROC AUC values than motion features using longer delays",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Needs both plumes; the smooth plume cannot be read (see fig2b-smooth-auc). The complex part was run (notebook, under fig2e). With mirror-balanced samples split by location over 10 repeats, the motion AUC is 0.6012 (SD 0.0075) at a 1-frame delay, falls steadily to 0.5369 at 4 and 0.5047 at 15 frames, no delay exceeds delay 1, and delay 15 is below it by more than the SD, so the complex part holds.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71; complex plume in the dandiset",
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-smooth-weights",
+     "statement": "Fitted on all three z-scored features together in the smooth plume, the logistic model gives the gradient a much larger weight (about 2.6) than motion (about 0.06), and the sum a weight of 0; the combined model reaches a test AUC of 0.847.",
+     "source": "Results, Plume-Specific Features Predict Centerline Direction, paragraph 3; Figure 2D; SI Figure S2D",
+     "quote": "The model trained in the smooth plume learned a larger weight for the odor gradient feature than for the odor motion feature ... In both plumes, the weights for the odor sum feature were 0, as expected",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Data elsewhere (Dryad); not readable in this run, as for fig2b-smooth-auc.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71, or as rescaled by the paper if its Yale Dataverse deposit (doi:10.60600/YU/590UBV) holds it",
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-complex-weights",
+     "statement": "Fitted on all three features together in the complex plume, the logistic model gives motion a larger weight (about 0.40) than the gradient (about 0.10), and the sum a weight of 0; the combined model reaches a test AUC of 0.612.",
+     "source": "Results, Plume-Specific Features Predict Centerline Direction, paragraph 3; Figure 2E; SI Figure S2D",
+     "quote": "Conversely, the model trained in the complex plume learned a larger weight for the odor motion feature than for the odor gradient feature ... In both plumes, the weights for the odor sum feature were 0, as expected",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "Means over 10 repeats, region mean intensity above 5, mirror-balanced samples split at random (recorded under measured). |motion| 0.426 against 0.403 +/- 0.034 (within), |gradient| 0.262 against 0.098 +/- 0.041 (outside), sum 0.000, combined AUC 0.614 against 0.612 +/- 0.061 (within). Over the eight readings |motion| is 0.414 to 0.430 and |gradient| 0.231 to 0.281, so the ordering holds under every reading and the gradient weight is outside tolerance under every reading (0.276 with the centerline at row 571); |sum| is below 0.01 only under the mirror-balanced samplings (0.22 to 0.34 otherwise). Every reading gives partially reproduced (ordering only), so the outcome does not rest on the sampling assumption of fig2c-complex-auc.",
+     "deviations": [
+      "As fig2c-complex-auc (10 repeats, sampling readings, antenna geometry, regions, centerline variant).",
+      "Weights are those of the standardized features of one unpenalized logistic model on the three features (code, centerline_models.py), compared in absolute value as the claims file says."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3bc-mnm-filters",
+     "statement": "A minimal opponent network trained to find the centerline learns gradient-detector filters (opposite signs on the two antennae) in the smooth plume, and in the complex plume filters with a delayed negative lobe in f1 like a motion detector; test AUCs are 0.726 (smooth) and 0.517 (complex).",
+     "source": "Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor Features, paragraph 3; Figure 3B and 3C; SI Figure S3D and S3E",
+     "quote": "For models trained in the smooth plume, the filters acted like a gradient detector ... The opposite signs of the filters suggest that they are also sensitive to gradients, but the delayed, negative lobe in",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claim compares networks trained in the smooth and the complex plume; the smooth plume cannot be read (see fig1il-zscore-reliability). Training was not attempted for the complex plume alone; 500 epochs over 2,400,000 samples on 4 CPUs would not fit the run either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71; complex plume in the dandiset; the paper's training arrays and checkpoints were not deposited",
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-mnm-gradient-response",
+     "statement": "The minimal network trained in the smooth plume responds more strongly to synthetic gradient signals than the one trained in the complex plume.",
+     "source": "Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor Features, paragraph 4; Figure 3D",
+     "quote": "The model trained in the smooth plume responded more strongly to the gradient signals than the model trained in the complex plume",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig3bc-mnm-filters, blocked (smooth plume not readable).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "as fig3bc-mnm-filters",
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-mnm-motion-response",
+     "statement": "Minimal networks trained in either plume respond strongly to synthetic motion signals, and the smooth-trained model's motion response disappears when its filters are made exactly symmetric.",
+     "source": "Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor Features, paragraph 4; Figure 3E; SI Figure S3H",
+     "quote": "Interestingly, the models trained in the complex and smooth plumes both responded strongly to the motion signals with various delays ... Responses to the motion signals disappear if exactly symmetrical filters are used",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig3bc-mnm-filters, blocked (smooth plume not readable).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "as fig3bc-mnm-filters",
+     "proposed": null
+    },
+    {
+     "claim": "fig3ij-dnm-specialization",
+     "statement": "Dense networks are more specialized than minimal ones; the smooth-trained dense network is more sensitive to gradient signals and the complex-trained one responds more strongly to motion signals; dense networks perform modestly better than the minimal ones (test AUC 0.735 smooth, 0.543 complex).",
+     "source": "Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor Features, paragraphs 5 and 6; Figure 3I and 3J; SI Figure S3K",
+     "quote": "When tested on the gradient signals, the model trained in the smooth plume was more sensitive to gradient signals compared to the model trained in the complex plume ... the DNM trained in the complex plumes responded more strongly to the motion signals than the one trained in the smooth plumes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Needs dense networks trained in both plumes; the smooth plume cannot be read.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "as fig3bc-mnm-filters",
+     "proposed": null
+    },
+    {
+     "claim": "fig4ef-agent-success",
+     "statement": "Navigating agents that add a centerline-predicting dense network to a wind-only strategy find the source more often than wind-only agents when the network was trained in the plume they navigate, and less often when it was trained in the other plume; the wind-only agents perform similarly in the two plumes.",
+     "source": "Results, Sensitivity to Plume-Appropriate Directional Features Enhances Agent Navigation, paragraphs 2 to 4; Figure 4E and 4F",
+     "quote": "In the smooth-plume, agents using the augmented strategy with the smooth plume-trained dense network significantly outperformed agents using the wind-only strategy ... However, agents using the augmented strategy with plume-inappropriate computations ... performed worse than agents using the wind-only strategy",
+     "statistics": [
+      {
+       "about": "every pairwise comparison of success rate within each plume",
+       "test": "z-test of proportions",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "10,000 trajectories per condition"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig3ij-dnm-specialization, blocked (smooth plume not readable). The paper's code holds no agent simulation either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "smooth plume from Dryad doi:10.5061/dryad.g27mq71; complex plume in the dandiset; the simulation code and trained networks are not in the paper's repository",
+     "proposed": null
+    },
+    {
+     "claim": "discussion-ten-percent-gain",
+     "statement": "Adding bilateral detection to the wind-only agent improves success by about 10% of the baseline level.",
+     "source": "Discussion, paragraph 4",
+     "quote": "improved performance by ~10% of baseline levels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig4ef-agent-success, blocked (smooth plume not readable).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "as fig4ef-agent-success",
+     "proposed": null
+    },
+    {
+     "claim": "figs4-threshold-robustness",
+     "statement": "Across a range of thresholds on the strength of bilateral evidence, agents using plume-consistent features (networks or feature-based GLMs trained in the same plume) outperform agents using inconsistent ones.",
+     "source": "SI Figure S4E and S4F, legend",
+     "quote": "Although these thresholds affect absolute performance levels, across thresholds agents using consistent features ... outperformed agents using inconsistent features",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig4ef-agent-success and fig2d-smooth-weights, blocked (smooth plume not readable).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "as fig4ef-agent-success",
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-cue-betas",
+     "statement": "For upwind-facing flies in the bulk of the plume, the gradient cue 50 ms before a turn significantly predicts turn direction in the smooth plume while motion does not, and the motion cue does in the complex plume while the gradient does not.",
+     "source": "Results, Different Directional Odor Cues Predict Fly Crosswind Turning in Different Plume Types, paragraph 3; Figure 5E",
+     "quote": "In the smooth plume, the gradient cue but not the motion cue was a significant predictor ... conversely, in the complex plume the motion cue was a significant predictor, but the gradient cue was not",
+     "statistics": [
+      {
+       "about": "gradient coefficient, smooth plume",
+       "test": "logistic regression with cluster-robust (trajectory-level) SE",
+       "p": 0.005,
+       "p_relation": "<"
+      },
+      {
+       "about": "motion coefficient, complex plume",
+       "test": "logistic regression with cluster-robust (trajectory-level) SE",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "Measured values are under the code's readings, as the criterion compares them (files' turn start, 15 mm margin, no z-scoring, complex smoke-2a files, heading 150 to 210 in the complex plume; 2949 and 1002 turns). There the smooth coefficients are within tolerance (gradient -0.1114, p 0.0008; motion -0.0107, p 0.35) and the complex ones are not (motion -0.0119, p 0.15, against +0.0441 +/- 0.0159; gradient -0.0124, p 0.036, against +0.0185 +/- 0.0161). The significance pattern is tested under the criterion's onset (the SI's 20% rule, computed from the files' dtheta in the turn's direction) with the smoke-1a files as the complex plume (assumed; the outcome does not rest on it, as no file set or onset gives the result in every reading). There it fails under every reading (0 of 24): the complex motion coefficient has p 0.046 at 160 to 200 degrees and 0.090 at 150 to 210 (as stored or pooled; 295 and 409 turns), and with per-trajectory z-scoring (complex motion p 0.0046 and 0.013) the smooth motion coefficient becomes significant (p 0.0079). The smooth part holds under the other z-scorings (gradient p below 0.0001, motion p 0.23; 2846 turns, 1010 trajectories). With the code's smoke-2a files the criterion holds in 16 of 24 readings (as stored or pooled) and fails per trajectory (complex motion p 0.098 and 0.20), with a negative motion coefficient (-0.028 and -0.024) opposite to the published one; both sets together pass none. Within each set the motion coefficient has the same sign in flipped and unflipped trials (smoke-1a +0.049 and +0.020, smoke-2a -0.028 and -0.030), so the projection flip does not reverse the sign within a set. Whether one set's cues carry a mirrored sign is not settled: in the smooth plume the mean gradient cue follows the slope of the mean intensity across y (r -0.96 and -0.94 facing upwind, +0.93 and +0.94 facing downwind), but in neither complex set does it (r -0.65 to +0.33), so this test cannot tell the complex sets apart; their intensity layouts are not mirrored relative to each other (smoke-2a against smoke-1a of the same projection flip r 0.77 and 0.67, of the opposite one 0.04 and -0.03). With the dataset's turn start, the smoke-1a files pass at 160 to 200 as stored or pooled (complex motion p 0.0059, gradient p 0.28; smooth gradient p 0.0008, motion p 0.35) and fail at 150 to 210 and per trajectory; this reading is within 0.1 SE of the code's published complex coefficients and within 0.001 per turn of its four log-likelihoods, and the smoke-1a files with the SI onset at 160 to 200 are also close (0.45 SE in motion, 0.09 SE in gradient, log-likelihoods within 0.0036). Whether the dataset's turn start is the SI's onset is asked of a reader (questions/brudner-2026.yaml).",
+     "deviations": [
+      "Assumed that the smoke-1a files are the paper's complex plume. The paper does not say which complex-plume behavior files it analysed; the dandiset's description says the smoke_1a_orig plume 'was analyzed throughout the paper', and the session descriptions of the smoke-1a files name that movie (smoke_1a), those of the smoke-2a files another (smoke_2a). The code selects smoke-2a (metadata/published_panel_params.json); its published tables are matched most closely by smoke-1a, not smoke-2a. Whether smoke-1a should stand for the paper's complex plume is also asked of a reader. Both alternatives and both sets together are shown.",
+      "Onset is the SI's (the time the rotation in the turn's direction crosses 20% of its peak on the rising edge; SI, Behavioral Analysis), as the criterion asks when the dataset's turn start is defined otherwise. The files' events start a median of 4 frames after that onset (every 6th file, 15841 turns). The peak is searched between the event's start and stop, a standard choice. The first version of this attempt followed |dtheta|, whose run went on into rotation the other way in 0.2% of turns; the rule now follows the signed rotation. The files' turn start, which the code uses, is shown as a variant.",
+      "Z-scoring (SI, Behavioral Analysis, which the code does not do) run as none, over all frames of the plume group (same p-values) and per trajectory, the claims file's three readings.",
+      "The predictor is read at the last frame at or before onset minus 50 ms within one frame, after rounding the target time to 10 decimals, exactly as the code's merge_asof does. Heading is read at that frame and position at the event start (turn_x, turn_y), as the code does.",
+      "The criterion's other readings (heading window, margin, alpha of 0.05 or 0.01 for not significant) are all run; the margin removes no kept turn, as the position filter lies inside it."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-cue-dominance",
+     "statement": "Cue dominance, the gradient-minus-motion log-likelihood difference relative to the total bilateral contribution, is near 1 in the smooth plume (gradient dominates) and negative in the complex plume (motion dominates).",
+     "source": "Results, Different Directional Odor Cues Predict Fly Crosswind Turning in Different Plume Types, paragraph 4; Figure 5F; SI Figure S5D and S5E",
+     "quote": "This measure indicates that the gradient cue dominated in the smooth plume, while the motion cue dominated in the complex plume",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "Measured under the readings of fig5e-cue-betas (SI onset, smoke-1a files, heading 160 to 200, as stored; the first reading the criterion lists). The smooth dominance is 0.937 (within 0.946 +/- 0.095) and the complex -0.492 (outside -0.662 +/- 0.066). With smoke-1a and the SI onset the signs hold in 4 of 6 readings (160 to 200 under every z-scoring, 150 to 210 per trajectory; the margin changes nothing) and the two values are never both within tolerance (per trajectory smooth 0.518 and complex -0.716; at 150 to 210 as stored the complex value is +0.114). Both are within tolerance with the smoke-2a files at 150 to 210 as stored or pooled (0.937 and -0.717), and with the dataset's turn start and the smoke-1a files at 160 to 200 (0.879 and -0.701), the reading nearest the code's published tables. Under the code's readings (smoke-2a, turn start) the complex value is +0.388. The complex log-likelihoods differ little (full minus base 0.011 per turn with smoke-1a at 160 to 200). So the outcome rests on the onset as well as on the file set: with smoke-1a it would be reproduced under the dataset's turn start, which a reader has been asked about, together with whether the one-reading rule of this criterion should differ from the all-readings rule of fig5e-cue-betas.",
+     "deviations": [
+      "The assumption of fig5e-cue-betas (smoke-1a files) and the SI onset the criterion asks for; the outcome rests on both.",
+      "The code's four models (VARIANT_FORMULAS) with trajectory-clustered SE; LL is the mean per turn. Smooth and complex readings are paired by onset, margin and z-scoring."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "methods-intensity-right-bias",
+     "statement": "Upwind-facing flies show a bias for rightward turns, toward the projector mount, that grows with the overall projected light intensity.",
+     "source": "SI, Supplementary Methods, Behavioral Analysis, paragraph 3",
+     "quote": "Intensity was included to account for an observed bias exhibited by upwind-facing animals for rightward turns, towards the projector mount location, with increased overall projected light intensity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The files code turn direction as +1 or -1, the sign of the rotational velocity at the event's peak (all 15841 turns checked), and describe it only as 'Turn direction label'. The heading is atan2(-vy, vx) (92.5% of moving frames within 30 degrees), so +1 turns are counterclockwise in the (x, -y) frame, but whether that is left or right depends on how the camera viewed the arena, which the files do not state; nor do they say where the projector mount is. The intensity coefficient of the full model (heading 160 to 200) favours the -1 direction in the smooth plume (-0.0497, p below 0.0001, SI onset; -0.0506 with the turn start; also per trajectory) and is not significant in the complex plume (smoke-1a +0.0058, p 0.27; smoke-2a -0.0001, p 0.95; every onset and z-scoring p above 0.26). So the criterion holds under every reading if -1 is a right turn and fails under every reading if +1 is a right turn.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5c-turn-angles",
+     "statement": "The detected saccade-like turns reorient flies by about 30 degrees, with median angular displacements of -34.2 and +33.8 degrees for the two turn directions.",
+     "source": "SI Figure S5C, legend; Results, Different Directional Odor Cues Predict Fly Crosswind Turning in Different Plume Types, paragraph 2",
+     "quote": "Median values (dashed lines; -34.2\u00b0, +33.8\u00b0) are similar to turn displacements reported in flies navigating plumes of smoke",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_brudner_2026.ipynb",
+     "notes": "All detected turns of both plumes pooled (smooth and smoke-1a, 80445 turns), the heading change from the event's start to its stop gives medians of -20.8 and +21.3 degrees, and the integral of rotational velocity over the event -20.3 and +20.9. Under every turn set the claims file names (all turns or the kept turns) and every complex file set, the two displacements give medians of -19.6 to -21.4 and +20.7 to +22.0 degrees, outside tolerance of -34.2 +/- 3.42 and +33.8 +/- 3.38. Over the run at or above half the peak (Fig. S5A measures peak width at half height) they are -25.0 to -26.6 and +26.8 to +27.7, also outside tolerance. Only the integral over the turn bounded by the 20% crossings of its peak on both edges, a variant the claims file does not name, gives medians within tolerance (all turns -34.3 and +35.2; with smoke-2a -35.0 and +35.9; with both complex sets -35.0 and +35.8; kept turns -32.7 and +36.2). The events lie inside the half-height run (start a median of 1 frame after its rising crossing, stop 1 frame before its falling one; median length 7 frames against 10 for the half-height run and 16 for the 20% run), start a median of 4 frames after the SI's onset, and 99.9% stop before the 20% crossing on the falling edge. By group, over the 20%-bounded turn, smooth -34.1 and +35.2, smoke-1a -35.1 and +35.1, smoke-2a -37.6 and +37.7. The first version's run of |dtheta| gives the same medians. Whether the dataset's events are the paper's turn bounds is asked of a reader.",
+     "deviations": [
+      "A variant, which does not decide the outcome, bounds the turn from the SI's onset (20% of the peak on the rising edge; SI, Behavioral Analysis) to the 20% crossing on the falling edge of the rotation in the turn's direction, the end the paper does not state. This bound was adopted after the event bounds failed.",
+      "The complex files are smoke-1a, as assumed for fig5e-cue-betas; smoke-2a and both sets are shown and give the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5fh-smoothing-agent",
+     "statement": "Agents using one fixed rule on time-smoothed gradient and motion cues produce turns for which a logistic regression on the local cues weights the gradient more in the smooth than in the complex plume and motion more in the complex than in the smooth plume, and, within each plume, weights the gradient above motion in the smooth plume and motion above the gradient in the complex plume, so time integration could account for the flies' pattern.",
+     "source": "Results, Different Directional Odor Cues Predict Fly Crosswind Turning in Different Plume Types, paragraph 5; SI Figure S5F to S5H, legend",
+     "quote": "We found that gradient cues were weighted more strongly in the smooth than in the complex plume; conversely, motion cues were weighted more strongly in the complex than in the smooth plume",
+     "statistics": [
+      {
+       "about": "within-plume difference of gradient and motion weights, each plume",
+       "test": "logistic regression weights compared",
+       "p": 0.005,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Agents navigate both plumes, and the smooth plume cannot be read (see fig1il-zscore-reliability); the paper's code holds no agent simulation.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": "as fig4ef-agent-success",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The complex-plume behavior files come in two sets, 'smoke-1a' (24 files) and 'smoke-2a' (24), recorded on the same days and vials, each with 12 flipped and 12 unflipped projections, whose session descriptions name two different movies (smoke_1a and smoke_2a) and whose signals differ (99th percentile of the intensity 171 and 252; the turn-direction coefficient of motion is positive in one set and negative in the other, in both projection flips). Nothing in the files or the dandiset says what smoke_2a is; the dandiset's description says the deposited smoke_1a_orig plume was analysed throughout the paper, the code selects smoke-2a only, and the Yale Dataverse deposit lists both as complex plume. The two sets' intensity layouts across y are not mirrored relative to each other, and the mean gradient cue of neither follows its mean intensity profile, so a sign convention differing between the sets cannot be ruled out from the files.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The turn_events table gives direction as +1 or -1 (\"Turn direction label\") without saying which is left or right, and the heading is described as in \"standardized arena coordinates\" but is atan2(-vy, vx), so y is reversed relative to the heading. Left and right turns cannot be named, which the paper's rightward bias towards the projector needs.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The turn events are not described. Their start comes a median of 4 frames (about 67 ms) after the turn onset the SI defines (20% of the peak rotational speed on the rising edge) and a median of 1 frame after the crossing of half the peak; they stop a median of 1 frame before the falling crossing of half the peak and 4 frames before the falling 20% crossing, and last 5 to 11 frames (all but 8 of 15841 sampled events 5 to 9). Turn displacements over the events (median about 21 degrees) are smaller than the paper's 34 degrees, which the turns bounded by the 20% crossings give.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The odor signals in the behavior files cannot be aligned with the deposited complex plume window. No file gives the movie frame shown at a trajectory frame or the trial's start in the movie.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "odor_velocity (the motion cue) is NaN on 95 to 98% of frames, which its description (\"estimated from frame-to-frame correlation of antenna-segment odor profiles\") does not explain; the paper's code holds the last value through the gaps.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Four smooth-plume files (sessions 2023811 ...4b490d04 and ...ba163898, 2023822 ...93542ebb and ...e5c9250e) hold 10 frames with y of 768 to 814 mm, in an arena 170 mm wide.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "205 of 7235 trajectories have no position at all (every x and y NaN) and are stored at full length, with nothing to say why; in 47 files some trajectories carry timestamps and others a starting time and rate.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The smooth plume movie, used by 15 of the paper's 22 claims (Figs. 1 to 4, S1 to S4 and S5F-H), is not in the dandiset. The description points to Dryad (doi:10.5061/dryad.g27mq71), whose downloads need an API token; the paper's own rescaled version is in neither the dandiset nor its Yale Dataverse deposit.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-12",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the author run, the executed notebook with the conclusions and summary removed, except one Result cell (then cell 26) that the handover left in, the helper module and the claims file; the verifier also read the paper under paper/ and the archive's file list and dandiset description.",
+     "agreed": 20,
+     "of": 22,
+     "disagreements": [
+      {
+       "claim": "fig5e-cue-betas",
+       "outcome": "not_reproduced",
+       "reason": "The criterion counts a claim as reproduced only if every reading gives that result; here the result depends on the reading. With the SI onset and smoke-2a, both plumes pass with stored or pooled z-scored signals; per-trajectory z-scoring fails both plumes. Under the code's readings the complex coefficients have the wrong sign and are out of tolerance. The choice of complex file set is doubtful: the archive's dandiset description says smoke_1a_orig was analyzed throughout the paper, and smoke-1a with the event start and heading 160 to 200 reproduces the published Fig. 5E coefficients almost exactly. The onset rule ignores the sign of the rotation and can run into an adjacent opposite-direction turn."
+      },
+      {
+       "claim": "fig5f-cue-dominance",
+       "outcome": "reproduced",
+       "reason": "One reading gives both values within tolerance with the right signs (SI onset, smoke-2a, heading 150 to 210, z none or pooled, 0.935 and -0.715); smoke-1a with the event start and heading 160 to 200 also gives 0.879 and -0.701. The result is fragile: under the code's readings the complex value is +0.388."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-12",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the round-1 revision, with its conclusions and summary, the helper module, the claims file, the attempt record and the README; the verifier also read the paper under paper/.",
+     "agreed": 22,
+     "of": 22,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-12",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The proposed change of outcome of figs5c-turn-angles, the only one in the record, with the analysis behind it in the notebook (cell 24), the helper module, the claims file and the attempt record; the verifier also read the paper under paper/.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's published Fig. 5E and 5F tables (data/published_panel_tables at commit effc7b0) are matched most closely by the smoke-1a behavior files with the dataset's turn start and the SI's heading window of 160 to 200 degrees (complex coefficients within 0.1 SE, all four log-likelihoods within 0.001 per turn), and not by what the code's metadata/published_panel_params.json names, the smoke-2a files with 150 to 210 degrees. Those give a Fig. 5E motion coefficient of -0.0119 (p 0.15) and gradient coefficient of -0.0124 (p 0.036), and a Fig. 5F cue dominance of +0.388, where the tables give +0.0441 (p 0.0055), +0.0185 (p 0.25) and -0.662. A port of the code was used; it was not run beside the code here. The smoke-1a files with the SI's onset at 160 to 200 degrees are also close (0.45 SE in motion).",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the paper's authors. (1) Which complex-plume behavior files are the complex plume of Fig. 5, smoke-1a, smoke-2a or both, what is the smoke_2a movie, and why does the code name smoke-2a and 150 to 210 degrees when its published tables match smoke-1a and 160 to 200? (2) Fig. 5E-F take cues 50 ms before turn onset, defined in the SI as the 20% crossing of the peak, while the code uses the deposited event start, which is later than that crossing on the files' dtheta; which was used, and on what turn speed? (3) How were the Fig. 2 and 3 samples balanced; were they mirrored (antennae swapped, label flipped), as the sum AUC of exactly 0.5 suggests? (4) Where does a turn end for the displacement of Fig. S5C? (5) How is the motion cue of Fig. S1G defined for a sensor spacing and a delay, and were the maps of Fig. S1F-G smoothed? (6) Were the Fig. 5 predictors z-scored over all frames or per trajectory? (7) Do the smoke-1a and smoke-2a files compute the gradient and motion cues with the same sign convention, given that they give complex coefficients of opposite sign?",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "brudner-2026",
+   "type": "reproduction",
+   "title": "Odor gradient and motion cues across two plumes (Brudner, Zhou et al. 2026)",
+   "description": "Tests the findings of Brudner, Zhou et al. (2026) that dandiset 001871 can test. It holds the walking trajectories and turn events of flies navigating a projected smooth plume and a complex smoke plume, and a 1500-frame window of the complex plume movie. The turn-direction regressions and cue dominance of Fig. 5, the turn angles of Fig. S5C, the centerline logistic models of Fig. 2 in the complex plume and the resolution analysis of Fig. S1F-G are tested. The smooth plume movie is not in the dandiset, so the claims on it, on the trained networks and on the navigating agents are blocked.",
+   "datasets": [
+    "dandi:001871"
+   ],
+   "papers": [
+    "10.1073/pnas.2608896123"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_brudner_2026.ipynb",
+     "title": "Reproducing Brudner, Zhou et al. (2026) from dandiset 001871",
+     "executed": "notebooks/brudner-2026/reproduce_brudner_2026.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 30,
+   "hashed": true
+  }
+ ],
+ "badge": null
+}
