@@ -38,6 +38,7 @@ import datetime
 import hashlib
 import html
 import json
+import urllib.parse
 import random
 import re
 import shutil
@@ -59,6 +60,7 @@ SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from 
                     "outcome and what they find about the data.")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import datasets  # noqa: E402
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
 import paper_records  # noqa: E402
 from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
@@ -1220,6 +1222,11 @@ def page_author(data: dict, author: dict) -> str:
               f'It may be a failure of the attempt.</p>') if n_claims else ""
     said = " · ".join(x for x in (f'{n} paper{"" if n == 1 else "s"}, {tried} attempted' if n else "",
                                   f'{m} dataset{"" if m == 1 else "s"}' if m else "") if x)
+    by_key = {q["key"]: q for q in papers_of(data)}
+    wrote = [r for rs in (data.get("responses") or {}).values() for r in rs if r["shown"] and r.get("orcid") == orcid]
+    wrote_html = "".join(response_item(
+        data, r, root, where=f' &middot; on <a href="{root}papers/{e(r["paper"])}/">{e(by_key[r["paper"]]["byline"])}</a>'
+        if r["paper"] in by_key else "") for r in wrote)
     badge, every = author_badge(data, author), author_outcomes(data, author)
     all_note = ("It counts every claim of these papers in a current attempt, verified or not, as the bar at the top "
                 "of this page does.")
@@ -1234,7 +1241,7 @@ def page_author(data: dict, author: dict) -> str:
                     "alt": every["alt"], "url": every["url"], "counts": all_note}]
     badge_panel = badges_how(styles, "Badges for this page" if len(styles) > 1 else "Badge for this page",
                              "on a lab&rsquo;s site or a profile", f"{root}api/authors/{e(orcid)}.json") if styles else ""
-    tabs = [("papers", "Papers", n), ("datasets", "Datasets", m)]
+    tabs = [("papers", "Papers", n), ("datasets", "Datasets", m), ("responses", "Responses", len(wrote))]
     tabs = [t for t in tabs if t[2]] or tabs[:1]
     tab_buttons = "".join(f'<button type="button" role="tab" data-panel="{k}" aria-selected="false">{label} '
                           f'<span class="count">{c}</span></button>' for k, label, c in tabs)
@@ -1248,6 +1255,10 @@ def page_author(data: dict, author: dict) -> str:
     <p class="sub small" style="margin-top:12px">Every dataset in the registry that names this ORCID iD among its
     contributors, with their roles as the dataset gives them, and what attempts found about its data.</p>
     <div class="results" style="margin-top:12px">{set_cards}</div></section>''',
+        "responses": f'''<section class="tabpanel" id="responses"><h2>Responses</h2>
+    <p class="sub small" style="margin-top:12px">What this person wrote in response to attempts on their papers,
+    once a maintainer confirmed who wrote it.</p>
+    <div class="author-responses"><ul>{wrote_html}</ul></div></section>''',
     }
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}authors/">Authors</a> / {e(name)}</p>
@@ -1828,7 +1839,7 @@ def caution_block() -> str:
     differs from what the paper analysed. “Blocked” means the claim could not be tested at all.</p>
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
-    from the paper’s. Authors who think an attempt is wrong can <a href="{REPO_URL}/issues">open an issue</a>.</p>
+    from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
   </div>
 </div>'''
 
@@ -2408,7 +2419,7 @@ def page_about(data: dict) -> str:
       partly fixed or still present. Earlier attempts stay in the record.</p></div>
     <div class="panel"><h2>Disagreeing with an attempt</h2>
       <p>The agents make mistakes. If you are an author of a paper here, or know the data, and think an attempt is
-      wrong, <a href="{REPO_URL}/issues">open an issue</a> on the registry. Every attempt links to its notebook, its
+      wrong, <a href="{RESPOND_URL}">respond to it</a> with the form for authors. Every attempt links to its notebook, its
       claims and the reasoning behind each outcome.</p></div>
   </div>
 </main>'''
@@ -2669,6 +2680,96 @@ def version_text(a: dict) -> str:
         return "unpublished draft" + (f" (modified {e(str(modified)[:10])})" if modified else "")
     doi = a["dataset"].get("doi")
     return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
+
+
+RESPOND_URL = f"{REPO_URL}/issues/new?template=author-response.yml"
+ORCID_ID = re.compile(r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]")
+
+
+def respond_link(paper: dict, attempt: dict | None = None) -> str:
+    """The author response form, filled in for this paper (and attempt)."""
+    q = {"paper": paper["key"], "title": f'Author response: {paper["byline"]}'}
+    if attempt:
+        q["attempt"] = attempt["id"]
+    return RESPOND_URL + "&" + urllib.parse.urlencode(q)
+
+
+def form_answers(body: str) -> dict:
+    """The answers of an issue form, by the label of each field (tools/runner/run_requests.py, form)."""
+    fields, name = {}, None
+    for line in (body or "").splitlines():
+        if line.startswith("### "):
+            name = line[4:].strip(); fields[name] = ""
+        elif name is not None:
+            fields[name] += line + "\n"
+    return {k: ("" if v.strip() == "_No response_" else v.strip()) for k, v in fields.items()}
+
+
+def paper_named(text: str) -> str | None:
+    """The key of the paper a form's "Paper" answer names: its key (kim-2022), its DOI, or the address of its page."""
+    text = (text or "").strip().splitlines()[0].strip() if (text or "").strip() else ""
+    known = paper_records.listed()
+    at = re.search(r"papers/([a-z0-9-]+)/?", text)
+    if text.lower() in known:
+        return text.lower()
+    if at and at[1] in known:
+        return at[1]
+    doi = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", text, flags=re.I).lower()
+    return next((k for k in known if paper_records.doi_of(k) == doi), None) if doi else None
+
+
+def responses_by_paper(issues: list[dict]) -> dict:
+    """Author responses (issues labelled author-response) by paper key. A response is to a paper's attempt, as the
+    claims and outcomes are the paper's. It is shown once a maintainer confirmed who wrote it (`author-confirmed`
+    for an author of the paper, `confirmed` for anyone else); the rest are only counted."""
+    out: dict = {}
+    for i in issues:
+        f = form_answers(i.get("body", ""))
+        key = paper_named(f.get("Paper", ""))
+        if not key:
+            continue
+        labels = {lab["name"] for lab in i.get("labels", [])}
+        orcid = ORCID_ID.search(f.get("ORCID iD", ""))
+        out.setdefault(key, []).append({
+            "url": i["url"], "state": i.get("state", "OPEN").lower(), "date": (i.get("createdAt") or "")[:10],
+            "name": f.get("Your name", ""), "role": f.get("Your role in the paper", ""), "view": f.get("Your view of the attempt", ""),
+            "orcid": orcid[0] if orcid else None, "paper": key,
+            "attempt": f.get("Attempt", ""), "claims": f.get("Claims you are responding to", ""), "text": f.get("Your response", ""),
+            "author": "author-confirmed" in labels, "shown": bool(labels & {"author-confirmed", "confirmed"}),
+            "disputed": "disputed" in labels})
+    return out
+
+
+def response_item(data: dict, r: dict, root: str, where: str = "") -> str:
+    """One confirmed response: who wrote it (their page here, when their ORCID iD has one), their view, and the
+    start of its text, with the issue it is in. `where` names the paper, on a page that is not the paper's."""
+    known = author_index(data) if data.get("targets") is not None else {}
+    name = (f'<a href="{root}authors/{e(r["orcid"])}/">{e(r["name"])}</a>' if r.get("orcid") in known else e(r["name"]))
+    return (f'<li><p class="small"><strong>{name}</strong>, {e(r["role"]) if r["author"] else "not an author of the paper"}'
+            f' &middot; {e(r["date"])} &middot; <em>{e(r["view"])}</em>{" &middot; under review" if r["disputed"] else ""}'
+            f'{(" &middot; attempt " + e(r["attempt"])) if r["attempt"] else ""}'
+            f'{(" &middot; claims " + e(r["claims"])) if r["claims"] else ""}{where}</p>'
+            f'<p>{e(squash(r["text"])[:900])}{"&hellip;" if len(squash(r["text"])) > 900 else ""} '
+            f'<a href="{e(r["url"])}">Read it in full</a></p></li>')
+
+
+def responses_block(data: dict, paper: dict, attempt: dict | None = None, root: str = "") -> str:
+    """The confirmed responses to a paper's attempts, and how many await confirmation: on the paper's page all of
+    them, on an attempt's page those to that attempt or to the paper's attempts in general."""
+    rs = [r for r in (data.get("responses") or {}).get(paper["key"], [])
+          if not attempt or r["attempt"] in ("", attempt["id"])]
+    seen: set = set()
+    rs = [r for r in rs if not (r["url"] in seen or seen.add(r["url"]))]
+    if not rs:
+        return ""
+    shown = [r for r in rs if r["shown"]]; waiting = len(rs) - len(shown)
+    items = "".join(response_item(data, r, root) for r in shown)
+    wait = (f'<p class="sub small">{waiting} response{"s" if waiting != 1 else ""} from someone who says they are an author '
+            f'await{"" if waiting != 1 else "s"} confirmation.</p>') if waiting else ""
+    return (f'<div class="author-responses"><h2>Responses from the paper&rsquo;s authors</h2>'
+            f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">An author can say whether the '
+            f'outcomes are right with the form linked under this ("Respond to this attempt"). '
+            f'<a href="{REPO_URL}/blob/main/docs/author-responses.md">How responses are handled</a>.</p></div>')
 
 
 def summary_block(atts: list[dict], name=None) -> str:
@@ -3152,6 +3253,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                     for q in papers_of(data) if q["doi"] in papers_here and q["attempts"]]
         actions += [f'<a href="{root}api/{page_of(dandiset).rstrip("/")}.json">JSON</a>']
     actions += [f'<a href="{root}#caution">How to read outcomes</a>']
+    # The author response form (docs/author-responses.md), filled in for the paper and, on an attempt's page or the
+    # page of a paper with one current attempt, for the attempt. A response is to a paper's attempt, so the link is
+    # on those two pages and not on a dataset's.
+    if paper:
+        responding = one or (atts[0] if len(atts) == 1 else None)
+        actions += [f'<a href="{e(respond_link(paper, responding))}">'
+                    f'{"Respond to this attempt" if responding else "Respond to an attempt"}</a>']
 
     tags = ""
     if paper:
@@ -3349,6 +3457,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
   {summary_block(atts, name=(lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a))) if paper else None)}
+  {responses_block(data, paper, one, root) if paper else ""}
   {f'<p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>' if tested_on else ""}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
@@ -3656,6 +3765,8 @@ def main() -> int:
                         help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
     parser.add_argument("--queue", type=Path, metavar="JSON",
                         help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
+    parser.add_argument("--responses", type=Path, metavar="JSON",
+                        help="the author-response issues (gh issue list --label author-response --state all --json url,body,labels,state,createdAt)")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     parser.add_argument("--notebooks-from", metavar="URL",
@@ -3674,6 +3785,8 @@ def main() -> int:
     data["notebooks_root"] = args.notebooks_from
     if args.queue and args.queue.is_file():
         data["queue"] = json.loads(args.queue.read_text())
+    if args.responses and args.responses.is_file():
+        data["responses"] = responses_by_paper(json.loads(args.responses.read_text()))
     if args.issues and args.issues.is_file():
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
         # An issue's title is "<dataset label or paper key>: waiting on you" (tools/notify.py); a paper's is shown
