@@ -143,6 +143,7 @@ outcomes:
   - Halves of stable1 are its first and second 15 min, as the claims file reads them.
 - claim: fig1d-instability
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_park_2019.ipynb
   output: claim:fig1d-instability
   notes: KLD on spike counts (reading a) gives trial pairs F(1.60, 182.42) = 11.74, p = 7.2e-05 (the
@@ -154,6 +155,12 @@ outcomes:
     adding 0.5 to rates far below 1 flattens the probabilities) only stable1-arena exceeds the
     halves (p below 0.0001; the others 0.15 and 0.26). The criterion has no partial form; the
     outcome is partial because two of the three comparisons with the halves hold under reading (a).
+    Read strictly, the claim is not reproduced.
+  deviations:
+  - The criterion gives only the reproduced form. Partially reproduced is a judgement outside it,
+    made because both ANOVAs and two of the three comparisons with the halves hold under reading
+    (a); this is an assumption, and under a strict reading of the criterion the outcome would be
+    not reproduced.
 - claim: fig2-decoding-stable-vs-rotating
   outcome: reproduced
   assumed: true
@@ -198,11 +205,11 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_park_2019.ipynb
   output: claim:fig2c-proximity-anticorrelation
-  measured: -0.071
+  measured: -0.0698
   notes: Under every reading (Idir bins and probabilities, proximity a or b, and distance to the
     zone's centre, to its nearest point, or by angle about the arena centre to the zone's centre
-    direction) the mean of the 14 frame-specific correlations is negative, -0.042 to -0.087 (first
-    reading -0.071), and none of the 24 is within -0.141 ± 0.029 or -0.132 ± 0.024; 8 to 12 of 14
+    direction) the mean of the 14 frame-specific correlations is negative, -0.043 to -0.087 (first
+    reading -0.0698), and none of the 24 is within -0.141 ± 0.029 or -0.132 ± 0.024; 9 to 12 of 14
     are negative and 7 to 11 negative with p < 0.0001, never all 14. ΔIdir correlates negatively
     with proximity at p < 0.05 in 4 to 6 of 7 ensembles (mean r -0.040 to -0.128). The criterion
     makes this partial under every reading, so the outcome does not rest on how the distance is
@@ -225,12 +232,18 @@ outcomes:
     claims file asked whether every test should have p > 0.17, the bound the paper reports; the
     reader answered on 2026-11-13 that the criterion stands (non-significance at 0.05), so the
     answer changed nothing here and the claim was not re-run. With the assumed n the smallest p is
-    0.35, so the tests would also meet that bound.
+    0.35, so the tests would also meet that bound. The 10 degree, rotating-trial Idir reading is
+    not the only one under which figs2-frame-preference reproduces; that claim matches with 45
+    degree bins and rotating-trial probabilities, and under that Idir reading 1 of 14 tests here is
+    significant even with n the sum of the weights (smallest p = 0.040), so the claim would not be
+    reproduced under it.
   deviations:
   - The n of the weighted Rayleigh test is taken as the sum of the weights, the convention of the
     weighted Rayleigh test in CircStat (circ_rtest), the field's standard MATLAB toolbox; the paper
     does not say. With n the number of bins the claim is not reproduced (1 of 14 tests at p <
-    0.05). The Idir reading is the first the figs2 criterion lists. This is an assumption.
+    0.05). The Idir reading is the first the figs2 criterion lists, not the one under which figs2
+    reproduces (45 degree bins), where 1 of 14 tests is significant under either n. Both are
+    assumptions the outcome rests on.
 - claim: fig3-hd-pair-correlations-preserved
   outcome: reproduced
   notebook: reproduce_park_2019.ipynb
@@ -302,6 +315,7 @@ outcomes:
     histogram; KLD uses its counts.
 - claim: fig4c-arena-registration-short-lived
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_park_2019.ipynb
   output: claim:fig4c-arena-registration-short-lived
   notes: Run under the four readings of window side and normalisation. With the Methods'
@@ -311,20 +325,33 @@ outcomes:
     before (p = 0.096 to 0.50) and differ at 10 s with cell 2 after (p = 0.0094). Every reading
     differs at every interval beyond 10 s (p below 0.002). The arena frame is below all three other
     conditions at none of 20 to 60 s with the Methods' normalisation, and only at 60 s (before) or
-    50 and 60 s (after) with the code's; at 20 to 50 s the room frame falls as far as or further
-    than the arena frame (Methods' normalisation, before, 40 s, 0.267 and 0.281 against 0.410 and
-    0.452). At 300 and 600 s the arena frame is below the others in every reading, and the room
-    frame below both stable trials with the Methods' normalisation, as reported, but not at 600 s
-    with the code's. The criterion's partial form needs the arena frame to fall below the others
-    beyond 10 s; it falls only from 50 or 60 s, after the room frame, so the effect claimed for 20
-    to 60 s is not found. The outcome was partially reproduced before the first verification
-    round, when only cell 2 spikes before were run; the verifier gave not reproduced.
+    50 and 60 s (after) with the code's. With the Methods' normalisation the room frame falls as
+    far as or further than the arena frame at 20 to 50 s (before, 40 s, 0.267 and 0.281 against
+    0.410 and 0.452). With the code's normalisation the room frame falls first (cell 2 before, below
+    both stable trials at 20 s, where the arena frame is not), and the arena frame is lower from 40
+    s (0.180 against 0.204 before, 0.181 against 0.208 after) and below the room frame by Tukey's
+    test from 50 s (after) or 60 s (before). At 300 and 600 s the arena frame is below the others
+    in every reading, and the room frame below both stable trials with the Methods' normalisation,
+    as reported, but not at 600 s with the code's. The code's normalisation with cell 2 before meets
+    the words of the partial form (no difference up to 10 s, differences at every later interval,
+    the arena frame below the other three at 60, 300 and 600 s, the room frame not below stable2
+    at 600 s). The outcome takes "beyond 10 s" in the partial form as from 20 s, the arena-frame
+    part of the full criterion, and under that reading no reading of window side and
+    normalisation meets it; read as any interval beyond 10 s, the outcome would be partially
+    reproduced. The outcome was partially reproduced before the first verification round, when
+    only cell 2 spikes before were run; the verifier gave not reproduced.
   deviations:
   - Strength is the Rayleigh vector length of the internally referenced curve, the reading the
     claims file gives.
   - One-way ANOVA on 141 to 146 pairs per interval (pairs with a defined curve in all four
     conditions at that interval), with between-groups Tukey-Kramer HSD, as the criterion's one-way
     ANOVA implies.
+  - The partial form ("the arena frame falls below the others beyond 10 s and not before, but the
+    room-frame order at long intervals is not found") is read as requiring the arena-frame order
+    of the full criterion, below the three others from 20 s, since it names only the room-frame
+    order as missing, and the paper writes that arena-frame tuning "abruptly decreased after 10 s"
+    while the ensemble registered to the room frame within about 10 s (Results, Transient
+    Allocentric Registration, paragraph 3). This is an assumption the outcome rests on.
 - claim: fig5-error-inhomogeneous
   outcome: partially_reproduced
   notebook: reproduce_park_2019.ipynb
@@ -346,9 +373,9 @@ outcomes:
     tolerance of 0.589, and the arena-frame head-direction r is 0.360 (0.378); the arena-frame r is
     0.484, 0.543 and 0.144 (0.653) and the room-frame head-direction r 0.072 (0.147). The measured
     values are those of reading (ii) at 15 degrees, the first listed reading with two r within
-    tolerance. Reading (i) gives error r of 0.030 to 0.426 at 20 samples. Pooled (reading a) no r
+    tolerance. Reading (i) gives error r of 0.031 to 0.426 at 20 samples. Pooled (reading a) no r
     is within tolerance under any reading, and the medians over ensembles (reading c) reach at most
-    0.343 (room) and 0.548 (arena, reading ii at 133 ms). The answer brings the arena-frame error r
+    0.348 (room, reading ii at 666 ms) and 0.548 (arena, reading ii at 133 ms). The answer brings the arena-frame error r
     closer to 0.653 but not within tolerance, and leaves the outcome as it was under reading (iii)
     (partially reproduced, with measured values 0.560, 0.144, 0.0718 and 0.360). Four ensembles
     tie at six cells; the other three match at most one value under any reading. The paper's z
@@ -377,8 +404,13 @@ outcomes:
     340 degrees (centres 105 and 345), within 10 degrees of 110 and 350 by their bin centres. This
     is 1 of 32 combinations of window, pooling and reading, against 0.20 expected by chance for two
     minima placed at random; 10 others find one of the two minima (6.6 expected by chance) and the
-    pooled 133 ms variant finds neither. The outcome rests on the pooled reading. Whether the minima match
-    the cue positions cannot be tested.
+    pooled reading (a) with 133 ms windows finds neither. Were the 32 rows independent, at least one
+    would match both minima by chance with probability 0.18 (they share data, so this is rough).
+    The pooled curve is shallow (Rayleigh r 0.032 under fig5-error-inhomogeneous reading i; mean
+    error 63.2 to 91.3 degrees by head direction, mean 76.8), and the two minima lie 13.6 and 13.4
+    degrees below the mean but only 0.1 and 1.6 degrees below their lower neighbouring bin, so the
+    match is weak support. The outcome rests on the pooled reading. Whether the minima match the
+    cue positions cannot be tested.
   deviations:
   - The paper does not say which recordings are pooled or which measure Figure 5C plots; the match
     is found with all seven ensembles pooled and the mean error by head direction, an assumption
@@ -693,3 +725,185 @@ verifications:
       rows match one. The chance rates are printed (0.20 rows expected with both, 6.6 with one).
       The bin-start convention follows the paper's code and is kept, noted as a deviation. Outcome
       unchanged.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the first revision, with its conclusion cells and
+    summary, the helper module, the claims file, the README and this attempt record, with the
+    paper's full text.
+  results:
+  - claim: cell-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Round-1 point resolved, cell-counts now uses the Rayleigh vector of
+      the tuning curve.
+    response: No change.
+  - claim: hd-cell-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: fig1a-avoidance-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands. Round-1 point resolved, the two .xls lists are now read.
+    response: No change.
+  - claim: fig1c-speed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands. Round-1 point resolved, tukey_rm added (formula checked by reading).
+    response: No change.
+  - claim: fig1c-lfp-power
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: fig1c-firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands. Round-1 point resolved, with the R523 outlier dropped as a variant p
+      = 0.275.
+    response: No change.
+  - claim: fig1c-directionality
+    agrees: true
+    outcome: reproduced
+    reason: The repeated-measures error term for Tukey is stated and reasonable. The Bonferroni
+      paired t-test gives 0.0048 for the deciding pair, so the outcome does not depend on tukey_rm
+      assuming sphericity while Mauchly's test is significant.
+    response: No change.
+  - claim: fig1d-preference-change
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Point 13 (the fig1d legend order) is passed to a reader; the claim
+      is tested as written, which is acceptable.
+    response: No change.
+  - claim: fig1d-instability
+    agrees: false
+    outcome: partially_reproduced
+    reason: The criterion has no partial form, and the record says so. Partial is therefore a
+      judgement outside the criterion (the verifier made the same one in round 1). Either mark it
+      assumed with that reason, or give not reproduced.
+    response: Kept partially reproduced, the outcome the verifier gave in round 1, and marked it
+      assumed, with a deviation saying that partial is a judgement outside the criterion and that
+      under a strict reading the outcome would be not reproduced. The notebook's result cell and
+      summary say the same.
+  - claim: fig2-decoding-stable-vs-rotating
+    agrees: true
+    outcome: reproduced
+    reason: The claims file's majority rule is stated and reasonable.
+    response: No change. The decoder's window directions are now rounded to 1e-6 degrees before
+      binning (see fig5-error-inhomogeneous); the counts of 4 of 7 are unchanged.
+  - claim: figs2-frame-preference
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (1 of 16 readings, two labels on 0.02 to 0.03 differences) is stated and
+      reasonable. Cell 43 and the record give 0.605, 0.291, 0.199 and 0.054, and 1023R029 0.000
+      against 0.367; cell 42 prints 0.606, 0.292, 0.200 and 0.368.
+    response: The printed values depended on floating-point noise in the window directions (see
+      fig5-error-inhomogeneous). After the fix the output prints 0.605, 0.291, 0.199, 0.054 and
+      0.367, which the text and notes now match. Counts and outcome unchanged.
+  - claim: fig2c-proximity-anticorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Cell 46 gives -0.062 to 0.113 where cell 45 prints a maximum of
+      0.114, and the record gives a first reading of -0.071 and measured -0.071 where cell 45
+      prints -0.0704. Round-1 point resolved, with edge and angle distances added; the outcome
+      holds under all 24 readings.
+    response: Corrected to the new run, in which the window-direction fix moves these values
+      slightly; measured is now -0.0698, the range of means -0.043 to -0.087, 9 to 12 of 14
+      negative, and the per-ensemble range -0.063 to 0.115. Outcome unchanged.
+  - claim: figs3-no-head-direction-bias
+    agrees: false
+    outcome: reproduced
+    reason: The n = sum-of-weights assumption is stated and is reasonable (CircStat convention). Not
+      stated is that the Idir reading used (10 degree bins) is not the only one under which figs2
+      reproduces (45 degree bins, rotating trial, ΔIdir SD, both below 0.05). Under the figs2
+      reading figs3 has 1 of 14 tests significant even with n = sum of weights (min p 0.039, cell
+      48), so it would not reproduce. The record should say so.
+    response: The notes, the deviation and the notebook's result cell now say that under the Idir
+      reading that reproduces figs2, 1 of 14 tests is significant under either n (smallest p 0.040
+      with n the sum of the weights in the new run), so the claim would not be reproduced there,
+      and that the outcome rests on both assumptions. Outcome unchanged.
+  - claim: fig3-hd-pair-correlations-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands. Round-1 point resolved, the offset unit forms no pair.
+    response: No change.
+  - claim: figs4-all-pair-correlations-preserved
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: figs5-hd-cells-high-model-information
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: figs6-subclass-correlations-preserved
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: no-angular-velocity-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: The claims file's test, now with shift controls, is stated and reasonable; the shift
+      tests keep the excess, so it does not come from treating samples as independent.
+    response: No change.
+  - claim: fig4-internal-tuning-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as it stands. Round-1 point resolved, the rescaled KLD variant was added and the
+      (b) reading still passes, instability p = 0.052. The README says the notebook takes about
+      seven minutes, four and a half of them for the internally referenced tuning; cell 59 prints
+      306 s (5.1 min), and the notebook prints no total runtime.
+    response: The notebook now prints its total run time at the end, and the README gives the times
+      of recent runs (6.1 to 7.3 min in total, 270 to 313 s for the internally referenced tuning) as
+      six to eight minutes, about five of them for that step.
+  - claim: fig4c-arena-registration-short-lived
+    agrees: false
+    outcome: not_reproduced
+    reason: The outcome depends on how "beyond 10 s" is read, and the record does not state that as
+      an assumption. The before-side, code-normalisation reading meets the partial clause word for
+      word (no differences up to 10 s, p < 0.05 at every later interval, arena below all three
+      others at 60, 300 and 600 s, room not below stable2 at 600 s). Both 50 and 60 s are beyond 10
+      s, and "after the room frame" is not a condition in the criterion. Not reproduced is
+      defensible if "beyond 10 s" is read as "from 20 s", which fits the paper's "abruptly
+      decreased after 10 s" and its legend's 20 to 60 s order; the verifier's round-1 outcome made
+      the same reading. Either mark it assumed and state that reading, or change it to partially
+      reproduced. Separately, "at 20 to 50 s the room frame falls as far as or further than the
+      arena frame" holds only with the Methods' normalisation; with the code's the arena frame is
+      lower at 40 s (0.180 against 0.204 before, 0.181 against 0.208 after) and at 50 s.
+    response: Kept not reproduced and marked it assumed, with a deviation stating the reading of
+      "beyond 10 s" as from 20 s and why (the partial form names only the room-frame order as
+      missing, and the paper's "abruptly decreased after 10 s" with registration to the room frame
+      within about 10 s), and saying that read as any interval beyond 10 s the outcome would be
+      partially reproduced. The sentence on the room frame now holds only for the Methods'
+      normalisation, and the code's normalisation is described separately (the room frame falls
+      first at 20 s with cell 2 before, the arena frame is lower from 40 s and below the room frame
+      by Tukey's test from 50 or 60 s).
+  - claim: fig5-error-inhomogeneous
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Cell 67 and the record give the arena-frame r as 0.484, 0.543 where
+      cell 66 prints 0.542; the room-frame medians as at most 0.343 where cell 66 prints 0.345 (4
+      samples, (ii) ≤15); and reading (i) error r of 0.030 to 0.426 at 20 samples where the lowest
+      printed value is 0.0284 (1121R157).
+    response: The re-run showed that these values moved between runs. Window directions that are
+      exact multiples of 10 degrees came out of the circular mean a rounding error above or below
+      the bin edge, so they fell in different bins on different machines. hd20.window_directions
+      now rounds the mean to 1e-6 degrees. In the new run the arena-frame r is 0.543, the room
+      medians reach 0.348 (reading ii, 20 samples), and reading (i) gives 0.031 to 0.426; text and
+      notes match these. The measured values and the outcome are unchanged.
+  - claim: fig5c-error-minima-at-cues
+    agrees: true
+    outcome: reproduced
+    reason: Agrees it is reproduced as the criterion is written, but the support is weak. It is 1
+      match in 32 combinations at 0.0063 per combination by chance; at least one match is expected
+      about 18% of the time, and the record gives only the 0.20 expected count. The pooled
+      error-by-direction curve is nearly flat (r = 0.029, cell 66). The note should say both.
+    response: The notebook now prints the chance of at least one match in 32 rows (0.18, rough as
+      the rows share data) and the depth of the pooled curve's minima (13.6 and 13.4 degrees below
+      the mean of 76.8, 0.1 and 1.6 below their lower neighbour; Rayleigh r 0.032 in the new run).
+      The notes and result cell state both and call the match weak support. The 1 of 32 and 10 of
+      32 counts are unchanged after the window-direction fix. Outcome unchanged.

@@ -314,12 +314,14 @@ def kld(p_counts: np.ndarray, q_counts: np.ndarray) -> float:
 
 def window_directions(d: np.ndarray, w: int) -> np.ndarray:
     """Circular mean direction (degrees, 0-360) of the tracked samples in each window of w samples;
-    NaN where no sample in the window is tracked."""
+    NaN where no sample in the window is tracked. The mean is rounded to 1e-6 degrees, so that a
+    window of equal integer directions lands in the same 10 degree bin on every machine (unrounded,
+    100 can come out as 99.99999999 or 100.00000001 depending on the CPU's floating-point path)."""
     nwin = len(d) // w
     dd = d[: nwin * w].astype(float).reshape(nwin, w)
     ok = dd <= 360
     z = np.where(ok, np.exp(1j * np.deg2rad(dd)), 0).sum(1)
-    ang = np.rad2deg(np.angle(z)) % 360
+    ang = np.round(np.rad2deg(np.angle(z)), 6) % 360
     ang[~ok.any(1)] = np.nan
     return ang
 
