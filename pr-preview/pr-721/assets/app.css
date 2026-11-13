@@ -35,6 +35,7 @@ button.theme:hover{background:var(--hover);color:var(--text)}
 /* In the bar the theme button is its mark alone (its state is in its title); the menu on a small screen has room
    for the word. Under 1120px the bar drops what it can do without, and under 920px it becomes the menu. */
 button.theme .t{display:none}
+nav.top a.tab.runs{display:none}   /* in the menu on a small screen, and in the footer */
 @media (max-width:1120px){nav.top .by,nav.top a.tab .n{display:none}}
 /* The tabs are one group (.tabrow): on a wide screen they sit in the bar as before; on a phone the bar is one line
    (brand and a menu button) and the button opens the tabs, and the theme button, as a list under it (THEME_JS sets nav.top.open). */
@@ -42,6 +43,7 @@ nav.top .tabrow{display:contents}
 button.navtoggle{display:none}
 @media (max-width:920px){
 nav.top .by{display:inline}
+nav.top a.tab.runs{display:flex}
 button.theme .t{display:inline}
 nav.top .wrap{flex-wrap:wrap;height:auto;gap:0 8px;overflow:visible;align-items:center;padding-top:8px;padding-bottom:8px}
 nav.top .brand{padding:0;margin-right:0;order:1}
@@ -197,6 +199,14 @@ padding:1px 8px;cursor:pointer}
 @media (max-width:640px){.row.drow .right{align-items:flex-start}}
 /* The papers list: the title leads, and every title starts in the same column (list.js, papers) */
 .row.drow.prow{grid-template-columns:1fr max-content}
+/* A paper's authors, under its title: the names past the first few open on request. */
+.authors{font-size:.95rem;color:var(--text2);margin:6px 0 8px;max-width:78ch}
+.authors p{margin:0}
+.authors a{color:inherit;text-decoration-color:var(--line);text-underline-offset:2px}
+.authors a:hover{color:var(--link);text-decoration-color:currentColor}
+.authors details{margin-top:2px}
+.authors summary{cursor:pointer;color:var(--muted);font-size:.88rem;width:max-content}
+.authors details[open] summary{margin-bottom:2px}
 /* The datasets list: open findings, counted on the right and by kind under the title. */
 .row.drow .open strong{font-variant-numeric:tabular-nums}
 .row.drow .open.none{color:var(--muted)}
@@ -383,6 +393,31 @@ td.ps.none::before{visibility:hidden}
 .flegend i{display:inline-block;width:.8em;height:.8em;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
 @media (max-width:560px){.frow{grid-template-columns:6em 1fr 5em;gap:6px;font-size:.82rem}}
 .timeline-panel{margin:0 0 20px}
+/* A paper's datasets under its title: a row each, with the version tested, size, findings and links. */
+.sets{margin:12px 0 4px;font-size:.92rem;overflow-x:auto}
+.sets table{border-collapse:collapse;color:var(--text2)}
+.sets caption{text-align:left;font-size:.78rem;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-bottom:4px}
+.sets th,.sets td{text-align:left;padding:6px 22px 6px 0;border-top:1px solid var(--line);white-space:nowrap;vertical-align:baseline}
+.sets th{font-weight:600;font-variant-numeric:tabular-nums}
+.sets tr:last-child th,.sets tr:last-child td{border-bottom:1px solid var(--line)}
+.sets td:last-child{padding-right:0}
+@media (max-width:640px){.sets table,.sets tbody{display:block}.sets tr{display:flex;flex-wrap:wrap;gap:0 16px;padding:6px 0;border-top:1px solid var(--line)}
+.sets th,.sets td{border:0!important;padding:1px 0;white-space:normal}.sets th{flex:0 0 100%}.sets td:empty{display:none}}
+.sets-why{font-size:.88rem;color:var(--text2);margin:6px 0 2px;max-width:78ch}
+.sets-why summary{cursor:pointer;color:var(--muted);width:max-content;max-width:100%}
+.sets-why ul{margin:6px 0 0;padding-left:18px}.sets-why li{margin:4px 0}
+/* The attempts behind a paper's results, closed until asked for: a quiet bar, not a panel of its own weight. */
+details.timeline-panel{padding:0}
+details.timeline-panel>summary{display:flex;align-items:baseline;gap:10px;padding:9px 16px;cursor:pointer;list-style:none;color:var(--text2)}
+details.timeline-panel>summary::-webkit-details-marker{display:none}
+details.timeline-panel>summary::before{content:"";align-self:center;width:6px;height:6px;border-right:2px solid var(--muted);
+  border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none}
+details.timeline-panel[open]>summary::before{transform:rotate(45deg)}
+details.timeline-panel>summary h2{font-size:.95rem;margin:0;font-weight:600}
+details.timeline-panel>summary:hover{color:var(--text)}
+details.timeline-panel[open]>summary{border-bottom:1px solid var(--line)}
+details.timeline-panel>p,details.timeline-panel>ol{margin-left:20px;margin-right:20px}
+details.timeline-panel>ol{margin-bottom:18px}
 .timeline{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 12px}
 .timeline li{position:relative;padding:24px 0 0;min-width:0;display:flex}
 .timeline li::before{content:"";position:absolute;top:7px;left:14px;right:-26px;height:2px;background:var(--line)}
@@ -402,7 +437,7 @@ color:var(--panel);background:var(--accent);border-radius:3px;padding:1px 7px}
 .timeline li{padding:0 0 0 30px}.timeline li::before{top:16px;bottom:-14px;left:8px;right:auto;width:2px;height:auto}
 .timeline .dot{top:12px;left:3px}.timeline li.here .dot{top:9px;left:0}}
 .timeline .t-version{font-size:.85rem;color:var(--text2)}
-.findings .tag[class*=status-]{margin-right:6px}
+.findings .tag{margin-right:6px}
 .tag.status-new{border-color:var(--accent);color:var(--accent)}
 .tag.status-fixed{border-color:var(--good);color:var(--good)}
 details.separate{margin-top:8px}details.separate>summary{cursor:pointer;width:fit-content}
