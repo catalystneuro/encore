@@ -1,0 +1,109 @@
+dandiset: "000017"
+paper: doi:10.1038/s41586-019-1787-x
+questions:
+- claim: edtable1-region-counts
+  asked: 2026-11-10
+  question: >-
+    The criterion counts, for each region of Extended Data Table 1, the neurons of definition N,
+    which applies the rule of at least 13 neurons per region in a session. The table's neuron column
+    sums to 22,458, the number the Results give for all neurons "localizable to one of 42 brain
+    regions", before any rule of 13 per session. Does the table count every neuron (curated, at least
+    0.1 Hz) of the 42 regions, the rule of 13 deciding only which regions are among the 42? If so,
+    should the criterion use those neurons?
+  passage: >-
+    "Across all sessions we recorded from 29,134 neurons ... of which 22,458 were localizable to one
+    of 42 brain regions" (Results, Brain-wide recording in visual behavior). "Neurons were only
+    included for further analysis when at least 13 neurons passing the above criteria were
+    identified as coming from the same brain region, in the same experiment. Furthermore, brain
+    regions were only included for which recordings from at least two subjects had sufficient
+    numbers of neurons." (Methods, Data analysis). The claims file notes that the table's neuron
+    column sums to 22,458.
+  why: >-
+    With neurons N, recordings, mice and neurons match in 26 of the 42 regions and the claim is not
+    reproduced. Counting every neuron of the 42 regions, they match in 38 of 42 (recordings exact in
+    41, mice in 42), and the neurons number 22,434 against 22,458, so the claim would be reproduced.
+    The same reading decides the area lists of supptable2-sessions (38 of 39 sessions match with all
+    neurons, 24 with neurons N).
+  answer: >-
+    The claims file misread it, and the criterion is changed. The Methods count as a neuron every
+    curated unit with a trial firing rate of at least 0.1 Hz ("Units passing these criteria were
+    considered to reflect the spiking activity of a neuron"); the rule of 13 applies only to
+    "further analysis". The Results give 22,458 "localizable to one of 42 brain regions", the sum
+    of the table's neuron column, and 60.0% of them (13,466) are active, the sum of its responsive
+    column, so the table counts every neuron of the 42 regions. The criterion now counts those
+    neurons, with recordings read as (a) sessions with any neuron of the region or (b) sessions
+    with at least 13, and definition N as a variant. supptable2-sessions now takes its area lists
+    from the same neurons and readings.
+  answered: 2026-11-10
+- claim: fig4d-jpecc-vis-leads
+  asked: 2026-11-10
+  question: >-
+    The criterion does the PCA "per group and time bin", following jPECC.m. The Methods say the PCA
+    was performed "across time points and trials". Reader step 2 of the protocol puts the Methods
+    before the code where they disagree. Should the criterion use one PCA across time points and
+    trials, with the per-bin PCA of jPECC.m as a variant? The same applies to
+    fig4d-jpecc-no-lag-frontal-midbrain.
+  passage: >-
+    "For each region group, principal components analysis was performed across time points and
+    trials to reduce population activity to 10 dimensions." (Methods, jPECC analysis). jPECC.m calls
+    pca on squeeze(sp1(:,t1,:)) inside the loop over time bins.
+  why: >-
+    The two PCAs can give different canonical correlations at each pair of bins. Here both were run
+    and give the same outcomes (VIS leads Frontal, not Midbrain; one uncorrected significant point
+    for Frontal-Midbrain), so the misreading does not change these outcomes, but a later attempt
+    should follow the Methods.
+  answer: >-
+    The claims file misread it, and the criterion is changed. The Methods say "For each region
+    group, principal components analysis was performed across time points and trials to reduce
+    population activity to 10 dimensions", one PCA per group, and jPECC.m fits one per time bin.
+    Where they disagree the Methods come first and the code is a variant (Reader, step 2), so
+    fig4d-jpecc-vis-leads now uses one PCA per group across time points and trials, with the
+    per-bin PCA of jPECC.m as a variant. fig4d-jpecc-no-lag-frontal-midbrain takes its method from
+    that claim and follows it with no edit of its own.
+  answered: 2026-11-10
+- claim: fig5d-go-miss-matches-task-passive
+  asked: 2026-11-10
+  question: >-
+    The criterion takes the per-region means "as ed6b-prestimulus-order", whose neurons are those
+    of the Figs. 3 to 5 set (task-responsive neurons N). The Fig. 5c and 5d legends average "over
+    all neurons in each region" and give the neurons per region as 130 to 1534, which are the
+    smallest and largest neuron counts of Extended Data Table 1 (PAG and MOs), i.e. every neuron
+    of the region. Should fig5d-go-miss-matches-task-passive, and ed7f-detect-probability-engagement,
+    which takes its task minus passive difference from fig5d, use all neurons of each region, with
+    the Figs. 3 to 5 set as a variant?
+  passage: >-
+    "d, Scatterplot showing difference in pre-stimulus rate between task and passive contexts
+    (x-axis) and between go and miss trials within the task context (y-axis), averaged over all
+    neurons in a region. Text size indicates number of neurons in the analysis (range 130-1534)."
+    (Fig. 5 legend). "c, Brain map showing difference in pre-stimulus firing rate between task and
+    passive conditions, averaged over all neurons in each region." (Fig. 5 legend). Extended Data
+    Table 1 gives 130 neurons for PAG and 1534 for MOs.
+  why: >-
+    The neuron set changes the correlations. With the Figs. 3 to 5 set fig5d gives r = 0.641
+    (window a) and ed7f gives r = 0.515, both within their criteria; with all neurons N of each
+    region fig5d gives r = 0.494 (p = 0.0009) and ed7f r = 0.444 (p = 0.003, window a) and
+    0.442 (window b). Both claims are reproduced either way here, but ed7f's tolerance (0.48 ±
+    0.048, lower bound 0.432) leaves a margin of 0.01 with all neurons, so a later attempt could
+    differ. The verifier of round 1 raised it.
+- claim: fig5b-miss-more-than-passive
+  asked: 2026-11-10
+  question: >-
+    The statement is about activation: more neurons are significantly activated by contralateral
+    stimuli on Miss trials than on passive trials. The criterion's expected value is the number of
+    sessions with enough contrast-matched trials (34), with tolerance 0, and the outcome requires
+    exactly 34 sessions to be kept. That number comes from the Methods' description of the
+    matched-contrast selection, not from Fig. 5b. Should the session count be a condition of the
+    outcome, or should the claim be judged on the activation conditions (pooled fraction and the
+    regional excess), with the session count reported?
+  passage: >-
+    "When fewer than 10 such trials could be found, the session was excluded for the
+    matched-contrast analyses (n=34 of 39 sessions included)." (Methods, Training protocol). "More
+    neurons were significantly activated by contralateral visual stimuli on Miss trials than on
+    passive trials" is the claim's statement (Results, Distributed coding of task engagement;
+    Fig. 5b).
+  why: >-
+    Here the selection keeps 36 sessions and no threshold from 10 to 14 gives 34, so the claim is
+    not reproduced on the session count alone. The activation conditions hold: with z-reading Z1
+    and finite z, the pooled fraction is 4.82% on Miss against 3.24% on passive trials (Figs. 3 to
+    5 set) and Miss is above passive in 30 of 42 regions. Judged on activation, the claim would be
+    reproduced. The verifier of round 2 raised it.
