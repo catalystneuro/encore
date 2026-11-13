@@ -1360,11 +1360,10 @@ def author_outcomes(data: dict, author: dict) -> dict | None:
 
 def _legend(counts: dict, x: float, y: float, gap: float = 14) -> tuple[str, float]:
     """The outcomes in a row from x: a dot in the outcome's colour, then its count and name in ink (the dot carries
-    which outcome it is, the text stays readable). Returns the drawing and where it ends."""
+    which outcome it is, the text stays readable). All four are there, an outcome with no claim as 0: a badge then
+    reads the same way for everyone, and says outright that nothing failed. Returns the drawing and where it ends."""
     out = ""
     for k, n in counts.items():
-        if not n:
-            continue
         text = f"{n} {OUTCOME_SHORT[k]}"
         out += (f'<circle cx="{x + 4:.0f}" cy="{y - 4:.0f}" r="4" fill="{OUTCOME_FILL[k]}"/>'
                 f'<text x="{x + 13:.0f}" y="{y:.0f}" textLength="{_text_width(text):.0f}">{e(text)}</text>')
