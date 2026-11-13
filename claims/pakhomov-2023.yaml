@@ -1,0 +1,655 @@
+# Claims for Pakhomov, Gudvangen, Mangalanathan, Kondratiev, Redondo & Semenov (2023), "Next
+# generation CANCAN focusing for remote stimulation by nanosecond electric pulses",
+# Bioelectrochemistry 152, 108437, tested on dandisets 000686, 000875, 001025, 001027 and 001028.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md. It replaces the four files written 2026-10-22
+# and 2026-10-23 under pilot-10, one per dataset (claims/pakhomov-2023/); ids are kept where the
+# finding is the same, taken from the file of the dataset that holds the figure.
+#
+# Text read. The accepted author manuscript in PubMed Central (PMC10247516, NIHMS1891360), as
+# served by ncbi_pmc, in paper/10.1016-j.bioelechem.2023.108437.txt: Introduction, Materials and
+# methods (2.1 to 2.4), Results (3.1 to 3.5), Discussion and the legends of Figs. 1 to 9. It is
+# not the version of record. The paper has no supplement (PMC marks "has-supplement no", and the
+# text cites none). No PDF was supplied, so no figure was read, and values printed only in a
+# figure (the voltages of Fig. 7 other than 2.4 and 5.6 kV, every axis value) are not used. The
+# paper links no code and no data deposit (images were measured in MetaMorph 7.8.13 and Fiji,
+# graphs drawn in Grapher 16), so no repository was read. Every method below is from the Methods
+# or the figure legends.
+#
+# The datasets, from their titles on DANDI.
+# - 000686, "Focusing electroporation to the center of a quadrupole electrode array by
+#   interference of unipolar pulses", the title of Fig. 5. Claims on Fig. 5 rest on it.
+# - 000875, "Influence of unipolar pulse packet quantity on centering the electroporation effect
+#   within a quadrupole electrode array", the experiment of Fig. 6.
+# - 001025, "The impact of voltage on CANCAN focusing of electroporation using four-electrode
+#   arrays of varying sizes", the experiment of Fig. 7.
+# - 001027, "CANCAN focusing of electroporation in a quadrupole array by different pulsing
+#   protocols", the experiment of Fig. 8 (three packets, 1Px4, 4 kV).
+# - 001028, "CANCAN focusing of electroporation in 3D", the title of Fig. 9.
+# - No title names the single-cell experiment of Fig. 4 or the field simulations of Fig. 3, and
+#   the paper gives no other data location. Those claims list all five datasets: the author checks
+#   each, and blocks the claim as data_missing when none holds the data. They are kept because
+#   Fig. 4 is the basis of the paper's design and of its last finding.
+#
+# Data the paper used, as it reports them. All experiments are in CHO-K1 cells. Electroporation is
+# measured as uptake of YO-PRO-1 dye (YP), as fluorescence intensity.
+# - Individual cells (Fig. 4; Methods 2.2, Results 3.1). Cells on 10-mm glass coverslips, 1 uM YP,
+#   confocal images (40x, 0.95 NA) every 10 s for 600 s, pulses at 57 s. Two tungsten electrodes
+#   (100 um diameter, 140 um gap, 50 um above the coverslip) driven from two EPULSUS-FPM4-7
+#   channels. Five groups, 21 to 30 cells each (25 for the unipolar pulse): sham; one 600-ns
+#   unipolar pulse at 15 kV/cm; and three bipolar signals that start with the same pulse and lose
+#   1/8 of the first amplitude per phase (4 phases; 8 phases; 8 phases with 5-us delays). Per
+#   cell, a manual ROI; F is its mean intensity, F0 the mean of the six images before the pulses,
+#   and F-F0 is the measure. Groups were run in random order.
+# - Cell monolayers (Figs. 5 to 9; Methods 2.3 and 2.4). 35-mm glass-bottom dishes, one dish per
+#   experiment (Methods 2.1). A quadrupole array of four 1.5-mm needles (e1 to e4), small or large
+#   (about 2-fold apart; the large has an 8.4-mm diagonal), touching the glass or, in Fig. 9, 1 to
+#   3 mm above it. Packets 1, 2 and 3 of 600-ns unipolar pulses (Fig. 2B to D), delivered at 1 Hz.
+#   "nPx4" is n packets from each electrode in turn; "1Px40" is one packet rotated 40 times; the
+#   control "trains" energize one electrode with the same pulses. YP 1 uM for 10 min, rinsed, then
+#   stitched 10x images. Intensity in 92 or 224 ROIs along one or both diagonals, over +/- 1.65 mm
+#   (small array) or +/- 3.65 mm (large array) from the geometric center, leaving out areas next to
+#   the electrodes (<5% of the diagonal length). Values in a.u. or in % of the most peripheral ROI
+#   (closest to the electrode). Mean +/- s.e. over 3 to 5 independent experiments, LOESS fits.
+#   Per figure: Fig. 5, Packet 2 at 6.4 kV, 40 packets against 40 trains, from e1 only (A, e1 to e3
+#   diagonal) or rotated (B, C, both diagonals averaged), large array (Results 3.2 refers to Fig.
+#   3C), n = 4 to 5. Fig. 6, Packet 2, 1Px4, 5Px4 and 10Px4, n = 3 to 4. Fig. 7, Packet 2 at
+#   several first-pulse voltages, 1Px4 in the small array (A, B; 2.4 to 5.6 kV) and 10Px4 in the
+#   large array (C, D), n = 3. Fig. 8, Packets 1, 2 and 3, 4 kV, 1Px4, n = 3 to 4. Fig. 9, large
+#   array, Packet 2, 10Px4, 6.4 kV, 0, 1, 2 or 3 mm above the monolayer, n = 3 to 4.
+# - Electric field simulations (Fig. 3; Methods 2.3) in Sim4Life, as in the paper's reference 15
+#   (doi:10.1016/j.bioelechem.2021.107876). Model outputs, not recordings.
+#
+# Statistics (Methods 2.4). "Two-sided Student's t-test", p < 0.05, the only test the paper
+# names; Student's names the equal-variance form, and Welch's form is a variant only. Between
+# treatments the groups are different dishes, so the test is unpaired. In the figures,
+# significance is read from the gap between error bars (a gap longer than the bars means
+# p < 0.05); this rule is shown as a variant where a claim rests on a figure. Methods 2.2 names no
+# test for the single cells; the Methods 2.4 test is used for them, and this is a reading.
+#
+# Details the paper leaves open, with the readings it allows. A criterion that uses one says so.
+# For an expected value, the claim holds when it matches under any combination of readings. For a
+# test, the outcome is the one all readings give; when they differ, the author adopts the reading
+# the paper best supports, as an assumption, or blocks the claim as methods_underspecified, with
+# every result shown.
+# (O1) ROI layout. 92 (small) or 224 (large) ROIs "along one or both diagonals" over the stated
+#      range. Readings (a) the count is for one diagonal, spacing about 36 um (small) or 33 um
+#      (large); (b) the count is split over two diagonals, about 72 um or 65 um. The count and
+#      range fix the ROI length along the diagonal under each reading; the extent across the
+#      diagonal is not given. Readings (w1) square ROIs, side equal to the spacing (a standard
+#      choice); (w2) three spacings wide, as a check on sensitivity. Neither comes from the paper.
+# (O2) Diagonals. Fig. 5A uses the e1 to e3 diagonal and Fig. 5B averages both (legends). For
+#      Figs. 6 to 9 the paper does not say. Readings (a) both diagonals averaged by distance;
+#      (b) one diagonal.
+# (O3) Center. Readings (a) the ROI nearest the geometric center; (b) the mean of the two ROIs on
+#      either side of it when none is centered.
+# (O4) Most peripheral ROI. Each measured diagonal has two ends. Readings (a) the mean of the end
+#      ROIs; (b) each half-diagonal taken to its own end ROI, then averaged. For Fig. 5A the e1
+#      end is named by the text.
+# (O5) Normalization order. Readings (a) each dish normalized to its own most peripheral ROI,
+#      then averaged; (b) the mean profile divided by its own most peripheral value. Tests on
+#      normalized values use (a), which gives per-dish values.
+# (O6) Background. Methods 2.4 says nothing about background for the monolayer images
+#      (Methods 2.2 subtracts F0 for single cells). Readings (a) raw ROI intensity; (b) intensity
+#      minus a background the images allow (a cell-free or dark area, or the needle footprints).
+# (O7) Raw values or LOESS. Values in the text may have been read from ROI means or from the LOESS
+#      fits, whose span is not given. Readings (a) dish means of ROI values; (b) the LOESS fit of
+#      the mean profile, spans 0.25 and 0.75 as standard choices.
+# (O8) Paired or unpaired. For comparisons inside the same dishes (center against trough, center
+#      against periphery) the paper does not say. Readings (a) paired; (b) unpaired.
+# (O9) Trough. "The least affected area ... between the center and the electrodes" (Results
+#      3.3). The ROI with the lowest mean between the center and the most peripheral ROI.
+#      Readings (a) the mean of the two sides; (b) each side.
+# (O10) "End of recording" (Fig. 4). Readings (a) the last image (600 s); (b) the mean of the last
+#      six images, matching the six-image baseline.
+# (O11) Arrays and voltages. The paper does not state the array of Figs. 6 and 8, nor the
+#      first-pulse voltage of Fig. 6, nor the voltages of Fig. 7C, D. The author takes them from
+#      the dataset and reports them; they do not change a criterion.
+schema_version: 2
+paper: doi:10.1016/j.bioelechem.2023.108437
+claims:
+- id: fig3-field-simulation
+  statement: In the simulations, 1 kV applied to one electrode gives about 1.8 kV/cm in the center
+    of the small array and 0.8 kV/cm in the center of the large array, and about 4-fold more near
+    the energized electrode (7 and 3.5 kV/cm per kV). Energizing one diagonal gives no field in the
+    center.
+  source: Methods 2.3, paragraph 4; Figure 3
+  quote: For example, applying 1 kV to one electrode produced the electric field of approximately
+    1.8 kV/cm and 0.8 kV/cm in center of the small and large arrays ... The electric field strength
+    was about 4-fold higher near the energized electrode (7 kV/cm and 3.5 kV/cm per 1 kV applied, for
+    the small and large arrays, respectively) Note that energizing either electrode diagonal produced
+    no electric field in the center of the array
+  datasets:
+  - "000686"
+  - "000875"
+  - "001025"
+  - "001027"
+  - "001028"
+  expected:
+  - quantity: center field, small array, per kV on one electrode
+    value: 1.8
+    tolerance: 0.18
+    unit: kV/cm
+  - quantity: center field, large array, per kV on one electrode
+    value: 0.8
+    tolerance: 0.08
+    unit: kV/cm
+  - quantity: field near the energized electrode, small array, per kV
+    value: 7
+    tolerance: 0.7
+    unit: kV/cm
+  - quantity: field near the energized electrode, large array, per kV
+    value: 3.5
+    tolerance: 0.35
+    unit: kV/cm
+  criterion: The values are outputs of the paper's Sim4Life model (Methods 2.3, built as in its
+    reference 15), which the paper does not deposit. The claim is tested only if a dataset holds
+    the simulated field maps; a field model built by the author is not the paper's and is not a
+    test. With the maps, reproduced when the four values are within tolerance and the center field
+    with a diagonal energized is zero, read as below 1% of the single-electrode center field (a
+    standard choice for numerical zero; the paper gives no threshold). How far from the electrode
+    "near" is measured is not given; readings (a) the highest value at the needle surface; (b) the
+    value at the edge of the area Methods 2.4 excludes next to the electrode (5% of the diagonal).
+    Without the maps, blocked as data_missing.
+- id: fig4-sham-no-uptake
+  statement: Sham-exposed cells gain no YP fluorescence over the 10 min of imaging, while cells
+    given pulses show a gradual rise in YP signal from the first image after exposure.
+  source: Results 3.1, paragraph 2; Figure 4
+  quote: Sham-exposed cells showed no gain in YP fluorescence during the 10 min of observation. In
+    contrast, cells treated by electric pulses displayed gradual increase in YP signal, starting from
+    the image frame taken immediately after nsEP exposure.
+  datasets:
+  - "000686"
+  - "000875"
+  - "001025"
+  - "001027"
+  - "001028"
+  criterion: Per cell F-F0 (Methods 2.2). A claim of absence for sham, for which the paper reports
+    no test; it is judged with the test Methods 2.4 names, a two-sided Student's t-test at p < 0.05,
+    here one-sample against zero at the end of recording (O10, both readings). Reproduced when sham
+    F-F0 does not differ from zero, and, for every pulsed group, the mean at the first image after
+    57 s exceeds zero by the same test and the mean end value exceeds the mean first post-pulse
+    value (the paper's "gradual increase", for which it gives no test, so means are compared). Not
+    reproduced when sham differs from zero. The sham effect size is given either way.
+- id: fig4-unipolar-strongest
+  statement: A single 600-ns pulse at 15 kV/cm causes by far the strongest YP uptake, 126 +/- 14
+    a.u. (n = 25 cells) by the end of recording.
+  source: Results 3.1, paragraph 2; Figure 4
+  quote: A single 600-ns pulse at 15 kV/cm caused by far the strongest YP uptake, reaching 126±14
+    a.u. (n=25) by the end of recording.
+  datasets:
+  - "000686"
+  - "000875"
+  - "001025"
+  - "001027"
+  - "001028"
+  expected:
+  - quantity: unipolar pulse, F-F0 at end of recording, mean over cells
+    value: 126
+    tolerance: 14
+    unit: a.u.
+  criterion: Tolerance is the paper's s.e. Per cell F-F0 (Methods 2.2), mean over cells, at the end
+    of recording (O10). Reproduced when, under one reading, the mean is within tolerance and exceeds
+    every other group's mean. The group size is reported against n = 25.
+- id: fig4-bipolar-weaker
+  statement: Bipolar signals that start with the same pulse cause significantly weaker uptake
+    (p < 0.001). By the end of recording the 4-phasic signal reaches 20.8 +/- 2.0 a.u., the 8-phasic
+    6.9 +/- 1.6 a.u., and the 8-phasic with 5-us delays 25.4 +/- 2.8 a.u.
+  source: Results 3.1, paragraph 2; Figure 4
+  quote: Bipolar signals started with exactly the same pulse (600 ns, 15 kV/cm) but caused
+    significantly weaker effects (p<0.001). By the end of recording, YP signal reached only 20.8±2.0
+    a.u. for the 4-phasic signal; 6.9±1.6 a.u. for the 8-phasic signal; and 25.4±2.8 a.u. for the
+    8-phasic signal with 5-μs delays between phases.
+  datasets:
+  - "000686"
+  - "000875"
+  - "001025"
+  - "001027"
+  - "001028"
+  statistics:
+  - about: each bipolar signal against the single unipolar pulse, end of recording
+    test: not named for single cells (Methods 2.2 names none; Methods 2.4 names a two-sided
+      Student's t-test)
+    p: 0.001
+    p_relation: "<"
+    n: 21 to 30 cells per group
+  expected:
+  - quantity: 4-phasic, F-F0 at end of recording
+    value: 20.8
+    tolerance: 2.0
+    unit: a.u.
+  - quantity: 8-phasic, F-F0 at end of recording
+    value: 6.9
+    tolerance: 1.6
+    unit: a.u.
+  - quantity: 8-phasic with 5-us delays, F-F0 at end of recording
+    value: 25.4
+    tolerance: 2.8
+    unit: a.u.
+  criterion: Tolerances are the paper's s.e. Per cell F-F0 at the end of recording (O10). Each
+    bipolar group is compared with the unipolar group by an unpaired two-sided Student's t-test
+    (Methods 2.4, applied to single cells as a reading; Welch's form is a variant). Reproduced when
+    all three means are within tolerance under one reading of O10 and all three tests give
+    p < 0.001, the test outcome taken by the opening comment's rule for tests. Partially reproduced
+    when the tests hold but a mean is outside tolerance.
+- id: fig4-twenty-fold-cancellation
+  statement: The 8-phasic signal with no delays causes about 20-fold weaker electroporation than a
+    single unipolar pulse and is the most efficient at cancellation; the 4-phasic signal and the
+    delayed 8-phasic signal cancel 4 to 5-fold.
+  source: Figure 4 legend; Results 3.1, paragraph 2; Results 3.4, paragraph 1
+  quote: identified the 8-phasic bipolar signal as the most efficient at cancellation (~20-fold) ...
+    the other two types of bipolar signals which were less efficient at cancellation (4–5-fold, Fig.
+    4 ) ... Note that applying the 8-phasic bipolar signal with no inter-phase delays caused about
+    20-fold weaker electroporation than a single unipolar pulse
+  datasets:
+  - "000686"
+  - "000875"
+  - "001025"
+  - "001027"
+  - "001028"
+  depends_on:
+  - fig4-unipolar-strongest
+  - fig4-bipolar-weaker
+  expected:
+  - quantity: unipolar over 8-phasic, F-F0 at end of recording
+    value: 20
+    tolerance: 2
+  - quantity: unipolar over 4-phasic, and over delayed 8-phasic (range 4 to 5, widened by 10% of
+      each bound)
+    value: 4.55
+    tolerance: 0.95
+  criterion: Ratios of group means at the end of recording (O10). Results 3.4 gives the other two
+    signals as "4-5-fold, Fig. 4"; the paper's own means give 18.3 for the 8-phasic signal, 6.1 for
+    the 4-phasic and 5.0 for the delayed 8-phasic, so its 4-phasic value is outside its own range.
+    Reproduced when, under one reading, the 8-phasic ratio is within 18 to 22, is the largest of the
+    three, and the other two ratios are within 3.6 to 5.5. Partially reproduced when the 8-phasic
+    ratio is within tolerance and the largest but another ratio is outside 3.6 to 5.5; the paper's
+    6.1 is reported beside the result.
+- id: fig5a-trains-stronger
+  statement: Without rotation, 40 unipolar trains from e1 cause much stronger electroporation
+    throughout the array than 40 Packet 2 packets started from e1, and the uptake after trains
+    follows the field strength distribution.
+  source: Results 3.2, paragraph 1; Figure 5A
+  quote: The lack of cancellation caused a much stronger electroporation throughout the array, and
+    the distribution of YP uptake expectedly followed the electric field strength distribution in
+    Fig. 3C .
+  datasets:
+  - "000686"
+  criterion: Along the e1 to e3 diagonal (Fig. 5A legend), Packet 2 at 6.4 kV, n = 4 to 5 dishes,
+    under O1, O3, O6 and O7. "Throughout" is read at the e1 end, the center and the e3 end. Reproduced
+    when the train mean exceeds the packet mean at all three places by unpaired two-sided Student's
+    t-tests at p < 0.05 (Methods 2.4), and the train profile falls from the e1 end to the center, as
+    the field of Fig. 3C does with distance from the energized electrode, by the same test (O8). The
+    paper gives no test of the profile's shape; the full train profile is shown.
+- id: fig5a-packet-center-enhanced
+  statement: Without rotation, Packet 2 enhances electroporation in the center of the array despite
+    the weakening of the field with distance from e1, but uptake near e1 stays stronger than in the
+    center.
+  source: Results 3.2, paragraph 1; Figure 5A
+  quote: In contrast, Packet 2 enhanced electroporation in the center of the array, despite gradual
+    weakening of the electric field with distance from e1. However, the bipolar cancellation only
+    partially offset the electric field weakening, and electroporation near e1 remained stronger than
+    in the center.
+  datasets:
+  - "000686"
+  depends_on:
+  - fig5a-trains-stronger
+  criterion: The 40-packet profile along the e1 to e3 diagonal (Fig. 5A), under O1, O3, O6, O7 and O8.
+    "Enhanced in the center" has two readings the sentence allows, (a) a central peak, the center
+    above the trough between the center and the e1 end (O9) by a two-sided Student's t-test at
+    p < 0.05; (b) relative to the trains, the center over e1-end ratio higher for packets than for
+    trains by an unpaired t-test on per-dish ratios at p < 0.05. Reproduced when (a) or (b) holds,
+    under the rule for readings of the opening comment, and the e1-end value exceeds the center
+    value of the packet profile by the same test. Partially reproduced when only one of the two
+    parts holds.
+- id: fig5b-rotation-center-peak
+  statement: With rotation (1P x 40), Packet 2 smears the effect at the perimeter and brings out a
+    remote effect in the center, while the same rotation of unipolar trains (1T x 40) leaves a void
+    of electroporation in the center.
+  source: Results 3.2, paragraph 2; Figure 5B
+  quote: Rotation with Packet 2 “smeared” the electroporation effect at the perimeter and emphasized
+    the remote effect in the center. This remote effect contrasted with a void of electroporation in
+    the center when the pulse train was applied in the same manner instead of the packet.
+  datasets:
+  - "000686"
+  criterion: Profiles averaged across both diagonals (Fig. 5B legend), n = 4 to 5, under O1, O3, O4,
+    O6, O7 and O8. Reproduced when the 1P x 40 center exceeds its trough (O9) by a two-sided
+    Student's t-test at p < 0.05, and the 1T x 40 profile shows a void in the center. The paper does
+    not define a void; readings (a) the 1T x 40 center below its most peripheral value by the same
+    test; (b) the center ROI is the lowest point of the 1T x 40 mean profile.
+- id: fig5c-normalized-contrast
+  statement: Normalized to the most peripheral ROI (100%), rotated Packet 2 and rotated trains show
+    sharply different spatial distributions, the packet's center being relatively high and the
+    trains' relatively low.
+  source: Results 3.2, paragraph 2; Figure 5C
+  quote: The striking difference in the spatial distribution of electroporation between the CANCAN
+    and control treatments is appreciated best by comparing the normalized fluorescence data, when
+    the emission intensity in the most peripheral (closest to the electrode) ROI is taken as 100% (
+    Fig. 5C ).
+  datasets:
+  - "000686"
+  depends_on:
+  - fig5b-rotation-center-peak
+  criterion: The paper prints no number for Fig. 5C. Same data as Fig. 5B in % of the most
+    peripheral ROI (O4, O5), under O1, O3, O6 and O7. Reproduced when the normalized center of
+    1P x 40 exceeds that of 1T x 40 by an unpaired two-sided Student's t-test at p < 0.05 on per-dish
+    values. Both normalized centers are reported, and whether the 1P x 40 value is above 100%.
+- id: fig6a-more-packets-more-uptake
+  statement: Raising the total number of rotated Packet 2 packets from 4 (1Px4) to 20 (5Px4) and
+    40 (10Px4) strongly raises YP uptake throughout the array, and a central peak is discernible
+    for every treatment.
+  source: Results 3.3, paragraph 1; Figure 6A
+  quote: Increasing the total number of applied packets from 4 to 20 and 40 profoundly enhanced the
+    electroporative YP dye uptake throughout the electrode array ( Fig. 6A ). The peak of
+    electroporation in the center was clearly discernable for all tested treatments.
+  datasets:
+  - "000875"
+  criterion: In a.u., n = 3 to 4 dishes (Fig. 6 legend), under O1 to O4, O6 to O9 and O11.
+    "Throughout" is read at the most peripheral ROI, the trough and the center. Reproduced when at
+    all three places the means rise from 4 to 20 to 40 packets and 40 exceeds 4 by an unpaired
+    two-sided Student's t-test at p < 0.05, and for each treatment the center exceeds the trough by
+    the same test. Partially reproduced when the rise holds at one or two of the places.
+- id: fig6b-peak-relative-to-periphery
+  statement: The central peak is almost twofold brighter than the periphery for 1Px4, and about the
+    same as the periphery for 5Px4 and 10Px4.
+  source: Results 3.3, paragraph 1; Figure 6B
+  quote: Its brightness was almost twofold higher than at the periphery for a single packet was
+    applied 4 times from different directions, or about the same as at the periphery for the rotation
+    of 5 and 10 packets ( Fig. 6B ).
+  datasets:
+  - "000875"
+  expected:
+  - quantity: normalized center, 1Px4
+    value: 200
+    tolerance: 20
+    unit: "%"
+  - quantity: normalized center, 5Px4
+    value: 100
+    tolerance: 10
+    unit: "%"
+  - quantity: normalized center, 10Px4
+    value: 100
+    tolerance: 10
+    unit: "%"
+  criterion: Center in % of the most peripheral ROI, under O1 to O7. "Almost twofold" is taken as
+    200% with the default 10% tolerance. Reproduced when, under one combination of readings, all
+    three values are within tolerance. Partially reproduced when the 1Px4 value is within tolerance
+    and above both others.
+- id: fig6-trough-half-of-center
+  statement: For all three packet numbers, the least affected area between the center and the
+    electrodes shows about 2-fold lower fluorescence than the center.
+  source: Results 3.3, paragraph 1; Figure 6
+  quote: Interestingly, the least affected area of the cell monolayer (between the center and the
+    electrodes) showed about 2-fold lower fluorescence intensity than in the center for all the
+    treatments.
+  datasets:
+  - "000875"
+  expected:
+    quantity: center over trough, each of 1Px4, 5Px4 and 10Px4
+    value: 2
+    tolerance: 0.2
+  criterion: Trough as O9, center as O3, under O1, O2, O6 and O7. Reproduced when, under one
+    combination of readings, the ratio is within 1.8 to 2.2 for all three treatments. Partially
+    reproduced when it is within tolerance for one or two and above 1 for all.
+- id: fig6-peak-narrower
+  statement: The central peak becomes narrower with more packets.
+  source: Results 3.3, paragraph 1; Figure 6
+  quote: Also, the central peak appeared narrower (sharper) with increasing the number of packets.
+  datasets:
+  - "000875"
+  criterion: The paper defines no width (the Discussion names the width or sharpness of the remote
+    peak as a parameter, without a definition). Readings (a) full width of the central peak at half
+    its height above the trough (O9), on the mean normalized profile; (b) the distance between the
+    two troughs on either side of the center; each also on the LOESS fit (O7). Reproduced when the
+    width falls from 1Px4 to 5Px4 to 10Px4; partially reproduced when 10Px4 is narrower than 1Px4
+    but 5Px4 is out of order. The rule for readings of the opening comment applies.
+- id: fig7a-amplitude-scales-uptake
+  statement: With 1Px4 in the small array, raising the first-pulse amplitude from 2.4 to 5.6 kV
+    raises YP fluorescence 15.5 times at the most peripheral point, 16.2 times half-way to the
+    center and 16.8 times in the center.
+  source: Results 3.3, paragraph 2; Figure 7A
+  quote: For example, when the first pulse amplitude was increased from 2.4 to 5.6 kV ... YP
+    fluorescence increased 15.5 times at the most peripheral point; 16.2 times half-way to the
+    center; and 16.8 times in the center ( Fig. 7A ).
+  datasets:
+  - "001025"
+  expected:
+  - quantity: 5.6 kV over 2.4 kV, most peripheral ROI
+    value: 15.5
+    tolerance: 1.55
+  - quantity: 5.6 kV over 2.4 kV, half-way to the center
+    value: 16.2
+    tolerance: 1.62
+  - quantity: 5.6 kV over 2.4 kV, center
+    value: 16.8
+    tolerance: 1.68
+  criterion: Ratios of the mean intensities over dishes (n = 3; dishes are not paired across
+    voltages, Methods 2.1) at the most peripheral ROI (O4), the ROI nearest half the distance from
+    the center to it, and the center (O3), under O1, O2, O6 and O7. Background (O6) changes ratios
+    this large, so both readings are run. Reproduced when, under one combination of readings, all
+    three ratios are within tolerance. Partially reproduced when one or two are.
+- id: fig7b-targeting-independent-of-amplitude
+  statement: Normalized to the most peripheral ROI, the profiles for different amplitudes fully
+    overlap; amplitude changes the degree of electroporation but not its spatial distribution.
+  source: Results 3.3, paragraph 2; Figure 7B
+  quote: In contrast, changing nsEP amplitude affected the degree of electroporation but not its
+    spatial distribution ( Fig. 7 ). ... When the YP emission was normalized to the most peripheral
+    ROI, the data for different nsEP amplitudes fully overlapped ( Fig. 7B ).
+  datasets:
+  - "001025"
+  criterion: A claim of absence, for which the paper reports no test; it is judged on the test
+    Methods 2.4 names, an unpaired two-sided Student's t-test at p < 0.05, with no correction, as
+    the paper applies none. Small array, 1Px4, every voltage of Fig. 7A and B (n = 3 each; the
+    voltages between 2.4 and 5.6 kV are printed only in the figure and are taken from the dataset).
+    Per-dish normalized values (O5 a) at the center and at the half-way ROI of
+    fig7a-amplitude-scales-uptake are compared between every pair of voltages, under O1 to O4, O6
+    and O7. Reproduced when no pair differs; not reproduced when any does. The differences in
+    percentage points and their p-values are given either way; a test over all ROIs and the
+    error-bar rule of Methods 2.4 are shown as variants.
+- id: fig7cd-holds-for-large-array
+  statement: The independence of the normalized distribution from amplitude also holds when
+    rotating multiple packets (10Px4) in the larger array.
+  source: Results 3.3, paragraph 2; Figures 7C and 7D
+  quote: The findings held true for rotating multiple packets and when using the larger array ( Fig.
+    7C and D ). Overall, our results show that NG-CANCAN targeting of electroporation does not
+    depend on nsEP amplitude, at least within the studied amplitude range.
+  datasets:
+  - "001025"
+  criterion: As fig7b-targeting-independent-of-amplitude, on the large array with 10Px4 (Fig. 7C
+    and D, n = 3), with the same test, places and rule. The voltages are not given in the text and
+    are taken from the dataset (O11). The rise of a.u. values with voltage at the three places is
+    reported as well.
+- id: discussion-independent-of-array-size
+  statement: Remote targeting, within the studied limits, depends neither on pulse amplitude nor on
+    array size, so findings from small arrays can be extrapolated to larger inter-electrode
+    distances.
+  source: Discussion, paragraph 5; Figure 7
+  quote: the remote targeting, at least within studied limits, did not depend on either the electric
+    pulse amplitude or array size ( Fig. 7 ). We infer that findings from small electrode arrays
+    can be extrapolated to larger inter-electrode distances.
+  datasets:
+  - "001025"
+  depends_on:
+  - fig7b-targeting-independent-of-amplitude
+  - fig7cd-holds-for-large-array
+  criterion: The paper's evidence is Fig. 7, where the small array received 1Px4 and the large
+    array 10Px4, and Fig. 6B reports that packet number alone changes the normalized center; no
+    comparison in the paper isolates array size, and it names no test for it. The claim is judged
+    as the Discussion rests it, on amplitude independence in both arrays. Reproduced when
+    fig7b-targeting-independent-of-amplitude and fig7cd-holds-for-large-array are both
+    reproduced. The normalized profiles of the two arrays, on distance as a fraction of the
+    measured half-diagonal, are shown side by side, with the packet confound stated.
+- id: fig8a-equal-center-uptake
+  statement: Packets 1, 2 and 3 at 4 kV, rotated one cycle (1Px4), give the same YP uptake in the
+    center of the array, 215 to 235 a.u.
+  source: Results 3.4, paragraph 2; Figure 8A
+  quote: All packets produced the same YP uptake in the center (215–235 a.u.)
+  datasets:
+  - "001027"
+  expected:
+    quantity: center YP intensity, each of Packets 1, 2 and 3 (range 215 to 235, widened by 10% of
+      each bound)
+    value: 226
+    tolerance: 32.5
+    unit: a.u.
+  criterion: Center (O3) in a.u., n = 3 to 4, under O1, O2, O6, O7 and O11. The equality is a claim
+    of absence, judged on the test Methods 2.4 names, an unpaired two-sided Student's t-test at
+    p < 0.05 between each pair of packets, the outcome taken by the opening comment's rule for
+    tests. Reproduced when the three means are inside 193.5 to 258.5 a.u. under one reading and no
+    pair differs. Not reproduced when a pair differs; partially
+    reproduced when no pair differs but a mean is outside the range. Effect sizes are given either
+    way.
+- id: fig8a-more-uptake-near-electrodes
+  statement: Packets 1 and 3 cause much more YP uptake near the electrodes (250 to 350 a.u.) than
+    Packet 2 (about 120 a.u.), p < 0.01.
+  source: Results 3.4, paragraph 2; Figure 8A
+  quote: but Packets 1 and 3 caused drastically more YP uptake near the electrodes (250–350 a.u. vs
+    ~120 a.u. for packet 1, p<0.01, Fig. 8A )
+  datasets:
+  - "001027"
+  statistics:
+  - about: Packets 1 and 3 against Packet 2, near the electrodes
+    test: two-sided Student's t-test (Methods 2.4)
+    p: 0.01
+    p_relation: "<"
+    n: 3 to 4 experiments per packet
+  expected:
+  - quantity: most peripheral ROI, Packets 1 and 3 (range 250 to 350, widened by 10% of each bound)
+    value: 305
+    tolerance: 80
+    unit: a.u.
+  - quantity: most peripheral ROI, Packet 2
+    value: 120
+    tolerance: 12
+    unit: a.u.
+  criterion: The text prints "~120 a.u. for packet 1", which its own clause contradicts (Packets 1
+    and 3 are the 250 to 350 group); it is read as Packet 2, which also fits Fig. 8B (about 226
+    over 120 is near 183%). "Near the electrodes" is the most peripheral ROI (O4), under O1, O2, O6
+    and O7. Reproduced when Packets 1 and 3 are inside 225 to 385 a.u. and Packet 2 within
+    tolerance under one reading, and each of Packets 1 and 3 exceeds Packet 2 by an unpaired
+    two-sided Student's t-test at p < 0.01, the test outcome taken by the opening comment's rule
+    for tests. Partially reproduced when the tests hold but values are outside.
+- id: fig8b-packet2-best-targeting
+  statement: Normalized to the most peripheral ROI, YP emission in the center is 183% for Packet 2
+    and drops to 83% for Packet 3 and 74% for Packet 1.
+  source: Results 3.4, paragraph 2; Figure 8B
+  quote: The superiority of Packet 2 for CANCAN targeting is highlighted by the drop of normalized
+    YP emission in the center from 183% for Packet 2 to 83% and 74% for Packets 3 and 1, respectively
+    ( Fig. 8B ).
+  datasets:
+  - "001027"
+  expected:
+  - quantity: normalized center, Packet 2
+    value: 183
+    tolerance: 18.3
+    unit: "%"
+  - quantity: normalized center, Packet 3
+    value: 83
+    tolerance: 8.3
+    unit: "%"
+  - quantity: normalized center, Packet 1
+    value: 74
+    tolerance: 7.4
+    unit: "%"
+  criterion: Center (O3) in % of the most peripheral ROI (O4, O5), under O1, O2, O6 and O7. Reproduced
+    when, under one combination of readings, all three values are within tolerance. Partially
+    reproduced when Packet 2 is above 100% and Packets 1 and 3 below it but a value is outside
+    tolerance.
+- id: fig8-cancellation-predicts-targeting
+  statement: The bipolar signal with the strongest cancellation between two electrodes (8-phasic,
+    Fig. 4) gives the most efficient remote targeting in the quadrupole (Packet 2, Fig. 8).
+  source: Discussion, paragraph 3; Results 3.4, paragraphs 1 and 2; Figures 4 and 8
+  quote: Three packets for CANCAN targeting were designed to produce three types of bipolar signals
+    near electrodes and we showed that, indeed, the strongest bipolar cancellation has led to the
+    most efficient remote targeting ( Figs. 4 and 8 ).
+  datasets:
+  - "001027"
+  depends_on:
+  - fig4-twenty-fold-cancellation
+  - fig8b-packet2-best-targeting
+  criterion: Results 3.4 matches the signals to the packets (4-phasic to Packet 1, 8-phasic to
+    Packet 2, delayed 8-phasic to Packet 3). Reproduced when the signal with the largest
+    unipolar-over-bipolar ratio in Fig. 4 corresponds to the packet with the highest normalized
+    center in Fig. 8. The paper claims only the top match; the order of the other two is reported
+    (the paper's own numbers give Packet 1 more cancellation, 6.1 against 5.0, but less targeting,
+    74% against 83%). Blocked as data_missing when the Fig. 4 data are in no dataset.
+- id: fig9a-gap-reduces-periphery-more
+  statement: With the large array lifted 1, 2 and 3 mm above the monolayer, YP emission near the
+    electrodes falls 2.4, 6.4 and 9 times against electrodes touching the cells, while in the center
+    it falls only 1.02, 1.4 and 3.8 times.
+  source: Results 3.5, paragraph 1; Figure 9A
+  quote: Specifically, YP emission near the electrodes decreased 2.4, 6.4, and 9 times with 1-, 2-
+    and 3-mm gaps (as compared to electrodes being in the same plane with cells); in the center, it
+    decreased just 1.02, 1.4, and 3.8 times, respectively.
+  datasets:
+  - "001028"
+  expected:
+  - quantity: 0 mm over 1 mm, near electrodes
+    value: 2.4
+    tolerance: 0.24
+  - quantity: 0 mm over 2 mm, near electrodes
+    value: 6.4
+    tolerance: 0.64
+  - quantity: 0 mm over 3 mm, near electrodes
+    value: 9
+    tolerance: 0.9
+  - quantity: 0 mm over 1 mm, center
+    value: 1.02
+    tolerance: 0.102
+  - quantity: 0 mm over 2 mm, center
+    value: 1.4
+    tolerance: 0.14
+  - quantity: 0 mm over 3 mm, center
+    value: 3.8
+    tolerance: 0.38
+  criterion: Ratios of the mean intensities over dishes (n = 3 to 4), 0 mm over each gap. "Near the
+    electrodes" is the most peripheral ROI (Fig. 9B legend, "measurements most distant from the
+    center"; O4); center as O3; under O1, O2, O6 and O7. Reproduced when, under one combination of
+    readings, all six ratios are within tolerance. Partially reproduced when at every gap the
+    near-electrode ratio exceeds the center ratio but some values are outside tolerance.
+- id: fig9b-gap-boosts-targeting
+  statement: The faster fading near the electrodes raises targeting efficiency (center over
+    periphery) to as much as 600% with a 2-mm gap.
+  source: Results 3.5, paragraph 1; Figure 9B
+  quote: Such disproportionally faster fading of the effect near electrodes boosted the CANCAN
+    targeting efficiency (measured as a ratio of the effect in the center and at the periphery) to as
+    much as 600% for the 2-mm gap ( Fig. 9B ).
+  datasets:
+  - "001028"
+  depends_on:
+  - fig9a-gap-reduces-periphery-more
+  expected:
+    quantity: normalized center, 2-mm gap
+    value: 600
+    tolerance: 60
+    unit: "%"
+  criterion: Center (O3) in % of the most peripheral ROI (O4, O5), under O1, O2, O6 and O7.
+    Reproduced when, under one combination of readings, the 2-mm value is within 540 to 660% and
+    is the largest of the four distances ("as much as"). Partially reproduced when it is within
+    tolerance but another distance is higher. The 0, 1 and 3 mm values are reported.
+- id: fig9c-restricted-to-center
+  statement: With the electrodes placed above the monolayer, electroporation is restricted almost
+    exclusively to the center of the array.
+  source: Results 3.5, paragraph 1; Figure 9C
+  quote: Consistent with these measurements, YP fluorescence images in Fig. 9C show that
+    electroporation is restricted almost exclusively to the remote target (center) when electrodes
+    are placed above the cell monolayer.
+  datasets:
+  - "001028"
+  criterion: The paper shows sample images and gives no measure. Read on the profiles, under O1 to
+    O9. Reproduced when, at each of 1, 2 and 3 mm, the center exceeds the most peripheral ROI by a
+    two-sided Student's t-test at p < 0.05 (O8), and the center is the highest point of the mean
+    profile. The normalized profiles are shown.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3-field-simulation. The 1% bound for "no electric field in the center" is not from the paper; it is now named a standard choice for numerical zero. "Near the energized electrode" was fixed as the highest value outside the needle, a choice that can change the 7 and 3.5 kV/cm values; it is now two named readings (needle surface, edge of the area Methods 2.4 excludes).
+  - fig4-sham-no-uptake. The comparison of the end value with the first post-pulse value named no test; it now says means are compared, as the paper gives no test for the gradual increase.
+  - fig4-bipolar-weaker, fig8a-equal-center-uptake, fig8a-more-uptake-near-electrodes. The criteria let the tests pass "under one reading", which contradicts the opening comment's rule that a test's outcome is the one all readings give. "Under one reading" now applies to the expected values only, and the tests follow the rule for tests.
+  - fig4-twenty-fold-cancellation. The quote held only the Fig. 4 legend; the statement's "most efficient at cancellation" and "4 to 5-fold" come from Results 3.4, which is now quoted as well.
+  - Open. The single-cell data of Fig. 4 and the simulations of Fig. 3 are named by no dataset title; the claims list all five datasets and are blocked as data_missing if none holds them.
+  - Open. Methods 2.2 names no test for the single cells; the Methods 2.4 Student's t-test is applied to them as a reading (Fig. 4 claims).
+  - Open. "~120 a.u. for packet 1" (Results 3.4) is read as Packet 2, as the sentence's own clause and Fig. 8B require; the figure was not read to confirm it, as no PDF was supplied.
