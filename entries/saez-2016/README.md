@@ -28,8 +28,10 @@ differences from the paper's method.
 Eight of the 28 included control recordings are missing or incomplete in the data set, so the control
 claims rest on 20 cells. Outcomes marked "assumed" rest on taking the last 120 baseline sweeps as the
 pre-pairing epoch, which the Methods' wording and the data set's own spreadsheets support; with the first 120
-several outcomes change. Where readings of the post-pairing window disagree on a claim of absence, the last
-120 post-pairing sweeps are adopted. The attempt record, with the reasons and the differences from the paper's method, is
+several outcomes change. The exception is "V-clamp and I-clamp control outcomes do not differ", which is
+marked assumed for another reason: the readings of the post-pairing window disagree on it (one test gives
+p = 0.0497 with all post-pairing sweeps), and the last 120 post-pairing sweeps are adopted; with the first 120
+baseline sweeps it passes in every reading. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/saez-2016-01.yaml`](../../attempts/saez-2016-01.yaml).
 
 - `reproduce_saez_2016.ipynb`: the analysis. It takes about three minutes, most of it streaming the 1.1 GB
