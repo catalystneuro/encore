@@ -258,7 +258,8 @@ outcomes:
   output: claim:fig3d-supranetwork-lesion
   notes: With s-c (61.12 and 29.42%; Source Data 61.11 and 29.46%) PC1's mean behaviour weight is
     0.268 against 0.274 intact, a small drop, and PC2's absolute probability weights peak in the
-    first cue second and its behaviour weights in the tenth. With s-a and s-b the PC2 part fails.
+    second cue second, within the first half of the cue, and its behaviour weights in the tenth.
+    With s-a and s-b the PC2 part fails.
     Over ten further runs of s-c the PC1 behaviour weight is 0.2678 (standard deviation 0.0001).
     With loadings (a variant) PC1's behaviour loading is 0.680 against 0.756 intact.
 - claim: fig3e-network-anatomy
@@ -311,7 +312,8 @@ outcomes:
   notes: Under L1, k6's mean firing to uncertainty shock (-0.88) is below 0 and below its other trial
     types; k7 (0.82) and k8 (0.31) are above 0 and highest for uncertainty shock, and both are
     sustained. The network part fails with the Pearson correlation the criterion names; the mean r
-    among k6 to k9 is -0.250 against 0.000 with the other seven (k6 is anticorrelated with k7 and k8).
+    among k6 to k9 is -0.250 against 0.000 with the other seven (k6 and k9 are correlated, r = 0.67,
+    and both are anticorrelated with k7 and k8, r = -0.88, -0.58, -0.60 and -0.79).
     With r squared it is 0.505 against 0.110 and the claim would be reproduced; the coefficient is
     asked of a reader, as for fig4b-phasic-network. Under L2 the tonic network part holds in none of
     20 seeds with r and in all 20 with r squared.
@@ -363,7 +365,8 @@ outcomes:
   - 33.43
   notes: The recomputed betas equal Source Data Fig. 5b middle, with prediction error in columns 1 to
     20 and shock in 21 to 40 (outcomeRegression.m), the reverse of the Methods' layout; the shapes
-    are tested on the betas of each regressor. L2 gives 47.80 and 30.92% with the same shapes.
+    are tested on the betas of each regressor. L2 gives 47.80 and 30.92% (PC1 out of
+    tolerance, PC2 within it) with the same shapes.
 - claim: fig5c-phasic-lesion
   outcome: reproduced
   notebook: reproduce_strickland_2022.ipynb
@@ -406,6 +409,7 @@ outcomes:
     p-a is shown.
 - claim: cue-outcome-membership-independent
   outcome: reproduced
+  assumed: true
   notebook: reproduce_strickland_2022.ipynb
   output: claim:cue-outcome-membership-independent
   measured:
@@ -417,6 +421,11 @@ outcomes:
     median goodness-of-fit p is 0.048 (phasic) and 0.011 (tonic), and neither goodness-of-fit test
     has p < 0.05 in 4 of 20 seeds. The outcome is judged on the paper's own membership (L1), the
     networks whose counts the claim gives.
+  deviations:
+  - Assumed that the outcome is judged on L1, the paper's own membership (Source Data Fig. 2f and 4f),
+    whose counts (85 of 265, 159 of 613) are those the claim and Results paragraph 14 give. The
+    criterion says only that results are reported under L1 and L2. Judged on the median over the 20
+    L2 seeds, the goodness-of-fit p values (0.048 and 0.011) would make the claim not reproduced.
 findings:
 - kind: format_error
   statement: 204 of the 1812 unit files hold repeated spike times (9289 repeats in all). The paper's
@@ -459,9 +468,9 @@ findings:
 - kind: methods_unavailable
   statement: The Methods call the cluster correlations "Pearson's correlation coefficient (R2)" and
     the scripts plot r squared. Is the network separation of Fig. 2e and 4d judged on r squared?
-    With r, k3 and k6 are anticorrelated with their fellow clusters and the outcome networks do not
-    separate. Whether the claims file's criteria for the outcome networks should allow r squared is
-    also asked of a reader (questions/strickland-2022.yaml).
+    With r, k3 is anticorrelated with k1 and k2, k6 and k9 with k7 and k8, and the outcome networks
+    do not separate. Whether the claims file's criteria for the outcome networks should allow r
+    squared is also asked of a reader (questions/strickland-2022.yaml).
 - kind: paper_inconsistency
   statement: The Supplementary Methods lay out the outcome beta matrix with shock in intervals 1 to 20
     and prediction error in 21 to 40, as a 21-cluster matrix; outcomeRegression.m and Source Data
@@ -523,7 +532,8 @@ verifications:
     outcome: reproduced
     reason: 21 regions. PMnR 236, DRV 208, DLPAG 179, VLPAG 147, DPG 145, and every region equals
       Source Data.
-    response: No change. The notebook now prints the region renumbering of cueAnalysis.m (lines 20 to
+    response: No change. The notebook now prints the region renumbering of cueAnalysis.m (lines 20
+      to
       48) from the data set.
   - claim: fig2b-cue-clusters
     agrees: true
@@ -556,7 +566,9 @@ verifications:
       is not in the criterion, gives R2 = 0.64. The markdown says the Source Data latencies "turn out
       to follow" the 12-s variant, but l-a shares 513 values with Source Data against the variant's
       413, and neither reproduces Source Data's 1498 units or its k1 mean of 182 ms.
-    response: Corrected the markdown, the conclusion, the notes and the finding; they now say that no
+      Even on Source Data's own latencies, R2 is 0.508 under c-a and 0.394 under c-b.
+    response: Corrected the markdown, the conclusion, the notes and the finding; they now say that
+      no
       reading tried reproduces the Source Data latencies (513 and 413 shared values, k1 182 ms against
       4046 and 327). The notebook now shows that no script in the data set computes the latency
       (findchangepts appears in none), which answers the request for the latency block of
@@ -587,7 +599,8 @@ verifications:
     outcome: partially_reproduced
     reason: Onset (k5) and offset (k15) hold under all four regression readings. Sustained (k10) fails,
       0.77 < half of 1.69. Mid-cue (k6) fails, first second 0.60 is above half the peak.
-    response: No change. The notebook now prints the regression of cueAnalysis.m (lines 1104 to 1116)
+    response: No change. The notebook now prints the regression of cueAnalysis.m (lines 1104 to
+      1116)
       from the data set.
   - claim: fig3b-signal-pca
     agrees: true
@@ -640,7 +653,8 @@ verifications:
       squared, which the notebook runs without stating it as an assumption for this claim. The Methods
       passage does allow r squared; this is a claims-file inconsistency, since it allows r and r
       squared for fig2e but not here.
-    response: Changed to partially_reproduced, judged with r as the criterion says; the assumption of
+    response: Changed to partially_reproduced, judged with r as the criterion says; the assumption
+      of
       r squared is removed and r squared is shown as a variant. Whether the criterion should allow r
       squared is asked of a reader (questions/strickland-2022.yaml). Under L2 the network part is now
       also given for each of the 20 seeds.
@@ -649,7 +663,8 @@ verifications:
     outcome: partially_reproduced
     reason: The k6 to k8 profiles and the sustained test hold. With r, the network part fails, within
       -0.250 against 0.000. It passes only under r squared.
-    response: Changed to partially_reproduced, as for fig4b-phasic-network, with the same question to
+    response: Changed to partially_reproduced, as for fig4b-phasic-network, with the same question
+      to
       a reader.
   - claim: fig4e-network-pca
     agrees: true
@@ -691,7 +706,8 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: s-d gives 79.99% and 16.81%, and the shape tests hold.
-    response: No change. The notebook now prints the lesion shuffle of outcomeRegression.m (lines 106
+    response: No change. The notebook now prints the lesion shuffle of outcomeRegression.m (lines
+      106
       to 113); the Shuffle function itself is not in the data set.
   - claim: fig5d-tonic-lesion
     agrees: true
@@ -721,3 +737,213 @@ verifications:
     response: No change of outcome. The L2 tests now run on each of the 20 seeds; the median
       goodness-of-fit p is 0.048 (phasic) and 0.011 (tonic), and neither test has p < 0.05 in 4 of 20
       seeds. The notes say the outcome is judged on L1.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary,
+    the helper module bst3.py, the claims file, the attempt record, the README and the questions file,
+    with the paper's full text and Source Data under paper/.
+  results:
+  - claim: source-data-cluster-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig1c-suppression-order
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: figs2-each-rat-discriminates
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: units-sessions-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig1e-regions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig2b-cue-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig2c-cue-pc1-ordered
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig2c-pc1-contribution
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, settled from round 1. The claims file's standard for a k-means result is the median over
+      20 seeds; on that measure the nine largest clusters hold 481 units, within 505 +- 50.5. Single
+      seeds range from 360 to 590, and 13 of 20 are within tolerance. The L1 part matches Source Data
+      to 0.0003.
+    response: No change.
+  - claim: fig2d-danger-latency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. How the paper computed its latencies is still unknown; the record lists it as a
+      finding. The round-1 reason in the record leaves out the Source Data latency R2 values (0.508
+      and 0.394), though they appear in the notes.
+    response: Added the Source Data R2 values to the round-1 reason.
+  - claim: fig2e-cue-subnetwork
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig2f-cue-hubs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The assumption of r squared is stated and reasonable; the Methods write "(R2)" and the
+      Source Data column is headed R2. With r, k1 and k3 are the two highest means, so the claim would
+      not even be partial. Source Data matches the 42-column r squared, not the Methods' danger-only
+      measure, a paper inconsistency; the outcome is partial under the criterion.
+    response: No change.
+  - claim: fig2g-cue-anatomy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig3a-cluster-signals
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig3b-signal-pca
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig3c-subnetwork-lesion
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The criteria compare unit-norm weights; with loadings fig3c would pass (0.709 against
+      0.680). This is a claims-file weakness, referred to a reader.
+    response: No change.
+  - claim: fig3d-supranetwork-lesion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The notebook and the record's notes say PC2's probability peak is in the first cue
+      second, but the printed peak index is 2, so the peak is in the second cue second. The criterion
+      only needs the first half, so the outcome stands.
+    response: Corrected the notebook's conclusion and the notes to the second cue second, within the
+      first half of the cue.
+  - claim: fig3e-network-anatomy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig4b-outcome-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig4c-positive-prediction-error
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig4b-phasic-network
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, settled from round 1. Judged with Pearson r, as the criterion says, every profile part
+      holds and the network part fails (within -0.329 against 0.008), which is partial. The criterion
+      allows only r where the fig2e one allows r and r squared; with r squared the claim would be
+      reproduced. This is a claims-file inconsistency, now referred to a reader.
+    response: No change of outcome. The conclusion now gives k3's anticorrelation with k1 and k2 (r
+      = -0.85, -0.74) as the reason the phasic network fails.
+  - claim: fig4b-tonic-network
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, settled from round 1 (within -0.250 against 0.000 with r). The conclusion says k6 is the
+      only cluster inhibited to surprising shock, but k3, k4, k5 and k9 also have negative
+      uncertainty-shock means. It says the tonic network fails because k3 and k6 oppose their fellow
+      clusters; this is incomplete, as k9 is anticorrelated with k7 (-0.60) and k8 (-0.79) and
+      correlated with k6 (0.67), so k6 and k9 together oppose k7 and k8.
+    response: Corrected the conclusion, which now says k6 has the lowest uncertainty-shock mean,
+      with k3, k4, k5 and k9 also below 0, and k6 and k9 are anticorrelated with k7 and k8. The same
+      correction is made in the notes, the finding on the correlation coefficient and the question
+      to a reader.
+  - claim: fig4e-network-pca
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig4f-outcome-hubs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig4g-outcome-anatomy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig5a-outcome-cluster-signals
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Result sentences, the Summary, the README and the record's notes and findings
+      agree with the printed outputs.
+    response: No change.
+  - claim: fig5b-outcome-signal-pca
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The conclusion says L2 gives 47.80 and 30.92%, out of tolerance, but only PC1 is out
+      of tolerance; 30.92 lies inside 33.4 +- 3.34.
+    response: Corrected the conclusion and the notes, which now say PC1 is out of tolerance and PC2
+      within it.
+  - claim: fig5c-phasic-lesion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Shuffle function is not in the data set; the lesion matrices still match the Source
+      Data percentages to within 0.04 points.
+    response: No change.
+  - claim: fig5d-tonic-lesion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Shuffle function is not in the data set; the lesion matrices still match the Source
+      Data percentages to within 0.04 points.
+    response: No change.
+  - claim: fig5e-no-anatomical-bias
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, settled from round 1; its round-1 partial was its own call, not one of the criterion's
+      levels. The assumption of p-b is stated and reasonable, as the claims file's check log keeps p-b for
+      Fig. 5e only, and the largest differential, 4.48, equals Source Data. The threshold comes from
+      the quantity it tests, so p-b cannot fail, and the Results' reading (p-a, 9.82, permutation p =
+      0.001) fails; this is a claims-file design flaw.
+    response: No change.
+  - claim: cue-outcome-membership-independent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The claim is judged on L1; under L2 the median goodness-of-fit p values are 0.048
+      (phasic) and 0.011 (tonic), and only 4 of 20 seeds pass. The criterion only says results are
+      reported under L1 and L2, so choosing L1 is a judgment that would flip the outcome. It is
+      reasonable and the notes state it, but it should carry assumed true.
+    response: Marked assumed true, with a deviation stating the assumption; the notebook's
+      conclusion and summary and the README table now say the outcome rests on an assumption.

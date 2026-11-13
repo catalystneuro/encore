@@ -35,7 +35,7 @@ of binned and normalized firing that the paper's scripts build from them, and th
 | Outcome beta PCA, 53.7% and 33.4% | Reproduced |
 | Phasic and tonic lesions | Reproduced |
 | No anatomical bias of outcome networks | Reproduced (assumption) |
-| Cue and outcome network membership independent | Reproduced |
+| Cue and outcome network membership independent | Reproduced (assumption) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
