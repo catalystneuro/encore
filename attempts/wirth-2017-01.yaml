@@ -1,0 +1,390 @@
+schema_version: 3
+id: wirth-2017-01
+datasets:
+- archive: crcns
+  id: hc-21
+  version: unversioned
+  doi: 10.6080/K0GX48R9
+  relation: primary
+- archive: crcns
+  id: hc-12
+  version: unversioned
+  doi: 10.6080/K0R49NQV
+  relation: primary
+paper: doi:10.1371/journal.pbio.2001045
+date: 2026-11-13
+entry: wirth-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43420118844
+outcomes:
+- claim: gaze-anticipates-action
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:gaze-anticipates-action
+  notes: Before right turns (code 1) the horizontal eye signal, standardized within session, lies
+    on the negative side of that before left turns (code 2) in each monkey, in the 500 and the 300
+    ms windows, for each eye and both eyes, successful or all trials, with rank-sum p below 1e-100.
+    500 ms, both eyes, successful trials, K median difference -0.77 session SD (p = 4.0e-148, 39 of
+    40 sessions), S -1.00 (p = 4.3e-146, 20 of 20 sessions). Taking negative as rightward, gaze lies
+    on the side of the coming turn. Both monkeys, each window and the pooled test agree, so the
+    readings of the criterion give one outcome.
+  deviations:
+  - The eye signal has no calibration, units or sign in the files, and is on a +-5000 scale in 36
+    sessions and a +-5 scale in 26. Values are standardized within each session (minus the session
+    median, over its SD) before sessions are pooled; per-session differences are also counted.
+  - Assumed that a negative horizontal value is rightward. During a turn the mean eye position in
+    optokinetic stimulation shifts toward the side of the quick phases, the side the observer turns
+    to, and the right-minus-left difference grows in the negative direction from the turn code on
+    (to -1.4 session SD in S at 0.3 to 0.6 s and -0.9 in K at 0.6 to 0.7 s). If the sign were the other way, gaze
+    before a turn would lie opposite the turn.
+  - S1 Appendix A2, which holds the paper's analysis, was not available; the test is the rank-sum
+    of the claims file.
+- claim: gaze-anticipates-landmarks
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:gaze-anticipates-landmarks
+  notes: Passive returns (tags 5xy) turn right when the camera orientation falls over them, as it
+    does after code 1. During right-turning returns the standardized eye signal lies on the negative
+    side, rightward as assumed for gaze-anticipates-action, in each monkey (all returns, both eyes,
+    K -0.56 session SD, p = 6.2e-58, 39 of 41 sessions; S -0.56, p = 6.4e-30, 20 of 21 sessions)
+    and after successful trials only (p = 4.7e-34 and 1.5e-10).
+  deviations:
+  - The same standardization and assumed sign as gaze-anticipates-action.
+  - The side of a return is taken from the change of camera orientation over it (median absolute
+    change 102.5 degrees); the files do not say where the landmarks appear.
+- claim: learning-trials
+  outcome: reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:learning-trials
+  measured:
+  - 12.26
+  - 16.53
+  notes: Using the files' own learning curves, the first trial whose lower bound exceeds 1/4 is on
+    average 12.26 +- 3.28 (SEM, 23 sessions) for monkey S and 16.53 +- 2.69 (38 sessions) for monkey
+    K over all sessions (reading a), and 15.82 +- 3.44 for K without the probe sessions (reading b).
+    Both monkeys fall within the paper's SEMs under both readings. Two sessions of S and three of K
+    never reach the criterion and are left out. The field learningtrial of every session equals
+    this trial.
+  deviations:
+  - The curves are the files' own; the method of the paper's reference 60 is not named in the text
+    read. The columns are read as probability, lower and upper bound, as the values show, where the
+    descriptor puts the probability in the middle column.
+- claim: learning-to-90
+  outcome: reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:learning-to-90
+  measured: 0.898
+  notes: Of the 59 sessions that reach both the lower bound above 1/4 and the upper bound at 0.9, 53
+    need fewer than 10 trials between them (0.898). Over all 66 sessions the fraction is 0.803, also
+    within 0.89 +- 0.089, and without the probe sessions 0.898 and 0.815.
+  deviations:
+  - The denominator is not stated; the fraction is given over the sessions reaching both criteria
+    and over all sessions, and both match.
+- claim: probe-transfer
+  outcome: not_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:probe-transfer
+  measured:
+  - 58.3
+  - 28.3
+  notes: hc-12 holds 12 probe sessions of monkey K (the paper reports 15) and none of monkey S (the
+    paper reports 9); the 8 probe-like sessions of hc-21 are among the 12. For K, 28.3% correct over
+    the first 5 trials and 58.3% over the 5 trials after the new entries, both below the paper's 44%
+    and 73% by more than the tolerance; Wilcoxon signed-rank over the 12 sessions p = 0.072 (median
+    gain 0.30). The two values of monkey S could not be computed; the criterion fails on K's values
+    alone.
+  deviations:
+  - Probe sessions are found from the start arms (the first 10 trials use one or two entries and
+    later ones others), as the files do not mark them. The introduction is the first trial from an
+    entry not used in the first 10 (S3C legend).
+  - The measured values are monkey K's, after and at the start; monkey S has no probe session in
+    the data.
+- claim: probe-faster-criterion
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Counting trials to criterion from the introduction of the new entries needs learning
+    curves recomputed on part of the session, with the confidence bounds of the paper's reference
+    60, which the text read does not name (S3B legend, "methods based on [60]"). The files hold only
+    whole-session curves. Any other curve method would set the criterion differently. hc-12 also
+    holds no probe session of monkey S. The question is for the paper's authors (findings).
+- claim: cells-recorded
+  outcome: partially_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:cells-recorded
+  measured:
+  - 189
+  - 186
+  notes: hc-12 holds 189 cell files (99 of monkey K, 90 of monkey S), the paper's analysed count; 187
+    have new-maze data and 186 fire more than 100 spikes in the new-maze session (within 189 +-
+    18.9). The 270 cells recorded (128 S, 142 K) are not deposited beyond these 189, so that count
+    cannot be checked. The files give recording coordinates but no subfield.
+- claim: responsive-cells
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Responsiveness is defined over four spaces, one of them the point of gaze, which needs the
+    gaze direction in degrees; the eye signal has no calibration, units or sign in the files.
+    Responsive in the three spaces computed here are 59 of 186 cells (full trials, permuted chunks;
+    39, 55 and 32 under the other readings), a lower bound of the four-space count, which could lie
+    anywhere from 59 to 186.
+- claim: state-space-most-responsive
+  outcome: not_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:state-space-most-responsive
+  measured: 57
+  notes: 57 of 186 cells have significant state-space IC under the main reading (full trials,
+    permuted chunks) and 33, 42 and 24 under the others, all below 75.6 to 92.4. With a one-sided
+    test at 0.01 the counts are 62, 34, 52 and 29. The count needs no gaze, so the missing gaze space
+    does not change the outcome; the chi-squared tests across the four spaces could not be run.
+    State space has the most cells of the three spaces computed (57 against 46 for position and 40
+    for direction).
+  deviations:
+  - Map resolution steps (square bins for position and state space, as in the dataset's scripts,
+    equal angular bins for direction) and the two readings each of the trial window and of the
+    surrogate shifting, as in the claims file (Method W).
+- claim: multi-space-coding
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on responsive-cells (the gaze space). Of the 59 cells responsive in the three
+    spaces computed, 46 are significant in two or more; cells responsive only in gaze space would
+    add to the denominator, so the fraction over the paper's set cannot be bounded above one half.
+- claim: direction-center-vs-periphery
+  outcome: not_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:direction-center-vs-periphery
+  notes: For the 40 cells with significant direction IC (reading a, permuted chunks) normalized
+    sparsity is higher in the centre than on return paths (median difference 0.020, 25 of 40,
+    Wilcoxon p = 0.031) and IC is not (0.012, p = 0.43). Neither the reproduced level (both p <
+    0.001) nor the partial level (both p < 0.05, or one p < 0.001) is met. Over the 59 three-space
+    responsive cells, which stand in for reading (b), IC and sparsity are higher with p = 0.045 and
+    0.0074, the partial level; with shifted chunks no comparison is significant. The statement
+    speaks of direction-selective cells, which is reading (a).
+  deviations:
+  - Centre and return maps at one common angular resolution per session, chosen so the number of
+    bins valid in both is closest to 200 (median 151 centre and 157.5 return bins valid); the
+    paper does not say how the two maps were binned.
+  - Reading (b), all responsive cells, cannot be formed without the gaze space; the three-space
+    responsive cells are shown.
+- claim: direction-tuning-not-maintained
+  outcome: partially_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:direction-tuning-not-maintained
+  measured:
+  - 15
+  - 40
+  - 4
+  notes: Of 40 direction-selective cells, 15 (38%) have a significantly low centre-return
+    correlation (binomial p = 2.1e-14 at chance 0.025) and 4 a significantly high one (p = 0.017).
+    The proportion of low cells matches the paper's 36% and the high count is inside 2 to 4, but the
+    number of cells tested (40, expected 56 +- 5.6) and the low count (15, expected 20 +- 2) are
+    outside the tolerance. Over the 59 three-space responsive cells 16 are low and 4 high. With
+    shifted chunks 5 of 24 are low and 3 high.
+  deviations:
+  - Cells with at least 10 common valid bins, a standard choice for "enough"; with 2 the counts do
+    not change.
+- claim: state-space-ic-higher
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: One of the three comparisons is with the point-of-gaze space, which cannot be built. The
+    other two hold under the main reading; normalized IC is higher in state space than in position
+    space (44 cells, median 0.014, Wilcoxon p = 1.1e-4) and than in direction space (40 cells,
+    median 0.021, p = 2.5e-7).
+- claim: sparsity-state-vs-direction
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:sparsity-state-vs-direction
+  measured: 0.0022
+  notes: For the 40 cells with significant IC in both state and direction space (full trials,
+    permuted chunks), normalized sparsity is higher in state space (median difference 0.016, 28 of
+    40 cells, Wilcoxon p = 0.0022). Under the other three readings it is not significant (p = 0.32,
+    0.92 and 0.36), so the outcome rests on the main reading.
+  deviations:
+  - The main reading takes the trial window from start to next start (the state space includes the
+    returns, Fig 1F legend) and permutes the order of the 5 s chunks (Results, "randomly shuffling
+    periods of spiking activity in time"); the paper does not settle either, and the outcome
+    depends on them (findings).
+- claim: sparsity-state-vs-position
+  outcome: not_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:sparsity-state-vs-position
+  measured: 9
+  notes: Under the main reading state space is significantly sparser than position space over the
+    44 cells responsive in both (median difference 0.016, Wilcoxon p = 0.00043), where the paper's
+    test finds no significant difference; 9 (per-cell level 0.05) or 5 (0.01) cells differ
+    individually, against 15 +- 1.5, and those 9 are sparser in state space (p = 0.0039). Under
+    shifted chunks the overall test is not significant (p = 0.31 and 0.17) but only 2 or 6 cells
+    differ individually. No reading meets all parts.
+- claim: sparsity-gaze-vs-state
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the point-of-gaze space; the eye signal has no calibration.
+- claim: state-space-selectivity
+  outcome: not_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:state-space-selectivity
+  notes: The paper's responsive set contains the three-space responsive cells and lies within all
+    cells, so its counts are bounded by the counts over these two sets. Under the main reading the
+    high count lies between 15 and 23, above 11 to 13; with shifted chunks between 3 and 8, below.
+    With trials to reward and permuted chunks the high count lies between 13 and 23 and the low count
+    between 7 and 12, above the 3 to 5 the criterion allows. No reading can meet the criterion.
+  deviations:
+  - The three rotational moves are read as the 36 degree alignment (tags 2xy) and the 72 degree
+    rotations to the right and to the left (tags 3xy, split by the sign of the orientation change);
+    the paper does not name them. High and low are the upper and lower 5% of the surrogates, the
+    level implied by the binomial chance rate of the claims file.
+  - The paper's responsive set cannot be formed (gaze space); the outcome rests on the bounds.
+- claim: landmark-identity-distance
+  outcome: not_reproduced
+  notebook: reproduce_wirth_2017.ipynb
+  output: claim:landmark-identity-distance
+  notes: At most 24 cells (over all 186) show a main effect of relative distance with successful
+    laps, and at most 31 with all laps, against 64 +- 6.4; this bound holds for any responsive set.
+    The identity count lies between 16 and 32 (successful laps) or 24 and 47 (all laps) and the
+    interaction count between 6 and 14 or 8 and 17, but the distance count fails under every
+    reading, and with it the partial level. With all laps the one session of 193 trials
+    (sn20110624) gives the residual df of Fig 5, 756, and its three cells have interaction F of
+    1.83, 3.19 and 1.56, not the 4.41 and 2.12 of Fig 5.
+  deviations:
+  - Laps read two ways, successful trials (Method W) and all trials (Methods, "each of the animal's
+    laps"); the residual df of 756 in Fig 5 is reached only with all laps of sn20110624 (193 x 4 -
+    16), which supports the second.
+  - Relative distance from the files' curvilinear abscissa (0 centre, 1 arm end) in quarters; the
+    landmark identity is the entry path. Rates per lap and segment, ANOVA with interaction, type II
+    sums of squares, alpha 0.05.
+- claim: landmark-identity-center
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Over the three-space responsive cells and over all cells the one-way count lies between 9
+    and 16 (reading a) or 11 and 23 (reading b) with successful laps, and between 8 and 18 or 12 and
+    26 with all laps (main reading of the responsive set), so it may or may not fall in 11 to 13, and
+    the binomial test depends on the size of the responsive set, which needs the gaze space.
+- claim: path-selectivity
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Cells enter on significant point-of-gaze IC, and landmark entry into the field of view
+    needs the landmark positions, which the files do not give (only the arms' geometry is in the
+    camera data). The eye signal has no calibration.
+- claim: gaze-aligned-dynamics
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Foveation is gaze within 10 degrees of a landmark, which needs the gaze in degrees and the
+    landmark positions; the files give neither.
+- claim: latency-skew
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on gaze-aligned-dynamics; the gaze-aligned latencies need foveation and the onset
+    latencies need the landmark positions.
+- claim: eccentricity-modulation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on gaze-aligned-dynamics; landmark eccentricity needs calibrated gaze and the
+    landmark positions.
+- claim: foveation-selectivity
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on gaze-aligned-dynamics; needs foveation epochs and landmark onsets.
+- claim: fields-per-cell
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The paper's text and legends do not define a positional field (S5B counts peaks); the
+    definition is presumably in S1 Appendix, which was not available. The question is for the
+    paper's authors (findings).
+- claim: spatial-selectivity-fraction
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Under reading (a) 46 of 186 cells (0.247) have significant position IC, outside 0.5 +-
+    0.05. Readings (b) and (c) need the responsive set; responsive cells among all lie between 0.32
+    and 1, and position cells among responsive between 0.247 and 0.78, both of which include 0.5.
+- claim: gaze-map-landmarks
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs point-of-gaze maps and the landmark positions; the eye signal has no calibration and
+    the files give no landmark positions.
+- claim: dimensionality-control
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The control is described in S1 Appendix A5, which was not available; the S7 legend shows
+    only that spikes were simulated on the trajectory with a box-shaped field.
+findings:
+- kind: metadata_insufficient
+  datasets:
+  - crcns-hc-12
+  - crcns-hc-21
+  statement: The horizontal and vertical eye signals have no units, calibration or sign convention.
+    They are on a +-5000 scale in 36 hc-12 sessions and a +-5 scale in 26, with saturated samples at
+    the bound (up to 22% of a session). The paper's point-of-gaze maps, foveation and landmark
+    eccentricity cannot be computed, which blocks 12 of the 28 claims; the files also give no
+    positions of the landmarks.
+- kind: metadata_error
+  datasets:
+  - crcns-hc-12
+  statement: The descriptor puts the probability of a correct response in the middle column of
+    learning_curves and the bounds in columns 1 and 3. In all 187 files column 2 is the lowest and
+    column 3 the highest, so the columns are probability, lower bound and upper bound. The field
+    learningtrial, not described, is the first trial whose lower bound exceeds 1/4 (-2 when none).
+- kind: metadata_error
+  datasets:
+  - crcns-hc-12
+  statement: The descriptor gives the eye positions at 250 Hz; eye_times are 5 ms apart (200 Hz) in
+    every file.
+- kind: metadata_error
+  datasets:
+  - crcns-hc-12
+  statement: The descriptor says code 43 is the rewarded start arm and code 53 the rewarded chosen
+    arm. The arm chosen on rewarded trials is 53 in 32 of 66 sessions and another arm in the rest,
+    as the reward moved each day.
+- kind: data_missing
+  datasets:
+  - crcns-hc-12
+  statement: Two hc-12 files (sn20121015_HPC_e2_c1a and c1c) have no new-maze (newallo) data, the
+    only maze the paper analyses, so 187 of the 189 cells can be analysed.
+- kind: data_missing
+  datasets:
+  - crcns-hc-12
+  - crcns-hc-21
+  statement: hc-12 holds 12 probe sessions of monkey K and none of monkey S, where the paper reports
+    15 and 9; hc-21 holds 8 probe-like sessions, all among K's 12.
+- kind: other
+  about: data
+  datasets:
+  - crcns-hc-12
+  - crcns-hc-21
+  statement: 87 of the 101 hc-21 files hold the same spike trains (same spike count and first five
+    spike times) as hc-12 files, under other file names. Neither descriptor says that the
+    two data sets overlap.
+- kind: other
+  about: data
+  datasets:
+  - crcns-hc-12
+  statement: The files come in seven layouts. The spike times are under file.elec in 175 files and
+    only under newallo.elec in 12; camera data are at the top level or under newallo; the camera
+    orientation runs from 0 to 360 in some files and -180 to 180 in others. The descriptor gives one
+    layout.
+- kind: methods_unavailable
+  statement: How were the 5 s chunks of recording "randomly shifted" for the surrogates (their order
+    permuted, or each moved by its own offset), and did the maps include the passive returns after
+    successful trials? Significant counts change two-fold between these readings (state space 57 or
+    33 of 186 cells with returns, 42 or 24 without), and sparsity-state-vs-direction holds only with
+    permuted chunks and returns.
+- kind: methods_unavailable
+  statement: Which learning-curve method is reference 60, and how were trials to criterion counted
+    after the new entries of probe sessions? The files hold only whole-session curves.
+- kind: methods_unavailable
+  statement: How is a positional field defined for the count of 2.7 fields per cell, and how was the
+    control for the dimensionality of the state space done (S1 Appendix A5)? S1 Appendix was not
+    available to this attempt.
+- kind: methods_unavailable
+  statement: Which three rotational moves enter the state-space selectivity index, and were the
+    two-way ANOVA's laps all trials or only successful ones? The residual df of 756 in Fig 5 fits all
+    193 laps of session sn20110624.
