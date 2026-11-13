@@ -225,10 +225,24 @@ def distance_to_sector(x, y, sector, angle_sign=-1.0):
     return out
 
 
-def count_entries(inside: np.ndarray, valid: np.ndarray) -> int:
-    """Entrances into a zone: outside-to-inside transitions over tracked samples."""
+def count_entries(inside: np.ndarray, valid: np.ndarray, min_out: int = 1) -> int:
+    """Entrances into a zone: outside-to-inside transitions over tracked samples. With
+    ``min_out`` > 1 an entrance counts only after at least that many samples outside, which
+    drops re-entries from position jitter at the edge [assumption: ``min_out`` = 3 (100 ms)
+    is calibrated in the notebook against the Tracker's own entrance count on the shock-on
+    files, where both can be computed]."""
     s = inside[valid].astype(int)
-    return int(((s[1:] == 1) & (s[:-1] == 0)).sum())
+    if min_out <= 1:
+        return int(((s[1:] == 1) & (s[:-1] == 0)).sum())
+    n, out_run = 0, 0  # a session that starts inside does not count an entrance
+    for v in s:
+        if v:
+            if out_run >= min_out:
+                n += 1
+            out_run = 0
+        else:
+            out_run += 1
+    return n
 
 
 # --------------------------------------------------------------------------- maps
@@ -259,6 +273,63 @@ def rate_map(spk, occ, min_occ=0.0):
         r = spk / occ
     r[(occ <= 0) | (occ < min_occ)] = np.nan
     return r
+
+
+@functools.lru_cache(maxsize=1)
+def map_index() -> pd.DataFrame:
+    """The data set's own maps: data/SPIKE/<frame>/... per unit and session, data/TIME/<frame>/...
+    per session; ``sm`` is "" for the plain maps and "RmSm" or "ArSm" for the smoothed ones."""
+    rx = re.compile(r"^data/(SPIKE|TIME)/(ROOM|ARENA)/(EnvironmentalTask/)?([^./]+?)_?(?:spikes_)?cl-fix"
+                    r"(RmSm|ArSm|)(?:\.P(\d+)C(\d+))?$")
+    rows = []
+    for m in members():
+        r = rx.match(m)
+        if r:
+            rows.append(dict(path=m, kind=r.group(1), frame=r.group(2), env=bool(r.group(3)), session=r.group(4),
+                             sm=r.group(5), tetrode=int(r.group(6)) if r.group(6) else -1,
+                             cluster=int(r.group(7)) if r.group(7) else -1))
+    return pd.DataFrame(rows)
+
+
+def _read_map(name: str) -> np.ndarray:
+    """A deposited map, square. Most are 32 x 32; the place avoidance maps of WT15Hab1, WT16Hab1,
+    150720_WT19Ini1_2 and 150720_WT19Conf1_2 are 41 x 41, a grid whose pixel mapping is not
+    described (checked in the notebook)."""
+    v = np.array(read(name).split(), float)
+    n = int(round(np.sqrt(len(v))))
+    return v.reshape(n, n)
+
+
+SMOOTH_KERNEL = np.outer([0.5, 1.0, 0.5], [0.5, 1.0, 0.5])
+
+
+def smooth_maps(spk, occ):
+    """Our own smoothing of the spike-count and dwell maps, for sessions without a deposited
+    smoothed map on the common grid [assumption, M2]: a 3 x 3 kernel with weights 1 at the
+    centre, 0.5 at the edges and 0.25 at the corners (sum 4), the centred kernel closest to
+    the authors' smoothed maps, which sum about 4.5 bins (notebook)."""
+    return (ndimage.convolve(spk, SMOOTH_KERNEL, mode="constant"),
+            ndimage.convolve(occ, SMOOTH_KERNEL, mode="constant"))
+
+
+@functools.lru_cache(maxsize=None)
+def deposited_maps(session, tetrode, cluster, frame="room", env=False, smoothed=True):
+    """Spike-count and dwell-time maps (32 x 32) the authors deposited for one unit and session.
+
+    [assumption, M2] The paper does not say whether its rate maps were smoothed. The data set
+    holds smoothed maps (``RmSm``, ``ArSm``) beside the plain ones, made by the authors; with
+    ``smoothed=True`` they are used, as the closest record of the maps the paper's field
+    counts were made on. Their smoothing is not described (finding); the notebook shows that
+    it acts like a sum over about 2 x 2 bins."""
+    D = map_index()
+    fr = "ROOM" if frame == "room" else "ARENA"
+    sm = ("RmSm" if frame == "room" else "ArSm") if smoothed else ""
+    sel = (D.frame == fr) & (D.env == env) & (D.session == session) & (D.sm == sm)
+    s = D[sel & (D.kind == "SPIKE") & (D.tetrode == tetrode) & (D.cluster == cluster)]
+    t = D[sel & (D.kind == "TIME")]
+    if s.empty or t.empty:
+        return None, None
+    return _read_map(s.path.iloc[0]), _read_map(t.path.iloc[0])
 
 
 def map_stability(a, b, max_shift=2):
@@ -572,6 +643,32 @@ def mixed_terms(df, formula, group, terms):
         rows.append(dict(term=lab, F=float(np.squeeze(w.statistic)), df1=len(idx),
                          df2=float(np.squeeze(w.df_denom)), p=float(np.squeeze(w.pvalue))))
     return pd.DataFrame(rows), m
+
+
+def mixed_lsd(df, y, factor, group, levels, df_denom=None):
+    """Fisher's LSD from a one-way mixed model (random intercept per ``group``): each pair of
+    level means is compared with the model's own standard error of the difference, the pooled
+    error of the fit, as JMP's LSD after a mixed model does [claims M12]. The denominator df is
+    the residual df (n minus fixed parameters) unless ``df_denom`` is given (the paper's df)."""
+    import statsmodels.formula.api as smf
+    import warnings
+    d = df[[y, factor, group]].dropna()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        m = smf.mixedlm(f"{y} ~ 0 + C({factor})", d, groups=d[group]).fit(reml=True)
+    names = [f"C({factor})[{lv}]" for lv in levels]
+    cov = m.cov_params().loc[names, names].values
+    mu = m.fe_params[names].values
+    dfd = df_denom if df_denom is not None else len(d) - len(levels)
+    rows = []
+    for i in range(len(levels)):
+        for j in range(i + 1, len(levels)):
+            diff = mu[i] - mu[j]
+            se = np.sqrt(cov[i, i] + cov[j, j] - 2 * cov[i, j])
+            t = diff / se
+            rows.append(dict(a=levels[i], b=levels[j], diff=diff, se=se, t=t, df=dfd,
+                             p=2 * stats.t.sf(abs(t), dfd)))
+    return pd.DataFrame(rows)
 
 
 def prop_ztest(k1, n1, k2, n2):
