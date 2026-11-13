@@ -22,12 +22,12 @@ healthy participants' data are not in the data set.
 | Past trials do not affect choice | Not reproduced |
 | Encoding limited to the previous trial | Reproduced |
 | Sharp boundary between t-1 and t-2 | Reproduced (assumption) |
-| All regressors significant in mixed-effects models | Not reproduced (assumption) |
+| All regressors significant in mixed-effects models | Not reproduced (assumption; change to reproduced proposed) |
 | Stepwise selection similar to the 5-window selection | Partially reproduced (assumption) |
 | Risk over all trials explains more variance than over gamble trials | Not reproduced |
 | No encoding of response direction | Reproduced |
 | All signals in at least 6 patients (mean 7.41) | Not reproduced |
-| Multiplexing and present-past overlap (Figures 7F, S7) | Not reproduced (2 claims, assumption) |
+| Multiplexing and present-past overlap (Figures 7F, S7) | Not reproduced (2 claims) |
 | Example risk and regret electrodes | Reproduced |
 | Broadband comparisons (2 claims) and anatomy (3 claims) | Blocked: data missing |
 
@@ -35,8 +35,10 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The HFA is used as deposited, already baseline-corrected, as the authors' own correction; the claims
-file's two baseline readings are run as well and change the outcomes marked as resting on an
-assumption. The data set's "buttonpress" epoch behaves as locked to the outcome reveal, seven electrodes of s03
+file's two baseline readings are run as well. They change the outcomes of four claims (past encoding,
+past signals more sustained, sharp boundary, stepwise selection), which are marked as resting on that
+assumption, and under reading (a) the mixed-effects claim passes, so a change to reproduced is
+proposed for it. The latency claim rests on a different assumption, the timing of the second epoch. The data set's "buttonpress" epoch behaves as locked to the outcome reveal, seven electrodes of s03
 are deposited twice, and the HFA trials carry no round number (they are matched to rounds through the
 authors' regressor file). The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/saez-2018-01.yaml`](../../attempts/saez-2018-01.yaml).

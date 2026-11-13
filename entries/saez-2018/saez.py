@@ -151,17 +151,56 @@ def past_regressors(rounds: pd.DataFrame, idx: np.ndarray, lag: int) -> pd.DataF
     return pd.DataFrame(out)
 
 
-def load_hfa(subject: str, rt_ms: np.ndarray | None = None, n_offset_trials: int = 10) -> dict:
+def epoch_offsets(g: np.ndarray, p: np.ndarray, rt_ms: np.ndarray, max_sd: float = 2.0,
+                  tol_ms: int = 25) -> tuple[pd.DataFrame, np.ndarray]:
+    """Shift and level difference between the game (g) and buttonpress (p) 1-kHz epochs, per trial.
+
+    For each trial, the shift s (ms) is the one that best superimposes the overlapping samples of
+    the first electrode, g[s + j] against p[j] for j < 3001 - s, at least 300 samples (the
+    smallest SD of their difference, computed for every s at once from cumulative sums and the
+    cross-correlation). A trial is `matched` when s minus the reaction time is within tol_ms of
+    the subject's median over the trials where that SD is below max_sd (about 0.3 to 1 for a true
+    match, against about 5 for unrelated samples); trials whose epochs do not overlap (long
+    reaction times) are not matched. Both thresholds are standard choices, shown in the notebook.
+    Returns the per-trial table and the mean difference g - p over the overlap per trial and
+    electrode (NaN where not matched): the per-trial offset between the two epochs' levels.
+    """
+    n = g.shape[1]
+    S = np.arange(n - 299)
+    L = n - S
+    rows, diff = [], np.full((g.shape[0], g.shape[2]), np.nan)
+    for t in range(g.shape[0]):
+        a, b = g[t, :, 0].astype(float), p[t, :, 0].astype(float)
+        ca, ca2 = np.r_[0, np.cumsum(a)], np.r_[0, np.cumsum(a * a)]
+        cb, cb2 = np.r_[0, np.cumsum(b)], np.r_[0, np.cumsum(b * b)]
+        sa, sb = ca[n] - ca[S], cb[L]
+        var = (ca2[n] - ca2[S] + cb2[L] - 2 * np.correlate(a, b, "full")[n - 1 + S]) / L - ((sa - sb) / L) ** 2
+        k = int(np.argmin(var))
+        rows.append({"trial": t, "rt_ms": int(rt_ms[t]), "offset_ms": k, "offset_minus_rt": k - int(rt_ms[t]),
+                     "sd_diff": round(float(np.sqrt(max(var[k], 0))), 3),
+                     "mean_diff": round(float((sa[k] - sb[k]) / L[k]), 3)})
+    df = pd.DataFrame(rows)
+    good = df.sd_diff < max_sd
+    med = df.offset_minus_rt[good].median()
+    df["matched"] = (df.offset_minus_rt - med).abs() <= tol_ms
+    for t in np.where(df.matched)[0]:
+        k = df.offset_ms[t]
+        diff[t] = (g[t, k:, :].astype(float) - p[t, :n - k, :].astype(float)).mean(0)
+    return df, diff
+
+
+def load_hfa(subject: str, rt_ms: np.ndarray | None = None) -> dict:
     """Window-averaged HFA of both epochs (trials x 57 x electrodes, float32), with checks.
 
     The 1-kHz arrays are read for checks only: the maximum difference, per electrode, between
     the window arrays and the mean of samples 50k to 50k+200; electrode pairs whose 1-kHz traces
     or window arrays are identical; the grand mean trace. With rt_ms (the csv's button press
-    minus game presentation, per trial), the offset between the two epochs is found for the
-    first n_offset_trials trials as the shift that best superimposes the overlapping 1-kHz
-    samples of the first electrode (the smallest SD of their difference); the mean difference at
-    that shift shows whether the two epochs carry the same per-trial offset. `keys` lists every
-    variable the file holds, with its shape.
+    minus game presentation, per trial), the shift and level difference between the two epochs
+    are found for every trial (`epoch_offsets`): `offsets` is the per-trial table and
+    `offset_diff` the per-trial, per-electrode level difference (game minus buttonpress), which
+    shows whether the two epochs carry the same per-trial correction and lets the game epoch's
+    pre-event baseline be applied to the buttonpress epoch (baseline reading (b)). `keys` lists
+    every variable the file holds, with its shape.
     """
     z = _zip("data.zip")
     d = sio.loadmat(z.open(f"data/data_ephys/{subject}_ofc_hg_events.mat"))
@@ -185,22 +224,7 @@ def load_hfa(subject: str, rt_ms: np.ndarray | None = None, n_offset_trials: int
         out[f"{e}_high_corr"] = [(i, j, round(float(c[i, j]), 4)) for i in range(ne)
                                  for j in range(i + 1, ne) if c[i, j] > 0.95]
     if rt_ms is not None:
-        g, p = d["game_events_hg"][:, :, 0].astype(float), d["buttonpress_events_hg"][:, :, 0].astype(float)
-        offs = []
-        for t in range(min(n_offset_trials, len(rt_ms))):
-            best = (None, np.inf, np.nan)
-            for s in range(0, 2700):
-                j = np.arange(0, 3001 - s)
-                if len(j) < 300:
-                    break
-                dif = g[t, j + s] - p[t, j]
-                v = np.std(dif)
-                if v < best[1]:
-                    best = (s, v, float(dif.mean()))
-            offs.append({"trial": t, "rt_ms": int(rt_ms[t]), "offset_ms": best[0],
-                         "offset_minus_rt": best[0] - int(rt_ms[t]), "sd_diff": round(best[1], 3),
-                         "mean_diff": round(best[2], 3)})
-        out["offsets"] = pd.DataFrame(offs)
+        out["offsets"], out["offset_diff"] = epoch_offsets(d["game_events_hg"], d["buttonpress_events_hg"], rt_ms)
     del d
     return out
 
