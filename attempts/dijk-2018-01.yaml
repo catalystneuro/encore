@@ -59,10 +59,13 @@ outcomes:
   notes: On the data set's smoothed maps with M5 a, the adopted reading, mean fields per cell are 1.51 (DG
     circular), 2.09 (DG removed), 1.45 and 1.68 (CA), against 1.48, 2.70, 1.19 and 2.0. Three are within tolerance;
     removed DG is below 2.70 ± 0.39 under every reading (at most 2.09). Under the adopted reading the condition
-    effect is p = 0.026 (cell as random term), removed DG is above circular DG (p = 0.011) but not above circular
-    CA (p = 0.071), and circular and removed CA do not differ (p = 0.45). Across readings removed DG is never
-    above circular CA (p 0.067 to 0.88). Without the two sessions that fail the clock check the means are 1.50,
-    2.00, 1.45 and 1.61, condition p = 0.067.
+    effect is p = 0.026 (cell as random term). Fisher's LSD with the mixed model's pooled error puts removed
+    DG above circular DG (p = 0.0042) and above circular CA (p = 0.036), and circular and removed CA do not
+    differ (p = 0.45), the paper's pattern; paired and unpaired t tests, the earlier post hoc test, put removed
+    DG above circular DG (p = 0.011) but not above circular CA (p = 0.071). Across readings the pooled-error
+    LSD puts removed DG above circular CA only with M5 a on smoothed maps (p = 0.036 and 0.024; elsewhere p
+    0.14 to 0.86). The outcome fails on the removed DG mean. Without the two sessions that fail the clock check
+    the means are 1.50, 2.00, 1.45 and 1.61, condition p = 0.067.
   deviations:
   - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
     1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is about
@@ -75,8 +78,9 @@ outcomes:
     B1).
   - Mixed models are statsmodels' REML linear mixed models with Wald F tests; their denominator df are not
     JMP's Kenward-Roger df (M12).
-  - Post hoc comparisons are paired t tests within region and an unpaired t test across regions (Fisher's LSD
-    without the pooled error of the mixed model).
+  - Fisher's LSD uses the pooled error of the mixed model with cell as random term (level means of the four
+    region and condition groups and their covariance, residual df). Paired t tests within region and an unpaired
+    t test across regions are shown beside it.
   assumed: true
 - claim: fig1b-stability-dg-below-ca-removal
   outcome: reproduced
@@ -249,8 +253,9 @@ outcomes:
     coherence differs across conditions (0.49, 0.38, 0.32; ANOVA p = 0.011, Kruskal-Wallis p = 0.010). Room
     information is 1.15 and 0.73 bits/s in pretraining and conflict, outside the tolerance of 1.6 and 1.75;
     as bits per spike, the variant, it is 1.59 and 1.60, within it (asked of a reader, as for Table S1). Arena
-    field counts differ on unsmoothed maps (p = 0.0018) and on the data set's smoothed maps (p = 0.0017), not
-    with our smoothing, the reading adopted for this task (room p = 0.42, arena p = 0.65).
+    field counts differ on unsmoothed maps (p = 0.0018) and on the data set's smoothed maps (p = 0.0017), and
+    room field counts on unsmoothed maps differ by Kruskal-Wallis (p = 0.030; ANOVA p = 0.091), but neither
+    differs with our smoothing, the reading adopted for this task (room p = 0.42, arena p = 0.65).
   deviations:
   - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
     1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is about
@@ -412,9 +417,10 @@ outcomes:
     room normalizer: training zone F = 87.3, p < 0.0001; conflict zone F = 4.66, p = 0.028, or 0.038 with the
     paper''s df). Fisher''s LSD with the mixed model''s pooled error puts training highest near the training
     zone (1.90 against 1.02 and 0.97; p < 0.0001) and conflict highest near the conflict zone (1.46 against
-    0.94 and 0.85; p = 0.028 and 0.012, or 0.035 and 0.017 with the paper''s df). The other readings agree
-    (conflict above pretraining p 0.021 to 0.047, above training p 0.008 to 0.012), except conflict against
-    pretraining with 16-pixel locations, the room plus arena normalizer and the paper''s df (p = 0.055). Paired
+    0.94 and 0.85; p = 0.028 and 0.012, or 0.035 and 0.017 with the paper''s df). The other readings agree.
+    Over all four readings conflict is above pretraining with p 0.021 to 0.047 (residual df) or 0.027 to 0.055
+    (paper''s df), and above training with p 0.008 to 0.012 or 0.012 to 0.017; the one p above 0.05 is conflict
+    against pretraining with 16-pixel locations, the room plus arena normalizer and the paper''s df. Paired
     t tests over the five mice, the round-1 post hoc test, do not separate the conflict zone (p 0.060 to 0.20).'
   deviations:
   - Mixed models are statsmodels' REML linear mixed models with Wald F tests; their denominator df are not
@@ -550,8 +556,10 @@ outcomes:
   - 69
   - 16
   - 67
-  notes: 'All readings give 152 pairs, the paper''s total, but none gives the three counts within tolerance:
-    positive pairs number 67 to 71 (expected 81 ± 8.1), negative 12 to 21, independent 60 to 73. Reading (a)(i)
+  notes: 'Readings (i) and (iii) give 152 pairs, the paper''s total; readings (ii), which need a second pretraining
+    session, give 103. None gives the three counts within tolerance. Over the 152-pair readings positive pairs
+    number 67 to 71 (expected 81 ± 8.1), negative 12 to 21 (15 ± 1.5) and independent 60 to 73 (56 ± 5.6);
+    the 103-pair readings give 46 and 47 positive, 11 and 12 negative and 44 and 46 independent. Reading (a)(i)
     matches the negative count (16) and reading (a)(iii) the independent count (60). Measured values are for
     reading (a)(i).'
   deviations:
@@ -596,8 +604,9 @@ outcomes:
   notebook: reproduce_dijk_2018.ipynb
   output: claim:negative-pairs-no-change
   notes: Under the adopted class reading (a)(iii), the 19 to 21 negative pairs per manipulation differ (H =
-    10.7, p = 0.0047 under M11 (b); p = 0.012 under (a)), with replication below the shock manipulations. Only
-    the shuffle classes of reading (b)(i) give no difference (p = 0.15 and 0.31).
+    10.7, p = 0.0047 under M11 (b); p = 0.012 under (a)), with replication below the shock manipulations. Of
+    the six class readings, only the shuffle classes of reading (b)(i) give no difference (p = 0.15 and 0.31);
+    the (ii) readings, on the 103 pairs of mice with two pretraining sessions, differ (p 0.0017 to 0.017).
   deviations:
   - The pair classes are open (pc-int-pair-classes, which no reading reproduces). Reading (a)(iii), Kendall's
     own test on both pretraining sessions joined, is adopted as the most direct reading of significantly correlated
@@ -663,8 +672,9 @@ outcomes:
   notebook: reproduce_dijk_2018.ipynb
   output: claim:fig6b-correlation-before-avoidance
   notes: Before avoidances the zone by condition interaction is p = 0.44 (raw minima) and p = 0.30 (smoothed);
-    with pair as random term p = 0.12 and 0.077. Conflict near the conflict zone is the highest cell (0.019),
-    but not above the others by LSD (p 0.075 to 0.63).
+    with pair as random term p = 0.12 and 0.077. With raw minima conflict near the conflict zone is the highest
+    cell (0.019), but not above the others by LSD (p 0.075 to 0.63); with smoothed minima pretraining near the
+    training zone (0.0189) is above it (0.018), and the LSD p are 0.092 to 0.82.
   deviations:
   - Minima on the raw and on the 1-s smoothed distance (M8 readings) both run; the 4-s windows before the minima
     are pooled per session.
@@ -679,9 +689,13 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dijk_2018.ipynb
   output: claim:fig6-inset-rate-changes
-  notes: Before avoidances rate changes differ across manipulations (p = 0.0004 raw, 0.0073 smoothed) and not
-    between zones (p = 0.56, 0.49) or by interaction (p = 0.65, 0.70); before errors both zone (p = 0.0018,
-    0.0075) and manipulation (p = 0.013, 0.0002) effects are present, as the Figure 6C legend says.
+  notes: Under M11 reading (b), before avoidances rate changes differ across manipulations (p = 0.0004 raw,
+    0.0073 smoothed) and not between zones (p = 0.56, 0.49) or by interaction (p = 0.65, 0.70); before errors
+    both zone (p = 0.0018, 0.0075) and manipulation (p = 0.013, 0.0002) effects are present, as the Figure 6C
+    legend says. Under reading (a) the criterion fails with either minima. With raw minima the avoidance pattern
+    holds (manipulation p = 0.015; zone p = 0.45, interaction p = 0.62) but the error manipulation effect does
+    not (p = 0.12; zone p = 0.025); with smoothed minima the avoidance manipulation effect is p = 0.072 and
+    the error zone effect p = 0.084 (error manipulation p = 0.0012).
   deviations:
   - Rate changes use the place cells' whole rates in the pooled 4-s windows, as no field mask is defined there.
   - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training pair
@@ -754,7 +768,8 @@ findings:
 - kind: methods_unavailable
   statement: The paper does not say which session pairs form the shock addition and shock relocation comparisons.
     This attempt adopts every pretraining-training pair for addition and both training sessions against conflict
-    for relocation; several outcomes (fig3d whole-cell, fig5d2, figs2bc at 20 ms, fig5d3) hold under this reading
+    for relocation; several outcomes (fig3d whole-cell, fig5d2, figs2bc at 20 ms, fig5d3, the Figure 6 rate change
+    insets) hold under this reading
     and not under the adjacent-session reading. Question for the authors, which pairs were used?
 - kind: methods_unavailable
   statement: The size of location x in Ipos is not stated; Figure 4B and the Figure 4D map correlation hold
@@ -1049,3 +1064,284 @@ verifications:
     reason: 'Avoidances: manipulation p ≤ 0.007, zone and interaction not significant. Errors: zone p ≤ 0.0075,
       manipulation p ≤ 0.013 (cell 78, M11b only).'
     response: No change.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 run, with its conclusions and summary, the
+    helper module, the claims file and the attempt record, with the paper. The verifier ran nothing from the notebook;
+    it read the new pooled-error LSD helper (mixed_lsd). Report in transcripts/dijk-2018/verifier-2-report.md. It
+    agrees with all 44 outcomes. Text it found unsupported (the README's run time among it) was corrected and the
+    outputs it asked for added in author-revise-2.
+  results:
+  - claim: fig1-single-field-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. B1 partly resolved: fields are now found on smoothed maps (the authors''
+      RmSm maps in the environment experiment), so few cells have no field. Fig1 single-field share for CA (35–55%)
+      still misses tolerance under every reading. The outcome rests on the field definition, which the paper does
+      not give, as the record states.'
+    response: No change; the dependence on the field definition stays in the notes and the methods_unavailable finding.
+  - claim: fig1-field-number-scaling
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. B1 partly resolved: removed-DG field count (at most 2.09) still misses
+      tolerance under every reading; the outcome rests on the field definition, which the paper does not give. The
+      post hoc tests still use paired and unpaired t tests, not a pooled-error LSD (the same issue as B3).
+      This cannot change the outcome, because removed DG is already outside tolerance.'
+    response: Added Fisher's LSD with the pooled error of the mixed model with cell as random term (cell 18), beside
+      the t tests. On the data set's smoothed maps with M5 a it puts removed DG above circular DG (p = 0.0042) and
+      above circular CA (p = 0.036) and finds no difference between circular and removed CA (p = 0.45); the removed
+      DG mean, 2.09 against 2.70 ± 0.39, still fails. Notes, deviation and conclusion (cell 19) updated. Outcome
+      unchanged.
+  - claim: fig1b-stability-dg-below-ca-removal
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig1-rate-remapping-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig1c-field-rate-change-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: tables1-dg-ca-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 44 outcomes. Claims-file readings to report, not correct: the claims file takes the
+      "bits/s" label literally, but the values match bits per spike (cells 31, 37); the record now raises this as
+      a paper inconsistency. The 5.77 ms mean ISI in the table cannot be a mean interspike interval; the files give
+      seconds (3858 ms, cell 31).'
+    response: The information unit was already a question for a reader; the mean ISI is now a second question in
+      questions/dijk-2018.yaml. The claim is tested as written. Outcome unchanged.
+  - claim: fig2c-cfos-reduced
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig2d-conflict-deficit
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig2-quadrant-preference
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig2e-shock-off-deficit
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig3b-avoidance-learning
+    agrees: true
+    outcome: not_reproduced
+    reason: Now not reproduced, which was my round-1 position. It also fails with WT15's first 10 min (p = 0.067)
+      and with WT15 left out (p = 0.17) (cell 57).
+    response: No change.
+  - claim: fig3b-shock-off-avoidance
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. Summary (cell 144): "log shocks (5 to 33)": WT15Ini2_1 logs 1 shock (cells
+      9, 60). The record''s finding correctly says 1 to 33.'
+    response: Summary corrected to 1 to 33. Outcome unchanged.
+  - claim: speed-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: tables2-firing-quality-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. Cell 38: this conclusion omits that room-frame field counts on unsmoothed
+      maps also differ (Kruskal-Wallis p = 0.030, cell 37). This is minor and does not change the outcome.'
+    response: Conclusion (cell 38) and notes now state it (Kruskal-Wallis p = 0.030, ANOVA p = 0.091). Outcome unchanged.
+  - claim: fig3c-stability-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 44 outcomes. Summary (cell 144): "leave 115 place cell values per manipulation against
+      the paper''s 120": 115 is the total over the three manipulations (cell 35).'
+    response: Summary corrected to 115 values over the three manipulations (37, 42 and 36). Outcome unchanged.
+  - claim: fig3c-replication-vs-relocation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig3c-stability-vs-environment
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig3d-rate-remapping-task
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 44 outcomes. B2 resolved: the field part of fig3d now runs under M11 (b) with every
+      mask (cell 49). Several M11-dependent outcomes pass only under reading (b): fig3d whole-cell among them.'
+    response: No change; the dependence on M11 reading (b) is stated in the notes and the methods_unavailable finding.
+  - claim: interneuron-rate-remapping
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: ipos-speed-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig4b-room-preference-pretraining
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 44 outcomes. B6 resolved: the paper''s df are applied where results are borderline
+      (fig4b, fig4d).'
+    response: No change.
+  - claim: fig4c-ipos-before-avoidance
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig4d-room-maps-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes. It remains fragile (r = 0.16, p < 0.001 at 16 px).
+    response: No change; the 16-pixel result stays in the notes.
+  - claim: fig4d-room-ipos-near-active-zone
+    agrees: true
+    outcome: reproduced
+    reason: 'Went from partially reproduced to reproduced. I agree. With the pooled error that the criterion''s
+      Fisher''s LSD implies, conflict is above pretraining (p = 0.028) and above training (p = 0.012) near the conflict
+      zone (cell 126). The result is fragile: with 16-px locations, the room plus arena normalizer and the paper''s
+      df, conflict against pretraining is p = 0.055; paired t tests over mice fail (p 0.060 to 0.20). Cell 127,
+      and the fig4d notes: "above training p 0.008 to 0.012". These are the residual-df values; with the paper''s
+      df they run 0.012 to 0.017.'
+    response: 'Conclusion (cell 127) and notes now give both ranges over the four readings: above pretraining p
+      0.021 to 0.047 (residual df) or 0.027 to 0.055 (paper''s df), above training p 0.008 to 0.012 or 0.012 to
+      0.017. Outcome unchanged.'
+  - claim: figs2a-pc-pairs-no-change
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: standardized-rates-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 44 outcomes. assumed false: both readings now agree, so I accept that.'
+    response: No change.
+  - claim: overdispersion-similar
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: network-consistency-overall
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 44 outcomes. assumed false: both readings now agree, so I accept that.'
+    response: No change.
+  - claim: fig5b-network-consistency-zones
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig5d1-pc-int-tau-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig5d2-pc-int-change-relocation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes. Passes only under M11 reading (b).
+    response: No change; stated in the notes.
+  - claim: pc-int-fraction-increased
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 44 outcomes. README: the place cell-interneuron row ("Mostly reproduced; pair class
+      counts and negative pairs not") omits that pc-int-fraction-increased is partially reproduced.'
+    response: README row now says the share of place cells that increase co-firing is partially reproduced. Outcome
+      unchanged.
+  - claim: figs2bc-other-timescales
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes. Passes only under M11 reading (b) at 20 ms.
+    response: No change; stated in the notes.
+  - claim: pc-int-pair-classes
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. Cell 84, and the pc-int-pair-classes notes: "All readings give 152 pairs".
+      Cell 83 shows that readings (a)(ii) and (b)(ii) give 103 pairs. The quoted ranges (positive 67–71, independent
+      60–73) leave those readings out. The record''s own deviation says that "reading (ii) covers 103 pairs", which
+      contradicts the note. B8 not addressed, no bearing on a conclusion: the pair classes still do not match the
+      paper''s counts; the record says so.'
+    response: Conclusion (cell 84) and notes now say that readings (i) and (iii) give 152 pairs and readings (ii)
+      103, and give the counts of the 103-pair readings (46 and 47 positive, 11 and 12 negative, 44 and 46 independent).
+      Outcome unchanged.
+  - claim: fig5d3-independent-pairs-increase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes. Passes only under M11 reading (b), with relocation highest.
+    response: No change; stated in the notes.
+  - claim: fig5d4-positive-pairs-decrease
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: negative-pairs-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. Cell 89, and the negative-pairs notes: "Only the shuffle classes of reading
+      (b)(i) give no difference". The (ii) class readings are not tested in cell 86, so "only" covers four of the
+      six class readings.'
+    response: Cell 86 now tests all six class readings. The (ii) readings differ across manipulations (p 0.0017
+      to 0.017), so (b)(i) is the only one of six with no difference; conclusion (cell 89) and notes updated. Outcome
+      unchanged.
+  - claim: fig5e1-correlation-near-zone
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig5e2-e4-change-near-zone
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: correlation-not-speed
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 44 outcomes. It remains fragile (acceleration p = 0.05004). README: correlation-not-speed,
+      which is reproduced, is not listed as an exception.'
+    response: README row now lists it among the exceptions. Outcome unchanged.
+  - claim: fig5e1-inset-rate-change-near-zone
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. README: "Correlations near shock zones and before avoidances (Figures
+      5E, 6) | Not reproduced, except the absence before errors and the rate change insets". fig5e1-inset-rate-change-near-zone
+      is not reproduced (cell 100).'
+    response: README row now names the exceptions as the speed relation, the absence of an increase before errors
+      and the rate change insets of Figure 6. Outcome unchanged.
+  - claim: fig6b-correlation-before-avoidance
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 44 outcomes. Cell 106, and the fig6b notes: "Conflict near the conflict zone is the
+      highest cell (0.019) … LSD p 0.075 to 0.63". This holds only for the raw minima. With smoothed minima, pretraining
+      near the training zone (0.0189) is above conflict near the conflict zone (0.018), and one LSD p is 0.82 (cell
+      105). The outcome is unaffected.'
+    response: Conclusion (cell 106) and notes now give the raw and smoothed minima apart (smoothed LSD p 0.092 to
+      0.82). Outcome unchanged.
+  - claim: fig6c-no-increase-before-errors
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes.
+    response: No change.
+  - claim: fig6-inset-rate-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 44 outcomes. One deviation is not true. fig6-inset-rate-changes says "Reading (a) is
+      shown beside it", but cell 109 runs only M11 (b) (MAN_ADOPT). It has not been run under M11 reading (a), despite
+      the deviation text.
+    response: 'Cell 109 now runs both M11 readings. Under reading (a) the criterion fails with either minima (raw:
+      error manipulation p = 0.12; smoothed: avoidance manipulation p = 0.072, error zone p = 0.084), so the outcome
+      rests on reading (b), as it is marked (assumed true). It joins the outcomes that pass only under reading (b);
+      conclusion (cell 110), summary, notes and the M11 finding updated. Outcome unchanged.'
