@@ -1,4 +1,4 @@
-# wirth-2017 · verifier-2 · run 43463604332
+# wirth-2017 · verifier-2 · run 43463612326
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
@@ -10,213 +10,140 @@ cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
 
 ```
 total 320
-drwxr-xr-x 6 runner runner    4096 Nov 13 17:06 .
-drwxr-xr-x 8 runner runner    4096 Nov 13 17:06 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 16:31 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 16:31 .bashrc
-drwxr-xr-x 5 runner runner    4096 Nov 13 17:06 .claude
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env.development
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env.development.local
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env.local
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env.production
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env.production.local
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env.test
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .env.test.local
-drwx------ 2 runner runner    4096 Nov 13 17:06 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 16:31 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 16:31 .github
--rw-r--r-- 1 runner runner       0 Nov 13 17:06 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 16:31 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 16:31 .mcp.json
+drwxr-xr-x 6 runner runner    4096 Nov 13 17:14 .
+drwxr-xr-x 8 runner runner    4096 Nov 13 17:14 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 17:10 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 17:10 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 13 17:14 .claude
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .env.test.local
+drwx------ 2 runner runner    4096 Nov 13 17:14 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 17:10 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 17:10 .github
+-rw-r--r-- 1 runner runner       0 Nov 13 17:14 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 17:10 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 13 17:10 .mcp.json
 [... 83 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat README.md; head -c 3000 wirth-2017.yaml; echo; grep -n "^[a-z_]*:" wirth-2017-01.yaml | head -50
+cd  head -40 wirth-2017.yaml; echo ----; head -40 wirth-2017-01.yaml; cat README.md
 ```
 
 ```
-# Wirth, Baraduc, Plante, Pinede & Duhamel (2017) from CRCNS hc-12
-
-Tests the findings of [Wirth et al. (2017)](https://doi.org/10.1371/journal.pbio.2001045) that can be
-tested on [CRCNS hc-12](https://doi.org/10.6080/K0R49NQV), which holds the 189 analysed hippocampal
-cells of two macaques navigating a virtual star maze, with eye tracking. [CRCNS
-hc-21](https://doi.org/10.6080/K0GX48R9) is read to check which of its recordings are also in hc-12.
-
-| Claim | Outcome |
-|---|---|
-| Gaze anticipates the turn, and the side where landmarks will appear | Reproduced (sign of the eye signal assumed, supported by the slow phases) |
-| Learning in about a dozen trials; fewer than 10 more trials to 90% | Reproduced |
-| Performance after new entries in probe sessions | Not reproduced (monkey K only) |
-| Faster learning after new entries | Blocked: methods underspecified |
-| 189 cells analysed of 270 recorded | Partially reproduced |
-| State space has the most responsive cells (84) | Not reproduced |
-| Direction maps: centre against return paths | IC and sparsity partially reproduced; correlation counts not reproduced |
-| Higher information in state space than in position and direction space | Partially reproduced (the gaze comparison cannot be made) |
-| Sparser in state space than in direction space | Reproduced (full-trial window) |
-| Sparsity, state against position space | Not reproduced |
-| State-space selectivity in the centre | Not reproduced |
-[... 59 more lines not kept]
+# Claims for Wirth, Baraduc, Plante, Pinede & Duhamel (2017), PLoS Biology 15(2), e2001045,
+# tested on CRCNS hc-12 and hc-21.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (PMC5328243, open access), full text from Europe PMC JATS
+# XML as stored under paper/: Results, Discussion, Materials and Methods, the figure legends of
+# Figs 1 to 7 and the legends of S1 to S7 Figs. The supplementary text files S1 Appendix
+# (sections A1 to A5: point-of-gaze density maps, gaze before joystick actions, recording
+# methods and cell selection, population averages, the control for space dimensionality) and
+# S2 Appendix (description of the CRCNS files and scripts) are DOCX files that are not under
+# paper/ and were not read. The claims that rest on them say so (gaze-anticipates-action,
+# gaze-anticipates-landmarks, dimensionality-control, fields-per-cell). No PDF was read; the
+# reference list is absent from the stored text, so reference 60 (the learning curve method)
+# is not named.
+#
+# Code: the paper links no repository. It says some Matlab scripts are hosted with the data on
+# CRCNS (Supporting data; S2 Appendix); the hc-12 descriptor lists them (a scripts folder that
+# plots position, direction and state-space maps, rasters and learning curves). These are files
+# of the dataset and were not read. No criterion below takes a method from code; the author may
+[... 91 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat wirth-2017-01.yaml
+cd  sed -n 40,1000p wirth-2017-01.yaml
 ```
 
 ```
 <persisted-output>
-Output too large (38.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/301f2493-e8ff-46d2-bac0-91f7f851b2ce/tool-results/bt5ddxn12.txt
+Output too large (37.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/d29e0dc8-4d70-4d59-9bfd-47be7e32bcf7/tool-results/bxs27o387.txt
 
 Preview (first 2KB):
-schema_version: 3
-id: wirth-2017-01
-datasets:
-- archive: crcns
-  id: hc-21
-  version: unversioned
-  doi: 10.6080/K0GX48R9
-  relation: primary
-- archive: crcns
-  id: hc-12
-  version: unversioned
-  doi: 10.6080/K0R49NQV
-  relation: primary
-paper: doi:10.1371/journal.pbio.2001045
-date: 2026-11-13
-entry: wirth-2017
-[... 31 more lines not kept]
+    and the pooled test agree, so the readings of the criterion give one outcome.
+  deviations:
+  - The eye signal has no calibration, units or sign in the files, and is on a +-5000 scale in 36 sessions
+    and a +-5 scale in 26. Values are standardized within each session (minus the session median, over
+    its SD) before sessions are pooled; per-session differences are also counted and tested across sessions.
+  - Assumed that a negative horizontal value is rightward, from the slow phases. During a turn the scene
+    flows across the screen opposite to the turn and the slow phases of optokinetic nystagmus and pursuit
+    follow it; the median eye velocity from 0 to 600 ms after the code is positive during right turns
+    and negative during left turns in 40 of 40 sessions of K and 20 of 20 of S (signed-rank p = 1.8e-12
+    and 1.9e-6). This uses the eye velocity only, not the position the claim tests. The mean position
+    during the turn moves toward the turn, as it does during optokinetic stimulation.
+  - S1 Appendix A2, which holds the paper's analysis, was not available; the test is the rank-sum of the
+    claims file.
+- claim: gaze-anticipates-landmarks
+  outcome: reproduced
+  assumed: true
+[... 10 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/301f2493-e8ff-46d2-bac0-91f7f851b2ce/tool-results/bt5ddxn12.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/d29e0dc8-4d70-4d59-9bfd-47be7e32bcf7/tool-results/bxs27o387.txt"
 }
 ```
 
 ```
-1	schema_version: 3
-2	id: wirth-2017-01
-3	datasets:
-4	- archive: crcns
-5	  id: hc-21
-6	  version: unversioned
-7	  doi: 10.6080/K0GX48R9
-8	  relation: primary
-9	- archive: crcns
-10	  id: hc-12
-11	  version: unversioned
-12	  doi: 10.6080/K0R49NQV
-13	  relation: primary
-14	paper: doi:10.1371/journal.pbio.2001045
-15	date: 2026-11-13
-16	entry: wirth-2017
-17	provenance:
-18	  kind: agent
-19	  accountable:
-20	    name: CatalystNeuro
-[... 631 more lines not kept]
+1	    and the pooled test agree, so the readings of the criterion give one outcome.
+2	  deviations:
+3	  - The eye signal has no calibration, units or sign in the files, and is on a +-5000 scale in 36 sessions
+4	    and a +-5 scale in 26. Values are standardized within each session (minus the session median, over
+5	    its SD) before sessions are pooled; per-session differences are also counted and tested across sessions.
+6	  - Assumed that a negative horizontal value is rightward, from the slow phases. During a turn the scene
+7	    flows across the screen opposite to the turn and the slow phases of optokinetic nystagmus and pursuit
+8	    follow it; the median eye velocity from 0 to 600 ms after the code is positive during right turns
+9	    and negative during left turns in 40 of 40 sessions of K and 20 of 20 of S (signed-rank p = 1.8e-12
+10	    and 1.9e-6). This uses the eye velocity only, not the position the claim tests. The mean position
+11	    during the turn moves toward the turn, as it does during optokinetic stimulation.
+12	  - S1 Appendix A2, which holds the paper's analysis, was not available; the test is the rank-sum of the
+13	    claims file.
+14	- claim: gaze-anticipates-landmarks
+15	  outcome: reproduced
+16	  assumed: true
+17	  notebook: reproduce_wirth_2017.ipynb
+18	  output: claim:gaze-anticipates-landmarks
+19	  notes: Passive returns (tags 5xy) turn right when the camera orientation falls over them, as it does
+20	    after code 1. During right-turning returns the standardized eye signal lies on the negative (rightward)
+[... 592 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 -c "
+cd  grep -c "^  - id:\|^- id:" wirth-2017.yaml; grep -n "^- id:\|^  - id:" wirth-2017.yaml; grep -c "^- claim:" wirth-2017-01.yaml; python3 - <<'E'
 import json
 nb=json.load(open('reproduce_wirth_2017.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print(f'=== CELL {i} [{c[\"cell_type\"]}]')
-    src=''.join(c['source'])
-    if c['cell_type']=='markdown': print(src)
-    else:
-        print(src[:1500] + ('...[trunc src]' if len(src)>1500 else ''))
-        for o in c.get('outputs',[]):
-            if 'text' in o: print('--OUT--'); print(''.join(o['text']))
-            elif 'data' in o and 'text/plain' in o['data']: print('--OUT--'); print(''.join(o['data']['text/plain'])[:3000])
-            elif o.get('output_type')=='error': print('--ERR--', o['ename'], o['evalue'])
-" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
-```
-
-```
-1435 /tmp/claude-1001/nb.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt"
-}
-```
-
-```
-1	=== CELL 0 [markdown]
-2	# Reproducing Wirth et al. (2017) from CRCNS hc-12
-3	
-4	Paper. Wirth S, Baraduc P, Plante A, Pinede S, Duhamel JR (2017). Gaze-informed, task-situated
-5	representation of space in primate hippocampus during virtual navigation. PLoS Biology 15(2):
-6	e2001045. [doi:10.1371/journal.pbio.2001045](https://doi.org/10.1371/journal.pbio.2001045).
-7	The claims file (`claims/wirth-2017.yaml`) was written from the version of record (PMC5328243),
-8	Results, Methods and the legends of Figs 1 to 7 and S1 to S7; S1 Appendix was not available.
-9	
-10	Datasets. CRCNS [hc-12](https://doi.org/10.6080/K0R49NQV) (189 cells, the new-maze sessions;
-11	every claim rests on it) and CRCNS [hc-21](https://doi.org/10.6080/K0GX48R9) (101 cells, a
-12	familiar and a new maze per file), streamed from the public bucket `crcnsarchive`
-13	(`hc-12/live/data.tar.gz`, `hc-21/live/data.tar.gz`). CRCNS data sets are not versioned; the
-14	version is recorded as `unversioned`, and the MD5 sums from each data set's `checksums.md5`
-15	for the files read are: hc-12 `data.tar.gz` 426c7d00c0358f2cc9873e0dbb331e2f (descriptor
-16	version 0.7, 17 Jan 2017); hc-21 `data.tar.gz` dee5e8aa4a7b3c44b61b8cecfe622a0a (descriptor
-17	version 0.52, 21 Dec 2018). Each data set has one published state (`live/`, with only
-18	documentation under `orig/`), so the version pinned is the only one there is, and hc-12 is the
-19	deposit the paper cites. hc-21 is read only to check whether it holds recordings that are also
-20	in hc-12 and whether it holds the probe sessions hc-12 lacks; no claim rests on it.
-[... 676 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 697,
- "limit": 740
-}
-```
-
-```
-697	**Result: reproduced, resting on the sign of the eye signal.** Before right turns the
-698	horizontal eye signal lies on the negative (rightward) side of that before left turns in each
-699	monkey, in both windows, for each eye and both eyes, with rank-sum p below 1e-100 (500 ms, both
-700	eyes, successful trials: K median difference -0.77 session SD, p = 4.0e-148; S -1.00,
-701	p = 4.3e-146). Across sessions the difference is negative in 39 of 40 sessions of K and 20 of 20
-702	of S (signed-rank p = 1.3e-11 and 1.9e-6), so the result does not rest on pooling the turns of
-703	a session.
-704	=== CELL 30 [markdown]
-705	## gaze-anticipates-landmarks
-706	
-707	> When relocated to a new entry, the monkeys gazed proactively at the location where the
-708	> landmarks would appear.
-709	
-710	Passive returns (tags 5xy between the end of a trial and the next start); a return turns right
-711	when the camera orientation falls over it (as for code 1). Mean horizontal eye signal over the
-712	return, standardized within session; rank-sum right against left. Returns after all trials,
-713	and after successful trials as a variant (Method W).
-714	=== CELL 31 [code]
-715	Rt = pd.DataFrame([dict(session=s, monkey=b["monkey"], **r) for s, b in beh.items() for r in b["returns"]])
-716	res = []
-[... 720 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -c "^- id:" wirth-2017.yaml; grep -n "^- id:\|^  id:" wirth-2017.yaml | head -40
+out=open('/tmp/claude/nb.txt','w') if False else None
+import os
+p=os.environ.get('TMPDIR','/tmp')+'/nb.txt'
+with open(p,'w') as f:
+  for i,c in enumerate(nb['cells']):
+    f.write(f"\n===== CELL {i} [{c['cell_type']}] =====\n")
+    f.write(''.join(c['source'])+"\n")
+    for o in c.get('outputs',[]):
+      if 'text' in o: f.write("--- OUT ---\n"+''.join(o['text']))
+      elif 'data' in o and 'text/plain' in o['data']: f.write("--- OUT ---\n"+''.join(o['data']['text/plain']))
+      elif o.get('output_type')=='error': f.write("--- ERR ---\n"+o['ename']+o['evalue'])
+print(p, len(nb['cells']))
+E
+wc -l $TMPDIR/nb.txt
 ```
 
 ```
@@ -240,7 +167,44 @@ cd  grep -c "^- id:" wirth-2017.yaml; grep -n "^- id:\|^  id:" wirth-2017.yaml |
 495:- id: state-space-selectivity
 533:- id: landmark-identity-distance
 575:- id: landmark-identity-center
-[... 9 more lines not kept]
+[... 12 more lines not kept]
+```
+
+**Agent**
+
+Claims and outcomes both number 28. Now reading the notebook outputs.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "limit": 450
+}
+```
+
+```
+1	
+2	===== CELL 0 [markdown] =====
+3	# Reproducing Wirth et al. (2017) from CRCNS hc-12
+4	
+5	Paper. Wirth S, Baraduc P, Plante A, Pinede S, Duhamel JR (2017). Gaze-informed, task-situated
+6	representation of space in primate hippocampus during virtual navigation. PLoS Biology 15(2):
+7	e2001045. [doi:10.1371/journal.pbio.2001045](https://doi.org/10.1371/journal.pbio.2001045).
+8	The claims file (`claims/wirth-2017.yaml`) was written from the version of record (PMC5328243),
+9	Results, Methods and the legends of Figs 1 to 7 and S1 to S7; S1 Appendix was not available.
+10	
+11	Datasets. CRCNS [hc-12](https://doi.org/10.6080/K0R49NQV) (189 cells, the new-maze sessions;
+12	every claim rests on it) and CRCNS [hc-21](https://doi.org/10.6080/K0GX48R9) (101 cells, a
+13	familiar and a new maze per file), streamed from the public bucket `crcnsarchive`
+14	(`hc-12/live/data.tar.gz`, `hc-21/live/data.tar.gz`). CRCNS data sets are not versioned; the
+15	version is recorded as `unversioned`, and the MD5 sums from each data set's `checksums.md5`
+16	for the files read are: hc-12 `data.tar.gz` 426c7d00c0358f2cc9873e0dbb331e2f (descriptor
+17	version 0.7, 17 Jan 2017); hc-21 `data.tar.gz` dee5e8aa4a7b3c44b61b8cecfe622a0a (descriptor
+18	version 0.52, 21 Dec 2018). Each data set has one published state (`live/`, with only
+19	documentation under `orig/`), so the version pinned is the only one there is, and hc-12 is the
+20	deposit the paper cites. hc-21 is read only to check whether it holds recordings that are also
+[... 430 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -249,7 +213,7 @@ cd  grep -c "^- id:" wirth-2017.yaml; grep -n "^- id:\|^  id:" wirth-2017.yaml |
 {
  "file_path": "wirth-2017.yaml",
  "offset": 40,
- "limit": 560
+ "limit": 800
 }
 ```
 
@@ -274,156 +238,252 @@ cd  grep -c "^- id:" wirth-2017.yaml; grep -n "^- id:\|^  id:" wirth-2017.yaml |
 57	#  - Cells. The 189 cells with more than 100 spikes per session; responsive cells are those
 58	#    with significant IC (p < 0.01) in at least one of the four spaces (Results, Sensitivity
 59	#    of the cells, paragraph 2).
-[... 540 more lines not kept]
+[... 780 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 450,
+ "limit": 550
+}
+```
+
+```
+450	ke      15.82  3.44                 28               1     8.5
+451	sn      12.26  3.28                 23               2     6.0
+452	
+453	Expected: monkey S (sn) 12.3 +- 2, monkey K (ke) 14.8 +- 2.4
+454	
+455	===== CELL 19 [markdown] =====
+456	**Result: reproduced.** Under reading (a) monkey S reaches criterion after 12.26 +- 3.28 trials
+457	(mean +- SEM, 23 sessions) and monkey K after 16.53 +- 2.69 (38 sessions), both within the
+458	paper's 12.3 +- 2 and 14.8 +- 2.4. Without the probe sessions (b) monkey K gives 15.82 +- 3.44,
+459	also within. Two sessions of S and three of K never reach the criterion and are left out. The
+460	SEMs here are larger than the paper's.
+461	
+462	===== CELL 20 [code] =====
+463	for name, sub in (("(a) all sessions", S), ("(b) not probe sessions", S[~S.probe])):
+464	    reach = sub.t90.notna()
+465	    print(f"{name}: sessions reaching both criteria {int(reach.sum())} of {len(sub)}; "
+466	          f"fewer than 10 trials from lower bound > 1/4 to upper bound >= 0.9: {int((sub.t90 < 10).sum())}, "
+467	          f"fraction of sessions reaching {(sub.t90 < 10).sum() / reach.sum():.3f}, of all sessions {(sub.t90 < 10).mean():.3f}")
+468	print("Trials from criterion to upper bound 0.9 (sessions reaching):", S.t90.describe()[["min", "50%", "max"]].to_dict())
+469	print("Expected 0.89 +- 0.089")
+[... 530 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1000,
+ "limit": 530
+}
+```
+
+```
+1000	            ok = a.notna() & b_.notna()
+1001	            w = stats.wilcoxon(a[ok], b_[ok])
+1002	            dir_rows.append({"surrogates": sr, "cells": cellset, "measure": {"ic": "IC", "sp": "sparsity"}[meas],
+1003	                             "n": int(ok.sum()), "median centre": round(a[ok].median(), 3),
+1004	                             "median return": round(b_[ok].median(), 3),
+1005	                             "median diff": round((a[ok] - b_[ok]).median(), 3),
+1006	                             "centre higher": int((a[ok] > b_[ok]).sum()), "p": w.pvalue})
+1007	print(pd.DataFrame(dir_rows).to_string())
+1008	print("\nValid direction bins: centre median", C["nbins|center"].median(), ", return median", C["nbins|return"].median())
+1009	--- OUT ---
+1010	  surrogates                       cells   measure   n  median centre  median return  median diff  centre higher         p
+1011	0    permute   (a) direction IC p < 0.01        IC  40          0.091          0.062        0.012             21  0.427972
+1012	1    permute   (a) direction IC p < 0.01  sparsity  40          0.062          0.018        0.020             25  0.030970
+1013	2    permute  (b) three-space responsive        IC  59          0.079          0.031        0.019             34  0.045477
+1014	3    permute  (b) three-space responsive  sparsity  59          0.060          0.014        0.022             39  0.007373
+1015	4      shift   (a) direction IC p < 0.01        IC  28          0.096          0.070        0.027             16  0.094564
+1016	5      shift   (a) direction IC p < 0.01  sparsity  28          0.074          0.023        0.040             20  0.015633
+1017	6      shift  (b) three-space responsive        IC  51          0.084          0.050        0.018             29  0.136124
+1018	7      shift  (b) three-space responsive  sparsity  51          0.052          0.019        0.030             34  0.013339
+1019	
+[... 507 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "turns\|eye500\|vel_pre500\|dtheta_0_600\|def .*turn\|code == 1\|codes" wirth.py | head -60
+cd paper; grep -n -i -o ".\{300\}\(shuffl\|randomly shift\|surrogate\).\{300\}" 10.1371-journal.pbio.2001045.txt | head -20; grep -n -i -o ".\{200\}S2 Fig.\{400\}" 10.1371-journal.pbio.2001045.txt | head
 ```
 
 ```
-47:  paths taken from the returns that follow correct trials", read with the returns kept).
-188:    turns = [[int(v) for v in row[1:] if v in (1, 2)] for row in cm]
-194:            "turns": turns, "turn_t": turn_t}
-377:def turn_types(c, typing="arc"):
-708:def return_turns(c):
-737:    """Session behaviour: trial table, learning curves, eye before turns and on returns."""
-739:    turns = []
-740:    for i, (ty, tt) in enumerate(zip(tr["turns"], tr["turn_t"])):
-749:            row["vel_pre500"] = eye_velocity(c, t - 0.5, t)
-753:                row["dtheta_0_600ms"] = ((c["t60"][i1, 3] - c["t60"][i0, 3] + 180) % 360) - 180
-754:            turns.append(row)
-762:    rets = return_turns(c)
-787:            "turns": turns, "returns": rets, "abscissa_at_events": clock, "eye_saturated": eye_sat, "eye_range": eye_rng,
-890:                        "codes_head": tuple(c["cm"][:10, 1].astype(int))})
+53:, 6 , 24 ]. The first quantity documents how much spatial information a spike conveys, while the second expresses spatial selectivity. To compare IC across coding spaces, we ensured that the same number of bins was used across cells and spaces and normalized IC with respect to the average IC of 999 surrogate datasets generated by randomly shuffling periods of spiking activity in time (see Materials and Methods ). While this method may be conservative [ 25 ], it is widely used in rodent literature (e.g., [ 1 – 7 ]) as it effectively conveys information relative to the spatial distribution of the cell’s 
+71:hen, for each cell, we compared the difference between the normalized index computed in state space and the corresponding normalized index in another coding space, considering only cells responsive in both spaces. Normalized indexes were obtained by subtracting the average indexes obtained from the surrogate data from the raw indexes in order to prevent any bias due to space structure. The joint distribution of these differences in IC and sparsity is illustrated in Fig 3 , where state space is compared to either self-position ( Fig 3D ), direction ( Fig 3E ), or point of gaze ( Fig 3F ). The spike info
+71: < 0.01). Sparsity was significantly higher (Wilcoxon test) in state space compared to direction space ( p = 0.006) but not significantly higher compared to position space ( p = 0.19), although the 15 cells for which the difference was individually significant (as assessed with permutation tests on surrogate data) were sparser in state space ( p = 0.001). Conversely, sparsity was significantly higher overall in gaze space than in state space ( p < 0.001), but this effect could not be confirmed when considering only 18 cells for which the difference was individually significant ( p = 0.68). This pattern
+97: , corresponding to cell 1 in Fig 2 , 5% of the 42 cells, p = 0.37, binomial test), whereas 12/42 cells (29%, p < 0.001, binomial test) discriminated signific
+[... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 175,200p wirth.py; sed -n 690,790p wirth.py
+cd paper; grep -n -i -o ".\{400\}Permutation statistics.\{600\}" 10.1371-journal.pbio.2001045.txt | head -3; grep -n -i -o "S2 Fig\. .\{800\}" 10.1371-journal.pbio.2001045.txt | head -3
 ```
 
 ```
-def _code_times(cm, tm, code):
-    """Per trial, the time of the first occurrence of an event code (NaN if absent)."""
-    hit = cm[:, 1:] == code
-    first = np.where(hit.any(1), hit.argmax(1) + 1, -1)
-    return np.where(first > 0, tm[np.arange(len(cm)), np.maximum(first, 0)], np.nan)
-
-
-def trials(c):
-    """Per-trial table: start arm (1-5), chosen arm (1-5), outcome, event times."""
-    cm, tm = c["cm"], c["tm"]
-    start_code = np.array([next((v for v in row[1:] if 40 <= v <= 44), np.nan) for row in cm])
-    chosen = np.array([next((v for v in row[1:] if 50 <= v <= 54), np.nan) for row in cm])
-    turns = [[int(v) for v in row[1:] if v in (1, 2)] for row in cm]
-    turn_t = [[t for v, t in zip(row[1:], trow[1:]) if v in (1, 2)] for row, trow in zip(cm, tm)]
-    return {"start_arm": start_code - 39, "chosen_arm": chosen - 49,
-            "correct": (cm[:, 1:] == 11).any(1), "error": (cm[:, 1:] == 12).any(1),
-            "t_start": _code_times(cm, tm, 21), "t_center": _code_times(cm, tm, 22),
-            "t_reward": _code_times(cm, tm, 11), "t_end": _code_times(cm, tm, 23),
-            "turns": turns, "turn_t": turn_t}
-
-[... 106 more lines not kept]
+(Bash completed with no output)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n -i "right\|left\|code" paper/hc-12.data-description.txt | head -40; grep -n -i "S2 Fig\|anticipat\|proactive" paper/10.1371-journal.pbio.2001045.txt | head
+cd paper; grep -n -i -o ".\{300\}\(5 s\|5-s\|chunks\|shifted\).\{300\}" 10.1371-journal.pbio.2001045.txt | head -5; grep -n -i -o ".\{100\}passive.\{500\}" 10.1371-journal.pbio.2001045.txt | head -5
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+85:y of the landmark viewed and the position as previously unraveled by the state space. Twenty-nine cells coded a combination of these two factors with a significant interaction (14 cells) or both factors significant (15 cells). Both proportions are higher than chance ( p < 0.001, binomial test). Fig 5 shows the activity of two cells recorded concurrently during the same behavioral session. The cell on the left shows a high activity for the northwestern landmark viewed from distance RD1 (F(9,756) = 4.4076, p < 0.001); the cell on the right shows a high activity for the northeastern landmark viewed
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n -i -o ".\{200\}\(surrogate\|S2 Fig\|S2C\|relocat\).\{300\}" 10.1371-journal.pbio.2001045.txt | sed -n 1,30p | cut -c1-600
+```
+
+```
+23:at one end of a path and moves towards the center, (2) turns left or right in the center, (3) chooses one path, (4) enters the chosen path and is rewarded at the end if correct, and (5) the animal is relocated (joystick disengaged) to the next start. D. First-person view of the five events described in C , with a heat map of the monkey’s gaze fixations overlaid on the scene illustrating the animal’s scanning interests. Arrows indicate the main direction of motion of the animal. E. Illustration of the s
+27:at one end of a path and moves towards the center, (2) turns left or right in the center, (3) chooses one path, (4) enters the chosen path and is rewarded at the end if correct, and (5) the animal is relocated (joystick disengaged) to the next start. D. First-person view of the five events described in C , with a heat map of the monkey’s gaze fixations overlaid on the scene illustrating the animal’s scanning interests. Arrows indicate the main direction of motion of the animal. E. Illustration of the s
+29: , S1 Fig , and S1 Appendix A1, Material and Methods) revealed that gaze was attracted to the rewarded path and the landmarks. During the 500 ms before each action on the joystick ( Fig 1D , S1 Fig , S2 Fig , and S1 Appendix A2), gaze anticipated the direction of the subsequent movement (Wilcoxon test, p < 0.001 ( S1 Fig , S2 Fig , and S1 Appendix A2). Similarly, when being relocated to a new entry, monkeys proactively gazed at the location at which the landmarks would appear (see S2 Fig and S1 Append
+53:ond expresses spatial selectivity. To compare IC across coding spaces, we ensured that the same number of bins was used across cells and spaces and normalized IC with respect to the average IC of 999 surrogate datasets generated by randomly shuffling periods of spiking activity in time (see Materials and Methods ). While this method may be conservative [ 25 ], it is widely used in rodent literature (e.g., [ 1 – 7 ]) as it effectively conveys information relativ
+[... 3 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n -i -o ".\{50\}\(permutation st\|randomly\).\{500\}" 10.1371-journal.pbio.2001045.txt | cut -c1-700; grep -n -i -o ".\{20\}S2 Fig\..\{700\}" 10.1371-journal.pbio.2001045.txt | cut -c1-800
+```
+
+```
+21:lly, the animals were reallocated to a different, randomly assigned start ( Fig 1C , fifth panel). This latter trajectory did not follow any maze arms, preventing the animals from retracing their steps after a correct choice. Importantly, the landmarks were positioned between the maze arms, thus dissociating the goal from the visual references. In other words, the animals could not directly associate a physical object (landmark) to the reward but had to analyze and memorize the spatial relationships between landmarks and reward. Fig 1D shows the same c
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; wc -l *.txt; grep -n -i -c "Materials and Methods" 10.1371-journal.pbio.2001045.txt; grep -n -i "^.\{0,80\}\(Permutation\|Information content\|S2 Fig\)" 10.1371-journal.pbio.2001045.txt | cut -c1-200
+```
+
+```
+370 10.1371-journal.pbio.2001045.txt
+   169 hc-12.data-description.txt
+   192 hc-21.data-description.txt
+   731 total
+9
+61:A. Proportion of responsive cells (cells with significant information content [IC], above gray line) and proportion of cells significantly coding each of the four spaces (black). Open bars correspo
+179:## Permutation statistics
+183:## Information Content (IC)
+367:information content per spike
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; sed -n 175,195p 10.1371-journal.pbio.2001045.txt; grep -n "S2 Fig\|S2C" 10.1371-journal.pbio.2001045.txt | cut -c1-120
+```
+
+```
+## Activity maps
+
+We computed each cell’s mean firing rate for each spatial bin, simply dividing the number of spikes recorded in that bin by the total time spent in it. Only bins comprising at least four successful trials were kept. For display (Figs 2 and 4 ), a smoothing procedure was applied: the instantaneous firing activity was slightly smoothed with a Gaussian kernel of SD = 100 ms before computing the map. When comparing spaces, no smoothing was used and bin sizes were adjusted so that each map contained a similar number of bins (~200).
+
+## Permutation statistics
+
+To test the statistical significance of any index computed on the spike data, we created 999 surrogate data sets in which we divided the recording time into chunks of 5 s that we randomly shifted. This procedure decorrelated the spikes from the animal’s behavior while essentially preserving the structure of spike trains (e.g. spike bursts). All analyses were run on actual and surrogate data, and for any tested variable, the rank of its actual value among the set of 1,000 (actual + 999 surrogate ones) was used to extract a statistical p -value (bilateral test).
+
+## Information Content (IC)
+
+For each individual cell, we iteratively adjusted the spatial resolution of each map to get as close to 200 valid bins as possible for each coding space (position, direction, point of gaze, and state space). Bins were considered valid if they included more than 400 ms of time in successful trials. We computed the information content in bits per spike with the following formula [ 24 ]: I = ∑ i λ i λ ¯ log 2 ( λ i λ ¯ ) p i where λ i is the firing rate in the spatial bin i , λ ¯ is the mean firing rate, and p i is the fraction of the time spent by the animal in bin i . IC is zero for a homogeneous firing over the M bins; it is equal to log 2 ( M ) when a single bin contains all the spikes and the animal spends an equal amount of time visiting each bin. To avoid potential bias, we normalized the IC by subtracting fr
+[... 11 more lines not kept]
+```
 
 **Agent**
 
-**Verifier report, round 2: wirth-2017-01**
+# Verifier report, round 2: Wirth et al. 2017 (doi:10.1371/journal.pbio.2001045), CRCNS hc-12 / hc-21
 
-Counts come from the claims file (28 claims) and the attempt record (28 outcomes).
+The claims file has 28 claims, and the attempt record has 28 outcomes, one for each. They split as 5 reproduced, 3 partially reproduced, 6 not reproduced and 14 blocked (11 for insufficient metadata, 3 for underspecified methods).
 
-## 1. Outcomes and assumptions
+## 1. Outcomes
 
-| Claim | Outcome in record | Agree? |
-|---|---|---|
-| gaze-anticipates-action | reproduced (assumed) | Yes, with a new reservation (3a). The sign assumption is stated, and it is now reasonable: it rests on the slow-phase velocity during turns at the centre (cell 28), not on eye position. |
-| gaze-anticipates-landmarks | reproduced (assumed) | Yes. I now agree with this outcome. In round 1 I said partially reproduced because the test was circular; it no longer is, because the sign comes from velocity at the centre. The criterion asks only on which side the eyes lie, and that is met (cell 31). The record correctly says the test cannot separate anticipation from the shift in eye position that comes with optokinetic nystagmus (OKN) whenever the view rotates. That limitation is in the claims-file criterion. It follows the S2C legend, so it is not a misreading of the paper. |
-| learning-trials | reproduced | Yes |
-| learning-to-90 | reproduced | Yes |
-| probe-transfer | not_reproduced | Yes. Monkey K's two means fail on their own. |
-| probe-faster-criterion | blocked (methods_underspecified) | Yes |
-| cells-recorded | partially_reproduced | Yes |
-| responsive-cells | blocked (metadata_insufficient) | Yes |
-| state-space-most-responsive | not_reproduced | Yes |
-| multi-space-coding | blocked (metadata_insufficient) | Yes |
-| direction-center-vs-periphery | partially_reproduced (assumed) | Yes. The stand-in for reading (b) is stated. |
-| direction-tuning-not-maintained | not_reproduced | Only if marked assumed (3b). |
-| state-space-ic-higher | partially_reproduced | Yes |
-| sparsity-state-vs-direction | reproduced (assumed) | Yes. Both claims-file windows keep the returns: reading (b) is the notebook's toreward_ret. So the assumption is weaker than the record makes it sound. |
-| sparsity-state-vs-position | not_reproduced | Yes |
-| sparsity-gaze-vs-state | blocked | Yes |
-| state-space-selectivity | not_reproduced (assumed) | The assumption is stated, but I would grade it blocked (3c). |
-| landmark-identity-distance | not_reproduced | Yes. The upper bound over all cells fails. |
-| landmark-identity-center | blocked | Yes |
-| path-selectivity, gaze-aligned-dynamics, latency-skew, eccentricity-modulation, foveation-selectivity, gaze-map-landmarks | blocked (metadata_insufficient) | Yes |
-| fields-per-cell, dimensionality-control | blocked (methods_underspecified) | Yes |
-| spatial-selectivity-fraction | blocked (metadata_insufficient) | Yes |
+| Claim | Outcome in the record | Agree? | Note |
+|---|---|---|---|
+| gaze-anticipates-action | reproduced (assumed) | Yes | The assumption is stated and reasonable. Cell 28 gives the sign from eye velocity during turns, not from eye position, in 40/40 sessions of K and 20/20 of S. See caveat (a) below; it does not change the outcome. |
+| gaze-anticipates-landmarks | reproduced (assumed) | Yes, changed from my round-1 partial | The sign now comes from the slow-phase velocity during turns at the centre, which does not use eye position, so the test is no longer circular. Cell 31: K −0.56 SD, p = 6.2e-58, 39/41 sessions; S −0.56, p = 6.4e-30, 20/21. See claims-file point (b) below. |
+| learning-trials | reproduced | Yes | Cell 18. |
+| learning-to-90 | reproduced | Yes | Cell 20: 0.898, or 0.803 over all sessions. Only one session reaches 0.9 at the criterion trial itself. |
+| probe-transfer | not reproduced | Yes | Cell 23: 28.3% and 58.3% against 44 and 73. No variant puts both means inside tolerance. |
+| probe-faster-criterion | blocked (methods underspecified) | Yes | |
+| cells-recorded | partially reproduced | Yes | |
+| responsive-cells | blocked (metadata insufficient) | Yes | |
+| state-space-most-responsive | not reproduced | Yes | Cell 38: 37 to 57 cells against 75.6 to 92.4, and 41 to 58 using the upper tail only. |
+| multi-space-coding | blocked (metadata insufficient) | Yes | |
+| direction-center-vs-periphery | partially reproduced (assumed) | Yes | The assumption is stated: the three-space responsive cells stand in for reading (b). It is the weakest step. For a signed-rank test the result on 59 cells puts no bound on the result over the paper's set. Under reading (a) neither level is met (cell 41). |
+| direction-tuning-not-maintained | not reproduced | Yes, under the same stand-in, but it should be marked `assumed: true` | Reading (b) uses the same three-space stand-in as the previous claim, which is only a lower bound of the responsive set. The record does not mark this as an assumption. With shifted chunks under (b), 51 cells give 14 low (cell 44). Up to 10 more cells could join and keep n within 56 ± 5.6, and only 4 of them would need to be low to reach 18. Over the paper's set, the criterion is therefore not excluded under that reading. Reading (a) fails on n (40 and 28, against 56 ± 5.6). |
+| state-space-ic-higher | partially reproduced | Yes | Cell 53: p < 0.01 under all 12 rows; the largest is 0.0022. |
+| sparsity-state-vs-direction | reproduced (assumed) | Yes | Cell 48. Reproduced with the full-trial window, which is the claims file's reading (a). Not significant from start to reward. |
+| sparsity-state-vs-position | not reproduced | Yes | Cell 50: the overall test is significant (p ≤ 0.00043) and the per-cell counts are 3 to 11, against 15 ± 1.5. |
+| sparsity-gaze-vs-state | blocked | Yes | |
+| state-space-selectivity | not reproduced (assumed: permuted chunks) | Yes, as an assumption | The assumption is stated and reasonable. The Results say "randomly shuffling periods of spiking activity in time", and the Methods say the 5 s chunks were "randomly shifted". The claims file left both readings open, and under shifted chunks the claim cannot be decided (cell 56). Without the assumption the outcome would be blocked. |
+| landmark-identity-distance | not reproduced | Yes | Cell 61: at most 31 cells (33 with type III), against 64 ± 6.4. |
+| landmark-identity-center | blocked | Yes | Cell 63: the bounds straddle 11 to 13. |
+| path-selectivity, gaze-aligned-dynamics, latency-skew, eccentricity-modulation, foveation-selectivity, gaze-map-landmarks | blocked (metadata insufficient) | Yes | |
+| fields-per-cell, dimensionality-control | blocked (methods underspecified) | Yes | |
+| spatial-selectivity-fraction | blocked | Yes | Cell 66: (a) gives 0.129 to 0.247 and fails; (b) and (c) cannot be decided. |
+
+Caveat (a), gaze-anticipates-action: cell 28 prints the eye velocity in the 500 ms before the turn code. For K it already shows a slow-phase-like difference: right 0.250 against left −0.189, in 38/40 sessions, p = 2.3e-9. So in K the view may already be rotating in that window, perhaps from a preceding turn the same way, and the eye-position effect there may partly continue that rotation. S shows no such difference (9/20 sessions, p = 0.40) and has the larger position effect (−1.00 SD). The outcome stands, but the record should mention this.
+
+Claims-file point (b), reported and not corrected: the claim says the monkeys looked proactively at where landmarks would appear. The criterion for gaze-anticipates-landmarks takes the mean eye position over the whole return, so it cannot separate anticipation from the shift of eye position that comes with any rotating view. The attempt says so (cell 32 and the record's notes). The criterion does not test the "proactive" part of the claim.
 
 ## 2. Text against the printed outputs
 
-Almost every number in the Result conclusions, the Summary (cell 67), the README and the record's notes and findings matches the outputs. I checked every range, p-value, count and bound against cells 6–66. The median probe gain of 0.30 is not printed, but it follows from the table in cell 23. These do not match:
+Almost every sentence checked matches the outputs, including all the numbers in the record's notes and findings. These are the exceptions:
 
-- **Cell 29 and the gaze-anticipates-action deviation:** "The median eye velocity from 0 to 600 ms after the code is positive during right turns and negative during left turns, in 40 of 40 sessions of K and 20 of 20 of S."
-  - Cell 28 prints only right > left per session (40/40, 20/20) and the pooled medians (0.539 / −0.432 and 0.470 / −0.857).
-  - The sign of each turn type within each session is not printed. It should say "higher during right turns than left turns in 40 of 40 sessions".
-  - This does not change the conclusion.
-- **Cell 7:** "ke20140207 spans only -126 to 90 degrees because its headings (18, 90, 234 and 306 …)."
-  - Cell 6 prints heading sets as counts over sessions, not per session, so this session's set is not shown.
-  - Minor.
-- **README table:** it drops qualifiers that the record carries as assumptions.
-  - "State-space selectivity in the centre | Not reproduced" leaves out "permuted chunks; open under shifted chunks".
-  - "Direction maps … IC and sparsity partially reproduced" leaves out the three-space stand-in for reading (b).
-  - The Summary in cell 67 keeps both qualifiers.
+- **Cell 9:** "at the trial start (code 21) the abscissa is at the arm end, at the arrival at the choice point (code 22) it is 0, and one second later or earlier it is not."
+  - Cell 8 prints `start +0s 0.01` (near 0, which cell 7 defines as the centre) and `center +1s 0.00`.
+  - Both halves are contradicted.
+- **Cell 7:** "Column 5 … runs from 0 at the centre to 1 at the arm end."
+  - The same outputs fit an abscissa that runs from the start of each branch: 0.01 at the trial start, 0.72 one second before the centre, 1.00 at the reward.
+  - The record's landmark-identity-distance deviation repeats "(0 centre, 1 arm end)".
+  - On the entry paths the quarters may be numbered in the opposite order. The main-effect and interaction counts do not depend on the order, so no conclusion changes.
+- **Record, direction-tuning-not-maintained:** "The low count misses 18 to 22 under every reading." This holds for the stand-in set only, not for the paper's reading (b); see section 1.
+- **README:** the row "State-space selectivity in the centre | Not reproduced" drops the qualifier carried by the notebook summary (cell 67) and cell 57: "permuted chunks; open under shifted chunks".
 
-**My round-1 reasons in the record:** the verifications section states them faithfully and in substance as I wrote them. Problems 1, 2, 3, 4, 5, 7, 8 and 9 sit under the right claims. Problems 6 and 10 appear in the "reviewed" text. Nothing is misattributed.
+Cell 0, the Summary (cell 67) and the record's findings are otherwise supported.
+
+The record's `verifications` entry states my round-1 reasons accurately, mostly in my own wording, with my problems 1 to 10 assigned to the right claims and summarised under `reviewed`.
 
 ## 3. Round-1 points
 
 **Resolved:**
-- 1: the circular sign, now set from velocity (cell 28).
-- 2: the overlapping shift surrogates are replaced. In the synthetic check (cell 34), 3.3% of trains with no coding come out p < 0.01, against 100% before.
-- 3: both tails are stored, and at most 3 cells are significant on the low side.
-- 4: three move typings are run.
-- 5: state-space-ic-higher now has its own section, with all readings shown.
-- 6: the toreward_ret window is added.
-- 7: start-arm sequences and variants are shown.
-- 8: type III sums of squares are shown.
-- 9: signed-rank tests across sessions are added.
-- 10: the layout is checked per file.
-- All section C requests are answered. The eye sign was settled by velocity, not by the side on which landmarks appear.
+- Problem 2: the shift surrogates were rebuilt. Cell 34 gives a synthetic false-positive rate of 3.3% at p < 0.01 over 60 trains, against 100% before.
+- Problem 3: tails are now stored; at most 3 cells are significant on the low side.
+- Problem 4: three move typings were run.
+- Problem 5: state-space-ic-higher is now graded, under all readings.
+- Problem 6: a start-to-reward window with returns was added.
+- Problem 7: start-arm sequences and variants were added.
+- Problem 8: type III sums of squares were added.
+- Problem 9: signed-rank tests across sessions were added.
+- Problem 10: all 187 files have 12 columns and a radius of 0.81 to 3.0.
+- Problem 1: resolved as far as the data allow, through the velocity check. It remains a stated assumption.
+- All section C requests were answered.
 
-**What remains that bears on a conclusion:**
+**Remaining issues that bear on a conclusion:**
+1. direction-tuning-not-maintained rests on the three-space stand-in for reading (b). It should be marked `assumed: true`, and the notes should say that under shifted chunks the paper's set could still meet the criterion.
+2. state-space-selectivity is not reproduced only under the permuted-chunk assumption, and the README row should say so.
+3. gaze-anticipates-action in monkey K: the slow-phase velocity before the turn code suggests the window overlaps an ongoing rotation. This is a caveat on interpretation; the outcome stands under the criterion.
+4. Claims file: the gaze-anticipates-landmarks criterion does not separate anticipation from rotation-linked eye position. The attempt states this, and it is reported here, not corrected.
 
-a. **gaze-anticipates-action.** Every code 1 or 2 in a trial is used, so the 500 ms before a turn can fall inside the previous rotation.
-   - A turn of about 28° takes 600 ms (cell 26), so a 72° rotation lasts more than 1 s.
-   - In monkey K, eye velocity in the 500 ms before the code already differs between right and left turns with the in-turn sign: 0.250 against −0.189, 38 of 40 sessions, p = 2.3e-9 (cell 28).
-   - The right-minus-left position difference is already −0.21 to −0.30 at −1.0 to −0.8 s (cell 27).
-   - So K's effect may be the OKN position shift of an ongoing rotation, not anticipation. Monkey S does not show this: 9 of 20 sessions, p = 0.40.
-   - Output needed: the orientation change in the 500 ms before each code, and the test restricted to turns with no rotation in that window (or to the first turn of each trial).
-
-b. **direction-tuning-not-maintained.** Reading (a) fails firmly on the number of cells tested (40 and 28 against 56 ± 5.6). The outcome therefore rests on reading (b), where the three-space set stands in for the paper's responsive set.
-   - That set is only a lower bound, and the count of low cells is not fixed by it.
-   - Under the bounds logic the attempt uses elsewhere, adding just 2 gaze-responsive cells that both have low correlations gives 61 tested, 18 low and 4 high, which meets the criterion.
-   - The outcome should be marked `assumed: true`, as direction-center-vs-periphery is, or be blocked.
-
-c. **state-space-selectivity.** Under permuted chunks it fails firmly: the low count over the three-space set is 6 or 7 against 3 to 5 (cell 56). Under the now-valid shifted reading the bounds include the targets in 8 of 9 combinations.
-   - For spatial-selectivity-fraction the record applies "met under any one reading" and blocks the claim because some readings are open. Applied the same way here, this claim should also be blocked.
-   - The permuted reading rests only on the wording "randomly shuffling periods", which is weak support. Either justify grading this claim differently or grade it blocked (metadata_insufficient).
-
-d. **gaze-anticipates-landmarks.** Not an error in the attempt, recorded for the reader: the claims-file criterion, which follows the S2C legend, is met by the OKN shift in eye position alone. The reproduction confirms the S2C pattern but not the anticipation the claim states.
+Not bearing on a conclusion: the abscissa description in cells 7 and 9 and in the record's deviation.
 
 ## End of run
 
-13 turns, 3 minutes, $1.49 at API prices, result: success.
+17 turns, 3 minutes, $1.58 at API prices, result: success.
