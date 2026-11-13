@@ -738,6 +738,86 @@ def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
     assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"
 
 
+def _response(name, labels, attempt="tingley-2021-01", paper="tingley-2021", orcid="_No response_"):
+    body = (f"### Paper\n\n{paper}\n\n### Attempt\n\n{attempt}\n\n### Your name\n\n{name}\n\n"
+            f"### Your role in the paper\n\nfirst author\n\n### ORCID iD\n\n{orcid}\n\n"
+            "### Your view of the attempt\n\nSome outcomes are wrong\n\n### Claims you are responding to\n\nC3\n\n"
+            "### Your response\n\nThe intervals in Figure 3 are bootstrapped.\n\n### Supporting links\n\n_No response_\n")
+    return {"url": "https://github.com/x/y/issues/" + "".join(str(ord(c)) for c in name)[:12], "body": body, "state": "OPEN",
+            "createdAt": "2026-11-07T00:00:00Z", "labels": [{"name": n} for n in ["author-response", *labels]]}
+
+
+TINGLEY = {"key": "tingley-2021", "byline": "Tingley et al. 2021"}
+
+
+def test_the_response_link_fills_in_the_paper_and_the_attempt():
+    url = site.respond_link(TINGLEY, {"id": "tingley-2021-01"})
+    assert "template=author-response.yml" in url and "paper=tingley-2021" in url and "attempt=tingley-2021-01" in url
+    assert "title=Author+response%3A+Tingley+et+al.+2021" in url and "attempt=" not in site.respond_link(TINGLEY)
+
+
+def test_a_response_names_its_paper_by_key_doi_or_page():
+    doi = site.paper_records.doi_of("tingley-2021")
+    for said in ("tingley-2021", doi, f"https://doi.org/{doi}", "https://encorescience.org/papers/tingley-2021/"):
+        assert list(site.responses_by_paper([_response("A", ["author-confirmed"], paper=said)])) == ["tingley-2021"], said
+    assert site.responses_by_paper([_response("A", [], paper="no such paper")]) == {}
+
+
+def test_only_confirmed_author_responses_are_shown():
+    rs = site.responses_by_paper([_response("A. Author", ["author-confirmed"]), _response("Someone", [])])
+    assert list(rs) == ["tingley-2021"] and [r["shown"] for r in rs["tingley-2021"]] == [True, False]
+    html = site.responses_block({"responses": rs}, TINGLEY)
+    assert "A. Author" in html and "bootstrapped" in html and "Someone" not in html
+    assert "1 response from someone who says they are an author awaits confirmation" in html
+    assert "attempt tingley-2021-01" in html and "template=author-response.yml" not in html   # the form is linked once, under it
+
+
+def test_a_paper_without_responses_has_no_responses_section():
+    assert site.responses_block({"responses": {}}, TINGLEY) == ""
+
+
+def test_an_attempts_page_shows_the_responses_to_it_and_to_the_paper_in_general():
+    mine, other, general = (_response("A. Author", ["author-confirmed"]),
+                            _response("Be Author", ["author-confirmed"], attempt="tingley-2021-02"),
+                            _response("Cee Author", ["author-confirmed"], attempt="_No response_"))
+    rs = site.responses_by_paper([mine, other, general, mine])
+    page = site.responses_block({"responses": rs}, TINGLEY)
+    assert page.count("A. Author") == 1 and "Be Author" in page and "Cee Author" in page
+    one = site.responses_block({"responses": rs}, TINGLEY, {"id": "tingley-2021-01"})
+    assert "A. Author" in one and "Cee Author" in one and "Be Author" not in one
+
+
+def test_responses_are_on_the_papers_page_and_the_writers_page_and_not_the_datasets(tmp_path):
+    data = site.collect()
+    person = next(a for a in site.authors_of(data, site.paper_records.doi_of("tingley-2021")) if a.get("orcid"))
+    data["responses"] = site.responses_by_paper([_response(person["name"], ["author-confirmed"], orcid=person["orcid"])])
+    site.build(data, tmp_path)
+    paper = (tmp_path / "papers" / "tingley-2021" / "index.html").read_text()
+    # On the paper's page, under the summary: the writer's name opens their page, as their ORCID iD has one.
+    assert "Responses from the paper&rsquo;s authors" in paper and "bootstrapped" in paper
+    assert f'<strong><a href="../../authors/{person["orcid"]}/">{site.e(person["name"])}</a></strong>' in paper
+    assert paper.count("Respond to this attempt</a>") == 1 and "attempt=tingley-2021-" in paper
+    # Their own page has a Responses tab with it, naming the paper.
+    theirs = (tmp_path / "authors" / person["orcid"] / "index.html").read_text()
+    assert 'data-panel="responses"' in theirs and "bootstrapped" in theirs and 'papers/tingley-2021/">Tingley et al. 2021</a>' in theirs
+    # A dataset's page has neither the responses nor the form: a response is to a paper's attempt.
+    dataset = (tmp_path / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert "bootstrapped" not in dataset and "Respond to" not in dataset
+
+
+def test_the_response_form_is_on_paper_and_attempt_pages(built):
+    data, out = built
+    paper = (out / "papers" / "tingley-2021" / "index.html").read_text()
+    assert "Respond to this attempt</a>" in paper and "paper=tingley-2021&amp;" in paper and "attempt=tingley-2021-" in paper
+    # A paper with several current attempts does not choose one for the writer; each attempt's page does.
+    several = (out / "papers" / "semenov-2026" / "index.html").read_text()
+    assert "Respond to an attempt</a>" in several and "attempt=semenov-2026" not in several
+    assert "attempt=semenov-2026-03" in (out / "papers" / "semenov-2026" / "semenov-2026-03" / "index.html").read_text()
+    assert "Respond to" not in (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    # No one has a Responses tab while there are no responses.
+    assert 'data-panel="responses"' not in (out / "authors" / next(iter(site.author_index(data))) / "index.html").read_text()
+
+
 def test_the_journal_filter_names_at_most_the_top_journals(built):
     _, out = built
     rows = json.loads((out / "data" / "datasets.json").read_text())
