@@ -3463,27 +3463,49 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
                f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
                f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
-               f'<div class="dhead"><h1>{e(paper["title"])}</h1>{tier_badge(tier, tier_link)}</div>'
-               f'{authors_html(data, paper["doi"], root)}'
-               f'<p class="sub"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · paper key '
-               f'<code>{e(paper["key"])}</code></p>'
-               f'{sets}{could_not}')
+               f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
+               f'{authors_html(data, paper["doi"], root)}')
+        # The result leads (the outcomes and the summary); what the paper is and which data were used are in a
+        # column at the side, which goes under the result on a narrow screen.
+        side = (f'<aside class="phead-side" aria-label="About the paper and its data">'
+                f'<p class="phead-tier">{tier_badge(tier, tier_link)}</p>'
+                f'<p class="sub small"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · <span class="key">paper key '
+                f'<code>{e(paper["key"])}</code></span></p>'
+                f'{sets}{could_not}'
+                + (f'<div class="phead-tags">{tags}</div>' if tags else "") + '</aside>')
     else:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
                f'<div class="dhead"><h1>{e(dataset_label(dandiset))}</h1>{tier_badge(tier, tier_link)}</div>'
                f'<p class="sub">{e(name)}</p>')
-    body = f'''<header class="page">
+    if paper:
+        header = f'''<header class="page">
+  {top}
+  <div class="phead">
+  <div class="phead-main">
+  <div class="result"><p class="result-head">Outcomes of {n} claims</p>{bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}</div>
+  {outside_note(atts)}
+  {summary_block(atts, name=lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
+  {responses_block(data, paper, one, root)}
+  {superseded}
+  <p class="actions">{" ".join(actions)}</p>
+  </div>
+  {side}
+  </div>
+</header>
+'''
+    else:
+        header = f'''<header class="page">
   {top}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
-  {summary_block(atts, name=(lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a))) if paper else None)}
-  {responses_block(data, paper, one, root) if paper else ""}
+  {summary_block(atts)}
   {f'<p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>' if tested_on else ""}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
-<main>
+'''
+    body = f'''{header}<main>
   {attempts_timeline(data, dandiset, root, atts, paper=paper)}
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>
