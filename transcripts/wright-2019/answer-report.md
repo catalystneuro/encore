@@ -1,0 +1,9 @@
+I answered the one question. `claims/wright-2019.yaml` changed in its opening comment only (details 1 and 2), and the answer is recorded in `questions/wright-2019.yaml` with `answered: 2026-11-11`. Nothing is committed.
+
+**fig1c-total-suppression (baseline windows and 0/0 ratios): changed in part.**
+- **Detail 1 (baseline window).** The claims file used one window for both ratios, and the paper's own regression table rules that out. Trials 5, 12 and 14 have interval fear -1.00, which means no pokes in the interval baseline. Yet their total fear is 0.73, 0.64 and 0.40, which needs pokes in the total fear baseline. Detail 1 now gives separate windows, with the total fear window the longer one. The readings (interval window, total window) are 2 s and 10 s, 2 s and 20 s, or 10 s and 20 s. It also says Figure 1, figure supplement 1A uses the total fear window.
+- **Detail 2 (0/0 ratio).** It gains a third reading, set to 1. It comes from Figure 1, figure supplement 2: "A suppression ratio of 1.0 is found ... when no poke occurs in an interval".
+- **What stays open.** The text never states a window, and "20 s" appears nowhere in it. So the author's 20 s / 2 s / 0/0 = 1 combination is added as a reading credited to their fit of the table, not named as the paper's method. Setting 0/0 to 0 stays, because the table's 0.00 entries also fit equal baseline and cue rates. The table alone cannot separate these readings without the data.
+- **Criteria.** None needed editing, since each one cites "the readings of details 1 to 3".
+
+`python tools/claims_check.py` reports 39 quotes and 3 problems, all "value not found" for p-values in claims I did not touch: 9.7e-05 (fig2b), 8.9e-05 (fig5a) and 0.0032 (fig5f). They most likely come from how the paper prints those values, but I did not check that against the text.

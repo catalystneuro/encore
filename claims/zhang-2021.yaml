@@ -1,0 +1,460 @@
+# Claims for Zhang, Gao, Cukur & Gallant (2021), Frontiers in Neuroscience 14:565976,
+# "Voxel-Based State Space Modeling Recovers Task-Related Cognitive States in Naturalistic fMRI
+# Experiments", doi:10.3389/fnins.2020.565976, on CRCNS data set vim-4 (doi:10.6080/K0668BDF).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14.
+#
+# Text read: the version of record (PMC8145286, open access), as JATS XML flattened to text under
+# paper/: main text, Materials and Methods, figure legends, Table 1, and the supplement
+# (Data_Sheet_1.DOCX, legends of Supplementary Figures 1 to 5). No PDF was supplied. The
+# per-subject CSI values of the attention task are printed only inside the images of
+# Supplementary Figures 1 and 2; they were read from the images in the supplement file (S1
+# 0.51, 0.79, 0.64; S3 0.70, 0.71, 0.05; S4 0.64, 0.69, 0.47; S5 0.66, 0.74, 0.59; S6 0.60, 0.71,
+# 0.61, for attend-humans, attend-vehicles and passive). The images of Figures 1 to 4 of the main
+# text were not available, so the pattern of Figure 3B is not known here. Two inconsistencies of
+# the paper, noted where they matter. (1) The means of the six per-subject CSIs in Figure 1 and
+# the supplement (0.64, 0.72, 0.51) are not exactly the means the Results give (0.66, 0.74, 0.53).
+# (2) The Figure 1 legend says blue is "only humans present" and green "only vehicles present";
+# the supplement legend and the plotted positions say the reverse (green humans, blue vehicles).
+# The video game subjects are S1 and S7 in the text and C1 and C2 in the legends of Figure 3 and
+# Supplementary Figure 4; C1 is S1 (CSI 0.72 in both) and C2 is S7.
+# The data set's description (paper/vim-4.data-description.txt) was read only to know what it
+# holds; no claim comes from it. It says subject S4 of the attention task is not in the data set
+# (no consent for release), so attention-task claims over subjects are tested on S1, S2, S3, S5
+# and S6.
+#
+# Code read: https://github.com/gallantlab/state-space, commit 6ffb3c30 (2020-09-12), linked from
+# the paper's Data Availability Statement. StateSpace.py holds the HRF deconvolution
+# (estimate_devonvolved_response, RidgeCV on delayed features, weights averaged over delays,
+# z-scored), the state space (extract_state_space_positions), the passive-data subsampling, a
+# Monte Carlo JSD between two multivariate normals, and plotting; Example.ipynb fits the state
+# space of the attention task for S1 from the data set's deconvolved data. The code has no CSI
+# averaging, no classifier, no permutation test and no video game analysis.
+#
+# Method choices the code settles where the Methods are silent, used in the criteria below:
+# the OLS regression includes an intercept column (pinv of the normal equations); PCA is
+# scikit-learn PCA (mean-centred) with 24 components fitted on the [TR x voxel] responses; the
+# denoised weights are U U^T B^T for the task variables; the state directions are the first
+# (number of variables) columns of Q from the QR of the denoised [voxel x variable] weights (a
+# reduced QR gives the same columns; the code warns that QR can flip signs); positions are the
+# responses times these directions, then z-scored per dimension over all TRs analysed. For the
+# attention task the state space is fitted once per subject on the passive, attend-human and
+# attend-vehicle TRs stacked (900 each in the data set's deconvolved files, passive already
+# subsampled to the attentive movies), with the three columns of the data set's state labels as
+# task variables. The JSD between two fitted normals is estimated from 1000 samples of each, in
+# log base 2 (so bounded by 1). In plots the human and vehicle axes are sign-oriented so that the
+# "both present" mean lies above the "neither" mean.
+#
+# Data the paper used. Visual attention task: six subjects (S1 to S6) watching natural movies
+# while fixating, in attend-humans, attend-vehicles (three 10-min runs each) and passive viewing
+# sessions; 3T, TR 2 s, 2.24 x 2.24 x 3.5 mm voxels, cortical voxels only (48,673 +/- 4,382 per
+# subject); detrended (240-s third-order Savitzky-Golay), z-scored, then HRF-deconvolved with a
+# WordNet-label voxelwise model (FIR delays 1 to 4 TRs, ridge with 10-fold CV, weights averaged
+# over delays). Task variables per TR are human presence, vehicle presence and attention
+# condition; the 12 classification labels are the four presence combinations by three
+# conditions. Video game task (Counter Strike, Source): S1 and S7, one with six 15-min runs (90
+# min) and the other with three (45 min); the paper says "one subject" and "the second subject"
+# and does not name which is which, BOLD not deconvolved, nine non-exclusive behavioural states labelled per
+# TR by two observers (dead, round start, safe explore, unsafe explore, kill, engage close,
+# engage far, flash, run away); S7 had no flash events. The data set's description lists
+# preprocessed and deconvolved attention data, semantic and state labels, video game data and
+# per-TR state labels, and fsaverage mappers; it lists no functional localizer or ROI data.
+#
+# Details the paper and code leave open, named in the claims they touch: the number of
+# permutations and how labels are permuted; how the 10 folds are formed; the distance used to
+# assign a held-out TR to the nearest cluster; how z-scoring is applied to held-out TRs; how TRs
+# with several or no video game states enter the clusters and the classifier; the clusters of
+# the video game CSI; the form of the passive-against-attentive test; which weights are mapped
+# onto the cortex; the ROI definitions; for the video game, the sign of each dimension and the
+# order of the nine variables in the QR (the code has no video game analysis); the voxel
+# thresholds of Figures 2 and 4.
+schema_version: 2
+paper: doi:10.3389/fnins.2020.565976
+claims:
+- id: fig1-csi-s2
+  statement: In subject S2 the four presence states (neither, humans only, vehicles only, both)
+    are significantly separated in the attention-task state space, with a cluster separation
+    index of 0.75 for attend-humans, 0.69 for attend-vehicles and 0.67 for passive viewing.
+  source: Figure 1 legend
+  quote: The cluster separation index (CSI) is 0.75 for attend-humans, 0.69 for attend-vehicles,
+    and 0.67 for passive ( p < 1e-5, permutation test), all indicating significant separation of
+    the clusters
+  statistics:
+  - test: permutation test
+    p: 1.0e-5
+    p_relation: "<"
+    n: subject S2, each attention condition
+  expected:
+  - quantity: CSI, S2, attend-humans
+    value: 0.75
+    tolerance: 0.075
+  - quantity: CSI, S2, attend-vehicles
+    value: 0.69
+    tolerance: 0.069
+  - quantity: CSI, S2, passive
+    value: 0.67
+    tolerance: 0.067
+  criterion: State space as in the code (see the opening comment), fitted on S2's three
+    conditions stacked. For each condition, the CSI as the Methods define it (Quantification of
+    State Space Results, paragraph 1), a multivariate normal (sample mean and covariance) fitted
+    to the TRs of each of the four presence states in the 3-dimensional state space, the JSD of
+    every pair estimated as in the code's JSD function, and the CSI the mean of the six JSDs.
+    Significance by permutation as in the Methods (paragraph 2), "permuting the state labels,
+    and performing the full analysis using the permuted labels". The number of permutations is
+    open (a p below 1e-5 needs at least 1e5); use at least 1000 and report p as (k+1)/(n+1).
+    Which labels are permuted is open; the readings are (a) the human and vehicle presence labels
+    shuffled together across TRs, the state space refitted each time, and (b) the same with the
+    labels circularly shifted within each condition, which keeps their autocorrelation.
+    Reproduced when all three CSIs are within tolerance and each exceeds every null value under
+    a reading. The Monte Carlo JSD varies with the seed; report the mean over 10 seeds.
+- id: att-csi-group
+  statement: Across subjects the presence states are distinctly and significantly separated in
+    the attention-task state space, with CSI 0.66 +/- 0.09 for attend-humans, 0.74 +/- 0.03 for
+    attend-vehicles and 0.53 +/- 0.24 for passive viewing (mean +/- std).
+  source: Results, The Voxel-Based State Space Method Recovers a State Space for Variables in
+    the Attention Task, paragraph 2
+  quote: The states are distinctly separated with a CSI of 0.66 ± 0.09 (mean ± std across
+    subjects) for attend-humans, 0.74 ± 0.03 for attend-vehicles, and 0.53 ± 0.24 for passive
+    viewing ( p < 1e-5; permutation test)
+  statistics:
+  - test: permutation test
+    p: 1.0e-5
+    p_relation: "<"
+    n: 6 subjects
+  depends_on:
+  - fig1-csi-s2
+  expected:
+  - quantity: mean CSI across subjects, attend-humans
+    value: 0.66
+    tolerance: 0.09
+  - quantity: mean CSI across subjects, attend-vehicles
+    value: 0.74
+    tolerance: 0.03
+  - quantity: mean CSI across subjects, passive
+    value: 0.53
+    tolerance: 0.24
+  criterion: Tolerances are the paper's stated spread across subjects. The CSI and permutation
+    test as in fig1-csi-s2, per subject, on the five subjects the data set holds (S4 is not
+    released); the mean and standard deviation are taken over them. The paper does not say how
+    the group p is formed; the readings are (a) every subject's CSI significant and (b) the mean
+    CSI exceeding the mean of the subjects' null CSIs at every permutation. Reproduced when the
+    three means are within tolerance and the CSIs are significant under a reading. The means
+    over the same five subjects from the per-subject figure values (0.64, 0.73, 0.51) are
+    reported as a second reference, since the paper's own per-subject values do not average to
+    the printed means.
+- id: supp-csi-per-subject
+  statement: In each subject and each attention condition the CSI is significant, with the
+    values printed in Supplementary Figures 1 and 2.
+  source: Supplementary Figures 1 and 2 (panels and legend)
+  quote: CSIs are shows for each condition in each subject and are significant (p < 1e-2 or less,
+    permutation test)
+  statistics:
+  - test: permutation test
+    p: 0.01
+    p_relation: "<"
+    n: each of subjects S1, S3, S4, S5 and S6 and each condition
+  depends_on:
+  - fig1-csi-s2
+  expected:
+  - quantity: CSI, S1, attend-humans
+    value: 0.51
+    tolerance: 0.051
+  - quantity: CSI, S1, attend-vehicles
+    value: 0.79
+    tolerance: 0.079
+  - quantity: CSI, S1, passive
+    value: 0.64
+    tolerance: 0.064
+  - quantity: CSI, S3, attend-humans
+    value: 0.70
+    tolerance: 0.07
+  - quantity: CSI, S3, attend-vehicles
+    value: 0.71
+    tolerance: 0.071
+  - quantity: CSI, S3, passive
+    value: 0.05
+    tolerance: 0.005
+  - quantity: CSI, S5, attend-humans
+    value: 0.66
+    tolerance: 0.066
+  - quantity: CSI, S5, attend-vehicles
+    value: 0.74
+    tolerance: 0.074
+  - quantity: CSI, S5, passive
+    value: 0.59
+    tolerance: 0.059
+  - quantity: CSI, S6, attend-humans
+    value: 0.60
+    tolerance: 0.06
+  - quantity: CSI, S6, attend-vehicles
+    value: 0.71
+    tolerance: 0.071
+  - quantity: CSI, S6, passive
+    value: 0.61
+    tolerance: 0.061
+  criterion: The values are read from the panels of Supplementary Figures 1 and 2 (S4, 0.64,
+    0.69 and 0.47, is not in the data set and is left out). CSI and permutation test as in
+    fig1-csi-s2. Reproduced when at least 10 of the 12 values are within tolerance and every CSI
+    exceeds its null at p < 0.01; partially reproduced for 7 to 9 values; not reproduced below
+    7. The S3 passive value, 0.05, is near the floor of the Monte Carlo JSD; its estimate over
+    10 seeds is reported with its spread.
+- id: att-passive-lower
+  statement: Attention increases state separation; the CSI under passive viewing is
+    significantly lower than under the attentive conditions in five of the six subjects.
+  source: Results, The Voxel-Based State Space Method Recovers a State Space for Variables in
+    the Attention Task, paragraph 2; Figure 1 legend; Discussion, paragraph 2
+  quote: Furthermore, we found that the CSI in the passive condition was significantly lower than
+    the CSI in the attentive conditions for five out of the six subjects ( p < 1e-5; permutation
+    test)
+  depends_on:
+  - att-csi-group
+  expected:
+  - quantity: subjects with passive CSI significantly lower, of six
+    value: 5
+    tolerance: 0
+  criterion: CSIs as in fig1-csi-s2. The paper does not give the form of this test. The
+    readings are (a) passive against each attentive condition, both differences significant;
+    (b) passive against the mean of the two attentive CSIs. The null in either is formed by
+    permuting the attention-condition labels between passive and attentive TRs (the presence
+    labels kept), either (i) refitting the state space each time, as the Methods' "full analysis"
+    says, or (ii) keeping the fitted positions and reassigning TRs to conditions; p is one-sided
+    (passive lower). A subject counts at the paper's threshold, p < 1e-5, which needs at least
+    1e5 permutations; where fewer can be run (at least 1000), a subject counts when its
+    difference exceeds every null value, the bound reached is reported, and the count at p <
+    0.05 is shown as a variant. The data set holds five of the six subjects. Reproduced when the
+    passive CSI is significantly lower in at least 4 of the 5 under a reading, which is what five
+    of six allows; not reproduced otherwise. From the
+    figure values, S1 (passive 0.64 against attend-humans 0.51) and S6 (0.61 against 0.60) fail
+    reading (a) on the raw values, so the per-reading counts are reported.
+- id: att-classification
+  statement: Held-out TRs of the attention task are classified into the 12 labels (four presence
+    states by three attention conditions) from their position in the learned state space at
+    48.4 +/- 7.6% across subjects, well above the chance of 8.3%.
+  source: Results, The Voxel-Based State Space Method Recovers a State Space for Variables in
+    the Attention Task, paragraph 3
+  quote: Average performance across subjects is 48.4 ± 7.6% ( p < 1e-5, permutation test, chance =
+    8.3%)
+  statistics:
+  - test: permutation test
+    p: 1.0e-5
+    p_relation: "<"
+    n: 6 subjects, 10-fold cross-validation each
+  expected:
+  - quantity: mean classification accuracy across subjects, 12 labels
+    value: 48.4
+    tolerance: 7.6
+    unit: percent
+  criterion: Tolerance is the paper's stated spread across subjects. As in the Methods
+    (Quantification of State Space Results, paragraph 2), per subject, 10-fold cross-validation
+    over the stacked TRs of the three conditions; in each fold the state space (code's method)
+    is fitted on the training 90%, the held-out TRs are projected onto its directions, and each
+    is assigned to the nearest of the 12 training clusters; accuracy is averaged over folds and
+    then over the five subjects in the data set. Open, with readings run each. Folds as (a)
+    contiguous tenths of the stacked series, or (b) random TRs. Nearest cluster by (a) Euclidean
+    distance to the cluster mean, or (b) the highest density under the multivariate normal
+    fitted to the cluster, as for the CSI. Held-out positions are z-scored with the training
+    means and standard deviations (the code z-scores the positions it fits; a standard choice for
+    held-out data). The null permutes the 12 labels of the training TRs and repeats the
+    full analysis, at least 1000 times. Reproduced when the mean is within tolerance and above
+    every null mean under a reading; partially reproduced when it is significant but outside
+    tolerance under all readings.
+- id: att-weights-cortex
+  statement: The human-presence dimension of the attention-task state space has its weights in
+    face and body areas (FFA, OFA, EBA), MT+, LO, the frontal operculum and the inferior frontal
+    sulcus; the vehicle-presence dimension in RSC, PPA, OPA, IPS, FEF and around the inferior
+    frontal sulcus.
+  source: Results, The Voxel-Based State Space Method Recovers a State Space for Variables in
+    the Attention Task, paragraph 4; Figure 2; Supplementary Figure 3
+  quote: The “human presence” dimension projects heavily onto FFA ( Kanwisher et al., 1997 ), OFA (
+    Gauthier et al., 2000 ), and EBA ( Downing et al., 2001 ) ... In contrast, the “vehicle
+    presence” dimension projects strongly onto RSC ( Maguire, 2001 ; Epstein, 2008 ), PPA (
+    Epstein et al., 1999 ), and OPA ( Dilks et al., 2013 )
+  data: with_inputs
+  criterion: The ROIs were delineated per subject from functional localizer and retinotopic
+    mapping data (Methods, Preprocessing and Visualization, paragraph 2), which the paper does
+    not deposit and the data set's description does not list; the author decides whether an
+    outside ROI source (for example an fsaverage atlas through the data set's mappers) can be
+    used. Which weights are mapped is open; the readings are (a) the OLS weights B, (b) the
+    denoised weights B_L, and (c) the state directions Q_S, each sign-oriented so that the
+    dimension's own state has a positive mean position. Figure 2 and Supplementary Figure 3
+    threshold voxels by the prediction performance of a semantic encoding model at uncorrected p
+    < 0.05. The data set holds the semantic labels and the preprocessed BOLD, so the threshold
+    has two readings, (i) no threshold and (ii) voxels whose cross-validated prediction by the
+    WordNet model of the deconvolution (Methods, Deconvolution, FIR delays 1 to 4, ridge with
+    10-fold CV) is significant at uncorrected p < 0.05; the test of the prediction is open
+    (correlation of predicted and measured responses, against zero or by permutation). Per
+    subject and ROI, the mean weight. Reproduced when, in at least 4 of the 5 subjects, the mean
+    human-presence weight is positive and above the mean vehicle-presence weight in FFA, OFA and
+    EBA, and the reverse holds in RSC, PPA and OPA, under a reading. The other named regions are
+    reported, including those the Figure 2 legend adds (SEF for the human-presence dimension, FO
+    for the vehicle-presence dimension).
+- id: game-csi
+  statement: In the video game task the behavioural states are distinctly and significantly
+    separated in the 9-dimensional state space, with CSI 0.72 in subject S1 and 0.62 in S7.
+  source: Results, The Voxel-Based State Space Method Recovers a Behavioral State Space for the
+    Open-Ended Video Game Task, paragraph 2; Figure 3A
+  quote: The states are distinctly separated with a CSI of 0.72 in subject S1 and 0.62 in subject
+    S7 ( p < 1e-5, permutation test)
+  statistics:
+  - test: permutation test
+    p: 1.0e-5
+    p_relation: "<"
+    n: subjects S1 and S7
+  expected:
+  - quantity: CSI, S1, video game
+    value: 0.72
+    tolerance: 0.072
+  - quantity: CSI, S7, video game
+    value: 0.62
+    tolerance: 0.062
+  criterion: State space by the code's method on each subject's BOLD data (no deconvolution, as
+    the Methods say) with the nine state columns as task variables. CSI as in fig1-csi-s2, in
+    the 9-dimensional space. The clusters are open, and the states are not exclusive. Readings
+    are (a) one cluster per state, a TR entering the cluster of every state it has; (b) one
+    cluster per state from TRs with exactly one state; (c) the three groups of Figure 3A (safe
+    explore, engage close, all other TRs). A state with no TRs (flash in S7) or too few to fit
+    a covariance is left out and the count reported. Permutations as in fig1-csi-s2, shuffling
+    the rows of the state matrix. Reproduced when both CSIs are within tolerance and above every
+    null value under a reading.
+- id: game-mutual-negative-projection
+  statement: The mutually exclusive states engage close and safe explore each project negatively
+    onto the other's dimension of the video game state space.
+  source: Results, The Voxel-Based State Space Method Recovers a Behavioral State Space for the
+    Open-Ended Video Game Task, paragraph 3; Figure 3A legend
+  quote: For example, “engaging close” and “safe explore” each project negatively to the dimension
+    associated with the other state ( Figure 3A ) ( p < 1e-5, permutation test)
+  statistics:
+  - test: permutation test
+    p: 1.0e-5
+    p_relation: "<"
+    n: subjects S1 and S7
+  depends_on:
+  - game-csi
+  criterion: State space as in game-csi. The code has no video game analysis, and two details
+    that change the dimensions are open. The sign of each dimension, with readings (a) its own
+    state's TRs have a positive mean position (by analogy with the code's plotting, which flips
+    an axis by cluster means), (b) the diagonal of R made positive, so that the dimension points
+    along the state's denoised weight vector. The order of the nine variables entering the QR,
+    since each column of Q is orthogonalized against the earlier ones, with readings (i) the
+    order of Table 1 (dead, round start, safe explore, unsafe explore, kill, engage close, engage
+    far, flash, run away) and (ii) the order of the columns of the data set's state matrix. The
+    measure is the mean position of engage-close TRs on the safe-explore dimension and of
+    safe-explore TRs on the engage-close dimension. The null permutes the rows of the state
+    matrix and refits, at least 1000 times, one-sided for a negative mean. Reproduced when both
+    means are negative and significant at p < 0.05 in both subjects; partially reproduced in one
+    subject.
+- id: fig3b-state-relations
+  statement: States of the video game project at significant non-zero positions on other states'
+    dimensions, an asymmetric pattern found in both subjects that differs between them.
+  source: Figure 3B and its legend; Results, The Voxel-Based State Space Method Recovers a
+    Behavioral State Space for the Open-Ended Video Game Task, paragraph 3
+  quote: Relationships between states are reflected in non-zero projections of states on to other
+    state dimensions ... Colors indicate Bonferroni-corrected significance ( p < 0.01, permutation
+    test)
+  statistics:
+  - test: permutation test
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni
+    n: subjects S1 and S7
+  depends_on:
+  - game-mutual-negative-projection
+  criterion: The figure's matrix was not available to this reader, so no per-pair result is
+    fixed. For each ordered pair of different states, the mean position of the row state's TRs
+    on the column state's dimension, with the sign and order readings of
+    game-mutual-negative-projection, and a two-sided permutation test as there. The number of
+    tests Bonferroni corrects for is open; readings are (a) the off-diagonal pairs the subject
+    has (72, or 56 for S7, who has no flash) and (b) every cell of the matrix (81, or 64 for S7);
+    corrected threshold 0.01. Reproduced when each subject has significant
+    off-diagonal pairs, the matrix is asymmetric in at least one pair, and the two subjects'
+    sets of significant pairs differ. The full matrices are reported for comparison with the
+    figure.
+- id: game-classification
+  statement: Held-out TRs of the video game task are classified into the nine behavioural states
+    from their position in the learned state space with balanced accuracy 32.8 +/- 3.8% in S1
+    and 30.4 +/- 4.2% in S7, above the chance of 11%.
+  source: Results, The Voxel-Based State Space Method Recovers a Behavioral State Space for the
+    Open-Ended Video Game Task, paragraph 4
+  quote: Average balanced accuracy across 10 cross-validation folds in the subject is 32.8 ± 3.8%
+    in subject S1 and 30.4 ± 4.2% in subject S7 ( p < 1e-5, permutation test, chance = 11%)
+  statistics:
+  - test: permutation test
+    p: 1.0e-5
+    p_relation: "<"
+    n: subjects S1 and S7, 10 folds each
+  depends_on:
+  - game-csi
+  expected:
+  - quantity: balanced accuracy, S1
+    value: 32.8
+    tolerance: 3.8
+    unit: percent
+  - quantity: balanced accuracy, S7
+    value: 30.4
+    tolerance: 4.2
+    unit: percent
+  criterion: Tolerances are the paper's stated spread across folds. Cross-validation as in
+    att-classification, with the nine state clusters, and balanced accuracy (mean recall over
+    classes, Brodersen et al. 2010) averaged over folds. Folds and nearest-cluster distance have
+    the readings of att-classification. How a TR with several states or none is labelled is
+    open; readings are (a) TRs with exactly one state only; (b) every labelled TR, a prediction
+    counted correct for each of its states that it names and recall computed per state over the
+    TRs that have it. Classes with no TRs (flash in S7) are left out. Null as in
+    att-classification. Reproduced when both values are within tolerance and above every null
+    value under a reading; partially reproduced when significant but outside tolerance.
+- id: game-weights-two-groups
+  statement: The video game state dimensions fall into two groups, dead, round start, safe
+    explore, unsafe explore and flash in TPJ, precuneus and prefrontal cortex (default-mode
+    areas), and kill, engage close, engage far and run away in motor, premotor and
+    supplementary motor areas, IPS, FEF and SEF; the weights are largely consistent across the
+    two subjects.
+  source: Results, The Voxel-Based State Space Method Recovers a Behavioral State Space for the
+    Open-Ended Video Game Task, paragraph 5; Figure 4; Supplementary Figures 4 and 5
+  quote: They appear to fall into two general categories. The dimensions for “safe explore,”
+    “round start,” “flash,” “dead,” and “unsafe explore” project on to the TPJ, precuneus, and
+    prefrontal cortex. The dimensions for “run away,” “engage close,” “kill,” and “engage far”
+    project on to the motor, pre-motor, and supplementary motors areas, and also in IPS, FEF, and
+    SEF ... The weights for each dimension are largely consistent across the two subjects
+  data: with_inputs
+  depends_on:
+  - game-csi
+  criterion: The paper groups the dimensions by the regions their weights project onto, read
+    from the maps (Figure 4, Supplementary Figures 4 and 5); it gives no quantitative grouping
+    method. The regions need definitions the data set does not list (see att-weights-cortex);
+    the author decides whether an outside source can be used (functional ROIs for IPS, FEF and
+    SEF; an fsaverage atlas, through the data set's mappers, for TPJ, precuneus, prefrontal,
+    motor, premotor and supplementary motor cortex). Weights with the readings of
+    att-weights-cortex, the Q_S reading also under the order readings of
+    game-mutual-negative-projection. Figure 4 thresholds voxels by "an encoding model" at
+    Bonferroni-corrected p < 0.05, the model not named; readings are (i) no threshold and (ii)
+    voxels whose cross-validated prediction by the nine-state OLS model is significant at that
+    level. Per subject, dimension and region, the mean weight. Reproduced when, in both
+    subjects, every dimension of the first group (dead, round start, safe explore, unsafe
+    explore, flash; no flash in S7) has a positive mean weight in TPJ, precuneus and prefrontal
+    cortex and a higher one there than in the second group's regions, and every dimension of the
+    second group (kill, engage close, engage far, run away) the reverse in motor, premotor and
+    supplementary motor cortex, IPS, FEF and SEF, allowing one dimension per subject to fail,
+    under a reading; not reproduced otherwise. As a variant not taken from the paper and not
+    deciding the outcome, the Pearson correlation across voxels between the weight maps of every
+    pair of dimensions, with average-linkage clustering on one minus correlation cut into two
+    groups, is reported. The paper gives no measure of "largely consistent across the two
+    subjects"; the correlation of each dimension's map between subjects on fsaverage is
+    reported, and the consistency part is said to hold when its median over shared dimensions is
+    positive, a reading of the reader's, stated as such.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checked the quotes against the text, the per-subject CSIs against the images of Supplementary Figures 1 and 2 (all 15 values and the p bounds agree), and the description of the code against gallantlab/state-space at 6ffb3c3 (it agrees, including the intercept column, PCA denoiser, QR, z-scoring, log2 Monte Carlo JSD and the sign flip of the plotting).
+  - att-passive-lower, removed the statistics entry, since the p < 1e-5 is the threshold at which subjects are counted (five of six), a method and not a result (protocol, Reader, step 3).
+  - att-passive-lower, the criterion counted subjects at p < 0.05, a threshold the paper does not use; it now counts at the paper's p < 1e-5, with the bound reached and the count at p < 0.05 shown when fewer than 1e5 permutations can be run.
+  - att-classification, said that z-scoring held-out positions with the training statistics is a standard choice, following the code's z-scoring of fitted positions; the paper does not fix it.
+  - att-weights-cortex, the criterion dropped the semantic-model voxel threshold of Figure 2 on the ground that the model's performance is not given; the data set holds the semantic labels and preprocessed BOLD, so the threshold is computable, and it is now a reading (with no threshold the other); also named the regions the Figure 2 legend adds (SEF, FO).
+  - game-mutual-negative-projection, the sign rule was attributed to the code, which has no video game analysis; the sign and the order of the nine variables in the QR (which changes every dimension after the first) are now named as open, with readings.
+  - fig3b-state-relations, took the sign and order readings, and named the number of Bonferroni tests (off-diagonal pairs or every cell) as open.
+  - game-weights-two-groups, the deciding test was a correlation clustering of weight maps that the paper does not use; the paper groups dimensions by the regions they project onto, so the deciding test is now mean weight per region, with data with_inputs for the region definitions, the Figure 4 voxel threshold named as open, and the clustering kept as a variant that does not decide; the consistency measure is marked as a reading of the reader's.
+  - Opening comment, the paper does not say which video game subject played 90 min and which 45 min; the comment had S1 as 90 min; the open details now include the video game sign and order and the voxel thresholds.
+  - Open, not settled. The paper's group CSI means (0.66, 0.74, 0.53) do not equal the means of its own per-subject values (0.64, 0.72, 0.51), recorded in att-csi-group. Figure 3B and the main figures could not be read (no PDF), so fig3b-state-relations fixes no per-pair result. The exception subject in att-passive-lower cannot be fixed from the paper; on the figure values S1 or S6 fail reading (a).
+  - Main findings, every Results finding has a claim; the descriptive numbers (24 PCs explaining about 70% of variance, voxel counts) are method details and have none.

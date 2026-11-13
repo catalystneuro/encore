@@ -164,6 +164,15 @@ def test_every_claim_needs_one_outcome(repo):
     assert any("claim 'fig1' has more than one outcome" in e for e in found)
 
 
+def test_claims_read_again_after_an_attempt_are_the_next_attempts_to_test(repo):
+    """A dataset added to a paper has its claims read again, and they reach main ahead of the repeat attempt."""
+    check = {"date": "2099-01-01", "kind": "agent", "ready": True}
+    claims = {**CLAIMS, "claims": CLAIMS["claims"] + [{"id": "fig2", "statement": "S.", "source": "Figure 2"}],
+              "checks": (CLAIMS.get("checks") or []) + [check]}
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert not any("claim 'fig2' has no outcome" in e for e in errors(repo))
+
+
 def test_the_dandiset_version_must_be_pinned(repo):
     entry = {**ENTRY, "related": [{"id": "dandi:000001", "relation": "uses_data"}, ENTRY["related"][1]]}
     (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump(entry))
@@ -365,3 +374,84 @@ def test_the_colab_copy_sets_itself_up_only_on_colab():
     compile(code, "setup", "exec")
     assert 'if "google.colab" in sys.modules:' in code and "entries/demo" in code
     exec(code, {})   # outside Colab: nothing happens
+
+
+def _executed(repo, monkeypatch):
+    """The demo entry with executed copies and the stamp a passing run leaves, without executing anything: the
+    environment and the notebook run are replaced by a copy of the notebook."""
+    entry_dir, out = repo / "entries" / "demo", repo / "executed" / "demo"
+    calls = []
+
+    def fake(cmd, **kwargs):
+        calls.append(cmd)
+        if cmd[1:4] == ["-m", "jupyter", "nbconvert"]:
+            shutil.copy(entry_dir / cmd[-1], out / cmd[-1])
+        return type("R", (), {"returncode": 0, "stderr": ""})()
+    monkeypatch.setattr(tool.subprocess, "run", fake)
+    assert tool.run(entry_dir, out, 60, 60) == 0
+    return entry_dir, out, calls
+
+
+def test_a_run_with_nothing_changed_reuses_the_executed_copies(repo, monkeypatch, capsys):
+    entry_dir, out, calls = _executed(repo, monkeypatch)
+    assert (out / tool.STAMP).is_file() and any(c[1:4] == ["-m", "jupyter", "nbconvert"] for c in calls)
+    del calls[:]
+    capsys.readouterr()
+    assert tool.run(entry_dir, out, 60, 60) == 0
+    assert calls == []                                      # nothing was built or executed
+    said = capsys.readouterr().out
+    assert "analysis.ipynb" in said and "reused" in said and "--fresh" in said
+    assert tool.run(entry_dir, out, 60, 60, fresh=True) == 0 and any(c[1:4] == ["-m", "jupyter", "nbconvert"] for c in calls)
+
+
+def test_any_change_to_what_a_run_reads_makes_it_run_again(repo, monkeypatch):
+    entry_dir, out, calls = _executed(repo, monkeypatch)
+    before = tool.entry_hash(entry_dir)
+    assert tool.reusable(entry_dir, out, 60)
+    # A change to a notebook, a helper, the lock or entry.yaml (the Python, the dataset's version) changes the hash.
+    for name, text in (("helper.py", "X = 1\n"), ("requirements.lock.txt", "numpy==2.1.0\n")):
+        old = (entry_dir / name).read_text() if (entry_dir / name).exists() else None
+        (entry_dir / name).write_text(text)
+        assert tool.entry_hash(entry_dir) != before and tool.reusable(entry_dir, out, 60) is None
+        (entry_dir / name).unlink() if old is None else (entry_dir / name).write_text(old)
+    assert tool.entry_hash(entry_dir) == before and tool.reusable(entry_dir, out, 60)
+    # Files a run does not read leave it as it was.
+    (entry_dir / "__pycache__").mkdir(); (entry_dir / "__pycache__" / "helper.cpython-313.pyc").write_bytes(b"x")
+    assert tool.entry_hash(entry_dir) == before
+
+
+def test_executed_copies_that_are_not_what_the_run_left_are_not_reused(repo, monkeypatch):
+    import json
+    entry_dir, out, _ = _executed(repo, monkeypatch)
+    stamp = json.loads((out / tool.STAMP).read_text())
+    # An executed copy edited after the run.
+    (out / "analysis.ipynb").write_text((out / "analysis.ipynb").read_text() + "\n")
+    assert tool.reusable(entry_dir, out, 60) is None
+    shutil.copy(entry_dir / "analysis.ipynb", out / "analysis.ipynb")
+    assert tool.reusable(entry_dir, out, 60)
+    # A run that took longer than the limit asked for now; one too old; one that failed leaves no stamp.
+    (out / tool.STAMP).write_text(json.dumps({**stamp, "results": [{**stamp["results"][0], "seconds": 4000}]}))
+    assert tool.reusable(entry_dir, out, 60) is None and tool.reusable(entry_dir, out, 80)
+    (out / tool.STAMP).write_text(json.dumps({**stamp, "finished": stamp["finished"] - 40 * 86400}))
+    assert tool.reusable(entry_dir, out, 60) is None
+    (out / tool.STAMP).write_text("not json")
+    assert tool.reusable(entry_dir, out, 60) is None
+
+
+
+def test_a_finding_that_can_be_about_either_says_which_from_pilot_15(repo):
+    def check(protocol, findings, datasets=None):
+        attempt = {**ATTEMPT, "findings": findings,
+                   "provenance": {**ATTEMPT["provenance"], "agent": {**ATTEMPT["provenance"]["agent"], "protocol": protocol}}}
+        if datasets:
+            attempt["datasets"] = datasets
+        (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+        return [e for e in errors(repo) if "finding 1" in e]
+    other = [{"kind": "other", "statement": "Something about it."}]
+    # The rule is the protocol's from pilot-15: an attempt made under an earlier version is not held to it.
+    assert check("pilot-14", other) == [] and check("pilot-7", other) == []
+    assert any("say what it is about" in e for e in check("pilot-15", other))
+    assert any("say what it is about" in e for e in check("pilot-16", other))
+    assert check("pilot-15", [{**other[0], "about": "paper"}]) == []
+    # A kind that says what it is about needs nothing more.
+    assert check("pilot-15", [{"kind": "metadata_error", "statement": "Wrong age."}]) == []
