@@ -163,13 +163,18 @@
     // A person with an ORCID iD: the name opens their page; their papers here, each opening its own, and how
     // many of the registry's datasets name them.
     authors(r) {
-      const papers = r.papers.map((q) => q.page ? `<a href="${root + q.page}">${esc(q.byline)}</a>`
-        : `<a href="https://doi.org/${esc(q.doi)}">${esc(q.byline)}</a>`).join(', ');
+      // The first few papers, each opening its page, then how many more: the person's page has them all.
+      const SHOWN = 4;
+      const link = (q) => q.page ? `<a href="${root + q.page}">${esc(q.byline)}</a>`
+        : `<a href="https://doi.org/${esc(q.doi)}">${esc(q.byline)}</a>`;
+      const papers = r.papers.slice(0, SHOWN).map(link).join(', ')
+        + (r.papers.length > SHOWN ? `, and ${r.papers.length - SHOWN} more` : '');
       const count = (n, noun) => n ? `${n} ${noun}${n === 1 ? '' : 's'}` : '';
-      const sets = r.n_datasets ? `<div class="meta"><span class="muted">${esc(r.datasets.slice(0, 8).join(', '))}${r.n_datasets > 8 ? `, and ${r.n_datasets - 8} more` : ''}</span></div>` : '';
+      const sets = r.n_datasets ? `<div class="meta"><span class="muted">${esc(r.datasets.slice(0, SHOWN).join(', '))}${r.n_datasets > SHOWN ? `, and ${r.n_datasets - SHOWN} more` : ''}</span></div>` : '';
       return `<div class="row drow prow">
         <div><p class="title"><a href="${root + r.page}">${esc(r.name)}</a></p>
-          ${papers ? `<div class="meta"><span>${papers}</span></div>` : ''}${sets}</div>
+          ${papers ? `<div class="meta"><span>${papers}</span></div>` : ''}${sets}
+          ${r.counts ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}</div>` : ''}</div>
         <div class="right"><span class="small">${[count(r.n_papers, 'paper'), count(r.n_datasets, 'dataset')].filter(Boolean).join(' · ')}</span>
           <span class="small muted">${esc(r.id)}</span></div></div>`;
     },

@@ -1,29 +1,28 @@
-I've worked through all 12 points in the round-1 report and re-ran the entry. The final run passed in 126 s with no errors, `tools/entry.py check` reports 0 errors, and every conclusion matches the new outputs.
+I went through every point in the round-1 report, changed two outcomes, and re-ran the entry. `python tools/entry.py all entries/park-2019` passes: the notebook ran in 427 s with no errors, and the checks report 0 errors. Round 1 is recorded under `verifications` in `attempts/park-2019-02.yaml`, with the verifier's reasons in its own words and my reply under `response`.
 
 **Outcome changes**
-- **fig4c-arena-registration-short-lived: partially reproduced → not reproduced**, as the verifier said. The criterion's partial outcome needs the arena frame to fall below the others after 10 s and not before. That fails twice: the conditions already differ at 10 s (p = 0.0106), and at 20 to 60 s the room frame drops below the arena frame.
-- **fig5-error-inhomogeneous: kept as partially reproduced**, with the verifier's disagreement recorded. The criterion gives partial when "the tests hold but not every r". Under readings (b) and (c) every Rayleigh and Kuiper test holds, even though no r is near the paper's.
-- **No other outcome changed.**
+- **fig1c-directionality: partially reproduced → reproduced (rests on an assumption).** The verifier was right that the Tukey test ignored the repeated-measures error term that the paper's F(3, 342) implies. I added `hd20.tukey_rm`, a Tukey test that uses that error term; for two conditions it gives the same p as a paired t-test. With it, room against stable2 is p = 0.0019, so every required pair is at p < 0.01. The old between-groups test (p = 0.055) is kept as a variant. The choice is recorded as an assumption and as a `methods_unavailable` finding asking the authors which error term they used.
+- **fig4c-arena-registration-short-lived: partially reproduced → not reproduced.** The verifier gave not reproduced and I agree. The "after" window side now runs at every interval, and the notebook checks each part of the criterion under all four readings of window side and normalisation. In none of them is the arena frame below the other three at 20 to 50 s. It drops below them only from 50 or 60 s, after the room frame has already dropped.
 
-**Added or corrected**
-- **Which data decide outcomes (problem 2):** the notebook now says outcomes are decided on the files as deposited, since the paper's counts imply it used them.
-- **Clean variants (problem 1):** added for fig2, figs2, fig2c, figs3, fig5, fig5c and fig4c. The notes now say where outcomes depend on files shown wrong:
-  - fig2: without session 1023R029, stable2 beats the arena frame in only 3 of 6 ensembles.
-  - figs2: without 1023R029, no reading gives 4 room and 2 arena.
-  - fig1c-directionality and fig4 change outcome without the bad files.
-- **Tukey test (problem 3):** using the repeated-measures error term is now stated in the notebook as an assumption, with its reason. With the between-groups test, fig1c-directionality would be partially reproduced.
-- **Tables and sensitivity checks:**
-  - fig2: stable2 error against the shifted reference shows decoding at chance in 1026R157 and 1117R157.
-  - figs2: the 4-and-2 count holds only for margins from 0.04 to 0.05.
-- **fig4 gap (problems 7 and 8):** I added a check of why the arena frame scores lower than the room frame. The room-frame histograms are shifted by the arena's rotation. The tracker samples alone, with no spikes, show the same shift and the same order (room 0.068, arena 0.048, p = 7.55e-08). The text also says the main normalization leaves the raw displacement histogram.
-- **fig5c:** I added the full 36-bin curve, the third-deepest minimum (325°), a shuffled null and a clean variant. The minima are deeper than every one of 1000 shuffles, and the clean variant puts them at 115° and 345°. I also corrected a value in the earlier notes: the second minimum is 63.9, not 63.3.
-- **Question for a reader (problem 4):** the possible misreading of the fig5 claim is in `questions/park-2019.yaml`; the claim itself is unchanged. The head-direction reading is run as a variant: r is 0.104 to 0.550, every test is significant, and none reaches the paper's values.
-- **cell-counts:** the 1001R029 and 1001R523 sessions were recorded on 1 October 2013 and 1 October 2014. The files carry no rat ID, so they can't explain the Table S1 differences.
-- **Speed filter:** now called an assumption. The notes give exactly which readings and tests the result holds under.
-- **Bin-start bias:** the decoder's labelling by bin start, which biases errors by about −5°, is documented in the helper and the deviations.
-- **Record and README:** the round is recorded under `verifications` for all 22 claims, and the README is updated.
+**Added or corrected (outcomes unchanged)**
+- **fig1c-speed:** the new Tukey test is now the main one. Reading (a) gives the claimed pattern with either test.
+- **fig1c-firing-rate:** the ANOVA without the 40 AP/s R523 unit gives p = 0.275, so the result does not depend on that unit.
+- **cell-counts:**
+  - Reading (b) now applies the Rayleigh test to the tuning curve's vector, as the Methods describe; 110 of 115 units still pass.
+  - The notebook now says reading (b) is circular, since the deposited units were already selected as head-direction cells.
+  - Both R523 units are named R523 in all their files, so the unit Table S1 counts under another rat cannot be identified.
+- **fig2c:** I added distance to the zone's nearest point and angular distance. None of the 24 readings comes within tolerance, so the outcome no longer rests on how distance is measured, and I removed `assumed`.
+- **no-angular-velocity-tuning:** a test against time-shifted spike trains, and the same test with head direction removed, still find more significant cells than chance. The excess does not come from the anti-conservative p-values the verifier flagged.
+- **fig4 and fig1d:** added a KLD variant with curves rescaled to spike counts. fig4's one passing reading still passes (instability p = 0.052).
+- **fig3:** every session's units share the same first timestamp. Session 1017R035 holds a single unit and forms no pair, so no pair was offset.
+- **figs2:** per-ensemble values are now printed at 45° bins; two of the six labels rest on differences of 0.02 to 0.03.
+- **fig5:** the notebook prints the sample sizes implied by the paper's z values (681, 679, 10,671 and 1,072). No pooling of the ensembles matches them.
+- **fig5c:** minima are now matched by bin centre only; the one pooled match still holds. Chance rates are printed: 0.20 rows expected to hit both minima, 6.6 to hit one.
+- **Data check:** it now reads the two `.xls` file lists, which match the tracker files exactly. This needed `python-calamine`, so `requirements.in` and the lock file changed.
+- **Handover:** the fig1d conclusion cell is split into two cells that start "**Result:", so the next handover strips both.
+- **Record text:** I corrected the figs2 note on undefined Idir. The code drops an interval when any cell's value is undefined; it does not sum over the others.
+- **Reader question:** added to `questions/park-2019.yaml`, asking whether the Figure 1D legend's order is garbled. The claim is still tested as written.
 
-**Not done**
-- I couldn't identify the paper's 38 speed units; no output in the data identifies them.
-- I kept the shock-zone centre-point assumption, because the paper gives no other definition of relative proximity.
-- Untracked dotfiles and folders I didn't create (`.bashrc`, `.vscode`, `scripts`, and others) appeared at the repo root. I left them alone; they shouldn't be committed.
+**Not done, and why**
+- The decoder still returns the start of the winning bin, because that is what the paper's code does; it is noted as a deviation.
+- I did not commit or push, as instructed.

@@ -328,12 +328,17 @@ def check(entry_dir: Path) -> Report:
         import datasets as archive_datasets
         used = [archive_datasets.folder(archive_datasets.key_of(d["archive"], str(d["id"])))
                 for d in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else [])]
+        # The rule is the protocol's from pilot-15. An attempt made under an earlier version is not held to it: its
+        # agents had not been told (a chain under way when the rule reached main ended in a failed check, as
+        # hazon-2022 did on 2026-11-12), and the site takes such a finding by its kind.
+        version = re.fullmatch(r"pilot-(\d+)", str(((attempt.get("provenance") or {}).get("agent") or {}).get("protocol") or ""))
+        told = not version or int(version[1]) >= 15
         for n, f in enumerate(attempt.get("findings") or [], 1):
-            if f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+            if told and f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
                 report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
             about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
                                                                    "paper_inconsistency") else "data")
-            if about == "data" and len(used) > 1 and not f.get("datasets"):
+            if told and about == "data" and len(used) > 1 and not f.get("datasets"):
                 report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
                                     f"(`datasets:`, from {', '.join(used)})")
             for d in f.get("datasets") or []:
