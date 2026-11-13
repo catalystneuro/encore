@@ -69,8 +69,7 @@ cells only; a link claim checks that its cells are the data set's, in the same o
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the
 differences from the paper's method.
 
-The outcomes above are those after the first verification round, which changed seven of them; the record gives
-the verifier's reasons and the replies. The paper links no analysis code, and several of its definitions are open; the notebook runs every reading the
+The outcomes above are those after the first verification round, which changed seven of them; the second round agreed with all of them, and no change of outcome is proposed. The record gives the verifier's reasons and the replies. The paper links no analysis code, and several of its definitions are open; the notebook runs every reading the
 claims file names, and the classification of cells into facilitation, suppression and no modulation does not
 give the paper's counts under any of them. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/brinke-2017-01.yaml`](../../attempts/brinke-2017-01.yaml). The helper `ipn.py`
