@@ -184,43 +184,35 @@ outcomes:
     computed, 46 are significant in two or more; cells responsive only in gaze space would add to the
     denominator, so the fraction over the paper's set cannot be bounded above one half.
 - claim: direction-center-vs-periphery
-  outcome: partially_reproduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_wirth_2017.ipynb
   output: claim:direction-center-vs-periphery
   notes: For the 40 cells with significant direction IC (reading a, permuted chunks) normalized sparsity
     is higher in the centre than on return paths (median difference 0.020, 25 of 40, Wilcoxon p = 0.031)
     and IC is not (0.012, p = 0.43); with shifted chunks (28 cells) p = 0.016 and 0.095. Reading (a) meets
-    neither level. Over the 59 three-space responsive cells, which stand in for reading (b), IC and sparsity
-    are both higher with p = 0.045 and 0.0074, the partial level; with shifted chunks (51 cells) IC is
-    not (p = 0.14, sparsity p = 0.013). No reading reaches p < 0.001. The outcome rests on the stand-in
-    for reading (b) and on permuted chunks. Over all 180 cells with both maps neither is higher (IC p
-    = 0.31, sparsity p = 0.29, permuted chunks), so a signed-rank result over the 59 cells puts no bound
-    on the result over the paper's responsive set; a change to blocked is proposed.
+    neither level. Reading (b) needs the paper's responsive set, which needs the point-of-gaze space.
+    Over the 59 three-space responsive cells, which it contains, IC and sparsity are both higher with
+    p = 0.045 and 0.0074, the partial level; with shifted chunks (51 cells) IC is not (p = 0.14, sparsity
+    p = 0.013). Over all 180 cells with both maps neither is higher (IC p = 0.31, sparsity p = 0.29, permuted
+    chunks), so a signed-rank result over the 59 cells puts no bound on the result over the paper's set,
+    which may lie at any level. No set reaches p < 0.001. Reading (a) fails and reading (b) cannot be
+    formed, so the claim cannot be decided, as for landmark-identity-center.
   deviations:
   - Centre and return maps at one common angular resolution per session, chosen so the number of bins
     valid in both is closest to 200 (median 151 centre and 157.5 return bins valid); the paper does not
     say how the two maps were binned.
   - Reading (b), all responsive cells, cannot be formed without the gaze space; the three-space responsive
     cells, which it contains, stand in for it, an assumption.
-  assumed: true
-  proposed:
-    outcome: blocked
-    blocked_by: metadata_insufficient
-    reason: Reading (a) meets neither level (IC p = 0.43, sparsity p = 0.031 with permuted chunks; 0.095
-      and 0.016 with shifted chunks). Reading (b) is the paper's responsive set, which needs the point-of-gaze
-      space. The three-space responsive cells that stand in for it give the partial level only with permuted
-      chunks (IC p = 0.045, sparsity p = 0.0074), and all cells give neither (p = 0.31 and 0.29), so the
-      result over the paper's set may lie at any level. As for landmark-identity-center and spatial-selectivity-fraction,
-      a reading that cannot be formed leaves the claim undecided.
 - claim: direction-tuning-not-maintained
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_wirth_2017.ipynb
   output: claim:direction-tuning-not-maintained
   measured:
   - 15
   - 40
   - 4
-  assumed: true
   notes: Of 40 direction-selective cells (permuted chunks), 15 (38%) have a significantly low centre-return
     correlation (binomial p = 2.1e-14 at chance 0.025) and 4 a significantly high one (p = 0.017). The
     high count is inside 2 to 4, but the number of cells tested (40, expected 56 +- 5.6) and the low count
@@ -228,24 +220,17 @@ outcomes:
     low and 4 high; with shifted chunks 11 of 28 and 14 of 51 are low. Over these sets the low count misses
     18 to 22, although more cells than chance have a low correlation under all of them (binomial p below
     1e-10). The criterion has no partial level. Reading (a) fails on the number of cells (40 and 28).
-    Under reading (b) the outcome rests on the three-space stand-in. The paper's responsive set lies
+    Reading (b) needs the paper's responsive set, which needs the point-of-gaze space. That set lies
     between the three-space responsive cells and all cells (181 tested, 25 low and 8 high with permuted
     chunks; 18 and 7 with shifted chunks), and a set between the two can meet the criterion, in one combination
     with permuted chunks (n 61, low 18, high 4) and in 13 with shifted chunks (for example n 55, low 18,
-    high 3), so over the paper's set the criterion is not excluded; a change to blocked is proposed.
+    high 3). A set that meets the criterion and one that fails it (the stand-in) both exist, so the claim
+    cannot be decided.
   deviations:
   - Cells with at least 10 common valid bins, a standard choice for "enough"; with 2 the counts do not
     change.
   - Reading (b), all responsive cells, cannot be formed without the gaze space; the three-space responsive
     cells stand in for it, an assumption, as in direction-center-vs-periphery.
-  proposed:
-    outcome: blocked
-    blocked_by: metadata_insufficient
-    reason: Reading (a) fails on the number of cells tested (40 and 28 against 56 +- 5.6). Reading (b)
-      is the paper's responsive set, which needs the point-of-gaze space. Bounding it between the three-space
-      responsive cells and all cells, a set that meets the criterion exists under both readings of the
-      surrogates (permuted, n 61, low 18, high 4; shifted, 13 combinations), so the claim cannot be decided,
-      as for landmark-identity-center and spatial-selectivity-fraction.
 - claim: state-space-ic-higher
   outcome: partially_reproduced
   notes: 'Normalized IC is higher in state space than in position space (full trials, permuted chunks:
@@ -884,3 +869,45 @@ verifications:
     outcome: blocked
     reason: Agreed (methods underspecified).
     response: No change.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the two changes of outcome proposed after round 2 (direction-center-vs-periphery
+    and direction-tuning-not-maintained), with the executed notebook, the claims file and the paper.
+    Report in transcripts/wirth-2017/verifier-3-report.md. It also reported that the claims file's reading
+    of the 56 cells of direction-tuning-not-maintained fits reading (a) better than reading (b), and said
+    this changes neither verdict; the point is added to questions/wirth-2017.yaml.
+  results:
+  - claim: direction-center-vs-periphery
+    agrees: true
+    outcome: blocked
+    reason: 'The numbers in the proposal match cell 42. Reading (a) fails both levels: with permuted chunks
+      40 cells, IC p = 0.43 and sparsity p = 0.031; with shifted chunks 28 cells, p = 0.095 and 0.016.
+      Reading (b) needs the paper''s responsive set, and that set needs the point-of-gaze space, which
+      the uncalibrated eye signal cannot give. The three-space stand-in reaches the partial level only
+      with permuted chunks (IC p = 0.045, sparsity p = 0.0074, 59 cells); with shifted chunks IC is p
+      = 0.14; over all 180 cells neither measure is higher (p = 0.31 and 0.29). A signed-rank result on
+      a subset sets no bound on the result over a superset, so the paper''s set could fall at any level.
+      Reading (a) fails and reading (b) cannot be formed, so the "under one reading" criterion cannot
+      be decided, the same basis on which landmark-identity-center was verified as blocked (cell 64).
+      The change moves away from the favourable outcome, and the binning choice was fixed before this
+      round.'
+    response: Outcome set to blocked (metadata_insufficient) and the proposal removed; assumed is removed,
+      as a blocked outcome carries none, and the deviations stay. The notes, the notebook's conclusion
+      and summary and the README say blocked.
+  - claim: direction-tuning-not-maintained
+    agrees: true
+    outcome: blocked
+    reason: 'The numbers match cell 45. Reading (a) fails on the number of cells tested: 40 (permuted)
+      and 28 (shifted), against 56 +- 5.6. Reading (b) cannot be formed without the gaze space. The bounding
+      check in cell 45 is correct. With permuted chunks exactly one combination meets the criterion (n
+      61, low 18, high 4); it needs exactly 2 gaze-only cells, both significantly low, which is narrow
+      but possible, as 9 of the 122 cells outside the three-space set are low. With shifted chunks 13
+      combinations meet it, for example n 55, low 18, high 3. A set meeting the criterion exists under
+      both surrogate readings, and a set failing it (the stand-in) also exists, so the claim cannot be
+      decided, consistent with landmark-identity-center and spatial-selectivity-fraction.'
+    response: Outcome set to blocked (metadata_insufficient) and the proposal removed; assumed is removed,
+      as a blocked outcome carries none, and the deviations stay. The notes, the notebook's conclusion
+      and summary and the README say blocked. The verifier's point on the reading
+      of the 56 cells is added to questions/wirth-2017.yaml; the claim stays tested as the claims file
+      has it.
