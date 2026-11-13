@@ -1,0 +1,118 @@
+# brudner-2026, Brudner et al. 2026
+
+No claim reproduced, three partially and three not reproduced, with one claim
+blocked on the dandiset alone and 13 more that also need outside data, plus
+two claims on data elsewhere (the smooth plume on Dryad), both blocked. The
+first verification round agreed with 20 of the 22 outcomes as they stood, the
+second with all 22, two of them only conditionally, and a third round, on the
+one change proposed after the second, agreed with it. It pins version
+0.260630.1657, the only published version and the one the paper's code names.
+The paper, Brudner, Zhou, Jayaram, Madeira Santana, Crimaldi, Clark and
+Emonet, "Fly navigational responses exploit plume-specific odor motion and
+gradient cues" in PNAS, shows that the crosswind odor gradient is organized
+antisymmetrically about the centerline in a smooth plume and odor motion in a
+complex one, that logistic models and small networks trained to find the
+centerline pick up the cue of their plume, that agents gain from adding such
+bilateral detection to a wind-only strategy, and that the crosswind turns of
+blinded flies with optogenetic odor are predicted by the gradient in the
+smooth plume and by motion in the complex plume; the dandiset holds 131
+behavior files (83 smooth, and two complex sets of 24, "smoke-1a" and
+"smoke-2a"), a 1500-frame window of the complex plume movie, three freestream
+windows and a compact asset of the Fig. S1 freestream inputs. The claims were
+written from the version of record with its SI Appendix and from the paper's
+code (emonetlab/GradientMotionMultiplePlumes at effc7b0), which holds the
+Fig. 5E/F analysis written for this dandiset with its published tables, the
+Fig. 1 and 2 cue and model code and a re-implementation of Fig. 3, and nothing
+for the agent simulations or Fig. S1. Every claim on the smooth plume, the
+networks or the agents is blocked as `other`, as the smooth plume could not be
+read and no agent code exists. Not reproduced are `fig5e-cue-betas` (with the
+SI's onset and the smoke-1a files no reading passes, 0 of 24, and no file set
+or onset gives the result in every reading), `figs1fg-resolution-robustness`
+(motion r 0.729 to 0.820 at a 4-frame delay as stored, below 0.8 in every
+reading, and gradient r 0.613 at 12 pixels without smoothing) and
+`figs5c-turn-angles` (medians of -20.8 and +21.3 degrees over the files' turn
+events against -34.2 and +33.8). Partial are `fig2c-complex-auc` (motion AUC
+0.603 above gradient 0.560, neither within tolerance, resting on an assumed
+mirror balancing of the samples), `fig2e-complex-weights` (|motion| 0.426
+above |gradient| 0.262, against 0.098 +/- 0.041) and `fig5f-cue-dominance`
+(smooth 0.937 within tolerance, complex -0.492 outside -0.662 +/- 0.066,
+resting on the smoke-1a files and the SI onset). `methods-intensity-right-bias`
+is blocked as `metadata_insufficient`: it holds under every reading if -1 is a
+right turn and fails under every reading if +1 is. The freestream and complex
+parts of the two Fig. S1 claims hold (index -2.93, -1.53 and +0.04 at 5, 10 and
+20 cm/s and 4.40 complex), as does the complex part of `figs2c-one-frame-delay`,
+but the claims stay blocked. The author's first run gave three reproduced (all
+on assumptions: the SI onset with the smoke-2a files for Fig. 5, and a turn end
+at 20% of the peak for Fig. S5C), two partially, one not reproduced and 16
+blocked. The author asked a reader nothing, so the answer and author-answers
+runs changed nothing. Round 1 disagreed on fig5e (not reproduced, as the result
+depends on the reading) and fig5f, doubted the smoke-2a choice, since the
+dandiset's description says smoke_1a_orig was analysed throughout the paper,
+found that the onset rule ignored the sign of the rotation and asked for the
+decidable Fig. S1 parts; in reply the smoke-1a files became the assumed complex
+plume, fig5e moved to not reproduced and fig5f to partially reproduced, against
+the verifier, the onset rule was fixed (the old one reversed in 0.2% of turns),
+fits per projection flip and a comparison with the code's published tables were
+added, and a reader was asked whether the dataset's turn start is the SI's
+onset. Round 2 agreed with all 22, with fig5f and figs5c only conditionally,
+found sentences the outputs did not support (that the complex motion cue never
+reaches significance, that only smoke-1a matches the published tables, that the
+sets do not differ by a flip convention, 1011 trajectories where the output
+prints 1010) and asked for a test of the cue signs against the plume geometry,
+which could not tell the two sets apart; the author removed the assumption flag
+of fig5e, ran the half-height turn bounds (medians -25.0 to -26.6 and +26.8 to
++27.7), proposed not reproduced for figs5c and put three more questions to a
+reader. Round 3 reviewed only that proposal and agreed. The author's run took
+about 1 h 40 min (04:15 to 05:56 UTC); a development run peaked at 11.9 GB of
+memory, fixed before the clean runs, which peaked at 7.1 GB, and the notebook
+ran in 735 s at first, 19 minutes after round 1, 823 s after round 2 and 929 s
+at the end. Untracked dotfiles in the repository root, which the author did not
+create, were left alone.
+
+The smooth plume movie, used by 15 of the paper's 22 claims, is not in the
+dandiset; the description points to Dryad (doi:10.5061/dryad.g27mq71), which
+answers 401 to downloads without an API token, and the paper's own rescaled
+version is in neither the dandiset nor its Yale Dataverse deposit. The
+complex-plume behavior files come in two sets, smoke-1a and smoke-2a (24 files
+each, on the same days and vials, each with 12 flipped and 12 unflipped
+projections), whose session descriptions name two movies and whose signals
+differ (99th percentile of the intensity 171 and 252, and a motion coefficient
+positive in one set and negative in the other in both projection flips);
+nothing says what smoke_2a is, the dandiset's description says smoke_1a_orig
+was analysed throughout the paper, and the code selects smoke-2a only, so a
+sign convention differing between the sets cannot be ruled out. The code's
+published Fig. 5E and 5F tables are matched most closely by the smoke-1a files
+with the dataset's turn start and 160 to 200 degrees (within 0.1 SE, all four
+log-likelihoods within 0.001 per turn), not by the smoke-2a files with 150 to
+210 degrees that the code names, which give a motion coefficient of -0.0119
+(p 0.15) and a cue dominance of +0.388 where the tables give +0.0441 and
+-0.662. The turn events are not described: they start a median of 4 frames
+(about 67 ms) after the SI's onset and stop a median of 4 frames before the
+falling 20% crossing, so turns over the events measure about 21 degrees
+against the paper's 34. The turn direction (+1 or -1) is not mapped to left or
+right, and the heading, said to be in standardized arena coordinates, is
+atan2(-vy, vx), so the rightward bias towards the projector cannot be tested.
+No file gives the movie frame shown at a trajectory frame, so the odor signals
+cannot be aligned with the deposited complex window, whose provenance names a
+preprocessing run 'bgsub_gauss3_fullslice_p001_p99' that may differ from the
+movie the paper analysed. odor_velocity is NaN on 95 to 98% of frames, which
+its description does not explain. Four smooth-plume files hold 10 frames with
+y of 768 to 814 mm in an arena 170 mm wide, 205 of 7235 trajectories have no
+position at all, and in 47 files some trajectories carry timestamps and others
+a starting time and rate. Questions are put to the paper's authors: which
+complex files are the complex plume of Fig. 5 and what smoke_2a is; which turn
+onset Fig. 5E-F used; how the Fig. 2 and 3 samples were balanced; where a turn
+ends for Fig. S5C; how the Fig. S1G motion cue is defined and whether the maps
+were smoothed; whether the Fig. 5 predictors were z-scored over all frames or
+per trajectory; and whether the two complex sets share a sign convention.
+
+The author's points on the protocol: the Dryad file was not staged although
+`docs/archives.md` says it would be, and no `blocked_by` value fits data that
+are public but cannot be fetched; `entry.py lock` writes a `python:` field the
+entry schema rejects; `entry.py check` requires `about:` on findings whose
+`about` the attempt schema forbids; it does not say how to combine readings of
+several independent open details, or whether a reading the author adds counts
+under "one reading"; the rule for `measured` does not cover an added reading;
+the clock check cannot be done when the files hold no stimulus frame index; it
+does not say whether to compute the decidable parts of a claim blocked anyway;
+and the fig5e criterion tests significance but not sign.
