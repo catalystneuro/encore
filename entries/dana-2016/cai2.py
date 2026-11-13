@@ -39,7 +39,9 @@ Where each parameter comes from:
   every trace has the same number of frames; the recordings run at 29.6 to 30.0 and 14.9 to
   15.0 Hz. "script": the data set's script, 70 frames around the frame nearest the event,
   interpolated ten-fold, of which samples 1 to 300 (10 frames before to 20 frames after) are
-  kept, F0 from the first 100 samples, and noise traces with any |dF/F0| >= 0.3 dropped.
+  kept, F0 from the first 100 samples, and noise traces with any |dF/F0| >= 0.3 dropped. Events
+  are placed at their ephys time stamps, a standard choice the clock check supports; the script
+  places them at sample index / fs plus the first frame time (script_time), shown as a variant.
 - Templates (i) the mean of all event traces (Methods), (ii) leave-one-out (claim's reading).
 - Detection rate: fraction of event projections above the 95th percentile of the noise
   projections (claim criterion; the script uses the 99th, shown as a variant).
@@ -298,11 +300,24 @@ def corrected_f(rec):
     return rec["roi"] - NEUROPIL_R * rec["neuropil"]
 
 
-def segment_traces(rec, times, segment, indicator, noise=False):
-    """dF/F0 traces for events at `times`. Returns (traces, peak-window traces, n dropped).
+def script_time(rec, t):
+    """The time the script gives an event at ephys time t: sample index / fs + the first frame time.
+
+    The script locates an event at ind_isolate(n)/fs + time(1) of the fluorescence series, so it
+    places the event later than its ephys time stamp by the first frame time (about 16 ms at 30 Hz,
+    33 ms at 15 Hz, 0.286 s in data_20150804_cell5_002.mat), less the ephys start for files whose
+    ephys starts later than 0 (sample 1 is at ephys_t0).
+    """
+    return np.asarray(t, float) - rec["ephys_t0"] + 1.0 / FS_EPHYS + rec["tf"][0]
+
+
+def segment_traces(rec, times, segment, indicator, noise=False, align="ephys"):
+    """dF/F0 traces for events at `times`. Returns (traces, n dropped).
 
     segment 'a', 'b', 'c' as in the module docstring; 'script' is the script's interpolated
-    300-sample trace (for noise traces it also drops traces with |dF/F0| >= 0.3).
+    300-sample trace (for noise traces it also drops traces with |dF/F0| >= 0.3). align 'ephys'
+    (the main reading) places each event at its ephys time stamp, which the clock check supports;
+    'script' places it as the script does (script_time), a variant for the 'script' segment.
     """
     F = corrected_f(rec)
     tf = rec["tf"]
@@ -310,6 +325,8 @@ def segment_traces(rec, times, segment, indicator, noise=False):
     fr = NOMINAL_FPS[indicator]
     L = int(round(NOISE_S[indicator] * fr))
     one_s = int(round(fr))
+    if align == "script":
+        times = script_time(rec, times)
     traces, dropped = [], 0
     for t in times:
         if segment == "script":
