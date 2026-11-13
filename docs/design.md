@@ -172,7 +172,8 @@ The public site is static and is built from the files above by
 - **A page per attempted dataset** at `datasets/<archive>/<id>/`, with tabs
   for claims, findings, verification, method differences and provenance. It is
   complete HTML and is the page an archive would link to. Each claim has its
-  own anchor. The DANDI pages used to be at `dandisets/<id>/`, which now
+  own anchor. A closed claim shows its statement and, under it, the first
+  sentence of the agent's notes, so the list can be read without opening each. The DANDI pages used to be at `dandisets/<id>/`, which now
   redirects.
 - **`api/datasets/<archive>/<id>.json`:** the same results for one dataset,
   for other sites to fetch (also at `api/dandiset/<id>.json` for DANDI, as
