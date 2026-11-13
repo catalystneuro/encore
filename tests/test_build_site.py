@@ -1072,3 +1072,36 @@ def test_a_badge_sums_the_papers_and_leaves_out_what_is_not_verified():
     assert site.badge_of(data, key)["reproduced"] == n
     first["tier"] = "runs"
     assert site.badge_of(data, key) is None
+
+
+def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_verified_attempts(built):
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "authors.json").read_text())}
+    with_badge = without = 0
+    for orcid, author in site.author_index(data).items():
+        badge = site.author_badge(data, author)
+        total = sum(site.outcome_counts(a)["reproduced"] for q in author["papers"] for a in q["live"] if a["tier"] != "runs")
+        svg = out / "badge" / "authors" / f"{orcid}.svg"
+        assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and rows[orcid]["badge"] == (badge or {}).get("text")
+        if with_badge + without > 60 and badge and with_badge > 5 and without > 5:
+            continue   # the files of a sample of people are read; the rule is checked for everyone
+        api = json.loads((out / "api" / "authors" / f"{orcid}.json").read_text())
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert api["badge"] == badge and api["orcid"] == orcid and api["name"] == author["name"]
+        assert [q["key"] for q in api["papers"]] == [q["key"] for q in author["papers"]]
+        assert [d["key"] for d in api["datasets"]] == [d["key"] for d in author["datasets"]]
+        assert ("Badge for this page" in page) == bool(badge)
+        if not badge:
+            without += 1
+            continue
+        with_badge += 1
+        assert badge["reproduced"] == total == sum(q["reproduced"] for q in badge["papers"])
+        papers = len(badge["papers"])
+        assert badge["text"] == f'{total} finding{"" if total == 1 else "s"} reproduced' + (f" · {papers} papers" if papers > 1 else "")
+        assert badge["url"] == site.SITE_URL + f"authors/{orcid}/" and f">{site.e(badge['text'])}</text>" in svg.read_text()
+        # The page has the badge and what to paste to show it, as HTML and as Markdown.
+        assert f'[![{site.e(badge["alt"])}]({badge["svg"]})]({badge["url"]})' in page
+        assert site.e(f'<a href="{badge["url"]}"><img src="{badge["svg"]}"') in page
+    assert with_badge and without
+    # A dataset's page offers both forms too.
+    assert "Or as Markdown:" in (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
