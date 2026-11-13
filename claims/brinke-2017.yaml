@@ -38,6 +38,13 @@
 #   5-figure supplement 1; Figure 6-figure supplement 1B,C) and a model of 26 IpN neurons built
 #   on them with the parameters of Figure 5-source data 1. The paper does not say where those
 #   Purkinje cell data are deposited.
+# - Source data 1 (elife-28132-data1-v2.mat, published with the article on the eLife site,
+#   https://cdn.elifesciences.org/articles/28132/elife-28132-data1-v2.mat). A MATLAB structure
+#   'ipn' of 51 variables "relevant to the analyses in this paper", with per-trial values for the
+#   372 cells in the dataset's order (first 270 cells the first dataset, the next 102 the second).
+#   Recording depth, which the CRCNS description does not list, is taken from it; the claims that
+#   use depth (firing-rate-depth, fig4s1-cs-peak-suppression-not-different,
+#   fig5ej-cs-pause-cells-shallower, fig6g-us-response-depth) are data with_inputs.
 #
 # Methods fixed by the paper and used below (Materials and methods unless said otherwise).
 # - Eyelid. Normalized per recording to the full blink range (resting open position to mean UR
@@ -101,6 +108,21 @@
 schema_version: 2
 paper: doi:10.7554/elife.28132
 claims:
+- id: source-data-1-link
+  kind: link
+  statement: The cells of the paper's Source data 1 are the cells of CRCNS cb-1 in the same order, so
+    that the recording depth Source data 1 gives can be attached to the data set's cells.
+  source: Additional files, Source data 1
+  quote: The two IpN datasets central to this study are combined, with the first 270 cells denoting
+    the first dataset, and the remaining 102 cells denoting the second dataset.
+  data: with_inputs
+  criterion: Added by the author of attempt brinke-2017-01 (Author, step 4). Cell i of the data set
+    is matched to cell i of Source data 1, the order both use. The matched cells are compared on what
+    both hold, the number of trials, the per-trial eyelid closure at US onset ('CR @ US ms' against
+    the data set's crAmplitude) and the per-trial baseline rate ('Baseline Hz' against the spike count
+    in the pre-CS baseline), and the same comparisons are shown with the cells shifted by one as a
+    reference. Reproduced when at least 99% of the 372 cells agree on all three and the shifted match
+    does not; the number of cells with a depth is reported.
 - id: firing-rate-depth
   statement: In the first dataset the IpN firing frequency averaged 67 +/- 27 Hz and did not vary
     with recording depth (r = 0.085, p = 0.16, n = 270, Pearson).
@@ -112,13 +134,17 @@ claims:
     statistic: r = 0.085
     p: 0.16
     n: 270 cells, first dataset
+  data: with_inputs
+  depends_on:
+  - source-data-1-link
   expected:
   - quantity: mean firing frequency, first dataset
     value: 67
     tolerance: 6.7
     unit: Hz
   criterion: Firing frequency is the cell's mean rate over the 500 ms baseline (reading a) or over
-    the whole trial (reading b), the paper does not say which; depth is the recording depth. A claim
+    the whole trial (reading b), the paper does not say which; depth is the recording depth, from
+    Source data 1 (opening comment). A claim
     of absence judged on the paper's test, Pearson's r at p < 0.05. Reproduced when the correlation
     is not significant and the mean rate is within tolerance under one reading.
 - id: fig1ijk-modulation-classes
@@ -989,11 +1015,14 @@ claims:
   - about: recording depth
     test: Mann-Whitney U test
     p: 0.7348
+  data: with_inputs
   depends_on:
+  - source-data-1-link
   - fig4s1-cs-peak-cells
   criterion: A claim of absence, judged on the paper's tests, Mann-Whitney U at p < 0.05, between
     the two CS peak cells with suppression and the other 21 suppression cells. Minimum spike rate
-    relative to baseline in the CS-US interval; velocity as in the opening comment. Reproduced when
+    relative to baseline in the CS-US interval; velocity as in the opening comment; recording depth
+    from Source data 1 (opening comment). Reproduced when
     none of the three tests is significant; the differences are reported.
 - id: fig4h-transient-responses-after-day-3
   statement: In the first dataset none of the 11 cells with a transient response at the CS-related
@@ -1117,7 +1146,9 @@ claims:
   - about: second dataset
     test: Mann-Whitney U test
     p: 0.0372
+  data: with_inputs
   depends_on:
+  - source-data-1-link
   - fig5cd-cs-pause-faster-facilitation-ds1
   - fig5hi-cs-pause-faster-facilitation-ds2
   expected:
@@ -1138,7 +1169,8 @@ claims:
     tolerance: 245
     unit: um
   criterion: Groups as in Figure 5 (facilitation cells with and without a CS pause, Figure 5E,J
-    legend). Reproduced when both tests give p < 0.05 with CS pause cells shallower.
+    legend). Recording depth from Source data 1 (opening comment). Reproduced when both tests give
+    p < 0.05 with CS pause cells shallower.
 - id: fig5s1-model-timing
   statement: IpN neurons modeled from Purkinje cell simple spike suppression align better with
     recorded facilitation cells without a CS pause, with earlier onset (73 +/- 19 against 88 +/- 25
@@ -1476,7 +1508,9 @@ claims:
   - test: Kruskal-Wallis
     p: 0.0025
     n: 134, 77 and 28 cells
+  data: with_inputs
   depends_on:
+  - source-data-1-link
   - fig6b-us-peak-pause-overlap
   expected:
   - quantity: depth, US pause only
@@ -1491,7 +1525,8 @@ claims:
     value: 2182
     tolerance: 218.2
     unit: um
-  criterion: Kruskal-Wallis over the three groups. Reproduced when p < 0.05 and the mean depths are
+  criterion: Kruskal-Wallis over the three groups, recording depth from Source data 1 (opening
+    comment). Reproduced when p < 0.05 and the mean depths are
     ordered pause only, both, peak only, from shallow to deep.
 - id: us-pause-declines-with-training
   statement: The US pause became less common and weaker with training; 47.1% of cells (66/140) on
