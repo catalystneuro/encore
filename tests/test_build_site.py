@@ -1091,6 +1091,34 @@ def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives()
     assert "--archive-4" not in css
 
 
+def test_muted_text_keeps_the_wcag_aa_contrast_in_both_themes():
+    """Small gray text (dates, journals, claim sources, counts) needs 4.5:1 on every background it sits on, and must
+    stay lighter than the secondary text so the two still read as two levels."""
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+
+    def theme(selector):
+        block = css.split(selector, 1)[1].split("}", 1)[0]
+        return dict(re.findall(r"--([a-z0-9-]+):(#[0-9a-f]{6})", block))
+
+    def ratio(a, b):
+        def lum(h):
+            c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+            c = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+            return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+        hi, lo = sorted([lum(a), lum(b)], reverse=True)
+        return (hi + 0.05) / (lo + 0.05)
+
+    light = theme(":root{")
+    dark_system = theme(":root:not([data-theme=light]){")
+    dark_chosen = theme(":root[data-theme=dark]{")
+    assert dark_system == dark_chosen  # the two copies of the dark theme stay in step
+    for colours in (light, {**light, **dark_chosen}):
+        for text in ("muted", "good-text"):
+            for background in ("surface", "panel", "hover"):
+                assert ratio(colours[text], colours[background]) >= 4.5, (text, background, colours[text])
+        assert ratio(colours["muted"], colours["surface"]) < ratio(colours["text2"], colours["surface"]) - 2
+
+
 def test_the_datasets_list_is_for_curators_and_the_papers_list_finds_a_paper_by_its_datasets(built):
     import json
     data, out = built
