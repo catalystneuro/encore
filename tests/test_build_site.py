@@ -164,6 +164,19 @@ def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
         assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
+def test_the_caution_shows_its_lead_and_keeps_the_rest_behind_a_disclosure(built):
+    _, out = built
+    home = (out / "index.html").read_text()
+    block = home[home.index('<div class="caution" id="caution">'):]
+    block = block[:block.index("</details>") + len("</details>")]
+    lead, details = block.split("<details>", 1)
+    assert site.CAUTION in lead and "It may be a failure of the attempt." in lead
+    assert "<details open" not in block
+    assert "An outcome says what one attempt could recover" in details
+    assert "Most attempts are made by AI agents." in details and site.RESPOND_URL in details
+    assert site.CAUTION_JS in home and "#caution" in site.CAUTION_JS
+
+
 def test_a_papers_page_lists_every_notebook_of_every_entry_that_uses_its_datasets(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
@@ -317,6 +330,19 @@ def test_a_deprecated_attempt_counts_for_nothing():
     assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
 
 
+def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
+    # A record that gives a tested claim no notebook (andrews-2024 did) must not stop the build: the paper's page
+    # lists the claim with those no notebook tests, and says the record names none.
+    data = site.collect()
+    q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
+    a = q["attempts"][0]
+    moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
+    moved["notebook"] = None
+    page = site.page_paper(data, q)
+    assert "Not tested in a notebook" in page and "with no notebook named in the record" in page
+    assert f'id="claim-{moved["claim"]}"' in page
+
+
 def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
     data, out = built
     papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
@@ -432,6 +458,18 @@ def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
             for nb in attempt["notebooks"]:
                 if any(o.get("notebook") == nb["path"] for o in attempt["outcomes"]):
                     assert f'Notebook <code>{nb["path"]}</code>' in page
+
+
+def test_each_outcome_has_its_own_mark_and_not_reproduced_is_not_a_question_or_a_cross():
+    icons = [icon for _, _, icon in site.OUTCOMES.values()]
+    assert len(set(icons)) == len(icons)
+    assert all("?" not in icon for icon in icons)
+    differs = site.OUTCOMES["not_reproduced"][2]
+    assert differs == site.DIFFERS_MARK and not any(c in differs for c in "✗✕×!")
+    # The mark is decorative: a screen reader hears the label next to it, not the symbol.
+    assert 'aria-hidden="true"' in differs
+    assert site.chip("not_reproduced").startswith('<span class="chip unresolved"><span class="icon" aria-hidden="true">')
+    assert all(f'aria-hidden="true">{icon}</span>' in site.legend({k: 1 for k in site.OUTCOMES}) for icon in icons)
 
 
 def test_claims_with_outside_names_count_as_the_dandiset():
@@ -927,6 +965,16 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
                 assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
     # And a dataset's page names the paper's page.
     assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    # The result leads: under the title, the full outcome bar and the summary come before the datasets, which
+    # sit with the paper's DOI, tags and verification badge in the side column. So on an attempt's page.
+    for path in (("papers", "tingley-2021"), ("papers", "kim-2022", "kim-2022-01")):
+        text = site.joinpath(*path, "index.html").read_text()
+        head = text[text.index('<header class="page"'):text.index("</header>")]
+        result, summary = head.index('<div class="result">'), head.index('<div class="attempt-summary">')
+        side, sets = head.index('<aside class="phead-side"'), head.index('<div class="sets">')
+        assert head.index("<h1>") < result < summary < side < sets, path
+        assert '<div class="bar" role="img" aria-label="Outcomes of ' in head[result:summary]
+        assert 'class="tier' in head[side:] and "doi:" in head[side:] and "doi:" not in head[:side]
     # A paper on several datasets lists them all; the tab bar leads to the papers and to the datasets.
     semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))

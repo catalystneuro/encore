@@ -90,10 +90,15 @@ GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><p
                '-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 '
                '7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
 
+# The mark for "not reproduced": an equals sign struck through, "the result differs". It is drawn, not typed, because
+# the font's "≠" is too thin to read in the 14px legend square. It is neutral on purpose: not a cross, as a failure to
+# reproduce may be the attempt's failure, not the paper's. It takes the text colour of the square it sits in.
+DIFFERS_MARK = ('<svg viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M2 3.8h6M2 6.2h6M6.6 1.6 3.4 8.4" '
+                'fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>')
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
     "partially_reproduced": ("Partially reproduced", "warning", "◐"),
-    "not_reproduced": ("Not reproduced", "unresolved", "?"),
+    "not_reproduced": ("Not reproduced", "unresolved", DIFFERS_MARK),
     "blocked": ("Blocked", "blocked", "⊘"),
 }
 BLOCKED_BY = {
@@ -1837,7 +1842,8 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')set(false)
 
 def caution_block() -> str:
     return f'''<div class="caution" id="caution">
-  <p class="lead"><strong>{CAUTION}</strong> It may be a failure of the attempt.</p>
+  <p class="lead"><span><strong>{CAUTION}</strong> It may be a failure of the attempt.</span></p>
+  <details><summary>More on reading outcomes</summary>
   <div class="body">
     <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it. A
     “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
@@ -1846,8 +1852,14 @@ def caution_block() -> str:
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
     from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
-  </div>
+  </div></details>
 </div>'''
+
+
+# A reader who follows a link to #caution came for the explanation: open it for them.
+CAUTION_JS = """<script>(function(){function go(){if(location.hash!=='#caution')return;var c=document.getElementById('caution'),
+d=c&&c.querySelector('details');if(!d)return;d.open=true;c.scrollIntoView();}
+go();addEventListener('load',go);addEventListener('hashchange',go);})();</script>"""
 
 
 # --- pages ---------------------------------------------------------------------
@@ -2153,7 +2165,7 @@ def page_overview(data: dict) -> str:
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + TABS_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               + TABS_JS + CAUTION_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
@@ -3129,7 +3141,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             reasons: dict = {}
             for o in blocked:
                 reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
-            why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
+            # A record can give a tested claim no notebook (andrews-2024 did, for a claim that was blocked until
+            # its last revision). `entry.py check` refuses such a record; the page says what the record says and
+            # does not fail, so that one record cannot stop the site's build.
+            why = ", ".join(f"{count} {(BLOCKED_BY.get(k, k) or 'with no notebook named in the record').lower()}"
+                            for k, count in reasons.items())
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
@@ -3456,27 +3472,49 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
                f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
                f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
-               f'<div class="dhead"><h1>{e(paper["title"])}</h1>{tier_badge(tier, tier_link)}</div>'
-               f'{authors_html(data, paper["doi"], root)}'
-               f'<p class="sub"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · paper key '
-               f'<code>{e(paper["key"])}</code></p>'
-               f'{sets}{could_not}')
+               f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
+               f'{authors_html(data, paper["doi"], root)}')
+        # The result leads (the outcomes and the summary); what the paper is and which data were used are in a
+        # column at the side, which goes under the result on a narrow screen.
+        side = (f'<aside class="phead-side" aria-label="About the paper and its data">'
+                f'<p class="phead-tier">{tier_badge(tier, tier_link)}</p>'
+                f'<p class="sub small"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · <span class="key">paper key '
+                f'<code>{e(paper["key"])}</code></span></p>'
+                f'{sets}{could_not}'
+                + (f'<div class="phead-tags">{tags}</div>' if tags else "") + '</aside>')
     else:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
                f'<div class="dhead"><h1>{e(dataset_label(dandiset))}</h1>{tier_badge(tier, tier_link)}</div>'
                f'<p class="sub">{e(name)}</p>')
-    body = f'''<header class="page">
+    if paper:
+        header = f'''<header class="page">
+  {top}
+  <div class="phead">
+  <div class="phead-main">
+  <div class="result"><p class="result-head">Outcomes of {n} claims</p>{bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}</div>
+  {outside_note(atts)}
+  {summary_block(atts, name=lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
+  {responses_block(data, paper, one, root)}
+  {superseded}
+  <p class="actions">{" ".join(actions)}</p>
+  </div>
+  {side}
+  </div>
+</header>
+'''
+    else:
+        header = f'''<header class="page">
   {top}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
-  {summary_block(atts, name=(lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a))) if paper else None)}
-  {responses_block(data, paper, one, root) if paper else ""}
+  {summary_block(atts)}
   {f'<p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>' if tested_on else ""}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
-<main>
+'''
+    body = f'''{header}<main>
   {attempts_timeline(data, dandiset, root, atts, paper=paper)}
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>
