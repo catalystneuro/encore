@@ -231,13 +231,14 @@ def split_periods(x, trigs, sf=SF):
 
 
 def probe_trials(x, param, trigs, spikes=None, sf=SF, include_blank=True, blank_as_context=True,
-                 min_contexts=2):
+                 min_contexts=2, keep_trials=False):
     """Per probe, the trials of each context, as CxtDep.m forms them.
 
     Returns a list of dicts: probe (1-based fragment index, or BLANK), contexts (sorted list
     of context labels; BLANK for silence), data (n_ctx x rep x T array of the probe period,
-    for continuous x), spikes (per context, per trial, spike times in s from probe onset),
-    rep, T, and occurrences.
+    for continuous x, each context cut to the smallest number of trials over all contexts),
+    trials (with keep_trials, every trial of each context before that cut), spikes (per
+    context, per trial, spike times in s from probe onset), rep, T, and occurrences.
     """
     seqs, rep = parse_notes(param)
     dur = fragment_samples(param, sf)
@@ -293,8 +294,30 @@ def probe_trials(x, param, trigs, spikes=None, sf=SF, include_blank=True, blank_
             continue
         data = np.stack([np.stack(per[c][:m]) for c in ctxs]).astype(np.float32)
         out.append({"probe": p, "contexts": ctxs, "data": data, "rep": m, "T": T,
+                    "trials": per if keep_trials else None,
                     "spikes": [per_spk[c][:m] for c in ctxs] if spikes is not None else None,
                     "n_occurrences": {str(c): sum(1 for o in occ[p] if o[0] == c) for c in ctxs}})
+    return out
+
+
+def probe_windows(param, trigs, n_samples, sf=SF):
+    """Sample windows (start, end) of every fragment presentation that enters a probe (the first
+    `Effective repeats` presentations of each sequence), for the probe-period firing rates."""
+    seqs, rep = parse_notes(param)
+    dur = fragment_samples(param, sf)
+    ev, _ = split_periods(np.zeros(n_samples), trigs, sf)
+    seen, out = {}, []
+    for k, t in enumerate(trigs):
+        if t["seq"] is None or not t["frags"]:
+            continue
+        seen[t["seq"]] = seen.get(t["seq"], 0) + 1
+        if rep is not None and seen[t["seq"]] > rep:
+            continue
+        a = ev[k][0]
+        for f in t["frags"]:
+            b = min(a + dur[f - 1], n_samples)
+            out.append((a, b))
+            a = b
     return out
 
 
@@ -307,7 +330,9 @@ def _ranks(flat, ties):
 
 
 def long_runs(b, min_gap=ALPHA_SAMPLES):
-    """Keep runs of True whose last and first points are at least min_gap samples apart."""
+    """Keep runs of True whose last and first points are at least min_gap samples apart, so at
+    least min_gap + 1 = 51 consecutive points (KWtest in CxtDep.m: k(end) - k(1) >= dt; the
+    Methods say 'for at least 5 ms')."""
     L = min_gap + 1
     b = np.asarray(b, bool)
     if b.shape[-1] < L:
@@ -485,12 +510,29 @@ def mgb_spikes(x):
     return extract_spikes(x)[0]
 
 
-def period_rates(spikes, ev, sp, sf=SF):
-    """Spike counts and durations (s) in the stimulus periods and the silences (GetEvoked.m split)."""
+def mgb_spikes_half(x):
+    """Second MGB reading: ExtractSpikes with half of its automatic threshold (one third of the
+    largest filtered value), to show how the rates depend on the threshold, which the paper
+    does not give."""
+    thr = extract_spikes(x)[1]
+    return extract_spikes(x, threshold=thr / 2)[0]
+
+
+BASELINE_S = 1.0      # pre-stimulus baseline: the 1 s before each trigger, within the silence (a standard choice)
+
+
+def window_rates(spikes, ev, sp, probe_win, sf=SF):
+    """Spike counts and durations (s) per window reading: 'stim' (every stimulus period) and
+    'silence' (the silences between, GetEvoked.m split), 'baseline' (the BASELINE_S before each
+    stimulus, cut to the silence before it) and 'probe' (the probe periods analysed)."""
+    base = []
+    for (a, b), (e0, _) in zip(sp[:-1], ev):
+        base.append((max(a, e0 - int(BASELINE_S * sf)), e0))
+
     def count(periods):
         n = sum(int(np.sum((spikes >= a) & (spikes < b))) for a, b in periods)
         return n, sum(b - a for a, b in periods) / sf
-    return count(ev), count(sp)
+    return {"stim": count(ev), "silence": count(sp), "baseline": count(base), "probe": count(probe_win)}
 
 
 def onset_contrast(x, trigs, win_s=0.2, shift_s=3.0):
@@ -548,8 +590,9 @@ def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE):
     out = {"info": file_info(m), "rates": {}}
     out["info"]["vm_percentiles_mv"] = [float(v) for v in np.percentile(x_raw[::10], [1, 50, 99])]
     out["onset"] = onset_contrast(x_raw, trigs)
+    pw = probe_windows(p, trigs, len(x_raw)) if out["info"]["n_seq"] else []
     for method in ("code", "dvdt"):
-        out["rates"][method] = period_rates(a1_spikes(x_raw, method), ev, sp)
+        out["rates"][method] = window_rates(a1_spikes(x_raw, method), ev, sp, pw)
     if not do_context:
         return out
     x = median_clip(x_raw)
@@ -602,7 +645,9 @@ def mgb_file_pass(m, do_context, min_rep=10):
     ev, sp = split_periods(x, trigs)
     out = {"info": file_info(m), "rates": {}, "probes": []}
     spk = mgb_spikes(x)
-    out["rates"]["code"] = period_rates(spk, ev, sp)
+    pw = probe_windows(p, trigs, len(x)) if out["info"]["n_seq"] else []
+    out["rates"]["code"] = window_rates(spk, ev, sp, pw)
+    out["rates"]["half"] = window_rates(mgb_spikes_half(x), ev, sp, pw)
     out["onset"] = onset_contrast(np.bincount(spk, minlength=len(x)).astype(float) * SF, trigs)
     if not do_context or (out["info"]["rep"] or 0) < min_rep:
         return out
@@ -618,8 +663,8 @@ def mgb_file_pass(m, do_context, min_rep=10):
 def pop_curve(arrays, mode, length):
     """Population average at each time of curves of different lengths.
 
-    'running': over the probes still running at t; 'all': over all probes, a probe that has
-    ended counting as zero. Returns (curve, number of probes running at t)."""
+    'running': over the probes still running at t (NaN where none runs); 'all': over all
+    probes, a probe that has ended counting as zero. Returns (curve, number of probes running at t)."""
     s = np.zeros(length)
     c = np.zeros(length)
     for a in arrays:
@@ -627,7 +672,8 @@ def pop_curve(arrays, mode, length):
         s[:n] += a[:n]
         c[:n] += 1
     if mode == "running":
-        return s / np.maximum(c, 1), c
+        with np.errstate(invalid="ignore", divide="ignore"):
+            return np.where(c > 0, s / np.maximum(c, 1), np.nan), c
     return s / len(arrays), c
 
 
@@ -646,6 +692,23 @@ def _num(v):
     return tuple(np.round(a, 6)) if a.size else ()
 
 
+STIM_FIELDS = ("ff", "df", "attenuation", "f0", "AMmean", "AMstd", "AMrange", "FMrange", "FMstd")
+
+
+def stimulus_table(param):
+    """Per stimulus (1-based): name, description and the parameters that define the property
+    sets (DMR and TORC bands 'ff', SoundTrans shift 'df' and 'attenuation', MHT parameters)."""
+    rows = []
+    for k, s in enumerate(np.atleast_1d(getattr(param, "stimulus", [])), 1):
+        d = {"stim": k, "name": " ".join(str(s.name).split()), "description": " ".join(str(s.description).split())}
+        for f in STIM_FIELDS:
+            v = getattr(s.param, f, None)
+            if v is not None and np.size(v):
+                d[f] = tuple(float(np.round(a, 3)) for a in np.atleast_1d(v))
+        rows.append(d)
+    return rows
+
+
 def property_families(param, ttype):
     """Sets of conditioning stimuli (1-based) that differ in one sound property only.
 
@@ -653,14 +716,21 @@ def property_families(param, ttype):
     variants ... as conditioning stimuli for each probe fragment") and Table 1 the properties per
     ensemble; the sets for each recording are rebuilt here from the stimulus metadata, an
     assumption stated in the notebook:
-    - TORC and DMR ensembles: the stimuli described as amplitude (or attenuation) variants form an
-      amplitude set, bandwidth or frequency variants a frequency set; forward and time-reversed
-      ("backward") variants are separate sets.
+    - TORC and DMR ensembles, and the SoundTrans recordings with more than six stimuli: the
+      stimuli described as amplitude variants or with an attenuation form an amplitude set, those
+      described as bandwidth or frequency variants or with a SoundTrans frequency shift ('df') a
+      frequency set; forward and time-reversed ("backward") variants are separate sets.
     - SoundTrans variants of a natural sound ('naturalistic'): the natural sound with its
       attenuated copies (amplitude), or with its frequency-shifted copies (frequency).
     - Modulated harmonic tones: the sets listed in the recording's notes when it lists them;
-      otherwise stimuli that share every parameter but one: AMmean (amplitude), f0 (frequency),
-      AMrange and AMstd (AM), FMrange and FMstd (FM).
+      otherwise stimuli that share the parameters of the other properties: AMmean alone
+      (amplitude), f0 (frequency), the envelope parameters AMrange, AMstd and AMmean with at
+      least two different (AMrange, AMstd) (AM), FMrange and FMstd (FM). AMmean belongs to AM
+      because the notes of the 19-stimulus recordings list stimuli 13 and 14 (AMmean 40 and 63
+      dB with AMstd 15 and 5 dB) as amplitude-modulation variants of stimulus 8 (54 and 10 dB).
+      A recording can hold several sets of one property (the 16 MHTs of the 17-stimulus
+      recordings are a grid of 4 AM rates by 4 FM rates: four AM sets, one per FM rate, and
+      four FM sets).
     - Pink noise (MCN): each natural sound with the modulated colored noise made from it
       (higher-order).
     """
@@ -677,7 +747,8 @@ def property_families(param, ttype):
             elif any(("forward" in n or "backward" in n) for n in names):
                 continue
             amp = [i for i in sel if "amplitude" in descs[i - 1] or hasattr(st[i - 1].param, "attenuation")]
-            frq = [i for i in sel if ("bandwidth" in descs[i - 1] or "frequency" in descs[i - 1]) and i not in amp]
+            frq = [i for i in sel if ("bandwidth" in descs[i - 1] or "frequency" in descs[i - 1]
+                                      or hasattr(st[i - 1].param, "df")) and i not in amp]
             if len(amp) >= 2:
                 fam["amplitude"].append(amp)
             if len(frq) >= 2:
@@ -711,15 +782,17 @@ def property_families(param, ttype):
             mht = [i for i in idx if "modulated harmonic" in descs[i - 1]]
             def par(i, f):
                 return _num(getattr(st[i - 1].param, f, []))
-            groups = {"amplitude": ("AMmean",), "frequency": ("f0",), "AM": ("AMrange", "AMstd"), "FM": ("FMrange", "FMstd")}
-            allf = sum(groups.values(), ())
+            groups = {"amplitude": ("AMmean",), "frequency": ("f0",), "AM": ("AMrange", "AMstd", "AMmean"),
+                      "FM": ("FMrange", "FMstd")}
+            vary = {"AM": ("AMrange", "AMstd")}   # an AM set must differ in modulation, not only in mean level
+            allf = ("AMmean", "f0", "AMrange", "AMstd", "FMrange", "FMstd")
             for prop, own in groups.items():
                 others = [f for f in allf if f not in own]
                 bucket = {}
                 for i in mht:
                     bucket.setdefault(tuple(par(i, f) for f in others), []).append(i)
                 for members in bucket.values():
-                    if len({tuple(par(i, f) for f in own) for i in members}) >= 2:
+                    if len({tuple(par(i, f) for f in vary.get(prop, own)) for i in members}) >= 2:
                         fam[prop].append(members)
     elif ttype == "pinknoise":
         nat = {}
@@ -736,8 +809,11 @@ def property_families(param, ttype):
 
 
 def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE):
-    """Significance and fractional power per probe and property, with only the conditioning
-    stimuli of one property set as contexts (the largest set the probe was tested with)."""
+    """Significance and fractional power per probe, property and property set, with only the
+    conditioning stimuli of that set as contexts (Methods, Stimulus design, paragraph 2), each
+    cut to the smallest number of trials over those contexts. Every set a probe was tested with
+    (at least two of its contexts in the set) gives one entry; `largest` marks, per probe and
+    property, the set with the most contexts (the first when tied)."""
     p = m["param"]
     trigs = sequence_triggers(m["triggers"])
     ttype = trigs[0]["type"] if trigs else ""
@@ -745,23 +821,27 @@ def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE):
     descs = [str(s.description).lower() for s in np.atleast_1d(getattr(p, "stimulus", []))]
     x = median_clip(trace_mv(m["response"], getattr(p.recording, "offset", None)))
     out = []
-    for pr in probe_trials(x, p, trigs):
+    for pr in probe_trials(x, p, trigs, keep_trials=True):
         if pr["probe"] == BLANK:
             continue
         for prop in PROPERTIES:
-            best = []
-            for members in fam[prop]:
-                keep = [k for k, c in enumerate(pr["contexts"]) if c in members]
-                if len(keep) > len(best):
-                    best = keep
-            if len(best) < 2:
+            sets = []
+            for si, members in enumerate(fam[prop]):
+                keep = [c for c in pr["contexts"] if c in members]
+                if len(keep) >= 2:
+                    sets.append((si, keep))
+            if not sets:
                 continue
-            d = pr["data"][best]
-            sig, noise = kw_significance(d, n_shuffle=n_shuffle, rng=rng)
-            pred, inv = frac_power(d)
-            out.append({"probe": pr["probe"], "property": prop, "ensemble": ttype,
-                        "probe_type": "natural" if "track" in descs[pr["probe"] - 1] else "synthetic",
-                        "contexts": [pr["contexts"][k] for k in best], "rep": pr["rep"], "T": pr["T"],
-                        "signif": sig, "noise": noise.astype(np.float32), "pred": pred.astype(np.float32),
-                        "inv": inv.astype(np.float32)})
+            big = max(range(len(sets)), key=lambda j: (len(sets[j][1]), -j))
+            for j, (si, keep) in enumerate(sets):
+                n = min(len(pr["trials"][c]) for c in keep)
+                d = np.stack([np.stack(pr["trials"][c][:n]) for c in keep]).astype(np.float32)
+                sig, noise = kw_significance(d, n_shuffle=n_shuffle, rng=rng)
+                pred, inv = frac_power(d)
+                out.append({"probe": pr["probe"], "property": prop, "ensemble": ttype, "set": si,
+                            "largest": j == big, "n_sets": len(sets),
+                            "probe_type": "natural" if "track" in descs[pr["probe"] - 1] else "synthetic",
+                            "contexts": keep, "rep": n, "T": pr["T"],
+                            "signif": sig, "noise": noise.astype(np.float32), "pred": pred.astype(np.float32),
+                            "inv": inv.astype(np.float32)})
     return out
