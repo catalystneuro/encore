@@ -1136,13 +1136,20 @@ def authors_html(data: dict, doi: str, root: str) -> str:
 def author_rows(data: dict) -> list[dict]:
     """The authors list's rows: everyone with an ORCID iD, their papers and their datasets in the registry."""
     out = []
+    paper_counts = {x["id"]: x.get("counts") or {} for x in paper_rows(data)}
     for orcid, a in author_index(data).items():
         attempted = [q for q in a["papers"] if q["attempts"]]
+        # The outcomes of every claim tested across their papers, as the bar on their page has them.
+        counts = {k: sum(paper_counts.get(q["key"], {}).get(k, 0) for q in a["papers"]) for k in OUTCOMES}
         out.append({
             "id": orcid, "name": a["name"], "family": a["name"].split()[-1] + ", " + " ".join(a["name"].split()[:-1]),
             "page": f"authors/{orcid}/", "n_papers": len(a["papers"]), "n_attempted": len(attempted),
             "n_datasets": len(a["datasets"]),
             "badge": (author_badge(data, a) or {}).get("text"),
+            # The number to sort by: the claims reproduced across their papers, as the row's bar shows it. (The
+            # badge counts verified attempts only, so it can be smaller.)
+            "n_reproduced": counts["reproduced"],
+            "counts": counts if sum(counts.values()) else None,
             "attempted": "yes" if attempted else "no",
             "as": [k for k, on in (("author", a["papers"]), ("contributor", a["datasets"])) if on],
             "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims"
@@ -2341,8 +2348,9 @@ LISTS["authors"] = {
              "it is, so a person without an iD is named on the paper&rsquo;s or the dataset&rsquo;s page and has "
              "no page here.",
     "facets": [("as", "In the registry as"), ("attempted", "Papers")],
-    "sorts": [("-n_papers", "Most papers"), ("-n_datasets", "Most datasets"), ("family", "Family name"),
-              ("name", "Given name"), ("-n_attempted", "Most papers attempted")],
+    "sorts": [("-n_papers", "Most papers"), ("-n_reproduced", "Most findings reproduced"),
+              ("-n_datasets", "Most datasets"), ("family", "Family name"), ("name", "Given name"),
+              ("-n_attempted", "Most papers attempted")],
     "csv": None,
 }
 

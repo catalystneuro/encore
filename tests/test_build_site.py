@@ -1105,3 +1105,22 @@ def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_ver
     assert with_badge and without
     # A dataset's page offers both forms too.
     assert "Or as Markdown:" in (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
+
+
+def test_the_authors_list_sorts_by_findings_reproduced(built):
+    data, out = built
+    page = (out / "authors" / "index.html").read_text()
+    config = json.loads(page.split('id="list-config">')[1].split("</script>")[0])
+    assert {"key": "-n_reproduced", "label": "Most findings reproduced"} in config["sorts"]
+    rows = json.loads((out / "data" / "authors.json").read_text())
+    index = site.author_index(data)
+    # The number is the one the row's bar shows: the claims reproduced across the person's papers.
+    assert all(r["n_reproduced"] == (r["counts"] or {}).get("reproduced", 0) for r in rows)
+    assert max(r["n_reproduced"] for r in rows) > 0 and any(r["n_reproduced"] == 0 for r in rows)
+    # A row has the outcomes of all the person's papers as one bar, and their first few papers only.
+    papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
+    for r in rows[:200]:
+        total = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in index[r["id"]]["papers"]) for k in site.OUTCOMES}
+        assert r["counts"] == (total if sum(total.values()) else None)
+    js = (site.ASSETS / "list.js").read_text()
+    assert "miniBar(r.counts)" in js and "r.papers.slice(0, SHOWN)" in js and "and ${r.papers.length - SHOWN} more" in js
