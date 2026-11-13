@@ -541,6 +541,30 @@ def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
 
 
+def test_the_bar_is_for_readers_and_check_your_data_is_its_button(built):
+    """Pipeline is the maintainers' page: in the footer, the phone menu (menuonly, hidden on a wide screen) and the
+    About page, not among the bar's tabs. "Check your data" is the bar's one button."""
+    import re
+    data, out = built
+    home = (out / "index.html").read_text()
+    bar = home[home.index('<nav class="top"'):home.index("</nav>")]
+    footer = home[home.index("<footer>"):home.index("</footer>")]
+    assert 'href="pipeline/">Pipeline</a>' in footer
+    shown = [m for m in re.findall(r'<a class="(tab[^"]*)" href="([^"]*)"', bar) if "menuonly" not in m[0]]
+    assert [h for _, h in shown][:5] == ["./", "papers/", "datasets/", "authors/", "about/"]
+    assert not any("pipeline" in h for _, h in shown)
+    assert '<a class="tab menuonly" href="pipeline/">Pipeline</a>' in bar
+    assert re.search(rf'<a class="tab ext cta" href="{re.escape(site.ENCORE_DOCS)}" title="Run the same check', bar)
+    # The menu-only links are hidden in the bar and shown in the phone menu; the button is filled in the accent.
+    css = (site.ASSETS / "app.css").read_text()
+    wide = css[:css.index("@media (max-width:920px)")]
+    assert "nav.top a.tab.menuonly{display:none}" in wide and "nav.top a.tab.menuonly{display:flex}" in css
+    assert "background:var(--accent);color:var(--surface)" in wide[wide.index("nav.top a.tab.cta{"):]
+    pipeline = (out / "pipeline" / "index.html").read_text()
+    assert '<a class="tab menuonly" href="../pipeline/" aria-current="page">Pipeline</a>' in pipeline
+    assert 'href="../pipeline/">pipeline</a>' in (out / "about" / "index.html").read_text()
+
+
 def test_a_claim_shows_the_papers_own_words_when_quoted():
     claim = {"claim": "fig2", "statement": "Rates rise.", "source": "Figure 2B", "quote": "Firing rates rose <sharply>.",
              "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}

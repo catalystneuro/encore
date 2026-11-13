@@ -1774,16 +1774,18 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     r = rows_cache(data)
     n_papers = sum(1 for p in papers_of(data) if p["attempts"])
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
-    tabs = [("overview", "Overview", root or "./", None), ("papers", "Papers", f"{root}papers/", n_papers),
-            ("datasets", "Datasets", f"{root}datasets/", n_datasets),
-            ("authors", "Authors", f"{root}authors/", None),
-            ("pipeline", "Pipeline", f"{root}pipeline/", None),
-            ("about", "About", f"{root}about/", None)]
+    # The bar's tabs are the pages for readers. Pipeline, the maintainers' page of which step each paper is at, is
+    # in the phone menu (class "menuonly") and the footer, not in the bar on a wide screen.
+    tabs = [("overview", "Overview", root or "./", None, ""), ("papers", "Papers", f"{root}papers/", n_papers, ""),
+            ("datasets", "Datasets", f"{root}datasets/", n_datasets, ""),
+            ("authors", "Authors", f"{root}authors/", None, ""),
+            ("about", "About", f"{root}about/", None, ""),
+            ("pipeline", "Pipeline", f"{root}pipeline/", None, " menuonly")]
     nav = ""
-    for key, label, href, n in tabs:
+    for key, label, href, n, extra in tabs:
         current = ' aria-current="page"' if key == active else ""
         count = f'<span class="n">{n:,}</span>' if n is not None else ""
-        nav += f'<a class="tab" href="{href}"{current}>{label}{count}</a>'
+        nav += f'<a class="tab{extra}" href="{href}"{current}>{label}{count}</a>'
     banner = '<div class="demo">Demo data: made-up attempts, for testing the site only</div>' if data["demo"] else ""
     home = root or "./"
     return f'''<!doctype html>
@@ -1798,9 +1800,9 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow" id="tabrow">{nav}
+  <a class="tab ext menuonly" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
-  <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
-  <a class="tab ext runs" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
+  <a class="tab ext cta" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a></div>
   <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false" aria-controls="tabrow" aria-label="Menu"><span aria-hidden="true"></span></button>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
@@ -1808,7 +1810,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 {body}
 <footer>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
-<a href="{REPO_URL}/actions">Agent runs</a> ·
+<a href="{root}pipeline/">Pipeline</a> · <a href="{REPO_URL}/actions">Agent runs</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
 the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
 a judgement of the paper.</footer>
@@ -2413,7 +2415,8 @@ def page_about(data: dict) -> str:
       cannot see the credentials it runs on, and a verifier sees only the materials it is given: the repository is
       removed before it starts. Each run commits its work, its cleaned transcript and its report, so every step can
       be read afterwards in the <a href="{REPO_URL}/tree/main/transcripts">transcripts</a> and the
-      <a href="{REPO_URL}/actions">agent runs</a>.</p></div>
+      <a href="{REPO_URL}/actions">agent runs</a>. The <a href="{root}pipeline/">pipeline</a> page shows where each
+      paper stands, from the match to its datasets to verification.</p></div>
     <div class="panel"><h2>Reading an outcome</h2>
       <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it.
       A failure to reproduce may be a failure of the attempt, and is not a finding that the paper is wrong. Claims that
