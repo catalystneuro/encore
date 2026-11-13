@@ -612,6 +612,20 @@ def test_a_check_of_the_link_is_under_provenance_and_not_among_the_claims(built)
     assert seen
 
 
+def test_a_claim_shows_its_id_which_the_response_form_asks_for():
+    claim = {"claim": "fig2-rates", "statement": "Rates rise.", "source": "Figure 2B", "outcome": "reproduced",
+             "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    # In view without opening the claim, and not a link there (a click on the summary opens the claim).
+    head = html.split("</summary>")[0]
+    assert '<code class="claim-id" title="The id of this claim">fig2-rates</code>' in head and "<a " not in head
+    # Open, the claim gives its id again with a link to itself.
+    assert 'Claim id <code>fig2-rates</code>' in html and '<a href="#claim-fig2-rates">link to this claim</a>' in html
+    # The form's hint names ids as the page shows them, not numbers the page does not have.
+    form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
+    assert "C3, C7" not in form and "end of the claim's first line" in form
+
+
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
     claim = {"claim": "t", "statement": "Few respond.", "source": "Table S1", "inferred": "Numbers from Table S1.",
              "outcome": "reproduced", "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
