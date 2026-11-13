@@ -1,17 +1,27 @@
 /* Brand: plum, with grays tinted faintly violet toward it. Green, yellow, blue and gray are kept for the outcomes:
    "not reproduced" is blue with a struck-through equals sign, not red with a cross, as it may be the agent's failure, not the paper's. */
-:root{--surface:#faf9fb;--panel:#ffffff;--line:#e3dfe8;--text:#120e17;--text2:#4f4858;--muted:#8a8392;
+/* Text colours (--text2, --muted, --good-text) keep at least 4.5:1 on --surface, --panel and --hover in both themes, the WCAG AA
+   minimum for small text; tests/test_build_site.py checks --muted. --good itself stays bright for bars and marks. */
+:root{--surface:#faf9fb;--panel:#ffffff;--line:#e3dfe8;--text:#120e17;--text2:#4f4858;--muted:#726b7a;
 --good:#0ca30c;--warning:#fab219;--critical:#d03b3b;--unresolved:#2b6cb0;--blocked:#898781;--link:#6a3d8f;--accent:#6a3d8f;--hover:#f3f0f6;
---bar:#7d4fae;color-scheme:light}
+--bar:#7d4fae;--good-text:#097e09;color-scheme:light}
 /* Dark: when the system asks for it and the reader has not chosen light, or when the reader chose dark. */
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--surface:#15121a;--panel:#1d1923;--line:#332c3d;--text:#f2eff6;
---text2:#c3bccc;--muted:#8f8899;--link:#c4a3e8;--accent:#c4a3e8;--hover:#241f2b;--bar:#a07ad0;color-scheme:dark}}
+--text2:#c3bccc;--muted:#8f8899;--link:#c4a3e8;--accent:#c4a3e8;--hover:#241f2b;--bar:#a07ad0;--good-text:#0ca30c;color-scheme:dark}}
 :root[data-theme=dark]{--surface:#15121a;--panel:#1d1923;--line:#332c3d;--text:#f2eff6;
---text2:#c3bccc;--muted:#8f8899;--link:#c4a3e8;--accent:#c4a3e8;--hover:#241f2b;--bar:#a07ad0;color-scheme:dark}
+--text2:#c3bccc;--muted:#8f8899;--link:#c4a3e8;--accent:#c4a3e8;--hover:#241f2b;--bar:#a07ad0;--good-text:#0ca30c;color-scheme:dark}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:68px}
 body{margin:0;background:var(--surface);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:var(--link)}
+/* Where nearly every word is a link (a paper's datasets table, the rows of lists and cards, the crumbs, the attempts
+   panel, the footer), a full underline under each is noise. A link that stands alone in its cell or in a line of
+   links (a dataset's id, "on DANDI", "JSON", "doi") shows its underline on hover and focus only. A link among plain
+   words keeps a thin grey one, as the link colour is not 3:1 against the text around it. Running text keeps the
+   full underline. :where() keeps these weak, so a component's own rule (a title, a legend, a chip) still wins. */
+:where(.sets th,.sets td:not(:first-of-type),.row .id,.row .meta) a:not([class]){text-decoration:none}
+:where(.sets td:first-of-type,.row .meta .small,.crumbs,.timeline .t-version,footer) a:not([class]){text-decoration:underline;text-decoration-color:var(--muted);text-decoration-thickness:1px;text-underline-offset:3px}
+:where(.sets,.row .id,.row .meta,.crumbs,.timeline,footer) a:not([class]):is(:hover,:focus-visible){text-decoration:underline;text-decoration-color:currentColor}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
 [hidden]{display:none!important}
 
@@ -26,6 +36,11 @@ nav.top a.tab:hover{color:var(--text)}
 nav.top a.tab[aria-current=page]{color:var(--text);box-shadow:inset 0 -2px 0 var(--accent);font-weight:600}
 nav.top a.tab.ext{font-size:.88rem;color:var(--muted)}
 nav.top a.tab.ext::after{content:"↗";margin-left:4px;font-size:.78em}
+/* "Check your data", the one thing the site asks a visitor to do: a filled button in the accent (text 7.5:1 on it in
+   the light theme, 8.6:1 in the dark), outlined on hover. */
+nav.top a.tab.cta{align-self:center;margin-left:6px;padding:5px 12px;border:1px solid var(--accent);border-radius:4px;
+background:var(--accent);color:var(--surface);font-weight:600}
+nav.top a.tab.cta:hover{background:transparent;color:var(--accent)}
 nav.top a.tab.icon{color:var(--muted)}nav.top a.tab.icon:hover{color:var(--text)}
 nav.top a.tab.icon svg{width:20px;height:20px;fill:currentColor;display:block}
 nav.top a.tab .n{margin-left:6px;font-size:.76rem;color:var(--muted);font-weight:500}
@@ -33,17 +48,18 @@ button.theme{align-self:center;margin-left:8px;display:inline-flex;align-items:c
 color:var(--text2);background:none;border:1px solid var(--line);border-radius:3px;padding:3px 10px;cursor:pointer;white-space:nowrap}
 button.theme:hover{background:var(--hover);color:var(--text)}
 /* In the bar the theme button is its mark alone (its state is in its title); the menu on a small screen has room
-   for the word. Under 1120px the bar drops what it can do without, and under 920px it becomes the menu. */
+   for the word. Under 1120px the bar drops "by CatalystNeuro", under 1000px the counts, and under 920px it becomes the menu. */
 button.theme .t{display:none}
-nav.top a.tab.runs{display:none}   /* in the menu on a small screen, and in the footer */
-@media (max-width:1120px){nav.top .by,nav.top a.tab .n{display:none}}
+nav.top a.tab.menuonly{display:none}   /* Pipeline and Agent runs: in the menu on a small screen, and in the footer */
+@media (max-width:1120px){nav.top .by{display:none}}
+@media (max-width:999px){nav.top a.tab .n{display:none}}
 /* The tabs are one group (.tabrow): on a wide screen they sit in the bar as before; on a phone the bar is one line
    (brand and a menu button) and the button opens the tabs, and the theme button, as a list under it (THEME_JS sets nav.top.open). */
 nav.top .tabrow{display:contents}
 button.navtoggle{display:none}
 @media (max-width:920px){
 nav.top .by{display:inline}
-nav.top a.tab.runs{display:flex}
+nav.top a.tab.menuonly{display:flex}
 button.theme .t{display:inline}
 nav.top .wrap{flex-wrap:wrap;height:auto;gap:0 8px;overflow:visible;align-items:center;padding-top:8px;padding-bottom:8px}
 nav.top .brand{padding:0;margin-right:0;order:1}
@@ -63,6 +79,7 @@ nav.top .tabrow{order:5;display:none;flex:0 0 100%;flex-direction:column;padding
 nav.top.open .tabrow{display:flex}
 nav.top .tabrow a.tab{padding:10px 2px;font-size:1rem}
 nav.top .tabrow a.tab[aria-current=page]{box-shadow:inset 3px 0 0 var(--accent);padding-left:12px}
+nav.top .tabrow a.tab.cta{align-self:flex-start;margin:6px 0 4px;padding:8px 14px}
 nav.top a.tab.icon{gap:8px}nav.top a.tab.icon::after{content:"GitHub";font-size:1rem}
 nav.top a.tab .n{display:none}
 html{scroll-padding-top:60px}
@@ -178,6 +195,7 @@ fieldset.facet legend{font-weight:650;font-size:.82rem;color:var(--text2);paddin
 .listbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-bottom:10px}
 .listbar input[type=search]{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:3px;background:var(--panel);
 color:var(--text);flex:1;min-width:200px}
+.listbar input[type=search]::placeholder{color:var(--muted);opacity:1}
 .listbar .grow{flex:1}
 .active{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .active button{font:inherit;font-size:.8rem;border:1px solid var(--line);background:var(--hover);color:var(--text);border-radius:3px;
@@ -222,7 +240,6 @@ padding:1px 8px;cursor:pointer}
 .row.prow .byline{margin:0 0 2px;font-size:.8rem;color:var(--muted);letter-spacing:.01em}
 .row.prow .byline .sep{margin:0 6px}
 .row.prow .title{font-size:1.02rem;line-height:1.35}
-.row.prow .meta a{text-decoration-thickness:1px;text-underline-offset:2px}
 .verified{font-size:.78rem;color:var(--text2);white-space:nowrap}
 .verified span{color:var(--accent);font-weight:700}
 .empty{padding:28px;text-align:center;color:var(--muted)}
@@ -279,7 +296,10 @@ padding:10px 12px;cursor:pointer;white-space:nowrap}
 /* A claim's id, at the end of its first line: what the records and the response form call it. */
 .claim-id{margin-left:auto;font-size:.76rem;color:var(--muted);background:none;padding:0;white-space:nowrap}
 .claim-link{margin:10px 0 0}
-.statement{margin:0 0 4px;font-weight:550;max-width:84ch}
+.statement{margin:0 0 4px;font-weight:500;max-width:84ch}
+/* Under a closed claim's statement, the first sentence of its notes: what was found. Open, the full notes show. */
+.gist{margin:0 0 2px;font-size:.86rem;color:var(--text2);max-width:98ch}
+.claim details[open]>summary .gist{display:none}
 .notes{color:var(--text2);font-size:.92rem;margin:0;max-width:84ch}
 .caveat{font-size:.82rem;color:var(--muted);margin:4px 0 0}
 .claim details>summary{list-style:none;cursor:pointer;position:relative;padding-left:20px}
@@ -287,7 +307,7 @@ padding:10px 12px;cursor:pointer;white-space:nowrap}
 .claim details>summary::before{content:"";position:absolute;left:2px;top:.45em;width:7px;height:7px;
 border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
 .claim details[open]>summary::before{transform:rotate(45deg)}
-.claim details>summary:hover .statement{text-decoration:underline;text-decoration-color:var(--line)}
+.claim details>summary:hover .statement{text-decoration:underline;text-decoration-color:var(--muted);text-underline-offset:2px}
 .claim details>summary:focus-visible{outline:2px solid var(--accent,currentColor);outline-offset:3px;border-radius:4px}
 .claim-body{padding:6px 0 0 20px}
 .quote{margin:0 0 10px;padding:2px 0 2px 12px;border-left:3px solid var(--line);max-width:80ch}
@@ -411,7 +431,7 @@ td.ps.none::before{visibility:hidden}
 @media (max-width:560px){.frow{grid-template-columns:6em 1fr 5em;gap:6px;font-size:.82rem}}
 .timeline-panel{margin:0 0 20px}
 /* A dataset's page: what was reproduced from it, and its badge with the code to show it. */
-.reproduced-line{margin:12px 0 2px}.reproduced-line strong{color:var(--good)}
+.reproduced-line{margin:12px 0 2px}.reproduced-line strong{color:var(--good-text)}
 details.badge-how{padding:0}
 details.badge-how>summary{display:flex;align-items:center;gap:14px;padding:10px 16px;cursor:pointer;list-style:none}
 details.badge-how>summary::-webkit-details-marker{display:none}
@@ -490,7 +510,7 @@ color:var(--panel);background:var(--accent);border-radius:3px;padding:1px 7px}
 .timeline .t-version{font-size:.85rem;color:var(--text2)}
 .findings .tag{margin-right:6px}
 .tag.status-new{border-color:var(--accent);color:var(--accent)}
-.tag.status-fixed{border-color:var(--good);color:var(--good)}
+.tag.status-fixed{border-color:var(--good);color:var(--good-text)}
 details.separate{margin-top:8px}details.separate>summary{cursor:pointer;width:fit-content}
 details.separate>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 /* The overview's attempts panel: two tabs, most reproduced and latest */
