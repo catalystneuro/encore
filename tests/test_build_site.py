@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html
 import json
 import re
 import sys
@@ -577,6 +578,25 @@ def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     assert 'aria-current="page">About' in about
     assert 'href="about/">About' in (out / "index.html").read_text()
     assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
+
+
+def test_the_about_page_names_the_archives_draws_the_steps_and_points_authors_and_archives_on(built):
+    data, out = built
+    about = (out / "about" / "index.html").read_text()
+    archives = {site.split_key(a["key"])[0] for a in data["attempts"]}
+    assert archives and site.attempted_archives(data)
+    for k in archives:
+        assert html.escape(site.ARCHIVES[k]["name"]) in about
+    assert "the only archive" not in about
+    # The diagram: one box a step, labelled for screen readers, and the list still in full.
+    assert 'id="flow"' in about and 'role="img" aria-label="The six steps of an attempt' in about
+    for head, _ in site.ABOUT_STEPS:
+        assert about.count(f">{html.escape(head)}<") >= 2
+    assert html.escape(site.RESPOND_URL) in about and "docs/badges.md" in about
+    assert 'href="../authors/"' in about and 'href="../datasets/"' in about
+    # The badge shown is a real one, of the first dataset with a badge.
+    shown = re.search(r'src="\.\./badge/([a-z]+)/([^"]+)\.svg"', about)
+    assert shown and (out / "badge" / shown[1] / f"{shown[2]}.svg").exists()
 
 
 def test_a_claim_shows_the_papers_own_words_when_quoted():
