@@ -22,7 +22,7 @@ healthy participants' data are not in the data set.
 | Past trials do not affect choice | Not reproduced |
 | Encoding limited to the previous trial | Reproduced |
 | Sharp boundary between t-1 and t-2 | Reproduced (assumption) |
-| All regressors significant in mixed-effects models | Not reproduced (assumption; change to reproduced proposed) |
+| All regressors significant in mixed-effects models | Reproduced (assumption) |
 | Stepwise selection similar to the 5-window selection | Partially reproduced (assumption) |
 | Risk over all trials explains more variance than over gamble trials | Not reproduced |
 | No encoding of response direction | Reproduced |
@@ -37,8 +37,8 @@ reasoning and the differences from the paper's method.
 The HFA is used as deposited, already baseline-corrected, as the authors' own correction; the claims
 file's two baseline readings are run as well. They change the outcomes of four claims (past encoding,
 past signals more sustained, sharp boundary, stepwise selection), which are marked as resting on that
-assumption, and under reading (a) the mixed-effects claim passes, so a change to reproduced is
-proposed for it. The latency claim rests on a different assumption, the timing of the second epoch. The data set's "buttonpress" epoch behaves as locked to the outcome reveal, seven electrodes of s03
+assumption. The mixed-effects claim passes under reading (a), with one model per window, and rests
+on that reading. The latency claim rests on a different assumption, the timing of the second epoch. The data set's "buttonpress" epoch behaves as locked to the outcome reveal, seven electrodes of s03
 are deposited twice, and the HFA trials carry no round number (they are matched to rounds through the
 authors' regressor file). The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/saez-2018-01.yaml`](../../attempts/saez-2018-01.yaml).

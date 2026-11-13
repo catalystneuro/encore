@@ -258,18 +258,8 @@ outcomes:
       offset, measured where the epochs overlap), are applied on top of it in the notebook''s section Baseline
       readings.']
 - claim: mixed-effects-robust
-  outcome: not_reproduced
+  outcome: reproduced
   assumed: true
-  proposed:
-    outcome: reproduced
-    reason: The criterion passes when, under one reading, every regressor has corrected p < 10^-4, and the
-      claims file names baseline reading (a), each epoch's own 200 ms before its event, as a reading. Under
-      it, one nested model per window with one regressor and all electrodes, Bonferroni over 16 regressors
-      and 114 windows, gives all 16 regressors corrected p < 10^-4 (largest 3.3e-05, past gamble). Subtracting
-      the window centred at -100 ms removes any constant per-trial offset, so applying it on top of the
-      deposited correction gives the same values as applying it to uncorrected HFA. The outcome would rest
-      on baseline reading (a) and the per-window reading of the time point (assumed). Notebook, sections
-      mixed-effects-robust and Baseline readings. Raised by the verifier in round 2.
   notebook: reproduce_saez_2018.ipynb
   output: claim:mixed-effects-robust
   notes: 'All models have patient and electrode within patient as random intercepts (REML), fitted by
@@ -283,9 +273,10 @@ outcomes:
     loss indices at t and t-1. Time point (b), HFA averaged over post-event windows, Bonferroni over 16
     regressors and 2 epochs: 4, 6, 3 and 3. Under the claims file''s baseline reading (a), the per-window
     model with one regressor and all electrodes makes all 16 significant (largest corrected p 3.3e-05,
-    past gamble), and under (b) 15 (past risk 2.9e-02), so the verified outcome rests on the deposited
-    baseline (assumed); a change to reproduced is proposed, as the criterion passes under one reading. Signed slopes average over electrodes
-    encoding in opposite directions.'
+    past gamble), and under (b) 15 (past risk 2.9e-02). The outcome is reproduced, as the criterion passes
+    under one reading; it rests on baseline reading (a) and the per-window reading of the time point (assumed),
+    and is the best of the 24 combinations of readings run. Set after the verifier agreed in round 3. Signed
+    slopes average over electrodes encoding in opposite directions.'
   deviations: ['The HFA is used as deposited, as the authors'' own baseline correction (an assumption):
       the game epoch is corrected over [-1000, -800] ms (its first window is the same in every trial)
       and the buttonpress epoch carries a per-trial offset close to it. STAR Methods say only that epochs
@@ -294,7 +285,8 @@ outcomes:
       readings, (a) the 200 ms before each epoch''s event and (b) the 200 ms before game presentation
       for both epochs (the buttonpress epoch first put on the game epoch''s level with its per-trial, per-electrode
       offset, measured where the epochs overlap), are applied on top of it in the notebook''s section Baseline
-      readings.', 'The nested
+      readings. The outcome rests on baseline reading (a), which the claims file names, with one model
+      per window (assumed).', 'The nested
       model is fitted by REML in closed form (helper nested_lmm), which uses the fact that every electrode
       of a patient shares its trials and regressors; it is checked against statsmodels MixedLM in the
       notebook. A standard choice.', 'Time point (b) fits each epoch and counts a regressor when significant
@@ -748,3 +740,28 @@ verifications:
   - {claim: fig2-example-electrodes, agrees: true, outcome: reproduced, reason: 'Agrees with the outcome.
       Round-1 point 7, the circularity, is now stated.', response: 'Outcome kept. Under the corrected baseline
       (b) 18 of 66 risk electrodes show an inverted U and all 45 regret electrodes a slope.'}
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the change of outcome proposed after round 2, for mixed-effects-robust, with the
+    executed notebook, the helper module, the claims file and the paper. Report in transcripts/saez-2018/verifier-3-report.md.
+  results:
+  - claim: mixed-effects-robust
+    agrees: true
+    outcome: reproduced
+    reason: 'The numbers come from the data. Cell 90 builds baseline reading (a) by subtracting each epoch''s
+      window centred at -100 ms and reruns me_fits over all 114 windows with the same nested REML fit, which
+      cell 85 checks against statsmodels MixedLM. Under (a), one regressor and all electrodes gives 16 of
+      16 below the threshold (largest corrected p 3.3e-05, gamble_ind_1); the other three combinations give
+      10, 9 and 8. The deposited HFA gives 14 of 16 and (b) 15 of 16. Baseline reading (a) comes from the
+      claims file, written before the data were seen, and the author kept the deposited HFA as primary
+      even though it gives not_reproduced. Applying (a) on top of the deposited values equals applying it
+      to uncorrected HFA if the deposited correction was a subtraction, which the data are consistent with.
+      Bonferroni over 16 x 114 is slightly conservative, as 112 windows are fitted, and the pass has a margin
+      of about 3x. The criterion is applied as written, with readings the claims file names. Caveats, with
+      no change of outcome, the pass is the best of 24 combinations of readings, which "under one reading"
+      permits, so assumed should stay, citing baseline (a) and the per-window reading; the round-2 point
+      on reading (b) of the buttonpress epoch still stands, but the proposal does not rest on (b).'
+    response: Outcome set to reproduced with assumed true and the proposal removed. The notes, a deviation,
+      the notebook's conclusion and summary and the README now say that the outcome rests on baseline reading
+      (a) and the per-window reading and is the best of the 24 combinations run.
