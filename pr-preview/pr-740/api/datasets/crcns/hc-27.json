@@ -1,0 +1,1006 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "hc-27",
+  "label": "CRCNS:hc-27"
+ },
+ "page": "datasets/crcns/hc-27/",
+ "generated": "2026-11-13T14:17:27+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 11,
+  "partially_reproduced": 4,
+  "not_reproduced": 6,
+  "blocked": 3
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "hernandez-perez-2020-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "hc-27",
+    "version": "unversioned",
+    "doi": "10.6080/K0C53J2R",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:hc-27"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:hc-27",
+   "label": "CRCNS:hc-27",
+   "dataset_version": "unversioned",
+   "paper": "10.7554/elife.52289",
+   "paper_title": null,
+   "date": "2026-11-11",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43059911172"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "hernandez-perez-2020",
+   "entry_title": "Theta traveling wave along the medial entorhinal cortex (Hern\u00e1ndez-P\u00e9rez et al. 2020)",
+   "summary": "The paper's central finding, that theta in the rat medial entorhinal cortex travels as a wave along the dorsal-ventral axis, holds in this data: the phase lag grows with distance in all six rats, by 27.32 deg/mm against the paper's 26.36. The gradient in theta waveform asymmetry and the phase-specific delays hold in part, and coherence falls with distance much faster than reported. The split of the delay into asymmetry-related and residual parts and the test of coupled oscillators against fixed delays did not reproduce; the latter rests on a cycle period the paper does not define. The laminar and multi-unit results could not be tested, as those recordings are not in the dataset.",
+   "description": "Tests the findings of Hern\u00e1ndez-P\u00e9rez, Cooper and Newman (2020) on CRCNS hc-27, which holds the LFP of six rats, 5 or 6 channels each along the dorsal-ventral axis of the medial entorhinal cortex, at 500 Hz. It measures the theta phase shift, phase locking, coherence and power along the axis, the theta waveform asymmetry, the phase-specific conduction delays, the part of the delay due to asymmetry, and how delay varies with theta frequency. The laminar array and the multi-unit recordings are not in the data set.",
+   "notebooks": [
+    {
+     "path": "reproduce_hernandez_perez_2020.ipynb",
+     "title": "Reproducing Hern\u00e1ndez-P\u00e9rez et al. (2020) from CRCNS hc-27",
+     "executed": "notebooks/hernandez-perez-2020/reproduce_hernandez_perez_2020.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig2d-phase-shift-rate",
+     "statement": "Dorsal MEC sites are phase advanced relative to ventral sites, the theta phase shifting at 26.36 +/- 2.64 deg/mm along the dorsal-ventral axis, a shift significantly different from zero across six rats.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 2; Figure 2A and 2D",
+     "quote": "Dorsal sites were phase advanced relative to ventral, as can be seen in the cycle-triggered averages of the raw LFP, with the phase shifting at an average rate of 26.36 \u00b0/mm \u00b1 2.64 \u00b0/mm ( Figure 2A and D ). This mean shift was significantly different from zero (rank sum [max]=21 [21], p = 0.03, n=6)",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, O4)",
+       "statistic": "rank sum [max]=21 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Under the main reading (units `counts`, each channel's own theta epochs, least-squares slope with intercept, mean over rats) the per-rat slopes are 17.1, 22.6, 21.7, 38.0, 31.5 and 33.0 deg/mm, mean 27.32 (SEM 3.27), median 27.04, all positive (ventral sites lag), signed-rank T+ = 21 of 21, p = 0.031. All 12 combinations of the unit (`counts`, `none`), O3 and O6 readings that can be run meet the criterion (means 25.6 to 27.7), so the outcome does not rest on the unit reading. Under `file` rats 2 and 3 have no theta epoch, and no test over six rats can be made.",
+     "deviations": [
+      "Positions are 0.566 mm times the channel index (O1 a), the nominal spacing of Methods, Electrode array construction; the data set gives no positions, so the measured spacing of the one array with merged shanks (O1 b) cannot be used.",
+      "Every channel in each file is used (O2 a). The data set's author proof (docs/MEC-TW_authorProof.pdf, Figure 1, figure supplement 1) marks 6, 5, 6, 5, 6 and 5 electrode tips at the key recording for rats 1 to 6 (read by eye), the channel counts of the files, and labels the electrodes outside the MEC \"unused\", so reading O2 b selects the same channels.",
+      "The files state no unit. The 400 \u00b5V threshold of Methods, Data inclusion criteria, is applied on the scale of the integer files, with the non-integer files (rats 2 and 3) divided by 0.195 \u00b5V per bit (`counts`); this is 400 \u00b5V if the integer files are in \u00b5V and about 78 \u00b5V if they are Intan counts. `none` (no amplitude restriction) is shown and gives the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-linear-fit",
+     "statement": "The phase offsets are fit well by a linear relation with distance (r2 = 0.7627), so the phase changes steadily along the sampled length of the MEC.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 2; Figure 2D",
+     "quote": "The observed offsets were fit well by a linear Pearson correlation ( r 2 = 0.7627), indicating that the phase changed steadily across the sampled length of the MEC",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Pooled r2 of offset on distance over all rats' electrodes, dorsal-most (0, 0) included (reading a), is 0.778 under the main reading and 0.765 to 0.778 under every unit and O3 reading. Without the dorsal-most points (b) it is 0.66 to 0.68, and the median of per-rat r2 (c) is 0.95; neither is within 0.7627 +/- 0.0763.",
+     "deviations": [
+      "Offsets, positions and channels as in fig2d-phase-shift-rate."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-all-rats",
+     "statement": "Gradual theta phase shifts along the long axis of the MEC are seen in every one of the six rats.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 1; Figure 2A legend",
+     "quote": "In each of the six rats implanted, gradual phase shifts in the ~8 Hz theta-band were apparent in the raw recordings",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "All six per-rat Hilbert slopes are positive (17.1 to 38.0 deg/mm). In the cycle-triggered average of the raw LFP, triggered on the dorsal-most channel's waveform peaks in its theta epochs, the ventral-most channel's peak lags the dorsal-most's by 16, 18, 18, 40, 38 and 34 ms (triggers kept where the whole window is artefact-free on every channel).",
+     "deviations": [
+      "The lag of each channel's average is its local maximum above the average's mean nearest the trigger, within +/-124 ms (a standard choice; the paper shows the averages without a rule)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-phase-locking-high",
+     "statement": "The phase offset between sites is stable over the recording, the median phase locking between sites being 0.90.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 3; Figure 2B and 2E",
+     "quote": "The phase offset between any two channels was relatively stable over the duration of the recording ( Figure 2B and E ) given the median phase locking observed between sites of 0.90 [0.85\u20130.95]",
+     "statistics": [
+      {
+       "ci": {
+        "level": 0.95,
+        "low": 0.85,
+        "high": 0.95
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "With the dorsal-most channel's theta epochs (O3 c) the median over rats of the per-rat median MRL against the dorsal-most electrode is 0.946 (reading a) and over all pairs 0.936 (b), inside 0.85 to 0.95. With each channel's own epochs (O3 a) or all channels' (b) the readings give 0.959 to 0.971, above the range; with no amplitude restriction 0.78 to 0.81, below it. The outcome depends on which epochs are used, which the paper does not say (question for the authors under findings). In the threshold sweep on the common scale the O3 c value is 0.87, 0.92, 0.95 and 0.97 at 200, 300, 400 and 600, inside the range for 200 to 400; at 800 and above some rat has no epoch, and at 400 \u00b5V with the integer files read as Intan counts (2051) no rat has one.",
+     "deviations": [
+      "Assumed, the `counts` unit reading (see fig2d-phase-shift-rate), the reading under which the paper's 400 \u00b5V restriction can be applied to all six rats; without the restriction the claim fails."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-phase-locking-decrease",
+     "statement": "Phase locking decreases modestly but reliably with distance between electrodes, at -0.067 per mm.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 3; Figure 2E",
+     "quote": "The strength of phase locking (i.e., mean resultant length) decreased modestly but reliably as a function of the distance between the electrodes (slope of \u22120.067/mm \u00b1 0.011; rank sum [max]=0 [21], p = 0.03, n=6",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, O4)",
+       "statistic": "rank sum [max]=0 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Phase locking falls with distance in all six rats under every reading (T+ = 0, p = 0.031). With the dorsal-most channel's epochs (O3 c) the mean slope is -0.0675 per mm and the median -0.0619 (dorsal-most value included), within -0.067 +/- 0.011. With each channel's own epochs the slope is shallower (mean -0.039, median -0.030); with no amplitude restriction steeper (-0.13 to -0.14). In the threshold sweep the O3 c mean slope is -0.113, -0.086, -0.067 and -0.048 at 200, 300, 400 and 600; only 400 is within tolerance under O3 c.",
+     "deviations": [
+      "Assumed, the `counts` unit reading, as for fig2e-phase-locking-high; without the amplitude restriction the slope is outside the tolerance."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-coherence",
+     "statement": "Theta coherence across the MEC is 0.73.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 3; Figure 2C",
+     "quote": "Theta coherence across the MEC was 0.73 [0.66\u20130.81]",
+     "statistics": [
+      {
+       "ci": {
+        "level": 0.95,
+        "low": 0.66,
+        "high": 0.81
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Over all pairs the median over rats of the per-rat median coherence is 0.677 with 1 s windows (window a) and 0.690 with cohere's default (b), inside 0.66 to 0.81. Against the dorsal-most electrode only it is 0.605 to 0.621, below the range (bootstrap CI 0.50 to 0.75). Coherence uses artefact-free data and does not depend on the unit reading.",
+     "deviations": [
+      "Coherence is computed from Hann-windowed segments lying wholly inside the artefact-free data, so that removed stretches are not joined."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-coherence-decrease",
+     "statement": "Theta coherence decreases with distance between electrode pairs, at 0.067 per mm.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 3; Figure 2C and 2F",
+     "quote": "Coherence also decreased as a function of the distance between electrode pairs",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, O4)",
+       "statistic": "rank sum [max]=21 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Coherence with the dorsal-most electrode falls with distance in all six rats (T+ = 0, p = 0.031), but at 0.211 to 0.220 per mm (mean; median 0.222 to 0.224), about three times the paper's 0.067 +/- 0.018, under every window and mask reading. Per-rat slopes -0.10 to -0.30.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2g-power-no-change",
+     "statement": "Theta power does not change significantly along the long axis of the MEC.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 3; Figure 2G",
+     "quote": "We observed no significance change in theta power along the long axis of the MEC (slope of 0.73 [\u20130.08 \u2013 0.93] AU/mm; rank sum [max]=19 [21], p = 0.09, n=6; Figure 2G )",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, O4)",
+       "statistic": "rank sum [max]=19 [21]",
+       "p": 0.09,
+       "n": "6 rats"
+      },
+      {
+       "about": "median slope of theta power against distance",
+       "ci": {
+        "level": 0.95,
+        "low": -0.08,
+        "high": 0.93,
+        "unit": "AU/mm"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "The signed-rank test of the six per-rat slopes of relative theta power on distance does not find a change under any of the 12 unit, epoch and power-measure readings (p = 0.094 to 0.219); raw power gives p = 0.156 to 0.313. Under the main reading the median slope of relative power is -0.098 per mm (Welch; 95% CI -0.221 to 0.037) and -0.107 (Hilbert); the paper's median is +0.73 AU/mm [-0.08 to 0.93]. The test does not find the effect, so the claim of absence holds; the median slope here has the other sign from the paper's.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-along-not-across-layers",
+     "statement": "In the rat with a laminar array, theta phase shift between electrode pairs is positively correlated with displacement along the cell layers (rho = 0.58) but not with displacement across the layers (rho = 0.02), so the shifts are not due to placement across layers.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 4; Figure 3C to 3G",
+     "quote": "Phase shift was positively correlated with displacement \u2018along the cell layer\u2019 (rho = 0.58) but not with displacement \u2018across the layers\u2019 (rho = 0.02)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The laminar array (up to six stereotrodes per shank, Figure 3A) is not in the data set. Each rat's file holds 5 or 6 channels in one dorsal-ventral order, with no electrode geometry, so the displacements along and across the layers cannot be formed. The archive's file list holds the six LFP files, two MATLAB scripts and the documentation only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-mua-phase-shift",
+     "statement": "Theta-rhythmic multi-unit activity in layer II also forms a traveling wave, its lag increasing linearly with distance at the equivalent of 33.20 +/- 2.69 deg/mm, significantly greater than zero.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 5; Figure 4C and 4D",
+     "quote": "Computing the cross-correlogram of the amplitude envelope between each channel and the dorsal-most channel showed that multiunit activity also generated a traveling wave with a lag consistent with a 33.20\u00b0/mm \u00b1 2.69\u00b0/mm phase shift ( Figure 4C and D ). This phase shift was significantly greater than zero (rank sum [max]=21 [21], p = 0.03, n=3) and was fit well by a linear trendline ( r 2 = 0.9269)",
+     "statistics": [
+      {
+       "test": "rank sum",
+       "statistic": "rank sum [max]=21 [21]",
+       "p": 0.03,
+       "n": "3 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The multi-unit band is 600-3000 Hz (Methods, Analysis of multiunit spiking activity); the files are sampled at 500 Hz and hold nothing above 250 Hz, and they hold one recording per rat, the key LFP recording, not the later layer II recordings. No other file in the archive holds them.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-mua-matches-lfp",
+     "statement": "The slope relating lag to position does not differ significantly between theta-rhythmic multi-unit activity and LFP theta phase in the same three rats.",
+     "source": "Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC, paragraph 5; Figure 4D",
+     "quote": "The slope relating lag to position was not significantly different between theta-rhythmic multiunit activity and LFP theta phase across these three animals (rank sum [max]=0 [6], p = 0.25, n=3)",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, paired, O4)",
+       "statistic": "rank sum [max]=0 [6]",
+       "p": 0.25,
+       "n": "3 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig4d-mua-phase-shift, whose multi-unit recordings are not in the data set.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-rise-decay-gradient",
+     "statement": "The rise/decay asymmetry of theta is strongly negative at dorsal sites and significantly less so at ventral sites (-0.43 against -0.11).",
+     "source": "Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1; Figure 5C",
+     "quote": "theta was asymmetric at dorsal sites and significantly less so at relatively ventral sites, whether analyzed in terms of the asymmetric durations of the rise and decay (\u22120.43 [\u22120.57 \u2013 0.35] vs. \u22120.11 [\u22120.13 \u2013 0.09]; rank sum [max]=0 [21], p=0.03, n=6)",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, paired, O4)",
+       "statistic": "rank sum [max]=0 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      },
+      {
+       "about": "dorsal rise/decay asymmetry, read as -0.57 to -0.35 (an interval led by a minus sign drops the upper bound's sign, as in Figure 8D's printed CI; intervals that span zero are printed with a dash before both bounds)",
+       "ci": {
+        "level": 0.95,
+        "low": -0.57,
+        "high": -0.35
+       }
+      },
+      {
+       "about": "ventral rise/decay asymmetry, read as -0.13 to -0.09 on the same convention",
+       "ci": {
+        "level": 0.95,
+        "low": -0.13,
+        "high": -0.09
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Dorsal sites are more asymmetric than ventral ones in every rat under the main reading (T+ = 21 for ventral minus dorsal, p = 0.031; p = 0.031 or 0.0625 under the other readings), but the dorsal median is -0.171 against -0.43 +/- 0.14 and the ventral-most -0.049 against -0.11 +/- 0.02, and no reading brings both within tolerance (dorsal -0.136 to -0.176). The gradient is present but weaker. The two site readings (ventral-most, nearest 2.8 mm) are the same channel in every rat with 0.566 mm spacing. A synthetic check in the notebook shows the index is measured correctly for a wave inside the 1-25 Hz band. The criterion defines only reproduced; the outcome is partially reproduced because the direction and the test hold and the values do not. With the natural log (the Figure 5A legend says \"log\", the Methods log10) the main reading gives -0.393 and -0.112, both within tolerance, and 5 of 12 combinations meet every part; whether the criterion should allow it is asked of a reader (questions/hernandez-perez-2020.yaml), and the outcome is that of the claims file's log10. The threshold sweep gives a dorsal median of -0.14 to -0.18 at every threshold that can be run.",
+     "deviations": [
+      "Extrema of the 1-25 Hz signal (O7 a) are local maxima and minima at least 83 ms from the last of their type, made to alternate; a cycle is valid when its peak-to-peak period is 83 to 250 ms (Methods, Theta phase estimation). Reading O7 b (zero crossings of the 6-12 Hz signal) is shown and gives the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-peak-trough-gradient",
+     "statement": "The peak/trough asymmetry of theta is positive at dorsal sites and significantly lower at ventral sites (0.21 against -0.10).",
+     "source": "Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1; Figure 5C",
+     "quote": "or in terms of the asymmetric duration of the peak and trough durations (0.21 [0.00\u20130.29] vs. \u22120.10 [\u20130.16 \u2013 0.01]; rank sum [max]=0 [21], p=0.03, n=6) as shown in Figure 5",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, paired, O4)",
+       "statistic": "rank sum [max]=0 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      },
+      {
+       "about": "dorsal peak/trough asymmetry",
+       "ci": {
+        "level": 0.95,
+        "low": 0.0,
+        "high": 0.29
+       }
+      },
+      {
+       "about": "ventral peak/trough asymmetry, read as -0.16 to 0.01 (printed with a dash before both bounds, as the zero-spanning CI of Figure 2G is)",
+       "ci": {
+        "level": 0.95,
+        "low": -0.16,
+        "high": 0.01
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Dorsal median 0.110 (within 0.21 +/- 0.21), ventral-most -0.038 (within -0.10 +/- 0.11), lower in every rat (T+ = 0, p = 0.031). All 12 readings meet every part, and with the natural log (variant, see fig5c-rise-decay-gradient) all 12 still do (main 0.253 and -0.088).",
+     "deviations": [
+      "Peak duration is from the rising midpoint before a peak to the falling midpoint after it, trough duration from that falling midpoint to the next rising midpoint (Figure 5A legend)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-dorsal-sawtooth",
+     "statement": "At dorsal sites the rising phase of theta is significantly shorter than the decaying phase and the peaks are longer than the troughs.",
+     "source": "Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1; Figure 5B and 5C",
+     "quote": "at dorsal sites, the rising phase was significantly shorter than the decaying phase (signed rank [max]=0 [21], p=0.03, n=6) and the peaks were significantly longer than the troughs (signed rank [max]=20 [21], p=0.06, n=6)",
+     "statistics": [
+      {
+       "about": "rise against decay duration, dorsal",
+       "test": "signed rank",
+       "statistic": "signed rank [max]=0 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      },
+      {
+       "about": "peak against trough duration, dorsal",
+       "test": "signed rank",
+       "statistic": "signed rank [max]=20 [21]",
+       "p": 0.06,
+       "n": "6 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "On the dorsal-most channel the rise/decay index is negative in all six rats (T+ = 0, p = 0.031) under every reading. The peak/trough index is positive in five rats and exactly 0 in rat 1; the signed-rank test drops the zero, as Wilcoxon's test and MATLAB's signrank do, giving T+ = 15 of 15, p = 0.0625, at the criterion's level (O5). Under three readings rat 1's value is -0.02 and T+ = 20 of 21, p = 0.0625. The outcome is at the boundary whichever way the zero is treated: Pratt's treatment gives T+ = 20, exact p = 0.0625, and splitting the zero T+ = 20.5, exact p = 0.0625; no treatment can give less with five non-zero values.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-ventral-rise-not-peak",
+     "statement": "About 2.8 mm from the dorsal edge, the rising phase is still shorter than the decaying phase, but peak and trough durations no longer differ significantly.",
+     "source": "Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1; Figure 5C",
+     "quote": "At ~2.8 mm from the dorsal edge of the MEC, the rising phase was still significantly shorter than the decaying phase (signed rank [max]=20 [21], p=0.06, n=6) but the duration of the peaks was not significantly different than that of the troughs (signed rank [max]=3 [21], p=0.16, n=6)",
+     "statistics": [
+      {
+       "about": "rise against decay duration, about 2.8 mm",
+       "test": "signed rank",
+       "statistic": "signed rank [max]=20 [21]",
+       "p": 0.06,
+       "n": "6 rats"
+      },
+      {
+       "about": "peak against trough duration, about 2.8 mm",
+       "test": "signed rank",
+       "statistic": "signed rank [max]=3 [21]",
+       "p": 0.16,
+       "n": "6 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "At the channel nearest 2.8 mm (the ventral-most in every rat, 2.83 mm with six channels and 2.26 mm with five) the rise/decay index is negative in all six rats (T+ = 0, p = 0.031 under the main reading, at most 0.0625 under every reading) and the peak/trough test does not find a difference (T+ = 4, p = 0.219, median -0.038; p = 0.156 to 0.625 under the other readings).",
+     "deviations": [
+      "With five channels the nearest channel to 2.8 mm is at 2.26 mm, as the positions are nominal (O1 a)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-delay-by-phase",
+     "statement": "The conduction delay of theta along the dorsal-ventral axis is shortest for the falling phase (5.47 ms/mm) and longest for the peak (12.00 ms/mm), and the two differ significantly.",
+     "source": "Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 3; Figure 6B",
+     "quote": "We found that the conduction delay was shortest for the falling phase (5.47 ms/mm [2.87\u20138.70]) and greatest for the peak to travel from dorsal sites to ventral sites (12.00 ms/mm [6.52\u201314.43]) as shown in Figure 6 . These conduction delays differed significantly (rank sum [max]=0 [21], p=0.03, n=6)",
+     "statistics": [
+      {
+       "test": "rank sum (read as Wilcoxon signed-rank, paired, O4)",
+       "statistic": "rank sum [max]=0 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      },
+      {
+       "about": "falling-phase conduction delay",
+       "ci": {
+        "level": 0.95,
+        "low": 2.87,
+        "high": 8.7,
+        "unit": "ms/mm"
+       }
+      },
+      {
+       "about": "peak conduction delay",
+       "ci": {
+        "level": 0.95,
+        "low": 6.52,
+        "high": 14.43,
+        "unit": "ms/mm"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Under the main reading the falling-phase delay is 5.86 ms/mm (within 5.47 +/- 3.23) and the peak delay 11.82 ms/mm (within 12.00 +/- 5.48); the falling phase is the shortest of the four; the peak is longer than the falling phase in all six rats (T+ = 21, p = 0.031). The rising phase, 12.53 ms/mm, not the peak, is the longest, under all eight readings (with no amplitude restriction 10.43 against 9.36). Per rat under the main reading the falling phase is the shortest in all six, and the rising phase is longer than the peak in four (rats 1, 3, 5 and 6; the peak is the longest in rats 2 and 4). Every part holds except \"longest for the peak\". The criterion defines reproduced (all parts) and partially reproduced (values and order hold, test fails); this case, where one part of the order fails, is recorded as partially reproduced because the claim holds in part. Reference cycles per rat 678, 3467, 964, 659, 2601 and 1082 (all channels' epochs; 815 to 6286 with the dorsal-most's), against the paper's 3500 to 5000; regressions that did not converge, dropped, 0 to 212 per rat over the four phases.",
+     "deviations": [
+      "Reference cycles are the dorsal-most channel's valid cycles inside the theta epochs of all channels (O3 b; reading a coincides with b at the event times) or of the dorsal-most (c). The robust regression is MATLAB robustfit's bisquare with its default tuning, written out in the helper (Methods, Conduction delays of specific theta phases); the dorsal-most point (0, 0) is in each regression."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-delay-phase-slope",
+     "statement": "Conduction delay increases linearly with reference phase between the falling phase and the peak, at 0.02 (ms/mm)/deg (R2 = 0.82).",
+     "source": "Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 3; Figure 6C",
+     "quote": "The conduction delay increased at a rate of 0.02 (ms/mm)/deg [0.017\u20130.025] between the falling phase and the peak, a relationship that was fit well by a linear trendline (R 2 = 0.82; Figure 6C )",
+     "statistics": [
+      {
+       "ci": {
+        "level": 0.95,
+        "low": 0.017,
+        "high": 0.025,
+        "unit": "(ms/mm)/deg"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Under the main reading the pooled slope of rat-mean-subtracted delay on reference phase is 0.0208 (ms/mm)/deg and the median per-rat slope 0.0194, inside 0.017 to 0.025; the pooled R2 is 0.668 (0.668 to 0.695 under the `counts` readings), outside 0.82 +/- 0.082. With no amplitude restriction the slope is 0.013 to 0.014, below the range. The slope holds and the linear fit is weaker than the paper's, so the claim holds in part.",
+     "deviations": [
+      "Assumed, the `counts` unit reading; without the amplitude restriction the slope is outside the range and the claim is not reproduced."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-hilbert-between-limits",
+     "statement": "Converted to degrees at 8 Hz, the phase-specific shifts range from 15.38 deg/mm (falling phase) to 34.56 deg/mm (peak), and the Hilbert-based shift of about 26 deg/mm falls between them.",
+     "source": "Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 3; Figure 6B",
+     "quote": "The converted phase shifts varied from 15.38\u00b0/mm [8.27\u201325.06] to 34.56\u00b0/mm [17.78\u201341.56] between the falling phase and peak phase, respectively. As expected given the phase smoothing that occurs during the filtering step of the Hilbert-based phase estimation approach, the phase shift estimate derived from the Hilbert-based approach(~26\u00b0/mm) falls between these limits",
+     "statistics": [
+      {
+       "about": "falling-phase shift",
+       "ci": {
+        "level": 0.95,
+        "low": 8.27,
+        "high": 25.06,
+        "unit": "deg/mm"
+       }
+      },
+      {
+       "about": "peak shift",
+       "ci": {
+        "level": 0.95,
+        "low": 17.78,
+        "high": 41.56,
+        "unit": "deg/mm"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Converted at 360/125 deg/ms the falling-phase shift is 16.86 deg/mm (within 15.38 +/- 9.68) and the peak shift 34.06 (within 34.56 +/- 16.78), and the Hilbert shift, 27.32 deg/mm, lies between them, under all four `counts` readings. Reading b, the median of the converted per-cycle delays of all rats pooled, gives 18.33 and 32.39 under the main reading and also meets every part under all four `counts` readings. With no amplitude restriction the peak shift is 23.5 to 27.0, below the Hilbert shift of 27.7, under both readings.",
+     "deviations": [
+      "Assumed, the `counts` unit reading; without the amplitude restriction the claim fails."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-asymmetry-delay",
+     "statement": "The conduction delay attributable to the change in waveform asymmetry along the axis is 3.56 ms/mm, significantly greater than zero.",
+     "source": "Results, Theta waveform changes are a source of phase shift along the dorsal-ventral axis of MEC, paragraph 1; Figure 7B and 7D",
+     "quote": "These calculations revealed that the conduction delay due to varying asymmetry was 3.56 ms/mm [5.89\u20131.56] ( Figure 7B and D ). This was significantly greater than zero (signed rank [max]=21 [21], p=0.03, n=6)",
+     "statistics": [
+      {
+       "test": "signed rank",
+       "statistic": "signed rank [max]=21 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      },
+      {
+       "ci": {
+        "level": 0.95,
+        "low": 1.56,
+        "high": 5.89,
+        "unit": "ms/mm"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Under the main reading the asymmetry-related delay is 6.07 ms/mm (reading a; 6.56 under b), outside 3.56 +/- 2.33, positive in five of six rats (rat 3 -1.64; T+ = 20, p = 0.0625). With the dorsal-most channel's epochs it is 6.70 to 7.02 (a), positive in all six (p = 0.031). With no amplitude restriction two combinations are within tolerance (5.66 and 5.69, p = 0.031). Exchanging i and j in the formula gives the negatives. A synthetic wave with equal waveforms on all channels gives 0. In the threshold sweep the value is 6.0 to 7.6 ms/mm at every threshold where it can be computed. Half of Delay_Asym, a variant that is not the Methods' formula (a peak displaced by a change of rise and decay at a fixed period moves by half the change in their difference), gives 2.8 to 3.5 ms/mm, within tolerance; the outcome is that of the formula.",
+     "deviations": [
+      "The cycle of channel j is the one whose peak is nearest the reference peak; D_rise is the time from the trough before the peak to the peak and D_fall from the peak to the next trough (Methods, Asymmetry analysis and Asymmetry-corrected data; the paper does not say how cycles are matched across channels).",
+      "Assumed, the `counts` unit reading; without the amplitude restriction the claim is reproduced under two combinations."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-residual-delay",
+     "statement": "Subtracting the asymmetry-related delay (3.56 ms/mm) from the total observed conduction delay (12.98 ms/mm) leaves a residual delay of 9.61 ms/mm, so part of the total phase shift is due to waveform changes and a substantial shift remains.",
+     "source": "Results, Theta waveform changes are a source of phase shift along the dorsal-ventral axis of MEC, paragraph 1; Figure 7C and 7D",
+     "quote": "Subtracting the asymmetry-related conduction delay (3.56 ms/mm [5.89\u20131.56]) from the total observed conduction delay (12.98 ms/mm [18.21\u20138.87]) left a conduction delay of 9.61 ms/mm [11.98\u20136.99] ( Figure 7C and D )",
+     "statistics": [
+      {
+       "about": "total conduction delay",
+       "ci": {
+        "level": 0.95,
+        "low": 8.87,
+        "high": 18.21,
+        "unit": "ms/mm"
+       }
+      },
+      {
+       "about": "residual conduction delay",
+       "ci": {
+        "level": 0.95,
+        "low": 6.99,
+        "high": 11.98,
+        "unit": "ms/mm"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "The total delay is within 12.98 +/- 5.23 ms/mm under every reading (8.7 to 11.8; 11.83 under the main reading), but the residual is 2.0 to 5.2 ms/mm (5.24 under the main reading), below 9.61 +/- 2.62 under all 24 readings, as the asymmetry-related delay here is about twice the paper's. The residual is below the total in every rat under 18 of the 24 readings (paired signed-rank p = 0.031 there, 0.0625 under the others). With half of Delay_Asym removed (the variant of fig7-asymmetry-delay) the residual is 7.86 to 9.20 ms/mm under the `counts` readings, within tolerance (6.99 to 12.23), and 6.80 to 7.49 with no amplitude restriction, two of which (6.80 and 6.81) are below it; the outcome is that of the Methods' formula.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8c-relative-delay-flat",
+     "statement": "The relative conduction delay (percent of the theta period) does not change significantly with theta frequency.",
+     "source": "Results, Residual phase shifts after accounting for varying waveform asymmetry resemble those generated by weakly coupled oscillators, paragraph 2; Figure 8C",
+     "quote": "The results revealed that the relationship between relative conduction delay (% theta period) and theta frequency (Hz) was not significantly different from zero (median slope 0.34% theta period/Hz [\u22120.42, 0.42]; signed rank [max]=12 [21], p=0.84, n=6; Figure 8C )",
+     "statistics": [
+      {
+       "test": "signed rank",
+       "statistic": "signed rank [max]=12 [21]",
+       "p": 0.84,
+       "n": "6 rats"
+      },
+      {
+       "about": "median slope of relative delay on frequency",
+       "ci": {
+        "level": 0.95,
+        "low": -0.42,
+        "high": 0.42,
+        "unit": "% theta period/Hz"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "With the period from the reference peak to the next peak (the criterion's reading) the relative delay rises with frequency in all six rats, median slope 2.16 %/Hz (95% CI 1.61 to 2.52), T+ = 21, p = 0.031; with the period from the previous peak it falls in all six (median -1.28 %/Hz, p = 0.031). The test finds a relation under both, and under both unit readings. A centred period (half the interval from the previous to the next peak, this attempt's variant, which does not use the reference peak's time) gives no relation under the `counts` readings (p = 0.44 to 0.69): the relation the criterion's readings find comes largely from timing noise shared by the per-cycle delay and the period. A second variant, the frequency from the dorsal-most channel's Hilbert phase over a fixed 250 ms window centred on the reference peak, also finds no relation under three of the four `counts` combinations (main median -0.43 %/Hz, p = 0.156). The outcome says that the paper's result is not found with the claims file's period; it is not evidence against the paper's mechanism. Reference cycles per rat 664, 3463, 945, 657, 2528 and 1082.",
+     "deviations": [
+      "The per-cycle absolute delay is the robust slope of (peak offset minus Delay_Asym) on position, the corrected delay of fig7-residual-delay reading a (Methods, Comparison to coupled-oscillators and fixed-delay models).",
+      "Assumed, the claims file's period (reference peak to next peak, previous peak shown), which the paper does not define. The per-cycle delay and this period share the reference peak's time, and the relation changes sign between the next-peak and previous-peak periods, so the outcome rests on the definition (question for the authors under findings)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8d-absolute-delay-slope",
+     "statement": "The absolute conduction delay decreases significantly as theta frequency increases (median slope -3.12 ms/Hz).",
+     "source": "Results, Residual phase shifts after accounting for varying waveform asymmetry resemble those generated by weakly coupled oscillators, paragraph 2; Figure 8D",
+     "quote": "By contrast, the relationship between the absolute conduction delay and theta frequency differed significantly from zero (median slope \u22123.12 ms/Hz [\u22123.52\u20132.71]; signed rank [max]=0 [21], p=0.03, n=6; Figure 8D )",
+     "statistics": [
+      {
+       "test": "signed rank",
+       "statistic": "signed rank [max]=0 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      },
+      {
+       "about": "median slope, read as -3.52 to -2.71 since all six slopes are negative (signed rank 0 of 21)",
+       "ci": {
+        "level": 0.95,
+        "low": -3.52,
+        "high": -2.71,
+        "unit": "ms/Hz"
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "With the period to the next peak the absolute delay rises with frequency in all six rats, median slope +2.06 ms/mm per Hz (95% CI 1.28 to 2.76), p = 0.031; times the span of the array +5.16 ms per Hz. The sign is opposite to the paper's -3.12. With the period from the previous peak, shown as the criterion of fig8c-relative-delay-flat asks, the slope is negative in all rats, and with no amplitude restriction it is -3.13 and -3.12 ms/mm per Hz under two combinations, within tolerance; with the centred variant it is -0.84 (p = 0.0625) under the main reading. Per rat under the main reading, the uncorrected peak delay falls with frequency under the next-peak period (median -2.07, all six rats) and the trough delay, whose time is not the reference peak's, falls under the next-peak, centred and Hilbert frequencies (-0.74, -1.15, -1.85): the asymmetry correction, which subtracts the reference cycle's decay minus rise, shares timing with the period and turns the corrected slope positive. With the Hilbert frequency (a variant that uses no extrema times) the corrected delay falls with frequency, -0.89 ms/mm per Hz under the main reading (p = 0.094) and -0.40 to -1.35 under the eight combinations (p = 0.031 under five); over the span with no amplitude restriction it is -3.00 and -2.93 ms per Hz, within tolerance. The direction of the paper's finding appears when the frequency does not share timing with the delay.",
+     "deviations": [
+      "Assumed, the claims file's period, as for fig8c-relative-delay-flat; the outcome rests on it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-correlation-strength",
+     "statement": "Conduction delay varies more strongly with theta frequency than does the relative delay (median rho 0.14 against 0.02).",
+     "source": "Results, Residual phase shifts after accounting for varying waveform asymmetry resemble those generated by weakly coupled oscillators, paragraph 2",
+     "quote": "Comparing the correlation strength between the relative conduction delays (median rho = 0.02 [0.02\u20130.04]) and absolute conduction delays (median rho = 0.14 [0.09\u20130.19]) confirmed that conduction delay varied significantly more with theta frequency than did the phase difference (signed rank [max]=21 [21], p=0.03, n=6)",
+     "statistics": [
+      {
+       "test": "signed rank",
+       "statistic": "signed rank [max]=21 [21]",
+       "p": 0.03,
+       "n": "6 rats"
+      },
+      {
+       "about": "median correlation, relative delay",
+       "ci": {
+        "level": 0.95,
+        "low": 0.02,
+        "high": 0.04
+       }
+      },
+      {
+       "about": "median correlation, absolute delay",
+       "ci": {
+        "level": 0.95,
+        "low": 0.09,
+        "high": 0.19
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Under the main reading the median |r| with frequency is 0.260 for the relative delay and 0.207 for the absolute delay; the relative delay is the more strongly related (T+ = 0, p = 0.031), the reverse of the paper's 0.02 against 0.14. No combination of |r| or r2 meets every part (0 of 64, the centred and Hilbert variants included). With the centred period the order is the paper's (|r| 0.025 to 0.057 against 0.050 to 0.087 under `counts`) but the test does not find the difference with |r| (p = 0.156 to 0.438); with r2 it does under one `counts` combination (O3 c, O7 b; T+ = 20, p = 0.0625), where the absolute delay's median r2 is 0.005. With the Hilbert frequency |r| is 0.029 to 0.060 against 0.043 to 0.070, and the test finds the difference under one `counts` combination. The absolute delay's |r| is well below the paper's 0.14 under both variants.",
+     "deviations": [
+      "Assumed, the claims file's period, as for fig8c-relative-delay-flat; the outcome rests on it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-coupled-oscillators",
+     "statement": "The residual phase shifts behave as weakly coupled oscillators predict and not as a fixed-delay mechanism, with stable relative delays and absolute delays that shorten as theta frequency rises.",
+     "source": "Results, Residual phase shifts after accounting for varying waveform asymmetry resemble those generated by weakly coupled oscillators, paragraph 2; Figure 8",
+     "quote": "These results are consistent with the pattern of effects that would be generated by a coupled-oscillator-based mechanism",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hernandez_perez_2020.ipynb",
+     "notes": "Neither fig8c-relative-delay-flat nor fig8d-absolute-delay-slope is reproduced: under the criterion's reading both the relative delay (2.16 %/Hz) and the absolute delay (2.06 ms/mm per Hz) rise with frequency, both p = 0.031. This is not the fixed-delay pattern, as the absolute delay changes, so the criterion's \"partially reproduced otherwise\" applies, although neither of the coupled-oscillator predictions holds here. With the Hilbert frequency (variant) the relative delay does not change (p = 0.156) and the absolute delay falls (median -0.89 ms/mm per Hz, p = 0.094) under the main reading, the direction the coupled-oscillator account predicts.",
+     "deviations": [
+      "Assumed, the claims file's period, as for fig8c-relative-delay-flat; the outcome rests on it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files state no unit for the LFP. Rats 1, 4, 5 and 6 hold integers (step 1, rat 5 reaching 32767, the int16 limit), consistent with ADC counts; rats 2 and 3 hold non-integers whose spread is about five times smaller, consistent with \u00b5V at the Intan step of 0.195 \u00b5V. The paper's 400 \u00b5V theta threshold, applied to the values as stored, selects no theta epoch in rats 2 and 3, and with the integer files converted from Intan counts to \u00b5V it selects none in any rat (median theta amplitudes 52 to 201 \u00b5V), so the paper's epoch selection cannot be repeated without knowing the scale of each file.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds only the 500 Hz LFP of one recording per rat. The 30 kHz broadband, the layer II multi-unit recordings of Figure 4 and the laminar array's sites of Figure 3 are not in it, so three of the paper's findings cannot be tested.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No electrode positions or spacings are given per rat. Which electrodes were used is shown only in a figure of the data set's author proof (Figure 1, figure supplement 1), whose tip markers match the files' channel counts but are not labelled by channel. The paper says one array had merged shanks with a measured spacing not reported. Distances here are the nominal 0.566 mm per channel.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The recordings last 20.1 to 33.5 min (rat 5 33.5 min), where the paper describes 25-min trials.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-11",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the author-answers run (the executed notebook with the conclusion cells and the summary removed), the helper module and the claims file, with the paper. The verifier checked the archive listing and tested artefact_mask, theta_epochs, signrank, extrema and robustfit_slopes on synthetic inputs. Report in transcripts/hernandez-perez-2020/verifier-1-report.md. Its outcomes agree with the record on 23 of 24 claims.",
+     "agreed": 23,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "fig5c-rise-decay-gradient",
+       "outcome": "not_reproduced",
+       "reason": "Cell 28, dorsal -0.17 against -0.43 +/- 0.14, ventral -0.05 against -0.11 +/- 0.02. Direction and test hold (p = 0.031). 0 of 12 combinations pass. The Methods say log10, but the Figure 5A legend says only \"log\"; multiplying the main-reading medians by ln(10) = 2.303 matches the paper closely (-0.39 and -0.11), and the claims file did not list a natural-log reading. Under that reading the claim would pass (problem 1)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-11",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the round-1 revision, with its conclusions and summary, the helper module, the attempt record and the README, with the claims file and the paper. Report in transcripts/hernandez-perez-2020/verifier-2-report.md. Its outcomes agree with the record on 23 of 24 claims.",
+     "agreed": 23,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "fig5c-rise-decay-gradient",
+       "outcome": "not_reproduced",
+       "reason": "Under the claims file's log10 it still reads it as not reproduced, since the criterion defines only \"reproduced\" and both values are far outside tolerance (cell 39, -0.171 and -0.049). The record states its disagreement correctly, and the author's reason (\"effect present but weaker\", from the protocol) is defensible. The natural-log question has gone to a reader; under ln, 5 of 12 combinations pass."
+      }
+     ]
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. In what unit is each file of hc-27, and was the 400 \u00b5V theta-amplitude threshold applied on the same scale in all six rats? Applying it to the values as stored leaves rats 2 and 3 without theta epochs; this attempt divided their values by 0.195 \u00b5V per bit (assumed). Several outcomes (phase locking, the phase-specific delays and the asymmetry-related delay) change with this choice.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Were the phase locking and its slope (Figure 2E) computed on each channel's own high-theta epochs, on the dorsal-most channel's, or on times all channels share? The median phase locking is 0.946 with the dorsal-most channel's epochs and 0.96 to 0.97 with the others, and the slope -0.068 against -0.03 to -0.04 per mm.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. For Figure 8, how was a cycle's period defined (from the reference peak to the next, from the previous, or otherwise), and was the absolute delay the per-cycle robust slope? Here the relation of per-cycle delay to frequency changes sign between the next-peak and previous-peak periods and largely disappears with a period that does not use the reference peak's time, which suggests the relation is dominated by timing noise shared by the two measures. With a frequency from the Hilbert phase the median slope of the absolute delay on frequency is negative under every reading, the paper's direction, but the signed-rank test finds the fall in only one of the four `counts` readings (p = 0.094 under the main reading) and in all four with no amplitude restriction.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How were cycles matched across channels for the asymmetry-related delay (Methods, Asymmetry-corrected data), and how were the waveform extrema chosen when local maxima and minima did not alternate? This attempt matched the cycle with the nearest peak and kept the more extreme of two extrema of a kind in a row.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Several tests are printed as \"rank sum [max]\" with values (a maximum of 21 for n = 6, p = 0.03 at 0 or 21) that are those of a signed-rank test, and the multi-unit test is printed as \"rank sum [max]=21 [21], p = 0.03, n=3\", which no rank test of three values can give (maximum 6, smallest p 0.25). The coherence slope is printed as positive (0.067/mm) with a statistic of 21 of 21 while the text says coherence decreased.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "hernandez-perez-2020",
+   "type": "reproduction",
+   "title": "Theta traveling wave along the medial entorhinal cortex (Hern\u00e1ndez-P\u00e9rez et al. 2020)",
+   "description": "Tests the findings of Hern\u00e1ndez-P\u00e9rez, Cooper and Newman (2020) on CRCNS hc-27, which holds the LFP of six rats, 5 or 6 channels each along the dorsal-ventral axis of the medial entorhinal cortex, at 500 Hz. It measures the theta phase shift, phase locking, coherence and power along the axis, the theta waveform asymmetry, the phase-specific conduction delays, the part of the delay due to asymmetry, and how delay varies with theta frequency. The laminar array and the multi-unit recordings are not in the data set.",
+   "datasets": [
+    "crcns:hc-27"
+   ],
+   "papers": [
+    "10.7554/elife.52289"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_hernandez_perez_2020.ipynb",
+     "title": "Reproducing Hern\u00e1ndez-P\u00e9rez et al. (2020) from CRCNS hc-27",
+     "executed": "notebooks/hernandez-perez-2020/reproduce_hernandez_perez_2020.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 28,
+   "hashed": true
+  }
+ ],
+ "badge": null
+}
