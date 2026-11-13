@@ -948,8 +948,15 @@ def rows(data: dict) -> dict[str, list]:
     by_id = {t["key"]: t for t in data["targets"]}
     dandisets, claims, findings = [], [], []
     journal = journals_of(data["targets"])
+    # The papers associated with each dataset: the paper its data were published with and the papers that reuse
+    # them (papers/datasets/), attempted or not.
+    papers_on: dict = {}
+    for q in papers_of(data):
+        for k in q["datasets"]:
+            papers_on.setdefault(k, []).append(q)
     for t in data["targets"]:
         atts = current.get(t["key"])
+        mine = sorted(papers_on.get(t["key"], []), key=lambda q: (not q["attempts"], q["key"]))
         outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
         dandisets.append({
             "id": t["key"], "label": t["label"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
@@ -977,6 +984,11 @@ def rows(data: dict) -> dict[str, list]:
                 atts or [], key=version_order, reverse=True) if not a.get("deprecated"))),
             "tested": sorted({version_state(a) for a in atts or [] if not a.get("deprecated")}),
             "n_tested": len({a["paper"].lower() for a in atts or [] if not a.get("deprecated")}),
+            # Every paper associated with the dataset, those with an attempt first.
+            "n_papers": len(mine), "paper_count": "one" if len(mine) == 1 else "several" if mine else None,
+            "papers": [{"byline": q["byline"], "doi": q["doi"], "attempted": bool(q["attempts"]),
+                        "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims" else None}
+                       for q in mine],
             "badge": (badge_of(data, t["key"]) or {}).get("text") if atts else None,
             "deprecated": any(a.get("deprecated") for a in atts or []),
             "converted": "catalystneuro" if t["catalystneuro"] else "other",
@@ -2580,8 +2592,10 @@ LISTS = {
                  "read. For a dataset&rsquo;s owner and the curators of its archive. Results on a paper&rsquo;s "
                  "claims are in the <a href=\"../papers/\">papers list</a>.",
         "facets": [("archive", "Archive"), ("found", "Open findings"), ("tested", "Tested on"),
-                   ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-findings", "Most open findings"), ("-date", "Most recently tested"), ("id", "Identifier"),
+                   ("paper_count", "Papers"), ("converted", "Converted by"), ("technique", "Technique"),
+                   ("species", "Species")],
+        "sorts": [("-findings", "Most open findings"), ("-date", "Most recently tested"), ("-n_papers", "Most papers"),
+                  ("id", "Identifier"),
                   ("-id", "Identifier, newest first"), ("-size_gb", "Largest"), ("size_gb", "Smallest"),
                   ("name", "Title")],
         "csv": None,
@@ -2625,6 +2639,7 @@ def page_list(data: dict, kind: str) -> str:
             "found": {**FINDING_KINDS, "(none)": "None recorded"},
             "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
             "attempted": {"yes": "Has a paper attempted", "no": "None attempted yet"},
+            "paper_count": {"one": "One paper", "several": "Several papers", "(none)": "None listed"},
             "as": {"author": "An author of a paper", "contributor": "A contributor of a dataset"},
             "relation": {"primary": "Its own data", "reuses": "Reused data"},
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
