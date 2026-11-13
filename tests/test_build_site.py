@@ -317,6 +317,37 @@ def test_a_deprecated_attempt_counts_for_nothing():
     assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
 
 
+def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
+    data, out = built
+    papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
+    seen = none = zeros = 0
+    for orcid, author in list(site.author_index(data).items())[:400]:
+        counts = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in author["papers"]) for k in site.OUTCOMES}
+        every = site.author_outcomes(data, author)
+        line, card = (out / "badge" / "authors" / f"{orcid}-{kind}.svg" for kind in ("outcomes", "card"))
+        api = json.loads((out / "api" / "authors" / f"{orcid}.json").read_text())
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["outcome_counts"] == (counts if every else None)
+        assert api["badges"] == {"reproduced": (site.author_badge(data, author) or {}).get("svg"),
+                                 "outcomes": every["svg_outcomes"] if every else None, "card": every["svg_card"] if every else None}
+        if not every:
+            none += 1
+            continue
+        seen += 1
+        assert every["counts"] == counts and every["claims"] == sum(counts.values())
+        # All four outcomes are on both, by count, a word and a dot in the outcome's colour: one with no claim as 0.
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg and f'<circle' in svg
+                assert f'fill="{site.OUTCOME_FILL[k]}"' in svg
+            assert svg.count("<circle") >= 4 and site.e(every["alt"]) in svg
+        zeros += any(n == 0 for n in counts.values())
+        assert site.e(author["name"]) in card.read_text() and card.read_text().count("<rect") == 1 + sum(1 for n in counts.values() if n)
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+    assert seen and none and zeros
+
+
 def test_a_deprecated_attempt_is_marked_on_its_page(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
@@ -346,7 +377,8 @@ def test_every_attempt_has_a_page_under_its_paper_naming_the_dataset_versions_it
                 several += a["id"] in current
                 up = "../../../"
                 for o in a["outcomes"]:
-                    assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
+                    assert (f'id="claim-{o["claim"]}"' if o.get("kind") == "link"
+                            else f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"') in page
                 # The paper's page leads to each of its attempts.
                 assert f'href="../../{own}"' in (out / "papers" / q["key"] / "index.html").read_text()
             # An attempt links to every dataset it used, with the version it ran on.
@@ -393,6 +425,9 @@ def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
             page = _paper_page(data, out, attempt)
             assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
             for o in attempt["outcomes"]:
+                if o.get("kind") == "link":   # a check of the link to the paper is under Provenance, not a claim
+                    assert f'id="claim-{o["claim"]}"' in page
+                    continue
                 assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"><details><summary>' in page
             for nb in attempt["notebooks"]:
                 if any(o.get("notebook") == nb["path"] for o in attempt["outcomes"]):
@@ -544,12 +579,52 @@ def test_link_claims_are_counted_apart_from_the_papers_findings():
     assert sum(site.outcome_counts(attempt).values()) == 1
     assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
     assert site.outcome_counts(attempt, "link")["reproduced"] == 1
-    assert "1 check that the dataset is the data behind the paper" in site.outside_note([attempt])
+    # A check of the link is a step of the work, not a result: the page's note of what is counted apart leaves it
+    # out, and has the claims on outside data.
+    note = site.outside_note([attempt])
+    assert "check that the dataset" not in note and "1 claim that also uses data from outside the dataset" in note
+    assert site.outside_note([{"outcomes": attempt["outcomes"][:2]}]) == ""
     # The overview folds them into a details block that names each group and its count.
     folded = site.outside_note([attempt], collapsed=True)
     assert folded.startswith('<details class="separate">')
-    assert "claims using outside data (1) and checks of the link to the paper (1)</summary>" in folded
-    assert "<details" not in site.outside_note([attempt])
+    assert "Counted separately: claims using outside data (1)</summary>" in folded and "link" not in folded
+    assert "<details" not in note
+
+
+def test_a_check_of_the_link_is_under_provenance_and_not_among_the_claims(built):
+    data, out = built
+    seen = 0
+    for q in site.papers_of(data):
+        for a in q["attempts"]:
+            links = [o for o in a["outcomes"] if o.get("kind") == "link"]
+            if not links or len(q["attempts"]) > 1:
+                continue
+            seen += 1
+            page = (out / "papers" / q["key"] / "index.html").read_text()
+            claims, provenance = page.split('id="provenance"')[0], page.split('id="provenance"')[1]
+            for o in links:
+                # Its anchor is kept, under Provenance; it is not a claim in the list, and the page's counts of
+                # outcomes do not mention it.
+                assert f'id="claim-{o["claim"]}"' in provenance and f'id="claim-{o["claim"]}"' not in claims
+                assert site.e(o["statement"]) in provenance
+            assert "check that the dataset is the data behind the paper" not in page.lower()
+            shown = [o for o in a["outcomes"] if o.get("kind") != "link"]
+            assert claims.count('<li class="claim') == len(shown)
+    assert seen
+
+
+def test_a_claim_shows_its_id_which_the_response_form_asks_for():
+    claim = {"claim": "fig2-rates", "statement": "Rates rise.", "source": "Figure 2B", "outcome": "reproduced",
+             "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    # In view without opening the claim, and not a link there (a click on the summary opens the claim).
+    head = html.split("</summary>")[0]
+    assert '<code class="claim-id" title="The id of this claim">fig2-rates</code>' in head and "<a " not in head
+    # Open, the claim gives its id again with a link to itself.
+    assert 'Claim id <code>fig2-rates</code>' in html and '<a href="#claim-fig2-rates">link to this claim</a>' in html
+    # The form's hint names ids as the page shows them, not numbers the page does not have.
+    form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
+    assert "C3, C7" not in form and "end of the claim's first line" in form
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
@@ -736,6 +811,86 @@ def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
     assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
                                                 "kind": "metadata_error", "about": "data"}]
     assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"
+
+
+def _response(name, labels, attempt="tingley-2021-01", paper="tingley-2021", orcid="_No response_"):
+    body = (f"### Paper\n\n{paper}\n\n### Attempt\n\n{attempt}\n\n### Your name\n\n{name}\n\n"
+            f"### Your role in the paper\n\nfirst author\n\n### ORCID iD\n\n{orcid}\n\n"
+            "### Your view of the attempt\n\nSome outcomes are wrong\n\n### Claims you are responding to\n\nC3\n\n"
+            "### Your response\n\nThe intervals in Figure 3 are bootstrapped.\n\n### Supporting links\n\n_No response_\n")
+    return {"url": "https://github.com/x/y/issues/" + "".join(str(ord(c)) for c in name)[:12], "body": body, "state": "OPEN",
+            "createdAt": "2026-11-07T00:00:00Z", "labels": [{"name": n} for n in ["author-response", *labels]]}
+
+
+TINGLEY = {"key": "tingley-2021", "byline": "Tingley et al. 2021"}
+
+
+def test_the_response_link_fills_in_the_paper_and_the_attempt():
+    url = site.respond_link(TINGLEY, {"id": "tingley-2021-01"})
+    assert "template=author-response.yml" in url and "paper=tingley-2021" in url and "attempt=tingley-2021-01" in url
+    assert "title=Author+response%3A+Tingley+et+al.+2021" in url and "attempt=" not in site.respond_link(TINGLEY)
+
+
+def test_a_response_names_its_paper_by_key_doi_or_page():
+    doi = site.paper_records.doi_of("tingley-2021")
+    for said in ("tingley-2021", doi, f"https://doi.org/{doi}", "https://encorescience.org/papers/tingley-2021/"):
+        assert list(site.responses_by_paper([_response("A", ["author-confirmed"], paper=said)])) == ["tingley-2021"], said
+    assert site.responses_by_paper([_response("A", [], paper="no such paper")]) == {}
+
+
+def test_only_confirmed_author_responses_are_shown():
+    rs = site.responses_by_paper([_response("A. Author", ["author-confirmed"]), _response("Someone", [])])
+    assert list(rs) == ["tingley-2021"] and [r["shown"] for r in rs["tingley-2021"]] == [True, False]
+    html = site.responses_block({"responses": rs}, TINGLEY)
+    assert "A. Author" in html and "bootstrapped" in html and "Someone" not in html
+    assert "1 response from someone who says they are an author awaits confirmation" in html
+    assert "attempt tingley-2021-01" in html and "template=author-response.yml" not in html   # the form is linked once, under it
+
+
+def test_a_paper_without_responses_has_no_responses_section():
+    assert site.responses_block({"responses": {}}, TINGLEY) == ""
+
+
+def test_an_attempts_page_shows_the_responses_to_it_and_to_the_paper_in_general():
+    mine, other, general = (_response("A. Author", ["author-confirmed"]),
+                            _response("Be Author", ["author-confirmed"], attempt="tingley-2021-02"),
+                            _response("Cee Author", ["author-confirmed"], attempt="_No response_"))
+    rs = site.responses_by_paper([mine, other, general, mine])
+    page = site.responses_block({"responses": rs}, TINGLEY)
+    assert page.count("A. Author") == 1 and "Be Author" in page and "Cee Author" in page
+    one = site.responses_block({"responses": rs}, TINGLEY, {"id": "tingley-2021-01"})
+    assert "A. Author" in one and "Cee Author" in one and "Be Author" not in one
+
+
+def test_responses_are_on_the_papers_page_and_the_writers_page_and_not_the_datasets(tmp_path):
+    data = site.collect()
+    person = next(a for a in site.authors_of(data, site.paper_records.doi_of("tingley-2021")) if a.get("orcid"))
+    data["responses"] = site.responses_by_paper([_response(person["name"], ["author-confirmed"], orcid=person["orcid"])])
+    site.build(data, tmp_path)
+    paper = (tmp_path / "papers" / "tingley-2021" / "index.html").read_text()
+    # On the paper's page, under the summary: the writer's name opens their page, as their ORCID iD has one.
+    assert "Responses from the paper&rsquo;s authors" in paper and "bootstrapped" in paper
+    assert f'<strong><a href="../../authors/{person["orcid"]}/">{site.e(person["name"])}</a></strong>' in paper
+    assert paper.count("Respond to this attempt</a>") == 1 and "attempt=tingley-2021-" in paper
+    # Their own page has a Responses tab with it, naming the paper.
+    theirs = (tmp_path / "authors" / person["orcid"] / "index.html").read_text()
+    assert 'data-panel="responses"' in theirs and "bootstrapped" in theirs and 'papers/tingley-2021/">Tingley et al. 2021</a>' in theirs
+    # A dataset's page has neither the responses nor the form: a response is to a paper's attempt.
+    dataset = (tmp_path / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert "bootstrapped" not in dataset and "Respond to" not in dataset
+
+
+def test_the_response_form_is_on_paper_and_attempt_pages(built):
+    data, out = built
+    paper = (out / "papers" / "tingley-2021" / "index.html").read_text()
+    assert "Respond to this attempt</a>" in paper and "paper=tingley-2021&amp;" in paper and "attempt=tingley-2021-" in paper
+    # A paper with several current attempts does not choose one for the writer; each attempt's page does.
+    several = (out / "papers" / "semenov-2026" / "index.html").read_text()
+    assert "Respond to an attempt</a>" in several and "attempt=semenov-2026" not in several
+    assert "attempt=semenov-2026-03" in (out / "papers" / "semenov-2026" / "semenov-2026-03" / "index.html").read_text()
+    assert "Respond to" not in (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    # No one has a Responses tab while there are no responses.
+    assert 'data-panel="responses"' not in (out / "authors" / next(iter(site.author_index(data))) / "index.html").read_text()
 
 
 def test_the_journal_filter_names_at_most_the_top_journals(built):
@@ -1016,3 +1171,113 @@ def test_a_lists_filters_open_again_when_a_narrow_window_is_widened():
     # not only when the page loads (assets/list.js follows the media query).
     js = (site.ASSETS / "list.js").read_text()
     assert "narrow.addEventListener('change', fitFilters)" in js and "$('facets').open = !narrow.matches" in js
+
+
+def test_a_dataset_has_a_badge_for_the_findings_reproduced_from_it_in_verified_attempts(built):
+    data, out = built
+    with_badge = 0
+    for key, attempts in site.current_attempts(data).items():
+        archive, ident = site.split_key(key)
+        svg = out / "badge" / archive / f"{ident}.svg"
+        api = json.loads((out / "api" / f'{site.page_of(key).rstrip("/")}.json').read_text())
+        row = next(r for r in json.loads((out / "data" / "datasets.json").read_text()) if r["id"] == key) if with_badge < 3 else None
+        # Only claims on the dataset, reproduced in full, in a current attempt a verifier has checked.
+        counted = [a for a in attempts if not a.get("deprecated") and a["tier"] != "runs"]
+        total = sum(site.outcome_counts(a)["reproduced"] for a in counted)
+        badge = site.badge_of(data, key)
+        assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and api["badge"] == badge
+        page = (out / site.page_of(key) / "index.html").read_text()
+        assert ("Badge for this dataset" in page) == bool(total)
+        if not total:
+            continue
+        with_badge += 1
+        assert badge["reproduced"] == total == sum(q["reproduced"] for q in badge["papers"])
+        assert badge["text"].startswith(f'{total} finding{"" if total == 1 else "s"} reproduced')
+        assert badge["url"] == site.SITE_URL + site.page_of(key) and badge["svg"].endswith(f"badge/{archive}/{ident}.svg")
+        text = svg.read_text()
+        assert text.startswith("<svg ") and f">{site.e(badge['text'])}</text>" in text and ">Encore</text>" in text
+        assert f"<strong>{total}</strong> finding" in page and site.e(badge["svg"]) in page
+        if row is not None:
+            assert row["badge"] == badge["text"]
+    assert with_badge
+    # A dataset's page leads with its papers; what was found about its data comes after.
+    page = (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert page.index('id="papers"') < page.index('id="findings"')
+
+
+def test_a_badge_sums_the_papers_and_leaves_out_what_is_not_verified():
+    data = site.collect()
+    key = next(k for k, atts in site.current_attempts(data).items()
+               if len(atts) == 1 and atts[0]["tier"] != "runs" and not atts[0].get("deprecated")
+               and site.outcome_counts(atts[0])["reproduced"] >= 2)
+    first = site.current_attempts(data)[key][0]
+    one = site.badge_of(data, key)
+    assert "papers" not in one["text"] and len(one["papers"]) == 1 and one["papers"][0]["relation"] in ("primary", "reuses")
+    # A second paper tested on the dataset, verified: its findings are added, and the badge says how many papers.
+    n = site.outcome_counts(first)["reproduced"]
+    second = {**first, "id": "another-2020-01", "paper": "10.1000/another"}
+    data["attempts"].append(second)
+    two = site.badge_of(data, key)
+    assert two["reproduced"] == 2 * n and two["text"] == f"{2 * n} findings reproduced · 2 papers"
+    assert "2 papers" in site.badge_svg(two) and two["alt"].endswith(f"from 2 papers, from {site.dataset_label(key)}")
+    # Not yet verified, or set aside: not counted.
+    second["tier"] = "runs"
+    assert site.badge_of(data, key)["reproduced"] == n
+    second["tier"], second["deprecated"] = first["tier"], "to redo"
+    assert site.badge_of(data, key)["reproduced"] == n
+    first["tier"] = "runs"
+    assert site.badge_of(data, key) is None
+
+
+def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_verified_attempts(built):
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "authors.json").read_text())}
+    with_badge = without = 0
+    for orcid, author in site.author_index(data).items():
+        badge = site.author_badge(data, author)
+        total = sum(site.outcome_counts(a)["reproduced"] for q in author["papers"] for a in q["live"] if a["tier"] != "runs")
+        svg = out / "badge" / "authors" / f"{orcid}.svg"
+        assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and rows[orcid]["badge"] == (badge or {}).get("text")
+        if with_badge + without > 60 and badge and with_badge > 5 and without > 5:
+            continue   # the files of a sample of people are read; the rule is checked for everyone
+        api = json.loads((out / "api" / "authors" / f"{orcid}.json").read_text())
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert api["badge"] == badge and api["orcid"] == orcid and api["name"] == author["name"]
+        assert [q["key"] for q in api["papers"]] == [q["key"] for q in author["papers"]]
+        assert [d["key"] for d in api["datasets"]] == [d["key"] for d in author["datasets"]]
+        # The section is there when the person has any badge: this one, or those with all the outcomes.
+        assert ("for this page</h2>" in page) == bool(badge or site.author_outcomes(data, author))
+        assert (site.e(f'{orcid}.svg" alt=') in page) == bool(badge)
+        if not badge:
+            without += 1
+            continue
+        with_badge += 1
+        assert badge["reproduced"] == total == sum(q["reproduced"] for q in badge["papers"])
+        papers = len(badge["papers"])
+        assert badge["text"] == f'{total} finding{"" if total == 1 else "s"} reproduced' + (f" · {papers} papers" if papers > 1 else "")
+        assert badge["url"] == site.SITE_URL + f"authors/{orcid}/" and f">{site.e(badge['text'])}</text>" in svg.read_text()
+        # The page has the badge and what to paste to show it, as HTML and as Markdown.
+        assert f'[![{site.e(badge["alt"])}]({badge["svg"]})]({badge["url"]})' in page
+        assert site.e(f'<a href="{badge["url"]}"><img src="{badge["svg"]}"') in page
+    assert with_badge and without
+    # A dataset's page offers both forms too.
+    assert "Or as Markdown:" in (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
+
+
+def test_the_authors_list_sorts_by_findings_reproduced(built):
+    data, out = built
+    page = (out / "authors" / "index.html").read_text()
+    config = json.loads(page.split('id="list-config">')[1].split("</script>")[0])
+    assert {"key": "-n_reproduced", "label": "Most findings reproduced"} in config["sorts"]
+    rows = json.loads((out / "data" / "authors.json").read_text())
+    index = site.author_index(data)
+    # The number is the one the row's bar shows: the claims reproduced across the person's papers.
+    assert all(r["n_reproduced"] == (r["counts"] or {}).get("reproduced", 0) for r in rows)
+    assert max(r["n_reproduced"] for r in rows) > 0 and any(r["n_reproduced"] == 0 for r in rows)
+    # A row has the outcomes of all the person's papers as one bar, and their first few papers only.
+    papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
+    for r in rows[:200]:
+        total = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in index[r["id"]]["papers"]) for k in site.OUTCOMES}
+        assert r["counts"] == (total if sum(total.values()) else None)
+    js = (site.ASSETS / "list.js").read_text()
+    assert "miniBar(r.counts)" in js and "r.papers.slice(0, SHOWN)" in js and "and ${r.papers.length - SHOWN} more" in js

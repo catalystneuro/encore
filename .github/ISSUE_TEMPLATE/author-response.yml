@@ -1,0 +1,88 @@
+name: Respond to an attempt (paper authors)
+description: "For an author of the paper: say whether an attempt's outcomes are right, and what it got wrong."
+title: "Author response: "
+labels: [author-response]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for looking at the attempt.
+
+        - This issue is public.
+        - We first confirm that you are an author of the paper, using the ORCID iD below or by writing to you. Your response then appears on the paper's page in the registry, and on your own author page if you gave an ORCID iD.
+        - If you agree with the outcomes, we record your agreement on the attempt as an endorsement.
+        - If you disagree, we correct the claims, run the attempt again, or withdraw it.
+
+        The steps we follow are in docs/author-responses.md.
+
+        A failure to reproduce in this registry may be a failure of the agent. It is not a judgement of the paper. Telling us where the attempt went wrong is the most useful thing you can do.
+  - type: input
+    id: paper
+    attributes:
+      label: Paper
+      description: "The paper's key in the registry (for example sargolini-2006) or its DOI. The link on the paper's page fills this in."
+    validations:
+      required: true
+  - type: input
+    id: attempt
+    attributes:
+      label: Attempt
+      description: "The attempt's id (for example sargolini-2006-02). The link on the page fills this in. Leave it empty if your response is about all of the paper's attempts."
+  - type: input
+    id: name
+    attributes:
+      label: Your name
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Your role in the paper
+      options:
+        - first author
+        - corresponding or senior author
+        - co-author
+        - not an author (for example, a maintainer of the dataset)
+    validations:
+      required: true
+  - type: input
+    id: orcid
+    attributes:
+      label: ORCID iD
+      description: "For example 0000-0002-1825-0097. We use it to confirm that you are an author of the paper, and to link your response to your author page. If you leave it empty, we will write to you at your institution."
+  - type: dropdown
+    id: view
+    attributes:
+      label: Your view of the attempt
+      options:
+        - The outcomes look right
+        - Some outcomes are wrong
+        - The attempt misread what the paper claims
+        - The dataset is incomplete or differs from what the paper used
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: claims
+    attributes:
+      label: Claims you are responding to
+      description: "The id of each claim, shown at the end of the claim's first line on the paper's page (for example units-recorded, fig1b-speed-ratio), or 'all'."
+  - type: textarea
+    id: response
+    attributes:
+      label: Your response
+      description: "What the attempt got right or wrong, and why. Point to the paper, its methods, its code or the data where you can."
+    validations:
+      required: true
+  - type: textarea
+    id: links
+    attributes:
+      label: Supporting links
+      description: "Code, corrected data, errata, or anything else that helps."
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Publication
+      options:
+        - label: "I agree that this response may be shown on the paper's page in the registry, with my name."
+          required: true
