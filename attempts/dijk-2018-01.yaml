@@ -1,0 +1,737 @@
+schema_version: 3
+id: dijk-2018-01
+datasets:
+- archive: crcns
+  id: hc-17
+  version: unversioned
+  doi: 10.6080/K0Q23XDV
+  relation: primary
+paper: doi:10.1016/j.neuron.2018.04.018
+date: '2026-11-13'
+entry: dijk-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43353005059
+outcomes:
+- claim: fig1-single-field-proportion
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig1-single-field-proportion
+  measured:
+  - 44.4
+  - 50.0
+  notes: Under every reading of the field rule (M5) and of the rate map (M2), the share of place cells
+    with one field in the first standard session is 44 to 62% in DG and 45 to 55% in CA, against 64 and
+    75%; no reading puts both within tolerance. The regions do not differ (p 0.34 to 0.68), as in the
+    paper. Many cells have no field under the claims file's rules (7 to 19 of 45 DG cells), so the result
+    rests on the M5 assumption, which does not fit these unsmoothed maps. Values are 44.4% (DG) and 50.0%
+    (CA) under M2 (a) and M5 (a), the first readings.
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Place fields follow the claims file's M5 readings (at least 9 edge-contiguous bins above 20% of the
+    peak, or above 1 AP/s) on unsmoothed maps (M2); the paper gives no field definition, and on these
+    maps many cells have no field.
+  - The first standard session of a day is its lowest-numbered circleintestbox session.
+  assumed: true
+- claim: fig1-field-number-scaling
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig1-field-number-scaling
+  measured:
+  - 0.71
+  - 0.74
+  - 0.77
+  - 1.24
+  notes: Mean fields per cell are 0.71 to 1.20 (DG, circular) and 0.74 to 1.47 (DG, removed) against 1.48
+    and 2.70, and no reading of M5 and M2 puts the four means within tolerance. Field numbers do rise
+    after removal under some readings (condition p 0.001 to 0.18 with cell as random term), but the post
+    hoc pattern of the paper (removed DG above circular DG and CA) is not found in any reading (p 0.10
+    to 0.99). Measured values are for M2 (a) and M5 (a).
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Place fields follow the claims file's M5 readings (at least 9 edge-contiguous bins above 20% of the
+    peak, or above 1 AP/s) on unsmoothed maps (M2); the paper gives no field definition, and on these
+    maps many cells have no field.
+  - Mixed models are statsmodels' REML linear mixed models with Wald F tests; their denominator df are
+    not JMP's Kenward-Roger df (M12).
+  - Post hoc comparisons are paired t tests within region and an unpaired t test across regions (Fisher's
+    LSD without the pooled error of the mixed model).
+  assumed: true
+- claim: fig1b-stability-dg-below-ca-removal
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig1b-stability-dg-below-ca-removal
+  notes: With one value per cell and manipulation (174 values), stability is higher in CA than in DG (mean
+    z 0.42 against 0.31; region F = 8.73, p = 0.0036), differs by manipulation (F = 9.98, p = 0.0001),
+    and Fisher's LSD puts removal below replication (p = 0.0001) and relocation (p = 0.0002); the interaction
+    is p = 0.76 (paper 0.77). Reading (b) of M2 gives the same (region p = 0.0011, manipulation p = 0.0004).
+    The data set gives 174 cell and manipulation values against the 178 the paper's df imply.
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Every pair of sessions of a day of the paper's three conditions enters; diffcircle and transferbin
+    sessions are left out, being none of the three versions. Stability is the maximum Pearson r over shifts
+    of up to 2 bins, Fisher z (STAR Methods, Firing rate stability).
+  - The environment session 140731_WT15_testbox2 duplicates testbox1 and is counted once.
+- claim: fig1-rate-remapping-no-difference
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig1-rate-remapping-no-difference
+  notes: The two-way ANOVA of the absolute rate change finds no region (p = 0.54), manipulation (p = 0.59)
+    or interaction effect (p = 0.70). With the signed ratio, the variant, the interaction is p = 0.034,
+    an effect the paper's test on magnitudes does not look at.
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+- claim: fig1c-field-rate-change-no-difference
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig1c-field-rate-change-no-difference
+  notes: No effect of region, manipulation or their interaction under either field mask, raw or log (smallest
+    p 0.30). Only 120 (M5 a) or 149 (M5 b) cell and manipulation values have a field mask, against the
+    170 the paper's df imply.
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Place fields follow the claims file's M5 readings (at least 9 edge-contiguous bins above 20% of the
+    peak, or above 1 AP/s) on unsmoothed maps (M2); the paper gives no field definition, and on these
+    maps many cells have no field.
+  - The field mask is the largest field in the first standard session of the day (M4); cells without a
+    field in that session have no value.
+  assumed: true
+- claim: tables1-dg-ca-similar
+  outcome: partially_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:tables1-dg-ca-similar
+  measured:
+  - 0.95
+  - 0.85
+  - 0.83
+  - 0.79
+  - 0.54
+  - 0.63
+  notes: No property differs between DG and CA by ANOVA, Welch's ANOVA or Kruskal-Wallis (smallest p 0.19).
+    Firing rates (DG 0.95, CA 0.85 AP/s) are within tolerance. Information content matches as bits per
+    spike (1.32 and 1.34, against 1.31 and 1.30 labelled bits/s) but not as bits per second (0.83 and
+    0.79). Coherence (0.54 and 0.63) is above the tolerance of 0.46 and 0.51. The mean ISI of the table
+    (5.77 ms) is not what the files give for a mean ISI (3858 ms), so that row measures something else.
+    Waveform width and theta phase cannot be computed, as the data set holds no waveforms or LFP.
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Information content is Skaggs information on visited bins; coherence is Muller and Kubie's neighbour
+    correlation, Fisher z, on unsmoothed maps (standard measures, as the paper names but does not define
+    them).
+  - Table S1 labels information content bits/s, but its values match bits per spike in these data; both
+    are shown.
+- claim: fig2c-cfos-reduced
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the POMC-Halorhodopsin Cre+ and Cre- mice (cFos counts and place avoidance behaviour).
+    The data set holds wild-type mice only (WT13 to WT27 in its file names, no file naming Cre, POMC,
+    Halo or cFos), its descriptor describes wild-type recordings only, and the paper names no other deposit.
+- claim: fig2d-conflict-deficit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the POMC-Halorhodopsin Cre+ and Cre- mice (cFos counts and place avoidance behaviour).
+    The data set holds wild-type mice only (WT13 to WT27 in its file names, no file naming Cre, POMC,
+    Halo or cFos), its descriptor describes wild-type recordings only, and the paper names no other deposit.
+- claim: fig2-quadrant-preference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the POMC-Halorhodopsin Cre+ and Cre- mice (cFos counts and place avoidance behaviour).
+    The data set holds wild-type mice only (WT13 to WT27 in its file names, no file naming Cre, POMC,
+    Halo or cFos), its descriptor describes wild-type recordings only, and the paper names no other deposit.
+- claim: fig2e-shock-off-deficit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the POMC-Halorhodopsin Cre+ and Cre- mice (cFos counts and place avoidance behaviour).
+    The data set holds wild-type mice only (WT13 to WT27 in its file names, no file naming Cre, POMC,
+    Halo or cFos), its descriptor describes wild-type recordings only, and the paper names no other deposit.
+- claim: fig3b-avoidance-learning
+  outcome: partially_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig3b-avoidance-learning
+  notes: Errors fall from training 1 (mean 14.0) to training 2 (4.33) and rise in conflict (19.0), and
+    paired comparisons put training 2 below training 1 (p = 0.028) and conflict (p = 0.042). The multivariate
+    repeated-measures test whose df match the paper's (2, 4) gives F = 5.70, p = 0.067, against F = 18.2,
+    p = 0.01; the univariate test gives F(2, 10) = 4.62, p = 0.038.
+  deviations:
+  - Errors are the Tracker's entrances in the shock-on files (avoidance state from 0 to 1). WT15 has no
+    separate 10-min training 2 shock-on file; its 20-min file deposited among the shock-on files is used.
+  - The criterion's reading (a), the multivariate test whose df (2, 4) match the paper's, decides; reading
+    (b) is shown.
+- claim: fig3b-shock-off-avoidance
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig3b-shock-off-avoidance
+  notes: Errors in the shock-off recordings (means 31.6, 21.5 and 62.4) are higher than in the shock-on
+    sessions (14.0, 4.33 and 19.0); with mouse as random term the shock status effect is F = 22.3, p =
+    0.0001 for errors and F = 9.79, p = 0.004 for errors per meter. Shock-off errors are counted geometrically,
+    which gives 1.18 times the Tracker's count on shock-on files; that does not account for a two- to
+    three-fold difference.
+  deviations:
+  - Shock-off errors are entrances of the room-frame position into the zone of the preceding shock-on
+    session, as the shock-off Tracker files hold no zone; this geometric count gives 1.18 times the Tracker's
+    count on shock-on files.
+  - The Tracker files of the WT15 and WT16 recordings log shocks, so their shock-off values may not be
+    shock-off.
+  - Mixed models are statsmodels' REML linear mixed models with Wald F tests; their denominator df are
+    not JMP's Kenward-Roger df (M12).
+  - The data set lacks a second pretraining session for WT15, WT16 and WT19 and the training 1 recording
+    of WT16, so manipulations with those sessions have fewer values than the paper's df imply.
+- claim: speed-no-difference
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:speed-no-difference
+  notes: Over training 1, training 2 and conflict in the shock-off recordings (5, 6 and 5 mice) the one-way
+    ANOVA gives F(2, 13) = 1.94, p = 0.18, the paper's df and values. The shock-on sessions give p = 0.89.
+    The readings with pretraining as a level differ (p = 0.0016 and 0.021), as mice run faster in pretraining
+    (4.96 cm/s against 2.4 to 3.5).
+  deviations:
+  - The criterion leaves the sessions open. The reading of training 1, training 2 and conflict in the
+    shock-off recordings is adopted, as its design (5, 6 and 5 mice) gives the paper's df (2, 13); every
+    reading is shown.
+  - Speed is the path length of positions sampled each second over the session's duration; it gives 0.81
+    to 0.91 times the Tracker's ElapsedPath.
+  assumed: true
+- claim: tables2-firing-quality-similar
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:tables2-firing-quality-similar
+  measured:
+  - 0.98
+  - 0.86
+  - 0.82
+  - 1.15
+  - 0.73
+  notes: Firing rates are within tolerance (0.98, 0.86 and 0.82 AP/s) and do not differ (p = 0.74), but
+    room-frame coherence differs across conditions (0.49, 0.38, 0.32; ANOVA p = 0.011, Kruskal-Wallis
+    p = 0.010), and so do arena-frame field counts (p = 0.0018). Room information is 1.15 bits/s in pretraining,
+    outside the tolerance of 1.6; as bits per spike it is 1.59 and 1.60 (pretraining, conflict), within
+    tolerance of 1.6 and 1.75, as for Table S1.
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Place fields follow the claims file's M5 readings (at least 9 edge-contiguous bins above 20% of the
+    peak, or above 1 AP/s) on unsmoothed maps (M2); the paper gives no field definition, and on these
+    maps many cells have no field.
+  - Pretraining and training values are averaged per cell over their sessions (the criterion's standard
+    choice).
+- claim: fig3c-stability-no-difference
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig3c-stability-no-difference
+  notes: 'Stability (higher of room and arena frame) does not differ across replication, shock addition
+    and shock relocation: Kruskal-Wallis p = 0.17 under the adopted reading (b) and p = 0.093 under reading
+    (a), with 115 values against the paper''s 120.'
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Cluster names (tetrode and cluster) are taken to be the same unit in every session of a day, as the
+    paper's lists give one entry per cell for the day.
+  - The data set lacks a second pretraining session for WT15, WT16 and WT19 and the training 1 recording
+    of WT16, so manipulations with those sessions have fewer values than the paper's df imply.
+  assumed: true
+- claim: fig3c-replication-vs-relocation
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig3c-replication-vs-relocation
+  notes: Replication and relocation stabilities do not differ by the rank-sum test (z = 1.48, p = 0.14
+    under reading (b); z = 1.95, p = 0.051 under reading (a)), with relocation lower in both.
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - The data set lacks a second pretraining session for WT15, WT16 and WT19 and the training 1 recording
+    of WT16, so manipulations with those sessions have fewer values than the paper's df imply.
+  assumed: true
+- claim: fig3c-stability-vs-environment
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig3c-stability-vs-environment
+  notes: Task stability (replication and relocation pooled, median z 0.30) does not differ from DG replication
+    stability in the environment experiment (p 0.42 to 0.96 across readings) and is below CA replication
+    stability (median 0.51; p 0.0010 to 0.0084).
+  deviations:
+  - Rate maps use 32 x 32 bins of 8 tracker pixels, the grid of the data set's own maps (data/TIME, data/SPIKE,
+    1024 values; '_4' files with SCALE 8). The paper's 1.5 cm/pixel (STAR Methods, Recording set up) is
+    about 1.4 cm in the arena and 2 cm in the environment boxes on this grid.
+  - Task values pool replication and relocation (criterion); both M11 readings give the same outcome.
+- claim: fig3d-rate-remapping-task
+  outcome: partially_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig3d-rate-remapping-task
+  notes: Whole-cell rate changes are larger for shock addition and relocation than for replication under
+    the adopted reading (b) (means 0.43, 0.42 against 0.28; H = 12.0, p = 0.0025; LSD on ranks p = 0.0009
+    and 0.0059, addition against relocation p = 0.62), but not under reading (a) (p = 0.058). Field rate
+    changes do not differ under any reading (p 0.089 to 0.61), with field masks for only 13 to 15 cells
+    per manipulation.
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  - Place fields follow the claims file's M5 readings (at least 9 edge-contiguous bins above 20% of the
+    peak, or above 1 AP/s) on unsmoothed maps (M2); the paper gives no field definition, and on these
+    maps many cells have no field.
+  - The field mask is the largest M5 field of the room-frame map in the first session of the day (M4).
+  - The data set lacks a second pretraining session for WT15, WT16 and WT19 and the training 1 recording
+    of WT16, so manipulations with those sessions have fewer values than the paper's df imply.
+  assumed: true
+- claim: interneuron-rate-remapping
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:interneuron-rate-remapping
+  notes: Interneuron rate changes are ordered replication < relocation < addition in the means (0.13,
+    0.19, 0.22 under reading (b)), but Kruskal-Wallis gives p = 0.27 (reading (b)) and p = 0.72 (reading
+    (a)), against p = 0.01.
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  - The data set lacks a second pretraining session for WT15, WT16 and WT19 and the training 1 recording
+    of WT16, so manipulations with those sessions have fewer values than the paper's df imply.
+  assumed: true
+- claim: ipos-speed-correlation
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:ipos-speed-correlation
+  measured: 0.098
+  notes: ΔIpos is weakly related to speed (p < 0.001 in all readings), but the variance explained is 0.10
+    to 1.08%, and none of the four readings gives 0.69 ± 0.069% (closest 0.55%, 16-pixel locations and
+    133-ms displacement). The measured value is for 8-pixel locations and displacement over the step.
+  deviations:
+  - Ipos uses 133-ms steps of 4 position samples, with the middle sample's location; the probabilities
+    are taken over the session (M6).
+- claim: fig4b-room-preference-pretraining
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig4b-room-preference-pretraining
+  notes: The frame by condition interaction is F = 6.55, p = 0.0046; room-preferring time exceeds arena-preferring
+    time in pretraining (0.59 against 0.41, p = 0.023) and not in training (p = 0.84) or conflict (p =
+    0.95). With 16-pixel locations the interaction is p = 0.058.
+  deviations:
+  - M6 leaves the size of location x open; 8-pixel bins are adopted as the paper's stated analysis resolution
+    (1.5 cm/pixel, STAR Methods, Recording set up), and 16-pixel blocks are shown.
+  - Mixed models are statsmodels' REML linear mixed models with Wald F tests; their denominator df are
+    not JMP's Kenward-Roger df (M12).
+  assumed: true
+- claim: fig4c-ipos-before-avoidance
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig4c-ipos-before-avoidance
+  notes: 'In all twelve readings (location size, smoothing of the distance, window of 0.8 to 1.2 s) the
+    condition by zone interaction has p ≤ 0.0001 and the ordering holds: in training ΔIpos before approaches
+    to the training zone is 0.23 bits against -0.056 for the conflict zone, and in conflict 0.070 for
+    the conflict zone against 0.0014 for the training zone (main reading).'
+  deviations:
+  - Approaches are local minima of the distance to the zone edge closer than 50% of the session's mean
+    distance (M8), inside the zone or not, as the Results speak of the time before mice avoid or enter
+    the zone.
+  - Mixed models are statsmodels' REML linear mixed models with Wald F tests; their denominator df are
+    not JMP's Kenward-Roger df (M12).
+- claim: fig4d-room-maps-uncorrelated
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig4d-room-maps-uncorrelated
+  notes: With 8-pixel locations the training and conflict maps of room-preferring time are not correlated
+    (r = 0.068, p = 0.076, 677 pixels); with 16-pixel locations they are (r = 0.16, p < 0.001).
+  deviations:
+  - The M6 location size is adopted as for fig4b (8-pixel bins); the maps themselves are on the 8-pixel
+    grid in both readings. Pearson over pixels visited in both maps (the criterion's standard choice).
+  assumed: true
+- claim: fig4d-room-ipos-near-active-zone
+  outcome: partially_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig4d-room-ipos-near-active-zone
+  notes: Normalized room Ipos near each zone differs across conditions in every reading (training zone
+    F = 87.3, p < 0.0001; conflict zone F = 4.66, p = 0.028; 8-pixel locations, room normalizer). Near
+    the training zone training is highest (1.90 against 1.02 and 0.97; paired LSD p < 0.0001 and 0.0013).
+    Near the conflict zone conflict has the highest mean (1.46 against 0.94 and 0.85), but the paired
+    LSD over the five mice does not separate it (p = 0.15 and 0.092), in any reading (p 0.060 to 0.20).
+  deviations:
+  - Mixed models are statsmodels' REML linear mixed models with Wald F tests; their denominator df are
+    not JMP's Kenward-Roger df (M12).
+  - Fisher's LSD is taken as paired t tests over mice, the mixed model's random term.
+- claim: figs2a-pc-pairs-no-change
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:figs2a-pc-pairs-no-change
+  notes: Place cell pair correlations do not differ across trial types (H = 0.57, p = 0.75; 133, 133 and
+    118 pairs, the paper's 384 values), and their changes do not differ across manipulations (p = 0.43
+    under reading (b), p = 0.67 under reading (a)).
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  - Kendall's tau-b over all 133-ms bins of a session (M9 standard choice); the SD is the sample SD of
+    six taus from the earlier session.
+- claim: standardized-rates-no-difference
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:standardized-rates-no-difference
+  notes: With consecutive 5-s episodes the standardized rates do not differ across conditions (F(2, 7736)
+    = 2.51, p = 0.082). The field-entry reading (b) gives p = 0.0077 but leaves only 14 conflict passes,
+    as few cells have fields under M5.
+  deviations:
+  - M10 leaves the episodes open. Consecutive 5-s windows are adopted, as the Methods compute z for each
+    5 s episode during which the expected count exceeds the cell's average firing (STAR Methods, Overdispersion);
+    field-entry windows rest on M5 fields, which few cells have here.
+  - Episodes use the room-frame session map; the paper does not name the frame.
+  assumed: true
+- claim: overdispersion-similar
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:overdispersion-similar
+  measured:
+  - 5.28
+  - 5.34
+  - 5.72
+  notes: With consecutive 5-s episodes the variances of z are 5.28, 5.34 and 5.72, all within tolerance
+    of 5.2, 5.74 and 5.63; the F tests against pretraining give p = 0.77 and 0.078, and the per-cell ANOVA
+    p = 0.97. Reading (b) gives variances 4.48, 8.56 and 8.65 on few passes.
+  deviations:
+  - Episodes as adopted for standardized-rates-no-difference (consecutive 5-s windows).
+  - F tests are two-sided; the paper's printed p-values do not fit its df under a two-sided test (claims
+    file).
+  assumed: true
+- claim: network-consistency-overall
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:network-consistency-overall
+  notes: Under reading (a) mean NC is positive in every condition (0.042, 0.054, 0.061) and does not differ
+    (F(2, 9076) = 0.72, p = 0.49), on 9079 pass values against the paper's 2526. Reading (b) leaves no
+    conflict passes.
+  deviations:
+  - The criterion's reading (a) of overlapping (both cells' pass rules met on the same 5-s episode) is
+    adopted; reading (b), overlapping M5 fields, leaves too few passes.
+  assumed: true
+- claim: fig5b-network-consistency-zones
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5b-network-consistency-zones
+  notes: The zone by condition interaction is p = 0.48 (reading (a)) and p = 0.49 (reading (b)), against
+    p = 0.04. Near the conflict zone NC is 0.041, 0.058 and 0.009 in pretraining, training and conflict,
+    the fall from training to conflict being significant (p = 0.019), but the rise from pretraining to
+    training is not (p = 0.30).
+  deviations:
+  - Zone passes are episodes with at least 3 s within 6 cm of a zone or in it (M7).
+- claim: fig5d1-pc-int-tau-no-difference
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5d1-pc-int-tau-no-difference
+  notes: Place cell-interneuron correlations do not differ across trial types (H = 1.40, p = 0.50; 152,
+    152 and 134 pairs, the paper's 438 values).
+- claim: fig5d2-pc-int-change-relocation
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5d2-pc-int-change-relocation
+  notes: 'Normalized changes differ across manipulations (reading (b): means -0.29, -0.19, 0.15; F(2,
+    425) = 7.63, p = 0.00056), and Fisher''s LSD puts relocation above replication (p = 0.0002) and addition
+    (p = 0.0036). Under reading (a) relocation is above replication (p = 0.0003) but not addition (p =
+    0.16).'
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  - The data set lacks a second pretraining session for WT15, WT16 and WT19 and the training 1 recording
+    of WT16, so manipulations with those sessions have fewer values than the paper's df imply.
+  assumed: true
+- claim: pc-int-fraction-increased
+  outcome: partially_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:pc-int-fraction-increased
+  measured:
+  - 78.4
+  - 76.2
+  - 91.7
+  notes: With a change above zero (reading (a)) and M11 reading (b), 78.4, 76.2 and 91.7% of place cells
+    increased co-firing with at least one interneuron, all within tolerance of 75, 83 and 92%, but relocation
+    against replication gives z = 1.59, p = 0.11, against p = 0.03. With the 1-SD threshold the test is
+    significant (p < 0.001) but the percentages (5 to 44%) are far from the paper's.
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  assumed: true
+- claim: figs2bc-other-timescales
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:figs2bc-other-timescales
+  notes: Under reading (b), at 20 ms tau does not differ across trial types (p = 0.77) and changes differ
+    with relocation highest (H = 6.94, p = 0.031); at 250 ms tau p = 0.48 and changes H = 24.5, p < 0.0001,
+    relocation highest. Under reading (a) the 20-ms change test gives p = 0.058.
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  - 20-ms and 250-ms bins are cut from the spike times.
+  assumed: true
+- claim: pc-int-pair-classes
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:pc-int-pair-classes
+  measured:
+  - 69
+  - 16
+  - 67
+  notes: 'All readings give 152 pairs, the paper''s total, but none gives the three counts within tolerance:
+    positive pairs number 67 to 71 (expected 81 ± 8.1), negative 12 to 21, independent 60 to 73. Reading
+    (a)(i) matches the negative count (16) and reading (a)(iii) the independent count (60). Measured values
+    are for reading (a)(i).'
+  deviations:
+  - Reading (b) uses 200 circular shifts of one train by 10 to 90% of the session, a standard choice;
+    WT15, WT16 and WT19 have one pretraining session, so reading (ii) covers 103 pairs.
+- claim: fig5d3-independent-pairs-increase
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5d3-independent-pairs-increase
+  notes: The initially independent pairs differ across manipulations (H = 8.35, p = 0.015), with relocation
+    highest (median 0.23 against 0.08 and -0.20). Under M11 reading (a) the test is p = 0.0073 but addition
+    (0.25) is as high as relocation (0.23).
+  deviations:
+  - The pair classes are open (pc-int-pair-classes, which no reading reproduces). Reading (a)(iii), Kendall's
+    own test on both pretraining sessions joined, is adopted as the most direct reading of significantly
+    correlated during pretraining; every class reading is shown.
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  assumed: true
+- claim: fig5d4-positive-pairs-decrease
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5d4-positive-pairs-decrease
+  notes: Positive pairs differ across manipulations (H = 20.6, p < 0.0001); their changes are below zero
+    for replication (median -0.21, signed-rank p = 0.0001) and addition (-0.55, p < 0.0001) and not different
+    from zero for relocation (-0.02, p = 0.69).
+  deviations:
+  - The pair classes are open (pc-int-pair-classes, which no reading reproduces). Reading (a)(iii), Kendall's
+    own test on both pretraining sessions joined, is adopted as the most direct reading of significantly
+    correlated during pretraining; every class reading is shown.
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  assumed: true
+- claim: negative-pairs-no-change
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:negative-pairs-no-change
+  notes: Under the adopted class reading (a)(iii), the 19 to 21 negative pairs per manipulation differ
+    (H = 10.7, p = 0.0047 under M11 (b); p = 0.012 under (a)), with replication below the shock manipulations.
+    Only the shuffle classes of reading (b)(i) give no difference (p = 0.15 and 0.31).
+  deviations:
+  - The pair classes are open (pc-int-pair-classes, which no reading reproduces). Reading (a)(iii), Kendall's
+    own test on both pretraining sessions joined, is adopted as the most direct reading of significantly
+    correlated during pretraining; every class reading is shown.
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  assumed: true
+- claim: fig5e1-correlation-near-zone
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5e1-correlation-near-zone
+  notes: Zone-vicinity correlations show no zone by condition interaction (F = 0.43, p = 0.65); in conflict
+    the mean tau near the conflict zone (0.018) is not above the other cells of the design (LSD p 0.25
+    to 0.61). The data give 876 pair values against the 812 the paper's df imply.
+  deviations:
+  - Zone-vicinity bins are 133-ms bins whose middle position is within 4.5 cm of a zone and outside it
+    (M7); pretraining and training values are averaged per pair.
+- claim: fig5e2-e4-change-near-zone
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5e2-e4-change-near-zone
+  notes: Under every reading of M11 and of the SD, the zone by manipulation interaction has p ≥ 0.17 for
+    all, independent and positive pairs, against p = 0.0044, 0.0011 and 0.00001.
+  deviations:
+  - The pair classes are open (pc-int-pair-classes, which no reading reproduces). Reading (a)(iii), Kendall's
+    own test on both pretraining sessions joined, is adopted as the most direct reading of significantly
+    correlated during pretraining; every class reading is shown.
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+- claim: correlation-not-speed
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:correlation-not-speed
+  notes: Over 88180 6-s bins, tau is not related to speed (r = -0.0055, p = 0.105) and, narrowly, not
+    to acceleration (r = -0.0066, p = 0.050); it is weakly related to place cell rate (r2 = 0.0009, p
+    < 0.001) and interneuron rate (r2 = 0.0004, p < 0.001). Zone-vicinity rates show no zone (p = 0.92)
+    or condition effect (p = 0.72).
+  deviations:
+  - Speed and acceleration come from 1-s rolling means of position; bins of 45 133-ms steps (6 s) over
+    whole sessions, all place cell-interneuron pairs pooled (the criterion's reading). The rate ANOVA
+    uses every cell's rate per zone vicinity and condition.
+- claim: fig5e1-inset-rate-change-near-zone
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig5e1-inset-rate-change-near-zone
+  notes: Zone-vicinity rate changes are higher for addition (0.47) and relocation (0.49) than replication
+    (0.41) and show no interaction (p = 0.77), but the manipulation effect is p = 0.059 under reading
+    (b) and p = 0.12 under reading (a), against p = 0.0001.
+  deviations:
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+- claim: fig6b-correlation-before-avoidance
+  outcome: not_reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig6b-correlation-before-avoidance
+  notes: Before avoidances the zone by condition interaction is p = 0.44 (raw minima) and p = 0.30 (smoothed);
+    with pair as random term p = 0.12 and 0.077. Conflict near the conflict zone is the highest cell (0.019),
+    but not above the others by LSD (p 0.075 to 0.63).
+  deviations:
+  - Minima on the raw and on the 1-s smoothed distance (M8 readings) both run; the 4-s windows before
+    the minima are pooled per session.
+- claim: fig6c-no-increase-before-errors
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig6c-no-increase-before-errors
+  notes: Before errors the zone by condition interaction is p = 0.72 (raw minima) and p = 0.93 (smoothed).
+  deviations:
+  - Error events are minima at distance 0, the first sample inside the zone.
+- claim: fig6-inset-rate-changes
+  outcome: reproduced
+  notebook: reproduce_dijk_2018.ipynb
+  output: claim:fig6-inset-rate-changes
+  notes: Before avoidances rate changes differ across manipulations (p = 0.0004 raw, 0.0073 smoothed)
+    and not between zones (p = 0.56, 0.49) or by interaction (p = 0.65, 0.70); before errors both zone
+    (p = 0.0018, 0.0075) and manipulation (p = 0.013, 0.0002) effects are present, as the Figure 6C legend
+    says.
+  deviations:
+  - Rate changes use the place cells' whole rates in the pooled 4-s windows, as no field mask is defined
+    there.
+  - M11 session pairs are open in the claims file. Reading (b) is adopted (every pretraining and training
+    pair for shock addition, both training sessions against conflict for relocation), since the Results
+    say that analysis of the shock addition and the shock replication manipulations used data collected
+    during both the training 1 and training 2 sessions (Results, DG-Dependent Memory Discrimination Is
+    Not Selectively Accompanied by Dentate Firing Field Remapping, paragraph 2). Reading (a) is shown
+    beside it.
+  assumed: true
+findings:
+- kind: data_missing
+  statement: The data set holds wild-type mice only. The optogenetic experiments of Figure 2 (29 POMC-Halorhodopsin
+    Cre+ and Cre- mice, behaviour and cFos counts) are not in it, and the paper names no other deposit.
+- kind: data_missing
+  statement: Sessions the paper describes are missing. WT15, WT16 and WT19 have one pretraining session
+    where the paper gives two, and WT16 has no training 1 recording. The paper's df (H2,117 and H2,435)
+    imply values that need these sessions; the data give 115 place cell values and 428 place cell-interneuron
+    changes.
+- kind: other
+  about: data
+  statement: The environment session 140731_WT15_testbox2 has the same position series as 140731_WT15_testbox1,
+    and two of its four listed units have the same spike trains; it appears to be deposited twice. It
+    is counted once.
+- kind: metadata_error
+  statement: The Tracker files of the recordings of WT15 (after training 1 and 2) and WT16 (after training
+    2 and conflict) log a shock zone and 1 to 33 shocks with nonzero current, where the paper says recordings
+    were made with the shock off. The WT15 training 2 recording is also deposited among the shock-on files
+    (identical CRC), and WT16's conflict recording is named Conf1_1 in the TS files and Conf1_2 in its
+    Tracker file.
+- kind: other
+  about: data
+  statement: For WT15, WT16 and WT19 the conflict shock zone (centre 305 degrees) is 170 degrees from
+    the training zone (135 degrees), where the paper says the zone was relocated 180 degrees; for WT20,
+    WT26 and WT27 it is 180.
+- kind: metadata_error
+  statement: The data descriptor says the Spike and Time maps hold 256 x 256 pixels written as one column;
+    they hold 1024 values, a 32 x 32 grid of 8 tracker pixels. On that grid a bin is about 1.4 cm in the
+    arena and 2 cm in the environment boxes, where the paper gives 1.5 cm/pixel.
+- kind: metadata_insufficient
+  statement: The data set holds smoothed maps (files ending RmSm and ArSm) without a description of the
+    smoothing, and the TS file variants (Rm, Ar, _4, .times, 0spks, test-fix, and a misnamed file 151215_WT26Ini2_2_spikes_cl-fix.P1C1Rm151215_WT26Ini2_2_spikes_cl-fix.P1C1Rm)
+    are not described; the meaning of each was inferred from the headers and by comparing files.
+- kind: other
+  about: data
+  statement: The WT19 pretraining session lasts 30 min, where the paper gives 20-min pretraining sessions.
+    Environment sessions last 10, 20 or 30 min, which the paper does not state.
+- kind: metadata_insufficient
+  statement: The files do not say how clusters were matched across the sessions of a day; the class lists
+    give one entry per cell for the day, and this attempt assumes that a tetrode and cluster name is the
+    same unit in every session.
+- kind: paper_inconsistency
+  statement: Table S1 and Table S2 label information content in bits/s, but their values match Skaggs
+    information in bits per spike computed from the files (DG 1.32 against 1.31; pretraining 1.59 against
+    1.6), not bits per second (0.83 and 1.15). The mean ISI of the tables (5 to 6 ms) is not the mean
+    interspike interval of these cells (seconds).
+- kind: methods_unavailable
+  statement: The paper does not define a place field or say whether its rate maps were smoothed. On unsmoothed
+    maps with the claims file's field rules many cells have no field, and field counts (Figure 1) and
+    field rate changes (Figure 3D) do not reproduce. Question for the authors, which smoothing and which
+    field rule (threshold, minimum size, contiguity) were used?
+- kind: methods_unavailable
+  statement: The paper does not say which session pairs form the shock addition and shock relocation comparisons.
+    This attempt adopts every pretraining-training pair for addition and both training sessions against
+    conflict for relocation; several outcomes (fig3d whole-cell, fig5d2, figs2bc at 20 ms, fig5d3) hold
+    under this reading and not under the adjacent-session reading. Question for the authors, which pairs
+    were used?
+- kind: methods_unavailable
+  statement: The size of location x in Ipos is not stated; Figure 4B and the Figure 4D map correlation
+    hold with 8-pixel bins and not with 16-pixel blocks. The 5-s episodes of overdispersion and network
+    consistency, the meaning of overlapping firing fields, and the statistical criteria classing place
+    cell-interneuron pairs as positive, negative or independent are not stated either. Questions for the
+    authors, the location size, whether episodes tile the session or follow field entries, and the test
+    used to class pairs (the Kruskal-Wallis df for the classes imply more values than pairs times manipulations).
