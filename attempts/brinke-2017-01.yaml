@@ -1,0 +1,925 @@
+schema_version: 3
+id: brinke-2017-01
+datasets:
+- archive: crcns
+  id: cb-1
+  version: unversioned
+  doi: 10.6080/K0B85697
+  relation: primary
+paper: doi:10.7554/elife.28132
+date: '2026-11-13'
+entry: brinke-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43342632633
+outcomes:
+- claim: firing-rate-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:firing-rate-depth
+  notes: Recording depth is not in the data set. The mean firing frequency of the 270 first-dataset cells is 68.3
+    +/- 26.4 Hz over the 500 ms baseline (reading a) and 70.6 +/- 27.4 Hz over the whole trial (reading b), both
+    within 67 +/- 6.7 Hz. Asked a reader whether the claim should use the depths in the paper's Source data 1 (questions/brinke-2017.yaml).
+- claim: fig1ijk-modulation-classes
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig1ijk-modulation-classes
+  measured:
+  - 80
+  - 23
+  - 167
+  notes: No reading puts all three counts within tolerance. Reading (a) gives 80 facilitation, 23 suppression and
+    167 unmodulated cells (suppression within tolerance); reading (a+) gives 62, 13 and 195 (facilitation and unmodulated
+    within tolerance); reading (b) gives 88 (89 with facilitation first), 31 (30) and 151. Measured values are reading
+    (a), larger-change tie rule.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: modulation-absolute-not-rate-dependent
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:modulation-absolute-not-rate-dependent
+  notes: Absolute facilitation does not depend on firing frequency (Spearman r = -0.036 to -0.029, p = 0.55 to 0.63)
+    and relative suppression does (reading a, r = -0.207 signed negative, p = 0.00063, the paper's -0.211). Absolute
+    suppression shows no relation under any reading (|r| <= 0.008, p >= 0.89; paper r = -0.131, p = 0.03), and relative
+    facilitation is significant only under reading (b) (r = -0.123, p = 0.044; paper r = -0.378). No reading has
+    all three significant tests.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: fig1l-cells-with-behavior
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig1l-cells-with-behavior
+  measured: 111
+  notes: 111 of 270 recordings (41.1%) have CRs in at least 20% of trials. The two eyelid-baseline readings are
+    the same samples in the first dataset. The count is 129 at 15% and 94 at 25%, and 132 to 101 for CR thresholds
+    of 4% to 6% closure.
+  deviations:
+  - The Methods' trial exclusions (Grubbs test on baseline SDs, eye at least half open; Materials and methods, Eyeblink
+    conditioning) are not applied; the deposited trials are taken as the valid trials, since the data set's per-trial
+    variables cover all of them and the smallest recording has 10 trials, the paper's minimum of valid trials. 282
+    deposited trials have a baseline eyelid at or past half closure.
+- claim: fig1m-modulation-grows-with-training
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig1m-modulation-grows-with-training
+  measured:
+  - 0.244
+  - 0.228
+  notes: With the day codes as given and class reading (a), facilitation magnitude rises with training day (Spearman
+    r = 0.244, p = 0.029, n = 80) and suppression has a positive r (0.228, p = 0.30, n = 23), which is what the
+    criterion asks. Both r values are below the paper's 0.413 and 0.354 and outside their tolerance; readings (a+)
+    and (b) give facilitation r = 0.369 and 0.272 (both p < 0.05). With days 7 to 10 left out, no facilitation correlation
+    is significant (p = 0.11 to 0.33).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: fig1no-modulation-more-with-behavior
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig1no-modulation-more-with-behavior
+  measured:
+  - 42
+  - 38
+  - 16
+  - 7
+  notes: Under reading (a), facilitation 42/111 with behavior against 38/159 without (chi-square p = 0.014, Yates
+    0.020) and suppression 16/111 against 7/159 (p = 0.0037, Yates 0.0074). The suppression counts equal the paper's
+    16 and 7; the facilitation counts are outside the tolerance of 30 and 30. Readings (a+) and (b) give the same
+    direction; (b) loses significance for facilitation with Yates' correction (p = 0.053).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - With behavior is 111 recordings here, against the paper's 103.
+- claim: fig2a-facilitation-properties-ds1
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2a-facilitation-properties-ds1
+  measured:
+  - 102.5
+  - 19.6
+  - 0.539
+  - 0.496
+  notes: Both correlations are positive and significant under every reading. Under reading (a+) the duration (102.5
+    ms), r with % CRs (0.539) and r with CR amplitude at US onset (0.496, data set's values) are within tolerance
+    but the magnitude (19.6 +/- 19.4 Hz) is below 22.5 +/- 2.25 Hz. Readings (a) and (b) give durations of 85.1
+    and 79.2 ms and magnitudes of 18.7 and 18.1 Hz. Measured values are reading (a+).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+- claim: fig2b-facilitation-trial-correlations-ds1
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2b-facilitation-trial-correlations-ds1
+  measured:
+  - 42
+  - 18
+  notes: Several combinations give a count within 15.3 to 18.7, no significant negative cell and a bootstrap p below
+    1/500 under both nulls; the first in the table is class (a), rate reading (a), CR amplitude computed at US onset,
+    18 of 42 cells. Across the 27 combinations the count is 17 to 23 and at most one cell is negative. There are
+    42, 35 or 44 facilitation cells with behavior by class reading, against the paper's 30.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - The Statistics rule (Pearson if at least 30 points and both variables normal after a Grubbs test, otherwise
+    Spearman) needs a normality test the paper does not name; Lilliefors is used, and a Spearman-only count is printed
+    beside each count. No outcome changes with it.
+  - Bootstrap p-values are fractions of 500 random datasets under both null readings of the claims file; 0.000 means
+    below 1/500.
+- claim: fig2b-lmm-ds1
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2b-lmm-ds1
+  measured: 0.393
+  notes: Every combination gives a slope within 0.35 to 0.63 % closure per Hz (0.385 to 0.554, p < 1e-9) over 17
+    to 22 cells and 560 to 733 trials; the first row (class a, rate a, data set's CR amplitude) is 0.393 +/- 0.055
+    over 22 cells.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - Fitted with statsmodels MixedLM (REML, Wald test), not MATLAB's F-test.
+- claim: fig2d-facilitation-leads-eyelid-ds1
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2d-facilitation-leads-eyelid-ds1
+  measured: 31.8
+  notes: Spikes lead the eyelid under every reading (30 to 38 of 35 to 44 cells positive, Wilcoxon p = 0.0001 to
+    0.0024), but the mean lag is 31.8 to 49.3 ms against 25 +/- 2.5 ms (31.8 for class a, last 200 ms). 16 to 22
+    cells have their best lag at the +/-100 ms edge of the lag range named by the criterion.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: fig2-s1-correlation-matrix-offsets
+  outcome: not_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2-s1-correlation-matrix-offsets
+  measured:
+  - 60
+  - 20
+  - 30
+  - 10
+  - 100
+  - -20
+  - 20
+  - 0
+  notes: No reading puts all eight offsets within 10 ms, and the sign pattern fails under every reading because
+    the first-dataset suppression position offset sits at the +100 (or -100) ms edge. The first-dataset facilitation
+    velocity offset is 20 ms under every reading; with 10 ms steps the facilitation offsets are 50 to 60, 20, 30
+    and 10 ms. Measured values are class (a), 20 ms windows at 10 ms steps, in the order of the expected values.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Correlations in the matrices are Pearson's r, a choice the Methods do not state; the matrix spans -300 (or -200)
+    ms to 200 ms after the US, which covers every entry the offsets use.
+- claim: fig2e-facilitation-ds2
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2e-facilitation-ds2
+  measured:
+  - 70
+  - 60.4
+  notes: All 102 second-dataset recordings have CRs in at least 20% of trials. Under reading (a), 12-212 ms, 70
+    cells facilitate with 60.4 +/- 40.6 Hz; the other readings give 67 to 71 cells and 54.0 to 61.8 Hz.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+- claim: fig2f-facilitation-trial-correlations-ds2
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2f-facilitation-trial-correlations-ds2
+  measured: 51
+  notes: Every combination gives 48 to 51 significant positive cells (51 for class a, rate a, data set's CR amplitude),
+    at most one negative, bootstrap p below 1/500.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - The Statistics rule (Pearson if at least 30 points and both variables normal after a Grubbs test, otherwise
+    Spearman) needs a normality test the paper does not name; Lilliefors is used, and a Spearman-only count is printed
+    beside each count. No outcome changes with it.
+  - Bootstrap p-values are fractions of 500 random datasets under both null readings of the claims file; 0.000 means
+    below 1/500.
+- claim: fig2f-lmm-ds2
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2f-lmm-ds2
+  measured: 0.627
+  notes: With the data set's own per-trial facilitation (rate reading c) the slope is 0.627 (data set's CR amplitude)
+    and 0.620 % per Hz (p < 1e-58), within 0.56 to 0.72. Rate readings (a) and (b) give 0.506 to 0.544, just below
+    the tolerance, and one of their fits is degenerate (SE 2.08).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+- claim: fig2h-facilitation-leads-eyelid-ds2
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2h-facilitation-leads-eyelid-ds2
+  measured: 74.0
+  notes: Spikes lead in 67 to 69 of 69 to 71 cells (Wilcoxon p < 1e-11), but the mean lag is 72.8 to 74.0 ms (median
+    82 to 83) against 33.4 +/- 3.34 ms, with 24 to 26 cells at the +100 ms edge of the lag range.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+- claim: fig2-suppression-properties-ds1
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2-suppression-properties-ds1
+  measured:
+  - 10.3
+  - 63.6
+  notes: Under reading (b) the three correlations are positive and significant (% CRs r = 0.388, p = 0.031; CR amplitude
+    at US onset r = 0.364, p = 0.044; baseline CV r = 0.467, p = 0.008) but the magnitude (9.9 Hz) and duration
+    (53.2 ms) are outside tolerance. Under reading (a) the magnitude (10.3 Hz) and duration (63.6 ms) are within
+    tolerance, but only the whole-trial CV correlation is significant (r = 0.505, p = 0.014). Measured values are
+    reading (a).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+- claim: suppression-smaller-shorter-than-facilitation
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:suppression-smaller-shorter-than-facilitation
+  measured:
+  - 5.46
+  - 9.14
+  - 53.2
+  - 79.2
+  notes: Under class reading (b) over all cells, suppression has lower peak z-scores (5.46 against 9.14, p = 0.00016)
+    and shorter durations (53.2 against 79.2 ms, p = 0.013). The suppression values are within tolerance and the
+    facilitation values are not. Under readings (a) and (a+), and over the cells with behavior under every reading,
+    the duration test is not significant (p = 0.062 to 0.43).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: suppression-same-timing-as-facilitation
+  outcome: not_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:suppression-same-timing-as-facilitation
+  notes: On the cells of the reading the previous claim adopts (class b, all cells), onsets differ (144.9 against
+    115.5 ms, p = 0.00074) and so do peak times (167.7 against 190.3 ms, p = 0.036). Under class (a+) neither differs
+    (p = 0.135 and 0.489); under class (a) the onset does (p = 0.00014).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Onset and peak time follow the criterion's reading (first bin of the first 10 ms run beyond 3 baseline SDs in
+    the CS-US interval; time of the extreme there).
+- claim: fig2j-suppression-trial-correlations-ds1
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2j-suppression-trial-correlations-ds1
+  measured:
+  - 16
+  - 4
+  - -0.381
+  notes: 'Class (a), rate reading (a), data set''s CR amplitude: 16 suppression cells with behavior, 4 significant
+    negative, none positive, mixed-model slope -0.381 +/- 0.169 % per Hz (p = 0.024), bootstrap p 0.002 or below.
+    Under class (a), rate readings (b) and (c) give 2 to 4 cells and slopes of -0.51 to -0.89.'
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - The Statistics rule (Pearson if at least 30 points and both variables normal after a Grubbs test, otherwise
+    Spearman) needs a normality test the paper does not name; Lilliefors is used, and a Spearman-only count is printed
+    beside each count. No outcome changes with it.
+  - Bootstrap p-values are fractions of 500 random datasets under both null readings of the claims file; 0.000 means
+    below 1/500.
+- claim: fig2l-suppression-no-lead-ds1
+  outcome: not_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2l-suppression-no-lead-ds1
+  notes: The most negative cross-correlation is at positive lags in 12 to 19 cells per reading (means 48.0 to 70.9
+    ms; class a, last 200 ms, 56.1 +/- 46.7 ms), and the Wilcoxon test is significant under every reading (p = 0.00016
+    to 0.0036). 7 to 11 cells sit at the +100 ms edge of the lag range.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: fig2n-suppression-ds2
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2n-suppression-ds2
+  measured:
+  - 18
+  - 11.2
+  - 6
+  - -0.62
+  notes: 'Negative correlations and a negative slope are found under every combination, but no combination has all
+    four values within tolerance. Under class (a), 12-212 ms, rate (a), data set''s CR amplitude: 18 cells, 11.2
+    Hz, 6 significant, slope -0.620. The magnitude (10.9 to 11.7 Hz) is within tolerance throughout; cell counts
+    are 11 to 21; rate reading (c) gives slopes near -1.0 with 2 or 3 significant cells. The data set''s own 0-212
+    ms window, not a reading of the paper, gives 16 suppression cells under class (a).'
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - The Statistics rule (Pearson if at least 30 points and both variables normal after a Grubbs test, otherwise
+    Spearman) needs a normality test the paper does not name; Lilliefors is used, and a Spearman-only count is printed
+    beside each count. No outcome changes with it.
+  - The model has random intercepts only, as Supplementary file 1 says.
+- claim: ds2-stronger-facilitation-same-suppression
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:ds2-stronger-facilitation-same-suppression
+  measured:
+  - 60.4
+  - 24.8
+  - 91.0
+  - 43.5
+  notes: Facilitation is stronger in the second dataset under every reading (class a with behavior 60.4 against
+    24.8 Hz, p = 6.9e-08) and suppression does not differ (p = 0.18 to 0.99). Second-dataset facilitation, % CRs
+    (91.0 +/- 12.2) and CR amplitude (43.5 +/- 17.0%, data set's values) are within tolerance; first-dataset facilitation
+    (18.1 to 25.8 Hz) is below 30.1 +/- 3.01 Hz under every reading.
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+- claim: fig2p-suppression-no-lead-ds2
+  outcome: not_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig2p-suppression-no-lead-ds2
+  notes: Lags are positive in 12 to 18 cells per reading (means 54.4 to 72.7 ms) and the Wilcoxon test is significant
+    under every reading (p = 0.0003 to 0.0005).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+- claim: ds2-modulation-proportion
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:ds2-modulation-proportion
+  measured:
+  - 88
+  - 18
+  notes: 'Reading (a), 12-212 ms: 88 of 102 cells modulated (86%), 70 facilitating and 18 suppressing, ratio 3.9.
+    Other readings give 78 to 92 modulated and 11 to 21 suppression cells.'
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+- claim: fig3-optogenetic-inhibition-abolishes-crs
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig3-optogenetic-inhibition-abolishes-crs
+  notes: The optogenetic sessions of the three L7cre-Ai27 mice are not in the data set, which holds only paired-trial
+    IpN recordings from 24 mice, and the paper names no other deposit of them.
+- claim: fig4b-cs-pause-ds1
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig4b-cs-pause-ds1
+  measured:
+  - 4
+  - 86.5
+  notes: 'No reading gives 6 to 8 CS pause cells with a latency within 88 +/- 8.8 ms and a significant association.
+    Drop/mean (50-125 ms): 9 cells at 84.6 +/- 11.3 ms, 8 facilitating (Fisher p = 0.0003 to 0.0007). Mean/trough:
+    4 cells (6 with the 50 ms rebound, at 98.7 ms, 2 facilitating, p = 0.62 to 1). Measured values are mean/trough,
+    50-125 ms.'
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: fig4c-cs-pause-ds2
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig4c-cs-pause-ds2
+  measured:
+  - 37
+  - 32
+  notes: CS pause cells facilitate more often under every reading but one (p = 1.2e-07 to 0.034; mean/trough, 50-130
+    ms with the 50 ms rebound, p = 0.050 to 0.080). Mean/trough gives 37 (or 40) cells, within 41 +/- 4.1, but 32
+    facilitating, below 39 +/- 3.9; the drop readings give 44 facilitating among 47 to 56.
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+- claim: fig4g-cs-pause-latency-cr-latency
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig4g-cs-pause-latency-cr-latency
+  measured:
+  - 0.385
+  - 0.347
+  notes: 'Under mean/trough with CR latency reading (b): both datasets r = 0.385 (p = 0.016, n = 39), second dataset
+    r = 0.347 (p = 0.035, n = 37). Under drop/trough with reading (b) the r values are within tolerance (0.560,
+    0.389). CR latency reading (a) with mean/trough gives no significant correlation (p = 0.15).'
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - The cells are those with a CS pause, CRs in at least 20% of trials and a CR latency; n is 39 here against the
+    paper's 45.
+- claim: fig4s1-cs-peak-cells
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig4s1-cs-peak-cells
+  measured:
+  - 4
+  - 0
+  notes: 'Drop/mean: 4 first-dataset cells and no second-dataset cell with a CS peak; 3 of the 4 suppress against
+    20/266 others (Fisher p = 0.0021, class a). Mean/mean with the 50 ms rebound gives 5 and 0 (p = 0.0118 under
+    class b). Other readings give 2 to 59 first-dataset and up to 57 second-dataset cells.'
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+- claim: fig4s1-cs-peak-suppression-not-different
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig4s1-cs-peak-suppression-not-different
+  notes: 'The depth comparison cannot be made: depth is not in the data set. The other two comparisons are not significant
+    under any reading (minimum rate p >= 0.17, velocity p >= 0.129); under drop/mean, class a, 3 against 20 cells,
+    p = 0.90 and 0.83. Asked a reader whether the claim should use the depths in the paper''s Source data 1 (questions/brinke-2017.yaml).'
+- claim: fig4h-transient-responses-after-day-3
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig4h-transient-responses-after-day-3
+  measured:
+  - 99
+  - 0
+  notes: 'Drop/mean, 50-125 ms: none of the 13 transient cells is recorded on days 1 to 3 (0/99 against 13/171,
+    Fisher p = 0.0026). Other readings put 1 to 27 transient cells on days 1 to 3, or none without significance
+    (mean/mean, 0/99 against 5/171, p = 0.16).'
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+- claim: fig5cd-cs-pause-faster-facilitation-ds1
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig5cd-cs-pause-faster-facilitation-ds1
+  measured:
+  - 105.7
+  - 52.8
+  - 9.97
+  - 5.58
+  notes: 'Drop readings, class (a+): the 7 facilitation cells with a CS pause have a higher maximum rate (105.7
+    against 52.8 Hz from baseline, p = 0.0028; reading b, 45.0 against 16.4 Hz, p = 0.014) and velocity (9.97 against
+    5.58 Hz/ms, p = 0.004) than the 55 without; class (b) also gives both (p = 0.011 to 0.046). None of the values
+    is within tolerance. Under the mean readings 2 facilitation cells have a pause and no test is significant.'
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Velocity is the largest first difference of the deposited 1 ms spike density in the CS-US interval (claims file,
+    opening comment).
+- claim: fig5hi-cs-pause-faster-facilitation-ds2
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig5hi-cs-pause-faster-facilitation-ds2
+  measured:
+  - 9.35
+  - 5.76
+  notes: Maximum facilitation does not differ under any reading (p = 0.24 to 0.97); velocity is higher in CS pause
+    cells under the drop readings (9.35 against 5.76 Hz/ms, p = 0.0002, class a) and under the mean readings with
+    class (b) (p = 0.044). The velocities are outside the tolerance of 5.6 and 3.6 Hz/ms.
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - Second-dataset classes use the last 200 ms of the description's 212 ms CS-US interval (12-212 ms); the paper's
+    200 ms interval (0-200 ms) is shown where counts are given.
+- claim: fig5ej-cs-pause-cells-shallower
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig5ej-cs-pause-cells-shallower
+  notes: Recording depth is not in the data set. Asked a reader whether the claim should use the depths in the paper's
+    Source data 1 (questions/brinke-2017.yaml).
+- claim: fig5s1-model-timing
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig5s1-model-timing
+  notes: Needs the Purkinje cell recordings of ten Brinke et al. (2015) and the model of Figure 5-source data 1.
+    The data set holds only IpN recordings, the paper does not say where the Purkinje cell recordings are, and the
+    claims file names no public copy.
+- claim: fig6-us-peak-prevalence
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6-us-peak-prevalence
+  measured:
+  - 214
+  - 11.8
+  - 104.3
+  notes: 214 of 270 cells (79.3%) have a first US peak, with 104.3 +/- 59.6 Hz from baseline (96.7 from the last
+    50 ms); both within tolerance. The latency, 11.8 +/- 5.3 ms (median 10), is just outside 10.6 +/- 1.06 ms.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+- claim: fig6c-us-peak-declines-with-training
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6c-us-peak-declines-with-training
+  measured:
+  - 94.9
+  - 74.9
+  notes: Over all cells the US peak amplitude is lower later (text grouping 94.9 against 74.9 Hz, p = 0.002; legend
+    grouping 98.9 against 59.4 Hz, p = 1.5e-06), but the later means are far above 29 +/- 2.9 Hz. Over US peak cells
+    only the decline is not significant (p = 0.57 and 0.08).
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+- claim: us-peak-anticorrelates-with-behavior
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:us-peak-anticorrelates-with-behavior
+  measured:
+  - -0.381
+  - -0.271
+  notes: Spearman r = -0.381 with % CRs (p = 1e-10) and -0.271 with CR amplitude at US onset (p = 6e-06), n = 270;
+    both negative and significant, both weaker than the paper's and just outside tolerance.
+  deviations:
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+- claim: fig6d-us-peak-trial-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6d-us-peak-trial-correlations
+  measured:
+  - 72
+  - 16
+  - -2.16
+  notes: 72 recordings have a US peak and behavior (outside 62 +/- 6.2); 16 (data set's CR amplitude) to 20 show
+    significant negative correlations (outside 13 +/- 1.3), 2 or 3 positive; bootstrap p below 1/500. The mixed-model
+    slope, -2.16 +/- 0.38 Hz per %, is within tolerance.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - The Statistics rule (Pearson if at least 30 points and both variables normal after a Grubbs test, otherwise
+    Spearman) needs a normality test the paper does not name; Lilliefors is used, and a Spearman-only count is printed
+    beside each count. No outcome changes with it.
+  - Bootstrap p-values are fractions of 500 random datasets under both null readings of the claims file; 0.000 means
+    below 1/500.
+- claim: us-peak-cooccurs-with-facilitation
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:us-peak-cooccurs-with-facilitation
+  measured:
+  - 56
+  - 7
+  notes: Facilitation is more common in US peak cells (class a 72/214 against 8/56, p = 0.0049; class a+ 56/214
+    against 6/56, p = 0.013). Cells with a significant US peak correlation are not more likely to have a positive
+    facilitation correlation under any reading (for example 7/16 against 19/56, p = 0.56; p = 0.15 to 1).
+  deviations:
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - The measured count of positive facilitation correlations is among 16 US-peak-correlated cells, not 13.
+- claim: fig6s1a-eyelid-opening-us-peak
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6s1a-eyelid-opening-us-peak
+  measured:
+  - 142
+  - 16
+  notes: 142 US peak cells without behavior. With eyelid reading (b), the CS-US extreme, 16 have significant positive
+    correlations (bootstrap p below 1/500); with reading (a), at US onset, 23. Measured values are reading (b),
+    the one that matches.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+  - Bootstrap p-values are fractions of 500 random datasets under both null readings of the claims file; 0.000 means
+    below 1/500.
+- claim: fig6s1bc-purkinje-us-complex-spike-opening
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6s1bc-purkinje-us-complex-spike-opening
+  notes: Uses only the Purkinje cell recordings of ten Brinke et al. (2015), which are not in this data set and
+    which the paper does not locate.
+- claim: us-pause-prevalence
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:us-pause-prevalence
+  measured:
+  - 99
+  - 28.6
+  - -48.9
+  notes: 99 cells (36.7%) have a US pause at 28.6 +/- 5.3 ms, -48.9 +/- 18.8 Hz from baseline (-51.7 from the last
+    50 ms); all within tolerance. The count is 99 or 100 for turnaround spans of 20 to 45 ms.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+- claim: cs-pause-cells-have-us-pause
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:cs-pause-cells-have-us-pause
+  measured: 4
+  notes: 'Mean/trough, 50-125 ms, 50 ms rebound: all 6 CS pause cells have a US pause, against 93/264 others (Fisher
+    p = 0.0022). Without the rebound span, 4/4 and 3/3 (p = 0.017 and 0.048). Under the drop readings the association
+    is not significant (p = 0.079 to 0.50). Measured value is mean/trough, 50-125 ms, within the window, the first
+    reading listed.'
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+- claim: fig6b-us-peak-pause-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6b-us-peak-pause-overlap
+  measured:
+  - 76
+  - 138
+  - 23
+  - 33
+  notes: Both 76, peak only 138, pause only 23, neither 33; three of the four are within tolerance, pause only is
+    not.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+- claim: fig6g-us-response-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6g-us-response-depth
+  notes: Recording depth is not in the data set. Asked a reader whether the claim should use the depths in the paper's
+    Source data 1 (questions/brinke-2017.yaml).
+- claim: us-pause-declines-with-training
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:us-pause-declines-with-training
+  measured:
+  - 140
+  - 68
+  - 31
+  notes: 68/140 cells on days 1 to 4 against 31/130 later have a US pause (chi-square p = 2.5e-05, Yates 4.4e-05).
+    Over all cells the pause is deeper early (from the last 50 ms -23.5 against -11.4 Hz, p = 0.0014; from baseline
+    -19.9 against -2.8 Hz, p = 0.00066); over US pause cells only it is not (p = 0.27 and 0.31). 31 is below 39
+    +/- 3.9.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+- claim: fig6h-us-pause-trial-correlations
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig6h-us-pause-trial-correlations
+  measured:
+  - 35
+  - 4
+  - 0.37
+  notes: 35 US pause cells with behavior; with the data set's CR amplitude 4 have significant positive correlations
+    (bootstrap p = 0.020 shuffle, 0.014 random), with the CS-US maximum also 4 (p = 0.004 and 0.010), with the amplitude
+    computed at the stated US onset 2 (p = 0.23 and 0.20). 3 cells are significantly negative. The linear-model
+    slope is 0.37 +/- 0.09 Hz per %, outside 0.66 +/- 0.12.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+  - The Statistics rule (Pearson if at least 30 points and both variables normal after a Grubbs test, otherwise
+    Spearman) needs a normality test the paper does not name; Lilliefors is used, and a Spearman-only count is printed
+    beside each count. No outcome changes with it.
+  - Bootstrap p-values are fractions of 500 random datasets under both null readings of the claims file; 0.000 means
+    below 1/500.
+- claim: fig7-second-us-peak
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig7-second-us-peak
+  measured:
+  - 109
+  - 44.0
+  - 60.9
+  notes: 109 cells have a second US peak (105 with a first peak), outside 83 +/- 8.3 (103 to 113 for turnaround
+    spans of 20 to 45 ms); peak time 44.0 +/- 9.2 ms and magnitude 60.9 Hz from the last 50 ms (71.0 from baseline)
+    are within tolerance.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+- claim: fig7-second-us-peak-dynamics
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig7-second-us-peak-dynamics
+  measured:
+  - 24.6
+  - 47.1
+  notes: 'From the last 50 ms: larger with poor behavior (30.7 against 18.7 Hz, p = 0.011), no change with day over
+    270 recordings (r = 0.026, p = 0.68), growth with day over 159 poor-behavior recordings (r = 0.202, p = 0.011),
+    larger after day 4 among them (47.1 against 24.6 Hz, p = 0.0009); the velocity test misses (3.54 against 4.49
+    Hz/ms, p = 0.053). From baseline, the poor against good test misses (p = 0.083).'
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+  - The paper's n of 224 and 138 recordings are not matched; all 270 and the 159 without behavior are used.
+- claim: fig7c-second-peak-cells-lower-cr
+  outcome: partially_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig7c-second-peak-cells-lower-cr
+  measured:
+  - 16
+  - 21
+  - 19
+  - 31.2
+  - 46.3
+  notes: Second-peak cells have lower CR amplitudes in both datasets (first p = 0.017; second 31.2 against 46.3%,
+    p = 0.0015, both within tolerance), but the second-dataset counts (16 first peaks, 21 pauses, 19 second peaks)
+    are outside 9, 24 and 11.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+  - CR amplitude at US onset is run as the data set's crAmplitude (the paper's variable; its second-dataset mean
+    is the paper's 43.5 +/- 17%) and as computed at the stated US onset; the data set's values are the eyelid 13
+    ms before the stated onset.
+- claim: fig7b-first-second-peak-correlated
+  outcome: not_reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:fig7b-first-second-peak-correlated
+  measured:
+  - 0.617
+  - 58
+  notes: 58 of the 105 cells with both peaks have significant positive trial-by-trial correlations (against 14)
+    and the mixed-model slope is 0.617 +/- 0.037 Hz/Hz (against 0.31 +/- 0.08). In 40 of the 105 cells the two 30
+    ms windows overlap; among the other 65, 24 are significant.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
+  - The Statistics rule (Pearson if at least 30 points and both variables normal after a Grubbs test, otherwise
+    Spearman) needs a normality test the paper does not name; Lilliefors is used, and a Spearman-only count is printed
+    beside each count. No outcome changes with it.
+- claim: us-only-trials-ds2
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:us-only-trials-ds2
+  notes: The data set has no trial-type field, and its description says each recording holds paired trials; the
+    US-only trials of the 25 cells are not identifiable in it, and the paper names no other deposit.
+- claim: fig7s1c-us-only-second-peak-cs-pause-cells
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the US-only trials, which are not in the data set (see us-only-trials-ds2).
+- claim: fig7fg-us-pause-resembles-cs-pause
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the US-only trials, which are not in the data set (see us-only-trials-ds2).
+findings:
+- kind: data_missing
+  statement: The data set holds no recording depth, which the paper uses in four of its findings (Figures 4-figure
+    supplement 1E, 5E, 5J and 6G, and the depth correlation of firing rate). The paper's Source data 1 on the eLife
+    site lists a variable named Depth for the same 372 cells.
+- kind: data_missing
+  statement: The US-only trials interspersed in 25 second-dataset recordings (Figure 7 and its supplement 1) and
+    the optogenetic sessions of three L7cre-Ai27 mice (Figure 3) are not in the data set; nothing in it marks a
+    trial's type.
+- kind: metadata_error
+  statement: 'The per-trial crAmplitude is described as the eyelid closure at US onset, but it equals the eyelid
+    position 13 ms before the stated US onset (usOnset): exactly in the second dataset (largest difference per recording
+    at most 0.11% closure), and with a median per-recording largest difference of 1.1% closure in the first. At
+    the stated US onset the differences are 5.3 and 13.5% (medians). The second-dataset mean of crAmplitude is the
+    paper''s 43.5 +/- 17%.'
+- kind: metadata_insufficient
+  statement: The per-trial facilitation variable is described only as facilitation during the CS-US interval after
+    subtracting spontaneous facilitation in the baseline. In the second dataset it equals the mean of the positive
+    part of the trial's spike density above the trial's own baseline mean over the whole CS-US interval (0-212 ms),
+    minus the same quantity over the 200 ms baseline. In the first dataset neither the last 200 ms nor the whole
+    interval reproduces it exactly (median per-recording largest difference 4.5 and 8.9 Hz), so its definition there
+    is not documented.
+- kind: metadata_error
+  statement: The stored ephysMean is not the mean of the stored ephys trials in 26 recordings (median absolute difference
+    above 1 Hz; largest single difference 158 Hz), while eyelidMean equals the mean of the eyelid trials everywhere.
+- kind: selection_undocumented
+  about: data
+  statement: 282 of the 13027 deposited trials have a baseline eyelid at or past half closure, and a Grubbs test
+    on baseline SDs flags 402, while the Methods say such trials were removed. The data set does not say which trials
+    it holds or whether the exclusions were applied.
+- kind: other
+  about: data
+  statement: The first dataset has 18 mouse IDs (1 to 19 without 10), where the paper's Results say 19 mice and
+    its Methods 22. The second dataset has 6, as the Methods say.
+- kind: other
+  about: data
+  statement: The second dataset's CS-US interval is 212 ms in the data set (usOnset 0.212 s) and its description,
+    but 200 ms in the paper's Results.
+- kind: methods_unavailable
+  statement: 'Questions for the paper''s authors, as no analysis code is linked. (1) How is the ''mean above-baseline
+    activity within the baseline itself'' formed for the CS-US modulation classes: the mean of max(baseline - mean,
+    0) over all baseline bins, the mean over the above-baseline bins only, or the positive parts in both window
+    and baseline (the data set''s facilitation variable)? None of these gives 60, 23 and 187 cells here (80/23/167,
+    62/13/195, 88/31/151). (2) For the CS pause, is 4.5 SDs measured from the baseline mean or as the size of the
+    drop, is the 2 SD rebound measured from the trough or from the baseline, and must the rebound fall within 50-125
+    ms? (3) How were the 500 random datasets of the bootstrap made? (4) Which normality test decides between Pearson
+    and Spearman? (5) Over which segment and lag range were the spike-eyelid cross-correlations taken? Many lags
+    here sit at the edge of a +/-100 ms range. (6) How is spike rate velocity computed? The first difference of
+    the 1 ms spike density gives two to four times the paper''s values. The paper''s Source data 1 holds per-cell
+    values that would let these be checked.'
+- kind: paper_inconsistency
+  statement: The paper gives 19 mice for the first dataset in the Results and n = 25 in all, with 22 for the first
+    and 6 for the second dataset, in the Methods; these do not add up.
