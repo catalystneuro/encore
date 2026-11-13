@@ -5,7 +5,7 @@
   "label": "DANDI:000404"
  },
  "page": "datasets/dandi/000404/",
- "generated": "2026-11-11T11:35:15+00:00",
+ "generated": "2026-11-13T03:51:44+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 20,
@@ -1096,37 +1096,46 @@
      "kind": "data_missing",
      "statement": "The files hold no decoder matrices (Kalman gain, steady-state cursor dynamics, the PPF's parameters), although the paper's Data availability lists decoder parameters among the deposited data. The code that wrote the files has these lines commented out (online_analysis/nwb_utils.py). Monkey G's steady-state gain and cursor update can be recovered exactly from the decoder state and spike counts (variance accounted for above 0.99999 on 99% of updates); Monkey J's PPF cannot, and its linear approximation must be refitted.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "format_error",
      "statement": "Monkey J's target_state and obs_details series carry one target and obstacle for every trial of a session; the writer indexes frames with the position of each go event in the event list (nwb_utils.py, targets[(go_ - start_index_overall):] with go_ an index into strobed), so the last trial's values fill the file. In Monkey G's sessions 0 and 1, checked, target_state at reward is one value for all trials and does not hold the trial's target. Targets have to be read from the cursor position at reward.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The trials table has only start and stop times. Task, target, direction around the obstacle and Monkey J's obstacle trial type are not given; the task can be read from the obstacle series of each task entry, the target from the cursor at reward, and Monkey J's obstacle trial types (the paper analyses only partial and full obstruction) only by matching start and end positions to a target list in the paper's code.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "Units differ within Monkey J's files. The cursor and decoder state are in m and m/s, while target_state, obstacle_position and obs_details are stated in cm; target_state holds center-out targets in m (0.1027, 0.1384) and obstacle-task targets in cm (-3.25, 8.13) under that one unit. Monkey G's files are in cm throughout.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. How was Monkey J's 100 ms decoder for the simulations built (the expression for F in Methods, \"BMI cursor dynamics\", does not survive in the text), and in what units are the next-command errors of Table S1 (row 5E)? Here the 100 ms cursor update was fitted to the decoder state, and the errors match the paper's only when multiplied by 10.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "Monkey G's decoder state does not follow the steady-state filter on 0.03 to 0.95% of updates per session, among them the first updates of each task entry, where the filter had not converged. The gain recovered on the other updates accounts for 0.928 to 1 of the variance of the velocity update over all updates, so the gain must be fitted on the updates the filter explains.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -1160,6 +1169,17 @@
        "reason": "Agrees only conditionally; not run. The blocker is a build-isolation failure installing ssm, not missing data, and the verifier cannot verify that failure. By the record's own estimate the 4 J sessions take about 3 h on one core. A standard workaround (installing without build isolation, or with Cython and numpy pre-installed) would let at least J and the code's G subset be tested."
       }
      ]
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How was Monkey J's 100 ms decoder for the simulations built (the expression for F in Methods, \"BMI cursor dynamics\", does not survive in the text), and in what units are the next-command errors of Table S1 (row 5E)? Here the 100 ms cursor update was fitted to the decoder state, and the errors match the paper's only when multiplied by 10.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }

@@ -5,7 +5,7 @@
   "label": "CRCNS:fcx-2"
  },
  "page": "datasets/crcns/fcx-2/",
- "generated": "2026-11-11T11:35:15+00:00",
+ "generated": "2026-11-13T03:51:44+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 5,
@@ -805,61 +805,37 @@
      "kind": "metadata_error",
      "statement": "The derived data's time axes put each segment's first sample at -1.5 s, and that sample is the trial table's epoch start (encmain at column H, first stimulus onset; proc 0.3 s before column I, test cue offset; pre about 0.1 s after column G), so the task events lie 1.5 s earlier on the time axes than 0 s suggests. The deposited scripts cut their windows from the time axes as if 0 s were stimulus onset, test cue offset minus 0.3 s and start screen minus 0.9 s. The data side with the table: the 900 and 1150 ms delay trials part where the table puts the first delay-dependent event of each segment (proc ERPs from -0.25 to 0.75 s, p down to 0.005 against 200 permutations) and not where the scripts' windows put it (proc 1.0 to 2.0 s, p 0.29 to 0.94).",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "The response times of docs/summary_file.csv, which the descriptor says are \"calculated on all correct trials\", differ from the mean over correct trials of the per-trial tables in 7 of 10 subjects (s1 identity 1948 against 2348 ms), and no other summary of the trial tables tried (medians, all or kept trials, other subjects' rows, blocks of 40 trials, trial type) gives them. The paper's condition means are those of summary_file.csv. Its accuracies do equal the per-trial tables.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "For s10 the trial table's epoch columns are not on the derived data's sample grid (offsets of 97.1 to 98.1 samples from column G, about 114 for two trials, and fractional offsets for H and I), and its trialinfo does not equal the trial table's columns.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "The descriptor gives fsample 1000 for the derived structures; s8 and s9 are at 512 Hz (as its note on the trial table says).",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The deposited psianalysis.m multiplies the Fourier coefficients without conjugating one of them, so its \"cross-spectral density\" and phase slope are not the PSI of Nolte et al. that the Methods cite. It also z-scores the trial mean of per-trial PSI against a null built from trial-averaged coherency, a different statistic; with the conjugate added, this form passes z > 1.96 for 57% of electrodes and pairs when one signal's trials are shuffled against the other's, as many as on the real data (56%), and its selection rates are of the order of the paper's counts of phase-directing units (31% to 49%). The Methods' PSI passes 0% to 0.1% with trials shuffled.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "subtracterp.m with ncond = 3 selects the temporal trials by trialinfo column 5 == 2 (the delay length column, 900 or 1150), so the temporal condition is empty; pacanalysis.m sizes its amplitude matrix with an undefined variable `freq`; and dirpac_compute.m calls pacanalysis with six arguments while it takes four, so the deposited PAC scripts cannot run as given.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "The Methods describe PSI from sliding 3-cycle windows (dt = 3/f) at 3 to 7 Hz on 900 ms segments; a 3-cycle window at 3 Hz is 1 s long and cannot be placed in the segment. The deposited code uses one Hanning window over the segment.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "The behavioural models are said to have \"3 condition-fixed effects\" but are reported as F(1,28); with one value per subject and condition, F(1,28) is what condition as a single numeric term gives, and on summary_file.csv that reading gives the paper's p > 0.12 for response time.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. Were the behavioural mixed models fitted with condition as one numeric term (and if so, with which coding), on the per-subject values of docs/summary_file.csv, and how were those response times computed? The printed F(1,28) fits a numeric term on 30 subject-condition values. On summary_file.csv that model finds no response-time effect (p = 0.13); on the trial tables' response times it finds one (p = 0.0015), so the outcome of behavior-no-difficulty-difference rests on these choices.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. Which form of PSI produced the reported PSI z values and the counts of phase-directing electrodes (the Methods' Nolte PSI on the trial-averaged cross-spectrum, or the code's mean of per-trial PSI against trial-averaged coherency), with which spectral window, and were the analysis windows cut 1.5 s later on the derived time axes than the trial table places the events, as the deposited scripts do? The Methods' PSI selects at most 3 phase-directing units per system here, and the code's form selects as many with trials shuffled as on the real data, so crossspectral-equal-strength and the PAC claims are blocked.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -892,6 +868,62 @@
      "agreed": 21,
      "of": 21,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The deposited psianalysis.m multiplies the Fourier coefficients without conjugating one of them, so its \"cross-spectral density\" and phase slope are not the PSI of Nolte et al. that the Methods cite. It also z-scores the trial mean of per-trial PSI against a null built from trial-averaged coherency, a different statistic; with the conjugate added, this form passes z > 1.96 for 57% of electrodes and pairs when one signal's trials are shuffled against the other's, as many as on the real data (56%), and its selection rates are of the order of the paper's counts of phase-directing units (31% to 49%). The Methods' PSI passes 0% to 0.1% with trials shuffled.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "subtracterp.m with ncond = 3 selects the temporal trials by trialinfo column 5 == 2 (the delay length column, 900 or 1150), so the temporal condition is empty; pacanalysis.m sizes its amplitude matrix with an undefined variable `freq`; and dirpac_compute.m calls pacanalysis with six arguments while it takes four, so the deposited PAC scripts cannot run as given.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Methods describe PSI from sliding 3-cycle windows (dt = 3/f) at 3 to 7 Hz on 900 ms segments; a 3-cycle window at 3 Hz is 1 s long and cannot be placed in the segment. The deposited code uses one Hanning window over the segment.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The behavioural models are said to have \"3 condition-fixed effects\" but are reported as F(1,28); with one value per subject and condition, F(1,28) is what condition as a single numeric term gives, and on summary_file.csv that reading gives the paper's p > 0.12 for response time.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Were the behavioural mixed models fitted with condition as one numeric term (and if so, with which coding), on the per-subject values of docs/summary_file.csv, and how were those response times computed? The printed F(1,28) fits a numeric term on 30 subject-condition values. On summary_file.csv that model finds no response-time effect (p = 0.13); on the trial tables' response times it finds one (p = 0.0015), so the outcome of behavior-no-difficulty-difference rests on these choices.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which form of PSI produced the reported PSI z values and the counts of phase-directing electrodes (the Methods' Nolte PSI on the trial-averaged cross-spectrum, or the code's mean of per-trial PSI against trial-averaged coherency), with which spectral window, and were the analysis windows cut 1.5 s later on the derived time axes than the trial table places the events, as the deposited scripts do? The Methods' PSI selects at most 3 phase-directing units per system here, and the code's form selects as many with trials shuffled as on the real data, so crossspectral-equal-strength and the PAC claims are blocked.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }

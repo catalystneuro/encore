@@ -5,7 +5,7 @@
   "label": "CRCNS:bf-3"
  },
  "page": "datasets/crcns/bf-3/",
- "generated": "2026-11-11T11:35:15+00:00",
+ "generated": "2026-11-13T03:51:44+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 28,
@@ -1954,61 +1954,46 @@
      "kind": "metadata_insufficient",
      "statement": "Spikes, nose pokes and pellet deliveries were recorded only from 20 s before each cue onset to 31.5 s after it, where an EVT14 event (pause recording, in the authors' script) ends each window; the rest of each 3.5 min inter-trial interval is not in the files (177497 of 177598 pokes and 5871 of 5877 pellets fall in these windows). The data descriptor does not say so, and analyses of the inter-trial interval can only use these windows.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The data descriptor does not say what the event channels EVT01 to EVT14 hold, or which channel carries which cue in each behavior program (the letter after epr25 in the file name). Only the authors' script cubeScriptPR25.m gives them; the mapping it gives agrees with the shocks (all 780 danger trials and 390 of 1560 uncertainty trials shocked 12 s after onset, no safety trial). EVT08 repeats EVT01 in every file and is not described.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "The data descriptor says VPcube.poke.base is the nose-poke rate over the 2 s before the cue; the cube holds the rate over the 20 s before it (equal in all 435 units to the rate computed from the poke times). It lists half duration and amplitude ratio among the cube's fields; the cube has neither (vpAnalysis.m computes them). It describes mean waveforms for each trial type; each unit file has one 32-sample waveform.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "The files hold 195 sessions (distinct session file names, each with its own trial table), one more than the 194 the paper reports for the 435 neurons.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "Four pairs of units recorded in one session share 70 to 88% of their spikes within 0.1 ms (pa02082418 SPK01a and SPK15a; pa21040319, pa21040419 SPK06a and SPK15a; pa21040519 SPK07a and SPK15a), and a fifth pair 49% (pa21031519 SPK06a and SPK07a). They may be one neuron recorded on two wires and counted twice.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The Methods normalize firing by averaging trials of each type, subtracting that type's mean firing in the 10 s before cue onset and Z-scoring over the trial types; the authors' script cubeScriptPR25.m subtracts from each trial its firing in the 2 s before cue onset, floored to an integer rate, and Z-scores single trials. The paper's printed means, bootstrap intervals and regression betas match the script's normalization (for example Low firing danger onset -0.364 against the paper's -0.37), and the Methods' normalization gives values about twice as large. Of the three differences, Z-scoring single trials in place of trial means accounts for the gap, since with Z over single trials the means are within the paper's tolerance whatever the baseline length or flooring.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The Methods screen neurons on mean firing rates (Hz); vpAnalysis.m floors each trial's rate to an integer before the t-tests. The floored screen gives the paper's 257 neurons from 153 sessions; the unfloored one gives 271 from 160, and a split into cue-excited and cue-inhibited neurons outside the paper's counts.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The Methods subtract the mean firing of the 1 s before reward delivery; cubeScriptPR25.m subtracts the mean of the first 1 s of the 4 s window, 2 s to 1 s before delivery. The script also takes only pellets delivered 18 to 2 s before or 14 to 28 s after a cue onset.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "The k-means clusters of cue-inhibited neurons (Low 74, Intermediate 34, High 18) are a local optimum, vpAnalysis.m runs Matlab kmeans once after rng(1), and with more starts k-means finds partitions with a lower within-cluster sum of squares (58/46/22 on the same features; SSE 7254 against 7997). Over 300 seeds one start reaches the paper's partition 98 times. Question for the authors, was a single start intended, and do the cluster results hold on the lowest-SSE partition?",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "The text read does not define a nose-poke pause (Supplementary Figs. 6 and 9) or the cue window of the cue-cue correlations (Supplementary Figs. 5 and 8). cubeScriptPR25.m takes gaps of more than 2 s between pokes 18 to 2 s before cue onset, and vpAnalysis.m correlates the first 5 s of cue for the cue-inhibited clusters. Question for the authors, are these the definitions used in the supplementary figures?",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -2046,6 +2031,53 @@
      "agreed": 45,
      "of": 45,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods normalize firing by averaging trials of each type, subtracting that type's mean firing in the 10 s before cue onset and Z-scoring over the trial types; the authors' script cubeScriptPR25.m subtracts from each trial its firing in the 2 s before cue onset, floored to an integer rate, and Z-scores single trials. The paper's printed means, bootstrap intervals and regression betas match the script's normalization (for example Low firing danger onset -0.364 against the paper's -0.37), and the Methods' normalization gives values about twice as large. Of the three differences, Z-scoring single trials in place of trial means accounts for the gap, since with Z over single trials the means are within the paper's tolerance whatever the baseline length or flooring.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods screen neurons on mean firing rates (Hz); vpAnalysis.m floors each trial's rate to an integer before the t-tests. The floored screen gives the paper's 257 neurons from 153 sessions; the unfloored one gives 271 from 160, and a split into cue-excited and cue-inhibited neurons outside the paper's counts.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods subtract the mean firing of the 1 s before reward delivery; cubeScriptPR25.m subtracts the mean of the first 1 s of the 4 s window, 2 s to 1 s before delivery. The script also takes only pellets delivered 18 to 2 s before or 14 to 28 s after a cue onset.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The k-means clusters of cue-inhibited neurons (Low 74, Intermediate 34, High 18) are a local optimum, vpAnalysis.m runs Matlab kmeans once after rng(1), and with more starts k-means finds partitions with a lower within-cluster sum of squares (58/46/22 on the same features; SSE 7254 against 7997). Over 300 seeds one start reaches the paper's partition 98 times. Question for the authors, was a single start intended, and do the cluster results hold on the lowest-SSE partition?",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The text read does not define a nose-poke pause (Supplementary Figs. 6 and 9) or the cue window of the cue-cue correlations (Supplementary Figs. 5 and 8). cubeScriptPR25.m takes gaps of more than 2 s between pokes 18 to 2 s before cue onset, and vpAnalysis.m correlates the first 5 s of cue for the cue-inhibited clusters. Question for the authors, are these the definitions used in the supplementary figures?",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }
