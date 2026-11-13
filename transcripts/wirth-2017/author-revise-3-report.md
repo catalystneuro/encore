@@ -1,14 +1,13 @@
-The verifier agreed with both proposals in round 3, so neither proposal is still open.
+Two outcomes changed, and no proposals remain. A previous author-revise-3 run (commit d9b90dd) had already made all of these edits, so I checked them against the verifier's round-3 report and made no new changes.
 
-**Outcomes changed**
-- **direction-center-vs-periphery**: changed from partially_reproduced to blocked (`metadata_insufficient`). Reading (a), the direction-selective cells, meets neither level. Reading (b) needs the paper's set of responsive cells, which needs the point-of-gaze space. The three-space cells and the full set of cells give different results, so the paper's set could land at any level.
-- **direction-tuning-not-maintained**: changed from not_reproduced to blocked (`metadata_insufficient`). Reading (a) fails on the number of cells tested: 40 or 28, against 56 ± 5.6. Under reading (b), sets that meet the criterion and sets that fail it both exist between the two bounds.
+**Outcomes changed.** The verifier agreed with both proposals.
+- **direction-center-vs-periphery:** partially_reproduced (assumed) → blocked (`metadata_insufficient`). Reading (a) misses both levels. Reading (b) needs the paper's responsive set, which needs the point-of-gaze space that this data cannot give.
+- **direction-tuning-not-maintained:** not_reproduced (assumed) → blocked (`metadata_insufficient`). Reading (a) fails on the number of cells tested (40 and 28, against 56 ± 5.6). Under reading (b), one set of cells within the possible range meets the criterion and another fails it, so the claim cannot be decided.
 
-On both claims I removed `proposed`. I also removed `assumed: true`, which goes beyond "change nothing else": the entry's check failed because the schema does not allow `assumed` on a blocked outcome. The deviations stay, and the round-3 responses say why `assumed` went. No other outcome changed.
+In `attempts/wirth-2017-01.yaml`, both claims have `proposed` removed and `assumed` dropped, since a blocked outcome carries none; their deviations stay. Round 3 is recorded under `verifications`: for each of the two claims, the verifier agreed, would give blocked, and its reason and the response are there. The notebook's two conclusion cells and its summary, and the entry README, all say blocked. No other outcome changed.
 
-**Other updates**
-- I updated the notes, the notebook's two conclusion cells, the header table and the summary, and the README. The blocked row in the README now counts 13 claims, up from 11.
-- Round 3 is recorded under `verifications`, with one result per claim. Each gives agrees: true, outcome blocked, the verifier's reason and my response.
-- The verifier also said the claims file's reading of the 56 cells fits reading (a) better than reading (b). It said this changes neither verdict. Following the protocol, I added it as a question in `questions/wirth-2017.yaml` and did not change the claim.
+**Verifier's side point.** It said the claims file's reading of the 56 cells fits reading (a) better than reading (b), and that this changes neither verdict. The point is a question for a reader in `questions/wirth-2017.yaml`, and the claim stays tested as the claims file has it.
 
-`python tools/entry.py all entries/wirth-2017` passed with 0 errors, and the notebook ran in 1,589 s. The re-executed cells 42 and 45 give the same numbers the text cites. Nothing is committed. The changes to `tools/` and the untracked dotfiles were there before this run, and I did not touch them.
+**Checks.** `python tools/entry.py all entries/wirth-2017` gave 0 errors. Nothing in the entry had changed since the last run, so it reused the executed notebook from 19:43 UTC and did not run it again.
+
+Nothing is committed. The working tree also has uncommitted changes in `tools/build_site.py`, `tools/site_assets/app.css` and `tools/site_assets/list.js` that this run did not make; I left them as they are.
