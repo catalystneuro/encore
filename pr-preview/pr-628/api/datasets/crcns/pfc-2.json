@@ -1,0 +1,925 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "pfc-2",
+  "label": "CRCNS:pfc-2"
+ },
+ "page": "datasets/crcns/pfc-2/",
+ "generated": "2026-11-13T05:05:54+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 5,
+  "partially_reproduced": 8,
+  "not_reproduced": 17,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "fujisawa-2008-02",
+   "dataset": {
+    "archive": "crcns",
+    "id": "pfc-2",
+    "version": "unversioned",
+    "doi": "10.6080/K01V5BWK",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:pfc-2"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:pfc-2",
+   "label": "CRCNS:pfc-2",
+   "dataset_version": "unversioned",
+   "paper": "10.1038/nn.2134",
+   "paper_title": "Behavior-dependent short-term assembly dynamics in the medial prefrontal cortex",
+   "date": "2026-11-07",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/42375947012"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "fujisawa-2008-crcns-pfc-2",
+   "entry_title": "Short-term assembly dynamics in rat medial prefrontal cortex (Fujisawa et al. 2008)",
+   "summary": "Few of the paper's main findings held up in this data. Neurons fired over similar stretches of the maze and connected cells were mostly trajectory specific, but far more cells told left from right trials in the side arms than reported (54.3% in layer 2/3 against 22%), and the population did not fire uniformly along the maze. The connection results did not reproduce: counts, cell types and the hub circuit differed, position-dependent transmission was rarer, and depression, facilitation and supralinear coincidence were not seen. Likely reasons are detection details the paper leaves open and missing data, as one of four rats and the layer 5 example session are absent. Minor claims, such as no link with running speed, held.",
+   "description": "Tests the findings of Fujisawa, Amarasingham, Harrison and Buzsaki (2008) on CRCNS pfc-2, which holds the prefrontal spikes, trials and positions of 13 working memory sessions of three of the paper's four rats. It compares firing along the maze, left and right selectivity, monosynaptic connections found by spike jitter, and the position and spike-order dependence of spike transmission.",
+   "notebooks": [
+    {
+     "path": "reproduce_fujisawa_2008.ipynb",
+     "title": "Reproducing Fujisawa et al. (2008) from CRCNS pfc-2",
+     "executed": "notebooks/fujisawa-2008-crcns-pfc-2/reproduce_fujisawa_2008.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "unit-count",
+     "statement": "A total of 633 well-isolated units were recorded from anterior cingulate and dorsal prelimbic cortex in four rats.",
+     "source": "Results, paragraph 1",
+     "quote": "We recorded a total of 633 well-isolated units from the anterior cingulate area (area 24) and dorsal prelimbic area (area 32) of the medial prefrontal cortex (mPFC)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "627 cells over the 13 working memory sessions (EE 446, FF 146, GG 35), within 10% of 633, but over three of the paper's four rats; 615 with EE188 counted as the 105 cells of EE188_Behavior_PFC.mat. The files list 1,495 clusters (spikeph). By the largest rate over the tenths of the maze, 0 to 10 cells per session are below 1 Hz (10 of 117 in EE188), and 5 of the 12 EE188 cells that EE188_Behavior_PFC.mat leaves out are below 1 Hz, consistent with the data description's 1 Hz rule for Cells without showing it. The match in number does not show that the same units are counted, so the claim holds only in part.",
+     "deviations": [
+      "The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the Figure 2a and 3d session by the data description, is layer 2/3. The count is over three rats, the paper's over four.",
+      "Each session's cells are those of its CellsInfo, a selection of the sorted clusters that the data description describes only as cells firing above 1 Hz in the trials; for EE188 the 117 cells of EE188_example.mat.",
+      "Each cell's largest trial rate is its spikes over time spent in each tenth of the maze on left and right trials, a standard measure used only to compare the files' cells with the data description's 1 Hz rule."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "task-performance",
+     "statement": "The rats performed the task with a mean of 91.9% correct choices during the recording sessions.",
+     "source": "Methods, Behavioral task",
+     "quote": "In the recording sessions, the mean correct performance was 91.9%.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "The trial tables list correct trials only, but the session tar of EE188 holds the .eeg file with the two nose-poke sensor channels (97 right, 98 left), and the position file covers the whole session. A trial is the run of pokes since the last arm-end visit and its choice the arm end reached next. EE188 has 46 trials, 45 correct and 1 error (97.8%, within 91.9 +- 9.19); with a 40 pixel radius the same, with 80 pixels 46 of 48 (95.8%). 41 of the table's 42 correct trials are found as correct trials of the same side; the remaining one (first poke 1133.5 s) lies within a detected correct trial of the same side whose first poke is 3.5 s earlier. The table leaves out 1 detected error and 3 detected correct trials; one of these (2245.1 s) reaches the arm 25.9 s after its first poke, within the 9.0 to 36.1 s of the table's trials, and the other two (822.9 and 2370.7 s) 199.8 and 259.9 s after it, longer than any table trial. Without these two, 43 of 44 (97.7%). The other 12 sessions' sensor channels are in their own tars and were not read, so the claim is tested on one session of 13.",
+     "deviations": [
+      "One session of 13 (EE188), whose tar is already streamed for EE188_example.mat; each other session's tar is about 2 GB and would have to be streamed for its sensor channels.",
+      "Pokes are the intervals when a sensor channel is below -15,000 (the channels sit near 0 and drop to about -30,000), a standard threshold; the first and last poke of each table trial match the table to within 1.6 ms.",
+      "An arm end is reached within 60 pixels of the median end position of the table's correct trials of that side, a standard choice; 40 and 80 pixels are shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-synchrony-by-layer",
+     "statement": "About 10% of layer 2/3 neurons and 20% of layer 5 neurons fire at least one spike in a given 100 ms window, and this fraction is roughly constant across the maze.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 3; Figure 2c; Discussion, paragraph 2",
+     "quote": "the fraction of simultaneously active neurons (10% and 20% in 100-ms windows, layers 2/3 and 5, respectively; Fig. 2c) were relatively constant in all segments of the maze",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Reading b (all sessions of each layer) gives 12.6% for layer 2/3 (outside 10 +- 1) and 20.3% for layer 5 (within 20 +- 2); reading a gives 11.8% for EE188, the only Figure 2a session in the data set. Every tenth of the maze is within 50% of the mean (layer 2/3 11.2 to 14.5%, layer 5 19.0 to 20.8%). Per session 7.6 to 21.9%.",
+     "deviations": [
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells.",
+      "The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the Figure 2a and 3d session by the data description, is layer 2/3.",
+      "Windows of 100 ms tile each trial from its start to its end; a window's position is the position file's at its centre (4.7% of layer 2/3 windows have none)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-population-uniform",
+     "statement": "Individual neurons fire transiently at specific locations, but the population as a whole fires relatively uniformly over the whole maze.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 3; Figure 2a and 2b",
+     "quote": "viewed as a population, the firing properties of mPFC neurons were quite homogeneous ... individual neurons fired transiently, but, as a whole, the population of neurons fired relatively uniformly over the entire apparatus",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "In EE188 the peak positions per tenth are 17, 0, 2, 2, 16, 7, 7, 5, 0, 61 of 117 (chi-square against uniform p < 0.001), and the population mean rate per tenth is 0.57 to 2.33 times its mean. The layer 5 sessions of FF show the same pattern (variant). The PSTHs are spike counts per unit of normalised length per trial, as the Methods define them, so they are higher where the rat spends more time; in EE188 it spends 0.86 s per trial in the first tenth and 2.89 s in the last, against 0.47 to 0.71 s in the others (median speed 81 and 22 pixels/s, against 138 to 198).",
+     "deviations": [
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells.",
+      "The peak position of a cell is that of the larger of its left and right PSTH peaks; the claims file gives Figure 2a's ordering without saying which condition.",
+      "1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the end of the nose-poke and the start of reward consumption, the trial start and end the data description defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lifetime-width",
+     "statement": "Most neurons are active over a similar stretch of the maze, 0.27 (62 cm) +/- 0.17 (39 cm) of normalised length (mean +/- s.d.), measured between the 50% boundaries of the peak rate.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 3; Supplementary Figure 2B",
+     "quote": "most neurons were generically active for similar standardized distances of 0.27 (62 cm) \u00b1 0.17 (39 cm) (mean \u00b1 s.d.) in the maze (as determined by the 50% firing boundaries of the peak firing rate",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Under PSTH reading a (all trials), width i (contiguous run) and cells y (all 627 cells) the width is 0.209 +- 0.154. Readings a-ii-x (0.235 +- 0.158), b-ii-y (0.267 +- 0.171) and c-ii-y (0.239 +- 0.156) also match; in the other eight combinations the mean is within tolerance and the s.d. (0.108 to 0.188) is not. Per rat (c-i) 0.195, 0.198 and 0.143.",
+     "deviations": [
+      "1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the end of the nose-poke and the start of reward consumption, the trial start and end the data description defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke.",
+      "Widths are measured on a grid of 200 points (0.005 of the maze), a standard discretisation."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "trajectory-divergence",
+     "statement": "Left and right running paths overlap in the stem and diverge significantly from position 0.30; head directions diverge from 0.24.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4; Supplementary Figure 3B",
+     "quote": "Left and right lap trajectories in segments 0 to 0.3 of the central arm overlapped; they began to differ significantly at position 0.3 ... Significant separation of left/right trajectories and head directions emerged at position 0.30 and 0.24, respectively (p<0.01)",
+     "statistics": [
+      {
+       "test": "permutation test with global bands, left and right labels shuffled",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "In EE188 (42 trials) the lateral coordinate first differs significantly between left and right trials (global level 0.01) at 0.28 (reading a), within 0.30 +- 0.03; the distance to the mean path (reading b) at 0.43, the x coordinate at 0.48. Head direction differs from 0.01 under every reading, against 0.24, although left and right trials start 2 pixels apart. The head direction difference lies at the start of the maze (31 to 45 degrees at 0.005 to 0.025, 11 at 0.055, 0 to 8 from 0.105 on), so the rat leaves the nose-poke with its head turned differently on the two trial types. Smoothed, 0.28 for the lateral path. Other sessions give 0.01 to 0.43 for the lateral path; head direction is available only in EE152 (0.17) and EE165 (0.26).",
+     "deviations": [
+      "Per trial, the mean of each variable in 100 bins of normalised position, gaps filled by linear interpolation; the binning and the absence of smoothing are standard choices, the smoothed version (kernel 0.05) is shown.",
+      "Head direction is the angle from LED 1 to LED 2, compared by the circular difference of the condition means; the paper does not say how it was computed.",
+      "The claims file names the lateral coordinate x. In this position file the stem runs along x (over positions 0 to 0.3 the mean path runs from x 554 to 308 at y 248 to 264) and the arms end at y 134 and 384, so reading a uses y, and x is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "side-arm-selectivity-by-layer",
+     "statement": "In the side arms (positions 0.5 to 1) the fraction of neurons firing differently on left and right trials is almost twice as large in layer 5 (40%) as in layer 2/3 (22%).",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4; Figure 2b",
+     "quote": "The fraction of trajectory-selective neurons in the side arms (positions 0.5\u20131) was almost twice as large in deep (layer 5, 40%) than in superficial (layer 2/3, 22%) neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Reading a gives 62.3% of layer 5 cells (91/146) and 54.3% of layer 2/3 cells (261/481); reading b 61.6% and 51.8%. Per session 28.6 to 78.1%. With shuffled labels the test flags 5.1% of 627 cells, near its level of 0.05.",
+     "deviations": [
+      "The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the Figure 2a and 3d session by the data description, is layer 2/3.",
+      "Only correct trials are in the data set, so reading T-a (correct trials only) is the one run.",
+      "1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the end of the nose-poke and the start of reward consumption, the trial start and end the data description defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "central-arm-selectivity",
+     "statement": "A smaller fraction of neurons, 16% in layer 2/3 and 18% in layer 5, already fire differently on left and right trials in the central arm (positions 0 to 0.3), where paths and head directions are apparently indistinguishable.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4; Figure 2b",
+     "quote": "a sizable but smaller fraction of neurons in both layer 2/3 and layer 5 (16% and 18%, respectively; Fig. 2b) was also differentially active in the central arm (segments 0\u20130.3)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Reading a gives 31.4% of layer 2/3 cells (151/481) and 26.7% of layer 5 cells (39/146); reading b 28.7% and 22.6%. Per session 8.3 to 57.1%.",
+     "deviations": [
+      "The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the Figure 2a and 3d session by the data description, is layer 2/3.",
+      "Only correct trials are in the data set, so reading T-a (correct trials only) is the one run.",
+      "1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the end of the nose-poke and the start of reward consumption, the trial start and end the data description defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "odor-selective-fraction",
+     "statement": "About a quarter of neurons (26% in one layer 2/3 session) fire at significantly different rates during nose-poking for the two odors.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4; Supplementary Figure 6B",
+     "quote": "Approximately one-quarter of the neurons showed significantly different ... firing rates in response to one of the two odorants ... Although 26% of neurons showed significant odor preference (t-test, p<.05)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "In EE188, with the rate over the sensor-detected pokes, 36 of 117 cells (30.8%, Student) or 34 (29.1%, Welch) differ between left and right trials, against 26 +- 2.6. With the trial table's window from the first poke to the end of the last, which includes the pauses between pokes (median 4.59 s against 2.43 s of poking), 45.3% and 42.7%, and 32.4% over all sessions.",
+     "deviations": [
+      "The window is the sensor-detected pokes, from channels 97 and 98 of the session's .eeg file, as Supplementary Figure 6A defines it (duration of nose-poking, detected by a photoelectric sensor); the rate is the spikes during the pokes over their summed duration. The trial table's window (first poke to end of the last) is a variant, and the only window for the other sessions.",
+      "Left and right trials are taken as the two odors, as the claims file says."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "odor-unrelated-to-stem",
+     "statement": "Neurons' odor preference during nose-poking is unrelated to their left-right differences in the stem and side arms, so odor traces do not explain the stem selectivity.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4 (end, page 4); Supplementary Figure 6B",
+     "quote": "we ruled out this possibility after examining, and finding no reliable relationship among, the differential firing patterns in the stem area and during nose poking",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "With the odor preference from the sensor-detected pokes, the Spearman correlation of the nose-poke difference with the side-arm difference is 0.237 (p = 0.010), an association with the same sign. The Fisher tests give odds 1.31 (p = 0.549) in the stem and 1.87 (p = 0.161) in the side arms; the stem Spearman correlation is -0.155 (p = 0.095). With Pearson the side-arm correlation is -0.007 (p = 0.94) and the claim would be reproduced as the criterion is written, so the outcome rests on the coefficient. The stem shows an opposite-sign association (Pearson -0.278, p = 0.0024). With the trial table's window (variant) no same-sign association is found (Fisher p 0.191 and 0.267, Spearman -0.184 and 0.134), and the stem Pearson correlation is -0.411. Whether opposite-sign associations count against the claim is asked of a reader (questions/crcns-pfc-2.yaml).",
+     "deviations": [
+      "Assumed that the correlation of reading b is Spearman's, as the rate differences are heavy tailed and a rank correlation is not driven by a few high-rate cells; the claims file does not name the coefficient. Pearson is shown and gives the other outcome.",
+      "The odor preference is from the sensor-detected pokes (odor-selective-fraction); the trial table's window is a variant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "retrospective-coding-rare",
+     "statement": "Only a small fraction of neurons fire differently according to the reward location of the previous trial.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4 (end, page 4); Supplementary Figures 7 and 8",
+     "quote": "found only spare evidence that any neurons fired differentially on the basis of previously visited positions ... Note that only a small fraction of neurons show retrospective coding",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "With previous-trial labels 4.3% of EE188 cells (5/117) are selective, against 77.8% with current labels on the same trials; over all sessions 7.3% of layer 2/3 and 8.9% of layer 5 cells, against 66.9% and 65.8%. The paper states no chance level; the test's false-positive rate with shuffled labels is 5.1% of cells at level 0.05, so the previous-trial fractions are close to chance.",
+     "deviations": [
+      "The trial table lists correct trials only, so where an error trial was left out the previous trial is the previous correct one.",
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells.",
+      "1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the end of the nose-poke and the start of reward consumption, the trial start and end the data description defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "connection-counts",
+     "statement": "Of 62,408 directed cell pairs, 495 (0.79%) show a short-latency narrow peak or trough in the cross-correlogram, 0.55% excitatory and 0.24% inhibitory, and 0.17% of pairs are reciprocally connected.",
+     "source": "Results, Characterization of mPFC neurons and their connections, paragraph 4; Figure 3e",
+     "quote": "Of the 62,408 cell pairs (counting each literal pair twice, corresponding to the two directions), 495 (0.79%) had short latency ... 0.55% excitatory connections and 0.24% inhibitory connections (single directions); 0.17% of cell pairs were connected reciprocally",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "40,240 directed pairs (three of four rats). Under G-b, 0.94 to 1.32% of pairs are connected, 0.84 to 0.97% excitatory and 0.11 to 0.39% inhibitory over the four B and W combinations; under G-a 1.07 to 1.50%, 0.94 to 1.09% and 0.14 to 0.47%; no combination puts the three directed values within tolerance. Reciprocal pairs are 0.045 to 0.199% of directed pairs under G-b; 0.179% of unordered pairs under G-a B-b W-a is the only reciprocal value within tolerance. G-b B-a W-a finds 41 of the authors' 43 pairs_all connections for EE188, G-a B-a W-a all 43 (W-b 42), B-b 34. With every EE188 train shifted in time the detector flags 0.12 to 0.15% of pairs as excitatory and 0.04 to 0.07% as inhibitory (G-b B-a W-a), against 0.70% and 0.26% unshifted.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the Figure 2a and 3d session by the data description, is layer 2/3.",
+      "1,000 jitter surrogates per session; lags are rounded to the nearest bin centre."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cell-type-fractions",
+     "statement": "By their cross-correlogram interactions 32.5% of units are putative pyramidal cells and 12.5% putative interneurons; 50.7% of the targets of excitatory cells themselves suppress other neurons; the ratio of pyramidal cells to interneurons is 2.82 +/- 0.51 (s.d.).",
+     "source": "Results, Characterization of mPFC neurons and their connections, paragraph 4",
+     "quote": "a sizable fraction of the recorded units could be classified as putative pyramidal cells (32.5%) or inhibitory interneurons (12.5%). A large percentage of the postsynaptic targets of the putative excitatory cells (50.7%) were suppressing other neurons ... The ratio of putative principal cells to inhibitory interneurons in the entire population, identified by physiological criteria, was 2.82 \u00b1 0.51 (s.d.)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Under G-b, 35.2 to 36.5% of cells are putative pyramidal cells (C-a; 36.3 to 38.8% with C-b), within tolerance only under B-b, and 2.2 to 6.1% interneurons; 16.9 to 29.2% of the targets of excitation are interneurons; the ratio is 6.28 to 16.57 per session (7 to 9 of 13 sessions have an interneuron). Under G-a 37.8 to 41.8%, 2.2 to 6.4% and 18.2 to 31.8%. The authors' CellsInfo for EE188 gives 28.2% pyramidal cells and 12.8% interneurons.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "Sessions or rats without an interneuron give no ratio and are left out (4 to 6 sessions)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pyr-pyr-connections",
+     "statement": "Monosynaptic excitation between putative pyramidal cells is rare, found in 0.12% of layer 2/3 and 0.27% of layer 5 pairs.",
+     "source": "Results, Characterization of mPFC neurons and their connections, paragraph 4",
+     "quote": "Monosynaptic excitation between putative pyramidal cells was detected in 0.12% of layer 2/3 and 0.27% of layer 5 pairs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Under G-b, pyramidal to pyramidal excitation is in 0.146 to 0.176% of layer 2/3 pairs and 0.109 to 0.219% of layer 5 pairs (reading a), or 0.81 to 0.98% and 1.15 to 1.89% of pyramidal pairs (reading b); under G-a 0.164 to 0.176% and 0.191 to 0.246%. Only the layer 5 value under G-a B-b W-a (0.246%) is within tolerance.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "The data set holds three of the four rats; its rats EE, FF and GG are taken to be the paper's E, F and G of Supplementary Figure 1 (E and G layer 2/3, F layer 5), as the names match and EE.188, the Figure 2a and 3d session by the data description, is layer 2/3."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-session-connections",
+     "statement": "In the single layer 2/3 session of Figure 3b (1172 pairs), 48 connections have a putative pyramidal reference cell and 30 a putative interneuron; in the layer 5 session of Supplementary Figure 11 (about 1422 pairs) the numbers are 73 and 25.",
+     "source": "Figure 3b legend; Results, paragraph 5 of the section; Supplementary Figure 11 legend",
+     "quote": "Figure 3b illustrates significant peaks and troughs of crosscorrelograms of 1172 pairs of layer 2/3 cells (13,572 matrix points) simultaneously recorded in a single session",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "In EE188 (117 cells, 13,572 ordered pairs), under G-b, 78 to 81 connections have a pyramidal reference cell and 6 to 18 an interneuron (reading a), from 52 to 56 and 3 to 9 reference cells (reading b), against 48 and 30; under G-a 84 to 86 and 5 to 21. The authors' pairs_all with their CellsInfo types gives 40 and 3. The layer 5 values (73 and 25) cannot be tested.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-hub",
+     "statement": "A large part of the recorded neurons belong to a single interconnected circuit, 39 of 117 in the layer 2/3 session and 45 of 142 in the layer 5 session.",
+     "source": "Figure 3d; Results, page 6, paragraph 2; Supplementary Figure 11C",
+     "quote": "a large portion of the active neurons (39 of the 117) belonged to a single interconnected circuit ... a large fraction (45 of 142 total) belonged to a single \"hub\" of network",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "The largest connected circuit in EE188 holds 82 or 83 (B-a) or 59 (B-b) of 117 cells under G-b, 85 or 86 and 64 under G-a, against 39. The authors' pairs_all graph (43 connections) has a largest component of exactly 39 cells. If Figure 3d draws pairs_all, which the matching count suggests but does not show, it draws a subset of the connections found (G-a B-a W-a finds all 43, G-b B-a W-a 41, B-b 34), which the paper does not describe. The layer 5 value (45 of 142) cannot be tested.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-distance",
+     "statement": "Most connected pairs are on the same shank and connection probability falls rapidly with the distance between the neurons, yet connections are found up to 1,200 um apart.",
+     "source": "Figure 3f; Results, page 6, paragraph 1",
+     "quote": "most functionally connected pairs were detected locally and recorded by the same probe shank. The probability of putative connections decreased rapidly as a function of distance between the somata of the recorded pair (Fig. 3f), but connections were detected between neurons up to 1,200 mm apart",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Under G-b B-a W-a, 352 connected pairs are on the same shank and 195 on others; the same-shank probability is 6.20% (99% interval 5.41 to 7.07) against 1.24% (0.97 to 1.56) at 200 um, and falls further with distance; connections are found up to 1,400 um, the largest separation on the probe, not 1,200. The 1,400 um value rests on 2 excitatory and 2 inhibitory connections of 504 pairs (0.40% each, interval 0.02 to 1.83%). Every B, W and G combination gives the same pattern and the same largest separation.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "Distance is the shank separation (200 um per shank), as the claims file says."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "nearby-pyr-int-probability",
+     "statement": "Connection probability between nearby (under 200 um) putative pyramidal cells and interneurons is 1 to 2%.",
+     "source": "Supplementary Note, Potential caveat with the cross-correlation method, paragraph 3",
+     "quote": "The 1-2% connection probability we detected between the physiologically identified nearby (<200 \u03bcm) pyramidal cell-interneuron pairs by the cross-correlation method",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Under G-b, of same-shank pairs of a putative pyramidal cell and interneuron, 38.0 to 63.3% have a pyramidal to interneuron connection (reading a) and 42.9 to 64.6% a connection either way (reading b), over 76 to 163 pairs; under G-a 33.8 to 60.9%. The cell types are defined by the connections themselves, so most such pairs are the connections that typed them. With the authors' CellsInfo types and pairs_all in EE188, 23 of 54 pairs (42.6%).",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "connected-cells-trajectory-specific",
+     "statement": "Most putative pyramidal cells (72.2% in layer 2/3, 84.7% in layer 5) and many interneurons (58.3% and 83%) fire differently on left and right trajectories.",
+     "source": "Results, pages 6 and 7; Figure 3c; Supplementary Figure 11B",
+     "quote": "In addition to a large fraction of putative pyramidal cells (72.2% and 84.7% in layers 2/3 and 5, respectively), many interneurons (58.3% and 83% in layers 2/3 and 5, respectively) ... were also trajectory specific",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Reading b (G-b B-a W-a) gives 69.0% of layer 2/3 pyramidal cells (127/184), 73.3% of layer 5 pyramidal cells (33/45), 59.3% of layer 2/3 interneurons (16/27) and 83.3% of layer 5 interneurons (5/6); three of four are within tolerance, the layer 5 pyramidal value is not (84.7 +- 8.47). B-a W-b gives 75.6% for it, G-a 69.4 to 73.5%; no combination puts all four within tolerance. Reading a (EE188) gives 76.8% and 50.0% for layer 2/3.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells.",
+      "1,000 permutations (the claims file's standard choice). Spikes are placed on the maze between the end of the nose-poke and the start of reward consumption, the trial start and end the data description defines (page 2, SessionNP); the files' own spike labels also cover the nose-poke."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "no-spatial-clustering",
+     "statement": "Left- and right-specific neurons are not clustered on the probe but spread over the whole recorded volume.",
+     "source": "Results, page 7, paragraph 1; Figure 3c; Discussion, paragraph 2",
+     "quote": "left and right trajectory-specific neurons (Fig. 1c and Fig. 2) were not clustered together but occupied a large neuronal volume",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "In EE188 (37 left, 29 right, 15 both, 36 none) the chi-square test of shank against class gives p = 0.577, Cramer's V = 0.23. In the variant over the other sessions, FF130 gives p = 0.047 (V = 0.39) and the other 11 p = 0.105 to 0.942.",
+     "deviations": [
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "position-dependent-transmission",
+     "statement": "Of 343 pairs with significant excitatory monosynaptic connections, 67 show identifiable position dependence of excess short-latency coincidences.",
+     "source": "Results, Behavioral modulation of monosynaptic interactions, paragraph 1; Figure 4b; Supplementary Figure 12",
+     "quote": "Across all sessions, out of 343 pairs with significant excitatory monosynaptic connections in all sessions, 67 pairs showed identifiable position dependence in monosynaptic interactions by this measure",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Of 389 excitatory connections (G-b B-a W-a), 31 to 34 show position dependence under the four readings (8.0 to 8.7%); B-b gives 30 to 36 of 349, G-a 31 to 36 of 387 to 439. Jittering only the presynaptic cell gives 46 (11.8%, trials a) or 53 (13.6%, trials b) of 389. Per rat (B-a, a, i) EE 27 of 306, FF 4 of 78, GG 0 of 5. With the presynaptic spikes shifted by 20 ms, 0 of 39 pairs are significant.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "A coincident event is placed at the presynaptic spike's original position; the jitter moves it by at most 5 ms."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-session-selective-connections",
+     "statement": "In the layer 2/3 session of Figure 3d, 15 of 36 excitatory connections are active selectively in maze segments of left or right trajectories.",
+     "source": "Figure 5a legend",
+     "quote": "Putative monosynaptic connections that were active selectively in maze segments during left or right turn trajectories (15 of 36 excitatory connections; same set of neurons, and session, as in Fig. 3d)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "In EE188, 6 or 7 of 95 excitatory connections (G-b B-a) and 7 to 9 of 81 (G-b B-b) are position dependent, against 15 of 36; under G-a 6 or 7 of 105 and 7 to 10 of 88; of the 43 pairs_all connections, 5 or 6.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-pair-156-136",
+     "statement": "Pair 156-136, on different shanks, keeps steady firing rates between positions 0.2 and 0.5 on left trials, yet excess short-latency coincidences occur only between 0.4 and 0.6.",
+     "source": "Figure 4; Results, Behavioral modulation of monosynaptic interactions, paragraph 2",
+     "quote": "cell pair 156-136, recorded from different electrode shanks, maintained steady firing rates between maze segments 0.2 and 0.5, yet short-latency coincident spikes significantly in excess of firing rate\u2013controlled coincidences (the \u2018expected coincidence rate\u2019) occurred only between maze locations 0.4 and 0.6",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "On left trials the excess coincidences of 156-136 form a single region in mid-maze, from 0.325 to 0.645 by the pointwise band (global p = 0.001, global band broken from 0.372 to 0.622); the end is within tolerance and the start is not (0.075 before 0.4, tolerance 0.04). Between 0.2 and 0.5 the left PSTH of 156 varies by 49% of its maximum and that of 136 by 59%, so 136 is not steady by the criterion's 50%. The cells are on shanks 5 and 4, and 156 to 136 is a connection under the test and in pairs_all. The effect (a single transmission region in mid-maze on left trials) is present, with an earlier start and a less steady target rate.",
+     "deviations": [
+      "Cell numbers are those of CellsInfo in EE188_example.mat, which the data description gives as the session of Figures 2a and 3d."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-example-pairs",
+     "statement": "In pair 197-201 transmission is significant only between 0.4 and 0.5 of left trials although the expected coincidence rate is as high from 0 to 0.5; pair 49-52 transmits only on left trials; pair 186-201 only toward the end of the right arm although expected coincidences are higher earlier.",
+     "source": "Figure 5b; Results, Behavioral modulation of monosynaptic interactions, paragraph 2",
+     "quote": "in pair 197-201, the expected coincidence rate was equally high between maze locations 0 and 0.5 of the left trials, yet significant spike transmission was detected only between maze locations 0.4 and 0.5 (Fig. 5b). In pair 49-52, the expected coincidence rate in the first two segments was equally high on left and on right trajectory trials, yet significant spike transmission was detected only on left trajectory trials. In pair 186-201, significant effects were observed only toward the end of the right arm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "197-201, left trials, one region from 0.355 to 0.525 (global band 0.398 to 0.432), so its start misses 0.4 +- 0.04 by 0.005; none on right trials. 49-52 has no region on either side (global p = 0.55 left, 0.80 right). 186-201 has none on left trials (p = 0.065) and one on right trials from 0.715 to 0.975 (global band from 0.752), which begins before 0.75. No pair meets the criterion as written; all three are connections under G-b B-a W-a.",
+     "deviations": [
+      "Region extents are given at the edges of the 0.005 grid bins."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "thinning-preserves-dependence",
+     "statement": "In several pairs, position-dependent transmission remains after spikes are thinned so that both cells fire at a flat rate over the region examined.",
+     "source": "Results, Behavioral modulation of monosynaptic interactions, paragraph 1; Methods, Controlling for power; Supplementary Figure 13",
+     "quote": "Applying this approach, we indeed found that in several cases, the conclusion of position-dependent synaptic efficacy remained unaltered after thinning",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "The thinning reaches its target (each cell's PSTH minimum within 10% of the maximum in the region) in 26% of thinnings under reading a (0.2 to 0.5) and 23% under reading b; it stops early when no spike is left within s of the maximum. Counting a repetition only when both cells were flattened, 0 of 16 pairs keep a significant and a non-significant part in the majority of 10 thinnings under reading a and 1 of 36 under reading b (EE196 8-7, 10 of 10), against at least two. Without the flatness condition 2 pairs hold under reading a (FF130 57-60, 10 of 10; FF130 57-51, 6 of 10), but their thinned PSTHs keep a minimum of 0 to 8% of the maximum.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "The pairs are the position-dependent connections of G-b B-a W-a, trial readings a and dependence i.",
+      "A repetition counts only when both cells' thinned PSTHs reach the Methods' target (minimum within 10% of the maximum); the Methods' thinning stops when no spike is left within [-s, +s] of the maximum, which here happens before the target in most thinnings. The count without this condition is shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-depression-facilitation",
+     "statement": "Comparing first spikes of trains with later spikes, about equal shares of pairs show depressing (12.7%) and facilitating (10.7%) spike transmission; 32.2% of the significant pairs are on different shanks.",
+     "source": "Figure 6c; Results, page 8, paragraph 1",
+     "quote": "Among the significant pairs, 32.2% were recorded by different shanks ... we found that approximately equal percentages of neuron pairs showed firing pattern\u2013dependent depressing (12.7%) and facilitating (10.7%) effects (Fig. 6c)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "With the P taken from both tails of the permutation distribution, depressing pairs are 4.0 to 5.9% and facilitating pairs 5.1 to 10.6% of the connections over the eight readings under G-b (G-a 4.6 to 6.4% and 5.5 to 9.9%), against 12.7% and 10.7%; facilitation is within tolerance under two readings of each (later spikes as any spike within 40 ms, summed heights), depression under none. 27.3 to 33.3% of the significant pairs are on different shanks. 388 of 389 excitatory connections (529 of 530 in all) are testable. On synthetic trains the test finds a fourfold difference in efficacy in 20 of 20 runs in either direction and flags 3 of 20 runs with equal efficacy; with labels assigned at random to the data's spikes, 16 of 121 pairs (13.2%, 95% interval 7.8 to 20.6%) are significant at P < 0.10, consistent with 10% (binomial p = 0.23). The share of connections significant either way, 10.9 to 14.9% under G-b, is at this random-label rate, so the facilitation within tolerance under two readings is not partial support for the claim.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "100 jitter surrogates and 500 permutations per pair and reading, fewer than the 1,000 the claims file names, for run time.",
+      "The standardised heights grow with the square root of the number of spikes, so the permutation distribution of the difference is not centred on 0 when the two groups differ in size. The two-sided P is taken from its two tails, as the Methods define a two-sided permutation P (P+- = min(1, 2P+, 2P-)); depression is a difference in the upper tail (first spikes more effective than under shuffled labels), facilitation one in the lower tail. The first version compared absolute values with a null assumed centred on 0."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-convergent-examples",
+     "statement": "Two putative pyramidal cells converging on one layer 2/3 interneuron behave oppositely; cell 197 depresses with spike repetition while the first spikes of cell 186 are ineffective and its later spikes drive the interneuron.",
+     "source": "Figure 6b; Results, pages 7 and 8; Supplementary Figure 14",
+     "quote": "Figure 6b shows a putative layer 2/3 interneuron innervated by two pyramidal cells, with ... pyramidal cell 197 showing a depressing effect with spike repetition. In contrast, the first spike of spike trains of cell 186 was ineffective",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "186-201 facilitates: relative to shuffled labels its later spikes drive 201 more than its first (difference -8.21 against a mean permuted difference of 0.76, P = 0.004, later spikes as any spike within 40 ms; -4.35, P = 0.012, in chained trains with the largest bin). 197-201 has a higher first-spike than later-spike height (difference 4.71 to 8.13), but the permuted differences are as large (mean 4.88 to 7.69) and P is 0.707 to 0.914, so it shows no depression. CellsInfo types 197 and 186 as pyramidal and 201 as interneuron.",
+     "deviations": [
+      "100 jitter surrogates and 500 permutations, and the P from both tails of the permutation distribution, as for fig6-depression-facilitation."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-supralinear-coincidence",
+     "statement": "Coincident spikes of two or more presynaptic cells within 5 ms discharge their common target interneuron supralinearly, more than the sum of their separate effects, while coincidences in windows over 10 ms add only linearly.",
+     "source": "Figure 7a and 7b; Results, page 8, paragraph 2; Discussion, paragraph 4",
+     "quote": "Coincident discharge of two presynaptic neurons within 5 ms was more effective than the sum of the effects of nonsynchronous spikes (Fig. 7a), and coincidence of three or four spikes resulted in a supralinear effect in various independently tested cell assemblies (Fig. 7b) ... showed only a linear additive effect on the cooperative ability of presynaptic neurons to discharge a postsynaptic partner",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "16 satellites under G-b (15 under G-a; 14 in the paper). With 5 ms windows the mean transmission probability after two coincident presynaptic cells is 0.064 against 0.054 after one, below 2 p1 and 1 - (1 - p1)^2 in all 16 satellites; after three cells (2 satellites with enough events) 0.119 against 0.090, below both predictions. No window from 2 to 20 ms gives a mean above the linear predictions; at 2 ms 3 of 15 satellites lie above them.",
+     "deviations": [
+      "The global band of the jitter test follows the Methods' stepping procedure (G-b): it is stepped inwards, excluding the k largest surrogate maxima and the k smallest minima, for as long as at least 99% of the surrogates lie entirely within both sides. The Methods build the band from the maximum and minimum of each surrogate (Identifying monosynaptic interactions), define a band's global acceptance level as the proportion of data sets lying completely within it, and take the global band as the minimal band with that level (Multiple hypothesis testing and global bands). The band holds a median 99.4% of surrogates (5th percentile 99.0%). The first version's 1% on each side (G-a) is shown for every claim as a variant.",
+      "An event is a presynaptic spike with k cells spiking in the window ending at it and no presynaptic spike in the 4 ms after; single events have no other presynaptic cell within the window before or 4 ms after; values need at least 20 events. These definitions are standard choices; the paper does not give them."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "speed-not-correlated",
+     "statement": "Firing rates show no net positive relationship with running speed; the distribution of rate-speed correlations is symmetric around zero.",
+     "source": "Supplementary Figure 3C",
+     "quote": "The symmetry of these histograms around 0 suggests that, unlike in the hippocampus, this population of neurons does not exhibit a net positive relationship between firing rate and speed.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Over 627 cells the median correlation is -0.018 (45% positive, range -0.52 to 0.64), not above 0; the Wilcoxon test against 0 gives p = 0.00036, a small negative shift, so the distribution is not exactly symmetric around 0. Per rat medians -0.023, -0.007 and 0.031. By CellsInfo type, pyramidal -0.007 (p = 0.065) and interneurons -0.078 (p = 3.2e-05); by the connection-based types (G-b B-a W-a C-a), -0.015 (p = 0.041) and -0.088 (p = 0.065). The criterion tests only a shift above 0; whether a significant shift below 0 counts against the statement's symmetry around zero is asked of a reader (questions/crcns-pfc-2.yaml).",
+     "deviations": [
+      "Speed is the path length of the LED midpoint (LED 1 alone where LED 2 is not tracked) per 0.5 s bin, in pixels per second.",
+      "The groups are those of CellsInfo, with the connection-based types the claims file names as a variant; the criterion's decision uses all cells."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "population-vector-width",
+     "statement": "Population vector correlations fall off over similar distances throughout the maze, 0.18 +/- 0.087 of normalised length in layer 2/3 and 0.27 +/- 0.13 in layer 5.",
+     "source": "Supplementary Figure 2A",
+     "quote": "Neuronal populations were relatively evenly correlated throughout the maze segments with 0.18(41cm) \u00b1 0.087(29cm) (L2/3) and 0.27(62cm) \u00b1 0.13(30cm) (L5) in normalized length",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "With each cell's PSTH divided by its peak (the assumption), reading a gives 0.239 +- 0.060 for EE188 (layer 2/3) and 0.300 +- 0.078 for the pooled layer 5 sessions, within tolerance; reading b 0.265 and 0.338, also within; the pooled layer 2/3 sessions give 0.243 (a) and 0.268 (b, just outside). With z-scored PSTHs all values match (0.179 to 0.216). With raw rates the correlation stays above 0.35 everywhere and the width is 0.96 to 1.00, so the claim fails. The s.d. over positions (0.026 to 0.086) is below the paper's 0.087 and 0.13; the criterion does not test it.",
+     "deviations": [
+      "Assumed that each cell's PSTH is normalised before the correlation, by its peak as Figure 2a displays the rates. The paper does not say; with raw rates the high-rate cells dominate and the correlation never falls to the 0.35 of the Supplementary Figure 2A colour scale. z-scoring is shown and gives the same outcome.",
+      "The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in the data set; no FF session has more than 64 cells. The layer 5 value comes from the pooled FF sessions.",
+      "The width at a position is the contiguous length around the diagonal over which the correlation stays above 0.5, as the claims file reads it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds three of the paper's four rats (EE, FF, GG; the paper's rat H is absent). Its trial tables list correct trials only; error trials can be found only from the nose-poke sensor channels in each session's raw .eeg file (read here for EE188). The layer 5 session of Figure 2a and Supplementary Figure 11 (142 cells) is not in it; the FF sessions hold 40 to 64 cells.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The data description names EE188_example.mat as a file of folder EE0708; it is a member of EE0708/EE.188.tar.gz, about 2 GB into the gzip stream, and the folder holds EE188_Behavior.mat, EE188_Behavior_PFC.mat and EE188_Behavior_CA1.mat instead.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The CellsInfo type column is described as pyramidal (1), interneuron (2) or unknown (3). In the 12 sessions of behaviors.zip and in EE188_Behavior_PFC.mat no cell is unknown (87 pyramidal and 18 interneurons in EE188), while EE188_example.mat of the same session has 33, 15 and 69. How either classification was made is not documented.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "Each session's files keep a selection of the sorted clusters (627 cells of 1,495 clusters listed in spikeph); the description says only that Cells are neurons whose maximum rate in the trials exceeds 1 Hz. EE188_Behavior_PFC.mat holds 105 of the 117 cells of EE188_example.mat.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The layer of each rat's probe is not given in the data set; it can be taken only from the paper's Supplementary Figure 1, by assuming that rats EE, FF and GG are the paper's E, F and G.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The spikes' trial labels (spikeLtr, spikeRtr) and positions (spikeX) start at the first nose-poke of each trial, while the description defines the trial start as the end of the last nose-poke (SessionNP column 2). Spikes during the nose-poke, which lasts up to 315 s, are placed near position 0.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The pairs_all list of EE188_example.mat (43 connections) is described as the cell pairs with monosynaptic connections, but it holds fewer connections than the paper reports for that session (48 and 30 in Figure 3b) and its largest component is the 39-cell circuit of Figure 3d; which selection it is, is not said.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In 10 of the 13 sessions the second LED is not tracked (zeros in the position file), so head direction can be computed only in EE152, EE165 and EE188.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The trial table of EE188 (SessionNP) leaves out 3 trials that the nose-poke sensor channels and the position file show as correct (first pokes at 822.9, 2245.1 and 2370.7 s), and 1 error trial (2687.2 s). In two of the three (822.9 and 2370.7 s) the rat reaches the arm 193.4 and 176.9 s after its last poke, longer than any table trial, so they may be left out for that reason; why any are left out is not said.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The data description defines Cells as the units whose maximum rate in the trials exceeds 1 Hz, but the files hold no Cells variable. By the largest rate over the tenths of the maze, 0 to 10 cells per session of CellsInfo are below 1 Hz, so which selection CellsInfo is cannot be confirmed.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-07",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier tested ccg_jitter, detect_connections and order_effect on synthetic trains. 28 of its 30 outcomes agree with the record as it was; for unit-count and fig4-pair-156-136 it gives partially reproduced. Its general points: the global band split, no false-positive check on the connection detector, an off-centre permutation null in the spike-order test, the nose-poke window, and thinning that can stop before its target.",
+     "agreed": 28,
+     "of": 30,
+     "disagreements": [
+      {
+       "claim": "unit-count",
+       "outcome": "partially_reproduced",
+       "reason": "627 cells is within 633 +- 63.3 (cell 9). The match is probably coincidental: rat H and the 142-neuron layer 5 session are missing, and the processed files appear filtered (EE188 has 105 cells in Behavior_PFC against 117 in the example file; the data description defines Cells as units over 1 Hz in trials). The comparison ignores that CellsInfo in behaviors.zip may be the data description's Cells set, while EE188 enters unfiltered at 117."
+      },
+      {
+       "claim": "fig4-pair-156-136",
+       "outcome": "partially_reproduced",
+       "reason": "There is a single significant region on left trials, ending at 0.645 (in tolerance). It starts at 0.325 (outside 0.4 +- 0.04), and cell 136 varies by 59% between 0.2 and 0.5, so it is not steady."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-07",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook with the conclusions and the summary, the helper module, the claims file, the README and the attempt record, with the paper. The verifier agrees with 29 of the 30 outcomes, and with odor-unrelated-to-stem as an outcome that rests on its assumption. It quoted six passages the printed outputs do not support (lifetime-width, task-performance and the EE188 finding, fig6-depression-facilitation, fig3d-hub, the pairs_all coverage, fig2-population-uniform), found its round-1 points resolved, and listed as remaining the odor-unrelated-to-stem dependencies, the head direction diverging at 0.01, the fig6 chance rate, the speed-not-correlated reading and the EE188 finding.",
+     "agreed": 30,
+     "of": 30,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. Was the 99% global band of the jitter test the minimal band holding 99% of the surrogates entirely within its upper and lower sides, as the Methods' stepping procedure defines it (used here, G-b), or 1% on each side? With the stepping procedure this attempt finds 0.94 to 1.32% of directed pairs connected, with 1% on each side 1.07 to 1.50%, against 0.79%. It also asks which bin width the cross-correlograms used (1 ms or 0.5 ms) and how Figure 3d's subset of connections (pairs_all) was chosen.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. For the population vector correlations of Supplementary Figure 2A, were each cell's rates normalised (by the peak, or z-scored) before the correlation? With raw rates the correlations stay above 0.5 along the whole maze; with normalised rates the widths match the reported 0.18 and 0.27. This attempt assumed normalisation by the peak.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "fujisawa-2008-crcns-pfc-2",
+   "type": "reproduction",
+   "title": "Short-term assembly dynamics in rat medial prefrontal cortex (Fujisawa et al. 2008)",
+   "description": "Tests the findings of Fujisawa, Amarasingham, Harrison and Buzsaki (2008) on CRCNS pfc-2, which holds the prefrontal spikes, trials and positions of 13 working memory sessions of three of the paper's four rats. It compares firing along the maze, left and right selectivity, monosynaptic connections found by spike jitter, and the position and spike-order dependence of spike transmission.",
+   "datasets": [
+    "crcns:pfc-2"
+   ],
+   "papers": [
+    "10.1038/nn.2134"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_fujisawa_2008.ipynb",
+     "title": "Reproducing Fujisawa et al. (2008) from CRCNS pfc-2",
+     "executed": "notebooks/fujisawa-2008-crcns-pfc-2/reproduce_fujisawa_2008.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 29,
+   "hashed": false
+  }
+ ]
+}
