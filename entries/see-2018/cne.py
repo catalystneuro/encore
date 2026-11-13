@@ -78,6 +78,18 @@ STRF_LAGS = 20
 MI_BINS = np.linspace(-5, 5, 26)
 MI_FRACTIONS = (0.90, 0.95, 0.975, 0.99, 1.0)   # Materials and methods
 MI_ITER = 20
+# Arrays are float64. With float32 the ICA weights and activity thresholds changed by about 1e-7
+# with the CPU's BLAS kernel, enough to move an event across its threshold and so change every
+# subsample drawn after it; the results then differed between runs on different machines.
+FLOAT = np.float64
+# The ICA of the 100 shuffles, which only sets the membership thresholds through the mean and SD
+# of all their weights, and the ICA of the 200 runs of each surrogate model, which only give a
+# mean cNE size, run in float32 to keep the notebook within its time limit. A change of 1e-7 in
+# a weight moves those thresholds and means by far less than they are reported to.
+REPEAT_ICA_DTYPE = np.float32
+# Activity is rounded to this many decimals before it is compared with a threshold or sorted, so
+# that values tied in exact arithmetic stay tied whatever the order of summation.
+ACT_DECIMALS = 9
 SIGN_READINGS = ("a", "b")      # (a) largest |weight| positive; (b) as fastICA returns it
 PROJECTIONS = ("quadratic", "linear")
 
@@ -113,12 +125,12 @@ def load_sites() -> list[dict]:
 
 
 def load_stimulus(name: str) -> np.ndarray:
-    """The stimulus envelope `stim_mat` of rn1 or rn16 (64 carriers by 0.5-ms columns), float32."""
+    """The stimulus envelope `stim_mat` of rn1 or rn16 (64 carriers by 0.5-ms columns), as FLOAT."""
     z = _zip("Stimulus.zip")
     raw = z.read(f"Stimulus/{name}-matrix.mat")
     stim = sio.loadmat(io.BytesIO(raw))["stim_mat"]
     del raw
-    return np.asarray(stim, dtype=np.float32)
+    return np.asarray(stim, dtype=FLOAT)
 
 
 def load_params(name: str) -> dict:
@@ -157,7 +169,7 @@ def binned(site: dict, bin_ms: float, units=None, t_range=None) -> np.ndarray:
     n = int(np.floor((hi - lo) / bin_ms))
     edges = lo + np.arange(n + 1) * bin_ms
     us = site["units"] if units is None else [site["units"][i] for i in units]
-    out = np.zeros((len(us), n), dtype=np.float32)
+    out = np.zeros((len(us), n), dtype=FLOAT)
     for i, u in enumerate(us):
         t = u["stim_ms"]
         out[i] = np.histogram(t[np.isfinite(t)], edges)[0]
@@ -176,7 +188,7 @@ def zscore(counts: np.ndarray) -> np.ndarray:
     m = counts.mean(axis=1, keepdims=True)
     s = counts.std(axis=1, keepdims=True)
     s[s == 0] = 1.0
-    return ((counts - m) / s).astype(np.float32)
+    return ((counts - m) / s).astype(FLOAT)
 
 
 def mp_bound(n: int, t: int) -> float:
@@ -186,13 +198,13 @@ def mp_bound(n: int, t: int) -> float:
 def fastica(x: np.ndarray, seed: int, max_iter: int, tol: float, info: dict | None = None) -> np.ndarray:
     """Symmetric fastICA with the logcosh contrast (Hyvarinen and Oja 1997; the algorithm of
     sklearn's FastICA) on whitened data x (N by T). Returns the unmixing matrix W (N by N); the
-    number of iterations run is put in `info` when given."""
+    number of iterations run is put in `info` when given. Computed in the dtype of x."""
     rng = np.random.default_rng(seed)
     n, t = x.shape
     w = _sym_decorrelate(rng.standard_normal((n, n)))
     it = 0
     for it in range(1, max_iter + 1):
-        g = np.tanh(w.astype(np.float32) @ x)
+        g = np.tanh(w.astype(x.dtype) @ x)
         w1 = (g @ x.T) / t - (1.0 - g ** 2).mean(axis=1)[:, None] * w
         w1 = _sym_decorrelate(w1.astype(np.float64))
         lim = np.max(np.abs(np.abs(np.einsum("ij,ij->i", w1, w)) - 1.0))
@@ -211,7 +223,8 @@ def _sym_decorrelate(w: np.ndarray) -> np.ndarray:
 
 
 def _ica_weights(z: np.ndarray, vals: np.ndarray, vecs: np.ndarray, seed: int,
-                 max_iter: int = 1000, tol: float = 1e-6, info: dict | None = None) -> np.ndarray:
+                 max_iter: int = 1000, tol: float = 1e-6, info: dict | None = None,
+                 dtype=FLOAT) -> np.ndarray:
     """fastICA on the projection of z onto the PCs `vecs` (n by N) with eigenvalues `vals`, which
     are already uncorrelated, so whitening divides each by the square root of its eigenvalue.
     Returns the IC weights in unit space (n by N), each of unit length."""
@@ -220,7 +233,7 @@ def _ica_weights(z: np.ndarray, vals: np.ndarray, vecs: np.ndarray, seed: int,
             info["iter"] = 0
         return vecs / np.linalg.norm(vecs, axis=0, keepdims=True)
     scale = 1.0 / np.sqrt(vals)
-    x = (vecs.T.astype(np.float32) @ z) * scale[:, None].astype(np.float32)
+    x = ((vecs.T @ z) * scale[:, None]).astype(dtype)
     w = fastica(x, seed, max_iter, tol, info)
     weights = vecs @ (w * scale[None, :]).T
     return weights / np.linalg.norm(weights, axis=0, keepdims=True)
@@ -298,7 +311,8 @@ def detect(counts: np.ndarray, seed: int, n_shuffles: int = N_SHUFFLES, null: bo
         zs = circular_shuffle(z, rng)
         sl, sv = pcs(zs)
         si = {}
-        shuf_w.append(_ica_weights(zs, sl[:k], sv[:, :k], seed + 1 + i, SHUFFLE_ICA_ITER, 1e-4, si))
+        shuf_w.append(_ica_weights(zs, sl[:k], sv[:, :k], seed + 1 + i, SHUFFLE_ICA_ITER, 1e-4, si,
+                                   REPEAT_ICA_DTYPE))
         shuf_iter.append(si["iter"])
         if activity_null:
             for p in PROJECTIONS:
@@ -327,7 +341,8 @@ def member_sets(det: dict, reading: str = "a") -> list[np.ndarray]:
 def events_from_activity(act: np.ndarray, threshold: float, reading: str) -> np.ndarray:
     """Indices of events. Reading (a): every sample above threshold. Reading (b): one per run of
     samples above threshold, at its peak."""
-    above = act > threshold
+    act = np.round(act, ACT_DECIMALS)
+    above = act > np.round(threshold, ACT_DECIMALS)
     if reading == "a":
         return np.flatnonzero(above)
     d = np.diff(np.r_[0, above.astype(int), 0])
@@ -377,11 +392,11 @@ def segment_index(times_ms: np.ndarray, bin_ms: float, n_bins: int, lags: int) -
 def sta(stim: np.ndarray, idx: np.ndarray, lags: int) -> np.ndarray:
     """Spike- or event-triggered average (carriers by lags, last lag nearest the event)."""
     if len(idx) == 0:
-        return np.zeros((stim.shape[0], lags), dtype=np.float32)
+        return np.zeros((stim.shape[0], lags), dtype=FLOAT)
     out = np.zeros((stim.shape[0], lags), dtype=np.float64)
     for j in range(lags):
         out[:, j] = stim[:, idx - (lags - 1 - j)].sum(axis=1)
-    return (out / len(idx)).astype(np.float32)
+    return (out / len(idx)).astype(FLOAT)
 
 
 def projections(stim: np.ndarray, strf: np.ndarray) -> np.ndarray:
@@ -493,8 +508,8 @@ def fit_dg(binary: np.ndarray, info: dict | None = None) -> tuple[np.ndarray, np
 
 def sample_dg(gamma: np.ndarray, lam: np.ndarray, n_bins: int, rng: np.random.Generator) -> np.ndarray:
     chol = np.linalg.cholesky(lam)
-    x = (rng.standard_normal((n_bins, len(gamma)), dtype=np.float32) @ chol.T.astype(np.float32))
-    return (x > -gamma[None, :].astype(np.float32)).T.astype(np.float32)
+    x = (rng.standard_normal((n_bins, len(gamma)), dtype=FLOAT) @ chol.T.astype(FLOAT))
+    return (x > -gamma[None, :].astype(FLOAT)).T.astype(FLOAT)
 
 
 # --- per-recording analyses, run in worker processes ------------------------------------------
@@ -579,12 +594,12 @@ def run_binsizes(i: int, seed: int) -> dict:
                 for er in ("a", "b"):
                     mis, mis_ho, nd = [], [], []
                     for j in range(d["n"]):
-                        a1 = interp_activity(act[j], b, n_ms)
+                        a1 = np.round(interp_activity(act[j], b, n_ms), ACT_DECIMALS)
                         if er == "a":
-                            ev = np.argsort(a1)[-N_EVENTS_5A:]
+                            ev = np.argsort(a1, kind="stable")[-N_EVENTS_5A:]
                         else:
                             peaks = np.flatnonzero((a1[1:-1] > a1[:-2]) & (a1[1:-1] >= a1[2:])) + 1
-                            ev = peaks[np.argsort(a1[peaks])[-N_EVENTS_5A:]]
+                            ev = peaks[np.argsort(a1[peaks], kind="stable")[-N_EVENTS_5A:]]
                         nd.append(len(np.unique(ev // b)))
                         idx = segment_index(ev + 0.5, STRF_BIN_MS, stim.shape[1], STRF_LAGS)
                         strf = sta(stim, idx, STRF_LAGS)
@@ -798,7 +813,7 @@ def pr_setup(site: dict, model_bin: float) -> list[dict]:
 def pr_sample(setup: list[dict], rng: np.random.Generator, units=None) -> np.ndarray:
     """PR trains: each spike assigned to a random time bin of its projection class."""
     units = range(len(setup)) if units is None else units
-    out = np.zeros((len(units), setup[0]["n_bins"]), dtype=np.float32)
+    out = np.zeros((len(units), setup[0]["n_bins"]), dtype=FLOAT)
     for r, u in enumerate(units):
         s = setup[u]
         for m, k in zip(s["members"], s["spikes"]):
@@ -876,7 +891,7 @@ def run_models(i: int, det: dict, seed: int, n_iter: int) -> dict:
             k = int((vals > mp_bound(*z.shape)).sum())
             ns.append(k)
             if k:
-                w = orient(_ica_weights(z, vals[:k], vecs[:, :k], seed + it), "a")
+                w = orient(_ica_weights(z, vals[:k], vecs[:, :k], seed + it, dtype=REPEAT_ICA_DTYPE), "a")
                 sizes.append(float(np.mean(((w > hi) | (w < lo)).sum(axis=0))))
             else:
                 sizes.append(np.nan)

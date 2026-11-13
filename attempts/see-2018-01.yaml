@@ -100,13 +100,14 @@ outcomes:
   output: claim:fig5a-mi-peaks-10-15ms
   notes: No reading puts the largest MI at 10 or 15 ms. With the 5000 largest 1-ms samples of the interpolated activity
     as events (event reading a), the mean and median MI rise with bin size and peak at 35 ms under both projections
-    (mean 0.698 bits linear, 0.730 quadratic), nearly flat from 15 ms. With the 5000 largest local peaks (event
+    (mean 0.696 bits linear, 0.729 quadratic), nearly flat from 15 ms. With the 5000 largest local peaks (event
     reading b), MI is highest at 2 ms and falls with bin size. Under reading (a) the 5000 events of a cNE fall in a
     median of 2857 (linear) distinct bins at 2 ms and 230 at 50 ms, so that at large bins the events are runs of
     neighbouring samples. With the STRF estimated on the events of the other half of the stimulus (a check the paper
-    does not describe), the MI is a tenth to a fifth as large and still does not peak at 10 or 15 ms; under (a) the
-    mean peaks at 5 ms (linear; 0.074 bits against 0.073 at 8 to 15 ms) or 50 ms (quadratic), the median at 50 ms,
-    and under (b) at 2 ms. The result rests on the STRF resolution and MI bins, which the paper does not give.
+    does not describe), the mean MI is 0.086 to 0.209 of the in-sample mean under event reading (a) and 0.024 to
+    0.292 under (b), and it still does not peak at 10 or 15 ms; under (a) the mean peaks at 5 ms (linear; 0.075 bits
+    against 0.072 to 0.073 at 8 to 15 ms) or 50 ms (quadratic), the median at 50 ms, and under (b) at 2 ms. Under
+    (a) the 5000 events fall in a median of 2857 (linear) or 3358 (quadratic) distinct bins at 2 ms. The result rests on the STRF resolution and MI bins, which the paper does not give.
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -132,7 +133,7 @@ outcomes:
   notebook: reproduce_see_2018.ipynb
   output: claim:fig5c-size-increases-with-bin
   notes: The mean of per-recording mean sizes rises from 3.88 at 2 ms to 5.11 at 50 ms (Spearman rho 0.952, p =
-    0.00026; sign reading a), with small dips at 8 and 20 ms; under reading (b) from 3.91 to 5.51 (rho 1.0).
+    0.00026; sign reading a), with small dips at 8 and 20 ms; under reading (b) from 3.93 to 5.51 (rho 1.0).
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -149,11 +150,13 @@ outcomes:
     pairs, and the spike/STRF sharpness ratio is lower for cNE pairs (median 0.800 against 1.077, Mann-Whitney p =
     1.3e-53). Taking the absolute value (iii) or dividing by the number of overlapping lags before subtracting the
     minimum (iv, which removes the taper of a finite cross-correlation) agree, with 58.4% and 76.2% of cNE pairs
-    sharper and p = 2.0e-76 and 1.1e-39; with a baseline subtracted from the spike PWCs, 87.9 to 95.8% under (ii)
+    sharper and p = 4.1e-76 and 1.1e-39; with a baseline subtracted from the spike PWCs, 87.9 to 95.8% under (ii)
     to (iv). With negative values set to zero (i), the STRF PWCs are 4 ms wide, no wider than the spike PWC in 97.4%
     of non-cNE pairs, and spike PWCs are sharper in only 6.9% of cNE pairs (27.7 to 34.3% with a baseline subtracted),
-    though the ratio is still lower for cNE pairs (p = 3.3e-61). Question for the authors, how the STRF PWC was
-    computed and compared (recorded as a finding).
+    though the ratio is still lower for cNE pairs (p = 3.3e-61). The spike PWC sharpness on the raw +-50 ms histogram
+    is itself off the paper's scale (median 12 ms for cNE pairs against about 2; fig6-member-pwc-sharpness-delay), so
+    the comparison is between two measures that both differ from the paper's. Question for the authors, how the STRF
+    PWC was computed and compared (recorded as a finding).
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -244,7 +247,7 @@ outcomes:
   - 10.7
   notes: Mean size 4.58 +/- 1.84 pooled over 104 cNEs (given as measured) and 4.34 per recording, against 7.4 +/-
     2.5; 10.7% of the units against 17%; per-recording mean size on units R2 0.807 (slope 0.078, p = 2.3e-06), against
-    0.33. Only the positive slope with p < 0.05 holds. Sign reading (b) gives a mean of 4.73 and R2 0.745. The cNEs
+    0.33. Only the positive slope with p < 0.05 holds. Sign reading (b) gives a mean of 4.74 and R2 0.738. The cNEs
     are smaller than the paper's while their number matches, which points at the membership threshold or IC scaling
     (a question for the authors).
   deviations:
@@ -336,8 +339,8 @@ outcomes:
   notebook: reproduce_see_2018.ipynb
   output: claim:fig10b-ptd-higher
   notes: Over 476 cNE and member pairs (the paper has 703, its cNEs being larger), cNE STRFs have a higher PTD under
-    all four readings, signed-rank p = 3.5e-12 (linear projection, every bin above threshold), 1.9e-09 (linear,
-    peak per run), 5.0e-04 (quadratic, every bin) and 1.3e-05 (quadratic, peak); cNE higher in 54 to 62% of pairs.
+    all four readings, signed-rank p = 8.0e-12 (linear projection, every bin above threshold), 3.8e-09 (linear,
+    peak per run), 5.6e-04 (quadratic, every bin) and 2.4e-05 (quadratic, peak); cNE higher in 54 to 62% of pairs.
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -355,15 +358,26 @@ outcomes:
   notebook: reproduce_see_2018.ipynb
   output: claim:fig10c-strf-mi-higher
   assumed: true
-  notes: Assumed, the linear projection, one of the claims file's two readings of the cNE activity. cNE STRF MI exceeds
-    the member's in 53 to 56% of 476 pairs; signed-rank p = 6.4e-04 (linear, every bin above threshold), 0.0098
-    (linear, peak per run), 0.044 (quadratic, every bin), 0.15 (quadratic, peak). The linear, every-bin reading
-    passes in 3 of 5 subsampling draws (other seeds p = 4.2e-06, 0.012, 0.0029, 4.9e-06) and no other reading in
-    any, so the in-sample result is fragile. With the STRF from the
-    events or spikes of the other half of the stimulus (a check the paper does not describe, which removes the bias
-    of fitting and testing on the same events), the cNE MI is higher under all four readings (59 to 65% of pairs,
-    p = 2.2e-15 to 6.7e-08). The paper has p = 1.6e-59 over 703 pairs. The MI rests on the STRF resolution and
-    projection bins chosen here.
+  notes: Recorded as reproduced, resting on the linear projection, the outcome of round 1; a change to not reproduced
+    is proposed (below). cNE STRF MI exceeds the member's in 52.7 to 55.7% of 476 pairs; signed-rank p = 0.0015
+    (linear, every bin above threshold), 0.0076 (linear, peak per run), 0.049 (quadratic, every bin) and 0.19
+    (quadratic, peak), so no reading reaches p < 0.001 in this draw. Over five subsampling draws the linear,
+    every-bin reading passes in 2 (p = 7.7e-06 and 1.5e-05; the others 0.0015, 0.0012 and 0.0036) and no other
+    reading in any. Earlier executions gave other p-values for the same seeds, as the float32 ICA varied with the
+    machine's BLAS kernel; cne.py now computes in float64 and rounds activity before thresholds, and two executions
+    give the same numbers. With the STRF from the events or spikes of the other half of the stimulus (a check the
+    paper does not describe, which removes the bias of fitting and testing on the same events), the cNE MI is
+    higher under all four readings (59.7 to 63.1% of pairs, p = 2.7e-14 to 1.6e-08), but the criterion asks for
+    the in-sample MI. The paper has p = 1.6e-59 over 703 pairs. The MI rests on the STRF resolution and projection
+    bins chosen here.
+  proposed:
+    outcome: not_reproduced
+    reason: In the printed run no reading meets the criterion (p = 0.0015, 0.0076, 0.049 and 0.19), and the linear,
+      every-bin reading passes in only 2 of 5 subsampling draws. The linear projection was adopted because it was
+      the reading that passed, which the verifier of round 2 found a weak basis. The paper says it follows the
+      approach of Lopes-dos-Santos et al. 2013 (Results, Identification of coordinated neuronal ensembles), whose
+      projection is the quadratic one in the claims file, and under it no event reading passes in any draw.
+      The analysis is in the notebook's fig10c section (cell tagged claim:fig10c-strf-mi-higher).
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -374,7 +388,7 @@ outcomes:
     bins over -5 to 5 SD) are a standard choice.
   - Events as in fig10b-ptd-higher.
   - Assumption, the linear projection of the activity; under the quadratic projection no event reading reaches
-    p < 0.001 with the in-sample MI.
+    p < 0.001 with the in-sample MI in any of five draws. A change of outcome is proposed (see proposed).
 - claim: fig10s1-random-group-strfs
   outcome: reproduced
   notebook: reproduce_see_2018.ipynb
@@ -406,11 +420,13 @@ outcomes:
   notebook: reproduce_see_2018.ipynb
   output: claim:fig11c-models-number
   notes: Mean over 200 runs per recording; real 6.50 cNEs. Shuffled 0.23 and PR 1.41 (10-ms bins) or 1.52 (5-ms
-    bins), fewer in all 16 recordings; DG 8.00, more in 15. Bonferroni (x3) paired t-test p = 4.6e-09, 3.1e-08 or
-    4.6e-08, and 1.5e-04, under both PR readings. The DG fit needed its latent correlation matrix made positive
-    definite in 15 recordings (smallest eigenvalue down to -1.97; latent correlations changed by up to 0.56), but a
-    sampled run reproduces the real 5-ms covariances (r 0.974 to 0.999 with the real ones, slope 0.66 to 1.04) and
-    rates (within 0.0021). The PR model drops 18 to 61 spikes per recording, those in the first 100 ms.
+    bins), fewer in all 16 recordings; DG 8.01, more in 15. Bonferroni (x3) paired t-test p = 4.6e-09, 3.0e-08 or
+    4.5e-08, and 1.6e-04, under both PR readings. The DG fit needed its latent correlation matrix made positive
+    definite in 15 recordings (smallest eigenvalue down to -1.97; latent correlations changed by up to 0.56). A
+    sampled run has 5-ms covariances correlated 0.977 to 0.999 with the real ones and rates within 0.0018, but the
+    slope of its covariances on the real ones runs from 0.672 to 1.02, so at sites 1 and 16 (0.672 and 0.688) it
+    under-reproduces the covariances by about a third. The PR model drops 18 to 61 spikes per recording, those in
+    the first 100 ms.
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -428,9 +444,9 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_see_2018.ipynb
   output: claim:fig11d-models-size
-  notes: Real mean size 4.34. With runs without cNEs left out, shuffled 4.95 (larger, corrected p = 0.055), PR 3.80
-    or 3.84 (p = 0.20, 0.24), DG 4.30 (p = 1). Counting such runs as size 0, shuffled 1.11 (smaller, p = 1.4e-07),
-    PR 3.74 or 3.83 (p = 0.13, 0.23), DG 4.30. At most one of three comparisons holds under any reading.
+  notes: Real mean size 4.34. With runs without cNEs left out, shuffled 4.95 (larger, corrected p = 0.052), PR 3.81
+    or 3.85 (p = 0.22, 0.26), DG 4.30 (p = 1). Counting such runs as size 0, shuffled 1.11 (smaller, p = 1.4e-07),
+    PR 3.75 or 3.84 (p = 0.13, 0.25), DG 4.30. At most one of three comparisons holds under any reading.
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -445,7 +461,7 @@ outcomes:
   output: claim:fig11ef-coincidence-ratios
   notes: Reading (b) of the criterion, the only one the data set allows. 400 groups of 2 and 400 of 3 from 1012
     and 1397 possible; 28 groups of 3 with a real CR of 0 left out. Median normalised CR, pairs, shuffled 0.159,
-    PR 0.215 or 0.223, DG 0.776; triplets 0.000, 0.000 and 0.730. Every comparison has the CR below one with Bonferroni
+    PR 0.217 or 0.222, DG 0.777; triplets 0.000, 0.000 and 0.731. Every comparison has the CR below one with Bonferroni
     (x4) p < 1e-35. The 'repeat' CR needs the repeated 10-min RN, which the data set lacks, so the claim holds on
     the models only.
   deviations:
@@ -463,7 +479,7 @@ outcomes:
   assumed: true
   notes: Assumed, PR on 5-ms bins, the STRF resolution used here and the DG model's bin in the Methods. Median STRF
     similarity over 3275 unit runs (5 runs per recording), PR 0.737 (5 ms; given as measured) or 0.645 (10 ms, outside
-    0.666 to 0.814), shuffled 0.022, DG 0.022. Under the 10-ms reading the PR part fails.
+    0.666 to 0.814), shuffled 0.022, DG 0.021. Under the 10-ms reading the PR part fails.
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -505,9 +521,10 @@ findings:
   statement: Not fixed by the paper; a question for its authors, so that they can confirm or correct the choice.
     The STRF window and resolution, the MI projection bins, and how cNE events are timed for STRFs. With 5-ms bins
     and 20 lags (the data set's sample code), STRF MI over bin sizes peaks at 35 ms or 2 ms depending on how the
-    5000 events are taken, not at 10 to 15 ms, and cNE STRF MI exceeds member MI at p < 0.001 only under the linear
-    projection and in 3 of 5 subsampling draws. Whether the STRF was estimated on events held out from the MI; with
-    held-out events the MI is a tenth to a fifth as large and cNE MI exceeds member MI under every reading.
+    5000 events are taken, not at 10 to 15 ms, and cNE STRF MI exceeds member MI at p < 0.001 under no reading in
+    the main subsampling draw and under the linear projection in 2 of 5 draws. Whether the STRF was estimated on
+    events held out from the MI; with held-out events the MI is about a tenth to a fifth as large (event reading a)
+    and cNE MI exceeds member MI under every reading.
 - kind: methods_unavailable
   statement: Not fixed by the paper; a question for its authors, so that they can confirm or correct the choice.
     How the STRF PWC of Figure 6 was computed and how its sharpness was measured, given that a cross-correlation
@@ -749,3 +766,206 @@ verifications:
     reason: PR on 5-ms bins gives a median of 0.737, within 0.666 to 0.814; PR on 10-ms bins gives 0.645, outside.
       Shuffled and DG give 0.022.
     response: No change.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the round-1 revision, executed again by the workflow before the
+    run, with the attempt record, the README, the helper module, the claims file and the paper's full text. It did not
+    re-run the notebook or download the data.
+  results:
+  - claim: fig2bd-pwc-measures-covary
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: No change.
+  - claim: fig2eg-distance-weak
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: No change.
+  - claim: fig4-example-nine-cnes
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: No change.
+  - claim: fig4s2-interleaved-halves-stable
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: No change.
+  - claim: fig4s3-train-test-83pct
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: No change.
+  - claim: fig5a-mi-peaks-10-15ms
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output; the held-out check (cell 65) shows the miss does not come from in-sample
+      MI bias. Cell 66 and the record note do not match cell 65 in places (0.074 against 0.073 where cell 65 prints
+      0.075 at 5 ms against 0.072 to 0.074; 3362 distinct bins where it prints 3360; 0.059 to 0.082 bits where the
+      range is 0.058 to 0.082). 'A tenth to a fifth as large' holds roughly for reading (a); under (b) the ratio runs
+      from about 0.04 to 0.27. None of these change the outcome.
+    response: Rewritten against the new run (0.075 against 0.072 to 0.073 at 8 to 15 ms; 2857 or 3358 distinct bins at
+      2 ms; 0.059 to 0.082 bits). Cell 65 now prints the held-out mean MI as a fraction of the in-sample mean, 0.086
+      to 0.209 under event reading (a) and 0.024 to 0.292 under (b), and the text gives both. Outcome unchanged.
+  - claim: fig5b-number-decreases-with-bin
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: No change.
+  - claim: fig5c-size-increases-with-bin
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: The start of the reading (b) series is now 3.93, as cell 71 prints (the text had 3.91). Outcome
+      unchanged.
+  - claim: fig6c-spike-pwc-narrower-than-strf-pwc
+    agrees: true
+    outcome: reproduced
+    reason: Changed from round 1. The assumption (STRF PWC made non-negative by subtracting its minimum) is stated and
+      reasonable; readings (iii) and (iv) agree, and rejecting clipping (i) rests on the paper's description of STRF
+      PWCs as broad. Both criterion parts pass under (ii) to (iv). The stated p = 2.0e-76 does not match cell 54.
+      Spike PWC sharpness on the raw +-50 ms histogram remains off the paper's scale (12 ms against about 2), so the
+      comparison is between two measures that are both off scale; a caveat, not a reason to change the outcome.
+    response: The p-value now matches the new run (4.1e-76; the float64 change moved it from the verifier's 2.43e-76),
+      and the notes state the caveat that both measures are off the paper's scale. Outcome unchanged.
+  - claim: fig6j-sharpness-cne-pairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. The verifier still thinks the claims file probably misreads the paper's non-cNE pair set; the
+      record raises it as a question for a reader.
+    response: No change; the question is in questions/see-2018.yaml.
+  - claim: fig6-member-pwc-sharpness-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output. Spike PWC sharpness on the raw +-50 ms histogram remains off the paper's
+      scale (12 ms against about 2); the record states this as a question for the authors.
+    response: No change.
+  - claim: fig7-totals
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: No change.
+  - claim: fig7a-number-vs-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: No change.
+  - claim: fig7b-size-vs-neurons
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: The float64 change moved sign reading (b) to a mean of 4.74 and R2 0.738; the text now gives these.
+      Outcome unchanged.
+  - claim: fig7-negative-weights
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: No change.
+  - claim: fig7c-membership
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: No change.
+  - claim: fig7d-pairs-within-200um
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: No change.
+  - claim: fig7e-no-depth-bias
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is the claims file's choice of test. It is stated and reasonable.
+    response: No change.
+  - claim: fig7f-span-200um
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: No change.
+  - claim: fig8-spont-evoked-72pct
+    agrees: true
+    outcome: blocked
+    reason: Agreed; blocked by missing data.
+    response: No change.
+  - claim: fig9c-cne-events-more-mi
+    agrees: true
+    outcome: blocked
+    reason: Agreed; blocked by missing data.
+    response: No change.
+  - claim: fig9s1-cne-mi-above-random-groups
+    agrees: true
+    outcome: blocked
+    reason: Agreed; blocked by missing data.
+    response: No change.
+  - claim: fig9s2-noise-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agreed; blocked by missing data.
+    response: No change.
+  - claim: fig10b-ptd-higher
+    agrees: true
+    outcome: reproduced
+    reason: Passes under all four readings in this run (p 8.0e-12 to 5.6e-4, cell 76), but the stated p-values
+      (3.5e-12, 1.9e-09, 5.0e-04, 1.3e-05) appear to have been written from an earlier execution; cell 76 prints
+      8.01e-12, 3.75e-09, 0.000559 and 2.43e-05. The outcome holds.
+    response: Replaced with the printed values (8.0e-12, 3.8e-09, 5.6e-04, 2.4e-05) in cell 77 and the record. The
+      source of the variation between executions is found and removed (see fig10c-strf-mi-higher). Outcome unchanged.
+  - claim: fig10c-strf-mi-higher
+    agrees: false
+    outcome: not_reproduced
+    reason: In this execution the linear projection with event reading (a) gives p = 0.00153 (cell 79), above the
+      0.001 bound; the other three readings give 0.0076, 0.049 and 0.185, so none passes. Across all five subsampling
+      draws the reading passes in 2. The held-out MI passes clearly (p <= 1.6e-8), but the criterion asks for the
+      in-sample MI. On the printed output the outcome is not_reproduced. Choosing the linear projection because it is
+      the reading that passes is also a weak basis for the assumption. The stated p-values, seed results and
+      percentages were written from an earlier execution, and the result changes from one execution to the next with
+      fixed seeds, which the record does not mention.
+    response: Kept reproduced, as no outcome may change in round 2, and proposed not_reproduced under proposed, with
+      its reason. The variation between executions came from the float32 ICA, whose weights and activity thresholds
+      changed by about 1e-7 with the CPU's BLAS kernel (checked outside the notebook by running the detection under
+      OPENBLAS_CORETYPE=Haswell and under the default kernel), enough to move an event across its threshold and so
+      change every subsample drawn after it. cne.py now computes in float64 (the ICA of the shuffles and of the model
+      runs stays float32, for time) and rounds activity to 1e-9 before comparing it with a threshold. Outside the
+      notebook, the detection and cNE-member STRF measures of three recordings and the bin-size analysis of one then
+      agree to 1e-15 under both kernels, and two full executions of the notebook give the same numbers. The new run
+      gives the verifier's values (p = 0.0015, 0.0076, 0.049, 0.19; linear (a) passes in 2 of 5 draws), and cell 79
+      now counts the first draw in the tally. Cells 80 and 99, the README, the notes and the STRF finding are
+      rewritten against it.
+  - claim: fig10s1-random-group-strfs
+    agrees: true
+    outcome: reproduced
+    reason: Passes with 500 groups (PTD p 3.7e-4). The PTD part fails with 100 groups on one other seed (p 0.0023,
+      cell 82), which the notes say.
+    response: No change.
+  - claim: fig11ab-real-vs-surrogate
+    agrees: true
+    outcome: blocked
+    reason: Agreed; blocked by missing data.
+    response: No change.
+  - claim: fig11c-models-number
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in the outcome table. The record note that a sampled run reproduces the real 5-ms covariances
+      (slope 0.66 to 1.04) overstates it; the covariance slopes are 0.657 at site 1 and 0.712 at site 16 (cell 86), so
+      the DG sample under-reproduces covariances by about a third there. The outcome does not depend on it.
+    response: The note now says the slopes run from 0.672 to 1.02 in the new run and that at sites 1 and 16 (0.672 and
+      0.688) the sample under-reproduces the covariances by about a third. Model values updated to the new run (DG
+      8.01; Bonferroni p 4.6e-09, 3.0e-08 or 4.5e-08, and 1.6e-04). Outcome unchanged.
+  - claim: fig11d-models-size
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its printed output.
+    response: Values updated to the new run (shuffled corrected p 0.052; PR 3.81 or 3.85, and 3.75 or 3.84 with empty
+      runs as size 0). Outcome unchanged.
+  - claim: fig11ef-coincidence-ratios
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed in the outcome table, with no further note.
+    response: Medians updated to the new run (PR 0.217 or 0.222, DG 0.777 for pairs and 0.731 for triplets). Outcome
+      unchanged.
+  - claim: fig11s3b-pr-strf-similarity
+    agrees: true
+    outcome: reproduced
+    reason: The 5-ms PR bin is stated and reasonable. The notes also report that 10-ms bins fail (0.645).
+    response: DG median corrected to 0.021, as cell 94 prints. Outcome unchanged.
