@@ -133,7 +133,7 @@ outcome, not only the findings reproduced.
 | Style | Address | What it shows |
 |---|---|---|
 | Findings reproduced | `badge/authors/<ORCID iD>.svg` | One number: the findings reproduced in full, in verified attempts. |
-| All outcomes | `badge/authors/<ORCID iD>-outcomes.svg` | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. |
+| All outcomes | `badge/authors/<ORCID iD>-outcomes.svg` | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. An outcome with no claim is shown as 0. |
 | Card | `badge/authors/<ORCID iD>-card.svg` | The person's name, the number of claims and papers, the outcomes as one bar, and the four counts. |
 
 ![All outcomes](https://encorescience.org/badge/authors/0000-0002-3100-4800-outcomes.svg)

@@ -320,7 +320,7 @@ def test_a_deprecated_attempt_counts_for_nothing():
 def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
     data, out = built
     papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
-    seen = none = 0
+    seen = none = zeros = 0
     for orcid, author in list(site.author_index(data).items())[:400]:
         counts = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in author["papers"]) for k in site.OUTCOMES}
         every = site.author_outcomes(data, author)
@@ -335,16 +335,17 @@ def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
             continue
         seen += 1
         assert every["counts"] == counts and every["claims"] == sum(counts.values())
-        # Every outcome with a count is on both, by its count and a word for it; one with none is left out.
+        # All four outcomes are on both, by count, a word and a dot in the outcome's colour: one with no claim as 0.
         for svg in (line.read_text(), card.read_text()):
             for k, n in counts.items():
-                assert (f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg) == bool(n)
-                assert (f'fill="{site.OUTCOME_FILL[k]}"' in svg) == bool(n)
-            assert site.e(every["alt"]) in svg
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg and f'<circle' in svg
+                assert f'fill="{site.OUTCOME_FILL[k]}"' in svg
+            assert svg.count("<circle") >= 4 and site.e(every["alt"]) in svg
+        zeros += any(n == 0 for n in counts.values())
         assert site.e(author["name"]) in card.read_text() and card.read_text().count("<rect") == 1 + sum(1 for n in counts.values() if n)
         page = (out / "authors" / orcid / "index.html").read_text()
         assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
-    assert seen and none
+    assert seen and none and zeros
 
 
 def test_a_deprecated_attempt_is_marked_on_its_page(built):
