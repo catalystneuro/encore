@@ -164,6 +164,19 @@ def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
         assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
+def test_the_caution_shows_its_lead_and_keeps_the_rest_behind_a_disclosure(built):
+    _, out = built
+    home = (out / "index.html").read_text()
+    block = home[home.index('<div class="caution" id="caution">'):]
+    block = block[:block.index("</details>") + len("</details>")]
+    lead, details = block.split("<details>", 1)
+    assert site.CAUTION in lead and "It may be a failure of the attempt." in lead
+    assert "<details open" not in block
+    assert "An outcome says what one attempt could recover" in details
+    assert "Most attempts are made by AI agents." in details and site.RESPOND_URL in details
+    assert site.CAUTION_JS in home and "#caution" in site.CAUTION_JS
+
+
 def test_a_papers_page_lists_every_notebook_of_every_entry_that_uses_its_datasets(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():

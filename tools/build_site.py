@@ -1837,7 +1837,8 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')set(false)
 
 def caution_block() -> str:
     return f'''<div class="caution" id="caution">
-  <p class="lead"><strong>{CAUTION}</strong> It may be a failure of the attempt.</p>
+  <p class="lead"><span><strong>{CAUTION}</strong> It may be a failure of the attempt.</span></p>
+  <details><summary>More on reading outcomes</summary>
   <div class="body">
     <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it. A
     “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
@@ -1846,8 +1847,14 @@ def caution_block() -> str:
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
     from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
-  </div>
+  </div></details>
 </div>'''
+
+
+# A reader who follows a link to #caution came for the explanation: open it for them.
+CAUTION_JS = """<script>(function(){function go(){if(location.hash!=='#caution')return;var c=document.getElementById('caution'),
+d=c&&c.querySelector('details');if(!d)return;d.open=true;c.scrollIntoView();}
+go();addEventListener('load',go);addEventListener('hashchange',go);})();</script>"""
 
 
 # --- pages ---------------------------------------------------------------------
@@ -2153,7 +2160,7 @@ def page_overview(data: dict) -> str:
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + TABS_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               + TABS_JS + CAUTION_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
