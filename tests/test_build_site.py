@@ -537,6 +537,17 @@ def test_the_overview_shows_the_dashboard(built):
         assert (out / "assets" / "progress.js").is_file()
 
 
+def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
+    data, out = built
+    page = (out / "index.html").read_text()
+    # A plain form, so it works without scripts: the papers list reads q from the URL.
+    assert re.search(r'<form class="home-search" method="get" action="papers/"[^>]*>\s*<input name="q" type="search"', page)
+    # Under the lede, then the outcomes (with the caution attached), then the counters and charts.
+    order = [page.index('class="lede"'), page.index('class="home-search"'), page.index("claims that rest on the dataset alone"),
+             page.index('id="caution"'), page.index('class="progress"' if 'class="progress"' in page else 'class="tiles"')]
+    assert order == sorted(order)
+
+
 def test_view_on_dandi_opens_a_new_window(built):
     data, out = built
     dandiset = next(iter(site.current_attempts(data)))

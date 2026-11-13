@@ -160,9 +160,10 @@ gates and verification. A person is only pulled in when the repair fails.
 The public site is static and is built from the files above by
 `tools/build_site.py`; there is no server.
 
-- **Overview:** headline numbers, outcomes overall and by technique, why claims
-  were blocked, findings by kind, and verification. Every number and bar links
-  to the matching filtered list.
+- **Overview:** a search box for papers, then the outcomes of all claims (with
+  the caution on reading them), then headline numbers and progress charts,
+  outcomes by technique, why claims were blocked, findings by kind, and
+  verification. Every number and bar links to the matching filtered list.
 - **Datasets:** a list of every target, with filters (status, outcomes of
   its claims, why claims were blocked, verification, kinds of finding,
   technique, species), search, sorting and pagination. The view is kept in the
