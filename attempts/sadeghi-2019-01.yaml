@@ -1,0 +1,369 @@
+schema_version: 3
+id: sadeghi-2019-01
+datasets:
+- archive: crcns
+  id: bst-2
+  version: unversioned
+  doi: 10.6080/K03X84V3
+  relation: primary
+paper: doi:10.1371/journal.pbio.3000449
+date: '2026-11-13'
+entry: sadeghi-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43495516371
+outcomes:
+- claim: fig1k-example-temporal-widths
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig1k-example-temporal-widths
+  measured: [2.8, 3.1, 4.4, 5.5, 7.1, 12.2, 5.6, 156.8, 7.6, 20.6, 60.9]
+  notes: At P1_Site04, with the window of the paper's code (the first half of the raster, as
+    NeuralExample.m computes Fig 1) and the channel-averaged stimulus-driven temporal correlation,
+    all ten widths are within tolerance and crowd and water are narrower than fire at 50%. The
+    snake's side peak is at 60.9 ms (channels 9 to 16), outside 50 +/- 5 ms, so 10 of 11 values
+    match. Under the two windows the claims file names, the whole response and 1000 ms windows,
+    6 to 8 of 11 values match (partially reproduced by the criterion); the bird's 10% width is
+    then 138.8 or 50.2 ms. With the median over channels, 7 to 8 of 11 match under every window.
+  deviations:
+  - The window is taken from the paper's code, Code/Examples/NeuralExample.m, which computes Fig 1
+    from the first half of each raster (T0 at its centre, Tw = NS - 2 MaxLag - 2 samples), as the
+    claims file's opening comment allows; the claims file's two readings are shown as variants.
+  - The aMUA is at the files' 2034.5 Hz, so the lag step is 0.49 ms where the paper's 2 kHz gives
+    0.5 ms.
+  - The channel order along the probe is not documented, so the high-frequency channels for the
+    period are read as channels 9 to 16 and, as a variant, 1 to 8 (52 to 62 ms either way);
+    reading (b), best frequency above 2 kHz, cannot be run without best frequencies.
+- claim: fig1-snr-noise-stronger
+  outcome: partially_reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig1-snr-noise-stronger
+  measured: [-11.8, -8.1, -34.0, 1.0, -29.3, 7.7]
+  notes: Reading (a)(c)(e), whole window, 65 site and sound values, spectral SNR mean -11.8 dB (SD
+    8.0, range -34.0 to 1.0) and temporal mean -8.1 dB (SD 9.0, range -29.3 to 7.7); 97% and 88% of
+    the values are below 0 dB. Both means are within tolerance under 15 of the 18 readings, but no
+    reading puts more than two of the four range bounds within tolerance (per site averages,
+    spectral -26.8 to -1.4 and temporal -26.6 to 1.2 dB in the whole window). At the example site
+    alone the means are -4.3 and -1.9 dB.
+  deviations:
+  - The SNR formula is not in the text; the readings of the claims file (squared stimulus-driven
+    over squared noise correlations, with and without the zero-lag diagonal, per site and sound or
+    per site, all sites or the example) are all run, under three windows.
+- claim: fig1-s5-model-predicts-neural
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The test needs each recording channel's best frequency, from the tone-pip frequency
+    response areas (Fig 1A, S5 Fig legend). The data set holds only the aMUA rasters to the natural
+    sounds; its file list (data.tar.gz members) and description have no tone-pip recordings or best
+    frequencies, and the channel order along the probe is not documented, so the model channels
+    cannot be matched to recording channels.
+- claim: fig2-noise-restricted
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig2-noise-restricted
+  notes: Over the 13 paradigm 1 sites, with widths at 50% of the maximum (reading (a)), the noise
+    correlations are narrower than the stimulus-driven ones for 5 of 5 sounds in both domains under
+    every window (whole window, spectral 1.8 to 2.0 against 6.6 to 9.1 channels, temporal 1.2
+    against 4.8 to 7.5 ms), and their SD across sounds is smaller in both domains (spectral 0.33
+    against 0.68, temporal 3.63 against 48.67). Under reading (b), the mean beyond 2 channels or 10
+    ms, noise is lower for 5 of 5 sounds spectrally but for 2 of 5 temporally, as the stimulus-driven
+    temporal correlations of fire, water and snake fall below zero beyond 10 ms. The bird chorus
+    keeps a stimulus-driven correlation of 0.22 at 50 ms (noise 0.05) and the snake a side peak at
+    55 ms.
+  deviations:
+  - Each site's collapsed curves are normalised by their value at offset 0 or lag 0 before
+    averaging (the claims file's open step).
+- claim: fig3a-example-tonotopy-removal
+  outcome: partially_reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig3a-example-tonotopy-removal
+  measured: [78.4, 45.1]
+  notes: At P1_Site04, at 1 s, randomising the validation channel order lowers the temporal
+    classifier by 20 to 40 points under every reading ((1a)(2a) 78.4 to 45.1%, (1a)(2b) 64.4 to
+    31.3%, (1b)(2a) 80 to 60%, (1b)(2b) 70 to 30%). The value with tonotopy is within tolerance under
+    two readings, the value without it under none. Chance is 20%.
+  deviations:
+  - The decision rule (reading 1) and the choice of PCs (reading 2) are not settled by the paper;
+    all four combinations are run. Reading (4) concerns the spectrum classifier only.
+- claim: fig3a-example-classifier-order
+  outcome: partially_reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig3a-example-classifier-order
+  notes: The single-trial order spectro-temporal >= spectral >= temporal holds under 4 of 8 reading
+    combinations (for example (1a)(2b), a on the model data, 86.4, 77.7 and 64.4%). The noiseless
+    rule holds under none; the noiseless spectral classifier is 12 to 21 points above the
+    single-trial one under the (1a) readings, but the noiseless temporal classifier is 13 to 30
+    points below the single-trial one, not similar, and the noiseless spectro-temporal classifier
+    is not always 5 points higher (60 to 100% depending on how a is chosen).
+  deviations:
+  - The noiseless classifier is run at the example site at 1 s only (500 ms shuffled model windows,
+    1000 ms shuffled validation windows, 100 each), which is what the criterion compares.
+- claim: fig3b-population-above-chance
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig3b-population-above-chance
+  notes: Under every reading, across the 13 sites, the four single-trial classifiers exceed 20% at 1
+    s ((1a)(2a) spectro-temporal 77.8%, spectral 76.9%, temporal 68.7%, without tonotopy 43.1%;
+    largest two-sided p 7.8e-07), each is higher at 1 s than at 62.5 ms, and removing tonotopy
+    lowers the temporal classifier by 25.6 points (paired t = 7.87, p = 4.4e-06; 25.4 to 31.5 points
+    under the other readings). The 4 sites of one animal and the 9 of the other show the same
+    pattern.
+- claim: figs6-per-sound-above-chance
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:figs6-per-sound-above-chance
+  notes: Under reading (1a) with PCs chosen on validation, all 18 non-snake-temporal conditions
+    exceed 20% at p < 0.05 across the 13 sites and the two snake temporal conditions do not (16 of
+    18 with the inner split). Under the (1b) readings, 16 to 18 of 18 exceed chance but a snake
+    temporal condition does too, so the claim holds under the (1a) readings only.
+  deviations:
+  - The decision rule is not settled by the paper (reading 1); the outcome holds under (1a) and not
+    under (1b), and the criterion takes any reading.
+- claim: figs9-mixing-coefficient
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:figs9-mixing-coefficient
+  measured: [0.7, 0.5]
+  notes: One reading puts both medians within tolerance, (1b)(2a) with a chosen on the validation
+    data, the 24 paradigm 1 and 2 sites pooled (median 0.70, quartiles 0.40 and 0.90) and paradigm 3
+    with whole responses (median 0.50, 25th percentile 0.25). The result depends strongly on how a
+    is chosen; with a fitted on the model data the paradigm 1 and 2 medians are 0.50 to 0.60, as
+    reported, but the paradigm 3 medians are 0.80 to 0.90; with a fitted on the validation data and
+    the (1a) readings the paradigm 3 medians are 0.00 to 0.40. No reading matches per paradigm.
+  deviations:
+  - The paper says only that a maximises the log-likelihood; a is chosen on the summed log-posterior
+    of the true sound, on the model data or on the validation data, over a grid of 0 to 1 in steps
+    of 0.1, and both are shown. Paradigm 2 uses its half split classifier (reading 3a).
+- claim: figs10-amua-tmua
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Thresholded MUA needs the raw voltage traces (events 2 SDs above the noise floor). The
+    data set holds only the aMUA envelopes downsampled to 2034.5 Hz; neither its file list nor its
+    description has voltage traces or spike times.
+- claim: fig4-example-original-vs-equalized
+  outcome: not_reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig4-example-original-vs-equalized
+  measured: [0.93, 0.898]
+  notes: At P2_Site11, over the five sounds, original against 1/f stimulus-driven correlations give
+    spectral r = 0.930 +/- 0.019 (within 0.92 +/- 0.01) and temporal r = 0.898 +/- 0.022, higher
+    than the reported 0.72 +/- 0.07 and outside 10% of it under every reading (0.875 to 0.900). The
+    correlations are as similar as the statement says, or more, but the temporal value differs from
+    the reported one.
+- claim: fig4e-population-original-vs-equalized
+  outcome: not_reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig4e-population-original-vs-equalized
+  measured: [0.879, 0.917, 0.818, 0.639]
+  notes: Across the 11 sites (whole window, per-site means), same sound 0.879 +/- 0.033 spectral and
+    0.917 +/- 0.007 temporal, across sounds 0.818 +/- 0.035 and 0.639 +/- 0.011. Same-sound exceeds
+    across-sound in both domains under every reading, but no value is within its stated SE and at
+    most 3 of 4 are within 10% (first-half window), so neither rule of the criterion is met. The
+    spectral values are lower and the temporal ones higher than reported.
+- claim: fig4f-example-equalized-classification
+  outcome: partially_reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig4f-example-equalized-classification
+  measured: [58, 65, 79, 90]
+  notes: At P2_Site11, with the half split (3a) and reading (1a)(2a), the classifiers trained on the
+    original sounds give 58% spectral, 65% temporal and 79% (a on model data) or 65% (a on validation
+    data) spectro-temporal on the 1/f sounds, and the spectrum classifier gives 90% on the original
+    sounds; with a on the validation data all four values are within tolerance, but the spectrum
+    classifier on the 1/f sounds is 31%, not below 30%. With (1a)(2b) it is 29% and three of four
+    values are within tolerance. The pattern (correlation classifiers above 40%, spectrum below 30%
+    on 1/f) holds under (1a)(2b) with the half split and under (1a) with whole responses (3b). The
+    within-site t tests over the five sounds give p 0.016 to 0.033 for spectral and temporal under
+    (1a)(2a).
+- claim: fig4h-population-equalized-classification
+  outcome: partially_reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig4h-population-equalized-classification
+  measured: [50.4, 54.0, 54.4, 90.0, 30.0]
+  notes: Across the 11 sites the three correlation classifiers exceed 20% on the 1/f sounds at 1 s
+    under every reading (two-sided p < 0.003), and the spectrum classifier falls from 90.0 +/- 2.2%
+    on the original sounds to 30.0 +/- 1.3% on the 1/f sounds ((1a)(2a), half split), below every
+    correlation classifier. At most 3 of the 5 values are within tolerance; temporal 54.0% is just
+    outside 49 +/- 4.9% and the spectrum classifier on 1/f sounds is outside 27 +/- 1% under most
+    readings (24.5 to 38.2%). The spectrum classifier rises from 24.7% at 62.5 ms to 30.0% at 1 s.
+    With whole responses (3b) the temporal classifier reaches 76 to 84% on the 1/f sounds.
+- claim: fig8b-example-pca-variance
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig8b-example-pca-variance
+  measured: [96.3, 85.3]
+  notes: At P3_Site04, with 1000 ms windows of single-trial correlations (reading b), two PCs explain
+    96.3% of the spectral and 85.3% of the temporal variance of the six-exemplar training set (96.3
+    and 85.5% over the five-exemplar folds), and a nearest-centroid rule in two PCs classifies 88.6%
+    and 85.6% of held-out exemplar windows (chance 33.3%). With 1000 ms shuffled windows the values
+    are 98.3 and 88.3%; with 500 ms shuffled windows (reading a) the temporal value is 77.0%, just
+    outside the tolerance, and the spectral nearest-centroid accuracy 76.1%.
+- claim: fig8e-example-categorization
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig8e-example-categorization
+  measured: 94
+  notes: At P3_Site04, under every reading, the three correlation classifiers reach 93 to 100% at 1 s
+    and are higher than at 62.5 ms (50 to 83%); the spectrum classifier gives 91 to 94%. Under
+    reading (a), (1a)(2a), spectro-temporal 95, spectral 93, temporal 98 and spectrum 94%.
+- claim: fig8f-population-categorization
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:fig8f-population-categorization
+  measured: [94.8, 94.8, 92.2, 93.3]
+  notes: Across the 11 sites, under every reading, the four classifiers are within tolerance at 1 s
+    and above 33.3% (reading (a), (1a)(2a), spectro-temporal 94.8, temporal 94.8, spectral 92.2,
+    spectrum 93.3%; two-sided p < 1e-10), and each is higher at 1 s than at 62.5 ms. The 3 and 8
+    sites of the two animals give the same values.
+- claim: fig5-speech-water-widths
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_model.ipynb
+  output: claim:fig5-speech-water-widths
+  measured: [64.5, 4.0]
+  notes: With the time average of the short-term autocorrelations at tau_W = 566 ms (reading ii a)
+    and the channel-averaged curve, Human_Speech Sound_1 has a 64.5 ms and Flowing_Water Sound_1 a
+    4.0 ms half width (median over channels 70.0 and 4.1 ms). With the long-term correlation of the
+    whole envelopes speech is 81.1 ms, outside the tolerance. The speech example's mean off-diagonal
+    zero-lag correlation is 0.464 against 0.259 for water. Across the 15 speech sounds the widths
+    are 57.3 to 86.3 ms, across water 3.5 to 7.3 ms.
+  deviations:
+  - Bandwidths follow the Methods' formula, 25 + 75(1 + 1.4 f^2)^0.69, where the paper's example
+    code uses criticalbandwidth.m (94 + 71 f^1.5); envelopes are resampled to 1 kHz as the Methods
+    say, where the example code keeps 3675 Hz.
+  - The short-term correlation is sampled every tau_W / 4, a standard choice for a time average.
+- claim: fig6-category-half-widths
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_model.ipynb
+  output: claim:fig6-category-half-widths
+  measured: [3.9, 3.9, 67.9, 82.4, 160.9]
+  notes: With the 566 ms short-term reading and the channel-averaged category mean curve, four of
+    five half widths are within tolerance (flowing water 3.9, wind 3.9, speech 67.9, dogs 82.4 ms);
+    cats are 160.9 ms against 117.3 +/- 11.7. Every vocalization is wider than water and wind under
+    all four readings. The statement's spectral part is mixed; dogs, speech and cats have high mean
+    off-diagonal correlations (0.484, 0.429, 0.388) and flowing water the lowest (0.265), but single
+    bird songs are low (0.273), below wind (0.315).
+  deviations:
+  - As in fig5-speech-water-widths.
+- claim: fig6c-category-diversity
+  outcome: reproduced
+  notebook: reproduce_sadeghi_2019_model.ipynb
+  output: claim:fig6c-category-diversity
+  measured: [0.123, 0.144, 0.171, 0.222, 0.373, 0.381]
+  notes: With norms not squared (reading c on a), five of six CDIs are within tolerance (single bird
+    songs 0.373 against 0.29 +/- 0.029), speech is the lowest of the 13 categories, white noise is
+    lower still (0.042), and the six keep the paper's rank order. With squared norms (readings a
+    and b) the values are about ten times smaller (speech 0.016, fire 0.162) and none is within
+    tolerance, though the rank order is the same.
+  deviations:
+  - White noise is generated (15 Gaussian noises of 10 s, fixed seed), as the data set does not hold
+    it.
+  - The CDI equation is lost from the text; the claims file's readings are all run, and only the one
+    with norms not squared matches the reported values.
+- claim: fig7i-stationarity
+  outcome: not_reproduced
+  notebook: reproduce_sadeghi_2019_model.ipynb
+  output: claim:fig7i-stationarity
+  measured: [0.719, 0.358]
+  notes: Under reading (a), with environmental sounds flowing water, waves, thunder and rain, and wind,
+    mean SI 0.719 +/- 0.048 against 0.49 +/- 0.04 reported, vocalizations 0.358 +/- 0.089 against
+    0.28 +/- 0.04; reading (b) gives 0.792 and 0.621, and adding bird chorus and speech babble gives
+    0.654 under (a). Speech has the lowest category mean and white noise the highest under both
+    readings, and environmental sounds are more stationary than vocalizations, but neither value is
+    within tolerance under any reading.
+  deviations:
+  - As in fig5-speech-water-widths; the SI equation is lost from the text and the claims file's two
+    readings are run.
+- claim: fig9a-optimal-resolution
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run. The model classifier needs short-term spectral and temporal features of the 195
+    sounds at ten resolutions and a leave-one-sound-out GMM classifier for three correlation
+    classifiers and the spectrum classifier. The model notebook's cost cell measured, on this
+    runner, about 13 to 15 min for the features and at least 76050 GMM fits (17 to 73 min) with the
+    reported PC and component counts (reading 7b), and at least 39000 more fits (11 to 49 min) to
+    choose N_c by cross-validation (reading 7a); with the correlations the notebook already
+    computes, it would take about 56 to 152 min, over the 60 minute limit except under the cheapest
+    readings, and writing and running it did not fit the time left in this run after the neural and
+    model correlation analyses. The model correlations, the 195 sounds and the paper's code are all
+    in the data set, so a later attempt can test it.
+- claim: fig9b-similar-maximum
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run; it needs the classifier of fig9a-optimal-resolution at each classifier's optimum
+    (see that claim's notes for the estimate).
+- claim: fig9b-accumulation-rate
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run; it needs the performance curves of fig9b-similar-maximum, from the classifier of
+    fig9a-optimal-resolution (see that claim's notes for the estimate).
+- claim: fig9c-time-averaged-worse
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run; it needs the classifier of fig9a-optimal-resolution and a time-averaged variant
+    (see that claim's notes for the estimate).
+- claim: fig9e-category-specific
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run; it needs the per-category results of the classifier of fig9a-optimal-resolution
+    (see that claim's notes for the estimate).
+- claim: fig9-spectrum-classifier-lower
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run; it needs the spectrum classifier at ten resolutions and the correlation classifiers
+    of fig9a-optimal-resolution (see that claim's notes for the estimate).
+- claim: fig10-vocalization-background
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run; it needs the classifier of fig9a-optimal-resolution in a two-class task (see that
+    claim's notes for the estimate).
+findings:
+- kind: metadata_error
+  statement: The aMUA rasters are sampled at 2034.5 Hz (12207.03 Hz divided by 6, the Fs field of
+    every file), where the paper states 2 kHz; 6104 samples per trial make the stated 3 s only at the
+    files' rate. The data description gives no rate.
+- kind: data_missing
+  statement: The data set holds only the aMUA rasters to the natural sounds. The tone-pip recordings
+    and best frequencies behind Fig 1A and S5 Fig, and the raw voltage traces behind the thresholded
+    MUA of S10 Fig, are not deposited, so those analyses cannot be repeated.
+- kind: metadata_insufficient
+  statement: The order of the 16 channels along the probe (which end is dorsal, low frequency) is not
+    documented, so the channels cannot be assigned to frequencies, and the Param.RecordDate field
+    holds values such as May2019 and May2019C2 without explanation.
+- kind: metadata_error
+  statement: P2_Site08 has 13 trials per sound, where the paper states one paradigm 2 site with 14
+    trials and all others with 20. The other trial and site counts match the paper (paradigm 1 18 to
+    39 trials, 13 sites, 4 and 9 per animal; paradigms 2 and 3 11 sites each, 3 and 8 per animal).
+- kind: metadata_error
+  statement: The data description says all sound files are double precision WAV; the 195 model
+    sounds are 16 bit integer PCM and the paradigm sounds 32 bit float. The model sounds' SD is 0.0003
+    to 0.0022 of full scale, where the description says they are normalised to 0.001.
+- kind: other
+  about: data
+  statement: The whole data set is one 5.3 GB tar.gz file, which cannot be read at random; reading
+    any neural file means decompressing the stream from the start (about 4 minutes for the whole
+    file here). The white noise control of the model analyses is not included.
+- kind: code_mismatch
+  statement: The paper's model example code (ModelExample.m) builds the cochleogram with
+    criticalbandwidth.m, b = 94 + 71 f^1.5 (f in kHz), where the Methods give b = 25 + 75(1 +
+    1.4 f^2)^0.69, and it keeps the envelopes at 3675 Hz (oversampling factor 4) where the Methods
+    say 1 kHz. The Methods are followed here.
+- kind: methods_unavailable
+  statement: For the authors. The neural classifier's Methods leave open how the 100 random time
+    samples enter a decision (each sample a decision, or log-likelihoods summed over the 100 samples
+    for one decision), how the number of PCs that "maximize the classifier performance" is chosen
+    (on the validation data or within the model data), and on which data the mixing coefficient a
+    is fitted. The per-sound result of S6 Fig holds only when each sample is a decision, and the
+    median a of S9 Fig changes from 0.0 to 0.9 with these choices. Which rules were used?
+- kind: methods_unavailable
+  statement: For the authors. The CDI of Fig 6C matches the reported values only when the norms are
+    not squared (speech 0.123 against 0.12), while the Methods' prose (variance normalised by power)
+    reads as squared norms, which give values ten times smaller. The SI of Fig 7I under either
+    squared reading gives higher values than reported (environmental 0.72 against 0.49). Which
+    forms of the SI and CDI were used?
