@@ -1,0 +1,680 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001559",
+  "label": "DANDI:001559"
+ },
+ "page": "datasets/dandi/001559/",
+ "generated": "2026-11-13T21:37:34+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 1,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 17
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 2
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "tian-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001559",
+    "version": "0.250902.2058",
+    "doi": "10.48324/dandi.001559/0.250902.2058",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001559"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001559",
+   "label": "DANDI:001559",
+   "dataset_version": "0.250902.2058",
+   "paper": "10.1021/acssensors.5c01093",
+   "paper_title": "An Enhanced Red Bioluminescent Indicator for Responsive Detection of Physiological Calcium Dynamics in Cells and Mice",
+   "date": "2026-11-03",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41571579139"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "tian-2025",
+   "entry_title": "eBRIC bioluminescence in mouse somatosensory cortex (Tian et al. 2025, Figure 4)",
+   "summary": "Only the cortical findings of Figure 4 could be tested, because the dataset holds nothing else. Neuronal expression of eBRIC held up, and the steady baseline held in three of four recordings. Whether stimulation raises bioluminescence in all four electrode and current conditions could not be settled, since the paper gives no response window or test and the files do not label electrodes or currents. The speckle blood flow finding lacked stimulus times, and the single-trial and electrode timing findings depend on the unsettled result. The in vitro, cell culture and amygdala findings could not be tested because their data are missing.",
+   "description": "Tests the in vivo cortical findings of Tian, Zhang, Du, Huang, Bizimana, Nishimura and Ai (2025) on dandiset 001559, which holds the raw data of Figure 4 for one mouse, the two-photon stacks of eBRIC expression, the laser speckle movies and the PMT recordings of bioluminescence during whisker pad stimulation. It checks the expression images, the steadiness of the baseline, the evoked increases, single-trial detection and the timing of the responses to the two electrodes. The in vitro, cell and awake BLA experiments of the other figures are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_tian_2025.ipynb",
+     "title": "Reproducing Tian et al. (2025), Figure 4, from dandiset 001559",
+     "executed": "notebooks/tian-2025/reproduce_tian_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig4b-expression-healthy",
+     "statement": "Two-photon fluorescence shows robust eBRIC expression in neuronal somata and processes in the whisker barrel cortex, and the neurons look healthy and intact three months after surgery.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4B",
+     "quote": "Two-photon excited fluorescence revealed robust eBRIC expression in neuronal somata and processes. Neurons appeared healthy and morphologically intact even three months after surgery",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tian_2025.ipynb",
+     "notes": "The channel 4 mean projection of the 2025-06-09 stack of cells holds 184 bright compact cell-sized objects at a Laplacian-of-Gaussian scale of 4 px and 91 at 6 px (centres a median 1.70 and 2.03 times the local median), in labelled tissue whose median is 3.55 times the darkest 5% of the field. The wide-field stack shows a bounded bright red region (95th percentile 519 units against a median of 17) with the vessels dark, and the vessels bright in the green channel. Somata are labelled; processes are not resolved one by one and appear as labelling between the somata. No surgery date is in the files; the stacks were taken 63 days after the first recording through the window (2025-04-07), so at least two months after surgery, consistent with but not showing three months. Health is not judged, as the criterion says.",
+     "deviations": [
+      "The criterion is qualitative; the count of compact bright objects (a Laplacian of Gaussian with a threshold of 5 robust s.d., at two scales) is a standard choice made here to put numbers to the image, not the paper's.",
+      "The channel identities (channel 2 green, channels 3 and 4 red, channel 4 the 645/65 channel) are inferred from the images; the files do not state them.",
+      "Stacks are subsampled by 2 in each spatial dimension and averaged over all frames; the paper's inset is an average projection over 30 um in z, and the z step is not in the files."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-speckle-responsive-region",
+     "statement": "Laser speckle contrast imaging shows that the region of viral expression responds with blood flow changes to electrical stimulation of the whisker pad.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4C legend",
+     "quote": "Laser speckle contrast imaging was used to confirm that the viral expression was in a region that responded to electrical stimulation of the whisker pad",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_tian_2025.ipynb",
+     "notes": "The three 2025-04-07 movies (40 Hz, 1000 by 920 pixels, 108 to 147 s) are present; their frames cycle through four exposure levels and their contrast maps show the vessel tree, consistent with multi-exposure laser speckle imaging. They carry no stimulus marker, stimulus times or description (no file has an intervals group, and the stimulus group is empty in all 35), so the comparison of stimulation with the time before it cannot be formed; finding stimulation periods from the flow itself would assume the response the claim tests. The registration of the speckle field to the eBRIC region is also not recorded. As a partial look, not a test, the notebook reads every frame. The whole-field flow index (1/K^2 relative to its median) has an s.d. of 0.8% to 4.5% in exposure phases 1 to 3 (5.9% to 11.3% in phase 0); departures of its 1 s smoothed value from a 30 s running median pass 3 robust s.d. at most three times per movie in phases 1 to 3 (0.9% to 2.6%); the spectrum between 2 and 33 s peaks at its longest period (30 s), a slow drift with no regular rhythm, in phases 1 to 3 except phase 1 of 12:49 (4.6 s); regions of 40 by 40 pixels share a median of 6% to 12% of their fluctuation variance with the whole field. No repeated change at a regular period is seen, and whether any change is a response cannot be told.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-steady-baseline",
+     "statement": "Infusing DTZ at 25 uL/min through the tail vein gives a steady level of baseline bioluminescence during the recording.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D",
+     "quote": "Infusion at 25 \u03bcL/min generated a steady level of baseline bioluminescence",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tian_2025.ipynb",
+     "notes": "Channel 4, change of the 5 s pre-onset baseline from the first to the last trial, by recording, 18.34 (14:50), 6.64 (14:55), 1.84 (14:59) and 0.79 (15:04) units, against a mean 4 mA response of 17.44 (window a) and 14.13 (window b). Three of four recordings meet the criterion in both channels and both windows; the 14:50 recording does not (channel 3, 17.53 against 16.61 and 13.60). The channel 4 level also rises by 6.39 and 11.02 units within the two unstimulated recordings before it, and from about 352 to about 402 over the six recordings of the day, a rise larger than the mean 4 mA response; the criterion judges each recording, so this does not enter the outcome, but the level is not steady across the recordings. With the 4 mA reference taken from the two weak sessions (2.49 or 2.02), the 14:55 recording fails as well; with any pairing that includes one strong session, the same three recordings pass. With a straight-line trend in place of the first-to-last difference, 14:50 still fails in channel 4 (16.11 over the trial baselines and 18.00 over all bins outside the responses); in channel 3 (15.18 and 15.08) it passes against window a (16.61) and fails against window b (13.60); the 14:55 trend over its whole recording (13.83, channel 4) is close to the window b reference (14.13).",
+     "deviations": [
+      "The criterion compares the drift with the 4 mA response in the same recording, but each recording here holds one condition. The comparison is with the mean 4 mA response of the same channel over the two assumed 4 mA recordings; the recording's own response is shown as a variant, and with it the same 14:50 recording fails.",
+      "Assumed, as the dataset does not record the current of each session, that the four stimulated sessions are the four conditions of Figure 4D and that the two with the larger mean responses are the 4 mA ones. The paper says the 4 mA condition gives the response strong enough to detect single events (Results, In Vivo BLI, paragraph 1), which supports the larger responses being 4 mA. Every pairing is shown. The per-trial responses in trial order show no alternation or blocks within a session (odd against even trials and first against second half, Mann-Whitney p 0.31 to 0.89); every trial of the two strong sessions is 7.64 or more, and one of the 18 trials of the weak sessions (7.77) is above that. This is consistent with one current per session but does not show it.",
+      "Assumed that channel 4 is the PMT with the 645/65 filter (Methods, Surgery Preparation and Bioluminescence Recording), from the 2025-06-09 images where channel 4 shows the red expression without the FITC-dextran vessels and channel 3 shows both. Channel 3 is shown and gives the same outcome.",
+      "The PMT signal is the mean of the pixels of each scan line, in bins of 128 lines (59 ms), a standard choice; the paper does not give the time base of its traces.",
+      "Stimulus times come from image channel 1, read as a marker of the 5 s trains (Methods, \"Electrical stimulation (5 Hz, 5 s, 2 mA and 4 mA)\"); its pulses last 4.985 to 4.992 s."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-evoked-increase",
+     "statement": "Whisker pad stimulation (5 Hz for 5 s) at 4 mA and at 2 mA, through each of the two electrodes, gives clear increases in cortical eBRIC bioluminescence.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D",
+     "quote": "clear increases in bioluminescence were observed with stimulation (4 and 2 mA) at both electrodes on the whisker pad",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_tian_2025.ipynb",
+     "notes": "Per session, channel 4, window a (0 to 5 s), mean response 2.65 (14:50), 15.93 (14:55), 18.95 (14:59) and 2.33 (15:04) units; Wilcoxon p 0.0078, 0.0039, 0.0078, 0.116; t-test p 0.013, below 0.0001, below 0.0001, 0.046. Window b (0 to 10 s), 15:04 mean 1.00, Wilcoxon p 0.246 and t-test p 0.211; the other three sessions are significant under both tests. So all four conditions show an increase under window a with the t-test and three of four under the other three readings; channel 3 gives four of four under the same reading and two or three of four under the others (the 14:50 session also fails the Wilcoxon test in window a, p = 0.125). The criterion makes the claim methods_underspecified when the readings disagree. The result does not depend on which session is which condition, since every condition must show an increase, but it rests on each session being one condition. The 15:04 session's trials split into five below zero (-2.0 to -0.3) and five above (2.9 to 7.5); if it held two conditions, the per-condition tests would change, and the outcome could change with them. One mouse is in the dandiset, so the two readings of which mice coincide. In the 15:04 session two of ten trials have baselines that start within 10 s of the previous onset. The question of which window and test the paper used is for the paper's authors.",
+     "deviations": [
+      "Assumed that the four stimulated sessions are the four conditions (two electrodes by two currents), one condition per session; the dataset does not label them. The trial order shows no alternation or blocks within a session (Mann-Whitney p 0.31 to 0.89), which is consistent with this but does not show it.",
+      "Channel 4 is taken as the 645/65 PMT and channel 3 shown; both give the same disagreement among readings.",
+      "One mouse of the paper's six is in the dandiset; it is taken to be the representative mouse of Figure 4D."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-4ma-single-trials",
+     "statement": "At 4 mA the response is strong enough to detect individual stimulation events, in single trials without averaging.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D; Discussion, paragraph 4",
+     "quote": "with the 4 mA condition producing a sufficiently strong response to detect individual stimulation events",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_tian_2025.ipynb",
+     "notes": "Blocked because it depends on fig4d-evoked-increase, which is blocked (protocol, a claim that depends on a blocked claim is blocked for the same reason). The test ran. Under the assumed current, all 15 trials of the two 4 mA sessions exceed 3 times the s.d. of their smoothed baseline, in both windows, both thresholds and both channels. With one weak session in the 4 mA pair the pooled fraction is 0.53 to 0.75, and with the two weak sessions 0.28 to 0.50. The 2 mA fractions are 0.20 to 0.50 (channel 4). In channel 4 the single-pulse variant does not show responses to individual pulses; the folded modulation at the 0.2 s period during stimulation is 0.31 and 0.47 against 0.27 and 0.37 in the 5 s before (the two 4 mA sessions), and the per-trial comparison is not significant in any session (p 0.11 to 0.19). In channel 3 it is significant in 14:59 (an assumed 4 mA session, p = 0.023) and 14:50 (assumed 2 mA, p = 0.039), and not in 14:55 (p = 0.156) or 15:04, so the variant does not decide the claim. With the baseline s.d. taken without its last 0.5 s (whose centred 1 s average takes in signal after onset), every 4 mA fraction stays 1.0 and the 2 mA pooled fractions are 0.17 to 0.44.",
+     "deviations": [
+      "Rests on the same assumed current assignment and channel as fig4d-steady-baseline.",
+      "The single-pulse variant uses the line signal (0.46 ms per line), with each stimulation period detrended and folded in 20 phase bins of the 0.2 s period, with the first pulse assumed at the marker onset; the paper gives no pulse times."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-electrode-timing",
+     "statement": "The responses to the two electrode locations differ in timing; stimulation of region 1 gives a delayed peak, and region 2 an earlier rise after stimulation onset.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D",
+     "quote": "Stimulation of region 1 resulted in a delayed peak response, while region 2 elicited an earlier rise in signal following stimulation onset",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_tian_2025.ipynb",
+     "notes": "Blocked because it depends on fig4d-evoked-increase, which is blocked. The test ran. At the assumed 2 mA the 14:50 session has both the later peak and the later rise (channel 4, peak 4.42 against 3.60 s, rise 2.54 against 0.005 s; channel 3 likewise), in 0.89 and 0.98 of bootstrap resamples of the trials; the 15:04 average is small (peak 2.54) and crosses half its peak at onset. At the assumed 4 mA neither session has both later times (channel 4 peaks both at 3.71 s, rises 1.42 and 1.01 s; channel 3 peaks 3.24 and 3.95 s with rises 1.18 and 0.89 s). So the criterion's condition holds at one current, the weaker, under the assumed pairing. The dataset does not label the electrodes, so no session can be named region 1. The 15:04 rise of 0.005 s is a step at onset. Its unsmoothed average is 0.77 above baseline in the second before onset and above half its peak (1.27) from the first bin after onset (mean 2.54 over 0 to 0.5 s); the centred 1 s average moves the step earlier, so the smoothed trace is already 1.69 at onset. With the rise taken as the start of the run above half peak (-0.23 s for 15:04, 2.54 s for 14:50) or from the unsmoothed average (0.005 and 2.36 s), 14:50 still has both later times at the assumed 2 mA in both channels, and neither 4 mA session does. The 15:04 session is the one whose increase does not pass every reading of fig4d-evoked-increase.",
+     "deviations": [
+      "Rests on the same assumed current assignment and channel as fig4d-steady-baseline; under the other pairings of sessions into currents, some session also has both later times at one current (printed in the notebook).",
+      "The electrodes are not labelled, so the claim is tested as one electrode having both later times, as the criterion says for that case."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-bla-footshock-increase",
+     "statement": "In awake head-fixed mice, footshock (0.8 mA, 1 s, every 40 s, 13 trials) gives a significant and consistent increase in BLA bioluminescence with eBRIC and sDTZ, larger than in mice expressing the Ca2+-insensitive control BREP.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Figure 5B and 5C",
+     "quote": "As expected, we observed a significant and consistent increase in bioluminescence in the eBRIC group in response to footshocks",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The awake BLA imaging of Figure 5 (eBRIC and BREP mice, EMCCD camera) is not in the dandiset, whose files are all from one mouse with a cranial window over the barrel cortex, and the paper deposits it nowhere else.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-brep-minimal",
+     "statement": "Mice expressing BREP show minimal to no change in bioluminescence under footshock.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Figure 5B and 5C",
+     "quote": "As a negative control, we generated mice expressing BREP, a Ca 2+ -insensitive bioluminescent protein, and observed minimal to no changes in bioluminescence under electric footshock stimulation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig5-bla-footshock-increase; the Figure 5 data are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-10hz-imaging",
+     "statement": "eBRIC with sDTZ allowed BLI of the awake mouse brain at 10 Hz (100 ms exposures without intervals).",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Methods, BLI of BLA Ca2+ Dynamics in Awake Mice",
+     "quote": "The combination of eBRIC and sDTZ allowed digitalization at a frequency of 10 Hz, which has not been achieved in previous studies",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The Figure 5 camera recordings are not in the dandiset, so their frame rate cannot be read.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-double-bric",
+     "statement": "Under the same footshock condition, the eBRIC response in the BLA is nearly twice that of BRIC in the authors' earlier experiments.",
+     "source": "Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Discussion, paragraph 2",
+     "quote": "Compared to prior experiments with BRIC under the same stimulation condition, the response magnitude of eBRIC has nearly doubled",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Neither the eBRIC footshock data of Figure 5 nor the earlier BRIC data are in the dandiset; with the dataset's side missing, the outside BRIC data were not looked for.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1a-lysate-18fold",
+     "statement": "After three rounds of directed evolution, eBRIC shows an 18.2-fold Ca2+-induced increase in bioluminescence (39 uM Ca2+ against no Ca2+) in bacterial cell lysates.",
+     "source": "Results, Engineering and Characterization of eBRIC In Vitro, paragraph 2; Figure 1A",
+     "quote": "Through three rounds of directed evolution, we successfully generated a drastically enhanced BRIC (eBRIC) variant with an 18.2-fold Ca 2+ -included bioluminescence increase in cell lysates",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Bacterial lysate screening data are not in the dandiset, which holds Figure 4 only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-mutations",
+     "statement": "eBRIC carries five mutations from BRIC, two in teLuc, one in mScarlet-I and two in the CaM-M13 region, and the two CaM-M13 mutations are mainly responsible for the larger response.",
+     "source": "Results, Engineering and Characterization of eBRIC In Vitro, paragraph 3; Figure 1A to 1C",
+     "quote": "During this process, five mutations were identified ... Notably, the two mutations in the CaM-M13 region are primarily responsible for the observed response enhancement",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The sequences and mutagenesis data are not in the dandiset; the sequences are at Addgene and in Figure S1, which are not measurements of this dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-purified-response",
+     "statement": "In purified protein, the response between 65 nM and 1.35 uM Ca2+ rises from 1.7-fold (BRIC) to 4.6-fold (eBRIC), and the change between 0 and 39 uM Ca2+ from 6.5-fold to about 17-fold.",
+     "source": "Results, Engineering and Characterization of eBRIC In Vitro, paragraph 4; Figure 1D",
+     "quote": "From BRIC to eBRIC, the response between 65 nM and 1.35 \u03bcM of Ca 2+ increased from 1.7-fold to 4.6-fold, while the overall Ca 2+ -induced change between 0 and 39 \u03bcM of free Ca 2+ increased from 6.5-fold to \u223c17-fold",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Purified protein data are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-kd",
+     "statement": "The apparent Kd of eBRIC for Ca2+ is 2.3 uM with a Hill coefficient of 1.3, from a four-parameter Hill fit to bioluminescence at 600 nm (3 technical replicates); BRIC's was 133 nM.",
+     "source": "Figure 1E legend; Results, Engineering and Characterization of eBRIC In Vitro, paragraph 4",
+     "quote": "A four-parameter Hill equation was used to fit the data to determine the dissociation constant ( K d = 2.3 \u03bcM and Hill coefficient = 1.3)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Ca2+ titration data are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lysate-brightness",
+     "statement": "In bacterial lysates, eBRIC is dimmer than BRIC in the Ca2+-free state and brighter in the Ca2+-bound state.",
+     "source": "Results, Engineering and Characterization of eBRIC In Vitro, paragraph 2; Figure S2",
+     "quote": "Compared to BRIC, eBRIC displayed reduced brightness in the Ca 2+ -free state but enhanced brightness in the Ca 2+ -bound state",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Lysate brightness data (Figure S2) are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-hela-5fold",
+     "statement": "In HeLa cells stimulated with 20 uM histamine, eBRIC reports Ca2+ oscillations, and its maximal change (dBL/BL0) is nearly 5-fold that of BRIC (33 eBRIC and 34 BRIC cells, unpaired two-tailed t-test).",
+     "source": "Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons, paragraph 1; Figure 2A and 2B",
+     "quote": "Comparing this to BRIC at identical conditions, the magnitude of the change (\u0394BL/BL 0 ) was nearly 5-fold higher",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "HeLa imaging data are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-hek-3p5fold",
+     "statement": "In HEK 293T cells, 10 uM acetylcholine gives a 3.5-fold (dBL/BL0) eBRIC bioluminescence increase (20 cells).",
+     "source": "Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons, paragraph 1; Figure 2C",
+     "quote": "We observed a robust 3.5-fold (\u0394BL/BL 0 ) bioluminescence increase",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "HEK 293T imaging data are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-neurons-7p3fold",
+     "statement": "In cultured primary mouse neurons, high K+ depolarization gives a 7.3-fold (dBL/BL0) increase in eBRIC bioluminescence, 5.6 times the response of BRIC (24 eBRIC and 17 BRIC cells, unpaired two-tailed t-test).",
+     "source": "Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons, paragraph 1; Figure 3B",
+     "quote": "high K + depolarization induced a 7.3-fold increase (\u0394BL/BL 0 ) in eBRIC bioluminescence, resulting in a 5.6-fold increase in responsiveness from BRIC",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Primary neuron imaging data are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cell-brightness",
+     "statement": "In HeLa cells eBRIC is dimmer than BRIC in the Ca2+-free state and about twice as bright after histamine stimulation, with a similar trend in primary neurons.",
+     "source": "Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons, paragraph 2; Figure S2",
+     "quote": "eBRIC exhibited reduced brightness in the Ca 2+ -free state but demonstrated approximately twice the brightness of BRIC after stimulation. A similar trend was observed in primary neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Cell brightness data (Figure S2) are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "hek-spectrum",
+     "statement": "The emission spectrum of eBRIC in HEK 293T cells closely resembles that in lysates and as purified protein, so expression in mammalian cells does not change BRET efficiency.",
+     "source": "Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons, paragraph 2; Figure S3",
+     "quote": "The spectral profile closely resembled that of eBRIC in lysates and as a purified protein, suggesting that expression in mammalian cells does not alter the BRET efficiency",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Spectral data (Figure S3) are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table-s1-fold-gains",
+     "statement": "In physiologically stimulated live cells, eBRIC is 4.5- to 5.6-fold more responsive than BRIC and 7.4- to 18-fold more responsive than Orange CaMBIs.",
+     "source": "Discussion, paragraph 1; Table S1",
+     "quote": "Compared to Orange CaMBIs, we gained 7.4- to 18-fold increase in Ca 2+ responsiveness using the new eBRIC Ca 2+ sensor in physiologically stimulated live cells ( Table S1 ). Compared to our previously reported BRIC sensor, eBRIC is 4.5- to 5.6-fold more responsive",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The cell data behind Table S1 are not in the dandiset, so the outside Orange CaMBI values were not looked for.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds one mouse (sub-582364L); the Methods report six mice for the cortical recordings (\"C57BL/6J mice (n = 6)\"). The one mouse is taken to be the representative mouse of Figure 4D.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The description says the dandiset includes \"the python scripts used for analysis and for figure generation\" of Figure 4; the published version holds only the 35 NWB files.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The PMT recordings of 2025-05-31 have no stimulus table or events. The stimulus times are recorded only as image channel 1 (a TwoPhotonSeries described as \"Imaging data acquired using ScanImage for Channel 1\"), whose 5 s pulses match the stimulation trains; nothing says so. No file records which of the two electrodes or which current (2 or 4 mA) each session used, so the four conditions of Figure 4D cannot be identified.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The channels are not described. No file says which detector or filter each of the four ScanImage channels is; every imaging plane has indicator and location \"unknown\" and no emission wavelength, and every session description is empty. From the images, channel 2 is green (FITC-dextran), channels 3 and 4 red, and channel 4 the one without green, consistent with the 645/65 filter of the Methods.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The three 2025-04-07 movies are stored as TwoPhotonSeries described as \"Imaging data from two-photon excitation microscopy\", but they are 40 Hz camera movies whose frames cycle through four exposure levels and whose contrast maps show the vessel tree, consistent with multi-exposure laser speckle imaging (Figure 4C). They carry no stimulus times.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The stated pixel size of the ScanImage series (grid_spacing 0.028125 um for 512 pixels and 0.0140625 um for 1024 pixels) gives a field of 14.4 um, about one neuron, while the stack of cells shows on the order of a hundred cell bodies and the wide field a whole vessel tree; the stated size is likely a unit or scale error.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The dates of surgery and virus injection are not recorded (only the date of birth, 2024-10-29), so the paper's \"three months after surgery\" for the expression images cannot be checked; the stacks were taken 63 days after the first recording through the window.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Two of the six PMT recordings of 2025-05-31 (14:42 and 14:46) have no stimulus pulses; the paper does not mention unstimulated recordings and the files do not say what they are. The bioluminescence level rises within them and over the day (channel 4 from about 352 to about 402).",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the first run (the executed notebook with the conclusions and summary removed, the helper module and the claims file), the paper under paper/, and the archive's asset metadata. The verifier did not have the attempt record.",
+     "agreed": 19,
+     "of": 21,
+     "disagreements": [
+      {
+       "claim": "fig4d-4ma-single-trials",
+       "outcome": "reproduced",
+       "reason": "In the assumed 4 mA sessions 100% of trials are detected under both windows, k = 2 and k = 3, on both channels, and the fraction stays above half under 5 of the 6 ways of choosing the two 4 mA sessions; the exception (0.278) makes the two weakest sessions the 4 mA ones, which contradicts the paper. The verifier gives it as reproduced, conditional on the unverified session-to-current assumption and on fig4d-evoked-increase, which is blocked."
+      },
+      {
+       "claim": "fig4d-electrode-timing",
+       "outcome": "partially_reproduced",
+       "reason": "At 2 mA, 145053 has both the later peak and the later rise, which formally meets the criterion, but the earlier rise of 0.005 s comes from 150418, whose response does not pass every reading of fig4d-evoked-increase; its averaged trace is already above half its peak at onset, possibly carried over from earlier trials, so this is not a rise after onset. At 4 mA the peak times tie at 3.714 s and no electrode is later on both measures."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the revised run (with its conclusions and summary, including the figures of the expression stacks, the speckle time course and the trial traces), the helper module, the claims file, the paper under paper/, and the attempt record.",
+     "agreed": 21,
+     "of": 21,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. For Figure 4D, which response window, baseline and test establish the \"clear increases\"? With the 5 s before onset as baseline, the 15:04 session's increase is significant with a 0-5 s window by a one-sample t-test (p = 0.046) but not by a Wilcoxon test (p = 0.116), nor with a 0-10 s window (p 0.21 and 0.25), so whether all four conditions show an increase depends on the choice.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. Which of the four stimulated sessions of 2025-05-31 is which electrode (region 1 or 2) and which current, and which ScanImage channel is the 645/65 PMT? This attempt assumed one condition per session, the two sessions with the larger responses (14:55 and 14:59) as 4 mA, and channel 4.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. When was the whisker pad stimulated during the three speckle movies of 2025-04-07, and how was the speckle response of Figure 4C measured? The files record no stimulus times.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "tian-2025",
+   "type": "reproduction",
+   "title": "eBRIC bioluminescence in mouse somatosensory cortex (Tian et al. 2025, Figure 4)",
+   "description": "Tests the in vivo cortical findings of Tian, Zhang, Du, Huang, Bizimana, Nishimura and Ai (2025) on dandiset 001559, which holds the raw data of Figure 4 for one mouse, the two-photon stacks of eBRIC expression, the laser speckle movies and the PMT recordings of bioluminescence during whisker pad stimulation. It checks the expression images, the steadiness of the baseline, the evoked increases, single-trial detection and the timing of the responses to the two electrodes. The in vitro, cell and awake BLA experiments of the other figures are not in the dandiset.",
+   "datasets": [
+    "dandi:001559"
+   ],
+   "papers": [
+    "10.1021/acssensors.5c01093"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_tian_2025.ipynb",
+     "title": "Reproducing Tian et al. (2025), Figure 4, from dandiset 001559",
+     "executed": "notebooks/tian-2025/reproduce_tian_2025.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 101,
+   "hashed": false
+  }
+ ],
+ "badge": {
+  "text": "1 finding reproduced",
+  "reproduced": 1,
+  "papers": [
+   {
+    "doi": "10.1021/acssensors.5c01093",
+    "key": "tian-2025",
+    "byline": "Tian et al. 2025",
+    "title": "An Enhanced Red Bioluminescent Indicator for Responsive Detection of Physiological Calcium Dynamics in Cells and Mice",
+    "relation": "primary",
+    "reproduced": 1,
+    "url": "https://encorescience.org/papers/tian-2025/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/dandi/001559/",
+  "svg": "https://encorescience.org/badge/dandi/001559.svg",
+  "alt": "Encore: 1 finding reproduced, from DANDI:001559"
+ }
+}
