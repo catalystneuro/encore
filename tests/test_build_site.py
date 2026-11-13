@@ -317,6 +317,36 @@ def test_a_deprecated_attempt_counts_for_nothing():
     assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
 
 
+def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
+    data, out = built
+    papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
+    seen = none = 0
+    for orcid, author in list(site.author_index(data).items())[:400]:
+        counts = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in author["papers"]) for k in site.OUTCOMES}
+        every = site.author_outcomes(data, author)
+        line, card = (out / "badge" / "authors" / f"{orcid}-{kind}.svg" for kind in ("outcomes", "card"))
+        api = json.loads((out / "api" / "authors" / f"{orcid}.json").read_text())
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["outcome_counts"] == (counts if every else None)
+        assert api["badges"] == {"reproduced": (site.author_badge(data, author) or {}).get("svg"),
+                                 "outcomes": every["svg_outcomes"] if every else None, "card": every["svg_card"] if every else None}
+        if not every:
+            none += 1
+            continue
+        seen += 1
+        assert every["counts"] == counts and every["claims"] == sum(counts.values())
+        # Every outcome with a count is on both, by its count and a word for it; one with none is left out.
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert (f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg) == bool(n)
+                assert (f'fill="{site.OUTCOME_FILL[k]}"' in svg) == bool(n)
+            assert site.e(every["alt"]) in svg
+        assert site.e(author["name"]) in card.read_text() and card.read_text().count("<rect") == 1 + sum(1 for n in counts.values() if n)
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+    assert seen and none
+
+
 def test_a_deprecated_attempt_is_marked_on_its_page(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
@@ -1090,7 +1120,9 @@ def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_ver
         assert api["badge"] == badge and api["orcid"] == orcid and api["name"] == author["name"]
         assert [q["key"] for q in api["papers"]] == [q["key"] for q in author["papers"]]
         assert [d["key"] for d in api["datasets"]] == [d["key"] for d in author["datasets"]]
-        assert ("Badge for this page" in page) == bool(badge)
+        # The section is there when the person has any badge: this one, or those with all the outcomes.
+        assert ("for this page</h2>" in page) == bool(badge or site.author_outcomes(data, author))
+        assert (site.e(f'{orcid}.svg" alt=') in page) == bool(badge)
         if not badge:
             without += 1
             continue
