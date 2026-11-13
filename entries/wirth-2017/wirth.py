@@ -28,21 +28,33 @@ Where the parameters come from:
 - Skaggs information in bits per spike and the sparsity index as written in the Methods
   (Information Content; Sparsity index). Normalized values subtract the mean of 999 surrogates.
 - Surrogates (Methods, Permutation statistics): the recording time of the new-maze session is
-  cut into 5 s chunks that are "randomly shifted". Reading "permute" (claims file, Method W
-  (a)): the order of the chunks of the spike train is permuted. Reading "shift" (Method W
-  (b)): each chunk is moved by an independent random offset, circularly. The p-value is
-  bilateral, twice the smaller tail fraction of the rank among 1,000 (claims file, a standard
-  choice); one-tailed fractions are kept for the claims that count each tail.
+  cut into 5 s chunks that are "randomly shifted", which "decorrelated the spikes from the
+  animal's behavior while essentially preserving the structure of spike trains". Reading
+  "permute" (claims file, Method W (a)): the order of the chunks of the spike train is
+  permuted. Reading "shift" (Method W (b), each chunk displaced by an independent random time
+  shift): the spikes of each chunk are shifted circularly within the chunk by an independent
+  random offset, so that chunks do not overlap and every frame keeps one source. (Moving each
+  chunk by an offset over the whole session, as the first version did, piles chunks on top of
+  each other and leaves frames empty; on a train without any coding its surrogates had higher
+  IC than the train itself, so it was replaced; an assumption.) The p-value is bilateral,
+  twice the smaller tail fraction of the rank among 1,000 (claims file, a standard choice); the
+  upper and lower tail fractions are kept as well.
 - Trial windows (claims file, Method W): reading "full", trial start (code 21) to the next
   trial start, so the passive return after the trial belongs to it; reading "toreward",
-  trial start to reward (code 11).
+  trial start to reward (code 11), no return; reading "toreward_ret", trial start to reward
+  plus the return (tags 5xy) that follows the trial, which drops the time from reward to the
+  start of the return (the claims file's reading (b), "from trial start to reward, return
+  paths taken from the returns that follow correct trials", read with the returns kept).
 - Maze centre: transition tags 2xy and 3xy (rotations at the centre); return paths: tags 5xy
   (descriptor, transition tags). Entry paths: tags 10x, the path x being the landmark identity.
 - State-space selectivity (Methods, State-space selectivity): 3.6 degree bins, three move
-  types, at least 400 ms in each of at least two types. The three types are read as the 36
-  degree alignment (tags 2xy), a 72 degree rotation to the right and one to the left (tags
-  3xy, split by the sign of the change of camera orientation); an assumption, as the paper
-  does not name them.
+  types, at least 400 ms in each of at least two types. The paper does not name the three
+  moves; three typings are run (an assumption each): "arc", the 36 degree alignment (tags
+  2xy), a 72 degree rotation to the right and one to the left (tags 3xy, split by the sign of
+  the change of camera orientation); "align_dir", the 36 degree alignment to the right, to the
+  left (2xy split by sign) and the 72 degree rotation (3xy, either way); "tag", each
+  transition tag of the state-space graph (2xy or 3xy) as its own move, the edges of Fig 1F
+  and Fig 4A ("compared on the different state-space transitions").
 """
 
 from __future__ import annotations
@@ -122,6 +134,7 @@ def reduce_file(name, d, maze="newallo"):
     t0 = np.nanmin(t0)
     t1 = np.nanmax(np.where(cm[:, 1:] > 0, tm[:, 1:], np.nan))
     keep = (t60[:, 0] >= t0) & (t60[:, 0] <= t1 + 1.0) & np.isfinite(t60[:, 10])
+    out["t60_shape_raw"] = t60.shape
     t60 = t60[keep]
     t60 = t60[np.argsort(t60[:, 0], kind="stable")]
     out["t60"] = t60.astype(np.float64)
@@ -196,10 +209,14 @@ def frame_table(c, reading="full"):
         if reading == "full":
             nxt = ts[i + 1] if i + 1 < n and np.isfinite(ts[i + 1]) else tr["t_end"][i] + 1.0
             end = nxt
-        else:  # "toreward"
+        else:  # "toreward" and "toreward_ret"
             end = tr["t_reward"][i]
             if not np.isfinite(end):
                 continue
+            if reading == "toreward_ret":
+                nxt = ts[i + 1] if i + 1 < n and np.isfinite(ts[i + 1]) else tr["t_end"][i] + 1.0
+                tag = c["t60"][:, 10]
+                trial[(t >= tr["t_end"][i]) & (t < nxt) & (tag >= 500) & (tag < 600)] = i
         trial[(t >= ts[i]) & (t < end)] = i
     ok = (trial >= 0) & tr["correct"][np.maximum(trial, 0)]
     return trial, ok
@@ -313,14 +330,21 @@ def surrogate_counts(s, rng, reading, n=N_SURR, batch=111):
                 perm = rng.permutation(nch)
                 body = s[: nch * L].reshape(nch, L)[perm].ravel()
                 out[i] = np.concatenate([body, s[nch * L:]])
-            else:  # "shift": each chunk moved by an independent random offset, circularly
-                src = np.arange(T)
-                ch = np.minimum(src // L, nch)  # the remainder is one more chunk
-                offs = rng.integers(0, T, size=nch + 1)
-                tgt = (src + offs[ch]) % T
-                out[i] = np.bincount(tgt, weights=s, minlength=T)
+            else:  # "shift": each chunk shifted circularly within itself by its own offset
+                out[i] = s[shift_index(T, L, rng)]
         done += k
         yield out
+
+
+def shift_index(T, L, rng):
+    """Source frame of each frame when every L-frame chunk (and the shorter remainder) is
+    rotated by an independent random offset within itself."""
+    src = np.arange(T)
+    ch = src // L
+    start = ch * L
+    length = np.minimum(L, T - start)
+    offs = rng.integers(0, L, size=ch[-1] + 1)
+    return start + (src - start + offs[ch]) % length
 
 
 def tail_p(actual, surr):
@@ -345,28 +369,44 @@ def binom_upper(k, n, p):
 
 # ---------------------------------------------------------------- per-cell analysis
 
+WINDOWS = ("full", "toreward", "toreward_ret")
+TYPINGS = ("arc", "align_dir", "tag")
 SHIFTS_S = (-5.0, -2.0, -1.0, -0.5, -0.25, 0.0, 0.25, 0.5, 1.0, 2.0, 5.0)
 
 
-def turn_types(c):
-    """Per frame: 0 for a 36 degree alignment (tag 2xy), 1 for a 72 degree rotation to the
-    right, 2 to the left (tags 3xy, by the sign of the orientation change over the run of
-    frames carrying the tag), -1 elsewhere. A right turn (code 1) lowers the camera
-    orientation, as the notebook shows from the files."""
+def turn_types(c, typing="arc"):
+    """Per frame, the index of the rotational move at the centre (-1 elsewhere) and the number
+    of move types. "arc": 0 for a 36 degree alignment (tag 2xy), 1 for a 72 degree rotation to
+    the right, 2 to the left (tags 3xy). "align_dir": 0 and 1 for a 36 degree alignment to the
+    right and to the left, 2 for a 72 degree rotation. "tag": one type per transition tag (2xy
+    and 3xy). The side is the sign of the orientation change over the run of frames carrying
+    the tag; a right turn (code 1) lowers the camera orientation, as the notebook shows."""
     tag = c["t60"][:, 10]
     th = c["t60"][:, 3]
-    out = np.full(len(tag), -1)
-    out[(tag >= 200) & (tag < 300)] = 0
+    is2 = (tag >= 200) & (tag < 300)
     is3 = (tag >= 300) & (tag < 400)
-    if is3.any():
-        brk = np.nonzero(np.diff(np.r_[0, is3.astype(int), 0]))[0]
+    out = np.full(len(tag), -1)
+    if typing == "tag":
+        vals = np.unique(tag[is2 | is3])
+        out[is2 | is3] = np.searchsorted(vals, tag[is2 | is3])
+        return out, max(len(vals), 1)
+    right = np.zeros(len(tag), bool)
+    rot = is2 | is3
+    if rot.any():
+        brk = np.nonzero(np.diff(np.r_[0, rot.astype(int), 0]))[0]
         dth = np.r_[0, (np.diff(th) + 180) % 360 - 180]
         for a, b in zip(brk[::2], brk[1::2]):
             vals = tag[a:b]
             for v in np.unique(vals):  # one run per tag value
                 idx = np.arange(a, b)[vals == v]
-                out[idx] = 1 if dth[idx[1:]].sum() < 0 else 2
-    return out
+                right[idx] = dth[idx[1:]].sum() < 0
+    if typing == "arc":
+        out[is2] = 0
+        out[is3] = np.where(right[is3], 1, 2)
+    else:  # "align_dir"
+        out[is2] = np.where(right[is2], 0, 1)
+        out[is3] = 2
+    return out, 3
 
 
 class Session:
@@ -376,7 +416,7 @@ class Session:
         self.t60 = c["t60"]
         self.tag = c["t60"][:, 10]
         self.coords = space_coords(c)
-        self.tables = {r: frame_table(c, r) for r in ("full", "toreward")}
+        self.tables = {r: frame_table(c, r) for r in WINDOWS}
         self.res = {}
         for r, (trial, ok) in self.tables.items():
             for kind, xy in self.coords.items():
@@ -397,14 +437,15 @@ class Session:
                 best = (k, nb, b, oc, vc, orr, vr)
         _, nb, b, oc, vc, orr, vr = best
         self.cr = {"nb": nb, "bins": b, "occ_c": oc, "val_c": vc, "occ_r": orr, "val_r": vr}
-        # state-space selectivity layout: 3.6 degree bins x 3 move types, centre frames
-        types = turn_types(c)
+        # state-space selectivity layout: 3.6 degree bins x move types, centre frames
         nbin = int(round(360 / SSI_BIN_DEG))
         db = np.clip(np.floor(np.mod(self.t60[:, 3], 360) / SSI_BIN_DEG).astype(int), 0, nbin - 1)
-        col = np.where(self.center & (types >= 0), db * 3 + np.maximum(types, 0), -1)
-        occ = np.bincount(col[col >= 0], minlength=nbin * 3).reshape(nbin, 3) * DT
-        self.ssi = {"col": col, "occ": occ, "nbin": nbin}
-        self.types = types
+        self.ssi = {}
+        for ty in TYPINGS:
+            types, k = turn_types(c, ty)
+            col = np.where(self.center & (types >= 0), db * k + np.maximum(types, 0), -1)
+            occ = np.bincount(col[col >= 0], minlength=nbin * k).reshape(nbin, k) * DT
+            self.ssi[ty] = {"col": col, "occ": occ, "nbin": nbin, "k": k}
         # designs
         self.designs = {}
         for (r, kind), rr in self.res.items():
@@ -416,9 +457,12 @@ class Session:
         self.designs["center_common"] = design(self.center, b, both)
         self.designs["return_common"] = design(self.ret, b, both)
         self.occ_common = (oc[both], orr[both])
-        good = col >= 0
-        self.designs["ssi"] = sparse.csr_matrix(
-            (np.ones(good.sum()), (np.nonzero(good)[0], col[good])), shape=(len(col), nbin * 3))
+        self.ssi_designs = {}
+        for ty, sv in self.ssi.items():
+            col = sv["col"]
+            good = col >= 0
+            self.ssi_designs[ty] = sparse.csr_matrix(
+                (np.ones(good.sum()), (np.nonzero(good)[0], col[good])), shape=(len(col), nbin * sv["k"]))
 
 
 def _occ(sess, key):
@@ -434,9 +478,9 @@ def _occ(sess, key):
 
 def ssi_index(counts, occ):
     """SSI over bins with >= 400 ms in each of >= 2 move types (Methods, State-space
-    selectivity); counts (..., nbin*3)."""
-    nbin = occ.shape[0]
-    cnt = counts.reshape(counts.shape[:-1] + (nbin, 3))
+    selectivity); counts (..., nbin*k), occ (nbin, k)."""
+    nbin, k = occ.shape
+    cnt = counts.reshape(counts.shape[:-1] + (nbin, k))
     good_t = occ >= MIN_BIN_S
     good_b = good_t.sum(1) >= 2
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -457,29 +501,35 @@ def analyse_cell(c, sess, seed):
     keys = [k for k in sess.designs if isinstance(k, tuple)] + ["center", "return"]
     actual = {k: s @ sess.designs[k] for k in keys}
     act_cc = (s @ sess.designs["center_common"], s @ sess.designs["return_common"])
-    act_ssi = s @ sess.designs["ssi"]
+    act_ssi = {ty: s @ dm for ty, dm in sess.ssi_designs.items()}
     for k in keys:
         occ = _occ(sess, k)
         out[f"ic|{k}"] = float(skaggs_ic(actual[k], occ)) if len(occ) else np.nan
         out[f"sp|{k}"] = float(sparsity(actual[k], occ)) if len(occ) > 1 else np.nan
         out[f"nbins|{k}"] = int(len(occ))
+    for r in WINDOWS:
+        out[f"frames|{r}"] = int(sess.tables[r][1].sum())
     oc_c, oc_r = sess.occ_common
     out["corr"] = float(uncentered_corr(act_cc[0] / oc_c, act_cc[1] / oc_r)) if len(oc_c) else np.nan
     out["n_common"] = int(len(oc_c))
-    ssi_a, nb_ssi = ssi_index(act_ssi, sess.ssi["occ"])
-    out["ssi"] = float(ssi_a)
-    out["ssi_bins"] = nb_ssi
+    ssi_a = {}
+    for ty in TYPINGS:
+        a, nb_ssi = ssi_index(act_ssi[ty], sess.ssi[ty]["occ"])
+        ssi_a[ty] = float(a)
+        out[f"ssi|{ty}"] = float(a)
+        out[f"ssi_bins|{ty}"] = nb_ssi
     for sr, sub in (("permute", 1), ("shift", 2)):
         rng = np.random.default_rng([seed, sub])
         surr = {k: [] for k in keys}
-        surr_cc, surr_ssi = [], []
+        surr_cc, surr_ssi = [], {ty: [] for ty in TYPINGS}
         for S in surrogate_counts(s, rng, sr):
             St = S.T
             for k in keys:
                 surr[k].append((sess.designs[k].T @ St).T)
             surr_cc.append(((sess.designs["center_common"].T @ St).T,
                             (sess.designs["return_common"].T @ St).T))
-            surr_ssi.append((sess.designs["ssi"].T @ St).T)
+            for ty, dm in sess.ssi_designs.items():
+                surr_ssi[ty].append((dm.T @ St).T)
         stats = {}
         for k in keys:
             occ = _occ(sess, k)
@@ -494,8 +544,10 @@ def analyse_cell(c, sess, seed):
                 p2, pu, pl = tail_p(a, sv)
                 out[f"{meas}n|{k}|{sr}"] = float(a - sv.mean()) if len(sv) else np.nan
                 out[f"{meas}p|{k}|{sr}"] = float(p2)
+                if meas == "ic":
+                    out[f"icup|{k}|{sr}"], out[f"iclo|{k}|{sr}"] = float(pu), float(pl)
         # sparsity and IC differences, state space minus another space (per trial reading)
-        for r in ("full", "toreward"):
+        for r in WINDOWS:
             st = (r, "state")
             for other in ("position", "direction"):
                 ok_ = (r, other)
@@ -514,12 +566,13 @@ def analyse_cell(c, sess, seed):
             p2, pu, pl = tail_p(out["corr"], cs)
             out[f"corr_up|{sr}"], out[f"corr_lo|{sr}"] = float(pu), float(pl)
             out[f"corrn|{sr}"] = float(out["corr"] - cs.mean()) if len(cs) else np.nan
-        ss, _ = ssi_index(np.vstack(surr_ssi), sess.ssi["occ"])
-        ss = ss[np.isfinite(ss)]
-        if np.isfinite(ssi_a) and len(ss):
-            p2, pu, pl = tail_p(ssi_a, ss)
-            out[f"ssin|{sr}"] = float(ssi_a - ss.mean())
-            out[f"ssi_up|{sr}"], out[f"ssi_lo|{sr}"] = float(pu), float(pl)
+        for ty in TYPINGS:
+            ss, _ = ssi_index(np.vstack(surr_ssi[ty]), sess.ssi[ty]["occ"])
+            ss = ss[np.isfinite(ss)]
+            if np.isfinite(ssi_a[ty]) and len(ss):
+                p2, pu, pl = tail_p(ssi_a[ty], ss)
+                out[f"ssin|{ty}|{sr}"] = float(ssi_a[ty] - ss.mean())
+                out[f"ssi_up|{ty}|{sr}"], out[f"ssi_lo|{ty}|{sr}"] = float(pu), float(pl)
     # clock check: state-space IC with the spikes shifted in time
     key = ("full", "state")
     occ = _occ(sess, key)
@@ -590,9 +643,14 @@ def anova_two(two):
         warnings.simplefilter("ignore")
         fit = ols("rate ~ C(lm) * C(rd)", data=two).fit()
         tab = sm.stats.anova_lm(fit, typ=2)
+        # type III, MATLAB anovan's default, with sum-to-zero contrasts
+        fit3 = ols("rate ~ C(lm, Sum) * C(rd, Sum)", data=two).fit()
+        tab3 = sm.stats.anova_lm(fit3, typ=3)
     return {"p_lm": tab.loc["C(lm)", "PR(>F)"], "p_rd": tab.loc["C(rd)", "PR(>F)"],
             "p_int": tab.loc["C(lm):C(rd)", "PR(>F)"], "F_int": tab.loc["C(lm):C(rd)", "F"],
             "df_int": tab.loc["C(lm):C(rd)", "df"], "df_res": tab.loc["Residual", "df"],
+            "p_lm3": tab3.loc["C(lm, Sum)", "PR(>F)"], "p_rd3": tab3.loc["C(rd, Sum)", "PR(>F)"],
+            "p_int3": tab3.loc["C(lm, Sum):C(rd, Sum)", "PR(>F)"],
             "n_lm": int(two.lm.nunique())}
 
 
@@ -627,6 +685,24 @@ def eye_mean(c, t0, t1, which="mean"):
         v = np.where(np.abs(v) < EYE_RAIL * c["eye_rail"], v, np.nan)
     v = v[np.isfinite(v)]
     return float(v.mean()) if len(v) else np.nan
+
+
+def eye_velocity(c, t0, t1):
+    """Median horizontal eye velocity in [t0, t1), raw file units per second, of the mean of
+    both eyes; saturated samples dropped. The median of the sample-to-sample velocity follows
+    the slow phases of nystagmus and smooth pursuit, as quick phases and saccades are brief."""
+    if c["eye"] is None:
+        return np.nan
+    et = c["eye_t"]
+    i0, i1 = np.searchsorted(et, t0), np.searchsorted(et, t1)
+    if i1 - i0 < 3:
+        return np.nan
+    v = np.vstack([c["eye"]["l_hor"][i0:i1], c["eye"]["r_hor"][i0:i1]]).astype(float)
+    v = np.where(np.abs(v) < EYE_RAIL * c["eye_rail"], v, np.nan)
+    vel = np.diff(v, axis=1) / np.diff(et[i0:i1])
+    vel = np.nanmean(vel, 0)
+    vel = vel[np.isfinite(vel)]
+    return float(np.median(vel)) if len(vel) else np.nan
 
 
 def return_turns(c):
@@ -669,6 +745,8 @@ def behaviour(c):
                     row[f"eye{int(w * 1000)}_{which}"] = eye_mean(c, t - w, t, which)
             for lag in EYE_LAGS:
                 row[f"lag{lag}"] = eye_mean(c, t + lag, t + lag + 0.1)
+            row["vel_0_600ms"] = eye_velocity(c, t, t + 0.6)
+            row["vel_pre500"] = eye_velocity(c, t - 0.5, t)
             i0 = np.searchsorted(c["t60"][:, 0], t)
             i1 = np.searchsorted(c["t60"][:, 0], t + 0.6)
             if i1 < len(c["t60"]):
@@ -685,6 +763,7 @@ def behaviour(c):
     for r in rets:
         for which in ("mean", "l", "r"):
             r[f"eye_{which}"] = eye_mean(c, r["t0"], r["t1"], which)
+        r["vel"] = eye_velocity(c, r["t0"], r["t1"])
     eye_sat = None
     if c["eye"] is not None:
         v = np.concatenate([c["eye"]["l_hor"], c["eye"]["r_hor"]])
@@ -692,12 +771,32 @@ def behaviour(c):
         eye_rng = (float(np.percentile(v, 1)), float(np.percentile(v, 99)))
     else:
         eye_rng = None
-    return {"monkey": c["monkey"], "session": c["session"], "n_trials": len(c["cm"]),
+    # position at each trial start (the end of the start arm) and at reward (end of the chosen arm)
+    pos = {}
+    for nm, tt in (("start", tr["t_start"]), ("reward", tr["t_reward"])):
+        i = np.searchsorted(t60[:, 0], np.where(np.isfinite(tt), tt, t60[0, 0]))
+        i = np.minimum(i, len(t60) - 1)
+        pos[nm] = np.where(np.isfinite(tt)[:, None], t60[i, 1:3], np.nan)
+    nxt = np.r_[tr["t_start"][1:], np.nan]
+    timing = {"reward_to_end": float(np.nanmedian(tr["t_end"] - tr["t_reward"])),
+              "end_to_next_start": float(np.nanmedian(nxt - tr["t_end"]))}
+    return {"monkey": c["monkey"], "session": c["session"], "n_trials": len(c["cm"]), "timing": timing,
+            "pos_start": pos["start"], "pos_reward": pos["reward"],
             "start_arm": tr["start_arm"], "chosen_arm": tr["chosen_arm"],
             "correct": tr["correct"], "lc": c["lc"], "learningtrial": c["learningtrial"],
             "turns": turns, "returns": rets, "abscissa_at_events": clock, "eye_saturated": eye_sat, "eye_range": eye_rng,
             "has_eye": c["eye"] is not None,
             "eye_scale": None if c["eye"] is None else ("+-5000" if c["eye_rail"] > 10 else "+-5")}
+
+
+def entry_headings(t60):
+    """Circular mean camera orientation (degrees, 0 to 360) on each entry path (tags 10x)."""
+    tag, th = t60[:, 10], np.deg2rad(t60[:, 3])
+    out = {}
+    for x in np.unique(tag[(tag >= 100) & (tag < 200)]).astype(int):
+        m = tag == x
+        out[x % 100] = int(round(np.rad2deg(np.arctan2(np.sin(th[m]).mean(), np.cos(th[m]).mean())) % 360))
+    return out
 
 
 def file_meta(name, d, c):
@@ -714,6 +813,14 @@ def file_meta(name, d, c):
                     "y_min": float(np.nanmin(t60[:, 2])), "y_max": float(np.nanmax(t60[:, 2])),
                     "theta_min": float(np.nanmin(t60[:, 3])), "theta_max": float(np.nanmax(t60[:, 3])),
                     "abscissa_min": float(np.nanmin(t60[:, 4])), "abscissa_max": float(np.nanmax(t60[:, 4])),
+                    "abscissa_over_1": float(np.mean(t60[:, 4] > 1.001)),
+                    "t60_cols": int(c["t60_shape_raw"][1]), "t60_rows_raw": int(c["t60_shape_raw"][0]),
+                    "ss_angle_min": float(np.nanmin(t60[:, 6])), "ss_angle_max": float(np.nanmax(t60[:, 6])),
+                    "ss_radius_min": float(np.nanmin(t60[:, 7])), "ss_radius_max": float(np.nanmax(t60[:, 7])),
+                    "tag_next_min": float(np.nanmin(t60[:, 8])), "tag_next_max": float(np.nanmax(t60[:, 8])),
+                    "tag_min": float(np.nanmin(t60[:, 10])), "tag_max": float(np.nanmax(t60[:, 10])),
+                    "tag_hundreds": tuple(sorted(set((t60[:, 10] // 100).astype(int)))),
+                    "entry_headings": entry_headings(t60),
                     "has_eye": c["eye"] is not None, "eye_units": c["eye_units"],
                     "eye_dt_ms": float(np.median(np.diff(c["eye_t"])) * 1000) if c["eye"] is not None else np.nan,
                     "spikes_in_window": int(np.sum((c["spikes"] >= c["window"][0]) & (c["spikes"] <= c["window"][1]))),
@@ -747,6 +854,8 @@ def collect(dataset="hc-12", limit=None, log=print):
         out.update({f"lm2_{k}": v for k, v in a2.items()})
         out["lm1a_p"], out["lm1a_groups"] = anova_one(onea)
         out["lm1b_p"], out["lm1b_groups"] = anova_one(oneb)
+        out["n_entry_frames_abscissa_over_1"] = int(np.sum(np.isfinite(c["t60"][:, 4]) & (c["t60"][:, 4] > 1.001)
+                                                          & (sess.tag >= 100) & (sess.tag < 200)))
         out["n_laps"] = int(two.trial.nunique())
         two, onea, oneb, _ = landmark_tables(c, s, sess, laps="all")
         a2 = anova_two(two) or {}
