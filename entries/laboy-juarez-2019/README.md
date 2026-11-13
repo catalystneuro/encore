@@ -16,12 +16,15 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The unit counts of all three experiments match the paper. Single-whisker tuning, the preference
-for CW-SW sequences, sublinear integration with near-linear best combinations, the inbound order
-preference and the awake results mostly reproduce. The shuffle test of combination selectivity
-finds more selective response sets than the paper (318 of 463, against 187 of 451) and, on a
-null built from the real data, gives p < 0.05 for a quarter of the sets; every claim on the
-selective group is also run on the 187 sets with the smallest p, which changes the outcome
-of four claims, and of a fifth under one reading.
+for CW-SW sequences and sublinear integration with near-linear best combinations mostly
+reproduce, as do six of the eight testable awake claims. Of the experiment 2 claims on sequence
+order, the dt tuning and the PCA claims are partially reproduced, and the order decoders are not
+reproduced. The shuffle test of combination selectivity finds more selective response sets than
+the paper (318 of 463, against 187 of 451) and, on a null built from the real data, gives
+p < 0.05 for a quarter of the sets. Every claim on the selective group is also run on the 187
+sets with the smallest p, which changes the outcome of four claims, and of a fifth under one
+reading, and on the 162 sets selected after calibrating the p-values on that null, which changes
+the outcome of three claims, and of a fourth under one reading.
 The dt smoothing classifies curves differently, and the population decoders of combination identity
 and order fall short of the paper's accuracies. The paper's analysis code is available only on
 request, so these methods rest on the Methods text. The behavioral claim is blocked: the files
