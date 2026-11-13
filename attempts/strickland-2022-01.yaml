@@ -1,0 +1,451 @@
+schema_version: 3
+id: strickland-2022-01
+datasets:
+- archive: crcns
+  id: bst-3
+  version: unversioned
+  doi: 10.6080/K0Q23XGR
+  relation: primary
+paper: doi:10.1038/s41467-022-34021-1
+date: 2026-11-13
+entry: strickland-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43342645589
+inputs:
+- what: The paper's cue and outcome cluster membership (Source Data sheets Figure 2b k1 to k21 and
+    Figure 4b k1 to k11), matched to the data set's units by their firing rows, and the paper's own
+    matrices and per-unit values used as reference (Figures 1c, 2c, 2d, 2e, 2f, 3b to 3e, 4c, 4e, 4f,
+    5b to 5e), from the Source Data workbook 41467_2022_34021_MOESM4_ESM.xlsx (MD5
+    4df716fd6739ee3de3b0df81c4175be8), streamed from the publisher.
+  source: doi:10.1038/s41467-022-34021-1 (supplementary file MOESM4)
+outcomes:
+- claim: source-data-cluster-link
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:source-data-cluster-link
+  measured:
+  - 1812
+  - 1812
+  notes: Under the normalization of the paper's cubeScript.m (the data set's cube), every one of the
+    1812 cue rows and 1812 outcome rows of the Source Data cluster sheets equals exactly one unit's
+    row (largest difference 5e-15), so 100% match and every unit gets one cue and one outcome
+    cluster, with the sizes the claims file lists. Under the claims file's four readings (n-a, n-b,
+    w-a, w-b, computed from the spike times in 250-ms bins) at most 2 rows match within 0.01, though
+    1664 cue rows and 650 to 1728 outcome rows correlate above 0.99 with a unit.
+  deviations:
+  - The rows that match are normalized as cubeScript.m does (firing in 1-s and 500-ms bins over the
+    40 s from 10 s before cue onset, minus the trial's 2-s pre-cue rate rounded down, z-scored over
+    all trials and bins at each bin size), a detail the Supplementary Methods describe differently
+    (250-ms bins averaged, other windows) and the paper's code settles. The claims file's four
+    readings are shown and none matches.
+- claim: fig1c-suppression-order
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig1c-suppression-order
+  measured:
+  - 147.92
+  - 0.914
+  - 0.709
+  - 0.230
+  notes: 73 sessions. With empty trials set to 1 (cubeScript.m) the means are 0.914, 0.709 and 0.230,
+    equal to Source Data Fig. 1c, and every session's values equal a Source Data row. Cue x sex
+    mixed ANOVA (a-a) F(2,142) = 147.9, p < 1e-30. With empty trials set to 0 (sr-a) F = 145.6, left
+    out (sr-b) F = 150.4. The repeated-measures reading (a-b) gives F(2,144) = 116.2. 31 of 1168 trials
+    had no pokes in either period.
+  deviations:
+  - Empty trials are set to 1 as cubeScript.m does (poke.SR(isnan(poke.SR)) = 1), a detail the
+    Methods leave open; the claims file's sr-a and sr-b are shown and give the same order and an F
+    within tolerance.
+- claim: figs2-each-rat-discriminates
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:figs2-each-rat-discriminates
+  notes: Under reading c-c all 8 rats with at least 3 sessions have danger and uncertainty
+    suppression intervals that exclude zero. Under c-a 7 of 8 (subject 9's uncertainty minus safety
+    interval is -0.06 to 0.28) and under c-b 5 of 8. Subjects 4 and 6 (2 sessions and 1) have means
+    ordered danger > uncertainty > safety.
+  deviations:
+  - The legend does not say which quantity's interval is tested; three readings are run and the
+    claim holds under c-c.
+- claim: units-sessions-subjects
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:units-sessions-subjects
+  measured:
+  - 1812
+  - 965
+  - 73
+  - 192
+  - 328
+  - 141
+  - 32
+  - 52
+  - 43
+  - 116
+  - 195
+  - 409
+  - 304
+  notes: Subjects mapped from animal ids as cueAnalysis.m does (js10, 11, 13, 14, 15, 21, 22, 24, 25,
+    27 to 1 to 10; js10, 11, 13 and 27 female). All counts equal the paper's. Supplementary Table 1
+    lists 75 sessions; the data set has 7 for subject 5 (8 listed) and 9 for subject 10 (10 listed).
+- claim: fig1e-regions
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig1e-regions
+  measured:
+  - 21
+  - 236
+  - 208
+  - 179
+  - 147
+  - 145
+  notes: 21 regions hold units after the scripts' merges (region 21, CIC, into DpWh; 24 into x/scp),
+    and every region's count equals the sum of Source Data Fig. 3e left.
+  deviations:
+  - Region names and merges come from cubeScript.m and cueAnalysis.m; the cube's own region strings
+    are MATLAB string objects that cannot be read outside MATLAB.
+- claim: fig2b-cue-clusters
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig2b-cue-clusters
+  measured:
+  - 24.0
+  - 218.5
+  - 75.0
+  notes: Medians over 20 k-means seeds (k-means++ seeding, one replicate) of the smallest, largest
+    and median cluster sizes are 24.0, 218.5 and 75.0, all within tolerance (the median near the
+    lower edge, 74.7). Single seeds give 14 to 38, 171 to 274 and 63 to 93. The paper's clustering has
+    a summed squared distance of 11219, inside the seeds' range (11135 to 11336).
+  deviations:
+  - The script seeds MATLAB's generator (rng(1)), which cannot be repeated in Python; 20 seeds are
+    used, as the claims file's standard choice says.
+- claim: fig2c-cue-pc1-ordered
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig2c-cue-pc1-ordered
+  measured: 29.73
+  notes: PC1 of the 1812 x 42 cue matrix (cueAnalysis.m) explains 29.73%; mean weights over the cue
+    are danger 0.266, uncertainty 0.128, safety 0.006. The claims file's 47.1% on the Source Data
+    inset is explained; the inset's 1812 rows equal the units' rows with the pre-cue baseline
+    subtracted (the heat plot), not the matrix PCA was run on. Per animal PC1 explains 19.2 to 43.0%
+    and is ordered in 9 of 10 animals (subject 9 has uncertainty 0.139 and safety 0.140).
+- claim: fig2c-pc1-contribution
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig2c-pc1-contribution
+  measured:
+  - 505
+  - 0.1214
+  - 0.1129
+  notes: Under L1 the nine largest contributions per unit are k1 to k9 (505 units) under both s-a and
+    s-b, with k1 and k2 the two largest; s-a, the script's shuffle (each row across its columns),
+    gives every cluster's Source Data value within 0.0003. Under L2 (best of 20 k-means runs, numbered
+    by contribution) the nine largest hold 411 units, outside 505 +- 50.5, and share 343 units with
+    L1's k1 to k9. The share of each animal's units in k1 to k9 ranges from 0.078 (subject 7) to
+    0.415 (subject 2).
+- claim: fig2d-danger-latency
+  outcome: not_reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig2d-danger-latency
+  measured: 0.067
+  notes: With the latency found within the 10-s cue as the Supplementary Methods say, the correlation
+    across clusters is negative but weak and not significant (l-a r = -0.260, R2 = 0.067, p = 0.26;
+    l-b R2 = 0.065, p = 0.26; with cluster totals, c-b, R2 = 0.122 and 0.104). Units of k1 to k9 do
+    have shorter latencies than k10 to k21 (3571 against 4590 ms, l-a). 1778 units have a latency;
+    Source Data lists 1498. The latencies differ from the paper's (k1 mean 4046 ms here, 182 ms in
+    Source Data). A search from 2 s before onset keeping latencies after onset (a variant outside the
+    criterion) gives 1458 units, k1 327 ms, 413 values equal to Source Data values, and R2 = 0.640
+    (c-a, p = 1.4e-05). On the Source Data latencies R2 is 0.508 (c-a) and 0.394 (c-b). The question
+    of the window and of which units have no latency is for the paper's authors (findings).
+  deviations:
+  - Baseline subtraction and z-scoring are affine maps of the summed 1-ms spike counts, which leave a
+    change point in mean unchanged, so l-a is computed on the summed spike counts of the four danger
+    trials. findchangepts is implemented as one change in mean minimizing the residual sum of squares.
+- claim: fig2e-cue-subnetwork
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig2e-cue-subnetwork
+  notes: With r squared, the mean within k1 to k9 is 0.445 (42 columns) and 0.465 (36 columns),
+    against 0.184 and 0.194 between k1 to k9 and k10 to k21, and k3 has the lowest mean with the other
+    eight (0.225, 0.229). With r the within mean is also higher (0.129 against 0.068) but k8 is lowest
+    (-0.516) because k7 and k8 decrease firing; the criterion names both and the claim holds under r
+    squared. The script's 120-column variant gives the same with r squared except that k7 is lowest.
+- claim: fig2f-cue-hubs
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig2f-cue-hubs
+  measured:
+  - 0.462
+  - 0.503
+  notes: With danger firing over 14 intervals and r squared, k2 (0.503) and k1 (0.462) have the two
+    highest means, within tolerance, but k1 does not exceed k3 (p = 0.42) or k4 (p = 0.12), and k2
+    does not exceed k3 (p = 0.014), at 0.05/7 or 0.05/8. With r, k1 and k3 are the two highest. The
+    Source Data per-unit values equal r squared computed on the units' full 42-value cue rows (all
+    three cues); with that measure k1 (0.424) and k2 (0.466) are the two highest and each exceeds
+    all of k3 to k9 at both thresholds. Levene's tests are printed.
+  deviations:
+  - Assumed that the coefficient averaged is r squared, as the Methods call it ("seven separate
+    correlation coefficients for each single unit (R2)") and as Source Data Fig. 2f, headed R2,
+    holds; with r the claim would not be reproduced. The question is in the findings.
+  - The Methods' measure (danger firing) is the test; the Source Data values follow all three cues,
+    shown as a variant.
+- claim: fig2g-cue-anatomy
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig2g-cue-anatomy
+  notes: Every cue cluster spans at least six regions (k3 six). The share in DPG, DpWh, DLPAG, LPAG
+    and VLPAG is 0.436 (220/505) in the subnetwork and 0.612 (41/67) in k1 and k2, against 0.340
+    (445/1307) in the supranetwork.
+- claim: fig3a-cluster-signals
+  outcome: partially_reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig3a-cluster-signals
+  notes: The script's regression (r-a with an intercept) gives betas equal to Source Data Fig. 3b
+    middle. Two of four shapes hold under every reading; k5 peaks in the first cue second and k15 in
+    the first second after the cue. K10's first cue second (0.77) is below half its maximum (1.69),
+    so it is not sustained by the criterion's rule, and k6 peaks in cue second 5 (1.02) with its first
+    cue second (0.60) above half that.
+- claim: fig3b-signal-pca
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig3b-signal-pca
+  measured:
+  - 62.73
+  - 26.21
+  notes: The recomputed matrix equals Source Data Fig. 3b middle and gives 62.73% and 26.21%, with all
+    shape conditions, also with the pre-cue baseline subtracted. Readings r-b and i-b give 72.00 and
+    15.79%, 57.07 and 27.94%, and 66.16 and 21.37%; L2 gives 63.08 and 25.04%.
+  deviations:
+  - The regression is the script's (cluster mean firing, mean member suppression ratio, with an
+    intercept, cueAnalysis.m), which the Methods leave open.
+- claim: fig3c-subnetwork-lesion
+  outcome: partially_reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig3c-subnetwork-lesion
+  notes: With the script's lesion (s-c, giving 67.14 and 26.00% as the Source Data matrix does) PC1's
+    mean behaviour weight over the cue is 0.264 after the subnetwork lesion (96% of the intact 0.274)
+    and PC2's probability weight in the first cue second drops from 0.268 to 0.201, but the behaviour
+    weight is not above the one after the supranetwork lesion (0.268). The paper's own Source Data
+    matrices give the same. Shuffling betas (s-a, s-b) meets every part. v-b gives 53.88 and 25.45%.
+- claim: fig3d-supranetwork-lesion
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig3d-supranetwork-lesion
+  notes: With s-c (61.12 and 29.42%; Source Data 61.11 and 29.46%) PC1's mean behaviour weight is
+    0.268 against 0.274 intact, a small drop, and PC2's absolute probability weights peak in the
+    first cue second and its behaviour weights in the tenth. With s-a and s-b the PC2 part fails.
+- claim: fig3e-network-anatomy
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig3e-network-anatomy
+  measured:
+  - 5.93
+  - 7.41
+  notes: LPAG (7.41) and DPG (5.93) have the two largest differentials, then DRD (3.13) and PMnR
+    (2.53); all 21 equal Source Data Fig. 3e right. Under L2 LPAG and DPG are also the two largest.
+- claim: fig4b-outcome-clusters
+  outcome: partially_reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig4b-outcome-clusters
+  measured:
+  - 29.0
+  - 304.5
+  - 161.0
+  notes: Over 20 seeds the median largest (304.5) and median (161.0) sizes are within tolerance; the
+    median smallest cluster is 29.0, against 46 +- 4.6, and single seeds give 1 to 58.
+  deviations:
+  - The script seeds MATLAB's generator (rng(1)), which cannot be repeated; 20 seeds are used.
+- claim: fig4c-positive-prediction-error
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig4c-positive-prediction-error
+  measured: 17.68
+  notes: PC1 of the 1812 x 80 outcome matrix (outcomeAnalysis.m) explains 17.68%, with mean weights
+    uncertainty shock 0.194, danger 0.071, uncertainty omission -0.005 and safety -0.032. The Source
+    Data Fig. 4c matrix (24.18%) is the heat-plot version with a baseline subtracted. Per animal,
+    uncertainty shock has the largest weight in all 10 and danger exceeds safety in 9.
+- claim: fig4b-phasic-network
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig4b-phasic-network
+  notes: Under L1, k1 to k3 have higher temporal indices than every one of k6 to k9 (t-a and t-b); in
+    the first second k1 uncertainty shock 2.58 > danger 1.59 > 0, k2 danger 2.85 > uncertainty shock
+    1.44 > 0, and k3 below 0 on both. The mean r squared among k1 to k3 is 0.539 against 0.076 with
+    k4 to k11; with r it is -0.329 against 0.008, as k3 is anticorrelated with k1 and k2 (r = -0.85,
+    -0.74), which would make the outcome partially reproduced.
+  deviations:
+  - Assumed that the network correlation is r squared, the coefficient the Methods name ("Pearson's
+    correlation coefficient (R2)") and outcomeAnalysis.m plots (correlationsOutcome squared); the
+    criterion says Pearson correlation. The question is in the findings.
+- claim: fig4b-tonic-network
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig4b-tonic-network
+  notes: Under L1, k6's mean firing to uncertainty shock (-0.88) is below 0 and below its other trial
+    types; k7 (0.82) and k8 (0.31) are above 0 and highest for uncertainty shock, and both are
+    sustained. The mean r squared among k6 to k9 is 0.505 against 0.110 with the other seven; with r
+    it is -0.250 against 0.000 (k6 is anticorrelated with k7 and k8), which would make the outcome
+    partially reproduced.
+  deviations:
+  - Assumed r squared for the network correlation, as for fig4b-phasic-network.
+- claim: fig4e-network-pca
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig4e-network-pca
+  measured:
+  - 37.01
+  - 29.20
+  notes: 265 phasic and 613 tonic units. Phasic PC1 first-second weights are danger 0.410 and
+    uncertainty shock 0.424, each more than twice their late means; tonic PC1 is largest for
+    uncertainty shock (0.202) and negative for safety (-0.078). The Source Data matrices give the
+    same.
+- claim: fig4f-outcome-hubs
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig4f-outcome-hubs
+  notes: With the script's measure (r squared, outcomeAnalysis.m), whose per-unit values equal Source
+    Data Fig. 4f as a set, k1 (0.274) and k2 (0.260) exceed k3 (0.148; p = 3.6e-12 and 9.8e-08) and
+    k6 (0.264) exceeds k7 (0.197), k8 (0.157) and k9 (0.119), all below 0.05/3 and 0.05/6. With r the
+    phasic part holds and k6 has the lowest tonic mean. The Methods' networks (1-5, 7-10) are shown.
+  deviations:
+  - Bonferroni over the pairs within each network (3 and 6), a choice the claims file leaves to the
+    count of tests.
+- claim: fig4g-outcome-anatomy
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig4g-outcome-anatomy
+  notes: 0.600 of phasic and 0.594 of tonic units are in the axis-extreme regions (difference 0.006,
+    chi-square p = 0.92); the tonic network spans 20 regions and the phasic 17; k6 spans 17 against
+    10 to 19 for the other clusters. The effect is as small as on the paper's own values.
+- claim: fig5a-outcome-cluster-signals
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig5a-outcome-cluster-signals
+  notes: Under all four readings k1's shock and prediction error betas peak in the first 2 s and stay
+    below half that from 5 to 10 s, and k6's mean absolute prediction error beta is 12.3 times its
+    mean absolute shock beta (8.9 without an intercept).
+- claim: fig5b-outcome-signal-pca
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig5b-outcome-signal-pca
+  measured:
+  - 53.74
+  - 33.43
+  notes: The recomputed betas equal Source Data Fig. 5b middle, with prediction error in columns 1 to
+    20 and shock in 21 to 40 (outcomeRegression.m), the reverse of the Methods' layout; the shapes
+    are tested on the betas of each regressor. L2 gives 47.80 and 30.92% with the same shapes.
+- claim: fig5c-phasic-lesion
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig5c-phasic-lesion
+  measured:
+  - 79.99
+  - 16.81
+  notes: The script's lesion (firing permuted across trial rows before regression, s-d) gives 79.99 and
+    16.81% with one permutation for all intervals and 79.98 and 16.82% with one per interval; all
+    shapes hold. Shuffling betas gives 76.50 and 20.07% (s-a) and 78.59 and 17.89% (s-b).
+- claim: fig5d-tonic-lesion
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig5d-tonic-lesion
+  measured:
+  - 61.18
+  - 29.88
+  notes: With s-d, 61.18 and 29.88% (one permutation for all intervals) or 61.24 and 29.80%; PC1 has
+    opposing shock and prediction error weights peaking in the first 2 s, and PC2 correlates with the
+    intact PC2 at r = 0.895. Shuffling betas gives 53.45% (s-a) and 60.93% (s-b) for PC1.
+- claim: fig5e-no-anatomical-bias
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:fig5e-no-anatomical-bias
+  notes: With phasic read as k1 to k5 (p-b), the reading Source Data Fig. 5e uses (679 units), the
+    largest differential is 4.48 points (MnR), at the criterion's limit, and every value equals
+    Source Data. With phasic as k1 to k3 (p-a) the largest is 9.82 (PMnR), which would not reproduce
+    it. The chi-square of region by network, a variant, gives p = 0.039 (p-b) and 3e-05 (p-a).
+  deviations:
+  - Judged on p-b, the reading of the paper's own computation (Source Data), as the claims file
+    points out; p-a is shown.
+- claim: cue-outcome-membership-independent
+  outcome: reproduced
+  notebook: reproduce_strickland_2022.ipynb
+  output: claim:cue-outcome-membership-independent
+  measured:
+  - 85
+  - 159
+  notes: Under L1, 85 of 265 phasic and 159 of 613 tonic units are in the cue subnetwork; against 0.279
+    chi-square 2.30 (p = 0.13) and 1.17 (p = 0.28); 2 x 2 tests p = 0.10 and 0.19. Under L2 the tonic
+    network differs (p < 0.01).
+findings:
+- kind: format_error
+  statement: 204 of the 1812 unit files hold repeated spike times (9289 repeats in all). The paper's
+    cubeScript.m counts spikes with intersect(), which keeps each time once, so the cube's counts
+    leave the repeats out.
+- kind: metadata_insufficient
+  statement: The data set holds no cluster membership. The paper's k-means clusters come from
+    MATLAB's kmeans after rng(1), relabelled by hand-written maps in cueAnalysis.m and
+    outcomeAnalysis.m, so they cannot be regenerated outside MATLAB; they can be recovered only
+    from the paper's Source Data workbook, whose cluster sheets every unit matches exactly.
+- kind: metadata_insufficient
+  statement: The cube's anatomy.region holds region names as MATLAB string objects, which cannot be
+    read outside MATLAB. The region numbers need the list in cubeScript.m, and the analysis scripts
+    renumber 35 units from region 21 (CIC) to DpWh, saying the cube assigned them in error, and merge
+    regions 11 and 24 into x/scp. The units of anatomy.x, y and z are not stated.
+- kind: other
+  about: data
+  statement: In session js10030220, 19 unit files share one set of event times, while 2 others
+    (spk0009, spk0044) and 1 more (spk0049) carry cue and poke times that differ from them by an
+    amount growing over the session to about 0.28 and 0.30 s. The cube uses each file's own times.
+- kind: other
+  about: data
+  statement: Session js27101920 has 5 shock times; no shock is recorded on its first danger trial
+    (row 1). All other 72 sessions have 6 shocks, 12.0 s after cue onset on rows 1 to 6.
+- kind: paper_inconsistency
+  statement: Supplementary Table 1 lists 75 recording sessions (8 for subject 5 and 10 for subject
+    10); the Results and the data set have 73 (7 and 9).
+- kind: methods_unavailable
+  statement: The Source Data danger latencies (Fig. 2d) do not follow the Supplementary Methods'
+    search within the 10-s cue; many equal change points found from 2 s before cue onset, and 1498 of
+    1812 units have one, by a rule not stated. Which window was searched, how the 1-ms firing was
+    built, and which units were left out? With the stated method the latency does not correlate with
+    PC1 contribution (R2 = 0.067).
+- kind: paper_inconsistency
+  statement: For the cue hubs (Fig. 2f) the Supplementary Methods correlate danger firing over 14
+    intervals, but the Source Data per-unit values are squared correlations of the full 42-value cue
+    rows (all three cues). Was r or r squared averaged, and over which cues? With danger firing the
+    k1 hub does not exceed k3 or k4.
+- kind: methods_unavailable
+  statement: The Methods call the cluster correlations "Pearson's correlation coefficient (R2)" and
+    the scripts plot r squared. Is the network separation of Fig. 2e and 4d judged on r squared?
+    With r, k3 and k6 are anticorrelated with their fellow clusters and the outcome networks do not
+    separate.
+- kind: paper_inconsistency
+  statement: The Supplementary Methods lay out the outcome beta matrix with shock in intervals 1 to 20
+    and prediction error in 21 to 40, as a 21-cluster matrix; outcomeRegression.m and Source Data
+    Fig. 5b to 5d hold prediction error first, for 11 clusters.
+- kind: code_mismatch
+  statement: Source Data Fig. 4f right labels 171 units as k7 and 111 as k8, as outcomeAnalysis.m
+    hard-codes them, where the Figure 4b sheets and the clustering have 111 units in k7 and 171 in k8.
+- kind: code_mismatch
+  statement: The normalization in cubeScript.m (1-s, 500-ms and 250-ms bins z-scored separately over
+    the 40 s from 10 s before cue onset, baseline rounded down) differs from the Supplementary Methods
+    (250-ms bins from 20 s before to 20 s after the cue, averaged into larger intervals); only the
+    script's normalization reproduces the paper's values. The lesion scripts shuffle firing of k1 to
+    k9, k1 to k3 and k6 to k9 before regression, where the Methods shuffle the betas of clusters 1 to
+    8.
+- kind: other
+  about: paper
+  statement: Source Data Fig. 2c inset and Fig. 4c hold the units' rows with a pre-cue baseline
+    subtracted (the heat-plot data), not the matrices whose PCA gives the reported 29.7% and 17.7%;
+    PCA of those sheets gives 47.1% and 24.2%.
