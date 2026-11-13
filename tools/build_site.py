@@ -1993,7 +1993,7 @@ def progress_data(data: dict) -> dict:
 
 
 def progress_panel(data: dict) -> str:
-    """The dashboard at the top of the overview: totals and two charts of the effort over time.
+    """The dashboard on the overview, under the outcomes: totals and two charts of the effort over time.
 
     The page draws the charts from the JSON it carries (assets/progress.js); without scripts, the table
     below them gives the same numbers.
@@ -2127,15 +2127,18 @@ def page_overview(data: dict) -> str:
   each attempt, and every finding gets
   an outcome, whether or not it reproduced. <a href="about/">How it works</a> ·
   <a href="{ENCORE_DOCS}">Run the same check on your own data</a></p>
-  {"" if dashboard else f'<div class="tiles">{tile_html}</div>'}
+  <form class="home-search" method="get" action="papers/" role="search">
+    <input name="q" type="search" placeholder="Search papers" aria-label="Search papers">
+    <button class="ghost" type="submit">Search</button>
+  </form>
 </header>
 <main>
-  {dashboard}
-  <div class="panel">
+  <div class="panel outcomes-panel">
     <h2>Outcomes of the {n_claims:,} claims that rest on the dataset alone</h2>
     {outcomes}{outside_note(attempts, collapsed=True)}
     {caution_block()}
   </div>
+  {dashboard or f'<div class="tiles">{tile_html}</div>'}
   <div class="grid2" style="margin-top:16px">{panels}</div>
   <div class="panel attempts" style="padding:0">
     <div class="tabs" role="tablist"><button type="button" role="tab" data-panel="most-reproduced" aria-selected="true">Most
