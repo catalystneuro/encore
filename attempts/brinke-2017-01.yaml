@@ -20,15 +20,35 @@ provenance:
   runner:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/43342632633
+inputs:
+- what: The paper's Source data 1 (elife-28132-data1-v2.mat, MD5 3ca8f91c5371e88c12f5eb32b3b209c6), streamed from
+    https://cdn.elifesciences.org/articles/28132/elife-28132-data1-v2.mat. Only its recording depth (Depth) is used,
+    by firing-rate-depth, fig4s1-cs-peak-suppression-not-different, fig5ej-cs-pause-cells-shallower and
+    fig6g-us-response-depth; its trial counts, CR @ US ms, Baseline Hz and Cell are read by source-data-1-link to
+    check the match.
+  source: doi:10.7554/eLife.28132
 outcomes:
+- claim: source-data-1-link
+  outcome: reproduced
+  notebook: reproduce_brinke_2017.ipynb
+  output: claim:source-data-1-link
+  notes: Added after the reader's answer (questions/brinke-2017.yaml), which made four claims take recording depth
+    from Source data 1. Matched by order, all 372 cells agree on the number of trials, the per-trial eyelid closure
+    at US onset ('CR @ US ms' equals crAmplitude) and the per-trial baseline rate ('Baseline Hz' equals the spike
+    count over 500 ms, or 200 ms in the second dataset), and Source data 1's 'Cell' is each cell's position; shifted
+    by one cell, 9 of 371 agree on the trial count and none on the other two. Source data 1 gives one depth per cell
+    for the 270 first-dataset cells (1500 to 3000 um) and none for the 102 second-dataset cells.
 - claim: firing-rate-depth
-  outcome: blocked
-  blocked_by: data_missing
+  outcome: reproduced
   notebook: reproduce_brinke_2017.ipynb
   output: claim:firing-rate-depth
-  notes: Recording depth is not in the data set. The mean firing frequency of the 270 first-dataset cells is 68.3
-    +/- 26.4 Hz over the 500 ms baseline (reading a) and 70.6 +/- 27.4 Hz over the whole trial (reading b), both
-    within 67 +/- 6.7 Hz. Asked a reader whether the claim should use the depths in the paper's Source data 1 (questions/brinke-2017.yaml).
+  measured: 68.3
+  notes: The reader's answer (questions/brinke-2017.yaml) made the claim data with_inputs, with recording depth from the paper's Source data 1; the earlier run blocked it as data_missing. Under reading (a), the 500 ms baseline, the 270 first-dataset cells fire at 68.3 +/- 26.4 Hz
+    (within 67 +/- 6.7) and the rate does not correlate with depth (Pearson r = 0.086, p = 0.16; the paper's r =
+    0.085, p = 0.16). Under reading (b), the whole trial, the mean is 70.6 +/- 27.4 Hz and the correlation is
+    significant (r = 0.146, p = 0.0167), so the claim holds under reading (a) only. Within the 11 mice with at least
+    10 cells no reading (a) correlation is significant (p >= 0.14). The data set's per-trial baseline rates equal
+    Source data 1's 'Baseline Hz' in every cell (source-data-1-link), so the rate side matches the paper's own values.
 - claim: fig1ijk-modulation-classes
   outcome: partially_reproduced
   notebook: reproduce_brinke_2017.ipynb
@@ -523,13 +543,23 @@ outcomes:
     in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
     allows. The data set's own per-trial facilitation follows reading (b).
 - claim: fig4s1-cs-peak-suppression-not-different
-  outcome: blocked
-  blocked_by: data_missing
+  outcome: reproduced
   notebook: reproduce_brinke_2017.ipynb
   output: claim:fig4s1-cs-peak-suppression-not-different
-  notes: 'The depth comparison cannot be made: depth is not in the data set. The other two comparisons are not significant
-    under any reading (minimum rate p >= 0.17, velocity p >= 0.129); under drop/mean, class a, 3 against 20 cells,
-    p = 0.90 and 0.83. Asked a reader whether the claim should use the depths in the paper''s Source data 1 (questions/brinke-2017.yaml).'
+  notes: The reader's answer (questions/brinke-2017.yaml) made the claim data with_inputs, with recording depth from the paper's Source data 1; the earlier run blocked it as data_missing. None of the three comparisons is significant under any threshold, window or class reading (minimum
+    rate p >= 0.174, velocity p >= 0.129, depth p >= 0.239). Under drop/mean (50-125 ms), class (a), the reading
+    under which fig4s1-cs-peak-cells reproduces, the 3 suppression cells with a CS peak against the other 20 give
+    -33.1 against -32.8 Hz (p = 0.898), -2.98 against -2.70 Hz/ms (p = 0.83) and 2099 +/- 438 against 1975 +/- 346
+    um (p = 0.616); the paper compares 2 against 21 cells, and the readings give 1 to 8 CS peak cells. The cell
+    groups come from the data set; the depths are Source data 1's.
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
 - claim: fig4h-transient-responses-after-day-3
   outcome: reproduced
   notebook: reproduce_brinke_2017.ipynb
@@ -592,8 +622,21 @@ outcomes:
   blocked_by: data_missing
   notebook: reproduce_brinke_2017.ipynb
   output: claim:fig5ej-cs-pause-cells-shallower
-  notes: Recording depth is not in the data set. Asked a reader whether the claim should use the depths in the paper's
-    Source data 1 (questions/brinke-2017.yaml).
+  notes: The reader's answer (questions/brinke-2017.yaml) made the claim data with_inputs, with recording depth from the paper's Source data 1; the earlier run blocked it as data_missing. Source data 1 gives no depth for any of the 102 second-dataset cells (its Depth is NaN there), and
+    the paper names no other source, so the second-dataset test cannot be run and the claim, which needs both tests,
+    stays blocked. The first-dataset half was run. CS pause cells lie shallower than the other facilitation cells
+    under every reading (1673 to 1976 um against 2124 to 2149 um), every mean within tolerance (1840 +/- 184 and 2130
+    +/- 213 um); the difference is significant only under the mean readings with class (b), 2 CS pause cells against
+    86 (1673 +/- 23 against 2139 +/- 325 um, p = 0.0483; class a, p = 0.054), and not under the drop readings, 7 to
+    9 CS pause cells (p = 0.11 to 0.34).
+  deviations:
+  - The CS transients are run under the four threshold readings of the claims file, the 50-125 ms (Methods, CS-responses)
+    and 50-130 ms (Results, Characterization, paragraph 4) windows, and two places to look for the rebound, within
+    the window or up to 50 ms after the trough; the paper does not say where the following peak (or drop) must lie.
+  - Cell classes are run under the claims file's baseline-correction readings (a) and (b) and a third, (a+), in
+    which the 'mean above-baseline activity within the baseline itself' (Materials and methods, Spike modulation
+    in the last 200 ms of the CS-US interval) is averaged over the above-baseline bins only, which the wording also
+    allows. The data set's own per-trial facilitation follows reading (b).
 - claim: fig5s1-model-timing
   outcome: blocked
   blocked_by: data_missing
@@ -747,12 +790,21 @@ outcomes:
   - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
     within 30 ms of the extreme, a choice the paper does not make (20 to 45 ms are shown for the counts).
 - claim: fig6g-us-response-depth
-  outcome: blocked
-  blocked_by: data_missing
+  outcome: reproduced
   notebook: reproduce_brinke_2017.ipynb
   output: claim:fig6g-us-response-depth
-  notes: Recording depth is not in the data set. Asked a reader whether the claim should use the depths in the paper's
-    Source data 1 (questions/brinke-2017.yaml).
+  measured:
+  - 1920
+  - 2061
+  - 2186
+  notes: The reader's answer (questions/brinke-2017.yaml) made the claim data with_inputs, with recording depth from the paper's Source data 1; the earlier run blocked it as data_missing. Cells with only a US pause lie at 1920 +/- 290 um (n = 23), cells with both at 2061 +/- 323 um (n
+    = 76) and cells with only a US peak at 2186 +/- 364 um (n = 138), all within tolerance and in the paper's order;
+    Kruskal-Wallis p = 0.00067 (paper 0.0025). The result holds with depth relative to each mouse's mean (p = 0.0057)
+    and with turnaround spans of 20 and 45 ms (p = 0.00067 and 0.00052). The group sizes differ from the paper's
+    (28, 77, 134) on the data set's side, as in fig6b-us-peak-pause-overlap.
+  deviations:
+  - The US responses follow the Methods (US-responses); the turnaround of the pause and second peak is looked for
+    within 30 ms of the extreme, a choice the paper does not make (20 and 45 ms are shown).
 - claim: us-pause-declines-with-training
   outcome: reproduced
   notebook: reproduce_brinke_2017.ipynb
@@ -874,7 +926,12 @@ findings:
 - kind: data_missing
   statement: The data set holds no recording depth, which the paper uses in four of its findings (Figures 4-figure
     supplement 1E, 5E, 5J and 6G, and the depth correlation of firing rate). The paper's Source data 1 on the eLife
-    site lists a variable named Depth for the same 372 cells.
+    site gives it for the 270 first-dataset cells, which match the data set's cells in order, and for none of the
+    102 second-dataset cells.
+- kind: other
+  about: paper
+  statement: The paper's Source data 1 gives Depth as NaN for all 102 second-dataset cells, although Figure 5J reports
+    their depths (2350 +/- 140 against 2450 +/- 211 um), so the second-dataset depths are not public.
 - kind: data_missing
   statement: The US-only trials interspersed in 25 second-dataset recordings (Figure 7 and its supplement 1) and
     the optogenetic sessions of three L7cre-Ai27 mice (Figure 3) are not in the data set; nothing in it marks a

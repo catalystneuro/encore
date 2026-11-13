@@ -71,6 +71,27 @@ def load():
     return out
 
 
+# The paper's Source data 1 (eLife, doi:10.7554/eLife.28132, Additional files), read only for the
+# recording depth, which the data set lacks (claims file, opening comment). It is the file of the
+# version of record (v2) on the eLife CDN, pinned by its MD5.
+SOURCE_DATA1 = "https://cdn.elifesciences.org/articles/28132/elife-28132-data1-v2.mat"
+SOURCE_DATA1_MD5 = "3ca8f91c5371e88c12f5eb32b3b209c6"
+
+
+def load_source_data1():
+    """Stream Source data 1 into memory; return ({variable name: list of 372 per-trial arrays}, md5).
+
+    The file is a structure 'ipn' of 51 variables, each with a 'name' and a 'values' cell array of
+    one vector of per-trial values per cell, cells in the data set's order (paper, Additional files,
+    Source data 1)."""
+    from scipy.io import loadmat
+    with fsspec.open(SOURCE_DATA1, "rb") as f:
+        raw = f.read()
+    md5 = hashlib.md5(raw).hexdigest()
+    s = loadmat(io.BytesIO(raw), squeeze_me=True, struct_as_record=False)["ipn"]
+    return {v.name: [np.atleast_1d(np.asarray(x, float)) for x in v.values] for v in s}, md5
+
+
 def idx(t, a, b):
     """Boolean mask of the samples with a <= t < b (ms)."""
     return (t >= a) & (t < b)
