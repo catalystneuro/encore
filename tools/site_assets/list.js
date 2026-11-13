@@ -18,8 +18,13 @@
     return [v === null || v === undefined || v === '' ? '(none)' : String(v)];
   };
 
-  // On a narrow screen the filters sit above the results: start them closed.
-  if (matchMedia('(max-width: 820px)').matches) $('facets').open = false;
+  // On a narrow screen the filters sit above the results, closed under a bar that opens them. On a wide one they
+  // are a column beside the results with no bar, so they must be open: a window that starts narrow and is then
+  // widened (or a phone turned on its side) would otherwise show no filters and nothing to open them with.
+  const narrow = matchMedia('(max-width: 820px)');
+  const fitFilters = () => { $('facets').open = !narrow.matches; };
+  fitFilters();
+  narrow.addEventListener('change', fitFilters);
 
   let rows;
   try {
@@ -154,6 +159,19 @@
           ${kinds ? `<div class="meta kinds" style="margin-top:6px">${kinds}</div>` : ''}</div>
         <div class="right"><span class="open${n ? '' : ' none'}"><strong>${n}</strong> open finding${n === 1 ? '' : 's'}</span>
           <span class="small muted">${esc(r.date)}</span></div></div>`;
+    },
+    // A person with an ORCID iD: the name opens their page; their papers here, each opening its own, and how
+    // many of the registry's datasets name them.
+    authors(r) {
+      const papers = r.papers.map((q) => q.page ? `<a href="${root + q.page}">${esc(q.byline)}</a>`
+        : `<a href="https://doi.org/${esc(q.doi)}">${esc(q.byline)}</a>`).join(', ');
+      const count = (n, noun) => n ? `${n} ${noun}${n === 1 ? '' : 's'}` : '';
+      const sets = r.n_datasets ? `<div class="meta"><span class="muted">${esc(r.datasets.slice(0, 8).join(', '))}${r.n_datasets > 8 ? `, and ${r.n_datasets - 8} more` : ''}</span></div>` : '';
+      return `<div class="row drow prow">
+        <div><p class="title"><a href="${root + r.page}">${esc(r.name)}</a></p>
+          ${papers ? `<div class="meta"><span>${papers}</span></div>` : ''}${sets}</div>
+        <div class="right"><span class="small">${[count(r.n_papers, 'paper'), count(r.n_datasets, 'dataset')].filter(Boolean).join(' · ')}</span>
+          <span class="small muted">${esc(r.id)}</span></div></div>`;
     },
   }[cfg.kind];
 

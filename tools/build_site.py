@@ -432,6 +432,12 @@ def collect(executed: Path | None = None) -> dict:
         "claim_files": claim_files,
         # Claims belong to a paper (claims/<paper>.yaml): each paper's claims files with every claim, for its page.
         "paper_claims": paper_claims(),
+        # Each paper's authors in order, with their ORCID iDs (papers/authors.yaml, tools/authors.py).
+        "authors": ((load_yaml(ROOT / "papers" / "authors.yaml") or {}).get("papers", {})
+                    if (ROOT / "papers" / "authors.yaml").is_file() else {}),
+        # The people each dataset names as its contributors, with ORCID iDs and roles (targets/contributors.yaml).
+        "contributors": ((load_yaml(ROOT / "targets" / "contributors.yaml") or {}).get("datasets", {})
+                         if (ROOT / "targets" / "contributors.yaml").is_file() else {}),
         "transcripts": {**transcripts, **archived},
         "transcript_dirs": transcript_dirs,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -888,11 +894,26 @@ def notebook_of(attempt: dict, path: str | None) -> dict | None:
 TOP_JOURNALS = 25
 
 
+_JOURNALS: dict = {}
+
+
+def journals_known() -> dict:
+    """The papers of papers/journals.yaml, by DOI: read once for each state of the file (a page of every paper and
+    of every author asks for a journal)."""
+    path = ROOT / "papers" / "journals.yaml"
+    if not path.is_file():
+        return {}
+    stamp = (str(path), path.stat().st_mtime_ns)
+    if stamp not in _JOURNALS:
+        _JOURNALS.clear()
+        _JOURNALS[stamp] = (load_yaml(path) or {}).get("papers", {})
+    return _JOURNALS[stamp]
+
+
 def journals_of(targets: list[dict]) -> dict[str, str]:
     """Each target's journal for the datasets list's filter (papers/journals.yaml, tools/journals.py): one of the
     TOP_JOURNALS journals with the most datasets, "Preprint", "Other journals", or "Not recorded"."""
-    path = ROOT / "papers" / "journals.yaml"
-    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    known = journals_known()
     norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
     raw = {t["key"]: (known.get(norm(t.get("paper"))) or {}).get("journal") for t in targets}
     counts: dict = {}
@@ -971,7 +992,8 @@ def rows(data: dict) -> dict[str, list]:
                                "notebook_title": nb["title"] if nb else None})
             for f in a["findings"]:
                 findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
-    return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings}
+    return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings,
+            "authors": author_rows(data)}
 
 
 _PAPERS: dict = {}
@@ -979,16 +1001,14 @@ _PAPERS: dict = {}
 
 def journal_name(doi: str) -> str | None:
     """The paper's journal as papers/journals.yaml names it (tools/journals.py), for its page; None when not recorded."""
-    path = ROOT / "papers" / "journals.yaml"
-    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    known = journals_known()
     return (known.get(re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (doi or "").strip().lower())) or {}).get("journal")
 
 
 def paper_journals(dois: list[str]) -> dict[str, str]:
     """Each paper's journal for the papers list's filter (papers/journals.yaml): one of the TOP_JOURNALS journals with
     the most papers, "Preprint", "Other journals", or "Not recorded"."""
-    path = ROOT / "papers" / "journals.yaml"
-    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    known = journals_known()
     norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
     raw = {d: (known.get(norm(d)) or {}).get("journal") for d in dois}
     counts: dict = {}
@@ -1041,6 +1061,231 @@ def papers_of(data: dict) -> list[dict]:
     _PAPERS.clear()
     _PAPERS[id(data)] = out
     return out
+
+
+AUTHORS_SHOWN = 12   # a paper's page names this many authors, and the rest on request
+_AUTHORS: dict = {}
+
+
+def authors_of(data: dict, doi: str) -> list[dict]:
+    """A paper's authors in order (papers/authors.yaml): name, and ORCID iD or none."""
+    key = re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (doi or "").strip().lower())
+    return (data.get("authors") or {}).get(key) or []
+
+
+def contributors_of(data: dict, key: str) -> list[dict]:
+    """The people a dataset names as its contributors (targets/contributors.yaml): name, ORCID iD or none, roles."""
+    return (data.get("contributors") or {}).get(key) or []
+
+
+def author_index(data: dict) -> dict[str, dict]:
+    """Everyone with an ORCID iD who is an author of a paper in the registry or a contributor of one of its
+    datasets, by iD: the name (the one most of their records print), their papers (papers_of), newest first, and
+    their datasets, each with their roles on it. A person without an iD has no entry: a name alone does not say
+    who it is."""
+    if id(data) in _AUTHORS:
+        return _AUTHORS[id(data)]
+    names: dict = {}
+    out: dict = {}
+
+    def entry(person):
+        names.setdefault(person["orcid"], Counter())[person["name"]] += 1
+        return out.setdefault(person["orcid"], {"orcid": person["orcid"], "papers": [], "datasets": []})
+    for q in papers_of(data):
+        for a in authors_of(data, q["doi"]):
+            if a.get("orcid"):
+                entry(a)["papers"].append(q)
+    for t in data["targets"]:
+        for c in contributors_of(data, t["key"]):
+            if c.get("orcid"):
+                entry(c)["datasets"].append({"key": t["key"], "roles": c.get("roles") or []})
+    for orcid, found in out.items():
+        found["name"] = sorted(names[orcid].items(), key=lambda kv: (-kv[1], -len(kv[0]), kv[0]))[0][0]
+        found["papers"].sort(key=lambda q: (q["key"].rsplit("-", 1)[-1], q["key"]), reverse=True)
+        found["datasets"].sort(key=lambda d: d["key"])
+    _AUTHORS.clear()
+    _AUTHORS[id(data)] = out
+    return out
+
+
+def people_html(data: dict, people: list[dict], root: str, noun: str = "authors") -> str:
+    """People under a title, in order: each with an ORCID iD opens their page (their roles, when they have any, on
+    hover); the names past the first AUTHORS_SHOWN open on request."""
+    if not people:
+        return ""
+    known = author_index(data)
+
+    def one(a):
+        title = f' title="{e(", ".join(a["roles"]))}"' if a.get("roles") else ""
+        return (f'<a href="{root}authors/{e(a["orcid"])}/"{title}>{e(a["name"])}</a>' if a.get("orcid") in known
+                else f'<span{title}>{e(a["name"])}</span>' if title else e(a["name"]))
+    names = [one(a) for a in people]
+    if len(names) <= AUTHORS_SHOWN + 2:
+        return f'<p class="authors">{", ".join(names)}</p>'
+    rest = len(names) - AUTHORS_SHOWN
+    return (f'<div class="authors"><p>{", ".join(names[:AUTHORS_SHOWN])},</p><details><summary>and {rest} more '
+            f'{noun}</summary><p>{", ".join(names[AUTHORS_SHOWN:])}</p></details></div>')
+
+
+def authors_html(data: dict, doi: str, root: str) -> str:
+    """A paper's authors for its page."""
+    return people_html(data, authors_of(data, doi), root)
+
+
+def author_rows(data: dict) -> list[dict]:
+    """The authors list's rows: everyone with an ORCID iD, their papers and their datasets in the registry."""
+    out = []
+    for orcid, a in author_index(data).items():
+        attempted = [q for q in a["papers"] if q["attempts"]]
+        out.append({
+            "id": orcid, "name": a["name"], "family": a["name"].split()[-1] + ", " + " ".join(a["name"].split()[:-1]),
+            "page": f"authors/{orcid}/", "n_papers": len(a["papers"]), "n_attempted": len(attempted),
+            "n_datasets": len(a["datasets"]),
+            "attempted": "yes" if attempted else "no",
+            "as": [k for k, on in (("author", a["papers"]), ("contributor", a["datasets"])) if on],
+            "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims"
+                        else None, "doi": q["doi"]} for q in a["papers"]],
+            "datasets": [dataset_label(d["key"]) for d in a["datasets"]],
+        })
+    return sorted(out, key=lambda r: (-r["n_papers"], -r["n_datasets"], r["family"].lower()))
+
+
+def dataset_card(data: dict, key: str, root: str, note: str = "") -> str:
+    """A dataset as a row, as the datasets list has it: its identifier, its name (which opens its page, or the
+    archive when no attempt has used it), `note`, the version tested and its open findings about the data."""
+    r = next((x for x in rows_cache(data)["datasets"] if x["id"] == key), None)
+    if r is None:
+        return ""
+    href = root + r["page"] if r.get("page") else r["url"]
+    tested = bool(r.get("page")) and r["status"] == "attempted"
+    kinds = " ".join(f'<span class="tag">{e(FINDING_KINDS.get(k, k))}<span class="c">{n}</span></span>'
+                     for k, n in (r.get("found_counts") or {}).items())
+    n = r.get("findings") or 0
+    meta = " ".join(f"<span>{x}</span>" for x in (
+        [note] if note else []) + ([f'Tested on {e("; ".join(r["versions"]))}'] if tested and r.get("versions") else [])
+        + [human_size(r["size_gb"])])
+    right = (f'<span class="open{"" if n else " none"}"><strong>{n}</strong> open finding{"" if n == 1 else "s"}</span>'
+             f'<span class="small muted">{e(r.get("date") or "")}</span>' if tested
+             else '<span class="small muted">Not yet tested</span>')
+    return (f'<div class="row drow"><div class="id"><a href="{e(href)}">{e(r["label"])}</a></div>'
+            f'<div><p class="title"><a href="{e(href)}">{e(r["name"] or r["paper_title"] or r["label"])}</a></p>'
+            f'<div class="meta">{meta}</div>'
+            + (f'<div class="meta kinds" style="margin-top:6px">{kinds}</div>' if kinds else "")
+            + f'</div><div class="right">{right}</div></div>')
+
+
+def paper_card(data: dict, q: dict, root: str, note: str = "", under: str = "") -> str:
+    """A paper as a row: its byline (and `note`) over its title, which opens its page, then its outcomes or where
+    it stands, and `under`; its verification and the date of its latest attempt on the right."""
+    r = next((x for x in rows_cache(data)["papers"] if x["id"] == q["key"]), {})
+    state = ("attempted" if q["attempts"] else "claims read, not yet attempted" if q["status"] == "claims"
+             else "not yet attempted")
+    outcome = (f'<div class="meta" style="margin-top:6px">{bar(r["counts"], "Outcomes", "bar mini")}'
+               + '<span class="small muted">' + e(" · ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in r["counts"].items() if n))
+               + '</span></div>') if r.get("counts") else f'<div class="meta"><span class="muted">{e(state.capitalize())}</span></div>'
+    title = (f'<a href="{root}{e(r["page"])}">{e(q["title"])}</a>' if r.get("page")
+             else f'<a href="https://doi.org/{e(q["doi"])}">{e(q["title"])}</a>')
+    return (f'<div class="row drow prow"><div><p class="byline">{e(q["byline"])}'
+            + (f'<span class="sep" aria-hidden="true">·</span>{note}' if note else "") + '</p>'
+            f'<p class="title">{title}</p>{outcome}{under}</div>'
+            f'<div class="right">{quiet_tier(r["tier"]) if r.get("tier") else ""}'
+            f'<span class="small muted">{e(r.get("date") or "")}</span></div></div>')
+
+
+def page_author(data: dict, author: dict) -> str:
+    """A person's page, by ORCID iD: the papers in the registry they are an author of, with the outcomes of those
+    papers' claims summed, and the datasets they are a contributor of."""
+    root = "../../"
+    orcid, name = author["orcid"], author["name"]
+    papers, sets = author["papers"], author["datasets"]
+    cards = "".join(paper_card(data, q, root, note=e(journal_name(q["doi"]) or "")) for q in papers)
+    set_cards = "".join(dataset_card(data, d["key"], root, note=e(", ".join(d["roles"]))) for d in sets)
+    n, tried, m = len(papers), sum(1 for q in papers if q["live"]), len(sets)
+    # The outcomes of every claim tested across their papers, as one bar.
+    rows_ = {r["id"]: r for r in rows_cache(data)["papers"]}
+    total = {k: sum((rows_.get(q["key"], {}).get("counts") or {}).get(k, 0) for q in papers) for k in OUTCOMES}
+    n_claims = sum(total.values())
+    summed = (f'<div class="summary">{bar(total, f"Outcomes of {n_claims} claims", "bar mini")}{legend(total, compact=True)}</div>'
+              f'<p class="sub small" style="margin-top:6px">Outcomes of the {n_claims:,} claims tested across '
+              f'{tried} attempted paper{"" if tried == 1 else "s"}, on the data in their datasets. {CAUTION} '
+              f'It may be a failure of the attempt.</p>') if n_claims else ""
+    said = " · ".join(x for x in (f'{n} paper{"" if n == 1 else "s"}, {tried} attempted' if n else "",
+                                  f'{m} dataset{"" if m == 1 else "s"}' if m else "") if x)
+    tabs = [("papers", "Papers", n), ("datasets", "Datasets", m)]
+    tabs = [t for t in tabs if t[2]] or tabs[:1]
+    tab_buttons = "".join(f'<button type="button" role="tab" data-panel="{k}" aria-selected="false">{label} '
+                          f'<span class="count">{c}</span></button>' for k, label, c in tabs)
+    panels = {
+        "papers": f'''<section class="tabpanel" id="papers"><h2>Papers</h2>
+    <p class="sub small" style="margin-top:12px">Every paper in the registry that names this ORCID iD among its
+    authors, as OpenAlex records them. An outcome says what one attempt could reproduce from the paper&rsquo;s open
+    data.</p>
+    <div class="results" style="margin-top:12px">{cards or '<p class="empty">None.</p>'}</div></section>''',
+        "datasets": f'''<section class="tabpanel" id="datasets"><h2>Datasets</h2>
+    <p class="sub small" style="margin-top:12px">Every dataset in the registry that names this ORCID iD among its
+    contributors, with their roles as the dataset gives them, and what attempts found about its data.</p>
+    <div class="results" style="margin-top:12px">{set_cards}</div></section>''',
+    }
+    body = f'''<header class="page">
+  <p class="crumbs"><a href="{root}authors/">Authors</a> / {e(name)}</p>
+  <div class="dhead"><h1>{e(name)}</h1></div>
+  <p class="sub">ORCID iD <a href="https://orcid.org/{e(orcid)}" rel="noopener">{e(orcid)}</a> · {said} in the registry</p>
+  {summed}
+</header>
+<main>
+  <div class="tabs" role="tablist">{tab_buttons}</div>
+  {"".join(panels[k] for k, _, _ in tabs)}
+</main>'''
+    structured = {"@context": "https://schema.org", "@type": "Person", "name": name,
+                  "identifier": f"https://orcid.org/{orcid}", "sameAs": f"https://orcid.org/{orcid}"}
+    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, TABS_JS, path=f"authors/{orcid}/",
+                 description=f"Papers and datasets of {name} (ORCID {orcid}) in the Encore registry, and what "
+                             f"attempts to reproduce the papers from their open data found.", structured=structured)
+
+
+def paper_of(data: dict, attempt: dict) -> dict | None:
+    """The paper (papers_of) an attempt is on."""
+    return next((q for q in papers_of(data) if q["doi"] == attempt["paper"].lower()), None)
+
+
+def paper_attempts(data: dict, paper: dict) -> list[dict]:
+    """Every attempt on a paper, current or replaced, each once (an attempt on several datasets is a row for each
+    in data["attempts"]), oldest first."""
+    seen, out = set(), []
+    for a in sorted(data["attempts"], key=lambda a: (a["date"], a["id"])):
+        if a["paper"].lower() == paper["doi"] and a["id"] not in seen:
+            seen.add(a["id"])
+            out.append(a)
+    return out
+
+
+def attempt_sets(data: dict, attempt: dict) -> list[dict]:
+    """An attempt's rows, one for each dataset it used: each has that dataset's version and the findings about it."""
+    return [a for a in data["attempts"] if a["id"] == attempt["id"]]
+
+
+def attempt_own_path(data: dict, attempt: dict) -> str | None:
+    """The address of an attempt's own page, under its paper: papers/<paper>/<attempt>/."""
+    q = paper_of(data, attempt)
+    return f'papers/{q["key"]}/{attempt["id"]}/' if q else None
+
+
+def attempt_path(data: dict, attempt: dict) -> str:
+    """Where to read an attempt: its own page, or its paper's page when it is the paper's one current attempt (its
+    own address then leads there). An attempt whose paper is not listed is read on its dataset's pages."""
+    q = paper_of(data, attempt)
+    if not q:
+        current = current_attempts(data).get(attempt["key"], [])
+        return page_of(attempt["key"]) + ("" if attempt in current else f'{attempt["id"]}/')
+    if [a["id"] for a in q["attempts"]] == [attempt["id"]]:
+        return f'papers/{q["key"]}/'
+    return f'papers/{q["key"]}/{attempt["id"]}/'
+
+
+def used_html(data: dict, attempt: dict, root: str) -> str:
+    """The datasets an attempt used, each a link to the dataset's page, with the version it ran on."""
+    return "; ".join(f'<a href="{root}{e(page_of(x["key"]))}">{e(x["label"])}</a> {version_text(x)}'
+                     for x in attempt_sets(data, attempt))
 
 
 def paper_rows(data: dict) -> list[dict]:
@@ -1291,6 +1536,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
     tabs = [("overview", "Overview", root or "./", None), ("papers", "Papers", f"{root}papers/", n_papers),
             ("datasets", "Datasets", f"{root}datasets/", n_datasets),
+            ("authors", "Authors", f"{root}authors/", None),
             ("pipeline", "Pipeline", f"{root}pipeline/", None),
             ("about", "About", f"{root}about/", None)]
     nav = ""
@@ -1314,7 +1560,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
   <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow" id="tabrow">{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
   <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
-  <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
+  <a class="tab ext runs" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
   <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false" aria-controls="tabrow" aria-label="Menu"><span aria-hidden="true"></span></button>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
@@ -1322,6 +1568,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 {body}
 <footer>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
+<a href="{REPO_URL}/actions">Agent runs</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
 the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
 a judgement of the paper.</footer>
@@ -1632,7 +1879,7 @@ def page_overview(data: dict) -> str:
                 or '<p class="empty">No verified attempt yet.</p>')
 
     dashboard = progress_panel(data)
-    redirect = json.dumps({a["id"]: a["key"] for a in data["attempts"]})
+    redirect = json.dumps({a["id"]: attempt_path(data, a) for a in data["attempts"]})
     body = f'''<header class="page" id="top">
   <div class="eyebrow">The Encore registry</div>
   <h1>Can the findings of a paper be reproduced from its open data?</h1>
@@ -1949,7 +2196,7 @@ def page_about(data: dict) -> str:
 
 # The site's lists. Only the papers list is a page (INDEX_LISTS): since 2026-11-11 the papers are the one index,
 # and a dataset's page is reached from its papers. The datasets rows are still written as data (data/datasets.json).
-INDEX_LISTS = ("papers", "datasets")
+INDEX_LISTS = ("papers", "datasets", "authors")
 LISTS = {
     "papers": {
         "title": "Papers", "noun": "papers", "data": "data/papers.json",
@@ -1984,6 +2231,21 @@ LISTS = {
 }
 
 
+# The authors list: everyone with an ORCID iD among the authors of a paper in the registry.
+LISTS["authors"] = {
+    "title": "Authors", "noun": "authors", "data": "data/authors.json",
+    "intro": "Everyone with an ORCID iD among the authors of a paper in the registry or the contributors of one of "
+             "its datasets. Each opens a page with all of their papers and datasets here. People are found by ORCID "
+             "iD, as OpenAlex records it for a paper and the archive for a dataset: a name alone does not say who "
+             "it is, so a person without an iD is named on the paper&rsquo;s or the dataset&rsquo;s page and has "
+             "no page here.",
+    "facets": [("as", "In the registry as"), ("attempted", "Papers")],
+    "sorts": [("-n_papers", "Most papers"), ("-n_datasets", "Most datasets"), ("family", "Family name"),
+              ("name", "Given name"), ("-n_attempted", "Most papers attempted")],
+    "csv": None,
+}
+
+
 def page_list(data: dict, kind: str) -> str:
     spec = LISTS[kind]
     outcome_labels = {k: v[0] for k, v in OUTCOMES.items()}
@@ -2003,6 +2265,8 @@ def page_list(data: dict, kind: str) -> str:
             "status": {**STATUS, "claims": "Claims read, not yet attempted"} if kind == "papers" else STATUS,
             "found": {**FINDING_KINDS, "(none)": "None recorded"},
             "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
+            "attempted": {"yes": "Has a paper attempted", "no": "None attempted yet"},
+            "as": {"author": "An author of a paper", "contributor": "A contributor of a dataset"},
             "relation": {"primary": "Its own data", "reuses": "Reused data"},
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
@@ -2183,56 +2447,79 @@ def version_text(a: dict) -> str:
     return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
 
 
-def summary_block(atts: list[dict]) -> str:
-    """The recorder's summary of each attempt shown, at the top of the dataset's page, with who wrote it."""
+def summary_block(atts: list[dict], name=None) -> str:
+    """The recorder's summary of each attempt shown, at the top of the page, with who wrote it. Several are told
+    apart by their paper, or by what `name` gives for an attempt (html)."""
     shown = [a for a in atts if a.get("summary")]
     if not shown:
         return ""
-    paras = "".join((f'<p class="lede"><em>{e(a.get("paper_title") or a["paper"])}:</em> ' if len(shown) > 1 else '<p class="lede">')
+    name = name or (lambda a: e(a.get("paper_title") or a["paper"]))
+    paras = "".join((f'<p class="lede"><em>{name(a)}:</em> ' if len(shown) > 1 else '<p class="lede">')
                     + f'{e(a["summary"])}</p>' for a in shown)
     return (f'<div class="attempt-summary">{paras}<p class="sub small">Summary written by the agent that recorded the attempt, '
             f'from its claims and the agents&rsquo; reports. A failure to reproduce may be a failure of the agent.</p></div>')
 
 
-def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -> str:
-    """A panel with every attempt on the dataset, oldest first, when there is more than one."""
-    all_atts = sorted((a for a in data["attempts"] if a["key"] == dandiset), key=lambda a: (a["date"], a["id"]))
+def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict], paper: dict | None = None) -> str:
+    """A panel with every attempt on the dataset, or given a paper every attempt on the paper, oldest first, when
+    there is more than one. Each opens the attempt's page and names the datasets it used, with their versions."""
+    if paper:
+        all_atts = paper_attempts(data, paper)
+        current = paper["attempts"]
+    else:
+        all_atts = sorted((a for a in data["attempts"] if a["key"] == dandiset), key=lambda a: (a["date"], a["id"]))
+        current = current_attempts(data).get(dandiset, [])
     if len(all_atts) < 2:
         return ""
-    current = current_attempts(data).get(dandiset, [])
+    current_ids = {a["id"] for a in current}
+    shown_ids = {a["id"] for a in shown}
+    one_shown = len(shown_ids) == 1
     papers = {a["paper"] for a in all_atts}
     items = ""
     for a in all_atts:
-        # Counted here even when deprecated, which the dataset's totals leave out.
+        sets = attempt_sets(data, a) if paper else [a]
+        # Counted here even when deprecated, which the totals leave out.
         counts = {k: sum(1 for o in a["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
         n = sum(counts.values())
-        href = f'{root}{page_of(dandiset)}' + ("" if a in current else f'{e(a["id"])}/')
-        here = a in shown
-        notes = [f'{n} claims', f'{len(a["findings"])} findings']
+        n_found = sum(len(x["findings"]) for x in sets)
+        href = f'{root}{attempt_path(data, a)}'
+        is_current = a["id"] in current_ids
+        # On a paper's page every current attempt is shown, so none is marked; on an attempt's page, the one.
+        here = a["id"] in shown_ids and (one_shown or not paper)
+        notes = [f'{n} claims', f'{n_found} findings about the data']
         protocol = (a.get("agent") or {}).get("protocol")
         if protocol:
             notes.append(f'protocol {e(protocol)}')
-        paper = (f'<span class="muted small">{e(a.get("paper_title") or a["paper"])}</span>'
+        title = (f'<span class="muted small">{e(a.get("paper_title") or a["paper"])}</span>'
                  if len(papers) > 1 else "")
         name = f'Attempt {e(a["id"].rsplit("-", 1)[1])}'
         viewing = '<span class="t-viewing">Viewing</span>' if here else ""
         name = f'<strong>{name}</strong>' if here else f'<a href="{href}"><strong>{name}</strong></a>'
+        used = ("; ".join(f'<a href="{root}{e(page_of(x["key"]))}">{e(x["label"])}</a> {version_text(x)}' for x in sets)
+                if paper else f'Dataset {version_text(a)}')
         card = (f'<div class="t-head">{name}{viewing}<span class="muted small">{e(a["date"])}</span>'
-                + f'<span class="tag">{"current" if a in current else "replaced"}</span>'
+                + f'<span class="tag">{"current" if is_current else "replaced"}</span>'
                 + ('<span class="tag">deprecated</span>' if a.get("deprecated") else "")
-                + f'</div>{paper}<span class="t-version">Dataset {version_text(a)}</span>'
+                + f'</div>{title}<span class="t-version">{used}</span>'
                 f'<div class="t-bar">{bar(counts, f"Outcomes of {n} claims", "bar mini")}</div>'
                 f'<span class="muted small">{" · ".join(notes)}</span>')
         card = f'<div class="t-card">{card}</div>'
-        classes = " ".join(c for c, on in (("current", a in current), ("here", here),
+        classes = " ".join(c for c, on in (("current", is_current), ("here", here),
                                            ("deprecated", bool(a.get("deprecated")))) if on)
         current_attr = ' aria-current="page"' if here else ""
         items += (f'<li class="{classes}"{current_attr}>'
                   f'<span class="dot" aria-hidden="true"></span>{card}</li>')
-    return (f'<div class="panel timeline-panel"><h2>Attempts over time <span class="count">{len(all_atts)}</span></h2>'
-            f'<p class="sub small" style="margin-top:6px">Each attempt tests the paper again, usually on a newer version '
-            f'of the dataset or a newer protocol, and reports which earlier findings are fixed. The latest attempt on '
-            f'each paper is the current one.</p><ol class="timeline">{items}</ol></div>')
+    intro = ("Every attempt on the paper, each with the datasets it used and their versions. An attempt on a dataset "
+             "replaces the one before it on that dataset; the paper&rsquo;s page shows the current ones." if paper else
+             "Each attempt tests the paper again, usually on a newer version of the dataset or a newer protocol, and "
+             "reports which earlier findings are fixed. The latest attempt on each paper is the current one.")
+    # Closed until asked for: the page is about the paper's results, and the attempts behind them are detail. The
+    # bar says how many there are, and how many of them a later attempt replaced.
+    n_replaced = sum(1 for a in all_atts if a["id"] not in current_ids)
+    said = f'{len(all_atts) - n_replaced} current' + (f', {n_replaced} replaced' if n_replaced else "")
+    return (f'<details class="panel timeline-panel"><summary><h2>Attempts{"" if paper else " over time"} '
+            f'<span class="count">{len(all_atts)}</span></h2><span class="muted small">{said}</span></summary>'
+            f'<p class="sub small" style="margin-top:10px">{intro}</p><ol class="timeline">{items}</ol></details>')
 
 
 def finding_tags(f: dict) -> str:
@@ -2263,15 +2550,20 @@ def page_dataset(data: dict, key: str) -> str:
     atts = [a for a in current_attempts(data).get(key, []) if not a.get("deprecated")]
     papers = [q for q in papers_of(data) if key in q["datasets"]]
     by_doi = {q["doi"]: q for q in papers}
-    rows = {r["id"]: r for r in rows_cache(data)["papers"]}
 
-    def found_by(a):
+    def found_by(a, f):
         q = by_doi.get(a["paper"].lower())
         name = f'<a href="{root}papers/{e(q["key"])}/">{e(q["byline"])}</a>' if q else e(a["paper"])
         others = [k for k in a.get("datasets") or [a["key"]] if k != key]
-        return (f'Found by the attempt on {name} ({e(a["id"])}, {e(a["date"])})'
-                + (f'; that attempt also used {e(", ".join(dataset_label(k) for k in others))}, and its findings are '
-                   'not yet said to be about one dataset or another' if others else ""))
+        named = f.get("datasets") or []
+        return (f'Found by the attempt on {name} (<a href="{root}{e(attempt_path(data, a))}">{e(a["id"])}</a>, '
+                f'{e(a["date"])})'
+                # An attempt on several datasets says which of them a finding is about (`datasets`): one that
+                # does not is listed for each, and one about several says so.
+                + (f'; that attempt also used {e(", ".join(dataset_label(k) for k in others))}, and the finding '
+                   'does not say which dataset it is about' if others and not named else
+                   f'; also about {e(", ".join(dataset_label(key_of_dir(x)) for x in named if key_of_dir(x) != key))}'
+                   if len(named) > 1 else ""))
     findings = [(f, a) for a in atts for f in a["findings"]]
     # Open findings under the version of the dataset they were found on, the newest version first: a finding on
     # an older version has not been checked on a newer one unless a later attempt on the same paper says so.
@@ -2287,7 +2579,7 @@ def page_dataset(data: dict, key: str) -> str:
                  'not checked on it">an older version</span>')
         findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
                           f'{n} open finding{"" if n == 1 else "s"}</span></h3><ul class="findings">'
-                          + ("".join(findings_list([f], root, note=lambda _f, a=a: found_by(a))
+                          + ("".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f))
                                      for a in group for f in a["findings"]) or findings_list([], root)) + "</ul>")
     if not atts:
         findings_html = f'<ul class="findings">{findings_list([], root)}</ul>'
@@ -2305,20 +2597,15 @@ def page_dataset(data: dict, key: str) -> str:
 
     paper_rows_html = ""
     for q in papers:
-        r = rows.get(q["key"], {})
         rel = next((d.get("relation", "primary") for d in paper_records.datasets_of(q["key"]) if d["key"] == key), "primary")
-        state = ("attempted" if q["attempts"] else "claims read, not yet attempted" if q["status"] == "claims"
-                 else "not yet attempted")
-        outcome = (f'<div class="meta" style="margin-top:6px">{bar(r["counts"], "Outcomes", "bar mini")}'
-                   + '<span class="small muted">' + e(" · ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in r["counts"].items() if n))
-                   + '</span></div>') if r.get("counts") else f'<div class="meta"><span class="muted">{e(state.capitalize())}</span></div>'
-        title = (f'<a href="{root}{e(r["page"])}">{e(q["title"])}</a>' if r.get("page") else e(q["title"]))
-        paper_rows_html += (f'<div class="row drow prow"><div><p class="byline">{e(q["byline"])}'
-                            f'<span class="sep" aria-hidden="true">·</span>'
-                            f'{"its own data" if rel == "primary" else "reuses the data"}</p>'
-                            f'<p class="title">{title}</p>{outcome}</div>'
-                            f'<div class="right">{quiet_tier(r["tier"]) if r.get("tier") else ""}'
-                            f'<span class="small muted">{e(r.get("date") or "")}</span></div></div>')
+        # The attempts on the paper that used this dataset, each with the version it ran on.
+        mine = [a for a in current_attempts(data).get(key, []) if a["paper"].lower() == q["doi"]]
+        under = ('<div class="meta" style="margin-top:6px"><span class="small">' + "; ".join(
+            f'Attempt <a href="{root}{e(attempt_path(data, a))}">{e(a["id"])}</a> on {version_text(a)}'
+            + (" (set aside, to redo: its findings are not listed here)" if a.get("deprecated") else "")
+            for a in mine) + '</span></div>') if mine else ""
+        paper_rows_html += paper_card(data, q, root, note="its own data" if rel == "primary" else "reuses the data",
+                                      under=under)
 
     tags = ""
     if target:
@@ -2340,6 +2627,7 @@ def page_dataset(data: dict, key: str) -> str:
   <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
   <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
   <p class="sub">{e(name)}</p>
+  {people_html(data, contributors_of(data, key), root, noun="contributors")}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   {f'<p class="sub small" style="margin-top:8px">Tested on dataset {"; ".join(versions)}</p>' if versions else ""}
   <p class="actions">{" ".join(actions)}</p>
@@ -2372,7 +2660,7 @@ def page_paper(data: dict, p: dict) -> str:
         for d in row["datasets"])
     relation = " (data the paper reuses)" if p["relation"] == ["reuses"] else ""
     head = (f'<header class="page"><p class="eyebrow">{e(p["byline"])}{(" · " + e(journal_name(p["doi"]))) if journal_name(p["doi"]) else ""}</p>'
-            f'<h1>{e(p["title"])}</h1>'
+            f'<h1>{e(p["title"])}</h1>{authors_html(data, p["doi"], root)}'
             f'<p class="sub"><a href="https://doi.org/{e(p["doi"])}">doi:{e(p["doi"])}</a> · paper key '
             f'<code>{e(p["key"])}</code></p></header>')
     parts = [f'<section class="panel"><h2>Datasets{relation}</h2><ul class="inline">{datasets_html}</ul></section>']
@@ -2428,12 +2716,16 @@ def page_paper(data: dict, p: dict) -> str:
 
 
 def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper: dict | None = None) -> str:
-    """The dandiset's page, from its current attempts; or, given an earlier attempt, that attempt's page; or, given
-    a paper (papers_of), the paper's page: the same sections from the paper's latest attempts on all its datasets,
-    with `dandiset` the dataset of its latest attempt."""
-    root = "../../" if paper else "../../../../" if attempt else "../../../"
+    """Given a paper (papers_of), the paper's page: its claims and their outcomes, from the paper's latest attempts
+    on all its datasets, with `dandiset` the dataset of its latest attempt. Given a paper and one of its attempts,
+    that attempt's page, under the paper: the same sections for the one attempt, current or replaced. Without a
+    paper (an attempt whose paper is not listed), the dandiset's page from its current attempts, or an earlier
+    attempt's page under it."""
+    root = ("../../../" if attempt else "../../") if paper else "../../../../" if attempt else "../../../"
     current_atts = current_attempts(data)[dandiset]
-    atts = paper["attempts"] if paper else [attempt] if attempt else current_atts
+    atts = [attempt] if attempt else paper["attempts"] if paper else current_atts
+    one = attempt if paper else None                      # the page is one attempt's, under its paper
+    replaced = bool(one) and one["id"] not in {a["id"] for a in paper["attempts"]}
     # The datasets the page is about: the paper's that its attempts used, or the one.
     about = list(dict.fromkeys(k for a in atts for k in a.get("datasets") or [a["key"]])) if paper else [dandiset]
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
@@ -2460,8 +2752,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     for a in atts:
         if paper:   # the page is the paper's: an attempt is named by its datasets when there are several
             if len(atts) > 1:
-                claims_html += (f'<p class="sub small" style="margin:14px 0 0">Attempt <code>{e(a["id"])}</code>, on '
-                                + ", ".join(e(dataset_label(k)) for k in a.get("datasets") or [a["key"]]) + '</p>')
+                claims_html += (f'<p class="sub small" style="margin:14px 0 0">Attempt '
+                                f'<a href="{root}{e(attempt_path(data, a))}"><code>{e(a["id"])}</code></a>, on '
+                                + used_html(data, a, root) + '</p>')
         else:
             claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
                             f'<a href="https://doi.org/{e(a["paper"])}">{e(a.get("paper_title") or a["paper"])}</a></p>')
@@ -2575,12 +2868,15 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         rows_ = [("Attempt record", record), ("Paper", f'<a href="https://doi.org/{e(a["paper"])}">'
                                                      f'{e(a.get("paper_title") or a["paper"])}</a>'),
                  ("Date", e(a["date"])),
-                 ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}'),
-                 ("Dataset", f'<a href="{e(archive_url(a["key"]))}">{e(a["label"])}</a>'),
-                 ("Version", e(a["dataset_version"] or "not recorded")
-                  + (f' (<a href="https://doi.org/{e(a["dataset"]["doi"])}">doi:{e(a["dataset"]["doi"])}</a>)'
-                     if a["dataset"].get("doi") else "")
-                  + (f', modified {e(a["dataset"]["modified"])}' if a["dataset"].get("modified") else ""))]
+                 ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}')]
+        # The datasets the attempt used, each with its version: a paper's attempt can use several.
+        for x in (attempt_sets(data, a) if paper else [a]):
+            rows_ += [("Dataset", (f'<a href="{root}{e(page_of(x["key"]))}">{e(x["label"])}</a> ' if paper else "")
+                       + f'(<a href="{e(archive_url(x["key"]))}">on {e(ARCHIVES.get(split_key(x["key"])[0], {}).get("label", split_key(x["key"])[0]))}</a>)'),
+                      ("Version", e(x["dataset_version"] or "not recorded")
+                       + (f' (<a href="https://doi.org/{e(x["dataset"]["doi"])}">doi:{e(x["dataset"]["doi"])}</a>)'
+                          if x["dataset"].get("doi") else "")
+                       + (f', modified {e(x["dataset"]["modified"])}' if x["dataset"].get("modified") else ""))]
         if a["kind"] == "agent":
             runner = a.get("runner") or {}
             rows_ += [("Run on", (f'<a href="{e(runner["url"]) }">{e(runner.get("platform"))}</a>' if runner.get("url")
@@ -2592,7 +2888,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                             + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows_) + "</dl>")
     folder = f'{dandiset}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dandiset
     if paper:   # the paper's runs are filed once; the first of its datasets that has them shows them
-        folder = next((k for k in about if data.get("transcripts", {}).get(k)), dandiset)
+        aside = f'/attempt-{one["id"].rsplit("-", 1)[1]}' if replaced else ""   # a replaced attempt's are moved aside
+        folder = next((k + aside for k in about if data.get("transcripts", {}).get(k + aside)), dandiset + aside)
     repo_folder = (data.get("transcript_dirs") or {}).get(folder, dir_of(dandiset))
     runs = data.get("transcripts", {}).get(folder, [])
     if runs and not data["demo"]:
@@ -2605,11 +2902,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
 
     archive_link = lambda k, text: (f'<a href="{e(archive_url(k))}" target="_blank" rel="noopener">{text}</a>')
     archive_of = lambda k: e(ARCHIVES.get(split_key(k)[0], {}).get("label", split_key(k)[0]))
-    if paper:
-        actions = [f'<a href="https://doi.org/{e(paper["doi"])}">Paper</a>']
-        actions += [archive_link(k, f"{e(dataset_label(k))} on {archive_of(k)}") for k in about]
-        actions += [f'<a href="{root}api/{page_of(k).rstrip("/")}.json">JSON' + (f" ({e(dataset_label(k))})" if len(about) > 1
-                                                                               else "") + "</a>" for k in about]
+    if paper:   # the paper's DOI is under its title, and each dataset's links are in the table of datasets
+        actions = []
     else:
         actions = [archive_link(dandiset, f"View on {archive_of(dandiset)}")]
         actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>' for a in atts] if len(atts) == 1 else []
@@ -2628,8 +2922,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
              for x in sorted({x for t in mine for x in t["technique"]})]
             + [f'<a class="tag" href="{root}papers/?species={e(x)}">{e(x)}</a>'
                for x in sorted({x for t in mine for x in t["species"]})]
-            + [f'<span class="tag" title="{t["size_gb"]:,.1f} GB, {t["files"]:,} files">{e(t["label"])}: '
-               f'{human_size(t["size_gb"])}</span>' for t in mine])
+)
     elif target:
         tags = " ".join(
             [f'<a class="tag" href="{root}papers/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
@@ -2654,7 +2947,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                           f'<span class="muted">(not attempted)</span></span> ')
         related = (f'<div class="panel" style="margin-top:28px"><h2>Other datasets that name the same paper</h2>'
                    f'<div class="related">{links}</div></div>')
-    if paper:
+    if one:   # an attempt's page: the attempts on its paper before and after it
+        others = paper_attempts(data, paper)
+        i = next(n for n, a in enumerate(others) if a["id"] == one["id"])
+        link = lambda a, text: f'<a href="{root}{e(attempt_path(data, a))}">{text}</a>'
+        prev_link = link(others[i - 1], f'← {e(others[i - 1]["id"])}') if i > 0 else "<span></span>"
+        next_link = link(others[i + 1], f'{e(others[i + 1]["id"])} →') if i < len(others) - 1 else "<span></span>"
+    elif paper:
         others = [q for q in papers_of(data) if q["attempts"]]
         i = next(n for n, q in enumerate(others) if q["key"] == paper["key"])
         link = lambda q, text: f'<a href="{root}papers/{e(q["key"])}/">{text}</a>'
@@ -2667,7 +2966,21 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         next_link = (f'<a href="{root}{page_of(ids[i + 1])}">{dataset_label(ids[i + 1])} →</a>' if i < len(ids) - 1
                      else "<span></span>")
     superseded = ""
-    if attempt:
+    if one:
+        paper_link = f'<a href="{root}papers/{e(paper["key"])}/">the paper&rsquo;s page</a>'
+        if replaced:
+            later = next((a["id"] for a in reversed(paper["attempts"])
+                          if set(a.get("datasets") or [a["key"]]) & set(one.get("datasets") or [one["key"]])),
+                         paper["attempts"][-1]["id"])
+            superseded = (f'<p class="deprecated"><strong>An earlier attempt.</strong> Attempt '
+                          f'<a href="{root}{e(attempt_path(data, next(a for a in paper["attempts"] if a["id"] == later)))}">'
+                          f'{e(later)}</a> replaced it; {paper_link} shows the current outcomes. Its notebooks link '
+                          f'to the entry as it is now; the attempt record is as it was.</p>')
+        else:
+            n_cur = len(paper["attempts"])
+            superseded = (f'<p class="sub small" style="margin-top:8px">One of the {n_cur} current attempts on this '
+                          f'paper, each on its own datasets; {paper_link} has them all.</p>')
+    elif attempt:
         later = next(a["id"] for a in current_atts if a["paper"] == attempt["paper"])
         same_entry = any(a["entry"] == attempt["entry"] for a in current_atts)
         superseded = (f'<p class="deprecated"><strong>An earlier attempt.</strong> Attempt {e(later)} replaced it; '
@@ -2719,14 +3032,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                 ("differences", "Method differences", len(deviations)), ("provenance", "Provenance", None)]
     # Findings about the data belong to the dataset: on a paper's page, a pointer to its datasets' pages.
     if paper:
-        n_found = len(all_findings)
         findings_panel = ""
-        found_note = (f'<p class="sub small" style="margin-top:8px">{n_found} finding{"s" if n_found != 1 else ""} '
-                      f'about the data, on the page{"s" if len(about) > 1 else ""} of '
-                      + ", ".join(f'<a href="{root}{e(page_of(k))}">{e(dataset_label(k))}</a>' for k in about)
-                      + '.</p>') if n_found else ""
     else:
-        found_note = ""
         findings_panel = (f'<section class="tabpanel" id="findings"><h2>Findings about the data</h2>'
                           f'<p class="sub small" style="margin-top:12px">What attempts found about the dataset itself, '
                           f'for its owner and the archive.</p><ul class="findings">{findings_html}</ul></section>')
@@ -2735,28 +3042,64 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         count = f' <span class="count">{c}</span>' if c is not None else ""
         tab_buttons += f'<button type="button" role="tab" data-panel="{key}" aria-selected="false">{label}{count}</button>'
 
-    tested_on = "; ".join((e(a.get("paper_title") or a["paper"]) + ": " if len(atts) > 1 else "")
-                          + "dataset " + version_text(a) for a in atts)
+    if paper:   # the table of datasets has each one's version
+        tested_on = ""
+    else:
+        tested_on = "; ".join((e(a.get("paper_title") or a["paper"]) + ": " if len(atts) > 1 else "")
+                              + "dataset " + version_text(a) for a in atts)
     name = (target or {}).get("name") or atts[-1]["entry_title"] or dandiset
     tier = weakest_tier(atts)
     tier_link = f'{root}papers/?status=attempted&tier={tier}'
     crumb = (f'<a href="{root}{page_of(dandiset)}">{e(dataset_label(dandiset))}</a> / {e(attempt["id"])}' if attempt
              else e(dataset_label(dandiset)))
     if paper:
-        row = next(r for r in rows_cache(data)["papers"] if r["id"] == paper["key"])
-        sets = ", ".join(f'<a href="{root}{e(d["page"])}">{e(d["label"])}</a>' if d["page"] else e(d["label"])
-                         for d in row["datasets"])
+        # One line for each dataset, with everything about it that was scattered over the header: the version
+        # tested, its size, the findings about its data (on its page), and where it is on the archive. A paper's
+        # page lists all the paper's datasets; an attempt's, those the attempt used.
+        by_target = {t["key"]: t for t in data["targets"]}
+        used_rows: dict = {}
+        for a in atts:
+            for x in attempt_sets(data, a):
+                used_rows.setdefault(x["key"], []).append(x)
+        listed = list(used_rows) if one else list(dict.fromkeys([*paper["datasets"], *used_rows]))
+        lines = ""
+        for k in listed:
+            mine_ = used_rows.get(k, [])
+            t = by_target.get(k) or {}
+            n_k = sum(len(x["findings"]) for x in mine_ if not x.get("deprecated"))
+            has_page = k in current or k in data.get("claim_files", {})
+            name_ = (f'<a href="{root}{e(page_of(k))}">{e(dataset_label(k))}</a>' if has_page else e(dataset_label(k)))
+            cells = [name_,
+                     "; ".join(dict.fromkeys(version_text(x) for x in mine_)) if mine_
+                     else '<span class="muted">not used by an attempt</span>',
+                     (f'<span title="{t["size_gb"]:,.1f} GB, {t["files"]:,} files">{human_size(t["size_gb"])}</span>'
+                      if t.get("size_gb") is not None else ""),
+                     "" if not mine_ else
+                     f'<a href="{root}{e(page_of(k))}#findings">{n_k} finding{"" if n_k == 1 else "s"} about the data</a>'
+                     if n_k else '<span class="muted">no findings about the data</span>',
+                     archive_link(k, f"on {archive_of(k)}"),
+                     f'<a href="{root}api/{page_of(k).rstrip("/")}.json">JSON</a>' if mine_ and k in current else ""]
+            lines += "<tr>" + f"<th scope=\"row\">{cells[0]}</th>" + "".join(f"<td>{c}</td>" for c in cells[1:]) + "</tr>"
+        heading = ("Data the paper reuses" if paper["relation"] == ["reuses"] else
+                   "Dataset" if len(listed) == 1 else "Datasets")
+        sets = (f'<div class="sets"><table aria-label="{heading}"><caption>{heading}</caption><tbody>{lines}</tbody>'
+                f'</table></div>')
         missing = [m for a in atts for m in a.get("missing_datasets") or []]
-        could_not = ("<br><strong>Datasets it could not use:</strong> " + "; ".join(
-            e((m.get("archive", "") + ":" + m.get("id", "")).strip(":") or m.get("name", "a dataset"))
-            + f' ({e(m.get("why", ""))})' for m in missing)) if missing else ""
-        top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {e(paper["byline"])}</p>'
-               f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}</p>'
+        # Why an attempt left a dataset out, in its own words: long, so on request.
+        could_not = (f'<details class="sets-why"><summary>{len(missing)} dataset{"" if len(missing) == 1 else "s"} '
+                     f'the attempt could not use, and why</summary><ul>' + "".join(
+                         "<li><strong>" + e((m.get("archive", "") + ":" + m.get("id", "")).strip(":") or m.get("name", "a dataset"))
+                         + f'</strong> {e(m.get("why", ""))}</li>' for m in missing) + "</ul></details>") if missing else ""
+        here = (f'<a href="{root}papers/{e(paper["key"])}/">{e(paper["byline"])}</a> / Attempt {e(one["id"])}'
+                if one else e(paper["byline"]))
+        top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
+               f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
+               f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
                f'<div class="dhead"><h1>{e(paper["title"])}</h1>{tier_badge(tier, tier_link)}</div>'
+               f'{authors_html(data, paper["doi"], root)}'
                f'<p class="sub"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · paper key '
                f'<code>{e(paper["key"])}</code></p>'
-               f'<p class="sub">{"Data the paper reuses" if paper["relation"] == ["reuses"] else "Datasets"}: {sets}'
-               f'{could_not}</p>')
+               f'{sets}{could_not}')
     else:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
                f'<div class="dhead"><h1>{e(dataset_label(dandiset))}</h1>{tier_badge(tier, tier_link)}</div>'
@@ -2766,15 +3109,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
-  {summary_block(atts)}
-  {found_note}
-  <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
+  {summary_block(atts, name=(lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a))) if paper else None)}
+  {f'<p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>' if tested_on else ""}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
 <main>
-  {"".join(attempts_timeline(data, k, root, [a for a in atts if k in (a.get("datasets") or [a["key"]])][:1] or atts)
-           for k in about[:1]) if paper else attempts_timeline(data, dandiset, root, atts)}
+  {attempts_timeline(data, dandiset, root, atts, paper=paper)}
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>
     <div class="subtabs" id="claim-filter" role="group" aria-label="Show claims by outcome"></div>
@@ -2796,6 +3137,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   {related}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
+    if one:
+        return shell(data, f'Attempt {one["id"]} · {paper["byline"]}: {paper["title"]} · {SITE_NAME}', root, "papers",
+                     body, CLAIMS_JS + TABS_JS, path=f'papers/{paper["key"]}/{one["id"]}/',
+                     description=f'Attempt {one["id"]} to reproduce {paper["byline"]}, "{paper["title"]}", from its '
+                                 f'open data: {n} claims, their outcomes, notebooks and verification.')
     if paper:
         return shell(data, f'{paper["byline"]}: {paper["title"]} · {SITE_NAME}', root, "papers", body,
                      CLAIMS_JS + TABS_JS, path=f'papers/{paper["key"]}/',
@@ -2902,8 +3248,11 @@ def build(data: dict, output: Path) -> None:
         page.mkdir(parents=True, exist_ok=True)
         (page / "index.html").write_text(page_dataset(data, key))
         for a in earlier_attempts(data, key):
+            # An earlier attempt's page was under its dataset; it is under its paper now.
             (page / a["id"]).mkdir(exist_ok=True)
-            (page / a["id"] / "index.html").write_text(page_dandiset(data, key, a))
+            own = attempt_own_path(data, a)
+            (page / a["id"] / "index.html").write_text(
+                redirect_page(own, "../" * (page_of(key).count("/") + 1)) if own else page_dandiset(data, key, a))
         api = json.dumps({
             "dataset": {"archive": split_key(key)[0], "id": split_key(key)[1], "label": dataset_label(key)},
             "page": page_of(key), "generated": data["generated"],
@@ -2919,7 +3268,7 @@ def build(data: dict, output: Path) -> None:
         # The DANDI pages and API files were at dandisets/<id>/ before; links to them are kept working.
         if split_key(key)[0] == "dandi":
             old = output / "dandisets" / split_key(key)[1]
-            for sub, target in [("", page_of(key))] + [(a["id"] + "/", page_of(key) + a["id"] + "/")
+            for sub, target in [("", page_of(key))] + [(a["id"] + "/", attempt_own_path(data, a) or page_of(key) + a["id"] + "/")
                                                        for a in earlier_attempts(data, key)]:
                 (old / sub).mkdir(parents=True, exist_ok=True)
                 (old / sub / "index.html").write_text(redirect_page(target, "../../" + ("../" if sub else "")))
@@ -2928,6 +3277,17 @@ def build(data: dict, output: Path) -> None:
         if p["attempts"] or p["status"] == "claims":
             (output / "papers" / p["key"]).mkdir(parents=True, exist_ok=True)
             (output / "papers" / p["key"] / "index.html").write_text(page_paper(data, p))
+        # Every attempt on the paper has an address of its own, which stays when a later attempt replaces it. The
+        # paper's one current attempt is read on the paper's page, and its address leads there.
+        for a in paper_attempts(data, p):
+            page = output / "papers" / p["key"] / a["id"]
+            page.mkdir(parents=True, exist_ok=True)
+            (page / "index.html").write_text(
+                redirect_page(f'papers/{p["key"]}/', "../../../") if attempt_path(data, a) == f'papers/{p["key"]}/'
+                else page_dandiset(data, a["key"], attempt=a, paper=p))
+    for orcid, author in author_index(data).items():
+        (output / "authors" / orcid).mkdir(parents=True, exist_ok=True)
+        (output / "authors" / orcid / "index.html").write_text(page_author(data, author))
     for key in claims_only(data):
         # A dataset whose paper's claims are read and not yet attempted: the dataset's page, whose papers list
         # leads to the claims on the paper's page.
@@ -2953,7 +3313,8 @@ def renamed_redirects(data: dict, output: Path) -> None:
     earlier = {a["id"]: a["key"] for key in current_attempts(data) for a in earlier_attempts(data, key)}
     for old, new in (renamed.get("attempts") or {}).items():
         if new in earlier:
-            target = page_of(earlier[new]) + new + "/"
+            moved = next(a for a in data["attempts"] if a["id"] == new)
+            target = attempt_own_path(data, moved) or page_of(earlier[new]) + new + "/"
             depth = page_of(earlier[new]).count("/") + 1
             (output / page_of(earlier[new]) / old).mkdir(parents=True, exist_ok=True)
             (output / page_of(earlier[new]) / old / "index.html").write_text(redirect_page(target, "../" * depth))
@@ -3004,6 +3365,8 @@ def sitemap(data: dict) -> str:
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
     pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)
               if p["attempts"] or p["status"] == "claims"]
+    pages += [(f"authors/{orcid}/", max([q["date"] for q in a["papers"] if q["date"]] or [data["generated"][:10]]))
+              for orcid, a in author_index(data).items()]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')

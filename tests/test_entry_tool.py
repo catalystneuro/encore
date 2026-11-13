@@ -437,3 +437,21 @@ def test_executed_copies_that_are_not_what_the_run_left_are_not_reused(repo, mon
     (out / tool.STAMP).write_text("not json")
     assert tool.reusable(entry_dir, out, 60) is None
 
+
+
+def test_a_finding_that_can_be_about_either_says_which_from_pilot_15(repo):
+    def check(protocol, findings, datasets=None):
+        attempt = {**ATTEMPT, "findings": findings,
+                   "provenance": {**ATTEMPT["provenance"], "agent": {**ATTEMPT["provenance"]["agent"], "protocol": protocol}}}
+        if datasets:
+            attempt["datasets"] = datasets
+        (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+        return [e for e in errors(repo) if "finding 1" in e]
+    other = [{"kind": "other", "statement": "Something about it."}]
+    # The rule is the protocol's from pilot-15: an attempt made under an earlier version is not held to it.
+    assert check("pilot-14", other) == [] and check("pilot-7", other) == []
+    assert any("say what it is about" in e for e in check("pilot-15", other))
+    assert any("say what it is about" in e for e in check("pilot-16", other))
+    assert check("pilot-15", [{**other[0], "about": "paper"}]) == []
+    # A kind that says what it is about needs nothing more.
+    assert check("pilot-15", [{"kind": "metadata_error", "statement": "Wrong age."}]) == []
