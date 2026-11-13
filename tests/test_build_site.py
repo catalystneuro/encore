@@ -164,6 +164,19 @@ def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
         assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
+def test_the_caution_shows_its_lead_and_keeps_the_rest_behind_a_disclosure(built):
+    _, out = built
+    home = (out / "index.html").read_text()
+    block = home[home.index('<div class="caution" id="caution">'):]
+    block = block[:block.index("</details>") + len("</details>")]
+    lead, details = block.split("<details>", 1)
+    assert site.CAUTION in lead and "It may be a failure of the attempt." in lead
+    assert "<details open" not in block
+    assert "An outcome says what one attempt could recover" in details
+    assert "Most attempts are made by AI agents." in details and site.RESPOND_URL in details
+    assert site.CAUTION_JS in home and "#caution" in site.CAUTION_JS
+
+
 def test_a_papers_page_lists_every_notebook_of_every_entry_that_uses_its_datasets(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
@@ -333,7 +346,7 @@ def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_pat
 def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
     data, out = built
     papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
-    seen = none = 0
+    seen = none = zeros = 0
     for orcid, author in list(site.author_index(data).items())[:400]:
         counts = {k: sum((papers[q["key"]].get("counts") or {}).get(k, 0) for q in author["papers"]) for k in site.OUTCOMES}
         every = site.author_outcomes(data, author)
@@ -348,16 +361,17 @@ def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
             continue
         seen += 1
         assert every["counts"] == counts and every["claims"] == sum(counts.values())
-        # Every outcome with a count is on both, by its count and a word for it; one with none is left out.
+        # All four outcomes are on both, by count, a word and a dot in the outcome's colour: one with no claim as 0.
         for svg in (line.read_text(), card.read_text()):
             for k, n in counts.items():
-                assert (f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg) == bool(n)
-                assert (f'fill="{site.OUTCOME_FILL[k]}"' in svg) == bool(n)
-            assert site.e(every["alt"]) in svg
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg and f'<circle' in svg
+                assert f'fill="{site.OUTCOME_FILL[k]}"' in svg
+            assert svg.count("<circle") >= 4 and site.e(every["alt"]) in svg
+        zeros += any(n == 0 for n in counts.values())
         assert site.e(author["name"]) in card.read_text() and card.read_text().count("<rect") == 1 + sum(1 for n in counts.values() if n)
         page = (out / "authors" / orcid / "index.html").read_text()
         assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
-    assert seen and none
+    assert seen and none and zeros
 
 
 def test_a_deprecated_attempt_is_marked_on_its_page(built):
@@ -623,6 +637,20 @@ def test_a_check_of_the_link_is_under_provenance_and_not_among_the_claims(built)
             shown = [o for o in a["outcomes"] if o.get("kind") != "link"]
             assert claims.count('<li class="claim') == len(shown)
     assert seen
+
+
+def test_a_claim_shows_its_id_which_the_response_form_asks_for():
+    claim = {"claim": "fig2-rates", "statement": "Rates rise.", "source": "Figure 2B", "outcome": "reproduced",
+             "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    # In view without opening the claim, and not a link there (a click on the summary opens the claim).
+    head = html.split("</summary>")[0]
+    assert '<code class="claim-id" title="The id of this claim">fig2-rates</code>' in head and "<a " not in head
+    # Open, the claim gives its id again with a link to itself.
+    assert 'Claim id <code>fig2-rates</code>' in html and '<a href="#claim-fig2-rates">link to this claim</a>' in html
+    # The form's hint names ids as the page shows them, not numbers the page does not have.
+    form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
+    assert "C3, C7" not in form and "end of the claim's first line" in form
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():

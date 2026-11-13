@@ -1360,11 +1360,10 @@ def author_outcomes(data: dict, author: dict) -> dict | None:
 
 def _legend(counts: dict, x: float, y: float, gap: float = 14) -> tuple[str, float]:
     """The outcomes in a row from x: a dot in the outcome's colour, then its count and name in ink (the dot carries
-    which outcome it is, the text stays readable). Returns the drawing and where it ends."""
+    which outcome it is, the text stays readable). All four are there, an outcome with no claim as 0: a badge then
+    reads the same way for everyone, and says outright that nothing failed. Returns the drawing and where it ends."""
     out = ""
     for k, n in counts.items():
-        if not n:
-            continue
         text = f"{n} {OUTCOME_SHORT[k]}"
         out += (f'<circle cx="{x + 4:.0f}" cy="{y - 4:.0f}" r="4" fill="{OUTCOME_FILL[k]}"/>'
                 f'<text x="{x + 13:.0f}" y="{y:.0f}" textLength="{_text_width(text):.0f}">{e(text)}</text>')
@@ -1700,9 +1699,14 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
     if o.get("quote"):
         cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
         body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
+    # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at
+    # the end of the claim's first line, and with a link to the claim once it is open.
+    ident = f'<code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
+    body += (f'<p class="claim-link small muted">Claim id <code>{e(o["claim"])}</code> &middot; '
+             f'<a href="#claim-{e(o["claim"])}">link to this claim</a></p>')
     # The chip is not a link here: inside the summary a click should open the claim.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
-            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}</div>'
+            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}{ident}</div>'
             f'<p class="statement">{e(o["statement"])}</p></summary>'
             f'<div class="claim-body">{body}</div></details></li>')
 
@@ -1833,7 +1837,8 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')set(false)
 
 def caution_block() -> str:
     return f'''<div class="caution" id="caution">
-  <p class="lead"><strong>{CAUTION}</strong> It may be a failure of the attempt.</p>
+  <p class="lead"><span><strong>{CAUTION}</strong> It may be a failure of the attempt.</span></p>
+  <details><summary>More on reading outcomes</summary>
   <div class="body">
     <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it. A
     “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
@@ -1842,8 +1847,14 @@ def caution_block() -> str:
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
     from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
-  </div>
+  </div></details>
 </div>'''
+
+
+# A reader who follows a link to #caution came for the explanation: open it for them.
+CAUTION_JS = """<script>(function(){function go(){if(location.hash!=='#caution')return;var c=document.getElementById('caution'),
+d=c&&c.querySelector('details');if(!d)return;d.open=true;c.scrollIntoView();}
+go();addEventListener('load',go);addEventListener('hashchange',go);})();</script>"""
 
 
 # --- pages ---------------------------------------------------------------------
@@ -2149,7 +2160,7 @@ def page_overview(data: dict) -> str:
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + TABS_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               + TABS_JS + CAUTION_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
