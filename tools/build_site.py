@@ -90,10 +90,15 @@ GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><p
                '-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 '
                '7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
 
+# The mark for "not reproduced": an equals sign struck through, "the result differs". It is drawn, not typed, because
+# the font's "≠" is too thin to read in the 14px legend square. It is neutral on purpose: not a cross, as a failure to
+# reproduce may be the attempt's failure, not the paper's. It takes the text colour of the square it sits in.
+DIFFERS_MARK = ('<svg viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M2 3.8h6M2 6.2h6M6.6 1.6 3.4 8.4" '
+                'fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>')
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
     "partially_reproduced": ("Partially reproduced", "warning", "◐"),
-    "not_reproduced": ("Not reproduced", "unresolved", "?"),
+    "not_reproduced": ("Not reproduced", "unresolved", DIFFERS_MARK),
     "blocked": ("Blocked", "blocked", "⊘"),
 }
 BLOCKED_BY = {

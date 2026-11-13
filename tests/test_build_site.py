@@ -434,6 +434,18 @@ def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
                     assert f'Notebook <code>{nb["path"]}</code>' in page
 
 
+def test_each_outcome_has_its_own_mark_and_not_reproduced_is_not_a_question_or_a_cross():
+    icons = [icon for _, _, icon in site.OUTCOMES.values()]
+    assert len(set(icons)) == len(icons)
+    assert all("?" not in icon for icon in icons)
+    differs = site.OUTCOMES["not_reproduced"][2]
+    assert differs == site.DIFFERS_MARK and not any(c in differs for c in "✗✕×!")
+    # The mark is decorative: a screen reader hears the label next to it, not the symbol.
+    assert 'aria-hidden="true"' in differs
+    assert site.chip("not_reproduced").startswith('<span class="chip unresolved"><span class="icon" aria-hidden="true">')
+    assert all(f'aria-hidden="true">{icon}</span>' in site.legend({k: 1 for k in site.OUTCOMES}) for icon in icons)
+
+
 def test_claims_with_outside_names_count_as_the_dandiset():
     attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "with_labels"},
                             {"claim": "b", "outcome": "reproduced", "data": "with_inputs"}]}
