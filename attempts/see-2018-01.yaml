@@ -354,12 +354,12 @@ outcomes:
   - PTD is the maximum minus the minimum of the averaged STRF, which equals the legend's (max - min) of the summed
     STRF divided by the count.
 - claim: fig10c-strf-mi-higher
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_see_2018.ipynb
   output: claim:fig10c-strf-mi-higher
   assumed: true
-  notes: Recorded as reproduced, resting on the linear projection, the outcome of round 1; a change to not reproduced
-    is proposed (below). cNE STRF MI exceeds the member's in 52.7 to 55.7% of 476 pairs; signed-rank p = 0.0015
+  notes: Not reproduced under either projection (changed from reproduced in round 3, with the verifier's agreement).
+    cNE STRF MI exceeds the member's in 52.7 to 55.7% of 476 pairs; signed-rank p = 0.0015
     (linear, every bin above threshold), 0.0076 (linear, peak per run), 0.049 (quadratic, every bin) and 0.19
     (quadratic, peak), so no reading reaches p < 0.001 in this draw. Over five subsampling draws the linear,
     every-bin reading passes in 2 (p = 7.7e-06 and 1.5e-05; the others 0.0015, 0.0012 and 0.0036) and no other
@@ -370,14 +370,6 @@ outcomes:
     higher under all four readings (59.7 to 63.1% of pairs, p = 2.7e-14 to 1.6e-08), but the criterion asks for
     the in-sample MI. The paper has p = 1.6e-59 over 703 pairs. The MI rests on the STRF resolution and projection
     bins chosen here.
-  proposed:
-    outcome: not_reproduced
-    reason: In the printed run no reading meets the criterion (p = 0.0015, 0.0076, 0.049 and 0.19), and the linear,
-      every-bin reading passes in only 2 of 5 subsampling draws. The linear projection was adopted because it was
-      the reading that passed, which the verifier of round 2 found a weak basis. The paper says it follows the
-      approach of Lopes-dos-Santos et al. 2013 (Results, Identification of coordinated neuronal ensembles), whose
-      projection is the quadratic one in the claims file, and under it no event reading passes in any draw.
-      The analysis is in the notebook's fig10c section (cell tagged claim:fig10c-strf-mi-higher).
   deviations:
   - cNE detection details the paper does not fix are this attempt's readings, from the claims file's opening comment
     and cne.py (Marcenko-Pastur bound (1 + sqrt(n/T))^2, symmetric fastICA with logcosh, sign reading (a) for membership,
@@ -387,8 +379,8 @@ outcomes:
     cells, and 5 ms bins, nlags = 20 is sufficient'); the paper gives no STRF parameters. MI projection bins (25
     bins over -5 to 5 SD) are a standard choice.
   - Events as in fig10b-ptd-higher.
-  - Assumption, the linear projection of the activity; under the quadratic projection no event reading reaches
-    p < 0.001 with the in-sample MI in any of five draws. A change of outcome is proposed (see proposed).
+  - The projection of the activity is open in the claims file; both the quadratic (a) and the linear (b) projection
+    were run, and neither reaches p < 0.001 with the in-sample MI in the printed draw.
 - claim: fig10s1-random-group-strfs
   outcome: reproduced
   notebook: reproduce_see_2018.ipynb
@@ -969,3 +961,24 @@ verifications:
     outcome: reproduced
     reason: The 5-ms PR bin is stated and reasonable. The notes also report that 10-ms bins fail (0.645).
     response: DG median corrected to 0.021, as cell 94 prints. Outcome unchanged.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the proposed change of outcome on fig10c-strf-mi-higher and the analysis behind it (cells
+    74 to 80 of the full executed notebook of the round-2 revision), with the attempt record, the claims file and the
+    paper. It did not re-run the notebook or download the data.
+  results:
+  - claim: fig10c-strf-mi-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion says the claim is reproduced when p < 0.001 with cNE MI higher under one event reading,
+      using the in-sample STRF MI. For the printed draw, cell 79 prints signed-rank p = 0.00153 (linear, a), 0.00757
+      (linear, b), 0.0485 (quadratic, a) and 0.185 (quadratic, b), with the cNE higher in 52.7 to 55.7% of pairs, so
+      no reading meets p < 0.001. In the table of five draws linear (a) passes in only 2 of 5 (7.7e-06 and 1.5e-05)
+      and no other reading passes in any. The held-out MI does pass (p = 2.7e-14 to 1.6e-08), but the record correctly
+      treats it as a check, because the criterion asks for the in-sample MI. The outcome holds whichever projection
+      is used. The argument from Lopes-dos-Santos et al. 2013 backs the outcome but is not needed for it, since the
+      claims file leaves the projection open.
+    response: Outcome changed to not_reproduced and the proposal removed. The notes, the deviation on the projection
+      (which no longer cites Lopes-dos-Santos et al. 2013 or prefers one projection), cells 80 and 99, and the README
+      are rewritten to match.

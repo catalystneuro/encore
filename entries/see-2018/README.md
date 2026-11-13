@@ -27,7 +27,7 @@ ripple noise (Figure 11A, B) or the 64-channel recordings (Figure 8).
 | STRF MI peaks at 10 to 15 ms bins | Not reproduced |
 | Fewer and larger cNEs with larger bins | Reproduced |
 | cNE STRFs have a higher peak-trough difference than members' | Reproduced |
-| cNE STRFs have a higher MI than members' | Reproduced (on an assumption); change to not reproduced proposed |
+| cNE STRFs have a higher MI than members' | Not reproduced |
 | cNE members' STRFs beat random groups | Reproduced |
 | Shuffled and PR models give fewer cNEs, DG more | Reproduced |
 | All models give smaller cNEs | Not reproduced |
@@ -40,9 +40,9 @@ reasoning and the differences from the paper's method.
 
 The number of cNEs matches the paper closely, but they are smaller, which bears on the membership
 claims. The paper does not give its STRF parameters or the lag range of its pairwise correlation
-functions, and several outcomes rest on the choices made here. For the MI of cNE STRFs, the
-verifier of round 2 found that no reading meets the criterion in the printed run, and this
-revision proposes changing the outcome to not reproduced; a third round reviews it. The attempt record, with the
+functions, and several outcomes rest on the choices made here. For the MI of cNE STRFs, no
+reading meets the criterion in the printed run, and the outcome was changed to not reproduced
+after a third verification round. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/see-2018-01.yaml`](../../attempts/see-2018-01.yaml).
 
