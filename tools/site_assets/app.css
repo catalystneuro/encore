@@ -12,6 +12,14 @@
 html{scroll-behavior:smooth;scroll-padding-top:68px}
 body{margin:0;background:var(--surface);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:var(--link)}
+/* Where nearly every word is a link (a paper's datasets table, the rows of lists and cards, the crumbs, the attempts
+   panel, the footer), a full underline under each is noise. A link that stands alone in its cell or in a line of
+   links (a dataset's id, "on DANDI", "JSON", "doi") shows its underline on hover and focus only. A link among plain
+   words keeps a thin grey one, as the link colour is not 3:1 against the text around it. Running text keeps the
+   full underline. :where() keeps these weak, so a component's own rule (a title, a legend, a chip) still wins. */
+:where(.sets th,.sets td:not(:first-of-type),.row .id,.row .meta) a:not([class]){text-decoration:none}
+:where(.sets td:first-of-type,.row .meta .small,.crumbs,.timeline .t-version,footer) a:not([class]){text-decoration:underline;text-decoration-color:var(--muted);text-decoration-thickness:1px;text-underline-offset:3px}
+:where(.sets,.row .id,.row .meta,.crumbs,.timeline,footer) a:not([class]):is(:hover,:focus-visible){text-decoration:underline;text-decoration-color:currentColor}
 .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
 [hidden]{display:none!important}
 
@@ -219,7 +227,6 @@ padding:1px 8px;cursor:pointer}
 .row.prow .byline{margin:0 0 2px;font-size:.8rem;color:var(--muted);letter-spacing:.01em}
 .row.prow .byline .sep{margin:0 6px}
 .row.prow .title{font-size:1.02rem;line-height:1.35}
-.row.prow .meta a{text-decoration-thickness:1px;text-underline-offset:2px}
 .verified{font-size:.78rem;color:var(--text2);white-space:nowrap}
 .verified span{color:var(--accent);font-weight:700}
 .empty{padding:28px;text-align:center;color:var(--muted)}
