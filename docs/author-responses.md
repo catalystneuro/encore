@@ -1,39 +1,79 @@
 # Author responses
 
-An author of a paper can respond to an attempt on it with the issue form
-[Respond to an attempt](https://github.com/catalystneuro/encore/issues/new?template=author-response.yml).
-A response is to a paper's attempt: the claims and their outcomes belong to the paper. So the link to the form
-is on the paper's page and on each attempt's page (`papers/<paper>/<attempt>/`), filled in for the paper and the
-attempt; a paper with several current attempts leaves the attempt to the writer. A dataset's page has no link:
-what an attempt found about the data is for the dataset's owner and the archive. The form's issues carry the
-label `author-response`.
+Authors of a paper can respond to a reproduction attempt with the
+[Respond to an attempt](https://github.com/catalystneuro/encore/issues/new?template=author-response.yml)
+issue form. Each submission opens a GitHub issue with the label `author-response`.
 
-## What a maintainer does with one
+## Links to the form
 
-1. **Confirm the author.** The paper's page lists its authors, each with an ORCID iD where OpenAlex has one
-   (`papers/authors.yaml`). Check that the ORCID iD on the form is one of them (or, without one, write to the
-   author at their institution). Then add the label `author-confirmed`. An iD typed into a form is a claim, not
-   proof, so the label is a person's decision: where it matters, ask the author to confirm from the email on
-   their ORCID record. Only confirmed responses are shown; the paper's page counts the others as awaiting
-   confirmation. A response from someone who is not an author (a maintainer of the dataset, say) is shown once
-   it has the label `confirmed`, as a response, not as an author's.
-2. **Act on it**, by what the author says:
-   - **The outcomes look right:** add a verification of kind `paper_author` to the attempt's record
-     (`attempts/<attempt>.yaml`, schemas/attempt.schema.json): `date`, `by` (the author's name and the issue's URL)
-     and `results`, one `{claim, agrees}` for each claim the author speaks to. The
-     attempt's tier becomes `author_endorsed` (docs/design.md, "Trust tiers"). Close the issue.
-   - **Some outcomes are wrong, or the attempt misread the claims:** reply with what will change. A misread claim is
-     corrected in the claims file and the attempt run again (a run request, docs/queue.md); an outcome the author
-     shows to be wrong is a reason to run the attempt again, and the author's points go into the request. Label the
-     issue `disputed` until the new attempt has merged.
-   - **The dataset differs from what the paper used:** this is a finding about the data. Open an issue on the
-     conversion, or tell the archive, and link it here.
-3. **Keep it public.** The response stays on the site after the issue is closed: it is part of the attempt's
-   record.
+The form is linked from two kinds of page:
 
-## Where a response is shown
+- **A paper's page.** If the paper has one current attempt, the link fills in the paper and that attempt. If it
+  has several, the link fills in the paper only, and the author chooses the attempt.
+- **An attempt's page** (`papers/<paper>/<attempt>/`). The link fills in the paper and the attempt.
 
-- On the paper's page, under the attempts' summaries: every confirmed response to the paper's attempts.
-- On an attempt's page: the responses to that attempt, and those to the paper's attempts in general.
-- On the writer's own page (`authors/<ORCID>/`), in a Responses tab, when the form gave an ORCID iD the registry
-  knows.
+Dataset pages do not link to the form. A response is about a paper's claims and their outcomes. Findings about
+the data are for the dataset's owner and the archive.
+
+## Maintainer steps
+
+### 1. Confirm the author
+
+The paper's page lists its authors with their ORCID iDs, where OpenAlex has them. The list is stored in
+`papers/authors.yaml`.
+
+- If the form includes an ORCID iD, check that it belongs to one of the paper's authors.
+- If it does not, email the author at their institution.
+
+An ORCID iD typed into a form does not prove who wrote it. When the response has consequences, such as an
+endorsement or a dispute, ask the author to confirm by email from the address on their ORCID record.
+
+Then add one of these labels to the issue:
+
+| Label | Meaning |
+|---|---|
+| `author-confirmed` | The writer is an author of the paper. |
+| `confirmed` | The writer's identity is confirmed, but they are not an author. For example, they maintain the dataset. |
+
+The site shows only responses that have one of these labels. A `confirmed` response is shown as coming from
+someone who is not an author. Responses without a label are not shown; the paper's page gives only their number,
+as awaiting confirmation.
+
+### 2. Act on the response
+
+The next step depends on the view the author chose in the form.
+
+**The outcomes look right.** Add a verification of kind `paper_author` to the attempt's record
+(`attempts/<attempt>.yaml`, described in `schemas/attempt.schema.json`) with these fields:
+
+- `date`
+- `by`: the author's name and the issue's URL
+- `results`: one `{claim, agrees}` entry for each claim the author addresses
+
+This moves the attempt to the `author_endorsed` tier (see "Trust tiers" in `docs/design.md`). Then close the
+issue.
+
+**Some outcomes are wrong, or the attempt misread the claims.** Reply on the issue to say what will change, and
+add the label `disputed`.
+
+- If a claim was misread, correct the claims file and run the attempt again with a run request
+  (`docs/queue.md`).
+- If the author shows that an outcome is wrong, run the attempt again and include the author's points in the
+  run request.
+
+Remove `disputed` when the new attempt is merged.
+
+**The dataset differs from what the paper used.** Treat this as a finding about the data. Open an issue on the
+conversion or notify the archive, and link to it from the response's issue.
+
+### 3. Keep the response public
+
+A response stays on the site after its issue is closed. It is part of the attempt's record.
+
+## Where responses appear
+
+| Page | What it shows |
+|---|---|
+| Paper page | Every confirmed response to the paper's attempts, below the attempt summaries. |
+| Attempt page (`papers/<paper>/<attempt>/`) | Confirmed responses to that attempt, and responses that named no attempt. |
+| Author page (`authors/<ORCID>/`) | A Responses tab with the author's confirmed responses, if the form included an ORCID iD that the registry knows. |
