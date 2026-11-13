@@ -10,9 +10,10 @@ File layout (descriptor of hc-12, version 0.7, and the files themselves): spike 
 (`file.elec`, or `file.newallo.elec` when the top level has none), the trial tables of the new
 maze (`newallo.codematrix`, `newallo.timematrix`), learning curves, eye positions at 250 Hz
 with `eye_times`, and `camera_data.time_60`, 60 Hz rows of [time, x, y, camera orientation
-(deg), curvilinear abscissa on the maze branch (0 centre, 1 arm end), state-space curvilinear
-abscissa, state-space polar angle, state-space radius, next, previous and current transition
-tag, composite maze tag]. `time_60` sits under `newallo.camera_data` in some files.
+(deg), curvilinear abscissa on the maze branch (on the entry and exit paths the distance from
+the centre over 16 m, 0 centre, 1 arm end; on the passive returns it runs along the return;
+notebook), state-space curvilinear abscissa, state-space polar angle, state-space radius,
+next, previous and current transition tag, composite maze tag]. `time_60` sits under `newallo.camera_data` in some files.
 
 Where the parameters come from:
 
@@ -749,8 +750,12 @@ def behaviour(c):
             row["vel_pre500"] = eye_velocity(c, t - 0.5, t)
             i0 = np.searchsorted(c["t60"][:, 0], t)
             i1 = np.searchsorted(c["t60"][:, 0], t + 0.6)
+            ip = np.searchsorted(c["t60"][:, 0], t - 0.5)
             if i1 < len(c["t60"]):
                 row["dtheta_0_600ms"] = ((c["t60"][i1, 3] - c["t60"][i0, 3] + 180) % 360) - 180
+            if i0 < len(c["t60"]):
+                # orientation change over the 500 ms before the code (is the view already rotating?)
+                row["dtheta_pre500"] = ((c["t60"][i0, 3] - c["t60"][ip, 3] + 180) % 360) - 180
             turns.append(row)
     t60 = c["t60"]
     clock = {}
@@ -759,6 +764,8 @@ def behaviour(c):
             i = np.searchsorted(t60[:, 0], tt[np.isfinite(tt)] + sh)
             i = i[i < len(t60)]
             clock[(nm, sh)] = float(np.nanmedian(t60[i, 4])) if len(i) else np.nan
+            clock[(nm + " r/16", sh)] = float(np.nanmedian(np.hypot(t60[i, 1], t60[i, 2]))) / 16 if len(i) else np.nan
+            clock[(nm + " on return", sh)] = float(np.mean((t60[i, 10] >= 500) & (t60[i, 10] < 600))) if len(i) else np.nan
     rets = return_turns(c)
     for r in rets:
         for which in ("mean", "l", "r"):
@@ -799,6 +806,19 @@ def entry_headings(t60):
     return out
 
 
+def _ab_vs_r(t60, tag_ranges):
+    """Median absolute difference between the curvilinear abscissa and the distance from the
+    centre over 16 m, on frames whose transition tag lies in one of `tag_ranges`."""
+    tag = t60[:, 10]
+    m = np.zeros(len(t60), bool)
+    for lo, hi in tag_ranges:
+        m |= (tag >= lo) & (tag < hi)
+    m &= np.isfinite(t60[:, 4])
+    if not m.any():
+        return np.nan
+    return float(np.median(np.abs(t60[m, 4] - np.hypot(t60[m, 1], t60[m, 2]) / 16)))
+
+
 def file_meta(name, d, c):
     fl = d["file"][0, 0]
     row = {"file": name, "monkey": name[:2], "session": name.split("_")[0],
@@ -814,6 +834,10 @@ def file_meta(name, d, c):
                     "theta_min": float(np.nanmin(t60[:, 3])), "theta_max": float(np.nanmax(t60[:, 3])),
                     "abscissa_min": float(np.nanmin(t60[:, 4])), "abscissa_max": float(np.nanmax(t60[:, 4])),
                     "abscissa_over_1": float(np.mean(t60[:, 4] > 1.001)),
+                    # abscissa against distance from the centre over the arm length (16 m), on the
+                    # entry and exit paths (tags 1xy, 4xy) and on the passive returns (tags 5xy)
+                    "abscissa_vs_r_arms": _ab_vs_r(t60, ((100, 200), (400, 500))),
+                    "abscissa_vs_r_returns": _ab_vs_r(t60, ((500, 600),)),
                     "t60_cols": int(c["t60_shape_raw"][1]), "t60_rows_raw": int(c["t60_shape_raw"][0]),
                     "ss_angle_min": float(np.nanmin(t60[:, 6])), "ss_angle_max": float(np.nanmax(t60[:, 6])),
                     "ss_radius_min": float(np.nanmin(t60[:, 7])), "ss_radius_max": float(np.nanmax(t60[:, 7])),

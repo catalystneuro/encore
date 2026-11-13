@@ -37,7 +37,16 @@ outcomes:
     successful trials, K median difference -0.77 session SD (p = 4.0e-148, 39 of 40 sessions, signed-rank
     across sessions p = 1.3e-11), S -1.00 (p = 4.3e-146, 20 of 20 sessions, p = 1.9e-6). Negative is rightward
     by the slow phases (deviations), so gaze lies on the side of the coming turn. Both monkeys, each window
-    and the pooled test agree, so the readings of the criterion give one outcome.
+    and the pooled test agree, so the readings of the criterion give one outcome. In the 500 ms before
+    the code the view already rotates slowly toward the turn (median 0.49 to 0.75 degrees, in that direction
+    in 95% to 99% of turns), and in K the eye velocity there differs between right and left turns in the
+    direction of the slow phases (0.250 against -0.189 session SD, 38 of 40 sessions, p = 2.3e-9); in S
+    it does not (9 of 20, p = 0.40). The position effect remains in turns with less than 0.25 degrees
+    of rotation before the code (K -0.27 session SD, p = 3.3e-5; S -0.54, p = 0.0059) and less than 1
+    degree (K -0.37, S -0.695), where K's velocity difference also remains (0.248, p = 2.6e-10). Part
+    of K's position effect may continue an eye movement under way before the window; it is a third to
+    a half as large in the low-rotation turns as over all turns. The S2B control (second of two turns)
+    was not run.
   deviations:
   - The eye signal has no calibration, units or sign in the files, and is on a +-5000 scale in 36 sessions
     and a +-5 scale in 26. Values are standardized within each session (minus the session median, over
@@ -63,7 +72,9 @@ outcomes:
     which do not use eye position; the eye velocity over the returns gives the same sign (40 of 41 and
     21 of 21 sessions). The test measures where the eyes are during the return, as the criterion does;
     whether this is anticipation or the eye position that goes with any rotation of the view cannot be
-    told apart here.
+    told apart here. The criterion, which takes the mean over the whole return, does not test the proactive
+    part of the claim; this is asked of a reader in questions/wirth-2017.yaml, and the claim is tested
+    as the claims file has it.
   deviations:
   - The same standardization and sign as gaze-anticipates-action.
   - The side of a return is taken from the change of camera orientation over it (median absolute change
@@ -182,7 +193,9 @@ outcomes:
     neither level. Over the 59 three-space responsive cells, which stand in for reading (b), IC and sparsity
     are both higher with p = 0.045 and 0.0074, the partial level; with shifted chunks (51 cells) IC is
     not (p = 0.14, sparsity p = 0.013). No reading reaches p < 0.001. The outcome rests on the stand-in
-    for reading (b) and on permuted chunks.
+    for reading (b) and on permuted chunks. Over all 180 cells with both maps neither is higher (IC p
+    = 0.31, sparsity p = 0.29, permuted chunks), so a signed-rank result over the 59 cells puts no bound
+    on the result over the paper's responsive set; a change to blocked is proposed.
   deviations:
   - Centre and return maps at one common angular resolution per session, chosen so the number of bins
     valid in both is closest to 200 (median 151 centre and 157.5 return bins valid); the paper does not
@@ -190,6 +203,15 @@ outcomes:
   - Reading (b), all responsive cells, cannot be formed without the gaze space; the three-space responsive
     cells, which it contains, stand in for it, an assumption.
   assumed: true
+  proposed:
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    reason: Reading (a) meets neither level (IC p = 0.43, sparsity p = 0.031 with permuted chunks; 0.095
+      and 0.016 with shifted chunks). Reading (b) is the paper's responsive set, which needs the point-of-gaze
+      space. The three-space responsive cells that stand in for it give the partial level only with permuted
+      chunks (IC p = 0.045, sparsity p = 0.0074), and all cells give neither (p = 0.31 and 0.29), so the
+      result over the paper's set may lie at any level. As for landmark-identity-center and spatial-selectivity-fraction,
+      a reading that cannot be formed leaves the claim undecided.
 - claim: direction-tuning-not-maintained
   outcome: not_reproduced
   notebook: reproduce_wirth_2017.ipynb
@@ -198,16 +220,32 @@ outcomes:
   - 15
   - 40
   - 4
+  assumed: true
   notes: Of 40 direction-selective cells (permuted chunks), 15 (38%) have a significantly low centre-return
     correlation (binomial p = 2.1e-14 at chance 0.025) and 4 a significantly high one (p = 0.017). The
     high count is inside 2 to 4, but the number of cells tested (40, expected 56 +- 5.6) and the low count
     (15, expected 20 +- 2) are outside the tolerance. Over the 59 three-space responsive cells 16 are
-    low and 4 high; with shifted chunks 11 of 28 and 14 of 51 are low. The low count misses 18 to 22 under
-    every reading, although more cells than chance have a low correlation under all of them (binomial
-    p below 1e-10). The criterion has no partial level.
+    low and 4 high; with shifted chunks 11 of 28 and 14 of 51 are low. Over these sets the low count misses
+    18 to 22, although more cells than chance have a low correlation under all of them (binomial p below
+    1e-10). The criterion has no partial level. Reading (a) fails on the number of cells (40 and 28).
+    Under reading (b) the outcome rests on the three-space stand-in. The paper's responsive set lies
+    between the three-space responsive cells and all cells (181 tested, 25 low and 8 high with permuted
+    chunks; 18 and 7 with shifted chunks), and a set between the two can meet the criterion, in one combination
+    with permuted chunks (n 61, low 18, high 4) and in 13 with shifted chunks (for example n 55, low 18,
+    high 3), so over the paper's set the criterion is not excluded; a change to blocked is proposed.
   deviations:
   - Cells with at least 10 common valid bins, a standard choice for "enough"; with 2 the counts do not
     change.
+  - Reading (b), all responsive cells, cannot be formed without the gaze space; the three-space responsive
+    cells stand in for it, an assumption, as in direction-center-vs-periphery.
+  proposed:
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    reason: Reading (a) fails on the number of cells tested (40 and 28 against 56 +- 5.6). Reading (b)
+      is the paper's responsive set, which needs the point-of-gaze space. Bounding it between the three-space
+      responsive cells and all cells, a set that meets the criterion exists under both readings of the
+      surrogates (permuted, n 61, low 18, high 4; shifted, 13 combinations), so the claim cannot be decided,
+      as for landmark-identity-center and spatial-selectivity-fraction.
 - claim: state-space-ic-higher
   outcome: partially_reproduced
   notes: 'Normalized IC is higher in state space than in position space (full trials, permuted chunks:
@@ -287,7 +325,9 @@ outcomes:
   - Laps read two ways, successful trials (Method W) and all trials (Methods, "each of the animal's laps");
     the residual df of 756 in Fig 5 is reached only with all laps of sn20110624 (193 x 4 - 16), which
     supports the second.
-  - Relative distance from the files' curvilinear abscissa (0 centre, 1 arm end) in quarters; the landmark
+  - Relative distance from the files' curvilinear abscissa in quarters; on the entry paths the abscissa
+    is the distance from the centre over 16 m (0 centre, 1 arm end; median absolute difference at most
+    0.0023 per file), checked in the notebook; the landmark
     identity is the entry path. Rates per lap and segment, ANOVA with interaction, type II sums of squares,
     alpha 0.05; type III, the default of MATLAB's anovan, is shown and gives the same outcome.
 - claim: landmark-identity-center
@@ -647,4 +687,200 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The method is in S1 Appendix A5, which is not available.
+    response: No change.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The full executed notebook of the first revision, the helper module, the claims file and
+    the attempt record, with the paper under paper/. It found round-1 problems 1 to 10 resolved, and
+    reported text that did not match the outputs, with what was changed: cell 9 said that at the trial
+    start the abscissa is at the arm end and that one second after the arrival at the centre it is not
+    0, which the printed values contradict; cell 7 and the landmark-identity-distance deviation said the
+    abscissa runs from 0 at the centre to 1 at the arm end, where the outputs also fit an abscissa that
+    runs from the start of each branch. The notebook now prints the abscissa against the distance from
+    the centre over 16 m: on the entry and exit paths they agree in every file (median absolute difference
+    at most 0.0023), so 0 is the centre there; at the trial start the row still belongs to the passive
+    return, whose abscissa has run down to 0.01 while the camera is at the arm end (1.00); after the arrival
+    the camera stays at the centre while the view rotates. Cells 7 and 9 and the deviation were rewritten
+    to match. The README row of state-space-selectivity now carries the permuted-chunk qualifier, and the
+    record''s statement that the low count of direction-tuning-not-maintained misses under every reading
+    now says it holds over the stand-in sets only.'
+  results:
+  - claim: gaze-anticipates-action
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated and reasonable; cell 28 gives the sign from eye velocity during turns
+      in 40/40 sessions of K and 20/20 of S. Caveat: in the 500 ms before the turn code K already shows
+      a slow-phase-like velocity difference (0.250 against -0.189, 38/40 sessions, p = 2.3e-9), so the
+      view may already be rotating and the position effect may partly continue that rotation; S shows
+      none (9/20, p = 0.40) and has the larger position effect. The outcome stands, but the record should
+      mention this.'
+    response: Added the camera rotation over the 500 ms before the code and the position test on turns
+      with little rotation. The view rotates slowly toward the turn before the code in both monkeys (median
+      0.49 to 0.75 degrees); the position effect remains with less than 0.25 degrees (K -0.27, p = 3.3e-5;
+      S -0.54, p = 0.0059), and K's velocity difference remains there too, so it is not explained by the
+      rotation. The notes now give the caveat. Outcome unchanged.
+  - claim: gaze-anticipates-landmarks
+    agrees: true
+    outcome: reproduced
+    reason: 'Changed from round-1 partial: the sign now comes from the slow-phase velocity during turns
+      at the centre, which does not use eye position, so the test is no longer circular (cell 31: K -0.56
+      SD, p = 6.2e-58, 39/41 sessions; S -0.56, p = 6.4e-30, 20/21). Claims-file point: the criterion
+      takes the mean eye position over the whole return, so it cannot separate anticipation from the
+      shift of eye position that comes with any rotating view, and does not test the "proactive" part
+      of the claim.'
+    response: Added the point as a question for a reader in questions/wirth-2017.yaml; the claim is tested
+      as the claims file has it, and the notes say it is asked. Outcome unchanged.
+  - claim: learning-trials
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18.
+    response: No change.
+  - claim: learning-to-90
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: 0.898, or 0.803 over all sessions. Only one session reaches 0.9 at the criterion trial
+      itself.'
+    response: No change.
+  - claim: probe-transfer
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 23: 28.3% and 58.3% against 44 and 73. No variant puts both means inside tolerance.'
+    response: No change.
+  - claim: probe-faster-criterion
+    agrees: true
+    outcome: blocked
+    reason: Agreed, no further comment.
+    response: No change.
+  - claim: cells-recorded
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed, no further comment.
+    response: No change.
+  - claim: responsive-cells
+    agrees: true
+    outcome: blocked
+    reason: Agreed, no further comment.
+    response: No change.
+  - claim: state-space-most-responsive
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 38: 37 to 57 cells against 75.6 to 92.4, and 41 to 58 using the upper tail only.'
+    response: No change.
+  - claim: multi-space-coding
+    agrees: true
+    outcome: blocked
+    reason: Agreed, no further comment.
+    response: No change.
+  - claim: direction-center-vs-periphery
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption is stated: the three-space responsive cells stand in for reading (b). It is
+      the weakest step. For a signed-rank test the result on 59 cells puts no bound on the result over
+      the paper''s set. Under reading (a) neither level is met (cell 41).'
+    response: Added the comparison over all cells (IC p = 0.31, sparsity p = 0.29), which shows that the
+      result changes with the cell set. The verified outcome is kept, and a change to blocked (metadata
+      insufficient) is proposed, as reading (b) cannot be formed and reading (a) fails.
+  - claim: direction-tuning-not-maintained
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed under the same stand-in, but it should be marked assumed: true. Reading (b) uses the
+      three-space stand-in, only a lower bound of the responsive set. With shifted chunks under (b), 51
+      cells give 14 low (cell 44); up to 10 more cells could join and keep n within 56 +- 5.6, and only
+      4 of them would need to be low to reach 18, so over the paper''s set the criterion is not excluded
+      under that reading. Reading (a) fails on n (40 and 28). The record''s "the low count misses 18 to
+      22 under every reading" holds for the stand-in set only.'
+    response: Marked assumed, with a deviation for the stand-in, and corrected the notes and the notebook
+      conclusion. Added the counts over all cells and a check of which sets between the two bounds meet
+      the criterion; one does with permuted chunks (n 61, low 18, high 4) and 13 do with shifted chunks.
+      The verified outcome is kept, and a change to blocked (metadata insufficient) is proposed.
+  - claim: state-space-ic-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 53: p < 0.01 under all 12 rows; the largest is 0.0022.'
+    response: No change.
+  - claim: sparsity-state-vs-direction
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 48. Reproduced with the full-trial window, which is the claims file''s reading (a). Not
+      significant from start to reward.'
+    response: No change.
+  - claim: sparsity-state-vs-position
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 50: the overall test is significant (p <= 0.00043) and the per-cell counts are 3 to 11,
+      against 15 +- 1.5.'
+    response: No change.
+  - claim: sparsity-gaze-vs-state
+    agrees: true
+    outcome: blocked
+    reason: Agreed, no further comment.
+    response: No change.
+  - claim: state-space-selectivity
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed as an assumption, which is stated and reasonable: the Results say "randomly shuffling
+      periods of spiking activity in time" and the Methods say the 5 s chunks were "randomly shifted";
+      under shifted chunks the claim cannot be decided (cell 56), and without the assumption the outcome
+      would be blocked. The README row drops the qualifier "permuted chunks; open under shifted chunks".'
+    response: Added the qualifier to the README row. Outcome unchanged.
+  - claim: landmark-identity-distance
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 61: at most 31 cells (33 with type III), against 64 +- 6.4. The deviation''s "(0 centre,
+      1 arm end)" for the abscissa may not hold, and on the entry paths the quarters may be numbered in
+      the opposite order; the main-effect and interaction counts do not depend on the order, so no conclusion
+      changes.'
+    response: The notebook now shows that on the entry and exit paths the abscissa equals the distance
+      from the centre over 16 m in every file, so the quarters run from the arm end to the centre as stated;
+      the deviation now says so. Outcome unchanged.
+  - claim: landmark-identity-center
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 63: the bounds straddle 11 to 13.'
+    response: No change.
+  - claim: path-selectivity
+    agrees: true
+    outcome: blocked
+    reason: Agreed (metadata insufficient).
+    response: No change.
+  - claim: gaze-aligned-dynamics
+    agrees: true
+    outcome: blocked
+    reason: Agreed (metadata insufficient).
+    response: No change.
+  - claim: latency-skew
+    agrees: true
+    outcome: blocked
+    reason: Agreed (metadata insufficient).
+    response: No change.
+  - claim: eccentricity-modulation
+    agrees: true
+    outcome: blocked
+    reason: Agreed (metadata insufficient).
+    response: No change.
+  - claim: foveation-selectivity
+    agrees: true
+    outcome: blocked
+    reason: Agreed (metadata insufficient).
+    response: No change.
+  - claim: fields-per-cell
+    agrees: true
+    outcome: blocked
+    reason: Agreed (methods underspecified).
+    response: No change.
+  - claim: spatial-selectivity-fraction
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 66: (a) gives 0.129 to 0.247 and fails; (b) and (c) cannot be decided.'
+    response: No change.
+  - claim: gaze-map-landmarks
+    agrees: true
+    outcome: blocked
+    reason: Agreed (metadata insufficient).
+    response: No change.
+  - claim: dimensionality-control
+    agrees: true
+    outcome: blocked
+    reason: Agreed (methods underspecified).
     response: No change.

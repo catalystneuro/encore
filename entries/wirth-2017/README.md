@@ -13,11 +13,11 @@ hc-21](https://doi.org/10.6080/K0GX48R9) is read to check which of its recording
 | Faster learning after new entries | Blocked: methods underspecified |
 | 189 cells analysed of 270 recorded | Partially reproduced |
 | State space has the most responsive cells (84) | Not reproduced |
-| Direction maps: centre against return paths | IC and sparsity partially reproduced; correlation counts not reproduced |
+| Direction maps: centre against return paths | IC and sparsity partially reproduced; correlation counts not reproduced (both with the three-space responsive cells standing in for the paper's set) |
 | Higher information in state space than in position and direction space | Partially reproduced (the gaze comparison cannot be made) |
 | Sparser in state space than in direction space | Reproduced (full-trial window) |
 | Sparsity, state against position space | Not reproduced |
-| State-space selectivity in the centre | Not reproduced |
+| State-space selectivity in the centre | Not reproduced (assuming permuted chunks; open under shifted chunks) |
 | Landmark identity and distance (two-way ANOVA) | Not reproduced |
 | Claims that need the point-of-gaze space or the paper's responsive set (11 claims) | Blocked: metadata insufficient |
 | Number of fields, control for dimensionality | Blocked: methods underspecified |
