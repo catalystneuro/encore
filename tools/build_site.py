@@ -618,15 +618,17 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
 
 def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
     """Lines with the outcomes of the claims that use outside data or other archives, when there are any.
-    Collapsed (the overview), they sit in a details block that names each group and its count."""
+    Collapsed (the overview), they sit in a details block that names each group and its count.
+
+    The registry's own checks that a dataset is the data behind its paper (claims of kind `link`) are not here:
+    they are a step of the work, not a result of the paper. Each is still in the list of claims, marked as a check
+    of the link, and their totals are in the JSON (`outcome_counts_links`)."""
     out, labels = "", []
     for group, one, many, label in (
             ("with_inputs", "1 claim that also uses data from outside the dataset",
              "claims that also use data from outside the dataset", "claims using outside data"),
             ("elsewhere", "1 claim on data the paper deposited in another archive",
-             "claims on data the paper deposited in other archives", "claims on data in other archives"),
-            ("link", "1 check that the dataset is the data behind the paper",
-             "checks that the dataset is the data behind the paper", "checks of the link to the paper")):
+             "claims on data the paper deposited in other archives", "claims on data in other archives")):
         counts = outcome_counts(attempts, group)
         m = sum(counts.values())
         if not m:
@@ -3101,10 +3103,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         if a.get("deprecated"):
             claims_html += (f'<p class="deprecated"><strong>Deprecated:</strong> {e(a["deprecated"])} '
                             f'Its outcomes are shown but not counted.</p>')
-        # One group per notebook, in the entry's order, then the claims no notebook tests.
+        # One group per notebook, in the entry's order, then the claims no notebook tests. The registry's check
+        # that the dataset is the data behind the paper (a claim of kind `link`) is a step of the work, not a
+        # result of the paper: it is under Provenance, not among the claims.
         rank = {**order, "blocked": 3}
+        results = [o for o in a["outcomes"] if o.get("kind") != "link"]
         for nb in a["notebooks"]:
-            mine = sorted((o for o in a["outcomes"] if o.get("notebook") == nb["path"]),
+            mine = sorted((o for o in results if o.get("notebook") == nb["path"]),
                           key=lambda o: rank[o["outcome"]])
             if not mine:
                 continue
@@ -3115,7 +3120,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
                             f'</p>{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
-        blocked = [o for o in a["outcomes"] if o.get("notebook") not in listed]
+        blocked = [o for o in results if o.get("notebook") not in listed]
         if blocked:
             reasons: dict = {}
             for o in blocked:
@@ -3217,6 +3222,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                        + (f' (<a href="https://doi.org/{e(x["dataset"]["doi"])}">doi:{e(x["dataset"]["doi"])}</a>)'
                           if x["dataset"].get("doi") else "")
                        + (f', modified {e(x["dataset"]["modified"])}' if x["dataset"].get("modified") else ""))]
+        for o in a["outcomes"]:
+            if o.get("kind") == "link":   # the check that the dataset is the paper's data, with the claim's anchor
+                rows_ += [("Check that the dataset is the paper&rsquo;s data",
+                           f'<span id="claim-{e(o["claim"])}">{chip(o["outcome"])} {e(o["statement"])}</span>'
+                           + (f'<br><span class="muted small">{e(o["notes"])}</span>' if o.get("notes") else ""))]
         if a["kind"] == "agent":
             runner = a.get("runner") or {}
             rows_ += [("Run on", (f'<a href="{e(runner["url"]) }">{e(runner.get("platform"))}</a>' if runner.get("url")

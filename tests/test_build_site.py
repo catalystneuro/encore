@@ -376,7 +376,8 @@ def test_every_attempt_has_a_page_under_its_paper_naming_the_dataset_versions_it
                 several += a["id"] in current
                 up = "../../../"
                 for o in a["outcomes"]:
-                    assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
+                    assert (f'id="claim-{o["claim"]}"' if o.get("kind") == "link"
+                            else f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"') in page
                 # The paper's page leads to each of its attempts.
                 assert f'href="../../{own}"' in (out / "papers" / q["key"] / "index.html").read_text()
             # An attempt links to every dataset it used, with the version it ran on.
@@ -423,6 +424,9 @@ def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
             page = _paper_page(data, out, attempt)
             assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
             for o in attempt["outcomes"]:
+                if o.get("kind") == "link":   # a check of the link to the paper is under Provenance, not a claim
+                    assert f'id="claim-{o["claim"]}"' in page
+                    continue
                 assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"><details><summary>' in page
             for nb in attempt["notebooks"]:
                 if any(o.get("notebook") == nb["path"] for o in attempt["outcomes"]):
@@ -574,12 +578,38 @@ def test_link_claims_are_counted_apart_from_the_papers_findings():
     assert sum(site.outcome_counts(attempt).values()) == 1
     assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
     assert site.outcome_counts(attempt, "link")["reproduced"] == 1
-    assert "1 check that the dataset is the data behind the paper" in site.outside_note([attempt])
+    # A check of the link is a step of the work, not a result: the page's note of what is counted apart leaves it
+    # out, and has the claims on outside data.
+    note = site.outside_note([attempt])
+    assert "check that the dataset" not in note and "1 claim that also uses data from outside the dataset" in note
+    assert site.outside_note([{"outcomes": attempt["outcomes"][:2]}]) == ""
     # The overview folds them into a details block that names each group and its count.
     folded = site.outside_note([attempt], collapsed=True)
     assert folded.startswith('<details class="separate">')
-    assert "claims using outside data (1) and checks of the link to the paper (1)</summary>" in folded
-    assert "<details" not in site.outside_note([attempt])
+    assert "Counted separately: claims using outside data (1)</summary>" in folded and "link" not in folded
+    assert "<details" not in note
+
+
+def test_a_check_of_the_link_is_under_provenance_and_not_among_the_claims(built):
+    data, out = built
+    seen = 0
+    for q in site.papers_of(data):
+        for a in q["attempts"]:
+            links = [o for o in a["outcomes"] if o.get("kind") == "link"]
+            if not links or len(q["attempts"]) > 1:
+                continue
+            seen += 1
+            page = (out / "papers" / q["key"] / "index.html").read_text()
+            claims, provenance = page.split('id="provenance"')[0], page.split('id="provenance"')[1]
+            for o in links:
+                # Its anchor is kept, under Provenance; it is not a claim in the list, and the page's counts of
+                # outcomes do not mention it.
+                assert f'id="claim-{o["claim"]}"' in provenance and f'id="claim-{o["claim"]}"' not in claims
+                assert site.e(o["statement"]) in provenance
+            assert "check that the dataset is the data behind the paper" not in page.lower()
+            shown = [o for o in a["outcomes"] if o.get("kind") != "link"]
+            assert claims.count('<li class="claim') == len(shown)
+    assert seen
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
