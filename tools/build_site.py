@@ -38,6 +38,7 @@ import datetime
 import hashlib
 import html
 import json
+import urllib.parse
 import random
 import re
 import shutil
@@ -59,6 +60,7 @@ SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from 
                     "outcome and what they find about the data.")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import datasets  # noqa: E402
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
 import paper_records  # noqa: E402
 from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
@@ -616,15 +618,17 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
 
 def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
     """Lines with the outcomes of the claims that use outside data or other archives, when there are any.
-    Collapsed (the overview), they sit in a details block that names each group and its count."""
+    Collapsed (the overview), they sit in a details block that names each group and its count.
+
+    The registry's own checks that a dataset is the data behind its paper (claims of kind `link`) are not here:
+    they are a step of the work, not a result of the paper. Each is still in the list of claims, marked as a check
+    of the link, and their totals are in the JSON (`outcome_counts_links`)."""
     out, labels = "", []
     for group, one, many, label in (
             ("with_inputs", "1 claim that also uses data from outside the dataset",
              "claims that also use data from outside the dataset", "claims using outside data"),
             ("elsewhere", "1 claim on data the paper deposited in another archive",
-             "claims on data the paper deposited in other archives", "claims on data in other archives"),
-            ("link", "1 check that the dataset is the data behind the paper",
-             "checks that the dataset is the data behind the paper", "checks of the link to the paper")):
+             "claims on data the paper deposited in other archives", "claims on data in other archives")):
         counts = outcome_counts(attempts, group)
         m = sum(counts.values())
         if not m:
@@ -1220,12 +1224,26 @@ def page_author(data: dict, author: dict) -> str:
               f'It may be a failure of the attempt.</p>') if n_claims else ""
     said = " · ".join(x for x in (f'{n} paper{"" if n == 1 else "s"}, {tried} attempted' if n else "",
                                   f'{m} dataset{"" if m == 1 else "s"}' if m else "") if x)
-    badge = author_badge(data, author)
-    badge_panel = badge_how(
-        badge, f"{root}badge/authors/{e(orcid)}.svg", "Badge for this page",
-        "It counts the findings of these papers reproduced in full by attempts an independent verifier has checked.",
-        "on a lab&rsquo;s site or a profile", f"{root}api/authors/{e(orcid)}.json") if badge else ""
-    tabs = [("papers", "Papers", n), ("datasets", "Datasets", m)]
+    by_key = {q["key"]: q for q in papers_of(data)}
+    wrote = [r for rs in (data.get("responses") or {}).values() for r in rs if r["shown"] and r.get("orcid") == orcid]
+    wrote_html = "".join(response_item(
+        data, r, root, where=f' &middot; on <a href="{root}papers/{e(r["paper"])}/">{e(by_key[r["paper"]]["byline"])}</a>'
+        if r["paper"] in by_key else "") for r in wrote)
+    badge, every = author_badge(data, author), author_outcomes(data, author)
+    all_note = ("It counts every claim of these papers in a current attempt, verified or not, as the bar at the top "
+                "of this page does.")
+    styles = ([{"name": "Findings reproduced", "src": f"{root}badge/authors/{e(orcid)}.svg", "svg": badge["svg"],
+                "alt": badge["alt"], "url": badge["url"],
+                "counts": "It counts the findings of these papers reproduced in full by attempts an independent "
+                          "verifier has checked."}] if badge else [])
+    if every:
+        styles += [{"name": "All outcomes", "src": f"{root}badge/authors/{e(orcid)}-outcomes.svg",
+                    "svg": every["svg_outcomes"], "alt": every["alt"], "url": every["url"], "counts": all_note},
+                   {"name": "Card", "src": f"{root}badge/authors/{e(orcid)}-card.svg", "svg": every["svg_card"],
+                    "alt": every["alt"], "url": every["url"], "counts": all_note}]
+    badge_panel = badges_how(styles, "Badges for this page" if len(styles) > 1 else "Badge for this page",
+                             "on a lab&rsquo;s site or a profile", f"{root}api/authors/{e(orcid)}.json") if styles else ""
+    tabs = [("papers", "Papers", n), ("datasets", "Datasets", m), ("responses", "Responses", len(wrote))]
     tabs = [t for t in tabs if t[2]] or tabs[:1]
     tab_buttons = "".join(f'<button type="button" role="tab" data-panel="{k}" aria-selected="false">{label} '
                           f'<span class="count">{c}</span></button>' for k, label, c in tabs)
@@ -1239,6 +1257,10 @@ def page_author(data: dict, author: dict) -> str:
     <p class="sub small" style="margin-top:12px">Every dataset in the registry that names this ORCID iD among its
     contributors, with their roles as the dataset gives them, and what attempts found about its data.</p>
     <div class="results" style="margin-top:12px">{set_cards}</div></section>''',
+        "responses": f'''<section class="tabpanel" id="responses"><h2>Responses</h2>
+    <p class="sub small" style="margin-top:12px">What this person wrote in response to attempts on their papers,
+    once a maintainer confirmed who wrote it.</p>
+    <div class="author-responses"><ul>{wrote_html}</ul></div></section>''',
     }
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}authors/">Authors</a> / {e(name)}</p>
@@ -1253,7 +1275,7 @@ def page_author(data: dict, author: dict) -> str:
 </main>'''
     structured = {"@context": "https://schema.org", "@type": "Person", "name": name,
                   "identifier": f"https://orcid.org/{orcid}", "sameAs": f"https://orcid.org/{orcid}"}
-    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, TABS_JS, path=f"authors/{orcid}/",
+    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, TABS_JS + BADGE_PICK_JS, path=f"authors/{orcid}/",
                  description=f"Papers and datasets of {name} (ORCID {orcid}) in the Encore registry, and what "
                              f"attempts to reproduce the papers from their open data found.", structured=structured)
 
@@ -1311,17 +1333,123 @@ def author_badge(data: dict, author: dict) -> dict | None:
             "alt": f"Encore: {text.replace(' · ', ', from ')}, in the work of {author['name']}"}
 
 
+# The outcomes' colours as the site's bars have them (app.css), and each outcome in a word or two for a badge.
+OUTCOME_FILL = {"reproduced": "#0ca30c", "partially_reproduced": "#fab219", "not_reproduced": "#2b6cb0", "blocked": "#898781"}
+OUTCOME_SHORT = {"reproduced": "reproduced", "partially_reproduced": "partially", "not_reproduced": "not reproduced",
+                 "blocked": "blocked"}
+
+
+def author_outcomes(data: dict, author: dict) -> dict | None:
+    """Every outcome across a person's papers, as the bar at the top of their page has them: the claims that rest
+    on the papers' datasets, in every current attempt, verified or not. For the two badges that show all the
+    outcomes (docs/badges.md). None when no paper of theirs has an attempt."""
+    rows_ = {r["id"]: r for r in rows_cache(data)["papers"]}
+    counts = {k: sum((rows_.get(q["key"], {}).get("counts") or {}).get(k, 0) for q in author["papers"]) for k in OUTCOMES}
+    claims = sum(counts.values())
+    if not claims:
+        return None
+    papers = sum(1 for q in author["papers"] if sum((rows_.get(q["key"], {}).get("counts") or {}).values()))
+    said = ", ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items() if n)
+    base = SITE_URL + f'badge/authors/{author["orcid"]}'
+    return {"counts": counts, "claims": claims, "papers": papers, "name": author["name"],
+            "url": SITE_URL + f'authors/{author["orcid"]}/', "svg_outcomes": base + "-outcomes.svg",
+            "svg_card": base + "-card.svg",
+            "alt": f'Encore: {said}, of {claims} claim{"" if claims == 1 else "s"} in {papers} '
+                   f'paper{"" if papers == 1 else "s"} of {author["name"]}'}
+
+
+def _legend(counts: dict, x: float, y: float, gap: float = 14) -> tuple[str, float]:
+    """The outcomes in a row from x: a dot in the outcome's colour, then its count and name in ink (the dot carries
+    which outcome it is, the text stays readable). Returns the drawing and where it ends."""
+    out = ""
+    for k, n in counts.items():
+        if not n:
+            continue
+        text = f"{n} {OUTCOME_SHORT[k]}"
+        out += (f'<circle cx="{x + 4:.0f}" cy="{y - 4:.0f}" r="4" fill="{OUTCOME_FILL[k]}"/>'
+                f'<text x="{x + 13:.0f}" y="{y:.0f}" textLength="{_text_width(text):.0f}">{e(text)}</text>')
+        x += 13 + _text_width(text) + gap
+    return out, x - gap
+
+
+def outcomes_badge_svg(o: dict) -> str:
+    """One line with every outcome: "Encore", then each outcome's count."""
+    lw = _text_width("Encore") + 30
+    legend, end = _legend(o["counts"], lw + 10, 15)
+    w = round(end + 10)
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="22" viewBox="0 0 {w} 22" role="img" '
+            f'aria-label="{e(o["alt"])}"><title>{e(o["alt"])}</title>'
+            f'<clipPath id="r"><rect width="{w}" height="22" rx="4"/></clipPath>'
+            f'<g clip-path="url(#r)"><rect width="{lw:.0f}" height="22" fill="#2b2333"/>'
+            f'<rect x="{lw:.0f}" width="{w - lw:.0f}" height="22" fill="#f3f1f6"/></g>'
+            f'<g fill="none" stroke="#c4a3e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+            f'<circle cx="13" cy="11" r="5.6"/><path d="M10.4 11.2l1.9 1.9 3.3-3.8"/></g>'
+            f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11" font-weight="bold">'
+            f'<text x="24" y="15" fill="#fff" textLength="{_text_width("Encore"):.0f}">Encore</text>'
+            f'<g fill="#2b2333">{legend}</g></g></svg>\n')
+
+
+def card_badge_svg(o: dict) -> str:
+    """A card: the person's name, how many claims in how many papers, the outcomes as one bar, and each count."""
+    pad = 14
+    legend, end = _legend(o["counts"], pad, 80)
+    tested = f'{o["claims"]} claim{"" if o["claims"] == 1 else "s"} · {o["papers"]} paper{"" if o["papers"] == 1 else "s"}'
+    name_w = _text_width(o["name"]) * 1.18
+    w = round(max(end + pad, pad + 62 + _text_width(tested) + pad + 20, name_w + 2 * pad, 300))
+    # The bar: a segment for each outcome, in the site's order, with a gap of the card's colour between two.
+    span, x, bar_ = w - 2 * pad, pad, ""
+    shown = [(k, n) for k, n in o["counts"].items() if n]
+    room = span - 2 * (len(shown) - 1)
+    for i, (k, n) in enumerate(shown):
+        seg = max(3.0, room * n / o["claims"]) if i < len(shown) - 1 else pad + span - x
+        bar_ += f'<rect x="{x:.1f}" y="52" width="{seg:.1f}" height="8" rx="4" fill="{OUTCOME_FILL[k]}"/>'
+        x += seg + 2
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="96" viewBox="0 0 {w} 96" role="img" '
+            f'aria-label="{e(o["alt"])}"><title>{e(o["alt"])}</title>'
+            f'<rect x=".5" y=".5" width="{w - 1}" height="95" rx="6" fill="#fff" stroke="#d9d4e0"/>'
+            f'<g fill="none" stroke="#6a3d8f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+            f'<circle cx="{pad + 6}" cy="19" r="5.6"/><path d="M{pad + 3.4} 19.2l1.9 1.9 3.3-3.8"/></g>'
+            f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11">'
+            f'<text x="{pad + 17}" y="23" font-weight="bold" fill="#2b2333" textLength="{_text_width("Encore"):.0f}">Encore</text>'
+            f'<text x="{w - pad}" y="23" text-anchor="end" fill="#6b6475">{e(tested)}</text>'
+            f'<text x="{pad}" y="43" font-size="13" font-weight="bold" fill="#120e17">{e(o["name"])}</text>'
+            f'{bar_}<g font-weight="bold" fill="#2b2333">{legend}</g></g></svg>\n')
+
+
 def badge_how(badge: dict, src: str, title: str, counts: str, where: str, json_href: str) -> str:
     """The section of a page with its badge and what to paste to show it elsewhere, as HTML and as Markdown (for a
     profile on GitHub, say)."""
-    as_html = f'<a href="{badge["url"]}"><img src="{badge["svg"]}" alt="{badge["alt"]}"></a>'
-    as_markdown = f'[![{badge["alt"]}]({badge["svg"]})]({badge["url"]})'
+    return badges_how([{"name": "", "src": src, "svg": badge["svg"], "alt": badge["alt"], "url": badge["url"],
+                        "counts": counts}], title, where, json_href)
+
+
+BADGE_PICK_JS = """<script>(function(){
+document.querySelectorAll('.badge-how').forEach(function(box){
+var picks=[].slice.call(box.querySelectorAll('.badge-pick'));if(picks.length<2)return;
+function show(b){picks.forEach(function(p){p.setAttribute('aria-pressed',p===b);});
+box.querySelector('.badge-html').textContent=b.dataset.html;box.querySelector('.badge-md').textContent=b.dataset.md;
+box.querySelector('.badge-counts').textContent=b.dataset.counts;}
+picks.forEach(function(p){p.addEventListener('click',function(){show(p);});});});})();</script>"""
+
+
+def badges_how(styles: list[dict], title: str, where: str, json_href: str) -> str:
+    """The section of a page with its badges and what to paste to show one elsewhere, as HTML and as Markdown (for
+    a profile on GitHub, say). With several styles the reader picks one (BADGE_PICK_JS); the first is shown."""
+    for b in styles:
+        b["html"] = f'<a href="{b["url"]}"><img src="{b["svg"]}" alt="{b["alt"]}"></a>'
+        b["md"] = f'[![{b["alt"]}]({b["svg"]})]({b["url"]})'
+    first = styles[0]
+    picks = "".join(
+        f'<button type="button" class="badge-pick" aria-pressed="{str(b is first).lower()}" data-html="{e(b["html"])}" '
+        f'data-md="{e(b["md"])}" data-counts="{e(html.unescape(b["counts"]))}"><span class="small">{e(b["name"])}</span>'
+        f'<img src="{b["src"]}" alt="{e(b["alt"])}"></button>' for b in styles) if len(styles) > 1 else ""
     return f'''<details class="panel badge-how"><summary><h2>{title}</h2>
-    <img src="{src}" alt="{e(badge["alt"])}" height="22"></summary>
-    <p class="sub small">{counts} To show it {where}, linked to this page:</p>
-    <pre class="snippet"><code>{e(as_html)}</code></pre>
+    <img src="{first["src"]}" alt="{e(first["alt"])}" height="22"></summary>
+    {f'<div class="badge-picks" role="group" aria-label="Badge style">{picks}</div>' if picks else ""}
+    <p class="sub small"><span class="badge-counts">{first["counts"]}</span> To show it {where}, linked to this page:</p>
+    <pre class="snippet"><code class="badge-html">{e(first["html"])}</code></pre>
     <p class="sub small">Or as Markdown:</p>
-    <pre class="snippet"><code>{e(as_markdown)}</code></pre>
+    <pre class="snippet"><code class="badge-md">{e(first["md"])}</code></pre>
     <p class="sub small">The same numbers are in <a href="{json_href}">this page&rsquo;s JSON</a>, under
     <code>badge</code> (<a href="{REPO_URL}/blob/main/docs/badges.md">how it is counted</a>).</p>
   </details>'''
@@ -1713,7 +1841,7 @@ def caution_block() -> str:
     differs from what the paper analysed. “Blocked” means the claim could not be tested at all.</p>
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
-    from the paper’s. Authors who think an attempt is wrong can <a href="{REPO_URL}/issues">open an issue</a>.</p>
+    from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
   </div>
 </div>'''
 
@@ -2293,7 +2421,7 @@ def page_about(data: dict) -> str:
       partly fixed or still present. Earlier attempts stay in the record.</p></div>
     <div class="panel"><h2>Disagreeing with an attempt</h2>
       <p>The agents make mistakes. If you are an author of a paper here, or know the data, and think an attempt is
-      wrong, <a href="{REPO_URL}/issues">open an issue</a> on the registry. Every attempt links to its notebook, its
+      wrong, <a href="{RESPOND_URL}">respond to it</a> with the form for authors. Every attempt links to its notebook, its
       claims and the reasoning behind each outcome.</p></div>
   </div>
 </main>'''
@@ -2554,6 +2682,96 @@ def version_text(a: dict) -> str:
         return "unpublished draft" + (f" (modified {e(str(modified)[:10])})" if modified else "")
     doi = a["dataset"].get("doi")
     return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
+
+
+RESPOND_URL = f"{REPO_URL}/issues/new?template=author-response.yml"
+ORCID_ID = re.compile(r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]")
+
+
+def respond_link(paper: dict, attempt: dict | None = None) -> str:
+    """The author response form, filled in for this paper (and attempt)."""
+    q = {"paper": paper["key"], "title": f'Author response: {paper["byline"]}'}
+    if attempt:
+        q["attempt"] = attempt["id"]
+    return RESPOND_URL + "&" + urllib.parse.urlencode(q)
+
+
+def form_answers(body: str) -> dict:
+    """The answers of an issue form, by the label of each field (tools/runner/run_requests.py, form)."""
+    fields, name = {}, None
+    for line in (body or "").splitlines():
+        if line.startswith("### "):
+            name = line[4:].strip(); fields[name] = ""
+        elif name is not None:
+            fields[name] += line + "\n"
+    return {k: ("" if v.strip() == "_No response_" else v.strip()) for k, v in fields.items()}
+
+
+def paper_named(text: str) -> str | None:
+    """The key of the paper a form's "Paper" answer names: its key (kim-2022), its DOI, or the address of its page."""
+    text = (text or "").strip().splitlines()[0].strip() if (text or "").strip() else ""
+    known = paper_records.listed()
+    at = re.search(r"papers/([a-z0-9-]+)/?", text)
+    if text.lower() in known:
+        return text.lower()
+    if at and at[1] in known:
+        return at[1]
+    doi = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", text, flags=re.I).lower()
+    return next((k for k in known if paper_records.doi_of(k) == doi), None) if doi else None
+
+
+def responses_by_paper(issues: list[dict]) -> dict:
+    """Author responses (issues labelled author-response) by paper key. A response is to a paper's attempt, as the
+    claims and outcomes are the paper's. It is shown once a maintainer confirmed who wrote it (`author-confirmed`
+    for an author of the paper, `confirmed` for anyone else); the rest are only counted."""
+    out: dict = {}
+    for i in issues:
+        f = form_answers(i.get("body", ""))
+        key = paper_named(f.get("Paper", ""))
+        if not key:
+            continue
+        labels = {lab["name"] for lab in i.get("labels", [])}
+        orcid = ORCID_ID.search(f.get("ORCID iD", ""))
+        out.setdefault(key, []).append({
+            "url": i["url"], "state": i.get("state", "OPEN").lower(), "date": (i.get("createdAt") or "")[:10],
+            "name": f.get("Your name", ""), "role": f.get("Your role in the paper", ""), "view": f.get("Your view of the attempt", ""),
+            "orcid": orcid[0] if orcid else None, "paper": key,
+            "attempt": f.get("Attempt", ""), "claims": f.get("Claims you are responding to", ""), "text": f.get("Your response", ""),
+            "author": "author-confirmed" in labels, "shown": bool(labels & {"author-confirmed", "confirmed"}),
+            "disputed": "disputed" in labels})
+    return out
+
+
+def response_item(data: dict, r: dict, root: str, where: str = "") -> str:
+    """One confirmed response: who wrote it (their page here, when their ORCID iD has one), their view, and the
+    start of its text, with the issue it is in. `where` names the paper, on a page that is not the paper's."""
+    known = author_index(data) if data.get("targets") is not None else {}
+    name = (f'<a href="{root}authors/{e(r["orcid"])}/">{e(r["name"])}</a>' if r.get("orcid") in known else e(r["name"]))
+    return (f'<li><p class="small"><strong>{name}</strong>, {e(r["role"]) if r["author"] else "not an author of the paper"}'
+            f' &middot; {e(r["date"])} &middot; <em>{e(r["view"])}</em>{" &middot; under review" if r["disputed"] else ""}'
+            f'{(" &middot; attempt " + e(r["attempt"])) if r["attempt"] else ""}'
+            f'{(" &middot; claims " + e(r["claims"])) if r["claims"] else ""}{where}</p>'
+            f'<p>{e(squash(r["text"])[:900])}{"&hellip;" if len(squash(r["text"])) > 900 else ""} '
+            f'<a href="{e(r["url"])}">Read it in full</a></p></li>')
+
+
+def responses_block(data: dict, paper: dict, attempt: dict | None = None, root: str = "") -> str:
+    """The confirmed responses to a paper's attempts, and how many await confirmation: on the paper's page all of
+    them, on an attempt's page those to that attempt or to the paper's attempts in general."""
+    rs = [r for r in (data.get("responses") or {}).get(paper["key"], [])
+          if not attempt or r["attempt"] in ("", attempt["id"])]
+    seen: set = set()
+    rs = [r for r in rs if not (r["url"] in seen or seen.add(r["url"]))]
+    if not rs:
+        return ""
+    shown = [r for r in rs if r["shown"]]; waiting = len(rs) - len(shown)
+    items = "".join(response_item(data, r, root) for r in shown)
+    wait = (f'<p class="sub small">{waiting} response{"s" if waiting != 1 else ""} from someone who says they are an author '
+            f'await{"" if waiting != 1 else "s"} confirmation.</p>') if waiting else ""
+    return (f'<div class="author-responses"><h2>Responses from the paper&rsquo;s authors</h2>'
+            f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">An author can say whether the '
+            f'outcomes are right with the form linked under this ("Respond to this attempt"). '
+            f'<a href="{REPO_URL}/blob/main/docs/author-responses.md">How responses are handled</a>.</p></div>')
 
 
 def summary_block(atts: list[dict], name=None) -> str:
@@ -2885,10 +3103,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         if a.get("deprecated"):
             claims_html += (f'<p class="deprecated"><strong>Deprecated:</strong> {e(a["deprecated"])} '
                             f'Its outcomes are shown but not counted.</p>')
-        # One group per notebook, in the entry's order, then the claims no notebook tests.
+        # One group per notebook, in the entry's order, then the claims no notebook tests. The registry's check
+        # that the dataset is the data behind the paper (a claim of kind `link`) is a step of the work, not a
+        # result of the paper: it is under Provenance, not among the claims.
         rank = {**order, "blocked": 3}
+        results = [o for o in a["outcomes"] if o.get("kind") != "link"]
         for nb in a["notebooks"]:
-            mine = sorted((o for o in a["outcomes"] if o.get("notebook") == nb["path"]),
+            mine = sorted((o for o in results if o.get("notebook") == nb["path"]),
                           key=lambda o: rank[o["outcome"]])
             if not mine:
                 continue
@@ -2899,7 +3120,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
                             f'</p>{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
-        blocked = [o for o in a["outcomes"] if o.get("notebook") not in listed]
+        blocked = [o for o in results if o.get("notebook") not in listed]
         if blocked:
             reasons: dict = {}
             for o in blocked:
@@ -3004,6 +3225,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                        + (f' (<a href="https://doi.org/{e(x["dataset"]["doi"])}">doi:{e(x["dataset"]["doi"])}</a>)'
                           if x["dataset"].get("doi") else "")
                        + (f', modified {e(x["dataset"]["modified"])}' if x["dataset"].get("modified") else ""))]
+        for o in a["outcomes"]:
+            if o.get("kind") == "link":   # the check that the dataset is the paper's data, with the claim's anchor
+                rows_ += [("Check that the dataset is the paper&rsquo;s data",
+                           f'<span id="claim-{e(o["claim"])}">{chip(o["outcome"])} {e(o["statement"])}</span>'
+                           + (f'<br><span class="muted small">{e(o["notes"])}</span>' if o.get("notes") else ""))]
         if a["kind"] == "agent":
             runner = a.get("runner") or {}
             rows_ += [("Run on", (f'<a href="{e(runner["url"]) }">{e(runner.get("platform"))}</a>' if runner.get("url")
@@ -3040,6 +3266,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                     for q in papers_of(data) if q["doi"] in papers_here and q["attempts"]]
         actions += [f'<a href="{root}api/{page_of(dandiset).rstrip("/")}.json">JSON</a>']
     actions += [f'<a href="{root}#caution">How to read outcomes</a>']
+    # The author response form (docs/author-responses.md), filled in for the paper and, on an attempt's page or the
+    # page of a paper with one current attempt, for the attempt. A response is to a paper's attempt, so the link is
+    # on those two pages and not on a dataset's.
+    if paper:
+        responding = one or (atts[0] if len(atts) == 1 else None)
+        actions += [f'<a href="{e(respond_link(paper, responding))}">'
+                    f'{"Respond to this attempt" if responding else "Respond to an attempt"}</a>']
 
     tags = ""
     if paper:
@@ -3237,6 +3470,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
   {summary_block(atts, name=(lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a))) if paper else None)}
+  {responses_block(data, paper, one, root) if paper else ""}
   {f'<p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>' if tested_on else ""}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
@@ -3422,9 +3656,13 @@ def build(data: dict, output: Path) -> None:
         (output / "authors" / orcid).mkdir(parents=True, exist_ok=True)
         (output / "authors" / orcid / "index.html").write_text(page_author(data, author))
         badge = author_badge(data, author)
+        every = author_outcomes(data, author)
+        (output / "badge" / "authors").mkdir(parents=True, exist_ok=True)
         if badge:
-            (output / "badge" / "authors").mkdir(parents=True, exist_ok=True)
             (output / "badge" / "authors" / f"{orcid}.svg").write_text(badge_svg(badge))
+        if every:
+            (output / "badge" / "authors" / f"{orcid}-outcomes.svg").write_text(outcomes_badge_svg(every))
+            (output / "badge" / "authors" / f"{orcid}-card.svg").write_text(card_badge_svg(every))
         # For a lab's site or a profile (docs/badges.md): the person's papers and datasets here, and the badge.
         (output / "api" / "authors").mkdir(parents=True, exist_ok=True)
         counts = {x["id"]: x for x in r["papers"]}
@@ -3432,6 +3670,11 @@ def build(data: dict, output: Path) -> None:
             "orcid": orcid, "name": author["name"], "page": f"authors/{orcid}/", "url": SITE_URL + f"authors/{orcid}/",
             "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
             "badge": badge,
+            # Every outcome across their papers, verified or not, and the badges that show them.
+            "outcome_counts": every["counts"] if every else None,
+            "badges": {"reproduced": badge["svg"] if badge else None,
+                       "outcomes": every["svg_outcomes"] if every else None,
+                       "card": every["svg_card"] if every else None},
             "papers": [{"key": q["key"], "byline": q["byline"], "title": q["title"], "doi": q["doi"],
                         "status": q["status"], "outcome_counts": counts.get(q["key"], {}).get("counts"),
                         "tier": counts.get(q["key"], {}).get("tier"),
@@ -3535,6 +3778,8 @@ def main() -> int:
                         help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
     parser.add_argument("--queue", type=Path, metavar="JSON",
                         help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
+    parser.add_argument("--responses", type=Path, metavar="JSON",
+                        help="the author-response issues (gh issue list --label author-response --state all --json url,body,labels,state,createdAt)")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     parser.add_argument("--notebooks-from", metavar="URL",
@@ -3553,6 +3798,8 @@ def main() -> int:
     data["notebooks_root"] = args.notebooks_from
     if args.queue and args.queue.is_file():
         data["queue"] = json.loads(args.queue.read_text())
+    if args.responses and args.responses.is_file():
+        data["responses"] = responses_by_paper(json.loads(args.responses.read_text()))
     if args.issues and args.issues.is_file():
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
         # An issue's title is "<dataset label or paper key>: waiting on you" (tools/notify.py); a paper's is shown
