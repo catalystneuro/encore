@@ -90,10 +90,15 @@ GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><p
                '-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 '
                '7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
 
+# The mark for "not reproduced": an equals sign struck through, "the result differs". It is drawn, not typed, because
+# the font's "≠" is too thin to read in the 14px legend square. It is neutral on purpose: not a cross, as a failure to
+# reproduce may be the attempt's failure, not the paper's. It takes the text colour of the square it sits in.
+DIFFERS_MARK = ('<svg viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M2 3.8h6M2 6.2h6M6.6 1.6 3.4 8.4" '
+                'fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>')
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
     "partially_reproduced": ("Partially reproduced", "warning", "◐"),
-    "not_reproduced": ("Not reproduced", "unresolved", "?"),
+    "not_reproduced": ("Not reproduced", "unresolved", DIFFERS_MARK),
     "blocked": ("Blocked", "blocked", "⊘"),
 }
 BLOCKED_BY = {
@@ -1839,7 +1844,8 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')set(false)
 
 def caution_block() -> str:
     return f'''<div class="caution" id="caution">
-  <p class="lead"><strong>{CAUTION}</strong> It may be a failure of the attempt.</p>
+  <p class="lead"><span><strong>{CAUTION}</strong> It may be a failure of the attempt.</span></p>
+  <details><summary>More on reading outcomes</summary>
   <div class="body">
     <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it. A
     “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
@@ -1848,8 +1854,14 @@ def caution_block() -> str:
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
     from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
-  </div>
+  </div></details>
 </div>'''
+
+
+# A reader who follows a link to #caution came for the explanation: open it for them.
+CAUTION_JS = """<script>(function(){function go(){if(location.hash!=='#caution')return;var c=document.getElementById('caution'),
+d=c&&c.querySelector('details');if(!d)return;d.open=true;c.scrollIntoView();}
+go();addEventListener('load',go);addEventListener('hashchange',go);})();</script>"""
 
 
 # --- pages ---------------------------------------------------------------------
@@ -2155,7 +2167,7 @@ def page_overview(data: dict) -> str:
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + TABS_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               + TABS_JS + CAUTION_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
@@ -2167,17 +2179,18 @@ def page_overview(data: dict) -> str:
 
 ABOUT_STEPS = [
     ("Choose a target",
-     "The queue holds every public dataset whose metadata names a paper; so far all come from the DANDI Archive, the only archive the registry reads yet. Datasets converted "
-     "by CatalystNeuro go first."),
+     "A target is a paper and the public datasets that hold its data. So far attempts have used datasets in "
+     "{archives}. Run requests go first, then datasets converted by CatalystNeuro."),
     ("Write down the claims",
-     "An author agent reads the paper and records its key findings as claims, each with the numbers it rests on, a "
-     "tolerance, and the test that will decide it. The claims are written before any analysis is run."),
+     "A reader agent reads the paper and records its key findings as claims, each with the numbers it rests on, a "
+     "tolerance, and the test that will decide it. A second reader checks the claims against the paper. The claims "
+     "are written before any analysis is run, and the readers never see the data."),
     ("Check the data and test each claim",
      "The author checks the dataset against its own description, then writes a notebook that streams the data from "
      "the archive and tests each claim. Every claim gets an outcome: reproduced, partially reproduced, not reproduced, "
      "or blocked, with the reason. What the author learns about the data along the way is recorded as findings."),
     ("First verification",
-     "A second agent, in a separate run that has not seen the author's reasoning or conclusions, reviews the notebook "
+     "A verifier agent, in a separate run that has not seen the author's reasoning or conclusions, reviews the notebook "
      "and the paper and decides its own outcome for each claim. The author then answers each point, revising the "
      "analysis where needed."),
     ("Second verification",
@@ -2188,6 +2201,41 @@ ABOUT_STEPS = [
      "The attempt is added to the registry's records. The notebook runs again in a clean environment, "
      "and once the checks pass the attempt is merged and appears here."),
 ]
+# Who does each step, as the diagram on the About page labels it (docs/pipeline.md, "Steps").
+ABOUT_ROLES = ["Queue runner", "Reader agents", "Author agent", "Verifier agent", "Verifier agent",
+               "Checks, then the recorder agent"]
+
+
+def about_flow() -> str:
+    """The six steps of ABOUT_STEPS as a picture: one box a step, with who does it, and the author's revision after
+    each verification. Drawn with the site's colours, so that it follows the theme; the list beside it says the rest."""
+    w, box, gap, pill, pgap = 300, 46, 22, 26, 18
+    parts, y = [], 1
+    arrow = lambda y0, y1: (f'<line x1="{w // 2}" y1="{y0}" x2="{w // 2}" y2="{y1 - 2}" class="fa" '
+                            f'marker-end="url(#flow-arrow)"/>')
+    for i, (head, _) in enumerate(ABOUT_STEPS):
+        if i:
+            parts.append(arrow(y - gap, y))
+        parts.append(f'<rect x="1" y="{y}" width="{w - 2}" height="{box}" rx="4" class="fb"/>'
+                     f'<circle cx="19" cy="{y + box // 2}" r="11" class="fc"/>'
+                     f'<text x="19" y="{y + box // 2 + 4}" class="fn">{i + 1}</text>'
+                     f'<text x="38" y="{y + 20}" class="ft">{e(head)}</text>'
+                     f'<text x="38" y="{y + 37}" class="fr">{e(ABOUT_ROLES[i])}</text>')
+        y += box + gap
+        if head.endswith("verification"):
+            top = y - gap
+            parts.append(arrow(top, top + pgap))
+            parts.append(f'<rect x="{w // 2 - 70}" y="{top + pgap}" width="140" height="{pill}" rx="{pill // 2}" class="fp"/>'
+                         f'<text x="{w // 2}" y="{top + pgap + 17}" class="fq">Author revises</text>')
+            y = top + pgap + pill + gap
+    label = ("The six steps of an attempt, in order: " + "; ".join(
+        f"{i + 1}, {head.lower()}, by the {ABOUT_ROLES[i][0].lower() + ABOUT_ROLES[i][1:]}"
+        for i, (head, _) in enumerate(ABOUT_STEPS)) + ". The author revises after each verification.")
+    h = y - gap + 1
+    return (f'<figure class="flow" id="flow"><svg viewBox="0 0 {w} {h}" role="img" aria-label="{e(label)}">'
+            f'<title>{e(label)}</title><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" '
+            f'markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="fm"/></marker></defs>'
+            + "".join(parts) + "</svg></figure>")
 
 
 PIPELINE_STATES = [("done", "Done"), ("older", "Made before the step existed"), ("waiting", "Waiting on a person"),
@@ -2397,18 +2445,43 @@ t.textContent+=" ("+ago+")";}})();
                  description="Where every paper of the reproduction registry stands in its pipeline.")
 
 
+def attempted_archives(data: dict) -> list[str]:
+    """The archives with at least one attempt, in the order of ARCHIVES."""
+    order = list(ARCHIVES)
+    return sorted({split_key(a["key"])[0] for a in data["attempts"]},
+                  key=lambda k: (order.index(k) if k in order else 99, k))
+
+
 def page_about(data: dict) -> str:
-    """How an attempt is made: the agents, their roles, and where they run."""
+    """How an attempt is made: the agents, their roles, and where they run; and what the site has for a paper's
+    authors and for the archives that hold its data."""
     root = "../"
-    steps = "".join(f'<li><h3>{e(head)}</h3><p>{e(text)}</p></li>' for head, text in ABOUT_STEPS)
+    names = [ARCHIVES.get(k, {}).get("name", k) for k in attempted_archives(data)]
+    archives = (", ".join(names[:-1]) + " and " + names[-1]) if len(names) > 1 else (names[0] if names else "public archives")
+    steps = "".join(f'<li><h3>{e(head)}</h3><p>{e(text.replace("{archives}", archives))}</p></li>'
+                    for head, text in ABOUT_STEPS)
+    # The badge shown is that of the first dataset with one, so that it is always a real badge.
+    order = list(ARCHIVES)
+    shown = next((k for k in sorted({a["key"] for a in data["attempts"]},
+                                    key=lambda k: (order.index(split_key(k)[0]) if split_key(k)[0] in order else 99, k))
+                  if badge_of(data, k)), None)
+    if shown:
+        badge = badge_of(data, shown)
+        archive_, ident_ = split_key(shown)
+        example = (f'<p class="about-badge"><a href="{root}{e(page_of(shown))}"><img src="{root}badge/{e(archive_)}/'
+                   f'{e(ident_)}.svg" alt="{e(badge["alt"])}"></a> <span class="small muted">The badge of '
+                   f'{e(dataset_label(shown))}</span></p>')
+    else:
+        example = ""
     body = f'''<header class="page">
   <h1>How the registry works</h1>
   <p class="lede">Every attempt here is made by AI agents, in a fixed sequence of roles, following a
-  <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The author and the verifiers are separate runs
-  that do not share their reasoning.</p>
+  <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The readers, the author and the verifiers are
+  separate runs that do not share their reasoning.</p>
 </header>
 <main class="about">
-  <div class="panel"><h2>An attempt, step by step</h2><ol class="steps">{steps}</ol></div>
+  <div class="panel"><h2>An attempt, step by step</h2>
+    <div class="flowwrap">{about_flow()}<ol class="steps">{steps}</ol></div></div>
   <div class="grid2" style="margin-top:16px">
     <div class="panel"><h2>Where the agents run</h2>
       <p>Each role runs in GitHub Actions on a fresh machine with no personal configuration. The agent's commands
@@ -2424,17 +2497,31 @@ def page_about(data: dict) -> str:
       apart. <a href="{root}#caution">More on reading outcomes</a></p></div>
     <div class="panel"><h2>Repeat attempts</h2>
       <p>When a dataset changes, for example after its data are corrected, or when the protocol changes, a new attempt
-      can be made on the same paper. The author agent then reports, for each earlier finding, whether it is fixed,
-      partly fixed or still present. Earlier attempts stay in the record.</p></div>
+      can be made on the same paper. Its author does not see the earlier attempt. Once the new attempt is verified, a
+      separate run compares the two and reports, for each earlier finding, whether it is fixed, partly fixed or still
+      present. Earlier attempts stay in the record.</p></div>
     <div class="panel"><h2>Disagreeing with an attempt</h2>
       <p>The agents make mistakes. If you are an author of a paper here, or know the data, and think an attempt is
       wrong, <a href="{RESPOND_URL}">respond to it</a> with the form for authors. Every attempt links to its notebook, its
       claims and the reasoning behind each outcome.</p></div>
   </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel" id="authors"><h2>For authors</h2>
+      <p>Each paper's page and each attempt's page link to a <a href="{RESPOND_URL}">form for responding</a> to the
+      attempt. Once a maintainer confirms who wrote a response, it is shown on the paper's page
+      (<a href="{REPO_URL}/blob/main/docs/author-responses.md">how responses are handled</a>). Each author whose
+      ORCID iD the registry knows has a page with their papers, their datasets and their badges. Find yours in the
+      <a href="{root}authors/">list of authors</a>.</p></div>
+    <div class="panel" id="archives"><h2>For archives</h2>
+      <p>Each dataset an attempt has used has a page with what the attempts found about its data. The
+      <a href="{root}datasets/">list of datasets</a> has them all. A dataset with findings reproduced from it has a
+      badge, which an archive or the dataset's owner can show on their own page. Each of these datasets also has a JSON file
+      with the same numbers (<a href="{REPO_URL}/blob/main/docs/badges.md">how to use the badges</a>).</p>{example}</div>
+  </div>
 </main>'''
     return shell(data, f"How the registry works · {SITE_NAME}", root, "about", body, path="about/",
-                 description="How AI agents attempt to reproduce papers from their open data on the DANDI Archive: "
-                             "the claims, the author and verifier roles, and where the agents run.")
+                 description="How AI agents attempt to reproduce papers from their open data in public archives: "
+                             "the claims, the reader, author and verifier roles, and where the agents run.")
 
 
 # The site's lists. Only the papers list is a page (INDEX_LISTS): since 2026-11-11 the papers are the one index,
@@ -3132,7 +3219,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             reasons: dict = {}
             for o in blocked:
                 reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
-            why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
+            # A record can give a tested claim no notebook (andrews-2024 did, for a claim that was blocked until
+            # its last revision). `entry.py check` refuses such a record; the page says what the record says and
+            # does not fail, so that one record cannot stop the site's build.
+            why = ", ".join(f"{count} {(BLOCKED_BY.get(k, k) or 'with no notebook named in the record').lower()}"
+                            for k, count in reasons.items())
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
@@ -3459,27 +3550,49 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
                f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
                f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
-               f'<div class="dhead"><h1>{e(paper["title"])}</h1>{tier_badge(tier, tier_link)}</div>'
-               f'{authors_html(data, paper["doi"], root)}'
-               f'<p class="sub"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · paper key '
-               f'<code>{e(paper["key"])}</code></p>'
-               f'{sets}{could_not}')
+               f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
+               f'{authors_html(data, paper["doi"], root)}')
+        # The result leads (the outcomes and the summary); what the paper is and which data were used are in a
+        # column at the side, which goes under the result on a narrow screen.
+        side = (f'<aside class="phead-side" aria-label="About the paper and its data">'
+                f'<p class="phead-tier">{tier_badge(tier, tier_link)}</p>'
+                f'<p class="sub small"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · <span class="key">paper key '
+                f'<code>{e(paper["key"])}</code></span></p>'
+                f'{sets}{could_not}'
+                + (f'<div class="phead-tags">{tags}</div>' if tags else "") + '</aside>')
     else:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
                f'<div class="dhead"><h1>{e(dataset_label(dandiset))}</h1>{tier_badge(tier, tier_link)}</div>'
                f'<p class="sub">{e(name)}</p>')
-    body = f'''<header class="page">
+    if paper:
+        header = f'''<header class="page">
+  {top}
+  <div class="phead">
+  <div class="phead-main">
+  <div class="result"><p class="result-head">Outcomes of {n} claims</p>{bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}</div>
+  {outside_note(atts)}
+  {summary_block(atts, name=lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
+  {responses_block(data, paper, one, root)}
+  {superseded}
+  <p class="actions">{" ".join(actions)}</p>
+  </div>
+  {side}
+  </div>
+</header>
+'''
+    else:
+        header = f'''<header class="page">
   {top}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
-  {summary_block(atts, name=(lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a))) if paper else None)}
-  {responses_block(data, paper, one, root) if paper else ""}
+  {summary_block(atts)}
   {f'<p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>' if tested_on else ""}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
-<main>
+'''
+    body = f'''{header}<main>
   {attempts_timeline(data, dandiset, root, atts, paper=paper)}
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>
