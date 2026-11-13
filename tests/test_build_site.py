@@ -1018,6 +1018,95 @@ def test_a_lists_filters_open_again_when_a_narrow_window_is_widened():
     assert "narrow.addEventListener('change', fitFilters)" in js and "$('facets').open = !narrow.matches" in js
 
 
+def test_a_dataset_has_a_badge_for_the_findings_reproduced_from_it_in_verified_attempts(built):
+    data, out = built
+    with_badge = 0
+    for key, attempts in site.current_attempts(data).items():
+        archive, ident = site.split_key(key)
+        svg = out / "badge" / archive / f"{ident}.svg"
+        api = json.loads((out / "api" / f'{site.page_of(key).rstrip("/")}.json').read_text())
+        row = next(r for r in json.loads((out / "data" / "datasets.json").read_text()) if r["id"] == key) if with_badge < 3 else None
+        # Only claims on the dataset, reproduced in full, in a current attempt a verifier has checked.
+        counted = [a for a in attempts if not a.get("deprecated") and a["tier"] != "runs"]
+        total = sum(site.outcome_counts(a)["reproduced"] for a in counted)
+        badge = site.badge_of(data, key)
+        assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and api["badge"] == badge
+        page = (out / site.page_of(key) / "index.html").read_text()
+        assert ("Badge for this dataset" in page) == bool(total)
+        if not total:
+            continue
+        with_badge += 1
+        assert badge["reproduced"] == total == sum(q["reproduced"] for q in badge["papers"])
+        assert badge["text"].startswith(f'{total} finding{"" if total == 1 else "s"} reproduced')
+        assert badge["url"] == site.SITE_URL + site.page_of(key) and badge["svg"].endswith(f"badge/{archive}/{ident}.svg")
+        text = svg.read_text()
+        assert text.startswith("<svg ") and f">{site.e(badge['text'])}</text>" in text and ">Encore</text>" in text
+        assert f"<strong>{total}</strong> finding" in page and site.e(badge["svg"]) in page
+        if row is not None:
+            assert row["badge"] == badge["text"]
+    assert with_badge
+    # A dataset's page leads with its papers; what was found about its data comes after.
+    page = (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert page.index('id="papers"') < page.index('id="findings"')
+
+
+def test_a_badge_sums_the_papers_and_leaves_out_what_is_not_verified():
+    data = site.collect()
+    key = next(k for k, atts in site.current_attempts(data).items()
+               if len(atts) == 1 and atts[0]["tier"] != "runs" and not atts[0].get("deprecated")
+               and site.outcome_counts(atts[0])["reproduced"] >= 2)
+    first = site.current_attempts(data)[key][0]
+    one = site.badge_of(data, key)
+    assert "papers" not in one["text"] and len(one["papers"]) == 1 and one["papers"][0]["relation"] in ("primary", "reuses")
+    # A second paper tested on the dataset, verified: its findings are added, and the badge says how many papers.
+    n = site.outcome_counts(first)["reproduced"]
+    second = {**first, "id": "another-2020-01", "paper": "10.1000/another"}
+    data["attempts"].append(second)
+    two = site.badge_of(data, key)
+    assert two["reproduced"] == 2 * n and two["text"] == f"{2 * n} findings reproduced · 2 papers"
+    assert "2 papers" in site.badge_svg(two) and two["alt"].endswith(f"from 2 papers, from {site.dataset_label(key)}")
+    # Not yet verified, or set aside: not counted.
+    second["tier"] = "runs"
+    assert site.badge_of(data, key)["reproduced"] == n
+    second["tier"], second["deprecated"] = first["tier"], "to redo"
+    assert site.badge_of(data, key)["reproduced"] == n
+    first["tier"] = "runs"
+    assert site.badge_of(data, key) is None
+
+
+def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_verified_attempts(built):
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "authors.json").read_text())}
+    with_badge = without = 0
+    for orcid, author in site.author_index(data).items():
+        badge = site.author_badge(data, author)
+        total = sum(site.outcome_counts(a)["reproduced"] for q in author["papers"] for a in q["live"] if a["tier"] != "runs")
+        svg = out / "badge" / "authors" / f"{orcid}.svg"
+        assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and rows[orcid]["badge"] == (badge or {}).get("text")
+        if with_badge + without > 60 and badge and with_badge > 5 and without > 5:
+            continue   # the files of a sample of people are read; the rule is checked for everyone
+        api = json.loads((out / "api" / "authors" / f"{orcid}.json").read_text())
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert api["badge"] == badge and api["orcid"] == orcid and api["name"] == author["name"]
+        assert [q["key"] for q in api["papers"]] == [q["key"] for q in author["papers"]]
+        assert [d["key"] for d in api["datasets"]] == [d["key"] for d in author["datasets"]]
+        assert ("Badge for this page" in page) == bool(badge)
+        if not badge:
+            without += 1
+            continue
+        with_badge += 1
+        assert badge["reproduced"] == total == sum(q["reproduced"] for q in badge["papers"])
+        papers = len(badge["papers"])
+        assert badge["text"] == f'{total} finding{"" if total == 1 else "s"} reproduced' + (f" · {papers} papers" if papers > 1 else "")
+        assert badge["url"] == site.SITE_URL + f"authors/{orcid}/" and f">{site.e(badge['text'])}</text>" in svg.read_text()
+        # The page has the badge and what to paste to show it, as HTML and as Markdown.
+        assert f'[![{site.e(badge["alt"])}]({badge["svg"]})]({badge["url"]})' in page
+        assert site.e(f'<a href="{badge["url"]}"><img src="{badge["svg"]}"') in page
+    assert with_badge and without
+    # A dataset's page offers both forms too.
+    assert "Or as Markdown:" in (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
+
+
 def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
     # andrews-2024 reproduced a claim with a simulation run in its own environment: an outcome that is not blocked
     # and names no notebook. The paper's page lists it with the claims not tested in a notebook.

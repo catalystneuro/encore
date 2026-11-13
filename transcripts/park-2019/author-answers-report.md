@@ -1,14 +1,31 @@
-I had no questions to act on, so I changed nothing in the entry, the claims file or the attempt record.
+I've handled both answered questions. Neither changed an outcome. The entry checks pass with 0 errors, the notebook runs from a clean environment in 257 s, and the handover is built in `executed/park-2019/handover/`. I haven't committed or pushed anything, and haven't verified my own work.
 
-**Questions:** none. `questions/park-2019.yaml` doesn't exist on this branch and its git history is empty. My first attempt (`attempts/park-2019-01.yaml`) put no questions to a reader. The previous answer run reported the same and made no changes (`transcripts/park-2019/answer-report.md`). The two `methods_unavailable` findings in the attempt are questions for the paper's authors, not a reader. They cover the Idir definitions, the 2 SD rule and the Rayleigh n in one, and the Tukey error term, how speed is computed and the pair selection in the other. A reader doesn't answer those.
+**Question 1, fig5-error-inhomogeneous: the reader amended the claim.** The criterion now names three readings of what the error distribution covers:
+- (i) the mean absolute error in each 10 degree bin of head direction;
+- (ii) the head directions of windows decoded within 15, 30 or 45 degrees;
+- (iii) the signed error angles. This is the only reading I ran before the answer.
 
-**Claims re-run:** none, so every outcome stays as recorded. For example, fig1c-speed is still reproduced (assumed), fig4-internal-tuning-preserved is still not reproduced, and no-angular-velocity-tuning is still not reproduced (assumed).
+I re-ran the claim under all three readings, with the three pooling readings and both windows (660 ms and 133 ms).
 
-**Entry steps:**
-- `lock`: wrote `requirements.lock.txt` for Python 3.13 with hashes. The file came out identical, so git shows no change.
-- `all`: the check found 0 errors. The run reused the executed copy from 17:04 UTC (pass, 125 s), because nothing it reads had changed. Nothing was executed again.
-- `handover`: wrote `executed/park-2019/handover`.
+- **Outcome: partially reproduced, the same as before.** Every test holds (all four distributions non-uniform, both Kuiper's tests at p < 0.05) in 75 of the 80 combinations. None of them has all four r values within tolerance, and the best has two.
+- **Closest match.** This is ensemble 0930R029 with 660 ms windows, one of four ensembles tied for most cells, under reading (ii) at 15 degrees:
 
-I didn't verify the work, commit or push. The working tree has no tracked changes; the untracked files (`.bashrc`, `.idea`, `scripts` and others) were already there and aren't mine.
+  | r value | Measured | Expected |
+  |---|---|---|
+  | Room-frame error | 0.604 | 0.589 (within) |
+  | Arena-frame error | 0.484 | 0.653 (outside) |
+  | Room-frame head direction | 0.072 | 0.147 (outside) |
+  | Arena-frame head direction | 0.360 | 0.378 (within) |
 
-If questions were meant to be on this branch, they need to be added and this run started again.
+  These replace the earlier measured values from reading (iii): 0.560, 0.144, 0.072 and 0.360.
+- **What the new readings change.** They bring the arena-frame error r closer to 0.653, up to 0.548 for the median over ensembles at 133 ms, but never within tolerance. With all seven ensembles pooled, no r is within tolerance under any reading.
+- **Two choices of mine, recorded as deviations.** The paper doesn't fix two details of reading (i):
+  - The Rayleigh n is the number of decoded windows, because the paper's z implies about 680. With n = 36 bins as a variant, the arena-frame error is uniform for every ensemble.
+  - Kuiper's test compares the error weights with head-direction occupancy over the same bins, using a new helper `hd20.kuiper_binned`.
+
+  Neither choice changes the outcome, since readings (ii) and (iii) give the same result.
+- **Files updated.** In the notebook I rewrote the method text, the analysis cell and the conclusion for this claim. The attempt record has new notes, new measured values and the two deviations. The README and summary table stay as they were, since the outcome is the same.
+
+**Question 2, figs3-no-head-direction-bias: the reader left the claim unchanged.** The threshold stays at p ≥ 0.05, so I didn't re-run it. The outcome is still reproduced, resting on my assumption about the Rayleigh n. The claim's notes now record the answer. They also say that with my assumed n the smallest p is 0.35, so the result would meet the paper's p > 0.17 as well.
+
+fig5c-error-minima-at-cues uses the same decoding but wasn't amended; its numbers came out identical in the new run.
