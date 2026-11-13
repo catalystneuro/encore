@@ -1653,6 +1653,29 @@ def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None, ask
     return html
 
 
+# Words the notes abbreviate with a full stop, which does not end a sentence there ("Fig. 2", "et al. 2019").
+ABBREVIATIONS = {"fig", "figs", "eq", "eqs", "al", "ref", "refs", "s.d", "s.e", "s.e.m", "a.u", "e.g", "i.e", "vs",
+                 "cf", "approx", "ext", "supp", "no", "sec", "ca", "resp"}
+
+
+def gist(notes: str, limit: int = 110, shortest: int = 40) -> str:
+    """The first sentence of a claim's notes, cut at a word before `limit` characters with an ellipsis if longer.
+
+    The notes are the agent's account of what it measured and mostly open with the result, so this line lets a
+    reader scanning the claims learn the result without opening each one. It is the record's own text, unchanged.
+    A first sentence shorter than `shortest` characters is often a label ("Reading (b)."), so the next one follows.
+    """
+    text = squash(notes)
+    for m in re.finditer(r"[.!?](?=\s+[A-Z0-9(\"'`])", text):
+        word = text[:m.start()].rsplit(" ", 1)[-1].lower()
+        if m.end() >= shortest and word not in ABBREVIATIONS:
+            text = text[:m.end()]
+            break
+    if len(text) <= limit:
+        return text
+    return text[:limit + 1].rsplit(" ", 1)[0].rstrip(",;:(–—-") + "…"
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
@@ -1704,10 +1727,12 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
     ident = f'<code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
     body += (f'<p class="claim-link small muted">Claim id <code>{e(o["claim"])}</code> &middot; '
              f'<a href="#claim-{e(o["claim"])}">link to this claim</a></p>')
+    # What was found, in a line under the statement while the claim is closed; open, the full notes show.
+    lead = f'<p class="gist">{e(gist(o["notes"]))}</p>' if o["notes"] else ""
     # The chip is not a link here: inside the summary a click should open the claim.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
             f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}{ident}</div>'
-            f'<p class="statement">{e(o["statement"])}</p></summary>'
+            f'<p class="statement">{e(o["statement"])}</p>{lead}</summary>'
             f'<div class="claim-body">{body}</div></details></li>')
 
 

@@ -546,7 +546,8 @@ def test_a_claim_shows_the_papers_own_words_when_quoted():
              "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
     assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p><cite>Figure 2B</cite>' in html
-    assert html.index("blockquote") < html.index("It rose.")
+    body = html.split("</summary>")[1]
+    assert body.index("blockquote") < body.index("It rose.")
     assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
 
 
@@ -569,7 +570,8 @@ def test_a_claim_lists_the_statistics_the_paper_reports():
     claim = {"claim": "a", "statement": "S.", "source": None, "statistics": stats, "outcome": "reproduced",
              "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in html and html.index("stats") < html.index("N.")
+    body = html.split("</summary>")[1]
+    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in body and body.index("stats") < body.index("N.")
 
 
 def test_link_claims_are_counted_apart_from_the_papers_findings():
@@ -625,6 +627,24 @@ def test_a_claim_shows_its_id_which_the_response_form_asks_for():
     # The form's hint names ids as the page shows them, not numbers the page does not have.
     form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
     assert "C3, C7" not in form and "end of the claim's first line" in form
+
+
+def test_a_closed_claim_gives_the_first_sentence_of_its_notes():
+    notes = ("GC median latency 0.710 ms against MC 0.740 ms (Mann-Whitney P = 2.3e-14, Fig. 1E). The stored "
+             "waveforms are cut off.")
+    claim = {"claim": "fig1", "statement": "Rates <rise>.", "source": "Figure 1E", "outcome": "reproduced",
+             "blocked_by": None, "notes": notes, "deviations": [], "disagreed": False}
+    head, body = site.claim_item(claim, "../").split("</summary>")
+    # In the summary, after the statement, whose markup is unchanged; the full notes are in the body.
+    assert ('<p class="statement">Rates &lt;rise&gt;.</p><p class="gist">GC median latency 0.710 ms against MC '
+            '0.740 ms (Mann-Whitney P = 2.3e-14, Fig. 1E).</p>') in head
+    assert f'<p class="notes">{site.e(notes)}</p>' in body
+    # A long first sentence is cut at a word, with an ellipsis; a short label is joined by the next sentence.
+    long = site.gist("In " + "many long words " * 20 + "the rate rose. Then more.")
+    assert long == "In " + "many long words " * 6 + "many long…"
+    assert site.gist("Reading (b). The rate is 3 Hz in 9 sessions. More.") == "Reading (b). The rate is 3 Hz in 9 sessions."
+    # No notes, no line.
+    assert 'class="gist"' not in site.claim_item({**claim, "notes": ""}, "../")
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
