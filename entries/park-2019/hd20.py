@@ -40,6 +40,9 @@ Where the parameters come from:
   choice. Dunnett's test: scipy's, whose p-values come from a randomised integration, seeded (a
   standard choice that cannot change a result beyond the fourth decimal). Kuiper's two-sample test: the asymptotic distribution with Stephens' correction
   (Numerical Recipes, which the paper cites), a standard choice.
+- Tukey HSD after a repeated-measures ANOVA (`tukey_rm`) uses the ANOVA's repeated-measures error
+  term, an assumption (STAR Methods, Statistics, name only Tukey-Kramer HSD, run in JMP 12);
+  `tukey` is the between-groups test, used after one-way ANOVAs and as a variant.
 """
 
 from __future__ import annotations
@@ -504,12 +507,38 @@ def oneway(groups: dict) -> dict:
 
 
 def tukey(wide: pd.DataFrame) -> pd.DataFrame:
-    """Tukey-Kramer HSD over the columns of `wide` (each column a condition)."""
+    """Tukey-Kramer HSD over the columns of `wide` (each column a condition), between groups: the
+    error term is the pooled within-condition variance, which ignores the pairing of rows."""
     from statsmodels.stats.multicomp import pairwise_tukeyhsd
     long = wide.melt(var_name="cond", value_name="v").dropna()
     res = pairwise_tukeyhsd(long.v, long.cond)
     t = pd.DataFrame(res.summary().data[1:], columns=res.summary().data[0])
     return t[["group1", "group2", "meandiff", "p-adj", "reject"]]
+
+
+def tukey_rm(wide: pd.DataFrame) -> pd.DataFrame:
+    """Tukey HSD for repeated measures: every pair of columns compared with the error term of the
+    one-way repeated-measures ANOVA (condition by subject interaction, (k - 1)(n - 1) degrees of
+    freedom), q = |mean difference| / sqrt(MS_error / n), p from the studentized range with k
+    groups. The paper's F(3, 342) for 115 cells implies this within-subject error term; that the
+    post hoc test used it is an assumption (STAR Methods, Statistics, name only Tukey-Kramer HSD).
+    Rows with a missing value are dropped."""
+    from scipy import stats
+    X = wide.dropna()
+    A = X.to_numpy(float)
+    n, k = A.shape
+    resid = A - A.mean(0) - A.mean(1, keepdims=True) + A.mean()
+    df = (k - 1) * (n - 1)
+    se = np.sqrt((resid ** 2).sum() / df / n)
+    rows = []
+    cols = list(X.columns)
+    for i in range(k):
+        for j in range(i + 1, k):
+            d = A[:, j].mean() - A[:, i].mean()
+            q = abs(d) / se
+            rows.append({"group1": cols[i], "group2": cols[j], "meandiff": d, "q": q,
+                         "p-adj": float(stats.studentized_range.sf(q, k, df)), "df": df})
+    return pd.DataFrame(rows)
 
 
 def dunnett(groups: dict, control: str) -> pd.DataFrame:

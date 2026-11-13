@@ -14,7 +14,7 @@ the training sessions are not in it.
 | Speed lower in stable2 only | Reproduced |
 | LFP power unchanged | Blocked: data missing |
 | Firing rates maintained | Reproduced |
-| Directionality degraded in rotation, more in the arena frame | Partially reproduced |
+| Directionality degraded in rotation, more in the arena frame | Reproduced (assumed) |
 | Change in preferred direction across trial pairs | Partially reproduced |
 | Directional instability across trial pairs | Partially reproduced |
 | Decoding accurate in stable2, poor in rotation | Reproduced (assumed) |
@@ -27,7 +27,7 @@ the training sessions are not in it.
 | Subclass pair correlations (Figure S6) | Blocked: data missing |
 | No angular velocity tuning | Not reproduced (assumed) |
 | Internally referenced tuning preserved (Figure 4D) | Not reproduced |
-| Arena-frame internal tuning falls beyond 10 s (Figure 4C) | Partially reproduced |
+| Arena-frame internal tuning falls beyond 10 s (Figure 4C) | Not reproduced |
 | Decoding error distributions inhomogeneous (Figure 5) | Partially reproduced |
 | Error minima at 110 and 350 degrees | Reproduced (assumed) |
 
@@ -40,7 +40,7 @@ its rotating trial's spikes, and undocumented codes for untracked samples. The a
 the reasons and the differences from the paper's method, is
 [`attempts/park-2019-02.yaml`](../../attempts/park-2019-02.yaml).
 
-- `reproduce_park_2019.ipynb`: the analysis. It takes about six minutes, four of them for the
+- `reproduce_park_2019.ipynb`: the analysis. It takes about seven minutes, four and a half of them for the
   internally referenced tuning of Figure 4.
 - `hd20.py`: reading the TSD and tracker files from the zip in place, the tuning measures, the
   decoder and internally referenced tuning ported from the paper's code, Idir, and the statistics.
