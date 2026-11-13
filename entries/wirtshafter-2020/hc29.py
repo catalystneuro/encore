@@ -243,7 +243,7 @@ def repo_files(repo: str = CODE_REPO, commit: str = CODE_COMMIT) -> pd.DataFrame
 def times_intervals(keys) -> pd.DataFrame:
     """Every sample interval of each recording in Times.mat, read in pieces of PIECE samples:
     the median, how many intervals are not positive, more than 1.5 or less than 0.5 times the
-    median, the longest, and the distinct medians of the pieces (a change of sampling rate
+    median, the longest, the shortest of those over 1.5 times the median, and the distinct medians of the pieces (a change of sampling rate
     inside a recording would show as more than one); where the long intervals start (not listed
     below 1 ms sampling) and the first and last timestamps followed by one not later."""
     rows = []
@@ -255,6 +255,7 @@ def times_intervals(keys) -> pd.DataFrame:
             med = None
             counts = {"not_positive": 0, "long": 0, "short": 0}
             longest, longest_at, piece_medians, last = 0.0, np.nan, set(), None
+            shortest_long = np.inf
             long_at, repeat_at = [], []
             for s in range(0, n, PIECE):
                 x = d[s:s + PIECE, 0]
@@ -272,6 +273,8 @@ def times_intervals(keys) -> pd.DataFrame:
                 if med >= 1e-3:   # below 1 ms sampling the long intervals are jitter, too many to list
                     long_at +=[round(float(y[j]), 1) for j in np.flatnonzero(dt > 1.5 * med)]
                 counts["long"] += int(np.sum(dt > 1.5 * med))
+                if np.any(dt > 1.5 * med):
+                    shortest_long = min(shortest_long, float(dt[dt > 1.5 * med].min()))
                 counts["short"] += int(np.sum((dt > 0) & (dt < 0.5 * med)))
                 i = int(np.argmax(dt))
                 if dt[i] > longest:
@@ -279,6 +282,7 @@ def times_intervals(keys) -> pd.DataFrame:
             rows.append({"times_key": k, "samples": n, "dt_median_ms": 1e3 * med,
                          "piece_medians_ms": sorted(piece_medians), **counts,
                          "longest_ms": 1e3 * longest, "longest_at_s": longest_at,
+                         "shortest_long_ms": 1e3 * shortest_long if np.isfinite(shortest_long) else np.nan,
                          "long_at_s": long_at,
                          "not_positive_from_s": min(repeat_at) if repeat_at else np.nan,
                          "not_positive_to_s": max(repeat_at) if repeat_at else np.nan})
@@ -286,17 +290,44 @@ def times_intervals(keys) -> pd.DataFrame:
 
 
 def spike_gaps(units: pd.DataFrame, spikes: dict[str, np.ndarray], exclude=(),
-               gap_s: float = GAP_S) -> pd.DataFrame:
+               gap_s: float = GAP_S, ranges: pd.DataFrame | None = None) -> pd.DataFrame:
     """For each recording, the spikes of all its clusters pooled (leaving out the keys in
-    exclude): the longest stretch with no spike, and every stretch of at least gap_s, with where
-    it starts."""
+    exclude): the longest stretch with no spike between its first and last spike, and every
+    stretch of at least gap_s, with where it starts. With ranges (t_first_s and t_last_s of each
+    recording, indexed by times_key), also the silence from the recording's first timestamp to
+    the first spike (lead_s) and from the last spike to its last timestamp (trail_s)."""
     rows = []
     for key, grp in units[~units.key.isin(set(exclude))].groupby("times_key"):
         t = np.sort(np.concatenate([spikes[k] for k in grp.key]))
         dt = np.diff(t)
         long = np.flatnonzero(dt >= gap_s)
-        rows.append({"times_key": key, "clusters": len(grp), "spikes": t.size,
-                     "first_s": t[0], "last_s": t[-1], "longest_gap_s": float(dt.max()) if dt.size else np.nan,
-                     "gaps": len(long), "gap_starts_s": [round(float(t[i]), 1) for i in long],
-                     "gap_lengths_s": [round(float(dt[i]), 1) for i in long]})
+        row = {"times_key": key, "clusters": len(grp), "spikes": t.size,
+               "first_s": t[0], "last_s": t[-1], "longest_gap_s": float(dt.max()) if dt.size else np.nan,
+               "longest_gap_at_s": round(float(t[np.argmax(dt)]), 1) if dt.size else np.nan,
+               "gaps": len(long), "gap_starts_s": [round(float(t[i]), 1) for i in long],
+               "gap_lengths_s": [round(float(dt[i]), 1) for i in long]}
+        if ranges is not None:
+            row["lead_s"] = t[0] - ranges.loc[key, "t_first_s"]
+            row["trail_s"] = ranges.loc[key, "t_last_s"] - t[-1]
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def repo_mat_variables(paths, repo: str = CODE_REPO, commit: str = CODE_COMMIT) -> pd.DataFrame:
+    """The variables, shapes and classes of MATLAB files of a GitHub repository at a commit, read
+    from raw.githubusercontent.com (MATLAB 5 files with scipy, 7.3 files with h5py)."""
+    import requests
+
+    rows = []
+    for p in paths:
+        r = requests.get(f"https://raw.githubusercontent.com/{repo}/{commit}/{p}", timeout=60)
+        r.raise_for_status()
+        try:
+            for name, shape, cls in sio.whosmat(io.BytesIO(r.content)):
+                rows.append({"path": p, "variable": name, "shape": str(shape), "class": cls})
+        except Exception:
+            h = h5py.File(io.BytesIO(r.content), "r")
+            h.visititems(lambda n, d: rows.append({"path": p, "variable": n, "shape": str(d.shape),
+                                                   "class": str(d.dtype)})
+                         if isinstance(d, h5py.Dataset) else None)
     return pd.DataFrame(rows)
