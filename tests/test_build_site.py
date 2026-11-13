@@ -927,6 +927,16 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
                 assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
     # And a dataset's page names the paper's page.
     assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    # The result leads: under the title, the full outcome bar and the summary come before the datasets, which
+    # sit with the paper's DOI, tags and verification badge in the side column. So on an attempt's page.
+    for path in (("papers", "tingley-2021"), ("papers", "kim-2022", "kim-2022-01")):
+        text = site.joinpath(*path, "index.html").read_text()
+        head = text[text.index('<header class="page"'):text.index("</header>")]
+        result, summary = head.index('<div class="result">'), head.index('<div class="attempt-summary">')
+        side, sets = head.index('<aside class="phead-side"'), head.index('<div class="sets">')
+        assert head.index("<h1>") < result < summary < side < sets, path
+        assert '<div class="bar" role="img" aria-label="Outcomes of ' in head[result:summary]
+        assert 'class="tier' in head[side:] and "doi:" in head[side:] and "doi:" not in head[:side]
     # A paper on several datasets lists them all; the tab bar leads to the papers and to the datasets.
     semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
