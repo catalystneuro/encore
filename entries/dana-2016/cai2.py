@@ -17,13 +17,19 @@ Where each parameter comes from:
   350 ms for 6-8 APs") and the Figure 4d legend. For 1 AP the bin only bounds the next spike
   under reading (b); it is the 2 AP bin, as in the script (bin(1) = bin(2) = 100 ms).
 - Isolation readings of the claim fig4d-event-counts: (a) more than 1 s before the first and
-  after the last spike, (b) more than 1 s before the first spike only. The data set's script uses
-  1 s before and 0.8 s after (interval_pre, interval_post), needs a spike on each side, and
-  drops events after sample 3.15e6 (315 s); it is run as the reading "script".
+  after the last spike, (b) more than 1 s before the first spike only. Reading (a) is the main
+  one: the Methods give "isolated from other APs by >1 s", and the claims file makes the Methods
+  the main reading where they and the script disagree. The data set's script uses 1 s before
+  and 0.8 s after (interval_pre = 1000*fs/1000, interval_post = 800*fs/1000, with the comment
+  "if the next train start >1000ms after the last spike" in find_nspike_event.m), needs a spike
+  on each side (for i=2:(length(ind)-n)), and drops events after sample 3.15e6 (315 s); it is
+  run as the variant "script", not a reading of the claim.
 - NOISE_S (noise bins, 4 s jRGECO1a and 5 s jRCaMP1a): Figure 4e legend. Readings of the claim:
   (i) consecutive non-overlapping bins in each spike-free stretch, (ii) the same in stretches
   shortened by 1 s at each end; "script" is find_no_event.m: one trace per gap between spikes
-  longer than the bin, at its midpoint.
+  longer than the bin, at its midpoint (find_no_event(peak, interval_pre*4), position =
+  round((ind(i)+ind(i+1))/2)). The script's noise rule settles a detail the Methods leave open,
+  so it is the main noise reading.
 - F0 = mean of the 10 frames before the first spike: Methods, paragraph 2. "Before" is taken
   as frames whose time stamp precedes the spike (a standard choice; the script takes the frame
   nearest the spike as frame 0, which the "script" segment reading keeps).
@@ -46,6 +52,13 @@ Where each parameter comes from:
   no end); the 16 traces with the smallest RMS residual kept
   (claim's reading of "small fitting error"). Half decay (a) tau ln 2 or (b) peak to half peak
   on the trace; half rise from the first spike to half peak, by linear interpolation (claim).
+  Time to peak, from the first spike to the peak frame, is kept for the comparison with Chen et
+  al. (2013b), who report time to peak.
+- GCaMP6 reference values (claim fig4g-kinetics-like-gcamp6): Chen et al. (2013b), Nature
+  499:295, doi:10.1038/nature12354, Supplementary Table 3 ("GCaMP comparison in mouse V1 in vivo
+  (cell attached recording)": 1 AP half decay and 1 AP rise time to peak), the preparation of
+  Figure 4, read from the Supplementary Information PDF of the author manuscript in the PMC
+  open-access bucket (pmc-oa-opendata, PMC3777791.1). Supplementary Table 1 (cultured neurons, 10 AP) is read as a variant.
 """
 import hashlib
 import io
@@ -103,6 +116,46 @@ def published_md5():
     """The data set's checksums.md5, as a dict from path to sum."""
     with fsspec.open(f"{BUCKET}/checksums.md5", "rt") as f:
         return {p: s for s, p in (line.split() for line in f if line.strip())}
+
+
+def script_sources():
+    """The data set's three MATLAB scripts, as text, from cai-2/live/scripts/."""
+    out = {}
+    for name in ("data_analysis_for_CRCNS_jRGECO1a.m", "find_nspike_event.m", "find_no_event.m"):
+        with fsspec.open(f"{BUCKET}/scripts/{name}", "rt") as f:
+            out[name] = f.read()
+    return out
+
+
+# PMC open-access copy (article version PMC3777791.1) of the Supplementary Information of Chen et al. (2013b)
+CHEN_SUPP = ("https://pmc-oa-opendata.s3.amazonaws.com/PMC3777791.1/"
+             "NIHMS489004-supplement-supp_info_2_revised_20130705.pdf")
+_PM = r"(\d+(?:\.\d+)?)\s*±\s*(\d+(?:\.\d+)?)"
+
+
+def chen2013_tables():
+    """GCaMP6 rows of Chen et al. (2013b) Supplementary Tables 1 and 3, as {table: {sensor: values}}.
+
+    Values are (mean, s.e.m.) pairs: Table 3 (V1 in vivo) gives dF/F0 1 AP (%), half decay 1 AP
+    (ms), rise time to peak 1 AP (ms); Table 1 (culture) gives F0, dynamic range, half decay 10 AP
+    (ms), rise time to peak 10 AP (ms). Also returns the MD5 of the PDF read.
+    """
+    import logging
+    import pypdf
+    logging.getLogger("pypdf").setLevel(logging.ERROR)
+    with fsspec.open(CHEN_SUPP, "rb", block_size=2**22) as f:
+        raw = f.read()
+    name = CHEN_SUPP.split("/")[-1]
+    pages = [p.extract_text() for p in pypdf.PdfReader(io.BytesIO(raw)).pages]
+    out = {}
+    for table, title in ((3, "Supplementary Table 3 |"), (1, "Supplementary Table 1 |")):
+        text = next(t for t in pages if title in t)
+        rows = {}
+        for sensor in ("GCaMP6s", "GCaMP6f"):
+            line = next(ln for ln in text.splitlines() if ln.strip().startswith(sensor + " "))
+            rows[sensor] = [(float(a), float(b)) for a, b in re.findall(_PM, line)]
+        out[table] = rows
+    return out, name, hashlib.md5(raw).hexdigest()
 
 
 def parse_name(name):
@@ -386,5 +439,6 @@ def kinetics(rec, times, indicator, post_s):
             decay_trace = x0 + (y0 - peak / 2) * (x1 - x0) / (y0 - y1)
         else:
             decay_trace = np.nan
-        out.append(dict(rise=rise, tau=tau, decay_fit=tau * np.log(2), decay_trace=decay_trace, rms=rms, peak=peak))
+        out.append(dict(rise=rise, t_peak=float(tt[kp]), tau=tau, decay_fit=tau * np.log(2), decay_trace=decay_trace,
+                        rms=rms, peak=peak))
     return out
