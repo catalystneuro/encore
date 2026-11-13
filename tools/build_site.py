@@ -2780,7 +2780,10 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             reasons: dict = {}
             for o in blocked:
                 reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
-            why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
+            # An outcome that is not blocked can be here too: a test the attempt ran outside the entry's notebooks
+            # (a simulation that needs its own environment, as in andrews-2024), which has no reason for a block.
+            why = ", ".join(f"{count} {(BLOCKED_BY.get(k, k) or 'tested outside the notebooks').lower()}"
+                            for k, count in reasons.items())
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'

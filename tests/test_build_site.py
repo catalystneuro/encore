@@ -1016,3 +1016,16 @@ def test_a_lists_filters_open_again_when_a_narrow_window_is_widened():
     # not only when the page loads (assets/list.js follows the media query).
     js = (site.ASSETS / "list.js").read_text()
     assert "narrow.addEventListener('change', fitFilters)" in js and "$('facets').open = !narrow.matches" in js
+
+
+def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
+    # andrews-2024 reproduced a claim with a simulation run in its own environment: an outcome that is not blocked
+    # and names no notebook. The paper's page lists it with the claims not tested in a notebook.
+    data = site.collect()
+    q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
+    a = q["attempts"][0]
+    moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
+    moved["notebook"] = None
+    page = site.page_paper(data, q)
+    assert "Not tested in a notebook" in page and "tested outside the notebooks" in page
+    assert f'id="claim-{moved["claim"]}"' in page
