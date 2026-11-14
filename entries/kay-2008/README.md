@@ -15,12 +15,13 @@ later sessions of subject S1 and the retinotopic mapping scans are not in it.
 | Voxel counts per area (Supplementary Table 1) | Reproduced |
 | Predictive power falls from V1 to V2 to V3 | Reproduced |
 | The model does poorly in V4 | Reproduced |
-| RF size grows with eccentricity and from V1 to V3 | Reproduced (assumed) |
+| RF size grows with eccentricity and from V1 to V3 | Partially reproduced (assumed) |
 | Representative voxel 42205 (Figure 2) | Partially reproduced (assumed) |
 | V1-averaged tuning curves (Supplementary Figure 7) | Not reproduced |
 | Classification extension (Supplementary Discussion 1) | Not reproduced |
 | Most selected voxels lie in V1 | Not reproduced |
-| Single-trial identification, noise ceiling, voxel-number curve, SNR | Blocked: too large |
+| Performance is best at about 500 voxels (Supplementary Figure 4) | Partially reproduced (repeated trials only) |
+| Single-trial identification, noise ceiling, SNR | Blocked: too large |
 | Set sizes up to 1,000 and beyond, retinotopy-only extrapolation, constrained models | Blocked: data missing |
 | Later sessions (two and fourteen months), retinotopic validation | Blocked: data missing |
 

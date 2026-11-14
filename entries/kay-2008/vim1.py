@@ -31,7 +31,9 @@ O1 to O7, which cite the Supplementary Methods; SM below):
   as a stopping set, responses mean-subtracted, channels z-scored, kernel from zero, step 0.001,
   normalized gradient with momentum 0.9 (both the error gradient and the sum normalized to unit
   length, our reading of the garbled formula), stop at the first iteration where the stopping-set
-  error no longer decreases. One stopping set is drawn per fit and shared by all voxels fitted
+  error no longer decreases (our reading of "until the error no longer decreases": a fit whose
+  first step already raises the stopping-set error keeps the zero kernel, so the voxel has no
+  model and p = 1; about 30% of the initial fits stop there). One stopping set is drawn per fit and shared by all voxels fitted
   together (a standard choice for a random draw). The paper's 100 bootstrap fits, whose mean gives
   the final parameters, are not run here for time (a deviation; `n_boot` runs a smaller number).
 - Rough localization (SM 5): orientation-invariant 128 px models over the full 20 degrees, the
@@ -595,8 +597,10 @@ def fit_ro(D, L, C, rng, voxels):
 def gratings(npx=64, n_phase=16, amplitude=0.5):
     """Sinusoidal gratings at the 8 orientations and 5 spatial frequencies (1 to 16 cycles per
     FOV) of the 64 px pyramid, at `n_phase` phases: array (8, 5, n_phase, npx, npx). The
-    amplitude is a standard choice (the stimulus values span about +/-0.5); with the energy model
-    it scales the curves but does not change their shape."""
+    amplitude is a standard choice (the stimulus values span about +/-0.5). The channels are
+    contrast energies, so without the DC offset the curves scale with the amplitude and keep their
+    shape; once the DC offset is added, their shape depends on the amplitude, so only the curves
+    without it bear on a criterion."""
     yy, xx = np.mgrid[0:npx, 0:npx] + 0.5
     out = np.empty((8, 5, n_phase, npx, npx), np.float32)
     for o in range(8):

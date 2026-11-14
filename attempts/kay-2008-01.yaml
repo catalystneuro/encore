@@ -54,6 +54,12 @@ outcomes:
   - The responses are the data set's estimated repeated-trial responses, z-scored per voxel by the
     data set; the paper standardized per session (SM 3). Voxels with NaN responses are left out
     (S1 345, S2 214 of V1 to V3).
+  - The p-values that pick the O1 (a) candidate voxels use all 120 identification images, the one
+    being identified included, where P5 leaves that image out; O1 (b), which has no such step,
+    gives the same S1 count and one image fewer for S2.
+  - The stopping rule is read as stopping at the first iteration whose stopping-set error does not
+    decrease, so a fit whose first step raises that error keeps the zero kernel and the voxel has
+    no model (about 30% of the initial fits).
 - claim: fig4a-s2-repeated-120
   outcome: reproduced
   notebook: reproduce_kay_2008.ipynb
@@ -74,14 +80,21 @@ outcomes:
     voxel's time series, first with a Fourier basis per session to get its HRF, then with one
     amplitude per trial (1,024 trials and 28 polynomial terms on 4,752 time points per session)
     and first-order autoregressive noise, iterated to convergence; each voxel has its own design
-    after the HRF and the noise transform. The notebook streams one run (2.7 s) and times one
-    single-trial solve at 0.24 s, which gives about 615 minutes for the 10,228 V1 to V3 voxels of
-    both subjects, 5 sessions and 3 iterations, before the HRF fits. This is over the notebook limit
-    and the time left in the run. Nothing was computed on single trials.
+    after the HRF and the noise transform. The notebook's estimate (about 605 minutes) times one
+    dense single-trial solve over all seven runs of a session and scales it to every V1 to V3 voxel;
+    as the verifier found, it overstates the cost, since the trials of different runs share no
+    regressors and reading O6 (a) needs single trials only for the candidate voxels. In the
+    revision after round 1 a vectorized BRS fit was written and run while preparing, on two
+    sessions of S1 (not run in the notebook, so it decides nothing here); a full run of the entry
+    with a second notebook built on it did not finish within the revision's time, so the claim
+    stays blocked. Nothing in the executed notebook was computed on single trials.
 - claim: fig4a-noise-ceiling
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the single-trial patterns of fig4a-single-trial, which are blocked as too large.
+  notes: Needs the single-trial patterns of fig4a-single-trial, which are blocked as too large (see
+    there for how far the revision got). Two readings of the claims file are asked of a reader
+    (questions/kay-2008.yaml), the sample sizes of the available trials (13, 14 or 15 per image
+    in seqVal, where the criterion says 13 or 14) and the sample size of the predicted patterns.
 - claim: fig4b-set-size-1000
   outcome: blocked
   blocked_by: data_missing
@@ -112,6 +125,10 @@ outcomes:
   - The contrast channel is read as the square root of the weighted variance (the SM 8 formula is
     garbled in the text); fitted by the gradient descent of SM 6 with the deviations of
     fig3-s1-repeated-120.
+  - The luminance channel is the absolute weighted mean of the stimulus values relative to the grey
+    background (the mean-subtracted values plus the mean luminance), where SM 8 defines it as the
+    absolute deviation from the mean luminance. The values are within tolerance by 3.8 and 2.4
+    points; the SM 8 reading was not run in the executed notebook.
 - claim: suppfig8-constrained-models
   outcome: blocked
   blocked_by: data_missing
@@ -139,13 +156,17 @@ outcomes:
     Random choices give a median percentile of 49.6. The claim holds under one reading, as the
     criterion allows.
 - claim: suppfig4-500-voxels
-  outcome: blocked
-  blocked_by: too_large
-  notes: Two of its four conditions are single-trial, which are blocked (fig4a-single-trial). For
-    repeated trials (O1a-O5a), performance at 1, 5, 10, 20, 50, 100, 200, 500 and 1,000 voxels is
+  outcome: partially_reproduced
+  notebook: reproduce_kay_2008.ipynb
+  output: claim:suppfig4-500-voxels
+  notes: The criterion calls the claim partially reproduced when the rule holds in two or three of
+    its four conditions; it holds in both repeated-trial conditions, and the two single-trial
+    conditions are blocked (fig4a-single-trial). For repeated trials (O1a-O5a), performance at 1, 5, 10, 20, 50, 100, 200, 500 and 1,000 voxels is
     0.8, 7.5, 19.2, 36.7, 61.7, 71.7, 85.8, 90.8 and 90.8% for S1 and 0.8, 6.7, 16.7, 23.3, 45.8,
     61.7, 73.3, 72.5 and 66.7% for S2, so the rule holds in both repeated-trial conditions (500 is
-    the highest or within 3 points of it, and above 50).
+    the highest or within 3 points of it, and above 50). The notebook prints the O1a-O5a and
+    O1b-O5b readings only; under O1b-O5b the rule holds too (S1 75.8% at 500, the highest, against
+    42.5% at 50; S2 46.7% at 500, the highest, against 29.2% at 50).
 - claim: supptable1-voxel-counts
   outcome: reproduced
   notebook: reproduce_kay_2008.ipynb
@@ -160,6 +181,7 @@ outcomes:
   notes: The data set's ROI labels give exactly the paper's six counts.
 - claim: supptable1-predictive-power-by-area
   outcome: reproduced
+  assumed: true
   notebook: reproduce_kay_2008.ipynb
   output: claim:supptable1-predictive-power-by-area
   measured:
@@ -171,18 +193,26 @@ outcomes:
   - 13.1
   notes: All six fractions are within 10% of the paper's and V1 > V2 > V3 in both subjects. The
     denominators are all voxels labelled in each area; voxels with NaN responses count as not
-    significant. At p < 0.001 and p < 0.05 the order holds as well.
+    significant. At p < 0.001 and p < 0.05 the order holds as well. Over the voxels without NaN
+    only, 3 of the 6 values are within 10% (S1 V3 20.1%, S2 V1 29.0% and S2 V2 23.7% are not),
+    which would be partially reproduced.
   deviations:
   - The initial models carry the fitting deviations of fig3-s1-repeated-120.
+  - Assumed, voxels with NaN responses in the data set (S1 345, S2 214 of V1 to V3) count in the
+    denominators as not significant. Supplementary Table 1 gives the fractions as percentages of
+    the area totals, and those totals equal the data set's label counts including the NaN voxels;
+    the data set gives no estimates for them, so they cannot have significant predictive power
+    here. Whether the paper had estimates for them is not known.
 - claim: supptable1-snr
   outcome: blocked
   blocked_by: too_large
   notes: The data set gives no standard errors for its response estimates. Reading (a) needs the
     repeated-trial BRS fit of every voxel's time series per session, reading (b) a bootstrap over
-    runs of the same fits. The notebook times one repeated-trial solve (0.032 s) and estimates about
-    164 minutes for the V1 to V3 voxels of both subjects with the alternating HRF step and 3
-    iterations, over the time left in the run once the identification pipeline (39 minutes) is in
-    the notebook.
+    runs of the same fits. The notebook's estimate (about 172 minutes) scales a dense solve over the
+    five runs of a session to every voxel; as the verifier found, it overstates the cost, as each
+    run has its own images. The vectorized BRS fit written in the revision after round 1 (see
+    fig4a-single-trial) also gives the standard errors of reading (a), but it was not run in the
+    executed notebook, so nothing was computed for this claim.
 - claim: methods-v4-poor
   outcome: reproduced
   notebook: reproduce_kay_2008.ipynb
@@ -199,19 +229,20 @@ outcomes:
     Its best initial model has r = 0.75 and its Gaussian centre is (-3.89, -0.57) deg. Under O5 (a),
     the reading adopted, the envelope peaks at (-3.42, +0.24) deg, left of the vertical meridian but
     0.24 degrees above the horizontal one; the SF tuning is highest at the highest frequency, 2.94
-    cycles/deg; the orientation tuning's max/min is 2.23 without the DC offset and 16.2 with it, so
-    the broadband rule fails. Left hemifield and high-pass hold; just below and broadband do not.
-    Under O5 (b) the peak is at (-4.22, -0.47), SF tuning is highest at the highest frequency (0.80
-    cycles/deg) and the max/min is 1.77 without the DC offset (6.54 with it), so all three parts hold
-    without the DC offset.
+    cycles/deg; the orientation tuning's max/min is 2.23, so the broadband rule fails. Left
+    hemifield and high-pass hold; just below and broadband do not. Under O5 (b) the peak is at
+    (-4.22, -0.47), SF tuning is highest at the highest frequency (0.80 cycles/deg) and the max/min
+    is 1.77, so all three parts hold. The ratios with the DC offset added (16.2 and 6.54) depend on
+    the arbitrary grating amplitude and bear on nothing; the ratios without it do not depend on the
+    amplitude.
   deviations:
   - The readings differ in outcome. O5 (a) is adopted as an assumption, as the paper best supports
     it; its 5.45 degree field of view gives a highest frequency of 2.94 cycles/deg, the end of the
     spatial frequency axis of Figure 2b (2.9), where the O5 (b) model's ends at 0.80, and only O5
     (a) reproduces the identification results.
-  - Tuning curves are taken without the DC offset, as an assumption; SM 6 does not say whether the
-    tuning curves include it, and with it the minimum of the orientation curve is near zero, which
-    makes the max/min rule fail under both readings.
+  - Tuning curves are taken without the DC offset; SM 6 does not say whether the tuning curves
+    include it, and with it the shape of the curves depends on the grating amplitude, which the
+    paper does not give, so only the curves without it can be compared with the rule.
   - The paper does not say how it numbers voxels; voxIdx is assumed to be its numbering.
 - claim: suppfig7-roi-tuning
   outcome: not_reproduced
@@ -219,18 +250,21 @@ outcomes:
   output: claim:suppfig7-roi-tuning
   notes: Over all V1 voxels with a final model (1,084 in S1 and 1,083 in S2), the mean spatial
     frequency curve rises to the highest level (16 cycles per field of view) under O5 (a) and (b), in
-    both subjects, with or without the DC offset, with gratings over the field of view or inside the
-    stimulus aperture, and for the median over voxels; it is high-pass, not band-pass. The
+    both subjects, with gratings over the field of view or inside the stimulus aperture, and for
+    the median over voxels; it is high-pass, not band-pass. The
     orientation curve's range is 31% to 449% of its mean, against the 10% rule. Under O5 (a) a few
     voxels with very large responses to full-field gratings dominate the mean (SE up to about 740);
     gratings inside the aperture remove them (orientation range 42.5% in S1 and 31.4% in S2) without
-    changing the spatial frequency curve's shape. Reading (b) of the models (model I of the
-    constrained models) and reading (b) of the voxels were not run.
+    changing the spatial frequency curve's shape. The curves with the DC offset, also printed, depend
+    on the arbitrary grating amplitude and bear on nothing. Reading (b) of the models (model I of
+    the constrained models) and reading (b) of the voxels were not run, so the outcome holds only
+    for the readings run.
   deviations:
   - The curves are averaged over each model's five spatial frequency levels in cycles per field of
     view, as the fields of view differ between voxels; the paper does not say how the curves of
     voxels with different fields of view are combined.
-  - Grating amplitude 0.5, a standard choice that scales but does not shape the curves.
+  - Grating amplitude 0.5, a standard choice that scales the curves without the DC offset but
+    does not change their shape.
 - claim: suppfig10-retinotopy-validation
   outcome: blocked
   blocked_by: data_missing
@@ -238,21 +272,23 @@ outcomes:
     localizer scans behind the ROIs are not included, and its file list holds none. The paper gives
     no other location.
 - claim: suppfig11-rf-size-eccentricity
-  outcome: reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_kay_2008.ipynb
   output: claim:suppfig11-rf-size-eccentricity
-  notes: With RFs inside the 20 degree square (V1 732, V2 829, V3 342 voxels over both subjects), RF
-    size increases with eccentricity in each area (Spearman rho 0.535, 0.628 and 0.649, p < 1e-40),
-    and in 1 degree bins the medians order V1 < V2 < V3 in 5 of the 8 bins shared by the three
-    areas. With RFs inside the circular aperture the correlations hold (rho 0.573 to 0.676) and the
-    order holds in 3 of 6 bins, not most; with 0.5 degree bins it holds in 6 of 12 (square) and 3 of
-    9 (circle).
+  notes: RF size increases with eccentricity in each area under both filters run (Spearman rho
+    0.535 to 0.676, p < 1e-26). With RFs inside the circular aperture (V1 626, V2 684, V3 285 voxels
+    over both subjects) the medians order V1 < V2 < V3 in 3 of the 6 shared 1 degree bins and 3 of 9
+    shared 0.5 degree bins, not most. Only with RFs inside the 20 degree square and 1 degree bins
+    does the order hold in most bins (5 of 8; 6 of 12 with 0.5 degree bins). The first part of the
+    claim holds and the area order does not.
   deviations:
   - The legend's "estimated RF location was not completely within the stimulus bounds" is read as
-    the +/-2 SD square inside the 20 x 20 degree stimulus square, as an assumption; the paper gives
-    the stimulus size as 20 x 20 degrees and uses square fields of view. Inside the circular aperture
-    the bin order fails.
+    the RF inside the circular aperture, as an assumption; Figure 2's legend calls the white circle
+    "the bounds of the stimulus". The filter run requires a disc of 2 SD around the RF centre to lie
+    inside the mask's radius (9.5 degrees, from its area), not the +/-2 SD square of SM 5 inside the
+    paper's 10 degree radius; that filter was not run in the executed notebook. The first version of
+    this record adopted the 20 degree square, under which the order holds in most 1 degree bins.
 - claim: suppdisc1-classification-extension
   outcome: not_reproduced
   notebook: reproduce_kay_2008.ipynb
@@ -316,3 +352,201 @@ findings:
   statement: SM 5 gives the initial fields of view as 10.1 and 5.2 degrees, but at 128 px the
     resolution list of SM 6 gives 10.0 (256 px) and 5.12 (500 px) degrees; and a 1-octave bandwidth
     with an isotropic Gaussian gives an orientation bandwidth of about 37 degrees, not the 41 stated.
+verifications:
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module vim1.py and the claims file, with the paper under paper/. The verifier read the archive's
+    file list and tested the helpers on synthetic inputs (area_matrix, resize_stack, gwp, fit_gd,
+    loo_power, identify_repeated, boot_p, fit_gaussian). It had no attempt record.
+  results:
+  - claim: fig3-s1-repeated-120
+    agrees: true
+    outcome: reproduced
+    reason: Cell 11 gives 109/120 (90.8%) under O1a-O5a and O1b-O5a, within 92 +/- 9.2. Both O5b
+      readings give 75.8%, outside tolerance. Chance is 1/120, as in the paper. The O1a candidate
+      p-values use all 120 identification images, including the one being identified, where P5
+      leaves it out; O1b, which has no such leak, gives 109. The 10-fit bootstrap variant was run
+      only for O5b, not for O5a. Every result comes from one seed.
+    response: The leak and the stopping-rule reading (about 30% of initial fits stop at iteration 0)
+      are now deviations, and the stopping rule is stated in the helper's docstring. Not run, for
+      time, the bootstrap variant under O5 (a) (one fit per voxel already takes about 28 minutes for
+      the 7,905 voxels) and other seeds.
+  - claim: fig4a-s2-repeated-120
+    agrees: true
+    outcome: reproduced
+    reason: Cell 11 gives 87/120 (72.5%, O1a-O5a) and 86/120 (71.7%, O1b-O5a), within 72 +/- 7.2. O5b
+      gives 46.7%. O1b gives 86 against 87 under O1a.
+    response: As fig3-s1-repeated-120.
+  - claim: fig4a-single-trial
+    agrees: true
+    outcome: blocked
+    reason: Not run. The cost estimate in cell 16 is inflated; it times lstsq on a random dense matrix
+      and scales it to all 10,228 V1 to V3 voxels of both subjects and to the training runs as well.
+      Reading O6 (a) needs single-trial amplitudes only from the identification runs, and only for
+      candidate voxels. The 70 raw runs are on the archive, and reading O6 (a) is testable.
+    response: Agreed that the estimate overstated the cost; the notebook and the record now say so.
+      A vectorized BRS fit (repeated-trial HRF and amplitudes with standard errors, single-trial
+      amplitudes) was written and run while preparing on two S1 sessions, and a second notebook was
+      built on it, but the full run of the entry with it did not finish within this revision's
+      time, so the entry was returned to the verified notebook and the claim stays blocked.
+  - claim: fig4a-noise-ceiling
+    agrees: true
+    outcome: blocked
+    reason: Needs single-trial patterns. It becomes testable once those exist. The claims file gives
+      13 or 14 trials per image; cell 4 shows 13, 14 or 15 presentations per image across all runs.
+    response: Stays blocked with fig4a-single-trial. The trial counts are asked of a reader in
+      questions/kay-2008.yaml, with a second question on the sample size of the predicted patterns
+      in SM 7's simulation.
+  - claim: fig4b-set-size-1000
+    agrees: true
+    outcome: blocked
+    reason: The archive listing has no 999-image library.
+    response: No change.
+  - claim: fig4b-extrapolation
+    agrees: true
+    outcome: blocked
+    reason: Needs the library.
+    response: No change.
+  - claim: fig4c-retinotopy-only-extrapolation
+    agrees: true
+    outcome: blocked
+    reason: Needs the library.
+    response: No change.
+  - claim: suppm8-retinotopy-only-120
+    agrees: true
+    outcome: reproduced
+    reason: Cell 24 gives subject means of 53.3% weighted (55 +/- 5.5) and 43.8% standard (42 +/- 4.2)
+      on O1a voxels, 52.9% and 42.5% on O1b voxels, both below the GWP means. But ro_channels is
+      called with full + MU, so the luminance channel is the absolute value relative to the grey
+      background, where SM 8 defines it as absolute deviation from mean luminance, paralleling the
+      GWP model, which subtracts the mean. The notebook does not state this deviation. The values sit
+      within tolerance by 3.8 and 2.4 points.
+    response: The deviation is now stated in the notebook's conclusion and the record. A cell with the
+      SM 8 reading (mean-subtracted luminance) was written, but the run of the entry with it did not
+      finish within this revision's time, so it was taken out again and the outcome rests on the
+      reading run.
+  - claim: suppfig8-constrained-models
+    agrees: true
+    outcome: blocked
+    reason: Needs the library. The orderings at set size 120, which the criterion allows as a
+      non-deciding variant, were not shown.
+    response: No change; the variant at set size 120 was not run, for time.
+  - claim: time-two-months
+    agrees: true
+    outcome: blocked
+    reason: The archive listing has only five sessions per subject.
+    response: No change.
+  - claim: time-fourteen-months
+    agrees: true
+    outcome: blocked
+    reason: Same as time-two-months.
+    response: No change.
+  - claim: errors-similar-images
+    agrees: true
+    outcome: reproduced
+    reason: Cell 22, reading (b), local contrast, gives median percentiles of 61 to 69 and one-sided
+      Wilcoxon p from 1.2e-5 to 3.1e-4 under all four model readings. Reading (a), luminance, fails
+      (p >= 0.7). The random-choice null centres on 49.6. error_percentiles includes the selected
+      image among the others, which caps the percentile at 99.2; the effect is negligible.
+    response: No change. The criterion places the selected image's similarity among the correct
+      image's similarities to "the other 119 images", which include the selected one.
+  - claim: suppfig4-500-voxels
+    agrees: false
+    outcome: partially_reproduced
+    reason: The notebook calls this blocked, but cell 28 computes the two repeated-trial conditions
+      and both meet the rule. S1 O1a-O5a gives 90.8% at 500 voxels (the maximum), above 61.7% at 50.
+      S2 gives 72.5% at 500 against a maximum of 73.3%, above 45.8% at 50. The criterion defines
+      "partially" as the rule holding in two or three conditions; the two single-trial conditions
+      are untested. Cell 28 also prints only two of the four O1/O5 combinations.
+    response: Changed to partially_reproduced, as the criterion defines it, in the record and the
+      notebook. A cell printing all four combinations was written, but its run did not finish in
+      time; the record gives O1b-O5b from the executed cell, where the rule holds too.
+  - claim: supptable1-voxel-counts
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18 shows all six counts match exactly. They come from the data set's own ROI labels.
+    response: No change.
+  - claim: supptable1-predictive-power-by-area
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19 gives 6/6 values within 10% and V1 > V2 > V3 in both subjects. This relies on
+      counting voxels with missing values as non-significant. Using only voxels without missing
+      values, which the cell also prints, puts 3 of 6 within tolerance (S1 V3 20.1%, S2 V1 29.0%, S2
+      V2 23.7%), which would be partial. The notebook prints both but neither decides nor discusses
+      which is right.
+    response: The choice is now stated as an assumption (assumed true), with the reason, Supplementary
+      Table 1's totals equal the label counts including the NaN voxels, and the partial result over
+      voxels without NaN is given in the notebook and the record. Whether those voxels had usable
+      data in the paper was not established in the executed notebook.
+  - claim: supptable1-snr
+    agrees: true
+    outcome: blocked
+    reason: Not run. The too_large estimate is not well founded; the per-area fractions could be
+      estimated from a random voxel subsample, and the 70 runs (about 150 MB each) are on the
+      archive. The claim is partly testable.
+    response: As fig4a-single-trial; the BRS fit written in this revision gives reading (a)'s
+      standard errors, but it is not in the executed notebook, so the claim stays blocked.
+  - claim: methods-v4-poor
+    agrees: true
+    outcome: reproduced
+    reason: Cell 20 shows V4 below V3 in both subjects, but in S1 only by 17.5% against 18.2% (about
+      11 voxels), from a single random seed.
+    response: No change. A seed variant was written but not run in time; the notes give the 0.7
+      point margin.
+  - claim: fig2-representative-voxel
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 26 shows the receptive field in the left hemifield and spatial-frequency tuning
+      peaking at the top frequency under both readings. Under O5a, whose 5.45 degree field of view
+      gives exactly the figure's 2.9 cycles/deg axis, the envelope peak is above the horizontal
+      meridian (+0.24 degrees) and the orientation max/min is 2.23 (16.2 with the DC offset), so "just
+      below" and "broadband" fail. Both hold only under O5b with the DC offset removed. The curves that
+      include the DC offset depend on the arbitrary grating amplitude of 0.5, and the docstring's
+      statement that the amplitude does not change their shape is false once the DC offset is added.
+    response: The docstring is corrected, and the conclusion and record no longer cite the ratios with
+      the DC offset. Cells with the Gaussian fit to the final envelope and the ratios at other
+      amplitudes were written, but their run did not finish in time, so they are not in the entry.
+  - claim: suppfig7-roi-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 27 shows the spatial-frequency tuning peaking at the highest level (16 cycles/FOV) in
+      every reading run and an orientation range of 31% to 449% of the mean, against the < 10% rule.
+      The model-I reading and the suppfig8 voxel-set reading were not run, so the outcome is
+      not_reproduced only for the readings that were run. The "with DC" results are not meaningful.
+    response: The conclusion and record now say the outcome holds only for the readings run and that
+      the curves with the DC offset bear on nothing. Model I needs the constrained models of
+      suppfig8, not built here for time.
+  - claim: suppfig10-retinotopy-validation
+    agrees: true
+    outcome: blocked
+    reason: The archive has no retinotopic mapping scans, only Sub*_Anat_msk.
+    response: No change.
+  - claim: suppfig11-rf-size-eccentricity
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 25 gives Spearman rho of 0.54 to 0.68 with p < 1e-27 in every area, so RF size rising
+      with eccentricity holds. V1 < V2 < V3 holds in most bins only for the square bounds with 1
+      degree bins (5/8); with 0.5 degree bins it is 6/12, and with the circular bounds 3/6 and 3/9.
+      The circle filter tests ecc + 2 SD <= R, a disc, not the +/-2 SD square of SM 5 and Fig 2. Fig
+      2's legend calls the white circle "the bounds of the stimulus", which makes the square reading,
+      the only one that passes, the less supported one. The radius is 9.5 degrees, from the mask's
+      area; the paper describes a 20 degree circle.
+    response: Changed to partially_reproduced, assumed true, adopting the circular bounds as the
+      better supported reading, in the record and the notebook. A cell with the +/-2 SD square inside
+      a 10 degree circle and the median RF size per area was written, but its run did not finish in
+      time, so the outcome rests on the disc filter that was run.
+  - claim: suppdisc1-classification-extension
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 23 shows S2's contrast metric not above chance under every reading (1 or 2 of 120, p
+      >= 0.26; the paper reports 7, p < 0.0001). S1's contrast count is 9 (SD) or 4 against the
+      paper's 6. The luminance results meet the criterion.
+    response: No change.
+  - claim: suppm7-selected-voxels-v1
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 21 shows the V1 share of the selected voxels at 0.42 to 0.48 under all readings and
+      both subjects. V1 is the largest share but never more than half.
+    response: No change.
