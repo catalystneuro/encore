@@ -299,30 +299,24 @@ outcomes:
   deviations:
   - Bouts of 1 to 8.192 s (3 longer Uva4 bouts left out).
 - claim: spectral-features-weak
-  outcome: blocked
-  blocked_by: other
+  outcome: not_reproduced
+  assumed: true
   notebook: reproduce_danish_2017.ipynb
   output: claim:spectral-features-weak
-  notes: Kept as blocked, the outcome round 2 of verification reviewed; the revised notebook tests
-    the claim, and a change to not_reproduced is proposed. Six features computed per 1 ms from the
-    raw audio by uva.sap_features. Within single birds, 9 of 18 bird-feature pairs correlate
-    significantly with MUA (Bonferroni over 6 features) per rendition (reading a) and 15 of 18 per
-    1 ms bin (reading b); the paper reports none. Pooled over birds, amplitude r = 0.156 (a) and
-    0.183 (b, within 0.18 +- 0.018); gravity center r = 0.291 (a) and 0.082 (b), outside 0.17 +-
-    0.017; pitch goodness and FM are significant under every pooling, and Wiener entropy under (a)
-    and (b) but not with features z-scored within syllable type (p = 0.06).
+  notes: Six features computed per 1 ms from the raw audio by uva.sap_features. Within single birds,
+    9 of 18 bird-feature pairs correlate significantly with MUA (Bonferroni over 6 features) per
+    rendition (reading a) and 15 of 18 per 1 ms bin (reading b); the paper reports none. Amplitude
+    alone breaks the single-bird condition (reading a, b871 p = 0.0074 and Uva4 p = 0.0012; reading
+    b, all three birds). Pooled over birds, amplitude r = 0.156 (a) and 0.183 (b, within 0.18 +-
+    0.018); gravity center r = 0.291 (a) and 0.082 (b), outside 0.17 +- 0.017; pitch goodness and
+    FM are significant under every pooling, and Wiener entropy under (a) and (b) but not with
+    features z-scored within syllable type (p = 0.06). The single-bird tests use 317 to 2138
+    renditions and 31k to 257k bins per bird, so correlations as small as 0.058 are significant;
+    the paper does not give its n.
   deviations:
   - The features follow Sound Analysis Pro's definitions only approximately (a Hann taper where SAP
     uses two Slepian tapers, and the helper's own forms of FM and pitch goodness), as the claims
     file adopts SAP's definitions as an assumption.
-  proposed:
-    outcome: not_reproduced
-    reason: The revised notebook ran the test (cells of spectral-features-weak). Under the claims
-      file's criterion no single-bird correlation should be significant, but 9 of 18 bird-feature
-      pairs are under reading (a) and 15 of 18 under (b); pooled, gravity center gives r = 0.291 (a)
-      and 0.082 (b), outside 0.17 +- 0.017, and pitch goodness and FM are significant under every
-      pooling. The outcome rests on the approximate SAP features (assumed). Verifier, round 2, would
-      give not_reproduced, assumed.
 - claim: fig7b-10hz-power-peaks
   outcome: partially_reproduced
   assumed: true
@@ -839,3 +833,25 @@ verifications:
     outcome: not_reproduced
     reason: Agrees with not_reproduced; the channel assumption is stated and reasonable.
     response: No change.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The change of outcome proposed after round 2 (spectral-features-weak) and the
+    analysis behind it, cells 42 and 43 of the executed notebook, with the helper module, the claims
+    file and the paper's full text. The proposal was applied; the revision re-ran the entry.
+  results:
+  - claim: spectral-features-weak
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced, assumed. Every number in the notes and the proposal matches
+      cell 42, and cell 43 now matches cell 42. The criterion fails under both readings, and does
+      not depend on the approximate SAP features; amplitude, the feature that depends least on the
+      approximations, alone breaks the single-bird condition (reading a, b871 p = 0.0074 and Uva4 p
+      = 0.0012; reading b, all three birds). The pooled condition fails under every reading. With
+      317 to 2138 renditions and 31k to 257k bins per bird, correlations as small as r = 0.058 are
+      significant, and the paper does not report its n, so a difference in power may explain part
+      of the disagreement; the criterion has no effect-size floor. The claims file does not misread
+      the paper for this claim.
+    response: Outcome changed to not_reproduced, assumed, and the proposal removed. The notes now
+      give the amplitude result in single birds and the sample sizes, and the notebook, its summary
+      and the README state the outcome.

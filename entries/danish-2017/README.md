@@ -23,6 +23,7 @@ single units and GTE times are not in the data set.
 | Peak before syllable onset (Fig 6) | Partially reproduced (assumption) |
 | Dip before syllable offset (Fig 6) | Reproduced (assumption) |
 | Correlation with song amplitude, 42 ms lead (Fig 7A) | Reproduced (assumption) |
+| Spectral song features weakly related to Uva activity | Not reproduced (assumption) |
 | Spectral peaks near 9 Hz (Fig 7B) | Partially reproduced (assumption) |
 | Coherence with amplitude at 8.8 Hz (Fig 7D) | Reproduced (assumption) |
 | Fast oscillations in long syllables (Fig 9) | Not reproduced (assumption) |
@@ -31,7 +32,6 @@ single units and GTE times are not in the data set.
 | Control lesions | Blocked: data missing |
 | Directed song, single units | Blocked: metadata insufficient |
 | Antidromic responses | Blocked: no stimulus times and no identified units in the stimulation files |
-| Spectral features | Blocked as verified; tested in the notebook, and not reproduced (assumption) is proposed for a third verification round |
 | GTE analysis | Blocked: not attempted |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -43,7 +43,7 @@ record, with the reasons and the differences from the paper's method, is
 [`attempts/danish-2017-01.yaml`](../../attempts/danish-2017-01.yaml).
 
 - `reproduce_danish_2017.ipynb`: the analysis. It streams and reduces the two archives (9.4 GB)
-  and ran in 40 minutes in the latest revision run.
+  and ran in 21 minutes in the latest revision run.
 - `uva.py`: reading the archives (the .dat format of the recordings, the analysis files and the
   spreadsheets), MUA, sound amplitude and six spectral song features, the maturity index, Gamma, the song rhythm spectrum and
   multitaper coherence. Other notebooks on this data set can import it.
