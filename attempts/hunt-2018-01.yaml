@@ -198,14 +198,18 @@ outcomes:
   measured: [20, 80, 70, 270, 250, 240, 230, 470, 360]
   notes: With a 10 ms step (reading a) all nine values are within tolerance over -100 to 500 ms (the
     measured values above). With a 1 ms step (reading b), as Fig4_RSA.m computes it, all nine equal
-    the paper's (24, 72, 67, 269, 241, 238, 224, 457, 369 ms) over both ranges. Over -200 to 600 ms
-    with a 10 ms step 8 of 9 are within tolerance (spatial attention in ACC 41 ms).
+    the paper's (24, 72, 67, 269, 241, 238, 224, 457, 369 ms) over -200 to 600 ms; over -100 to 500
+    ms eight are equal and DLPFC left/right value is 358 ms (paper 369, within tolerance). Over -200
+    to 600 ms with a 10 ms step 8 of 9 are within tolerance (spatial attention in ACC 41 ms).
 - claim: figs5c-latency-order
   outcome: not_reproduced
   notebook: reproduce_hunt_2018.ipynb
   output: claim:figs5c-latency-order
-  notes: The criterion's test fails under every reading. The t75 point estimates follow the paper's
-    order in every region, but the 100 simulated t75 values overlap under both readings and with
+  notes: The criterion's test fails under every reading. The t75 point estimates of the nine claimed
+    curves follow the paper's order; with all the significant templates, in DLPFC accept/reject (491
+    ms) comes after left/right value (369 ms), while ACC (spatial attention 24, accept/reject 238,
+    stimulus identity 262, left/right value 457 ms) and OFC (spatial attention 67, accept/reject 224,
+    attended value 241, stimulus identity 269 ms) keep it. The 100 simulated t75 values overlap under both readings and with
     either set of variables (the criterion's significant templates, or the set Fig4_RSA.m stacks for
     the panel, peak CPD above 10%). In OFC the attended value range reaches -10 ms (reading a) and
     -13 ms (reading b), below the top of the spatial attention range (93 and 99 ms). In ACC
@@ -213,8 +217,9 @@ outcomes:
     to 272 ms; 227 to 291 ms). With the script's set, spatial attention lies below the other
     variables in ACC and DLPFC and left/right value above them in DLPFC, under both readings. The
     first run recorded partially_reproduced; it was changed after the first verification round, as
-    the criterion names no partial outcome and its one test fails in two of three regions under
-    every reading.
+    its one test fails in at least two of the three regions under every reading. In
+    figs1ab-cue-weights, which stays partially_reproduced, one component fails in one monkey and the
+    rest holds.
   deviations:
   - Fig4_RSA.m draws one permutation of the residuals shared over time points (reading b) and
     computes t75 over -199 to 600 ms at 1 ms, as done here; it keeps the variables with peak CPD
@@ -263,7 +268,11 @@ outcomes:
     cue 2 against EV 5 at cue 1 forms a positive cluster of 1622 bins (threshold 640, r = 0.755).
     With one 183 x 183 map over the cue 1, 2 and 3 epochs and a single null, the criterion also
     holds (1943, 6827, 1105 and 817 bins against 1414, 1056, 1083 and 810; EV 6 at cue 2 with EV 5
-    at cue 1, 5741 bins), with narrow margins for the two cue 3 option maps.
+    at cue 1, 5741 bins), with narrow margins for the two cue 3 option maps. That pass depends on
+    the seed. With 10 other seeds the EV 3 with EV 2 cluster passes in 0 of 10 (thresholds 853 to
+    1262) and with 10000 permutations it fails (threshold 990); EV 3 with EV 1 passes in 7 of 10 and
+    with 10000 permutations (984). So the single-map reading does not hold, and the outcome rests on
+    the script's separate maps, which pass by wide margins.
   deviations:
   - The map pairs are those of Fig5_OFCcrosscorrelation.m (EV 6/5, 2/1, 3/1, 3/2); its correlation
     divides a population covariance by sample standard deviations, a factor of 181/182 on r, which
@@ -276,7 +285,8 @@ outcomes:
   notebook: reproduce_hunt_2018.ipynb
   output: claim:fig5k-ofc-comparison-unique
   notes: Two-sided Fisher tests (as the script) give p = 0.0397, 0.0670, 0.0108 against DLPFC and
-    0.0032, 0.0003, < 0.0001 against ACC, the paper's values; all six OFC correlations are more
+    0.0032, 0.0003 against ACC, the paper's values, and for EV 3 against EV 2 against ACC z = -4.357,
+    p = 1.3e-05, ten times smaller than the paper's 0.00013; all six OFC correlations are more
     negative, five of six p < 0.05 (six of six one-sided). With units 87 and 653 put back (653 for
     the cue 3 correlations only, its cue 2 T-statistics not being finite) and the paper's n of 183,
     135 and 189 in the test, all six are more negative and five of six have p < 0.05 (0.018, 0.067,
@@ -314,7 +324,12 @@ outcomes:
     shortest RT bin is above the longest over 100-500 and 0-500 ms after cue 1 (odd/even, scripts'
     bins, Hz, mean T, a difference of 0.445); with 100 random halves it holds in 98 to 100 splits.
     The same holds in all 36 with the Methods' two-column projection and with the action weights at
-    -200 ms (smallest difference 0.012).
+    -200 ms (smallest difference 0.012). The data projected here equal those the scripts stored
+    (av_Cue1L_proj and av_RespRT_LR_proj of info_gathering_ramp_to_choice.mat, read for the first
+    five random halves) to within 1.4e-07 for every ACC unit, apart from the 1 cue-locked and 14
+    response-locked traces with a single trial, which the script stores as that trial's average
+    over time. With the weights also matching the stored ones, the projections are those of the
+    scripts up to that quirk.
   deviations:
   - The projection design is the scripts' (Fig6_ACCmultiplesignals_R3_version.m) [demeaned belief
     weights, demeaned action weights, constant, mean of EVs 11 and 12], and the action weights are
@@ -406,7 +421,9 @@ outcomes:
     19.0% and 18.7%, within tolerance, but OFC is above chance there (10.4%, p = 0.0018). The tests
     all hold in six readings and in the script's (ACC 20.6%, DLPFC 17.9%, binomial p = 2e-14 and
     3e-08, chi-square against OFC p = 6.8e-05 and 0.0016, OFC 6.0%, p = 0.41), in none of them with
-    both fractions within 18 +/- 1.8%; the exact binomial test changes none of this. The
+    both fractions within 18 +/- 1.8%. With the exact binomial test the tests hold in five readings
+    and the script's; reading (b, iii, b, p < 0.05) fails it (DLPFC exact p = 1e-05), and none
+    has both fractions within tolerance. The
     significance flags the authors stored (info_gathering_cue1_both.mat, from the same regression,
     whose T-statistics match these to 3.3e-07, with their own permutations) give ACC 18.5% and DLPFC
     17.2% with every test holding. They differ from the flags computed here in 2.1% of ACC units, so
@@ -503,6 +520,14 @@ findings:
     units in all 53 sessions and three areas when every unit is counted, and in 26 of 53 when units
     below 1 Hz are left out, and they sum to 198 ACC, 156 DLPFC and 195 OFC units, against the 189,
     135 and 183 the text reports after the 1 Hz exclusion.
+- kind: other
+  about: paper
+  statement: InfoGathering_Neurons_Ramp_to_choice.m averages each reaction-time bin with MATLAB's
+    mean over the selected rows, which for a selection of one trial averages over time, so a bin
+    holding a single trial is stored as a flat line at that trial's mean in
+    info_gathering_ramp_to_choice.mat. In the first five random halves this affects 1 cue-locked and
+    14 response-locked traces of ACC units out of several thousand; every other trace matches the
+    data computed here to within 1.4e-07.
 verifications:
 - date: '2026-11-14'
   kind: agent
@@ -815,3 +840,310 @@ verifications:
     reason: Cell 107 shows the fig4f and fig4g outcomes holding under all readings with the alternative
       templates.
     response: No change.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revision after round 1, with the conclusion cells
+    and the summary, the helper module pfc7.py, the attempt record, the README and the claims file, with
+    the paper under paper/. The verifier agreed with every outcome and checked the round-1 reasons restated
+    in the record. Its point that the Summary table shows outcomes resting on a minority of readings as
+    plain reproduced is answered by marking them in the table and the README.
+  results:
+  - claim: sessions-and-trials
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. This rests on the stored average_firing_rate, a third reading the claims file does
+      not list. It is stated, and the scripts settle it, so it is not an assumption. Round-1 point 9 is
+      resolved; compared session by session, 53 of 53 sessions match when every unit is counted, 26 of
+      53 at 1 Hz or more (cell 18).
+    response: No change.
+  - claim: choice-accuracy-ev
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: chose-on-partial-information
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the assumed outcome. The assumption is stated; the record names the passage, says
+      the paper does not define evaluated, and takes the script's joystick-corrected count. That is reasonable,
+      since it is the only one of the three counts the paper's own code computes for this number. The
+      record also says, correctly, that the other two counts fall outside the tolerance (cell 24, 54.23/42.56
+      and 95.59/92.25). The README lists this claim as Reproduced without the (assumed) that the Summary
+      (cell 153) and the record carry.
+    response: The README now lists it as Reproduced (assumed). Outcome unchanged.
+  - claim: choice-accuracy-observed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: figs1ab-cue-weights
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The figs5c notes give its change to not_reproduced as the criterion naming no partial
+      outcome; the figs1ab criterion names no partial outcome either, yet figs1ab stays partially_reproduced.
+      The two labels need one consistent rationale. In figs1ab one component fails, in one monkey.
+    response: Both outcomes kept. The figs5c notes and conclusion now give its reason as the verifier
+      restates it (its one test fails in at least two of three regions under every reading) and say that
+      in figs1ab one component fails in one monkey and the rest holds. Outcome unchanged.
+  - claim: figs1cd-fewer-cues-more-accurate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig2a-sample-the-favourite
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig2b-positive-evidence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig4d-spatial-attention
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.
+  - claim: fig4e-ofc-stimulus-identity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.
+  - claim: fig4f-ofc-attended-value
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.
+  - claim: fig4g-left-right-value
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.
+  - claim: fig4h-acc-accept-reject
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.
+  - claim: figs2-consistent-across-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.
+  - claim: figs4-dlpfc-top-bottom
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.
+  - claim: fig4-t75-latencies
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 71 and the record's notes say all nine t75 values equal the paper's at a 1 ms
+      step over -100 to 500 ms and over -200 to 600 ms. Cell 70 prints DLPFC left/right value = 358 at
+      1 ms over -100 to 500 ms (paper 369). Only the -200 to 600 ms range gives all nine exactly. The
+      outcome is unaffected, because 358 is within tolerance.
+    response: Corrected in the conclusion and the notes; over -100 to 500 ms eight are equal and DLPFC
+      left/right value is 358 ms, within tolerance. Outcome unchanged.
+  - claim: figs5c-latency-order
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced. The record's notes say the t75 point estimates follow the paper's
+      order in every region, but cell 70 prints point estimates only for the nine claimed variables; cell
+      73's significant set also includes stimulus identity in ACC and DLPFC and accept/reject in DLPFC,
+      whose point estimates are not printed. The reason given for the change (the criterion names no partial
+      outcome) clashes with the label on figs1ab; the verifier would keep both outcomes and restate the
+      figs5c reason, its single test fails in two of three regions under every reading.
+    response: Cell 73 now prints the t75 point estimate of every template in every region and the significant
+      set. With the nine claimed curves the order holds; with all significant templates, DLPFC accept/reject
+      (491 ms) comes after left/right value (369 ms), and ACC and OFC keep the order. The notes and conclusion
+      now say so and give the restated reason. Outcome unchanged.
+  - claim: fig5a-ofc-value-cpd
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig5b-stable-attended-value-subspace
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig5c-attribute-cue2-vs-cue1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig5de-option-cue3-vs-stored
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig5f-option-stored-combined
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig5gj-cross-correlation-dynamics
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Round-1 point 3 is resolved; all nine epoch blocks are computed as the script does,
+      with 8-connected clusters, plus a 183 x 183 variant, and the criterion holds under both (cell 93).
+      The single 183 x 183 map passes by narrow margins (1105 vs 1083 and 817 vs 810), with thresholds
+      from the 99.9th percentile of only 1000 permutations; another seed could flip it. The main reading
+      follows the script and passes by a wide margin, so the outcome stands.
+    response: Cell 93 now reruns the two cue 3 option maps of the single-map variant with 10 other seeds
+      and with 10000 permutations. EV 3 with EV 2 passes in 0 of 10 seeds and fails with 10000 permutations
+      (threshold 990 against 817 bins); EV 3 with EV 1 passes in 7 of 10 and with 10000 permutations.
+      The notes and conclusion now say the single-map reading does not hold and the outcome rests on the
+      script's separate maps. Outcome unchanged.
+  - claim: fig5k-ofc-comparison-unique
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 97 and the record's notes call the Fisher p-values the paper's values, ending
+      < 0.0001 against ACC. Cell 96 gives z = -4.357, which is p of about 1.3e-5; the paper reports 0.00013,
+      so that one value is ten times smaller than the paper's. The other five match. Round-1 point 4 is
+      resolved (cell 96).
+    response: Corrected in the conclusion and the notes. Outcome unchanged.
+  - claim: figs67-no-comparison-acc-dlpfc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig6a-acc-belief-subspace
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig6b-acc-belief-stronger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig6c-belief-subspace-rt
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Round-1 points 1 and 6 are resolved; the Methods' two-column projection runs for every
+      combination and fig6c holds in 36 of 36, and the record uses the scripts' stored halves plus halves
+      drawn once per session, which agree (cell 111). The Figure 6 projections themselves are still not
+      checked against stored output (info_gathering_ramp_to_choice.mat not read); only the weights they
+      use are validated.
+    response: The data the projections use are now read from info_gathering_ramp_to_choice.mat by range
+      requests, for the first five stored halves (new cell after the projections). They equal the data
+      here to within 1.4e-07 for every ACC unit, apart from 1 cue-locked and 14 response-locked traces
+      from a single trial, which the script stores as that trial's time average (MATLAB's mean on one
+      row); recorded as a finding. With the weights and the data matching, the projections follow. Outcome
+      unchanged.
+  - claim: fig6d-belief-ramp-to-choice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Methods' two-column projection now runs; fig6d holds in 36 of 36 (cell 114). The
+      projections themselves are not checked against stored output.
+    response: As fig6c, the projected data are now checked against the stored data. Outcome unchanged.
+  - claim: fig6e-action-subspace-ramp
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome passes only under some readings, which the criterion allows (one reading
+      suffices), and the conclusion cell says so honestly, though the Summary table shows it as plain
+      reproduced; 12 of 72 readings, including the scripts' own choices (cell 117). Round-1 points 1 and
+      2 are resolved; with the -200 ms bin it holds in 16 of 72, with the Methods' projection in 6 of
+      72.
+    response: The Summary table and the README now give the number of readings under which it holds. The
+      projected data are checked against the stored data, as for fig6c. Outcome unchanged.
+  - claim: fig7a-ofc-value-difference-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome passes only under some readings, which the criterion allows, and the conclusion
+      cell says so honestly, though the Summary table shows it as plain reproduced; 4 of 12 readings,
+      and no chi-square test is below 0.05 (cell 120).
+    response: The Summary table and the README now give the number of readings under which it holds. Outcome
+      unchanged.
+  - claim: fig7b-ofc-value-difference-any
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig7c-acc-belief-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: fig8-cue1-value-all-regions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Section C is resolved; the script lines are printed (cell 11) and the cue 1 regression
+      is checked against stored output (3.3e-07).
+    response: No change.
+  - claim: fig8-action-value-acc-dlpfc
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; partially_reproduced is right. The authors' stored flags would meet the full criterion,
+      but they are not a result computed here, so not counting them is correct. The record's notes say
+      the tests all hold in six readings and the exact binomial test changes none of this; in cell 138,
+      reading (b, iii, b, 0.05) passes with the script's formula but fails the exact test, so with the
+      exact test five readings pass. The conclusion about tolerance is unaffected.
+    response: Corrected in the notes and the conclusion; with the exact test five readings and the script's
+      hold, none with both fractions within tolerance. Outcome unchanged.
+  - claim: fig8-spatial-value-dlpfc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome passes only under some readings, which the criterion allows, and the conclusion
+      cell says so honestly, though the Summary table shows it as plain reproduced; 2 of 24 readings,
+      and 1 with the exact binomial test (cell 141). In both passing readings the DLPFC action fraction
+      is 7.5 to 9.0%, against the sibling claim's about 18%. Round-1 point 5 is resolved.
+    response: The Summary table and the README now give the number of readings under which it holds (2
+      of 26, counting the script's regression and the stored flags as readings, as cell 143 does). Outcome
+      unchanged.
+  - claim: fig8-attribute-value-ofc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: figs9-ev16-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence.
+    response: No change.
+  - claim: figs11-alternative-value-template
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Everything in the conclusion and the notes checks out against the printed outputs,
+      sentence by sentence. The RSA is not checked against stored output (the data set holds no stored
+      RSA output).
+    response: No change. The data set holds no stored RSA output to check it against.

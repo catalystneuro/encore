@@ -10,7 +10,7 @@ reproduced.
 |---|---|
 | Sessions and trial counts | Reproduced |
 | Neuron counts after the 1 Hz exclusion | Reproduced |
-| Choice accuracy, on expected value and on the pictures seen; early choices | Reproduced |
+| Choice accuracy, on expected value and on the pictures seen; early choices | Reproduced (assumed) |
 | Logistic regressions of choice (Supplementary Figure 1a/b) | Partially reproduced |
 | More accurate on 2-picture trials (Supplementary Figure 1c/d) | Reproduced |
 | Information sampling (Figure 2a/b) | Reproduced |
@@ -18,10 +18,10 @@ reproduced.
 | t75 latencies (Figure 4) | Reproduced |
 | Latency order from simulations (Supplementary Figure 5c) | Not reproduced |
 | OFC value comparison subspaces (Figure 5a-k, Supplementary Figures 6, 7) | Reproduced |
-| ACC belief confirmation and action subspaces (Figure 6) | Reproduced |
-| Single-neuron value difference in OFC at each test (Figure 7a) | Reproduced |
+| ACC belief confirmation and action subspaces (Figure 6) | Reproduced; Figure 6e under 12 of 72 readings |
+| Single-neuron value difference in OFC at each test (Figure 7a) | Reproduced, under 4 of 12 readings |
 | Single-neuron value difference collapsed, belief confirmation (Figure 7b/c) | Reproduced |
-| Cue 1 single-neuron coding (Figure 8): value, spatial value, attribute value | Reproduced |
+| Cue 1 single-neuron coding (Figure 8): value, spatial value, attribute value | Reproduced; spatial value under 2 of 26 readings |
 | Cue 1 action value in about 18% of ACC and DLPFC neurons (Figure 8) | Partially reproduced |
 | EV 16 correlation (Supplementary Figure 9) | Reproduced |
 
@@ -32,7 +32,8 @@ The paper's MATLAB scripts are files of the data set; where the claims file leav
 and a script settles it, the analysis follows the script and says so. The GLM written here gives the
 T-statistics the authors stored in the data set to within 1.6e-06, the cue 1 regression its
 stored T-statistics to within 3.3e-07, and the Figure 6 weights, on the random halves the scripts
-stored, the stored weights to within 2.6e-07. The attempt record, with the
+stored, the stored weights to within 2.6e-07; the data the Figure 6 projections use match the
+scripts' stored data. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/hunt-2018-01.yaml`](../../attempts/hunt-2018-01.yaml).
 

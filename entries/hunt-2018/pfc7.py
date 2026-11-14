@@ -648,3 +648,42 @@ def perm_significant(Y, X, C, rng, nperm=1000, first_bin=10, chunk=200):
     lo = np.percentile(mn, 2.5, axis=0)
     tt = t[:, first_bin:]
     return ((tt >= hi[:, None]) | (tt <= lo[:, None])).any(1), t
+
+
+def mat_leading_values(path: str, name: str, count: int) -> tuple[tuple, np.ndarray]:
+    """The first `count` values (column-major) of the double array `name`, a top-level variable of
+    the MATLAB 5 file `path`, read by HTTP range requests: the variables are walked by their tags
+    and only the start of the one wanted is fetched and decompressed. Used for the 5.3 GB
+    info_gathering_ramp_to_choice.mat, whose arrays have the random half as their last axis."""
+    import struct
+    import zlib
+    f = fsspec.open(BASE + path, block_size=2**20).open()
+    pos, total = 128, f.size
+    while pos < total:
+        f.seek(pos)
+        typ, nbytes = struct.unpack("<II", f.read(8))
+        if typ != 15:
+            raise ValueError(f"uncompressed element at byte {pos}")
+        z = zlib.decompressobj()
+        head = z.decompress(f.read(4096))
+        off = 8 + 16
+        _, dn = struct.unpack("<II", head[off:off + 8])
+        dims = struct.unpack(f"<{dn // 4}i", head[off + 8:off + 8 + dn])
+        off += 8 + dn + (-dn % 8)
+        nt, nn = struct.unpack("<II", head[off:off + 8])
+        if nt >> 16:   # small data element
+            vname, off = head[off + 4:off + 4 + (nt >> 16)].decode(), off + 8
+        else:
+            vname, off = head[off + 8:off + 8 + nn].decode(), off + 8 + nn + (-nn % 8)
+        if vname != name:
+            pos += 8 + nbytes
+            continue
+        dtype = {9: "<f8", 7: "<f4", 2: "<u1", 1: "<i1", 4: "<u2", 3: "<i2", 6: "<u4", 5: "<i4"}
+        rt = struct.unpack("<I", head[off:off + 4])[0] & 0xFFFF
+        dt = np.dtype(dtype[rt])
+        need = off + 8 + count * dt.itemsize
+        buf = bytearray(head)
+        while len(buf) < need:
+            buf += z.decompress(f.read(2**22))
+        return dims, np.frombuffer(bytes(buf[off + 8:need]), dt).astype(float)
+    raise KeyError(name)
