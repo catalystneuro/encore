@@ -849,7 +849,7 @@ def paper_pipeline_rows(data: dict) -> list[dict]:
             "datasets": [dataset_cell(k) for k in p["datasets"]], "state": state,
             "issue": issues_by_name.get(key) or next((issues[dataset_label(k)] for k in p["datasets"]
                                                       if dataset_label(k) in issues), None),
-            "page": f"papers/{key}/" if atts or p["status"] == "claims" else None,
+            "page": f"papers/{key}/",
             **queued([key] + ([] if by_paper else folders))})
         by_doi[doi] = row
         out.append(row)
@@ -987,7 +987,7 @@ def rows(data: dict) -> dict[str, list]:
             # Every paper associated with the dataset, those with an attempt first.
             "n_papers": len(mine), "paper_count": "one" if len(mine) == 1 else "several" if mine else None,
             "papers": [{"byline": q["byline"], "doi": q["doi"], "attempted": bool(q["attempts"]),
-                        "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims" else None}
+                        "page": f'papers/{q["key"]}/'}
                        for q in mine],
             "badge": (badge_of(data, t["key"]) or {}).get("text") if atts else None,
             "deprecated": any(a.get("deprecated") for a in atts or []),
@@ -1173,8 +1173,7 @@ def author_rows(data: dict) -> list[dict]:
             "counts": counts if sum(counts.values()) else None,
             "attempted": "yes" if attempted else "no",
             "as": [k for k, on in (("author", a["papers"]), ("contributor", a["datasets"])) if on],
-            "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims"
-                        else None, "doi": q["doi"]} for q in a["papers"]],
+            "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/', "doi": q["doi"]} for q in a["papers"]],
             "datasets": [dataset_label(d["key"]) for d in a["datasets"]],
         })
     return sorted(out, key=lambda r: (-r["n_papers"], -r["n_datasets"], r["family"].lower()))
@@ -1641,7 +1640,7 @@ def paper_rows(data: dict) -> list[dict]:
             "found": sorted({f["kind"] for a in live for f in a["findings"]}),
             "converted": "catalystneuro" if any(by_key.get(k, {}).get("catalystneuro") for k in p["datasets"]) else "other",
             "missing": sum(len(a.get("missing_datasets") or []) for a in live),
-            "page": f"papers/{p['key']}/" if atts or p["status"] == "claims" else None,
+            "page": f"papers/{p['key']}/",
         })
     return rows_
 
@@ -3225,6 +3224,9 @@ def page_paper(data: dict, p: dict) -> str:
         # Claims read from the paper, before its first attempt: they belong to the paper (claims/<paper>.yaml).
         files = data.get("paper_claims", {}).get(p["key"], [])
         claims_html, n = claims_list(files, {p["doi"]: p["title"]})
+        if not n:
+            parts.insert(0, '<p class="lede not-tested">Not tested yet. No claims have been read from this paper, and no '
+                            'attempt has tried to reproduce it.</p>')
         if n:
             prow = next((r for r in paper_pipeline_rows(data) if r.get("paper") == p["key"]), None)
             nxt = ("; next in the pipeline: " + e(prow["next"].lower())) if prow and prow["next"] else ""
@@ -3887,38 +3889,38 @@ def build(data: dict, output: Path) -> None:
                 (old / sub / "index.html").write_text(redirect_page(target, "../../" + ("../" if sub else "")))
             (output / "api" / "dandiset" / f"{split_key(key)[1]}.json").write_text(api)
     for p in papers_of(data):
-        if p["attempts"] or p["status"] == "claims":
-            (output / "papers" / p["key"]).mkdir(parents=True, exist_ok=True)
-            (output / "papers" / p["key"] / "index.html").write_text(page_paper(data, p))
-            badge, every = paper_badge(data, p), paper_outcomes(data, p)
-            (output / "badge" / "papers").mkdir(parents=True, exist_ok=True)
-            if badge:
-                (output / "badge" / "papers" / f'{p["key"]}.svg').write_text(badge_svg(badge))
-            if every:
-                (output / "badge" / "papers" / f'{p["key"]}-outcomes.svg').write_text(outcomes_badge_svg(every))
-                (output / "badge" / "papers" / f'{p["key"]}-card.svg').write_text(card_badge_svg(every))
-            # For a page elsewhere about the paper (docs/badges.md): its results in short, and its badges.
-            row = next((x for x in r["papers"] if x["id"] == p["key"]), {})
-            (output / "api" / "papers").mkdir(parents=True, exist_ok=True)
-            (output / "api" / "papers" / f'{p["key"]}.json').write_text(json.dumps({
-                "key": p["key"], "doi": p["doi"], "title": p["title"], "byline": p["byline"],
-                "journal": journal_name(p["doi"]), "url": SITE_URL + f'papers/{p["key"]}/', "status": p["status"],
-                "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
-                "authors": [{"name": a["name"], "orcid": a.get("orcid"),
-                             "url": SITE_URL + f'authors/{a["orcid"]}/' if a.get("orcid") else None}
-                            for a in authors_of(data, p["doi"])],
-                "datasets": [{"key": k, "label": dataset_label(k),
-                              "url": SITE_URL + page_of(k) if k in current_attempts(data) else None}
-                             for k in p["datasets"]],
-                "outcome_counts": every["counts"] if every else None, "tier": row.get("tier"),
-                "attempts": [{"id": a["id"], "date": a["date"], "tier": a["tier"],
-                              "datasets": a.get("datasets") or [a["key"]],
-                              "url": SITE_URL + attempt_path(data, a)} for a in p["attempts"]],
-                "badge": badge,
-                "badges": {"reproduced": badge["svg"] if badge else None,
-                           "outcomes": every["svg_outcomes"] if every else None,
-                           "card": every["svg_card"] if every else None},
-            }, indent=1) + "\n")
+        # Every paper listed has a page, tested or not, so that every list can link to it.
+        (output / "papers" / p["key"]).mkdir(parents=True, exist_ok=True)
+        (output / "papers" / p["key"] / "index.html").write_text(page_paper(data, p))
+        badge, every = paper_badge(data, p), paper_outcomes(data, p)
+        (output / "badge" / "papers").mkdir(parents=True, exist_ok=True)
+        if badge:
+            (output / "badge" / "papers" / f'{p["key"]}.svg').write_text(badge_svg(badge))
+        if every:
+            (output / "badge" / "papers" / f'{p["key"]}-outcomes.svg').write_text(outcomes_badge_svg(every))
+            (output / "badge" / "papers" / f'{p["key"]}-card.svg').write_text(card_badge_svg(every))
+        # For a page elsewhere about the paper (docs/badges.md): its results in short, and its badges.
+        row = next((x for x in r["papers"] if x["id"] == p["key"]), {})
+        (output / "api" / "papers").mkdir(parents=True, exist_ok=True)
+        (output / "api" / "papers" / f'{p["key"]}.json').write_text(json.dumps({
+            "key": p["key"], "doi": p["doi"], "title": p["title"], "byline": p["byline"],
+            "journal": journal_name(p["doi"]), "url": SITE_URL + f'papers/{p["key"]}/', "status": p["status"],
+            "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+            "authors": [{"name": a["name"], "orcid": a.get("orcid"),
+                         "url": SITE_URL + f'authors/{a["orcid"]}/' if a.get("orcid") else None}
+                        for a in authors_of(data, p["doi"])],
+            "datasets": [{"key": k, "label": dataset_label(k),
+                          "url": SITE_URL + page_of(k) if k in current_attempts(data) else None}
+                         for k in p["datasets"]],
+            "outcome_counts": every["counts"] if every else None, "tier": row.get("tier"),
+            "attempts": [{"id": a["id"], "date": a["date"], "tier": a["tier"],
+                          "datasets": a.get("datasets") or [a["key"]],
+                          "url": SITE_URL + attempt_path(data, a)} for a in p["attempts"]],
+            "badge": badge,
+            "badges": {"reproduced": badge["svg"] if badge else None,
+                       "outcomes": every["svg_outcomes"] if every else None,
+                       "card": every["svg_card"] if every else None},
+        }, indent=1) + "\n")
         # Every attempt on the paper has an address of its own, which stays when a later attempt replaces it. The
         # paper's one current attempt is read on the paper's page, and its address leads there.
         for a in paper_attempts(data, p):
@@ -3953,7 +3955,7 @@ def build(data: dict, output: Path) -> None:
             "papers": [{"key": q["key"], "byline": q["byline"], "title": q["title"], "doi": q["doi"],
                         "status": q["status"], "outcome_counts": counts.get(q["key"], {}).get("counts"),
                         "tier": counts.get(q["key"], {}).get("tier"),
-                        "url": SITE_URL + f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims" else None}
+                        "url": SITE_URL + f'papers/{q["key"]}/'}
                        for q in author["papers"]],
             "datasets": [{"key": d["key"], "label": dataset_label(d["key"]), "roles": d["roles"],
                           "url": SITE_URL + page_of(d["key"]) if d["key"] in current_attempts(data) else None}
@@ -4034,8 +4036,7 @@ def sitemap(data: dict) -> str:
     pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
-    pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)
-              if p["attempts"] or p["status"] == "claims"]
+    pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)]
     pages += [(f"authors/{orcid}/", max([q["date"] for q in a["papers"] if q["date"]] or [data["generated"][:10]]))
               for orcid, a in author_index(data).items()]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)

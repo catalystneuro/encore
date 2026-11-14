@@ -1217,6 +1217,27 @@ def test_a_version_is_said_in_words(built):
         "draft", "0.240101.0000", "0.230101.0000", None]
 
 
+def test_every_paper_has_a_page_and_every_list_links_to_it(built):
+    # A paper not tested yet has a page too, which says so, so that the lists of datasets, papers and authors open
+    # the paper's page in the registry, never the paper's DOI.
+    data, out = built
+    untested = 0
+    for q in site.papers_of(data):
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        assert site.e(q["title"]) in page and f'https://doi.org/{site.e(q["doi"])}' in page
+        if not q["attempts"] and q["status"] != "claims":
+            untested += 1
+            assert "Not tested yet." in page
+    assert untested
+    for name in ("datasets", "papers", "authors"):
+        rows = json.loads((out / "data" / f"{name}.json").read_text())
+        pages = [r["page"] for r in rows] if name == "papers" else [q["page"] for r in rows for q in r.get("papers") or []]
+        assert pages and all(x and x.startswith("papers/") and (out / x / "index.html").is_file() for x in pages), name
+    # The list opens each paper's page; the DOI is offered only as a link of its own, labelled "doi".
+    js = (site.ASSETS / "list.js").read_text()
+    assert "doi.org/${esc(q.doi)}" not in js and "r.page ? root + r.page : `https://doi.org" not in js
+
+
 def test_a_paper_with_claims_and_no_attempt_shows_its_claims_on_its_page(built):
     data, out = built
     papers = [q for q in site.papers_of(data) if q["status"] == "claims"]
@@ -1298,14 +1319,11 @@ def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_th
         assert {q["key"] for q in author["papers"]} == {q["key"] for q in papers}
         for q in papers:
             assert site.e(q["title"]) in page
-            if q["attempts"] or q["status"] == "claims":
-                assert f'href="../../papers/{q["key"]}/"' in page
+            assert f'href="../../papers/{q["key"]}/"' in page
         assert rows[orcid]["n_papers"] == len(papers) and rows[orcid]["n_attempted"] == sum(1 for q in papers if q["attempts"])
     # A paper's page names its authors in order; one with an ORCID iD opens the author's page, one without is a name.
     linked = plain = long = 0
     for q in site.papers_of(data):
-        if not (q["attempts"] or q["status"] == "claims"):
-            continue
         page = (out / "papers" / q["key"] / "index.html").read_text()
         people = site.authors_of(data, q["doi"])
         at = 0
@@ -1443,7 +1461,9 @@ def test_a_paper_has_badges_and_a_json_file_of_its_results(built):
         first, line, card = (out / "badge" / "papers" / f"{key}{kind}.svg" for kind in ("", "-outcomes", "-card"))
         file = out / "api" / "papers" / f"{key}.json"
         if not (q["attempts"] or q["status"] == "claims"):
-            assert not file.exists() and not first.exists() and not card.exists()
+            # A paper not tested yet has a page and a JSON file, and no badge.
+            assert file.is_file() and not first.exists() and not card.exists()
+            assert json.loads(file.read_text())["badges"] == {"reproduced": None, "outcomes": None, "card": None}
             continue
         api = json.loads(file.read_text())
         badge, every = site.paper_badge(data, q), site.paper_outcomes(data, q)

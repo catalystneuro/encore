@@ -172,7 +172,7 @@ the code for the one chosen, as HTML and as Markdown.
 https://encorescience.org/api/papers/<key>.json
 ```
 
-Every paper with a page has this file. It allows requests from any origin. Its fields are:
+Every paper listed in the registry has this file, tested or not. It allows requests from any origin. Its fields are:
 
 | Field | Meaning |
 |---|---|
