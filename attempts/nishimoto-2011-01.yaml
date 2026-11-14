@@ -1,0 +1,364 @@
+schema_version: 3
+id: nishimoto-2011-01
+datasets:
+- archive: crcns
+  id: mt-2
+  version: unversioned
+  doi: 10.6080/K0DN4374
+  relation: primary
+paper: doi:10.1523/jneurosci.6801-10.2011
+date: 2026-11-14
+entry: nishimoto-2011
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43552200959
+outcomes:
+- claim: fig3b-mean-prediction
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig3b-mean-prediction
+  measured: 0.448
+  notes: The compressive and divisive model predicts the 45 neurons with a mean correlation of
+    0.448 (median 0.454, range 0.221 to 0.730), below the band of 0.468 to 0.572. For the 14
+    neurons with both validation sets the two correlations are averaged, as the paper does; with
+    the motion-enhanced set only the mean is 0.443. No reading reaches the band (delays 1 to 10
+    give 0.449, random-partition folds 0.446, sigma chosen on held-out data 0.451, no delay offset
+    0.448, the 12 ms Gaussian as a full width 0.380). Monkey f 0.458 (34 neurons), monkey v 0.417
+    (11). All 45 neurons lie between 0.2 and 0.8, as in Figure 3B. The model is a spatially pooled
+    version of the paper's, which may explain part of the gap.
+  deviations:
+  - The regression weights are constrained to be pooled over space onto 763 regressors (545
+    complex, 218 simple) at 11 delays, where the paper fits a weight for each of 5956 filters. The
+    filter bank behind them follows the paper's rules (Materials and Methods, The V1 filter bank),
+    with 7025 complex and 1082 simple channels on grids spaced 2.2 sigma, one carrier cycle per two
+    sigma, and simple cells up to 2 cycles per cRF in the divisive pool. This was forced by the time
+    limit (12 models for 45 neurons).
+  - Simple cells enter the regression only at 0.75 cycles per cRF and SF 0, below the paper's limit
+    of 2 cycles per cRF, for the same reason.
+  - Assumed, the temporal envelope of the Gabor filters (Eq. 1), which the paper does not give. It
+    spans 11 frames with SD 2 frames and is centred on the frame (c_t = 0), so that the delays set
+    the latency. With an envelope ending at the frame (causal), the fitted weights of the first
+    neurons tried piled up at delay 0, so the response comes earlier than such a filter allows
+    (preparation, not in the notebook).
+  - Assumed, an offset of the 11-frame delay window of 0, 3 or 6 frames earlier, chosen per neuron
+    by the held-out error on the training data alone (0 for 31 neurons, 3 for 9, 6 for 5). The
+    data descriptor does not say how response bins are aligned to frames. Offset 0 for every
+    neuron gives the same mean (0.448).
+  - Assumed, spatial frequencies 0, 0.75, 1.5, 3 and 6 cycles per cRF and temporal frequencies 0,
+    3.75, 7.5, 15 and 30 Hz; the paper gives "log distributed from zero to six" and "from 0 to 30
+    Hz" with six velocities, without the values.
+  - The cRF is half the stored patch (claims file, reading (a)); the descriptor says the patch
+    covers about two receptive fields, so readings (a) and (b) coincide. Frames are block-averaged
+    to 32 x 32 pixels.
+  - Sigma of divisive normalization is 1% of the mean pooled response (claims file, reading (b));
+    reading (a), chosen on held-out data between 0.01 and 1 times, was run for this model only.
+    Boosting step 1% of the response SD; stopping after 50 steps without a lower held-out error,
+    keeping the weights at the minimum (the paper says only that boosting stopped when the error
+    began to increase).
+  - The random-partition reading of the folds uses the Gram matrix built from lag cross-products,
+    which is approximate for random rows.
+  - 45 neurons, where the paper has 52.
+- claim: fig3b-explainable-variance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold only the response averaged over repeats (psths), so the noise ceiling of
+    David and Gallant (2005), which needs the single repeats, cannot be estimated. The repeat
+    counts can be inferred from the denominators of the averaged values, but not the responses of
+    single repeats.
+- claim: fig3a-example-neuron
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig3a-example-neuron
+  measured: 0.71
+  notes: Three neurons have a prediction correlation within 0.648 to 0.792, ct0013 0.710, ct0021
+    0.708 and ct0039 0.730. Their validation sets show 20 to 21 repeats by the per-frame
+    denominators; the two neurons that show 10 (ct0028, ct0030) are not among them, so the paper's
+    example neuron cannot be identified.
+  deviations:
+  - The model as in fig3b-mean-prediction.
+- claim: fig2b-contrast-normalization-no-effect
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2b-contrast-normalization-no-effect
+  notes: Luminance and contrast normalization moves the mean correlation from 0.413 to 0.412
+    (readings (a) -0.3%, (b) -1.4%, (c) 0.6%; better in 26 of 45). Wilcoxon p = 0.414, corrected
+    p = 1 over 11 and over 5 comparisons. With the motion-enhanced set only p = 0.893.
+  deviations:
+  - The model as in fig3b-mean-prediction. Eqs. 10 to 12 are applied per frame over the stored
+    patch; without them the movie is centred and scaled by its overall mean and SD.
+- claim: fig2b-compressive-improves
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2b-compressive-improves
+  measured:
+  - 4.6
+  - 8.4
+  notes: The compressive nonlinearity is better than the simplest model in 40 of 45 neurons
+    without and with divisive normalization (corrected p 8.8e-8 and 1.8e-8 over 11). The sizes are
+    4.6% and 8.4% (reading (a), given as measured), 9.2% and 16.1% (b), 4.8% and 9.4% (c), against
+    16 and 19 (+-4). Only reading (b) with divisive normalization is within tolerance.
+  deviations:
+  - The model as in fig3b-mean-prediction. The power applies to all filter outputs, simple and
+    complex (claims file).
+- claim: fig2b-expansive-decreases
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2b-expansive-decreases
+  measured:
+  - -15.1
+  - -13.5
+  notes: The expansive nonlinearity is worse than the simplest model in 45 of 45 neurons without
+    and 38 of 45 with divisive normalization (corrected p 6.3e-13 and 4.5e-8). The sizes are -15.1%
+    and -13.5% (reading (a), given as measured), -26.9% and -24.5% (b), -15.7% and -13.2% (c),
+    against -36 and -24 (+-4). Reading (b) matches the value with divisive normalization only.
+  deviations:
+  - The model as in fig3b-mean-prediction.
+- claim: fig2b-divisive-improves
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2b-divisive-improves
+  measured: 2.9
+  notes: Divisive normalization with the linear nonlinearity raises the mean correlation by 2.9%
+    (reading (a), given as measured), 5.1% (b, within 8 +- 4) or 3.9% (c), better in 30 of 45.
+    Wilcoxon p = 0.0051, but corrected p = 0.056 over 11 comparisons (0.026 over 5), so the
+    claim's corrected p < 0.01 is not met. The increase is larger in monkey v (9.5%, reading (a))
+    than in monkey f (1.1%).
+  deviations:
+  - The model as in fig3b-mean-prediction. Sigma is the fixed reading (b) for this model; the
+    held-out choice was run for the compressive and divisive model only, for time.
+- claim: fig2b-compressive-divisive-best
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2b-compressive-divisive-best
+  notes: The compressive and divisive model (0.448) beats the compressive model (0.432) in 34 of
+    45 neurons, Wilcoxon p = 0.00016, corrected 0.0017 over 11, 0.0019 over 12 and 0.0008 over 5.
+    No model is better on average; the closest, the same model with luminance normalization, is
+    lower by 0.0065 (p = 0.36).
+  deviations:
+  - The model as in fig3b-mean-prediction.
+- claim: fig2b-no-interaction
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2b-no-interaction
+  notes: Without divisive normalization, compressive +0.019 (corrected p 8.8e-8) and expansive
+    -0.063 (6.3e-13) against the simplest model. With it, against the simplest model (reading (a))
+    +0.035 (1.8e-8) and -0.056 (4.5e-8), and against the linear divisive model (reading (b))
+    +0.022 (8.1e-9) and -0.068 (6.3e-13).
+  deviations:
+  - The model as in fig3b-mean-prediction.
+- claim: complex-cells-dominate
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:complex-cells-dominate
+  notes: With complex-cell regressors only the mean correlation is 0.448, as for the full model
+    (ratio of mean squared correlations 1.001, Wilcoxon p = 0.054); with simple-cell regressors
+    only it is 0.194 (ratio 0.250, p = 5.7e-14).
+  deviations:
+  - The model as in fig3b-mean-prediction. The two reduced models restrict which regressors
+    boosting may choose, on the same features and folds; the simple cells are limited to 0.75
+    cycles per cRF and SF 0 (218 of 763 regressors), so their share is smaller than in the paper.
+- claim: fig6a-null-on-plane
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig6a-null-on-plane
+  measured: 0.396
+  notes: The mean excitatory on-plane ratio of 150 null neurons is within 0.324 to 0.396 in 12 of
+    40 combinations of readings. With every reading (a) it is 0.396 (SD 0.072), at the upper edge
+    (given as measured). Null neurons made non-negative by an offset (rate reading (b)) give 0.44
+    to 0.53, outside the tolerance in every combination.
+  deviations:
+  - The null neurons have random weights on the 763 pooled regressors of the compressive and
+    divisive model, not on 5956 filters, and are refit by the same pooled model.
+  - Movie reading (b), all 150 neurons on one neuron's movies (ct0001), was run with the rate and
+    delay readings (a) only, for time.
+  - The plane is found on a grid of 72 azimuths (5 degree steps) and 41 speeds (0 and 0.5 to 100
+    cRF per second, log spaced), a standard choice.
+- claim: fig6a-excitatory-on-plane
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig6a-excitatory-on-plane
+  measured: 0.592
+  notes: The mean excitatory on-plane ratio is 0.550 to 0.596 across the eight readings, within
+    tolerance in all, and above every null set by a rank-sum test (p from below 1e-4 to 0.0098), so
+    40 of 40 combinations meet the criterion. With every reading (a) it is 0.592; monkey f 0.555,
+    monkey v 0.705.
+  deviations:
+  - The spectral receptive field is summed over the pooled regressors, each placed at its
+    spatial frequency, direction and temporal frequency; the near-plane test uses the regressor's
+    temporal frequency against the plane's at its spatial frequency vector.
+- claim: fig6b-suppressive-off-plane
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig6b-suppressive-off-plane
+  measured: 0.168
+  notes: With the fitted weights split per delay (quantity (a), sign (a)) the mean suppressive
+    on-plane ratio is 0.168 (balance (a), given as measured) or 0.171 (balance (b)), within 0.162
+    to 0.198, and below the suppressive ratios of the null sets with rectified rates (0.196 to
+    0.209; rank-sum p 0.0008 to 0.0097). Six of 40 combinations meet the criterion. The other
+    readings give 0.094 to 0.159, below the band, and null sets made non-negative by an offset have
+    suppressive ratios of 0.11 to 0.17 that do not differ from the real ones (p 0.077 to 0.97).
+  deviations:
+  - As in fig6a-excitatory-on-plane.
+- claim: fig7a-partial-ring
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig7a-partial-ring
+  notes: In 25 of 32 combinations more than half of the neurons fall between the extremes and fewer
+    than a quarter in each. With every reading (a) 6.7% are below 0.2, 22.2% at or above 0.8 and
+    71.1% between (median 0.534, range 0.055 to 1.652).
+  deviations:
+  - A regressor's quadrant is read from its spatial frequency vector, along the optimal direction
+    (vertical) or across it (horizontal), with borders at 45 degrees; the paper does not say how
+    the plane's axes are scaled. SF 0 regressors are left out.
+- claim: fig7a-no-corr-prediction-hv
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig7a-no-corr-prediction-hv
+  notes: With every reading (a), r = -0.281 and p = 0.061, between the claim's bounds of 0.05 and
+    0.10. Across the 16 readings of the ratio, p > 0.10 in 10 and p < 0.05 in 2, with r from -0.380
+    to -0.120.
+  deviations:
+  - As in fig7a-partial-ring. Judged on the first reading of each measure, as the rule for a claim
+    of absence asks for one test; the others are shown.
+- claim: fig7b-pattern-index
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig7b-pattern-index
+  notes: The simulated pattern indices are strongly component-like under all four combinations,
+    medians -8.6 to -10.7 and ranges within -14.6 to -4.4, so 0% to 18% of neurons lie within -6.6
+    to 2.2. No neuron exceeds 1.28.
+  deviations:
+  - Gratings at 24 directions and plaids at 12, each component at the RMS contrast of the training
+    movie (amplitude sqrt(2) times its SD), 30 frames each with the steady-state response read
+    from frames 10 to 23; the response is the model's prediction with the delay weights summed.
+    The paper gives no stimulus parameters.
+  - The pattern index uses 12 - 3 degrees of freedom in the Fisher transform, as in Smith et al.
+    (2005) for 12 directions.
+- claim: fig7c-hv-pattern-correlation
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig7c-hv-pattern-correlation
+  measured: 0.231
+  notes: Across 64 combinations of readings the correlation ranges from -0.343 to 0.330 and none is
+    positive with p < 0.01; with the first readings r = 0.231, p = 0.126 (given as measured). It
+    rests on pattern indices that do not match the paper's (fig7b-pattern-index).
+  deviations:
+  - As in fig7a-partial-ring and fig7b-pattern-index.
+- claim: fig7c-no-corr-prediction-pattern
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig7c-no-corr-prediction-pattern
+  notes: With the first readings (peak frequency per neuron, 120 degree plaids), r = -0.231, p =
+    0.127. The other combinations give p = 0.902, 0.370 and 0.055. The pattern indices themselves
+    do not match the paper's (fig7b-pattern-index), so this absence is shown on a different
+    measure from the paper's.
+  deviations:
+  - As in fig7b-pattern-index.
+- claim: natural-movie-control
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:natural-movie-control
+  measured:
+  - 0.493
+  - 0.462
+  notes: The files hold the natural-movie validation set for 14 neurons. The Wilcoxon signed-rank
+    test finds no difference (p = 0.241; natural higher in 10 of 14, mean difference +0.031). The
+    natural-movie mean, 0.493, is within tolerance, the motion-enhanced mean, 0.462, below 0.537 +-
+    0.054.
+  deviations:
+  - The natural-movie frames are read as `ranges.nrange`, which the data descriptor does not
+    describe; its frames carry less motion than the rest of `vrange` in all 14 files, as the
+    paper says of natural movies.
+  - 14 neurons where the paper has 15.
+- claim: fig8-recovery-simulated
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig8-recovery-simulated
+  notes: Each recovered spectral receptive field correlates best with its own true field, with
+    Poisson noise 0.835, 0.570 and 0.501 on the diagonal against at most 0.133 off it, and without
+    noise 0.791, 0.600 and 0.672 against at most 0.072.
+  deviations:
+  - The simulated neurons are built on the pooled regressors at one delay (6 frames) on the movies
+    of ct0001; (A) 3.0 cycles per cRF and 7.5 Hz at directions 330 to 30 degrees, (B) 1.5 cycles
+    per cRF and 7.5 Hz at four directions, (C) 60 random complex regressors, weights uniform from
+    0.5 to 1. The paper gives no parameters.
+findings:
+- kind: data_missing
+  statement: The data set holds 45 of the paper's 52 MT neurons (34 from monkey f, 11 from monkey
+    v), as its descriptor says. No recording appears twice.
+- kind: data_missing
+  statement: The files hold only the response averaged over repeats (psths), not the single
+    repeats, so the explainable variance the paper reports cannot be computed.
+- kind: metadata_insufficient
+  statement: Fourteen files hold a field `ranges.nrange`, the first 2000 frames of a 4000-frame
+    `ranges.vrange`, and every file holds an empty `ranges.trange`; the data descriptor describes
+    neither. Its frames carry less motion than the rest of `vrange` (median frame difference over
+    contrast 0.225 against 0.325, lower in all 14), consistent with the natural movies without
+    motion enhancement of the paper's control.
+- kind: data_missing
+  statement: The paper's natural-movie control used 15 neurons; the files hold a natural-movie
+    validation set (`nrange`) for 14.
+- kind: other
+  about: data
+  statement: The denominators of the averaged validation responses imply 10 to 33 repeats per
+    neuron (the largest per-frame denominator), where the paper reports 5 to 20; training frames
+    carry denominators up to 5, so some training frames were shown more than once, which neither
+    the paper nor the descriptor mentions.
+- kind: other
+  about: data
+  statement: Training frames (`crange`) number 17,908 to 40,000 per neuron (mean 26,894), where the
+    paper gives 20,000 to 40,000 (mean 27,120). In ct0133 (v0395), 12,729 of 19,842 training
+    frames have no response (NaN), leaving 7,093.
+- kind: metadata_insufficient
+  statement: The descriptor does not say how the response bins are aligned to the frames, which
+    sets the delays of a receptive field model. With a temporal filter centred on each frame, a
+    delay window moved 3 or 6 frames earlier fits the held-out training data better for 14 of 45
+    neurons.
+- kind: methods_unavailable
+  statement: Question for the authors. The paper does not give the temporal envelope (c_t and w_t
+    of Eq. 1), the exact spatial and temporal frequencies or velocities, or the filter count per
+    scale of its 5956-filter bank. This attempt used an 11-frame envelope with SD 2 frames
+    centred on the frame, spatial frequencies 0 to 6 cycles per cRF and temporal frequencies 0 to
+    30 Hz an octave apart; were these close to the paper's?
+- kind: methods_unavailable
+  statement: Question for the authors. The paper does not give the boosting step size, the exact
+    stopping rule, the semisaturation constant sigma of Eq. 14, or how the 20% held-out parts were
+    formed. This attempt used 1% of the response SD, 50 steps without improvement, sigma at 1% of
+    the mean pooled response, and five contiguous blocks; what did the paper use?
+- kind: methods_unavailable
+  statement: Question for the authors. The grating and plaid parameters of the pattern-index
+    simulation (spatial and temporal frequency, contrast, plaid separation, directions) and how
+    the two constraints of the optimal plane were balanced are not given. Here the indices came
+    out strongly component-like (medians -8.6 to -10.7), unlike Figure 7B; which parameters did the
+    paper use?
+- kind: paper_inconsistency
+  statement: The delays are given as "up to 10 frames or 130 ms", but 10 frames at 83 Hz are 120
+    ms; and the Methods give 20,000 to 40,000 training frames while the Results give 22,000 to
+    42,000 frames, which matches the training plus validation frames of the files.
