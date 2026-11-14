@@ -182,6 +182,10 @@ The public site is static and is built from the files above by
 - **`badge/<archive>/<id>.svg`:** a badge an archive can show on a dataset's
   own page, with the number of findings reproduced from it. The same numbers
   are in the dataset's JSON, under `badge` ([badges.md](badges.md)).
+- **`badge/papers/<key>.svg`** and **`api/papers/<key>.json`:** the same for
+  one paper. Datasets, papers and authors each have two more badge styles
+  with all the outcomes, at `…-outcomes.svg` and `…-card.svg`
+  ([badges.md](badges.md)).
 - **Executed notebooks** under `notebooks/`, from CI.
 
 ## Repository layout
