@@ -1,0 +1,788 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "mt-2",
+  "label": "CRCNS:mt-2"
+ },
+ "page": "datasets/crcns/mt-2/",
+ "generated": "2026-11-14T17:49:02+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 14,
+  "partially_reproduced": 3,
+  "not_reproduced": 2,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "nishimoto-2011-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "mt-2",
+    "version": "unversioned",
+    "doi": "10.6080/K0DN4374",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:mt-2"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:mt-2",
+   "label": "CRCNS:mt-2",
+   "dataset_version": "unversioned",
+   "paper": "10.1523/jneurosci.6801-10.2011",
+   "paper_title": null,
+   "date": "2026-11-14",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-15"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43552200959"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "nishimoto-2011",
+   "entry_title": "Spatiotemporal receptive fields of MT neurons in naturalistic movies (Nishimoto and Gallant 2011)",
+   "summary": "Most of the paper's main findings held up in this data, on a reduced version of its model fitted to 45 of its 52 MT neurons. The compressive and divisive V1 filter model predicted responses as well as reported (mean correlation 0.518 against 0.52) and beat the other models. Excitatory spectral receptive fields lay on a plane, suppressive ones off it, and most formed a partial ring. The link between the horizontal-vertical ratio and simulated pattern selectivity did not reproduce, in a simulation whose settings the paper does not give. Divisive normalization alone gave no significant gain, and the explainable variance could not be tested, as the files hold only repeat-averaged responses.",
+   "description": "Tests the findings of Nishimoto and Gallant (2011) on CRCNS mt-2, which holds the movie patches and trial-averaged responses of 45 MT neurons from two macaques. It fits the paper's V1 filter bank model with its 12 switched nonlinear variants by boosting, compares their prediction accuracy, and derives the on-plane and horizontal-vertical ratios, simulated pattern indices, the null model and the natural-movie control from the fits.",
+   "notebooks": [
+    {
+     "path": "reproduce_nishimoto_2011.ipynb",
+     "title": "Reproducing Nishimoto and Gallant (2011) from CRCNS mt-2",
+     "executed": null
+    },
+    {
+     "path": "finer_pooling.ipynb",
+     "title": "What the spatial pooling of the regression weights costs",
+     "executed": null
+    },
+    {
+     "path": "finer_pooling_fig2b.ipynb",
+     "title": "Figure 2B with the finer pooling",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig3b-mean-prediction",
+     "statement": "The compressive and divisive V1 filter model predicts the validation responses of the 52 MT neurons with an average correlation of r = 0.52.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 3; Figure 3B",
+     "quote": "Figure 3B summarizes prediction performance of the compressive/divisive V1 filter model across the entire sample of 52 MT neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "finer_pooling.ipynb",
+     "notes": "With the regression weights pooled onto 3 x 3 regions (1465 regressors), the closest to the paper's per-filter weights that fits in the time limit for all neurons, the compressive and divisive model predicts the 45 neurons with a mean correlation of 0.518 (median 0.507, range 0.263 to 0.761), within 0.468 to 0.572; motion-enhanced set only 0.524; monkey f 0.524, monkey v 0.500; all 45 between 0.2 and 0.8, as in Figure 3B. Every neuron is better predicted than with the 2 x 2 pooling used for all other analyses (45 of 45, mean +0.070, Wilcoxon p = 5.7e-14), which gives 0.448 (median 0.454, range 0.221 to 0.730) and reaches the band under no reading (delays 1 to 10 0.449, random-partition folds 0.446, sigma chosen on held-out data 0.451, no delay offset 0.448, patience 500 0.449, the 12 ms Gaussian as a full width 0.380). For three neurons a finer pooling still (4 x 4 regions and every simple channel, 3085 regressors) gives 0.614, 0.352 and 0.347 against 0.636, 0.398 and 0.322 with 3 x 3 regions, changes of -0.022, -0.046 and +0.025, so whether 3 x 3 is close to the paper's model is shown for these three neurons only, with mixed results. No boosting fold reached the step cap (main model median 156 steps, at most 643 over all 12 models). The outcome rests on the finer pooling, which remains a reduction of the paper's model.",
+     "deviations": [
+      "The regression weights are constrained to be pooled over space. For this claim, onto 1465 regressors (3 and 6 cycles per cRF onto 3 x 3 regions with Gaussian weights of SD 1/3 cRF, 1.5 cycles per cRF at each of its 4 positions, 0.75 and SF 0 summed, simple cells at 0.75 cycles per cRF and SF 0) at 11 delays, where the paper fits a weight for each of 5956 filters. The same pooling is used for natural-movie-control and for the Figure 2B models refitted in finer_pooling_fig2b.ipynb; the main notebook uses 763 regressors (3 and 6 cycles per cRF onto 2 x 2 regions). The filter bank behind them follows the paper's rules (Materials and Methods, The V1 filter bank), with 7025 complex and 1082 simple channels on grids spaced 2.2 sigma, one carrier cycle per two sigma, and simple cells up to 2 cycles per cRF in the divisive pool. This was forced by the time limit.",
+      "Simple cells enter the regression only at 0.75 cycles per cRF and SF 0, below the paper's limit of 2 cycles per cRF, for the same reason (all of them in the 3085-regressor check on three neurons).",
+      "Assumed, the temporal envelope of the Gabor filters (Eq. 1), which the paper does not give. It spans 11 frames with SD 2 frames and is centred on the frame (c_t = 0), so that the delays set the latency and a feature reads up to 5 frames ahead of its frame, which makes the model acausal, unlike Eq. 5. With an envelope ending at the frame (causal), the fitted weights of the first neurons tried piled up at delay 0, so the response comes earlier than such a filter allows (preparation, not in the notebook). The largest median weight share is at delay 10 (0.131), so the delay window may be truncated.",
+      "Assumed, an offset of the 11-frame delay window of 0, 3 or 6 frames earlier, chosen per neuron by the held-out error of the 2 x 2 model on the training data alone (0 for 31 neurons, 3 for 9, 6 for 5). The data descriptor does not say how response bins are aligned to frames. Offset 0 for every neuron gives the same mean with the 2 x 2 pooling (0.448).",
+      "Assumed, spatial frequencies 0, 0.75, 1.5, 3 and 6 cycles per cRF and temporal frequencies 0, 3.75, 7.5, 15 and 30 Hz; the paper gives \"log distributed from zero to six\" and \"from 0 to 30 Hz\" with six velocities, without the values.",
+      "The cRF is half the stored patch (claims file, reading (a)); the descriptor says the patch covers about two receptive fields, so readings (a) and (b) coincide. Frames are block-averaged to 32 x 32 pixels.",
+      "Sigma of divisive normalization is 1% of the mean pooled response (claims file, reading (b)); reading (a), chosen on held-out data between 0.01 and 1 times, was run for the 2 x 2 model only. Boosting step 1% of the response SD; stopping after 50 steps without a lower held-out error, keeping the weights at the minimum (the paper says only that boosting stopped when the error began to increase); a patience of 500 is shown as a check.",
+      "The Gram matrix of the training design is built from lag cross-products of the unlagged features, which is exact up to the block edges and removed frames for contiguous blocks and approximate for the random-partition reading; early stopping uses exact held-out predictions.",
+      "45 neurons, where the paper has 52. ct0133 keeps 7,093 of its 19,842 training frames; without it the mean is 0.520 (3 x 3) and 0.450 (2 x 2)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-explainable-variance",
+     "statement": "The compressive and divisive model accounts for 35% of the explainable response variance of MT neurons.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 3; Figure 3 legend",
+     "quote": "and the model accounts for 35% of the explainable response variance (David and Gallant, 2005)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The files hold only the response averaged over repeats (psths), so the noise ceiling of David and Gallant (2005), which needs the single repeats, cannot be estimated. The repeat counts can be inferred from the denominators of the averaged values, but not the responses of single repeats.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-example-neuron",
+     "statement": "For one example neuron the correlation between model predictions and observed responses is r = 0.72.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 3; Figure 3A",
+     "quote": "The correlation between model predictions and observed responses for this neuron is quite good",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "Three neurons have a prediction correlation within 0.648 to 0.792, ct0013 0.710, ct0021 0.708 and ct0039 0.730. Their validation sets show 20 to 21 repeats by the per-frame denominators (also at a tolerance of 1e-6); the two neurons that show 10 give 0.278 (ct0028) and 0.409 (ct0030), so the paper's example neuron cannot be identified. With the 3 x 3 pooling (finer_pooling.ipynb) four neurons fall in the band (ct0013 0.758, ct0021 0.761, ct0024 0.699, ct0039 0.760) and ct0028 and ct0030 give 0.403 and 0.492.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the main notebook and repeated with the 3 x 3 pooling in finer_pooling.ipynb, with the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-contrast-normalization-no-effect",
+     "statement": "Luminance and contrast normalization of the stimulus does not significantly change prediction accuracy compared with the simplest model (linear half-wave rectification, no normalization stages).",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 2; Figure 2B",
+     "quote": "Contrast normalization does not have a significant effect on predictions compared with the simplest model",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test with Bonferroni correction",
+       "p": 0.1,
+       "p_relation": ">",
+       "corrected": "Bonferroni",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "Luminance and contrast normalization moves the mean correlation from 0.413 to 0.412 (readings (a) -0.3%, (b) -1.4%, (c) 0.6%; better in 26 of 45). Wilcoxon p = 0.414, corrected p = 1 over 11 and over 5 comparisons. With the motion-enhanced set only p = 0.893.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model; the luminance-normalized models were not refitted with the 3 x 3 pooling, for time, so the effect size with a finer model is not known. Eqs. 10 to 12 are applied per frame over the stored patch; without them the movie is centred and scaled by its overall mean and SD."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-compressive-improves",
+     "statement": "A compressive static output nonlinearity consistently increases predictions over the simplest model, by about 16% without and about 19% with divisive normalization.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 2; Figure 2B",
+     "quote": "The compressive static output nonlinearity consistently increases predictions",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test with Bonferroni correction",
+       "p": 0.01,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "The compressive nonlinearity is better than the simplest model in 40 of 45 neurons without and with divisive normalization (corrected p 8.8e-8 and 1.8e-8 over 11). The sizes are 4.6% and 8.4% (reading (a), given as measured), 9.2% and 16.1% (b), 4.8% and 9.4% (c), against 16 and 19 (+-4). Only reading (b) with divisive normalization is within tolerance. With the 3 x 3 pooling (finer_pooling_fig2b.ipynb) the sizes are 5.6% and 8.0% (a), 11.4% and 16.1% (b), 5.6% and 8.6% (c), again with only reading (b) with divisive normalization within tolerance, better in 40 of 45 neurons in both (corrected p 6.2e-9 and 1.7e-9).",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling (1465 regressors). The power applies to all filter outputs, simple and complex (claims file)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-expansive-decreases",
+     "statement": "An expansive static output nonlinearity always decreases predictions relative to the simplest model, by about 36% without and about 24% with divisive normalization.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 2; Figure 2B",
+     "quote": "while the expansive nonlinearity always decreases predictions",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test with Bonferroni correction",
+       "p": 0.01,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "The expansive nonlinearity is worse than the simplest model in 45 of 45 neurons without and 38 of 45 with divisive normalization (corrected p 6.3e-13 and 4.5e-8). The sizes are -15.1% and -13.5% (reading (a), given as measured), -26.9% and -24.5% (b), -15.7% and -13.2% (c), against -36 and -24 (+-4). Under reading (a), given as measured, both values are outside tolerance; reading (b) matches the value with divisive normalization only.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors); the expansive models were not refitted with the 3 x 3 pooling, for time (finer_pooling_fig2b.ipynb)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-divisive-improves",
+     "statement": "Divisive normalization significantly improves predictions over the simplest model, by about 8% with the linear static nonlinearity.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 2; Figure 2B",
+     "quote": "Divisive normalization also improves predictions significantly",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test with Bonferroni correction",
+       "p": 0.01,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "Divisive normalization with the linear nonlinearity raises the mean correlation by 2.9% (reading (a), given as measured), 5.1% (b, within 8 +- 4) or 3.9% (c), better in 30 of 45. Wilcoxon p = 0.0051, but corrected p = 0.056 over 11 comparisons (0.026 over 5), so the claim's corrected p < 0.01 is not met. The increase is larger in monkey v (9.5%, reading (a)) than in monkey f (1.1%). With the 3 x 3 pooling (finer_pooling_fig2b.ipynb) the increase is 2.5% (a), 4.7% (b) or 3.1% (c), better in 31 of 45, Wilcoxon p = 0.0076, corrected 0.084 over 11 (0.038 over 5), so the outcome is the same.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling (1465 regressors). Sigma is the fixed reading (b) for this model; the held-out choice was run for the compressive and divisive model only, for time."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-compressive-divisive-best",
+     "statement": "The model with both a compressive nonlinearity and divisive normalization predicts significantly better than the model with the compressive nonlinearity alone, and is the simplest model that gives accurate predictions.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 2; Figure 2B",
+     "quote": "The model that contains both a compressive nonlinearity and divisive normalization has significantly more predictive power than a model that contains only a compressive nonlinearity",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test with Bonferroni correction",
+       "p": 0.01,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "The compressive and divisive model (0.448) beats the compressive model (0.432) in 34 of 45 neurons, Wilcoxon p = 0.00016, corrected 0.0017 over 11, 0.0019 over 12 and 0.0008 over 5. No model is better on average; the closest, the same model with luminance normalization, is lower by 0.0065 (p = 0.38). With the 3 x 3 pooling (finer_pooling_fig2b.ipynb, four models refitted) it gives 0.518 against 0.506, better in 33 of 45, p = 0.00075, corrected 0.0083 over 11, 0.0090 over 12 and 0.0038 over 5, and neither linear model is better.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling (1465 regressors)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-no-interaction",
+     "statement": "The effects of the compressive and expansive nonlinearities do not depend on whether divisive normalization is present.",
+     "source": "Results, Linear and nonlinear mechanisms that predict natural visual responses in area MT, paragraph 2; Figure 2B",
+     "quote": "Note, however, that the effects of the compressive and expansive nonlinearities do not depend on whether divisive normalization is present or not",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "Without divisive normalization, compressive +0.019 (corrected p 8.8e-8) and expansive -0.063 (6.3e-13) against the simplest model. With it, against the simplest model (reading (a)) +0.035 (1.8e-8) and -0.056 (4.5e-8), and against the linear divisive model (reading (b)) +0.022 (8.1e-9) and -0.068 (6.3e-13). With the 3 x 3 pooling the compressive effects are +0.027 (6.2e-9) without divisive normalization and +0.039 (1.7e-9, reading (a)) and +0.026 (6.2e-9, reading (b)) with it; the expansive models were not refitted.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling for the compressive model only, as the expansive models were not refitted."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "complex-cells-dominate",
+     "statement": "Most of the response variance is captured by the model complex cells, and the model simple cells have only a small effect on prediction performance.",
+     "source": "Materials and Methods, The V1 filter bank, paragraph 3 (data not shown)",
+     "quote": "most of the response variance is captured by the model complex cells, and the model simple cells have only small effect on prediction performance (data not shown)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "With complex-cell regressors only the mean correlation is 0.448, as for the full model (ratio of mean squared correlations 1.001; higher than the full model by 0.0002 on average, Wilcoxon p = 0.049); with simple-cell regressors only it is 0.194 (ratio 0.250, p = 5.7e-14). With the 3 x 3 pooling (finer_pooling.ipynb) complex only gives 0.514 against 0.518 (ratio 0.985) and simple only 0.194 (ratio 0.191); with every simple channel of the bank, on three neurons, simple only gives 0.367, 0.078 and 0.141 against 0.622, 0.364 and 0.333 for complex only.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the main notebook and repeated with the 3 x 3 pooling in finer_pooling.ipynb, with the same outcome. The two reduced models restrict which regressors boosting may choose, on the same features and folds; the simple cells are limited to 0.75 cycles per cRF and SF 0 (218 of 763 regressors), so their share is smaller than in the paper."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-null-on-plane",
+     "statement": "For 150 model MT neurons with random weights, the average excitatory on-plane ratio is 0.36.",
+     "source": "Results, Excitatory spectral receptive fields lie on a plane, paragraph 2; Figure 6A (dashed line); Materials and Methods, Null hypotheses test for on-plane ratio",
+     "quote": "The average on-plane ratio for this null model is 0.36",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "The mean excitatory on-plane ratio of 150 null neurons is within 0.324 to 0.396 in 12 of 40 combinations of readings. With every reading (a) it is 0.395 (SD 0.072), at the upper edge (given as measured). Null neurons made non-negative by an offset (rate reading (b)) give 0.44 to 0.53, outside the tolerance in every combination.",
+     "deviations": [
+      "The null neurons have random weights on the 763 pooled regressors of the compressive and divisive model, not on 5956 filters, and are refit by the same pooled model.",
+      "Movie reading (b), all 150 neurons on one neuron's movies (ct0001), was run with the rate and delay readings (a) only. Running it under all four combinations made the notebook exceed its time limit, so the other three are not run here.",
+      "The plane is found on a grid of 72 azimuths (5 degree steps) and 41 speeds (0 and 0.5 to 100 cRF per second, log spaced), a standard choice."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-excitatory-on-plane",
+     "statement": "Excitatory spectral receptive fields of MT neurons tend to lie on a single plane in the three-dimensional frequency domain; their average on-plane ratio is 0.59, significantly above the null model's 0.36.",
+     "source": "Results, Excitatory spectral receptive fields lie on a plane, paragraphs 1 and 2; Figure 6A",
+     "quote": "Figure 6A summarizes the onplane ratio for the excitatory receptive fields of all 52 area MT neurons in our sample. The average ratio is 0.59",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "52 neurons against 150 null model neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "The mean excitatory on-plane ratio is 0.550 to 0.596 across the eight readings, within tolerance in all, and above every null set by a rank-sum test (p from below 1e-4 to 0.0078), so 40 of 40 combinations meet the criterion. With every reading (a) it is 0.592; monkey f 0.556, monkey v 0.705.",
+     "deviations": [
+      "The spectral receptive field is summed over the pooled regressors, each placed at its spatial frequency, direction and temporal frequency; the near-plane test uses the regressor's temporal frequency against the plane's at its spatial frequency vector."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-suppressive-off-plane",
+     "statement": "Suppressive spectral receptive fields tend to avoid the optimal excitatory plane; their average on-plane ratio is 0.18, significantly below the null model.",
+     "source": "Results, Suppressive spectral receptive fields lie off the optimal excitatory plane; Figure 6B",
+     "quote": "The average ratio is 0.18, which is significantly smaller than the value for the null model described above",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "52 neurons against 150 null model neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "With the fitted weights split per delay (quantity (a), sign (a)) the mean suppressive on-plane ratio is 0.168 (balance (a), given as measured) or 0.171 (balance (b)), within 0.162 to 0.198, and below the suppressive ratios of the null sets with rectified rates (0.195 to 0.209; rank-sum p 0.0009 to 0.0080). Six of 40 combinations meet the criterion. The other readings give 0.094 to 0.159, below the band, and null sets made non-negative by an offset have suppressive ratios of 0.11 to 0.17 that do not differ from the real ones (p 0.077 to 0.97).",
+     "deviations": [
+      "As in fig6a-excitatory-on-plane."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7a-partial-ring",
+     "statement": "The horizontal-vertical ratio is distributed continuously; few neurons form a full ring (ratio near 1) or a single spatiotemporal frequency peak (ratio near 0), and most form a partial ring in the optimal plane that avoids low temporal frequencies.",
+     "source": "Results, Excitatory spectral receptive fields of most MT neurons form a partial ring in the plane, paragraphs 1 and 2; Figure 7A; Figures 4 and 5",
+     "quote": "However, the receptive fields of the large majority of MT neurons lie between these extremes, forming a partial ring in the optimal velocity plane and avoiding the region near zero temporal frequency",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "In 25 of 32 combinations more than half of the neurons fall between the extremes and fewer than a quarter in each. With every reading (a) 6.7% are below 0.2, 22.2% at or above 0.8 and 71.1% between (median 0.534, range 0.055 to 1.652).",
+     "deviations": [
+      "A regressor's quadrant is read from its spatial frequency vector, along the optimal direction (vertical) or across it (horizontal), with borders at 45 degrees; the paper does not say how the plane's axes are scaled. SF 0 regressors are left out."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7a-no-corr-prediction-hv",
+     "statement": "Prediction performance is not significantly correlated with the horizontal-vertical ratio.",
+     "source": "Results, Excitatory spectral receptive fields of most MT neurons form a partial ring in the plane, paragraph 2",
+     "quote": "Note that there was no significant correlation between prediction performance and the horizontal\u2013vertical ratio",
+     "statistics": [
+      {
+       "p": 0.1,
+       "p_relation": ">",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "With every reading (a), r = -0.281 and p = 0.061, between the claim's bounds of 0.05 and 0.10. Across the 16 readings of the ratio, p > 0.10 in 10 and p < 0.05 in 2, with r from -0.380 to -0.120.",
+     "deviations": [
+      "As in fig7a-partial-ring. Judged on the first reading of each measure, as the rule for a claim of absence asks for one test; the others are shown."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-pattern-index",
+     "statement": "Simulated plaid responses give pattern indices that form a continuum, mostly from -6 to 2, with highly pattern-selective neurons rare (the Discussion says none were extremely pattern selective).",
+     "source": "Results, The horizontal-vertical ratio is correlated with simulated pattern selectivity, paragraphs 2 and 3; Figure 7B; Discussion, paragraph 4",
+     "quote": "The pattern index for most neurons ranges from ... 6 to 2, and highly pattern-selective neurons are relatively rare",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "On the rectified model responses (firing rates, which cannot be negative), 64% of neurons have pattern indices within -6.6 to 2.2 with the per-neuron peak frequency and 120 degree plaids (median -5.10) and none exceed 2.2, which meets the criterion; with 90 degree plaids 49%, with the population frequency 58% (120 degrees) and 53% (90 degrees), with 2 and 3 neurons whose rectified responses are zero in every direction. With Poisson noise on the rectified rates (1 s presentations, 5, 10 or 20 repeats) the criterion is met in 17 to 20 of 20 draws under every combination. The unrectified model outputs give strongly component-like indices (medians -8.6 to -10.7, 0% to 18% within the range) and meet it under no combination, so the outcome rests on the rectification. The rectification sets a median of 25% of the grating and plaid directions to zero (28% with 90 degree plaids, range 0% to 58%), and the change of the index grows with that share (Spearman rho 0.568, p = 4.7e-5; 0.642 with 90 degree plaids). The 8 neurons with no direction clipped keep their component-like indices (median -8.33, 2 of 8 within the range), while 27 of the 37 clipped neurons fall within it. The indices thus reach the paper's range through the clipping of the tuning curves.",
+     "deviations": [
+      "Assumed, the simulated responses are the model's predictions half-wave rectified, as firing rates. The paper does not say whether its simulated grating and plaid responses were rectified or carried noise; the pattern index of Smith et al. (2005), which it uses, is computed from measured firing rates, and the paper describes the simulation as \"a prediction about the plaid selectivity that we would expect to obtain ... had we probed them with plaids\" (Results, The horizontal-vertical ratio is correlated with simulated pattern selectivity). Where the paper adds noise to simulated responses it says so (Poisson noise for the null model), so no noise is added in the adopted reading; noisy readings are shown.",
+      "Gratings at 24 directions and plaids at 12, each component at the RMS contrast of the training movie (amplitude sqrt(2) times its SD), 30 frames each with the steady-state response read from frames 10 to 23; the response is the 2 x 2 model's prediction with the delay weights summed. The paper gives no stimulus parameters.",
+      "The pattern index uses 12 - 3 degrees of freedom in the Fisher transform, as in Smith et al. (2005) for 12 directions; correlations are clipped at +-0.999999 so that a pure pattern or component cell gives a finite index."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-hv-pattern-correlation",
+     "statement": "The horizontal-vertical ratio is significantly correlated with the simulated pattern index (r = 0.46).",
+     "source": "Results, The horizontal-vertical ratio is correlated with simulated pattern selectivity, paragraph 3; Figure 7C",
+     "quote": "The correlation between the two indices is significant",
+     "statistics": [
+      {
+       "test": "t test for correlation coefficients",
+       "statistic": "r = 0.46",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "Across 64 combinations of readings the correlation ranges from -0.343 to 0.331 and none is positive with p < 0.01; with the first readings r = 0.231, p = 0.126 (given as measured). With the indices of the rectified responses, the reading adopted for fig7b-pattern-index, r ranges from -0.074 to 0.299 (0.097, p = 0.53, with the first readings), again with none positive at p < 0.01; with the noisy indices of the first of the 20 draws (ratio reading aaa/a, per-neuron frequency) r is 0.150 or less. Correlations with the population-frequency indices of the rectified and noisy responses are undefined, as 2 or 3 neurons have flat responses there.",
+     "deviations": [
+      "As in fig7a-partial-ring and fig7b-pattern-index. Given as measured is the value on the unrectified indices with the first readings."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-no-corr-prediction-pattern",
+     "statement": "Prediction performance is not significantly correlated with the pattern index.",
+     "source": "Results, The horizontal-vertical ratio is correlated with simulated pattern selectivity, paragraph 3",
+     "quote": "There was no significant correlation between prediction performance and the pattern index",
+     "statistics": [
+      {
+       "p": 0.1,
+       "p_relation": ">",
+       "n": "52 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "With the pattern indices of the rectified responses (the reading adopted for fig7b-pattern-index), the per-neuron peak frequency and 120 degree plaids, r = -0.053, p = 0.73; with 90 degree plaids p = 0.359. The unrectified indices give p = 0.127, 0.899, 0.371 and 0.055, and the noisy indices of the first of the 20 draws with the per-neuron frequency p of 0.38 or more.",
+     "deviations": [
+      "As in fig7b-pattern-index."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "natural-movie-control",
+     "statement": "Models fit on motion-enhanced movies predict responses to natural movies without motion enhancement as well as responses to new motion-enhanced movies (mean r = 0.533 against 0.537, 15 neurons).",
+     "source": "Results, Control to identify any bias arising from the use of motion-enhanced natural movies, paragraph 2",
+     "quote": "Receptive field models of area MT neurons estimated using motion-enhanced natural movies predicted responses to novel simple natural movies just as well as they predicted responses to novel motion-enhanced natural movies",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.1,
+       "p_relation": ">",
+       "n": "15 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "finer_pooling.ipynb",
+     "notes": "The files hold the natural-movie validation set for 14 neurons. With the 3 x 3 pooling the mean correlation is 0.523 for natural and 0.563 for motion-enhanced movies, both within tolerance, and the Wilcoxon signed-rank test finds no difference (p = 0.43; natural higher in 5 of 14, where the 2 x 2 pooling has it higher in 10 of 14). With the 2 x 2 pooling the natural mean, 0.493, is within tolerance, the motion-enhanced mean, 0.462, below 0.537 +- 0.054, and p = 0.241.",
+     "deviations": [
+      "The model as in fig3b-mean-prediction (3 x 3 pooling).",
+      "The natural-movie frames are read as `ranges.nrange`, which the data descriptor does not describe; its frames carry less motion than the rest of `vrange` in all 14 files, as the paper says of natural movies.",
+      "14 neurons where the paper has 15."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-recovery-simulated",
+     "statement": "The estimation procedure correctly recovers the spectral receptive fields of three simulated MT neurons, one narrowband, one non-planar with four directions at one frequency, and one with random directions and frequencies that does not avoid low temporal frequencies.",
+     "source": "Results, Control to ensure that the model estimation procedure can recover spectral receptive fields of any shape, paragraph 2; Figure 8",
+     "quote": "These results demonstrate that the receptive field estimation procedure used in this study can characterize arbitrary spectral receptive fields, regardless of their organization within the three-dimensional frequency domain",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nishimoto_2011.ipynb",
+     "notes": "Each recovered spectral receptive field correlates best with its own true field, with Poisson noise 0.835, 0.570 and 0.501 on the diagonal against at most 0.133 off it, and without noise 0.791, 0.600 and 0.672 against at most 0.072.",
+     "deviations": [
+      "The simulated neurons are built on the pooled regressors at one delay (6 frames) on the movies of ct0001; (A) 3.0 cycles per cRF and 7.5 Hz at directions 330 to 30 degrees, (B) 1.5 cycles per cRF and 7.5 Hz at four directions, (C) 60 random complex regressors, weights uniform from 0.5 to 1. The paper gives no parameters."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds 45 of the paper's 52 MT neurons (34 from monkey f, 11 from monkey v), as its descriptor says. No recording appears twice.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The files hold only the response averaged over repeats (psths), not the single repeats, so the explainable variance the paper reports cannot be computed.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Fourteen files hold a field `ranges.nrange`, the first 2000 frames of a 4000-frame `ranges.vrange`, and every file holds an empty `ranges.trange`; the data descriptor describes neither. Its frames carry less motion than the rest of `vrange` (median frame difference over contrast 0.225 against 0.325, lower in all 14), consistent with the natural movies without motion enhancement of the paper's control.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The paper's natural-movie control used 15 neurons; the files hold a natural-movie validation set (`nrange`) for 14.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The denominators of the averaged validation responses imply 10 to 33 repeats per neuron (the largest per-frame denominator, the same at a tolerance of 1e-6, a lower bound on the largest per-frame count), where the paper reports 5 to 20; training frames carry denominators up to 5, so some training frames were shown more than once, which neither the paper nor the descriptor mentions.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Training frames (`crange`) number 17,908 to 40,000 per neuron (mean 26,894), where the paper gives 20,000 to 40,000 (mean 27,120). In ct0133 (v0395), 12,729 of 19,842 training frames have no response (NaN), leaving 7,093.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The descriptor does not say how the response bins are aligned to the frames, which sets the delays of a receptive field model. With a temporal filter centred on each frame, a delay window moved 3 or 6 frames earlier fits the held-out training data better for 14 of 45 neurons.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook reproduce_nishimoto_2011.ipynb with the conclusion cells and the summary removed, the helper module mt2.py and the claims file, with the paper's full text. The verifier read the archive's file listing and tested helper functions on synthetic inputs (pattern_index, optimal_plane). It had no attempt record.",
+     "agreed": 20,
+     "of": 20,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebooks reproduce_nishimoto_2011.ipynb and finer_pooling.ipynb with their conclusions and summaries, the helper module mt2.py, the claims file, the attempt record and the README, with the paper's full text. Round 2.",
+     "agreed": 20,
+     "of": 20,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The paper does not give the temporal envelope (c_t and w_t of Eq. 1), the exact spatial and temporal frequencies or velocities, or the filter count per scale of its 5956-filter bank. This attempt used an 11-frame envelope with SD 2 frames centred on the frame, spatial frequencies 0 to 6 cycles per cRF and temporal frequencies 0 to 30 Hz an octave apart; were these close to the paper's?",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The paper does not give the boosting step size, the exact stopping rule, the semisaturation constant sigma of Eq. 14, or how the 20% held-out parts were formed. This attempt used 1% of the response SD, 50 steps without improvement, sigma at 1% of the mean pooled response, and five contiguous blocks; what did the paper use?",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The grating and plaid parameters of the pattern-index simulation (spatial and temporal frequency, contrast, plaid separation, directions) and how the two constraints of the optimal plane were balanced are not given. Here the indices came out strongly component-like (medians -8.6 to -10.7), unlike Figure 7B, unless the responses are rectified as firing rates (medians near -5). Were the simulated responses rectified, did they carry noise, and which parameters did the paper use?",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The delays are given as \"up to 10 frames or 130 ms\", but 10 frames at 83 Hz are 120 ms; and the Methods give 20,000 to 40,000 training frames while the Results give 22,000 to 42,000 frames, which matches the training plus validation frames of the files.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "nishimoto-2011",
+   "type": "reproduction",
+   "title": "Spatiotemporal receptive fields of MT neurons in naturalistic movies (Nishimoto and Gallant 2011)",
+   "description": "Tests the findings of Nishimoto and Gallant (2011) on CRCNS mt-2, which holds the movie patches and trial-averaged responses of 45 MT neurons from two macaques. It fits the paper's V1 filter bank model with its 12 switched nonlinear variants by boosting, compares their prediction accuracy, and derives the on-plane and horizontal-vertical ratios, simulated pattern indices, the null model and the natural-movie control from the fits.",
+   "datasets": [
+    "crcns:mt-2"
+   ],
+   "papers": [
+    "10.1523/jneurosci.6801-10.2011"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_nishimoto_2011.ipynb",
+     "title": "Reproducing Nishimoto and Gallant (2011) from CRCNS mt-2",
+     "executed": null
+    },
+    {
+     "path": "finer_pooling.ipynb",
+     "title": "What the spatial pooling of the regression weights costs",
+     "executed": null
+    },
+    {
+     "path": "finer_pooling_fig2b.ipynb",
+     "title": "Figure 2B with the finer pooling",
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 29,
+   "hashed": true
+  }
+ ],
+ "badge": {
+  "text": "14 findings reproduced",
+  "reproduced": 14,
+  "papers": [
+   {
+    "doi": "10.1523/jneurosci.6801-10.2011",
+    "key": "nishimoto-2011",
+    "byline": "Nishimoto et al. 2011",
+    "title": "A Three-Dimensional Spatiotemporal Receptive Field Model Explains Responses of Area MT Neurons to Naturalistic Movies",
+    "relation": "primary",
+    "reproduced": 14,
+    "url": "https://encorescience.org/papers/nishimoto-2011/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/crcns/mt-2/",
+  "svg": "https://encorescience.org/badge/crcns/mt-2.svg",
+  "alt": "Encore: 14 findings reproduced, from CRCNS:mt-2"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/crcns/mt-2.svg",
+  "outcomes": "https://encorescience.org/badge/crcns/mt-2-outcomes.svg",
+  "card": "https://encorescience.org/badge/crcns/mt-2-card.svg"
+ }
+}
