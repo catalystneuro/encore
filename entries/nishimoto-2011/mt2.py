@@ -27,6 +27,8 @@ deviation forced by compute, stated in the attempt record):
   (+-0.5, +-0.5) cRF for 3 and 6 cycles per cRF, and onto one central region for 0.75 and
   1.5; simple cells enter at 0.75 cycles per cRF (one position) and SF 0. This keeps
   the regression near 800 channels so that 12 models x 45 neurons fit in the time limit.
+  Two finer poolings of the main model (`pooling`, levels "3x3" and "fine") measure what
+  this constraint costs.
 - Static nonlinearity HR(x)^alpha (Eq. 13) on every filter output (C), then divisive
   normalization by the sum of all filter outputs, each scaled to unit SD over the training
   frames, plus sigma (Eq. 14; C: order as in Figure 2A).
@@ -99,6 +101,16 @@ def read_meta(name):
                    stim_dtype=str(h["rawStims"].dtype))
         for k in ["crange", "vrange", "nrange", "trange"]:
             out[k] = _range(h, k)
+    return out
+
+
+def list_keys(name):
+    """Every group and dataset in one file, with shape, type and MATLAB attributes."""
+    out = []
+    with fsspec.open(DATA + name, block_size=2**20).open() as f, h5py.File(f, "r") as h:
+        h.visititems(lambda k, o: out.append((k, getattr(o, "shape", None), str(getattr(o, "dtype", "group")),
+                                              str(o.attrs.get("MATLAB_class", b"").decode()),
+                                              int(o.attrs.get("MATLAB_empty", 0)))))
     return out
 
 
@@ -231,36 +243,49 @@ def bank_outputs(stim, bank, lumnorm, chunk=4000, ms=None):
     return C, Sm, np.array(desc_c), np.array(desc_s), ms
 
 
-def pooling(desc_c, desc_s):
+def pooling(desc_c, desc_s, level="2x2"):
     """Weights that pool full-bank channels onto regressors (the spatial constraint, D).
     Returns the matrix for complex and simple channels and the regressor descriptors
-    (sf, direction, tf, region x, region y, is_simple)."""
-    regions = {3.0: [(-0.5, -0.5), (0.5, -0.5), (-0.5, 0.5), (0.5, 0.5)],
-               6.0: [(-0.5, -0.5), (0.5, -0.5), (-0.5, 0.5), (0.5, 0.5)],
-               1.5: [(0.0, 0.0)], 0.75: [(0.0, 0.0)], 0.0: [(0.0, 0.0)]}
-    cols, rdesc = [], []
+    (sf, direction, tf, region x, region y, is_simple). Complex channels of one SF,
+    direction and TF are summed with Gaussian weights onto a grid of regions spanning the
+    2 cRF patch.
+    level "2x2" (every model): 3 and 6 cycles per cRF onto 2 x 2 regions (SD 0.5 cRF), 0.75
+    and 1.5 summed over their positions; simple cells at 0.75 cycles per cRF and SF 0 (763
+    regressors). "3x3", a reading of the main model that measures what the pooling costs: 3
+    and 6 onto 3 x 3 regions (SD 1/3 cRF) and 1.5 at each of its 4 grid positions (1465).
+    "fine", the same on 4 x 4 regions (SD 0.25 cRF) and with every simple channel of the
+    bank, up to 2 cycles per cRF, each at its position (3085)."""
+    ng = {"2x2": 2, "3x3": 3, "fine": 4}[level]
+    gc = (np.arange(ng) - (ng - 1) / 2) * (2.0 / ng)
+    gr = [(x, y) for y in gc for x in gc]
+    g15 = _grid(1.5)
+    regions = {3.0: (gr, 1.0 / ng), 6.0: (gr, 1.0 / ng),
+               1.5: ([(x, y) for y in g15 for x in g15], 0.0) if level != "2x2" else ([(0.0, 0.0)], None),
+               0.75: ([(0.0, 0.0)], None), 0.0: ([(0.0, 0.0)], None)}
+    rdesc = []
     keys_c = [tuple(d[:3]) for d in desc_c]
     uniq = sorted(set(keys_c), key=lambda k: (k[0], k[1], k[2]))
     Pc = []
     for k in uniq:
         idx = [i for i, kk in enumerate(keys_c) if kk == k]
-        for (rx, ry) in regions[k[0]]:
+        cen, sdr = regions[k[0]]
+        for (rx, ry) in cen:
             w = np.zeros(len(desc_c))
-            if len(regions[k[0]]) == 1:
+            if sdr is None:
                 w[idx] = 1.0
             else:
                 d2 = (desc_c[idx, 3] - rx) ** 2 + (desc_c[idx, 4] - ry) ** 2
-                w[idx] = np.exp(-d2 / (2 * 0.5**2))
+                w[idx] = (d2 < 1e-9) if sdr == 0 else np.exp(-d2 / (2 * sdr**2))
             Pc.append(w / w.sum())
             rdesc.append((*k, rx, ry, 0))
-    # simple cells: SF 0.75 (one grid position) and SF 0, phases kept apart
+    # simple cells, phases kept apart
     Ps = []
-    sel = [i for i, d in enumerate(desc_s) if d[0] in (0.0, 0.75)]
+    sel = [i for i, d in enumerate(desc_s) if level == "fine" or d[0] in (0.0, 0.75)]
     for i in sel:
         w = np.zeros(len(desc_s))
         w[i] = 1.0
         Ps.append(w)
-        rdesc.append((*desc_s[i][:3], 0.0, 0.0, 1))
+        rdesc.append((*desc_s[i][:3], *(desc_s[i][3:5] if level == "fine" else (0.0, 0.0)), 1))
     nc, ns = len(Pc), len(Ps)
     Pc = np.array(Pc).T.astype(np.float32)  # full complex x regressors
     Ps = np.array(Ps).T.astype(np.float32)
@@ -341,15 +366,21 @@ def lagged(F, rws, delays=DELAYS):
     return np.concatenate([F[rws - d] for d in range(delays)], 1)
 
 
-class ExactFold:
-    """Training Gram from exact per-block Gram matrices of the lagged design (used for the
-    random-partition reading, where the lag cross-products are not exact)."""
+class Lagged:
+    """The lagged design of some rows, read one column at a time, so that it is never held
+    whole in memory (S, numerical)."""
 
-    def __init__(self, Gt, Gk):
-        self.Gt, self.Gk = Gt, Gk
+    def __init__(self, F, rws, delays=DELAYS):
+        self.F, self.rws, self.P, self.D = F, rws, F.shape[1], delays
 
-    def row(self, r):
-        return self.Gt[r] - self.Gk[r]
+    def __getitem__(self, key):
+        _, j = key
+        d, i = divmod(j, self.P)
+        return self.F[self.rws - d, i]
+
+    def tdot(self, y):
+        """X'y, delay-major."""
+        return np.concatenate([self.F[self.rws - d].T @ y for d in range(self.D)])
 
 
 class Fold:
@@ -358,15 +389,16 @@ class Fold:
     G[(a, i), (b, j)] is C_{b-a}[i, j] for b >= a and C_{a-b}[j, i] otherwise; its rows
     are built when boosting asks for them."""
 
-    def __init__(self, Cs, P, delays):
-        self.Cs, self.P, self.D = Cs, P, delays
+    def __init__(self, tot, held, P, delays):
+        self.tot, self.held, self.P, self.D = tot, held, P, delays  # C = tot - held, by row
         self.cache = {}
 
     def row(self, r):
         if r not in self.cache:
             a, i = divmod(r, self.P)
             self.cache[r] = np.concatenate(
-                [self.Cs[b - a][i] if b >= a else self.Cs[a - b][:, i] for b in range(self.D)])
+                [self.tot[b - a][i] - self.held[b - a][i] if b >= a else
+                 self.tot[a - b][:, i] - self.held[a - b][:, i] for b in range(self.D)])
         return self.cache[r]
 
 
@@ -381,8 +413,9 @@ def block_stats(F, blocks, delays=DELAYS):
 
 def boost(G, c, Xh, yh, eps, patience=50, maxit=20000, active=None):
     """Coordinate gradient boosting (Eqs. 6-9) with early stopping on a held-out set.
-    G: training Gram (a Fold), c: X'y (centered), Xh, yh: held-out design and centered
-    response. `active` restricts the channels that may be chosen."""
+    G: training Gram (a Fold), c: X'y (centered), Xh: the held-out design (a `Lagged`),
+    yh: the centered held-out response. `active` restricts the channels that may be
+    chosen."""
     P = len(c)
     w = np.zeros(P, np.float64)
     g = c.astype(np.float64).copy()  # = X'(y - Xw), minus the gradient of E/2
@@ -419,27 +452,32 @@ def make_blocks(tr, nfold=5, rng=None):
     return [np.sort(tr[perm[i::nfold]]) for i in range(nfold)]
 
 
-def fit_neuron(F, ys, blocks, delays=DELAYS, stats=None, active=None, exact=False):
+def fit_neuron(F, ys, blocks, delays=DELAYS, stats=None, active=None, patience=50, lazy=False):
     """Fit one model to one or several responses on the same features.
     F: frames x regressors (z-scored), ys: list of responses per frame, blocks: held-out
     blocks of training rows. Returns, per response, the five-fold averaged weights
-    (delays*P, delay-major), the intercept and the iterations per fold."""
+    (delays*P, delay-major), the intercept and the iterations per fold. lazy: read the
+    held-out design a column at a time (`Lagged`), for the finer poolings, whose lagged
+    design would not fit in memory; its sums are then taken in single precision, so the
+    results differ from the default in the last digits."""
     nfold = len(blocks)
     P = F.shape[1]
-    Xhs = [lagged(F, blocks[k], delays) for k in range(nfold)]
-    if exact:
-        stats = [X.T @ X for X in Xhs]
-        tot = sum(stats)
-        folds = [ExactFold(tot, stats[k]) for k in range(nfold)]
+    if stats is None:
+        stats = block_stats(F, blocks, delays)
+    tot = sum(stats)
+    folds = [Fold(tot, stats[k], P, delays) for k in range(nfold)]
+    if lazy:
+        Xhs = [Lagged(F, blocks[k], delays) for k in range(nfold)]
+        XS = [Xh.tdot(np.ones(len(Xh.rws), np.float32)).astype(np.float64) for Xh in Xhs]
     else:
-        if stats is None:
-            stats = block_stats(F, blocks, delays)
-        tot = sum(stats)
-        folds = [Fold(tot - stats[k], P, delays) for k in range(nfold)]
-    XS = [Xh.sum(0, dtype=np.float64) for Xh in Xhs]
+        Xhs = [lagged(F, blocks[k], delays) for k in range(nfold)]
+        XS = [Xh.sum(0, dtype=np.float64) for Xh in Xhs]
     res = []
     for yy in ys:
-        XY = [(Xhs[k].T @ yy[blocks[k]].astype(np.float32)).astype(np.float64) for k in range(nfold)]
+        if lazy:
+            XY = [Xhs[k].tdot(yy[blocks[k]].astype(np.float32)).astype(np.float64) for k in range(nfold)]
+        else:
+            XY = [(Xhs[k].T @ yy[blocks[k]].astype(np.float32)).astype(np.float64) for k in range(nfold)]
         W, b0, its, herr = [], [], [], 0.0
         for k in range(nfold):
             others = [i for i in range(nfold) if i != k]
@@ -447,7 +485,7 @@ def fit_neuron(F, ys, blocks, delays=DELAYS, stats=None, active=None, exact=Fals
             mu = sum(yy[blocks[i]].sum() for i in others) / n
             c = sum(XY[i] for i in others) - mu * sum(XS[i] for i in others)
             sdy = np.sqrt(sum(((yy[blocks[i]] - mu) ** 2).sum() for i in others) / n)
-            w, nit, e = boost(folds[k], c, Xhs[k], yy[blocks[k]] - mu, 0.01 * sdy, active=active)
+            w, nit, e = boost(folds[k], c, Xhs[k], yy[blocks[k]] - mu, 0.01 * sdy, patience=patience, active=active)
             herr += e * len(blocks[k])
             W.append(w)
             b0.append(mu)
@@ -547,13 +585,22 @@ def pattern_index(g24, plaid12, sep):
     k = int(round(sep / 2 / 15))
     pat = g24[idx]
     comp = g24[(idx + k) % 24] + g24[(idx - k) % 24]
-    rp = np.corrcoef(plaid12, pat)[0, 1]
-    rc = np.corrcoef(plaid12, comp)[0, 1]
-    rpc = np.corrcoef(pat, comp)[0, 1]
+    cl = lambda r: np.clip(r, -0.999999, 0.999999)  # a pure pattern or component cell stays finite
+    rp = cl(np.corrcoef(plaid12, pat)[0, 1])
+    rc = cl(np.corrcoef(plaid12, comp)[0, 1])
+    rpc = cl(np.corrcoef(pat, comp)[0, 1])
     Rp = (rp - rc * rpc) / np.sqrt((1 - rc**2) * (1 - rpc**2))
     Rc = (rc - rp * rpc) / np.sqrt((1 - rp**2) * (1 - rpc**2))
     z = lambda r: np.arctanh(np.clip(r, -0.999999, 0.999999)) / np.sqrt(1 / (12 - 3))
     return z(Rp) - z(Rc)
+
+
+def noisy_tuning(resp, n_rep, rng, frames=83):
+    """Mean spike count over n_rep presentations of frames frames each, Poisson at the
+    model's rate per frame (rectified): the tuning curve an experiment would measure (A:
+    1 s presentations; the paper does not say whether its simulated responses had noise)."""
+    lam = np.maximum(resp, 0) * frames
+    return rng.poisson(lam, (n_rep, len(lam))).mean(0)
 
 
 # ---------------------------------------------------------------- one neuron
@@ -599,6 +646,18 @@ def _process(name, null_specs, sim, seed):
                for x in np.unique(y[v])]
         rep[k] = int(max(den))
     out["repeats"] = rep
+    # the same with a tolerance of 1e-6 and denominators up to 100: the share of values whose
+    # denominator is found, and the largest
+    strict = {}
+    for k, v in sets.items():
+        u = np.unique(y[v][~np.isnan(y[v])])
+        den = np.array([next((n for n in range(1, 101) if abs(x * n - round(x * n)) < 1e-6), 0) for x in u])
+        strict[k] = (int(den.max()), float(np.mean(den > 0)))
+    out["repeats_strict"] = strict
+    # validation sets: contiguous frames, and frames without a response
+    out["trange_len"] = len(m["trange"])
+    out["val_check"] = {k: dict(contiguous=bool(np.all(np.diff(v) == 1)), n_nan=int(np.isnan(y[v]).sum()))
+                        for k, v in sets.items()}
     vals = y[tr]
     out["train_denominators"] = sorted({n for x in np.unique(vals) for n in range(1, 41)
                                         if abs(x * n - round(x * n)) < 1e-3 and
@@ -648,6 +707,9 @@ def _process(name, null_specs, sim, seed):
                 fit["shift_r"] = (shifts, np.array([
                     np.corrcoef(pv[30:-30], ob[FIRST + 30 + k:len(vv) - 30 + k])[0, 1] for k in shifts]))
                 fit["r_smooth_b"] = val_corr(F, m, w, b0, smooth_sd=12 / 2.3548 / 12)
+                # early stopping with a patience of 500 steps in place of 50
+                r2, _ = fit_neuron(F, [y], blocks, stats=st, patience=500)
+                fit["patience500"] = dict(r=val_corr(F, m, r2[0][0], r2[0][1]), its=r2[0][2])
                 P = F.shape[1]
                 dl = np.repeat(np.arange(DELAYS), P)
                 isc = np.tile(rd[:, 5] == 0, DELAYS)
@@ -710,6 +772,55 @@ def _process(name, null_specs, sim, seed):
             del F
         del C, Sm
     out["t_total"] = time.time() - t0
+    return out
+
+
+def pooled_fit(C, Sm, dc, ds, tr, m, blocks, offset, level):
+    """The compressive and divisive model with a finer pooling (`pooling(level=...)`), on
+    the delay offset chosen with the 2 x 2 pooling, to measure what the pooling costs; also
+    with complex or simple regressors only."""
+    Pc, Ps, rd, nc, ns = pooling(dc, ds, level)
+    F, _ = features(C, Sm, tr, Pc, Ps, MAIN[1], MAIN[2])
+    mu, sd = zscore_stats(F, tr)
+    F = shift_rows((F - mu) / sd, offset)
+    res, st = fit_neuron(F, [m["psth"]], blocks, lazy=True)
+    w, b0, its, _ = res[0]
+    out = dict(n_complex=nc, n_simple=ns, r=val_corr(F, m, w, b0), its=its)
+    isc = np.tile(rd[:, 5] == 0, DELAYS)
+    for nm, act in [("complex_only", np.where(isc)[0]), ("simple_only", np.where(~isc)[0])]:
+        r2, _ = fit_neuron(F, [m["psth"]], blocks, stats=st, active=act, lazy=True)
+        out[nm] = val_corr(F, m, r2[0][0], r2[0][1])
+    return out
+
+
+def pooling_neuron(name, fine=False, threads=2):
+    """The main model of one neuron under the finer pooling (finer_pooling.ipynb). The delay
+    offset is chosen as in `_process`, by the held-out error of the 2 x 2 model on the
+    training data, so it is the same; the 2 x 2 fit at that offset is returned with it."""
+    from threadpoolctl import threadpool_limits
+    with threadpool_limits(threads):
+        t0 = time.time()
+        m = load(name)
+        tr, sets = rows(m)
+        y = m["psth"]
+        blocks = make_blocks(tr)
+        C, Sm, dc, ds, _ = bank_outputs(m["stim"], build_bank(), False)
+        Pc, Ps, rd, nc, ns = pooling(dc, ds)
+        F, _ = features(C, Sm, tr, Pc, Ps, MAIN[1], MAIN[2])
+        mu, sd = zscore_stats(F, tr)
+        F = (F - mu) / sd
+        off = {}
+        for o in OFFSETS:
+            Fo = shift_rows(F, o)
+            res, _ = fit_neuron(Fo, [y], blocks, lazy=True)
+            off[o] = (res[0][3], val_corr(Fo, m, res[0][0], res[0][1]))
+        del F, Fo
+        o = min(off, key=lambda k: off[k][0])
+        out = dict(name=name, cellid=m["cellid"], sets={k: len(v) for k, v in sets.items()}, offset=o,
+                   r2x2=off[o][1], p3x3=pooled_fit(C, Sm, dc, ds, tr, m, blocks, o, "3x3"))
+        if fine:
+            out["fine"] = pooled_fit(C, Sm, dc, ds, tr, m, blocks, o, "fine")
+        out["t_total"] = time.time() - t0
     return out
 
 
