@@ -9,6 +9,12 @@ and the differences from the paper's method.
 
 - `reproduce_zhang_2021.ipynb`: the data check and one section per claim.
 - `statespace.py`: loading, the state space of the paper's code (computed in the space of the 24
-  principal components), the cluster separation index and the classifiers.
+  principal components), the cluster separation index, the classifiers, and the atlas regions and
+  encoding models of the two cortical claims.
 
-The notebook streams about 7 GB and runs in about 20 minutes with 4 GB of memory.
+The two cortical claims use two public fsaverage atlases in place of the paper's ROIs, which are
+not deposited: visfAtlas (Rosenke et al. 2021, doi:10.1093/cercor/bhaa246) and HCP-MMP1.0 on
+fsaverage (doi:10.6084/m9.figshare.3498446.v2). Both are read into memory and checked against
+their checksums.
+
+The notebook streams about 16 GB and runs in about 55 minutes with 6 GB of memory.

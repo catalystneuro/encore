@@ -33,6 +33,15 @@ Where each method comes from:
   (PCA included), held-out TRs projected and assigned to the nearest training
   cluster (Methods, paragraph 2). Folds, distance and z-scoring of held-out TRs
   are readings named in the claims file.
+- Cortical regions (att-weights-cortex, game-weights-two-groups): the paper's
+  per-subject ROIs are not public, and the claims file allows an fsaverage atlas
+  through the data set's mappers. Regions are unions of visfAtlas and
+  HCP-MMP1.0 areas (an assumption, listed in ATT_REGIONS and GAME_REGIONS); a
+  region's mean of a voxel map is the mean over its fsaverage vertices that the
+  mapper reaches. Weights per region are computed exactly from the
+  region-averaged responses (region_weights). The encoding-model thresholds are
+  the claims file's readings (ii), with the details stated in semantic_model_r
+  and cv_ols_r.
 """
 import fsspec
 import h5py
@@ -114,33 +123,53 @@ def code_positions(X, Y, num_PCs=N_PCS):
     return stats.zscore(Y @ Q[:, :X.shape[1]])
 
 
-def load_attention_gram(subject, X_check=None):
+def load_attention_gram(subject, X_check=None, keep=None):
     """Stream one subject's deconvolved responses, stacked passive, human, vehicle.
 
     Returns the 2700 x 2700 Gram matrix and summaries; the voxel data are
     dropped. With X_check, also the positions from the paper's code on the full
-    voxel data.
+    voxel data and the norm of each row of its OLS coefficients (`coeffs`, voxel
+    space). With keep, also the responses of those voxels (float32).
     """
     with _open(f"VisualAttention/Data/deconv/{subject}.hdf") as f, h5py.File(f, "r") as h:
         Y = np.vstack([h[c][()] for c in CONDITIONS])
     out = gram_summary(Y)
     if X_check is not None:
         out["code_positions"] = code_positions(X_check, Y)
+        P = np.column_stack([X_check, np.ones(len(X_check))])
+        out["code_coef_norm"] = np.linalg.norm(np.linalg.pinv(P.T @ P) @ (P.T @ Y), axis=1)
+    if keep is not None:
+        out["Y_keep"] = Y[:, keep].astype(np.float32)
     del Y
     return out
 
 
-def load_game(subject):
-    """Stream one subject's video game BOLD (npy) and its state labels."""
+def load_game(subject, keep=None):
+    """Stream one subject's video game BOLD (npy) and its state labels.
+
+    Also the voxel maps of the OLS weights B and denoised weights B_L of every state (data
+    set column order, states with no TRs dropped), for the correlation variant of
+    game-weights-two-groups, and with keep the responses of those voxels (float32).
+    """
     with _open(f"VideoGame/Data/{subject}.npy") as f:
         np.lib.format.read_magic(f)
         shape, fortran, dtype = np.lib.format.read_array_header_1_0(f)
         Y = np.frombuffer(f.read(), dtype=dtype).reshape(shape).astype(np.float64)
     out = gram_summary(Y)
-    del Y
     st = read_hdf(f"VideoGame/Stimuli/{subject}.hdf")
     out["X"] = st["behavioural_state"].astype(float)
     out["labels"] = [s.decode().strip().lower() for s in st["state_labels"]]
+    X, names = game_matrix(out["X"], out["labels"], "dataset")
+    Z, _, _ = pca_scores(out["G"], np.arange(len(Y)))
+    P = np.column_stack([X, np.ones(len(X))])
+    pinv = np.linalg.pinv(P.T @ P)
+    coef = (pinv @ (P.T @ Z))[:-1]
+    out["B_vox"] = (pinv @ (P.T @ Y))[:-1]
+    out["BL_vox"] = ((Y - Y.mean(0)).T @ ((Z / (Z ** 2).sum(0)) @ coef.T)).T
+    out["map_names"] = names
+    if keep is not None:
+        out["Y_keep"] = Y[:, keep].astype(np.float32)
+    del Y
     return out
 
 
@@ -408,3 +437,233 @@ def balanced_accuracy(H, pred, classes):
     of the TRs that have c that are predicted as c."""
     rec = [(pred[H[:, k]] == c).mean() for k, c in enumerate(classes) if H[:, k].any()]
     return float(np.mean(rec))
+
+
+# ---------------------------------------------------------------- cortical regions
+
+VISF_URL = "https://download.brainvoyager.com/data/visfAtlas.zip"
+VISF_SHA256 = "2eae192d3aeab8f9812991c8a9bc2822d10c4d0a621172aaa43df1900660799d"
+HCP_URL = {"lh": "https://ndownloader.figshare.com/files/5528816",
+           "rh": "https://ndownloader.figshare.com/files/5528819"}
+HCP_MD5 = {"lh": "46a102b59b2fb1bb4bd62d51bf02e975", "rh": "75e96b331940227bbcb07c1c791c2463"}
+
+# Regions of the claims, as unions of atlas areas on fsaverage (an assumption: the paper's
+# ROIs were drawn per subject from localizers, which are not public).
+# visfAtlas (Rosenke et al. 2021, doi:10.1093/cercor/bhaa246): the face areas on the
+# fusiform (mFus, pFus) form the FFA, IOG-faces is the OFA, the lateral body areas (LOS, ITG,
+# MTG) form the EBA, CoS-places is the PPA and TOS-places (right hemisphere only) the OPA.
+# HCP-MMP1.0 (Glasser et al. 2016, on fsaverage: doi:10.6084/m9.figshare.3498446.v2) for the
+# regions visfAtlas lacks, with the area names of Glasser et al. (2016), Supplementary
+# Neuroanatomical Results.
+ATT_REGIONS = {
+    "FFA": ("visf", ["mFus-faces", "pFus-faces"]),
+    "OFA": ("visf", ["IOG-faces"]),
+    "EBA": ("visf", ["LOS-bodies", "ITG-bodies", "MTG-bodies"]),
+    "MT+": ("visf", ["hMT"]),
+    "PPA": ("visf", ["CoS-places"]),
+    "OPA": ("visf", ["TOS-places"]),
+    "RSC": ("hcp", ["RSC"]),
+    "LO": ("hcp", ["LO1", "LO2", "LO3"]),
+    "FO": ("hcp", ["FOP1", "FOP2", "FOP3", "FOP4", "FOP5"]),
+    "IFS": ("hcp", ["IFSa", "IFSp"]),
+    "IPS": ("hcp", ["IPS1", "IP0", "IP1", "IP2", "LIPv", "LIPd", "VIP", "MIP", "AIP"]),
+    "FEF": ("hcp", ["FEF"]),
+    "SEF": ("hcp", ["SCEF"]),
+    # variants of the body, face and place areas, not used by the criterion
+    "LOS-bodies": ("visf", ["LOS-bodies"]),
+    "ITG-bodies": ("visf", ["ITG-bodies"]),
+    "MTG-bodies": ("visf", ["MTG-bodies"]),
+    "OTS-bodies": ("visf", ["OTS-bodies"]),
+    "FFC (HCP)": ("hcp", ["FFC"]),
+    "PHA1-3 (HCP)": ("hcp", ["PHA1", "PHA2", "PHA3"]),
+    "POS1 (HCP)": ("hcp", ["POS1"]),
+}
+_PFC = ["8C", "8Av", "i6-8", "s6-8", "SFL", "8BL", "9p", "9a", "8Ad", "p9-46v", "a9-46v", "46", "9-46d",
+        "44", "45", "47l", "a47r", "p47r", "IFJa", "IFJp", "IFSa", "IFSp",
+        "10d", "10pp", "a10p", "p10p", "11l", "13l", "OFC", "47m", "47s", "pOFC",
+        "10r", "10v", "9m", "8BM", "p32", "d32", "s32", "a24", "25"]
+GAME_REGIONS = {
+    "TPJ": ("hcp", ["TPOJ1", "TPOJ2", "TPOJ3", "PGi", "PGs"]),
+    "precuneus": ("hcp", ["7m", "PCV", "POS2", "31pd", "31pv"]),
+    "prefrontal": ("hcp", _PFC),
+    "motor": ("hcp", ["4"]),
+    "premotor": ("hcp", ["6a", "6d", "6v", "6r", "55b", "PEF"]),
+    "SMA": ("hcp", ["6ma", "6mp"]),
+    "IPS": ATT_REGIONS["IPS"],
+    "FEF": ("hcp", ["FEF"]),
+    "SEF": ("hcp", ["SCEF"]),
+}
+
+
+def parse_annot(buf):
+    """Vertex labels and names of a FreeSurfer .annot file (bytes), new colour table format."""
+    import io
+    f = io.BytesIO(buf)
+    i4 = lambda n=1: np.frombuffer(f.read(4 * n), ">i4")
+    vnum = int(i4()[0])
+    vd = i4(2 * vnum).reshape(-1, 2)
+    values = np.zeros(vnum, np.int64)
+    values[vd[:, 0]] = vd[:, 1]
+    assert int(i4()[0]) == 1  # colour table present
+    assert int(i4()[0]) == -2  # version 2
+    i4()  # max structure id
+    f.read(int(i4()[0]))  # name of the original table
+    names, codes = [], []
+    for _ in range(int(i4()[0])):
+        i4()  # structure id
+        names.append(f.read(int(i4()[0])).rstrip(b"\x00").decode())
+        r, g, b, _t = i4(4)
+        codes.append(int(r) + int(g) * 256 + int(b) * 65536)
+    lookup = dict(zip(codes, names))
+    return np.array([lookup.get(int(v), "") for v in values])
+
+
+def load_atlases():
+    """Vertex names per hemisphere for both atlases: {"visf"|"hcp": {"lh": names, "rh": names}}.
+
+    Each file is read into memory and checked against its published checksum."""
+    import hashlib, io, zipfile
+    import requests
+    z = requests.get(VISF_URL, timeout=600).content
+    assert hashlib.sha256(z).hexdigest() == VISF_SHA256
+    out = {"visf": {}, "hcp": {}}
+    with zipfile.ZipFile(io.BytesIO(z)) as zf:
+        for h in ("lh", "rh"):
+            out["visf"][h] = parse_annot(zf.read(f"visfAtlas/FreeSurfer/{h}.visfAtlas.annot"))
+    for h in ("lh", "rh"):
+        b = requests.get(HCP_URL[h], timeout=600).content
+        assert hashlib.md5(b).hexdigest() == HCP_MD5[h]
+        out["hcp"][h] = np.array([n[2:-4] if n.endswith("_ROI") else "" for n in parse_annot(b)])
+    return out
+
+
+def load_mapper(subject):
+    """The data set's voxel-to-fsaverage mappers, {"lh"|"rh": CSR [vertices x voxels]}."""
+    from scipy import sparse
+    d = read_hdf(f"Mappers/{subject}.hdf")
+    side = {"lh": "left", "rh": "right"}
+    return {h: sparse.csr_matrix((d[f"vox_to_fsavg_{s}_data"], d[f"vox_to_fsavg_{s}_indices"],
+                                  d[f"vox_to_fsavg_{s}_indptr"]), shape=tuple(d[f"vox_to_fsavg_{s}_shape"]))
+            for h, s in side.items()}
+
+
+def region_matrix(mapper, atlases, regions, voxel_mask=None):
+    """[voxel x region] matrix whose product with a voxel map gives the region's mean on fsaverage.
+
+    A region's mean is taken over its vertices (both hemispheres) that the mapper reaches,
+    each vertex the mapper's weighted mean of its voxels. voxel_mask keeps only some voxels
+    (a vertex counts when it reaches a kept voxel). Returns the matrix and the vertices used.
+    """
+    from scipy import sparse
+    cols, nvert = [], []
+    for atlas, areas in regions.values():
+        col, n = 0, 0
+        for h, Mh in mapper.items():
+            if voxel_mask is not None:
+                Mh = Mh @ sparse.diags(voxel_mask.astype(float))
+            rows = np.isin(atlases[atlas][h], areas) & (np.diff(Mh.indptr) > 0)
+            col = col + np.asarray(Mh[rows].sum(0)).ravel()
+            n += int(rows.sum())
+        cols.append(col / max(n, 1))
+        nvert.append(n)
+    return np.column_stack(cols), nvert
+
+
+def region_weights(Z, X, S, sign_X=None):
+    """Mean weight per region of each state dimension, under the three readings of the claims file.
+
+    Z [TR x 24] PCA scores of the TRs fitted, X [TR x d] variables, S [TR x region] the
+    responses averaged per region (Y R_mat). The components are C = diag(1/sqrt(w)) U^T Yc,
+    with Z = U sqrt(w), so for a vector z in PC space the voxel map C^T z has region means
+    Sc^T (Z / w) z. Readings: "B" the OLS weights (the code's coeffs, from S itself), "B_L"
+    the denoised weights, "Q_S" the state directions. Each dimension is oriented so that its
+    own state's TRs (X[:, j] > 0) have a positive mean position: along Q_S for Q_S, along the
+    denoised weights for B and B_L. Returns {reading: [region x d]}.
+    """
+    d = X.shape[1]
+    P = np.column_stack([X, np.ones(len(X))])
+    pinv = np.linalg.pinv(P.T @ P)
+    B = (pinv @ (P.T @ S))[:d].T  # region x d
+    coef = (pinv @ (P.T @ Z))[:d]  # d x 24
+    w = (Z ** 2).sum(0)
+    Sc = S - S.mean(0)
+    to_reg = Sc.T @ (Z / w)  # region x 24
+    Q, _ = state_directions(Z, X)
+    out = {"B": B, "B_L": to_reg @ coef.T, "Q_S": to_reg @ Q}
+    sx = X if sign_X is None else sign_X
+    for key, dirs in [("B_L", coef.T), ("Q_S", Q)]:
+        p = Z @ dirs
+        sg = np.array([np.sign(p[sx[:, j] > 0, j].mean() - p[:, j].mean()) if sx[:, j].any() else 1.0
+                       for j in range(d)])
+        if key == "B_L":
+            out["B"] = out["B"] * sg
+        out[key] = out[key] * sg
+    return out
+
+
+def fir(F, delays=(1, 2, 3, 4)):
+    """Features delayed by 1 to 4 TRs, concatenated (Methods, "Deconvolution of the
+    Hemodynamic Response in the Attention Task")."""
+    out = []
+    for k in delays:
+        D = np.zeros_like(F)
+        D[k:] = F[:-k]
+        out.append(D)
+    return np.hstack(out)
+
+
+def semantic_model_r(subject, sem, voxels, alphas=(1e1, 1e2, 1e3, 1e4, 1e5), k=10):
+    """Cross-validated prediction of the raw attention BOLD by the WordNet FIR model.
+
+    Reading (ii) of att-weights-cortex, for the voxels given (those the regions reach). The
+    paper's deconvolution model (Methods, "Deconvolution of the Hemodynamic Response in the
+    Attention Task"): WordNet labels (semantics.hdf: "attentive" for the human and vehicle
+    runs, "passive" for the passive runs), delayed 1 to 4 TRs within each condition, ridge
+    regression with 10-fold cross-validation. Folds are contiguous tenths of each condition.
+    One ridge parameter per subject, the one with the highest mean prediction correlation
+    over these voxels (the paper does not say how it was chosen; an assumption). Returns the
+    per-voxel correlation of the held-out predictions (all folds pooled) with the responses,
+    the ridge parameter, the number of TRs and the mean correlation per ridge parameter.
+    """
+    with _open(f"VisualAttention/Data/{subject}.hdf") as f, h5py.File(f, "r") as h:
+        Y = np.vstack([h[c][()][:, voxels].astype(np.float32) for c in CONDITIONS])
+        sizes = [h[c].shape[0] for c in CONDITIONS]
+    feats = {"passive": sem["passive"], "human": sem["attentive"], "vehicle": sem["attentive"]}
+    X = np.vstack([fir(feats[c]) for c in CONDITIONS]).astype(np.float32)
+    fold_of = np.concatenate([np.repeat(np.arange(k), [len(a) for a in np.array_split(np.arange(n), k)])
+                              for n in sizes])
+    pred = np.zeros((len(alphas),) + Y.shape, np.float32)
+    for j in range(k):
+        te, tr = fold_of == j, fold_of != j
+        Xtr = X[tr].astype(np.float64)
+        s2, V = np.linalg.eigh(Xtr.T @ Xtr)  # ridge in the eigenbasis of X^T X
+        VtXtY = (V.T @ (Xtr.T @ Y[tr])).astype(np.float32)
+        Xte_V = (X[te] @ V).astype(np.float32)
+        for a, alpha in enumerate(alphas):
+            pred[a, te] = (Xte_V / (np.clip(s2, 0, None) + alpha).astype(np.float32)) @ VtXtY
+    Yc = Y - Y.mean(0)
+    r = np.array([((P - P.mean(0)) * Yc).sum(0) /
+                  np.sqrt(((P - P.mean(0)) ** 2).sum(0) * (Yc ** 2).sum(0) + 1e-30) for P in pred])
+    best = int(np.argmax(r.mean(1)))
+    return r[best], alphas[best], len(Y), r.mean(1)
+
+
+def cv_ols_r(Y, X, k=10):
+    """Per-voxel correlation of cross-validated OLS predictions (with intercept) with the
+    responses, 10 contiguous folds pooled: reading (ii) of game-weights-two-groups, the
+    nine-state model as the encoding model (claims file)."""
+    P = np.column_stack([X, np.ones(len(X))])
+    pred = np.zeros(Y.shape, np.float64)
+    for te in np.array_split(np.arange(len(Y)), k):
+        tr = np.setdiff1d(np.arange(len(Y)), te)
+        W = np.linalg.pinv(P[tr].T @ P[tr]) @ (P[tr].T @ Y[tr])
+        pred[te] = P[te] @ W
+    Pc, Yc = pred - pred.mean(0), Y - Y.mean(0)
+    return (Pc * Yc).sum(0) / np.sqrt((Pc ** 2).sum(0) * (Yc ** 2).sum(0) + 1e-30)
+
+
+def r_pvalue(r, n):
+    """One-sided p of a correlation above zero, from the t distribution with n - 2 df."""
+    from scipy import stats
+    r = np.clip(r, -0.999999, 0.999999)
+    return stats.t.sf(r * np.sqrt((n - 2) / (1 - r ** 2)), n - 2)
