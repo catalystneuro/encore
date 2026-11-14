@@ -666,6 +666,68 @@ findings:
     photostimulation trials) and which sessions entered the coding direction analysis? With the
     deposited scripts' rules 177 to 190 ALM neurons are modulated by fastigial photo-activation
     (paper 227) and 20 of 34 sessions enter the coding direction analysis (paper 28 of 39).
+- kind: metadata_insufficient
+  found: on_prompt
+  statement: >-
+    In DANDI:000007 the trial column photo_stim_id has no description beyond its type ("varchar(8) #")
+    in all 54 files, and no file holds a laser or photostimulation trace (acquisition, stimulus and
+    processing are empty). The codes are 1 and 2 in the fastigial, 3 and 4 in the dentate and 5 and 6
+    in the L7-cre x Ai32 sessions; which epoch, duration and power each stands for is not given in the
+    files.
+  datasets:
+  - "000007"
+- kind: identifier_missing
+  found: on_prompt
+  statement: >-
+    In DANDI:000007 the subjects anm00314746, anm00314756, anm00314757, anm00314758 and anm00314760
+    carry no other identifier, where the paper names these mice AN105 to AN109. By site, anm00314756
+    (the one dentate mouse of the five) and anm00314757 (the one with a left fastigial site and right
+    ALM) can be matched; anm00314746, anm00314758 and anm00314760 share a right fastigial site and left
+    ALM and cannot. The genotype of every mouse that is not L7-cre x Ai32 is "unknown", and
+    session_description is empty in all 54 files.
+  datasets:
+  - "000007"
+- kind: metadata_error
+  found: on_prompt
+  statement: >-
+    In DANDI:000007 the units' cell_type column labels 60 units "pyramidal" whose mean waveform has a
+    trough-to-peak width under the paper's 0.45 ms (33 under 0.35 ms), and 3 units "unknown". Every
+    unit's waveform sampling rate is given as 20000 Hz, including the 34 sessions recorded with the
+    32-channel NeuroNexus probe, which the Methods say were sampled at 25,000 Hz; in 14 of those
+    sessions the mean waveforms have 37 or 38 samples, against 30 in every other session.
+  datasets:
+  - "000007"
+- kind: other
+  about: data
+  found: on_prompt
+  statement: >-
+    In 2 of the 54 sessions of DANDI:000007, BAYLORCD13 20171211 and 20171215, the spikes could not be
+    shown to share the clock of the trial table, neither by a rate change after the onset of delay
+    photostimulation nor by trial-type selectivity after sample onset. The first holds 15 trials for 38
+    units (8 with photostimulation, and 1 and 4 correct lick-right and lick-left control trials), the
+    second 7 units. The other 52 sessions show it by one or both contrasts.
+  datasets:
+  - "000007"
+- kind: other
+  about: data
+  found: on_prompt
+  statement: >-
+    In DANDI:000007 session BAYLORCD8 20171020 the behavior runs on after the recording ends. Every
+    unit's observation interval ends at 7221.77 s, and the last 127 of the 462 trials, from 7223.1 to
+    8481.39 s, hold no spike of any unit. The obs_intervals column records this, but an analysis that
+    does not apply it counts those trials as silent.
+  datasets:
+  - "000007"
+- kind: methods_unavailable
+  found: on_prompt
+  statement: >-
+    For the population selectivity of Fig. 2c (E3), which epoch fixes each neuron's preferred trial
+    type? It decides where the maximum lies; on 1274 selective ALM neurons it lies 0.24 to 0.49 s after
+    the go cue when the response epoch fixes the preference, 0.06 to 0.23 s before it with the delay
+    epoch, and in the sample epoch in 9 of 10 draws with the sample epoch. For Fig. 3f the random draw
+    of the screening trials can decide the outcome; on trials with photostimulation code 6, 8 of 20
+    draws with 5 screening trials of each type and 11 of 20 with 10 of each give a photo-inhibition
+    selectivity whose bootstrap interval includes zero.
 verifications:
 - date: '2026-11-14'
   kind: agent
@@ -1539,3 +1601,168 @@ verifications:
     response: >-
       Outcome changed to not_reproduced and the proposal removed. The result cell, the summary and
       the README now give not reproduced.
+reconciliation:
+  earlier: gao-2018-01
+  date: 2026-11-14
+  blind: false
+  blind_note: >-
+    The author run and the three author-revise runs show nothing of gao-2018-01; the audit lines in
+    author.md are the record this attempt wrote. The author-answers run, after the outcomes were
+    recorded, looked for questions/gao-2018.yaml and printed lines 400 to 470 of
+    transcripts/see-2018/author-revise-1.md, which quote the start of gao-2018-01's questions file,
+    including its question on the claims file's E3 and the beginning of its reason, that on these data
+    the preparatory part of Fig. 2c is similar under every epoch while the peak lies in the response
+    epoch only under one. It also printed the first lines of questions/gao-2018.yaml and grep lines of
+    other papers' recorder transcripts that name docs/pilot-notes/gao-2018-01.md, without its content.
+    That run changed no outcome, note, finding or file of the attempt.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: >-
+      Finding 1 reports the same missing data (CN recordings, lick times, behavior-only sessions,
+      VGAT-ChR2-EYFP experiments, anatomy) in both datasets. It counts 24 of 46 claims as untestable
+      where gao-2018-01 counted 26 of 45, as the claims file now has 46 claims and gao-2018-02 tested
+      the ALM half of two Fig. 2 claims.
+  - finding: 2
+    status: still_present
+    now: 14
+    note: >-
+      In earlier_findings.ipynb the description of photo_stim_id is "varchar(8) #" in all 54 files and
+      no file holds anything under acquisition, stimulus or processing. gao-2018-02 read the laser traces
+      and code descriptions of CRCNS:alm-4 (its findings 5 and 6), which DANDI:000007 still lacks.
+  - finding: 3
+    status: still_present
+    now: 3
+    note: >-
+      Finding 3 reports the same trial columns (cue_time and pole_in_time) described as relative to the
+      trial start while holding session times; it does not name pole_out_time, which gao-2018-01 also
+      listed.
+  - finding: 4
+    status: still_present
+    now: 4
+    note: >-
+      Finding 4 reports the same disagreement for BAYLORCD12, BAYLORCD13 and BAYLORCD14 (manipulated CN
+      on the left, the side of the recorded ALM; BAYLORCD14 in right ALM in Supplemental Table 1).
+  - finding: 5
+    status: still_present
+    now: 15
+    note: >-
+      In earlier_findings.ipynb the five anm subjects have only the fields date_of_birth, genotype, sex,
+      species and subject_id, none naming AN105 to AN109; genotype is "unknown" for the 9 mice that are
+      not L7-cre x Ai32, and session_description is empty in 54 of 54 files.
+  - finding: 6
+    status: still_present
+    now: 7
+    note: >-
+      Finding 7 reports the same excess of units over the paper's counts in the same mice and the 20
+      photo-inhibition sessions against 19. Its counts (1084 and 682 pyramidal) come from the cellType
+      field, those of gao-2018-01 (1082 and 676) from the width rule.
+  - finding: 7
+    status: still_present
+    now: 16
+    note: >-
+      In earlier_findings.ipynb 27 units labelled pyramidal are 0.35 to 0.45 ms wide and 33 under 0.35
+      ms, 3 are labelled unknown, and all 54 files give 20000 Hz, the 34 NeuroNexus sessions included; 14
+      of those have waveforms of 37 or 38 samples against 30 elsewhere.
+  - finding: 8
+    status: still_present
+    now: 17
+    note: >-
+      With gao-2018-01's contrast 50 of 54 sessions show a locked response and with trial-type
+      selectivity 48 of 54; neither shows it in BAYLORCD13 20171211 or 20171215. Of the earlier five,
+      BAYLORCD12 20180125 and 20180129 are shown by both contrasts here and anm00314756 20151023 by
+      selectivity, so the finding holds for two sessions.
+  - finding: 9
+    status: still_present
+    now: 18
+    note: >-
+      In earlier_findings.ipynb every unit's observation interval in BAYLORCD8 20171020 ends at 7221.77 s,
+      and the 127 trials from 7223.1 to 8481.39 s hold 0 spikes.
+  - finding: 10
+    status: still_present
+    now: 19
+    note: >-
+      The epoch that fixes the preference moves the Fig. 2c maximum from 0.24 to 0.49 s after the go
+      cue (response epoch) to 0.06 to 0.23 s before it (delay epoch). For Fig. 3f no draw of 20 meets the
+      criterion with codes 5 and 6 pooled or code 5 alone, and 8 and 11 of 20 do with code 6 alone. The
+      preference trial count is also in gao-2018-02's finding 10 (the deposited scripts use 5 of each
+      type).
+  - finding: 11
+    status: still_present
+    now: 11
+    note: >-
+      Finding 11 asks the same question for the same latencies (how a 10 ms bin is placed in time, and
+      which window decides modulation), with the start label matching and the centre label not.
+  - finding: 12
+    status: still_present
+    now: 12
+    note: >-
+      Finding 12 asks the same three questions about the 64.1% and 27.0% fractions, and again only one
+      combination matches both (66.3% and 28.4% here).
+  outcomes:
+  - claim: fig1g-dentate-activation-little-effect
+    earlier: reproduced
+    note: >-
+      Difference in method. Both attempts get the same pooled result (0.873 to 0.835, one-sided p =
+      0.108 and 0.107); gao-2018-02 also read the laser traces of CRCNS:alm-4, found two sessions whose
+      light disagrees with code 4, and without them finds a drop (p = 0.042), so it records the absence
+      as holding in part.
+  - claim: fig1k-inhibition-delay-bias
+    earlier: partially_reproduced
+    note: >-
+      Difference in method. gao-2018-01 pooled codes 5 and 6 and judged the bias on CD12 and CD13, the
+      paper's mice, which drop on the same trial type. gao-2018-02 took reading (b) as code 6 alone, from
+      the code descriptions of CRCNS:alm-4, and counted CD8 and CD14 with them, which gives mice biased each way.
+  - claim: fig2-preparatory-more-in-alm
+    earlier: blocked
+    note: >-
+      Difference in method. Both measured the ALM fraction (0.525 and 0.563); gao-2018-01 blocked the
+      claim as the CN half is missing, and gao-2018-02 recorded the ALM half as a partial result, as the
+      criterion's last sentence allows. The claims check of 2026-11-14 lists no change to this criterion.
+  - claim: fig2-peri-movement-equal
+    earlier: blocked
+    note: >-
+      Difference in method, as for fig2-preparatory-more-in-alm. gao-2018-01 blocked it for the missing
+      CN half after measuring 0.572 to 0.587 in ALM; gao-2018-02 measured 0.642 and recorded the ALM half
+      as a partial result.
+  - claim: fig3e-alm-mean-rate-unchanged
+    earlier: partially_reproduced
+    note: >-
+      Difference in method, the neurons and trials. gao-2018-01 used all 676 units over the width rule
+      (3.379 and 3.767 spikes/s, below tolerance); gao-2018-02 used the 486 pyramidal neurons that pass
+      the deposited scripts' trial-count rule, with GoodTrials from CRCNS:alm-4 (4.03 and 4.21, within
+      tolerance).
+  - claim: fig3e-alm-increase-decrease
+    earlier: partially_reproduced
+    note: >-
+      Difference in method, the reading of the criterion. Both find counts above tolerance (158 and 112,
+      122 and 106) and an increase fraction within 10% of 0.55; gao-2018-01 counted the fraction toward a
+      partial result, gao-2018-02 applied it only where the dataset holds fewer neurons, as the criterion
+      says.
+  - claim: fig3f-alm-selectivity-abolished-by-cn-inhibition
+    earlier: reproduced
+    note: >-
+      Difference in method. gao-2018-01 judged by most of 20 random draws of the preference trials, on
+      438 neurons; gao-2018-02 made one draw on 336 neurons with code 6 trials. In earlier_findings.ipynb,
+      with code 6, 8 and 11 of 20 draws meet the criterion, so a single draw can fall either way.
+  - claim: fig4g-dentate-effect-recovers
+    earlier: not_reproduced
+    note: >-
+      Difference in method, the latency. Both find the recovery fails; gao-2018-01's latency by the
+      paper's method came out at 0.01 to 1.40 ms, outside the tolerance, while gao-2018-02's start label
+      gives 3.30 ms, at its lower bound, so it records a partial result. The claims file also gained a
+      named test for the fastigial comparison on 2026-11-14.
+  - claim: fig4i-fastigial-collapses-cd
+    earlier: reproduced
+    note: >-
+      Difference in method, the sessions and trials of the coding direction. gao-2018-01 used 9
+      fastigial and 13 dentate sessions and found no dentate change; gao-2018-02's session rule keeps 8
+      and 12 and finds a dentate difference whose interval excludes zero (0.15 to 4.18); in the last 400 ms it
+      includes zero without the sessions whose laser traces disagree with their codes.
+  protocol: >-
+    docs/pilot-notes.md has no section for pilot-15 or any version after pilot-14, so what the change
+    did is not recorded there. tools/entry.py names one rule as the protocol's from pilot-15, that a
+    finding of kind other or selection_undocumented says whether it is about the data or the paper, and
+    that in an attempt on several datasets a finding about the data names its datasets. gao-2018-02,
+    on two datasets, follows it; it changes where findings are shown and no outcome.
