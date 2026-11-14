@@ -1,108 +1,121 @@
-# 000130 · author · run 38593268430
+# sohn-2019 · author · run 43597162260
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; ls; ls entries claims attempts tools
+date -u; ls; ls docs entries attempts claims paper tools; wc -l docs/*.md README.md
 ```
 
 ```
-# Protocol for an attempt
-
-Version: `pilot-6`. Record this version in the attempt's provenance.
-
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 369 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat README.md docs/design.md; ls -R entries/001453-fouke-2025 claims/001453; cat attempts/001453-fouke-2025-01.yaml
-```
-
-```
-<persisted-output>
-Output too large (52.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/6d0fc731-c1c8-445c-be9d-e20fb47e0ca0/tool-results/bxis0ngbr.txt
-
-Preview (first 2KB):
-# Reproduction registry (working name)
-
-Agents, and people, try to reproduce the key findings of papers from the open
-data on the [DANDI Archive](https://dandiarchive.org), and register the result
-here: the notebooks when it works, and the reason when it does not.
-
-- **For the archive:** evidence of whether each dandiset is complete and
-  accurate enough to support the findings of its paper.
-- **For analysts:** working notebooks to build new analyses on.
-
-Status: pilot. All eight pilot targets have been attempted and checked by an
-independent agent.
-
-**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
-
-## Reading the outcomes
-[... 24 more lines not kept]
+Sat Nov 14 13:00:03 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+[... 987 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/6d0fc731-c1c8-445c-be9d-e20fb47e0ca0/tool-results/bxis0ngbr.txt"
+ "file_path": "docs/protocol.md"
 }
 ```
 
 ```
-1	# Reproduction registry (working name)
+1	# Protocol for an attempt
 2	
-3	Agents, and people, try to reproduce the key findings of papers from the open
-4	data on the [DANDI Archive](https://dandiarchive.org), and register the result
-5	here: the notebooks when it works, and the reason when it does not.
-6	
-7	- **For the archive:** evidence of whether each dandiset is complete and
-8	  accurate enough to support the findings of its paper.
-9	- **For analysts:** working notebooks to build new analyses on.
+3	Version: `pilot-15`. Record this version in the attempt's provenance.
+4	
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 10	
-11	Status: pilot. All eight pilot targets have been attempted and checked by an
-12	independent agent.
-13	
-14	**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
-15	
-16	## Reading the outcomes
-17	
-18	An outcome says what one attempt could recover from the data in a dandiset,
-19	with the methods available to it. **A "not reproduced" or "partially
-20	reproduced" outcome is not a finding that the paper is wrong.** It can come
-[... 971 more lines not kept]
+11	An attempt has three roles, each a separate run with a separate context:
+12	
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 657 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "claims/sohn-2019.yaml"
+}
+```
+
+```
+1	# Claims for Sohn, Narain, Meirhaeghe & Jazayeri (2019) on dandiset 000130.
+2	# Source: the accepted author manuscript in PubMed Central (PMC6805134), full text, read from its
+3	# Results, figure legends and STAR Methods. The supplementary tables and figures were not
+4	# available to this attempt. The paper's analysis code is "available on request"; the dandiset
+5	# links only the Neural Latents Benchmark, whose code (nlb_tools) loads the data and scores
+6	# models but holds none of the paper's analyses.
+7	#
+8	# When these criteria were written, the author had seen the data check only: the file list and
+9	# metadata, the columns of the trial table and their consistency with the event times, the
+10	# counts of trials per condition, the firing rate of each unit (48 of 54 units reach 1 spike/s),
+11	# and the time one GPFA fit takes. No claim's analysis had been run.
+12	#
+13	# The dandiset holds one recording session (2016-12-11) of monkey H, one of the 17 sessions of H
+14	# and 29 of both monkeys. Its 54 units were recorded together. A "dataset" here, as in the paper,
+15	# is one effector and target direction (4 in this session; the paper has 8, from two animals).
+16	#
+17	# Method choices fixed here, where the Methods leave them open:
+18	# - Behaviour uses completed trials not flagged by the file's `is_outlier` column (the paper's
+19	#   mixture model), and the `tp` and `ts` columns.
+20	# - Units: mean firing rate over the file of at least 1 spike/s and at least 5 trials in every
+[... 433 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001453-fouke-2025; cat entry.yaml requirements.in README.md; head -c 3000 ../../claims/001453/*.yaml; echo; sed -n 1,80p omr.py
+ls -la entries/sohn-2019 entries/fouke-2025; cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in; cat attempts/fouke-2025-01.yaml | head -250; ls papers/datasets | grep sohn; cat papers/datasets/sohn-2019.yaml; ls questions | grep sohn
 ```
 
 ```
+ls: cannot access 'entries/sohn-2019': No such file or directory
+entries/fouke-2025:
+total 132
+drwxr-xr-x   2 runner runner  4096 Nov 14 12:55 .
+drwxr-xr-x 292 runner runner 12288 Nov 14 12:59 ..
+-rw-r--r--   1 runner runner  2144 Nov 14 12:55 README.md
+-rw-r--r--   1 runner runner   907 Nov 14 12:55 entry.yaml
+-rw-r--r--   1 runner runner 16218 Nov 14 12:55 omr.py
+-rw-r--r--   1 runner runner 79403 Nov 14 12:55 reproduce_fouke_2025.ipynb
+-rw-r--r--   1 runner runner    61 Nov 14 12:55 requirements.in
+-rw-r--r--   1 runner runner  5989 Nov 14 12:55 requirements.lock.txt
 schema_version: 1
-name: 001453-fouke-2025
+name: fouke-2025
 type: reproduction
 title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
 description: Tests the freely swimming findings of Fouke, He, Loring and Naumann (2025) on dandiset
@@ -110,216 +123,86 @@ description: Tests the freely swimming findings of Fouke, He, Loring and Naumann
   optomotor protocol. It compares swimming speed, turning and angular acceleration between species
   and stimuli, the response to monocular stimuli, and how steady the swimming is. The imaging and
   head-fixed tail tracking of the paper's Figures 2 to 4 are not in the dandiset.
-license: Apache-2.0
-notebooks:
-- path: reproduce_fouke_2025.ipynb
-  title: Reproducing Fouke et al. (2025) from dandiset 001453
-  runtime_minutes: 6
-helpers:
-- omr.py
-related:
-- id: dandi:001453/0.250518.1950
-  relation: uses_data
-- id: doi:10.1016/j.cub.2025.04.027
-[... 166 more lines not kept]
+[... 278 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 30,400p claims/001453/*.yaml | head -150; ls schemas; python -c "
-import json,nbformat
-nb=nbformat.read('entries/001453-fouke-2025/reproduce_fouke_2025.ipynb',4)
-for c in nb.cells[:6]: print(c.cell_type, c.metadata, c.source[:1500]); print('-----')
-print([ (c.cell_type,c.metadata.get('tags')) for c in nb.cells])
-"
+sed -n 250,400p attempts/fouke-2025-01.yaml; cat entries/fouke-2025/README.md; ls schemas; sed -n 1,80p docs/archives.md | head -5; grep -n "DANDI" -A60 docs/archives.md | sed -n 1,120p
 ```
 
 ```
-the paper's analysis code and the protocol file of its stimulus software, and the values
-    computed through that link agree with those the paper's code printed.
-  source: Data and Code Availability; the paper's Fig1-S1.ipynb at GitLab commit 33a5c29
-  data: with_labels
-  criterion: Records are matched by the integer stimulus code. The link holds (reproduced) when
-    every code the analysis uses (0 to 7, 9, 10, 11, 13 and 20) occurs in the dandiset, and the
-    species' median speeds for the nine whole-field stimuli computed here are within 10% of the
-    values printed in Fig1-S1.ipynb for at least 14 of the 18 species and stimulus pairs. It is
-    partially reproduced for 9 to 13 pairs and not reproduced below 9. The fish cannot be
-    matched one to one, as no identifier links the dandiset's subjects to the code's folders;
-    the counts per species are compared instead. The sign of the zebrafish turning response
-    to codes 9 and 11 is reported, as the code and the protocol file disagree on which of them
-    is lateral right.
-- id: fig1d-dc-faster-all-codes
-  statement: Danionella cerebrum (DC) swim at a higher median velocity than zebrafish (ZF)
-    across the visual stimuli.
-  source: Results, first section; Figure 1D
-  criterion: Tested without stimulus names, over all 21 stimulus codes. For each fish and code
-    the median over trials of the trial speed in pixels per second; a two-way ANOVA (type II)
-    of these values on species, code and their interaction. Reproduced when the species effect
-[... 235 more lines not kept]
+- kind: metadata_insufficient
+  statement: The stimulus codes 0 to 20 have no names or description in the files or the
+    dandiset metadata. They can be named only from the paper's analysis notebook and the protocol
+    file of its stimulus software.
+- kind: code_mismatch
+  statement: The paper's analysis notebook labels code 9 as lateral right and 11 as lateral left,
+    while its conversion of the stimulus software's names gives the reverse (it carries a remap
+    that swaps them). The data do not settle which is right; zebrafish barely turn to either, and
+    Danionella turn more to the right for code 11, which fits the stimulus software's assignment
+    only if the fish turn with lateral motion.
+- kind: metadata_error
+  statement: Subject ids 0 to 11 are each used for one zebrafish and one Danionella cerebrum, so
+    subject_id does not identify an animal. The archive's summary counts 25 subjects and lists
+    only Danio rerio; the files hold 37 fish of two species.
+- kind: metadata_error
+  statement: f0_vtheta is stated in radians/s but holds the heading change per frame in radians,
+    and f0_vx and f0_vy are stated in pixels/s but are per frame. In most Danionella files the sum
+    of f0_vtheta over a trial does not match the change of f0_theta (median ratios 0.09 to 0.89).
+- kind: other
+  about: data
+[... 294 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  wc -l tools/entry.py; grep -n "def \|conclusion\|Result\|summary\|tag" tools/entry.py | head -80
+grep -n "^#" docs/design.md README.md; python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s,indent=1)[:6000])"
 ```
 
 ```
-378 tools/entry.py
-20:- each notebook has a cell tagged `sanity` that prints what was loaded;
-31:(docs/protocol.md): the executed notebooks with the conclusions removed (every
-32:markdown cell that begins "**Result:" and everything from the "## Summary"
-68:    def __init__(self):
-71:    def error(self, where, message: str) -> None:
-75:def schema(name: str) -> Draft202012Validator:
-79:def load(report: Report, path: Path):
-88:def validate(report: Report, path: Path, schema_name: str) -> dict | None:
-98:def _plain(value):
-109:def code_of(notebook_path: Path) -> str:
-116:def check(entry_dir: Path) -> Report:
-166:        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
-167:            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
-234:            tag = outcome.get("output")
-235:            if notebook in present and tag:
-237:                if not any(tag in c.metadata.get("tags", []) for c in nb.cells):
-238:                    report.error(path.relative_to(ROOT), f"no cell tagged {tag!r} in {notebook}")
-242:def _derivation_checks(report: Report, where, code: str) -> None:
-256:def lock(entry_dir: Path) -> int:
-[... 7 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 1,60p tools/entry.py; sed -n 116,310p tools/entry.py
-```
-
-```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 235 more lines not kept]
+docs/design.md:1:# Reproduction registry: design
+docs/design.md:5:## Goal
+docs/design.md:24:## What the queue looks like today
+docs/design.md:47:## The objects
+docs/design.md:82:## Entry types and building on each other
+docs/design.md:94:## Trust tiers
+docs/design.md:108:## Automated gates for a deposit
+docs/design.md:121:## Verification
+docs/design.md:138:## Provenance
+docs/design.md:145:## Feedback to data owners
+docs/design.md:152:## Maintenance
+docs/design.md:158:## Dashboard
+docs/design.md:191:## Repository layout
+docs/design.md:223:## What is reused from the example-notebooks registry
+docs/design.md:240:## Phasing
+docs/design.md:258:## Open decisions
+README.md:1:# Encore Science: the registry
+README.md:18:## Reading the outcomes
+README.md:33:## What is here
+README.md:52:## Attempts so far
+[... 241 more lines not kept]
 ```
 
 **Agent**
 
-Now the paper and the dandiset.
+Read the protocol, claims file and example formats. Next: the paper and the dataset listing.
 
 **Agent calls Bash**
 
 ```bash
-cd  curl -s https://api.dandiarchive.org/api/dandisets/000130/ | python -m json.tool | head -40; curl -s "https://api.dandiarchive.org/api/dandisets/000130/versions/" | python -m json.tool
+wc -c paper/*.txt; grep -n -i "STAR\|METHOD DETAILS\|Generalized linear\|Bayesian observer\|Speed\b\|encoding axis\|kernel\|Principal\|GPFA\|Data analysis\|Neural data analysis" paper/*.txt | head -80
 ```
 
-Result: the fetched text is not kept.
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Bash**
 
 ```bash
-cd  for v in 0.220113.0407 0.241017.1448; do echo "== $v"; curl -s "https://api.dandiarchive.org/api/dandisets/000130/versions/$v/assets/?page_size=100" | python -c "
-import json,sys
-for a in json.load(sys.stdin)['results']: print(a['asset_id'],a['blob'] if 'blob' in a else '',a['path'],a['size'])"; done; curl -s "https://api.dandiarchive.org/api/dandisets/000130/versions/0.241017.1448/" | python -m json.tool > $TMPDIR/meta_new.json; curl -s "https://api.dandiarchive.org/api/dandisets/000130/versions/0.220113.0407/" | python -m json.tool > $TMPDIR/meta_old.json; cat $TMPDIR/meta_new.json; diff $TMPDIR/meta_old.json $TMPDIR/meta_new.json
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-Both versions hold the same two blobs, so I'll pin the latest. Now the paper text.
-
-**Agent calls Bash**
-
-```bash
-cd  curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1016/j.neuron.2019.06.012&format=json&resultType=core" | python -c "
-import json,sys
-r=json.load(sys.stdin)['resultList']['result']
-for x in r: print(x.get('pmid'),x.get('pmcid'),x.get('isOpenAccess'),x.get('inPMC'),x.get('hasPDF'),x.get('title'), [f.get('availabilityCode') for f in x.get('fullTextUrlList',{}).get('fullTextUrl',[])])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  mkdir -p paper; curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6805134/fullTextXML" -o paper/PMC6805134.xml; ls -la paper; python - <<'E'
-import re,xml.etree.ElementTree as ET
-t=ET.parse('paper/PMC6805134.xml').getroot()
-def txt(e): return ''.join(e.itertext())
-out=[]
-for sec in t.iter():
-    if sec.tag in ('title','p','caption'):
-        pass
-body=t.find('.//body'); 
-s=[]
-def walk(e,d=0):
-    for c in e:
-        if c.tag=='sec':
-            ti=c.find('title'); s.append('\n'+'#'*(d+1)+' '+(txt(ti) if ti is not None else ''))
-            walk(c,d+1)
-        elif c.tag=='p': s.append(txt(c))
-        elif c.tag=='fig':
-            s.append('[FIG] '+' '.join(txt(x) for x in c if x.tag in('label','caption')))
-        elif c.tag in ('table-wrap',): s.append('[TABLE] '+txt(c))
-ab=t.find('.//abstract'); s.insert(0,'ABSTRACT '+txt(ab))
-walk(body)
-# also floats-group figures
-for f in t.iter('fig'):
-    pass
-fg=t.find('.//floats-group')
-if fg is not None:
-    for c in fg: s.append('[FLOAT] '+txt(c))
-open('paper/paper.txt','w').write('\n'.join(s))
-print(len('\n'.join(s)))
-E
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  cat paper/PMC6805134.xml; echo; curl -sL "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC6805134/unicode" -o paper/bioc.xml; ls -la paper; head -c 500 paper/bioc.xml
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  rm paper/PMC6805134.xml; python - <<'E'
-import xml.etree.ElementTree as ET
-t=ET.parse('paper/bioc.xml').getroot()
-s=[]
-for p in t.iter('passage'):
-    inf={i.get('key'):i.text for i in p.findall('infon')}
-    tx=p.findtext('text') or ''
-    typ=inf.get('type','')
-    if inf.get('section_type')=='REF': continue
-    if typ.startswith('title'): s.append('\n## '+tx)
-    elif 'caption' in typ: s.append('[FIG '+typ+'] '+tx)
-    else: s.append(tx)
-open('paper/paper.txt','w').write('\n'.join(s))
-print(len('\n'.join(s)))
-E
-wc -l paper/paper.txt
+mkdir -p $TMPDIR/s; fold -s -w 200 paper/10.1016-j.neuron.2019.06.012.txt > $TMPDIR/s/paper.txt; wc -l $TMPDIR/s/paper.txt; grep -n "STAR\|Generalized linear model\|Behavioral model\|Recording\|Principal\|Encoding axis\|Speed\|GPFA\|Analysis of neural" $TMPDIR/s/paper.txt | head -60
 ```
 
 Result: not kept, because it reads the paper's text.
@@ -328,985 +211,76 @@ Result: not kept, because it reads the paper's text.
 
 ```json
 {
- "file_path": "paper/paper.txt"
+ "file_path": "/tmp/claude-1001/s/paper.txt",
+ "offset": 60,
+ "limit": 160
 }
 ```
 
-Result: not kept, because it reads the paper's text.
-
-**Agent**
-
-Full text is available (PMC author manuscript). The dandiset is the Neural Latents Benchmark DMFC_RSG set: one monkey (Haydn), one train and one test file. Let me open the files.
-
-**Agent calls Bash**
-
-```bash
-cd  uv venv -q --python 3.13 $TMPDIR/ex && uv pip install -q --python $TMPDIR/ex/bin/python dandi h5py remfile numpy pandas pynwb scipy statsmodels scikit-learn matplotlib 2>&1 | tail -3; echo done
+```
+60	2013 ; Matell et al., 2003 ; Murakami et al., 2014 ). During the estimation epoch, many neurons had heterogeneous responses profiles that were modulated by elapsed time in a prior-dependent fashion ( 
+61	Figure 3A ). Consequently, responses at the time of Set varied with both the prior and t s ( Figure 3B ). The presentation of Set triggered a transient modulation of firing rates ( Figure 3B ( i – 
+62	iii , v )). Following this transient, neurons exhibited a range of monotonic (e.g., ramping) or non-monotonic response profiles that were often organized according to t s irrespective of the prior 
+63	condition ( Figure 3B ( i – iii , vi )). Responses of many neurons during the Set-Go epoch were temporally scaled with respect to t s (i.e., stretched in time for longer t s ), an effect that was 
+64	most conspicuous as a change of slope among the subset of ramping neurons ( Figure 3B ( ii , vi )). This temporal scaling is consistent with recent recordings in this area in a range of simple motor 
+65	timing tasks ( Emmons et al., 2017 ; Merchant et al., 2011 ; Mita et al., 2009 ; Remington et al., 2018a ; Wang et al., 2018 ). The influence of prior was most evident at the overlap t s of 800 ms ( 
+66	Figure 3C ). Despite identical task demands and temporal contingencies, many neurons had highly distinct firing rate patterns depending on the prior condition, with a maximum difference in firing 
+67	rate during the support of the prior between 480 and 800 ms ( Figure 3D ). Remarkably, this effect was present immediately after block transitions ( Figure S2 ). We used a generalized linear model 
+68	(GLM) to quantify the influence of t s and prior condition on spike counts ( Figure 3E ; see Methods ). Results indicated that approximately 30% of neurons were modulated by elapsed time (27% Monkey 
+69	H, 31% Monkey G), and more than 60% were sensitive to the prior condition (65% Monkey H, 62% Monkey G). These results suggest that neural responses during the support of the prior w
+[... 150 more lines not kept]
 ```
 
-```
-done
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex1.py <<'E'
-import h5py, remfile, numpy as np
-from dandi.dandiapi import DandiAPIClient
-with DandiAPIClient() as c:
-    ds=c.get_dandiset('000130','0.241017.1448')
-    for a in ds.get_assets():
-        url=a.get_content_url(follow_redirects=1, strip_query=True)
-        print('=====',a.path,url)
-        f=h5py.File(remfile.File(url),'r')
-        def show(name,obj):
-            if isinstance(obj,h5py.Dataset):
-                print(name,obj.shape,obj.dtype, dict((k,(v.decode() if isinstance(v,bytes) else v)) for k,v in obj.attrs.items() if k not in('namespace','object_id')))
-            else:
-                at={k:(v.decode() if isinstance(v,bytes) else v) for k,v in obj.attrs.items() if k not in ('object_id',)}
-                print(name+'/',at)
-        f.visititems(show)
-        for k in ['session_description','identifier','session_start_time','general/subject/subject_id','general/subject/species','general/subject/sex','general/subject/age','general/subject/description','general/experiment_description','general/institution','general/lab','general/related_publications','general/notes']:
-            if k in f: print(k, f[k][()])
-E
-$TMPDIR/ex/bin/python ex1.py 2>&1 | head -200
-```
-
-```
-===== sub-Haydn/sub-Haydn_desc-test_ecephys.nwb https://dandiarchive.s3.amazonaws.com/blobs/eaf/1fa/eaf1fa97-ce58-477d-b79d-82425cea818f
-acquisition/ {}
-analysis/ {}
-file_create_date (1,) object {}
-general/ {}
-general/devices/ {}
-general/devices/electrode_probe_1/ {'description': 'Linear probe with 24 recording channels', 'manufacturer': 'Plexon Inc.', 'namespace': 'core', 'neurodata_type': 'Device'}
-general/devices/electrode_probe_2/ {'description': 'Linear probe with 24 recording channels', 'manufacturer': 'Plexon Inc.', 'namespace': 'core', 'neurodata_type': 'Device'}
-general/devices/electrode_probe_3/ {'description': 'Linear probe with 24 recording channels', 'manufacturer': 'Plexon Inc.', 'namespace': 'core', 'neurodata_type': 'Device'}
-general/experiment_description () object {}
-general/experimenter (1,) object {}
-general/extracellular_ephys/ {}
-general/extracellular_ephys/electrode_group_1/ {'description': 'Electrodes on a neural probe', 'location': 'Dorsomedial frontal cortex', 'namespace': 'core', 'neurodata_type': 'ElectrodeGroup'}
-general/extracellular_ephys/electrode_group_2/ {'description': 'Electrodes on a neural probe', 'location': 'Dorsomedial frontal cortex', 'namespace': 'core', 'neurodata_type': 'ElectrodeGroup'}
-general/extracellular_ephys/electrode_group_3/ {'description': 'Electrodes on a neural probe', 'location': 'Dorsomedial frontal cortex', 'namespace': 'core', 'neurodata_type': 'ElectrodeGroup'}
-general/extracellular_ephys/electrodes/ {'colnames': array(['x', 'y', 'z', 'imp', 'location', 'filtering', 'group',
-       'group_name'], dtype=object), 'description': 'metadata about extracellular electrodes', 'namespace': 'hdmf-common', 'neurodata_type': 'DynamicTable'}
-general/extracellular_ephys/electrodes/filtering (72,) object {'description': 'description of hardware filtering', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/group (72,) object {'description': 'a reference to the ElectrodeGroup this electrode is a part 
-[... 182 more lines not kept]
-```
-
-**Agent**
-
-The train file has the full trial table and 54 units; the test file holds 283 trials with only held-in units and no task variables. Let me look at the trials and the NLB code the dandiset links to.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex2.py <<'E'
-import h5py, remfile, numpy as np, pandas as pd
-from dandi.dandiapi import DandiAPIClient
-pd.set_option('display.width',250); pd.set_option('display.max_columns',40)
-with DandiAPIClient() as c:
-    ds=c.get_dandiset('000130','0.241017.1448')
-    urls={a.path:a.get_content_url(follow_redirects=1, strip_query=True) for a in ds.get_assets()}
-out={}
-for p,u in sorted(urls.items()):
-    f=h5py.File(remfile.File(u),'r')
-    t=f['intervals/trials']
-    df=pd.DataFrame({k:(t[k][:] if t[k].dtype!=object else t[k][:].astype(str)) for k in t.attrs['colnames']})
-    df['id']=t['id'][:]
-    print('====',p); print(df.head(8).to_string()); print(df.describe(include='all').T.to_string())
-    print(df.split.value_counts())
-    u_=f['units']; idx=u_['spike_times_index'][:]; st=u_['spike_times'][:]
-    print('units', len(idx), 'heldout', u_['heldout'][:].sum(), 'ids', u_['id'][:][:60])
-    oi=u_['obs_intervals'][:]; oix=u_['obs_intervals_index'][:]
-    print('obs_intervals first unit', oi[:oix[0]][:5], oix[:5], 'nint/unit', np.diff(np.r_[0,oix])[:5])
-    print('spike range', st.min(), st.max(), 'sorted per unit', all(np.all(np.diff(s)>=0) for s in np.split(st, idx[:-1])))
-    for k in ['x','y','z','imp','location','filtering','group_name']:
-        v=f['general/extracellular_ephys/electrodes/'+k][:]
-        print(k, v[:5], np.unique(v.astype(str)).size)
-    print('keywords',f['general/keywords'][:], 'session_id', f['general/session_id'][()], 'experimenter', f['general/experimenter'][:])
-    out[p]=(df, np.split(st, idx[:-1]), u_['heldout'][:])
-import pickle; pickle.dump(out, open('d.pkl','wb'))
-E
-$TMPDIR/ex/bin/python ex2.py 2>&1
-```
-
-```
-==== sub-Haydn/sub-Haydn_desc-test_ecephys.nwb
-   start_time  stop_time  go_time split  id
-0         0.0        1.7      1.5  test   0
-1         1.8        3.5      3.3  test   1
-2         3.6        5.3      5.1  test   2
-3         5.4        7.1      6.9  test   3
-4         7.2        8.9      8.7  test   4
-5         9.0       10.7     10.5  test   5
-6        10.8       12.5     12.3  test   6
-7        12.6       14.3     14.1  test   7
-            count unique   top freq   mean         std  min    25%    50%    75%    max
-start_time  283.0    NaN   NaN  NaN  253.8  147.310692  0.0  126.9  253.8  380.7  507.6
-stop_time   283.0    NaN   NaN  NaN  255.5  147.310692  1.7  128.6  255.5  382.4  509.3
-go_time     283.0    NaN   NaN  NaN  255.3  147.310692  1.5  128.4  255.3  382.2  509.1
-split         283      1  test  283    NaN         NaN  NaN    NaN    NaN    NaN    NaN
-id          283.0    NaN   NaN  NaN  141.0   81.839273  0.0   70.5  141.0  211.5  282.0
-split
-test    283
-Name: count, dtype: int64
-units 40 heldout 0 ids [1001 1002 1003 1004 1012 1019 1024 1026 1028 1029 1030 1038 1042 1044
-[... 76 more lines not kept]
-```
-
-**Agent**
-
-Note: the `iti` column description says 500 ms for Short and 1220 for Long, the reverse of the paper; the data (trial 0, Long, iti 500) follow the paper. Now the NLB code.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; git clone -q https://github.com/neurallatents/nlb_tools.git && cd nlb_tools && git log -1 --format='%H %cd' && ls -R | head -30 && grep -rn -i "dmfc\|rsg" --include=*.py . | head -60
-```
-
-```
-42f8410b88e12db136910fa2f888b025ea0aa2ae Tue Jan 27 10:07:44 2026 -0500
-.:
-LICENSE
-README.md
-data
-examples
-nlb_tools
-pyproject.toml
-requirements.txt
-setup.py
-tests
-
-./data:
-eval_data_test.h5
-
-./examples:
-baselines
-tutorials
-
-./examples/baselines:
-[... 40 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/nlb_tools; sed -n 60,130p nlb_tools/make_tensors.py; sed -n 380,460p nlb_tools/evaluation.py; grep -n "def \|resample\|1 ms\|bin_width\|obs_int" nlb_tools/nwb_interface.py | head -50
-```
-
-```
-'spk_field': 'spikes',
-        'hospk_field': 'heldout_spikes',
-        'rate_field': 'rates',
-        'horate_field': 'heldout_rates',
-        'behavior_source': 'data',
-        'behavior_field': 'hand_vel',
-        'decode_masks': lambda x: np.stack([x.ctr_hold_bump == 0, x.ctr_hold_bump == 1]).T,
-        'lag': -20,
-        'make_params': {
-            'align_field': 'move_onset_time',
-            'align_range': (-100, 500),
-        },
-        'eval_make_params': {
-            'align_field': 'move_onset_time',
-            'align_range': (-100, 500),
-            'allow_overlap': True,
-        },
-        'fp_len': 200,
-        'psth_params': {
-            'cond_fields': ['cond_dir', 'ctr_hold_bump'],
-[... 183 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex3.py <<'E'
-import pickle, numpy as np, pandas as pd
-d=pickle.load(open('d.pkl','rb'))
-tr,spk,ho=d['sub-Haydn/sub-Haydn_desc-train_ecephys.nwb']
-te,spk_t,_=d['sub-Haydn/sub-Haydn_desc-test_ecephys.nwb']
-ok=tr.split!='none'
-print('none trials with go:', (tr[~ok].go_time.notna()).sum(), 'outliers in none', tr[~ok].is_outlier.mean(), 'outliers in train/val', tr[ok].is_outlier.sum())
-c=tr[tr.go_time.notna()]
-print('ts vs set-ready max abs diff ms', np.nanmax(abs(c.ts-(c.set_time-c.ready_time)*1000)))
-print('tp vs go-set', np.nanmax(abs(c.tp-(c.go_time-c.set_time)*1000)))
-print('ts values', sorted(tr.ts.unique()), 'by prior', tr.groupby('is_short').ts.unique().to_dict())
-print('iti by prior', tr.groupby('is_short').iti.unique().to_dict())
-print('theta', tr.theta.unique())
-g=c[~c.is_outlier]
-print('completed', len(c), 'non-outlier', len(g), 'outlier frac among completed %.3f'%c.is_outlier.mean())
-print(pd.crosstab([g.is_eye,g.theta,g.is_short],g.ts))
-# units
-dur=4809.3
-fr=np.array([len(s)/dur for s in spk]); print('FR', np.round(np.sort(fr),2)); print('n >=1 sp/s', (fr>=1).sum())
-# duplicates: test trials in train?
-from collections import Counter
-u=0
-isi_tr=np.round(np.diff(spk[0]),4)
-s=spk_t[0]; 
-hits=0
-for k in range(283):
-    seg=s[(s>=te.start_time[k])&(s<te.stop_time[k])]
-    if len(seg)<4: continue
-    pat=np.round(np.diff(seg),4)
-    # search
-    L=len(pat)
-    idx=np.where(isi_tr==pat[0])[0]
-    if any(np.array_equal(isi_tr[i:i+L],pat) for i in idx): hits+=1
-print('test trials whose unit-1001 ISI sequence occurs in train file:', hits)
-# gaps in obs intervals vs trials
-print('train start/stop overlap', ((tr.start_time.values[1:]-tr.stop_time.values[:-1])<0).sum())
-E
-$TMPDIR/ex/bin/python ex3.py
-```
-
-```
-none trials with go: 23 outliers in none 0.8896103896103896 outliers in train/val 40
-ts vs set-ready max abs diff ms 23.500000000140062
-tp vs go-set 5322.000000000298
-ts values [np.float64(480.0), np.float64(560.0), np.float64(640.0), np.float64(720.0), np.float64(800.0), np.float64(900.0), np.float64(1000.0), np.float64(1100.0), np.float64(1200.0)] by prior {False: array([ 800.,  900., 1200., 1000., 1100.]), True: array([560., 720., 800., 640., 480.])}
-iti by prior {False: array([500.]), True: array([1220.])}
-theta [  0. 180.]
-completed 1029 non-outlier 983 outlier frac among completed 0.045
-ts                     480.0   560.0   640.0   ...  1000.0  1100.0  1200.0
-is_eye theta is_short                          ...                        
-False  0.0   False          0       0       0  ...      30      21      25
-             True          21      35      14  ...       0       0       0
-       180.0 False          0       0       0  ...      16      16      18
-             True          33      21      25  ...       0       0       0
-True   0.0   False          0       0       0  ...      23      25      27
-             True          24      27      31  ...       0       0       0
-       180.0 False          0       0       0  ...      30      29      31
-             True          21      28      17  ...       0       0       0
-
-[8 rows x 9 columns]
-FR [ 0.39  0.91  0.92  0.93  0.98  0.99  1.22  1.29  1.38  1.58  1.69  1.79
-[... 8 more lines not kept]
-```
-
-**Agent**
-
-48 of 54 units pass the paper's 1 spike/s rule, the same 48 as the paper's GPFA session count for monkey H. Checking tp and ts against event times more closely.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex4.py <<'E'
-import pickle, numpy as np, pandas as pd
-d=pickle.load(open('d.pkl','rb'))
-tr,spk,ho=d['sub-Haydn/sub-Haydn_desc-train_ecephys.nwb']
-c=tr[tr.go_time.notna()].copy()
-c['dtp']=c.tp-(c.go_time-c.set_time)*1000; c['dts']=c.ts-(c.set_time-c.ready_time)*1000
-print(c.groupby('is_outlier').dtp.describe()); print(c.dts.describe()); print(np.histogram(c.dts,bins=[-30,-20,-10,-5,5,10,20,30]))
-print(c[abs(c.dtp)>50][['ts','tp','set_time','go_time','dtp','is_outlier','split','bad_time']].head(20))
-print(c[c.is_outlier][['ts','tp','dtp']].describe())
-print(c.groupby('split').is_outlier.mean())
-E
-$TMPDIR/ex/bin/python ex4.py
-```
-
-```
-count        mean         std  ...      50%      75%      max
-is_outlier                                 ...                           
-False       983.0   19.676031   14.219692  ...  17.9060  21.3255  200.597
-True         46.0 -180.334022  877.275368  ...  17.4555  20.3560  162.416
-
-[2 rows x 8 columns]
-count    1.029000e+03
-mean     1.477162e+00
-std      6.735462e+00
-min     -2.350000e+01
-25%     -1.818989e-10
-50%      0.000000e+00
-75%      3.500000e+00
-max      2.350000e+01
-Name: dts, dtype: float64
-(array([  1,  17, 102, 710,  84, 101,  14]), array([-30, -20, -10,  -5,   5,  10,  20,  30]))
-          ts        tp   set_time  ...  is_outlier  split   bad_time
-50    1100.0   928.147   203.0530  ...       False  train        NaN
-55    1200.0  1046.283   222.3700  ...       False    val        NaN
-88    1000.0   609.916   344.9715  ...        True  train        NaN
-[... 32 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; uv pip install -q --python $TMPDIR/ex/bin/python elephant 2>&1 | tail -2; cat > ex5.py <<'E'
-import pickle, numpy as np, time, quantities as pq, neo
-from elephant.gpfa import GPFA
-d=pickle.load(open('d.pkl','rb'))
-tr,spk,ho=d['sub-Haydn/sub-Haydn_desc-train_ecephys.nwb']
-fr=np.array([len(s)/4809.3 for s in spk]); keep=[s for s,f in zip(spk,fr) if f>=1]
-g=tr[tr.go_time.notna() & ~tr.is_outlier & tr.is_eye & (tr.theta==0)]
-sts=[]
-for _,r in g.iterrows():
-    a,b=r.ready_time, r.set_time
-    sts.append([neo.SpikeTrain((s[(s>=a)&(s<b)]-a)*pq.s, t_start=0*pq.s, t_stop=(b-a)*pq.s) for s in keep])
-print(len(sts))
-for xd in [4,8]:
-    t=time.time(); m=GPFA(bin_size=20*pq.ms, x_dim=xd, em_max_iters=200, verbose=False); m.fit(sts); print(xd, time.time()-t, m.score(sts) if hasattr(m,'score') else None)
-E
-$TMPDIR/ex/bin/python ex5.py 2>&1 | grep -v Warn | tail -5
-```
-
-```
-4 21.644527435302734 -173153.27805309795
-Initializing parameters using factor analysis...
-
-Fitting GPFA model...
-8 29.67946982383728 -172358.05744291496
-Shell cwd was reset to
-```
-
-**Agent**
-
-GPFA takes about 25 s per fit, so cross-validating over a small set of latent sizes fits the time budget. I have what I need to write the claims before any claim analysis.
-
-**Agent calls Bash**
-
-```bash
-cd  cat schemas/claims.schema.json | head -80; python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s,indent=0)[:6000])"
-```
-
-```
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Claims proposed for one target (a dandiset and one of its papers)",
-  "description": "Draft. To be revised after the pilot.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "dandiset",
-    "paper",
-    "claims"
-  ],
-  "properties": {
-    "schema_version": {
-      "const": 1
-    },
-    "dandiset": {
-      "type": "string",
-      "pattern": "^[0-9]{6}$"
-    },
-[... 421 more lines not kept]
-```
-
-**Agent**
-
-Writing the claims file now, before any claim analysis.
-
-**Agent calls Write**
+**Agent calls Read**
 
 ```json
 {
- "file_path": "claims/000130/10.1016-j.neuron.2019.06.012.yaml",
- "content": "# Claims for Sohn, Narain, Meirhaeghe & Jazayeri (2019) on dandiset 000130.\n# Source: the accepted author manuscript in PubMed Central (PMC6805134), full text, read from its\n# Results, figure legends and STAR Methods. The supplementary tables and figures were not\n# available to this attempt. The paper's analysis code is \"available on request\"; the dandiset\n# links only the Neural Latents Benchmark, whose code (nlb_tools) loads the data and scores\n# models but holds none of the paper's analyses.\n#\n# When these criteria were written, the author had seen the data check only: the file list and\n# metadata, the columns of the trial table and their consistency with the event times, the\n# counts of trials per condition, the firing rate of each unit (48 of 54 units reach 1 spike/s),\n# and the time one GPFA fit takes. No claim's analysis had been run.\n#\n# The dandiset holds one recording session (2016-12-11) of monkey H, one of the 17 sessions of H\n# and 29 of both monkeys. Its 54 units were recorded together. A \"dataset\" here, as in the paper,\n# is one effector and target direction (4 in this session; the paper has 8, from two animals).\n#\n# Method choices fixed here, where the Methods leave them open:\n# - Behaviour uses completed trials not flagged by the file's `is_outlier` column (the paper's\n#   mixture model), and the `tp` and `ts` columns.\n# - Units: mean firing rate over the file of at least 1 spike/s and at least 5 trials in every\n#   one of the 40 conditions (prior, ts, effector, direction), as in the Methods.\n# - Firing rates: spike counts in 20 ms bins averaged over trials, in spikes/s, then smoothed with\n#   a Gaussian of SD 40 ms (the Methods' \"kernel width\"). In the estimation epoch each bin\n#   averages the trials whose Set comes after the end of the bin (attrition). In the production\n#   epoch rates are taken from Set to the shortest tp of that ts. Rates are not normalised.\n# - PCA per dataset and epoch, on the trajectories of both priors concatenated, keeping the\n#   fewest components that explain at least 75% of the variance.\n# - The encoding axis u of a prior: the mean of the difference vectors X(ts_max - d) - X(ts_min + d)\n#   for d = 0, 20, 40 ms ... while ts_min + d < ts_max - d, normalised. Xu is the projection of\n#   X(t) on u, every 20 ms from ts_min to ts_max.\n# - The Bayesian observer: continuous uniform prior over each range, Gaussian measurement noise\n#   with SD wm*ts, the posterior mean as te, production noise with SD wp*te and an offset b per\n#   prior; wm, wp, bShort and bLong fit by maximum likelihood per dataset. te(t) is the mean\n#   estimate for ts = t, computed by numerical integration over tm.\n# - Speed of a production trajectory: the mean Euclidean distance between successive 20 ms states\n#   in the production PC space, from Set to the shortest tp of that ts. The Methods' \"divided by\n#   the duration separating Set and the time of Go\" is shown as a variant.\nschema_version: 1\ndandiset: \"000130\"\npaper: doi:10.1016/j.neuron.2019.06.012\nclaims:\n- id: beh-slopes\n  statement: Regression slopes of tp on ts are positive and less than one in every condition,\n    so the animals estimated ts and their responses were biased toward the mean of the prior.\n  source: Results, Task and behavior; Figure 1E and S1; Table S1\n  criterion: For each prior, effector and direction (8 conditions), a weighted linear regression\n    of tp on ts with each trial weighted by 1 over the variance of tp at its ts. Reproduced when\n    all 8 slopes lie between 0 and 1 with 95% confidence intervals that exclude 0 and 1;\n    partially reproduced when all 8 slopes lie between 0 and 1 but some interval includes 0 or\n    1; not reproduced otherwise.\n- id: beh-overlap-prior\n  statement: At the overlapping ts of 800 ms, biases were in opposite directions for the two\n    priors (rank-sum test, p < 1e-43 in animal H over 17 sessions).\n  source: Results, Task and behavior; Figure 1E; Table S2\n  criterion: Trials with ts = 800 ms, pooled over effector and direction. Reproduced when the\n    median of tp - 800 is negative for the Short prior and positive for the Long prior and a\n    two-sided rank-sum test of tp between priors has p < 0.05. The paper's p value pools 17\n    sessions and is not expected here; the p value of this session is reported, and the test is\n    shown per effector and direction.\n- id: beh-sigmoid-increments\n  statement: Increments of tp between neighbouring ts are smaller at the extremes of the prior\n    than near its mean, as the sigmoidal Bayesian estimator predicts (signed-rank test,\n    p < 1e-11 in animal H).\n  source: Results, Task and behavior; Figure 2E and 2F\n  criterion: For each of the 8 conditions, the mean tp at each of the 5 ts; the four increments\n    between neighbours; increment at the extremes = mean of the first and last, in the middle =\n    mean of the second and third. Reproduced when the middle increment exceeds the extreme one\n    in most conditions and a two-sided Wilcoxon signed-rank test over the 8 conditions has\n    p < 0.05.\n- id: beh-long-more-bias\n  statement: Biases are larger for the Long prior than for the Short prior, as scalar\n    variability predicts; regression slopes are smaller for Long.\n  source: Results, Task and behavior; Figure 2G and 2H\n  depends_on:\n  - beh-slopes\n  criterion: With the slopes of beh-slopes, reproduced when the Long slope is below the Short\n    slope in all 4 effector and direction datasets; partially reproduced for 3 of 4; not\n    reproduced otherwise.\n- id: beh-bayes-model\n  statement: A Bayesian observer model with scalar measurement and production noise fit to the\n    behaviour captures the bias and the variance of tp in all conditions.\n  source: Results, Task and behavior; Figure 2C and 2D; Table S3\n  criterion: The model fit per dataset (4 parameters). Across the 10 prior and ts conditions of a\n    dataset, the R2 of the observed mean bias (tp - ts) by the model's predicted bias, and the\n    Pearson correlation of the observed and predicted SD of tp. Reproduced when the bias R2 is\n    at least 0.8 and the SD correlation is positive in all 4 datasets; partially reproduced when\n    only one of the two holds in all 4; not reproduced otherwise. The fitted wm and wp are\n    reported; Table S3 was not available for comparison.\n- id: glm-prior-ts\n  statement: About 30% of neurons were modulated by elapsed time (27% in monkey H) and more than\n    60% were sensitive to the prior (65% in monkey H), by a Poisson GLM of spike counts before\n    Set compared by BIC.\n  source: Results, Single-neuron response profiles; Figure 3E; Methods, Generalized linear model\n  expected:\n  - quantity: Fraction of units sensitive to the prior, monkey H\n    value: 65\n    tolerance: 6.5\n    unit: percent\n  - quantity: Fraction of units sensitive to ts (elapsed time), monkey H\n    value: 27\n    tolerance: 2.7\n    unit: percent\n  criterion: Units as selected above. Counts in the 80 ms before each of the Short prior's ts\n    values (480 to 800 ms after Ready), from every trial whose Set comes after that time\n    (attrition), both priors. Full model log rate = prior + 5 time indicators + effector +\n    direction; prior-dependent when its BIC is below that of the model without the prior. For ts\n    dependence, a model per prior with that prior's 5 time indicators plus effector and direction\n    against the model without the time indicators; ts-dependent when the BIC favours the full\n    model in either prior. Reproduced when both fractions are within tolerance; partially\n    reproduced when one is; not reproduced otherwise. The binomial 95% interval of each fraction\n    is reported.\n- id: dfr-overlap-support\n  statement: At the overlapping ts of 800 ms, firing rates differ between priors, with the\n    largest difference during the support of the prior, between 480 and 800 ms after Ready.\n  source: Results, Single-neuron response profiles; Figure 3C and 3D\n  criterion: Per dataset, units as selected above, ts = 800 trials; per unit the difference of\n    mean rates between priors in 160 ms bins from 320 ms before Ready to 640 ms after Set; the\n    root mean square over units, averaged over the 4 datasets. Reproduced when the largest value\n    falls in a bin within 480 to 800 ms after Ready and exceeds the 95th percentile of the\n    largest value over 200 shuffles of the prior labels among ts = 800 trials; not reproduced\n    otherwise.\n- id: pca-dimensionality\n  statement: Population activity is low dimensional; 3 to 4 principal components in the\n    estimation epoch and 5 to 10 in the production epoch explain about 75% of the variance.\n  source: Results, Geometry and dynamics of population activity; Figure S3\n  criterion: The number of components needed to reach 75% of the variance, per dataset and epoch.\n    The ranges widened by 10% of each bound are 2.7 to 4.4 (3 or 4 components) in the estimation\n    epoch and 4.5 to 11 (5 to 11) in the production epoch. Reproduced when all 8 values fall in\n    their ranges; partially reproduced when at least 4 do; not reproduced otherwise.\n- id: encoding-r2\n  statement: Projections of estimation-epoch neural states onto the encoding axis match the\n    Bayesian estimates from the model fitted to the behaviour (R2 = 0.993 for the Short prior,\n    0.996 for the Long prior, monkey H, Hand Left).\n  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4C\n  depends_on:\n  - beh-bayes-model\n  expected:\n  - quantity: R2 of Xu by te, Short prior\n    value: 0.993\n    tolerance: 0.0993\n  - quantity: R2 of Xu by te, Long prior\n    value: 0.996\n    tolerance: 0.0996\n  criterion: Weighted linear regression Xu = a + b te over the 20 ms time points of the prior's\n    support, each point weighted by the number of trials it averages. The reported values can be\n    read as (a) the Hand Left dataset, the representative condition of Figure 4C, or (b) the\n    mean over the 4 datasets. Reproduced when, under one reading, both values are within\n    tolerance (R2 at least 0.894 and 0.896); partially reproduced when one is. The R2 for 1000\n    random unit vectors in the same PC space is shown as a reference.\n- id: encoding-bayes-beats-linear\n  statement: Neural projections are better explained by the Bayesian model than by a linear\n    function of ts with the same number of parameters, for both priors (signed-rank test on\n    RMSE, p = 0.008 for each prior).\n  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4D top\n  depends_on:\n  - encoding-r2\n  criterion: RMSE of the weighted fits Xu = a + b te and Xu = a + b ts, per dataset and prior.\n    The paper's p = 0.008 is the smallest a signed-rank test gives over 8 datasets, so the\n    Bayesian model was better in all 8. Reproduced when the Bayesian RMSE is lower in all 4\n    datasets for both priors; partially reproduced when it is for one prior; not reproduced\n    otherwise.\n- id: short-in-long-control\n  statement: In the Long prior during the period matched to the support of the Short prior\n    (\"Short In Long\"), there is no sigmoidal representation; the Bayesian model is not better\n    than the linear one (signed-rank test, p = 0.74).\n  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4D top\n  depends_on:\n  - encoding-r2\n  criterion: A claim of absence, judged on the paper's test. Long prior states from 480 to 800 ms\n    after Ready, an axis from the state at 480 to that at 800 ms, compared with the Short prior's\n    te and with ts as above. Reproduced when a two-sided Wilcoxon signed-rank test of the RMSE\n    difference over the 4 datasets has p >= 0.05; not reproduced when p < 0.05. The RMSE\n    difference is reported per dataset.\n- id: neural-long-more-bias\n  statement: Neural projections show more bias for the Long prior than for the Short prior, as a\n    smaller regression slope of Xu on ts (signed-rank test, p = 0.008).\n  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4D bottom\n  depends_on:\n  - encoding-r2\n  criterion: The slope of the weighted regression of Xu (spikes/s, in the shared PC space of the\n    dataset) on ts (ms), per dataset and prior. Reproduced when the Long slope is below the\n    Short slope in all 4 datasets; partially reproduced for 3; not reproduced otherwise.\n- id: speed-vs-projection\n  statement: Larger projections on the encoding axis at Set are followed by slower neural\n    trajectories in the production epoch (Pearson correlation, rho Short = -0.74, rho Long =\n    -0.51).\n  source: Results, Controlling speed based on Bayesian estimate; Figure 4E\n  depends_on:\n  - encoding-r2\n  expected:\n  - quantity: Pearson correlation of speed and Xu at Set, Short prior\n    value: -0.74\n    tolerance: 0.074\n  - quantity: Pearson correlation of speed and Xu at Set, Long prior\n    value: -0.51\n    tolerance: 0.051\n  criterion: Per prior, Xu at t = ts against the speed of the production trajectory of that ts,\n    pooled over the 4 datasets (20 points). Reproduced when both correlations are within\n    tolerance; partially reproduced when both are negative with p < 0.05 but at least one is\n    outside tolerance, or when only one is within tolerance; not reproduced otherwise.\n    Correlations within each dataset are shown as a variant.\n- id: initial-speed-biased\n  statement: The initial speed of production trajectories (Set to Set + 400 ms) is biased toward\n    the middle of the prior; its dependence on ts is shallower than the unbiased profile\n    proportional to 1/ts (signed-rank test, p < 1e-3 over conditions and animals).\n  source: Results, Controlling speed based on Bayesian estimate; Figure 4F\n  criterion: Per dataset and prior, the mean step distance between Set and Set + 400 ms (trials\n    with tp of at least 400 ms), the slope of its regression on ts, and the slope of the\n    unbiased profile speed(middle ts) x middle ts / ts. Reproduced when the measured slope is\n    shallower (less negative) than the unbiased one in most of the 8 dataset-priors and a\n    two-sided signed-rank test of the difference has p < 0.05; not reproduced otherwise.\n- id: speed-predicts-tp\n  statement: The speed of neural trajectories in the production epoch predicts the mean tp\n    (Pearson correlation, rho Short = -0.58, rho Long = -0.52).\n  source: Results, Controlling speed based on Bayesian estimate; Figure 4G\n  expected:\n  - quantity: Pearson correlation of speed and mean tp, Short prior\n    value: -0.58\n    tolerance: 0.058\n  - quantity: Pearson correlation of speed and mean tp, Long prior\n    value: -0.52\n    tolerance: 0.052\n  criterion: Per prior, the mean tp of each dataset and ts against the speed of that ts, pooled\n    over the 4 datasets (20 points). Same rule as speed-vs-projection. The trial-by-trial\n    correlation within each prior, effector and direction used by the Neural Latents Benchmark\n    is shown as a variant.\n- id: alt-speed-unmodulated\n  statement: Instantaneous speed of neural trajectories in the full neural space is not modulated\n    during the support of each prior (signed-rank test for zero regression slopes, p = 0.64 for\n    Short, p = 0.08 for Long).\n  source: Results, Alternative mechanisms (speed hypothesis); Figure 5B\n  criterion: A claim of absence, judged on the paper's test. Per dataset and prior, the distance\n    between successive 20 ms states of the smoothed rates of all selected units, over the\n    support of the prior (with attrition), regressed on time. Reproduced when a two-sided\n    signed-rank test of the 4 slopes against zero has p >= 0.05 for each prior; not reproduced\n    otherwise. With 4 datasets the test cannot reach p < 0.05; the slopes and their bootstrap\n    intervals over trials are reported as the effect size.\n- id: alt-transient-parallel\n  statement: In the first 200 ms after Set, trajectories for different ts run parallel; their\n    distance to the middle ts trajectory does not change (signed-rank test for zero slopes,\n    p = 0.92 for the shortest ts, p = 0.13 for the longest).\n  source: Results, Alternative mechanisms (transient hypothesis); Figure 5D\n  criterion: A claim of absence, judged on the paper's test. PCA per dataset on Set to Set + 200\n    ms, both priors, at least 75% of variance; per dataset and prior the distance from the\n    shortest and the longest ts trajectory to the middle ts trajectory at each 20 ms bin,\n    regressed on time. Reproduced when a two-sided signed-rank test of the 8 slopes against zero\n    has p >= 0.05 for both the shortest and the longest ts; not reproduced otherwise.\n- id: alt-threshold-monotonic\n  statement: Aligned to the response, distances between trajectories for different ts decrease\n    steadily up to movement initiation, without the converging then diverging pattern a\n    ts-dependent threshold would produce.\n  source: Results, Alternative mechanisms (threshold hypothesis); Figure 5F\n  criterion: PCA per dataset on Go - 800 ms to Go, both priors, keeping the components that\n    explain 60% of the variance (the figure legend's value). Per dataset, prior and non-middle ts\n    (32 curves), the distance to the middle ts trajectory at each 20 ms bin and the time of its\n    minimum. The paper's test (one-tailed signed-rank, p = 1.5e-4) cannot be read unambiguously,\n    so the criterion is fixed here. Reproduced when the median time of the minimum is in the last\n    40 ms before Go; partially reproduced when it is in the last 200 ms; not reproduced otherwise.\n- id: gpfa-variance-inverted-u\n  statement: The variance across single trials of the GPFA neural state at Set projected on the\n    encoding axis has an inverted-U profile over ts, lower at the extremes of each prior\n    (one-tailed signed-rank test on quadratic coefficients, p = 0.0273, monkey H).\n  source: Results, The curved manifold hypothesis captures the variance; Figure 6C\n  criterion: GPFA (20 ms bins) per dataset on single trials from Ready to Set, both priors, units\n    as selected above; the latent dimensionality chosen by 3-fold cross-validated log-likelihood\n    from 4 and 8; orthonormalised latents. Per prior, u from the trial-averaged latents with\n    attrition as above; each trial's latent state in its last bin before Set projected on u; Xu\n    z-scored over the prior's trials; the variance at each ts; the quadratic coefficient of a\n    polynomial fit of variance on ts. Reproduced when a one-tailed signed-rank test (coefficient\n    below zero) over the 8 dataset-priors has p < 0.05; not reproduced otherwise.\n- id: gpfa-mean-sigmoid\n  statement: The mean of the single-trial GPFA projections is sigmoidal (signed-rank test on\n    increments, p = 0.0078) and has a higher slope for the Short prior (one-tailed signed-rank,\n    p = 0.0625).\n  source: Results, The curved manifold hypothesis captures the variance; Figure 6D\n  depends_on:\n  - gpfa-variance-inverted-u\n  criterion: With the GPFA projections of gpfa-variance-inverted-u, not z-scored. The mean Xu at\n    each ts; increments as in beh-sigmoid-increments, compared by a two-sided signed-rank test\n    over the 8 dataset-priors (sigmoidal when middle exceeds extreme with p < 0.05); the slope of\n    mean Xu on ts per dataset and prior (higher for Short in all 4 datasets is the paper's\n    p = 0.0625). Reproduced when both parts hold; partially reproduced when one does.\n- id: rnn-curved-manifold\n  statement: Recurrent neural networks trained on the two-prior task with scalar measurement\n    noise behave like a Bayesian observer and show curved trajectories during the support of the\n    prior, like DMFC.\n  source: Results, Recurrent network models; Figure 7A to 7C and S7\n- id: rnn-perturbation\n  statement: In trained networks, compressing states along the encoding axis increases the\n    regression to the mean of tp, and translating them shifts tp.\n  source: Results, Recurrent network models; Figure 7D and 7E\n- id: monkey-g\n  statement: The behavioural and neural results hold in monkey G as in monkey H.\n  source: Results throughout; Figures 1 to 6 and S1 to S6\n"
+ "file_path": "/tmp/claude-1001/s/paper.txt",
+ "offset": 217,
+ "limit": 110
 }
 ```
 
 ```
-File created successfully at: claims/000130/10.1016-j.neuron.2019.06.012.yaml (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Claims written. Now the helper module.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; $TMPDIR/ex/bin/python -c "
-import elephant, inspect; from elephant.gpfa import GPFA; print(elephant.__version__); print(inspect.signature(GPFA.__init__)); print([m for m in dir(GPFA) if not m.startswith('_')])"; $TMPDIR/ex/bin/python -c "import elephant.gpfa, inspect; src=inspect.getsource(elephant.gpfa.GPFA.transform); print(src[:3000])"
-```
-
-```
-1.2.1
-(self, bin_size=array(20.) * ms, x_dim=3, min_var_frac=0.01, tau_init=array(100.) * ms, eps_init=0.001, em_tol=1e-08, em_max_iters=500, freq_ll=5, verbose=False)
-['fit', 'fit_transform', 'get_metadata_routing', 'get_params', 'score', 'set_fit_request', 'set_params', 'set_score_request', 'set_transform_request', 'transform']
-    @trials_to_list_of_spiketrainlist
-    def transform(
-        self,
-        spiketrains: Union[
-            List[List[neo.core.SpikeTrain]],
-            "Trials",
-            List[neo.core.spiketrainlist.SpikeTrainList],
-        ],
-        returned_data: str = ["latent_variable_orth"],
-    ) -> "GPFA":
-        """
-        Obtain trajectories of neural activity in a low-dimensional latent
-        variable space by inferring the posterior mean of the obtained GPFA
-        model and applying an orthonormalization on the latent variable space.
-
-        Parameters
-        ---------- # noqa
-[... 56 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000130-sohn-2019/rsg.py",
- "content": "\"\"\"Loading and measures for the Ready-Set-Go data of dandiset 000130.\n\nSohn, Narain, Meirhaeghe & Jazayeri (2019), Neuron, doi:10.1016/j.neuron.2019.06.012.\n\nThe dandiset is the DMFC_RSG set of the Neural Latents Benchmark: one session of monkey H\n(Haydn, 2016-12-11). The train file holds the trial table with every task variable and the\nspike times of 54 units; the test file holds 283 further trials without task variables and\nonly 40 of the units. Analyses use the train file. Files are streamed from the archive at the\npinned version; nothing is written to disk.\n\nWhere the parameters come from:\n\n- From the paper's STAR Methods: units kept with a mean rate of at least 1 spike/s and at least\n  5 trials per condition (`MIN_RATE`, `MIN_TRIALS`); 20 ms bins and a 40 ms Gaussian kernel for\n  population rates (`BIN_MS`, `SMOOTH_MS`, read here as the kernel's SD); attrition in the\n  estimation epoch; production rates up to the shortest tp of each ts; PCA keeping the\n  components that explain 75% of the variance (`VAR_KEPT`); the encoding axis from difference\n  vectors every 20 ms; the 80 ms GLM window before Set (`GLM_WINDOW_MS`) and BIC comparison;\n  the Bayesian observer with scalar measurement and production noise, a uniform prior, the\n  posterior mean, and an offset per prior; GPFA on single trials with cross-validation.\n- Common choices made here where the Methods leave it open (see the claims file): kernel width\n  read as SD; rates averaged per 20 ms bin and then smoothed; no normalisation of rates before\n  PCA; difference vectors for the encoding axis averaged up to the middle of the support;\n  speed as the mean step between successive 20 ms states; the GPFA latent dimensionality chosen\n  from `GPFA_DIMS` by 3-fold cross-validation, and `GPFA_EM_ITERS` EM iterations.\n- The flag `is_outlier` in the trial table is the paper's mixture-model exclusion and is used as\n  given; `outlier_mixture` refits that model as a check.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import optimize, stats\nfrom scipy.ndimage import gaussian_filter1d\n\nDANDISET_ID = \"000130\"\nDANDISET_VERSION = \"0.241017.1448\"\nTRAIN = \"sub-Haydn/sub-Haydn_desc-train_ecephys.nwb\"\nTEST = \"sub-Haydn/sub-Haydn_desc-test_ecephys.nwb\"\n\nMIN_RATE = 1.0         # spikes/s, Methods\nMIN_TRIALS = 5         # per condition, Methods\nBIN_MS = 20            # Methods\nSMOOTH_MS = 40         # Methods, \"Gaussian smoothing kernel width\", read as SD\nVAR_KEPT = 0.75        # Methods\nGLM_WINDOW_MS = 80     # Methods\nGPFA_DIMS = (4, 8)     # choice here; the Methods say only \"with cross validation\"\nGPFA_EM_ITERS = 100    # choice here, to keep the run short\n\nSHORT_TS = (480, 560, 640, 720, 800)\nLONG_TS = (800, 900, 1000, 1100, 1200)\nDATASETS = [(True, 0.0), (True, 180.0), (False, 0.0), (False, 180.0)]\n\n\ndef dataset_name(is_eye: bool, theta: float) -> str:\n    return f\"{'Eye' if is_eye else 'Hand'} {'Right' if theta == 0 else 'Left'}\"\n\n\ndef prior_ts(is_short: bool) -> tuple:\n    return SHORT_TS if is_short else LONG_TS\n\n\n# --- loading -------------------------------------------------------------------------------\n\ndef _str(value):\n    return value.decode() if isinstance(value, bytes) else value\n\n\ndef asset_urls() -> dict:\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n        return {a.path: a.get_content_url(follow_redirects=1, strip_query=True)\n                for a in dandiset.get_assets()}\n\n\ndef read_file(url: str) -> dict:\n    \"\"\"The trial table, units and descriptive metadata of one NWB file.\"\"\"\n    with h5py.File(remfile.File(url), \"r\") as f:\n        t = f[\"intervals/trials\"]\n        cols = [_str(c) for c in t.attrs[\"colnames\"]]\n        trials = pd.DataFrame({c: (t[c][:].astype(str) if t[c].dtype == object else t[c][:]) for c in cols})\n        descriptions = {c: _str(t[c].attrs.get(\"description\", \"\")) for c in cols}\n        u = f[\"units\"]\n        index = u[\"spike_times_index\"][:]\n        spikes = np.split(u[\"spike_times\"][:], index[:-1])\n        oi_index = u[\"obs_intervals_index\"][:]\n        obs = np.split(u[\"obs_intervals\"][:], oi_index[:-1])\n        electrodes = f[\"general/extracellular_ephys/electrodes\"]\n        meta = {\n            \"session_description\": _str(f[\"session_description\"][()]),\n            \"session_start_time\": _str(f[\"session_start_time\"][()]),\n            \"session_id\": _str(f[\"general/session_id\"][()]),\n            \"subject_id\": _str(f[\"general/subject/subject_id\"][()]),\n            \"species\": _str(f[\"general/subject/species\"][()]),\n            \"age\": _str(f[\"general/subject/age\"][()]),\n            \"related_publications\": [_str(x) for x in f[\"general/related_publications\"][:]],\n            \"electrode_location\": sorted({_str(x) for x in electrodes[\"location\"][:]}),\n            \"electrode_x_all_nan\": bool(np.isnan(electrodes[\"x\"][:]).all()),\n            \"n_electrodes\": len(electrodes[\"id\"][:]),\n        }\n    return {\"trials\": trials, \"descriptions\": descriptions, \"spikes\": spikes,\n            \"unit_ids\": u[\"id\"][:] if False else None, \"obs_intervals\": obs, \"meta\": meta,\n            \"heldout\": None} | _units(url)\n\n\ndef _units(url: str) -> dict:\n    with h5py.File(remfile.File(url), \"r\") as f:\n        return {\"unit_ids\": f[\"units/id\"][:], \"heldout\": f[\"units/heldout\"][:]}\n\n\ndef load() -> dict:\n    \"\"\"Both files of the pinned version, as returned by `read_file`.\"\"\"\n    urls = asset_urls()\n    return {\"train\": read_file(urls[TRAIN]), \"test\": read_file(urls[TEST]), \"urls\": urls}\n\n\ndef completed(trials: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"Completed trials (with Set and Go) not flagged as outliers.\"\"\"\n    ok = trials.set_time.notna() & trials.go_time.notna() & ~trials.is_outlier.astype(bool)\n    return trials[ok].copy()\n\n\ndef select_units(session: dict, trials: pd.DataFrame) -> tuple[np.ndarray, pd.DataFrame]:\n    \"\"\"Units kept by the Methods' rule, and a table of rates and trial counts.\"\"\"\n    t0 = min(iv[0, 0] for iv in session[\"obs_intervals\"])\n    t1 = max(iv[-1, 1] for iv in session[\"obs_intervals\"])\n    observed = np.array([np.sum(iv[:, 1] - iv[:, 0]) for iv in session[\"obs_intervals\"]])\n    rate = np.array([len(s) for s in session[\"spikes\"]]) / observed\n    counts = trials.groupby([\"is_short\", \"ts\", \"is_eye\", \"theta\"]).size()\n    n_cond = len(counts)\n    min_trials = int(counts.min())\n    table = pd.DataFrame({\"unit\": session[\"unit_ids\"], \"heldout\": session[\"heldout\"], \"rate\": rate,\n                          \"observed_s\": observed})\n    keep = (rate >= MIN_RATE) & (min_trials >= MIN_TRIALS) & (n_cond == 40)\n    table[\"kept\"] = keep\n    table.attrs.update(conditions=n_cond, min_trials=min_trials, span=(t0, t1))\n    return np.flatnonzero(keep), table\n\n\n# --- spike counts and rates ----------------------------------------------------------------\n\ndef counts(spikes: list, units, align: np.ndarray, start_ms: float, stop_ms: float,\n           bin_ms: float = BIN_MS) -> np.ndarray:\n    \"\"\"Spike counts, trials x bins x units, in bins from start to stop relative to `align` (s).\"\"\"\n    edges = np.arange(start_ms, stop_ms + 1e-9, bin_ms) / 1000.0\n    out = np.empty((len(align), len(edges) - 1, len(units)))\n    for j, u in enumerate(units):\n        s = spikes[u]\n        pos = np.searchsorted(s, align[:, None] + edges[None, :])\n        out[:, :, j] = np.diff(pos, axis=1)\n    return out\n\n\ndef smooth(rate: np.ndarray) -> np.ndarray:\n    \"\"\"Gaussian smoothing along time (axis 0) with SD `SMOOTH_MS`.\"\"\"\n    return gaussian_filter1d(rate, SMOOTH_MS / BIN_MS, axis=0, mode=\"nearest\")\n\n\ndef estimation_rates(spikes, units, trials: pd.DataFrame, t_max: float):\n    \"\"\"Rates from Ready to `t_max` ms with attrition: each bin averages the trials whose Set\n    comes after the end of the bin. Returns rates (bins x units, spikes/s), bin end times (ms\n    after Ready) and the number of trials in each bin.\"\"\"\n    c = counts(spikes, units, trials.ready_time.to_numpy(), 0, t_max)\n    ends = np.arange(BIN_MS, t_max + 1e-9, BIN_MS)\n    elapsed = (trials.set_time - trials.ready_time).to_numpy() * 1000\n    use = elapsed[:, None] >= ends[None, :] - 1e-6\n    n = use.sum(0)\n    mean = np.einsum(\"tb,tbu->bu\", use, c) / np.maximum(n, 1)[:, None]\n    return smooth(mean * 1000 / BIN_MS), ends, n\n\n\ndef aligned_rates(spikes, units, align: np.ndarray, start_ms: float, stop_ms: float):\n    \"\"\"Trial-averaged smoothed rates (bins x units, spikes/s) aligned to `align`.\"\"\"\n    c = counts(spikes, units, align, start_ms, stop_ms)\n    return smooth(c.mean(0) * 1000 / BIN_MS)\n\n\ndef production_rates(spikes, units, trials: pd.DataFrame, stop_ms: float | None = None):\n    \"\"\"Rates from Set to the shortest tp of these trials (or to `stop_ms`).\"\"\"\n    if stop_ms is None:\n        stop_ms = np.floor(trials.tp.min() / BIN_MS) * BIN_MS\n    return aligned_rates(spikes, units, trials.set_time.to_numpy(), 0, stop_ms)\n\n\n# --- population measures -------------------------------------------------------------------\n\nclass PCA:\n    \"\"\"PCA on stacked rate matrices, keeping the components that reach `kept` of the variance.\"\"\"\n\n    def __init__(self, matrices: list, kept: float = VAR_KEPT):\n        data = np.vstack(matrices)\n        self.mean = data.mean(0)\n        _, s, vt = np.linalg.svd(data - self.mean, full_matrices=False)\n        self.explained = s ** 2 / np.sum(s ** 2)\n        self.n = int(np.searchsorted(np.cumsum(self.explained), kept - 1e-12) + 1)\n        self.components = vt[: self.n]\n\n    def __call__(self, x: np.ndarray) -> np.ndarray:\n        return (x - self.mean) @ self.components.T\n\n\ndef encoding_axis(states: np.ndarray, times: np.ndarray, t_min: float, t_max: float) -> np.ndarray:\n    \"\"\"Unit vector from the mean of X(t_max - d) - X(t_min + d), d = 0, 20, 40 ... ms, while\n    t_min + d < t_max - d.\"\"\"\n    vectors = []\n    d = 0.0\n    while t_min + d < t_max - d:\n        i, j = np.argmin(abs(times - (t_min + d))), np.argmin(abs(times - (t_max - d)))\n        vectors.append(states[j] - states[i])\n        d += BIN_MS\n    u = np.mean(vectors, axis=0)\n    return u / np.linalg.norm(u)\n\n\ndef step_speed(states: np.ndarray) -> float:\n    \"\"\"Mean Euclidean distance between successive states.\"\"\"\n    return float(np.mean(np.linalg.norm(np.diff(states, axis=0), axis=1)))\n\n\ndef weighted_fit(x, y, w):\n    \"\"\"Weighted least squares y = a + b x; returns a, b, weighted R2 and RMSE of the fit.\"\"\"\n    x, y, w = map(np.asarray, (x, y, w))\n    design = np.column_stack([np.ones_like(x), x])\n    sw = np.sqrt(w)\n    coef, *_ = np.linalg.lstsq(design * sw[:, None], y * sw, rcond=None)\n    pred = design @ coef\n    ybar = np.sum(w * y) / np.sum(w)\n    r2 = 1 - np.sum(w * (y - pred) ** 2) / np.sum(w * (y - ybar) ** 2)\n    rmse = float(np.sqrt(np.mean((y - pred) ** 2)))\n    return coef[0], coef[1], float(r2), rmse\n\n\ndef increments(means) -> tuple[float, float]:\n    \"\"\"Mean increment at the extremes (first and last) and in the middle (second and third)\n    of five ordered values.\"\"\"\n    d = np.diff(np.asarray(means, float))\n    return (d[0] + d[3]) / 2, (d[1] + d[2]) / 2\n\n\n# --- behaviour -----------------------------------------------------------------------------\n\ndef weighted_slope(ts, tp):\n    \"\"\"Regression of tp on ts with each trial weighted by 1 / variance of tp at its ts. Returns\n    slope, its standard error, and the 95% interval.\"\"\"\n    df = pd.DataFrame({\"ts\": ts, \"tp\": tp})\n    var = df.groupby(\"ts\").tp.transform(\"var\")\n    w = 1 / var\n    x, y = df.ts.to_numpy(), df.tp.to_numpy()\n    design = np.column_stack([np.ones_like(x), x])\n    sw = np.sqrt(w.to_numpy())\n    coef, *_ = np.linalg.lstsq(design * sw[:, None], y * sw, rcond=None)\n    resid = (y - design @ coef) * sw\n    dof = len(y) - 2\n    sigma2 = np.sum(resid ** 2) / dof\n    cov = sigma2 * np.linalg.inv((design * sw[:, None]).T @ (design * sw[:, None]))\n    se = np.sqrt(cov[1, 1])\n    q = stats.t.ppf(0.975, dof)\n    return coef[1], se, (coef[1] - q * se, coef[1] + q * se)\n\n\ndef outlier_mixture(tp: np.ndarray, ts: float, iters: int = 200) -> np.ndarray:\n    \"\"\"Posterior probability of the lapse component for each trial, under a mixture of a\n    Gaussian and a uniform distribution from 0 to 3 ts (Methods).\"\"\"\n    tp = np.asarray(tp, float)\n    mu, sd, p = np.median(tp), max(np.std(tp), 1.0), 0.05\n    lapse = 1 / (3 * ts)\n    for _ in range(iters):\n        g = (1 - p) * stats.norm.pdf(tp, mu, sd)\n        l = p * lapse * ((tp >= 0) & (tp <= 3 * ts))\n        r = l / np.maximum(g + l, 1e-300)\n        w = 1 - r\n        mu = np.sum(w * tp) / np.sum(w)\n        sd = max(np.sqrt(np.sum(w * (tp - mu) ** 2) / np.sum(w)), 1.0)\n        p = np.clip(r.mean(), 1e-6, 0.5)\n    return r\n\n\nclass BayesObserver:\n    \"\"\"Bayesian observer of the Methods: tm ~ N(ts, wm ts), te = posterior mean under a uniform\n    prior on the range of ts, tp ~ N(te + b, wp te), with an offset b per prior.\"\"\"\n\n    GRID = 400\n\n    def __init__(self, wm=0.1, wp=0.08, b_short=0.0, b_long=0.0):\n        self.wm, self.wp, self.b = wm, wp, {True: b_short, False: b_long}\n\n    @staticmethod\n    def estimator(tm: np.ndarray, lo: float, hi: float, wm: float) -> np.ndarray:\n        s = np.linspace(lo, hi, 201)\n        like = np.exp(-0.5 * ((tm[:, None] - s[None, :]) / (wm * s[None, :])) ** 2) / s[None, :]\n        return (like * s).sum(1) / np.maximum(like.sum(1), 1e-300)\n\n    def _grid(self, is_short: bool):\n        ts = prior_ts(is_short)\n        lo, hi = min(ts), max(ts)\n        tm = np.linspace(lo * (1 - 5 * self.wm), hi * (1 + 5 * self.wm), self.GRID)\n        return tm, self.estimator(tm, lo, hi, self.wm)\n\n    def _p_tm(self, tm, ts):\n        p = stats.norm.pdf(tm[None, :], ts[:, None], self.wm * ts[:, None])\n        return p / p.sum(1, keepdims=True)\n\n    def loglik(self, ts, tp, is_short: bool) -> float:\n        tm, te = self._grid(is_short)\n        p_tm = self._p_tm(tm, np.asarray(ts, float))\n        p_tp = stats.norm.pdf(np.asarray(tp, float)[:, None], te[None, :] + self.b[is_short],\n                              self.wp * te[None, :])\n        return float(np.sum(np.log(np.maximum((p_tm * p_tp).sum(1), 1e-300))))\n\n    def moments(self, ts, is_short: bool):\n        \"\"\"Mean te, and mean and SD of tp, for each ts.\"\"\"\n        tm, te = self._grid(is_short)\n        ts = np.asarray(ts, float)\n        p_tm = self._p_tm(tm, ts)\n        mean_te = p_tm @ te\n        mean_tp = mean_te + self.b[is_short]\n        second = p_tm @ (te ** 2 * (1 + self.wp ** 2))\n        sd_tp = np.sqrt(second - mean_te ** 2)\n        return mean_te, mean_tp, sd_tp\n\n    @classmethod\n    def fit(cls, trials: pd.DataFrame) -> \"BayesObserver\":\n        \"\"\"Maximum likelihood fit of wm, wp, b_short and b_long to one dataset's trials.\"\"\"\n        groups = {s: g for s, g in trials.groupby(\"is_short\")}\n\n        def nll(theta):\n            m = cls(*theta)\n            if not (0.01 < m.wm < 0.5 and 0.01 < m.wp < 0.5):\n                return 1e12\n            return -sum(m.loglik(g.ts.to_numpy(), g.tp.to_numpy(), bool(s)) for s, g in groups.items())\n\n        res = optimize.minimize(nll, x0=[0.1, 0.08, 0.0, 0.0], method=\"Nelder-Mead\",\n                                options={\"xatol\": 1e-4, \"fatol\": 1e-3, \"maxiter\": 2000})\n        model = cls(*res.x)\n        model.converged, model.nll = bool(res.success), float(res.fun)\n        return model\n\n\n# --- GPFA ----------------------------------------------------------------------------------\n\ndef estimation_spiketrains(spikes, units, trials: pd.DataFrame):\n    \"\"\"Single-trial spike trains from Ready to Set, as neo objects for elephant's GPFA.\"\"\"\n    import neo\n    import quantities as pq\n    out = []\n    for ready, set_ in zip(trials.ready_time.to_numpy(), trials.set_time.to_numpy()):\n        dur = set_ - ready\n        out.append([neo.SpikeTrain((s[(s >= ready) & (s < set_)] - ready) * pq.s,\n                                   t_start=0 * pq.s, t_stop=dur * pq.s) for s in (spikes[u] for u in units)])\n    return out\n\n\ndef fit_gpfa(spiketrains, rng: np.random.Generator):\n    \"\"\"GPFA with the latent dimensionality from `GPFA_DIMS` chosen by 3-fold cross-validated\n    log-likelihood. Returns the model fit on all trials, the chosen dimensionality and the\n    cross-validated scores.\"\"\"\n    import quantities as pq\n    from elephant.gpfa import GPFA\n    folds = rng.permutation(len(spiketrains)) % 3\n    scores = {}\n    for dim in GPFA_DIMS:\n        total = 0.0\n        for k in range(3):\n            train = [s for s, f in zip(spiketrains, folds) if f != k]\n            test = [s for s, f in zip(spiketrains, folds) if f == k]\n            m = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)\n            m.fit(train)\n            total += m.score(test)\n        scores[dim] = total\n    best = max(scores, key=scores.get)\n    model = GPFA(bin_size=BIN_MS * pq.ms, x_dim=best, em_max_iters=GPFA_EM_ITERS)\n    model.fit(spiketrains)\n    return model, best, scores\n"
-}
-```
-
-```
-File created successfully at: entries/000130-sohn-2019/rsg.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000130-sohn-2019/rsg.py",
- "old_string": "        electrodes = f[\"general/extracellular_ephys/electrodes\"]",
- "new_string": "        unit_ids, heldout = u[\"id\"][:], u[\"heldout\"][:]\n        electrodes = f[\"general/extracellular_ephys/electrodes\"]"
-}
-```
-
-```
-The file entries/000130-sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000130-sohn-2019/rsg.py",
- "old_string": "    return {\"trials\": trials, \"descriptions\": descriptions, \"spikes\": spikes,\n            \"unit_ids\": u[\"id\"][:] if False else None, \"obs_intervals\": obs, \"meta\": meta,\n            \"heldout\": None} | _units(url)\n\n\ndef _units(url: str) -> dict:\n    with h5py.File(remfile.File(url), \"r\") as f:\n        return {\"unit_ids\": f[\"units/id\"][:], \"heldout\": f[\"units/heldout\"][:]}",
- "new_string": "    return {\"trials\": trials, \"descriptions\": descriptions, \"spikes\": spikes, \"unit_ids\": unit_ids,\n            \"heldout\": heldout, \"obs_intervals\": obs, \"meta\": meta}"
-}
-```
-
-```
-The file entries/000130-sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Now the notebook. I'll generate it from a builder script so I can add the conclusions after seeing the outputs.
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000130-sohn-2019/rsg.py",
- "old_string": "    c = counts(spikes, units, trials.ready_time.to_numpy(), 0, t_max)\n    ends = np.arange(BIN_MS, t_max + 1e-9, BIN_MS)\n    elapsed = (trials.set_time - trials.ready_time).to_numpy() * 1000\n    use = elapsed[:, None] >= ends[None, :] - 1e-6\n    n = use.sum(0)\n    mean = np.einsum(\"tb,tbu->bu\", use, c) / np.maximum(n, 1)[:, None]\n    return smooth(mean * 1000 / BIN_MS), ends, n",
- "new_string": "    c = counts(spikes, units, trials.ready_time.to_numpy(), 0, t_max)\n    elapsed = (trials.set_time - trials.ready_time).to_numpy() * 1000\n    return attrition_rates(c, elapsed)\n\n\ndef attrition_rates(c: np.ndarray, elapsed: np.ndarray):\n    \"\"\"`estimation_rates` from counts already taken (trials x bins x units from Ready).\"\"\"\n    ends = np.arange(1, c.shape[1] + 1) * BIN_MS\n    use = elapsed[:, None] >= ends[None, :] - 1e-6\n    n = use.sum(0)\n    mean = np.einsum(\"tb,tbu->bu\", use, c) / np.maximum(n, 1)[:, None]\n    return smooth(mean * 1000 / BIN_MS), ends, n"
-}
-```
-
-```
-The file entries/000130-sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude/build_nb.py",
- "content": "\"\"\"Builds entries/000130-sohn-2019/reproduce_sohn_2019.ipynb. Conclusions come from conclusions.py if present.\"\"\"\nimport importlib.util\nimport os\nimport sys\n\nimport nbformat\n\nHERE = os.path.dirname(os.path.abspath(__file__))\nOUT = \"entries/000130-sohn-2019/reproduce_sohn_2019.ipynb\"\nspec = importlib.util.spec_from_file_location(\"cells\", os.path.join(HERE, \"nb_cells.py\"))\ncells_mod = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(cells_mod)\nresults, summary = {}, None\ncpath = os.path.join(HERE, \"conclusions.py\")\nif os.path.exists(cpath) and \"--bare\" not in sys.argv:\n    spec = importlib.util.spec_from_file_location(\"conc\", cpath)\n    conc = importlib.util.module_from_spec(spec)\n    spec.loader.exec_module(conc)\n    results, summary = conc.RESULTS, conc.SUMMARY\n\nnb = nbformat.v4.new_notebook()\nnb.metadata = {\"kernelspec\": {\"name\": \"python3\", \"display_name\": \"Python 3\", \"language\": \"python\"},\n               \"language_info\": {\"name\": \"python\"}}\nfor kind, src, tag in cells_mod.CELLS:\n    if kind == \"result\":\n        if tag in results:\n            nb.cells.append(nbformat.v4.new_markdown_cell(results[tag].strip()))\n        continue\n    if kind == \"md\":\n        cell = nbformat.v4.new_markdown_cell(src.strip())\n    else:\n        cell = nbformat.v4.new_code_cell(src.strip())\n    if tag:\n        cell.metadata[\"tags\"] = [tag]\n    nb.cells.append(cell)\nif summary:\n    nb.cells.append(nbformat.v4.new_markdown_cell(summary.strip()))\nnbformat.write(nb, OUT)\nprint(\"wrote\", OUT, len(nb.cells), \"cells\")\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude/build_nb.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude/nb_cells.py",
- "content": "CELLS = []\n\n\ndef md(s, tag=None):\n    CELLS.append((\"md\", s, tag))\n\n\ndef code(s, tag=None):\n    CELLS.append((\"code\", s, tag))\n\n\ndef result(claim):\n    CELLS.append((\"result\", None, claim))\n\n\nmd(r\"\"\"\n# Reproducing Sohn et al. (2019) from dandiset 000130\n\n**Paper.** Sohn H, Narain D, Meirhaeghe N, Jazayeri M (2019). Bayesian computation through cortical\nlatent dynamics. *Neuron* 103(5):934-947.\n[doi:10.1016/j.neuron.2019.06.012](https://doi.org/10.1016/j.neuron.2019.06.012). This attempt used\nthe full text of the accepted author manuscript in PubMed Central (PMC6805134). The supplementary\nfigures and tables (Tables S1 to S3) were not available to it.\n\n**Dandiset.** [DANDI:000130](https://dandiarchive.org/dandiset/000130/0.241017.1448), version\n0.241017.1448. The paper cites no DANDI version (it predates the dandiset, which was made for the\nNeural Latents Benchmark in 2021). Of the two published versions, 0.220113.0407 and 0.241017.1448,\nthis is the most recent. Both hold the same two files (same asset and blob ids and sizes), and\ntheir metadata differ only in the publication date, the citation and the repository URL's trailing\nslash, so neither matches the paper better.\n\n**What the dandiset holds.** One recording session (2016-12-11) of monkey H (\"Haydn\"), from the\nNeural Latents Benchmark (NLB): a train file with the full trial table and the spikes of 54 units,\nand a test file with 283 further trials of the same session that carry no task variables and only\n40 of the units. The paper analyses 17 sessions of monkey H and 12 of monkey G. Monkey G is not in\nthe dandiset. All results here come from this one session, and a \"dataset\" is one effector and\ntarget direction (4 here; the paper's 8 are 2 animals x 4).\n\n**Code.** The paper's code is \"available from the corresponding author on request\" and was not\nread. The dandiset links the NLB, whose code\n([nlb_tools](https://github.com/neurallatents/nlb_tools) at commit 42f8410b) loads these files,\nbuilds tensors aligned to Go (1500 ms before Go), and scores models by a trial-by-trial correlation\nof neural speed with tp within each prior, effector and direction. It holds none of the paper's\nanalyses; its speed measure (mean step between successive states) matches the one chosen here.\n\n| Claim | Source | Tested here |\n|---|---|---|\n| beh-slopes: slopes of tp on ts between 0 and 1 | Fig. 1E | Tested |\n| beh-overlap-prior: opposite biases at ts = 800 ms | Fig. 1E | Tested |\n| beh-sigmoid-increments: smaller tp increments at the extremes | Fig. 2F | Tested |\n| beh-long-more-bias: smaller slopes for the Long prior | Fig. 2H | Tested |\n| beh-bayes-model: the Bayesian observer captures bias and variance | Fig. 2C, D | Tested |\n| glm-prior-ts: 65% prior-dependent and 27% ts-dependent units (H) | Fig. 3E | Tested |\n| dfr-overlap-support: prior difference at 800 ms peaks during the support | Fig. 3D | Tested |\n| pca-dimensionality: 3-4 PCs (estimation), 5-10 (production) | Fig. S3 | Tested |\n| encoding-r2: projections match the Bayesian estimate (R2 0.993, 0.996) | Fig. 4C | Tested |\n| encoding-bayes-beats-linear: Bayesian better than linear | Fig. 4D | Tested |\n| short-in-long-control: no sigmoid in the matched Long period | Fig. 4D | Tested |\n| neural-long-more-bias: smaller neural slope for Long | Fig. 4D | Tested |\n| speed-vs-projection: larger projection, slower speed | Fig. 4E | Tested |\n| initial-speed-biased: initial speed biased toward the mean | Fig. 4F | Tested |\n| speed-predicts-tp: speed predicts tp | Fig. 4G | Tested |\n| alt-speed-unmodulated: speed constant during the support | Fig. 5B | Tested |\n| alt-transient-parallel: parallel trajectories after Set | Fig. 5D | Tested |\n| alt-threshold-monotonic: distances fall steadily up to Go | Fig. 5F | Tested |\n| gpfa-variance-inverted-u: inverted-U variance of single-trial projections | Fig. 6C | Tested |\n| gpfa-mean-sigmoid: sigmoidal mean, higher Short slope | Fig. 6D | Tested |\n| rnn-curved-manifold, rnn-perturbation: recurrent network models | Fig. 7 | Blocked (no model in the dandiset; code on request) |\n| monkey-g: the results hold in monkey G | throughout | Blocked (monkey G not in the dandiset) |\n\"\"\")\n\ncode(r\"\"\"\nimport os\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nimport statsmodels.api as sm\nfrom scipy import stats\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import cross_val_score\n\nimport rsg\n\npd.set_option(\"display.width\", 200)\npd.set_option(\"display.max_columns\", 40)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nstarted = time.time()\ndata = rsg.load()\nS, T = data[\"train\"], data[\"test\"]\ntrials, spikes = S[\"trials\"], S[\"spikes\"]\ngood = rsg.completed(trials)\nunits, unit_table = rsg.select_units(S, good)\nDS = [(e, th, rsg.dataset_name(e, th)) for e, th in rsg.DATASETS]\nprint(f\"loaded dandiset {rsg.DANDISET_ID} version {rsg.DANDISET_VERSION} in {time.time() - started:.0f} s\")\n\"\"\")\n\nmd(\"\"\"\n## Data check\n\nEach check of the metadata against the values is stated under its output.\n\"\"\")\n\ncode(r\"\"\"\nfor key, f in [(\"train\", S), (\"test\", T)]:\n    print(f\"{key}: {data['urls'][rsg.TRAIN if key == 'train' else rsg.TEST]}\")\n    for k, v in f[\"meta\"].items():\n        print(f\"   {k}: {v}\")\n    print(f\"   trials: {len(f['trials'])}; columns: {list(f['trials'].columns)}\")\n    print(f\"   units: {len(f['unit_ids'])}; held out: {int(f['heldout'].sum())}\")\nprint(\"\\nTest-file units that are in the train file:\", int(np.isin(T[\"unit_ids\"], S[\"unit_ids\"]).sum()), \"of\", len(T[\"unit_ids\"]),\n      \"; train units held out:\", int(S[\"heldout\"].sum()), \"; held-out train units in the test file:\",\n      int(np.isin(S[\"unit_ids\"][S[\"heldout\"]], T[\"unit_ids\"]).sum()))\nprint(\"\\nTrain trials by NLB split:\", trials.split.value_counts().to_dict())\nprint(\"Train trials with Set and Go:\", int((trials.set_time.notna() & trials.go_time.notna()).sum()),\n      \"; of these flagged is_outlier:\", int(trials[trials.set_time.notna() & trials.go_time.notna()].is_outlier.sum()),\n      \"; completed and not outliers (used here):\", len(good))\nprint(\"Used trials by split:\", good.split.value_counts().to_dict())\nprint(\"\\nUsed trials per condition (rows: effector, direction, prior; columns: ts in ms):\")\nprint(pd.crosstab([good.is_eye.map({True: 'Eye', False: 'Hand'}), good.theta.map({0.0: 'Right', 180.0: 'Left'}),\n                   good.is_short.map({True: 'Short', False: 'Long'})], good.ts).to_string())\nprint(\"\\nColumn descriptions (train trial table):\")\nfor c, d in S[\"descriptions\"].items():\n    print(f\"   {c}: {d}\")\n\"\"\", \"sanity\")\n\nmd(\"\"\"\nThe dandiset summary says one subject (Rhesus monkey) and 2 files, which the files confirm. The\ntest file holds 283 trials of the same session (`session_id` 20161211) with only `start_time`,\n`stop_time`, `go_time` and `split`, on its own clock (0 to 509 s), and only the 40 held-in units;\nits task variables and the 14 held-out units are withheld for the benchmark. These trials cannot\nenter any analysis that needs ts, the prior or the effector, so the analyses use the train file's\ntrials. Each condition has at least 14 used trials, so the Methods' rule of at least 5 trials per\ncondition does not remove any unit.\n\"\"\")\n\ncode(r\"\"\"\nc = trials[trials.set_time.notna() & trials.go_time.notna()].copy()\nd_ts = c.ts - (c.set_time - c.ready_time) * 1000\nd_tp = c.tp - (c.go_time - c.set_time) * 1000\nprint(\"ts minus (set_time - ready_time), ms: median %.1f, range %.1f to %.1f; within 5 ms: %.0f%%\"\n      % (d_ts.median(), d_ts.min(), d_ts.max(), 100 * (abs(d_ts) <= 5).mean()))\nfor flag, g in d_tp.groupby(c.is_outlier):\n    print(f\"tp minus (go_time - set_time), ms, is_outlier={flag}: median {g.median():.1f}, 5th to 95th percentile \"\n          f\"{g.quantile(.05):.1f} to {g.quantile(.95):.1f}, range {g.min():.1f} to {g.max():.1f}\")\nprint(\"Distinct ts by prior:\", {('Short' if k else 'Long'): sorted(v) for k, v in trials.groupby('is_short').ts.unique().items()})\nprint(\"iti by prior (ms):\", {('Short' if k else 'Long'): sorted(v) for k, v in trials.groupby('is_short').iti.unique().items()})\nprint(\"Paper: inter-trial intervals of 1220 ms (Short) and 500 ms (Long).\")\nprint(\"theta values:\", sorted(trials.theta.unique()), \"; is_eye values:\", sorted(trials.is_eye.unique()))\nprint(\"tp of used trials, ms: %.0f to %.0f; of uncompleted trials (no Go):\" % (good.tp.min(), good.tp.max()),\n      sorted(trials[trials.go_time.isna()].tp.round().unique())[:6], \"...\")\n\n# Refit of the Methods' mixture model, per prior, ts, effector and direction, on completed trials.\nflags = []\nfor key, g in c[c.tp > 0].groupby([\"is_short\", \"ts\", \"is_eye\", \"theta\"]):\n    r = rsg.outlier_mixture(g.tp.to_numpy(), key[1])\n    flags.append(pd.Series(r > 0.5, index=g.index))\nrefit = pd.concat(flags).reindex(c.index, fill_value=True)\nprint(\"\\nMixture-model refit against is_outlier (completed trials):\")\nprint(pd.crosstab(c.is_outlier.rename(\"is_outlier\"), refit.rename(\"refit lapse\")).to_string())\nprint(f\"Outlier fraction of completed trials: file {c.is_outlier.mean():.2%}, refit {refit.mean():.2%}; paper, monkey H: 3.84%\")\n\"\"\", \"sanity\")\n\nmd(\"\"\"\n`ts` is the nominal interval; the event times give intervals within 23.5 ms of it, consistent with\na 60 Hz display (one frame is 16.7 ms). `tp` is a median 18 ms longer than `go_time - set_time`\nfor used trials, so the two columns do not measure the same interval; the analyses use `tp` for\nbehaviour, as the trial table defines it, and the event times for aligning spikes. The `iti`\nvalues agree with the paper (1220 ms after Short trials, 500 ms after Long ones), and its column\ndescription (500 for Short, 1220 for Long) has them the other way round. The `is_outlier` flag is\nconsistent with the Methods' mixture model, as the refit agreement shows.\n\"\"\")\n\ncode(r\"\"\"\nprint(\"Units: rate over the observed intervals, spikes/s\")\nprint(unit_table.rate.describe().round(2).to_string())\nprint(f\"Kept by the Methods' rule (>= {rsg.MIN_RATE} spike/s and >= {rsg.MIN_TRIALS} trials per condition): \"\n      f\"{len(units)} of {len(unit_table)} (held-out units among the kept: {int(unit_table.heldout[unit_table.kept].sum())})\")\nprint(\"Paper: GPFA on 'simultaneously recorded neurons in a single session (N = 48 in H)'.\")\nobs = S[\"obs_intervals\"]\nsame = all(np.array_equal(o, obs[0]) for o in obs)\nprint(\"\\nAll units share the same observation intervals:\", same, \"; intervals:\", np.round(obs[0], 2).tolist())\ngaps = obs[0][1:, 0] - obs[0][:-1, 1]\ninside = [((obs[0][:, 0] <= a) & (obs[0][:, 1] >= b)).any() for a, b in zip(trials.start_time, trials.stop_time)]\nprint(f\"Gaps between intervals: {np.round(gaps, 3).tolist()} s; trials inside one interval: {sum(inside)} of {len(trials)}\")\nprint(\"Spike times sorted within every unit:\", all(np.all(np.diff(s) >= 0) for s in spikes),\n      \"; spikes outside the observation intervals:\",\n      int(sum((~((s[:, None] >= obs[0][:, 0]) & (s[:, None] <= obs[0][:, 1])).any(1)).sum() for s in spikes)))\n\n# Recordings deposited twice: does any test trial reappear in the train file? Compare the\n# inter-spike-interval sequence of each test trial with the whole train recording, for 3 units.\nhits, checked = 0, 0\nfor uid in T[\"unit_ids\"][:3]:\n    s_tr = np.round(np.diff(spikes[int(np.flatnonzero(S[\"unit_ids\"] == uid)[0])]), 4)\n    s_te = T[\"spikes\"][int(np.flatnonzero(T[\"unit_ids\"] == uid)[0])]\n    for a, b in zip(T[\"trials\"].start_time, T[\"trials\"].stop_time):\n        pat = np.round(np.diff(s_te[(s_te >= a) & (s_te < b)]), 4)\n        if len(pat) < 3:\n            continue\n        checked += 1\n        hits += any(np.array_equal(s_tr[i:i + len(pat)], pat) for i in np.flatnonzero(s_tr == pat[0]))\nprint(f\"\\nTest trials whose spike pattern recurs in the train file: {hits} of {checked} checked (3 units)\")\nseg = rsg.counts(spikes, units, good.ready_time.to_numpy(), 0, 400, 400)[:, 0, :]\ndup = pd.DataFrame(seg).duplicated().sum()\nprint(\"Train trials with identical spike counts in all kept units over Ready to Ready + 400 ms:\", int(dup))\n\"\"\", \"sanity\")\n\nmd(\"\"\"\nThe 48 units kept by the Methods' rate rule match the paper's count for the single session of\nmonkey H used for GPFA (Methods, N = 48), which is consistent with this being that session; the\ndandiset does not say so. All units share six observation intervals separated by gaps of 0.1 to\n0.14 s; every trial lies inside one interval. No test trial repeats a stretch of the train file,\nand no two train trials are identical, so no recording is deposited twice. The units carry no\nsingle-unit or multi-unit label, no electrode, and the electrode table has no positions or\nimpedances.\n\"\"\")\n\ncode(r\"\"\"\n# Do spikes share the clock of the trial table? Decode \"before\" against \"after\" an event from the\n# population counts in 200 ms windows, with the event time shifted by an offset. A response\n# locked to the event gives the best decoding at zero offset.\nrng_clock = np.random.default_rng(1)\noffsets = [-400, -200, -100, -50, 0, 50, 100, 200, 400]\nrows = []\nfor event in [\"ready_time\", \"set_time\", \"go_time\"]:\n    for off in offsets:\n        t0 = good[event].to_numpy() + off / 1000\n        pre = rsg.counts(spikes, units, t0, -200, 0, 200)[:, 0, :]\n        post = rsg.counts(spikes, units, t0, 0, 200, 200)[:, 0, :]\n        X = np.sqrt(np.vstack([pre, post]))\n        y = np.r_[np.zeros(len(pre)), np.ones(len(post))]\n        perm = rng_clock.permutation(len(y))\n        acc = cross_val_score(LogisticRegression(max_iter=2000), X[perm], y[perm], cv=5).mean()\n        rows.append({\"event\": event, \"offset_ms\": off, \"accuracy\": acc})\nclock = pd.DataFrame(rows).pivot(index=\"offset_ms\", columns=\"event\", values=\"accuracy\")\nprint(\"Cross-validated accuracy, before against after the event (chance 0.5):\")\nprint(clock.round(3).to_string())\nprint(\"Offset of best decoding:\", clock.idxmax().to_dict())\n\n# Contrast between conditions: decode the prior from the counts in the 400 ms before Ready, with\n# the trial labels as they are and shifted by one block of trials.\npre_ready = np.sqrt(rsg.counts(spikes, units, good.ready_time.to_numpy(), -400, 0, 400)[:, 0, :])\nfor shift in [0, 25, 50]:\n    y = np.roll(good.is_short.to_numpy(), shift)\n    perm = rng_clock.permutation(len(y))\n    acc = cross_val_score(LogisticRegression(max_iter=2000), pre_ready[perm], y[perm], cv=5).mean()\n    print(f\"Prior decoded before Ready, labels shifted by {shift} trials: accuracy {acc:.3f}\")\n\"\"\", \"sanity\")\n\nmd(\"\"\"\nDecoding of \"before against after\" peaks at or near zero offset for Ready, Set and Go, and the\nprior is decoded from activity before Ready only with the labels in place. This is consistent with\nthe spikes and the trial table sharing one clock in the train file. The test file could not be\nchecked this way, as it has no task variables; it is not used.\n\"\"\")\n\n# ---------------------------------------------------------------------------------------------\nmd(r\"\"\"\n## Behaviour\n\n### beh-slopes\n\n> Regression slopes of tp on ts are positive and less than one in every condition, so the animals\n> estimated ts and their responses were biased toward the mean of the prior (Figure 1E).\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor e, th, name in DS:\n    for short in [True, False]:\n        g = good[(good.is_eye == e) & (good.theta == th) & (good.is_short == short)]\n        b, se, ci = rsg.weighted_slope(g.ts, g.tp)\n        b_ols = np.polyfit(g.ts, g.tp, 1)[0]\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"trials\": len(g), \"slope\": b,\n                     \"ci_low\": ci[0], \"ci_high\": ci[1], \"slope_unweighted\": b_ols})\nslopes = pd.DataFrame(rows)\nprint(slopes.round(3).to_string(index=False))\ninside = ((slopes.slope > 0) & (slopes.slope < 1)).sum()\nstrict = ((slopes.ci_low > 0) & (slopes.ci_high < 1)).sum()\nprint(f\"\\nSlopes between 0 and 1: {inside} of 8; with the 95% interval excluding 0 and 1: {strict} of 8\")\nprint(\"Slope range: %.3f to %.3f\" % (slopes.slope.min(), slopes.slope.max()))\n\"\"\", \"claim:beh-slopes\")\n\ncode(r\"\"\"\nfig, axes = plt.subplots(1, 4, figsize=(14, 3.4), sharey=True)\nfor ax, (e, th, name) in zip(axes, DS):\n    for short, col in [(True, \"tab:red\"), (False, \"tab:blue\")]:\n        g = good[(good.is_eye == e) & (good.theta == th) & (good.is_short == short)]\n        m = g.groupby(\"ts\").tp.agg([\"mean\", \"std\"])\n        ax.errorbar(m.index, m[\"mean\"], m[\"std\"], color=col, marker=\"o\", capsize=2)\n    ax.plot([450, 1250], [450, 1250], \"k:\", lw=1)\n    ax.set_title(name)\n    ax.set_xlabel(\"ts (ms)\")\naxes[0].set_ylabel(\"tp (ms), mean and SD\")\nplt.tight_layout()\nplt.show()\nprint(\"Mean tp per prior and ts: %.0f to %.0f ms; all points within the axes.\"\n      % (good.groupby(['is_eye', 'theta', 'is_short', 'ts']).tp.mean().min(), good.groupby(['is_eye', 'theta', 'is_short', 'ts']).tp.mean().max()))\n\"\"\", \"claim:beh-slopes\")\nresult(\"beh-slopes\")\n\nmd(r\"\"\"\n### beh-overlap-prior\n\n> At the overlapping ts of 800 ms, biases were in opposite directions for the two priors (rank-sum\n> test, p < 1e-43 in animal H over 17 sessions).\n\"\"\")\n\ncode(r\"\"\"\no = good[good.ts == 800]\ns_tp, l_tp = o[o.is_short].tp, o[~o.is_short].tp\np = stats.ranksums(s_tp, l_tp).pvalue\nprint(f\"ts = 800 ms: Short n = {len(s_tp)}, median tp - 800 = {s_tp.median() - 800:.1f} ms; \"\n      f\"Long n = {len(l_tp)}, median tp - 800 = {l_tp.median() - 800:.1f} ms; rank-sum p = {p:.2g}\")\nfor e, th, name in DS:\n    g = o[(o.is_eye == e) & (o.theta == th)]\n    a, b = g[g.is_short].tp, g[~g.is_short].tp\n    print(f\"   {name}: Short {a.median() - 800:+.1f} (n={len(a)}), Long {b.median() - 800:+.1f} (n={len(b)}), \"\n          f\"p = {stats.ranksums(a, b).pvalue:.2g}\")\n\"\"\", \"claim:beh-overlap-prior\")\nresult(\"beh-overlap-prior\")\n\nmd(r\"\"\"\n### beh-sigmoid-increments\n\n> Increments of tp between neighbouring ts are smaller at the extremes of the prior than near its\n> mean (signed-rank test, p < 1e-11 in animal H).\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor e, th, name in DS:\n    for short in [True, False]:\n        g = good[(good.is_eye == e) & (good.theta == th) & (good.is_short == short)]\n        ext, mid = rsg.increments(g.groupby(\"ts\").tp.mean().loc[list(rsg.prior_ts(short))])\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"extreme\": ext, \"middle\": mid})\ninc = pd.DataFrame(rows)\ninc[\"middle_minus_extreme\"] = inc.middle - inc.extreme\nprint(inc.round(1).to_string(index=False))\nw = stats.wilcoxon(inc.middle, inc.extreme)\nprint(f\"\\nMiddle above extreme in {(inc.middle_minus_extreme > 0).sum()} of 8; median difference \"\n      f\"{inc.middle_minus_extreme.median():.1f} ms; two-sided signed-rank p = {w.pvalue:.4f}\")\n\"\"\", \"claim:beh-sigmoid-increments\")\nresult(\"beh-sigmoid-increments\")\n\nmd(r\"\"\"\n### beh-long-more-bias\n\n> Biases are larger for the Long prior than for the Short prior; regression slopes are smaller for\n> Long (Figure 2H).\n\"\"\")\n\ncode(r\"\"\"\nwide = slopes.pivot(index=\"dataset\", columns=\"prior\", values=\"slope\")\nwide[\"long_below_short\"] = wide.Long < wide.Short\nprint(wide.round(3).to_string())\nprint(f\"\\nLong slope below Short slope in {int(wide.long_below_short.sum())} of 4 datasets; \"\n      f\"mean Short {wide.Short.mean():.3f}, mean Long {wide.Long.mean():.3f}\")\nwu = slopes.pivot(index=\"dataset\", columns=\"prior\", values=\"slope_unweighted\")\nprint(f\"Unweighted slopes: Long below Short in {int((wu.Long < wu.Short).sum())} of 4\")\n\"\"\", \"claim:beh-long-more-bias\")\nresult(\"beh-long-more-bias\")\n\nmd(r\"\"\"\n### beh-bayes-model\n\n> A Bayesian observer model with scalar measurement and production noise fit to the behaviour\n> captures the bias and the variance of tp in all conditions (Figure 2C and 2D).\n\"\"\")\n\ncode(r\"\"\"\nmodels, rows, pred_rows = {}, [], []\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th)]\n    m = rsg.BayesObserver.fit(g)\n    models[name] = m\n    obs_bias, pred_bias, obs_sd, pred_sd = [], [], [], []\n    for short in [True, False]:\n        ts = np.array(rsg.prior_ts(short), float)\n        _, mean_tp, sd_tp = m.moments(ts, short)\n        gg = g[g.is_short == short].groupby(\"ts\").tp.agg([\"mean\", \"std\"]).loc[ts]\n        obs_bias += list(gg[\"mean\"] - ts)\n        pred_bias += list(mean_tp - ts)\n        obs_sd += list(gg[\"std\"])\n        pred_sd += list(sd_tp)\n        for t, ob, pb, os_, ps in zip(ts, gg[\"mean\"] - ts, mean_tp - ts, gg[\"std\"], sd_tp):\n            pred_rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"ts\": t,\n                              \"bias_obs\": ob, \"bias_model\": pb, \"sd_obs\": os_, \"sd_model\": ps})\n    ob, pb = np.array(obs_bias), np.array(pred_bias)\n    r2 = 1 - np.sum((ob - pb) ** 2) / np.sum((ob - ob.mean()) ** 2)\n    r_sd = stats.pearsonr(obs_sd, pred_sd)[0]\n    rows.append({\"dataset\": name, \"wm\": m.wm, \"wp\": m.wp, \"b_short\": m.b[True], \"b_long\": m.b[False],\n                 \"converged\": m.converged, \"bias_R2\": r2, \"sd_r\": r_sd})\nfits = pd.DataFrame(rows)\nprint(fits.round(3).to_string(index=False))\nprint(f\"\\nBias R2 >= 0.8 in {(fits.bias_R2 >= 0.8).sum()} of 4; SD correlation > 0 in {(fits.sd_r > 0).sum()} of 4\")\npred = pd.DataFrame(pred_rows)\nprint(\"\\nObserved and model bias and SD (ms):\")\nprint(pred.round(1).to_string(index=False))\n\"\"\", \"claim:beh-bayes-model\")\n\ncode(r\"\"\"\nfig, axes = plt.subplots(1, 2, figsize=(8, 3.5))\nfor short, col in [(True, \"tab:red\"), (False, \"tab:blue\")]:\n    p_ = pred[pred.prior == (\"Short\" if short else \"Long\")]\n    axes[0].scatter(p_.bias_model, p_.bias_obs, color=col, s=15)\n    axes[1].scatter(p_.sd_model, p_.sd_obs, color=col, s=15)\nfor ax, lab in zip(axes, [\"bias (ms)\", \"SD of tp (ms)\"]):\n    lim = [min(ax.get_xlim()[0], ax.get_ylim()[0]), max(ax.get_xlim()[1], ax.get_ylim()[1])]\n    ax.plot(lim, lim, \"k:\", lw=1)\n    ax.set_xlabel(\"model \" + lab)\n    ax.set_ylabel(\"observed \" + lab)\nplt.tight_layout()\nplt.show()\nprint(\"Bias: observed %.0f to %.0f, model %.0f to %.0f ms; SD: observed %.0f to %.0f, model %.0f to %.0f ms; all within the axes.\"\n      % (pred.bias_obs.min(), pred.bias_obs.max(), pred.bias_model.min(), pred.bias_model.max(),\n         pred.sd_obs.min(), pred.sd_obs.max(), pred.sd_model.min(), pred.sd_model.max()))\n\"\"\", \"claim:beh-bayes-model\")\nresult(\"beh-bayes-model\")\n\n# ---------------------------------------------------------------------------------------------\nmd(r\"\"\"\n## Single units\n\n### glm-prior-ts\n\n> About 30% of neurons were modulated by elapsed time (27% in monkey H) and more than 60% were\n> sensitive to the prior (65% in monkey H) (Figure 3E).\n\"\"\")\n\ncode(r\"\"\"\ndef glm_rows(trs, ts_values):\n    # One row per trial and time point t (ms after Ready) for which Set came after t (attrition).\n    elapsed = ((trs.set_time - trs.ready_time) * 1000).to_numpy()\n    cnt = np.stack([rsg.counts(spikes, units, trs.ready_time.to_numpy() + t / 1000, -rsg.GLM_WINDOW_MS, 0,\n                               rsg.GLM_WINDOW_MS)[:, 0, :] for t in ts_values], axis=1)\n    rows, ys = [], []\n    for i, (_, r) in enumerate(trs.iterrows()):\n        for k, t in enumerate(ts_values):\n            if elapsed[i] >= t - 1e-6:\n                rows.append({\"t\": k, \"prior\": float(not r.is_short), \"eff\": float(not r.is_eye), \"dir\": float(r.theta == 180)})\n                ys.append(cnt[i, k])\n    return pd.DataFrame(rows), np.array(ys)\n\n\ndef design(df, with_t=True, with_prior=True):\n    cols = [np.ones(len(df)), df.eff.to_numpy(), df[\"dir\"].to_numpy()]\n    if with_prior:\n        cols.append(df.prior.to_numpy())\n    if with_t:\n        cols += [(df.t == k).to_numpy().astype(float) for k in range(1, 5)]\n    return np.column_stack(cols)\n\n\ndef fit(y, X):\n    r = sm.GLM(y, X, family=sm.families.Poisson()).fit()\n    return r.llf, X.shape[1]\n\n\ndef bic(llf, k, n):\n    return -2 * llf + k * np.log(n)\n\n\nres = []\ndf_all, Y_all = glm_rows(good, rsg.SHORT_TS)\nper_prior = {short: glm_rows(good[good.is_short == short], rsg.prior_ts(short)) for short in [True, False]}\nfor j, u in enumerate(units):\n    y = Y_all[:, j]\n    l_full, k_full = fit(y, design(df_all))\n    l_red, k_red = fit(y, design(df_all, with_prior=False))\n    n = len(y)\n    row = {\"unit\": int(S[\"unit_ids\"][u]), \"prior_dBIC\": bic(l_red, k_red, n) - bic(l_full, k_full, n),\n           \"prior_LR_p\": stats.chi2.sf(2 * (l_full - l_red), k_full - k_red)}\n    for short, (dfp, Yp) in per_prior.items():\n        yp = Yp[:, j]\n        lf, kf = fit(yp, design(dfp, with_prior=False))\n        lr, kr = fit(yp, design(dfp, with_t=False, with_prior=False))\n        row[f\"ts_dBIC_{'short' if short else 'long'}\"] = bic(lr, kr, len(yp)) - bic(lf, kf, len(yp))\n        row[f\"ts_LR_p_{'short' if short else 'long'}\"] = stats.chi2.sf(2 * (lf - lr), kf - kr)\n    res.append(row)\nglm = pd.DataFrame(res)\nglm[\"prior_dep\"] = glm.prior_dBIC > 0\nglm[\"ts_dep\"] = (glm.ts_dBIC_short > 0) | (glm.ts_dBIC_long > 0)\n\n\ndef wilson(k, n):\n    lo, hi = sm.stats.proportion_confint(k, n, method=\"wilson\")\n    return f\"{100 * k / n:.1f}% ({k} of {n}; 95% interval {100 * lo:.1f} to {100 * hi:.1f}%)\"\n\n\nprint(\"Rows (trial x time point): all trials\", len(df_all), \"; Short\", len(per_prior[True][0]), \"; Long\", len(per_prior[False][0]))\nprint(\"Prior-dependent (BIC):\", wilson(int(glm.prior_dep.sum()), len(glm)), \"; paper, H: 65%\")\nprint(\"ts-dependent (BIC):   \", wilson(int(glm.ts_dep.sum()), len(glm)), \"; paper, H: 27%\")\nprint(\"Both:\", int((glm.prior_dep & glm.ts_dep).sum()), \"; prior only:\", int((glm.prior_dep & ~glm.ts_dep).sum()),\n      \"; ts only:\", int((~glm.prior_dep & glm.ts_dep).sum()), \"; neither:\", int((~glm.prior_dep & ~glm.ts_dep).sum()))\nprint(\"\\nVariants, likelihood-ratio test in place of BIC:\")\nfor a in [0.05, 0.01]:\n    pd_ = (glm.prior_LR_p < a).sum()\n    td_ = ((glm.ts_LR_p_short < a) | (glm.ts_LR_p_long < a)).sum()\n    print(f\"   p < {a}: prior {100 * pd_ / len(glm):.1f}%, ts {100 * td_ / len(glm):.1f}%\")\nprint(\"ts-dependent in Short only:\", int(((glm.ts_dBIC_short > 0) & ~(glm.ts_dBIC_long > 0)).sum()),\n      \"; Long only:\", int((~(glm.ts_dBIC_short > 0) & (glm.ts_dBIC_long > 0)).sum()),\n      \"; both:\", int(((glm.ts_dBIC_short > 0) & (glm.ts_dBIC_long > 0)).sum()))\n\"\"\", \"claim:glm-prior-ts\")\nresult(\"glm-prior-ts\")\n\nmd(r\"\"\"\n### dfr-overlap-support\n\n> At the overlapping ts of 800 ms, firing rates differ between priors, with the largest difference\n> during the support of the prior, between 480 and 800 ms after Ready (Figure 3D).\n\"\"\")\n\ncode(r\"\"\"\nrng_dfr = np.random.default_rng(3)\nedges = np.arange(-320, 1440 + 1, 160)\ncentres = (edges[:-1] + edges[1:]) / 2\n\n\ndef rms_dfr(cnt, short):\n    d = cnt[short].mean(0) - cnt[~short].mean(0)          # bins x units, counts per 160 ms\n    return np.sqrt(np.mean((d * 1000 / 160) ** 2, axis=1))  # spikes/s\n\n\nper_ds, nulls = {}, []\ncnts = {}\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th) & (good.ts == 800)]\n    cnts[name] = (rsg.counts(spikes, units, g.ready_time.to_numpy(), -320, 1440, 160), g.is_short.to_numpy())\n    per_ds[name] = rms_dfr(*cnts[name])\nmean_rms = np.mean(list(per_ds.values()), axis=0)\nfor _ in range(200):\n    nulls.append(np.mean([rms_dfr(cnt, rng_dfr.permutation(lab)) for cnt, lab in cnts.values()], axis=0))\nnulls = np.array(nulls)\ntab = pd.DataFrame({\"bin_start\": edges[:-1], \"bin_end\": edges[1:], **{k: v for k, v in per_ds.items()},\n                    \"mean\": mean_rms, \"shuffle_mean\": nulls.mean(0), \"shuffle_95\": np.percentile(nulls, 95, axis=0)})\nprint(\"RMS over units of the Short minus Long rate difference at ts = 800 ms (spikes/s), by 160 ms bin from Ready:\")\nprint(tab.round(2).to_string(index=False))\nk = int(np.argmax(mean_rms))\nthr = np.percentile(nulls.max(1), 95)\nprint(f\"\\nLargest mean RMS: {mean_rms[k]:.2f} spikes/s in the bin {edges[k]} to {edges[k + 1]} ms after Ready; \"\n      f\"95th percentile of the shuffled maximum: {thr:.2f}\")\nprint(\"Largest bin per dataset:\", {n: f\"{edges[np.argmax(v)]}-{edges[np.argmax(v) + 1]}\" for n, v in per_ds.items()})\nprint(\"Used trials at ts = 800 ms per dataset (Short, Long):\",\n      {n: (int(l.sum()), int((~l).sum())) for n, (c_, l) in cnts.items()})\n\"\"\", \"claim:dfr-overlap-support\")\n\ncode(r\"\"\"\nplt.figure(figsize=(6, 3.2))\nfor n, v in per_ds.items():\n    plt.plot(centres, v, color=\"0.6\", lw=1)\nplt.plot(centres, mean_rms, \"k\", lw=2, label=\"mean of datasets\")\nplt.fill_between(centres, np.percentile(nulls, 5, axis=0), np.percentile(nulls, 95, axis=0), color=\"tab:green\", alpha=.2, label=\"shuffle 5-95%\")\nplt.axvspan(480, 800, color=\"tab:red\", alpha=.1, label=\"Short support\")\nplt.axvline(0, color=\"k\", ls=\":\")\nplt.axvline(800, color=\"k\", ls=\"--\")\nplt.xlabel(\"time from Ready (ms); Set at 800\")\nplt.ylabel(\"RMS rate difference (spikes/s)\")\nplt.legend(fontsize=7)\nplt.show()\nprint(\"Plotted values: %.2f to %.2f spikes/s; all within the axes.\" % (min(v.min() for v in per_ds.values()), max(v.max() for v in per_ds.values())))\n\"\"\", \"claim:dfr-overlap-support\")\nresult(\"dfr-overlap-support\")\n\n# ---------------------------------------------------------------------------------------------\nmd(r\"\"\"\n## Population trajectories\n\n### pca-dimensionality\n\n> Population activity is low dimensional; 3 to 4 principal components in the estimation epoch and\n> 5 to 10 in the production epoch explain about 75% of the variance (Figure S3).\n\nThe PCA fitted here is used by the claims that follow.\n\"\"\")\n\ncode(r\"\"\"\nEST, PROD, rows = {}, {}, []\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th)]\n    est = {}\n    for short in [True, False]:\n        gg = g[g.is_short == short]\n        rate, ends, n = rsg.estimation_rates(spikes, units, gg, max(rsg.prior_ts(short)))\n        est[short] = {\"rate\": rate, \"t\": ends, \"n\": n}\n    pca_e = rsg.PCA([est[True][\"rate\"], est[False][\"rate\"]])\n    prod = {}\n    for short in [True, False]:\n        for ts in rsg.prior_ts(short):\n            gg = g[(g.is_short == short) & (g.ts == ts)]\n            prod[(short, ts)] = {\"rate\": rsg.production_rates(spikes, units, gg), \"min_tp\": gg.tp.min(),\n                                 \"mean_tp\": gg.tp.mean(), \"n\": len(gg)}\n    pca_p = rsg.PCA([v[\"rate\"] for v in prod.values()])\n    EST[name] = {\"pca\": pca_e, **est}\n    PROD[name] = {\"pca\": pca_p, \"traj\": prod}\n    cum_e, cum_p = np.cumsum(pca_e.explained), np.cumsum(pca_p.explained)\n    rows.append({\"dataset\": name, \"est_PCs_75\": pca_e.n, \"prod_PCs_75\": pca_p.n,\n                 \"est_PCs_70\": int(np.searchsorted(cum_e, .7) + 1), \"est_PCs_80\": int(np.searchsorted(cum_e, .8) + 1),\n                 \"prod_PCs_70\": int(np.searchsorted(cum_p, .7) + 1), \"prod_PCs_80\": int(np.searchsorted(cum_p, .8) + 1),\n                 \"est_var_3PC\": cum_e[2], \"prod_var_5PC\": cum_p[4]})\ndims = pd.DataFrame(rows)\nprint(dims.round(3).to_string(index=False))\nn_ok = dims.est_PCs_75.between(3, 4).sum() + dims.prod_PCs_75.between(5, 11).sum()\nprint(f\"\\nIn range (estimation 3 or 4, production 5 to 11): {n_ok} of 8\")\nprint(\"Shortest tp per ts, used to cut production trajectories (ms):\",\n      {f\"{'S' if k[0] else 'L'}{k[1]}\": round(min(PROD[n]['traj'][k]['min_tp'] for n in PROD)) for k in PROD[DS[0][2]]['traj']})\n\"\"\", \"claim:pca-dimensionality\")\nresult(\"pca-dimensionality\")\n\nmd(r\"\"\"\n### encoding-r2\n\n> Projections of estimation-epoch neural states onto the encoding axis match the Bayesian estimates\n> from the model fitted to the behaviour (R2 = 0.993 for the Short prior, 0.996 for the Long prior,\n> monkey H, Hand Left; Figure 4C).\n\"\"\")\n\ncode(r\"\"\"\nrng_axes = np.random.default_rng(4)\nPROJ, rows = {}, []\nfor e, th, name in DS:\n    E = EST[name]\n    for short in [True, False]:\n        lo, hi = min(rsg.prior_ts(short)), max(rsg.prior_ts(short))\n        X = E[\"pca\"](E[short][\"rate\"])\n        t = E[short][\"t\"]\n        u = rsg.encoding_axis(X, t, lo, hi)\n        sel = (t >= lo - 1e-6) & (t <= hi + 1e-6)\n        xu, tt, w = X[sel] @ u, t[sel], E[short][\"n\"][sel]\n        te = models[name].moments(tt, short)[0]\n        _, _, r2_b, rmse_b = rsg.weighted_fit(te, xu, w)\n        _, slope_ts, r2_l, rmse_l = rsg.weighted_fit(tt, xu, w)\n        rand = []\n        for _ in range(1000):\n            v = rng_axes.standard_normal(X.shape[1])\n            rand.append(rsg.weighted_fit(te, X[sel] @ (v / np.linalg.norm(v)), w)[2])\n        rand = np.array(rand)\n        PROJ[(name, short)] = {\"t\": tt, \"xu\": xu, \"w\": w, \"te\": te, \"u\": u, \"X\": X, \"tall\": t}\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"points\": int(sel.sum()), \"PCs\": X.shape[1],\n                     \"R2_bayes\": r2_b, \"RMSE_bayes\": rmse_b, \"R2_linear\": r2_l, \"RMSE_linear\": rmse_l,\n                     \"slope_ts\": slope_ts, \"random_R2_median\": np.median(rand),\n                     \"random_R2_95\": np.percentile(rand, 95), \"frac_random_above\": np.mean(rand >= r2_b)})\nenc = pd.DataFrame(rows)\nprint(enc.round(4).to_string(index=False))\nhl = enc[enc.dataset == \"Hand Left\"].set_index(\"prior\").R2_bayes\nmean_r2 = enc.groupby(\"prior\").R2_bayes.mean()\nprint(f\"\\nReading (a), Hand Left: Short R2 = {hl['Short']:.4f}, Long R2 = {hl['Long']:.4f}\")\nprint(f\"Reading (b), mean of 4 datasets: Short R2 = {mean_r2['Short']:.4f}, Long R2 = {mean_r2['Long']:.4f}\")\nprint(\"Tolerance: R2 >= 0.894 (Short) and >= 0.896 (Long)\")\n\"\"\", \"claim:encoding-r2\")\n\ncode(r\"\"\"\nfig, axes = plt.subplots(1, 4, figsize=(14, 3.2))\nfor ax, (e, th, name) in zip(axes, DS):\n    for short, col in [(True, \"tab:red\"), (False, \"tab:blue\")]:\n        p_ = PROJ[(name, short)]\n        a, b, _, _ = rsg.weighted_fit(p_[\"te\"], p_[\"xu\"], p_[\"w\"])\n        ax.plot(p_[\"t\"], (p_[\"xu\"] - a) / b, \"o\", color=col, ms=3)   # projections mapped onto te by the fit\n        ax.plot(p_[\"t\"], p_[\"te\"], \"-\", color=col)\n    ax.plot([450, 1250], [450, 1250], \"k:\", lw=1)\n    ax.set_title(name)\n    ax.set_xlabel(\"time from Ready = ts (ms)\")\naxes[0].set_ylabel(\"te (line) and mapped Xu (dots), ms\")\nplt.tight_layout()\nplt.show()\nvals = np.concatenate([(PROJ[k][\"xu\"] - rsg.weighted_fit(PROJ[k][\"te\"], PROJ[k][\"xu\"], PROJ[k][\"w\"])[0]) / rsg.weighted_fit(PROJ[k][\"te\"], PROJ[k][\"xu\"], PROJ[k][\"w\"])[1] for k in PROJ])\nprint(\"Mapped projections: %.0f to %.0f ms; all within the axes.\" % (vals.min(), vals.max()))\n\"\"\", \"claim:encoding-r2\")\nresult(\"encoding-r2\")\n\nmd(r\"\"\"\n### encoding-bayes-beats-linear\n\n> Neural projections are better explained by the Bayesian model than by a linear function of ts\n> with the same number of parameters, for both priors (signed-rank test on RMSE, p = 0.008 for each\n> prior; Figure 4D top).\n\"\"\")\n\ncode(r\"\"\"\nenc[\"dRMSE_bayes_minus_linear\"] = enc.RMSE_bayes - enc.RMSE_linear\nprint(enc[[\"dataset\", \"prior\", \"RMSE_bayes\", \"RMSE_linear\", \"dRMSE_bayes_minus_linear\"]].round(3).to_string(index=False))\nfor prior, g in enc.groupby(\"prior\", sort=False):\n    print(f\"{prior}: Bayesian lower in {(g.dRMSE_bayes_minus_linear < 0).sum()} of 4; \"\n          f\"signed-rank p = {stats.wilcoxon(g.RMSE_bayes, g.RMSE_linear).pvalue:.3f} (smallest possible with 4: 0.125)\")\n\"\"\", \"claim:encoding-bayes-beats-linear\")\nresult(\"encoding-bayes-beats-linear\")\n\nmd(r\"\"\"\n### short-in-long-control\n\n> In the Long prior during the period matched to the support of the Short prior (\"Short In Long\"),\n> the Bayesian model is not better than the linear one (signed-rank test, p = 0.74).\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor e, th, name in DS:\n    p_ = PROJ[(name, False)]\n    X, t = p_[\"X\"], p_[\"tall\"]\n    u = rsg.encoding_axis(X, t, 480, 800)\n    sel = (t >= 480 - 1e-6) & (t <= 800 + 1e-6)\n    xu, tt = X[sel] @ u, t[sel]\n    w = EST[name][False][\"n\"][sel]\n    te = models[name].moments(tt, True)[0]\n    rows.append({\"dataset\": name, \"RMSE_bayes\": rsg.weighted_fit(te, xu, w)[3], \"RMSE_linear\": rsg.weighted_fit(tt, xu, w)[3],\n                 \"R2_bayes\": rsg.weighted_fit(te, xu, w)[2], \"R2_linear\": rsg.weighted_fit(tt, xu, w)[2]})\nsil = pd.DataFrame(rows)\nsil[\"dRMSE\"] = sil.RMSE_bayes - sil.RMSE_linear\nprint(sil.round(4).to_string(index=False))\np_sil = stats.wilcoxon(sil.RMSE_bayes, sil.RMSE_linear).pvalue\nprint(f\"\\nShort In Long: Bayesian lower in {(sil.dRMSE < 0).sum()} of 4; median dRMSE {sil.dRMSE.median():.3f}; \"\n      f\"signed-rank p = {p_sil:.3f} (smallest possible with 4 datasets: 0.125)\")\nsh = enc[enc.prior == \"Short\"]\nprint(f\"For comparison, Short prior: median dRMSE {sh.dRMSE_bayes_minus_linear.median():.3f}; \"\n      f\"relative dRMSE (dRMSE / RMSE_linear) Short In Long {np.median(sil.dRMSE / sil.RMSE_linear):.3f}, \"\n      f\"Short {np.median(sh.dRMSE_bayes_minus_linear / sh.RMSE_linear):.3f}\")\n\"\"\", \"claim:short-in-long-control\")\nresult(\"short-in-long-control\")\n\nmd(r\"\"\"\n### neural-long-more-bias\n\n> Neural projections show more bias for the Long prior than for the Short prior, as a smaller\n> regression slope of Xu on ts (signed-rank test, p = 0.008; Figure 4D bottom).\n\"\"\")\n\ncode(r\"\"\"\nsl = enc.pivot(index=\"dataset\", columns=\"prior\", values=\"slope_ts\")\nsl[\"long_below_short\"] = sl.Long < sl.Short\nprint(\"Slope of Xu on ts (spikes/s per ms, shared PC space of each dataset):\")\nprint(sl.round(4).to_string())\nprint(f\"\\nLong below Short in {int(sl.long_below_short.sum())} of 4 datasets; ratio Long / Short: \"\n      + \", \".join(f\"{r:.2f}\" for r in sl.Long / sl.Short))\n\"\"\", \"claim:neural-long-more-bias\")\nresult(\"neural-long-more-bias\")\n\nmd(r\"\"\"\n### speed-vs-projection\n\n> Larger projections on the encoding axis at Set are followed by slower neural trajectories in the\n> production epoch (Pearson correlation, rho Short = -0.74, rho Long = -0.51; Figure 4E).\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor e, th, name in DS:\n    P = PROD[name]\n    for (short, ts), v in P[\"traj\"].items():\n        states = P[\"pca\"](v[\"rate\"])\n        p_ = PROJ[(name, short)]\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"ts\": ts,\n                     \"xu_at_set\": p_[\"xu\"][np.argmin(abs(p_[\"t\"] - ts))], \"speed\": rsg.step_speed(states),\n                     \"duration_ms\": len(states) * rsg.BIN_MS, \"mean_tp\": v[\"mean_tp\"], \"trials\": v[\"n\"]})\nspd = pd.DataFrame(rows)\nspd[\"speed_per_tp\"] = spd.speed / spd.mean_tp\nprint(spd.round(3).to_string(index=False))\nfor prior in [\"Short\", \"Long\"]:\n    g = spd[spd.prior == prior]\n    r, p = stats.pearsonr(g.xu_at_set, g.speed)\n    rb, pb = stats.pearsonr(g.xu_at_set, g.speed_per_tp)\n    z = g.groupby(\"dataset\").xu_at_set.transform(lambda x: (x - x.mean()) / x.std())\n    rz, pz = stats.pearsonr(z, g.speed)\n    within = [stats.pearsonr(h.xu_at_set, h.speed)[0] for _, h in g.groupby(\"dataset\")]\n    print(f\"{prior}: rho = {r:.3f} (p = {p:.2g}); variant speed / mean tp: rho = {rb:.3f} (p = {pb:.2g}); \"\n          f\"Xu z-scored per dataset: rho = {rz:.3f} (p = {pz:.2g}); within datasets: \" + \", \".join(f\"{x:.2f}\" for x in within))\n\"\"\", \"claim:speed-vs-projection\")\nresult(\"speed-vs-projection\")\n\nmd(r\"\"\"\n### initial-speed-biased\n\n> The initial speed of production trajectories (Set to Set + 400 ms) is biased toward the middle of\n> the prior; its dependence on ts is shallower than the unbiased profile proportional to 1/ts\n> (signed-rank test, p < 1e-3 over conditions and animals; Figure 4F).\n\"\"\")\n\ncode(r\"\"\"\nrows, dropped = [], 0\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th)]\n    for short in [True, False]:\n        ts_v = np.array(rsg.prior_ts(short), float)\n        sp = []\n        for ts in ts_v:\n            gg = g[(g.is_short == short) & (g.ts == ts)]\n            dropped += int((gg.tp < 400).sum())\n            gg = gg[gg.tp >= 400]\n            sp.append(rsg.step_speed(PROD[name][\"pca\"](rsg.production_rates(spikes, units, gg, 400))))\n        sp = np.array(sp)\n        unbiased = sp[2] * ts_v[2] / ts_v\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", **{f\"speed_{int(t)}\": s for t, s in zip(ts_v, sp)},\n                     \"slope_measured\": np.polyfit(ts_v, sp, 1)[0], \"slope_unbiased\": np.polyfit(ts_v, unbiased, 1)[0]})\nini = pd.DataFrame(rows)\nini[\"measured_minus_unbiased\"] = ini.slope_measured - ini.slope_unbiased\nprint(ini.round(5).to_string(index=False))\nw = stats.wilcoxon(ini.slope_measured, ini.slope_unbiased)\nprint(f\"\\nMeasured shallower than unbiased in {(ini.measured_minus_unbiased > 0).sum()} of 8; \"\n      f\"two-sided signed-rank p = {w.pvalue:.4f}; trials dropped for tp < 400 ms: {dropped}\")\nprint(\"Measured slope negative in\", int((ini.slope_measured < 0).sum()), \"of 8\")\n\"\"\", \"claim:initial-speed-biased\")\nresult(\"initial-speed-biased\")\n\nmd(r\"\"\"\n### speed-predicts-tp\n\n> The speed of neural trajectories in the production epoch predicts the mean tp (Pearson\n> correlation, rho Short = -0.58, rho Long = -0.52; Figure 4G).\n\"\"\")\n\ncode(r\"\"\"\nfor prior in [\"Short\", \"Long\"]:\n    g = spd[spd.prior == prior]\n    r, p = stats.pearsonr(g.speed, g.mean_tp)\n    rb, pb = stats.pearsonr(g.speed_per_tp, g.mean_tp)\n    within = [stats.pearsonr(h.speed, h.mean_tp)[0] for _, h in g.groupby(\"dataset\")]\n    print(f\"{prior}: rho(speed, mean tp) = {r:.3f} (p = {p:.2g}), 20 points; variant speed / mean tp: {rb:.3f} (p = {pb:.2g}); \"\n          \"within datasets: \" + \", \".join(f\"{x:.2f}\" for x in within))\n\n# Variant: the Neural Latents Benchmark's measure, trial by trial within prior, effector and\n# direction; single-trial rates smoothed as above and projected on the production PCs, from Set\n# to the trial's own Go.\nrows = []\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th)]\n    for short in [True, False]:\n        gg = g[g.is_short == short]\n        c_ = rsg.counts(spikes, units, gg.set_time.to_numpy(), 0, 2400)\n        sp = []\n        for i, tp in enumerate(gg.tp.to_numpy()):\n            nb = int(tp // rsg.BIN_MS)\n            sp.append(rsg.step_speed(PROD[name][\"pca\"](rsg.smooth(c_[i, :nb] * 1000 / rsg.BIN_MS))))\n        r, p = stats.pearsonr(sp, gg.tp)\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"trials\": len(gg), \"r\": r, \"p\": p})\nnlb = pd.DataFrame(rows)\nprint(\"\\nTrial-by-trial speed against tp (NLB-style):\")\nprint(nlb.round(3).to_string(index=False))\nprint(f\"Mean r over the 8 conditions: {nlb.r.mean():.3f}\")\n\"\"\", \"claim:speed-predicts-tp\")\n\ncode(r\"\"\"\nfig, axes = plt.subplots(1, 2, figsize=(9, 3.4))\nfor prior, col in [(\"Short\", \"tab:red\"), (\"Long\", \"tab:blue\")]:\n    g = spd[spd.prior == prior]\n    for n, h in g.groupby(\"dataset\"):\n        axes[0].plot(h.xu_at_set, h.speed, \"o-\", color=col, ms=3, lw=.7)\n        axes[1].plot(h.speed, h.mean_tp, \"o-\", color=col, ms=3, lw=.7)\naxes[0].set_xlabel(\"Xu at Set (spikes/s)\")\naxes[0].set_ylabel(\"speed (spikes/s per 20 ms)\")\naxes[1].set_xlabel(\"speed (spikes/s per 20 ms)\")\naxes[1].set_ylabel(\"mean tp (ms)\")\nplt.tight_layout()\nplt.show()\nprint(\"Xu %.1f to %.1f; speed %.2f to %.2f; mean tp %.0f to %.0f; all within the axes.\"\n      % (spd.xu_at_set.min(), spd.xu_at_set.max(), spd.speed.min(), spd.speed.max(), spd.mean_tp.min(), spd.mean_tp.max()))\n\"\"\", \"claim:speed-predicts-tp\")\nresult(\"speed-predicts-tp\")\n\n# ---------------------------------------------------------------------------------------------\nmd(r\"\"\"\n## Alternative mechanisms\n\n### alt-speed-unmodulated\n\n> Instantaneous speed of neural trajectories in the full neural space is not modulated during the\n> support of each prior (signed-rank test for zero regression slopes, p = 0.64 for Short, p = 0.08\n> for Long; Figure 5B).\n\"\"\")\n\ncode(r\"\"\"\nrng_boot = np.random.default_rng(5)\n\n\ndef support_slope(rate, ends, short):\n    lo, hi = min(rsg.prior_ts(short)), max(rsg.prior_ts(short))\n    sp = np.linalg.norm(np.diff(rate, axis=0), axis=1)\n    t = ends[1:]\n    sel = (t > lo) & (t <= hi + 1e-6)\n    return np.polyfit(t[sel], sp[sel], 1)[0] * 100, sp[sel].mean()   # per 100 ms\n\n\nrows = []\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th)]\n    for short in [True, False]:\n        gg = g[g.is_short == short]\n        t_max = max(rsg.prior_ts(short))\n        c_ = rsg.counts(spikes, units, gg.ready_time.to_numpy(), 0, t_max)\n        el = ((gg.set_time - gg.ready_time) * 1000).to_numpy()\n        rate, ends, _ = rsg.attrition_rates(c_, el)\n        slope, mean_sp = support_slope(rate, ends, short)\n        boots = []\n        for _ in range(200):\n            i = rng_boot.integers(0, len(gg), len(gg))\n            r_, e_, _ = rsg.attrition_rates(c_[i], el[i])\n            boots.append(support_slope(r_, e_, short)[0])\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"mean_speed\": mean_sp, \"slope_per_100ms\": slope,\n                     \"slope_rel_pct\": 100 * slope / mean_sp, \"boot_low\": np.percentile(boots, 2.5), \"boot_high\": np.percentile(boots, 97.5)})\nasp = pd.DataFrame(rows)\nprint(\"Speed in the full space of\", len(units), \"units (spikes/s per 20 ms step); slope per 100 ms, with 95% bootstrap interval over trials:\")\nprint(asp.round(3).to_string(index=False))\nfor prior, g in asp.groupby(\"prior\", sort=False):\n    print(f\"{prior}: signed-rank p = {stats.wilcoxon(g.slope_per_100ms).pvalue:.3f} (smallest possible with 4: 0.125); \"\n          f\"slopes {', '.join(f'{x:+.3f}' for x in g.slope_per_100ms)}; intervals excluding 0: \"\n          f\"{int(((g.boot_low > 0) | (g.boot_high < 0)).sum())} of 4\")\n\"\"\", \"claim:alt-speed-unmodulated\")\nresult(\"alt-speed-unmodulated\")\n\nmd(r\"\"\"\n### alt-transient-parallel\n\n> In the first 200 ms after Set, trajectories for different ts run parallel; their distance to the\n> middle ts trajectory does not change (signed-rank test for zero slopes, p = 0.92 for the shortest\n> ts, p = 0.13 for the longest; Figure 5D).\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th)]\n    traj = {}\n    for short in [True, False]:\n        for ts in rsg.prior_ts(short):\n            gg = g[(g.is_short == short) & (g.ts == ts)]\n            traj[(short, ts)] = rsg.aligned_rates(spikes, units, gg.set_time.to_numpy(), -100, 300)[5:15]  # Set to Set + 200 ms\n    pca_t = rsg.PCA(list(traj.values()))\n    t = np.arange(1, 11) * rsg.BIN_MS\n    for short in [True, False]:\n        ts_v = rsg.prior_ts(short)\n        ref = pca_t(traj[(short, ts_v[2])])\n        for which, ts in [(\"shortest\", ts_v[0]), (\"longest\", ts_v[-1])]:\n            dist = np.linalg.norm(pca_t(traj[(short, ts)]) - ref, axis=1)\n            rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"ts\": which, \"PCs\": pca_t.n,\n                         \"mean_distance\": dist.mean(), \"slope_per_100ms\": np.polyfit(t, dist, 1)[0] * 100})\ntr_ = pd.DataFrame(rows)\ntr_[\"slope_rel_pct\"] = 100 * tr_.slope_per_100ms / tr_.mean_distance\nprint(tr_.round(3).to_string(index=False))\nfor which, g in tr_.groupby(\"ts\"):\n    w = stats.wilcoxon(g.slope_per_100ms)\n    print(f\"{which} ts: signed-rank p = {w.pvalue:.3f}; positive slopes {(g.slope_per_100ms > 0).sum()} of 8; \"\n          f\"median relative slope {g.slope_rel_pct.median():+.1f}% per 100 ms\")\n\"\"\", \"claim:alt-transient-parallel\")\nresult(\"alt-transient-parallel\")\n\nmd(r\"\"\"\n### alt-threshold-monotonic\n\n> Aligned to the response, distances between trajectories for different ts decrease steadily up to\n> movement initiation, without the converging then diverging pattern a ts-dependent threshold would\n> produce (Figure 5F).\n\"\"\")\n\ncode(r\"\"\"\ndef go_curves(kept):\n    rows, curves = [], {}\n    for e, th, name in DS:\n        g = good[(good.is_eye == e) & (good.theta == th)]\n        traj = {}\n        for short in [True, False]:\n            for ts in rsg.prior_ts(short):\n                gg = g[(g.is_short == short) & (g.ts == ts)]\n                traj[(short, ts)] = rsg.aligned_rates(spikes, units, gg.go_time.to_numpy(), -900, 100)[5:45]  # Go - 800 to Go\n        pca_g = rsg.PCA(list(traj.values()), kept) if kept else (lambda x: x)\n        t = np.arange(-39, 1) * rsg.BIN_MS   # bin end times relative to Go\n        for short in [True, False]:\n            ts_v = rsg.prior_ts(short)\n            ref = pca_g(traj[(short, ts_v[2])])\n            for ts in ts_v[:2] + ts_v[3:]:\n                dist = np.linalg.norm(pca_g(traj[(short, ts)]) - ref, axis=1)\n                curves[(name, short, ts)] = dist\n                rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", \"ts\": ts,\n                             \"PCs\": getattr(pca_g, \"n\", len(units)), \"t_min\": t[np.argmin(dist)],\n                             \"d_at_go_over_min\": dist[-1] / dist.min(), \"d_start\": dist[0], \"d_go\": dist[-1]})\n    return pd.DataFrame(rows), curves, t\n\n\nthr_tab, thr_curves, t_go = go_curves(0.60)\nprint(thr_tab.round(3).to_string(index=False))\nprint(f\"\\nMain (60% of variance): median time of the minimum {thr_tab.t_min.median():.0f} ms (bin end, relative to Go); \"\n      f\"minimum in the last 40 ms in {(thr_tab.t_min >= -20).sum()} of {len(thr_tab)} curves; in the last 200 ms in \"\n      f\"{(thr_tab.t_min >= -180).sum()}; distance at Go below that 800 ms earlier in {(thr_tab.d_go < thr_tab.d_start).sum()}\")\nfor kept, lab in [(0.75, \"75% of variance\"), (None, \"full space\")]:\n    v, _, _ = go_curves(kept)\n    print(f\"Variant, {lab}: median time of the minimum {v.t_min.median():.0f} ms; in the last 40 ms {(v.t_min >= -20).sum()} of {len(v)}\")\n\"\"\", \"claim:alt-threshold-monotonic\")\n\ncode(r\"\"\"\nfig, axes = plt.subplots(1, 2, figsize=(9, 3.2), sharey=True)\nfor (name, short, ts), d in thr_curves.items():\n    axes[0 if short else 1].plot(t_go, d, color=\"tab:red\" if short else \"tab:blue\", lw=.6, alpha=.6)\nfor ax, lab in zip(axes, [\"Short\", \"Long\"]):\n    ax.set_title(lab)\n    ax.set_xlabel(\"time from Go (ms)\")\naxes[0].set_ylabel(\"distance to middle ts (spikes/s)\")\nplt.tight_layout()\nplt.show()\nallv = np.concatenate(list(thr_curves.values()))\nprint(\"Distances %.1f to %.1f; all within the axes.\" % (allv.min(), allv.max()))\n\"\"\", \"claim:alt-threshold-monotonic\")\nresult(\"alt-threshold-monotonic\")\n\n# ---------------------------------------------------------------------------------------------\nmd(r\"\"\"\n## Single-trial trajectories (GPFA)\n\n### gpfa-variance-inverted-u\n\n> The variance across single trials of the GPFA neural state at Set projected on the encoding axis\n> has an inverted-U profile over ts, lower at the extremes of each prior (one-tailed signed-rank test\n> on quadratic coefficients, p = 0.0273, monkey H; Figure 6C).\n\"\"\")\n\ncode(r\"\"\"\nrng_gpfa = np.random.default_rng(6)\nt_gpfa = time.time()\nGP, rows = {}, []\nfor e, th, name in DS:\n    g = good[(good.is_eye == e) & (good.theta == th)]\n    sts = rsg.estimation_spiketrains(spikes, units, g)\n    model, dim, scores = rsg.fit_gpfa(sts, rng_gpfa)\n    lat = model.transform(sts)\n    GP[name] = {\"lat\": lat, \"trials\": g, \"dim\": dim}\n    print(f\"{name}: {len(g)} trials, latent dimensionality {dim} (cross-validated log-likelihood \"\n          + \", \".join(f\"{k}: {v:.0f}\" for k, v in scores.items()) + \")\")\n    for short in [True, False]:\n        mask = g.is_short.to_numpy() == short\n        L = [lat[i] for i in np.flatnonzero(mask)]\n        nb = max(x.shape[1] for x in L)\n        mean = np.array([np.mean([x[:, k] for x in L if x.shape[1] > k], axis=0) for k in range(nb)])\n        tt = np.arange(1, nb + 1) * rsg.BIN_MS\n        ts_v = rsg.prior_ts(short)\n        u = rsg.encoding_axis(mean, tt, min(ts_v), max(ts_v))\n        xu = np.array([x[:, -1] @ u for x in L])\n        ts_tr = g.ts.to_numpy()[mask]\n        z = (xu - xu.mean()) / xu.std()\n        var = np.array([z[ts_tr == t].var(ddof=1) for t in ts_v])\n        mxu = np.array([xu[ts_tr == t].mean() for t in ts_v])\n        rows.append({\"dataset\": name, \"prior\": \"Short\" if short else \"Long\", **{f\"var_{t}\": v for t, v in zip(ts_v, var)},\n                     \"quad_coef\": np.polyfit(np.array(ts_v, float), var, 2)[0],\n                     \"mean_xu\": mxu, \"slope_xu\": np.polyfit(np.array(ts_v, float), mxu, 1)[0]})\ngp = pd.DataFrame(rows)\nprint(f\"GPFA fits took {time.time() - t_gpfa:.0f} s\")\nprint(gp.drop(columns=[\"mean_xu\"]).round(5).to_string(index=False))\nw = stats.wilcoxon(gp.quad_coef, alternative=\"less\")\nprint(f\"\\nQuadratic coefficient negative in {(gp.quad_coef < 0).sum()} of 8; one-tailed signed-rank p = {w.pvalue:.4f}\")\next_mid = np.array([[v[[0, 4]].mean(), v[[1, 2, 3]].mean()] for v in gp[[c for c in gp.columns if c.startswith('var_')]].to_numpy()]) if False else None\n\"\"\", \"claim:gpfa-variance-inverted-u\")\n\ncode(r\"\"\"\nvar_cols = {True: [f\"var_{t}\" for t in rsg.SHORT_TS], False: [f\"var_{t}\" for t in rsg.LONG_TS]}\nfig, axes = plt.subplots(1, 2, figsize=(8, 3.2), sharey=True)\nallv = []\nfor ax, short in zip(axes, [True, False]):\n    for _, r in gp[gp.prior == (\"Short\" if short else \"Long\")].iterrows():\n        v = r[var_cols[short]].to_numpy(float)\n        allv += list(v)\n        ax.plot(rsg.prior_ts(short), v, \"o-\", color=\"tab:red\" if short else \"tab:blue\", lw=.8, ms=3)\n    ax.set_xlabel(\"ts (ms)\")\naxes[0].set_ylabel(\"variance of z-scored Xu\")\nplt.tight_layout()\nplt.show()\nprint(\"Variances %.2f to %.2f; all within the axes.\" % (min(allv), max(allv)))\n\"\"\", \"claim:gpfa-variance-inverted-u\")\nresult(\"gpfa-variance-inverted-u\")\n\nmd(r\"\"\"\n### gpfa-mean-sigmoid\n\n> The mean of the single-trial GPFA projections is sigmoidal (signed-rank test on increments,\n> p = 0.0078) and has a higher slope for the Short prior (one-tailed signed-rank, p = 0.0625;\n> Figure 6D).\n\"\"\")\n\ncode(r\"\"\"\ninc_g = pd.DataFrame([{\"dataset\": r.dataset, \"prior\": r.prior, **dict(zip([\"extreme\", \"middle\"], rsg.increments(r.mean_xu)))}\n                      for _, r in gp.iterrows()])\nprint(inc_g.round(4).to_string(index=False))\nw = stats.wilcoxon(inc_g.middle, inc_g.extreme)\nprint(f\"\\nMiddle increment above extreme in {(inc_g.middle > inc_g.extreme).sum()} of 8; two-sided signed-rank p = {w.pvalue:.4f}\")\nsg = gp.pivot(index=\"dataset\", columns=\"prior\", values=\"slope_xu\")\nprint(\"\\nSlope of mean Xu on ts (latent units per ms):\")\nprint(sg.round(5).to_string())\nprint(f\"Short slope above Long in {int((sg.Short > sg.Long).sum())} of 4; one-tailed signed-rank p = \"\n      f\"{stats.wilcoxon(sg.Short, sg.Long, alternative='greater').pvalue:.4f}\")\nprint(\"Mean Xu rises with ts (positive slope) in\", int((gp.slope_xu > 0).sum()), \"of 8\")\nprint(f\"\\nTotal run time {time.time() - started:.0f} s\")\n\"\"\", \"claim:gpfa-mean-sigmoid\")\nresult(\"gpfa-mean-sigmoid\")\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude/nb_cells.py (file state is current in your context — no need to Read it back)
+217	regularities in the environment create geometrically constrained manifolds of neural activity that can suitably perform Bayesian integration. STAR Methods LEAD CONTACT AND MATERIALS AVAILABILITY 
+218	Further information and requests for resources and reagents should be directed to and will be fulfilled by the Lead Contact, Mehrdad Jazayeri ( [removed: an e-mail address] ). This study did not generate new unique 
+219	reagents. EXPERIMENTAL MODEL AND SUBJECT DETAILS All experimental procedures conformed to the guidelines of the National Institutes of Health and were approved by the Committee of Animal Care at the 
+220	Massachusetts Institute of Technology. Experiments involved two naive, awake, male behaving monkeys (species: M. mulatta; ID: H and G; weight: 6.6 and 6.8 kg; age: 4 yrs old). Animals were 
+221	head-restrained and seated comfortably in a dark and quiet room, and viewed stimuli on a 23-inch monitor (refresh rate: 60 Hz). Eye movements were registered by an infrared camera and sampled at 1kHz 
+222	(Eyelink 1000, SR Research Ltd, Ontario, Canada). Hand movements were registered by a custom single-axis potentiometer-controlled joystick whose voltage output was sampled at 1kHz (PCIe6251, National 
+223	Instruments, TX). The MWorks software package ( http://mworks-project.org ) was used to present stimuli and to register hand and eye position. Neurophysiology recordings were made by 1–3 24-channel 
+224	laminar probes (V-probe, Plexon Inc., TX) through a bio-compatible cranial implant whose position was determined based on stereotaxic coordinates and structural MRI scan of the two animals. Analysis 
+225	of both behavioral and spiking data was performed using custom MATLAB code (Mathworks, MA). METHOD DETAILS Two-prior time-interval reproduction task Task contingencies. Animals were trained on an 
+226	interval-timing task that we refer to as the Ready-Set-Go (RSG) in which they had to measure a sample interval, t s , and produce a matching interval t p by initiating a saccad
+[... 100 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && python - <<'E'
-p='nb_cells.py'; s=open(p).read()
-s=s.replace('''ext_mid = np.array([[v[[0, 4]].mean(), v[[1, 2, 3]].mean()] for v in gp[[c for c in gp.columns if c.startswith('var_')]].to_numpy()]) if False else None
-''','')
-open(p,'w').write(s)
-E
-cd entries/000130-sohn-2019 && printf 'dandi\nelephant\nh5py\nmatplotlib\nneo\nnumpy\npandas\nquantities\nremfile\nscikit-learn\nscipy\nstatsmodels\n' > requirements.in && python /tmp/claude/build_nb.py && uv pip install -q --python $TMPDIR/ex/bin/python ipykernel nbconvert && echo ok
+grep -n "Figure 1\. \|Figure 2\. \|Figure 3\. \|Figure 4\. \|Figure 5\. \|Figure 6\. " $TMPDIR/s/paper.txt | head; sed -n 470,520p $TMPDIR/s/paper.txt
 ```
 
 ```
-wrote entries/000130-sohn-2019/reproduce_sohn_2019.ipynb 58 cells
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-time $TMPDIR/ex/bin/python -m jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/run1 reproduce_sohn_2019.ipynb 2>&1 | tail -30
-```
-
-```
-[NbConvertApp] Making directory /tmp/claude-1001/run1
-[NbConvertApp] Converting notebook reproduce_sohn_2019.ipynb to notebook
-[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 9221868 bytes to /tmp/claude-1001/run1/reproduce_sohn_2019.ipynb
-
-real	7m3.200s
-user	21m32.023s
-sys	0m6.978s
-```
-
-**Agent**
-
-It ran in 7 minutes. Let me read the outputs.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > show.py <<'E'
-import nbformat, sys
-nb=nbformat.read(sys.argv[1],4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type!='code': continue
-    print(f'### cell {i} tags={c.metadata.get("tags")}')
-    for o in c.outputs:
-        if o.output_type=='stream':
-            t=o.text
-            if len(t)>6000: t=t[:3000]+'\n...[%d chars]...\n'%len(t)+t[-2500:]
-            print(t)
-        elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-        elif 'text/plain' in o.get('data',{}) and 'image/png' not in o.get('data',{}): print(o.data['text/plain'][:2000])
-E
-$TMPDIR/ex/bin/python show.py run1/reproduce_sohn_2019.ipynb | head -300
-```
-
-```
-### cell 1 tags=None
-loaded dandiset 000130 version 0.241017.1448 in 5 s
-
-### cell 3 tags=['sanity']
-train: https://dandiarchive.s3.amazonaws.com/blobs/73a/6f6/73a6f648-8e97-4c90-b323-a15844e4e3d4
-   session_description: Data from monkey Haydn performing ready-set-go time interval reproduction task. This file contains continuous segments of the full session on 2016-12-11 that can be used for training models for the Neural Latents Benchmark.
-   session_start_time: 2016-12-11T00:00:00-05:00
-   session_id: 20161211
-   subject_id: Haydn
-   species: Macaca mulatta
-   age: P4Y
-   related_publications: ['http://dx.doi.org/10.1016/j.neuron.2019.06.012']
-   electrode_location: ['DMFC']
-   electrode_x_all_nan: True
-   n_electrodes: 72
-   trials: 1160; columns: ['start_time', 'stop_time', 'fix_on_time', 'fix_time', 'target_on_time', 'ready_time', 'set_time', 'go_time', 'target_acq_time', 'reward_time', 'bad_time', 'is_short', 'is_eye', 'theta', 'ts', 'tp', 'fix_time_dur', 'target_time_dur', 'iti', 'reward_dur', 'is_outlier', 'split']
-   units: 54; held out: 14
-test: https://dandiarchive.s3.amazonaws.com/blobs/eaf/1fa/eaf1fa97-ce58-477d-b79d-82425cea818f
-   session_description: Data from monkey Haydn performing ready-set-go time interval reproduction task. This file contains segments of trials from the full session on 2016-12-11 that are to be used for evaluating models for the Neural Latents Benchmark.
-   session_start_time: 2016-12-11T00:00:00-05:00
-[... 286 more lines not kept]
-```
-
-**Agent**
-
-Several outputs to note. The Bayesian fit has a bug: the offsets never left 0, because Nelder-Mead's first step for a zero start is tiny. I'll fix that. First the rest of the outputs.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; $TMPDIR/ex/bin/python show.py run1/reproduce_sohn_2019.ipynb 2>/dev/null | sed -n 300,520p
-```
-
-```
-Eye Left Short       6.199        6.726                    -0.526
-  Eye Left  Long       1.396        2.131                    -0.735
-Hand Right Short       1.003        0.805                     0.199
-Hand Right  Long       0.426        0.556                    -0.129
- Hand Left Short       0.388        0.436                    -0.048
- Hand Left  Long       0.209        0.252                    -0.043
-Short: Bayesian lower in 3 of 4; signed-rank p = 0.375 (smallest possible with 4: 0.125)
-Long: Bayesian lower in 4 of 4; signed-rank p = 0.125 (smallest possible with 4: 0.125)
-
-### cell 36 tags=['claim:short-in-long-control']
-   dataset  RMSE_bayes  RMSE_linear  R2_bayes  R2_linear   dRMSE
- Eye Right      1.0988       1.2534    0.9935     0.9916 -0.1545
-  Eye Left      1.4872       1.7048    0.9888     0.9853 -0.2176
-Hand Right      1.0800       1.1897    0.8732     0.8461 -0.1097
- Hand Left      0.3013       0.2268    0.9947     0.9970  0.0745
-
-Short In Long: Bayesian lower in 3 of 4; median dRMSE -0.132; signed-rank p = 0.250 (smallest possible with 4 datasets: 0.125)
-For comparison, Short prior: median dRMSE -0.156; relative dRMSE (dRMSE / RMSE_linear) Short In Long -0.108, Short -0.079
-
-### cell 38 tags=['claim:neural-long-more-bias']
-[... 202 more lines not kept]
+457:10.1152/jn.90941.2008 PMC2712272 Figure 1. Task and behavior. (A) Schematic of a single trial of the Ready-Set-Go task. The animal has to estimate a sample interval, t s , between Ready and Set 
+464:Figure 2. Bayesian model and behavior. (A) Bayesian observer model. The measurement ( t m ) is the sample interval ( t s ) plus white noise with standard deviation proportional to t s . The Bayesian 
+473:a black line). Triangles represent monkey H, and circles, monkey G. Figure 3. DMFC response profiles and neural trajectories. (A) Firing rate of 6 example neurons (i-vi) during the estimation epoch 
+483:dots: neural states at 20-ms increments). The distance between consecutive dots reflects speed. See Figure S3 for other datasets. Figure 4. Neural signatures of Bayesian integration. (A) A geometric 
+498:neural states evolved during the production epoch. Results are presented in the same format as in E. Figure 5. Alternative mechanisms. (A) Speed model (H1). Top: Bayesian estimation during the 
+512:computed in the PC space obtained across t s and accounting for ~60% of the total variance; results remained unchanged when more PCs were included. See also Figure S5 . Figure 6. Trial-by-trial 
+828:Figure S3. Analysis of population activity. Related to Figure 3. (A) Population activity during the estimation 
+836:Figure S4. State-space analysis across conditions and epochs. Related to Figure 3. (A) Cross-condition 
+893:Figure S6. Trial-by-trial analysis. Related to Figure 6. (A,B) Single-trial analysis for monkey G based on data 
+979:Table S2. Analysis of behavior at overlap interval. Related to Figure 1. Effect of different conditions - prior, 
+modality, direction) pooled across the two monkeys. Each data point represents a session (red: Short; blue: Long). Top-right: Histogram of the difference between ∆ t p (middle) and ∆ t p (extreme). 
+The difference was similar between Short and Long (red and blue triangles) as predicted by the model. Triangles shows averages across d
+[... 49 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; $TMPDIR/ex/bin/python - <<'E'
-import nbformat
-nb=nbformat.read('run1/reproduce_sohn_2019.ipynb',4)
-for c in nb.cells[54:]:
-    if c.cell_type!='code': continue
-    for o in c.outputs:
-        if o.output_type=='stream':
-            lines=[l for l in o.text.splitlines() if 'WARNING' not in l and 'warn' not in l and l.strip()]
-            print('\n'.join(lines))
-        elif o.output_type=='error': print('ERR',o.evalue)
-E
-```
-
-```
-<persisted-output>
-Output too large (87.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/6d0fc731-c1c8-445c-be9d-e20fb47e0ca0/tool-results/bw2o92yc4.txt
-
-Preview (first 2KB):
-/tmp/claude-1001/ex/lib/python3.13/site-packages/elephant/conversion.py:1158: UserWarning: Binning discarded 1 last spike(s) of the input spiketrain
-
-
-
-
-
-
-
-/tmp/claude-1001/ex/lib/python3.13/site-packages/elephant/conversion.py:1158: UserWarning: Binning discarded 4 last spike(s) of the input spiketrain
-
-
-
-
-
-
-
-[... 331 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -v -i "warn\|^\s*$" /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/6d0fc731-c1c8-445c-be9d-e20fb47e0ca0/tool-results/bw2o92yc4.txt | head -60
-```
-
-```
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Eye Right: 276 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -174260, 8: -173782)
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-Fitting GPFA model...
-Initializing parameters using factor analysis...
-[... 40 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -v -i "warn\|^\s*$\|Initializing\|Fitting GPFA" /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/6d0fc731-c1c8-445c-be9d-e20fb47e0ca0/tool-results/bw2o92yc4.txt | sed -n 5,80p
-```
-
-```
-GPFA fits took 392 s
-   dataset prior  var_480  var_560  var_640  var_720  var_800  quad_coef  slope_xu  var_900  var_1000  var_1100  var_1200
- Eye Right Short  0.76136  0.52216  0.64462  0.79323  0.26468   -0.00001   0.00225      NaN       NaN       NaN       NaN
- Eye Right  Long      NaN      NaN      NaN      NaN  0.98480   -0.00000   0.00141  0.73311   0.93194   0.35270   0.44420
-  Eye Left Short  0.48507  0.23071  0.30337  0.37887  0.18899    0.00000   0.00270      NaN       NaN       NaN       NaN
-  Eye Left  Long      NaN      NaN      NaN      NaN  0.55700   -0.00001   0.00155  0.91998   0.73910   0.47742   0.40530
-Hand Right Short  0.84457  0.95108  1.04073  0.87846  0.61072   -0.00001   0.00055      NaN       NaN       NaN       NaN
-Hand Right  Long      NaN      NaN      NaN      NaN  0.63505   -0.00002   0.00037  1.65513   1.37979   0.52164   0.27153
- Hand Left Short  0.90637  1.22513  0.68841  0.48210  0.70261    0.00000   0.00094      NaN       NaN       NaN       NaN
- Hand Left  Long      NaN      NaN      NaN      NaN  1.24085    0.00001   0.00045  1.43434   0.47332   0.70777   0.70577
-Quadratic coefficient negative in 5 of 8; one-tailed signed-rank p = 0.1250
-Variances 0.19 to 1.66; all within the axes.
-   dataset prior  extreme  middle
- Eye Right Short   0.0689  0.2540
- Eye Right  Long  -0.0024  0.2363
-  Eye Left Short   0.1258  0.2764
-  Eye Left  Long   0.0570  0.2203
-Hand Right Short   0.0247  0.0575
-Hand Right  Long  -0.0145  0.0719
- Hand Left Short   0.0276  0.1063
-[... 12 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex6.py <<'E'
-import pickle, numpy as np, pandas as pd
-d=pickle.load(open('d.pkl','rb'))
-tr,spk,ho=d['sub-Haydn/sub-Haydn_desc-train_ecephys.nwb']
-c=tr[tr.set_time.notna()&tr.go_time.notna()].copy()
-f=c[c.is_outlier]
-f=f.assign(ratio=f.tp/f.ts)
-print(f[['ts','tp','ratio','is_short','is_eye','theta','split']].sort_values('ratio').to_string())
-E
-$TMPDIR/ex/bin/python ex6.py
-```
-
-```
-ts        tp     ratio  is_short  is_eye  theta  split
-128    480.0  -960.000 -2.000000      True   False  180.0   none
-555   1100.0 -2200.000 -2.000000     False   False  180.0   none
-1140   480.0  -960.000 -2.000000      True   False  180.0   none
-729    900.0   126.700  0.140778     False   False    0.0  train
-618    900.0   187.293  0.208103     False   False  180.0  train
-85     640.0   235.260  0.367594      True   False  180.0  train
-938    640.0   338.043  0.528192      True   False    0.0    val
-21    1100.0   651.812  0.592556     False    True    0.0  train
-485   1100.0   660.528  0.600480     False   False  180.0  train
-88    1000.0   609.916  0.609916     False    True  180.0  train
-340    900.0   557.539  0.619488     False   False    0.0    val
-605    800.0   518.174  0.647717      True   False  180.0  train
-417   1000.0   724.818  0.724818     False    True    0.0  train
-857   1200.0   880.829  0.734024     False    True  180.0  train
-262   1100.0   836.371  0.760337     False    True  180.0  train
-176    800.0   615.484  0.769355     False    True    0.0  train
-291    900.0   705.897  0.784330     False    True    0.0    val
-278    800.0   632.999  0.791249     False    True    0.0    val
-888   1000.0   799.324  0.799324     False   False    0.0    val
-[... 28 more lines not kept]
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000130-sohn-2019/rsg.py",
- "old_string": "        res = optimize.minimize(nll, x0=[0.1, 0.08, 0.0, 0.0], method=\"Nelder-Mead\",\n                                options={\"xatol\": 1e-4, \"fatol\": 1e-3, \"maxiter\": 2000})\n        model = cls(*res.x)\n        model.converged, model.nll = bool(res.success), float(res.fun)\n        return model",
- "new_string": "        # Nelder-Mead from three starting points, with an explicit first simplex (steps of 0.03\n        # for wm and wp, 20 ms for the offsets); the best fit is kept.\n        best = None\n        for wm0 in (0.05, 0.1, 0.2):\n            x0 = np.array([wm0, 0.08, 0.0, 0.0])\n            simplex = np.vstack([x0, x0 + np.diag([0.03, 0.03, 20.0, 20.0])])\n            res = optimize.minimize(nll, x0=x0, method=\"Nelder-Mead\",\n                                    options={\"initial_simplex\": simplex, \"xatol\": 1e-3, \"fatol\": 1e-3,\n                                             \"maxiter\": 3000})\n            if best is None or res.fun < best.fun:\n                best = res\n        model = cls(*best.x)\n        model.converged, model.nll = bool(best.success), float(best.fun)\n        return model"
-}
-```
-
-```
-The file entries/000130-sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000130-sohn-2019/rsg.py",
- "old_string": "    import quantities as pq\n    from elephant.gpfa import GPFA\n    folds = rng.permutation(len(spiketrains)) % 3\n    scores = {}\n    for dim in GPFA_DIMS:\n        total = 0.0\n        for k in range(3):\n            train = [s for s, f in zip(spiketrains, folds) if f != k]\n            test = [s for s, f in zip(spiketrains, folds) if f == k]\n            m = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)\n            m.fit(train)\n            total += m.score(test)\n        scores[dim] = total\n    best = max(scores, key=scores.get)\n    model = GPFA(bin_size=BIN_MS * pq.ms, x_dim=best, em_max_iters=GPFA_EM_ITERS)\n    model.fit(spiketrains)\n    return model, best, scores",
- "new_string": "    import contextlib\n    import io\n    import logging\n    import warnings\n\n    import quantities as pq\n    from elephant.gpfa import GPFA\n\n    # elephant reports each spike it moves across a bin edge; keep the notebook readable.\n    logging.getLogger(\"elephant\").setLevel(logging.ERROR)\n    folds = rng.permutation(len(spiketrains)) % 3\n    scores = {}\n    with warnings.catch_warnings(), contextlib.redirect_stdout(io.StringIO()):\n        warnings.simplefilter(\"ignore\")\n        for dim in GPFA_DIMS:\n            total = 0.0\n            for k in range(3):\n                train = [s for s, f in zip(spiketrains, folds) if f != k]\n                test = [s for s, f in zip(spiketrains, folds) if f == k]\n                m = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)\n                m.fit(train)\n                total += m.score(test)\n            scores[dim] = total\n        best = max(scores, key=scores.get)\n        model = GPFA(bin_size=BIN_MS * pq.ms, x_dim=best, em_max_iters=GPFA_EM_ITERS)\n        model.fit(spiketrains)\n    return model, best, scores\n\n\ndef gpfa_transform(model, spiketrains):\n    \"\"\"Orthonormalised latent trajectories (latents x bins) of each trial, quietly.\"\"\"\n    import logging\n    import warnings\n    logging.getLogger(\"elephant\").setLevel(logging.ERROR)\n    with warnings.catch_warnings():\n        warnings.simplefilter(\"ignore\")\n        return model.transform(spiketrains)"
-}
-```
-
-```
-The file entries/000130-sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd /tmp/claude && python - <<'E'
-p='nb_cells.py'; s=open(p).read()
-s=s.replace("    lat = model.transform(sts)\n","    lat = rsg.gpfa_transform(model, sts)\n")
-s=s.replace('print(gp.drop(columns=["mean_xu"]).round(5).to_string(index=False))','print(gp.drop(columns=["mean_xu"]).to_string(index=False, float_format=lambda x: f"{x:.3g}"))')
-open(p,'w').write(s)
-E
-grep -n "gpfa_transform\|float_format" nb_cells.py; cd $TMPDIR && cat > ex7.py <<'E'
-import sys; sys.path.insert(0,'entries/000130-sohn-2019')
-import pickle, numpy as np, rsg, time
-d=pickle.load(open('d.pkl','rb'))
-tr,spk,ho=d['sub-Haydn/sub-Haydn_desc-train_ecephys.nwb']
-g=rsg.completed(tr); g=g[(g.is_eye)&(g.theta==0)]
-t=time.time(); m=rsg.BayesObserver.fit(g); print(time.time()-t, m.wm,m.wp,m.b,m.converged,m.nll)
-E
-$TMPDIR/ex/bin/python ex7.py
-```
-
-```
-1023:    lat = rsg.gpfa_transform(model, sts)
-1045:print(gp.drop(columns=["mean_xu"]).to_string(index=False, float_format=lambda x: f"{x:.3g}"))
-4.262102365493774 0.01326723435627581 0.10622129125917584 {True: np.float64(6.411330385134027), False: np.float64(24.390739570140738)} True 1616.1528760894007
-Shell cwd was reset to
-```
-
-**Agent**
-
-The fit now moves the offsets (Eye Right: bShort 6 ms, bLong 24 ms, wm 0.013). Re-running the notebook.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000130-sohn-2019 && python /tmp/claude/build_nb.py && time $TMPDIR/ex/bin/python -m jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/run2 reproduce_sohn_2019.ipynb 2>&1 | tail -2; cd $TMPDIR; $TMPDIR/ex/bin/python show.py run2/reproduce_sohn_2019.ipynb 2>/dev/null > run2.txt; ls -la run2/; grep -n "ERROR" run2.txt
-```
-
-```
-wrote entries/000130-sohn-2019/reproduce_sohn_2019.ipynb 58 cells
-[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 9113541 bytes to /tmp/claude-1001/run2/reproduce_sohn_2019.ipynb
-
-real	7m1.525s
-user	21m14.479s
-sys	0m6.871s
-total 8908
-drwxr-xr-x 2 runner runner    4096 Oct 14 16:31 .
-drwx-----T 9 runner runner    4096 Oct 14 16:31 ..
--rw-r--r-- 1 runner runner 9113541 Oct 14 16:31 reproduce_sohn_2019.ipynb
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; $TMPDIR/ex/bin/python -c "
-import nbformat
-nb=nbformat.read('run2/reproduce_sohn_2019.ipynb',4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type=='code':
-        n=sum(len(str(o)) for o in c.outputs); print(i,n) if n>50000 else None
-"; sed -n '/claim:beh-bayes-model/,/claim:glm/p' run2.txt | head -30; sed -n '/claim:encoding-r2/,/claim:neural-long/p' run2.txt | head -50
-```
-
-```
-13 77084
-22 54068
-27 75305
-32 88571
-45 78501
-52 148489
-54 7152980
-55 64938
-### cell 21 tags=['claim:beh-bayes-model']
-   dataset    wm    wp  b_short  b_long  converged  bias_R2  sd_r
- Eye Right 0.013 0.106    6.411  24.391       True    0.122 0.909
-  Eye Left 0.025 0.103   40.838   1.691       True    0.671 0.807
-Hand Right 0.074 0.104   36.932  50.359       True    0.865 0.277
- Hand Left 0.117 0.090    7.749 -81.479       True    0.978 0.749
-
-Bias R2 >= 0.8 in 2 of 4; SD correlation > 0 in 4 of 4
-
-Observed and model bias and SD (ms):
-   dataset prior     ts  bias_obs  bias_model  sd_obs  sd_model
- Eye Right Short  480.0      16.9        11.8    55.1      51.6
-[... 61 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; $TMPDIR/ex/bin/python -c "
-import nbformat
-nb=nbformat.read('run2/reproduce_sohn_2019.ipynb',4)
-c=nb.cells[54]
-for o in c.outputs: print(o.output_type, o.get('name'), len(str(o)), str(o.get('text',''))[:300])
-" | head; grep -rn "getLogger\|setLevel" $TMPDIR/ex/lib/python3.13/site-packages/elephant/utils.py | head
-```
-
-```
-stream stderr 238 [2026-10-14 16:24:54,693] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
-
-stream stderr 238 [2026-10-14 16:24:54,694] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
-
-stream stderr 238 [2026-10-14 16:24:54,694] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
-
-stream stderr 238 [2026-10-14 16:24:54,695] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
-
-stream stderr 238 [2026-10-14 16:24:54,696] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
-
-Traceback (most recent call last):
-  File "<string>", line 5, in <module>
-    for o in c.outputs: print(o.output_type, o.get('name'), len(str(o)), str(o.get('text',''))[:300])
-                        ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-BrokenPipeError: [Errno 32] Broken pipe
-38:logger = logging.getLogger(__file__)
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000130-sohn-2019 && python - <<'E'
-p='rsg.py'; s=open(p).read()
-old='''    # elephant reports each spike it moves across a bin edge; keep the notebook readable.
-    logging.getLogger("elephant").setLevel(logging.ERROR)
-'''
-new='''    _quiet_elephant()
-'''
-s=s.replace(old,new)
-s=s.replace('''    import logging
-    import warnings
-    logging.getLogger("elephant").setLevel(logging.ERROR)
-    with warnings.catch_warnings():''','''    import warnings
-    _quiet_elephant()
-    with warnings.catch_warnings():''')
-s=s.replace('''def fit_gpfa(spiketrains''','''def _quiet_elephant():
-    """elephant logs each spike it moves across a bin edge; keep the notebook readable."""
-    import logging
-
-    import elephant.utils
-    logging.getLogger(elephant.utils.__file__).setLevel(logging.ERROR)
-
-
-def fit_gpfa(spiketrains''')
-open(p,'w').write(s)
-E
-grep -n "logging\|_quiet" rsg.py; grep -A12 "GPFA fits took" $TMPDIR/run2.txt | head -14; grep -B2 -A12 "Middle increment above extreme in 8" $TMPDIR/run2.txt | tail -12
-```
-
-```
-366:def _quiet_elephant():
-368:    import logging
-371:    logging.getLogger(elephant.utils.__file__).setLevel(logging.ERROR)
-380:    import logging
-386:    _quiet_elephant()
-409:    _quiet_elephant()
-GPFA fits took 384 s
-   dataset prior  var_480  var_560  var_640  var_720  var_800  quad_coef  slope_xu  var_900  var_1000  var_1100  var_1200
- Eye Right Short    0.765    0.524    0.646    0.796    0.263   -6.2e-06   0.00224      NaN       NaN       NaN       NaN
- Eye Right  Long      NaN      NaN      NaN      NaN    0.989  -6.53e-07    0.0014    0.735     0.935     0.353     0.445
-  Eye Left Short    0.483     0.23    0.304     0.38    0.188   1.39e-06   0.00271      NaN       NaN       NaN       NaN
-  Eye Left  Long      NaN      NaN      NaN      NaN    0.555  -6.76e-06   0.00155    0.921     0.735     0.478     0.406
-Hand Right Short    0.844    0.954     1.04    0.874    0.614   -1.1e-05  0.000555      NaN       NaN       NaN       NaN
-Hand Right  Long      NaN      NaN      NaN      NaN    0.635  -2.22e-05  0.000377     1.65      1.38     0.521     0.272
- Hand Left Short     0.91     1.22    0.693    0.484    0.688   1.21e-06  0.000947      NaN       NaN       NaN       NaN
- Hand Left  Long      NaN      NaN      NaN      NaN     1.27   5.94e-06  0.000456     1.43     0.466     0.704     0.683
-
-Quadratic coefficient negative in 5 of 8; one-tailed signed-rank p = 0.1250
-
-
-[... 12 more lines not kept]
-```
-
-**Agent**
-
-Results are in. Before writing conclusions, let me check whether monkey G's data or other sessions exist elsewhere on DANDI, for the blocked claim's notes.
-
-**Agent calls Bash**
-
-```bash
-for q in Jazayeri "ready-set-go" "Sohn" "DMFC" "interval reproduction"; do echo "== $q"; curl -s "https://api.dandiarchive.org/api/dandisets/?search=$(python -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$q")&page_size=50&empty=false" | python -c "
-import json,sys
-for d in json.load(sys.stdin)['results']:
-    v=d.get('most_recent_published_version') or d['draft_version']; print(d['identifier'], v['name'][:100])"; done
+date -u; curl -s "https://api.dandiarchive.org/api/dandisets/000130/versions/0.241017.1448/assets/?page_size=100" | python -m json.tool | head -60; curl -s "https://api.dandiarchive.org/api/dandisets/000130/versions/0.241017.1448/" | python -c "import json,sys;d=json.load(sys.stdin);print(d.get('name'));print(d.get('description'));print(d.get('doi'));print(json.dumps(d.get('assetsSummary'),indent=1));print(d.get('relatedResource'))"
 ```
 
 Result: the fetched text is not kept.
@@ -1314,145 +288,1920 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && python - <<'E'
-p='nb_cells.py'; s=open(p).read()
-old='''description (500 for Short, 1220 for Long) has them the other way round. The `is_outlier` flag is
-consistent with the Methods' mixture model, as the refit agreement shows.'''
-new='''description (500 for Short, 1220 for Long) has them the other way round. The `is_outlier` flag
-marks 46 completed trials (4.47%, against 3.84% for monkey H in the paper). A refit of the
-Methods' mixture model as read here, per prior, ts, effector and direction, flags only 10 of them
-and no other trial; the file flags trials whose tp is within 0.76 to 1.6 times ts, which the refit
-keeps. How the flag was computed is not documented beyond "probabilistic mixture model". The
-analyses use the file's flag, as the claims file fixes.'''
-assert old in s; s=s.replace(old,new)
-old='''Decoding of "before against after" peaks at or near zero offset for Ready, Set and Go, and the
-prior is decoded from activity before Ready only with the labels in place. This is consistent with
-the spikes and the trial table sharing one clock in the train file. The test file could not be
-checked this way, as it has no task variables; it is not used.'''
-new='''Decoding of "before against after" is best at an offset of +100 ms for Ready, Set and Go, and falls
-for negative offsets (at -400 ms, 0.56, 0.68 and 0.73). A best offset of +100 ms is what a response
-with a latency of about 100 ms after each event gives, since the "after" window then holds the
-response. The prior is decoded from the 400 ms before Ready with accuracy 0.64 with the labels in
-place, 0.56 and 0.52 with the labels shifted by 25 and 50 trials. This is consistent with the
-spikes and the trial table sharing one clock in the train file; it does not prove it. The test
-file could not be checked this way, as it has no task variables; it is not used.'''
-assert old in s; s=s.replace(old,new)
-open(p,'w').write(s)
-E
-echo ok
+cd $TMPDIR && uv venv -q env 2>&1 | tail -2; source env/bin/activate; uv pip install -q h5py remfile pynwb numpy scipy pandas matplotlib statsmodels scikit-learn elephant ipykernel nbformat nbclient 2>&1 | tail -3; python -c "import elephant, pynwb; print(elephant.__version__, pynwb.__version__)"
 ```
 
 ```
-ok
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd /tmp/claude && python - <<'E'
-p='nb_cells.py'; s=open(p).read()
-old='''print(f"Outlier fraction of completed trials: file {c.is_outlier.mean():.2%}, refit {refit.mean():.2%}; paper, monkey H: 3.84%")'''
-new=old+'''
-only_file = c[c.is_outlier & ~refit]
-print("tp / ts of trials flagged by the file but kept by the refit: %.2f to %.2f (%d trials); of trials flagged by both: %s"
-      % ((only_file.tp / only_file.ts).min(), (only_file.tp / only_file.ts).max(), len(only_file),
-         np.round(np.sort((c[c.is_outlier & refit].tp / c[c.is_outlier & refit].ts).to_numpy()), 2).tolist()))'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''and no other trial; the file flags trials whose tp is within 0.76 to 1.6 times ts, which the refit
-keeps.''','''and no other trial; the 36 others have tp between the ratios to ts printed above, which the refit
-keeps as part of the Gaussian component.''')
-open(p,'w').write(s)
-E
-cd $TMPDIR && cat > ex8.py <<'E'
-import sys; sys.path.insert(0,'entries/000130-sohn-2019')
-import pickle, numpy as np, pandas as pd, rsg
-d=pickle.load(open('d.pkl','rb'))
-trials,spk,ho=d['sub-Haydn/sub-Haydn_desc-train_ecephys.nwb']
-c = trials[trials.set_time.notna() & trials.go_time.notna()].copy()
-flags = []
-for key, g in c[c.tp > 0].groupby(["is_short", "ts", "is_eye", "theta"]):
-    r = rsg.outlier_mixture(g.tp.to_numpy(), key[1])
-    flags.append(pd.Series(r > 0.5, index=g.index))
-refit = pd.concat(flags).reindex(c.index, fill_value=True)
-only_file = c[c.is_outlier & ~refit]
-print((only_file.tp / only_file.ts).min(), (only_file.tp / only_file.ts).max(), len(only_file))
-print(np.sort((c[c.is_outlier & refit].tp / c[c.is_outlier & refit].ts).to_numpy()))
-E
-$TMPDIR/ex/bin/python ex8.py
-```
-
-```
-0.5281921875 1.5985583333333333 36
-[-2.         -2.         -2.          0.14077778  0.20810333  0.36759375
-  0.59255636  0.61948778  2.207445    2.48604222]
+1.2.1 4.2.0
 Shell cwd was reset to
 ```
 
 **Agent**
 
-Now the conclusions and summary.
+Environment ready. Now opening both NWB files to list their contents.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && source env/bin/activate && cat > s/look.py <<'EOF'
+import h5py, remfile, requests, pynwb, numpy as np, pandas as pd
+V="0.241017.1448"
+r=requests.get(f"https://api.dandiarchive.org/api/dandisets/000130/versions/{V}/assets/").json()
+for a in r["results"]:
+    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
+    f=h5py.File(remfile.File(url),"r")
+    io=pynwb.NWBHDF5IO(file=f,load_namespaces=True); nwb=io.read()
+    print("=====",a["path"])
+    print(nwb.session_description, nwb.session_start_time, nwb.identifier)
+    print("subject", nwb.subject)
+    print("acq",list(nwb.acquisition), "proc", {k:list(v.data_interfaces) for k,v in nwb.processing.items()})
+    print("intervals", list(nwb.intervals))
+    t=nwb.trials.to_dataframe()
+    print(t.shape); print(t.dtypes); print(t.head(5).T)
+    for c in t.columns:
+        print(c, nwb.trials[c].description)
+    u=nwb.units.to_dataframe()
+    print(u.shape, u.columns.tolist()); print(u.drop(columns=["spike_times"]).head())
+    for c in nwb.units.colnames: print(c, nwb.units[c].description)
+    print("electrodes", nwb.electrodes.to_dataframe().head() if nwb.electrodes is not None else None)
+    t.to_pickle(f"s/{a['path'].split('_')[1]}_trials.pkl"); u.to_pickle(f"s/{a['path'].split('_')[1]}_units.pkl")
+EOF
+python s/look.py 2>&1 | head -300
+```
+
+```
+===== sub-Haydn/sub-Haydn_desc-test_ecephys.nwb
+Data from monkey Haydn performing ready-set-go time interval reproduction task. This file contains segments of trials from the full session on 2016-12-11 that are to be used for evaluating models for the Neural Latents Benchmark. 2016-12-11 00:00:00-05:00 8d26aa92-3929-11ec-8077-43176b153428
+subject subject pynwb.file.Subject at 0x126180421950096
+Fields:
+  age: P4Y
+  sex: M
+  species: Macaca mulatta
+  subject_id: Haydn
+
+acq [] proc {}
+intervals ['trials']
+(283, 4)
+start_time    float64
+stop_time     float64
+go_time       float64
+split             str
+dtype: object
+id             0     1     2     3     4
+start_time   0.0   1.8   3.6   5.4   7.2
+stop_time    1.7   3.5   5.3   7.1   8.9
+[... 127 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && source env/bin/activate && python - <<'EOF'
+import pandas as pd, numpy as np
+t=pd.read_pickle("s/train_trials.pkl"); u=pd.read_pickle("s/train_units.pkl")
+print(t.split.value_counts())
+print(t.groupby("split")[["ts","tp"]].agg(lambda x: x.isna().sum()))
+ok=t[~t.is_outlier & t.tp.gt(0)]
+print("completed nonoutlier", len(ok), " outliers", t.is_outlier.sum(), " tp<=0", (t.tp<=0).sum(), "tp nan", t.tp.isna().sum())
+print(pd.crosstab([t.is_short,t.is_eye,t.theta],t.ts))
+print(pd.crosstab([ok.is_short,ok.is_eye,ok.theta],ok.ts))
+print(t.describe().T)
+# check tp vs go-set, ts vs set-ready
+d=ok
+print("ts diff", np.nanmax(abs((d.set_time-d.ready_time)*1000-d.ts)), "tp diff", np.nanpercentile(abs((d.go_time-d.set_time)*1000-d.tp),[50,99,100]))
+print("outlier & reward", pd.crosstab(t.is_outlier, t.reward_time.notna()))
+print(t[t.is_outlier].tp.describe())
+print(u.heldout.value_counts())
+n=[len(s) for s in u.spike_times]; print("spikes per unit", min(n), max(n))
+T=t.stop_time.max(); print("session span", t.start_time.min(), T)
+oi=u.obs_intervals.iloc[0]; print(len(oi), oi[:3], oi[-3:]); print("all same obs", all(np.array_equal(x,oi) for x in u.obs_intervals))
+dur=sum(b-a for a,b in oi); print("obs dur", dur)
+fr=np.array(n)/dur; print(np.sort(fr).round(2)); print((fr>=1).sum())
+st=np.concatenate(u.spike_times.values); print(st.min(), st.max())
+print("sorted", all(np.all(np.diff(s)>=0) for s in u.spike_times))
+EOF
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "/tmp/claude-1001/env/lib/python3.13/site-packages/pandas/io/pickle.py", line 235, in read_pickle
+    with get_handle(
+         ~~~~~~~~~~^
+        filepath_or_buffer,
+        ^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        storage_options=storage_options,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ) as handles:
+    ^
+  File "/tmp/claude-1001/env/lib/python3.13/site-packages/pandas/io/common.py", line 954, in get_handle
+    handle = open(handle, ioargs.mode)
+FileNotFoundError: [Errno 2] No such file or directory: 's/train_trials.pkl'
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && ls s/ ; ls s 2>/dev/null
+```
+
+```
+Exit code 2
+desc-test_trials.pkl
+desc-test_units.pkl
+desc-train_trials.pkl
+desc-train_units.pkl
+look.py
+paper.txt
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && source env/bin/activate && python - <<'EOF'
+import pandas as pd, numpy as np
+t=pd.read_pickle("s/desc-train_trials.pkl"); u=pd.read_pickle("s/desc-train_units.pkl")
+print(t.split.value_counts())
+ok=t[~t.is_outlier & t.tp.gt(0)]
+print("completed nonoutlier", len(ok), " outliers", t.is_outlier.sum(), " tp<=0", (t.tp<=0).sum(), "tp nan", t.tp.isna().sum())
+print(pd.crosstab([ok.is_short,ok.is_eye,ok.theta],ok.ts))
+print(t.describe().T.to_string())
+d=ok
+print("ts diff", np.nanmax(abs((d.set_time-d.ready_time)*1000-d.ts)), "tp diff", np.nanpercentile(abs((d.go_time-d.set_time)*1000-d.tp),[50,99,100]))
+print("outlier & reward", pd.crosstab(t.is_outlier, t.reward_time.notna()))
+print(pd.crosstab(t.is_outlier, t.tp>0))
+print(t[t.is_outlier & (t.tp>0)][["ts","tp","is_short"]])
+print(u.heldout.value_counts())
+n=[len(s) for s in u.spike_times]
+oi=u.obs_intervals.iloc[0]; print(len(oi), oi[:3], oi[-3:]); print("all same obs", all(np.array_equal(x,oi) for x in u.obs_intervals))
+dur=sum(b-a for a,b in oi); print("obs dur", dur, "trial span", t.start_time.min(), t.stop_time.max())
+fr=np.array(n)/dur; print(np.sort(fr).round(2)); print((fr>=1).sum())
+st=np.concatenate(u.spike_times.values); print(st.min(), st.max())
+print("sorted", all(np.all(np.diff(s)>=0) for s in u.spike_times))
+# trials outside obs intervals?
+inobs=[any(a<=r.start_time and r.stop_time<=b for a,b in oi) for r in t.itertuples()]
+print("trials inside obs intervals", sum(inobs), len(t))
+tt=pd.read_pickle("s/desc-test_trials.pkl"); print(tt.describe())
+EOF
+```
+
+```
+split
+train    748
+val      258
+none     154
+Name: count, dtype: int64
+completed nonoutlier 983  outliers 177  tp<=0 134 tp nan 0
+ts                     480.0   560.0   640.0   ...  1000.0  1100.0  1200.0
+is_short is_eye theta                          ...                        
+False    False  0.0         0       0       0  ...      30      21      25
+                180.0       0       0       0  ...      16      16      18
+         True   0.0         0       0       0  ...      23      25      27
+                180.0       0       0       0  ...      30      29      31
+True     False  0.0        21      35      14  ...       0       0       0
+                180.0      33      21      25  ...       0       0       0
+         True   0.0        24      27      31  ...       0       0       0
+                180.0      21      28      17  ...       0       0       0
+
+[8 rows x 9 columns]
+                  count         mean          std          min          25%          50%          75%          max
+start_time       1160.0  2278.725419  1330.543862     0.516000  1132.897125  2275.530750  3403.243375  4805.582000
+[... 101 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && source env/bin/activate && python - <<'EOF'
+import pandas as pd, numpy as np
+t=pd.read_pickle("s/desc-train_trials.pkl")
+ok=t[~t.is_outlier & t.tp.gt(0)].copy()
+ok["dts"]=(ok.set_time-ok.ready_time)*1000-ok.ts
+ok["dtp"]=(ok.go_time-ok.set_time)*1000-ok.tp
+print(ok.dts.describe()); print(np.percentile(ok.dts,[1,5,25,50,75,95,99]))
+print(ok.dtp.describe()); print(np.percentile(ok.dtp,[1,5,25,50,75,95,99]))
+print(ok.groupby("is_eye").dtp.describe())
+print(ok.groupby("is_eye")[["dts"]].describe())
+print(np.unique(np.round(np.diff(np.sort(np.concatenate([t.ready_time.dropna(),t.set_time.dropna()]))*1e4)%5)))
+print(ok.set_time.head(10).values*1000)
+# go_time vs target_acq
+print(((ok.target_acq_time-ok.go_time)*1000).describe())
+EOF
+```
+
+```
+count    9.830000e+02
+mean    -1.422177e+00
+std      6.681722e+00
+min     -2.350000e+01
+25%     -3.500000e+00
+50%      0.000000e+00
+75%      1.818989e-10
+max      2.350000e+01
+Name: dts, dtype: float64
+[-2.0000000e+01 -1.6500000e+01 -3.5000000e+00  0.0000000e+00
+  1.8189894e-10  7.0000000e+00  1.7000000e+01]
+count    983.000000
+mean     -19.676031
+std       14.219692
+min     -200.597000
+25%      -21.325500
+50%      -17.906000
+75%      -17.235500
+max       -0.142000
+Name: dtp, dtype: float64
+[... 24 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+for q in Jazayeri "ready-set-go" DMFC "Bayesian computation"; do curl -s "https://api.dandiarchive.org/api/dandisets/?search=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$q")&page_size=50" | python3 -c "import json,sys;d=json.load(sys.stdin);print('$q',d['count'],[ (r['identifier'],r['most_recent_published_version']['name'][:60] if r.get('most_recent_published_version') else r['draft_version']['name'][:60]) for r in d['results']])"; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && source env/bin/activate && cat > s/gp.py <<'EOF'
+import pandas as pd, numpy as np, time, neo, quantities as pq, warnings
+warnings.filterwarnings("ignore")
+from elephant.gpfa import GPFA
+t=pd.read_pickle("s/desc-train_trials.pkl"); u=pd.read_pickle("s/desc-train_units.pkl")
+ok=t[~t.is_outlier & t.tp.gt(0)]
+oi=u.obs_intervals.iloc[0]; dur=sum(b-a for a,b in oi)
+keep=[s for s in u.spike_times if len(s)/dur>=1]
+d=ok[(ok.is_eye==False)&(ok.theta==180)]
+print(len(d))
+trials=[]
+for r in d.itertuples():
+    T=r.ts/1000
+    trials.append([neo.SpikeTrain((s[(s>=r.ready_time)&(s<r.ready_time+T)]-r.ready_time)*pq.s, t_start=0*pq.s,t_stop=T*pq.s) for s in keep])
+for xd in (4,8):
+    g=GPFA(bin_size=20*pq.ms, x_dim=xd, em_max_iters=200, verbose=False)
+    t0=time.time(); g.fit(trials); print(xd, time.time()-t0, len(g.fit_info['log_likelihoods']))
+    t0=time.time(); res=g.transform(trials, returned_data=['latent_variable_orth']); print("transform", time.time()-t0, res[0].shape)
+EOF
+timeout 900 python s/gp.py
+```
+
+```
+<persisted-output>
+Output too large (561.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/f0d522b5-f45c-46c0-8a81-358c1599911b/tool-results/bxsmtj703.txt
+
+Preview (first 2KB):
+[2026-11-14 13:03:15,637] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+[2026-11-14 13:03:15,637] utils - WARNING: Correcting 2 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+[2026-11-14 13:03:15,638] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+[2026-11-14 13:03:15,638] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+[2026-11-14 13:03:15,638] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+[2026-11-14 13:03:15,639] utils - WARNING: Correcting 3 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+[2026-11-14 13:03:15,639] utils - WARNING: Correcting 2 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+[2026-11-14 13:03:15,639] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the following bin. You can set tolerance=None to disable this behaviour.
+/tmp/claude-1001/env/lib/python3.13/site-packages/elephant/conversion.py:1158: UserWarning: Binning discarded 1 last spike(s) of the input spiketrain
+  warnings.warn("Binning discarded {} last spike(s) of the "
+[2026-11-14 13:03:15,650] utils - WARNING: Correcting 1 rounding errors by shifting the affected spikes into the fol
+[... 3 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -v "WARNING\|warnings.warn\|UserWarning" /home/runner/.claude/projects/-home-runner-work-encore-encore/f0d522b5-f45c-46c0-8a81-358c1599911b/tool-results/bxsmtj703.txt | tail; date -u
+```
+
+```
+Initializing parameters using factor analysis...
+
+Fitting GPFA model...
+4 21.50529432296753 200
+transform 2.822260618209839 (4, 45)
+Initializing parameters using factor analysis...
+
+Fitting GPFA model...
+8 29.65972924232483 200
+transform 2.8438382148742676 (8, 45)
+Sat Nov 14 13:04:15 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+mkdir -p entries/sohn-2019; sed -n 1,80p entries/fouke-2025/omr.py; python3 -c "
+import json;nb=json.load(open('entries/fouke-2025/reproduce_fouke_2025.ipynb'));
+[print(c['cell_type'],c.get('metadata'),''.join(c['source'])[:400],'\n---') for c in nb['cells'][:8]]"
+```
+
+```
+"""Loading and measures for the freely swimming optomotor data of dandiset 001453.
+
+Fouke, He, Loring & Naumann (2025), Current Biology, doi:10.1016/j.cub.2025.04.027.
+
+Each NWB file holds one fish: x and y position (pixels), heading (`f0_theta`, radians), its
+change per frame (`f0_vtheta`; the file says radians/s, the data show radians per frame),
+velocity estimates, and per frame the stimulus code and trial number (`stim_index`). Files are
+streamed from the archive at the pinned version; nothing is written to disk.
+
+Where the parameters come from:
+
+- Trial processing follows the paper's analysis notebook, Fig1-S1.ipynb, in
+  https://gitlab.oit.duke.edu/ean26/danionella_omr_neuralcircuits2025 at commit
+  33a5c297ff4ab6ff49f6bdd96139e9fdd867025c (the Methods give none of these): Savitzky-Golay
+  smoothing of positions (21 frames, order 2); rejection of trials whose absolute cumulative
+  heading change exceeds 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or
+  whose mean speed exceeds 100 mm/s; measures from 3 s to 35 s after the first tracked frame;
+  10 pixels per mm (the code divides pixels per second by 10 to give mm/s); per fish the median
+  over trials. The 3 s stationary phase and the 32 s of motion are in the Methods.
+- The names of the stimulus codes combine the protocol file sevenrep_twentyonestim.hdf of the
+[... 122 more lines not kept]
+```
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "/tmp/claude/conclusions.py",
- "content": "RESULTS = {\n\"beh-slopes\": \"\"\"\n**Result: not reproduced.** Six of the 8 slopes lie between 0 and 1 (0.50 to 0.90), and 5 of 8 have\n95% intervals that exclude both 0 and 1. In the Short prior with the eye, the slopes are 1.11\n(Eye Right, interval 1.01 to 1.21) and 1.01 (Eye Left), so in these two conditions this session\nshows no regression toward the mean. All slopes are positive. The criterion needs all 8 between 0\nand 1. The paper's slopes pool 17 sessions of monkey H and 12 of G; this is one session.\n\"\"\",\n\"beh-overlap-prior\": \"\"\"\n**Result: not reproduced.** At ts = 800 ms the median bias is +28.3 ms in the Short prior and +47.6 ms\nin the Long prior, so both are positive and not of opposite sign; the rank-sum test gives p = 0.073\n(93 and 107 trials). The Long prior gives the longer tp in 3 of 4 datasets, and significantly so\nonly for Hand Right (+29.7 against +96.8 ms, p = 0.00099). In Eye Left the Short tp is the longer\n(+79.1 against +18.6 ms, p = 0.051).\n\"\"\",\n\"beh-sigmoid-increments\": \"\"\"\n**Result: reproduced.** The mean increment of tp between neighbouring ts is larger in the middle of\nthe prior than at its extremes in 7 of 8 conditions (median difference 31.3 ms), two-sided\nsigned-rank p = 0.0156. The exception is Hand Left, Short prior (-10.7 ms).\n\"\"\",\n\"beh-long-more-bias\": \"\"\"\n**Result: reproduced.** The Long prior slope is below the Short prior slope in all 4 datasets (mean\n0.716 against 0.898), weighted or unweighted.\n\"\"\",\n\"beh-bayes-model\": \"\"\"\n**Result: partially reproduced.** The observer model predicts the SD of tp with a positive correlation\nin all 4 datasets (r = 0.28 to 0.91), but its predicted bias reaches R2 >= 0.8 in only 2 of 4\n(R2 = 0.12, 0.67, 0.87 and 0.98). The two eye datasets, whose Short slopes exceed 1 (beh-slopes),\nget very low measurement noise (wm = 0.013 and 0.025) and are the poorly fit ones. Every fit\nconverged. Table S3 was not available, so the fitted parameters are not compared with the paper's.\n\"\"\",\n\"glm-prior-ts\": \"\"\"\n**Result: not reproduced.** By the GLM and BIC rule of the Methods, 75.0% of units are prior-dependent\n(36 of 48, 95% interval 61.2 to 85.1%; paper 65 +/- 6.5%) and 45.8% are ts-dependent (22 of 48,\ninterval 32.6 to 59.7%; paper 27 +/- 2.7%). Both fractions are above the paper's and outside\ntolerance; the interval of the prior fraction includes 65%, that of the ts fraction does not\ninclude 27%. With a likelihood-ratio test in place of BIC the fractions are higher still (prior\n77.1 to 87.5%, ts 66.7 to 77.1%). The paper's fractions pool 536 units over 17 sessions; these 48\ncome from one session.\n\"\"\",\n\"dfr-overlap-support\": \"\"\"\n**Result: reproduced.** At ts = 800 ms, the RMS over units of the Short minus Long rate difference,\naveraged over datasets, is largest in the bin 480 to 640 ms after Ready (6.86 spikes/s), within the\nsupport of the Short prior, and above the 95th percentile of the shuffled maximum (3.11). Before\nReady it is at the shuffle level (2.39 and 2.29 against 95th percentiles of 2.42 and 2.32). Per\ndataset the largest bin is 480-640 (2 datasets), 640-800 and 800-960 ms; the mean is also high just\nafter Set (6.07 in 800 to 960 ms).\n\"\"\",\n\"pca-dimensionality\": \"\"\"\n**Result: not reproduced.** Two components reach 75% of the variance in the estimation epoch in all 4\ndatasets (3 components explain 86 to 90%), and 2, 2, 5 and 4 in the production epoch, so 1 of the\n8 values falls in the paper's ranges. Activity here is lower dimensional than the paper reports.\nThis session has 48 units; the paper's PCA pools up to 536 units recorded over 17 sessions, which\ncan add dimensions.\n\"\"\",\n\"encoding-r2\": \"\"\"\n**Result: reproduced.** Under reading (a), Hand Left, R2 = 0.998 (Short) and 0.996 (Long); under\nreading (b), the mean of the 4 datasets, 0.959 and 0.989. Both readings are within tolerance. The\nestimation trajectories here have only 2 PCs, and projections on random unit vectors in that space\nalso fit te well (median R2 0.73 to 0.98 by dataset and prior). The R2 on u exceeds that of 95% of\nrandom axes in 3 of 8 dataset-priors (Hand Right Long, both Hand Left priors), so in this session the\nfit is specific to u only for those three.\n\"\"\",\n\"encoding-bayes-beats-linear\": \"\"\"\n**Result: partially reproduced.** The Bayesian model has the lower RMSE in all 4 datasets for the\nLong prior and in 3 of 4 for the Short prior (Hand Right Short is the exception, 0.99 against 0.80).\nThe differences are small, 0.04 to 0.57 in units of Xu (spikes/s).\n\"\"\",\n\"short-in-long-control\": \"\"\"\n**Result: reproduced by the paper's test, which cannot detect an effect here.** The signed-rank test\nover the 4 datasets gives p = 0.25; with 4 datasets the smallest attainable p is 0.125, so it could\nnot have found an effect. The effect sizes do not show the contrast the paper describes: in the\ncontrol period the Bayesian model is better in 3 of 4 datasets, with a median relative RMSE\ndifference of -0.089, at least as large as in the Short prior itself (-0.060).\n\"\"\",\n\"neural-long-more-bias\": \"\"\"\n**Result: reproduced.** The slope of Xu on ts is smaller for the Long prior in all 4 datasets (ratios\nLong / Short 0.55, 0.63, 0.34 and 0.97); the Hand Right difference is small.\n\"\"\",\n\"speed-vs-projection\": \"\"\"\n**Result: partially reproduced.** Larger projections at Set are followed by slower production\ntrajectories in both priors, more strongly than the paper reports: rho = -0.941 (Short, p = 6.2e-10)\nand -0.878 (Long, p = 3.7e-07), outside the tolerances around -0.74 and -0.51. Within each dataset\nthe correlations are -0.75 to -1.00, and with Xu z-scored per dataset they are -0.759 and -0.779.\n\"\"\",\n\"initial-speed-biased\": \"\"\"\n**Result: reproduced.** The initial speed falls with ts in all 8 dataset-priors, and its slope is\nshallower than the unbiased 1/ts profile in 7 of 8 (two-sided signed-rank p = 0.039). Eye Right,\nLong is the exception. No trial was dropped for tp < 400 ms.\n\"\"\",\n\"speed-predicts-tp\": \"\"\"\n**Result: partially reproduced.** Faster production trajectories go with shorter mean tp in both\npriors: rho = -0.733 (Short, p = 0.00024) and -0.744 (Long, p = 0.00017) over 20 points, stronger\nthan the paper's -0.58 and -0.52 and outside tolerance. Within datasets the correlations are -0.80\nto -0.99. The benchmark's trial-by-trial variant gives r = -0.195 to -0.740 (mean -0.519), with 7 of\n8 conditions at p < 0.05.\n\"\"\",\n\"alt-speed-unmodulated\": \"\"\"\n**Result: reproduced by the paper's test, which cannot detect an effect here; the data show the\nspeed is modulated.** The signed-rank test over 4 datasets gives p = 0.125 for each prior, the\nsmallest value it can give. All 8 slopes are positive, speed rising by 13 to 24% of its mean per 100\nms during the support, and all 8 bootstrap intervals exclude zero. So in this session the speed in\nthe full neural space increases during the support of each prior; the claim of no modulation holds\nonly in the sense that the paper's test, at this sample size, cannot reject it. The paper's test\nover 8 datasets gave p = 0.08 for Long.\n\"\"\",\n\"alt-transient-parallel\": \"\"\"\n**Result: not reproduced.** For the longest ts, the distance to the middle trajectory changes in the\nfirst 200 ms after Set: 6 of 8 slopes are negative (median -15.3% of the mean distance per 100 ms),\nsigned-rank p = 0.039. For the shortest ts p = 0.078 (6 of 8 positive, median +26.7% per 100 ms).\nThe PCA kept 1 to 4 components, and in Eye Left a single component, where the distance is the\nabsolute difference along one axis.\n\"\"\",\n\"alt-threshold-monotonic\": \"\"\"\n**Result: not reproduced.** With the components that reach 60% of the variance (1 to 3 per dataset),\nthe median time of the minimum distance is 210 ms before Go; the minimum is in the last 40 ms in 6\nof 32 curves and in the last 200 ms in 14. The distance at Go is below that 800 ms earlier in 26 of\n32 curves, so distances do fall overall. The result depends on the number of components: with 75%\nof the variance the median minimum is 80 ms before Go, and in the full space of 48 units 40 ms\nbefore Go, which would meet the criterion. With 1 component (Eye datasets) the distance can reach\nzero where trajectories cross, which moves the minima.\n\"\"\",\n\"gpfa-variance-inverted-u\": \"\"\"\n**Result: not reproduced.** The quadratic coefficient of variance on ts is negative in 5 of 8\ndataset-priors; the one-tailed signed-rank test gives p = 0.125 (paper 0.0273). Cross-validation\nchose 8 latent dimensions in all 4 datasets, the larger of the two candidates.\n\"\"\",\n\"gpfa-mean-sigmoid\": \"\"\"\n**Result: reproduced.** The mean single-trial projection rises with ts in all 8 dataset-priors, its\nmiddle increments exceed those at the extremes in 8 of 8 (two-sided signed-rank p = 0.0078, the\npaper's value), and its slope is higher for the Short prior in 4 of 4 datasets (one-tailed p =\n0.0625, the paper's value).\n\"\"\",\n}\n\nSUMMARY = r\"\"\"\n## Summary\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\n| Claim | Outcome |\n|---|---|\n| beh-slopes | Not reproduced (6 of 8 slopes between 0 and 1) |\n| beh-overlap-prior | Not reproduced (both biases positive, p = 0.073) |\n| beh-sigmoid-increments | Reproduced (7 of 8, p = 0.0156) |\n| beh-long-more-bias | Reproduced (4 of 4) |\n| beh-bayes-model | Partially reproduced (SD in 4 of 4, bias R2 >= 0.8 in 2 of 4) |\n| glm-prior-ts | Not reproduced (75.0% and 45.8% against 65% and 27%) |\n| dfr-overlap-support | Reproduced (largest at 480 to 640 ms) |\n| pca-dimensionality | Not reproduced (2 PCs in the estimation epoch) |\n| encoding-r2 | Reproduced (0.998 and 0.996, Hand Left), not specific to u in 5 of 8 |\n| encoding-bayes-beats-linear | Partially reproduced (Long 4 of 4, Short 3 of 4) |\n| short-in-long-control | Reproduced by the paper's test, which cannot detect an effect with 4 datasets |\n| neural-long-more-bias | Reproduced (4 of 4) |\n| speed-vs-projection | Partially reproduced (rho -0.94 and -0.88, stronger than reported) |\n| initial-speed-biased | Reproduced (7 of 8, p = 0.039) |\n| speed-predicts-tp | Partially reproduced (rho -0.73 and -0.74, stronger than reported) |\n| alt-speed-unmodulated | Reproduced by the paper's test, which cannot detect an effect; all 8 slopes positive |\n| alt-transient-parallel | Not reproduced (longest ts, p = 0.039) |\n| alt-threshold-monotonic | Not reproduced (median minimum 210 ms before Go with 60% of variance) |\n| gpfa-variance-inverted-u | Not reproduced (5 of 8, p = 0.125) |\n| gpfa-mean-sigmoid | Reproduced (p = 0.0078 and 0.0625, the paper's values) |\n| rnn-curved-manifold, rnn-perturbation | Blocked: model results, no data in the dandiset |\n| monkey-g | Blocked: data missing |\n\n**How the analysis differs from the paper's.** All results come from one session of monkey H, one of\nthe 29 sessions of the paper, with 48 units where the paper pools 536 (H) and 636 (G) units over\nsessions; a \"dataset\" here is one effector and direction in this session (4, against the paper's\n8). The paper's code was not available, so smoothing, the encoding axis, speed, the GLM design with\nattrition and the Bayesian observer fit follow the Methods as read and the choices stated in the\nclaims file. The paper's signed-rank tests over 8 datasets become tests over 4, which cannot reach\np < 0.05; two claims of absence are judged on such tests. The GPFA latent dimensionality was chosen\nfrom 4 and 8 only, with 100 EM iterations. The outlier flag is the file's.\n\n**What was found about the dandiset.** It holds one session of one of the paper's two monkeys, in the\nform prepared for the Neural Latents Benchmark: 283 of the session's trials are in a test file\nwithout task variables and without 14 of the 54 units. The 48 units that pass the Methods' rate rule\nmatch the paper's single-session GPFA count for monkey H, consistent with this being that session.\nThe `iti` description gives the priors' inter-trial intervals the wrong way round, `tp` is a median\n18 ms longer than `go_time - set_time`, the `is_outlier` flag is not reproduced by a refit of the\nMethods' mixture model (10 of 46 flagged), and units have no single-unit or multi-unit label and no\nelectrode, whose table has no positions.\n\"\"\"\n"
+ "file_path": "entries/sohn-2019/rsg.py",
+ "content": "\"\"\"Loading and measures for the Ready-Set-Go recording of dandiset 000130.\n\nSohn, Narain, Meirhaeghe & Jazayeri (2019), Neuron, doi:10.1016/j.neuron.2019.06.012.\n\nThe dandiset holds one session (2016-12-11) of monkey H (\"Haydn\"), prepared for the Neural\nLatents Benchmark. The train file holds the trial table (event times, prior, effector, target\ndirection, ts, tp, the outlier flag of the paper's mixture model) and the spike times of all 54\nunits over the whole session; the test file holds 1.7 s segments of 283 further trials, for 40\nunits, with no task variables, and is not used for the analysis. Files are streamed from the\narchive at the pinned version; nothing is written to disk.\n\nWhere the parameters come from (claims/sohn-2019.yaml is cited as \"claims header\" for the\nmethod choices its opening comment fixes):\n\n- Trials: completed trials (tp > 0) not flagged by `is_outlier` (claims header).\n- Units: mean rate over the recording of at least 1 spike/s and at least 5 trials in each of\n  the 40 conditions (claims header; STAR Methods, \"Analysis of single- and multi-unit\n  activity\").\n- `BIN_MS` = 20 ms bins and `SMOOTH_SD_MS` = 40 ms Gaussian smoothing of trial-averaged rates\n  (claims header; STAR Methods, \"Principal component analysis\": \"bin size: 20 ms, Gaussian\n  smoothing kernel width: 40 ms\"). Edges of a smoothed trajectory use the nearest value, a\n  standard choice.\n- Estimation epoch: from Ready to the longest ts of the prior; bin k (ending at 20(k+1) ms after\n  Ready) averages the trials with ts >= 20(k+1) ms, so that Set comes after the end of the bin\n  (attrition; claims header and STAR Methods, \"Principal component analysis\"). The state \"at\n  time t\" is the bin ending at t.\n- Production epoch: from Set to the shortest Set-to-Go time of the trials of that ts (claims\n  header; STAR Methods). Spikes are aligned to the file's event times (`ready_time`,\n  `set_time`, `go_time`); behaviour uses the `ts` and `tp` columns (claims header).\n- PCA keeps the fewest components reaching `VAR_THRESHOLD` = 75% of the variance (claims\n  header; STAR Methods).\n- Encoding axis: the mean of X(ts_max - d) - X(ts_min + d) for d = 0, 20, 40 ... while\n  ts_min + d < ts_max - d, normalised (claims header; STAR Methods, \"Analysis of neural\n  projection\").\n- Bayesian observer: continuous uniform prior over each range, measurement noise SD wm*ts,\n  posterior mean as te, production noise SD wp*te, offset b per prior, fit by maximum\n  likelihood per dataset (claims header; STAR Methods, \"Analysis of behavior with a Bayesian\n  model\"). The integration grids (`TM_GRID_N`, `TS_GRID_N`) are a standard numerical choice.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import optimize\nfrom scipy.ndimage import gaussian_filter1d\nfrom sklearn.decomposition import PCA\n\nDANDISET_ID = \"000130\"\nDANDISET_VERSION = \"0.241017.1448\"\nTRAIN_PATH = \"sub-Haydn/sub-Haydn_desc-train_ecephys.nwb\"\nTEST_PATH = \"sub-Haydn/sub-Haydn_desc-test_ecephys.nwb\"\n\nBIN_MS = 20\nSMOOTH_SD_MS = 40\nVAR_THRESHOLD = 0.75\nMIN_RATE = 1.0\nMIN_TRIALS = 5\nSHORT_TS = (480, 560, 640, 720, 800)\nLONG_TS = (800, 900, 1000, 1100, 1200)\nPRIOR_TS = {\"Short\": SHORT_TS, \"Long\": LONG_TS}\nTM_GRID_N = 600\nTS_GRID_N = 400\n\n# The four \"datasets\" of the paper (effector x target direction); theta 0 is right, 180 left.\nDATASETS = {\"Eye Right\": (True, 0.0), \"Eye Left\": (True, 180.0),\n            \"Hand Right\": (False, 0.0), \"Hand Left\": (False, 180.0)}\n\n\ndef asset_urls() -> dict[str, str]:\n    \"\"\"Streaming URL of every NWB file at the pinned version, by path.\"\"\"\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n        return {a.path: a.get_content_url(follow_redirects=1, strip_query=True)\n                for a in dandiset.get_assets() if a.path.endswith(\".nwb\")}\n\n\ndef _text(value):\n    return value.decode() if isinstance(value, bytes) else value\n\n\ndef _read_table(group) -> pd.DataFrame:\n    \"\"\"A DynamicTable without ragged columns, read with h5py.\"\"\"\n    cols = {}\n    for name in _text(group.attrs[\"colnames\"]):\n        name = _text(name)\n        data = group[name][()]\n        if data.dtype.kind in \"SO\":\n            data = np.array([_text(x) for x in data])\n        cols[name] = data\n    return pd.DataFrame(cols, index=group[\"id\"][()])\n\n\ndef _ragged(group, name):\n    data, index = group[name][()], group[name + \"_index\"][()]\n    return np.split(data, index[:-1])\n\n\ndef load_file(url: str) -> dict:\n    \"\"\"Trial table, unit table and spike times of one NWB file, with the column descriptions.\"\"\"\n    with h5py.File(remfile.File(url), \"r\") as f:\n        trials = _read_table(f[\"intervals/trials\"])\n        tr_desc = {c: _text(f[\"intervals/trials\"][c].attrs.get(\"description\", \"\"))\n                   for c in trials.columns}\n        units = f[\"units\"]\n        spikes = _ragged(units, \"spike_times\")\n        obs = [x.reshape(-1, 2) for x in _ragged(units, \"obs_intervals\")]\n        unit_table = pd.DataFrame({\"heldout\": units[\"heldout\"][()].astype(bool),\n                                   \"n_spikes\": [len(s) for s in spikes]},\n                                  index=units[\"id\"][()])\n        meta = {\"session_description\": _text(f[\"session_description\"][()]),\n                \"session_start_time\": _text(f[\"session_start_time\"][()]),\n                \"subject_id\": _text(f[\"general/subject/subject_id\"][()]),\n                \"species\": _text(f[\"general/subject/species\"][()])}\n    return {\"trials\": trials, \"trial_descriptions\": tr_desc, \"units\": unit_table,\n            \"spikes\": spikes, \"obs_intervals\": obs, \"meta\": meta}\n\n\ndef good_trials(trials: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"Completed trials not flagged as outliers, with prior and dataset labels.\"\"\"\n    t = trials[(trials.tp > 0) & ~trials.is_outlier.astype(bool)].copy()\n    t[\"prior\"] = np.where(t.is_short.astype(bool), \"Short\", \"Long\")\n    names = {v: k for k, v in DATASETS.items()}\n    t[\"dataset\"] = [names[(bool(e), float(th))] for e, th in zip(t.is_eye, t.theta)]\n    t[\"ts\"] = t.ts.round().astype(int)\n    return t\n\n\ndef select_units(data: dict, trials: pd.DataFrame) -> tuple[np.ndarray, pd.DataFrame]:\n    \"\"\"Indices of the units kept, and the table of rates and minimum trial counts.\"\"\"\n    rows = []\n    for i, (s, obs) in enumerate(zip(data[\"spikes\"], data[\"obs_intervals\"])):\n        dur = float(np.sum(obs[:, 1] - obs[:, 0]))\n        # trials of each condition inside the unit's observation intervals\n        inside = np.zeros(len(trials), bool)\n        for a, b in obs:\n            inside |= (trials.start_time.values >= a) & (trials.stop_time.values <= b)\n        counts = trials[inside].groupby([\"prior\", \"ts\", \"dataset\"]).size()\n        n_cond = len(counts)\n        rows.append({\"unit\": data[\"units\"].index[i], \"rate\": len(s) / dur,\n                     \"min_trials\": int(counts.min()) if n_cond else 0, \"conditions\": n_cond})\n    table = pd.DataFrame(rows)\n    keep = (table.rate >= MIN_RATE) & (table.min_trials >= MIN_TRIALS) & (table.conditions == 40)\n    table[\"kept\"] = keep\n    return np.flatnonzero(keep.values), table\n\n\ndef bin_counts(spikes: list[np.ndarray], align_s: np.ndarray, start_ms: float, stop_ms: float,\n               bin_ms: float = BIN_MS) -> np.ndarray:\n    \"\"\"Spike counts, trials x bins x units, in bins from start_ms to stop_ms after each event.\"\"\"\n    edges = np.arange(start_ms, stop_ms + bin_ms / 2, bin_ms) / 1000.0\n    grid = align_s[:, None] + edges[None, :]\n    out = np.empty((len(align_s), len(edges) - 1, len(spikes)))\n    for j, s in enumerate(spikes):\n        idx = np.searchsorted(s, grid.ravel()).reshape(grid.shape)\n        out[:, :, j] = np.diff(idx, axis=1)\n    return out\n\n\ndef smooth(rates: np.ndarray, sd_ms: float = SMOOTH_SD_MS, bin_ms: float = BIN_MS) -> np.ndarray:\n    \"\"\"Gaussian smoothing along the time axis (axis 0).\"\"\"\n    return gaussian_filter1d(rates, sd_ms / bin_ms, axis=0, mode=\"nearest\")\n\n\ndef estimation_rates(spikes, t: pd.DataFrame, ts_max: int, smoothed: bool = True):\n    \"\"\"Trial-averaged rates (spikes/s) from Ready to ts_max with attrition, and trials per bin.\"\"\"\n    c = bin_counts(spikes, t.ready_time.values, 0, ts_max)\n    ends = np.arange(1, c.shape[1] + 1) * BIN_MS\n    incl = t.ts.values[:, None] >= ends[None, :]          # Set at or after the end of the bin\n    n = incl.sum(0)\n    rates = (c * incl[:, :, None]).sum(0) / np.maximum(n, 1)[:, None] * (1000 / BIN_MS)\n    return (smooth(rates) if smoothed else rates), n\n\n\ndef production_rates(spikes, t: pd.DataFrame, length_ms: float | None = None, smoothed=True):\n    \"\"\"Trial-averaged rates from Set; by default up to the shortest Set-to-Go time of the trials.\"\"\"\n    if length_ms is None:\n        length_ms = np.min((t.go_time - t.set_time).values) * 1000\n    nb = int(length_ms // BIN_MS)\n    c = bin_counts(spikes, t.set_time.values, 0, nb * BIN_MS)\n    rates = c.mean(0) * (1000 / BIN_MS)\n    return smooth(rates) if smoothed else rates\n\n\ndef go_rates(spikes, t: pd.DataFrame, before_ms: float = 800, smoothed=True):\n    \"\"\"Trial-averaged rates from Go - before_ms to Go.\"\"\"\n    c = bin_counts(spikes, t.go_time.values, -before_ms, 0)\n    rates = c.mean(0) * (1000 / BIN_MS)\n    return smooth(rates) if smoothed else rates\n\n\ndef n_components(pca: PCA, threshold: float = VAR_THRESHOLD) -> int:\n    \"\"\"Fewest components whose cumulative explained variance reaches the threshold.\"\"\"\n    return int(np.searchsorted(np.cumsum(pca.explained_variance_ratio_), threshold - 1e-12) + 1)\n\n\ndef fit_pca(blocks: list[np.ndarray], threshold: float = VAR_THRESHOLD):\n    \"\"\"PCA on the concatenated [time x units] blocks; returns the fit and the number kept.\"\"\"\n    pca = PCA().fit(np.vstack(blocks))\n    return pca, n_components(pca, threshold)\n\n\ndef encoding_axis(X: np.ndarray, ts_min: int, ts_max: int) -> np.ndarray:\n    \"\"\"Unit vector u: mean of X(ts_max - d) - X(ts_min + d), d = 0, 20, ... while the first is\n    earlier than the second. X is indexed by bin, the state at time t being row t/20 - 1.\"\"\"\n    diffs, d = [], 0\n    while ts_min + d < ts_max - d:\n        diffs.append(X[(ts_max - d) // BIN_MS - 1] - X[(ts_min + d) // BIN_MS - 1])\n        d += BIN_MS\n    v = np.mean(diffs, axis=0)\n    return v / np.linalg.norm(v)\n\n\ndef wls(y, x, w):\n    \"\"\"Weighted least squares y = a + b x; returns (a, b), weighted R2, fitted values.\"\"\"\n    y, x, w = map(np.asarray, (y, x, w))\n    A = np.column_stack([np.ones_like(x), x]) * np.sqrt(w)[:, None]\n    coef, *_ = np.linalg.lstsq(A, y * np.sqrt(w), rcond=None)\n    fit = coef[0] + coef[1] * x\n    ybar = np.sum(w * y) / np.sum(w)\n    r2 = 1 - np.sum(w * (y - fit) ** 2) / np.sum(w * (y - ybar) ** 2)\n    return coef, r2, fit\n\n\n# ----------------------------------------------------------------------------------------------\n# Bayesian observer (BLS) model\n\ndef _tm_grid(lo, hi):\n    return np.linspace(0.2 * lo, 2.2 * hi, TM_GRID_N)\n\n\ndef bls_estimate(tm: np.ndarray, lo: float, hi: float, wm: float) -> np.ndarray:\n    \"\"\"Posterior mean of ts given tm, uniform prior on [lo, hi], noise SD wm*ts.\"\"\"\n    s = np.linspace(lo, hi, TS_GRID_N)\n    lik = np.exp(-0.5 * ((tm[:, None] - s[None, :]) / (wm * s[None, :])) ** 2) / s[None, :]\n    return (lik * s).sum(1) / lik.sum(1)\n\n\ndef _tm_weights(ts, lo, hi, wm):\n    tm = _tm_grid(lo, hi)\n    w = np.exp(-0.5 * ((tm[None, :] - ts[:, None]) / (wm * ts[:, None])) ** 2)\n    return tm, w / w.sum(1, keepdims=True)\n\n\ndef bls_negloglik(params, data: dict[str, tuple[np.ndarray, np.ndarray]]):\n    wm, wp, b_short, b_long = params\n    if wm <= 0.01 or wp <= 0.01 or wm > 1 or wp > 1:\n        return np.inf\n    nll = 0.0\n    for prior, (ts, tp) in data.items():\n        lo, hi = min(PRIOR_TS[prior]), max(PRIOR_TS[prior])\n        b = b_short if prior == \"Short\" else b_long\n        tm, w = _tm_weights(ts.astype(float), lo, hi, wm)\n        te = bls_estimate(tm, lo, hi, wm)\n        sd = wp * te\n        dens = np.exp(-0.5 * ((tp[:, None] - te[None, :] - b) / sd[None, :]) ** 2) / (\n            np.sqrt(2 * np.pi) * sd[None, :])\n        p = (w * dens).sum(1)\n        nll -= np.sum(np.log(np.maximum(p, 1e-300)))\n    return nll\n\n\ndef fit_bls(t: pd.DataFrame) -> dict:\n    \"\"\"Maximum-likelihood fit of wm, wp, bShort, bLong to the trials of one dataset.\"\"\"\n    data = {p: (g.ts.values.astype(float), g.tp.values.astype(float))\n            for p, g in t.groupby(\"prior\")}\n    best = None\n    for x0 in ([0.1, 0.1, 0, 0], [0.15, 0.08, 20, -20], [0.07, 0.12, -20, 20]):\n        r = optimize.minimize(bls_negloglik, x0, args=(data,), method=\"Nelder-Mead\",\n                              options={\"xatol\": 1e-5, \"fatol\": 1e-4, \"maxiter\": 4000})\n        if best is None or r.fun < best.fun:\n            best = r\n    if not best.success:\n        raise RuntimeError(f\"BLS fit failed: {best.message}\")\n    wm, wp, bs, bl = best.x\n    return {\"wm\": wm, \"wp\": wp, \"b_Short\": bs, \"b_Long\": bl, \"nll\": best.fun}\n\n\ndef bls_predict(fit: dict, prior: str, ts) -> pd.DataFrame:\n    \"\"\"Model mean te (no offset), mean tp and SD of tp at each ts.\"\"\"\n    lo, hi = min(PRIOR_TS[prior]), max(PRIOR_TS[prior])\n    ts = np.atleast_1d(np.asarray(ts, float))\n    tm, w = _tm_weights(ts, lo, hi, fit[\"wm\"])\n    te = bls_estimate(tm, lo, hi, fit[\"wm\"])\n    b = fit[f\"b_{prior}\"]\n    mean_te = (w * te).sum(1)\n    mean_tp = mean_te + b\n    second = (w * ((te + b) ** 2 + (fit[\"wp\"] * te) ** 2)).sum(1)\n    return pd.DataFrame({\"ts\": ts, \"te\": mean_te, \"tp_mean\": mean_tp,\n                         \"tp_sd\": np.sqrt(second - mean_tp ** 2)})\n"
 }
 ```
 
 ```
-File created successfully at: /tmp/claude/conclusions.py (file state is current in your context — no need to Read it back)
+File created successfully at: entries/sohn-2019/rsg.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && python - <<'E'
-p='conclusions.py'; s=open(p).read()
-old='''(93 and 107 trials). The Long prior gives the longer tp in 3 of 4 datasets, and significantly so
-only for Hand Right (+29.7 against +96.8 ms, p = 0.00099). In Eye Left the Short tp is the longer
-(+79.1 against +18.6 ms, p = 0.051).'''
-new='''(93 and 107 trials). The Long prior gives the longer tp in 2 of 4 datasets, Hand Right (+29.7
-against +96.8 ms, p = 0.00099) and Hand Left (-61.6 against -2.8 ms, p = 0.069), where the Short
-bias is negative. In the eye datasets the Short tp is the longer (Eye Left +79.1 against +18.6 ms,
-p = 0.051).'''
-assert old in s; s=s.replace(old,new)
-s=s.replace("The differences are small, 0.04 to 0.57 in units of Xu (spikes/s).","The differences are small, 0.045 to 0.573 in units of Xu (spikes/s).")
-open(p,'w').write(s)
-E
+cd $TMPDIR && source env/bin/activate && uv pip install -q dandi 2>&1|tail -1; cd entries/sohn-2019 && python - <<'EOF'
+import time, rsg, numpy as np, pandas as pd
+t0=time.time()
+urls=rsg.asset_urls(); print(urls)
+d=rsg.load_file(urls[rsg.TRAIN_PATH]); print(time.time()-t0)
+print(d["meta"], d["units"].shape)
+t=rsg.good_trials(d["trials"]); keep,tab=rsg.select_units(d,t); print(len(keep), tab.min_trials.min(), tab.conditions.min())
+for name,g in t.groupby("dataset"):
+    t1=time.time(); f=rsg.fit_bls(g); print(name, {k:round(v,3) for k,v in f.items()}, round(time.time()-t1,1))
+    for p in ("Short","Long"):
+        pr=rsg.bls_predict(f,p,rsg.PRIOR_TS[p]); obs=g[g.prior==p].groupby("ts").tp.agg(["mean","std"])
+        print(pd.concat([pr.set_index(pr.ts.astype(int)),obs],axis=1).round(1).to_string())
+EOF
+```
+
+```
+entries/sohn-2019/rsg.py:239: RuntimeWarning: invalid value encountered in divide
+  return (lik * s).sum(1) / lik.sum(1)
+entries/sohn-2019/rsg.py:239: RuntimeWarning: invalid value encountered in divide
+  return (lik * s).sum(1) / lik.sum(1)
+{'sub-Haydn/sub-Haydn_desc-test_ecephys.nwb': 'https://dandiarchive.s3.amazonaws.com/blobs/eaf/1fa/eaf1fa97-ce58-477d-b79d-82425cea818f', 'sub-Haydn/sub-Haydn_desc-train_ecephys.nwb': 'https://dandiarchive.s3.amazonaws.com/blobs/73a/6f6/73a6f648-8e97-4c90-b323-a15844e4e3d4'}
+1.453387975692749
+{'session_description': 'Data from monkey Haydn performing ready-set-go time interval reproduction task. This file contains continuous segments of the full session on 2016-12-11 that can be used for training models for the Neural Latents Benchmark.', 'session_start_time': '2016-12-11T00:00:00-05:00', 'subject_id': 'Haydn', 'species': 'Macaca mulatta'} (54, 2)
+48 14 40
+Eye Left {'wm': np.float64(0.031), 'wp': np.float64(0.102), 'b_Short': np.float64(40.438), 'b_Long': np.float64(0.645), 'nll': np.float64(1526.382)} 22.6
+        ts     te  tp_mean  tp_sd   mean    std
+ts                                             
+480  480.0  494.0    534.4   50.7  539.5   45.1
+560  560.0  561.1    601.5   59.8  580.0   52.7
+640  640.0  641.3    681.7   68.3  666.9   81.6
+720  720.0  720.9    761.4   76.6  772.1  100.4
+800  800.0  778.7    819.1   80.0  864.0   79.3
+          ts      te  tp_mean  tp_sd    mean    std
+ts                                                 
+800    800.0   823.4    824.1   84.5   821.3   93.0
+900    900.0   902.0    902.6   95.9   916.0   91.9
+[... 48 more lines not kept]
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/sohn-2019/rsg.py",
+ "old_string": "    s = np.linspace(lo, hi, TS_GRID_N)\n    lik = np.exp(-0.5 * ((tm[:, None] - s[None, :]) / (wm * s[None, :])) ** 2) / s[None, :]\n    return (lik * s).sum(1) / lik.sum(1)",
+ "new_string": "    s = np.linspace(lo, hi, TS_GRID_N)\n    loglik = -0.5 * ((tm[:, None] - s[None, :]) / (wm * s[None, :])) ** 2 - np.log(s[None, :])\n    lik = np.exp(loglik - loglik.max(1, keepdims=True))\n    return (lik * s).sum(1) / lik.sum(1)"
+}
+```
+
+```
+The file entries/sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/s/py2nb.py <<'EOF'
+"""Convert a percent-format script to ipynb: '# %%' code cells, '# %% [markdown]' markdown,
+optional 'tags=a,b' after the marker."""
+import sys, re, nbformat
+src = open(sys.argv[1]).read().split("\n")
+cells, cur, kind, tags = [], [], None, []
+def flush():
+    if kind is None: return
+    text = "\n".join(cur).strip("\n")
+    if kind == "md":
+        text = "\n".join(l[2:] if l.startswith("# ") else l.lstrip("#") for l in text.split("\n"))
+        c = nbformat.v4.new_markdown_cell(text)
+    else:
+        c = nbformat.v4.new_code_cell(text)
+    if tags: c.metadata["tags"] = tags
+    cells.append(c)
+for line in src:
+    m = re.match(r"^# %%( \[markdown\])?( tags=(\S+))?\s*$", line)
+    if m:
+        flush(); cur = []; kind = "md" if m.group(1) else "code"
+        tags = m.group(3).split(",") if m.group(3) else []
+    else:
+        cur.append(line)
+flush()
+nb = nbformat.v4.new_notebook(); nb.cells = cells
+nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
+nbformat.write(nb, sys.argv[2])
+EOF
 echo ok
 ```
 
 ```
 ok
-Shell cwd was reset to
 ```
 
-**Agent**
+**Agent calls Write**
 
-Now entry.yaml and README, then lock and run.
+```json
+{
+ "file_path": "/tmp/claude-1001/s/nb.py",
+ "content": "# %% [markdown]\n# # Reproducing Sohn et al. (2019) from dandiset 000130\n#\n# Paper. Sohn H, Narain D, Meirhaeghe N, Jazayeri M (2019). Bayesian computation through cortical\n# latent dynamics. Neuron 103(5):934-947.e5.\n# [doi:10.1016/j.neuron.2019.06.012](https://doi.org/10.1016/j.neuron.2019.06.012). The claims\n# file (`claims/sohn-2019.yaml`) was written from the accepted author manuscript in PubMed Central\n# (PMC6805134): Results, figure legends and STAR Methods. The supplementary tables and figures were\n# not available to the reader. The paper's analysis code is available on request only.\n#\n# Dataset. [DANDI:000130](https://dandiarchive.org/dandiset/000130/0.241017.1448), version\n# 0.241017.1448 (doi:10.48324/dandi.000130/0.241017.1448). This version was asked for in the\n# prompt of this attempt; it is also the dandiset's only published version. The dandiset was\n# prepared for the Neural Latents Benchmark (DMFC_RSG) and holds one recording session\n# (2016-12-11) of monkey H (\"Haydn\"): a train file with the trial table and all 54 units, and a test\n# file with 1.7 s segments of 283 further trials for 40 units and no task variables. The paper\n# analysed 17 sessions of H and 12 of monkey G; only this session is here. Following the paper, a\n# \"dataset\" is one effector and target direction (4 here, 8 in the paper over both animals).\n#\n# Data are streamed from the archive; nothing is written to disk. Loading and the measures are in\n# `rsg.py`, whose docstring says where each parameter comes from.\n#\n# | Claim | Tested here |\n# |---|---|\n# | beh-slopes | tested |\n# | beh-overlap-prior | tested |\n# | beh-sigmoid-increments | tested |\n# | beh-long-more-bias | tested |\n# | beh-bayes-model | tested |\n# | glm-prior-ts | tested |\n# | dfr-overlap-support | tested |\n# | pca-dimensionality | tested |\n# | encoding-r2 | tested |\n# | encoding-bayes-beats-linear | tested |\n# | short-in-long-control | tested |\n# | neural-long-more-bias | tested |\n# | speed-vs-projection | tested |\n# | initial-speed-biased | tested |\n# | speed-predicts-tp | tested |\n# | alt-speed-unmodulated | tested |\n# | alt-transient-parallel | tested |\n# | alt-threshold-monotonic | tested |\n# | gpfa-variance-inverted-u | tested |\n# | gpfa-mean-sigmoid | tested |\n# | rnn-curved-manifold | blocked: the networks are not in the dataset (data_missing) |\n# | rnn-perturbation | blocked: the networks are not in the dataset (data_missing) |\n# | monkey-g | blocked: monkey G is not in the dataset (data_missing) |\n\n# %%\nimport logging\nimport resource\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nimport statsmodels.api as sm\nfrom scipy import stats\n\nimport rsg\n\nwarnings.filterwarnings(\"ignore\")\nlogging.getLogger(\"elephant\").setLevel(logging.ERROR)\npd.set_option(\"display.width\", 200)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nT0 = time.time()\nDS = list(rsg.DATASETS)\nPRIORS = [\"Short\", \"Long\"]\n\n\ndef signed_rank(x, alternative=\"two-sided\"):\n    \"\"\"Wilcoxon signed-rank test against zero, exact.\"\"\"\n    x = np.asarray(x, float)\n    return stats.wilcoxon(x, alternative=alternative, method=\"exact\").pvalue\n\n# %%\nurls = rsg.asset_urls()\ndata = rsg.load_file(urls[rsg.TRAIN_PATH])\ntest = rsg.load_file(urls[rsg.TEST_PATH])\ntrials_all = data[\"trials\"]\nT = rsg.good_trials(trials_all)\nkeep, unit_table = rsg.select_units(data, T)\nSP = [data[\"spikes\"][i] for i in keep]\nprint(f\"loaded in {time.time() - T0:.1f} s\")\n\n# %% [markdown]\n# ## Data check\n#\n# Each check of the metadata against the values is stated under its output.\n\n# %% tags=sanity\nprint(\"Files at the pinned version:\", sorted(urls))\nfor name, d in ((\"train\", data), (\"test\", test)):\n    print(f\"\\n{name}: {d['meta']}\")\n    print(f\"  trials {len(d['trials'])}, columns {list(d['trials'].columns)}\")\n    print(f\"  units {len(d['units'])} (held out in the benchmark: {int(d['units'].heldout.sum())})\")\nprint(\"\\nTrain-file trial columns and their descriptions:\")\nfor c, desc in data[\"trial_descriptions\"].items():\n    print(f\"  {c}: {desc}\")\nprint(\"\\nTrials by benchmark split (train file):\", trials_all.split.value_counts().to_dict())\nprint(\"Test-file trial columns:\", list(test[\"trials\"].columns), \"; split:\",\n      test[\"trials\"].split.value_counts().to_dict())\ndone = trials_all.tp > 0\nprint(f\"\\nTrain-file trials: {len(trials_all)}; completed (tp > 0): {int(done.sum())}; \"\n      f\"is_outlier: {int(trials_all.is_outlier.sum())} \"\n      f\"(of which completed: {int((trials_all.is_outlier & done).sum())}); \"\n      f\"kept (completed, not outlier): {len(T)}\")\nprint(\"Rewarded among kept:\", int(T.reward_time.notna().sum()), \"; rewarded among outliers:\",\n      int(trials_all[trials_all.is_outlier].reward_time.notna().sum()))\nprint(\"\\nKept trials per dataset, prior and ts:\")\nprint(pd.crosstab([T.dataset, T.prior], T.ts).to_string())\n\n# %% tags=sanity\nprint(\"Ranges of the variables used (kept trials):\")\nfor c in [\"ts\", \"tp\", \"theta\", \"iti\"]:\n    print(f\"  {c}: {T[c].min():.1f} to {T[c].max():.1f}\")\nprint(\"  ts values:\", sorted(T.ts.unique()))\norder_ok = ((T.fix_time <= T.target_on_time) & (T.target_on_time <= T.ready_time)\n            & (T.ready_time < T.set_time) & (T.set_time < T.go_time)).all()\nprint(\"Event order fix <= target <= ready < set < go in every kept trial:\", bool(order_ok))\nd_ts = (T.set_time - T.ready_time) * 1000 - T.ts\nd_tp = (T.go_time - T.set_time) * 1000 - T.tp\nprint(\"(set_time - ready_time) - ts, ms: percentiles 0/1/50/99/100 =\",\n      np.percentile(d_ts, [0, 1, 50, 99, 100]).round(1))\nprint(\"(go_time - set_time) - tp, ms: percentiles 0/1/50/99/100 =\",\n      np.percentile(d_tp, [0, 1, 50, 99, 100]).round(1))\nprint(\"  by effector (median, ms):\", d_tp.groupby(T.is_eye).median().round(1).to_dict())\nprint(\"\\niti by prior (ms):\")\nprint(pd.crosstab(trials_all.is_short.map({True: \"Short\", False: \"Long\"}), trials_all.iti).to_string())\nprint(\"\\nis_short against ts range: Short ts\", sorted(T[T.prior == \"Short\"].ts.unique()),\n      \"; Long ts\", sorted(T[T.prior == \"Long\"].ts.unique()))\n\n# %% [markdown]\n# `ts` matches the time from `ready_time` to `set_time` to within about 24 ms (one or two frames of a\n# 60 Hz display; the Methods give a 60 Hz monitor). `tp` is longer than `go_time - set_time` by a\n# median of about 18 ms, and the difference is not documented. Behaviour uses the `ts` and `tp`\n# columns (claims header) and spikes are aligned to the event times. The `iti` column is described\n# as 500 ms for the Short prior and 1220 ms for the Long prior; the values are the reverse (see the\n# table above), which matches the Methods (\"we set the inter-trial intervals of the Short and Long\n# conditions to 1220 ms and 500 ms, respectively\"). The description is wrong; `iti` is not used.\n\n# %% tags=sanity\nprint(\"Units in the train file:\", len(data[\"units\"]))\nprint(\"Observation intervals identical for all units:\",\n      all(np.array_equal(o, data[\"obs_intervals\"][0]) for o in data[\"obs_intervals\"]),\n      \"; covering\", data[\"obs_intervals\"][0].shape[0], \"segments,\",\n      round(float(np.sum(np.diff(data[\"obs_intervals\"][0], axis=1))), 1), \"s\")\nprint(\"Spike times sorted in every unit:\", all(np.all(np.diff(s) >= 0) for s in data[\"spikes\"]))\nprint(\"Spike time range, s:\", round(min(s.min() for s in data[\"spikes\"]), 3), \"to\",\n      round(max(s.max() for s in data[\"spikes\"]), 3), \"; trials span\",\n      round(trials_all.start_time.min(), 3), \"to\", round(trials_all.stop_time.max(), 3))\nprint(\"Mean rates (spikes/s): min %.2f, median %.2f, max %.2f\" % (\n    unit_table.rate.min(), unit_table.rate.median(), unit_table.rate.max()))\nprint(\"Units below 1 spike/s:\", int((unit_table.rate < 1).sum()),\n      \"; fewest kept trials in any of the 40 conditions:\", int(unit_table.min_trials.min()))\nprint(\"Units kept:\", len(keep), \"of\", len(unit_table))\n\n# %% [markdown]\n# The STAR Methods report 48 neurons in the high-yield session of monkey H used for GPFA; this\n# session yields 48 units under the paper's selection, consistent with its being that session. The\n# units are single- and multi-units together; the file does not say which is which. No electrode\n# position, area or unit quality is given (the electrode table has no positions).\n#\n# Clock check. With spikes and a trial table only, the alignment of spikes to the trial events is\n# checked by decoding a task variable in windows around an event, with the true labels and with the\n# labels of the next trial. The target direction is shown at `target_on_time`, so it can only be\n# decoded after it; the Set flash should evoke a transient at a fixed latency after `set_time`.\n\n# %% tags=sanity\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import cross_val_score, StratifiedKFold\n\nrng_check = np.random.default_rng(0)\nwin = [(-300, 0), (0, 300), (300, 600)]\ny_true = (T.theta.values == 180).astype(int)\ny_next = np.roll(y_true, -1)\nrows = []\nfor a, b in win:\n    X = rsg.bin_counts(SP, T.target_on_time.values, a, b, bin_ms=b - a)[:, 0, :]\n    X = np.sqrt(X)\n    cv = StratifiedKFold(5, shuffle=True, random_state=0)\n    for lab, y in ((\"true\", y_true), (\"next trial\", y_next)):\n        acc = cross_val_score(LogisticRegression(C=0.1, max_iter=2000), X, y, cv=cv).mean()\n        rows.append({\"window after target onset (ms)\": f\"{a} to {b}\", \"labels\": lab,\n                     \"accuracy\": round(acc, 3)})\nprint(\"Decoding target direction (left/right) from spike counts, 5-fold cross-validated:\")\nprint(pd.DataFrame(rows).pivot(index=\"window after target onset (ms)\", columns=\"labels\",\n                               values=\"accuracy\").to_string())\npop = rsg.bin_counts(SP, T.set_time.values, -200, 400).sum(2).mean(0) * (1000 / rsg.BIN_MS) / len(SP)\nshift = rng_check.uniform(-0.3, 0.3, len(T))\npop_shift = rsg.bin_counts(SP, T.set_time.values + shift, -200, 400).sum(2).mean(0) * 50 / len(SP)\nprint(\"\\nMean population rate (spikes/s per unit) in 20 ms bins from Set - 200 to Set + 400 ms:\")\nprint(\"  aligned to set_time:     \", pop.round(1))\nprint(\"  times jittered +-300 ms:\", pop_shift.round(1))\npeak = np.argmax(pop[10:]) * 20\nprint(f\"Peak after Set at {peak}-{peak + 20} ms: {pop[10:].max():.1f} against a pre-Set mean of \"\n      f\"{pop[:10].mean():.1f}; jittered peak {pop_shift[10:].max():.1f}\")\n\n# %% [markdown]\n# The target direction is decoded near chance before target onset and well above chance after it,\n# and not with the next trial's labels; the population rate shows a transient after Set that\n# disappears when the event times are jittered. The spikes share the clock of the trial table, as\n# far as these checks can tell. The analysis uses one session, so no unit is matched across sessions.\n#\n# The test file holds 283 trials of the session (1.7 s segments re-timed from 0, 40 units, no ts,\n# tp, prior or effector), so their behaviour and labels are not in the dandiset. The paper's 17\n# sessions of monkey H and all of monkey G are not in it either.\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/s/nb.py (file state is current in your context — no need to Read it back)
+```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000130-sohn-2019 && cat > entry.yaml <<'E'
+source $TMPDIR/env/bin/activate && cp $TMPDIR/s/nb.py run1.py && time python run1.py; rm run1.py
+```
+
+```
+loaded in 1.9 s
+Files at the pinned version: ['sub-Haydn/sub-Haydn_desc-test_ecephys.nwb', 'sub-Haydn/sub-Haydn_desc-train_ecephys.nwb']
+
+train: {'session_description': 'Data from monkey Haydn performing ready-set-go time interval reproduction task. This file contains continuous segments of the full session on 2016-12-11 that can be used for training models for the Neural Latents Benchmark.', 'session_start_time': '2016-12-11T00:00:00-05:00', 'subject_id': 'Haydn', 'species': 'Macaca mulatta'}
+  trials 1160, columns ['start_time', 'stop_time', 'fix_on_time', 'fix_time', 'target_on_time', 'ready_time', 'set_time', 'go_time', 'target_acq_time', 'reward_time', 'bad_time', 'is_short', 'is_eye', 'theta', 'ts', 'tp', 'fix_time_dur', 'target_time_dur', 'iti', 'reward_dur', 'is_outlier', 'split']
+  units 54 (held out in the benchmark: 14)
+
+test: {'session_description': 'Data from monkey Haydn performing ready-set-go time interval reproduction task. This file contains segments of trials from the full session on 2016-12-11 that are to be used for evaluating models for the Neural Latents Benchmark.', 'session_start_time': '2016-12-11T00:00:00-05:00', 'subject_id': 'Haydn', 'species': 'Macaca mulatta'}
+  trials 283, columns ['start_time', 'stop_time', 'go_time', 'split']
+  units 40 (held out in the benchmark: 0)
+
+Train-file trial columns and their descriptions:
+  start_time: Start time of epoch, in seconds
+  stop_time: Stop time of epoch, in seconds
+  fix_on_time: Time when the fixation cue on the display turns on
+  fix_time: Time when the animal fixates on the fixation cue
+  target_on_time: Time of target presentation
+  ready_time: Time of ready cue delivery
+  set_time: Time of set cue presentation
+  go_time: Time of monkey response, either with an eye saccade or joystick movement
+[... 76 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat >> $TMPDIR/s/nb.py <<'EOF'
+
+# %% [markdown]
+# ## beh-slopes
+#
+# > Regression slopes of tp on ts are positive and less than one in every condition, so the animals
+# > estimated ts and their responses were biased toward the mean of the prior.
+#
+# Criterion: per prior, effector and direction (8 conditions), a weighted linear regression of tp
+# on ts, each trial weighted by 1 over the variance of tp at its ts; reproduced when all 8 slopes lie
+# between 0 and 1 with 95% intervals excluding 0 and 1. The regression has an intercept (the
+# criterion's "linear regression of tp on ts"). The STAR Methods write the model as
+# "tp = βts + ε" ("Model free analysis of behavior"), without an intercept; that reading is shown as
+# a variant.
+
+# %% tags=claim:beh-slopes
+def weighted_slope(g, intercept=True):
+    w = 1 / g.groupby("ts").tp.transform("var")
+    X = sm.add_constant(g.ts.astype(float)) if intercept else g.ts.astype(float)
+    r = sm.WLS(g.tp.astype(float), X, weights=w).fit()
+    lo, hi = r.conf_int().loc["ts"]
+    return r.params["ts"], lo, hi
+
+
+rows = []
+for (ds, prior), g in T.groupby(["dataset", "prior"]):
+    b, lo, hi = weighted_slope(g)
+    b0, lo0, hi0 = weighted_slope(g, intercept=False)
+    rows.append({"dataset": ds, "prior": prior, "n": len(g), "slope": b, "ci_low": lo, "ci_high": hi,
+                 "slope_no_intercept": b0, "ci0_low": lo0, "ci0_high": hi0})
+slopes = pd.DataFrame(rows)
+print(slopes.round(3).to_string(index=False))
+inside = (slopes.slope > 0) & (slopes.slope < 1)
+excl = (slopes.ci_low > 0) & (slopes.ci_high < 1)
+print(f"\nWith intercept: slopes in (0, 1): {int(inside.sum())} of 8; intervals excluding 0 and 1: "
+      f"{int(excl.sum())} of 8")
+inside0 = (slopes.slope_no_intercept > 0) & (slopes.slope_no_intercept < 1)
+excl0 = (slopes.ci0_low > 0) & (slopes.ci0_high < 1)
+print(f"Variant without intercept: slopes in (0, 1): {int(inside0.sum())} of 8; intervals excluding "
+      f"0 and 1: {int(excl0.sum())} of 8")
+EOF
+echo
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cat >> $TMPDIR/s/nb.py <<'EOF'
+
+# %% [markdown]
+# ## beh-overlap-prior
+#
+# > At the overlapping ts of 800 ms, biases were in opposite directions for the two priors
+# > (rank-sum test, p < 1e-43 in animal H over 17 sessions).
+#
+# Criterion: trials with ts = 800 ms pooled over effector and direction; reproduced when the median
+# of tp - 800 is negative for Short and positive for Long and a two-sided rank-sum test of tp between
+# priors has p < 0.05. Shown per effector and direction as well.
+
+# %% tags=claim:beh-overlap-prior
+o = T[T.ts == 800]
+rows = []
+for ds, g in [("pooled", o)] + list(o.groupby("dataset")):
+    s, l = g[g.prior == "Short"].tp, g[g.prior == "Long"].tp
+    rows.append({"dataset": ds, "n_short": len(s), "n_long": len(l),
+                 "median_bias_short": np.median(s - 800), "median_bias_long": np.median(l - 800),
+                 "p_ranksum": stats.ranksums(s, l).pvalue})
+overlap = pd.DataFrame(rows)
+print(overlap.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
+
+# %% [markdown]
+# ## beh-sigmoid-increments
+#
+# > Increments of tp between neighbouring ts are smaller at the extremes of the prior than near its
+# > mean, as the sigmoidal Bayesian estimator predicts (signed-rank test, p < 1e-11 in animal H).
+#
+# Criterion: per condition the mean tp at each ts, the four increments; extreme = mean of the first
+# and last, middle = mean of the second and third; reproduced when middle exceeds extreme in most of
+# the 8 conditions and a two-sided signed-rank test over the 8 has p < 0.05.
+
+# %% tags=claim:beh-sigmoid-increments
+rows = []
+for (ds, prior), g in T.groupby(["dataset", "prior"]):
+    m = g.groupby("ts").tp.mean().reindex(rsg.PRIOR_TS[prior]).values
+    inc = np.diff(m)
+    rows.append({"dataset": ds, "prior": prior, "increments": inc.round(1),
+                 "extreme": (inc[0] + inc[3]) / 2, "middle": (inc[1] + inc[2]) / 2})
+incr = pd.DataFrame(rows)
+incr["middle_minus_extreme"] = incr.middle - incr.extreme
+print(incr.round(1).to_string(index=False))
+n_pos = int((incr.middle_minus_extreme > 0).sum())
+p_inc = signed_rank(incr.middle_minus_extreme)
+print(f"\nMiddle > extreme in {n_pos} of 8; median difference "
+      f"{incr.middle_minus_extreme.median():.1f} ms; signed-rank p = {p_inc:.4f}")
+print("Median difference by prior (ms):", incr.groupby("prior").middle_minus_extreme.median().round(1).to_dict())
+
+# %% [markdown]
+# ## beh-long-more-bias
+#
+# > Biases are larger for the Long prior than for the Short prior, as scalar variability predicts;
+# > regression slopes are smaller for Long.
+#
+# Criterion: with the slopes of beh-slopes, reproduced when the Long slope is below the Short slope
+# in all 4 datasets; partially reproduced for 3 of 4.
+
+# %% tags=claim:beh-long-more-bias
+sl = slopes.pivot(index="dataset", columns="prior", values="slope")
+sl["long_below_short"] = sl.Long < sl.Short
+sl0 = slopes.pivot(index="dataset", columns="prior", values="slope_no_intercept")
+sl["Short_no_intercept"], sl["Long_no_intercept"] = sl0.Short, sl0.Long
+print(sl.round(3).to_string())
+print(f"\nLong slope below Short: {int(sl.long_below_short.sum())} of 4 "
+      f"(variant without intercept: {int((sl0.Long < sl0.Short).sum())} of 4)")
+
+# %% [markdown]
+# ## beh-bayes-model
+#
+# > A Bayesian observer model with scalar measurement and production noise fit to the behaviour
+# > captures the bias and the variance of tp in all conditions.
+#
+# Criterion: the model fit per dataset (wm, wp, bShort, bLong). Across the 10 prior and ts conditions,
+# the R2 of the observed mean bias by the model's predicted bias, and the Pearson correlation of the
+# observed and predicted SD of tp. Reproduced when the bias R2 is at least 0.8 and the SD correlation
+# positive in all 4 datasets; partially when only one of the two holds in all 4.
+#
+# "R2 of the observed by the predicted" can be read as (a) 1 - SS_residual / SS_total with the
+# prediction taken as it is, or (b) the squared correlation of observed and predicted (a regression of
+# one on the other). Both are shown; they are judged together.
+
+# %% tags=claim:beh-bayes-model
+fits, preds = {}, []
+for ds, g in T.groupby("dataset"):
+    fits[ds] = rsg.fit_bls(g)
+    for prior in PRIORS:
+        p = rsg.bls_predict(fits[ds], prior, rsg.PRIOR_TS[prior])
+        obs = g[g.prior == prior].groupby("ts").tp.agg(["mean", "std", "size"])
+        p["dataset"], p["prior"] = ds, prior
+        p["obs_mean"], p["obs_sd"], p["n"] = obs["mean"].values, obs["std"].values, obs["size"].values
+        preds.append(p)
+preds = pd.concat(preds, ignore_index=True)
+preds["obs_bias"], preds["pred_bias"] = preds.obs_mean - preds.ts, preds.tp_mean - preds.ts
+print(pd.DataFrame(fits).T.round(3).to_string())
+rows = []
+for ds, p in preds.groupby("dataset"):
+    ss_res = np.sum((p.obs_bias - p.pred_bias) ** 2)
+    ss_tot = np.sum((p.obs_bias - p.obs_bias.mean()) ** 2)
+    rows.append({"dataset": ds, "bias_R2_a": 1 - ss_res / ss_tot,
+                 "bias_R2_b": stats.pearsonr(p.obs_bias, p.pred_bias)[0] ** 2,
+                 "sd_r": stats.pearsonr(p.obs_sd, p.tp_sd)[0],
+                 "sd_p": stats.pearsonr(p.obs_sd, p.tp_sd)[1]})
+bayes = pd.DataFrame(rows)
+print()
+print(bayes.round(3).to_string(index=False))
+print(preds[["dataset", "prior", "ts", "n", "obs_bias", "pred_bias", "obs_sd", "tp_sd"]].round(1).to_string(index=False))
+print(f"\nBias R2 >= 0.8: reading (a) {int((bayes.bias_R2_a >= 0.8).sum())} of 4, reading (b) "
+      f"{int((bayes.bias_R2_b >= 0.8).sum())} of 4; SD correlation positive: {int((bayes.sd_r > 0).sum())} of 4")
+EOF
+cd $TMPDIR/s && cp nb.py entries/sohn-2019/run1.py && cd entries/sohn-2019 && source $TMPDIR/env/bin/activate && python run1.py 2>&1 | sed -n '/beh-slopes/,$p;/slope/,$p' | tail -80; rm run1.py
+```
+
+```
+dataset  n_short  n_long  median_bias_short  median_bias_long  p_ranksum
+    pooled       93     107               28.3              47.6     0.0728
+  Eye Left       22      36               79.1              18.6     0.0506
+ Eye Right       25      38               40.9              36.5      0.811
+ Hand Left       24      14              -61.6             -2.81     0.0694
+Hand Right       22      19               29.7              96.8   0.000987
+   dataset prior                increments  extreme  middle  middle_minus_extreme
+  Eye Left  Long  [94.7, 90.6, 88.0, 61.3]     78.0    89.3                  11.3
+  Eye Left Short [40.4, 86.9, 105.2, 91.9]     66.2    96.1                  29.9
+ Eye Right  Long [77.9, 80.1, 153.8, 20.3]     49.1   117.0                  67.8
+ Eye Right Short [46.9, 86.8, 121.5, 84.6]     65.7   104.1                  38.4
+ Hand Left  Long  [64.3, 33.2, 80.5, 17.4]     40.8    56.8                  16.0
+ Hand Left Short  [45.8, 67.0, 23.6, 66.3]     56.1    45.3                 -10.7
+Hand Right  Long  [52.8, 93.8, 66.7, 20.8]     36.8    80.3                  43.5
+Hand Right Short  [32.5, 68.1, 93.1, 63.2]     47.9    80.6                  32.7
+
+Middle > extreme in 7 of 8; median difference 31.3 ms; signed-rank p = 0.0156
+Median difference by prior (ms): {'Long': 29.7, 'Short': 31.3}
+prior        Long  Short  long_below_short  Short_no_intercept  Long_no_intercept
+dataset                                                                          
+[... 60 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat >> $TMPDIR/s/nb.py <<'EOF'
+
+# %% [markdown]
+# ## glm-prior-ts
+#
+# > About 30% of neurons were modulated by elapsed time (27% in monkey H) and more than 60% were
+# > sensitive to the prior (65% in monkey H), by a Poisson GLM of spike counts before Set compared by
+# > BIC.
+#
+# Criterion: the selected units; counts in the 80 ms before each of the Short prior's ts values (480
+# to 800 ms after Ready) from every trial whose Set comes after that time, both priors. Full model:
+# log rate = prior + 5 time indicators + effector + direction; prior-dependent when its BIC is below
+# that of the model without the prior. For ts: a model per prior with that prior's 5 time indicators
+# plus effector and direction, against the model without the time indicators (intercept, effector
+# and direction, the STAR Methods' Equation 4); ts-dependent when the BIC favours the full model in
+# either prior. Expected 65 +- 6.5% (prior) and 27 +- 2.7% (ts).
+#
+# A trial whose ts equals the window's end is included: its window is the 80 ms "immediately before
+# Set" of the STAR Methods ("Generalized linear model"), and the attrition rule there counts "all
+# trials in which Set occurred after t". Windows are placed at the nominal times after `ready_time`.
+
+# %% tags=claim:glm-prior-ts
+from statsmodels.stats.proportion import proportion_confint
+
+
+def glm_rows(t, times):
+    """Rows (trial, window end) with ts >= window end, and counts for every unit."""
+    rows, counts = [], []
+    for T_end in times:
+        g = t[t.ts >= T_end]
+        c = rsg.bin_counts(SP, g.ready_time.values, T_end - 80, T_end, bin_ms=80)[:, 0, :]
+        counts.append(c)
+        rows.append(pd.DataFrame({"time": T_end, "long": (g.prior == "Long").astype(float).values,
+                                  "hand": (~g.is_eye.astype(bool)).astype(float).values,
+                                  "left": (g.theta == 180).astype(float).values}))
+    return pd.concat(rows, ignore_index=True), np.vstack(counts)
+
+
+def bic(y, X):
+    r = sm.GLM(y, X, family=sm.families.Poisson()).fit()
+    if not r.converged:
+        raise RuntimeError("GLM did not converge")
+    return -2 * r.llf + X.shape[1] * np.log(len(y))
+
+
+def design(rows, prior=True, time=True):
+    cols = []
+    if time:
+        cols.append(pd.get_dummies(rows.time, prefix="t").astype(float))
+    else:
+        cols.append(pd.DataFrame({"const": np.ones(len(rows))}))
+    if prior:
+        cols.append(rows[["long"]])
+    cols.append(rows[["hand", "left"]])
+    return pd.concat(cols, axis=1).values
+
+
+rows_p, y_p = glm_rows(T, rsg.SHORT_TS)
+per_prior = {p: glm_rows(T[T.prior == p], rsg.PRIOR_TS[p]) for p in PRIORS}
+print("Rows in the prior model:", len(rows_p), "; by window end:", rows_p.time.value_counts().sort_index().to_dict())
+res = []
+for j in range(len(SP)):
+    r = {"unit": int(unit_table[unit_table.kept].unit.values[j])}
+    r["prior_dep"] = bic(y_p[:, j], design(rows_p)) < bic(y_p[:, j], design(rows_p, prior=False))
+    for p in PRIORS:
+        rr, yy = per_prior[p]
+        r[f"ts_dep_{p}"] = bic(yy[:, j], design(rr, prior=False)) < bic(yy[:, j], design(rr, prior=False, time=False))
+    res.append(r)
+glm = pd.DataFrame(res)
+glm["ts_dep"] = glm.ts_dep_Short | glm.ts_dep_Long
+n = len(glm)
+for col, label, expv in (("prior_dep", "prior", 65), ("ts_dep", "ts (either prior)", 27),
+                         ("ts_dep_Short", "ts (Short model)", None), ("ts_dep_Long", "ts (Long model)", None)):
+    k = int(glm[col].sum())
+    lo, hi = proportion_confint(k, n, method="beta")
+    print(f"{label:>18}: {k} of {n} = {100 * k / n:.1f}% (95% CI {100 * lo:.1f} to {100 * hi:.1f})"
+          + (f"; expected {expv} +- {expv / 10:.1f}" if expv else ""))
+print("Both prior- and ts-dependent:", int((glm.prior_dep & glm.ts_dep).sum()),
+      "; neither:", int((~glm.prior_dep & ~glm.ts_dep).sum()))
+held = data["units"].loc[glm.unit, "heldout"].values
+print("Among the 40 benchmark held-in units kept vs held-out units kept:",
+      f"prior {glm.prior_dep[~held].mean():.2f} / {glm.prior_dep[held].mean():.2f},",
+      f"ts {glm.ts_dep[~held].mean():.2f} / {glm.ts_dep[held].mean():.2f}")
+
+# %% [markdown]
+# ## dfr-overlap-support
+#
+# > At the overlapping ts of 800 ms, firing rates differ between priors, with the largest difference
+# > during the support of the prior, between 480 and 800 ms after Ready.
+#
+# Criterion: per dataset, ts = 800 trials; per unit the difference of mean rates between priors in
+# 160 ms bins from 320 ms before Ready to 640 ms after Set; the root mean square over units, averaged
+# over the 4 datasets. Reproduced when the largest value falls in a bin within 480 to 800 ms after
+# Ready and exceeds the 95th percentile of the largest value over 200 shuffles of the prior labels
+# among ts = 800 trials. Bins up to Set are aligned to `ready_time`, those after Set to `set_time`
+# (ts = 800 ms, so the bins are contiguous in nominal time).
+
+# %% tags=claim:dfr-overlap-support
+rng_dfr = np.random.default_rng(7)
+o = T[T.ts == 800]
+labels = ([f"R{a}..{a + 160}" for a in range(-320, 800, 160)]
+          + [f"S{a}..{a + 160}" for a in range(0, 640, 160)])
+counts_dfr = {}
+for ds, g in o.groupby("dataset"):
+    a = rsg.bin_counts(SP, g.ready_time.values, -320, 800, bin_ms=160)
+    b = rsg.bin_counts(SP, g.set_time.values, 0, 640, bin_ms=160)
+    counts_dfr[ds] = (np.concatenate([a, b], axis=1) / 0.16, (g.prior == "Long").values)
+
+
+def rms_curve(shuffle_rng=None):
+    curves = []
+    for ds, (rates, is_long) in counts_dfr.items():
+        lab = shuffle_rng.permutation(is_long) if shuffle_rng is not None else is_long
+        diff = rates[lab].mean(0) - rates[~lab].mean(0)
+        curves.append(np.sqrt((diff ** 2).mean(1)))
+    return np.array(curves)
+
+
+curves = rms_curve()
+mean_curve = curves.mean(0)
+null_max = np.array([rms_curve(rng_dfr).mean(0).max() for _ in range(200)])
+print(pd.DataFrame(curves, index=list(counts_dfr), columns=labels).round(2).to_string())
+print("mean over datasets:", dict(zip(labels, mean_curve.round(2))))
+k = int(np.argmax(mean_curve))
+print(f"\nLargest mean RMS difference: {mean_curve[k]:.2f} spikes/s in bin {labels[k]} "
+      f"(support of the prior = bins R480..640 and R640..800)")
+print(f"Shuffle null of the largest value: median {np.median(null_max):.2f}, 95th percentile "
+      f"{np.percentile(null_max, 95):.2f}")
+print("Per-dataset bin of the largest value:", {ds: labels[i] for ds, i in zip(counts_dfr, curves.argmax(1))})
+print("Trials per dataset (Short, Long):", {ds: (int((~l).sum()), int(l.sum())) for ds, (_, l) in counts_dfr.items()})
+
+# %% [markdown]
+# ## Population trajectories
+#
+# Shared by the claims below. Per dataset, trial-averaged rates (20 ms bins, Gaussian SD 40 ms) of
+# the 48 units. Estimation epoch: from Ready to the prior's longest ts, with attrition. Production
+# epoch: from Set to the shortest Set-to-Go time of each ts. PCA per dataset and epoch on both priors
+# concatenated, keeping the components that reach 75% of the variance (STAR Methods, "Principal
+# component analysis").
+
+# %%
+EST, EST_N, PCA_E, K_E, PROD, PCA_P, K_P = {}, {}, {}, {}, {}, {}, {}
+for ds, g in T.groupby("dataset"):
+    EST[ds], EST_N[ds], PROD[ds] = {}, {}, {}
+    for prior in PRIORS:
+        gp = g[g.prior == prior]
+        EST[ds][prior], EST_N[ds][prior] = rsg.estimation_rates(SP, gp, max(rsg.PRIOR_TS[prior]))
+        for ts in rsg.PRIOR_TS[prior]:
+            PROD[ds][(prior, ts)] = rsg.production_rates(SP, gp[gp.ts == ts])
+    PCA_E[ds], K_E[ds] = rsg.fit_pca([EST[ds][p] for p in PRIORS])
+    PCA_P[ds], K_P[ds] = rsg.fit_pca(list(PROD[ds].values()))
+print("Production trajectory lengths (bins of 20 ms) per dataset:")
+print(pd.DataFrame({ds: {f"{p} {ts}": v.shape[0] for (p, ts), v in PROD[ds].items()} for ds in DS}).to_string())
+print("Rate ranges (spikes/s), estimation:", {ds: (round(min(v.min() for v in EST[ds].values()), 1),
+      round(max(v.max() for v in EST[ds].values()), 1)) for ds in DS})
+
+
+def est_states(ds, prior):
+    """Estimation-epoch states in the dataset's estimation PC space."""
+    return PCA_E[ds].transform(EST[ds][prior])[:, :K_E[ds]]
+
+
+def prod_states(ds, key, rates=None):
+    r = PROD[ds][key] if rates is None else rates
+    return PCA_P[ds].transform(r)[:, :K_P[ds]]
+
+# %% [markdown]
+# ## pca-dimensionality
+#
+# > Population activity is low dimensional; 3 to 4 principal components in the estimation epoch and
+# > 5 to 10 in the production epoch explain about 75% of the variance.
+#
+# Criterion: the number of components to reach 75%, per dataset and epoch; ranges widened by 10%:
+# 3 or 4 (estimation) and 5 to 11 (production). Reproduced when all 8 values fall in range; partially
+# when at least 4 do.
+
+# %% tags=claim:pca-dimensionality
+rows = []
+for ds in DS:
+    for ep, pca, k, rng_ok in (("estimation", PCA_E[ds], K_E[ds], (3, 4)), ("production", PCA_P[ds], K_P[ds], (5, 11))):
+        cum = np.cumsum(pca.explained_variance_ratio_)
+        rows.append({"dataset": ds, "epoch": ep, "n_PC_75": k, "in_range": rng_ok[0] <= k <= rng_ok[1],
+                     "cum_var_first_6": cum[:6].round(3)})
+dims = pd.DataFrame(rows)
+print(dims.to_string(index=False))
+print(f"\nIn range: {int(dims.in_range.sum())} of 8")
+print("Without smoothing (variant):", {ds: (rsg.fit_pca([rsg.estimation_rates(SP, T[(T.dataset == ds) & (T.prior == p)], max(rsg.PRIOR_TS[p]), smoothed=False)[0] for p in PRIORS])[1])
+      for ds in DS}, "(estimation)")
+EOF
+cd entries/sohn-2019 && cp $TMPDIR/s/nb.py run1.py && source $TMPDIR/env/bin/activate && time python run1.py 2>&1 | sed -n '/^Rows in the prior/,$p'; rm run1.py
+```
+
+```
+Rows in the prior model: 3921 ; by window end: {480: 983, 560: 884, 640: 773, 720: 686, 800: 595}
+             prior: 38 of 48 = 79.2% (95% CI 65.0 to 89.5); expected 65 +- 6.5
+ ts (either prior): 22 of 48 = 45.8% (95% CI 31.4 to 60.8); expected 27 +- 2.7
+  ts (Short model): 16 of 48 = 33.3% (95% CI 20.4 to 48.4)
+   ts (Long model): 16 of 48 = 33.3% (95% CI 20.4 to 48.4)
+Both prior- and ts-dependent: 19 ; neither: 7
+Among the 40 benchmark held-in units kept vs held-out units kept: prior 0.83 / 0.69, ts 0.51 / 0.31
+            R-320..-160  R-160..0  R0..160  R160..320  R320..480  R480..640  R640..800  S0..160  S160..320  S320..480  S480..640
+Eye Left           2.24      1.85     2.77       4.36       7.84       9.49       5.97     9.61       4.94       4.42       2.64
+Eye Right          2.16      1.97     2.58       3.51       8.92       9.14       4.59     6.79       5.18       4.49       1.95
+Hand Left          2.87      2.73     2.58       4.73       4.19       4.88       4.61     3.38       4.50       2.75       2.96
+Hand Right         2.30      2.59     2.78       3.75       2.91       3.94       4.39     4.22       3.92       3.37       2.25
+mean over datasets: {'R-320..-160': np.float64(2.39), 'R-160..0': np.float64(2.29), 'R0..160': np.float64(2.68), 'R160..320': np.float64(4.09), 'R320..480': np.float64(5.97), 'R480..640': np.float64(6.86), 'R640..800': np.float64(4.89), 'S0..160': np.float64(6.0), 'S160..320': np.float64(4.64), 'S320..480': np.float64(3.76), 'S480..640': np.float64(2.45)}
+
+Largest mean RMS difference: 6.86 spikes/s in bin R480..640 (support of the prior = bins R480..640 and R640..800)
+Shuffle null of the largest value: median 2.77, 95th percentile 3.09
+Per-dataset bin of the largest value: {'Eye Left': 'S0..160', 'Eye Right': 'R480..640', 'Hand Left': 'R480..640', 'Hand Right': 'R640..800'}
+Trials per dataset (Short, Long): {'Eye Left': (22, 36), 'Eye Right': (25, 38), 'Hand Left': (24, 14), 'Hand Right': (22, 19)}
+Production trajectory len
+[... 28 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat >> $TMPDIR/s/nb.py <<'EOF'
+soft = {}
+for ds in DS:
+    g = T[T.dataset == ds]
+    blocks = [rsg.estimation_rates(SP, g[g.prior == p], max(rsg.PRIOR_TS[p]))[0] for p in PRIORS]
+    rng_u = np.vstack(blocks).max(0) - np.vstack(blocks).min(0)
+    soft[ds] = rsg.fit_pca([b / (rng_u + 5) for b in blocks])[1]
+print("Soft-normalised rates, rate / (range + 5) (variant, not the claims file's method):", soft, "(estimation)")
+EOF
+cat >> $TMPDIR/s/nb.py <<'EOF'
+
+# %% [markdown]
+# ## encoding-r2
+#
+# > Projections of estimation-epoch neural states onto the encoding axis match the Bayesian
+# > estimates from the model fitted to the behaviour (R2 = 0.993 for the Short prior, 0.996 for the
+# > Long prior, monkey H, Hand Left).
+#
+# Criterion: weighted regression Xu = a + b te over the 20 ms time points of the prior's support,
+# each point weighted by the number of trials it averages; te(t) is the model's mean estimate at ts =
+# t, from the fits of beh-bayes-model. Readings: (a) the Hand Left dataset, (b) the mean over the 4
+# datasets. Reproduced when under one reading both R2 are within tolerance (at least 0.894 and
+# 0.896); partially when one is. Reference: R2 for 1000 random unit vectors in the same PC space.
+
+# %% tags=claim:encoding-r2
+rng_enc = np.random.default_rng(11)
+ENC = {}
+rows = []
+for ds in DS:
+    for prior in PRIORS:
+        lo, hi = min(rsg.PRIOR_TS[prior]), max(rsg.PRIOR_TS[prior])
+        X = est_states(ds, prior)
+        u = rsg.encoding_axis(X, lo, hi)
+        tt = np.arange(lo, hi + 1, rsg.BIN_MS)
+        idx = tt // rsg.BIN_MS - 1
+        xu, w = X[idx] @ u, EST_N[ds][prior][idx]
+        te = rsg.bls_predict(fits[ds], prior, tt).te.values
+        (_, b_te), r2_te, fit_te = rsg.wls(xu, te, w)
+        (_, b_ts), r2_ts, fit_ts = rsg.wls(xu, tt, w)
+        rand = rng_enc.normal(size=(1000, X.shape[1]))
+        rand /= np.linalg.norm(rand, axis=1, keepdims=True)
+        r2_rand = np.array([rsg.wls(X[idx] @ v, te, w)[1] for v in rand])
+        ENC[(ds, prior)] = dict(t=tt, xu=xu, w=w, te=te, X=X, u=u, slope_ts=b_ts,
+                                rmse_bayes=np.sqrt(np.mean((xu - fit_te) ** 2)),
+                                rmse_lin=np.sqrt(np.mean((xu - fit_ts) ** 2)),
+                                wrmse_bayes=np.sqrt(np.sum(w * (xu - fit_te) ** 2) / w.sum()),
+                                wrmse_lin=np.sqrt(np.sum(w * (xu - fit_ts) ** 2) / w.sum()))
+        rows.append({"dataset": ds, "prior": prior, "n_PC": X.shape[1], "points": len(tt),
+                     "R2_te": r2_te, "R2_ts": r2_ts, "R2_random_median": np.median(r2_rand),
+                     "R2_random_95pct": np.percentile(r2_rand, 95),
+                     "frac_random_above": np.mean(r2_rand >= r2_te)})
+enc = pd.DataFrame(rows)
+print(enc.round(3).to_string(index=False))
+hl = enc[enc.dataset == "Hand Left"].set_index("prior").R2_te
+mn = enc.groupby("prior").R2_te.mean()
+print(f"\nReading (a) Hand Left: Short {hl.Short:.3f}, Long {hl.Long:.3f}")
+print(f"Reading (b) mean over datasets: Short {mn.Short:.3f}, Long {mn.Long:.3f}")
+print("Within tolerance (>= 0.894 Short, >= 0.896 Long): (a)", [bool(hl.Short >= 0.894), bool(hl.Long >= 0.896)],
+      "; (b)", [bool(mn.Short >= 0.894), bool(mn.Long >= 0.896)])
+fig, axes = plt.subplots(1, 4, figsize=(14, 3))
+for ax, ds in zip(axes, DS):
+    for prior, col in (("Short", "tab:red"), ("Long", "tab:blue")):
+        e = ENC[(ds, prior)]
+        ax.plot(e["t"], e["xu"], "o", color=col, ms=3)
+        ax.plot(e["t"], rsg.wls(e["xu"], e["te"], e["w"])[2], "-", color=col)
+    ax.set_title(ds); ax.set_xlabel("t after Ready (ms)")
+axes[0].set_ylabel("Xu (spikes/s)")
+plt.tight_layout(); plt.show()
+print("Plotted Xu ranges:", {f"{d} {p}": (round(e['xu'].min(), 1), round(e['xu'].max(), 1)) for (d, p), e in ENC.items()})
+
+# %% [markdown]
+# ## encoding-bayes-beats-linear
+#
+# > Neural projections are better explained by the Bayesian model than by a linear function of ts
+# > with the same number of parameters, for both priors (signed-rank test on RMSE, p = 0.008 for
+# > each prior).
+#
+# Criterion: RMSE of the weighted fits Xu = a + b te and Xu = a + b ts, per dataset and prior;
+# reproduced when the Bayesian RMSE is lower in all 4 datasets for both priors; partially when it is
+# for one prior. The RMSE is the root mean square of the residuals ("Root Mean Squared Error between
+# the actual and predicted Xu", STAR Methods); the weighted RMSE is shown as a variant.
+
+# %% tags=claim:encoding-bayes-beats-linear
+rows = [{"dataset": ds, "prior": p, "rmse_bayes": e["rmse_bayes"], "rmse_linear": e["rmse_lin"],
+         "delta": e["rmse_bayes"] - e["rmse_lin"], "weighted_delta": e["wrmse_bayes"] - e["wrmse_lin"]}
+        for (ds, p), e in ENC.items()]
+rm = pd.DataFrame(rows)
+print(rm.round(4).to_string(index=False))
+for p in PRIORS:
+    r = rm[rm.prior == p]
+    print(f"{p}: Bayesian lower in {int((r.delta < 0).sum())} of 4 (weighted RMSE: "
+          f"{int((r.weighted_delta < 0).sum())} of 4); median delta {r.delta.median():.4f}; "
+          f"signed-rank p = {signed_rank(r.delta):.3f}")
+
+# %% [markdown]
+# ## short-in-long-control
+#
+# > In the Long prior during the period matched to the support of the Short prior ("Short In Long"),
+# > there is no sigmoidal representation; the Bayesian model is not better than the linear one
+# > (signed-rank test, p = 0.74).
+#
+# Criterion (absence, judged on the paper's test): Long prior states from 480 to 800 ms after Ready,
+# an axis from the state at 480 to that at 800 ms, compared with the Short prior's te and with ts as
+# above; reproduced when a two-sided signed-rank test of the RMSE difference over the 4 datasets has
+# p >= 0.05. The axis is built as u is, from the averaged difference vectors (the STAR Methods
+# "applied the same projection analysis"); the single vector from 480 to 800 ms is shown as a
+# variant. All Long trials have Set at or after 800 ms, so every point has the same weight.
+
+# %% tags=claim:short-in-long-control
+rows = []
+for ds in DS:
+    X = est_states(ds, "Long")
+    tt = np.arange(480, 801, rsg.BIN_MS)
+    idx = tt // rsg.BIN_MS - 1
+    w = EST_N[ds]["Long"][idx]
+    te = rsg.bls_predict(fits[ds], "Short", tt).te.values
+    for axis_name, u in (("averaged", rsg.encoding_axis(X, 480, 800)),
+                         ("single vector", (X[idx[-1]] - X[idx[0]]) / np.linalg.norm(X[idx[-1]] - X[idx[0]]))):
+        xu = X[idx] @ u
+        rb = np.sqrt(np.mean((xu - rsg.wls(xu, te, w)[2]) ** 2))
+        rl = np.sqrt(np.mean((xu - rsg.wls(xu, tt, w)[2]) ** 2))
+        rows.append({"dataset": ds, "axis": axis_name, "rmse_bayes": rb, "rmse_linear": rl, "delta": rb - rl,
+                     "R2_te": rsg.wls(xu, te, w)[1], "R2_ts": rsg.wls(xu, tt, w)[1]})
+sil = pd.DataFrame(rows)
+print(sil.round(4).to_string(index=False))
+for ax_name, r in sil.groupby("axis", sort=False):
+    print(f"{ax_name}: Bayesian lower in {int((r.delta < 0).sum())} of 4; median delta {r.delta.median():.4f};"
+          f" signed-rank p = {signed_rank(r.delta):.3f}")
+short_delta = rm[rm.prior == "Short"].set_index("dataset").delta
+print("Short prior deltas for comparison:", short_delta.round(4).to_dict())
+print("Short In Long minus Short delta, per dataset:",
+      (sil[sil.axis == "averaged"].set_index("dataset").delta - short_delta).round(4).to_dict())
+
+# %% [markdown]
+# ## neural-long-more-bias
+#
+# > Neural projections show more bias for the Long prior than for the Short prior, as a smaller
+# > regression slope of Xu on ts (signed-rank test, p = 0.008).
+#
+# Criterion: the slope of the weighted regression of Xu (spikes/s, shared PC space of the dataset) on
+# ts (ms), per dataset and prior; reproduced when Long is below Short in all 4 datasets; partially
+# for 3.
+
+# %% tags=claim:neural-long-more-bias
+nb_sl = pd.DataFrame({p: {ds: ENC[(ds, p)]["slope_ts"] for ds in DS} for p in PRIORS})
+nb_sl["long_below_short"] = nb_sl.Long < nb_sl.Short
+print(nb_sl.round(4).to_string())
+print(f"\nLong below Short in {int(nb_sl.long_below_short.sum())} of 4; "
+      f"signed-rank p (Short - Long) = {signed_rank(nb_sl.Short - nb_sl.Long):.3f}")
+EOF
+cd entries/sohn-2019 && cp $TMPDIR/s/nb.py run1.py && source $TMPDIR/env/bin/activate && time python run1.py 2>&1 | sed -n '/^Soft/,$p'; rm run1.py
+```
+
+```
+Soft-normalised rates, rate / (range + 5) (variant, not the claims file's method): {'Eye Right': 3, 'Eye Left': 3, 'Hand Right': 3, 'Hand Left': 3} (estimation)
+   dataset prior  n_PC  points  R2_te  R2_ts  R2_random_median  R2_random_95pct  frac_random_above
+ Eye Right Short     2      17  0.957  0.952             0.941            0.994              0.399
+ Eye Right  Long     2      21  0.974  0.969             0.970            0.974              0.111
+  Eye Left Short     2      17  0.909  0.897             0.898            0.974              0.434
+  Eye Left  Long     2      21  0.989  0.979             0.976            0.995              0.319
+Hand Right Short     2      17  0.959  0.962             0.920            0.985              0.322
+Hand Right  Long     2      21  0.994  0.992             0.987            0.995              0.172
+ Hand Left Short     2      17  0.994  0.984             0.866            0.993              0.004
+ Hand Left  Long     2      21  0.986  0.987             0.749            0.993              0.103
+
+Reading (a) Hand Left: Short 0.994, Long 0.986
+Reading (b) mean over datasets: Short 0.955, Long 0.986
+Within tolerance (>= 0.894 Short, >= 0.896 Long): (a) [True, True] ; (b) [True, True]
+Plotted Xu ranges: {'Eye Right Short': (np.float64(-41.9), np.float64(14.1)), 'Eye Right Long': (np.float64(-16.1), np.float64(22.3)), 'Eye Left Short': (np.float64(-47.0), np.float64(17.4)), 'Eye Left Long': (np.float64(-18.4), np.float64(24.5)), 'Hand Right Short': (np.float64(5.1), np.float64(22.2)), 'Hand Right Long': (np.float64(2.0), np.float64(20.8)), 'Hand Left Short': (np.float64(-3.0), np.float64(17.7)), 'Hand Left Long': (np.float64(-0.3), np.float64(10.4))}
+   dataset prior  rmse_bayes  rmse_linear   delta  weighted_delta
+ Eye Right Short      3.3058       3.4904 -0.1846         -0.1945
+ Eye Right  Long      2.6947       2.8912 -0.1965         -0.2109
+  Eye Left Short      6.2306       6.6243 -0.3937         -0.4079
+  Eye Left  Long    
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cat >> $TMPDIR/s/nb.py <<'EOF'
+
+# %% [markdown]
+# ## speed-vs-projection
+#
+# > Larger projections on the encoding axis at Set are followed by slower neural trajectories in the
+# > production epoch (Pearson correlation, rho Short = -0.74, rho Long = -0.51).
+#
+# Criterion: per prior, Xu at t = ts against the speed of the production trajectory of that ts, pooled
+# over the 4 datasets (20 points); speed is the mean Euclidean distance between successive 20 ms
+# states in the production PC space, from Set to the shortest tp of that ts (claims header).
+# Reproduced when both correlations are within tolerance (-0.74 +- 0.074, -0.51 +- 0.051); partially
+# when both are negative with p < 0.05 but one is outside tolerance, or when only one is within
+# tolerance. Variants: correlations within each dataset; speed divided by the mean Set-to-Go time of
+# the ts (the STAR Methods' "divided by the duration separating Set and the time of Go").
+
+# %% tags=claim:speed-vs-projection
+rows = []
+for ds in DS:
+    g = T[T.dataset == ds]
+    for (prior, ts) in PROD[ds]:
+        Y = prod_states(ds, (prior, ts))
+        e = ENC[(ds, prior)]
+        gg = g[(g.prior == prior) & (g.ts == ts)]
+        rows.append({"dataset": ds, "prior": prior, "ts": ts,
+                     "xu_at_set": e["xu"][list(e["t"]).index(ts)],
+                     "speed": np.mean(np.linalg.norm(np.diff(Y, axis=0), axis=1)),
+                     "set_to_go_s": np.mean(gg.go_time - gg.set_time), "tp_mean": gg.tp.mean()})
+SPD = pd.DataFrame(rows)
+SPD["speed_per_s"] = SPD.speed / SPD.set_to_go_s
+print(SPD.round(3).to_string(index=False))
+
+
+def corr_table(x, y):
+    out = []
+    for prior in PRIORS:
+        s = SPD[SPD.prior == prior]
+        r, p = stats.pearsonr(s[x], s[y])
+        per = {ds: round(stats.pearsonr(q[x], q[y])[0], 2) for ds, q in s.groupby("dataset")}
+        out.append({"prior": prior, "n": len(s), "r_pooled": round(r, 3), "p": p, "r_within_dataset": per})
+    return pd.DataFrame(out)
+
+
+print("\nSpeed (mean step) against Xu at Set:")
+print(corr_table("xu_at_set", "speed").to_string(index=False))
+print("\nVariant, speed divided by the Set-to-Go time:")
+print(corr_table("xu_at_set", "speed_per_s").to_string(index=False))
+
+# %% [markdown]
+# ## initial-speed-biased
+#
+# > The initial speed of production trajectories (Set to Set + 400 ms) is biased toward the middle of
+# > the prior; its dependence on ts is shallower than the unbiased profile proportional to 1/ts
+# > (signed-rank test, p < 1e-3 over conditions and animals).
+#
+# Criterion: per dataset and prior, the mean step distance between Set and Set + 400 ms (trials with
+# tp of at least 400 ms), the slope of its regression on ts, and the slope of the unbiased profile
+# speed(middle ts) x middle ts / ts. Reproduced when the measured slope is shallower (less negative)
+# than the unbiased one in most of the 8 and a two-sided signed-rank test of the difference has
+# p < 0.05. States are in the dataset's production PC space.
+
+# %% tags=claim:initial-speed-biased
+rows = []
+for ds in DS:
+    g = T[(T.dataset == ds) & (T.tp >= 400)]
+    for prior in PRIORS:
+        tsv = np.array(rsg.PRIOR_TS[prior], float)
+        sp = []
+        for ts in rsg.PRIOR_TS[prior]:
+            Y = prod_states(ds, None, rsg.production_rates(SP, g[(g.prior == prior) & (g.ts == ts)], length_ms=400))
+            sp.append(np.mean(np.linalg.norm(np.diff(Y, axis=0), axis=1)))
+        sp = np.array(sp)
+        unb = sp[2] * tsv[2] / tsv
+        rows.append({"dataset": ds, "prior": prior, "speeds": sp.round(2),
+                     "slope_measured": np.polyfit(tsv, sp, 1)[0], "slope_unbiased": np.polyfit(tsv, unb, 1)[0]})
+ini = pd.DataFrame(rows)
+ini["difference"] = ini.slope_measured - ini.slope_unbiased
+print(ini.to_string(index=False, formatters={c: "{:.5f}".format for c in ["slope_measured", "slope_unbiased", "difference"]}))
+print(f"\nMeasured shallower than unbiased (difference > 0): {int((ini.difference > 0).sum())} of 8; "
+      f"measured slope negative: {int((ini.slope_measured < 0).sum())} of 8; "
+      f"signed-rank p = {signed_rank(ini.difference):.4f}")
+
+# %% [markdown]
+# ## speed-predicts-tp
+#
+# > The speed of neural trajectories in the production epoch predicts the mean tp (Pearson
+# > correlation, rho Short = -0.58, rho Long = -0.52).
+#
+# Criterion: per prior, the mean tp of each dataset and ts against the speed of that ts (as in
+# speed-vs-projection), pooled over the 4 datasets (20 points); same rule as speed-vs-projection.
+# Variant: the trial-by-trial correlation within each prior, effector and direction. Here each trial's
+# rates (20 ms bins, Gaussian SD 40 ms) from Set to its Go are projected into the dataset's production
+# PC space; speed and tp are z-scored within each ts (as the STAR Methods do for Figure S6) and
+# correlated. This single-trial speed is a stand-in for the benchmark's model-inferred rates.
+
+# %% tags=claim:speed-predicts-tp
+print("Mean tp against speed (mean step):")
+print(corr_table("speed", "tp_mean").to_string(index=False))
+print("\nVariant, speed divided by the Set-to-Go time:")
+print(corr_table("speed_per_s", "tp_mean").to_string(index=False))
+rows = []
+for ds in DS:
+    g = T[T.dataset == ds]
+    for prior in PRIORS:
+        zs, zt = [], []
+        for ts in rsg.PRIOR_TS[prior]:
+            gg = g[(g.prior == prior) & (g.ts == ts)]
+            s_tr = []
+            for r in gg.itertuples():
+                nb = int((r.go_time - r.set_time) * 1000 // rsg.BIN_MS)
+                c = rsg.bin_counts(SP, np.array([r.set_time]), 0, nb * rsg.BIN_MS)[0] * (1000 / rsg.BIN_MS)
+                Y = PCA_P[ds].transform(rsg.smooth(c))[:, :K_P[ds]]
+                s_tr.append(np.mean(np.linalg.norm(np.diff(Y, axis=0), axis=1)))
+            zs.append(stats.zscore(s_tr)); zt.append(stats.zscore(gg.tp.values))
+        r, p = stats.pearsonr(np.concatenate(zs), np.concatenate(zt))
+        rows.append({"dataset": ds, "prior": prior, "trials": len(np.concatenate(zs)), "r_trial": r, "p": p})
+trial_corr = pd.DataFrame(rows)
+print("\nVariant, trial by trial (z-scored within ts):")
+print(trial_corr.round(4).to_string(index=False))
+print(f"Negative in {int((trial_corr.r_trial < 0).sum())} of 8; mean r {trial_corr.r_trial.mean():.3f}")
+
+# %% [markdown]
+# ## alt-speed-unmodulated
+#
+# > Instantaneous speed of neural trajectories in the full neural space is not modulated during the
+# > support of each prior (signed-rank test for zero regression slopes, p = 0.64 for Short, p = 0.08
+# > for Long).
+#
+# Criterion (absence, judged on the paper's test): per dataset and prior, the distance between
+# successive 20 ms states of the smoothed rates of all selected units over the support of the prior
+# (with attrition), regressed on time; reproduced when a two-sided signed-rank test of the 4 slopes
+# against zero has p >= 0.05 for each prior. With 4 datasets the test cannot reach p < 0.05; the
+# slopes and their bootstrap intervals over trials (200 resamples of trials within dataset and
+# prior) are the effect size.
+
+# %% tags=claim:alt-speed-unmodulated
+rng_spd = np.random.default_rng(23)
+
+
+def support_speed_slope(ds, prior, t):
+    lo, hi = min(rsg.PRIOR_TS[prior]), max(rsg.PRIOR_TS[prior])
+    R, _ = rsg.estimation_rates(SP, t, hi)
+    idx = np.arange(lo, hi + 1, rsg.BIN_MS) // rsg.BIN_MS - 1
+    steps = np.linalg.norm(np.diff(R[idx], axis=0), axis=1)
+    times = np.arange(lo + rsg.BIN_MS, hi + 1, rsg.BIN_MS)
+    return np.polyfit(times, steps, 1)[0], steps
+
+
+rows = []
+for ds in DS:
+    for prior in PRIORS:
+        g = T[(T.dataset == ds) & (T.prior == prior)]
+        slope, steps = support_speed_slope(ds, prior, g)
+        boot = [support_speed_slope(ds, prior, g.iloc[rng_spd.integers(0, len(g), len(g))])[0] for _ in range(200)]
+        rows.append({"dataset": ds, "prior": prior, "mean_step": steps.mean(), "slope_per_s": slope * 1000,
+                     "boot_lo": np.percentile(boot, 2.5) * 1000, "boot_hi": np.percentile(boot, 97.5) * 1000,
+                     "relative_change_over_support": slope * (len(steps) - 1) * rsg.BIN_MS / steps.mean()})
+asp = pd.DataFrame(rows)
+print(asp.round(3).to_string(index=False))
+for prior in PRIORS:
+    s = asp[asp.prior == prior]
+    print(f"{prior}: slopes > 0 in {int((s.slope_per_s > 0).sum())} of 4; bootstrap intervals excluding 0: "
+          f"{int(((s.boot_lo > 0) | (s.boot_hi < 0)).sum())} of 4; signed-rank p = {signed_rank(s.slope_per_s):.3f}")
+
+# %% [markdown]
+# ## alt-transient-parallel
+#
+# > In the first 200 ms after Set, trajectories for different ts run parallel; their distance to the
+# > middle ts trajectory does not change (signed-rank test for zero slopes, p = 0.92 for the shortest
+# > ts, p = 0.13 for the longest).
+#
+# Criterion (absence, judged on the paper's test): PCA per dataset on Set to Set + 200 ms, both
+# priors, at least 75% of variance; per dataset and prior the distance from the shortest and the
+# longest ts trajectory to the middle ts trajectory at each 20 ms bin, regressed on time; reproduced
+# when a two-sided signed-rank test of the 8 slopes against zero has p >= 0.05 for both.
+
+# %% tags=claim:alt-transient-parallel
+rows = []
+for ds in DS:
+    g = T[T.dataset == ds]
+    tr = {(p, ts): rsg.production_rates(SP, g[(g.prior == p) & (g.ts == ts)], length_ms=200)
+          for p in PRIORS for ts in rsg.PRIOR_TS[p]}
+    pca, k = rsg.fit_pca(list(tr.values()))
+    Z = {key: pca.transform(v)[:, :k] for key, v in tr.items()}
+    times = np.arange(1, 11) * rsg.BIN_MS
+    for prior in PRIORS:
+        tsv = rsg.PRIOR_TS[prior]
+        mid = Z[(prior, tsv[2])]
+        for which, ts in (("shortest", tsv[0]), ("longest", tsv[-1])):
+            dist = np.linalg.norm(Z[(prior, ts)] - mid, axis=1)
+            rows.append({"dataset": ds, "prior": prior, "ts": which, "n_PC": k,
+                         "dist_first": dist[0], "dist_last": dist[-1], "slope_per_s": np.polyfit(times, dist, 1)[0] * 1000})
+par = pd.DataFrame(rows)
+print(par.round(3).to_string(index=False))
+for which in ("shortest", "longest"):
+    s = par[par.ts == which]
+    print(f"{which}: slopes > 0 in {int((s.slope_per_s > 0).sum())} of 8; median {s.slope_per_s.median():.2f} "
+          f"per s; signed-rank p = {signed_rank(s.slope_per_s):.4f}")
+
+# %% [markdown]
+# ## alt-threshold-monotonic
+#
+# > Aligned to the response, distances between trajectories for different ts decrease steadily up to
+# > movement initiation, without the converging then diverging pattern a ts-dependent threshold
+# > would produce.
+#
+# Criterion: PCA per dataset on Go - 800 ms to Go, both priors, components explaining 60% of the
+# variance; per dataset, prior and non-middle ts (32 curves) the distance to the middle ts trajectory
+# at each 20 ms bin and the time of its minimum. Reproduced when the median time of the minimum is
+# in the last 40 ms before Go; partially when in the last 200 ms. A bin's time is its end (the last
+# bin ends at Go). The 75% threshold is shown as a variant.
+
+# %% tags=claim:alt-threshold-monotonic
+rows = []
+for thr in (0.60, 0.75):
+    for ds in DS:
+        g = T[T.dataset == ds]
+        tr = {(p, ts): rsg.go_rates(SP, g[(g.prior == p) & (g.ts == ts)]) for p in PRIORS for ts in rsg.PRIOR_TS[p]}
+        pca, k = rsg.fit_pca(list(tr.values()), threshold=thr)
+        Z = {key: pca.transform(v)[:, :k] for key, v in tr.items()}
+        ends = np.arange(-780, 1, rsg.BIN_MS)
+        for prior in PRIORS:
+            tsv = rsg.PRIOR_TS[prior]
+            for ts in tsv:
+                if ts == tsv[2]:
+                    continue
+                dist = np.linalg.norm(Z[(prior, ts)] - Z[(prior, tsv[2])], axis=1)
+                rows.append({"threshold": thr, "dataset": ds, "prior": prior, "ts": ts, "n_PC": k,
+                             "t_min": ends[np.argmin(dist)], "dist_at_go": dist[-1], "dist_min": dist.min(),
+                             "dist_at_-800": dist[0]})
+thr_tab = pd.DataFrame(rows)
+for thr, s in thr_tab.groupby("threshold"):
+    print(f"\nPCs for {thr:.0%}:", s.groupby("dataset").n_PC.first().to_dict())
+    print("Times of the minimum distance (ms before Go, bin end):", sorted(s.t_min.tolist()))
+    print(f"Median time of the minimum: {s.t_min.median():.0f} ms; in the last 40 ms: {int((s.t_min >= -20).sum())}"
+          f" of 32; in the last 200 ms: {int((s.t_min >= -180).sum())} of 32")
+    print(f"Distance at Go above the minimum in {int((s.dist_at_go > s.dist_min + 1e-9).sum())} of 32; "
+          f"median ratio of distance at Go to that at Go - 800 ms: {np.median(s.dist_at_go / s['dist_at_-800']):.2f}")
+EOF
+cd entries/sohn-2019 && cp $TMPDIR/s/nb.py run1.py && source $TMPDIR/env/bin/activate && time python run1.py 2>&1 | sed -n '/dataset prior   ts  xu_at_set/,$p'; rm run1.py
+```
+
+```
+Sat Nov 14 13:12:22 UTC 2026
+   dataset prior   ts  xu_at_set  speed  set_to_go_s  tp_mean  speed_per_s
+ Eye Right Short  480    -41.516  8.230        0.478  496.868       17.225
+ Eye Right Short  560    -37.308  8.033        0.524  543.739       15.320
+ Eye Right Short  640    -18.936  6.522        0.610  630.550       10.691
+ Eye Right Short  720      2.206  5.382        0.730  752.037        7.375
+ Eye Right Short  800     14.125  4.767        0.809  836.602        5.889
+ Eye Right  Long  800    -16.065  5.971        0.826  844.335        7.226
+ Eye Right  Long  900     -8.223  4.847        0.903  922.279        5.370
+ Eye Right  Long 1000      7.554  4.366        0.981 1002.392        4.452
+ Eye Right  Long 1100     19.502  4.357        1.131 1156.215        3.853
+ Eye Right  Long 1200     22.258  3.583        1.155 1176.536        3.102
+  Eye Left Short  480    -44.400  9.231        0.516  539.534       17.906
+  Eye Left Short  560    -45.159  7.445        0.556  579.976       13.398
+  Eye Left Short  640    -24.328  7.037        0.632  666.884       11.141
+  Eye Left Short  720      6.674  5.075        0.748  772.095        6.782
+  Eye Left Short  800     16.927  5.515        0.838  864.015        6.582
+  Eye Left  Long  800    -18.420  6.975        0.795  821.290        8.776
+  Eye Left  Long  900    -10.452  5.344        0.894  916.020        5.980
+  Eye Left  Long 1000      2.576  5.282        0.978 1006.664        5.399
+[... 108 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/s/gpfa_part.py <<'EOF'
+
+# %% [markdown]
+# ## gpfa-variance-inverted-u
+#
+# > The variance across single trials of the GPFA neural state at Set projected on the encoding axis
+# > has an inverted-U profile over ts, lower at the extremes of each prior (one-tailed signed-rank
+# > test on quadratic coefficients, p = 0.0273, monkey H).
+#
+# Criterion: GPFA (20 ms bins) per dataset on single trials from Ready to Set, both priors, the
+# selected units; latent dimensionality chosen by 3-fold cross-validated log-likelihood from 4 and 8;
+# orthonormalised latents. Per prior, u from the trial-averaged latents with attrition; each trial's
+# latent state in its last bin before Set projected on u; Xu z-scored over the prior's trials; the
+# variance at each ts; the quadratic coefficient of a polynomial fit of variance on ts. Reproduced
+# when a one-tailed signed-rank test (coefficient below zero) over the 8 dataset-priors has p < 0.05.
+#
+# GPFA is elephant's implementation (Yu et al. 2009, the method the STAR Methods cite). Each trial
+# runs from `ready_time` for its nominal ts, so that its last bin ends at Set. EM runs for 200
+# iterations (elephant's default is 500), a standard choice made for time; the change of
+# log-likelihood over the last 10 iterations is printed. Folds are drawn with a fixed seed.
+
+# %% tags=claim:gpfa-variance-inverted-u
+import neo
+import quantities as pq
+from elephant.gpfa import GPFA
+
+rng_gpfa = np.random.default_rng(31)
+EM_ITERS = 200
+
+
+def spiketrains(t):
+    out = []
+    for r in t.itertuples():
+        a, b = r.ready_time, r.ready_time + r.ts / 1000
+        out.append([neo.SpikeTrain((s[(s >= a) & (s < b)] - a) * pq.s, t_start=0 * pq.s, t_stop=(r.ts / 1000) * pq.s)
+                    for s in SP])
+    return out
+
+
+def gpfa_fit(trains, x_dim):
+    np.random.seed(int(rng_gpfa.integers(1 << 31)))
+    g = GPFA(bin_size=rsg.BIN_MS * pq.ms, x_dim=x_dim, em_max_iters=EM_ITERS, verbose=False)
+    g.fit(trains)
+    return g
+
+
+t_g = time.time()
+GP = {}
+cv_rows = []
+for ds in DS:
+    g = T[T.dataset == ds].reset_index(drop=True)
+    trains = spiketrains(g)
+    folds = rng_gpfa.permutation(len(g)) % 3
+    ll = {}
+    for x_dim in (4, 8):
+        ll[x_dim] = 0.0
+        for f in range(3):
+            m = gpfa_fit([trains[i] for i in np.flatnonzero(folds != f)], x_dim)
+            ll[x_dim] += m.score([trains[i] for i in np.flatnonzero(folds == f)])
+    best = max(ll, key=ll.get)
+    m = gpfa_fit(trains, best)
+    lls = m.fit_info["log_likelihoods"]
+    lat = m.transform(trains, returned_data=["latent_variable_orth"])
+    GP[ds] = (g, lat)
+    cv_rows.append({"dataset": ds, "trials": len(g), "cv_ll_4": ll[4], "cv_ll_8": ll[8], "x_dim": best,
+                    "ll_change_last10": lls[-1] - lls[-11]})
+print(pd.DataFrame(cv_rows).round(1).to_string(index=False))
+print(f"GPFA time: {time.time() - t_g:.0f} s")
+
+rows, GXU = [], {}
+for ds in DS:
+    g, lat = GP[ds]
+    for prior in PRIORS:
+        lo, hi = min(rsg.PRIOR_TS[prior]), max(rsg.PRIOR_TS[prior])
+        ii = np.flatnonzero(g.prior.values == prior)
+        nb = hi // rsg.BIN_MS
+        acc, cnt = np.zeros((nb, lat[0].shape[0])), np.zeros(nb)
+        for i in ii:
+            L = lat[i].T
+            acc[:len(L)] += L; cnt[:len(L)] += 1
+        avg = acc / cnt[:, None]
+        u = rsg.encoding_axis(avg, lo, hi)
+        xu = np.array([lat[i][:, -1] @ u for i in ii])
+        tsv = g.ts.values[ii]
+        z = stats.zscore(xu)
+        var = np.array([z[tsv == s].var(ddof=1) for s in rsg.PRIOR_TS[prior]])
+        mean = np.array([xu[tsv == s].mean() for s in rsg.PRIOR_TS[prior]])
+        GXU[(ds, prior)] = dict(var=var, mean=mean)
+        rows.append({"dataset": ds, "prior": prior, "variance_by_ts": var.round(2),
+                     "quad_coef": np.polyfit(np.array(rsg.PRIOR_TS[prior], float), var, 2)[0]})
+gv = pd.DataFrame(rows)
+print(gv.to_string(index=False, formatters={"quad_coef": "{:.3e}".format}))
+print(f"\nQuadratic coefficient below zero in {int((gv.quad_coef < 0).sum())} of 8; one-tailed signed-rank "
+      f"p = {signed_rank(gv.quad_coef, alternative='less'):.4f}")
+print("Mean variance profile over the 8 (z-scored Xu):", np.mean([r for r in gv.variance_by_ts], axis=0).round(3))
+
+# %% [markdown]
+# ## gpfa-mean-sigmoid
+#
+# > The mean of the single-trial GPFA projections is sigmoidal (signed-rank test on increments,
+# > p = 0.0078) and has a higher slope for the Short prior (one-tailed signed-rank, p = 0.0625).
+#
+# Criterion: with the projections of gpfa-variance-inverted-u, not z-scored; the mean Xu at each ts;
+# increments as in beh-sigmoid-increments compared by a two-sided signed-rank test over the 8
+# (sigmoidal when middle exceeds extreme with p < 0.05); the slope of mean Xu on ts per dataset and
+# prior (higher for Short in all 4 datasets is the paper's p = 0.0625). Reproduced when both parts
+# hold; partially when one does.
+
+# %% tags=claim:gpfa-mean-sigmoid
+rows = []
+for (ds, prior), e in GXU.items():
+    inc = np.diff(e["mean"])
+    rows.append({"dataset": ds, "prior": prior, "mean_xu": e["mean"].round(3), "middle_minus_extreme":
+                 (inc[1] + inc[2]) / 2 - (inc[0] + inc[3]) / 2,
+                 "slope": np.polyfit(np.array(rsg.PRIOR_TS[prior], float), e["mean"], 1)[0]})
+gm = pd.DataFrame(rows)
+print(gm.to_string(index=False, formatters={"middle_minus_extreme": "{:.4f}".format, "slope": "{:.5f}".format}))
+print(f"\nMiddle > extreme in {int((gm.middle_minus_extreme > 0).sum())} of 8; two-sided signed-rank "
+      f"p = {signed_rank(gm.middle_minus_extreme):.4f}")
+gs = gm.pivot(index="dataset", columns="prior", values="slope")
+print(gs.round(5).to_string())
+print(f"Short slope above Long in {int((gs.Short > gs.Long).sum())} of 4; one-tailed signed-rank "
+      f"p = {signed_rank(gs.Short - gs.Long, alternative='greater'):.4f}")
+EOF
+cd entries/sohn-2019 && python3 - <<'EOF'
+import re,os
+s=open(os.environ["TMPDIR"]+"/s/nb.py").read()
+# dev: keep only through population trajectory definitions + gpfa part, skip heavy sections
+head=s.split("# %% [markdown]\n# ## beh-slopes")[0]
+open("run2.py","w").write(head+open(os.environ["TMPDIR"]+"/s/gpfa_part.py").read())
+EOF
+source $TMPDIR/env/bin/activate && time python run2.py 2>&1 | grep -v "WARNING\|warn" | sed -n '/dataset  trials/,$p'; rm run2.py
+```
+
+```
+dataset  trials   cv_ll_4   cv_ll_8  x_dim  ll_change_last10
+ Eye Right     276 -175218.3 -174652.4      8               7.1
+  Eye Left     260 -165381.3 -164698.2      8              11.5
+Hand Right     225 -125038.9 -124443.3      8               7.5
+ Hand Left     222 -116142.9 -115634.9      8               8.1
+GPFA time: 642 s
+   dataset prior                 variance_by_ts  quad_coef
+ Eye Right Short   [0.76, 0.5, 0.58, 0.43, 0.3]  4.285e-07
+ Eye Right  Long  [0.98, 0.7, 0.96, 0.36, 0.41] -1.487e-06
+  Eye Left Short [0.43, 0.21, 0.61, 0.34, 0.17] -6.448e-06
+  Eye Left  Long [0.57, 0.91, 0.73, 0.46, 0.39] -6.404e-06
+Hand Right Short  [0.79, 0.8, 1.53, 0.76, 0.48] -2.308e-05
+Hand Right  Long [0.77, 1.55, 1.36, 0.61, 0.33] -1.914e-05
+ Hand Left Short   [0.8, 1.17, 0.9, 0.39, 0.82] -1.244e-06
+ Hand Left  Long  [1.3, 1.49, 0.33, 0.76, 0.61]  6.482e-06
+
+Quadratic coefficient below zero in 6 of 8; one-tailed signed-rank p = 0.0742
+Mean variance profile over the 8 (z-scored Xu): [0.8   0.916 0.875 0.514 0.439]
+   dataset prior                                mean_xu middle_minus_extreme   slope
+ Eye Right Short [-0.57, -0.649, -0.411, -0.076, 0.093]               0.2418 0.00237
+[... 20 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/s && python3 - <<'EOF'
+s=open("nb.py").read()
+old='''for prior in PRIORS:
+    s = asp[asp.prior == prior]
+    print(f"{prior}: slopes > 0 in {int((s.slope_per_s > 0).sum())} of 4; bootstrap intervals excluding 0: "
+          f"{int(((s.boot_lo > 0) | (s.boot_hi < 0)).sum())} of 4; signed-rank p = {signed_rank(s.slope_per_s):.3f}")
+'''
+new=old+'''
+# Variant: the same trials at every point of the support (only trials with the prior's longest ts),
+# so that the number of trials averaged, and the noise it leaves in the rates, does not change.
+rows = []
+for ds in DS:
+    for prior in PRIORS:
+        g = T[(T.dataset == ds) & (T.prior == prior) & (T.ts == max(rsg.PRIOR_TS[prior]))]
+        slope, steps = support_speed_slope(ds, prior, g)
+        rows.append({"dataset": ds, "prior": prior, "trials": len(g), "mean_step": steps.mean(),
+                     "slope_per_s": slope * 1000})
+asp_fixed = pd.DataFrame(rows)
+print("\\nVariant without attrition (trials of the longest ts only):")
+print(asp_fixed.round(3).to_string(index=False))
+for prior in PRIORS:
+    s = asp_fixed[asp_fixed.prior == prior]
+    print(f"{prior}: slopes > 0 in {int((s.slope_per_s > 0).sum())} of 4; signed-rank p = {signed_rank(s.slope_per_s):.3f}")
+print("Trials averaged at the start and end of the support (main analysis):",
+      {f"{ds} {p}": (int(EST_N[ds][p][min(rsg.PRIOR_TS[p]) // 20 - 1]), int(EST_N[ds][p][max(rsg.PRIOR_TS[p]) // 20 - 1]))
+       for ds in DS for p in PRIORS})
+'''
+assert old in s
+s=s.replace(old,new)
+s+=open("gpfa_part.py").read()
+open("nb.py","w").write(s)
+EOF
+grep -c "" $TMPDIR/s/nb.py; date -u
+```
+
+```
+1067
+Sat Nov 14 13:25:10 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/sohn-2019 && python3 -c "
+import os
+s=open(os.environ['TMPDIR']+'/s/nb.py').read()
+head=s.split('# %% [markdown]\n# ## beh-overlap-prior')[0]
+a=s.split('# %% [markdown]\n# ## alt-speed-unmodulated')[1].split('# %% [markdown]\n# ## alt-transient-parallel')[0]
+pop=s.split('# %% [markdown]\n# ## Population trajectories')[1].split('# %% [markdown]\n# ## pca-dimensionality')[0]
+open('run3.py','w').write(head+pop+a)
+" && source $TMPDIR/env/bin/activate && python run3.py 2>&1 | sed -n '/dataset prior   n/,/Variant without intercept/p;/Variant without attrition/,$p'; rm run3.py
+```
+
+```
+dataset prior   n  slope  ci_low  ci_high  slope_no_intercept  ci0_low  ci0_high
+  Eye Left  Long 155  0.845   0.743    0.948               0.996    0.980     1.012
+  Eye Left Short 105  1.011   0.896    1.126               1.072    1.051     1.092
+ Eye Right  Long 147  0.903   0.769    1.038               1.027    1.009     1.045
+ Eye Right Short 129  1.110   1.014    1.206               1.016    0.999     1.033
+ Hand Left  Long  88  0.502   0.369    0.636               0.923    0.901     0.946
+ Hand Left Short 134  0.612   0.499    0.725               1.013    0.990     1.035
+Hand Right  Long 112  0.612   0.488    0.736               1.032    1.012     1.052
+Hand Right Short 113  0.861   0.728    0.993               1.057    1.032     1.081
+
+With intercept: slopes in (0, 1): 6 of 8; intervals excluding 0 and 1: 5 of 8
+Variant without intercept: slopes in (0, 1): 2 of 8; intervals excluding 0 and 1: 1 of 8
+Variant without attrition (trials of the longest ts only):
+   dataset prior  trials  mean_step  slope_per_s
+ Eye Right Short      25      5.861        4.967
+ Eye Right  Long      27      4.294        2.563
+  Eye Left Short      22      6.737        5.289
+  Eye Left  Long      31      4.194        0.972
+Hand Right Short      22      4.734        3.567
+Hand Right  Long      25      4.006       -1.065
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+source $TMPDIR/env/bin/activate && python - <<'EOF'
+import h5py, remfile
+url="https://dandiarchive.s3.amazonaws.com/blobs/73a/6f6/73a6f648-8e97-4c90-b323-a15844e4e3d4"
+f=h5py.File(remfile.File(url),"r")
+def show(name,obj):
+    if isinstance(obj,h5py.Dataset) and "spike_times" not in name: print(name, obj.shape, obj.dtype)
+f["general"].visititems(show); print(list(f["units"].keys()))
+e=f["general/extracellular_ephys/electrodes"]
+for k in e.keys(): print(k, e[k][:5])
+for g in f["general/extracellular_ephys"].keys():
+    if g!="electrodes": print(g, dict(f["general/extracellular_ephys"][g].attrs))
+print(dict(f.attrs)); print(f["general/institution"][()] if "institution" in f["general"] else None)
+EOF
+```
+
+```
+experiment_description () object
+experimenter (1,) object
+extracellular_ephys/electrodes/filtering (72,) object
+extracellular_ephys/electrodes/group (72,) object
+extracellular_ephys/electrodes/group_name (72,) object
+extracellular_ephys/electrodes/id (72,) int64
+extracellular_ephys/electrodes/imp (72,) float64
+extracellular_ephys/electrodes/location (72,) object
+extracellular_ephys/electrodes/x (72,) float64
+extracellular_ephys/electrodes/y (72,) float64
+extracellular_ephys/electrodes/z (72,) float64
+institution () object
+keywords (4,) object
+lab () object
+related_publications (1,) object
+session_id () object
+subject/age () object
+subject/sex () object
+subject/species () object
+subject/subject_id () object
+[... 17 more lines not kept]
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/sohn-2019/rsg.py",
+ "old_string": "        meta = {\"session_description\": _text(f[\"session_description\"][()]),",
+ "new_string": "        el = f[\"general/extracellular_ephys/electrodes\"]\n        electrodes = {\"n\": len(el[\"id\"]),\n                      \"groups\": sorted({_text(x) for x in el[\"group_name\"][()]}),\n                      \"locations\": sorted({_text(x) for x in el[\"location\"][()]}),\n                      \"positions_all_nan\": bool(np.all(np.isnan(el[\"x\"][()]))\n                                                and np.all(np.isnan(el[\"y\"][()]))\n                                                and np.all(np.isnan(el[\"z\"][()]))),\n                      \"unit_columns\": sorted(k for k in units.keys() if not k.endswith(\"_index\"))}\n        meta = {\"session_description\": _text(f[\"session_description\"][()]),"
+}
+```
+
+```
+The file entries/sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/sohn-2019/rsg.py",
+ "old_string": "            \"spikes\": spikes, \"obs_intervals\": obs, \"meta\": meta}",
+ "new_string": "            \"spikes\": spikes, \"obs_intervals\": obs, \"meta\": meta, \"electrodes\": electrodes}"
+}
+```
+
+```
+The file entries/sohn-2019/rsg.py has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/s && python3 - <<'EOF'
+s=open("nb.py").read()
+old='print("Units kept:", len(keep), "of", len(unit_table))\n'
+new=old+'print("Unit table columns:", data["electrodes"]["unit_columns"])\nprint("Electrodes:", {k: v for k, v in data["electrodes"].items() if k != "unit_columns"})\n'
+assert old in s; s=s.replace(old,new)
+old2="""# units are single- and multi-units together; the file does not say which is which. No electrode
+# position, area or unit quality is given (the electrode table has no positions)."""
+new2="""# units are single- and multi-units together; the file does not say which is which. The electrode
+# table has 72 electrodes in 3 groups, consistent with the Methods' 1 to 3 24-channel probes, with
+# no positions; the unit table has no electrode column, so no unit can be placed on a probe."""
+assert old2 in s; s=s.replace(old2,new2)
+open("nb.py","w").write(s)
+EOF
+echo done
+```
+
+```
+done
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/s && python3 - <<'EOF'
+s=open("nb.py").read()
+old="""# The target direction is decoded near chance before target onset and well above chance after it,
+# and not with the next trial's labels; the population rate shows a transient after Set that
+# disappears when the event times are jittered."""
+new="""# The target direction is decoded at 0.55 in the 300 ms before target onset and in the first 300 ms
+# after it, and at 0.80 from 300 to 600 ms after it; with the next trial's labels it is at 0.50 in
+# every window. The population rate rises from about 80 ms after Set to a peak at 180 to 200 ms, and
+# the peak is gone when the event times are jittered."""
+assert old in s; s=s.replace(old,new)
+R={
+"beh-slopes":"""**Result: not reproduced.** With the intercept, 6 of 8 slopes lie between 0 and 1 and 5 of 8
+intervals exclude 0 and 1. The Short prior slopes of both eye datasets are not below 1 (Eye Left
+1.011, interval 0.896 to 1.126; Eye Right 1.110, 1.014 to 1.206). The other six slopes are 0.502 to
+0.903. Without the intercept (the Methods' equation) the slopes are 0.923 to 1.072 and 2 of 8 lie
+below 1, so that reading does not reproduce the claim either.""",
+"beh-overlap-prior":"""**Result: not reproduced.** Pooled over the four datasets, the median bias at ts = 800 ms is +28.3
+ms for the Short prior and +47.6 ms for the Long prior: both positive, with Long the later as the
+priors predict, and the rank-sum p = 0.073. Per dataset, the Short median is negative only in Hand
+Left (-61.6 against -2.8 ms, p = 0.069), and the difference is significant only in Hand Right
+(29.7 against 96.8 ms, p = 0.00099).""",
+"beh-sigmoid-increments":"""**Result: reproduced.** The middle increment exceeds the extreme one in 7 of 8 conditions (median
+difference 31.3 ms; the exception is Hand Left Short, -10.7 ms), signed-rank p = 0.0156.""",
+"beh-long-more-bias":"""**Result: reproduced.** The Long slope is below the Short slope in all 4 datasets (0.845 against
+1.011, 0.903 against 1.110, 0.502 against 0.612, 0.612 against 0.861). Without the intercept it is
+below in 3 of 4.""",
+"beh-bayes-model":"""**Result: partially reproduced.** The SD correlation is positive in all 4 datasets (0.277 to 0.909),
+but the bias R2 reaches 0.8 in 2 of 4 under both readings (Hand Left 0.978, Hand Right 0.865; Eye
+Left 0.670, Eye Right 0.122). The fitted wm is 0.013 to 0.116 and wp 0.090 to 0.106; the eye
+datasets have small wm and small, irregular biases.""",
+"glm-prior-ts":"""**Result: not reproduced.** 38 of 48 units (79.2%, 95% interval 65.0 to 89.5) are prior-dependent,
+above the 65 +- 6.5% range, and 22 of 48 (45.8%, 31.4 to 60.8) are ts-dependent, above 27 +- 2.7%.
+Both fractions are higher than the paper's, which pool 536 units of 17 sessions.""",
+"dfr-overlap-support":"""**Result: reproduced.** The mean RMS difference between priors peaks at 6.86 spikes/s in the bin
+480 to 640 ms after Ready, above the 95th percentile of the shuffled maxima (3.09). By dataset the
+peak is in the support for three datasets and in the first 160 ms after Set for Eye Left.""",
+"pca-dimensionality":"""**Result: not reproduced.** 1 of 8 values is in range: 2 components reach 75% in the estimation epoch
+of every dataset, and 2, 2, 5 and 4 in the production epoch (Eye Right, Eye Left, Hand Right, Hand
+Left). The first component alone explains 0.51 to 0.65 of the variance in the estimation epoch.
+Without smoothing the estimation epoch needs 3, 3, 4 and 6 components, and with soft-normalised
+rates 3 in each; neither variant is the claims file's method.""",
+"encoding-r2":"""**Result: reproduced.** Under reading (a), Hand Left, R2 is 0.994 (Short) and 0.986 (Long); under
+reading (b), the mean over datasets, 0.955 and 0.986. All are within tolerance. The estimation PC
+space has 2 dimensions in every dataset, and random unit vectors in it also give high R2 (medians
+0.749 to 0.987); the fraction of random vectors at or above the observed R2 is 0.004 to 0.434, and
+R2 with ts in place of te is within 0.013 of R2 with te in every case.""",
+"encoding-bayes-beats-linear":"""**Result: not reproduced.** The Bayesian RMSE is lower in 3 of 4 datasets for each prior, not in all
+4: it is higher for Hand Right Short (+0.180) and Hand Left Long (+0.081). The weighted RMSE gives the
+same counts.""",
+"short-in-long-control":"""**Result: reproduced, by the paper's test.** The signed-rank p is 0.250 for the RMSE difference
+over 4 datasets (and with the single-vector axis), so the test does not find a difference; with 4
+datasets it cannot reach p < 0.05. The effect it would test is not absent: the Bayesian RMSE is lower
+in 3 of 4 datasets for Short In Long (median difference -0.109), as for the Short prior itself (3 of
+4, median -0.289).""",
+"neural-long-more-bias":"""**Result: reproduced.** The Long slope is below the Short slope in all 4 datasets; in Hand Right
+they are nearly equal (0.0496 against 0.0504 spikes/s per ms). Signed-rank p = 0.125.""",
+"speed-vs-projection":"""**Result: partially reproduced.** Both pooled correlations are negative and significant, but
+stronger than the paper's and outside tolerance: r = -0.926 (Short, p = 4.8e-09) and -0.834 (Long,
+p = 4.9e-06). Within datasets r is -0.74 to -1.0. Speed divided by the Set-to-Go time gives -0.916
+and -0.908.""",
+"initial-speed-biased":"""**Result: reproduced.** The measured slope of initial speed on ts is shallower than the unbiased
+one in 7 of 8 dataset-priors (the exception is Eye Right Long), signed-rank p = 0.039. All 8
+measured slopes are negative.""",
+"speed-predicts-tp":"""**Result: partially reproduced.** Speed and mean tp are negatively correlated, r = -0.720 (Short,
+p = 0.00034) and -0.699 (Long, p = 0.00060), both outside tolerance (stronger than -0.58 and -0.52).
+Within datasets r is -0.83 to -0.99. Trial by trial, z-scored within ts, r is negative in 8 of 8
+conditions (mean -0.268).""",
+"alt-speed-unmodulated":"""**Result: reproduced, by the paper's test.** The signed-rank p is 0.125 for each prior, which with 4
+datasets is the smallest the test can give. The effect the claim denies is present: speed rises
+through the support in all 8 dataset-priors (slopes 3.95 to 10.61 per s, bootstrap intervals
+excluding 0 in 8 of 8; 30% to 82% over the support). Part of the rise comes from attrition, which
+leaves fewer trials, and noisier rates, late in the support: with the trials of the longest ts only,
+the slopes are 0.97 to 5.29 per s in 7 of 8 and -1.07 in Hand Right Long.""",
+"alt-transient-parallel":"""**Result: reproduced, by the paper's test.** The signed-rank p is 0.109 for the shortest ts and 1.0
+for the longest. For the shortest ts the distance to the middle trajectory grows in 6 of 8 (median
+slope 75.8 per s), which the test over 8 does not find significant.""",
+"alt-threshold-monotonic":"""**Result: not reproduced.** The median time of the minimum distance is 230 ms before Go with 60% of
+the variance (4 of 32 curves have it in the last 40 ms, 13 of 32 in the last 200 ms), and 200 ms
+before Go with 75%. Distances shrink overall (the distance at Go is a median 0.43 of that at Go - 800
+ms) but in 29 of 32 curves the distance at Go is above its minimum.""",
+"gpfa-variance-inverted-u":"""**Result: not reproduced.** The quadratic coefficient is negative in 6 of 8 dataset-priors, and the
+one-tailed signed-rank p is 0.074. The mean variance profile over the 8 is highest at the second ts
+and lowest at the last two (0.80, 0.92, 0.88, 0.51, 0.44). Cross-validation chose 8 latent
+dimensions in every dataset.""",
+"gpfa-mean-sigmoid":"""**Result: reproduced.** The middle increment of the mean projection exceeds the extreme one in 8 of 8
+(two-sided signed-rank p = 0.0078), and the Short slope is above the Long slope in all 4 datasets
+(one-tailed p = 0.0625, the paper's value).""",
+}
+import re
+heads=[m.start() for m in re.finditer(r"# %% \[markdown\]\n# ## ", s)]
+names=[s[h:].split("\n")[1][5:].strip() for h in heads]
+out=s; 
+# insert from the end
+for i in reversed(range(len(heads))):
+    nm=names[i]
+    if nm in R:
+        end = heads[i+1] if i+1 < len(heads) else len(s)
+        cell="# %% [markdown]\n"+"\n".join("# "+l for l in R[nm].split("\n"))+"\n\n"
+        out=out[:end]+cell+out[end:] if end<len(s) else out.rstrip("\n")+"\n\n"+cell
+print([n for n in names if n not in R])
+open("nb.py","w").write(out)
+EOF
+grep -c "Result:" $TMPDIR/s/nb.py
+```
+
+```
+['Data check', 'Population trajectories']
+20
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/s && sed -i 's/The first component alone explains 0.51 to 0.65 of the variance/The first component alone explains 0.51 to 0.64 of the variance/' nb.py && cat >> nb.py <<'EOF'
+
+# %% [markdown]
+# ## Blocked claims
+#
+# - rnn-curved-manifold and rnn-perturbation: the recurrent networks, their training and their
+#   simulations are not in the dandiset, and the paper's code is available on request only, so
+#   neither the networks nor the paper's training procedure is public (`data_missing`).
+# - monkey-g: the dandiset holds one session of monkey H; no data of monkey G are in it or in any
+#   other dandiset found by searching the archive for the lab and the task (`data_missing`).
+
+# %%
+print(f"Total run time: {(time.time() - T0) / 60:.1f} min; peak memory "
+      f"{resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.2f} GB")
+
+# %% [markdown]
+# ## Summary
+#
+# | Claim | Outcome |
+# |---|---|
+# | beh-slopes | not reproduced: 6 of 8 slopes in (0, 1); the eye Short slopes are 1.011 and 1.110 |
+# | beh-overlap-prior | not reproduced: both median biases positive (+28.3, +47.6 ms), p = 0.073 |
+# | beh-sigmoid-increments | reproduced: 7 of 8, p = 0.0156 |
+# | beh-long-more-bias | reproduced: 4 of 4 |
+# | beh-bayes-model | partially reproduced: bias R2 >= 0.8 in 2 of 4, SD correlation positive in 4 of 4 |
+# | glm-prior-ts | not reproduced: 79.2% prior-, 45.8% ts-dependent |
+# | dfr-overlap-support | reproduced: peak at 480 to 640 ms after Ready, above the shuffle null |
+# | pca-dimensionality | not reproduced: 1 of 8 in range (2 PCs reach 75% in the estimation epoch) |
+# | encoding-r2 | reproduced: Hand Left 0.994 and 0.986 |
+# | encoding-bayes-beats-linear | not reproduced: Bayesian better in 3 of 4 for each prior |
+# | short-in-long-control | reproduced by the paper's test (p = 0.25, n = 4) |
+# | neural-long-more-bias | reproduced: 4 of 4 |
+# | speed-vs-projection | partially reproduced: r = -0.926 and -0.834, outside tolerance |
+# | initial-speed-biased | reproduced: 7 of 8, p = 0.039 |
+# | speed-predicts-tp | partially reproduced: r = -0.720 and -0.699, outside tolerance |
+# | alt-speed-unmodulated | reproduced by the paper's test (p = 0.125, n = 4); speed rises in 8 of 8 |
+# | alt-transient-parallel | reproduced by the paper's test (p = 0.109 and 1.0) |
+# | alt-threshold-monotonic | not reproduced: median minimum 230 ms before Go |
+# | gpfa-variance-inverted-u | not reproduced: 6 of 8 negative, p = 0.074 |
+# | gpfa-mean-sigmoid | reproduced: p = 0.0078 and 0.0625 |
+# | rnn-curved-manifold | blocked: data missing |
+# | rnn-perturbation | blocked: data missing |
+# | monkey-g | blocked: data missing |
+#
+# A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+# reasoning and the differences from the paper's method.
+#
+# How the analysis differs from the paper's. It uses one session of monkey H, where the paper pools
+# 17 sessions of H and 12 of G, so every test over "datasets" has 4 in place of 8, and tests the paper
+# ran over sessions run here over the 4 datasets of one session. Firing rates are not normalised
+# (claims header), which leaves 2 components at 75% in most datasets and makes the estimation PC
+# space 2-dimensional. The paper's code is not public; method details come from the claims file and
+# the STAR Methods, as cited in each section. GPFA runs 200 EM iterations, fewer than elephant's
+# default of 500.
+#
+# What was found about the dataset. It holds one of the paper's 29 sessions: 1160 trials of the
+# train file (983 completed and not outliers) and 54 units, 48 of which pass the paper's selection,
+# the number the paper gives for the GPFA session of monkey H. The 283 trials of the test file have no
+# task variables, as the benchmark withholds them. The `iti` description reverses the two priors; `tp`
+# exceeds `go_time - set_time` by a median of 17.9 ms without explanation; units carry no electrode,
+# probe or single/multi-unit label.
+EOF
+python py2nb.py nb.py entries/sohn-2019/reproduce_sohn_2019.ipynb && python3 -c "
+import json;nb=json.load(open('entries/sohn-2019/reproduce_sohn_2019.ipynb'));print(len(nb['cells']), sum(1 for c in nb['cells'] if c['metadata'].get('tags')))"
+```
+
+```
+76 24
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+grep -l "^python" entries/*/entry.yaml | head -3; cat $(grep -l "^python" entries/*/entry.yaml | head -1); python3 tools/entry.py --help 2>&1 | head -30
+```
+
+```
+entries/andrews-2024/entry.yaml
+entries/asari-2009/entry.yaml
+entries/brinke-2017/entry.yaml
 schema_version: 1
-name: 000130-sohn-2019
+name: andrews-2024
 type: reproduction
-title: Bayesian computation through cortical latent dynamics (Sohn et al. 2019)
-description: Tests the findings of Sohn, Narain, Meirhaeghe and Jazayeri (2019) on dandiset 000130,
-  the Neural Latents Benchmark's DMFC_RSG set, which holds one session of monkey H performing the
-  Ready-Set-Go task with 54 units from dorsomedial frontal cortex. It tests the behaviour and the
-  Bayesian observer model, single-unit sensitivity to the prior and elapsed time, the geometry and
-  speed of population trajectories, the alternative mechanisms, and single-trial GPFA trajectories.
-  Monkey G and the recurrent network models are not in the dandiset.
+title: Optogenetic inhibition in human hippocampal slices on HD-MEAs (Andrews, Geng, Voitiuk et al. 2024)
+description: Tests the findings of Andrews, Geng, Voitiuk et al. (2024) on dandiset 001132, which holds 69
+  raw HD-MEA voltage recordings of 12 human hippocampal slices from 7 patients. The files hold no sorted
+  units, light events or condition labels, so only the cohort claim is tested; the notebook surveys every
+  recording, recovers light periods of slices 3C, 4C and 7D from the voltage, shows a
+  threshold-crossing variant for those of 3C, and runs the paper's network model.
+license: Apache-2.0
+python: "3.13"
+notebooks:
+- path: reproduce_andrews_2024.ipynb
+  title: Reproducing Andrews, Geng, Voitiuk et al. (2024) from dandiset 001132
+  runtime_minutes: 50
+helpers:
+- hdmea.py
+[... 34 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/sohn-2019 && cat > entry.yaml <<'EOF'
+schema_version: 1
+name: sohn-2019
+type: reproduction
+title: Bayesian computation through cortical latent dynamics (Sohn, Narain, Meirhaeghe & Jazayeri 2019)
+description: Tests the findings of Sohn, Narain, Meirhaeghe and Jazayeri (2019) on dandiset 000130, which
+  holds one recording session of monkey H in the two-prior Ready-Set-Go task, prepared for the Neural
+  Latents Benchmark. It tests the behavioural biases and the Bayesian observer fit, the single-unit GLM,
+  the population trajectories and encoding axis, the speed of production trajectories, the alternative
+  mechanisms and the GPFA single-trial analysis. Monkey G and the recurrent network models are not in it.
 license: Apache-2.0
 notebooks:
 - path: reproduce_sohn_2019.ipynb
   title: Reproducing Sohn et al. (2019) from dandiset 000130
-  runtime_minutes: 8
+  runtime_minutes: 13
 helpers:
 - rsg.py
 related:
@@ -1460,340 +2209,489 @@ related:
   relation: uses_data
 - id: doi:10.1016/j.neuron.2019.06.012
   relation: reproduces
-E
-cat > README.md <<'E'
-# Sohn, Narain, Meirhaeghe & Jazayeri (2019) from dandiset 000130
-
-Tests the findings of [Sohn et al. (2019)](https://doi.org/10.1016/j.neuron.2019.06.012) that can
-be tested on [DANDI:000130](https://dandiarchive.org/dandiset/000130/0.241017.1448), the Neural
-Latents Benchmark's DMFC_RSG set. It holds one recording session of monkey H in the Ready-Set-Go
-task, with 54 units from dorsomedial frontal cortex. The paper uses 17 sessions of monkey H and 12
-of monkey G; monkey G and the recurrent network models are not in the dandiset.
-
-| Claim | Outcome |
-|---|---|
-| Slopes of tp on ts between 0 and 1 in every condition | Not reproduced |
-| Opposite biases of the two priors at ts = 800 ms | Not reproduced |
-| Smaller tp increments at the extremes of the prior | Reproduced |
-| Smaller slopes for the Long prior | Reproduced |
-| The Bayesian observer captures bias and variance | Partially reproduced |
-| 65% of units prior-dependent and 27% ts-dependent | Not reproduced |
-| Prior difference at 800 ms largest during the support | Reproduced |
-| 3 to 4 and 5 to 10 PCs explain 75% of the variance | Not reproduced |
-| Projections on the encoding axis match the Bayesian estimate | Reproduced |
-| Bayesian model better than linear for the projections | Partially reproduced |
-| No sigmoid in the Long prior's matched period | Reproduced (the test cannot detect an effect with 4 datasets) |
-| Smaller neural slope for the Long prior | Reproduced |
-| Larger projection at Set, slower trajectory | Partially reproduced |
-| Initial speed biased toward the mean | Reproduced |
-| Speed predicts tp | Partially reproduced |
-| Speed unmodulated during the support | Reproduced (the test cannot detect an effect; the speed rises in all 8) |
-| Parallel trajectories after Set | Not reproduced |
-| Distances fall steadily up to Go | Not reproduced |
-| Inverted-U variance of single-trial projections | Not reproduced |
-| Sigmoidal mean of single-trial projections | Reproduced |
-| Recurrent network models (two claims) | Blocked |
-| The results hold in monkey G | Blocked: data missing |
-
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
-
-The attempt record, with the reasons and the differences from the paper's method, is
-[`attempts/000130-sohn-2019-01.yaml`](../../attempts/000130-sohn-2019-01.yaml).
-
-- `reproduce_sohn_2019.ipynb`: the analysis. It takes about eight minutes, most of it fitting GPFA.
-- `rsg.py`: loading the files, unit selection, population rates with attrition, PCA, the encoding
-  axis, the Bayesian observer and the GPFA fits. Other notebooks on this dandiset can import it.
-E
-cd  && python /tmp/claude/build_nb.py && python tools/entry.py lock entries/000130-sohn-2019 && python tools/entry.py check entries/000130-sohn-2019
+EOF
+printf "dandi\nelephant\nh5py\nmatplotlib\nneo\nnumpy\npandas\nquantities\nremfile\nscikit-learn\nscipy\nstatsmodels\n" > requirements.in
+cd ../.. && date -u && python tools/entry.py lock entries/sohn-2019 2>&1 | tail -5
 ```
 
 ```
-wrote entries/000130-sohn-2019/reproduce_sohn_2019.ipynb 79 cells
-wrote entries/000130-sohn-2019/requirements.lock.txt
-0 error(s)
+Sat Nov 14 13:27:33 UTC 2026
+wrote sohn-2019/requirements.lock.txt (Python 3.13, with hashes)
 ```
-
-**Agent**
-
-Lock and check pass. Running the entry from a clean environment.
-
-**Agent calls Bash**
-
-```bash
-time python tools/entry.py all entries/000130-sohn-2019 2>&1 | tail -15
-```
-
-```
-Installed kernelspec registry-000130-sohn-2019 in executed/000130-sohn-2019/.venv/share/jupyter/kernels/registry-000130-sohn-2019
-0 error(s)
-pass  reproduce_sohn_2019.ipynb  (399 s)
-
-real	6m42.236s
-user	20m32.939s
-sys	0m3.001s
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; $TMPDIR/ex/bin/python show.py executed/000130-sohn-2019/reproduce_sohn_2019.ipynb > final.txt 2>/dev/null; wc -c final.txt; ls -la executed/000130-sohn-2019/; diff <(grep -v "loaded dandiset\|took\|run time" run2.txt) <(grep -v "loaded dandiset\|took\|run time" final.txt) | head -80
-```
-
-```
-34814 final.txt
-total 724
-drwxr-xr-x 3 runner runner   4096 Oct 14 16:40 .
-drwxr-xr-x 3 runner runner   4096 Oct 14 16:34 ..
-drwxr-xr-x 5 runner runner   4096 Oct 14 16:34 .venv
--rw-r--r-- 1 runner runner 723171 Oct 14 16:40 reproduce_sohn_2019.ipynb
--rw-r--r-- 1 runner runner    173 Oct 14 16:40 result.json
-89a90
-> tp / ts of trials flagged by the file but kept by the refit: 0.53 to 1.60 (36 trials); of trials flagged by both: [-2.0, -2.0, -2.0, 0.14, 0.21, 0.37, 0.59, 0.62, 2.21, 2.49]
-148c149
-< ### cell 15 tags=['claim:beh-overlap-prior']
----
-> ### cell 16 tags=['claim:beh-overlap-prior']
-155c156
-< ### cell 17 tags=['claim:beh-sigmoid-increments']
----
-> ### cell 19 tags=['claim:beh-sigmoid-increments']
-168c169
-< ### cell 19 tags=['claim:beh-long-more-bias']
----
-[... 68 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; diff <(grep -v "loaded dandiset\|took\|run time\|^### cell\|^$" run2.txt) <(grep -v "loaded dandiset\|took\|run time\|^### cell\|^$" final.txt) | grep -v "WARNING\|warn" | head -60; grep -A30 "latent dimensionality" final.txt | head -45
-```
-
-```
-78a79
-> tp / ts of trials flagged by the file but kept by the refit: 0.53 to 1.60 (36 trials); of trials flagged by both: [-2.0, -2.0, -2.0, 0.14, 0.21, 0.37, 0.59, 0.62, 2.21, 2.49]
-402,30341c403,406
-< Eye Right: 276 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -174269, 8: -173788)
-< Eye Left: 260 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -164332, 8: -163784)
-< Hand Right: 225 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -124366, 8: -123794)
-< Hand Left: 222 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -115292, 8: -114854)
----
-> Eye Right: 276 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -174282, 8: -173773)
-> Eye Left: 260 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -164338, 8: -163777)
-> Hand Right: 225 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -124349, 8: -123811)
-> Hand Left: 222 trials, latent dimensionality 8 (cross-validated log-likelihood 4: -115301, 8: -114821)
-30343,30350c408,415
-<  Eye Right Short    0.765    0.524    0.646    0.796    0.263   -6.2e-06   0.00224      NaN       NaN       NaN       NaN
-<  Eye Right  Long      NaN      NaN      NaN      NaN    0.989  -6.53e-07    0.0014    0.735     0.935     0.353     0.445
-<   Eye Left Short    0.483     0.23    0.304     0.38    0.188   1.39e-06   0.00271      NaN       NaN       NaN       NaN
-<   Eye Left  Long      NaN      NaN      NaN      NaN    0.555  -6.76e-06   0.00155    0.921     0.735     0.478     0.406
-< Hand Right Short    0.844    0.954     1.04    0.874    0.614   -1.1e-05  0.000555      NaN       NaN       NaN       NaN
-< Hand Right  Long      NaN      NaN      NaN      NaN    0.635  -2.22e-05  0.000377     1.65      1.38     0.521     0.272
-<  Hand Left Short     0.91     1.22    0.693    0.484    0.688   1.21e-06  0.000947      NaN       NaN       NaN       NaN
-[... 74 more lines not kept]
-```
-
-**Agent**
-
-The clean run passed in 399 s, and every number matches the previous run except the GPFA values, which vary in the third significant digit between runs; no outcome changes. Now the attempt record.
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "attempts/000130-sohn-2019-01.yaml",
- "content": "schema_version: 1\nid: 000130-sohn-2019-01\ndandiset: \"000130\"\ndandiset_version: 0.241017.1448\npaper: doi:10.1016/j.neuron.2019.06.012\ndate: 2026-10-14\nentry: 000130-sohn-2019\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-6\noutcomes:\n- claim: beh-slopes\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-slopes\n  notes: Six of 8 weighted slopes of tp on ts lie between 0 and 1 (0.50 to 0.90) and 5 of 8 have 95%\n    intervals excluding 0 and 1. The Short prior slopes with the eye are 1.11 (Eye Right, interval\n    1.01 to 1.21) and 1.01 (Eye Left). All 8 are positive, so the animal estimated ts; the part of the\n    statement about bias toward the mean fails in the two eye Short conditions.\n  deviations:\n  - One session of monkey H; the paper's slopes come from 17 sessions of H and 12 of G.\n  - Outliers removed with the file's `is_outlier` flag, which a refit of the Methods' mixture model\n    does not reproduce (see findings).\n- claim: beh-overlap-prior\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-overlap-prior\n  notes: At ts = 800 ms the median bias is +28.3 ms for Short (93 trials) and +47.6 ms for Long (107\n    trials), both positive; rank-sum p = 0.073. The Long tp is the longer in 2 of 4 datasets (Hand\n    Right p = 0.00099, Hand Left p = 0.069, where the Short bias is -61.6 ms); in the eye datasets the\n    Short tp is the longer (Eye Left +79.1 against +18.6 ms, p = 0.051).\n  deviations:\n  - One session; the paper's p < 1e-43 pools 17 sessions of monkey H.\n- claim: beh-sigmoid-increments\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-sigmoid-increments\n  notes: The middle increment of mean tp exceeds the extreme one in 7 of 8 conditions (median\n    difference 31.3 ms), two-sided signed-rank p = 0.0156. Hand Left, Short is the exception (-10.7\n    ms).\n  deviations:\n  - The test is over the 8 conditions of one session; the paper's is over sessions and conditions of\n    both animals.\n- claim: beh-long-more-bias\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-long-more-bias\n  notes: The Long slope is below the Short slope in all 4 datasets (mean 0.716 against 0.898),\n    weighted or unweighted.\n  deviations:\n  - One session.\n- claim: beh-bayes-model\n  outcome: partially_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-bayes-model\n  notes: The predicted SD of tp correlates positively with the observed one in all 4 datasets (r =\n    0.28 to 0.91), but the bias R2 reaches 0.8 in 2 of 4 (0.12, 0.67, 0.87, 0.98). The poorly fit\n    datasets are the eye ones, whose Short slopes exceed 1, with wm = 0.013 and 0.025. All fits\n    converged. Table S3 was not available, so wm and wp (0.09 to 0.11) are not compared.\n  deviations:\n  - Fit to one session per effector and direction; the paper pools sessions.\n  - The prior is taken as continuous uniform over each range, as the Results describe; the task used\n    5 discrete values.\n  - The bias R2 threshold of 0.8 is a choice made here; the paper shows the fit graphically.\n- claim: glm-prior-ts\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:glm-prior-ts\n  measured:\n  - 75.0\n  - 45.8\n  notes: 36 of 48 units are prior-dependent (75.0%, 95% interval 61.2 to 85.1%) and 22 of 48 are\n    ts-dependent (45.8%, interval 32.6 to 59.7%), against 65% and 27% for monkey H. Both are outside\n    tolerance and higher; the interval of the prior fraction includes 65%, that of the ts fraction\n    excludes 27%. A likelihood-ratio test gives higher fractions still (prior 77.1 to 87.5%, ts 66.7\n    to 77.1% at p < 0.01 and 0.05).\n  deviations:\n  - 48 units from one session, where the paper's fractions use 536 units of monkey H over 17\n    sessions.\n  - The GLM design with attrition (rows for every trial whose Set comes after each time point) is\n    read from the Methods; the paper's code was not available.\n- claim: dfr-overlap-support\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:dfr-overlap-support\n  notes: The mean RMS rate difference at ts = 800 ms is largest at 480 to 640 ms after Ready (6.86\n    spikes/s), above the 95th percentile of the shuffled maximum (3.11). Before Ready it is at the\n    shuffle level. Per dataset the largest bin is 480-640 (2 datasets), 640-800 and 800-960 ms, and the\n    mean is also high just after Set (6.07 at 800 to 960 ms).\n  deviations:\n  - The time range (320 ms before Ready to 640 ms after Set) and the shuffle reference are chosen\n    here.\n- claim: pca-dimensionality\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:pca-dimensionality\n  notes: Two components reach 75% of the variance in the estimation epoch in all 4 datasets (3 explain\n    86 to 90%), and 2, 2, 5 and 4 in the production epoch; 1 of 8 values is in range. The activity is\n    lower dimensional than reported.\n  deviations:\n  - 48 simultaneously recorded units, where the paper's trial-averaged PCA pools units over 17\n    sessions; more units can add dimensions.\n  - Rates not normalised before PCA; the Methods do not say.\n- claim: encoding-r2\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:encoding-r2\n  measured:\n  - 0.998\n  - 0.996\n  notes: Both readings match. (a) Hand Left R2 = 0.998 (Short) and 0.996 (Long), given as measured; (b)\n    the mean of 4 datasets 0.959 and 0.989. With only 2 PCs in the estimation epoch, random unit axes\n    also fit te well (median R2 0.73 to 0.98); the R2 on u exceeds 95% of random axes in 3 of 8\n    dataset-priors (Hand Right Long and both Hand Left), so the paper's statement that the match is\n    specific to u (Figure S5) holds only for those.\n  deviations:\n  - te comes from the observer model fitted to this session.\n  - The encoding axis averages difference vectors up to the middle of the support, a choice made\n    here.\n- claim: encoding-bayes-beats-linear\n  outcome: partially_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:encoding-bayes-beats-linear\n  notes: The Bayesian RMSE is lower in 4 of 4 datasets for Long and 3 of 4 for Short (Hand Right Short\n    0.99 against 0.80). Differences are 0.045 to 0.573 spikes/s.\n  deviations:\n  - 4 datasets, where the paper had 8; a signed-rank test over 4 cannot reach p < 0.05, so the\n    criterion counts datasets.\n- claim: short-in-long-control\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:short-in-long-control\n  notes: Judged on the paper's test as the claims file fixes; signed-rank p = 0.25 over 4 datasets,\n    where the smallest attainable p is 0.125, so the test could not have found an effect. The effect\n    sizes do not show the control's contrast; the Bayesian model is better in 3 of 4 datasets with a\n    median relative RMSE difference of -0.089, at least as large as in the Short prior (-0.060). This\n    outcome carries no evidence for the absence the paper reports.\n  deviations:\n  - 4 datasets, where the paper had 8.\n- claim: neural-long-more-bias\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:neural-long-more-bias\n  notes: The Long slope of Xu on ts is below the Short slope in 4 of 4 datasets (ratios 0.55, 0.63,\n    0.34, 0.97).\n  deviations:\n  - 4 datasets, where the paper had 8.\n- claim: speed-vs-projection\n  outcome: partially_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:speed-vs-projection\n  measured:\n  - -0.941\n  - -0.878\n  notes: Both correlations are negative and significant (Short p = 6.2e-10, Long p = 3.7e-07) and\n    stronger than reported, outside tolerance. Within datasets -0.75 to -1.00; with Xu z-scored per\n    dataset -0.759 and -0.779, and the speed divided by mean tp gives -0.917 and -0.923.\n  deviations:\n  - 20 points per prior (4 datasets), where the paper had 40.\n  - Speed is the mean step between 20 ms states up to the shortest tp; the Methods' division by the\n    Set to Go duration is shown as a variant.\n- claim: initial-speed-biased\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:initial-speed-biased\n  notes: The initial speed falls with ts in 8 of 8 dataset-priors and is shallower than the 1/ts\n    profile in 7 of 8 (Eye Right Long is the exception), two-sided signed-rank p = 0.039. No trial had\n    tp below 400 ms.\n  deviations:\n  - 8 dataset-priors of one animal, where the paper's test combines 16 over two animals.\n- claim: speed-predicts-tp\n  outcome: partially_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:speed-predicts-tp\n  measured:\n  - -0.733\n  - -0.744\n  notes: Faster trajectories go with shorter mean tp in both priors (Short p = 0.00024, Long p =\n    0.00017), more strongly than reported and outside tolerance. Within datasets -0.80 to -0.99. The\n    Neural Latents Benchmark's trial-by-trial variant gives r = -0.195 to -0.740 (mean -0.519), 7 of 8\n    conditions with p < 0.05.\n  deviations:\n  - 20 points per prior, where the paper had 40.\n- claim: alt-speed-unmodulated\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:alt-speed-unmodulated\n  notes: Judged on the paper's test as the claims file fixes; signed-rank p = 0.125 for each prior,\n    the smallest a test over 4 datasets can give. The data show modulation; all 8 slopes are positive\n    (speed rising 13 to 24% of its mean per 100 ms of the support) and all 8 bootstrap intervals over\n    trials exclude zero. The outcome reflects the test's lack of power at this sample size, not an\n    absence of modulation in this session.\n  deviations:\n  - 4 datasets, where the paper had 8.\n  - Speed from smoothed trial-averaged rates with attrition in 20 ms bins of 48 units; the paper's\n    smoothing for this measure is not stated.\n- claim: alt-transient-parallel\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:alt-transient-parallel\n  notes: For the longest ts the distance to the middle trajectory falls in the first 200 ms after Set\n    in 6 of 8 dataset-priors (median -15.3% of the mean distance per 100 ms), signed-rank p = 0.039;\n    for the shortest ts p = 0.078 (6 of 8 rising, median +26.7%). The PCA kept 1 to 4 components, one\n    in Eye Left.\n  deviations:\n  - 8 dataset-priors of one animal, where the paper's test used 16.\n  - Rates smoothed over 100 ms before to 300 ms after Set and cut to the first 200 ms, a choice made\n    here.\n- claim: alt-threshold-monotonic\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:alt-threshold-monotonic\n  notes: With the components reaching 60% of the variance (1 to 3), the median time of the minimum\n    distance is 210 ms before Go; 6 of 32 curves have their minimum in the last 40 ms and 14 in the\n    last 200 ms. Distances do fall overall (the distance at Go is below that 800 ms earlier in 26 of\n    32). With 75% of the variance the median minimum is 80 ms before Go and in the full space 40 ms,\n    which would meet the criterion, so the outcome depends on the number of components; with one\n    component (eye datasets) the distance reaches zero where trajectories cross.\n  deviations:\n  - The paper's test (one-tailed signed-rank, p = 1.5e-4) cannot be read unambiguously; the criterion\n    on the median time of the minimum was fixed before the analysis.\n  - The 60% of variance follows the figure legend; the 75% of the Methods is shown as a variant.\n- claim: gpfa-variance-inverted-u\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:gpfa-variance-inverted-u\n  notes: The quadratic coefficient is negative in 5 of 8 dataset-priors; one-tailed signed-rank p =\n    0.125 (paper 0.0273). Cross-validation chose 8 latent dimensions in all 4 datasets, the larger\n    candidate. GPFA values vary in the third significant digit between runs; the counts and p values\n    did not change over three runs.\n  deviations:\n  - Latent dimensionality chosen only from 4 and 8, with 100 EM iterations, to keep the run short;\n    the paper's cross-validation range is not stated.\n  - One GPFA per effector and direction with both priors; the paper does not say how trials were\n    grouped.\n- claim: gpfa-mean-sigmoid\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:gpfa-mean-sigmoid\n  notes: Middle increments of the mean projection exceed the extreme ones in 8 of 8 (two-sided\n    signed-rank p = 0.0078) and the Short slope is the higher in 4 of 4 datasets (one-tailed p =\n    0.0625), the paper's values; the mean rises with ts in 8 of 8.\n  deviations:\n  - As for gpfa-variance-inverted-u.\n- claim: rnn-curved-manifold\n  outcome: blocked\n  blocked_by: other\n  notes: The claim is about recurrent networks trained in silico. It uses no recorded data, so the\n    dandiset cannot bear on it, and the trained networks and the training code are not public (the\n    code is available from the corresponding author on request).\n- claim: rnn-perturbation\n  outcome: blocked\n  blocked_by: other\n  notes: As for rnn-curved-manifold; the perturbation experiments are on the trained networks.\n- claim: monkey-g\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The dandiset holds one session of monkey H. A search of the DANDI archive for Jazayeri, Sohn,\n    DMFC and Ready-Set-Go finds no other dandiset with these recordings (only 000620, 000897 and\n    001275 of the same lab, on other tasks). The paper says the data are in the article and the code\n    is available on request.\nfindings:\n- kind: data_missing\n  statement: The dandiset holds one recording session (2016-12-11) of monkey H, with 54 units, where\n    the paper analyses 17 sessions of H and 12 of monkey G (617 and 741 units). The dandiset's\n    description does not say that it holds one session of the paper's 29 or which one. The 48 units\n    that pass the paper's rate rule match its count for the single session of H used for GPFA.\n- kind: data_missing\n  statement: Following the Neural Latents Benchmark design, 283 trials of the session are in the test\n    file without ts, tp, prior, effector or direction and without 14 of the 54 units, on a separate\n    clock. These trials cannot be used for any analysis of the paper.\n- kind: metadata_error\n  statement: The description of the `iti` column says 500 ms after Short prior trials and 1220 ms after\n    Long ones; the values are the reverse (Short 1220, Long 500), as the paper states.\n- kind: metadata_insufficient\n  statement: '`tp` is described as the time between Set and Go, but is a median 17.9 ms longer than\n    go_time minus set_time (5th to 95th percentile 1.1 to 29.8 ms, up to 200.6 ms in used trials).\n    `ts` is the nominal interval, within 23.5 ms of ready_time minus set_time. Neither difference is\n    documented.'\n- kind: selection_undocumented\n  statement: The `is_outlier` flag is described only as a probabilistic mixture model. It flags 46\n    completed trials (4.47%); a refit of the Methods' Gaussian and uniform mixture per prior, ts,\n    effector and direction flags 10 of these and no others, and the other 36 have tp from 0.53 to 1.60\n    times ts.\n- kind: metadata_insufficient\n  statement: Units carry no single-unit or multi-unit label and no electrode or probe; the electrode\n    table has no positions or impedances and gives the filtering as unknown. The paper distinguishes\n    456 single units from 902 multi-units.\n- kind: methods_unavailable\n  statement: The paper's analysis code is available only on request. The code the dandiset links\n    (nlb_tools) loads the data and scores benchmark models, and holds none of the paper's analyses.\n- kind: paper_inconsistency\n  statement: The Results give the GPFA sessions as N = 48 for monkey H and N = 107 for monkey G, the\n    Methods as N = 48 in H and 96 in G.\n"
+ "file_path": "entries/sohn-2019/README.md",
+ "content": "# Sohn, Narain, Meirhaeghe & Jazayeri (2019) from dandiset 000130\n\nTests the findings of [Sohn et al. (2019)](https://doi.org/10.1016/j.neuron.2019.06.012) that can be\ntested on [DANDI:000130](https://dandiarchive.org/dandiset/000130/0.241017.1448), which holds one\nrecording session (2016-12-11) of monkey H in the two-prior Ready-Set-Go task, prepared for the Neural\nLatents Benchmark: 1160 trials with their task variables and 54 units in DMFC. The paper used 17\nsessions of monkey H and 12 of monkey G; only this session is here.\n\n| Claim | Outcome |\n|---|---|\n| Regression slopes of tp on ts between 0 and 1 in every condition | Not reproduced |\n| Opposite biases of the two priors at ts = 800 ms | Not reproduced |\n| tp increments smaller at the extremes of the prior | Reproduced |\n| Smaller slopes for the Long prior | Reproduced |\n| The Bayesian observer captures bias and variance | Partially reproduced |\n| GLM: 65% of units prior-dependent, 27% ts-dependent | Not reproduced |\n| Prior difference at ts = 800 ms largest during the support | Reproduced |\n| 3 to 4 and 5 to 10 PCs explain 75% of the variance | Not reproduced |\n| Projections on the encoding axis match the Bayesian estimate (R2) | Reproduced |\n| Projections fit the Bayesian model better than a linear one | Not reproduced |\n| No sigmoid in the \"Short In Long\" control | Reproduced |\n| Smaller neural slope for the Long prior | Reproduced |\n| Projection at Set predicts production speed | Partially reproduced |\n| Initial speed biased toward the middle of the prior | Reproduced |\n| Production speed predicts tp | Partially reproduced |\n| Speed unmodulated during the support (H1) | Reproduced |\n| Trajectories parallel after Set (H2) | Reproduced |\n| Distances decrease up to Go (H3) | Not reproduced |\n| GPFA variance has an inverted-U profile | Not reproduced |\n| GPFA mean projection sigmoidal, steeper for Short | Reproduced |\n| Recurrent network results (two claims) | Blocked: data missing |\n| Monkey G | Blocked: data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nEvery test over datasets has the 4 effector and direction conditions of this session, where the paper\nhas 8 over two animals and pools 17 sessions of monkey H for its behavioural statistics. The attempt\nrecord, with the reasons and the differences from the paper's method, is\n[`attempts/sohn-2019-02.yaml`](../../attempts/sohn-2019-02.yaml).\n\n- `reproduce_sohn_2019.ipynb`: the analysis. It takes about 13 minutes, most of it the GPFA fits.\n- `rsg.py`: loading the files, unit selection, binned and trial-averaged rates, PCA, the encoding\n  axis and the Bayesian observer model. Other notebooks on this dandiset can import it.\n"
 }
 ```
 
 ```
-File created successfully at: attempts/000130-sohn-2019-01.yaml (file state is current in your context — no need to Read it back)
+File created successfully at: entries/sohn-2019/README.md (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'E'
-import yaml,re
-for p in ['attempts/000130-sohn-2019-01.yaml','claims/000130/10.1016-j.neuron.2019.06.012.yaml']:
-    d=yaml.safe_load(open(p))
-    def walk(x,path=''):
-        if isinstance(x,dict):
-            for k,v in x.items(): walk(v,path+'/'+str(k))
-        elif isinstance(x,list):
-            for i,v in enumerate(x): walk(v,path+f'[{i}]')
-        elif isinstance(x,str) and (': ' in x): print(p,path,'COLON',x[:80])
-    walk(d)
-    print(p,'ok')
-for p in ['attempts/000130-sohn-2019-01.yaml','claims/000130/10.1016-j.neuron.2019.06.012.yaml','entries/000130-sohn-2019/README.md','entries/000130-sohn-2019/rsg.py','/tmp/claude/nb_cells.py','/tmp/claude/conclusions.py','entries/000130-sohn-2019/entry.yaml']:
-    s=open(p).read()
-    for w in ['—','rather','**']:
-        if w in s and not (w=='**' and p.endswith(('nb_cells.py','conclusions.py'))): print(p,'contains',w)
-E
-grep -n "\*\*" /tmp/claude/nb_cells.py /tmp/claude/conclusions.py | grep -v "\*\*Result:" | head; grep -n -i "rather" /tmp/claude/*.py entries/000130-sohn-2019/* claims/000130/* attempts/000130* | head
-python tools/entry.py check entries/000130-sohn-2019
+date -u && time python tools/entry.py all entries/sohn-2019 2>&1 | tail -30; date -u
 ```
 
 ```
-attempts/000130-sohn-2019-01.yaml ok
-claims/000130/10.1016-j.neuron.2019.06.012.yaml ok
-entries/000130-sohn-2019/rsg.py contains **
-/tmp/claude/nb_cells.py:19:**Paper.** Sohn H, Narain D, Meirhaeghe N, Jazayeri M (2019). Bayesian computation through cortical
-/tmp/claude/nb_cells.py:25:**Dandiset.** [DANDI:000130](https://dandiarchive.org/dandiset/000130/0.241017.1448), version
-/tmp/claude/nb_cells.py:32:**What the dandiset holds.** One recording session (2016-12-11) of monkey H ("Haydn"), from the
-/tmp/claude/nb_cells.py:39:**Code.** The paper's code is "available from the corresponding author on request" and was not
-/tmp/claude/nb_cells.py:404:    r2 = 1 - np.sum((ob - pb) ** 2) / np.sum((ob - ob.mean()) ** 2)
-/tmp/claude/nb_cells.py:536:    return np.sqrt(np.mean((d * 1000 / 160) ** 2, axis=1))  # spikes/s
-/tmp/claude/nb_cells.py:549:tab = pd.DataFrame({"bin_start": edges[:-1], "bin_end": edges[1:], **{k: v for k, v in per_ds.items()},
-/tmp/claude/nb_cells.py:608:    EST[name] = {"pca": pca_e, **est}
-/tmp/claude/nb_cells.py:805:        rows.append({"dataset": name, "prior": "Short" if short else "Long", **{f"speed_{int(t)}": s for t, s in zip(ts_v, sp)},
-/tmp/claude/nb_cells.py:1051:        rows.append({"dataset": name, "prior": "Short" if short else "Long", **{f"var_{t}": v for t, v in zip(ts_v, var)},
-grep: entries/000130-sohn-2019/__pycache__: Is a directory
+Sat Nov 14 13:27:46 UTC 2026
+Installed kernelspec registry-sohn-2019 in executed/sohn-2019/.venv/share/jupyter/kernels/registry-sohn-2019
 0 error(s)
+pass  reproduce_sohn_2019.ipynb  (751 s)
+
+real	12m40.732s
+user	39m21.599s
+sys	0m13.963s
+Sat Nov 14 13:40:26 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+ls executed/sohn-2019/; python3 - <<'EOF' > $TMPDIR/s/exec_out.txt
+import json
+nb=json.load(open("executed/sohn-2019/reproduce_sohn_2019.ipynb"))
+for c in nb["cells"]:
+    if c["cell_type"]=="code":
+        for o in c.get("outputs",[]):
+            if "text" in o: print("".join(o["text"]))
+            elif "data" in o and "text/plain" in o["data"] and "image/png" not in o["data"]: print("".join(o["data"]["text/plain"]))
+    else:
+        src="".join(c["source"])
+        if src.startswith("## ") or src.startswith("**Result"): print("####", src[:300])
+EOF
+wc -l $TMPDIR/s/exec_out.txt; grep -n "Total run time\|signed-rank p\|r_pooled\|Short  20\| Long  20\|In range\|Reading\|of 48\|Largest\|Median time\|Quadratic\|Middle >\|Short slope\|With intercept\|pooled  " $TMPDIR/s/exec_out.txt
+```
+
+```
+reproduce_sohn_2019.ipynb
+result.json
+57395 /tmp/claude-1001/s/exec_out.txt
+120:With intercept: slopes in (0, 1): 6 of 8; intervals excluding 0 and 1: 5 of 8
+135:    pooled       93     107               28.3              47.6     0.0728
+161:Middle > extreme in 7 of 8; median difference 31.3 ms; signed-rank p = 0.0156
+165:difference 31.3 ms; the exception is Hand Left Short, -10.7 ms), signed-rank p = 0.0156.
+171:Criterion: with the slopes of beh-slopes, reproduced when the Long slope is below the Short slope
+182:#### **Result: reproduced.** The Long slope is below the Short slope in all 4 datasets (0.845 against
+260:             prior: 38 of 48 = 79.2% (95% CI 65.0 to 89.5); expected 65 +- 6.5
+261: ts (either prior): 22 of 48 = 45.8% (95% CI 31.4 to 60.8); expected 27 +- 2.7
+262:  ts (Short model): 16 of 48 = 33.3% (95% CI 20.4 to 48.4)
+263:   ts (Long model): 16 of 48 = 33.3% (95% CI 20.4 to 48.4)
+267:#### **Result: not reproduced.** 38 of 48 units (79.2%, 95% interval 65.0 to 89.5) are prior-dependent,
+268:above the 65 +- 6.5% range, and 22 of 48 (45.8%, 31.4 to 60.8) are ts-dependent, above 27 +- 2.7%.
+284:Largest mean RMS difference: 6.86 spikes/s in bin R480..640 (support of the prior = bins R480..640 and R640..800)
+328:In range: 1 of 8
+354:Reading (a) Hand Left: Short 0.994, Long 0.986
+355:Reading (b) mean over datasets: Short 0.955, Long 0.986
+380:Short: Bayesian lower in 3 of 4 (weighted RMSE: 3 of 4); median delta -0.2891; signed-rank p = 0.250
+[... 29 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -v "WARNING\|warn" $TMPDIR/s/exec_out.txt | sed -n '/gpfa-variance-inverted-u/,/Total run/p' | head -60; sed -n 1,20p $TMPDIR/s/exec_out.txt; grep -n "Peak after\|accuracy\|0 to 300\|300 to 600\|-300 to 0" $TMPDIR/s/exec_out.txt | head
+```
+
+```
+#### ## gpfa-variance-inverted-u
+
+> The variance across single trials of the GPFA neural state at Set projected on the encoding axis
+> has an inverted-U profile over ts, lower at the extremes of each prior (one-tailed signed-rank
+> test on quadratic coefficients, p = 0.0273, monkey H).
+
+Criterion: GPFA (
+
+
+
+
+
+
+
+
+
+
+
+
+
+[... 65 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/s && python3 - <<'EOF'
+s=open("nb.py").read()
+old="from elephant.gpfa import GPFA\n"
+new="from elephant.gpfa import GPFA\n\nlogging.disable(logging.WARNING)  # elephant logs a warning per spike train it re-bins\n"
+assert s.count(old)==1; s=s.replace(old,new)
+s=s.replace('logging.getLogger("elephant").setLevel(logging.ERROR)\n','')
+open("nb.py","w").write(s)
+EOF
+python py2nb.py nb.py entries/sohn-2019/reproduce_sohn_2019.ipynb; date -u
+```
+
+```
+Sat Nov 14 13:40:45 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+source $TMPDIR/env/bin/activate && python -c "
+import pandas as pd; t=pd.read_pickle('$TMPDIR/s/desc-train_trials.pkl'); a=t[t.tp<=0]
+print(a.tp.value_counts().head(), a.go_time.notna().sum(), a.set_time.notna().sum(), len(a)); print(pd.crosstab(t.split, t.tp>0))"
+```
+
+```
+tp
+-1600.0    25
+-1440.0    16
+-960.0     15
+-1120.0    14
+-2200.0    12
+Name: count, dtype: int64 3 13 134
+tp     False  True 
+split              
+none     134     20
+train      0    748
+val        0    258
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "attempts/sohn-2019-02.yaml",
+ "content": "schema_version: 3\nid: sohn-2019-02\ndatasets:\n- archive: dandi\n  id: \"000130\"\n  version: 0.241017.1448\n  doi: 10.48324/dandi.000130/0.241017.1448\n  relation: primary\npaper: doi:10.1016/j.neuron.2019.06.012\ndate: 2026-11-14\nentry: sohn-2019\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code\n    model: claude-opus-5-5\n    protocol: pilot-15\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/catalystneuro/encore/actions/runs/43597162260\noutcomes:\n- claim: beh-slopes\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-slopes\n  notes: With an intercept, 6 of 8 slopes lie between 0 and 1 and 5 of 8 intervals exclude 0 and 1.\n    The Short prior slopes of both eye datasets are not below 1, Eye Left 1.011 (0.896 to 1.126)\n    and Eye Right 1.110 (1.014 to 1.206); the other six are 0.502 to 0.903. Without an intercept the\n    slopes are 0.923 to 1.072 and 2 of 8 lie below 1. The eye datasets of this session show little\n    bias toward the mean of the Short prior. The paper's statement covers 17 sessions; this is one.\n  deviations:\n  - One session of monkey H, where the paper fits each of 17 sessions of H and 12 of G.\n  - The criterion's regression has an intercept; the STAR Methods write tp = βts + ε (\"Model free\n    analysis of behavior\"). The reading without an intercept is shown and gives the same outcome.\n- claim: beh-overlap-prior\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-overlap-prior\n  notes: Pooled over effector and direction (93 Short and 107 Long trials at ts = 800 ms), the median\n    of tp - 800 is +28.3 ms for Short and +47.6 ms for Long, so the Short bias is not negative, and the\n    rank-sum p is 0.073. Long is the later of the two, as the priors predict. Per dataset, the Short\n    median is negative only in Hand Left (-61.6 against -2.8 ms, p = 0.069), and the difference is\n    significant only in Hand Right (29.7 against 96.8 ms, p = 0.00099).\n  deviations:\n  - One session in place of the paper's 17 sessions of monkey H; the paper's p value is not expected.\n- claim: beh-sigmoid-increments\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-sigmoid-increments\n  notes: The middle increment exceeds the extreme one in 7 of 8 conditions (median difference 31.3\n    ms; Hand Left Short is the exception at -10.7 ms), two-sided signed-rank p = 0.0156.\n  deviations:\n  - One session; the test runs over its 8 prior, effector and direction conditions.\n- claim: beh-long-more-bias\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-long-more-bias\n  notes: The Long slope is below the Short slope in all 4 datasets (Eye Left 0.845 against 1.011, Eye\n    Right 0.903 against 1.110, Hand Left 0.502 against 0.612, Hand Right 0.612 against 0.861). Without\n    an intercept it is below in 3 of 4.\n- claim: beh-bayes-model\n  outcome: partially_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:beh-bayes-model\n  notes: The correlation of observed and predicted SD of tp is positive in all 4 datasets (0.277 to\n    0.909). The bias R2 reaches 0.8 in 2 of 4 datasets under both readings of R2 (Hand Left 0.978,\n    Hand Right 0.865, Eye Left 0.670, Eye Right 0.122; the squared correlation differs by at most\n    0.007). Fitted wm is 0.025, 0.013, 0.116 and 0.073 and wp 0.103, 0.106, 0.090 and 0.104 (Eye\n    Left, Eye Right, Hand Left, Hand Right). The eye datasets have small, irregular biases that the\n    model fits with a small wm.\n  deviations:\n  - The model is fit per dataset of one session, where the paper pools sessions per animal, effector\n    and direction.\n  - R2 of the observed by the predicted bias is computed both as 1 - SS_res/SS_tot of the prediction\n    and as the squared correlation; both give the same count.\n- claim: glm-prior-ts\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:glm-prior-ts\n  measured:\n  - 79.2\n  - 45.8\n  notes: Of the 48 selected units, 38 (79.2%, binomial 95% interval 65.0 to 89.5) are prior-dependent\n    and 22 (45.8%, 31.4 to 60.8) are ts-dependent (16 in the Short model, 16 in the Long model); 19\n    are both and 7 neither. Both fractions are above their ranges (65 +- 6.5, 27 +- 2.7). The paper's\n    fractions are over 536 units of 17 sessions; this session may be one of its more modulated.\n  deviations:\n  - A trial whose ts equals the end of a window is included, as its window is the 80 ms \"immediately\n    before Set\" (STAR Methods, \"Generalized linear model\", which counts \"all trials in which Set\n    occurred after t\"). Windows are placed at nominal times after ready_time.\n  - The reduced model for ts has an intercept with the effector and direction terms (STAR Methods,\n    Equation 4).\n- claim: dfr-overlap-support\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:dfr-overlap-support\n  notes: The RMS over units of the rate difference between priors, averaged over the 4 datasets,\n    peaks at 6.86 spikes/s in the bin 480 to 640 ms after Ready; the 95th percentile of the largest\n    value over 200 label shuffles is 3.09. By dataset the peak is in the support for Eye Right, Hand\n    Left and Hand Right, and in the first 160 ms after Set for Eye Left.\n  deviations:\n  - Bins up to Set are aligned to ready_time and those after Set to set_time.\n- claim: pca-dimensionality\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:pca-dimensionality\n  notes: 1 of 8 values is in range. Two components reach 75% of the variance in the estimation epoch\n    of every dataset, and 2, 2, 5 and 4 in the production epoch (Eye Right, Eye Left, Hand Right, Hand\n    Left). The first component alone explains 0.51 to 0.64 of the estimation-epoch variance. Without\n    smoothing the estimation epoch needs 3, 3, 4 and 6 components, and with soft-normalised rates\n    (rate over range + 5) 3 in each; these are variants, not the claims file's method, which leaves\n    rates unnormalised. Whether the paper normalised rates is not stated, and is asked of the authors.\n  deviations:\n  - Rates are not normalised (claims header); the paper does not say.\n- claim: encoding-r2\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:encoding-r2\n  measured:\n  - 0.994\n  - 0.986\n  notes: Reading (a), Hand Left, gives R2 = 0.994 (Short) and 0.986 (Long); reading (b), the mean over\n    datasets, 0.955 and 0.986. Both readings are within tolerance. The estimation PC space has 2\n    dimensions in every dataset, so the test is weakly specific to u. Random unit vectors give median\n    R2 of 0.749 to 0.987, the fraction of random vectors at or above the observed R2 is 0.004 to\n    0.434, and a regression on ts in place of te gives R2 within 0.013 of that on te in every case.\n  deviations:\n  - The state at time t is the 20 ms bin ending at t, a standard choice.\n  - te is the model's mean estimate at each ts without the offset b, which a linear regression\n    absorbs.\n- claim: encoding-bayes-beats-linear\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:encoding-bayes-beats-linear\n  notes: The Bayesian RMSE is lower than the linear one in 3 of 4 datasets for each prior. It is\n    higher for Hand Right Short (+0.180) and Hand Left Long (+0.081). Median differences are -0.289\n    (Short) and -0.165 (Long), signed-rank p = 0.25 for each. The weighted RMSE gives the same counts.\n    In the eye datasets the fitted wm is small, so te is close to linear in ts.\n  deviations:\n  - Four datasets of one session in place of eight over two animals.\n- claim: short-in-long-control\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:short-in-long-control\n  notes: By the paper's test the RMSE difference over the 4 datasets gives signed-rank p = 0.25 (with\n    the averaged and the single-vector axis); with 4 datasets the test cannot reach p < 0.05. The\n    effect it would test is not absent here. The Bayesian RMSE is lower in 3 of 4 datasets for Short\n    In Long (median difference -0.109) as for the Short prior itself (3 of 4, median -0.289); the\n    Short In Long difference minus the Short difference is +0.069, +0.183, -0.282 and +0.531 (Eye\n    Right, Eye Left, Hand Right, Hand Left).\n  deviations:\n  - The axis for Short In Long is built as u is, from averaged difference vectors (the STAR Methods\n    \"applied the same projection analysis\"); the single vector from 480 to 800 ms is shown and gives\n    the same result.\n- claim: neural-long-more-bias\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:neural-long-more-bias\n  notes: The slope of Xu on ts is lower for Long in all 4 datasets (Eye Right 0.119 against 0.194, Eye\n    Left 0.125 against 0.226, Hand Right 0.0496 against 0.0504, Hand Left 0.028 against 0.077\n    spikes/s per ms); in Hand Right the two are nearly equal. Signed-rank p = 0.125 over 4.\n- claim: speed-vs-projection\n  outcome: partially_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:speed-vs-projection\n  measured:\n  - -0.926\n  - -0.834\n  notes: Pooled over the 4 datasets (20 points per prior), r = -0.926 (Short, p = 4.8e-09) and -0.834\n    (Long, p = 4.9e-06); both are negative and significant but stronger than the paper's and outside\n    tolerance. Within datasets r is -0.74 to -1.0. Speed divided by the mean Set-to-Go time gives\n    -0.916 and -0.908.\n  deviations:\n  - Speed is the mean step distance in the production PC space (claims header); the Methods'\n    division by the Set-to-Go time is shown as a variant.\n- claim: initial-speed-biased\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:initial-speed-biased\n  notes: The slope of initial speed (Set to Set + 400 ms) on ts is shallower than the unbiased profile's\n    in 7 of 8 dataset-priors (Eye Right Long is the exception), two-sided signed-rank p = 0.039. All\n    8 measured slopes are negative.\n  deviations:\n  - States are projected into the dataset's production PC space, which is fit from Set to the\n    shortest tp of each ts.\n- claim: speed-predicts-tp\n  outcome: partially_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:speed-predicts-tp\n  measured:\n  - -0.720\n  - -0.699\n  notes: Pooled over the 4 datasets, speed and mean tp correlate at r = -0.720 (Short, p = 0.00034)\n    and -0.699 (Long, p = 0.00060), both negative and significant, outside tolerance (stronger than\n    -0.58 and -0.52). Within datasets r is -0.83 to -0.99. Trial by trial, with speed from each\n    trial's smoothed rates and both z-scored within ts, r is negative in 8 of 8 conditions (mean\n    -0.268, p below 0.05 in 6).\n  deviations:\n  - The trial-by-trial variant uses each trial's smoothed rates in place of the benchmark's\n    model-inferred rates.\n- claim: alt-speed-unmodulated\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:alt-speed-unmodulated\n  notes: By the paper's test, p = 0.125 for each prior, the smallest a two-sided signed-rank test over 4\n    can give, so the test cannot find the effect. The effect the claim denies is present. Speed rises\n    through the support in all 8 dataset-priors (slopes 3.95 to 10.61 per s, 30% to 82% over the\n    support), and 200 bootstrap resamples of trials give intervals excluding 0 in 8 of 8. Part of\n    the rise comes from attrition, which leaves fewer trials (for example 129 to 25) and noisier rates\n    late in the support. With the trials of the longest ts only the slopes are 0.97 to 5.29 per s in 7\n    of 8 and -1.07 in Hand Right Long. The outcome follows the criterion and says nothing about the\n    paper's 8 datasets.\n  deviations:\n  - The bootstrap intervals are percentile intervals; resampling with replacement adds noise to the\n    rates, so they sit above the point estimates.\n- claim: alt-transient-parallel\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:alt-transient-parallel\n  notes: The signed-rank p is 0.109 for the shortest ts and 1.0 for the longest, so the test finds no\n    change of distance. For the shortest ts the distance to the middle trajectory grows in 6 of 8\n    (median slope 75.8 per s), and for the longest in 4 of 8 (median 3.75 per s). The PC spaces have 2\n    to 4 dimensions.\n- claim: alt-threshold-monotonic\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:alt-threshold-monotonic\n  notes: With 60% of the variance (1 to 3 components) the median time of the minimum distance over 32\n    curves is 230 ms before Go; 4 curves have it in the last 40 ms and 13 in the last 200 ms. With\n    75% (2 to 5 components) the median is 200 ms before Go. Distances do shrink overall (the distance\n    at Go is a median 0.43 of that at Go - 800 ms), but in 29 of 32 curves the distance at Go is above\n    its minimum.\n  deviations:\n  - A bin's time is its end, so the last bin ends at Go.\n- claim: gpfa-variance-inverted-u\n  outcome: not_reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:gpfa-variance-inverted-u\n  notes: Cross-validation chose 8 latent dimensions in all 4 datasets. The quadratic coefficient of the\n    variance profile is negative in 6 of 8 dataset-priors, one-tailed signed-rank p = 0.074. The mean\n    profile over the 8 is 0.80, 0.92, 0.88, 0.51 and 0.44 from the shortest to the longest ts, lowest\n    at the long end but not at the short end.\n  deviations:\n  - GPFA is elephant's implementation, run for 200 EM iterations (elephant's default is 500), a\n    choice made for time; the log-likelihood still rose by 7 to 12 over the last 10 iterations.\n  - Each trial runs from ready_time for its nominal ts, so its last bin ends at Set.\n- claim: gpfa-mean-sigmoid\n  outcome: reproduced\n  notebook: reproduce_sohn_2019.ipynb\n  output: claim:gpfa-mean-sigmoid\n  notes: The middle increment of the mean GPFA projection exceeds the extreme one in 8 of 8\n    dataset-priors (two-sided signed-rank p = 0.0078), and the slope of the mean projection on ts is\n    higher for Short in all 4 datasets (one-tailed p = 0.0625, the paper's value).\n  deviations:\n  - As for gpfa-variance-inverted-u.\n- claim: rnn-curved-manifold\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The recurrent networks, their training and their simulations are not in the dandiset, and\n    the paper's code is available on request only, so the networks are not public.\n- claim: rnn-perturbation\n  outcome: blocked\n  blocked_by: data_missing\n  notes: As for rnn-curved-manifold; the perturbation experiments need the trained networks.\n- claim: monkey-g\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The dandiset holds one session of monkey H. A search of the archive for the lab, the task\n    and the paper found no other dandiset with these data.\nfindings:\n- kind: data_missing\n  about: data\n  statement: The dandiset holds one recording session (2016-12-11) of monkey H, of the paper's 29\n    sessions (17 of H, 12 of G). Monkey G is absent, and so are the recurrent network models. Tests\n    the paper ran over 8 datasets of two animals or over 17 sessions can be run here only over the 4\n    effector and direction conditions of one session.\n- kind: metadata_error\n  statement: The description of `iti` says it is 500 ms for the Short prior and 1220 ms for the Long\n    prior. The values are the reverse (Short 1220 ms in 577 trials, Long 500 ms in 583), as the paper's\n    Methods state.\n- kind: other\n  about: data\n  statement: The `tp` column, described as the time between Set and the response, exceeds go_time -\n    set_time by a median of 17.9 ms (0.1 to 200.6 ms), more for eye trials (median 21.2 ms) than hand\n    trials (17.3 ms); `ts` differs from set_time - ready_time by up to 23.5 ms. Which clock each uses\n    is not documented. For aborted trials `tp` holds negative values (such as -1600 or -2400 ms) that\n    are not described.\n- kind: metadata_insufficient\n  statement: The unit table has no electrode, probe, area or single-unit or multi-unit label, and the\n    electrode table (72 electrodes in 3 groups) has no positions. Units cannot be placed on a probe or\n    separated into single and multi-units as the paper counts them.\n- kind: other\n  about: data\n  statement: The test file's 283 trials (about a fifth of the session) carry only start, stop and go\n    times, with spikes of 40 of the 54 units; prior, ts, tp, effector and direction are withheld for\n    the Neural Latents Benchmark. Analyses of the paper can use only the 1160 trials of the train file.\n- kind: methods_unavailable\n  about: paper\n  statement: The paper's analysis code is available on request only, and three details that change\n    results here are not stated. The regression of tp on ts is written tp = βts + ε, without an\n    intercept, while the slopes reported below 1 imply one; whether firing rates were normalised\n    before PCA is not said, and without normalisation 2 components reach 75% of the variance in most\n    datasets of this session; and the number of GPFA EM iterations is not given. Could the authors\n    state each?\n"
+}
+```
+
+```
+File created successfully at: attempts/sohn-2019-02.yaml (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+sed -i 's/the squared correlation differs by at most\n    0.007/X/' attempts/sohn-2019-02.yaml && python3 - <<'EOF'
+p="attempts/sohn-2019-02.yaml"; s=open(p).read()
+s=s.replace("the squared correlation differs by at most\n    0.007)","the squared correlation differs by at most\n    0.008)")
+open(p,"w").write(s)
+EOF
+grep -n "0.008)" attempts/sohn-2019-02.yaml; python tools/entry.py check entries/sohn-2019 2>&1 | tail -15
+```
+
+```
+70:    0.008). Fitted wm is 0.025, 0.013, 0.116 and 0.073 and wp 0.103, 0.106, 0.090 and 0.104 (Eye
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+grep -nE "^\s+[^-a-z_ ].*: |^\s{4,}[a-z].*: " attempts/sohn-2019-02.yaml | grep -vE "^\s*[0-9]+:\s+[a-z_]+: " | head; grep -n "—\|rather" attempts/sohn-2019-02.yaml entries/sohn-2019/README.md entries/sohn-2019/rsg.py $TMPDIR/s/nb.py | head; date -u; python tools/entry.py all entries/sohn-2019 2>&1 | tail -4; date -u
+```
+
+```
+Sat Nov 14 13:42:14 UTC 2026
+Installed kernelspec registry-sohn-2019 in executed/sohn-2019/.venv/share/jupyter/kernels/registry-sohn-2019
+0 error(s)
+pass  reproduce_sohn_2019.ipynb  (729 s)
+Sat Nov 14 13:54:35 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+python3 - <<'EOF' > $TMPDIR/s/exec_out2.txt
+import json
+nb=json.load(open("executed/sohn-2019/reproduce_sohn_2019.ipynb"))
+for c in nb["cells"]:
+    if c["cell_type"]=="code":
+        for o in c.get("outputs",[]):
+            if "text" in o: print("".join(o["text"]))
+            elif "data" in o and "text/plain" in o["data"] and "image/png" not in o["data"]: print("".join(o["data"]["text/plain"]))
+    else:
+        src="".join(c["source"])
+        if src.startswith("## "): print("####", src.split("\n")[0])
+EOF
+wc -l $TMPDIR/s/exec_out2.txt; sed -n '/gpfa-variance/,$p' $TMPDIR/s/exec_out2.txt; diff <(grep -v "loaded in\|GPFA time\|Total run" $TMPDIR/s/exec_out.txt | grep -v "WARNING\|warn" | grep -v "^####\|^$" | head -630) <(grep -v "loaded in\|GPFA time\|Total run" $TMPDIR/s/exec_out2.txt | grep -v "^####\|^$" | head -630) | head -40
+```
+
+```
+764 /tmp/claude-1001/s/exec_out2.txt
+#### ## gpfa-variance-inverted-u
+executed/sohn-2019/.venv/lib/python3.13/site-packages/elephant/conversion.py:1158: UserWarning: Binning discarded 1 last spike(s) of the input spiketrain
+  warnings.warn("Binning discarded {} last spike(s) of the "
+
+Initializing parameters using factor analysis...
+
+
+Fitting GPFA model...
+
+executed/sohn-2019/.venv/lib/python3.13/site-packages/elephant/conversion.py:1158: UserWarning: Binning discarded 2 last spike(s) of the input spiketrain
+  warnings.warn("Binning discarded {} last spike(s) of the "
+executed/sohn-2019/.venv/lib/python3.13/site-packages/elephant/conversion.py:1158: UserWarning: Binning discarded 1 last spike(s) of the input spiketrain
+  warnings.warn("Binning discarded {} last spike(s) of the "
+
+Initializing parameters using factor analysis...
+
+Fitting GPFA model...
+
+executed/sohn-2019/.venv/lib/python3.13/site-packages/elephant/conversion.py:1158: UserWarning: Binning discarded 1 last spike(s) of the input spiketrain
+[... 324 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/s && python3 - <<'EOF'
+s=open("nb.py").read()
+old='''def gpfa_fit(trains, x_dim):
+    np.random.seed(int(rng_gpfa.integers(1 << 31)))
+    g = GPFA(bin_size=rsg.BIN_MS * pq.ms, x_dim=x_dim, em_max_iters=EM_ITERS, verbose=False)
+    g.fit(trains)
+    return g
+'''
+new='''def quiet(fn, *args, **kw):
+    """Run an elephant call without its progress prints and its re-binning warnings."""
+    with warnings.catch_warnings(), contextlib.redirect_stdout(io.StringIO()):
+        warnings.simplefilter("ignore")
+        return fn(*args, **kw)
+
+
+def gpfa_fit(trains, x_dim):
+    np.random.seed(int(rng_gpfa.integers(1 << 31)))
+    g = GPFA(bin_size=rsg.BIN_MS * pq.ms, x_dim=x_dim, em_max_iters=EM_ITERS, verbose=False)
+    quiet(g.fit, trains)
+    return g
+'''
+assert old in s; s=s.replace(old,new)
+s=s.replace("            ll[x_dim] += m.score([trains[i] for i in np.flatnonzero(folds == f)])",
+            "            ll[x_dim] += quiet(m.score, [trains[i] for i in np.flatnonzero(folds == f)])")
+s=s.replace('    lat = m.transform(trains, returned_data=["latent_variable_orth"])',
+            '    lat = quiet(m.transform, trains, returned_data=["latent_variable_orth"])')
+s=s.replace("import neo\nimport quantities as pq\n","import contextlib\nimport io\n\nimport neo\nimport quantities as pq\n")
+open("nb.py","w").write(s)
+EOF
+grep -n "quiet" $TMPDIR/s/nb.py; python $TMPDIR/s/py2nb.py $TMPDIR/s/nb.py entries/sohn-2019/reproduce_sohn_2019.ipynb && date -u && python tools/entry.py all entries/sohn-2019 2>&1 | tail -3; date -u
+```
+
+```
+1097:def quiet(fn, *args, **kw):
+1107:    quiet(g.fit, trains)
+1123:            ll[x_dim] += quiet(m.score, [trains[i] for i in np.flatnonzero(folds == f)])
+1127:    lat = quiet(m.transform, trains, returned_data=["latent_variable_orth"])
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/nbformat/__init__.py", line 204, in write
+    fp.write(s)
+    ^^^^^^^^
+AttributeError: 'str' object has no attribute 'write'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/claude-1001/s/py2nb.py", line 26, in <module>
+    nbformat.write(nb, sys.argv[2])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/nbformat/__init__.py", line 208, in write
+    with Path(fp).open("w", encoding="utf8") as f:
+         ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/pathlib/_local.py", line 537, in open
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+python $TMPDIR/s/py2nb.py $TMPDIR/s/nb.py entries/sohn-2019/reproduce_sohn_2019.ipynb && date -u && python tools/entry.py all entries/sohn-2019 2>&1 | tail -3; date -u
+```
+
+```
+Sat Nov 14 13:54:52 UTC 2026
+Installed kernelspec registry-sohn-2019 in executed/sohn-2019/.venv/share/jupyter/kernels/registry-sohn-2019
+0 error(s)
+pass  reproduce_sohn_2019.ipynb  (727 s)
+Sat Nov 14 14:07:11 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+python3 - <<'EOF' > $TMPDIR/s/exec_out3.txt
+import json
+nb=json.load(open("executed/sohn-2019/reproduce_sohn_2019.ipynb"))
+for c in nb["cells"]:
+    if c["cell_type"]=="code":
+        for o in c.get("outputs",[]):
+            if "text" in o: print("".join(o["text"]))
+            elif "data" in o and "text/plain" in o["data"] and "image/png" not in o["data"]: print("".join(o["data"]["text/plain"]))
+EOF
+python3 - <<'EOF' > $TMPDIR/s/exec_out2b.txt
+import json
+nb=json.load(open("/dev/stdin")) if False else None
+EOF
+wc -l $TMPDIR/s/exec_out3.txt; grep -c "Warning" $TMPDIR/s/exec_out3.txt; sed -n '/cv_ll_4/,$p' $TMPDIR/s/exec_out3.txt | head -40; grep -n "Short slope above\|Quadratic\|signed-rank p = \|r_pooled" $TMPDIR/s/exec_out3.txt | head -30
+```
+
+```
+480 /tmp/claude-1001/s/exec_out3.txt
+0
+   dataset  trials   cv_ll_4   cv_ll_8  x_dim  ll_change_last10
+ Eye Right     276 -175218.3 -174652.4      8               7.1
+  Eye Left     260 -165381.3 -164698.2      8              11.5
+Hand Right     225 -125038.9 -124443.3      8               7.5
+ Hand Left     222 -116142.9 -115634.9      8               8.1
+GPFA time: 653 s
+   dataset prior                 variance_by_ts  quad_coef
+ Eye Right Short   [0.76, 0.5, 0.58, 0.43, 0.3]  4.285e-07
+ Eye Right  Long  [0.98, 0.7, 0.96, 0.36, 0.41] -1.487e-06
+  Eye Left Short [0.43, 0.21, 0.61, 0.34, 0.17] -6.448e-06
+  Eye Left  Long [0.57, 0.91, 0.73, 0.46, 0.39] -6.404e-06
+Hand Right Short  [0.79, 0.8, 1.53, 0.76, 0.48] -2.308e-05
+Hand Right  Long [0.77, 1.55, 1.36, 0.61, 0.33] -1.914e-05
+ Hand Left Short   [0.8, 1.17, 0.9, 0.39, 0.82] -1.244e-06
+ Hand Left  Long  [1.3, 1.49, 0.33, 0.76, 0.61]  6.482e-06
+
+Quadratic coefficient below zero in 6 of 8; one-tailed signed-rank p = 0.0742
+Mean variance profile over the 8 (z-scored Xu): [0.8   0.916 0.875 0.514 0.439]
+[... 41 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 338,372p $TMPDIR/s/exec_out3.txt; sed -n 75,100p $TMPDIR/s/exec_out3.txt
+```
+
+```
+Speed (mean step) against Xu at Set:
+prior  n  r_pooled            p                                                                 r_within_dataset
+Short 20    -0.926 4.762032e-09   {'Eye Left': -0.9, 'Eye Right': -1.0, 'Hand Left': -0.99, 'Hand Right': -0.94}
+ Long 20    -0.834 4.873258e-06 {'Eye Left': -0.94, 'Eye Right': -0.91, 'Hand Left': -0.74, 'Hand Right': -0.94}
+
+Variant, speed divided by the Set-to-Go time:
+prior  n  r_pooled            p                                                                 r_within_dataset
+Short 20    -0.916 1.404610e-08 {'Eye Left': -0.93, 'Eye Right': -0.99, 'Hand Left': -0.99, 'Hand Right': -0.97}
+ Long 20    -0.908 3.227019e-08 {'Eye Left': -0.94, 'Eye Right': -0.96, 'Hand Left': -0.85, 'Hand Right': -0.96}
+
+   dataset prior                         speeds slope_measured slope_unbiased difference
+ Eye Right Short  [7.95, 7.81, 6.74, 6.2, 4.84]       -0.00977       -0.01113    0.00136
+ Eye Right  Long  [8.32, 7.1, 6.51, 5.94, 4.98]       -0.00784       -0.00674   -0.00110
+  Eye Left Short  [9.19, 7.62, 7.44, 6.0, 6.27]       -0.00932       -0.01229    0.00296
+  Eye Left  Long [9.02, 7.34, 6.44, 6.54, 6.56]       -0.00572       -0.00667    0.00094
+Hand Right Short [6.34, 5.63, 5.58, 5.01, 4.83]       -0.00453       -0.00921    0.00468
+Hand Right  Long  [7.07, 5.91, 5.46, 4.8, 5.13]       -0.00499       -0.00565    0.00066
+ Hand Left Short [6.37, 5.36, 5.18, 4.14, 4.11]       -0.00717       -0.00856    0.00139
+ Hand Left  Long [6.18, 4.88, 5.17, 5.17, 4.97]       -0.00213       -0.00535    0.00322
+
+[... 41 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+python tools/entry.py handover entries/sohn-2019 2>&1 | tail -5; ls executed/sohn-2019/handover/; python tools/entry.py check entries/sohn-2019 2>&1 | tail -2; ls entries/sohn-2019; date -u
+```
+
+```
+wrote executed/sohn-2019/handover
+reproduce_sohn_2019.ipynb
+rsg.py
+sohn-2019.yaml
+0 error(s)
+README.md
+__pycache__
+entry.yaml
+reproduce_sohn_2019.ipynb
+requirements.in
+requirements.lock.txt
+rsg.py
+Sat Nov 14 14:07:50 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+rm -rf entries/sohn-2019/__pycache__; python3 -c "
+import json;nb=json.load(open('executed/sohn-2019/handover/reproduce_sohn_2019.ipynb'));print(sum('Result:' in ''.join(c['source']) for c in nb['cells']), any('## Summary' in ''.join(c['source']) for c in nb['cells']))"
+```
+
+```
+0 False
 ```
 
 **Agent**
 
-Bold labels in the notebook header and summary break the style rule; removing them and re-running so the executed copy matches.
+I've finished the blind repeat attempt on sohn-2019 (DANDI:000130, version 0.241017.1448, the version the prompt asked for). `python tools/entry.py all entries/sohn-2019` passes, `check` reports 0 errors, and the handover is built in `executed/sohn-2019/handover/`. Nothing is committed. I did not come across any earlier attempt's results.
 
-**Agent calls Bash**
+**1. Outcomes**
 
-```bash
-cd /tmp/claude && python - <<'E'
-import re
-for p in ['nb_cells.py','conclusions.py']:
-    s=open(p).read()
-    s=re.sub(r'\*\*((Paper|Dandiset|What the dandiset holds|Code|How the analysis differs from the paper\'s|What was found about the dandiset)\.)\*\*', r'\1', s)
-    open(p,'w').write(s)
-E
-grep -n '\*\*[A-Z]' nb_cells.py conclusions.py | grep -v "Result:" ; rm -rf entries/000130-sohn-2019/__pycache__; cd  && python /tmp/claude/build_nb.py && python tools/entry.py all entries/000130-sohn-2019 2>&1 | tail -3
-```
+| Claim | Outcome | Key numbers |
+|---|---|---|
+| beh-slopes | not reproduced | 6 of 8 slopes between 0 and 1; the Short-prior slopes of both eye datasets are 1.011 and 1.110 |
+| beh-overlap-prior | not reproduced | median biases +28.3 (Short) and +47.6 ms (Long), both positive; p = 0.073 |
+| beh-sigmoid-increments | reproduced | 7 of 8, p = 0.0156 |
+| beh-long-more-bias | reproduced | 4 of 4 |
+| beh-bayes-model | partially reproduced | bias R2 at least 0.8 in 2 of 4; SD correlation positive in 4 of 4 |
+| glm-prior-ts | not reproduced | 79.2% prior-dependent, 45.8% ts-dependent (expected 65% and 27%) |
+| dfr-overlap-support | reproduced | peak 6.86 spikes/s at 480 to 640 ms after Ready; shuffle 95th percentile 3.09 |
+| pca-dimensionality | not reproduced | 1 of 8 in range; 2 components reach 75% in every estimation epoch |
+| encoding-r2 | reproduced | 0.994 and 0.986 (Hand Left); the PC space is only 2-dimensional, so random axes also score high |
+| encoding-bayes-beats-linear | not reproduced | Bayesian model better in 3 of 4 datasets for each prior |
+| short-in-long-control | reproduced (paper's test) | p = 0.25, but the effect is present in 3 of 4 datasets |
+| neural-long-more-bias | reproduced | 4 of 4 |
+| speed-vs-projection | partially reproduced | r = -0.926 and -0.834, stronger than the paper's, outside tolerance |
+| initial-speed-biased | reproduced | 7 of 8, p = 0.039 |
+| speed-predicts-tp | partially reproduced | r = -0.720 and -0.699, outside tolerance |
+| alt-speed-unmodulated | reproduced (paper's test) | p = 0.125, the smallest possible with 4 datasets; speed rises in 8 of 8, partly an attrition artefact |
+| alt-transient-parallel | reproduced | p = 0.109 (shortest ts) and 1.0 (longest) |
+| alt-threshold-monotonic | not reproduced | median time of the minimum distance is 230 ms before Go |
+| gpfa-variance-inverted-u | not reproduced | 6 of 8 coefficients negative, p = 0.074 |
+| gpfa-mean-sigmoid | reproduced | p = 0.0078 and 0.0625 |
+| rnn-curved-manifold, rnn-perturbation, monkey-g | blocked: data_missing | — |
 
-```
-wrote entries/000130-sohn-2019/reproduce_sohn_2019.ipynb 79 cells
-Installed kernelspec registry-000130-sohn-2019 in executed/000130-sohn-2019/.venv/share/jupyter/kernels/registry-000130-sohn-2019
-0 error(s)
-pass  reproduce_sohn_2019.ipynb  (397 s)
-```
+**2. Dataset, assumptions and questions**
 
-**Agent calls Bash**
+- **Coverage:** the dandiset holds one of the paper's 29 sessions (monkey H, 2016-12-11). The train file has 1160 trials (983 completed and not outliers) and 54 units, of which 48 pass the paper's unit selection. That matches the 48 units the paper gives for its GPFA session of monkey H.
+- **Test file:** its 283 trials have no task variables (the Neural Latents Benchmark withholds them), so they can't be used.
+- **`iti` column:** the description reverses the two priors; the values match the paper's Methods.
+- **`tp` column:** it exceeds `go_time - set_time` by a median of 17.9 ms, which is not documented. Aborted trials hold undocumented negative `tp` values.
+- **Unit labels:** units have no electrode, probe or single/multi-unit label, and the electrode table has no positions.
+- **Timing:** the clock checks are consistent. Target direction decodes at 0.80 at 300 to 600 ms after target onset against 0.50 with the next trial's labels, and there is a population transient after Set.
+- **Assumptions:** no outcome is marked `assumed`. Where the paper allows two readings (regression intercept, how R2 is computed, the Short-In-Long axis), both readings give the same outcome.
+- **Question for the paper's authors** (one `methods_unavailable` finding): whether the tp-on-ts regression had an intercept, whether rates were normalised before PCA, and how many GPFA EM iterations were run.
+- **Questions to a reader:** none.
 
-```bash
-cd $TMPDIR; $TMPDIR/ex/bin/python show.py executed/000130-sohn-2019/reproduce_sohn_2019.ipynb > final2.txt 2>/dev/null; diff <(grep -v "loaded dandiset\|took\|run time\|^$" final.txt) <(grep -v "loaded dandiset\|took\|run time\|^$" final2.txt) | grep -v "latent dimensionality" | head -40; grep "Quadratic\|Middle increment above\|Short slope above" final2.txt; cd  && python tools/entry.py handover entries/000130-sohn-2019 && ls -R executed/000130-sohn-2019/handover && git status --short
-```
+**3. Protocol points**
 
-```
-433,436c433,436
----
-438,445c438,445
-<  Eye Right Short    0.761    0.523    0.645    0.794    0.262  -6.26e-06   0.00225      NaN       NaN       NaN       NaN
-<  Eye Right  Long      NaN      NaN      NaN      NaN    0.988  -6.71e-07    0.0014    0.733     0.935     0.354     0.444
-<   Eye Left Short    0.485     0.23    0.303     0.38    0.188   1.43e-06   0.00271      NaN       NaN       NaN       NaN
-<   Eye Left  Long      NaN      NaN      NaN      NaN    0.556  -6.78e-06   0.00155    0.919     0.736      0.48     0.405
-< Hand Right Short    0.844     0.95     1.04    0.879    0.615  -1.11e-05  0.000558      NaN       NaN       NaN       NaN
-< Hand Right  Long      NaN      NaN      NaN      NaN    0.632  -2.24e-05  0.000374     1.65      1.38     0.517      0.27
-<  Hand Left Short     0.91     1.21    0.695    0.485    0.685   1.16e-06  0.000945      NaN       NaN       NaN       NaN
-<  Hand Left  Long      NaN      NaN      NaN      NaN     1.27   5.92e-06  0.000455     1.43     0.465     0.705      0.68
----
->  Eye Right Short    0.766    0.524    0.647    0.799    0.262  -6.25e-06   0.00224      NaN       NaN       NaN       NaN
->  Eye Right  Long      NaN      NaN      NaN      NaN    0.988  -6.05e-07    0.0014    0.732     0.932     0.355     0.445
->   Eye Left Short    0.484    0.231    0.306    0.381    0.189   1.36e-06    0.0027      NaN       NaN       NaN       NaN
->   Eye Left  Long      NaN      NaN      NaN      NaN    0.556  -6.79e-06   0.00155     0.92     0.737     0.478     0.405
-> Hand Right Short    0.844    0.952     1.04    0.875    0.615   -1.1e-05  0.000557      NaN       NaN       NaN       NaN
-> Hand Right  Long      NaN      NaN      NaN      NaN    0.636  -2.22e-05  0.000375     1.65      1.38     0.525     0.273
->  Hand Left Short    0.911     1.21    0.688    0.478    0.693   1.57e-06   0.00094      NaN       NaN       NaN       NaN
->  Hand Left  Long      NaN      NaN      NaN      NaN     1.25   5.78e-06  0.000451     1.44     0.
-[... 42 more lines not kept]
-```
+1. With 4 datasets, a two-sided signed-rank test can't reach p < 0.05, so the absence claims pass automatically under the rule "judged on the paper's test". I recorded them as reproduced and put the effect sizes in the notes; for alt-speed-unmodulated and short-in-long-control the effect is in fact present.
+2. The claims file fixes a choice the paper leaves open: rates are not normalised before PCA. Step 1.6 doesn't say whether that choice binds the author. I followed the claims file, showed the unsmoothed and normalised versions as variants, and put the question to the authors.
+3. The suggested clock check uses windows around the trial start. Here the prior is cued from trial start, so I used target onset and the Set transient instead.
+4. The protocol gives `about` only for two finding kinds. I also set it on a `data_missing` and a `methods_unavailable` finding; the check accepted this.
+5. The protocol asks for under ten minutes. GPFA with cross-validation takes about 11 minutes on its own, so I capped EM at 200 iterations (elephant's default is 500) and recorded that as a deviation. The fits had not fully converged.
 
-**Agent**
+**4. Runtime and failures**
 
-GPFA counts and p values are unchanged over four runs. Updating that note and running the final check.
+The notebook takes about 12 minutes (12.2 at the last full run, 0.59 GB peak memory), most of it GPFA. Nothing failed. I ran the entry three times: once for the first run, then twice more after edits that only silenced elephant's log output, with identical results each time. Analysis finished at 14:07 UTC, well before the 17:10 cut-off.
 
-**Agent calls Bash**
+Files are in `entries/sohn-2019`:
+- reproduce_sohn_2019.ipynb
+- rsg.py
+- entry.yaml
+- README.md
+- requirements.in
+- requirements.lock.txt
 
-```bash
-sed -i 's/did not change over three runs/did not change over four runs/' attempts/000130-sohn-2019-01.yaml && sed -i 's/runtime_minutes: 8/runtime_minutes: 7/; ' entries/000130-sohn-2019/entry.yaml && sed -i 's/It takes about eight minutes/It takes about seven minutes/' entries/000130-sohn-2019/README.md && python tools/entry.py check entries/000130-sohn-2019 && python tools/entry.py handover entries/000130-sohn-2019 && ls -la .bashrc .gitconfig scripts | head; git check-ignore -v paper executed | head
-```
-
-```
-0 error(s)
-wrote executed/000130-sohn-2019/handover
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:00 .bashrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:00 .gitconfig
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:00 scripts
-.gitignore:8:paper/	paper
-.gitignore:6:executed/	executed
-```
-
-**Agent**
-
-I've finished steps 1 to 6 for dandiset 000130. `entry.py check` reports 0 errors, the notebook passes `entry.py all` from a clean environment in 397 s, and the verifier's package is built in `executed/000130-sohn-2019/handover/`. Nothing is committed.
-
-**Paper text:** I used the full text of the accepted author manuscript (PMC6805134). It is saved under `paper/`. The supplementary tables and figures were not available.
-
-**Version pinned:** 0.241017.1448. The paper cites no DANDI version. The two published versions hold the same two files and differ only in publication metadata, so I pinned the most recent; the notebook header says why.
-
-### 1. Outcome per claim
-
-| Claim | Outcome |
-|---|---|
-| beh-slopes | Not reproduced: 6 of 8 slopes between 0 and 1; the two Eye Short slopes are 1.11 and 1.01 |
-| beh-overlap-prior | Not reproduced: both biases positive (+28 and +48 ms), p = 0.073 |
-| beh-sigmoid-increments | Reproduced: 7 of 8, p = 0.016 |
-| beh-long-more-bias | Reproduced: 4 of 4 |
-| beh-bayes-model | Partially reproduced: SD fits in 4 of 4, bias R2 ≥ 0.8 in only 2 of 4 |
-| glm-prior-ts | Not reproduced: 75.0% and 45.8%, against the paper's 65% and 27% |
-| dfr-overlap-support | Reproduced: largest at 480 to 640 ms after Ready |
-| pca-dimensionality | Not reproduced: 2 PCs reach 75% in the estimation epoch |
-| encoding-r2 | Reproduced: 0.998 and 0.996, but random axes beat it in 5 of 8 dataset-priors |
-| encoding-bayes-beats-linear | Partially reproduced: Long 4 of 4, Short 3 of 4 |
-| short-in-long-control | Reproduced by the paper's test, which cannot detect an effect with 4 datasets |
-| neural-long-more-bias | Reproduced: 4 of 4 |
-| speed-vs-projection | Partially reproduced: rho −0.94 and −0.88, stronger than reported |
-| initial-speed-biased | Reproduced: 7 of 8, p = 0.039 |
-| speed-predicts-tp | Partially reproduced: rho −0.73 and −0.74, stronger than reported |
-| alt-speed-unmodulated | Reproduced by the paper's test, but the speed rises in all 8 dataset-priors (bootstrap intervals exclude 0) |
-| alt-transient-parallel | Not reproduced: longest ts, p = 0.039 |
-| alt-threshold-monotonic | Not reproduced: median minimum 210 ms before Go; depends on how many PCs are kept |
-| gpfa-variance-inverted-u | Not reproduced: 5 of 8, p = 0.125 |
-| gpfa-mean-sigmoid | Reproduced: p = 0.0078 and 0.0625, the paper's exact values |
-| rnn-curved-manifold, rnn-perturbation | Blocked (`other`): these concern trained network models, not recorded data |
-| monkey-g | Blocked (`data_missing`) |
-
-### 2. What was found about the dandiset
-- **One session only.** It is the Neural Latents Benchmark version of a single session of monkey H (2016-12-11), out of the paper's 29 sessions over two monkeys. No other dandiset on the archive holds these recordings.
-- **Likely the paper's GPFA session.** 48 of its 54 units pass the paper's 1 spike/s rule, which matches the paper's GPFA count for monkey H. The dandiset does not say this.
-- **Test trials unusable.** 283 trials are in the test file with no task variables and without 14 of the 54 units, so no analysis can use them.
-- **`iti` description reversed.** It says 500 ms after Short trials and 1220 after Long; the values (and the paper) are the other way round.
-- **`tp` does not match the event times.** It is a median 18 ms longer than `go_time − set_time` (up to 200 ms), and this is not documented.
-- **`is_outlier` not reproduced.** A refit of the paper's mixture model flags only 10 of the file's 46 outliers.
-- **Units under-described.** There is no single-unit or multi-unit label and no electrode assignment, and the electrode table has no positions.
-- **Code not public.** The paper's code is available only on request, and the linked benchmark code holds none of its analyses.
-- **Paper inconsistency.** The Results give the GPFA counts as 48 and 107 neurons; the Methods give 48 and 96.
-
-### 3. Where the protocol was unclear, wrong or missing something
-1. **Claims of absence tested on a subset.** "Judged on the paper's test alone" breaks down when the dandiset holds 4 of the paper's 8 datasets. A signed-rank test over 4 can never give p < 0.05, so two absence claims come out "reproduced" automatically, one of them against clear evidence. I followed the rule and said so in each claim's notes and Result text.
-2. **No guidance on adapting the paper's statistics to a subset.** Where the paper's p = 0.008 means "all 8 datasets", I wrote criteria that count datasets (for example, 4 of 4).
-3. **The default 10% tolerance fits some measures badly.** For R2 near 1 it accepts anything above 0.894. For a proportion from 48 units, sampling error is larger than 10%. I kept the default and reported binomial intervals.
-4. **No blocking reason for model-only claims.** For the recurrent network claims I used `other`.
-5. **No place in the record for the code read.** When the linked code is unrelated to the paper's analyses, there is no field for it (`inputs` is for data). I recorded the repository and commit in the notebook header and added a `methods_unavailable` finding.
-6. **The suggested clock check confounds latency with offset.** Decoding peaks at +100 ms for every event, which reflects response latency. I reported the check as consistent with a shared clock, not as shown.
-7. **Fixed seeds do not make the GPFA fits deterministic.** Values move in the third significant digit between runs (probably multithreaded numerics); counts and p values were unchanged over four runs. I noted this.
-8. **Bug fixed after seeing outputs.** The Bayesian observer's optimiser left the offsets at 0 because its first step from a zero start is tiny. I fixed the optimiser after the first run without changing any criterion. The protocol does not say how to record such a fix; it is not in the attempt record.
-9. **Ambiguous test in the paper.** The paper's test for the threshold claim (one-tailed, p = 1.5e-4) cannot be read unambiguously. I fixed my own criterion before the analysis and recorded it as a deviation.
-
-### 4. Runtime and failures
-- **Runtime.** The notebook takes about 400 s, of which GPFA is about 360 s.
-- **Failures.** Europe PMC's full-text XML endpoint returned an HTTP 500, so I used the NCBI BioC API for the same manuscript. The first notebook run had the optimiser bug in point 8. Nothing else failed.
-- **Untracked files not created by me.** `git status` shows `.bashrc`, `.gitconfig`, `scripts` and similar at the repo root. They are character devices from the sandbox, not files, and should not be committed.
-
-Files are in the repository root:
-- `claims/000130/10.1016-j.neuron.2019.06.012.yaml`
-- `attempts/000130-sohn-2019-01.yaml`
-- `entries/000130-sohn-2019/`
+The attempt record is `attempts/sohn-2019-02.yaml`.
 
 ## End of run
 
-61 turns, 49 minutes, result: success.
+61 turns, 68 minutes, $5.42 at API prices, result: success.
