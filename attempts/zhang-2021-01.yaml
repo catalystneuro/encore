@@ -1,0 +1,246 @@
+schema_version: 3
+id: zhang-2021-01
+datasets:
+- archive: crcns
+  id: vim-4
+  version: unversioned
+  doi: 10.6080/K0668BDF
+  relation: primary
+paper: doi:10.3389/fnins.2020.565976
+date: 2026-11-14
+entry: zhang-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43583052040
+outcomes:
+- claim: fig1-csi-s2
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:fig1-csi-s2
+  measured:
+  - 0.740
+  - 0.718
+  - 0.676
+  notes: With the paper's code run on the full voxel data (R3), S2's CSIs are 0.740 (attend-humans),
+    0.718 (attend-vehicles) and 0.676 (passive), each within tolerance and above every one of 1000
+    null values under both permutation readings (p <= 0.001, the bound reached; the paper reports
+    p < 1e-5). The median over random third axes (R2) gives 0.723, 0.718 and 0.657, also within
+    tolerance. In the human-vehicle plane alone (R1) attend-humans is 0.664, outside tolerance.
+    Over random third axes the attend-humans CSI ranges from 0.683 to 0.784 (5 to 95%).
+  deviations:
+  - Assumed that the third axis of the attention state space is the one the paper's code gives. In
+    the deposited deconvolved data the attentive conditions are z-scored per voxel within each
+    condition, so the attention variable (-1, 0, +1) has an OLS weight of 1e-14, and the third QR
+    direction is set by rounding. The code is the paper's method and the paper's values were
+    presumably computed the same way; three readings are shown (code, random third axes, plane),
+    and the outcome holds under the first two.
+  - Permutations 1000 per reading of the claims file, so p reaches 0.001 and not 1e-5.
+  - The state space is computed exactly in the space of the 24 PCs (helper docstring); the code
+    itself is run for the observed values, and the human and vehicle axes of both agree to
+    |r| = 1.0000.
+- claim: att-csi-group
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:att-csi-group
+  measured:
+  - 0.665
+  - 0.729
+  - 0.525
+  notes: Over the five released subjects (R3) the mean CSIs are 0.665 +/- 0.103, 0.729 +/- 0.022 and
+    0.525 +/- 0.260 for attend-humans, attend-vehicles and passive, within the paper's spreads.
+    Under group reading (b) each mean exceeds the maximum of 1000 mean null CSIs (at most 0.110).
+    Under reading (a) every subject is significant at the bound in the attentive conditions but
+    S3's passive CSI (0.061) does not exceed every null value. R2 gives 0.658, 0.728 and 0.523; R1
+    gives 0.602, 0.675 (outside tolerance) and 0.492. The means of the paper's own per-subject
+    values over these subjects are 0.644, 0.728 and 0.512.
+  deviations:
+  - Five of the paper's six subjects; S4 is not released.
+  - Same assumption about the third axis as fig1-csi-s2.
+- claim: supp-csi-per-subject
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:supp-csi-per-subject
+  measured:
+  - 0.518
+  - 0.737
+  - 0.622
+  - 0.697
+  - 0.759
+  - 0.061
+  - 0.767
+  - 0.730
+  - 0.614
+  - 0.603
+  - 0.700
+  - 0.652
+  notes: With R3, 10 of 12 values are within 10% of the supplement's; outside are S3 passive (0.061
+    against 0.05, tolerance 0.005) and S5 attend-humans (0.767 against 0.66). Under permutation
+    reading (a) all 12 are significant at p < 0.01 (S3 passive p = 0.002, the others 0.001); under
+    reading (b) S3 passive has p = 0.042. R2 puts 11 of 12 within tolerance with the same
+    significance; R1 puts 10 within but S3 passive is not significant under either reading (p =
+    0.078 and 0.355), so R1 would make the claim partially reproduced.
+  deviations:
+  - Same assumption about the third axis as fig1-csi-s2.
+- claim: att-passive-lower
+  outcome: not_reproduced
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:att-passive-lower
+  measured: 2
+  notes: At the threshold 1000 permutations allow (the difference above every null value, p <=
+    0.001), the passive CSI is significantly lower in 2 of 5 subjects under reading (a) with the
+    code's positions (S3, S5), and 2 or 3 under reading (b), for every null (refitted or not) and
+    both permutation schemes; the criterion needs 4 of 5. At p < 0.05 the counts are at most 3
+    (R3) and at most 4 (R1, reading b, matched, refitted). In S1 and S6 attend-humans is below
+    passive (0.518 against 0.622; 0.603 against 0.652), as in the paper's own figure values for
+    these subjects, and the mean attentive CSI is within 0.006 of passive. S2's differences are
+    0.065 and 0.043 (p 0.002 to 0.075). Measured is the count under reading (a), null (i), matched
+    permutation.
+  deviations:
+  - Five of six subjects; S4 is not released.
+  - How condition labels are permuted is not fixed by the paper; two schemes were run (matched by
+    movie frame, and global), and the outcome is the same under both.
+  - Permutations 1000, so the bound reached is 0.001 and not the paper's 1e-5.
+- claim: att-classification
+  outcome: reproduced
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:att-classification
+  measured: 44.4
+  notes: Mean accuracy over the five subjects is 44.4% (contiguous folds, Euclidean), 53.4%
+    (contiguous, density), 46.6% (random, Euclidean) and 56.3% (random, density), against 48.4 +/-
+    7.6%; three readings are within tolerance and all exceed every one of 1000 mean null
+    accuracies (maxima 9.7 to 12.5%). Chance under this procedure (null mean) is 7.8 to 9.1%,
+    close to the paper's 8.3%. Per subject 40.8 to 60.6%.
+  deviations:
+  - Five of six subjects; S4 is not released.
+  - Held-out positions are z-scored with the training statistics, a standard choice the claims
+    file names.
+- claim: att-weights-cortex
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion compares mean weights in the subjects' functional ROIs (FFA, OFA, EBA, RSC,
+    PPA, OPA and others), which the paper drew from functional localizer and retinotopic mapping
+    data (Methods, Preprocessing and Visualization, paragraph 2). The data set's 39 files hold no
+    ROI, localizer or retinotopy data, and the paper's code repository (gallantlab/state-space at
+    6ffb3c3) holds none. A group atlas on fsaverage would substitute for the paper's per-subject
+    ROIs, which is not an input the paper relies on, so none was used. The mappers to fsaverage
+    are present for S1 to S7.
+- claim: game-csi
+  outcome: reproduced
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:game-csi
+  measured:
+  - 0.702
+  - 0.581
+  notes: With one cluster per state from TRs with exactly one state (reading b), the CSI is 0.702
+    (S1) and 0.581 (S7), within tolerance of 0.72 and 0.62 and above every one of 1000 null values
+    (maxima 0.270 and 0.258). With multi-membership clusters (reading a) S1 is 0.694 and S7 0.549,
+    just below tolerance (0.558); with the three groups of Figure 3A (reading c) 0.513 and 0.388.
+    All are above their nulls. Clusters with no more TRs than dimensions are left out (S1 flash
+    under a and b, S1 kill and S7 run away and kill under b).
+  deviations:
+  - S7 has no flash TRs, so its state space has 8 dimensions.
+  - The S1 video game data hold 65 min, where the paper reports 90 min for one subject.
+- claim: game-mutual-negative-projection
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:game-mutual-negative-projection
+  notes: With the variables in the data set's column order, engage-close TRs lie at -1.187 (S1) and
+    -0.191 (S7) on the safe-explore dimension and safe-explore TRs at -0.399 and -0.548 on the
+    engage-close dimension, each p = 5e-5 (the bound of 20,000 permutations), under both sign
+    readings. With Table 1's order S1 holds (-0.697, -0.068, p = 5e-5) but S7's safe-explore TRs
+    lie at -0.018 on the engage-close dimension (p = 0.937), which would make the claim hold in one
+    subject only.
+  deviations:
+  - Assumed the order of the variables in the QR is the order of the data set's state columns,
+    since the paper's code takes the state matrix as it is stored and has no video game analysis;
+    under Table 1's order the outcome would be partially reproduced.
+- claim: fig3b-state-relations
+  outcome: reproduced
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:fig3b-state-relations
+  notes: Under every sign, order and Bonferroni reading, S1 has 45 or 48 and S7 20 or 32 significant
+    off-diagonal projections (p < 0.01 corrected, 20,000 permutations, smallest p 5e-5), 10 to 20
+    pairs are significant in one direction only, and the subjects share 12 to 26 of their
+    significant pairs. The paper's matrix could not be compared pair by pair.
+- claim: game-classification
+  outcome: partially_reproduced
+  notebook: reproduce_zhang_2021.ipynb
+  output: claim:game-classification
+  measured:
+  - 45.9
+  - 33.4
+  notes: Every reading is above its null (p = 0.001; chance under this procedure 10.8 to 16.4%,
+    against the paper's 11%). S7 is within 30.4 +/- 4.2% with contiguous folds (26.4 to 33.4%)
+    and above it with random folds (36.8 to 46.5%). S1 is above 32.8 +/- 3.8% under every reading
+    (42.8 to 54.6%), so no reading puts both within tolerance. The S1 data hold 65 min where the
+    paper reports 90 min for one subject, so they may not be the data the paper analysed. Measured
+    is the first reading (contiguous folds, Euclidean, single-state TRs).
+  deviations:
+  - Classes with fewer than 2 x (dimensions + 1) TRs are left out of the density rule (listed in
+    the notebook); kill has no single-state TRs in S1.
+- claim: game-weights-two-groups
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion needs region definitions (TPJ, precuneus, prefrontal, motor, premotor and
+    supplementary motor cortex, IPS, FEF, SEF) from the paper's ROIs, which are not deposited
+    (see att-weights-cortex). In addition, S1's video game data have 73,594 voxels and no mapper in
+    the data set matches them (S1's mapper has 51,608, as its attention data), so S1's weights
+    cannot be placed on the cortex with the files given. S7's data match S7's mapper.
+findings:
+- kind: other
+  about: data
+  statement: In the deconvolved attention files each attentive condition (human, vehicle) is z-scored
+    per voxel within the condition, while the passive TRs are not. With the attention state coded
+    -1, 0, +1 in states.hdf, its regression weight is the difference of the two attentive means,
+    which is zero (1e-14 in all five subjects), so the attention dimension of the paper's state
+    space cannot be recovered from the deposited files; the third axis is set by rounding and the
+    CSIs move by up to 0.1 with it.
+- kind: metadata_insufficient
+  statement: The data description does not say how the third column of states.hdf codes the
+    attention condition; the files use -1 for attend-humans, 0 for passive and +1 for
+    attend-vehicles.
+- kind: metadata_error
+  statement: The S1 video game data hold 1950 TRs (65 min at the 2.0045 s TR), where the data
+    description and the paper say one subject played for 90 minutes (six 15-min runs). S7's 1320
+    TRs (44 min) match the stated 45 minutes.
+- kind: data_missing
+  statement: No mapper matches the S1 video game data, which have 73,594 voxels; the S1 mapper has
+    51,608 voxels, the voxel set of S1's attention data. S1's game weights cannot be placed on
+    fsaverage or the flatmap with the files given.
+- kind: data_missing
+  statement: The functional ROIs, and the localizer and retinotopic mapping data the paper used to
+    define them, are not in the data set, so the cortical claims of Figures 2 and 4 cannot be
+    tested by region.
+- kind: other
+  about: data
+  statement: The S7 video game BOLD (float32) is not z-scored per voxel over the session (voxel SDs
+    0.094 to 1.009, means -0.059 to 0.025), unlike S1's, which is exactly z-scored; the paper says
+    responses were normalized to zero mean and unit variance.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The attention variable has zero weight in the
+    deposited deconvolved data (attentive conditions z-scored per condition), so the third axis
+    of the attention state space, and with it the CSIs, depends on rounding. Was the paper's
+    analysis run on these files, and how was the attention dimension defined? This attempt adopted
+    the axis the published code gives and showed the plane and random third axes as readings.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. For the video game state space, in what order were
+    the nine variables entered into the QR decomposition? The safe-explore position of engage-close
+    TRs in S7 is negative and significant with the data set's column order and near zero with the
+    order of Table 1. This attempt adopted the column order.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. For the passive-against-attentive test (p < 1e-5 in
+    five of six subjects), what was compared (each attentive condition or their mean) and how
+    were labels permuted? In S1 and S6 the attend-humans CSI is below the passive one, in the
+    paper's figures and here.
