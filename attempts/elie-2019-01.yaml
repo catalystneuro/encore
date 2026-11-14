@@ -1,0 +1,877 @@
+schema_version: 3
+id: elie-2019-01
+datasets:
+- archive: crcns
+  id: aa-4
+  version: unversioned
+  doi: 10.6080/K00C4T06
+  relation: primary
+paper: doi:10.1371/journal.pcbi.1006698
+date: '2026-11-13'
+entry: elie-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43501306087
+inputs:
+- what: The tutorial model cell ModelCell_InfoCumInfo_Tutorial.mat (spike rasters, model rates and the MATLAB results
+    of the tutorial), for fig1-model-neurons.
+  source: https://github.com/julieelie/PoissonTimeVaryingInfo at commit 978020328321c7ed83be12c0152bed85ec77e218
+outcomes:
+- claim: units-404
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_elie_2019.ipynb
+  output: claim:units-404
+  notes: 'Neither reading of the criterion can be carried out. Reading (a): the files hold no list or flag of the
+    404 units, and the data description and the 2015 paper (Elie and Theunissen 2015, read at PMC4347984) give none.
+    Reading (b): the 2015 decoding starts from the 914 single auditory units, defined in the 2015 Methods and the
+    data description by I_AR of at least 2.3 bits/s among spike-sorted units and a spike-snippet SNR above 5. The
+    I_AR reading matches the authors'': 1401 spike-sorted files of any sortType have a stored I_AR of at least 2.3
+    bits/s, the 1401 auditory spike-sorted units of the description. The files hold 1281 units labelled single (sortType
+    single, or singl in three files), 1246 of them auditory. The SNR is not stored. Computed from the snippet files
+    (.f32, one per site and protocol, every site having one for its call protocol; layout from CRCNSCode/h5_plot_one_spike.m
+    in the archive) on the call-protocol snippets of 1452 of the 1453 spike-sorted units, the threshold of 5 leaves
+    461 auditory units (SNR reading A, the SD of each snippet''s maximum minus minimum) or 274 (reading B, the SD
+    of the snippet at the samples of the average''s maximum and minimum), not 914; reading A leaves 772 at a threshold
+    of 4 and 1120 at 3. So the data set does not hold 914 identifiable single units (expected 914, tolerance 0),
+    and a selection of 404 could only be redone on a different base set. The main reason is the missing unit labels
+    (metadata_insufficient); methods_underspecified is the block the criterion names.'
+  measured:
+  - 1281
+- claim: units-337
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for
+    the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were
+    estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo
+    cumulative information, so the claim would also be too_large here.
+- claim: s1-temporal-resolution
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: 'Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked
+    for the same reason. Variant on the 1246 auditory single units, deciding nothing: the coherence stored in the
+    files (4 to 496 Hz) puts 65.8% +- 19.0% of I_AR below 50 Hz; nothing shows that the stored curve is the computation
+    of S1 Fig, so this says nothing about the paper''s 96.7%. The KDE power part needs the KDE rates, which are
+    too large to compute here (see units-337), and was not computed.'
+- claim: fig1-model-neurons
+  outcome: partially_reproduced
+  notebook: reproduce_elie_2019.ipynb
+  output: claim:fig1-model-neurons
+  measured:
+  - 0.009
+  - 0.52
+  notes: 'The paper''s code repository holds one model cell (ModelCell_InfoCumInfo_Tutorial.mat), a temporal neuron:
+    4 stimuli, 10 trials, 400 ms, each stimulus driving a response at a different time. The rate and onset neurons
+    of Fig 1 are not there, so the criterion''s ''each model neuron'' can be checked for one of three. On it all
+    three conditions hold. The mean absolute difference between the KDE and the model rate is 0.009 spikes/ms (per
+    stimulus 0.0075 to 0.0103; RMS 0.016), below 0.02. Under the paper''s procedure, as its code runs it, the bias-corrected
+    cumulative information reaches 1.982 bits (14 bins at or above 1.8, last bin 1.884; all 40 bins computed, largest
+    error 0.234 bits, two bins at 5,000,000 samples), at least 1.8; the MATLAB tutorial''s saved results with the
+    same procedure give 1.981 and 1.894. The peak bias-corrected instantaneous information is 0.520 bits at 140
+    ms, within 0.5 +- 0.05. The simplified procedure (one set of 200,000 samples for all bins, jackknife set k for
+    every stimulus) gives 1.928 bits and a peak of 0.519, and the model rates give a largest cumulative information of 1.990 bits
+    (last bin 1.956) and a peak of 0.540. With independent
+    draws per jackknife replicate, which is not the code''s procedure, the cumulative information rises to 2.206
+    bits and ends at 0.803. The Python KDE matches the KDE saved by the MATLAB tutorial to 0.0004 spikes/ms on average
+    (largest 0.0033).'
+  deviations:
+  - Data, the paper's tutorial model cell only (data elsewhere, GitHub julieelie/PoissonTimeVaryingInfo at commit
+    978020328321c7ed83be12c0152bed85ec77e218); the rate and onset model neurons of Fig 1 are not published.
+  - KDE, the Python port of ssvkernel in the adaptivekde package (1.2.0), in place of the MATLAB ssvkernel the paper
+    cites (reference 42); its output matches the MATLAB KDE saved with the tutorial (mean difference 0.0004 spikes/ms).
+  - Model rate, the tutorial's Input_Spike_count read as the mean count per 10 ms bin and divided by 10 for spikes/ms;
+    its rows sum to 12.0, 11.0, 9.0 and 10.5 spikes per trial for the four stimuli, against 12.1, 8.3, 8.5 and 11.4
+    observed.
+  - 'Cumulative and instantaneous information as the paper''s code computes them (Methods, The cumulative information:
+    ''Monte Carlo samples were chunked in groups of 100,000 samples ... Sampling stopped when the standard error
+    was below 0.2 bits or at a max number of samples set to 5,000,000 samples. If the error at the maximum number
+    of samples was greater than 0.6 bits ... the calculation was not performed for any successive time points'';
+    Bias correction, NB = 20; cumulative_info_poisson_model_MCJK_wrapper.m, cumulative_info_poisson_model_calculus_MCJK.m
+    and Tutorial_TimeVarying_Information.mlx at the pinned commit). Taken from the code, as the text does not give
+    them: the jackknife sets are evaluated on the Monte Carlo samples drawn for the full data, each bootstrap pairs
+    the jackknife sets of the stimuli at random, the error is the square root of the mean over bootstraps of the
+    variance of the pseudo-values N I - (N-1) I_k, and the wrapper stops at 3 x 0.2 bits. NB = 20 follows the paper;
+    the tutorial uses 10 for the cumulative and 100 for the instantaneous information.'
+- claim: fig2a-poisson-test
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for
+    the same reason. The test also needs the KDE and jackknife KDE rates of every unit and stimulus, too large to
+    compute here (see units-337).
+- claim: fig2cd-fano-factor
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: 'Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked
+    for the same reason. Variant on the 1246 auditory single units (call protocol), deciding nothing: time-averaged
+    Fano factor 1.028 (SEM 0.002) as the code, 1.054 (SEM 0.003) leaving out empty bins; both differ from 1 at this
+    n (t-test p 3.1e-38 and 4.2e-70).'
+- claim: fig2b-noise-correlations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: 'Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked
+    for the same reason. Variant on the 1246 auditory single units (call protocol), deciding nothing: noise correlation
+    median 0.151, skewness 1.07; stimulus correlation median 0.291 over stimuli and 0.243 within stimuli.'
+- claim: fig3-5-example-neurons
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The paper does not name the three example units, and the S4 to S6 Fig images were not among the materials
+    (the paper was supplied as text), so they were not inspected and no match with the data was attempted; the criterion
+    blocks the claim when the units cannot be identified. The units would also have to be among the 404 of units-404,
+    which cannot be identified.
+- claim: fig6a-onset-sustained-information
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig6c-new-information
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig6b-fixed-rate-fraction
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig7a-time-constants
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig7b-k300
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: k300-rate-regression
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig9a-mean-cii
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig9a-top-quartile
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: s7-invariant-information
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig9b-cii-tau-ratio
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: fig9c-cii-k300
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: table1-anatomy-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the
+    electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the
+    coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the
+    attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info
+    and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404,
+    which are blocked as methods_underspecified.'
+  output: claim:table1-anatomy-counts
+  notebook: reproduce_elie_2019.ipynb
+- claim: fig10-cii-distance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the
+    electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the
+    coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the
+    attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info
+    and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404,
+    which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large
+    to run here (see units-337).'
+  output: claim:table1-anatomy-counts
+  notebook: reproduce_elie_2019.ipynb
+- claim: fig10-cii-area-anova
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the
+    electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the
+    coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the
+    attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info
+    and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404,
+    which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large
+    to run here (see units-337).'
+  output: claim:table1-anatomy-counts
+  notebook: reproduce_elie_2019.ipynb
+- claim: fig10-tau-k300-distance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the
+    electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the
+    coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the
+    attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info
+    and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404,
+    which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large
+    to run here (see units-337).'
+  output: claim:table1-anatomy-counts
+  notebook: reproduce_elie_2019.ipynb
+- claim: fig10-no-anatomy-categorical
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the
+    electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the
+    coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the
+    attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info
+    and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404,
+    which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large
+    to run here (see units-337).'
+  output: claim:table1-anatomy-counts
+  notebook: reproduce_elie_2019.ipynb
+- claim: cii-unimodal
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified,
+    so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife
+    estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run),
+    before the Monte Carlo cumulative information, so the claim would also be too_large here.
+- claim: s2-spike-counts
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: 'Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked
+    for the same reason. As a variant that decides nothing, on all 1246 single units with I_AR of at least 2.3 bits/s:
+    largest count 9 (4 units), 442 bins with 8 spikes, mean count per bin 0.136 (0.126 over trial-averaged counts),
+    call protocol only.'
+findings:
+- kind: metadata_insufficient
+  statement: The files do not mark the 914 single auditory units the data description and the paper report, nor
+    the 404 units the paper analyses. 1281 h5 files are labelled single units (sortType), 1246 of them with stored
+    I_AR of at least 2.3 bits/s, the 2015 auditory threshold. The spike-snippet SNR that defines a single unit is
+    not stored; computed from the snippet files as the description defines it, the threshold of 5 leaves 461 or
+    274 of the 1401 auditory spike-sorted units (two readings of the definition), not 914. Without a list of units,
+    none of the paper's population results can be repeated on its units.
+- kind: metadata_error
+  statement: 'The data description says the data set holds 688 multi-units and 914 single auditory units, one h5
+    file each. The files are 845 unsorted multi-unit files (sortType tdt) and 1453 spike-sorted files (named _ss):
+    1281 labelled single, 63 multi and 109 noise.'
+- kind: data_missing
+  statement: The anatomical area and the x, y, z coordinates of the recording sites, used in the paper's Table 1
+    and Figure 10, are not in the data set; only the electrode, site and array depths are stored.
+- kind: metadata_error
+  statement: The numbers of stimuli and trials differ from the stated ones. In the call protocol (groups Call, Call1,
+    Call1c, Call2, Call3) single units have 115.3 stimuli on average (sd 34.2, 34 to 133) against the paper's 114
+    (sd 22, 34 to 123), and 90.7 call stimuli of the nine call types (34 to 110); over every group they have 121.9
+    stimuli (73 to 137) against the description's 144 (64 to 153). 1874 unit-stimulus pairs of the call protocol
+    have 12 trials, against a stated maximum of 11. The other protocols in the files (Sel1 to Sel7, Mask1, STRF1),
+    which also hold call stimuli, are not described.
+- kind: metadata_error
+  statement: Three h5 files store sortType as 'singl'; and the description's section on file organisation names
+    a bird WhiBlu5896M, where the files and the summary say WhiBlu5396M.
+- kind: metadata_insufficient
+  statement: The per-site .f32 files of spike waveforms are described only as the waveform of the action potentials.
+    Their layout (18 float32 samples per spike, indexed from 1 by the spike_ids of the h5 files) is documented only
+    by the plotting function h5_plot_one_spike.m in the archive's CRCNSCode.tar.gz. There is one per site and protocol;
+    bird BlaBro09xxF has two files for site 4 and Call1 (1,956,253 and 33,047 snippets, named with _ and -).
+- kind: methods_unavailable
+  statement: 'The paper selects its 404 units by a decoding analysis it does not describe, citing Elie and Theunissen
+    2015, and its code repository holds neither that selection nor the selection of the 337 units, the locally adaptive
+    KDE step, the exponential fits or the CII. The single-unit SNR defined in the Methods, computed from the snippet
+    files, does not recover the 914 units. Question for the authors: can the lists of the 914, 404 and 337 units
+    be published, with the file names of the data set, and on which snippets and with which noise measure was the
+    SNR computed?'
+- kind: other
+  about: paper
+  statement: The paper gives NB = 20 bootstraps of the jackknife for the error on information, while the tutorial
+    of its code repository uses 10 for the cumulative and 100 for the instantaneous information. The text does not
+    say that the jackknife sets are paired across stimuli at random in each bootstrap, nor that the jackknife sets
+    are evaluated on the Monte Carlo samples of the full data; the code does both.
+verifications:
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module elie.py
+    and the claims file, with the paper's full text. The verifier listed the archive's S3 bucket, opened CRCNSCode.tar.gz
+    (no bird data downloaded) and tested cum_info_mc against exact enumeration on a synthetic case. It had no attempt
+    record and took the claims from the claims file. It found no place where the claims file misreads the paper.
+  results:
+  - claim: units-404
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 12: 1281 files are labelled single units, 1246 of them with I_AR >= 2.3. No file, the data description
+      or the CRCNSCode folder lists the 914 or the 404 units. Reading (b), redoing the 2015 decoding, was not attempted,
+      and the 914 count was not even approached. Cell 13 says the .f32 snippet files are undocumented; CRCNSCode/h5_plot_one_spike.m
+      reads them (18 float32 samples per snippet, indexed by spike_ids), which makes the SNR > 5 criterion, and
+      so the 914, computable at least for the sites that have snippets. Cell 12 also never counts the _ss files
+      of any sortType at I_AR >= 2.3 against the description''s 1401.'
+    response: The helper now reads the snippet files as h5_plot_one_spike.m does and computes each spike-sorted
+      unit's SNR on its call-protocol snippets under two readings of the description's definition; the notebook
+      lists the 42 snippet files per bird and site (every site has one for its call protocol, so the earlier 'only
+      some sites' was wrong) and the SNR distribution by sortType. The threshold of 5 leaves 461 or 274 auditory
+      units, not 914. The count of _ss files of any sortType at I_AR >= 2.3 is 1401, as the description says. Notes
+      and findings corrected. Outcome unchanged.
+  - claim: units-337
+    agrees: true
+    outcome: blocked
+    reason: Depends on units-404. Cell 15 estimates about 124 h on one core for the KDE rates alone; the cost argument
+      is a valid second reason (too_large), but the notebook does not name it as a blocking reason.
+    response: The cost cell's conclusion now names too_large as a second reason for every claim from units-337 on
+      and for fig2a-poisson-test. Outcome unchanged.
+  - claim: s1-temporal-resolution
+    agrees: true
+    outcome: blocked
+    reason: Depends on units-404. The variant on 1246 units (65.8 +- 19.0% below 50 Hz, 1245 units losing more than
+      5%) decides nothing. It uses the stored class_info curve, which runs from 4 to 496 Hz and may not be the S1
+      Fig computation, so the 65.8% says nothing about the paper. The power part was not computed at all.
+    response: The conclusion and the notes now say that nothing shows the stored curve is the S1 Fig computation,
+      so the number says nothing about the paper, and that the power part was not computed because it needs the
+      KDE rates. Outcome unchanged.
+  - claim: fig1-model-neurons
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 21, temporal neuron: mean |KDE - model| is 0.009 spikes/ms (< 0.02); bias-corrected peak instantaneous
+      information 0.519 bits (within 0.5 +- 0.05); cumulative information reaches 1.928 bits (>= 1.8). The MATLAB
+      tutorial''s saved results agree (0.502; 1.894). The rate and onset neurons are not in the repository, so ''each
+      model neuron'' holds for one of three. Cell 21 departs from Method I: a fixed 200,000 samples instead of the
+      adaptive chunks targeting 0.2 bits, jackknife SE instead of 20 bootstraps of the jackknife, and no 0.6-bit
+      stopping rule. Its common-random-numbers assumption decides the curve: with independent draws it goes to 2.206
+      bits, above the 2-bit maximum, and ends at 0.803.'
+    response: 'Added a cell that runs the paper''s procedure as its code runs it (cumulative_info_poisson_model_MCJK_wrapper.m
+      and _calculus_MCJK.m): a new estimate per end bin, chunks of 100,000 samples up to 5,000,000 until the error
+      is below 0.2 bits, NB = 20 bootstraps of the jackknife with random pairing of the sets across stimuli, and
+      the 0.6-bit stop. The code evaluates the jackknife sets on the samples drawn for the full data, so common
+      random numbers are the paper''s procedure, not an assumption; the docstring, notes and deviations now cite
+      it. Under it the cumulative information reaches 1.982 bits (largest error 0.234, all 40 bins computed) and
+      the peak instantaneous information is 0.520 bits. Outcome unchanged, now decided by this cell; measured peak
+      0.52.'
+  - claim: fig2a-poisson-test
+    agrees: true
+    outcome: blocked
+    reason: Depends on units-404. No variant was run.
+    response: No change.
+  - claim: fig2cd-fano-factor
+    agrees: true
+    outcome: blocked
+    reason: Depends on units-404. The variant on 1246 units gives 1.027 (SEM 0.002), significantly different from
+      1; it decides nothing. read_unit took call and song stimuli from every group, not only the Call group its
+      docstring names; this affects only the non-deciding variants.
+    response: Call stimuli now come from the call protocol only, as the docstring says, and the data check shows
+      the call and song stimuli of every group (no stimulus is in two groups of a unit). The variant is now 1.028
+      (SEM 0.002). Outcome unchanged.
+  - claim: fig2b-noise-correlations
+    agrees: true
+    outcome: blocked
+    reason: Depends on units-404. The variant gives a noise-correlation median of 0.152, outside the +-0.05 band,
+      and a stimulus-correlation median of 0.29 (over stimuli) or 0.24 (within stimulus); it decides nothing.
+    response: 'Variant re-run on the call protocol only: 0.151, 0.291 and 0.243. Outcome unchanged.'
+  - claim: fig3-5-example-neurons
+    agrees: true
+    outcome: blocked
+    reason: The paper does not name the units. The S4 to S6 raster images are not in the materials, and the notebook
+      shows no attempt to match them, which the criterion allows.
+    response: Added a section saying that the S4 to S6 Fig images were not among the materials, so they were not
+      inspected and no match was attempted. Outcome unchanged.
+  - claim: fig6a-onset-sustained-information
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig6c-new-information
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig6b-fixed-rate-fraction
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig7a-time-constants
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig7b-k300
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: k300-rate-regression
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig9a-mean-cii
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig9a-top-quartile
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: s7-invariant-information
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig9b-cii-tau-ratio
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: fig9c-cii-k300
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: table1-anatomy-counts
+    agrees: true
+    outcome: blocked
+    reason: 'All depend on units-337 (blocked, methods_underspecified). The notebook''s own reason (''no anatomical
+      location in the data set'') is not shown: read_unit records only that extra_info exists and never reads its
+      contents. The anatomy claims are blocked anyway through units-337.'
+    response: 'read_unit now lists every dataset of class_info and extra_info, and a notebook cell prints them over
+      all files: coherence and mean rate in class_info, inter-spike-interval and section statistics in extra_info,
+      no area or coordinate. The main reason is kept as data_missing, since the locations are missing even if the
+      units were known; the dependence on units-337 is in the notes. Outcome unchanged.'
+  - claim: fig10-cii-distance
+    agrees: true
+    outcome: blocked
+    reason: 'All depend on units-337 (blocked, methods_underspecified). The notebook''s own reason (''no anatomical
+      location in the data set'') is not shown: read_unit records only that extra_info exists and never reads its
+      contents. The anatomy claims are blocked anyway through units-337.'
+    response: 'read_unit now lists every dataset of class_info and extra_info, and a notebook cell prints them over
+      all files: coherence and mean rate in class_info, inter-spike-interval and section statistics in extra_info,
+      no area or coordinate. The main reason is kept as data_missing, since the locations are missing even if the
+      units were known; the dependence on units-337 is in the notes. Outcome unchanged.'
+  - claim: fig10-cii-area-anova
+    agrees: true
+    outcome: blocked
+    reason: 'All depend on units-337 (blocked, methods_underspecified). The notebook''s own reason (''no anatomical
+      location in the data set'') is not shown: read_unit records only that extra_info exists and never reads its
+      contents. The anatomy claims are blocked anyway through units-337.'
+    response: 'read_unit now lists every dataset of class_info and extra_info, and a notebook cell prints them over
+      all files: coherence and mean rate in class_info, inter-spike-interval and section statistics in extra_info,
+      no area or coordinate. The main reason is kept as data_missing, since the locations are missing even if the
+      units were known; the dependence on units-337 is in the notes. Outcome unchanged.'
+  - claim: fig10-tau-k300-distance
+    agrees: true
+    outcome: blocked
+    reason: 'All depend on units-337 (blocked, methods_underspecified). The notebook''s own reason (''no anatomical
+      location in the data set'') is not shown: read_unit records only that extra_info exists and never reads its
+      contents. The anatomy claims are blocked anyway through units-337.'
+    response: 'read_unit now lists every dataset of class_info and extra_info, and a notebook cell prints them over
+      all files: coherence and mean rate in class_info, inter-spike-interval and section statistics in extra_info,
+      no area or coordinate. The main reason is kept as data_missing, since the locations are missing even if the
+      units were known; the dependence on units-337 is in the notes. Outcome unchanged.'
+  - claim: fig10-no-anatomy-categorical
+    agrees: true
+    outcome: blocked
+    reason: 'All depend on units-337 (blocked, methods_underspecified). The notebook''s own reason (''no anatomical
+      location in the data set'') is not shown: read_unit records only that extra_info exists and never reads its
+      contents. The anatomy claims are blocked anyway through units-337.'
+    response: 'read_unit now lists every dataset of class_info and extra_info, and a notebook cell prints them over
+      all files: coherence and mean rate in class_info, inter-spike-interval and section statistics in extra_info,
+      no area or coordinate. The main reason is kept as data_missing, since the locations are missing even if the
+      units were known; the dependence on units-337 is in the notes. Outcome unchanged.'
+  - claim: cii-unimodal
+    agrees: true
+    outcome: blocked
+    reason: Each depends on units-337, directly or through fig7a or fig9a-top-quartile, and units-337 is blocked;
+      too_large also applies. In cum_info_mc, category cumulative information mixes a stimulus-weighted p(y) with
+      category-weighted conditional entropies; against exact enumeration on a synthetic case it gives -0.036, 0.350,
+      0.717 bits against 0.101, 0.424, 0.686. It is not used for any outcome here, but it would bias every category
+      claim if those were run.
+    response: cum_info_mc now weights categories equally in p(y), in the proposal and in the conditional entropy,
+      as inst_info and the paper's code (info_model_Calculus_wrapper2.m) do; a new notebook cell checks it against
+      exact enumeration (largest difference 0.0034 bits for stimuli, 0.0019 for categories; bin 1 equals the instantaneous
+      information). too_large is now named in the notebook. Outcome unchanged.
+  - claim: s2-spike-counts
+    agrees: true
+    outcome: blocked
+    reason: Depends on units-404. The variant on 1246 units gives max 9, 442 bins at 8, and a mean of 0.132; it
+      decides nothing.
+    response: 'Variant re-run on the call protocol only: max 9, 442 bins at 8, mean 0.136. Outcome unchanged.'
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook after the round-1 revision, with its conclusion cells and summary, the
+    helper module elie.py, the claims file, the attempt record, the entry README and the round-1 report, with the paper''s
+    full text. It found no place where the claims file misreads the paper, and found all round-1 points resolved.'
+  results:
+  - claim: units-404
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 12 finds 1281 files labelled single, 1246 of them auditory, and confirms the description''s 1401. Cell
+      14 shows that an SNR above 5 leaves 461 (reading A) or 274 (reading B) units, not 914. No list of the 404 exists
+      anywhere in the materials. Both SNR readings follow the description''s wording. The record says the main cause
+      is the missing labels, which is fair. Cell 10 is not a conclusion, but it does not match the cell 9 output above
+      it, which suggests it is left over from an earlier run: ''0.9% to 1.9%'' (printed 0.5% to 1.3% before onset), ''about
+      6.1 spikes/s'' (printed 6.33 to 6.41), ''44% to 66%'' (printed 42.2% to 65.3%), ''rises to 22 spikes/s'' (printed
+      peak 23.30). The conclusion that the clock is aligned still holds.'
+    response: Cell 9 now prints the ranges before and after onset, and cell 10 gives the printed values (0.5% to 1.3%,
+      6.33 to 6.41 spikes/s, 42.2% to 65.3%, peak 23.30 spikes/s). The re-run gives the same counts (1281, 1246, 1401,
+      461, 274). Outcome unchanged.
+  - claim: units-337
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: s1-temporal-resolution
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26.'
+    response: The README now says 18 claims, and its rows add up to 26. The re-run gives the same variant values. Outcome
+      unchanged.
+  - claim: fig1-model-neurons
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Cell 28 runs the paper''s procedure and gives a mean |KDE - model| of 0.009 spikes/ms. The cumulative
+      information reaches 1.982 bits (last bin 1.884). The peak instantaneous information is 0.520 bits. The MATLAB tutorial''s
+      saved results agree (1.981 and 1.894). Only one of the three model neurons is available. Cell 29 and the fig1 notes
+      say the model rate gives ''cumulative 1.956''; in cell 27 that is the last bin, and the largest value is 1.990,
+      at 340 ms. The fig1 deviation ''its rows sum to the observed spikes per trial (11.8 against 12.1 for stimulus 1)''
+      is not supported: 12.1 follows from cell 27, but no output prints 11.8. The round-1 reason in the record leaves
+      out the statement that the conclusion stood anyway because the MATLAB results agreed. On B6, the per-bin agreement
+      with the MATLAB saved results supports the shared random numbers; the Fig 1 legend could be read as independent
+      draws, and the record''s ''other'' finding notes that the text is silent on this.'
+    response: 'Cell 27 now prints the model rate''s largest cumulative information (1.990) beside its last bin (1.956),
+      and cell 29 and the notes give both. Cell 27 also prints the model''s spikes per trial against the observed ones:
+      12.0, 11.0, 9.0 and 10.5 against 12.1, 8.3, 8.5 and 11.4, so the 11.8 was wrong; the deviation now gives these
+      numbers. The round-1 reason is left as recorded. Outcome unchanged.'
+  - claim: fig2a-poisson-test
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26.'
+    response: The README now says 18 claims, and its rows add up to 26. The re-run gives the same variant values. Outcome
+      unchanged.
+  - claim: fig2cd-fano-factor
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26.'
+    response: The README now says 18 claims, and its rows add up to 26. The re-run gives the same variant values. Outcome
+      unchanged.
+  - claim: fig2b-noise-correlations
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26.'
+    response: The README now says 18 claims, and its rows add up to 26. The re-run gives the same variant values. Outcome
+      unchanged.
+  - claim: fig3-5-example-neurons
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 30 states that the S4 to S6 images were not available.
+    response: No change.
+  - claim: fig6a-onset-sustained-information
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig6c-new-information
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig6b-fixed-rate-fraction
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig7a-time-constants
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig7b-k300
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: k300-rate-regression
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig9a-mean-cii
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig9a-top-quartile
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: s7-invariant-information
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig9b-cii-tau-ratio
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: fig9c-cii-k300
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: table1-anatomy-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the change to data_missing is reasonable. Cell 12 lists every root attribute of the files and cell
+      16 lists every dataset in class_info and extra_info; none holds an area or a coordinate. Two small gaps remain:
+      the attributes of groups under class_info and extra_info are not listed, and only selected attributes of the stimulus
+      groups are read. The dependence on units-337 is stated.'
+    response: The helper now collects the attribute names of every group and dataset in each file (root, protocol, stimulus
+      and trial groups, and everything under class_info and extra_info), and cell 16 prints them over all files with
+      the number of files holding each. The groups and datasets under class_info and extra_info carry no attributes;
+      the stimulus groups hold call, caller, stimulus and response statistics attributes, the trial groups rates and
+      times; none is an area or a coordinate. Notes and the conclusion of cell 17 say so. Outcome unchanged.
+  - claim: fig10-cii-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the change to data_missing is reasonable. Cell 12 lists every root attribute of the files and cell
+      16 lists every dataset in class_info and extra_info; none holds an area or a coordinate. Two small gaps remain:
+      the attributes of groups under class_info and extra_info are not listed, and only selected attributes of the stimulus
+      groups are read. The dependence on units-337 is stated.'
+    response: The helper now collects the attribute names of every group and dataset in each file (root, protocol, stimulus
+      and trial groups, and everything under class_info and extra_info), and cell 16 prints them over all files with
+      the number of files holding each. The groups and datasets under class_info and extra_info carry no attributes;
+      the stimulus groups hold call, caller, stimulus and response statistics attributes, the trial groups rates and
+      times; none is an area or a coordinate. Notes and the conclusion of cell 17 say so. Outcome unchanged.
+  - claim: fig10-cii-area-anova
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the change to data_missing is reasonable. Cell 12 lists every root attribute of the files and cell
+      16 lists every dataset in class_info and extra_info; none holds an area or a coordinate. Two small gaps remain:
+      the attributes of groups under class_info and extra_info are not listed, and only selected attributes of the stimulus
+      groups are read. The dependence on units-337 is stated.'
+    response: The helper now collects the attribute names of every group and dataset in each file (root, protocol, stimulus
+      and trial groups, and everything under class_info and extra_info), and cell 16 prints them over all files with
+      the number of files holding each. The groups and datasets under class_info and extra_info carry no attributes;
+      the stimulus groups hold call, caller, stimulus and response statistics attributes, the trial groups rates and
+      times; none is an area or a coordinate. Notes and the conclusion of cell 17 say so. Outcome unchanged.
+  - claim: fig10-tau-k300-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the change to data_missing is reasonable. Cell 12 lists every root attribute of the files and cell
+      16 lists every dataset in class_info and extra_info; none holds an area or a coordinate. Two small gaps remain:
+      the attributes of groups under class_info and extra_info are not listed, and only selected attributes of the stimulus
+      groups are read. The dependence on units-337 is stated.'
+    response: The helper now collects the attribute names of every group and dataset in each file (root, protocol, stimulus
+      and trial groups, and everything under class_info and extra_info), and cell 16 prints them over all files with
+      the number of files holding each. The groups and datasets under class_info and extra_info carry no attributes;
+      the stimulus groups hold call, caller, stimulus and response statistics attributes, the trial groups rates and
+      times; none is an area or a coordinate. Notes and the conclusion of cell 17 say so. Outcome unchanged.
+  - claim: fig10-no-anatomy-categorical
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the change to data_missing is reasonable. Cell 12 lists every root attribute of the files and cell
+      16 lists every dataset in class_info and extra_info; none holds an area or a coordinate. Two small gaps remain:
+      the attributes of groups under class_info and extra_info are not listed, and only selected attributes of the stimulus
+      groups are read. The dependence on units-337 is stated.'
+    response: The helper now collects the attribute names of every group and dataset in each file (root, protocol, stimulus
+      and trial groups, and everything under class_info and extra_info), and cell 16 prints them over all files with
+      the number of files holding each. The groups and datasets under class_info and extra_info carry no attributes;
+      the stimulus groups hold call, caller, stimulus and response statistics attributes, the trial groups rates and
+      times; none is an area or a coordinate. Notes and the conclusion of cell 17 say so. Outcome unchanged.
+  - claim: cii-unimodal
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26. The notes'' ''(118 to 120 h in three runs)'' is not supported:
+      the re-executed cell 19 prints ''117 h on one core''. The ''more than 100 hours'' holds.'
+    response: The README now says 18 claims, and its rows add up to 26. The parenthesis now gives the estimate printed
+      by the executed run, 128 h on one core (the time per KDE estimate varies between runs, as the notebook says); the
+      'more than 100 hours' is unchanged. Outcome unchanged.
+  - claim: s2-spike-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees: blocked, methods_underspecified, with too_large also named for the units-337 group and fig2a. The
+      entry README''s ''Claims on the 404 and 337 units (...; 19 claims)'' is not supported: the record has 18 such claims,
+      and with them the README''s rows add up to 27, not 26.'
+    response: The README now says 18 claims, and its rows add up to 26. The re-run gives the same variant values. Outcome
+      unchanged.
