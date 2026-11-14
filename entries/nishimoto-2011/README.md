@@ -34,13 +34,18 @@ reasoning and the differences from the paper's method.
 The model is fitted at a reduced size: the filter bank follows the paper's rules, but the
 regression weights are pooled over space onto 763 regressors so that 12 models for 45 neurons fit
 in an hour. A second notebook refits the main model with a finer pooling (1465 regressors),
-which raises its mean correlation from 0.448 to 0.518; the claims on that model are judged
-there. The attempt record, with the reasons and the differences from the paper's method, is
+which raises its mean correlation from 0.448 to 0.518; fig3b-mean-prediction and
+natural-movie-control are judged there, and fig3a-example-neuron and complex-cells-dominate,
+judged in the main notebook, are repeated there with the same outcome. A third notebook refits
+four of the Figure 2B models with the finer pooling; the outcomes of the Figure 2B claims it
+repeats are unchanged. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/nishimoto-2011-01.yaml`](../../attempts/nishimoto-2011-01.yaml).
 
-- `reproduce_nishimoto_2011.ipynb`: the analysis. It takes about 60 minutes, two neurons at a time.
+- `reproduce_nishimoto_2011.ipynb`: the analysis. It takes about 65 minutes, two neurons at a time.
 - `finer_pooling.ipynb`: the main model with the finer pooling, for fig3b-mean-prediction,
   fig3a-example-neuron, complex-cells-dominate and natural-movie-control. About 27 minutes.
+- `finer_pooling_fig2b.ipynb`: the linear and compressive models, without and with divisive
+  normalization, with the finer pooling, for the Figure 2B claims. About 47 minutes.
 - `mt2.py`: streaming the files, the filter bank, boosting with early stopping, the null and
   simulated neurons, gratings and plaids, and the spectral measures. Other notebooks on this data
   set can import it.

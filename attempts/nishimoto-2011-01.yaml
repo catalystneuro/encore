@@ -37,15 +37,19 @@ outcomes:
     (delays 1 to 10 0.449, random-partition folds 0.446, sigma chosen on held-out data 0.451, no
     delay offset 0.448, patience 500 0.449, the 12 ms Gaussian as a full width 0.380). For three
     neurons a finer pooling still (4 x 4 regions and every simple channel, 3085 regressors) gives
-    0.614, 0.352 and 0.347 against 0.636, 0.398 and 0.322 with 3 x 3 regions. No boosting fold
+    0.614, 0.352 and 0.347 against 0.636, 0.398 and 0.322 with 3 x 3 regions, changes of -0.022,
+    -0.046 and +0.025, so whether 3 x 3 is close to the paper's model is shown for these three
+    neurons only, with mixed results. No boosting fold
     reached the step cap (main model median 156 steps, at most 643 over all 12 models). The outcome
     rests on the finer pooling, which remains a reduction of the paper's model.
   deviations:
   - The regression weights are constrained to be pooled over space. For this claim, onto 1465
     regressors (3 and 6 cycles per cRF onto 3 x 3 regions with Gaussian weights of SD 1/3 cRF, 1.5
     cycles per cRF at each of its 4 positions, 0.75 and SF 0 summed, simple cells at 0.75 cycles per
-    cRF and SF 0) at 11 delays, where the paper fits a weight for each of 5956 filters; every other
-    analysis uses 763 regressors (3 and 6 cycles per cRF onto 2 x 2 regions). The filter bank behind
+    cRF and SF 0) at 11 delays, where the paper fits a weight for each of 5956 filters. The same
+    pooling is used for natural-movie-control and for the Figure 2B models refitted in
+    finer_pooling_fig2b.ipynb; the main notebook uses 763 regressors (3 and 6 cycles per cRF onto 2
+    x 2 regions). The filter bank behind
     them follows the paper's rules (Materials and Methods, The V1 filter bank), with 7025 complex
     and 1082 simple channels on grids spaced 2.2 sigma, one carrier cycle per two sigma, and simple
     cells up to 2 cycles per cRF in the divisive pool. This was forced by the time limit.
@@ -99,9 +103,8 @@ outcomes:
     (finer_pooling.ipynb) four neurons fall in the band (ct0013 0.758, ct0021 0.761, ct0024 0.699,
     ct0039 0.760) and ct0028 and ct0030 give 0.403 and 0.492.
   deviations:
-  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model.
+  - The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the
+    main notebook and repeated with the 3 x 3 pooling in finer_pooling.ipynb, with the same outcome.
 - claim: fig2b-contrast-normalization-no-effect
   outcome: reproduced
   assumed: true
@@ -112,8 +115,8 @@ outcomes:
     p = 1 over 11 and over 5 comparisons. With the motion-enhanced set only p = 0.893.
   deviations:
   - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model. Eqs. 10 to 12 are applied per frame over the stored
+    the luminance-normalized models were not refitted with the 3 x 3 pooling, for time, so the
+    effect size with a finer model is not known. Eqs. 10 to 12 are applied per frame over the stored
     patch; without them the movie is centred and scaled by its overall mean and SD.
 - claim: fig2b-compressive-improves
   outcome: partially_reproduced
@@ -126,11 +129,13 @@ outcomes:
   notes: The compressive nonlinearity is better than the simplest model in 40 of 45 neurons
     without and with divisive normalization (corrected p 8.8e-8 and 1.8e-8 over 11). The sizes are
     4.6% and 8.4% (reading (a), given as measured), 9.2% and 16.1% (b), 4.8% and 9.4% (c), against
-    16 and 19 (+-4). Only reading (b) with divisive normalization is within tolerance.
+    16 and 19 (+-4). Only reading (b) with divisive normalization is within tolerance. With the 3 x
+    3 pooling (finer_pooling_fig2b.ipynb) the sizes are 5.6% and 8.0% (a), 11.4% and 16.1% (b), 5.6%
+    and 8.6% (c), again with only reading (b) with divisive normalization within tolerance, better
+    in 40 of 45 neurons in both (corrected p 6.2e-9 and 1.7e-9).
   deviations:
-  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model. The power applies to all filter outputs, simple and
+  - The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the
+    main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling (1465 regressors). The power applies to all filter outputs, simple and
     complex (claims file).
 - claim: fig2b-expansive-decreases
   outcome: partially_reproduced
@@ -143,11 +148,11 @@ outcomes:
   notes: The expansive nonlinearity is worse than the simplest model in 45 of 45 neurons without
     and 38 of 45 with divisive normalization (corrected p 6.3e-13 and 4.5e-8). The sizes are -15.1%
     and -13.5% (reading (a), given as measured), -26.9% and -24.5% (b), -15.7% and -13.2% (c),
-    against -36 and -24 (+-4). Reading (b) matches the value with divisive normalization only.
+    against -36 and -24 (+-4). Under reading (a), given as measured, both values are outside
+    tolerance; reading (b) matches the value with divisive normalization only.
   deviations:
-  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model.
+  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors); the expansive
+    models were not refitted with the 3 x 3 pooling, for time (finer_pooling_fig2b.ipynb).
 - claim: fig2b-divisive-improves
   outcome: not_reproduced
   assumed: true
@@ -158,11 +163,12 @@ outcomes:
     (reading (a), given as measured), 5.1% (b, within 8 +- 4) or 3.9% (c), better in 30 of 45.
     Wilcoxon p = 0.0051, but corrected p = 0.056 over 11 comparisons (0.026 over 5), so the
     claim's corrected p < 0.01 is not met. The increase is larger in monkey v (9.5%, reading (a))
-    than in monkey f (1.1%).
+    than in monkey f (1.1%). With the 3 x 3 pooling (finer_pooling_fig2b.ipynb) the increase is
+    2.5% (a), 4.7% (b) or 3.1% (c), better in 31 of 45, Wilcoxon p = 0.0076, corrected 0.084 over
+    11 (0.038 over 5), so the outcome is the same.
   deviations:
-  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model. Sigma is the fixed reading (b) for this model; the
+  - The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the
+    main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling (1465 regressors). Sigma is the fixed reading (b) for this model; the
     held-out choice was run for the compressive and divisive model only, for time.
 - claim: fig2b-compressive-divisive-best
   outcome: reproduced
@@ -172,11 +178,12 @@ outcomes:
   notes: The compressive and divisive model (0.448) beats the compressive model (0.432) in 34 of
     45 neurons, Wilcoxon p = 0.00016, corrected 0.0017 over 11, 0.0019 over 12 and 0.0008 over 5.
     No model is better on average; the closest, the same model with luminance normalization, is
-    lower by 0.0065 (p = 0.36).
+    lower by 0.0065 (p = 0.38). With the 3 x 3 pooling (finer_pooling_fig2b.ipynb, four models
+    refitted) it gives 0.518 against 0.506, better in 33 of 45, p = 0.00075, corrected 0.0083 over
+    11, 0.0090 over 12 and 0.0038 over 5, and neither linear model is better.
   deviations:
-  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model.
+  - The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the
+    main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling (1465 regressors).
 - claim: fig2b-no-interaction
   outcome: reproduced
   assumed: true
@@ -185,26 +192,29 @@ outcomes:
   notes: Without divisive normalization, compressive +0.019 (corrected p 8.8e-8) and expansive
     -0.063 (6.3e-13) against the simplest model. With it, against the simplest model (reading (a))
     +0.035 (1.8e-8) and -0.056 (4.5e-8), and against the linear divisive model (reading (b))
-    +0.022 (8.1e-9) and -0.068 (6.3e-13).
+    +0.022 (8.1e-9) and -0.068 (6.3e-13). With the 3 x 3 pooling the compressive effects are
+    +0.027 (6.2e-9) without divisive normalization and +0.039 (1.7e-9, reading (a)) and +0.026
+    (6.2e-9, reading (b)) with it; the expansive models were not refitted.
   deviations:
-  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model.
+  - The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the
+    main notebook; finer_pooling_fig2b.ipynb repeats it with the 3 x 3 pooling for the
+    compressive model only, as the expansive models were not refitted.
 - claim: complex-cells-dominate
   outcome: reproduced
   assumed: true
   notebook: reproduce_nishimoto_2011.ipynb
   output: claim:complex-cells-dominate
   notes: With complex-cell regressors only the mean correlation is 0.448, as for the full model
-    (ratio of mean squared correlations 1.001, Wilcoxon p = 0.054); with simple-cell regressors
+    (ratio of mean squared correlations 1.001; higher than the full model by 0.0002 on average,
+    Wilcoxon p = 0.049); with simple-cell regressors
     only it is 0.194 (ratio 0.250, p = 5.7e-14). With the 3 x 3 pooling (finer_pooling.ipynb)
     complex only gives 0.514 against 0.518 (ratio 0.985) and simple only 0.194 (ratio 0.191); with
     every simple channel of the bank, on three neurons, simple only gives 0.367, 0.078 and 0.141
     against 0.622, 0.364 and 0.333 for complex only.
   deviations:
-  - The model as in fig3b-mean-prediction, with the 2 x 2 pooling (763 regressors) for every model;
-    the finer pooling, which raises the main model's mean correlation from 0.448 to 0.518, could be
-    run for the main model only, so the effect sizes here may differ from those of a finer model. The two reduced models restrict which regressors
+  - The model as in fig3b-mean-prediction, judged with the 2 x 2 pooling (763 regressors) of the
+    main notebook and repeated with the 3 x 3 pooling in finer_pooling.ipynb, with the same outcome.
+    The two reduced models restrict which regressors
     boosting may choose, on the same features and folds; the simple cells are limited to 0.75
     cycles per cRF and SF 0 (218 of 763 regressors), so their share is smaller than in the paper.
 - claim: fig6a-null-on-plane
@@ -212,9 +222,9 @@ outcomes:
   assumed: true
   notebook: reproduce_nishimoto_2011.ipynb
   output: claim:fig6a-null-on-plane
-  measured: 0.396
+  measured: 0.395
   notes: The mean excitatory on-plane ratio of 150 null neurons is within 0.324 to 0.396 in 12 of
-    40 combinations of readings. With every reading (a) it is 0.396 (SD 0.072), at the upper edge
+    40 combinations of readings. With every reading (a) it is 0.395 (SD 0.072), at the upper edge
     (given as measured). Null neurons made non-negative by an offset (rate reading (b)) give 0.44
     to 0.53, outside the tolerance in every combination.
   deviations:
@@ -232,8 +242,8 @@ outcomes:
   output: claim:fig6a-excitatory-on-plane
   measured: 0.592
   notes: The mean excitatory on-plane ratio is 0.550 to 0.596 across the eight readings, within
-    tolerance in all, and above every null set by a rank-sum test (p from below 1e-4 to 0.0098), so
-    40 of 40 combinations meet the criterion. With every reading (a) it is 0.592; monkey f 0.555,
+    tolerance in all, and above every null set by a rank-sum test (p from below 1e-4 to 0.0078), so
+    40 of 40 combinations meet the criterion. With every reading (a) it is 0.592; monkey f 0.556,
     monkey v 0.705.
   deviations:
   - The spectral receptive field is summed over the pooled regressors, each placed at its
@@ -247,8 +257,8 @@ outcomes:
   measured: 0.168
   notes: With the fitted weights split per delay (quantity (a), sign (a)) the mean suppressive
     on-plane ratio is 0.168 (balance (a), given as measured) or 0.171 (balance (b)), within 0.162
-    to 0.198, and below the suppressive ratios of the null sets with rectified rates (0.196 to
-    0.209; rank-sum p 0.0008 to 0.0097). Six of 40 combinations meet the criterion. The other
+    to 0.198, and below the suppressive ratios of the null sets with rectified rates (0.195 to
+    0.209; rank-sum p 0.0009 to 0.0080). Six of 40 combinations meet the criterion. The other
     readings give 0.094 to 0.159, below the band, and null sets made non-negative by an offset have
     suppressive ratios of 0.11 to 0.17 that do not differ from the real ones (p 0.077 to 0.97).
   deviations:
@@ -283,13 +293,18 @@ outcomes:
   output: claim:fig7b-pattern-index
   notes: On the rectified model responses (firing rates, which cannot be negative), 64% of neurons
     have pattern indices within -6.6 to 2.2 with the per-neuron peak frequency and 120 degree
-    plaids (median -5.07) and none exceed 2.2, which meets the criterion; with 90 degree plaids 49%,
+    plaids (median -5.10) and none exceed 2.2, which meets the criterion; with 90 degree plaids 49%,
     with the population frequency 58% (120 degrees) and 53% (90 degrees), with 2 and 3 neurons whose
     rectified responses are zero in every direction. With Poisson noise on the rectified rates (1 s
-    presentations, 5, 10 or 20 repeats) the criterion is met in 16 to 20 of 20 draws under every
+    presentations, 5, 10 or 20 repeats) the criterion is met in 17 to 20 of 20 draws under every
     combination. The unrectified model outputs give strongly component-like indices (medians -8.6
     to -10.7, 0% to 18% within the range) and meet it under no combination, so the outcome rests on
-    the rectification.
+    the rectification. The rectification sets a median of 25% of the grating and plaid directions
+    to zero (28% with 90 degree plaids, range 0% to 58%), and the change of the index grows with
+    that share (Spearman rho 0.568, p = 4.7e-5; 0.642 with 90 degree plaids). The 8 neurons with no
+    direction clipped keep their component-like indices (median -8.33, 2 of 8 within the range),
+    while 27 of the 37 clipped neurons fall within it. The indices thus reach the paper's range
+    through the clipping of the tuning curves.
   deviations:
   - Assumed, the simulated responses are the model's predictions half-wave rectified, as firing
     rates. The paper does not say whether its simulated grating and plaid responses were
@@ -312,11 +327,12 @@ outcomes:
   notebook: reproduce_nishimoto_2011.ipynb
   output: claim:fig7c-hv-pattern-correlation
   measured: 0.231
-  notes: Across 64 combinations of readings the correlation ranges from -0.343 to 0.330 and none is
+  notes: Across 64 combinations of readings the correlation ranges from -0.343 to 0.331 and none is
     positive with p < 0.01; with the first readings r = 0.231, p = 0.126 (given as measured). With
     the indices of the rectified responses, the reading adopted for fig7b-pattern-index, r ranges
-    from -0.075 to 0.298 (0.096, p = 0.53, with the first readings), again with none positive at p
-    < 0.01; with the noisy indices (ratio reading aaa/a, per-neuron frequency) r is 0.177 or less.
+    from -0.074 to 0.299 (0.097, p = 0.53, with the first readings), again with none positive at p
+    < 0.01; with the noisy indices of the first of the 20 draws (ratio reading aaa/a, per-neuron
+    frequency) r is 0.150 or less.
     Correlations with the population-frequency indices of the rectified and noisy responses are
     undefined, as 2 or 3 neurons have flat responses there.
   deviations:
@@ -328,9 +344,10 @@ outcomes:
   notebook: reproduce_nishimoto_2011.ipynb
   output: claim:fig7c-no-corr-prediction-pattern
   notes: With the pattern indices of the rectified responses (the reading adopted for
-    fig7b-pattern-index), the per-neuron peak frequency and 120 degree plaids, r = -0.052, p =
-    0.733; with 90 degree plaids p = 0.358. The unrectified indices give p = 0.127, 0.902, 0.370 and
-    0.055, and the noisy indices with the per-neuron frequency p of 0.32 or more.
+    fig7b-pattern-index), the per-neuron peak frequency and 120 degree plaids, r = -0.053, p =
+    0.73; with 90 degree plaids p = 0.359. The unrectified indices give p = 0.127, 0.899, 0.371 and
+    0.055, and the noisy indices of the first of the 20 draws with the per-neuron frequency p of
+    0.38 or more.
   deviations:
   - As in fig7b-pattern-index.
 - claim: natural-movie-control
@@ -344,7 +361,7 @@ outcomes:
   notes: The files hold the natural-movie validation set for 14 neurons. With the 3 x 3 pooling the
     mean correlation is 0.523 for natural and 0.563 for motion-enhanced movies, both within
     tolerance, and the Wilcoxon signed-rank test finds no difference (p = 0.43; natural higher in 5
-    of 14). With the 2 x 2 pooling the natural mean, 0.493, is within tolerance, the motion-enhanced
+    of 14, where the 2 x 2 pooling has it higher in 10 of 14). With the 2 x 2 pooling the natural mean, 0.493, is within tolerance, the motion-enhanced
     mean, 0.462, below 0.537 +- 0.054, and p = 0.241.
   deviations:
   - The model as in fig3b-mean-prediction (3 x 3 pooling).
@@ -603,4 +620,165 @@ verifications:
     outcome: reproduced
     reason: Under both noise readings each recovered field correlates best with its own true field
       (diagonals 0.84, 0.57, 0.50 and 0.79, 0.60, 0.67; off-diagonals at most 0.13).
+    response: No change.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebooks reproduce_nishimoto_2011.ipynb and finer_pooling.ipynb with
+    their conclusions and summaries, the helper module mt2.py, the claims file, the attempt record
+    and the README, with the paper's full text. Round 2.
+  results:
+  - claim: fig3b-mean-prediction
+    agrees: true
+    outcome: reproduced
+    reason: The 3 x 3 model (finer, cell 5, 0.518) is closer to the paper's model than the 2 x 2 one.
+      Its offset was chosen on training data only, and no validation data is used for selection. It
+      is still a reduced model. Finer cell 6 says the finer pooling "does not raise it further on
+      these three", but ct0006 rises from 0.322 to 0.347; the 4 x 4 changes are -0.022, -0.046 and
+      +0.025, so whether 3 x 3 is close to the paper's model is shown for only three neurons. The
+      deviation's "every other analysis uses 763 regressors" is wrong, as natural-movie-control is
+      judged on the 1465-regressor model.
+    response: Corrected finer cell 6 and the record's notes to give the three changes and call them
+      mixed, and corrected the deviation to name the analyses that use the 3 x 3 pooling. Outcome
+      unchanged.
+  - claim: fig3b-explainable-variance
+    agrees: true
+    outcome: blocked
+    reason: Main cells 5 and 6, only psths, and trange is empty in all 45 files.
+    response: No change.
+  - claim: fig3a-example-neuron
+    agrees: true
+    outcome: reproduced
+    reason: Stated. The deviation copies the text "could be run for the main model only, so the
+      effect sizes here may differ", though the claim is on the main model and was rerun with 3 x 3
+      pooling. The README says it is judged in finer_pooling.ipynb, while the record points to the
+      main notebook and gives measured = 0.71 from the 2 x 2 model; the outcome is the same either
+      way.
+    response: Replaced the deviation with one that says the claim is judged on the 2 x 2 model and
+      repeated with the 3 x 3 pooling with the same outcome, and corrected the README to say so.
+      Outcome unchanged.
+  - claim: fig2b-contrast-normalization-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
+    response: No change of outcome; the deviation now says the luminance-normalized models were not
+      refitted with the 3 x 3 pooling.
+  - claim: fig2b-compressive-improves
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stated. Rests on the 2 x 2 model; the 3 x 3 pooling raises r by 0.070 on average, more
+      than the Fig. 2B differences being judged.
+    response: A third notebook, finer_pooling_fig2b.ipynb, refits the linear and compressive models
+      without and with divisive normalization with the 3 x 3 pooling. The sizes are 5.6% and 8.0%
+      (a), 11.4% and 16.1% (b), with only reading (b) with divisive normalization within tolerance,
+      both significant. Outcome unchanged.
+  - claim: fig2b-expansive-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stated. Rests on the 2 x 2 model. Main cell 72 says "partially reproduced (significant,
+      one size outside)", which holds only under reading (b); under reading (a), the value given as
+      measured, both sizes are outside tolerance (-15.1 against -36 and -13.5 against -24).
+    response: Corrected the summary row and the record's notes to say both sizes are outside
+      tolerance under reading (a) and one under reading (b). The expansive models were not refitted
+      with the 3 x 3 pooling, for time; the deviation says so. Outcome unchanged.
+  - claim: fig2b-divisive-improves
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees on the 2 x 2 model. The times-11 p = 0.056 is close to the bound, and the finer
+      pooling was not run for this pair of models; refitting the linear and linear-plus-divisive
+      models with 3 x 3 pooling would decide it.
+    response: Refitted both with the 3 x 3 pooling (finer_pooling_fig2b.ipynb). The increase is 2.5%
+      (a), 4.7% (b) or 3.1% (c), better in 31 of 45, Wilcoxon p = 0.0076, corrected 0.084 over 11
+      and 0.038 over 5, so the corrected p < 0.01 is still not met. Outcome unchanged.
+  - claim: fig2b-compressive-divisive-best
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
+    response: Repeated with the 3 x 3 pooling on four models (p = 0.00075, corrected 0.0083 over 11,
+      0.0090 over 12). Outcome unchanged.
+  - claim: fig2b-no-interaction
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
+    response: Repeated with the 3 x 3 pooling for the compressive model (corrected p 6.2e-9, 1.7e-9
+      and 6.2e-9); the expansive models were not refitted. Outcome unchanged.
+  - claim: complex-cells-dominate
+    agrees: true
+    outcome: reproduced
+    reason: Stated. Now also holds with every simple channel (finer, cell 11). The deviation copies
+      the text "could be run for the main model only", though the claim was rerun with 3 x 3
+      pooling, and the README says it is judged in finer_pooling.ipynb while the record points to
+      the main notebook.
+    response: Replaced the deviation as for fig3a-example-neuron and corrected the README. Outcome
+      unchanged.
+  - claim: fig6a-null-on-plane
+    agrees: true
+    outcome: reproduced
+    reason: Stated. Under all-(a) readings the value is 0.396, at the edge of the band. Null-movie
+      reading (b) under all four rate and delay combinations was not run; this is stated and does
+      not affect a conclusion.
+    response: No change.
+  - claim: fig6a-excitatory-on-plane
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
+    response: No change.
+  - claim: fig6b-suppressive-off-plane
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, but fragile; 6 of 40 combinations pass.
+    response: No change.
+  - claim: fig7a-partial-ring
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
+    response: No change.
+  - claim: fig7a-no-corr-prediction-hv
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stated.
+    response: No change.
+  - claim: fig7b-pattern-index
+    agrees: true
+    outcome: reproduced
+    reason: Agrees conditionally. The assumption is stated, with the passages quoted, and is
+      defensible, as firing rates cannot be negative, the prediction includes the intercept b0, and
+      the paper says nothing either way. It was adopted after the unrectified reading failed, and
+      the claims file does not list it. Rectifying clips tuning curves, which by itself pulls |Z|
+      toward 0; the notebook does not show how much of each tuning curve is clipped. It asked for
+      the fraction of grating and plaid directions clipped to zero per neuron, and the index
+      against that fraction.
+    response: Added a cell that prints, per neuron, the share of grating and plaid directions
+      clipped and the index with and without rectification. A median of 25% of directions is
+      clipped (0% to 58%); the change of the index grows with that share (Spearman rho 0.568, p =
+      4.7e-5); the 8 unclipped neurons keep their component-like indices (2 of 8 within the range)
+      and 27 of 37 clipped neurons fall within it. So the indices reach the paper's range through
+      the clipping. The conclusion and notes say so. Outcome kept as verified, resting on the
+      assumption. On this run the threaded fits moved some values in the third decimal (median
+      index -5.10 for -5.07, noisy draws meeting the criterion 17 to 20 of 20 for 16 to 20); the
+      notes give the new values.
+  - claim: fig7c-hv-pattern-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Fails under every index reading. The record's "with the noisy indices r is 0.177 or
+      less" comes from the first of 20 draws only (main cell 61), and the record does not say so.
+    response: The notes now say the noisy values are from the first of the 20 draws. Outcome
+      unchanged.
+  - claim: fig7c-no-corr-prediction-pattern
+    agrees: true
+    outcome: reproduced
+    reason: Holds under every index reading. The record's "p of 0.32 or more" comes from the first
+      of 20 draws only (main cell 64), and the record does not say so.
+    response: The notes now say so. Outcome unchanged.
+  - claim: natural-movie-control
+    agrees: true
+    outcome: reproduced
+    reason: Stated (3 x 3 pooling, nrange read as the natural movie). The direction flips between
+      models, natural higher in 10 of 14 neurons with 2 x 2 pooling and in 5 of 14 with 3 x 3; this
+      does not affect the criterion.
+    response: No change.
+  - claim: fig8-recovery-simulated
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
     response: No change.

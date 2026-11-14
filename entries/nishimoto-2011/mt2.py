@@ -775,28 +775,45 @@ def _process(name, null_specs, sim, seed):
     return out
 
 
-def pooled_fit(C, Sm, dc, ds, tr, m, blocks, offset, level):
+# models of Figure 2B refitted with the 3 x 3 pooling, (alpha, divisive), without luminance
+# normalization: the linear model with and without divisive normalization and the compressive
+# model without it (the expansive models are left out for time)
+FIG2B = [(1.0, False), (1.0, True), (0.5, False)]
+
+
+def pooled_fit(C, Sm, dc, ds, tr, m, blocks, offset, level, models=(), restricted=True):
     """The compressive and divisive model with a finer pooling (`pooling(level=...)`), on
-    the delay offset chosen with the 2 x 2 pooling, to measure what the pooling costs; also
-    with complex or simple regressors only."""
+    the delay offset chosen with the 2 x 2 pooling, to measure what the pooling costs; also,
+    if `restricted`, with complex or simple regressors only, and the models in `models`
+    ((alpha, divisive), without luminance normalization) with the same pooling and offset."""
     Pc, Ps, rd, nc, ns = pooling(dc, ds, level)
+    other = {}
+    for (alpha, div) in models:
+        F, _ = features(C, Sm, tr, Pc, Ps, alpha, div)
+        mu, sd = zscore_stats(F, tr)
+        F = shift_rows((F - mu) / sd, offset)
+        res, _ = fit_neuron(F, [m["psth"]], blocks, lazy=True)
+        other[(alpha, div)] = val_corr(F, m, res[0][0], res[0][1])
+        del F
     F, _ = features(C, Sm, tr, Pc, Ps, MAIN[1], MAIN[2])
     mu, sd = zscore_stats(F, tr)
     F = shift_rows((F - mu) / sd, offset)
     res, st = fit_neuron(F, [m["psth"]], blocks, lazy=True)
     w, b0, its, _ = res[0]
-    out = dict(n_complex=nc, n_simple=ns, r=val_corr(F, m, w, b0), its=its)
+    out = dict(n_complex=nc, n_simple=ns, r=val_corr(F, m, w, b0), its=its, models=other)
     isc = np.tile(rd[:, 5] == 0, DELAYS)
-    for nm, act in [("complex_only", np.where(isc)[0]), ("simple_only", np.where(~isc)[0])]:
+    for nm, act in [("complex_only", np.where(isc)[0]), ("simple_only", np.where(~isc)[0])] if restricted else []:
         r2, _ = fit_neuron(F, [m["psth"]], blocks, stats=st, active=act, lazy=True)
         out[nm] = val_corr(F, m, r2[0][0], r2[0][1])
     return out
 
 
-def pooling_neuron(name, fine=False, threads=2):
+def pooling_neuron(name, fine=False, threads=2, fig2b=False):
     """The main model of one neuron under the finer pooling (finer_pooling.ipynb). The delay
     offset is chosen as in `_process`, by the held-out error of the 2 x 2 model on the
-    training data, so it is the same; the 2 x 2 fit at that offset is returned with it."""
+    training data, so it is the same; the 2 x 2 fit at that offset is returned with it.
+    With `fig2b` (finer_pooling_fig2b.ipynb), the other models of FIG2B with the 3 x 3
+    pooling, in place of the complex-only and simple-only fits."""
     from threadpoolctl import threadpool_limits
     with threadpool_limits(threads):
         t0 = time.time()
@@ -817,7 +834,8 @@ def pooling_neuron(name, fine=False, threads=2):
         del F, Fo
         o = min(off, key=lambda k: off[k][0])
         out = dict(name=name, cellid=m["cellid"], sets={k: len(v) for k, v in sets.items()}, offset=o,
-                   r2x2=off[o][1], p3x3=pooled_fit(C, Sm, dc, ds, tr, m, blocks, o, "3x3"))
+                   r2x2=off[o][1], p3x3=pooled_fit(C, Sm, dc, ds, tr, m, blocks, o, "3x3",
+                                   FIG2B if fig2b else (), restricted=not fig2b))
         if fine:
             out["fine"] = pooled_fit(C, Sm, dc, ds, tr, m, blocks, o, "fine")
         out["t_total"] = time.time() - t0
