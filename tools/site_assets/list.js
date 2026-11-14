@@ -127,7 +127,7 @@
 
   const render = {
     papers(r) {
-      const href = r.page ? root + r.page : `https://doi.org/${r.doi}`;
+      const href = root + r.page;
       const right = r.status === 'attempted'
         ? `${check(r)}<span class="small muted">${esc(r.date)}</span>`
         : `<span class="tag">${esc(label('status', r.status))}</span>`;
@@ -150,12 +150,21 @@
       const kinds = Object.entries(r.found_counts || {}).map(([k, c]) =>
         `<a class="tag" href="${href}#findings">${esc(label('found', k))}<span class="c">${c}</span></a>`).join(' ');
       const versions = (r.versions || []).join('; ');
+      // The papers associated with the dataset: how many, how many of them tested when not all, then the first few
+      // by name (those tested first), each opening its page.
+      const ps = r.papers || [], SHOWN = 4, tested = ps.filter((q) => q.attempted).length;
+      const names = ps.slice(0, SHOWN).map((q) =>
+        `<a href="${root + q.page}">${esc(q.byline)}</a>`
+        + (q.attempted ? '' : ' <span class="muted">(not yet tested)</span>')).join(', ')
+        + (ps.length > SHOWN ? `, and ${ps.length - SHOWN} more` : '');
+      const papersLine = ps.length ? `<div class="meta"><span><strong>${ps.length}</strong> paper${ps.length === 1 ? '' : 's'}${
+        tested < ps.length ? `, ${tested} tested` : ''}:</span> <span>${names}</span></div>` : '';
       return `<div class="row drow">
         <div class="id"><a href="${href}">${esc(r.label)}</a></div>
         <div><p class="title"><a href="${href}">${esc(r.name || r.paper_title)}</a></p>
           <div class="meta">${versions ? `<span>Tested on ${esc(versions)}</span>` : ''}
-            <span>${r.n_tested} paper${r.n_tested === 1 ? '' : 's'} tested</span>
             ${size(r.size_gb)} ${files(r.files)}</div>
+          ${papersLine}
           ${kinds ? `<div class="meta kinds" style="margin-top:6px">${kinds}</div>` : ''}</div>
         <div class="right"><span class="open${n ? '' : ' none'}"><strong>${n}</strong> open finding${n === 1 ? '' : 's'}</span>
           <span class="small muted">${esc(r.date)}</span></div></div>`;
@@ -165,8 +174,7 @@
     authors(r) {
       // The first few papers, each opening its page, then how many more: the person's page has them all.
       const SHOWN = 4;
-      const link = (q) => q.page ? `<a href="${root + q.page}">${esc(q.byline)}</a>`
-        : `<a href="https://doi.org/${esc(q.doi)}">${esc(q.byline)}</a>`;
+      const link = (q) => `<a href="${root + q.page}">${esc(q.byline)}</a>`;
       const papers = r.papers.slice(0, SHOWN).map(link).join(', ')
         + (r.papers.length > SHOWN ? `, and ${r.papers.length - SHOWN} more` : '');
       const count = (n, noun) => n ? `${n} ${noun}${n === 1 ? '' : 's'}` : '';
