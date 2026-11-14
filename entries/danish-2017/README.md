@@ -9,12 +9,12 @@ single units and GTE times are not in the data set.
 | Claim | Outcome |
 |---|---|
 | Lesioned birds sing at rates similar to intact birds | Not reproduced |
-| Maturity index falls from 0.26 to 0.08 | Reproduced (assumption) |
+| Maturity index falls from 0.26 to 0.08 | Partially reproduced (assumption) |
 | Syllable durations closer to exponential (Gamma 16 to 3.7) | Partially reproduced |
 | Small syllable-duration peak at 50 to 100 ms in 6 of 7 birds | Partially reproduced |
 | Gap durations broader after lesion | Reproduced |
 | Song rhythmicity R falls from 3.30 to 1.7 | Partially reproduced |
-| Residual 3 to 8 Hz rhythm in 6 of 7 lesioned birds | Partially reproduced |
+| Residual 3 to 8 Hz rhythm in 6 of 7 lesioned birds | Not reproduced |
 | Uva activity before calls and introductory notes (Fig 4B, 4C) | Partially reproduced |
 | Uva activity elevated during song | Reproduced (assumption) |
 | Consistency across renditions and sites (Fig 5) | Partially reproduced |
@@ -24,11 +24,13 @@ single units and GTE times are not in the data set.
 | Spectral peaks near 9 Hz (Fig 7B) | Partially reproduced |
 | Coherence with amplitude at 8.8 Hz (Fig 7D) | Reproduced (assumption) |
 | Fast oscillations in long syllables (Fig 9) | Not reproduced |
-| Suppression for about 200 ms after bouts | Not reproduced |
+| Suppression for about 200 ms after bouts | Partially reproduced |
 | Little activation at motif and bout boundaries | Not reproduced |
-| Directed song, control lesions, single units | Blocked: data missing |
-| Antidromic responses, spectral features | Blocked: not attempted in the run's time |
-| GTE analysis | Blocked: not runnable |
+| Control lesions | Blocked: data missing |
+| Directed song, single units | Blocked: metadata insufficient |
+| Antidromic responses | Blocked: no antidromic response identifiable in the stimulation files |
+| Spectral features | Blocked: analysis added after round 1, not executed in time |
+| GTE analysis | Blocked: not attempted |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -38,8 +40,8 @@ electrode; the electrophysiology outcomes rest on the channel chosen for each bi
 record, with the reasons and the differences from the paper's method, is
 [`attempts/danish-2017-01.yaml`](../../attempts/danish-2017-01.yaml).
 
-- `reproduce_danish_2017.ipynb`: the analysis. It takes about half an hour, most of it streaming
-  and reducing the two archives (9.4 GB).
+- `reproduce_danish_2017.ipynb`: the analysis. It streams and reduces the two archives (9.4 GB);
+  the revised version did not finish within 47 minutes in the revision run.
 - `uva.py`: reading the archives (the .dat format of the recordings, the analysis files and the
-  spreadsheets), MUA and sound amplitude, the maturity index, Gamma, the song rhythm spectrum and
+  spreadsheets), MUA, sound amplitude and six spectral song features, the maturity index, Gamma, the song rhythm spectrum and
   multitaper coherence. Other notebooks on this data set can import it.

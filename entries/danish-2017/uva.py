@@ -48,7 +48,7 @@ def iter_tar(name, select=None):
 
     `select(name)` decides which members are read; the others are skipped (still decompressed).
     """
-    with urllib.request.urlopen(BUCKET + name) as raw:
+    with urllib.request.urlopen(BUCKET + name, timeout=300) as raw:  # a stalled read raises, not hangs
         with tarfile.open(fileobj=raw, mode="r|gz") as t:
             for m in t:
                 if not m.isfile():
@@ -107,6 +107,12 @@ def gauss_smooth(x, sd):
     return signal.oaconvolve(x, k / k.sum(), mode="same")
 
 
+def gauss_smooth_circular(x, sd):
+    """Gaussian smoothing as gauss_smooth, treating x as periodic (no edge effects)."""
+    h = int(np.ceil(4 * sd))
+    return gauss_smooth(np.r_[x[-h:], x, x[:h]], sd)[h: h + len(x)]
+
+
 def _down(x, fs):
     """Sample a smoothed trace at FS_OUT by taking the nearest sample (no further filtering)."""
     n = int(len(x) * FS_OUT / fs)
@@ -128,6 +134,54 @@ def amplitudes(x, fs):
     db = 10 * np.log10(np.maximum(p, 1e-20))
     rect = gauss_smooth(np.abs(x), 0.002 * fs)
     return _down(db, fs), _down(rect, fs)
+
+
+FEATURES = ["amplitude", "pitch_goodness", "wiener_entropy", "gravity_center", "am", "fm"]
+
+
+def sap_features(x, fs, win=0.0093, fmin=860.0, fmax=8600.0, chunk=20000):
+    """Six spectral song features at 1 kHz, after the definitions of Sound Analysis Pro
+    (Tchernichovski et al. 2000), which the claims file adopts as an assumption
+    (spectral-features-weak). Each 1 ms frame is a 9.3 ms window (SAP's default length) with a
+    Hann taper (SAP uses two Slepian tapers; a standard choice), power between 860 Hz and 8.6 kHz
+    (the band of the paper's Maturity index section; SAP's band is set by the user):
+      amplitude: 10 log10 of the summed power;
+      Wiener entropy: log of the ratio of the geometric to the arithmetic mean of the power;
+      gravity center: the power-weighted mean frequency (Hz);
+      pitch goodness: the largest cepstral peak at quefrencies of 0.5 to 2.5 ms (pitch 400 Hz to
+        2 kHz);
+      AM: the time derivative of log power summed over frequency (per ms);
+      FM: arctan of the largest time derivative of log power over the largest frequency
+        derivative, in degrees.
+    The window is centred on each 1 ms sample. Returns {feature: float32 array}."""
+    nwin = int(round(win * fs)); step = fs / FS_OUT
+    n = int(len(x) * FS_OUT / fs)
+    f = np.fft.rfftfreq(nwin, 1 / fs)
+    band = (f >= fmin) & (f <= fmax)
+    tap = np.hanning(nwin)
+    xp = np.r_[np.zeros(nwin // 2), x - np.mean(x), np.zeros(nwin)]
+    q = np.arange(nwin) / fs
+    qband = (q >= 0.0005) & (q <= 0.0025)
+    out = {k: np.empty(n, np.float32) for k in FEATURES}
+    prev_last = None
+    for a in range(0, n, chunk):
+        idx = np.round(np.arange(a, min(n, a + chunk)) * step).astype(int)
+        fr = xp[idx[:, None] + np.arange(nwin)[None, :]] * tap
+        P = np.abs(np.fft.rfft(fr, axis=1)) ** 2 + 1e-20
+        Pb = P[:, band]
+        L = np.log(Pb)
+        out["amplitude"][a:a + len(idx)] = 10 * np.log10(Pb.sum(1))
+        out["wiener_entropy"][a:a + len(idx)] = L.mean(1) - np.log(Pb.mean(1))
+        out["gravity_center"][a:a + len(idx)] = (Pb * f[band]).sum(1) / Pb.sum(1)
+        cep = np.abs(np.fft.irfft(np.log(P), nwin, axis=1))
+        out["pitch_goodness"][a:a + len(idx)] = cep[:, qband].max(1)
+        Lp = np.vstack([L[:1] if prev_last is None else prev_last, L])
+        dt = np.diff(Lp, axis=0)
+        df = np.abs(np.diff(L, axis=1)).max(1)
+        out["am"][a:a + len(idx)] = dt.sum(1)
+        out["fm"][a:a + len(idx)] = np.degrees(np.arctan(np.abs(dt).max(1) / np.maximum(df, 1e-12)))
+        prev_last = L[-1:]
+    return out
 
 
 def _dbase(b):
@@ -156,8 +210,14 @@ def _dbase(b):
             "length": int(np.atleast_1d(d.FileLength)[k]), "seg": st, "selected": sel.astype(bool),
             "titles": titles, "props": props,
         })
-    return {"fs": float(d.Fs), "files": files, "property_names": names,
-            "event_sources": [str(s) for s in np.atleast_1d(d.EventSources)] if np.size(d.EventSources) else []}
+    # Channels whose file lists are not empty (process_recording.m of the data set reads these as
+    # the valid neural channels), with the name of each list's first file.
+    chan_files = {k + 1: np.atleast_1d(c)[0].name
+                  for k, c in enumerate(np.atleast_1d(getattr(d, "ChannelFiles", [])))
+                  if np.size(c)}  # the lesion analysis files have no neural channels
+    return {"fs": float(d.Fs), "files": files, "property_names": names, "channel_files": chan_files,
+            "event_sources": [str(s) for s in np.atleast_1d(d.EventSources)] if np.size(d.EventSources) else [],
+            "event_detectors": [str(s) for s in np.atleast_1d(getattr(d, "EventDetectors", []))]}
 
 
 _DAT = re.compile(r"Electrophysiology/(Bird_[^/]+)/([^/]+)/(.+)_d(\d+)_(\d{8}T\d{6})chan(\d+)\.dat$")
@@ -204,8 +264,9 @@ def load_ephys():
             s = _stim_snippets(chans[c][0], chans[c][1])
             if s is not None:
                 stim[c] = s
+        feats = {k: v[:n] for k, v in sap_features(x, fs).items()}
         out["recs"][key] = {"mua": m[:, :n], "chans": neural, "amp_db": db[:n], "amp_rect": rect[:n],
-                            "fs": fs, "n_raw": len(x), "stim": stim}
+                            "fs": fs, "n_raw": len(x), "stim": stim, "features": feats}
 
     for name, b in iter_tar(EPHYS_TAR):
         out["md5"][name] = hashlib.md5(b).hexdigest()
@@ -580,9 +641,13 @@ def shifted_ffts(segs, nfft, rng):
 
 def scrambled_ffts(segs, nfft, rng):
     """Tapered FFTs of segments whose samples are randomly permuted and smoothed again with the
-    2 ms Gaussian (null of the long-syllable spectra, Methods, Rhythmicity paragraph 2)."""
+    2 ms Gaussian (null of the long-syllable spectra, Methods, Rhythmicity paragraph 2).
+
+    The permuted samples are smoothed circularly (padded with their own other end), so that the
+    smoothing adds no dip at the window's edges; the real MUA was smoothed on the whole trace
+    and has no such edges."""
     M = np.zeros((len(segs), nfft))
     for i, s in enumerate(segs):
-        y = gauss_smooth(rng.permutation(s), 2.0)
+        y = gauss_smooth_circular(rng.permutation(s), 2.0)
         M[i, :len(s)] = (y - y.mean()) * tapers(len(s))[0]
     return np.fft.rfft(M, axis=1)[:, None, :]
