@@ -1,0 +1,652 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "002020",
+  "label": "DANDI:002020"
+ },
+ "page": "datasets/dandi/002020/",
+ "generated": "2026-11-14T17:52:54+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 3,
+  "blocked": 15
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "nakamuta-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "002020",
+    "version": "0.261004.1410",
+    "doi": "10.48324/dandi.002020/0.261004.1410",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:002020"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:002020",
+   "label": "DANDI:002020",
+   "dataset_version": "0.261004.1410",
+   "paper": "10.1101/2025.01.14.630383",
+   "paper_title": "Self-organization of high-dimensional geometry of neural activity in culture",
+   "date": "2026-11-07",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/42425994257"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "nakamuta-2025",
+   "entry_title": "High-dimensional geometry of activity in developing cortical cultures (Nakamuta et al. 2025)",
+   "summary": "The shift from asynchronous firing to synchronized bursting as cultures mature held up in this data. The emergence of neuronal avalanches with an exponent near 1.5, and their link to the PCA power law, did not reproduce, though the fitted formula is lost from the paper's text. The central power law in the PCA variance spectrum around 15 DIV and the spatial localization of dominant PCs could not be tested: the paper does not say how its decay rate and locality are computed, and the files give no days in vitro. Dominant PCs also had slightly longer time scales than minor ones, against the paper. The model was not run, as it is not fully specified.",
+   "description": "Tests the findings of Nakamuta, Akita, Zhang, Kawahara, Takahashi and Teramae (2025) on dandiset 002020, which holds 129 daily 30-minute HD-MEA recordings of spike detections from seven dissociated rat cortical cultures. It computes variance spectra, the locality of principal components, cascade size distributions and synchrony for every recording. The files give no days in vitro, and the fitted decay rates do not reach the paper's group threshold, so the claims that rest on either are blocked.",
+   "notebooks": [
+    {
+     "path": "reproduce_nakamuta_2025.ipynb",
+     "title": "Reproducing Nakamuta et al. (2025) from dandiset 002020",
+     "executed": "notebooks/nakamuta-2025/reproduce_nakamuta_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "dishes-analysed",
+     "statement": "Seven dishes met the paper's inclusion rule (spontaneous activity observed continuously for more than 10 days) and were summarized.",
+     "source": "Results, Self-organization of power law in PCA, paragraph 3; Methods, Data processing and principal component analysis, paragraph 1",
+     "quote": "Averaging data across seven dishes revealed that power law in PCA was consistently established around 15 DIV",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The dataset holds 7 dishes. Under S1 (at least one electrode above 0.03 Hz), with a run broken only by a recorded day without activity, all 7 have a run of more than 10 days (11 to 33 days). If a day with no recording also breaks a run, 6 do (dish 23317 has 10 days). Under S2 (mean rate above 0.03 Hz) 4 or 2 do. Under S1 nearly every recording counts as active, so the count mostly measures how many days were recorded, and the result is fragile to both choices. The count matches the paper, but the dataset appears to hold only the selected dishes, so the test cannot show the selection itself.",
+     "deviations": [
+      "Whether a day with no recording breaks continuity is not said. Assumed it does not, as a missing recording is not an observation without activity; both readings are shown."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "activity-onset",
+     "statement": "Spontaneous activity became detectable at about 2 to 3 DIV.",
+     "source": "Results, Self-organization of power law in PCA, paragraph 1",
+     "quote": "Spontaneous activity became detectable approximately 2 \u2013 3 days in vitro (DIV)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The files give recording dates but no DIV or plating date. Their experiment description says \"Days in vitro are unknown to this converter and are not inferred from the date list\", and the subject age, P18D in every file, is the donor's age at dissection. Under S1 every dish is active on its first recording in the dataset; under S2, 4 dishes are active on day 0 and 3 on day 1 or 2 (19880 and 23302 day 2, 23317 day 1). Without the DIV of the first recording the onset cannot be placed on the paper's axis.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-async-to-bursts",
+     "statement": "As the cultures matured, spiking changed from asynchronous firing to synchronous bursting.",
+     "source": "Figure 1B; Results, Self-organization of power law in PCA, paragraphs 1 and 4",
+     "quote": "During this transition from exponential to power-law decay, spiking activity evolved from asynchronous firing to synchronous bursting",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Mean pairwise correlation of 100 ms counts rises with day (Spearman 0.487 under S1, 0.384 under S2, p < 0.0001); the largest fraction of electrodes active in one bin also rises (0.301, p 0.0007; 0.253, p 0.0072); under O2 and O3, against each dish's DIV, 0.462 and 0.269 (S1) and 0.373 and 0.232 (S2), p at most 0.014. The dish median from 15 DIV exceeds that at 3 to 5 DIV for both measures and selections under d0 = 2, 3, 4 and 5 and under the per-dish readings O2 and O3 (correlation 0.330 against 0.063, S1, d0 = 2). Only d0 = 1, which would put activity at 1 DIV, before the onset of 2 to 3 DIV the Results give, fails, for the fraction active under S1 (0.816 late against 0.892 early) and both measures under S2. Per dish the correlation rises in 6 of 7 dishes (it falls in 23282, -0.227) and the fraction active in 5 of 7 (it falls in 23280, -0.156, and 23282, -0.273).",
+     "deviations": [
+      "Days in vitro are not in the dataset; DIV is taken as days since the dish's first recording plus 2 (assumed, as the Results put the onset of activity at 2 to 3 DIV, four dishes are active on their first recording and three become active one or two days later); d0 = 1, 3, 4 and 5, and per-dish readings that put each dish's first active recording at DIV 2 (O2) or 3 (O3), are shown.",
+      "The paper shows rasters only; the measures and test are the claims file's readings."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-power-law-emerges",
+     "statement": "In early cultures the variance spectrum decays faster than a power function; as the culture matures it follows a power function, linear on log-log axes.",
+     "source": "Figure 1D; Results, Self-organization of power law in PCA, paragraph 2",
+     "quote": "Initially, the variance spectrum decayed more rapidly than a power function. However, as the culture matured, the spectrum began to follow a power function, appearing linear on a bilogarithmic scale",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The fitted b of the variance spectrum (rank as x) has a median of 0.0055 (S1, F1) and 0.0039 (S2, F1), and is at or above 0.1 only in 10 recording and reading pairs, 6 of them near silent. Independent Poisson counts at the recorded rates, with no correlation, give the same b (median 0.0114 against 0.0131 in the data, F1, the first and last recording of each dish). With x the rank, b of at least 0.1 over the first 100 ranks needs lambda_1/lambda_100 above about 19,930; the largest here is 5,503 (median 70.9 in the first three recordings, 844.5 later). Fits to the top 30 or 100 ranks, or with x as rank over the number of PCs, do not separate early from late recordings either. As written, 0 of 7 dishes meet the criterion under every fit, selection and d0 reading. Without the threshold, b falls with day only under S1 F1 (Spearman -0.256, p 0.0044). Fitting the rank as a function of the variance, the axes of the Figure 1D legend and a variant only, gives b at or above 0.1 in 0.86 of the first three recordings and 0.20 from 15 DIV (S1, F1), and meets the criterion in 1 dish (S1, F1), 2 to 4 dishes (S2, F1; 4 of 7, a majority, only under d0 = 1) and none under F2. Whether the claims file's x is the paper's is asked of a reader (questions/002020.yaml), and how b is computed is asked of the authors (findings).",
+     "deviations": [
+      "Days in vitro are not in the dataset; DIV is taken as days since the dish's first recording plus 2 (assumed, as the Results put the onset of activity at 2 to 3 DIV, four dishes are active on their first recording and three become active one or two days later); d0 = 1, 3, 4 and 5, and per-dish readings that put each dish's first active recording at DIV 2 (O2) or 3 (O3), are shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-example-dish",
+     "statement": "In the example dish the variance spectrum shifted from exponential to power-law decay around 10 DIV and stayed so to at least 19 DIV, with a power-law fit of exponent 1.30.",
+     "source": "Figure 1E and legend; Results, Self-organization of power law in PCA, paragraph 2",
+     "quote": "in this dish, the variance spectrum shifted from exponential decay to power-law decay around 10 DIV and remained stable at least until 19 DIV",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The shift rests on the 0.1 boundary on b, which the b fitted here meets from the first or nearly the first recording (see fig1d-power-law-emerges for the scale of b). The shift DIV also needs days in vitro, which the files do not give, and the example dish is not identified. Under every reading no dish meets the criterion. Under S1 F1 and d0 = 2 the shift falls at DIV 2 to 4 (23282 never stays below 0.1), with exponents 0.55 to 1.04 under reading (a), 0.28 to 1.19 under (b) and 1.34 to 1.82 under (c); the one dish with a shift at DIV 10 (23302, S1, F2) has exponents 4.41, 0.39 and 1.66.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-transition-15div",
+     "statement": "Across seven dishes the exponential decay rate of the variance spectrum is large early in development and falls as the culture matures, so that the power law in PCA is established around 15 DIV.",
+     "source": "Figure 1F (left); Results, Self-organization of power law in PCA, paragraph 3",
+     "quote": "Averaging data across seven dishes revealed that power law in PCA was consistently established around 15 DIV ... The exponential decay rate, which quantifies the degree of exponential decay, was large in the early stages of development, indicating a dominance of exponential decay. As the culture matured, the decay rate decreased, reflecting a shift toward power-law decay",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The DIV of \"established\" rests on the 0.1 boundary, which the b fitted here meets from the first or nearly the first recording (see fig1d-power-law-emerges for the scale of b); the files also give no days in vitro. Under every fit, selection and d0 reading the DIV is 0 to 5 under reading (a), the moving average, and 1 to 8 under (b), per dish, never within 15 plus or minus 1.5. The decrease of b with DIV holds under S1 F1 (Spearman -0.256, p 0.0045; -0.218, p 0.016, against the DIV of O2 and O3) and not under S1 F2 (-0.100, p 0.27), S2 F1 (-0.063, p 0.51) or S2 F2 (-0.107, p 0.26).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-exponent-1p2",
+     "statement": "Once established, the power-law exponent of the variance spectrum stabilized at about 1.2.",
+     "source": "Figure 1F (right); Results, Self-organization of power law in PCA, paragraph 3",
+     "quote": "The powerlaw exponent stabilized at approximately 1.2",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Depends on fig1f-transition-15div, which is blocked. For the record, the median c over recordings after the transition is 0.72 to 0.81 under F1 and 1.98 to 2.24 under F2, and the 3-day moving average of c at the last DIV is 0.58 (F1) and 3.72 (F2), none within 1.2 plus or minus 0.12.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-shuffle",
+     "statement": "Temporal shuffling leaves the variance spectrum unchanged early in development but, once the power law has emerged, disrupts it and returns it to exponential decay.",
+     "source": "Figure 1D, dashed lines and legend; Results, Self-organization of power law in PCA, paragraph 4",
+     "quote": "During the initial development period, shuffling did not alter the variance spectra. However, after the emergence of the power law in PCA, shuffling significantly disrupted the power law, reverting them to exponential decay",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The criterion's early group (PCA b at or above 0.1) holds 2 recordings (S1 F1), 6 (S1 F2), 0 (S2 F1) and 2 (S2 F2), most of them near silent, so part (i) cannot be judged. Part (ii) as written fails, with the shuffled b at or above 0.1 in 0 to 2.6% of late recordings (0 to 4.5% with the DIV split). Whether the shuffle raises b depends on the reading. Under S1 F1 it does not (median 0.0054 against 0.0043 shuffled, one-sided Wilcoxon p 0.98); under S1 F2, S2 F1 and S2 F2 the shuffled b is higher (p at most 0.0004; medians 0 against 0.0051, 0.0039 against 0.0044, 0 against 0.0047), but stays far below 0.1. Late, the shuffle lowers c (median 0.75 to 0.25, S1 F1). With early and late taken as 3 to 5 DIV and from 15 DIV (d0 = 2), a variant, the median ratio of shuffled to original b is 0.72 to 1.07 early. As uncorrelated Poisson counts give the same b as the data, a shuffled b at or above 0.1 cannot be expected whatever the data. Shuffling flattens the late spectra; whether that is the paper's reverting to exponential decay depends on how its b is computed.",
+     "deviations": [
+      "Days in vitro are not in the dataset; DIV is taken as days since the dish's first recording plus 2 (assumed, as the Results put the onset of activity at 2 to 3 DIV, four dishes are active on their first recording and three become active one or two days later); d0 = 1, 3, 4 and 5, and per-dish readings that put each dish's first active recording at DIV 2 (O2) or 3 (O3), are shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-spatial-structure",
+     "statement": "Early in development (3 DIV) all PCs correspond to a few scattered electrodes; in mature cultures (15 DIV) dominant PCs correspond to localized clusters of electrodes, while minor PCs remain on globally distributed, sporadic electrodes.",
+     "source": "Figure 2B; Results, Self-organization of spatial structure of PCs, paragraph 2",
+     "quote": "In the early stages of development(3 DIV), all PCs corresponded to a small number of scattered electrodes. However, as the culture matured (15 DIV), dominant PCs began to correspond to localized clusters of electrodes, while minor PCs remained associated with globally distributed, sporadic electrodes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Depends on fig2c-locality-spectrum, which is blocked because its readings disagree, and the criterion requires it reproduced. The claim's own part holds only under S2 with M1 and d0 = 2 to 5 (at about 15 DIV the first 10 PCs are more local than the last 10 in 4 to 6 of 7 dishes; at about 3 DIV they are within 10% in 4 to 7 of 7), and under M1 fig2c-locality-spectrum fails. Under S1 (M1 and M2) and under S2 with M2 the late part holds in 7 of 7 dishes and the early part in 0 to 2 of 7. No reading meets both this criterion and that of fig2c-locality-spectrum. Breaking ties toward the later recording changes no reading's result.",
+     "deviations": [
+      "Days in vitro are not in the dataset; DIV is taken as days since the dish's first recording plus 2 (assumed, as the Results put the onset of activity at 2 to 3 DIV, four dishes are active on their first recording and three become active one or two days later); d0 = 1, 3, 4 and 5, and per-dish readings that put each dish's first active recording at DIV 2 (O2) or 3 (O3), are shown.",
+      "The 3 and 15 DIV recordings are those nearest to these DIV under d0, the earlier on a tie; the later on a tie is shown too."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-locality-spectrum",
+     "statement": "The locality spectrum (the number of electrodes with local Moran's I above threshold, against PC index) is flat early in development and becomes steeper as the culture matures.",
+     "source": "Figure 2C; Results, Self-organization of spatial structure of PCs, paragraph 3",
+     "quote": "Initially, the locality spectrum was flat, but as culture matured, it became steeper",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The readings of the local Moran's I (M1, M2) and of the slope axis (L1, L2) give different outcomes, and the claims file says such a claim is blocked. Under M2 with L1 (w_ii = 0) the locality slope falls with day (Spearman -0.318, p 0.00036, S1; -0.401, p 1.2e-05, S2; -0.299 and -0.385 against the DIV of O2 and O3) and the median slope at 3 to 5 DIV is closer to zero than from 15 DIV for d0 = 1 to 5 and O3, not O2. Under M1 and under L2 the Spearman correlation is not negative with p < 0.05 (for example 0.009, p 0.92, S1, M1, L1), so 12 of the 56 main readings hold. Locality as a share of the kept electrodes gives the same result under M2 with L1 (Spearman -0.285, p 0.0015, S1). Even under M2 with L1 the early spectra are not flat, as the statement says, unless d0 is 3 or more (d0 = 2, medians -104.2 early and -105.7 late; d0 = 3, -23.95 and -103.7, S1).",
+     "deviations": [
+      "Days in vitro are not in the dataset; DIV is taken as days since the dish's first recording plus 2 (assumed, as the Results put the onset of activity at 2 to 3 DIV, four dishes are active on their first recording and three become active one or two days later); d0 = 1, 3, 4 and 5, and per-dish readings that put each dish's first active recording at DIV 2 (O2) or 3 (O3), are shown.",
+      "PCs with locality 0 are left out of the L2 fit, the log of zero being undefined."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-locality-slope",
+     "statement": "The slope of the locality spectrum confirms that spatial structure emerges progressively and is absent in the initial stages of development.",
+     "source": "Figure 2D; Results, Self-organization of spatial structure of PCs, paragraph 3",
+     "quote": "analysis of the slope of the locality spectrum confirmed the progressive emergence of spatial structure, which was absent during the initial stages of development",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Depends on fig2c-locality-spectrum, which is blocked, and its own readings also disagree (4 of 24 hold). Under M2 with L1 and d0 = 2 the 3-day moving average of the slope falls from -34.5 at DIV 2 to -186.1 at DIV 26 (Spearman with DIV -0.729, p 1.5e-06, S1; -0.766 under S2) and does not return to zero, but its first value is 19% of its most negative value under S1 and S2, above the 10% bound for absent. The 4 readings that hold are all under S1 with L1 (M1 and M2) and the per-dish readings O2 and O3, and they rest on near-silent recordings from before each dish's onset. Under O2 and O3 the first window of the moving average holds only 19880 day 0 (14 electrodes kept, 0.009 Hz) and 23317 day 0 (11 electrodes, 0.007 Hz), with a mean slope of 0.36; under d0 = 2 it holds ten recordings and the first value is -34.5. Under L2 no reading holds. Under S1 the moving average rises (Spearman 0.270 to 0.423) and returns to zero. Under S2 it does not fall significantly (Spearman -0.329 to 0.098, p at least 0.076), and its first value is 24 to 55% of its most negative value.",
+     "deviations": [
+      "The 3-day moving average is a centred mean over DIV x-1 to x+1 pooled over dishes, a standard reading; with one d0 for all dishes the curve only shifts, so a uniform d0 does not change the result; the per-dish readings O2 and O3 are shown."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-shuffle-locality",
+     "statement": "Temporal shuffling, which removes inter-electrode correlations, disrupts the spatial structure of PCs; the locality spectrum becomes nearly independent of PC index.",
+     "source": "Figure 2D, dashed line; Results, Self-organization of spatial structure of PCs, paragraph 4",
+     "quote": "applying a circular shift to data with an established spatial structure, which removed inter-electrode correlations, disrupted the structure ... the locality spectrum became nearly independent of the PC indices",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Depends on fig2c-locality-spectrum, which is blocked. Shuffling makes the slopes less negative under every reading and set (one-sided Wilcoxon p at most 2.4e-05). Under M2 with L1 the median shuffled slope is below 10% of the original in every set for S1 and S2 (ratio 0.001 to 0.094), but under M2 with L2 in no set (0.12 to 0.73). The criterion asks for the bound under each of M1, M2, L1 and L2, which no set meets (41 of 72 rows hold), so the claim's own part fails whatever fig2c-locality-spectrum turns out to be. Set (b), the Power-law group, holds nearly every active recording, as PCA b is below 0.1 in them.",
+     "deviations": [
+      "Days in vitro are not in the dataset; DIV is taken as days since the dish's first recording plus 2 (assumed, as the Results put the onset of activity at 2 to 3 DIV, four dishes are active on their first recording and three become active one or two days later); d0 = 1, 3, 4 and 5, and per-dish readings that put each dish's first active recording at DIV 2 (O2) or 3 (O3), are shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-avalanches-emerge",
+     "statement": "Across seven dishes the cascade size distribution shifted from exponential to power-law decay at about 15 DIV, with a power exponent of about 1.5.",
+     "source": "Figure 3C; Results, Co-occurrence of power law in PCA and neuronal avalanches, paragraph 2",
+     "quote": "Data summarized from seven dishes show that the distribution shifted from an exponential decay to a power-law decay at approximately 15 DIV, with an exponent around 1.5",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Under none of the 56 readings (S1 and S2, F1 and F2, A1 and A2, shift readings (a) and (b), seven d0 readings) are both the shift DIV and the exponent within tolerance. Under F1 the shift comes at DIV 3 to 8 for A1, too early under every d0, with median c 1.96 to 2.10; under F2 2 to 4 of 7 dishes never shift. The exponent is within 1.5 plus or minus 0.15 only under S1, F2, reading (b) (1.50 for A1, 1.49 for A2), where 4 of 7 dishes never shift, so the median shift is later than every recording. A dish whose last recording has b at or above 0.1 counts as later than every other in the median over dishes. Wherever the shift is reached (77 of 112 reading and shift pairs) the exponent is 1.13 to 2.53, never within tolerance, and in each of the 14 pairs where the exponent is within tolerance the median shift is never reached. Under reading (b) a DIV offset changes neither the exponent nor whether the shift is reached; under reading (a) the same holds for any offset shared by all dishes and for the per-dish onsets O2 and O3 (cell after the fig3c table). Other per-dish offsets were not tried; under reading (a) they change the pooled moving average and so c (S1 F1 A2 gives 1.65 under O2 and O3, against 1.72 shared), but the shift there is at DIV 21 to 22, far from 15 plus or minus 1.5. The missing DIV does not decide the claim, so it is not reproduced, as the round-3 verifier agreed.",
+     "deviations": [
+      "Under F2, sizes with no cascade are kept in the fit (a zero is a valid raw value); under F1 they are left out, the log of zero being undefined.",
+      "The fitted function is the claims file's reading of a formula lost from the text, so the exponent c compared with 1.5 is only as reliable as that reading."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-decay-rates-correlated",
+     "statement": "The exponential decay rates of the variance spectrum and of the cascade size distribution are positively correlated across recordings, so the two power laws are established concurrently.",
+     "source": "Figure 3D; Results, Co-occurrence of power law in PCA and neuronal avalanches, paragraph 3",
+     "quote": "A clear positive correlation between the two exponential decay rates indicates that two power laws are established concurrently in the dissociated culture",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Over 112 to 122 recordings, no reading of selection, fit and size (8 readings) gives both a positive Spearman and a positive Pearson correlation at p < 0.05. Spearman is 0.026 to 0.217 (p 0.022 only for S2 F1 A1, with Pearson -0.029), and Pearson is significant only for S1 F1 A2 (0.484, with Spearman 0.066, p 0.47). Leaving out recordings at or below 0.03 Hz changes no reading's outcome. Per dish, 3 or 4 of 7 dishes have a positive Spearman correlation. One of the two b's is at the bound 0 in most recordings, the avalanche b in 0.66 to 0.71 of them under F1 and the PCA b in 0.76 to 0.79 under F2. Leaving out the recordings where either is at the bound, a variant, both correlations are positive and significant under S1 F1 (n 37, Spearman 0.501, p 0.0016, Pearson 0.456, p 0.0046, A1; n 40, 0.602 and 0.548, A2) and under no other reading. The PCA b here is far below the scale of the paper's (see fig1d-power-law-emerges), so the quantity correlated may differ from the paper's.",
+     "deviations": [
+      "The fitted function is the claims file's reading of a formula lost from the text.",
+      "Under F2, sizes with no cascade are kept in the fit (a zero is a valid raw value); under F1 they are left out, the log of zero being undefined."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3ef-groups-cooccur",
+     "statement": "Recordings classified by the PCA decay rate alone (Power-law group, b below 0.1) show both power laws, while the Exponential group shows neither.",
+     "source": "Figure 3E and 3F; Results, Co-occurrence of power law in PCA and neuronal avalanches, paragraph 3",
+     "quote": "Interestingly, although these groups were categorized based solely on the power law in PCA, regardless of the power law in the neuronal avalanches, it was clearly observed that both phenomena appeared in the Power-law group ( Fig. 3E ). In contrast, neither power law was observed in the Exponential group",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "The Exponential group (PCA b at or above 0.1) holds 2 recordings (S1 F1), 6 (S1 F2), 0 (S2 F1) and 2 (S2 F2), so the groups cannot be compared as the paper does; the scale of b is the reason (see fig1d-power-law-emerges). In a median split of PCA b, shown as a variant, the avalanche b is lower in the lower-b half only for S2 F1 A1 (Mann-Whitney p 0.0014; others 0.088 to 0.62). At the 0.1 split one fit and size reading meets both readings formally, S1 F1 A2 (reading (a), Mann-Whitney p 0.0252, median avalanche b 3.7e-15 in the Power-law group and 0.543 in the Exponential group; reading (b), pooled b 6.1e-21 against 0.731), but its Exponential group is two near-silent recordings (23282 day 10, 16 electrodes kept, 0.005 Hz; 23317 day 0, 11 electrodes, 0.007 Hz), only the first with an A2 avalanche b. No other fit and size reading meets either reading, so the readings disagree.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-classified-by-avalanches",
+     "statement": "A similar co-occurrence is seen when recordings are classified by their neuronal avalanches.",
+     "source": "Figure S1, cited in Results, Co-occurrence of power law in PCA and neuronal avalanches, paragraph 3",
+     "quote": "A similar co-occurrence was also observed when data were classified based on the neuronal avalanches (Fig. S1)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Grouped by avalanche b at 0.1, the PCA b is lower in the avalanche Power-law group under S1 F1 (Mann-Whitney p 0.00135 for A1, 5.0e-05 for A2) but not under S1 F2, S2 F1 or S2 F2 (p 0.48 to 0.76). The PCA b is below 0.1 in both groups under every reading, recording by recording (median 0.004 to 0.010 under F1) and pooled over each group under reading (b) (0.0026 to 0.0077 under F1), so the second part of either reading cannot hold whatever the data. The threshold for Figure S1 is also not in the text read.",
+     "deviations": [
+      "For reading (b) the variance spectra of a group are pooled as the mean, rank by rank, of each spectrum divided by its sum, over ranks up to the median spectrum length, a standard choice."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2-shuffle-breaks-cooccurrence",
+     "statement": "The co-occurrence of the two power laws is easily disrupted by temporal shuffling, reflecting that the two phenomena are not inherently associated.",
+     "source": "Figure S2, cited in Results, Co-occurrence of power law in PCA and neuronal avalanches, paragraph 3; Discussion, paragraph 2",
+     "quote": "This co-occurrence is notable because it is easily disrupted by temporal shuffling, reflecting that these phenomena are inherently unassociated (Fig. S2)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "Reading (a) fails under every reading (0 to 1.7% of Power-law group recordings have shuffled avalanche b below 0.1 with shuffled PCA b at or above 0.1; the shuffled avalanche b has a median of 0.25 to 0.48, and the shuffled PCA b of 0.004 to 0.005). Reading (b) holds for A1 under S1 F1, S1 F2 and S2 F1, and not for A2 or S2 F2 (shuffled Spearman 0.24 to 0.33, p 0.0003 to 0.01). The readings disagree, so the claim is blocked as its criterion says; Figure S2 is not in the text read.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "no-temporal-structure",
+     "statement": "The cultures did not show the in vivo temporal structure of PCs, in which dominant PCs have longer time scales than minor PCs.",
+     "source": "Discussion, paragraph 4",
+     "quote": "This temporal structure is characterized by dominant PCs exhibiting longer time scales, while minor PCs exhibit shorter time scales. However, our study using the dissociated neuronal culture was unable to replicate such a temporal structure",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "From 15 DIV on (d0 = 2), the PC time scale falls with PC rank (Spearman negative, p < 0.05) in 25 of 44 recordings under (a), 24 of 44 under (a) interpolated and 27 of 44 under (b) (S1), and 23, 23 and 31 of 41 under S2, a majority under every d0 reading (the share without a negative correlation is at most 0.49), so dominant PCs have longer time scales in most recordings. The effect is small. Under (a) nearly every PC has the same value, one 100 ms bin (median share of tied PCs 1.00), and the median correlation is -0.118; interpolated, the median time scale of the first 10 PCs is 0.070 s against 0.063 s for the last 10 (median rho -0.311); under (b) 0.125 s against 0.1 s (-0.389). 19 of 702 recording and measure pairs have a constant time scale and count as not negative.",
+     "deviations": [
+      "Days in vitro are not in the dataset; DIV is taken as days since the dish's first recording plus 2 (assumed, as the Results put the onset of activity at 2 to 3 DIV, four dishes are active on their first recording and three become active one or two days later); d0 = 1, 3, 4 and 5, and per-dish readings that put each dish's first active recording at DIV 2 (O2) or 3 (O3), are shown.",
+      "Reading (b) integrates the autocorrelation from lag 0 to its first non-positive lag, the reading chosen here of the integral of the positive part; lags up to 300 s. A variant of (a) interpolates the 1/e crossing linearly between lags."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-cauchy-model-power-law",
+     "statement": "In the binary threshold network with heavy-tailed (Cauchy) connections, the variance spectrum decays exponentially for weak connections and becomes a power law at the critical point, with exponent 1.56, where neuronal avalanches also occur.",
+     "source": "Figure 4C and 4D; Results, Heavy-tailed connectivity is important for the co-occurrence, paragraph 4",
+     "quote": "The variance spectrum exhibited an exponential decay when the typical connection strength was sufficiently smaller than the critical point. However, as the connection strength increased, the spectrum transitioned to a power-law decay at the critical point. ... The power-law exponent at the critical state was 1.56",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "A simulation, not a test on the dataset. The network size, the scaling of the weight distributions with g (the formulas are lost from the text), the run length, initial state and inputs, and how model activity is binned are not given, and the paper links no code. Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-gaussian-model-no-power-law",
+     "statement": "Networks with Gaussian connections, which lack neuronal avalanches, show no power law in PCA at any connection strength.",
+     "source": "Figure 4C and 4D; Results, Heavy-tailed connectivity is important for the co-occurrence, paragraph 4",
+     "quote": "In contrast, Gaussian networks, which fails to reproduce neuronal avalanches, were also unable to reproduce a power law in PCA at any connection strength",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_nakamuta_2025.ipynb",
+     "notes": "As fig4d-cauchy-model-power-law. Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files give no days in vitro and no plating date (each says that days in vitro are unknown and that the subject age is the donor's E18), only recording dates. No result can be placed on the paper's DIV axis, which blocks the claims whose result is a DIV (onset at 2 to 3 DIV, power law at about 15 DIV, the shift near 10 DIV). The avalanche claim (about 15 DIV) fails whatever the DIV of the first recording, so it is not reproduced, not blocked. The DIV of each dish's first recording would settle it.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Spike times are given from the first detected spike, not from the recording start, whose frame is not stored. Time bins can only be aligned to the first spike.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dataset holds 129 recordings, 17 of them with a mean rate at or below 0.03 Hz, the paper's exclusion rate, and does not mark which recordings the paper analysed. Near-silent recordings occur within series (23317 on days 3 and 4, 23312 on day 22, 23302 on days 7 and 8) and at the ends of 23282 and 23302.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Six recordings of dish 23311 (days 8 to 13) hold 338 to 702 electrodes and one of 23280 (day 6) holds 525, where the other recordings hold 956 to 1012; the dataset does not say why.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-08",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run, the executed notebook with the conclusions and summary removed, the helper module and the claims file, with the paper under paper/. The verifier tested the helpers on synthetic inputs and checked the archive's asset metadata.",
+     "agreed": 17,
+     "of": 20,
+     "disagreements": [
+      {
+       "claim": "fig2b-spatial-structure",
+       "outcome": "partially_reproduced",
+       "reason": "At about 15 DIV the first 10 PCs are more local than the last 10 in 7 of 7 dishes, for S1 (M1 and M2) and S2/M2. The early half fails, as at about 3 DIV the locality ratio is within 10% in only 0 to 2 of 7 dishes there. It passes only under S2/M1, where fig2c fails. No reading satisfies both fig2b and its dependency fig2c. Ties toward the earlier day pick the near-silent day 0 as \"3 DIV\" for dish 19880."
+      },
+      {
+       "claim": "fig2c-locality-spectrum",
+       "outcome": "blocked",
+       "reason": "The readings disagree. It holds only under M2 with L1 (rho -0.32 for S1, -0.40 for S2, p < 0.001), and fails under M1 and under L2 (w_ii = 0). Even under M2/L1 the early slope is not flat (median -104 at 3 to 5 DIV against -106 later, d0 = 2). Under S1 the absolute L1 slope grows with the number of electrodes kept, while S2 keeps electrode counts nearly constant and gives the same result."
+      },
+      {
+       "claim": "fig2d-locality-slope",
+       "outcome": "not_reproduced",
+       "reason": "No reading holds. The moving average falls under M2/L1 (rho -0.73 to -0.77), but its first value is 19% of the most negative one, above the 10% bound for \"absent\"."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-08",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the revision after round 1, with its conclusions and summary, the helper module, the attempt record, the README and the claims file, with the paper under paper/.",
+     "agreed": 19,
+     "of": 20,
+     "disagreements": [
+      {
+       "claim": "fig3c-avalanches-emerge",
+       "outcome": "not_reproduced",
+       "reason": "Cell 48 now covers all 56 readings. Wherever the shift is finite, the exponent is outside 1.5 plus or minus 0.15 (1.13 to 2.53). The exponent is in tolerance only under S1 F2 (b), where 4 of 7 dishes never shift, so the median shift is infinite. No choice of DIV offset changes either fact, so the missing DIV is not what decides this claim. Cascade size as x is unambiguous here."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-08",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The proposed change of outcome for fig3c-avalanches-emerge and the analysis behind it (cells 49 and 50 of the executed notebook of the final revision), with the helper module, the attempt record and the claims file.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How is the exponential decay rate b of the variance spectrum computed (the fitted formula, what x is, which ranks are fitted, and whether the error is on log or raw values)? With f(x) = a x^-c exp(-b x), x the PC rank and all positive eigenvalues, b has a median of 0.0055 (S1, error on log values) and reaches 0.1 only in two near-silent recordings; with the error on raw values 76 to 79% of the values sit at the bound 0 and two active recordings reach 0.1 (0.46 and 0.32). So the 0.1 boundary between the Power-law and Exponential groups puts nearly every recording in the Power-law group; fits to the top 30 or 100 ranks, or with x as rank over the number of PCs, do not separate early from late recordings either, and independent Poisson counts at the recorded rates give the same b as the data. Fitting the rank as a function of the variance (the axes of the Figure 1D legend) puts b on the scale of 0.1 in early recordings; is that the fit?",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Is the local Moran's I normalized by the variance of the PC weights, does w_ii count, and is the locality slope fitted to locality against log PC index or to log locality against PC index? The readings give different outcomes for the locality claims, which are blocked for that reason; only the unnormalized form against log PC index gives a steeper spectrum with age.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. For the avalanches, are the spikes of all electrodes pooled into one train for the mean inter-spike interval, and is the cascade size the number of spikes or of electrodes? And what is the avalanche threshold for Figure S1 and the shuffle and measure of Figure S2 (the supplement was not in the text read)?",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The model of Figure 4 lacks the network size, the weight distributions as functions of g, the run length, initial state and inputs, and the binning of model activity for PCA, and no code is linked.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "nakamuta-2025",
+   "type": "reproduction",
+   "title": "High-dimensional geometry of activity in developing cortical cultures (Nakamuta et al. 2025)",
+   "description": "Tests the findings of Nakamuta, Akita, Zhang, Kawahara, Takahashi and Teramae (2025) on dandiset 002020, which holds 129 daily 30-minute HD-MEA recordings of spike detections from seven dissociated rat cortical cultures. It computes variance spectra, the locality of principal components, cascade size distributions and synchrony for every recording. The files give no days in vitro, and the fitted decay rates do not reach the paper's group threshold, so the claims that rest on either are blocked.",
+   "datasets": [
+    "dandi:002020"
+   ],
+   "papers": [
+    "10.1101/2025.01.14.630383"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_nakamuta_2025.ipynb",
+     "title": "Reproducing Nakamuta et al. (2025) from dandiset 002020",
+     "executed": "notebooks/nakamuta-2025/reproduce_nakamuta_2025.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 20,
+   "hashed": false
+  }
+ ],
+ "badge": null,
+ "badges": {
+  "reproduced": null,
+  "outcomes": "https://encorescience.org/badge/dandi/002020-outcomes.svg",
+  "card": "https://encorescience.org/badge/dandi/002020-card.svg"
+ }
+}
