@@ -353,7 +353,7 @@ outcomes:
     The files hold more neurons than the paper reports for these mice; the counts are judged as
     the criterion says and the fraction is reported.
 - claim: fig3f-alm-selectivity-abolished-by-cn-inhibition
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_gao_2018.ipynb
   output: claim:fig3f-alm-selectivity-abolished-by-cn-inhibition
   notes: >-
@@ -362,15 +362,6 @@ outcomes:
     0.27 [0.02, 0.53]. Selectivity falls by 73% to 82% but its interval excludes zero in both windows,
     so it is not abolished by the criterion. With 5 screening trials (the deposited script) 0.37
     [0.17, 0.57] and 0.32 [0.06, 0.56].
-  proposed:
-    outcome: not_reproduced
-    reason: >-
-      The criterion's only test of the claim is that photo-inhibition selectivity cannot be told
-      from zero, and it fails under every reading the notebook runs (cell 74); whole delay 0.39
-      [0.19, 0.60], last 500 ms 0.27 [0.02, 0.53], and with 5 screening trials 0.37 [0.17, 0.57] and
-      0.32 [0.06, 0.56]. The criterion has no partial condition, and the control part only sets the
-      precondition, so the 73% to 82% reduction does not make the claim hold in part. Both
-      verification rounds gave not_reproduced for this reason.
   deviations:
   - >-
     The criterion's 10 screening trials per type are from the Methods; the deposited script uses 5,
@@ -1523,3 +1514,28 @@ verifications:
       do not support.
     response: >-
       No change.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 3. The one proposed change of outcome, for fig3f-alm-selectivity-abolished-by-cn-inhibition
+    (partially_reproduced to not_reproduced), and the analysis behind it in cells 72 to 75 of the
+    executed notebook, with the helper module and the claims file. The verifier agreed with it. It
+    found no place where the claims file misreads the paper. Report in
+    transcripts/gao-2018/verifier-3-report.md.
+  results:
+  - claim: fig3f-alm-selectivity-abolished-by-cn-inhibition
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      The claims file's criterion requires two things under one window reading, control selectivity
+      above zero, and photo-inhibition selectivity not distinguishable from zero (its bootstrap 95%
+      interval over neurons includes zero). In cell 74 (computed in cell 72), 336 neurons pass, from
+      4 mice. Control selectivity is above zero in every reading. Photo-inhibition selectivity fails
+      the zero test in every reading, whole delay 0.39 [0.19, 0.60], last 500 ms 0.27 [0.02, 0.53],
+      and with the 5-screening-trial variant 0.37 [0.17, 0.57] and 0.32 [0.06, 0.56]. The criterion
+      has no partial condition, so the 73% to 82% drop in selectivity does not count as partial
+      reproduction.
+    response: >-
+      Outcome changed to not_reproduced and the proposal removed. The result cell, the summary and
+      the README now give not reproduced.

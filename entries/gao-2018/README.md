@@ -19,7 +19,7 @@ VGAT-ChR2 experiments and anatomy are in neither, so 24 of the 46 claims are blo
 | CN photo-inhibition alters 197 of 454 ALM neurons, 7.1 ms latency | Not reproduced |
 | Mean ALM rate unchanged by CN photo-inhibition | Reproduced |
 | 108 increase and 89 decrease among modulated ALM neurons | Not reproduced |
-| CN photo-inhibition abolishes ALM selectivity | Partially reproduced (a change to not reproduced is proposed) |
+| CN photo-inhibition abolishes ALM selectivity | Not reproduced (reduced by 73% to 82%, not abolished) |
 | Fastigial photo-activation changes ALM within 4.5 ms | Partially reproduced |
 | Fastigial photo-activation abolishes ALM selectivity | Reproduced |
 | The fastigial effect persists for more than 1 s | Reproduced |
