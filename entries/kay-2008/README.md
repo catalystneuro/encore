@@ -13,7 +13,7 @@ later sessions of subject S1 and the retinotopic mapping scans are not in it.
 | Retinotopy-only model, 55% and 42% at 120 images | Reproduced |
 | Errors fall on visually similar images | Reproduced (local contrast reading) |
 | Voxel counts per area (Supplementary Table 1) | Reproduced |
-| Predictive power falls from V1 to V2 to V3 | Reproduced |
+| Predictive power falls from V1 to V2 to V3 | Reproduced (assumed) |
 | The model does poorly in V4 | Reproduced |
 | RF size grows with eccentricity and from V1 to V3 | Partially reproduced (assumed) |
 | Representative voxel 42205 (Figure 2) | Partially reproduced (assumed) |
@@ -33,7 +33,7 @@ The identification results hold only when the final receptive-field model covers
 paper does not say which it used. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/kay-2008-01.yaml`](../../attempts/kay-2008-01.yaml).
 
-- `reproduce_kay_2008.ipynb`: the analysis. It takes about 40 minutes, most of it fitting one final
-  model per voxel.
+- `reproduce_kay_2008.ipynb`: the analysis. It took 39 minutes in one run and 106 in another, on a
+  slower machine, most of it fitting one final model per voxel.
 - `vim1.py`: loading the files, the Gabor wavelet pyramid, the gradient descent fits, identification
   and the retinotopy-only model. Other notebooks on this data set can import it.

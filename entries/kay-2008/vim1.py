@@ -33,7 +33,7 @@ O1 to O7, which cite the Supplementary Methods; SM below):
   length, our reading of the garbled formula), stop at the first iteration where the stopping-set
   error no longer decreases (our reading of "until the error no longer decreases": a fit whose
   first step already raises the stopping-set error keeps the zero kernel, so the voxel has no
-  model and p = 1; about 30% of the initial fits stop there). One stopping set is drawn per fit and shared by all voxels fitted
+  model and p = 1; about a third of the initial fits stop there, 29% to 38% in the six fits). One stopping set is drawn per fit and shared by all voxels fitted
   together (a standard choice for a random draw). The paper's 100 bootstrap fits, whose mean gives
   the final parameters, are not run here for time (a deviation; `n_boot` runs a smaller number).
 - Rough localization (SM 5): orientation-invariant 128 px models over the full 20 degrees, the
