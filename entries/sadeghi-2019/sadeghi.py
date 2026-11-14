@@ -74,7 +74,8 @@ def read_site(name, raw):
     D = h["Data"]
     P = D["Param"]
     out = {"name": name.split("/")[-1][:-4],
-           "param": {k: _chars(P[k]) for k in P.keys()}, "ras": {}, "fs": set(), "ntrials_ch": {}}
+           "param": {k: _chars(P[k]) for k in P.keys()}, "ras": {}, "fs": set(), "ntrials_ch": {},
+           "fields": {"Data": sorted(D.keys()), "Data.Param": sorted(P.keys()), "Data.Sound": sorted(D["Sound"].keys())}}
     snd = D["Sound"]
     sub = [k for k in snd.keys()][0]  # 'Channel', 'Condition' or 'Exemplar'
     for a, ref in enumerate(snd[sub][()].ravel()):
@@ -213,6 +214,28 @@ def correlation_readings(ras):
     NS2 = NS // 2
     T0, Tw = whole_window(NS2)
     out["code_half"] = site_correlations(ras[:, :, :NS2], T0, Tw)
+    return out
+
+
+def split_half(ras):
+    """Split-half reliability of the stimulus-driven (shuffled) correlations of one raster
+    (channels, trials, samples), for the aMUA part of S10 Fig F ("comparing neural correlations
+    across halves of the data"). Halves are read two ways: (time) the first and second 1.5 s, as
+    NeuralExample.m splits the raster (sA, sB), each with its whole-window correlation; (trial)
+    odd and even trials, each over the whole response. Returns {half: (r spectral with the
+    diagonal, r spectral off the diagonal, r temporal)}, Pearson r between the two halves."""
+    NS = ras.shape[-1]
+    NS2 = NS // 2
+    T0h, Twh = whole_window(NS2)
+    T0, Tw = whole_window(NS)
+    pairs = {"time": (site_correlations(ras[:, :, :NS2], T0h, Twh), site_correlations(ras[:, :, NS2:2 * NS2], T0h, Twh)),
+             "trial": (site_correlations(ras[:, 0::2], T0, Tw), site_correlations(ras[:, 1::2], T0, Tw))}
+    off = ~np.eye(ras.shape[0], dtype=bool)
+    out = {}
+    for k, (a, b) in pairs.items():
+        out[k] = (float(np.corrcoef(a["spec"]["sh"].ravel(), b["spec"]["sh"].ravel())[0, 1]),
+                  float(np.corrcoef(a["spec"]["sh"][off], b["spec"]["sh"][off])[0, 1]),
+                  float(np.corrcoef(a["temp"]["sh"].ravel(), b["temp"]["sh"].ravel())[0, 1]))
     return out
 
 
@@ -539,7 +562,7 @@ def raster_hash(a):
 
 def describe(d):
     """Counts, ranges and hashes of one site, for the data check."""
-    out = {"param": d["param"], "fs": sorted(d["fs"]), "cond": {}}
+    out = {"param": d["param"], "fs": sorted(d["fs"]), "cond": {}, "fields": d["fields"]}
     for key, r in d["ras"].items():
         nt, ns = d["ntrials_ch"][key]
         out["cond"][key] = {"channels": r.shape[0], "trials": r.shape[1], "samples": r.shape[2],

@@ -23,6 +23,7 @@ provenance:
 outcomes:
 - claim: fig1k-example-temporal-widths
   outcome: reproduced
+  assumed: true
   notebook: reproduce_sadeghi_2019_neural.ipynb
   output: claim:fig1k-example-temporal-widths
   measured: [2.8, 3.1, 4.4, 5.5, 7.1, 12.2, 5.6, 156.8, 7.6, 20.6, 60.9]
@@ -32,7 +33,9 @@ outcomes:
     snake's side peak is at 60.9 ms (channels 9 to 16), outside 50 +/- 5 ms, so 10 of 11 values
     match. Under the two windows the claims file names, the whole response and 1000 ms windows,
     6 to 8 of 11 values match (partially reproduced by the criterion); the bird's 10% width is
-    then 138.8 or 50.2 ms. With the median over channels, 7 to 8 of 11 match under every window.
+    then 138.8 or 50.2 ms. With the median over channels, 7 to 8 of 11 match under every window. The notebook now prints the lines of NeuralExample.m that set this window
+    (73 to 75, NS2 = floor(NS/2), sA = 1:NS2; 80, RASNMod = RASNA; 86 and 87, T0 at the centre and
+    TwMod = floor((NSMod - 2 MaxLag - 2)/Fsd 1000)).
   deviations:
   - The window is taken from the paper's code, Code/Examples/NeuralExample.m, which computes Fig 1
     from the first half of each raster (T0 at its centre, Tw = NS - 2 MaxLag - 2 samples), as the
@@ -123,12 +126,15 @@ outcomes:
   notes: Under reading (1a) with PCs chosen on validation, all 18 non-snake-temporal conditions
     exceed 20% at p < 0.05 across the 13 sites and the two snake temporal conditions do not (16 of
     18 with the inner split). Under the (1b) readings, 16 to 18 of 18 exceed chance but a snake
-    temporal condition does too, so the claim holds under the (1a) readings only.
+    temporal condition does too, so the claim holds under the (1a) readings only. Under (1a)(2a) the snake temporal classifier without tonotopy is
+    significantly below chance (12%, p = 0.012), where the paper gives p = 0.92; the criterion asks only
+    that it is not above chance, so the outcome stands, and the notebook flags the difference.
   deviations:
   - The decision rule is not settled by the paper (reading 1); the outcome holds under (1a) and not
     under (1b), and the criterion takes any reading.
 - claim: figs9-mixing-coefficient
   outcome: reproduced
+  assumed: true
   notebook: reproduce_sadeghi_2019_neural.ipynb
   output: claim:figs9-mixing-coefficient
   measured: [0.7, 0.5]
@@ -137,7 +143,12 @@ outcomes:
     with whole responses (median 0.50, 25th percentile 0.25). The result depends strongly on how a
     is chosen; with a fitted on the model data the paradigm 1 and 2 medians are 0.50 to 0.60, as
     reported, but the paradigm 3 medians are 0.80 to 0.90; with a fitted on the validation data and
-    the (1a) readings the paradigm 3 medians are 0.00 to 0.40. No reading matches per paradigm.
+    the (1a) readings the paradigm 3 medians are 0.00 to 0.40. No reading matches per paradigm. With paradigm 2 a taken from the whole-response classifier (reading 3b)
+    two more combinations pass, (1a)(2a) with a on the validation data (pooled median 0.70, paradigm 2
+    0.70, paradigm 3 0.40, which also meets the per-paradigm rule) and (1b)(2a) on the validation data
+    (pooled 0.65, paradigm 3 0.50); the other 14 combinations with 3b do not. The passing medians sit at
+    the edge of the tolerance and the per-site values spread from 0.0 to 1.0 (printed), so the outcome
+    depends on how a is chosen.
   deviations:
   - The paper says only that a maximises the log-likelihood; a is chosen on the summed log-posterior
     of the true sound, on the model data or on the validation data, over a grid of 0 to 1 in steps
@@ -145,9 +156,17 @@ outcomes:
 - claim: figs10-amua-tmua
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_sadeghi_2019_neural.ipynb
+  output: claim:figs10-amua-tmua
   notes: Thresholded MUA needs the raw voltage traces (events 2 SDs above the noise floor). The
-    data set holds only the aMUA envelopes downsampled to 2034.5 Hz; neither its file list nor its
-    description has voltage traces or spike times.
+    data set holds only the aMUA envelopes downsampled to 2034.5 Hz; the notebook lists every member
+    of the tar (281 files, code, documents, sounds and the 35 neural files) and every field of the
+    neural files (Data.Param with AnimalNo, BlockNo and RecordDate, and Data.Sound), and none holds
+    voltage traces or spike times, so four of the six values cannot be computed. The two aMUA
+    split-half values can and match. With the time halves of NeuralExample.m (first and second 1.5 s)
+    the median r between halves of the stimulus-driven correlations is 0.980 spectral and 0.830
+    temporal over the 65 paradigm 1 rasters (reading a; 0.980 and 0.842 over all 373 rasters, reading
+    b), against 0.98 and 0.83; with odd and even trials as halves they are 0.996 and 0.986.
 - claim: fig4-example-original-vs-equalized
   outcome: not_reproduced
   notebook: reproduce_sadeghi_2019_neural.ipynb
@@ -157,7 +176,9 @@ outcomes:
     spectral r = 0.930 +/- 0.019 (within 0.92 +/- 0.01) and temporal r = 0.898 +/- 0.022, higher
     than the reported 0.72 +/- 0.07 and outside 10% of it under every reading (0.875 to 0.900). The
     correlations are as similar as the statement says, or more, but the temporal value differs from
-    the reported one.
+    the reported one. Lag 0 does not drive the high temporal r; without lag 0 it is
+    0.888, without lags within 5 ms 0.693 +/- 0.110 (inside 0.72 +/- 0.07) and without lags within 20 ms
+    0.661; per channel the median r is 0.952. Only the first of these is the claims file's measure.
 - claim: fig4e-population-original-vs-equalized
   outcome: not_reproduced
   notebook: reproduce_sadeghi_2019_neural.ipynb
@@ -281,49 +302,121 @@ outcomes:
   - As in fig5-speech-water-widths; the SI equation is lost from the text and the claims file's two
     readings are run.
 - claim: fig9a-optimal-resolution
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not run. The model classifier needs short-term spectral and temporal features of the 195
-    sounds at ten resolutions and a leave-one-sound-out GMM classifier for three correlation
-    classifiers and the spectrum classifier. The model notebook's cost cell times the parts on a
-    subset; it needs features at ten resolutions and at least 76050 GMM fits with the reported PC
-    and component counts (reading 7b), and at least 39000 more fits to choose N_c by
-    cross-validation (reading 7a). The estimated duration of the notebook with the classifier
-    changes with the machine, between about one and four hours over the runs made,
-    over the 60 minute limit except under the cheapest readings on the fastest
-    runner, and writing and running it did not fit the time left in this run after the neural and
-    model correlation analyses. The model correlations, the 195 sounds and the paper's code are all
-    in the data set, so a later attempt can test it.
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_sadeghi_2019_classifier.ipynb
+  output: claim:fig9a-optimal-resolution
+  measured: [141.4, 100.0]
+  notes: Under readings (6b) (windows spaced by the full Kaiser length) and (7b) (the reported PC and
+    component counts), the spectral and temporal classifiers are best at 141 ms (82.1 and 80.5% at the
+    full duration) and the spectro-temporal one at 100 ms (81.5%). Under (6a)(7b) the optima are 283,
+    141 and 141 ms, and under the (7a) readings the spectro-temporal optimum is 283 ms, so the outcome
+    rests on (6b)(7b). Every correlation classifier is above 7.69% at every resolution under every
+    reading (lowest 58.5%, temporal at 25 ms; largest Bonferroni p over the 195 per-sound outcomes
+    1.3e-31, over the 13 category means 7.9e-05). The accuracy curves over resolution are flat (spectral
+    72 to 82%), so the optimum moves between neighbouring grid points with the reading.
+  deviations:
+  - The classifier is the Methods' pipeline, with choices the paper does not make, stated in
+    model.py and the notebook; the spectro-temporal feature vector is the spectral and temporal
+    features of a time point side by side; PCA is fitted once on all 195 sounds (refitted per fold
+    for 26 folds as a variant, 80.8% against 76.9%); training observations are subsampled to 10000 per
+    category, equally from each sound; the spectrum classifier, whose counts the paper does not give,
+    uses the PCs for 90% and 8 components.
+  - Reading (7a) uses the PCs explaining 90% at each resolution with the reported N_c; the
+    cross-validated choice of N_c (over 1, 2, 3, 5, 8, 13 and 20 components, a subset of the Methods'
+    1 to 20, for time) was run at each (6a)(7b) optimum only, giving 3 (reported 8) for spectral, 20
+    (reported 5) for temporal and 13 (reported 13) for spectro-temporal.
 - claim: fig9b-similar-maximum
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not run; it needs the classifier of fig9a-optimal-resolution at each classifier's optimum
-    (see that claim's notes for the estimate).
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_sadeghi_2019_classifier.ipynb
+  output: claim:fig9b-similar-maximum
+  measured: [81.5, 82.1, 80.5]
+  notes: Each classifier at its own optimum and the full duration, under (6b)(7b) the spectro-temporal
+    classifier is 81.5%, spectral 82.1% and temporal 80.5%, all within tolerance, and no pair differs
+    (two-sample t tests over the 195 per-sound outcomes, p 0.70, 0.90 and 0.80; over the 13 category
+    accuracies p 0.84 to 0.95). Under (6a)(7b) the values are 83.1, 82.1 and 80.0% (p 0.43 to 0.79).
+    Under (6a)(7a) the spectro-temporal classifier reaches 87.7% and differs from the temporal one
+    (p = 0.04 over sounds, 0.27 over categories), so the absence holds under the (7b) readings, the
+    reported counts, and under (7a) with (6b) (p 0.18 to 0.70).
+  deviations:
+  - As in fig9a-optimal-resolution.
 - claim: fig9b-accumulation-rate
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not run; it needs the performance curves of fig9b-similar-maximum, from the classifier of
-    fig9a-optimal-resolution (see that claim's notes for the estimate).
+  outcome: partially_reproduced
+  notebook: reproduce_sadeghi_2019_classifier.ipynb
+  output: claim:fig9b-accumulation-rate
+  measured: [1.92, 2.67, 1.23]
+  notes: No reading puts all three rise times within tolerance; the order spectro-temporal < spectral <
+    temporal holds under the (7b) readings and (6a)(7a) for every way of measuring it. Under (6b)(7b)
+    with linear interpolation, spectral 1.92 s (1.7 +/- 0.17), temporal 2.67 s (3.0 +/- 0.3) and
+    spectro-temporal 1.23 s (1.2 +/- 0.12); with the first sampled duration 2.31, 3.08 and 1.65 s; with
+    an exponential fit 1.45, 1.90 and 1.10 s. Under (6a)(7b) the times are shorter (0.6 to 1.9 s).
+    Under (6b)(7a) the spectro-temporal classifier (at 283 ms) is no faster than the spectral one.
+  deviations:
+  - As in fig9a-optimal-resolution.
 - claim: fig9c-time-averaged-worse
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not run; it needs the classifier of fig9a-optimal-resolution and a time-averaged variant
-    (see that claim's notes for the estimate).
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_sadeghi_2019_classifier.ipynb
+  output: claim:fig9c-time-averaged-worse
+  measured: 5.1
+  notes: At the spectro-temporal optimum and the full duration, reading (a) (time-averaged category
+    models, one diagonal Gaussian per category) is 5.1 to 5.6 points below the short-term classifier
+    under every reading ((6b)(7b) 76.4 against 81.5%; 6.0 to 6.8% relative), not 25. Reading (b) (the
+    running average of the test sound scored under the short-term models) is 15.4 to 36.9 points lower
+    ((6b)(7b) 44.6 against 81.5%, 36.9 points, 45.3% relative). No reading gives 25 +/- 2.5; the
+    time-averaged classifier is at least 10 points lower under reading (b) only, which meets the
+    partial rule. The outcome rests on reading (b), whose test feature differs from the training
+    features of the models.
+  deviations:
+  - As in fig9a-optimal-resolution. Reading (a) uses N_c = 1, as a category has only 14 or 15
+    time-averaged vectors, and the vectors are the time averages of the short-term PC scores.
 - claim: fig9e-category-specific
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not run; it needs the per-category results of the classifier of fig9a-optimal-resolution
-    (see that claim's notes for the estimate).
+  outcome: partially_reproduced
+  notebook: reproduce_sadeghi_2019_classifier.ipynb
+  output: claim:fig9e-category-specific
+  measured: [100.0, 33.3, 33.3, 80.0]
+  notes: Under (6a)(7b), waves are 100% with the spectral and 33.3% with the temporal classifier and
+    wind 33.3% and 80.0%; three of four values are within tolerance (wind spectral 33.3 against 47 +/-
+    6.7). Under the (6b) readings waves temporal and wind spectral are both 40.0% (two of four). Under
+    every reading waves are better identified by spectral and wind by temporal correlations by at least
+    six sounds of 15, which meets the partial rule.
+  deviations:
+  - As in fig9a-optimal-resolution.
 - claim: fig9-spectrum-classifier-lower
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not run; it needs the spectrum classifier at ten resolutions and the correlation classifiers
-    of fig9a-optimal-resolution (see that claim's notes for the estimate).
+  outcome: not_reproduced
+  notebook: reproduce_sadeghi_2019_classifier.ipynb
+  output: claim:fig9-spectrum-classifier-lower
+  notes: The spectrum classifier (windowed mean envelope of each channel) varies by 9.7 to 10.3 points
+    over the ten resolutions (70.3 to 80.5% at the full duration) and is best at the shortest windows,
+    25 or 50 ms, where it reaches 80.0 to 80.5%. It is not below every correlation classifier at the full
+    duration under any reading (for example (6a)(7b) 80.0% against temporal 80.0% and spectral 82.1%) and
+    is above the temporal classifier at most durations (below at 2 to 4 of 10 to 12). Neither the full
+    nor the partial rule is met.
+  deviations:
+  - As in fig9a-optimal-resolution. The spectrum classifier's PC and component counts are not given;
+    the PCs for 90% (5 to 8) and 8 components are used.
 - claim: fig10-vocalization-background
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not run; it needs the classifier of fig9a-optimal-resolution in a two-class task (see that
-    claim's notes for the estimate).
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_sadeghi_2019_classifier.ipynb
+  output: claim:fig10-vocalization-background
+  measured: [93.3, 96.7, -20.5]
+  notes: Under (6b)(7b) and reading (a) (one GMM per class), the spectro-temporal classifier is 93.3% for
+    background and 96.7% for vocalizations at the full duration, vocalization accuracy rises from 81.7%,
+    background stays within 87.4 to 94.1%, and the temporal classifier is 20.5 points below the
+    spectro-temporal one on vocalizations averaged over durations (reading d; 23.3 at the full duration,
+    reading c). Spectral beats temporal on the vocalizations at every duration (90.0 against 73.3% at the
+    full duration) but at Bonferroni-corrected p < 0.01 (paired t test over the 60 vocalizations) at 1 of
+    10 durations only, so that part holds weakly. Under (6a)(7b) reading (a) the values are 94.8 and
+    98.3%, the difference -25.0 (c) and -24.3 (d) points. Under reading (b) (13-category decisions
+    mapped to the class) the temporal classifier reaches 98.3% on vocalizations and the difference is
+    -1.7 to -11.8 points. In the (6a)(7b) rows the spectral and temporal curves are at different
+    optima (283 and 141 ms), and the per-duration tests pair them by index, not by duration; the
+    (6b)(7b) rows are at the same optimum (141 ms).
+  deviations:
+  - As in fig9a-optimal-resolution. The class models use the 13-category classifier's PC and
+    component counts.
 findings:
 - kind: metadata_error
   statement: The aMUA rasters are sampled at 2034.5 Hz (12207.03 Hz divided by 6, the Fs field of
@@ -368,3 +461,202 @@ findings:
     reads as squared norms, which give values ten times smaller. The SI of Fig 7I under either
     squared reading gives higher values than reported (environmental 0.72 against 0.49). Which
     forms of the SI and CDI were used?
+- kind: methods_unavailable
+  statement: For the authors. The deposit holds no code for the model classifier of Figs 9 and 10, and
+    the Methods leave open how the spectro-temporal feature vector is formed (taken here as the spectral
+    and temporal features side by side), how the test windows are spaced (tau_W or the full Kaiser
+    window), whether the PC and component counts were refitted at each resolution, and how the
+    time-averaged classifier of Fig 9C was built. The optimal resolutions and the Fig 9C reduction change
+    with these choices (spectro-temporal optimum 100 to 283 ms; reduction 5 to 37 points). Which were
+    used?
+verifications:
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 1. The executed neural and model notebooks of the first run with the conclusion cells and
+    the summary removed, the helpers sadeghi.py and model.py, and the claims file, with the paper. The
+    verifier checked the archive's file list and data description and tested site_correlations, width_at,
+    the decision helpers and the train and validation windows on synthetic inputs. It found no place
+    where the claims file misreads the paper, so no question was added for a reader. Report in
+    transcripts/sadeghi-2019/verifier-1-report.md. In reply the model classifier was built and run (a third
+    notebook), the aMUA split-half values were computed, and the outputs asked for were added. The
+    criticalbandwidth.m variant of fig7i (point 8) was added to the model notebook but could not be run in
+    the time left and was removed again, so the model notebook's executed copy is that of the first run.
+  results:
+  - claim: fig1k-example-temporal-widths
+    agrees: true
+    outcome: reproduced
+    reason: The code_half window with the channel-mean curve gives 10/11 within tolerance, and crowd and water
+      are narrower than fire. The claims file's two window readings give at most 8/11, which would be
+      partially reproduced. code_half comes from NeuralExample.m, which the verifier could not see (point 3).
+    response: The notebook now prints the lines of NeuralExample.m that set the window (first half of the
+      raster, T0 at its centre, TwMod = NSMod - 2 MaxLag - 2 samples), streamed from the deposit. The outcome
+      is marked as resting on that reading.
+  - claim: fig1-snr-noise-stronger
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading gets both means and at least 3 of 4 bounds; several readings have both means within
+      the SD tolerance and SNR mostly below 0 dB.
+    response: No change.
+  - claim: fig1-s5-model-predicts-neural
+    agrees: true
+    outcome: blocked
+    reason: The data set has no tone-pip responses, so no best frequencies; a version with an assumed
+      channel-to-frequency mapping would need an assumption the paper does not make.
+    response: The data check now lists every tar member and every field of the neural files (Data.Param holds
+      only AnimalNo, BlockNo and RecordDate), which confirms the block.
+  - claim: fig2-noise-restricted
+    agrees: true
+    outcome: reproduced
+    reason: Noise width at 50% is narrower for 5/5 sounds in both domains under every window, and the SD
+      across sounds is lower for noise.
+    response: No change.
+  - claim: fig3a-example-tonotopy-removal
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading has both values in tolerance; the drop is at least 20 points under every reading.
+    response: No change.
+  - claim: fig3a-example-classifier-order
+    agrees: true
+    outcome: partially_reproduced
+    reason: The order holds under some readings; the noiseless rule fails under every reading, noiseless
+      temporal being 15 to 20 points below single-trial. With a chosen on model data the noiseless
+      spectro-temporal classifier uses in-sample log-likelihoods, a sign of a degenerate choice (point 7).
+    response: No change; point 7 is noted, and the noiseless rule fails on the temporal classifier under every
+      choice of a.
+  - claim: fig3b-population-above-chance
+    agrees: true
+    outcome: reproduced
+    reason: Under every reading all four classifiers are above 20%, 1 s beats 62.5 ms, and the tonotopy drop
+      is 25 to 32 points.
+    response: No change.
+  - claim: figs6-per-sound-above-chance
+    agrees: true
+    outcome: reproduced
+    reason: 18/18 other conditions are above chance and snake temporal is not; snake without tonotopy is
+      significantly below chance (p = 0.012) where the paper has p = 0.92, which the notebook does not flag
+      (point 5).
+    response: The notebook now flags snake conditions significantly below chance, and the notes say so.
+  - claim: figs9-mixing-coefficient
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but fragile; only 1 of 16 reading combinations passes, at the tolerance edge, and
+      paradigm 2's a was taken only from reading (3)(a) (point 4).
+    response: Reading (3)(b) for paradigm 2 is now run (2 of its 16 combinations pass, one also per paradigm)
+      and the per-site values are printed; the outcome is kept, marked as resting on an assumption (a chosen
+      on the validation data), and the notes say it depends on that choice.
+  - claim: figs10-amua-tmua
+    agrees: true
+    outcome: blocked
+    reason: tMUA needs raw voltages, which are absent; the two aMUA split-half values (0.98, 0.83) could have
+      been tested (point 2).
+    response: The aMUA split-half values are now computed (0.980 and 0.830 with time halves over the paradigm 1
+      rasters, within tolerance); the claim stays blocked as four of its six values need tMUA.
+  - claim: fig4-example-original-vs-equalized
+    agrees: true
+    outcome: not_reproduced
+    reason: Spectral 0.93 is in tolerance; temporal 0.88 to 0.90 against 0.72 is outside both the tolerance
+      and 10% under every reading. Whether lag 0 drives the 0.90 could not be checked.
+    response: Temporal r without lag 0, without lags within 5 and 20 ms, and per channel are now printed; lag 0
+      does not drive it (0.888 without it). No change of outcome.
+  - claim: fig4e-population-original-vs-equalized
+    agrees: true
+    outcome: not_reproduced
+    reason: 0/4 values in tolerance under every reading; same-sound beats across-sound, but the temporal values
+      are more than 10% off, so the partial rule fails.
+    response: No change.
+  - claim: fig4f-example-equalized-classification
+    agrees: true
+    outcome: partially_reproduced
+    reason: The one reading with 4/4 in tolerance has the 1/f spectrum classifier at 31%, not below 30%; the
+      pattern holds under other readings. The within-site z test of reading (b) treats overlapping windows
+      as independent (point 6).
+    response: No change; the outcome does not use that test, as the notes say.
+  - claim: fig4h-population-equalized-classification
+    agrees: true
+    outcome: partially_reproduced
+    reason: At most 3/5 values in tolerance; the t tests pass and the spectrum classifier is lowest on 1/f
+      under every reading.
+    response: No change.
+  - claim: fig8b-example-pca-variance
+    agrees: true
+    outcome: reproduced
+    reason: Reading b_st1000 gives 96.3% and 85.3 to 85.5%; nearest-centroid accuracy 88.6% and 85.6%.
+    response: No change.
+  - claim: fig8e-example-categorization
+    agrees: true
+    outcome: reproduced
+    reason: Under every reading all three correlation classifiers are at least 90% at 1 s, rise from 62.5 ms,
+      and the spectrum classifier is 91 to 94%.
+    response: No change.
+  - claim: fig8f-population-categorization
+    agrees: true
+    outcome: reproduced
+    reason: 4/4 in tolerance, p < 1e-11 against 33.3%, and every classifier rises with duration, under every
+      reading.
+    response: No change.
+  - claim: fig5-speech-water-widths
+    agrees: true
+    outcome: reproduced
+    reason: Readings (ii)(a)(iii)(a) give speech 64.5 ms and water 4.0 ms; spectral breadth 0.464 against
+      0.259.
+    response: No change.
+  - claim: fig6-category-half-widths
+    agrees: true
+    outcome: reproduced
+    reason: 4/5 in tolerance (cat 160.9 against 117.3 is out) and every vocalization is wider than water and
+      wind; single bird songs' spectral breadth is below wind's, which the criterion does not test.
+    response: No change.
+  - claim: fig6c-category-diversity
+    agrees: true
+    outcome: reproduced
+    reason: Reading (c), norms not squared, gives 5/6 in tolerance; speech is lowest of the 13 categories and
+      white noise lowest overall.
+    response: No change.
+  - claim: fig7i-stationarity
+    agrees: true
+    outcome: not_reproduced
+    reason: Environmental 0.65 to 0.79 against 0.49 and vocalizations 0.36 to 0.62 against 0.28 under every
+      reading; the criterion has no partial clause. Whether the code's bandwidth formula would close the gap
+      is untested (point 8).
+    response: The criticalbandwidth.m variant was written but not run, for lack of time in this round; no
+      change.
+  - claim: fig9a-optimal-resolution
+    agrees: false
+    outcome: blocked
+    reason: The too_large blocking is not supported; the notebook's own estimate is 56 to 115 min, no time
+      limit is cited, and the estimate overcounts, since in leave-one-sound-out only the held-out sound's
+      category model changes per fold. The claims are testable and were not run (point 1).
+    response: The classifier was built, with one fit per category plus one refit per held-out sound, and run in
+      reproduce_sadeghi_2019_classifier.ipynb (38 min). The outcome changed from blocked to reproduced under
+      readings (6b)(7b).
+  - claim: fig9b-similar-maximum
+    agrees: false
+    outcome: blocked
+    reason: As for fig9a-optimal-resolution, testable and not run.
+    response: Tested; reproduced under the (7b) readings.
+  - claim: fig9b-accumulation-rate
+    agrees: false
+    outcome: blocked
+    reason: As for fig9a-optimal-resolution, testable and not run.
+    response: Tested; partially reproduced (the order holds, the values do not).
+  - claim: fig9c-time-averaged-worse
+    agrees: false
+    outcome: blocked
+    reason: As for fig9a-optimal-resolution, testable and not run.
+    response: Tested; partially reproduced (the running-average reading is 15 to 37 points lower, not 25).
+  - claim: fig9e-category-specific
+    agrees: false
+    outcome: blocked
+    reason: As for fig9a-optimal-resolution, testable and not run.
+    response: Tested; partially reproduced (3 of 4 values; waves better spectral, wind better temporal).
+  - claim: fig9-spectrum-classifier-lower
+    agrees: false
+    outcome: blocked
+    reason: As for fig9a-optimal-resolution, testable and not run.
+    response: Tested; not reproduced (the spectrum classifier matches the temporal one at the full duration).
+  - claim: fig10-vocalization-background
+    agrees: false
+    outcome: blocked
+    reason: As for fig9a-optimal-resolution, testable and not run.
+    response: Tested; reproduced under (6b)(7b), reading (a).

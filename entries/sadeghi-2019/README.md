@@ -17,7 +17,7 @@ auditory model, with the paper's MATLAB code.
 | Paradigm 1 population classifiers above chance (Fig 3B) | Reproduced |
 | Per-sound accuracy above chance except snake temporal (S6 Fig) | Reproduced |
 | Mixing coefficient near 0.5 to 0.6 (S9 Fig) | Reproduced |
-| aMUA against thresholded MUA (S10 Fig) | Blocked: data missing |
+| aMUA against thresholded MUA (S10 Fig) | Blocked: data missing (the aMUA split-half values match) |
 | Example site, original and 1/f correlations similar (Fig 4A to D) | Not reproduced |
 | Population, original and 1/f correlations (Fig 4E) | Not reproduced |
 | Example site, classification of 1/f sounds (Fig 4F) | Partially reproduced |
@@ -29,12 +29,18 @@ auditory model, with the paper's MATLAB code.
 | Model, category half widths (Fig 6A, B) | Reproduced |
 | Model, category diversity index (Fig 6C) | Reproduced |
 | Model, stationarity index (Fig 7I) | Not reproduced |
-| Model classifiers (Figs 9 and 10, seven claims) | Blocked: too large for the run |
+| Model, optimal resolution 141 and 100 ms (Fig 9A) | Reproduced (one reading) |
+| Model, similar maximum performance (Fig 9B) | Reproduced |
+| Model, accumulation rate (Fig 9B) | Partially reproduced |
+| Model, time-averaged classifier worse (Fig 9C) | Partially reproduced |
+| Model, waves spectral and wind temporal (Fig 9E) | Partially reproduced |
+| Model, spectrum classifier lower (Fig 9) | Not reproduced |
+| Model, vocalization against background (Fig 10) | Reproduced (one reading) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The data set is one 5.3 GB tar.gz file; the notebooks stream it once and parse each member in
-memory. The neural notebook takes about 35 to 55 minutes, the model notebook about 15 to 25, depending on the machine. The attempt
+memory. The neural notebook takes about 35 to 60 minutes, the model notebook about 15 to 25 and the model classifier notebook about 40, depending on the machine. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/sadeghi-2019-01.yaml`](../../attempts/sadeghi-2019-01.yaml).

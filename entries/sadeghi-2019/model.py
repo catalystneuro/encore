@@ -74,11 +74,16 @@ def lowpass_fir(fc=500.0, tw=125.0, fs=FS_SOUND, att=60.0):
     return H * W
 
 
-def cochleogram(x, fs=FS_SOUND):
+def bandwidth_code(fc):
+    """criticalbandwidth.m of the deposit's code: 94 + 71 f^1.5, f in kHz (a variant)."""
+    return 94 + 71 * (fc / 1000) ** 1.5
+
+
+def cochleogram(x, fs=FS_SOUND, bandwidth=bandwidth_methods):
     """(58 channels, samples at 1 kHz) envelopes."""
     x = x / x.std()
     fc = centre_frequencies()
-    bw = bandwidth_methods(fc)
+    bw = bandwidth(fc)
     he = lowpass_fir(fs=fs)
     ne = (len(he) - 1) // 2
     out = []
@@ -118,7 +123,8 @@ def short_term(S, tau_w_ms, maxlag, step=None, pairs="all"):
     return np.array(list(short_term_iter(S, tau_w_ms, maxlag, step, pairs)))
 
 
-def short_term_iter(S, tau_w_ms, maxlag, step=None, pairs="all"):
+def short_term_iter(S, tau_w_ms, maxlag, step=None, pairs="all", centres=None):
+    """centres: the window centres (samples) to use; by default every step from 2N to T - 2N."""
     K, _ = kaiser_for(tau_w_ms / 1000)
     W = np.sqrt(K)
     N = (len(W) - 1) // 2
@@ -132,7 +138,7 @@ def short_term_iter(S, tau_w_ms, maxlag, step=None, pairs="all"):
     SK2 = signal.fftconvolve(S ** 2, K[None, ::-1], mode="valid", axes=1) / nw
     L = nw + 2 * maxlag
     nfft = 1 << int(np.ceil(np.log2(L + nw)))
-    for k in range(2 * N, T - 2 * N, step):
+    for k in (range(2 * N, T - 2 * N, step) if centres is None else centres):
         X = S[:, k - N: k + N + 1]
         XW = X * W
         MX = XW.mean(1)
@@ -186,3 +192,165 @@ def width_at(curve, lags_ms, frac=0.5):
         a, b = curve[i], curve[i + step]
         return lags_ms[i] + (lags_ms[i + step] - lags_ms[i]) * (a - thr) / (a - b)
     return cross(1) - cross(-1)
+
+
+# ---------------------------------------------------------------- model classifier (Figs 9, 10)
+#
+# Methods, "Dimensionality reduction and distribution model", "Bayesian classifier", "Cross
+# validation", "Optimal temporal resolution and integration time", "Spectrum-based classifier";
+# claims file, opening comment (readings 6 and 7). Choices the paper does not make, each stated
+# in the notebook as an assumption or a standard choice:
+# - training observations are the short-term features at every tau_W / 4 (the step used above),
+#   at most TRAIN_CAP per category by a seeded random subsample (standard choice, for speed);
+# - the spectro-temporal feature vector is the spectral and temporal features of one time point
+#   side by side (assumption: the Methods give it its own PCs and N_c, so it is one vector);
+# - temporal observations are (time point, channel) pairs, and a window's temporal log-likelihood
+#   is summed over its 58 channels (Methods: "both time points and different frequency channels
+#   are treated as observations"; "features at each time sample are conditionally independent");
+# - the spectrum feature is the Kaiser-weighted mean envelope of each channel in the window;
+# - PCA is fitted once on the training observations of all 195 sounds (assumption; refitting it
+#   in every fold is run as a variant).
+
+TRAIN_CAP = 10000
+RES_MS = 25 * 2 ** (np.arange(10) / 2)  # 25 to 566 ms in half octave steps (Methods)
+REPORTED = {"spec": (26, 8), "temp": (8, 5), "st": (87, 13)}  # (PCs, N_c), Methods
+
+
+def features(S, tau_w_ms):
+    """Short-term features of one cochleogram at resolution tau_w_ms, on a grid of window
+    centres every tau_W / 4 where the window and every lag fit in the sound.
+    Returns dict spec (n, 1653), temp (n, 58, maxlag), spectrum (n, 58), centres (ms), K."""
+    K, _ = kaiser_for(tau_w_ms / 1000)
+    N = (len(K) - 1) // 2
+    maxlag = min(int(tau_w_ms // 2), N)
+    step = max(1, int(round(tau_w_ms / 4)))
+    C, T = S.shape
+    centres = np.arange(N + maxlag, T - N - maxlag - 1, step)
+    iu = np.triu_indices(C, 1)
+    spec = np.array([z[iu] for z in short_term_iter(S, tau_w_ms, 0, pairs="zero", centres=centres)], np.float32)
+    temp = np.array([a[:, maxlag + 1:] for a in short_term_iter(S, tau_w_ms, maxlag, pairs="auto", centres=centres)],
+                    np.float32)
+    SK = signal.fftconvolve(S, K[None, ::-1], mode="valid", axes=1) / K.sum()
+    spectrum = SK[:, centres - N].T.astype(np.float32)
+    return {"spec": spec, "temp": temp, "spectrum": spectrum, "centres": centres, "klen": len(K), "step": step}
+
+
+def test_index(F, spacing_ms):
+    """Grid indices of consecutive non-overlapping test windows from the start of the sound, at
+    least spacing_ms apart (reading 6a: tau_W; 6b: the full Kaiser window length)."""
+    stride = int(np.ceil(spacing_ms / F["step"] - 1e-9))
+    return np.arange(0, len(F["centres"]), stride)
+
+
+def n_steps(nmax):
+    """N = 1 to the largest number of windows in half octave steps (Cross validation)."""
+    ns = sorted({int(round(2 ** (j / 2))) for j in range(40) if round(2 ** (j / 2)) <= nmax})
+    return ns if ns[-1] == nmax else ns + [nmax]
+
+
+def obs_of(F, kind, idx=None):
+    """Observations of one sound for a classifier: (n, m, d), m = 58 channels for temporal, else 1.
+    idx selects grid points (all by default)."""
+    sl = slice(None) if idx is None else idx
+    if kind == "spec":
+        return F["spec"][sl][:, None]
+    if kind == "spectrum":
+        return F["spectrum"][sl][:, None]
+    if kind == "temp":
+        return F["temp"][sl]
+    t = F["temp"][sl]
+    return np.concatenate([F["spec"][sl], t.reshape(len(t), -1)], 1)[:, None]
+
+
+def fit_pca(Fs, kind, rng, nfit=15000, kmax=150):
+    """PCA of the pooled observations of the sounds Fs (list of feature dicts), fitted on at most
+    nfit rows drawn at random (standard choice). Returns mean, components (k, d), and the
+    cumulative fraction of the total variance (trace) the components explain."""
+    from sklearn.decomposition import PCA
+    rows = []
+    per = max(1, nfit // len(Fs))
+    for F in Fs:
+        X = obs_of(F, kind)
+        X = X.reshape(-1, X.shape[-1])
+        rows.append(X[rng.choice(len(X), min(per, len(X)), replace=False)])
+    X = np.concatenate(rows).astype(np.float64)
+    k = min(kmax, X.shape[1], X.shape[0] - 1)
+    p = PCA(k, svd_solver="randomized" if X.shape[1] > 500 else "full", random_state=0).fit(X)
+    total = X.var(0, ddof=1).sum()
+    return p.mean_, p.components_.astype(np.float32), np.cumsum(p.explained_variance_) / total
+
+
+def project(F, kind, mean, comps):
+    X = obs_of(F, kind)
+    n, m, d = X.shape
+    return ((X.reshape(-1, d) - mean.astype(np.float32)) @ comps.T).reshape(n, m, -1)
+
+
+def fit_gmm(X, nc, seed=0):
+    """Diagonal GMM (Methods). scikit-learn's default variance floor (reg_covar 1e-6); a fit that
+    fails on a collapsed component is refitted with 1e-4 (standard choice) and flagged."""
+    from sklearn.mixture import GaussianMixture
+    X = np.asarray(X, np.float64)
+    try:
+        gm = GaussianMixture(nc, covariance_type="diag", max_iter=200, random_state=seed).fit(X)
+        gm.refitted_ = False
+    except ValueError:
+        gm = GaussianMixture(nc, covariance_type="diag", max_iter=200, random_state=seed, reg_covar=1e-4).fit(X)
+        gm.refitted_ = True
+    return gm
+
+
+def train_rows(Zs, npc, rng, cap=TRAIN_CAP):
+    """Training observations of the sounds Zs, at most cap, drawn at random in equal numbers from
+    each sound (standard choice, for speed)."""
+    per = int(np.ceil(cap / len(Zs)))
+    out = []
+    for z in Zs:
+        X = z[:, :, :npc].reshape(-1, npc)
+        out.append(X if len(X) <= per else X[rng.choice(len(X), per, replace=False)])
+    return np.concatenate(out)
+
+
+def window_ll(gm, Zw, npc):
+    """Log-likelihood of each test window (n, m, d): summed over its m observations."""
+    n, m, _ = Zw.shape
+    return gm.score_samples(Zw[:, :, :npc].reshape(-1, npc).astype(np.float64)).reshape(n, m).sum(1)
+
+
+def loso(Z, labels, npc, nc, tests, seed, n_jobs=4):
+    """Leave one sound out (Cross validation). Z: per-sound observations (n, m, d); labels: class
+    of each sound; tests: per-sound dict {name: window arrays (n_w, m, d)} to score. A fold
+    changes only the held-out sound's class model, so each class is fitted once on all its
+    sounds and refitted once per held-out sound. Returns {name: per-sound (n_w, classes) LL}
+    and the fitted models (full per class, refit per sound)."""
+    from joblib import Parallel, delayed
+    labels = np.asarray(labels)
+    classes = np.unique(labels)
+    seeds = np.random.SeedSequence(seed).generate_state(len(Z) + len(classes))
+
+    def rows(c, leave, s):
+        idx = [i for i in np.flatnonzero(labels == c) if i != leave]
+        return train_rows([Z[i] for i in idx], npc, np.random.default_rng(s))
+
+    jobs = [(c, -1, seeds[len(Z) + k]) for k, c in enumerate(classes)] + [(labels[j], j, seeds[j]) for j in range(len(Z))]
+    fits = Parallel(n_jobs=n_jobs)(delayed(fit_gmm)(rows(c, j, s), nc) for c, j, s in jobs)
+    full, refit = fits[:len(classes)], fits[len(classes):]
+    out = {}
+    for name in tests[0]:
+        LL = []
+        for j in range(len(Z)):
+            Zw = tests[j][name]
+            LL.append(np.array([window_ll(refit[j] if c == labels[j] else full[k], Zw, npc) for k, c in enumerate(classes)]).T)
+        out[name] = LL
+    return out, full, refit
+
+
+def accuracy_curve(LL, labels, classes, ns):
+    """Fraction correct (per sound 0/1) after summing the log-likelihoods of the first N windows."""
+    labels = np.asarray(labels)
+    res = np.zeros((len(LL), len(ns)))
+    for j, L in enumerate(LL):
+        cs = np.cumsum(L, 0)
+        for i, n in enumerate(ns):
+            res[j, i] = classes[int(np.argmax(cs[min(n, len(cs)) - 1]))] == labels[j]
+    return res
