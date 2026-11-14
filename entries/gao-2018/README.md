@@ -9,14 +9,16 @@ VGAT-ChR2 experiments and anatomy are in neither, so 24 of the 46 claims are blo
 
 | Claim | Outcome |
 |---|---|
-| Behavior in the recording sessions (Fig. 1g, 1h, 1k; Extended Data Fig. 10b), six claims | Reproduced |
+| Behavior in the recording sessions (Fig. 1g, 1h, 1k; Extended Data Fig. 10b), five claims | Reproduced |
+| Dentate photo-activation has little effect on choice | Partially reproduced (3 of 8 mice; no drop at p < 0.05 on all sessions, a drop without two sessions whose light disagrees with the codes) |
+| Licking unaffected by fastigial photo-activation or photo-inhibition (two claims) | Blocked: no lick times (the early-lick part, tested, holds) |
 | Most ALM pyramidal neurons are selective (Fig. 2) | Reproduced |
-| Preparatory activity in 59% of ALM neurons | Reproduced (ALM only) |
+| Preparatory activity in 59% of ALM neurons, more than in the CN | Partially reproduced (ALM only) |
 | Peri-movement activity, ALM and CN | Partially reproduced (ALM only) |
 | Selectivity emerges gradually (Fig. 2c, d) | Partially reproduced (ALM only) |
-| CN photo-inhibition alters many ALM neurons, 7.1 ms latency | Partially reproduced |
+| CN photo-inhibition alters 197 of 454 ALM neurons, 7.1 ms latency | Not reproduced |
 | Mean ALM rate unchanged by CN photo-inhibition | Reproduced |
-| Increase against decrease among modulated ALM neurons | Reproduced, on an assumption |
+| 108 increase and 89 decrease among modulated ALM neurons | Not reproduced |
 | CN photo-inhibition abolishes ALM selectivity | Partially reproduced |
 | Fastigial photo-activation changes ALM within 4.5 ms | Partially reproduced |
 | Fastigial photo-activation abolishes ALM selectivity | Reproduced |
@@ -24,16 +26,18 @@ VGAT-ChR2 experiments and anatomy are in neither, so 24 of the 46 claims are blo
 | Dentate effect recovers quickly | Partially reproduced |
 | Control trajectories separate along the coding direction | Reproduced |
 | Fastigial, not dentate, photo-activation collapses the trajectories | Partially reproduced |
-| The coding direction captures 64.1% of selectivity and 27.0% of variance | Reproduced, on an assumption |
+| The coding direction captures 64.1% of selectivity and 27.0% of variance | Partially reproduced |
 | After fastigial photo-activation the projection no longer predicts licking | Not reproduced |
-| Lesions, CN recordings, licking, VGAT-ChR2 and anatomy (24 claims) | Blocked: data missing |
+| Lesions, CN recordings, VGAT-ChR2, anatomy and other behavior-only experiments (22 claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The two deposits have identical spike times; the analysis reads the CRCNS copy, which keeps every
 trial and the laser traces, and checks DANDI against it. Method details the paper leaves open are
-taken from the analysis scripts deposited with CRCNS:alm-4. The attempt record, with the reasons
+taken from the analysis scripts deposited with CRCNS:alm-4, and the lab's compiled analysis files
+there are used to check unit counts and per-neuron p-values (they hold the same units as the
+deposits). The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/gao-2018-02.yaml`](../../attempts/gao-2018-02.yaml).
 

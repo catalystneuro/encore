@@ -205,7 +205,8 @@ def _reduce_session(obj) -> dict:
         units.append(dict(key=str(key), t=ev, trial=etr, cell_type=ct,
                           waveform=np.atleast_2d(u.waveforms).mean(0), channel=float(np.median(u.channel))))
     return dict(trials=t, units=units, laser_form=int(form),
-                trial_descr=[str(x) for x in np.atleast_1d(tp.descr).ravel()])
+                trial_descr=[str(x) for x in np.atleast_1d(tp.descr).ravel()],
+                ts_channels=[str(x) for x in np.atleast_1d(obj.timeSeriesArrayHash.value.idStr)])
 
 
 def stream_crcns(which: str, verbose: bool = True) -> tuple[dict, dict]:
@@ -229,6 +230,17 @@ def stream_crcns(which: str, verbose: bool = True) -> tuple[dict, dict]:
     if verbose:
         print(f"{path}: {len(sessions)} sessions, {len(meta)} meta files, {time.time() - t0:.0f} s")
     return sessions, meta
+
+
+def read_script_mat(which: str, name: str, variables: list[str]) -> dict:
+    """Variables of one of the lab's compiled .mat files in the CRCNS zip (read into memory,
+    not to disk). Used only to reconcile counts with the deposit, never for a result."""
+    import zipfile
+    path, _ = CRCNS_SCRIPTS[which]
+    with fsspec.open(CRCNS_BASE + path, block_size=2 ** 22).open() as f:
+        with zipfile.ZipFile(f) as z:
+            raw = z.read(f"analyses_scripts/{name}")
+    return sio.loadmat(io.BytesIO(raw), variable_names=variables, squeeze_me=True)
 
 
 def read_script(which: str, name: str) -> str:
@@ -332,6 +344,22 @@ def perf_table(sessions, codes, contra_from="paper"):
     return pd.DataFrame(rows)
 
 
+def early_lick_table(sessions, codes):
+    """One row per session and photostimulation code: good trials with an instructed type (n)
+    and those flagged LickEarly (k), the per-trial early-lick flag of the trial type matrix.
+    With hier_boot this gives the early-lick rate and its bootstrap (B1 applied to early licks,
+    the claims file's choice for fig1i and fig1l)."""
+    rows = []
+    for s in sessions:
+        t = s.trials
+        m = (t.good & t.ptype.notna() & (t.instructed != "")).to_numpy()
+        for c in codes:
+            mm = m & (t.ptype == c).to_numpy()
+            rows.append(dict(mouse=s.mouse, session=s.key, code=c, side="all", n=int(mm.sum()),
+                             k=int((mm & t.lick_early.to_numpy()).sum())))
+    return pd.DataFrame(rows)
+
+
 def hier_boot(tab, stim_code, side=None, n_boot=10000, rng=None, ctrl_code=0):
     """Performance in control and stim trials and the one-tailed hierarchical bootstrap
     p-value of the change (Methods): resample mice, then sessions of each mouse, then trials
@@ -366,13 +394,34 @@ def hier_boot(tab, stim_code, side=None, n_boot=10000, rng=None, ctrl_code=0):
                 n_ctrl=int(cn.sum()), n_stim=int(sn.sum()), n_mice=len(umice), n_sessions=len(idx))
 
 
+def trial_level_tests(tab, stim_code, ctrl_code=0):
+    """Trial-level checks of a performance change, beside the bootstrap of B1: a one-sided
+    z-test of the pooled proportions (stim lower) and a two-sided Cochran-Mantel-Haenszel test
+    stratified by session. They ignore the variation between mice and sessions, so they are
+    less conservative than the hierarchical bootstrap; they are shown as a check, not used for
+    an outcome."""
+    from statsmodels.stats.contingency_tables import StratifiedTable
+    from statsmodels.stats.proportion import proportions_ztest
+    g = tab.groupby(["session", "code"])[["n", "k"]].sum().unstack("code")
+    g = g[(g[("n", stim_code)] > 0) & (g[("n", ctrl_code)] > 0)]
+    tables = [np.array([[r[("k", stim_code)], r[("n", stim_code)] - r[("k", stim_code)]],
+                        [r[("k", ctrl_code)], r[("n", ctrl_code)] - r[("k", ctrl_code)]]]) for _, r in g.iterrows()]
+    st = StratifiedTable(tables)
+    z = proportions_ztest([g[("k", stim_code)].sum(), g[("k", ctrl_code)].sum()],
+                          [g[("n", stim_code)].sum(), g[("n", ctrl_code)].sum()], alternative="smaller")
+    return dict(z_p_one_sided=float(z[1]), cmh_odds_ratio=float(st.oddsratio_pooled),
+                cmh_p_two_sided=float(st.test_null_odds().pvalue), sessions=len(tables))
+
+
 # ----------------------------------------------------------------------------- neurons
 
 
-def selectivity_tests(s: Session, u, trials="correct", response_s=RESPONSE_S):
+def selectivity_tests(s: Session, u, trials="correct", response_s=RESPONSE_S, measure="rate"):
     """E2: p-values of the t-test 'lick right' against 'lick left' in the sample, delay and
     response epochs, control trials. trials='correct' (reading a; the Fig. 2 script) or
-    'all' (reading b: correct and error trials grouped by instructed type)."""
+    'all' (reading b: correct and error trials grouped by instructed type). measure='rate'
+    tests counts divided by each trial's epoch length, as the Fig. 2 script; 'count' tests
+    spike counts, as E2 words it."""
     t = s.trials
     n = len(t)
     m = s.base_mask() & (t.ptype == 0).to_numpy() & s.stable(u, n)
@@ -381,7 +430,7 @@ def selectivity_tests(s: Session, u, trials="correct", response_s=RESPONSE_S):
     pi, po, cue = t.pole_in.to_numpy(), t.pole_out.to_numpy(), t.cue.to_numpy()
     out = {"nR": int(R.sum()), "nL": int(L.sum())}
     for ep, (a, b) in dict(sample=(pi, po), delay=(po, cue), response=(cue, cue + response_s)).items():
-        r = s.counts(u, a, b) / (b - a)
+        r = s.counts(u, a, b) / ((b - a) if measure == "rate" else 1.0)
         if R.sum() >= 2 and L.sum() >= 2 and (np.var(r[R]) > 0 or np.var(r[L]) > 0):
             out[ep] = stats.ttest_ind(r[R], r[L]).pvalue
         else:
@@ -500,7 +549,10 @@ def latency(changes, signs, rng, n_boot=10000, alpha=0.01, starts=None, label_sh
     two-tailed one-sample t-test at p < alpha; bootstrap over neurons. label_shift is added to
     the bin start to label a bin (0: start, 0.005: centre, 0.010: end). Returns onset on all
     neurons, bootstrap mean and s.d. of the onset (ms), and the fraction of resamples with no
-    onset."""
+    onset. A bin labelled by its start holds spikes up to 10 ms later, and starts are clipped at
+    0, so the start label gives the earliest time an effect could begin (an effect that starts
+    anywhere in the first 10 ms is labelled 0 ms); the centre and end labels are later by 5 and
+    10 ms."""
     X = np.asarray(changes) * np.asarray(signs)[:, None]
     valid = starts >= 0
 
