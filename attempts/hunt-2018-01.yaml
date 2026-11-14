@@ -1,0 +1,423 @@
+schema_version: 3
+id: hunt-2018-01
+datasets:
+- archive: crcns
+  id: pfc-7
+  version: unversioned
+  doi: 10.6080/K0PZ5712
+  relation: primary
+paper: doi:10.1038/s41593-018-0239-5
+date: 2026-11-14
+entry: hunt-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43627464018
+outcomes:
+- claim: sessions-and-trials
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:sessions-and-trials
+  measured: [25, 32, 14251, 9863]
+  notes: The behavioural files hold 25 sessions of Frank (F) and 32 of Miles (M), with 9863 and
+    14251 completed option and attribute trials (trial errors 0 and 6 only), the paper's counts
+    under reading (a). Without trials of equal expected value (reading c) there are 9479 and 13691.
+    Aborted trials (reading b) can be counted only from the unit files, for the 24 and 29 sessions
+    with units (10688 and 14391 trials there).
+  deviations:
+  - Reading (b) could be counted only for sessions with units, as the behavioural files hold
+    completed trials only.
+- claim: neuron-counts
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:neuron-counts
+  measured: [189, 135, 183, 9, 21, 12]
+  notes: With the average_firing_rate of other_data/all_units_info.mat, the rate every figure script
+    of the paper uses to select units (Fig4_RSA.m and others), 189 ACC, 135 DLPFC and 183 OFC units
+    are at or above 1 Hz, with 9, 21 and 12 excluded, the paper's numbers. The claims file's readings
+    do not give them; the whole-session rate (from OverallSpikeCodes, equal to the stored session
+    mean within 0.004 Hz) gives 190, 136 and 182, the rate from trial start to response 186, 137 and
+    179. The data set holds 198 ACC, 156 DLPFC and 195 OFC units over 24 F and 29 M sessions, the
+    totals and session counts of Supplementary Table 1 as the claims file gives them. The scripts
+    also drop unit 87 (DLPFC, 4.8 Hz) as a bad cell, so the paper's DLPFC analyses, and these, use
+    134 units.
+  deviations:
+  - The rate is the stored average_firing_rate that the paper's scripts use, a third reading
+    besides the claims file's two; how it was computed is not documented in the data set.
+- claim: choice-accuracy-ev
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:choice-accuracy-ev
+  measured: [75.71, 79.01]
+  notes: Reading (a), ties left out, gives 75.71% (F) and 79.01% (M); reading (b) 72.77% and 75.90%.
+    InfoGathering_Behaviour.m counts the 384 and 560 tied trials as correct, which gives 76.66% and
+    79.83%, the paper's numbers.
+- claim: chose-on-partial-information
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:chose-on-partial-information
+  measured: [85.52, 71.43]
+  notes: With the count of pictures corrected for a joystick movement made before the last picture
+    was fixated (num_pics_viewedprezero of InfoGathering_Behaviour.m), F chose before all four cues on
+    85.52% and M on 71.43% of trials. The raw count of fixated pictures gives 54.23% and 42.56%.
+  deviations:
+  - The claims file gives no method; the count is the script's (InfoGathering_Behaviour.m,
+    out.earlychoices), with its joystick threshold and smoothing.
+- claim: choice-accuracy-observed
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:choice-accuracy-observed
+  measured: [86.0, 87.75]
+  notes: Reading (a) gives 86.00% (F) and 87.75% (M), reading (b) 79.88% and 82.26%, reading (c)
+    89.17% and 89.20%, the script's own measure (unseen at 0.5, ties counted correct) 87.80% and
+    89.48%. Counting every fixated picture as seen gives 79.14% and 81.35% under reading (a).
+  deviations:
+  - Which pictures count as observed is taken from InfoGathering_Behaviour.m (accuracy_seen) as
+    those fixated before the joystick moved, dropping a last picture fixated for 250 ms or less.
+- claim: figs1ab-cue-weights
+  outcome: partially_reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs1ab-cue-weights
+  notes: Model A gives positive picture weights with p < 0.05 for all four positions in both
+    monkeys and both scales. The first-side term on option trials is negative in both (F b = -0.467,
+    p = 1.5e-07; M b = -1.220, p = 2.7e-54). Probability and magnitude weights are both positive, but
+    in M they are not approximately equal under either reading (option ratio 1.11, attribute 1.13;
+    95% CIs do not overlap; Wald p = 1.1e-06 and 4.1e-07); with true values the M ratios are 1.11
+    and 1.15. In F the CIs overlap on both trial types (Wald p = 0.53 and 0.002 with seen values).
+    The n-2 weight is below the n-1 weight (ranks F 1.186 against 1.347, M 1.161 against 1.229) and
+    above the final weight (0.270 and 0.284), so the legend's slight upweighting of the
+    antepenultimate cue is not seen against n-1.
+  deviations:
+  - Model B uses the seen values (unseen at 0.5, magnitudes shifted by -0.05) as
+    InfoGathering_Behaviour.m does; the true values are shown too.
+- claim: figs1cd-fewer-cues-more-accurate
+  outcome: not_reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs1cd-fewer-cues-more-accurate
+  notes: With the criterion's measure and the script's count of pictures, accuracy on 2-picture
+    trials is 74.96% (F) and 78.83% (M), against 76.10% and 79.62% (F) and 78.79% and 81.51% (M) on 3
+    and 4 pictures. The mean value difference is largest on 2-picture trials in both monkeys (F 0.266,
+    0.229, 0.219; M 0.271, 0.240, 0.228). With the paper's script measure (accuracy on the seen
+    values, averaged over sessions) accuracy is 90.19%, 82.63%, 82.27% (F) and 93.65%, 85.20%, 83.69%
+    (M), and the claim holds. Whether the criterion should use that measure is asked of a reader
+    (questions/hunt-2018.yaml).
+  deviations:
+  - The number of pictures is the script's num_pics_viewed250; with the raw count F holds and M
+    does not.
+- claim: fig2a-sample-the-favourite
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig2a-sample-the-favourite
+  notes: On attribute trials with a third picture, the logistic slope of returning to the first
+    option on rank 1 minus rank 2 is 0.729 (F, p = 3.3e-190) and 1.210 (M, printed p = 0); the third
+    saccade returns on 59.8% and 86.7% of trials when cue 1 outranks cue 2, against 8.7% and 10.0%
+    otherwise.
+- claim: fig2b-positive-evidence
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig2b-positive-evidence
+  notes: With both cues at rank +2, F sampled 2.05 and M 2.22 pictures, against 2.69 and 3.15 with
+    both at -2; Spearman rho with the summed rank is -0.356 (F), -0.499 (M) and -0.434 (pooled), all
+    p < 1e-143. The raw count gives the same direction.
+- claim: fig4d-spatial-attention
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig4d-spatial-attention
+  notes: Spatial attention T = 39.90 in DLPFC (permutation p < 0.0001), 4.58 in OFC (p = 0.018) and
+    7.90 in ACC (p = 0.0028); CPD 80.2% in DLPFC against 13.7% (ACC) and 5.1% (OFC); F = 348.5,
+    p < 0.0001. All four readings of O8 and O9 hold.
+- claim: fig4e-ofc-stimulus-identity
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig4e-ofc-stimulus-identity
+  notes: Stimulus identity T = 14.82 in OFC (p < 0.0001), CPD 35.8% against 3.6% (ACC) and 4.9%
+    (DLPFC); F = 23.8, p < 0.0001. All four readings hold.
+- claim: fig4f-ofc-attended-value
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig4f-ofc-attended-value
+  notes: Attended value T = 5.86 in OFC (one-sided p = 0.0019, two-sided 0.0022), CPD 8.05% against
+    1.21% (ACC) and 0.14% (DLPFC); F = 4.84, p = 0.029. All four readings hold.
+- claim: fig4g-left-right-value
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig4g-left-right-value
+  notes: Left/right value T = 6.05 in ACC (p = 0.0073) and 6.51 in DLPFC (p = 0.0036), 0.07 in OFC;
+    CPD 8.5% and 9.7% against 0.0% in OFC. All four readings hold.
+- claim: fig4h-acc-accept-reject
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig4h-acc-accept-reject
+  notes: Accept/reject T = 10.30 in ACC (p < 0.0001), CPD 21.3% against 4.7% in DLPFC; its CPD in ACC
+    exceeds that of attended value (1.2%), reading (a). Attended value in ACC is not significant with
+    all trials (one-sided p = 0.063) and is with 3 or more cues (p = 0.019), so reading (b) holds
+    only with all trials. In OFC accept/reject has T = 8.71 and CPD 16.2%.
+- claim: figs2-consistent-across-subjects
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs2-consistent-across-subjects
+  notes: All six coefficients are positive in each monkey under both trial readings (94, 37, 82
+    units in M and 95, 97, 101 in F); the smallest is 0.014 (left/right value in ACC of F, trials
+    with 3 or more cues).
+- claim: figs4-dlpfc-top-bottom
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs4-dlpfc-top-bottom
+  notes: Same-quadrant minus same-side-other-row similarity is 0.112 in DLPFC, 0.042 in ACC and
+    -0.001 in OFC. A label-permutation reference outside the criterion gives p < 0.001, 0.022 and
+    0.46.
+- claim: fig4-t75-latencies
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig4-t75-latencies
+  measured: [20, 80, 70, 270, 250, 240, 230, 470, 360]
+  notes: With a 10 ms step (reading a) all nine values are within tolerance over -100 to 500 ms (the
+    measured values above). With a 1 ms step (reading b), as Fig4_RSA.m computes it, all nine equal
+    the paper's (24, 72, 67, 269, 241, 238, 224, 457, 369 ms) over both ranges. Over -200 to 600 ms
+    with a 10 ms step 8 of 9 are within tolerance (spatial attention in ACC 41 ms).
+- claim: figs5c-latency-order
+  outcome: partially_reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs5c-latency-order
+  notes: The t75 point estimates follow the paper's order in every region, but the 100 simulated t75
+    values overlap under both readings and with either set of variables (the criterion's significant
+    templates, or the set Fig4_RSA.m stacks for the panel, peak CPD above 10%). In OFC the attended
+    value range reaches -10 ms (reading a) and -13 ms (reading b), below the top of the spatial
+    attention range (93 and 99 ms). In ACC left/right value (246 to 528 ms, reading b) overlaps
+    accept/reject (227 to 291 ms). With the script's set and reading (b), spatial attention lies below
+    the other variables in ACC and DLPFC and left/right value above them in DLPFC.
+  deviations:
+  - Fig4_RSA.m draws one permutation of the residuals shared over time points (reading b) and
+    computes t75 over -199 to 600 ms at 1 ms, as done here; it keeps the variables with peak CPD
+    above 10% (Supplementary Figure 5B legend, "Regressors explaining little variance have been
+    removed"), shown beside the criterion's significance rule.
+- claim: fig5a-ofc-value-cpd
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig5a-ofc-value-cpd
+  measured: 290
+  notes: Under reading (a) the mean OFC CPD of cue 1, 2 and 3 value peaks 290, 300 and 290 ms after
+    its own cue, and the cue 1 and cue 2 value CPDs are above either baseline at every bin of the
+    later epochs (epoch means 0.18 to 0.52 points above). Reading (b) gives peaks of 290 to 320 ms and
+    the same result.
+- claim: fig5b-stable-attended-value-subspace
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig5b-stable-attended-value-subspace
+  notes: r = 0.845 (p = 7.7e-51, n = 182) with contrasts 19 and 20 (the script's), r = 0.843 with the
+    mean T-statistics; M r = 0.860, F r = 0.809.
+  deviations:
+  - Unit 653 is dropped, as Fig5_OFCcrosscorrelation.m does (its T-statistics at cue 2 are not
+    finite), so OFC has 182 units.
+- claim: fig5c-attribute-cue2-vs-cue1
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig5c-attribute-cue2-vs-cue1
+  notes: r = -0.270, p = 0.00023, n = 182 (M -0.236, F -0.356).
+- claim: fig5de-option-cue3-vs-stored
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig5de-option-cue3-vs-stored
+  notes: EV 3 against EV 1 r = -0.283 (p = 0.00011), against EV 2 r = -0.379 (p = 1.3e-07).
+- claim: fig5f-option-stored-combined
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig5f-option-stored-combined
+  notes: At cue 3 r = 0.523 (p = 3.4e-14); at cue 2 r = -0.033 (p = 0.66), as the Discussion says.
+- claim: fig5gj-cross-correlation-dynamics
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig5gj-cross-correlation-dynamics
+  notes: The clusters through the 250 ms point have 884, 1839, 1105 and 817 bins against
+    99.9th-percentile thresholds of 577, 500, 577 and 584, with the signs of Figure 5c-f; EV 6 at
+    cue 2 against EV 5 at cue 1 forms a positive cluster of 1622 bins (threshold 580, r = 0.755).
+  deviations:
+  - The map pairs are those of Fig5_OFCcrosscorrelation.m (EV 6/5, 2/1, 3/1, 3/2); its correlation
+    divides a population covariance by sample standard deviations, a factor of 181/182 on r, which
+    is not reproduced here.
+- claim: fig5k-ofc-comparison-unique
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig5k-ofc-comparison-unique
+  notes: Two-sided Fisher tests (as the script) give p = 0.0397, 0.0670, 0.0108 against DLPFC and
+    0.0032, 0.0003, < 0.0001 against ACC, the paper's values; all six OFC correlations are more
+    negative, five of six p < 0.05 (six of six one-sided).
+- claim: figs67-no-comparison-acc-dlpfc
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs67-no-comparison-acc-dlpfc
+  notes: Presence holds in ACC (r = 0.852 and 0.559) and DLPFC (r = 0.658 and 0.519), all p < 1e-9.
+    No attended-against-stored correlation is negative with p < 0.05 (ACC r = 0.031, 0.084, 0.058;
+    DLPFC r = -0.040, -0.080, -0.105; smallest p 0.23).
+- claim: fig6a-acc-belief-subspace
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig6a-acc-belief-subspace
+  notes: With T-statistics all 10 ACC correlations are positive with p < 0.05 (r = 0.165 to 0.483),
+    against 3 of 10 in DLPFC and 2 of 10 in OFC; with OLS coefficients ACC has 8 of 10. By monkey,
+    ACC has 10 of 10 (M) and 7 of 10 (F).
+- claim: fig6b-acc-belief-stronger
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig6b-acc-belief-stronger
+  notes: The ACC correlation is larger in 19 of 20 comparisons; 13 of 20 have p < 0.05 two-sided (16
+    one-sided). With OLS coefficients 16 of 20 and 10 of 20.
+- claim: fig6c-belief-subspace-rt
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig6c-belief-subspace-rt
+  notes: Under all 24 combinations of O4 to O7 (with the scripts' fixed RT bins added to O5) the
+    shortest RT bin is above the longest over 100-500 and 0-500 ms after cue 1 (odd/even, scripts'
+    bins, Hz, mean T, a difference of 0.445); with 100 random halves it holds in 98 to 100 splits.
+  deviations:
+  - The projection design is the scripts' (Fig6_ACCmultiplesignals_R3_version.m) [demeaned belief
+    weights, demeaned action weights, constant, mean of EVs 11 and 12], and the action weights are
+    taken at the bin the scripts index as 30 (centred 210 ms before the response).
+  - The scripts' RT bins (below 1.2 s, 1.2-1.4, 1.4-1.6, 1.6-1.8, from 1.8 s) are run beside the
+    claims file's quintile readings.
+  - The traces are not cut at each bin's longest RT, which the script does for plotting; the
+    windows used lie before those cuts.
+- claim: fig6d-belief-ramp-to-choice
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig6d-belief-ramp-to-choice
+  notes: Under all 24 combinations the mean belief projection over -200 to 0 ms exceeds that over
+    -500 to -300 ms in all five RT bins.
+  deviations:
+  - As fig6c; the response-locked trace averages the left- and right-choice projections, as the
+    script does.
+- claim: fig6e-action-subspace-ramp
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig6e-action-subspace-ramp
+  notes: The action projection rises over -500 to 0 ms in every RT bin under all 48 readings. Its
+    maximum over -500 to 100 ms lies between -200 and 100 ms in all five bins under 2 of 48 readings
+    (odd/even halves, per-session quintiles, rates in Hz, the signed average, either O7); in the
+    others one or two bins peak 10 to 70 ms earlier (-230 ms in the longest bin with odd/even halves
+    and the scripts' bins; -270 ms in the fourth bin with the scripts' random halves). The outcome
+    follows the criterion's rule (one reading suffices) and rests on the peak window's lower edge.
+  deviations:
+  - As fig6c.
+- claim: fig7a-ofc-value-difference-neurons
+  outcome: partially_reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig7a-ofc-value-difference-neurons
+  notes: With the Figure 5 trial types (reading a), OFC has the largest proportion at all three tests
+    at 250 ms for p < 0.05 (6.0, 4.4, 6.6% against at most 5.3, 3.2, 4.8%) and at 300 ms for p < 0.01
+    (1.6, 1.6, 3.3%), but not at both levels in one bin; with the attribute-trial reading (b) it fails
+    in every combination. With the script's threshold (|T| > 1.64) it holds at both bins. At 250 ms
+    and p < 0.05 the smallest pairwise chi-square p is 0.084. The threshold is asked of a reader.
+- claim: fig7b-ofc-value-difference-any
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig7b-ofc-value-difference-any
+  notes: With reading (a), OFC has the largest fraction passing any test at both bins and all
+    thresholds (250 ms, p < 0.05 OFC 11.5%, ACC 9.0%, DLPFC 6.0%).
+- claim: fig7c-acc-belief-neurons
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig7c-acc-belief-neurons
+  notes: ACC is highest for all four EVs at both bins and both thresholds (300 ms, p < 0.05 ACC 16.4,
+    20.1, 19.6, 11.1% against at most 10.4, 12.7, 8.2, 6.7%); in M alone DLPFC is higher for EV 13
+    (16.2% against 12.8%).
+- claim: fig8-cue1-value-all-regions
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig8-cue1-value-all-regions
+  notes: All 24 readings and the script's regression give binomial p < 1e-7 in every region (script
+    ACC 54.0%, DLPFC 41.8%, OFC 59.0%).
+  deviations:
+  - The script's own regression (InfoGathering_Neurons_Cue1_regression.m, 13 regressors on raw
+    values, significance from 1000 trial permutations corrected over the bins from 0 to 500 ms) is
+    run as a further reading.
+- claim: fig8-action-value-acc-dlpfc
+  outcome: partially_reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig8-action-value-acc-dlpfc
+  measured: [19.0, 18.7]
+  notes: The first reading the criterion lists (full model, 100-500 ms, all trials, p < 0.05) gives
+    19.0% and 18.7%, within tolerance, but OFC is above chance there (10.4%, p = 0.0018). The tests
+    all hold in six readings and in the script's (ACC 20.6%, DLPFC 17.9%, binomial p = 2e-14 and
+    3e-08, chi-square against OFC p = 6.8e-05 and 0.0016, OFC 6.0%, p = 0.41), in none of them with
+    both fractions within 18 +/- 1.8%.
+- claim: fig8-spatial-value-dlpfc
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig8-spatial-value-dlpfc
+  notes: Holds under 2 of 24 readings (100-500 ms, all trials, p < 0.01, either model); with the full
+    model DLPFC spatial value 8.2% (binomial p = 3e-08) against action value 7.5% (chi-square p = 1),
+    ACC 2.6% against 13.2% (p = 0.0003). In the script's reading DLPFC spatial is 15.7% against 17.9%
+    (p = 0.74) and ACC 9.0% against 20.6% (p = 0.0024), but the DLPFC binomial p is 2e-06, above the
+    1e-6 bound. The outcome follows the criterion's rule (one reading suffices).
+- claim: fig8-attribute-value-ofc
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:fig8-attribute-value-ofc
+  measured: 26.2
+  notes: The first reading gives 26.2% of OFC (binomial p = 4e-22), above ACC (5.8%, chi-square
+    p = 1.6e-07) and DLPFC (11.9%, p = 0.0028); the script's reading gives 23.0% (p = 3e-17), above
+    ACC (7.9%, p = 0.00011) and DLPFC (11.2%, p = 0.011).
+- claim: figs9-ev16-correlation
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs9-ev16-correlation
+  measured: [0.18, 0.19]
+  notes: Over neurons on trials with 3 or more cues (reading b) the mean r2 is 0.180 (EV 7) and 0.190
+    (EV 9), and the largest other pair among EVs 1-6 and 13-18 is 0.046 (EV 2 with EV 13). Over
+    sessions (reading a) 0.190 and 0.204, the first outside tolerance. The script computes the matrix
+    on all trials (0.180 and 0.198 over neurons).
+- claim: figs11-alternative-value-template
+  outcome: reproduced
+  notebook: reproduce_hunt_2018.ipynb
+  output: claim:figs11-alternative-value-template
+  notes: Attended value in OFC T = 3.31 (one-sided p = 0.0021) with CPD 2.72% against 0.37% and
+    0.29%; left/right value T = 6.75 (ACC) and 6.56 (DLPFC), -0.01 in OFC. Both fig4f and fig4g
+    criteria hold under all four readings.
+  deviations:
+  - The alternative template is the commented line of Fig4_RSA.m, -|rank(i) - rank(j)| demeaned.
+findings:
+- kind: selection_undocumented
+  about: data
+  statement: Units are selected by the average_firing_rate field of other_data/all_units_info.mat,
+    which the paper's scripts use for the 1 Hz exclusion. How it was computed is not documented, and
+    it is neither the whole-session rate (the stored men) nor the rate over the analysed trials;
+    those select 190, 136 and 182 or 186, 137 and 179 units in ACC, DLPFC and OFC, where the field
+    gives the paper's 189, 135 and 183.
+- kind: metadata_error
+  statement: The unit files 681 to 724 (sessions 5, 11, 23 and 27 of Miles) store the subject letter
+    sb as lower case "m", while all other units of Miles store "M".
+- kind: metadata_error
+  statement: The data descriptor, the README and the scripts' flowchart name the preprocessed units
+    neuronal_data/LTH_preprocessed_data, but the archive holds them as
+    neuronal_data/LTH_processed_data.zip, the folder name the scripts read.
+- kind: code_mismatch
+  statement: Every figure script drops unit 87 (DLPFC, 4.8 Hz) as a bad cell, and the Figure 5 and 7
+    scripts also drop unit 653 (OFC, whose cue 2 T-statistics are not finite), so the DLPFC analyses
+    use 134 units and the OFC analyses of Figures 5 and 7 use 182, where the paper reports 135 and 183
+    (for example n = 135 DLPFC units in the Supplementary Figure 5 legend). The paper does not
+    mention these exclusions.
+- kind: paper_inconsistency
+  statement: For Figure 7a the Results say the cue 3 tests were made "at cue 3 of attribute trials"
+    while citing Figure 5d/e, which are option trials; the script (Fig7_single_neurons_cue2and3.m)
+    tests EV 3 against EVs 1 and 2, the option-trial regressors.
+- kind: code_mismatch
+  statement: The Methods for Figure 6 describe a neurons x 2 projection matrix from odd and even
+    trials, with weights for action 200 ms before the response. The published script
+    (Fig6_ACCmultiplesignals_R3_version.m) averages 100 random half splits, adds a constant and the
+    mean option/attribute response to the projection design, takes the action weights at the bin
+    centred 210 ms before the response, and uses fixed reaction-time bins (below 1.2 s, 1.2-1.4,
+    1.4-1.6, 1.6-1.8, from 1.8 s) that the Methods do not give.
+- kind: methods_unavailable
+  statement: Two thresholds of the single-neuron analyses are not in the text. Figure 7 counts a
+    neuron as encoding value difference when each of three T-statistics exceeds 1.64 in absolute
+    value (Fig7_single_neurons_cue2and3.m), and belief confirmation at 1.96, and Supplementary Figure
+    1c judges accuracy on the pictures seen, averaged over sessions (InfoGathering_Behaviour.m); the
+    results here depend on both choices (fig7a, figs1cd). The authors could confirm that these are
+    the choices behind the figures.
