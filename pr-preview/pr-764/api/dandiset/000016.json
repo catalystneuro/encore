@@ -1,0 +1,1269 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000016",
+  "label": "DANDI:000016"
+ },
+ "page": "datasets/dandi/000016/",
+ "generated": "2026-11-14T04:33:17+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 7,
+  "partially_reproduced": 3,
+  "not_reproduced": 14,
+  "blocked": 14
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "najafi-2020-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000016",
+    "version": "0.260915.2309",
+    "doi": "10.48324/dandi.000016/0.260915.2309",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000016"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000016",
+   "label": "DANDI:000016",
+   "dataset_version": "0.260915.2309",
+   "paper": "10.1016/j.neuron.2019.09.045",
+   "paper_title": "Excitatory and Inhibitory Subnetworks Are Equally Selective during Decision-Making and Emerge Simultaneously during Learning",
+   "date": "2026-11-10",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/42847712410"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "najafi-2020",
+   "entry_title": "Excitatory and inhibitory choice selectivity in mouse PPC (Najafi et al. 2020)",
+   "summary": "In this data the paper's central finding that inhibitory and excitatory populations decode the choice equally well held up, as did stronger noise correlations between neurons of the same choice preference. Single neurons of both types were similarly selective, but a second mouse also showed a cell-type difference, seen in 4 of 10 shuffle seeds. Whether inhibitory pairs are more correlated, and whether noise correlations limit decoding, could not be decided: the outcome depends on a test the Methods do not specify. The learning findings did not reproduce, with decoding gains and earlier choice signals failing in one or two of three learning mice, using fewer decoder repetitions than the paper. The circuit models were not run in time.",
+   "description": "Tests the findings of Najafi, Elsayed, Cao, Pnevmatikakis, Latham, Cunningham and Churchland (2020) on dandiset 000016, which holds the inferred spiking activity, ROI classes and trial tables of 135 two-photon imaging sessions from 4 mice. It compares choice selectivity of single excitatory and inhibitory neurons, choice decoders built from each population, noise correlations, and their changes during learning.",
+   "notebooks": [
+    {
+     "path": "01_single_neurons_correlations.ipynb",
+     "title": "Data, behaviour, single-neuron selectivity and correlations",
+     "executed": "notebooks/najafi-2020/01_single_neurons_correlations.html"
+    },
+    {
+     "path": "02_decoders.ipynb",
+     "title": "Choice decoders in expert sessions",
+     "executed": "notebooks/najafi-2020/02_decoders.html"
+    },
+    {
+     "path": "03_learning_decoders.ipynb",
+     "title": "Decoder time course and learning",
+     "executed": "notebooks/najafi-2020/03_learning_decoders.html"
+    },
+    {
+     "path": "04_time_course_per_bin_C.ipynb",
+     "title": "Decoder time course and weights with C chosen at every bin, mice 1 to 3",
+     "executed": "notebooks/najafi-2020/04_time_course_per_bin_C.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "data-composition",
+     "statement": "The imaging dataset has 135 sessions from 4 mice (45, 48, 7 and 35 sessions), with on average 480 neurons per session, about 40 inhibitory, 330 excitatory and 100 unclassified; inhibitory neurons are 11% of the population.",
+     "source": "STAR Methods, Quantification and statistical analysis; Results, paragraph 3",
+     "quote": "Our simultaneous imaging and decision-making dataset includes 135 sessions from 4 mice (45, 48, 7, and 35 sessions per mouse). Median number of trials per session is 213, 253, 264, and 222, for each mouse. On average, 480 neurons were imaged per session, out of which ~40 neurons were inhibitory and ~330 were excitatory",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "The dandiset holds 135 sessions (45, 48, 7, 35 per mouse, matching the paper's mice 1 to 4 by count). Median trials per session over all trials in the table are 213, 253, 264 and 222, the paper's values exactly; with a correct or incorrect choice they are 166, 190.5, 152 and 188. Means per session are 477.4 neurons, 330.0 excitatory and 41.0 inhibitory, all within tolerance. The inhibitory fraction is 0.1104 of excitatory plus inhibitory neurons, reading (b), within tolerance, and 0.0854 of all neurons, reading (a), outside.",
+     "deviations": [
+      "Neurons are the good ROIs, the ones the traces hold. Trials per session are all trials in the table, reading (a), and the inhibitory fraction is over excitatory plus inhibitory neurons, reading (b); the other readings are shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-psychometric",
+     "statement": "Choices depend strongly on stimulus rate, at chance at the 16 Hz boundary and more accurate for rates further from it.",
+     "source": "Results, paragraph 1; Figure 1B",
+     "quote": "Decisions depended strongly on stimulus rate: performance was at chance when the stimulus rate was at the category boundary, and was better at rates further from the category boundary",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "The logistic slope of high-rate choice on stimulus rate is positive in every mouse (0.082, 0.139, 0.210 and 0.092 per Hz, all p below 1e-98). The 16 Hz trials (10, 122, 0 and 6 with a response) are rewarded on a random side, so their choice side is unknown and the fraction of high choices at 16 Hz that the criterion asks to report cannot be given; they are left out of the fit. The per-rate table is grouped on rates rounded to 1 Hz.",
+     "deviations": [
+      "Only the 4 imaged mice are in the dandiset; Figure 1B uses 10.",
+      "Trials are those with trial_is_good true and a correct or incorrect response (the file's flag is false for every other response, as the notebook shows); trials without a choice-aligned trace (1982 of 25883) are left out.",
+      "16 Hz trials are rewarded on a random side (Methods) and all carry trial_type High-rate, so their choice side is unknown; they are left out of every analysis (138 trials with a response). The trial table has no column for helped trials or the first trials of a session, and trial_is_good is exactly a correct or incorrect response, so the code's other exclusions (setTrs2rmv.m) could not be applied."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1b-trial-history",
+     "statement": "Choice depends on current stimulus strength, on the previous trial's outcome and on the time since the previous trial; the effect of a previous success is stronger after a short ITI, and ITI has no significant effect after a failure.",
+     "source": "Figure S1B; Results, paragraph 1",
+     "quote": "Top left: strength of the sensory evidence affects the animal's choices: the stronger the evidence, the higher the impact. Top middle: Success of a previous trial also affects animal's decision; the effect is stronger when the previous success occurs after a short ITI (<7sec). Top Right: Same but for previous incorrect trials; the effect of ITI after a failure was not significant",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The model needs the inter-trial interval (previous choice to current stimulus onset). The trial table gives start_time, stop_time and event times relative to each trial's own start (start_time -0.48 to 0.21 s over all trials), and the files hold no session clock or absolute trial times, so the ITI and its 7 s split cannot be formed. The stimulus-strength part of the model alone would not test the claim.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1gi-inferred-spiking-differs",
+     "statement": "Inferred spiking activity differs significantly between inhibitory and excitatory neurons throughout the trial, and in the bin just before the choice in every mouse.",
+     "source": "Results, paragraph 4; Figure 1G, H and I",
+     "quote": "The magnitude of inferred spiking activity was significantly different for inhibitory vs. excitatory neurons throughout the trial ( Figure 1G ; t-test, p<0.001). Just before the choice (97 ms, average of 3 frames), this difference was clear ( Figure 1H ) and significant for all mice ( Figure 1I , t-test; p<0.001)",
+     "statistics": [
+      {
+       "about": "inhibitory against excitatory, through the trial, example mouse",
+       "test": "t-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "46 days, example mouse"
+      },
+      {
+       "about": "inhibitory against excitatory, 0-97 ms before choice, each mouse",
+       "test": "t-test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "Inhibitory activity is higher than excitatory activity in the bin before the choice in every mouse (ratios of day means 1.11 to 1.79). By the t-test across days, reading (a), p is 0.05, 8.7e-10, 0.1 and 0.03; on pooled neurons, reading (b), it is 0.0013, below 1e-300 (printed as 0), 8.2e-10 and 3.5e-05. So p < 0.001 holds in no reading for every mouse, mouse 1 missing at 0.0013 under (b). Under reading (a), p < 0.001 holds in 14 of 15 bins of mouse 2 and no bin of the other mice, so no mouse has it in every bin. The criterion has no partial band. The pooled counts (44546 E, 5530 I) are within the expected 41723 +/- 4172 and 5142 +/- 514.",
+     "deviations": [
+      "Correct trials; the time course is tested on the choice-aligned bins present in every session of a mouse (15 to 18 bins)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-example-session",
+     "statement": "In an example session (285 excitatory and 29 inhibitory neurons), 24 excitatory (8%) and 5 inhibitory (17%) neurons were significantly choice selective just before the choice.",
+     "source": "Figure 2A legend",
+     "quote": "Data correspond to the 97 ms window preceding choice (285 excitatory and 29 inhibitory neurons) ... 5 inhibitory and 24 excitatory neurons (17% and 8%, respectively) were significantly choice selective",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "One session (mouse 4, 170625231642) has 285 excitatory and 29 inhibitory neurons. Over 20 repetitions of the 50-shuffle rule, the median number of selective neurons is 11.5 excitatory and 1 inhibitory, against the expected 24 and 5. The empirical-p variant gives 28 and 2.",
+     "deviations": [
+      "The ROC uses correct trials without 16 Hz trials (claims file); the example session has 31 and 37 such trials of each choice."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2bc-fraction-selective-similar",
+     "statement": "Excitatory and inhibitory neurons have a similar fraction of significantly choice-selective neurons just before the choice (median across mice 13% and 16%, about 43 excitatory and 6 inhibitory neurons per session); the difference is significant in mouse 4.",
+     "source": "Results, Individual excitatory and inhibitory neurons are similarly choice-selective, paragraph 1; Figure 2C",
+     "quote": "Importantly, excitatory and inhibitory neurons were similar in terms of the fraction of choice-selective neurons ( Figure 2B , C ; Figure S3B , C )",
+     "statistics": [
+      {
+       "about": "excitatory against inhibitory fraction, per mouse (a star in mouse 4 only, by the Figure S3D legend)",
+       "test": "t-test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "45, 48, 7 and 35 sessions per mouse"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "The medians across mice of the fractions selective are E 0.1288 and I 0.1719, both within tolerance, and 42.2 excitatory neurons per session is within tolerance; 6.8 inhibitory is above 6 +/- 0.6. The unpaired t-test across sessions finds a difference in mouse 4 (p = 0.01335), as the paper reports, but also in mouse 2 (p = 0.04023), where the criterion requires none; in both, inhibitory neurons are more often selective. Neither the reproduced band nor the partial band (t-tests only) holds. With the empirical-p variant only mouse 4 differs (p = 0.03105), but the medians (0.2120, 0.2528) are then outside tolerance. Over 10 further seeds of the 50 shuffles mouse 2 has p < 0.05 in 4 of 10 (p 0.0178 to 0.0913, median 0.0517) and mouse 4 in all 10, with the medians within tolerance in every seed, so the criterion's band is reproduced in 6 seeds and not reproduced in 4. The outcome is that of the main draw, which lies on the not-reproduced side; it is not stable across seeds.",
+     "deviations": [
+      "127 of 135 sessions have at least 10 correct trials of each choice; 8 are left out.",
+      "The files name no lick side; choices are coded as the high-rate or low-rate side from trial_type and the outcome. Every measure used (AUC distance from 0.5, decoding accuracy, same or opposite preference) does not depend on which side is called left.",
+      "16 Hz trials are rewarded on a random side (Methods) and all carry trial_type High-rate, so their choice side is unknown; they are left out of every analysis (138 trials with a response). The trial table has no column for helped trials or the first trials of a session, and trial_is_good is exactly a correct or incorrect response, so the code's other exclusions (setTrs2rmv.m) could not be applied."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2bd-selectivity-time-course",
+     "statement": "The fraction of choice-selective neurons and the magnitude of choice selectivity increase gradually over the trial and peak just after the choice.",
+     "source": "Results, Individual excitatory and inhibitory neurons are similarly choice-selective, paragraph 1; Figure 2B and 2D",
+     "quote": "The fraction of choice-selective neurons ( Figure 2B ) and the magnitude of choice selectivity ( Figure 2D ) gradually increased over the trial, peaking just after the animal reported its choice",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "In the example mouse (mouse 1, 41 sessions) the fraction selective and the magnitude rise from the earliest bin to the bin before the choice for both types. Their peaks fall at bin 2 for excitatory (0.182, 0.164) and bin 1 for inhibitory (0.201, 0.172), 97 to 291 ms after the choice. Under reading (b), within 300 ms after the choice, the claim is reproduced; under reading (a), the first bin after the choice, it is not reproduced. The readings give different outcomes, so the claim is blocked. In mouse 2 inhibitory peaks fall at bin 3 (291 to 388 ms), in mouse 4 three of four peaks fall at bin -1, and in mouse 3 inhibitory selectivity peaks at bin -9 or -10 (7 sessions). The question of the window is for the paper's authors (finding).",
+     "deviations": [
+      "The peak is judged on bins present in at least half of a mouse's sessions (a standard choice)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2de-selectivity-magnitude-similar",
+     "statement": "The magnitude and time course of choice selectivity are similar for excitatory and inhibitory neurons.",
+     "source": "Results, Individual excitatory and inhibitory neurons are similarly choice-selective, paragraph 1; Figure 2D and 2E",
+     "quote": "as well as the magnitude and time course ( Figure 2D , E ) of choice selectivity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "At 0-97 ms before the choice, mean selectivity does not differ between the types in mice 1, 2 and 3 (p = 0.144, 0.071, 0.98) and differs in mouse 4 (I - E = +0.0186, p = 0.021). The criterion's partial band is one mouse. In the time course, 0, 5, 0 and 9 bins of mice 1 to 4 differ at p < 0.05.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3d-same-spiking-selectivity",
+     "statement": "Restricted to excitatory and inhibitory neurons with the same spiking activity, choice selectivity is still similar, and the difference in mouse 4 of Figure 2C disappears.",
+     "source": "Results, Individual excitatory and inhibitory neurons are similarly choice-selective, paragraph 1; Figure S3D",
+     "quote": "D, ROC analysis restricted to those excitatory and inhibitory neurons that had the same spiking activity. Choice selectivity is still similar between the two cell types. Note that the significant difference observed for mouse 4 in Figure 2C is absent after controlling for the difference in spiking activity of inhibitory and excitatory neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "Among neurons in the activity bin holding the most inhibitory neurons (median 265 E and 22 I per session) no mouse shows a difference in mean selectivity (p = 0.18, 0.75, 0.88, 0.55) or in the fraction selective (p = 0.13, 0.45, 0.51, 0.20), so the mouse 4 difference of fig2de is gone. The median activity is zero for 99.45 to 100 percent of neurons, so this match keeps the bin at zero, and in mouse 2 the kept inhibitory neurons stay more active than the kept excitatory ones (I - E +0.0003, p = 0.016). Matched on mean activity instead (median 81 E and 8 I per session, I - E activity p = 0.19 to 0.78), no mouse differs either (selectivity p = 0.68, 0.98, 0.14, 0.66; fraction p = 0.32, 0.62, 0.51, 0.84).",
+     "deviations": [
+      "The 50 bins span the range of the medians of excitatory and inhibitory neurons of the session (Methods do not say over which neurons the range is taken; a standard choice)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3c-wider-window",
+     "statement": "ROC on the window from 200 ms before to 300 ms after the choice gives a larger fraction of selective neurons, 21% of excitatory and 27% of inhibitory (median across mice), about 69 excitatory and 11 inhibitory neurons per session.",
+     "source": "Figure S3C",
+     "quote": "Fraction selective neurons at this time window (median across mice): excitatory: 21%; inhibitory: 27%, resulting in approximately 11 inhibitory and 69 excitatory neurons with significant choice selectivity per session",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "The median fractions across mice are E 0.197 and I 0.260 under reading (a) and E 0.204 and I 0.262 under reading (b), all within tolerance. Excitatory neurons per session are 63.357 and 65.322, within 69 +/- 6.9. Inhibitory neurons per session are 9.819 under (a) and 9.883 under (b), both below the lower bound 9.9. Both readings fail on the same value, and the criterion has no partial band. Over 10 further seeds of the 50 shuffles the inhibitory count is 9.471 to 10.157 under (a) and 9.668 to 10.191 under (b); all four values are within tolerance in 2 of 10 seeds under (a) and 6 of 10 under (b), and the readings disagree in 4 seeds. The outcome is that of the main draw; it sits on the bound and is not stable across seeds.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3e-correct-error-correlation",
+     "statement": "Choice selectivity on correct and on error trials is positively correlated across neurons, so most neurons reflect the choice more than the stimulus, and within each mouse this correlation is very similar for excitatory and inhibitory neurons; it is weaker in mouse 4.",
+     "source": "Results, Individual excitatory and inhibitory neurons are similarly choice-selective, paragraph 2; Figure S3E",
+     "quote": "Importantly, however, within each subject, this correlation was very similar for excitatory vs. inhibitory neurons ( Figure S3E ), suggesting that the tendency for neurons to be modulated by the choice vs. the stimulus was similar in excitatory and inhibitory neurons",
+     "statistics": [
+      {
+       "about": "example session, excitatory neurons",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.58",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "example session, inhibitory neurons",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.55",
+       "p": 0.007
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "In 94 sessions with at least 10 error trials of each choice the mean correct-to-error AUC correlation is positive for both types in mice 1 to 3 (0.275 to 0.494). Mouse 4 has the lowest r for both types (E 0.041, I -0.027), so its inhibitory mean is not positive. No mouse shows a difference between the types (p = 0.14, 0.32, 0.97, 0.35). One part fails and the criterion has no partial band.",
+     "deviations": [
+      "Sessions need at least 10 error trials of each choice (the criterion's reading); 94 of 127 sessions pass, 3 of them in mouse 3."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3bc-decoding-similar",
+     "statement": "Choice can be decoded from population activity well above chance, and inhibitory populations decode it as accurately as excitatory populations of the same size, in every mouse.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 2; Figure 3B and 3C",
+     "quote": "Classification accuracy of inhibitory neurons was well above chance and was very similar to that of excitatory neurons ( Figure 3B , red and blue traces overlap; Figure S4 ... Similar classification accuracy for excitatory and inhibitory populations was observed in all subjects ( Figure 3C )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_decoders.ipynb",
+     "notes": "In every mouse the inhibitory and subsampled excitatory decoders are above their shuffles (p below 0.003), and they do not differ. Mean accuracies are E 65.3, 64.3, 60.2, 67.2 and I 64.6, 66.1, 58.9, 69.6 percent (p = 0.671, 0.185, 0.64, 0.153). The all-neuron decoder reaches 73.3 to 87.2 percent.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "Excitatory populations are 5 random subsamples per session where the paper uses 50, for runtime.",
+      "Choices are matched once per session by random subsampling; the paper does not say whether this is redone per repetition.",
+      "16 Hz trials are rewarded on a random side (Methods) and all carry trial_type High-rate, so their choice side is unknown; they are left out of every analysis (138 trials with a response). The trial table has no column for helped trials or the first trials of a session, and trial_is_good is exactly a correct or incorrect response, so the code's other exclusions (setTrs2rmv.m) could not be applied."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-decoding-time-course",
+     "statement": "Accuracy of the all-neuron choice decoder grows after stimulus onset and peaks at the time of the choice.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 1; Figure 3B",
+     "quote": "Classification accuracy gradually grew after stimulus onset and peaked at the time of the choice ( Figure 3B , black)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "03_learning_decoders.ipynb",
+     "notes": "With C chosen at bin -1 and 25 splits (03), all-neuron accuracy on correct trials rises from the earliest bin (59.4 to 70.2 percent) to the bin before the choice (72.4 to 86.4) in every mouse; the peak falls at bin 2 in mice 1 and 4, bin 3 in mouse 2 (86.6) and bin 6 in mouse 3. With C chosen at every bin and 50 splits (04, mice 1, 2 and 3), mouse 1 peaks at bin 3 (89.5, next 88.5), mouse 2 at bin 2 (88.4, next 88.2) and mouse 3 at bin 6 (83.6). The peak is never in bins -1 or 0, reading (a), and in mouse 3 it lies outside 300 ms, reading (b), under both C rules, so the claim fails under both readings; the criterion has no partial band.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "The time courses train a decoder at every bin with the C chosen at bin -1 (the paper chooses C at every bin), with 25 random splits per bin (the paper 50), and 3 excitatory subsamples, for runtime.",
+      "C chosen at bin -1 could favour that bin; the peak still falls after it in every mouse.",
+      "Notebook 04 repeats the test for mice 1, 2 and 3 with C chosen at every bin and 50 splits (claims file, opening comment), on the earliest bin and bins -3 to the last, for runtime; mouse 4 is not repeated."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3df-weights-similar",
+     "statement": "In the decoder trained on all neurons, excitatory and inhibitory neurons receive weights of matched magnitude throughout the trial and with very similar distributions.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 3; Figure 3D, E and F",
+     "quote": "The weight magnitudes of excitatory and inhibitory neurons were matched for the entire trial ( Figure 3D ), and the distributions of weights was very similar ( Figures 3E , F )",
+     "statistics": [
+      {
+       "about": "excitatory against inhibitory absolute weight, per mouse (Figure 3F)",
+       "test": "t-test",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "02_decoders.ipynb",
+     "notes": "At 0-97 ms before the choice (02), the mean |w| of unit-length weight vectors of the all-neuron decoder does not differ between types in any mouse across sessions (p = 0.75, 0.051, 0.32, 0.13). Per bin (03, the time-course decoders with C chosen at bin -1), inhibitory weights are larger in 12 of 25 bins of mouse 2 (smallest p 0.0041) and in 1 of 25 bins of mouse 4 (p = 0.012), and no bin differs in mice 1 and 3 (smallest p 0.10 and 0.14). So two mice differ in part of the trial, the criterion's partial band. With C chosen at every bin and 50 splits (04, mice 1, 2 and 3), no bin differs in mice 1 and 3 (smallest p 0.171 and 0.0851) and inhibitory weights are larger in 3 of 12 bins of mouse 2 (smallest p 0.0222), so the band is the same under that C rule; mouse 4 was not repeated. The pooled counts, 42019 excitatory and 5172 inhibitory neurons, equal the expected values.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "The per-bin weights come from the time-course decoders of 03, with C chosen at bin -1 and 25 splits (the paper chooses C at every bin, 50 splits), for runtime. Notebook 04 repeats them for mice 1, 2 and 3 with C chosen at every bin and 50 splits, on the earliest bin and bins -3 to the last."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3hi-mixed-no-advantage",
+     "statement": "A population of half excitatory and half inhibitory neurons decodes choice with accuracy similar to that of an excitatory population of the same size, so a mixed population offers no major advantage.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 4; Figure 3H and 3I",
+     "quote": "Classification accuracy was similar for both decoders ( Figure 3H , I ), arguing that a mixed population offers no major advantage to decoding",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_decoders.ipynb",
+     "notes": "Mixed populations (n inhibitory plus n excitatory) and 2n-excitatory populations decode the choice equally in every mouse (differences -0.02 to +0.66 points, p 0.689 to 0.996).",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "5 subsamples of the mixed and 2n-excitatory populations where the code uses 50."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5-fluorescence-decoding",
+     "statement": "Excitatory and inhibitory populations are equally choice selective when decoders are trained on fluorescence traces.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 2; Figure S5",
+     "quote": "Excitatory and inhibitory populations were equally choice selective even when the analysis was performed on raw calcium traces ( Figure S5 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The files hold one kind of trace, under processing/Ophys/dFoF_*, and its values are the normalised inferred spiking activity (sparse, 90 percent of values below 1e-6, each neuron's maximum 1), not Delta F/F or denoised fluorescence. No fluorescence trace is in the dandiset. The CSHL repository the paper names was not searched for them. The processing/Ophys groups of every file are ImageSegmentation and the dFoF_* trial series only (01, data check).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6ab-previous-choice-stimulus",
+     "statement": "Population activity is weakly informative about the previous trial's choice and about the stimulus category (the stimulus category weakly except in mouse 4), and excitatory and inhibitory populations are similarly selective for both.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 5; Figure S6A and S6B",
+     "quote": "Excitatory and inhibitory populations were similarly selective for previous choice ( Figure S6A ). The population activity was also somewhat informative about whether the stimulus was above or below the category boundary ( Figure S6B ). Again, excitatory and inhibitory populations were similarly selective",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not reached within the run's five hours. The data are there (stimulus-aligned traces dFoF_stimAl_noEarlyDec and initiation-tone-aligned traces); streaming two more alignments for all sessions takes about 7 minutes each and the decoders about 15 minutes more, which did not fit after the other notebooks.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6c-outcome-decoding",
+     "statement": "Population activity is strongly selective for trial outcome, reaching about 80% accuracy (median across mice) about 400 ms after the confirmation lick, with inhibitory neurons slightly more accurate than excitatory neurons after reward.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 5; Figure S6C",
+     "quote": "Classification accuracy gradually increases and reaches 80% (median across mice) approximately 400ms after the animal confirms his choice (Figure S1A). Inhibitory neurons showed slightly higher selectivity for the outcome",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not reached within the run's five hours. The reward-aligned (dFoF_rewardAl) and incorrect-confirmation-aligned (dFoF_commitIncorrAl) traces are in the files; the analysis was not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6de-incorrect-trials",
+     "statement": "Decoders trained on correct trials predict the choice on incorrect trials with high accuracy, slightly lower than on correct trials, and the reduction is similar for excitatory and inhibitory populations in every mouse.",
+     "source": "Figure S6D and S6E",
+     "quote": "Importantly, for all mice, the change in classification accuracy was quite similar for excitatory and inhibitory neurons (right), indicating that both populations reflect choice vs. stimulus to a comparable degree",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "02_decoders.ipynb",
+     "notes": "Decoders trained on correct trials predict the choice on incorrect trials above the shuffle in mice 1 and 2 for all three populations (p below 6e-6). In mice 3 and 4 they do not (mouse 3 p 0.086 to 0.7; mouse 4 accuracy 44.0 to 47.8 percent, below the shuffle). The reduction from correct to incorrect trials does not differ between inhibitory and excitatory decoders in any mouse (p 0.278 to 0.993), and it is largest in mouse 4 for the all-neuron decoder (43.2 points, others 7.4 to 8.6). The variant with at least 10 incorrect trials of each choice gives the same pattern for the cell-type decoders. The criterion has no partial band. Whether the criterion's above-shuffle rule in every mouse reads the paper correctly is asked of a reader (questions/najafi-2020.yaml).",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "Excitatory populations are 5 random subsamples per session where the paper uses 50, for runtime.",
+      "The paper gives no minimum of incorrect trials; sessions with at least one incorrect trial of each choice are used, with at least 10 as a variant; both give the same pattern. Incorrect trials are z-scored with the correct-trial mean and SD, and their shuffle permutes the incorrect-trial labels."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4bd-stability-similar",
+     "statement": "Choice decoders lose accuracy at a similar rate away from their training time for excitatory and inhibitory populations, and their stability duration is indistinguishable.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 6; Figure 4B, C and D; Figure S7A",
+     "quote": "This drop in accuracy occurred at a similar rate for excitatory and inhibitory populations ( Figure 4B ). To quantify this, we determined the time window over which classifier accuracy remained within 2 standard deviations of the accuracy at the training time ( Figure 4C ). This was indistinguishable for excitatory and inhibitory neurons ( Figure 4D ; Figure S7A )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_decoders.ipynb",
+     "notes": "The stability duration of decoders trained at 0-97 ms before the choice does not differ between excitatory and inhibitory populations by the t-test of the mouse means under every reading (SD or SE rule, any or contiguous bins, alpha 0.001 or 0.05; p 0.524 to 0.991). Per mouse across sessions, a variant, 1 of 28 tests is below 0.05 (mouse 4, alpha 0.05, SE rule, any bins, p = 0.037); the others have p 0.064 or more.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "Excitatory populations are 5 random subsamples per session where the paper uses 50, for runtime.",
+      "Stability is measured for the decoder trained at 0-97 ms before the choice, tested at every bin on its held-out trials, as the criterion says."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7c-angle-stability",
+     "statement": "The angle between decoders trained at different times shows a similar time course of stability for excitatory and inhibitory populations.",
+     "source": "Results, Choice is decoded with equal accuracy from both excitatory and inhibitory populations, paragraph 6; Figure S7C",
+     "quote": "An alternate method for assessing stability, computing the angle between the weights of pairs of classifiers trained at different time windows, likewise suggested that excitatory and inhibitory populations are similarly stable",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs decoders with the paper's C rule at every bin for the inhibitory and subsampled excitatory populations of every session. Timed on the subset at 1 to 1.6 s per decoder and bin with the coarse C grid used here (about 5 times more with the paper's grid), this is about 25 bins x 6 populations x 1.3 s x 135 sessions, 7 to 8 hours of CPU, more than the time left; it was not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-nonselective-model",
+     "statement": "In a model with non-selective inhibition, inhibitory neurons decode the choice less accurately than excitatory neurons for every ratio of excitatory-to-inhibitory to inhibitory-to-excitatory connection strength.",
+     "source": "Results, Modeling rules out decision circuits with non-selective inhibition, paragraph 2; Figure 5A; Figure S8",
+     "quote": "For this value (and indeed for all other values), inhibitory neurons had lower classification accuracy than excitatory neurons ( Figure 5A , bottom; Figure S8 , left), inconsistent with our experimental results",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A simulation of the Methods' linearised rate model, not a test on the dataset. It was not reached within the run's five hours (4000 x 4000 matrix inversions per network, 25 networks per point for the signal-selective model).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5bc-selective-models-match",
+     "statement": "In signal-selective and SNR-selective models, inhibitory and excitatory neurons have matched decoding accuracy near the biologically plausible regime of equal excitatory-to-inhibitory and inhibitory-to-excitatory strengths; in all three models, accuracy rises faster for inhibitory than for excitatory neurons as the excitatory-to-inhibitory strength increases.",
+     "source": "Results, Modeling rules out decision circuits with non-selective inhibition, paragraphs 3 and 4; Figure 5B and 5C",
+     "quote": "In this circuit architecture, inhibitory and excitatory neurons had matched classification accuracy when the connection strength from excitatory to inhibitory neurons was about the same as the strength from inhibitory to excitatory ... Thus, in all panels of Figure 5 , classification accuracy increases faster for inhibitory neurons than excitatory ones as the excitatory to inhibitory connection strength increases",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A simulation of the Methods' linearised rate model, not a test on the dataset. It was not reached within the run's five hours (4000 x 4000 matrix inversions per network, 25 networks per point for the signal-selective model).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs9-signal-selective-best",
+     "statement": "The signal-selective model has the highest decoding accuracy of the three models at every connection-strength ratio and level of differential correlations, in both cell types.",
+     "source": "Results, Modeling rules out decision circuits with non-selective inhibition, paragraph 6; Figure S9",
+     "quote": "For all values of this parameter and in both cell types, signal-selective model has the highest classification accuracy for decoding the animal's choice",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A simulation of the Methods' linearised rate model, not a test on the dataset. It was not reached within the run's five hours (4000 x 4000 matrix inversions per network, 25 networks per point for the signal-selective model).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-same-selectivity-correlations",
+     "statement": "Noise correlations are stronger between neurons with the same choice selectivity than between neurons with opposite selectivity, for excitatory-inhibitory, excitatory-excitatory and inhibitory-inhibitory pairs, significant in every mouse except mouse 3 for EE and II pairs; the same holds in the spontaneous pre-trial period.",
+     "source": "Results, Correlations are stronger between similarly tuned neurons, paragraph 1; Figure 6A; Figure S10A",
+     "quote": "Indeed, neurons with the same choice selectivity had stronger correlations ( Figure 6A )",
+     "statistics": [
+      {
+       "about": "same against opposite selectivity, each pair type and mouse",
+       "test": "t-test",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "By the code's t-test on pooled neurons, noise correlations are higher between neurons of the same preference than of opposite preference for EI, EE and II pairs in every mouse (largest p 0.00017). Spontaneous correlations before the initiation tone show the same pattern in every mouse and pair type (largest p 0.012). Mouse 3 is significant for EE and II too, where the paper reports it is not; the criterion does not require that. Across sessions, the variant, the noise effect holds in mice 1, 2 and 4 (mouse 2 EI p = 0.0498) and not in mouse 3 (p 0.15 to 0.24).",
+     "deviations": [
+      "Noise correlations use all trials with a choice; preference from the correct-trial AUC without 16 Hz trials (claims file).",
+      "The files name no lick side; choices are coded as the high-rate or low-rate side from trial_type and the outcome. Every measure used (AUC distance from 0.5, decoding accuracy, same or opposite preference) does not depend on which side is called left.",
+      "16 Hz trials are rewarded on a random side (Methods) and all carry trial_type High-rate, so their choice side is unknown; they are left out of every analysis (138 trials with a response). The trial table has no column for helped trials or the first trials of a session, and trial_is_good is exactly a correct or incorrect response, so the code's other exclusions (setTrs2rmv.m) could not be applied."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6bc-inhibitory-correlations-higher",
+     "statement": "Inhibitory pairs have significantly higher noise correlations than excitatory pairs, with intermediate values for excitatory-inhibitory pairs, also for spontaneous correlations and for neurons matched in spiking activity.",
+     "source": "Results, Correlations are stronger between similarly tuned neurons, paragraph 2; Figure 6B and 6C; Figure S10B to S10E",
+     "quote": "Inhibitory pairs had significantly higher noise correlations compared to excitatory pairs ... This was true even when we restricted the analysis to inhibitory and excitatory neurons with the same inferred spiking activity ( Figure S10D , E ). Finally, similar to previous reports ... we found intermediate correlations for pairs consisting of one inhibitory neuron and one excitatory neuron ( Figure S10B , C )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "On pooled neurons, reading (b), II noise correlations exceed EE in every mouse for noise, spontaneous and activity-matched correlations (largest p 5.8e-10), with EI between them in every case, so (b) gives reproduced. Across sessions, reading (a), II exceeds EE in every mouse for noise correlations (largest p 0.025), but not for spontaneous correlations in mouse 3 (p = 0.15) or matched correlations in mice 1 and 3 (p = 0.092, 0.094), so (a) gives not reproduced. The readings differ, so the claim is blocked. With neurons matched on mean activity (a variant), II exceeds EE across sessions only in mouse 4 (p = 0.028), on pooled neurons not in mouse 3 (p = 0.058, II 0.0006 below EE 0.0048), and EI is not between in mice 3 and 4. Mouse 1 has exactly 11867 excitatory and 1583 inhibitory neurons, the expected counts, so it is the example mouse. The matching keeps the lowest activity bin, as the median activity is zero for nearly every neuron (01, figs3d).",
+     "deviations": [
+      "EI is each excitatory neuron's mean r with inhibitory partners pooled with each inhibitory neuron's mean r with excitatory partners."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-noise-correlations-limit-decoding",
+     "statement": "Removing noise correlations by building pseudo populations increases choice decoding accuracy of the full population in every mouse.",
+     "source": "Results, Noise correlations limit decoding accuracy, paragraph 2; Figure 7A and 7B",
+     "quote": "In all mice, removing noise correlations resulted in a consistent increase in classification accuracy ( Figure 7B ; filled vs. open circles), establishing that noise correlations limit population accuracy in PPC",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "02_decoders.ipynb",
+     "notes": "Pseudo populations raise the all-neuron accuracy in every mouse under both trial sets, on correct trials by +5.38, +5.45, +4.32 and +5.27 points and on all trials with a choice by +6.79, +5.21, +4.88 and +6.11. On correct trials with the one-sample test, reading (a), the change is significant in every mouse (p = 4e-10, 9.9e-12, 0.011, 6.2e-10), so that reading gives reproduced. Each of the other three readings fails in mouse 3 (correct trials unpaired p = 0.32; all trials one-sample p = 0.08 and unpaired p = 0.25), so they give not reproduced. The readings differ, so the claim is blocked.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "Only the largest ensemble, all neurons, is computed, as the criterion's change is taken there; the neuron ranking does not change it.",
+      "Pseudo populations are built by shuffling each neuron's trials within each choice on the whole trial set at every split, so training and test trials are both pseudo trials."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8ab-learning-accuracy",
+     "statement": "During learning, choice decoding accuracy increases and correlates with behavioural performance across sessions, for all, excitatory and inhibitory populations (r = 0.55, 0.35, 0.32 in mouse 2 and 0.57, 0.63, 0.32 in mouse 3).",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 1; Figure 8A, 8B and 8D",
+     "quote": "Classification accuracy of the choice decoder increased consistently as animals became experts in decision-making ( Figure 8A , left; Figure 8D , black), leading to a strong correlation between classifier accuracy and mouse performance over training ( Figure 8B , left)",
+     "statistics": [
+      {
+       "about": "accuracy against performance, example mouse, each population",
+       "test": "Pearson correlation",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "accuracy against performance, mice 2 and 3, each population",
+       "test": "Pearson correlation",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "03_learning_decoders.ipynb",
+     "notes": "Decoder accuracy correlates positively with easy-trial performance in every learning mouse and population. With all trials, reading (a), mouse 1 has r = 0.66, 0.57, 0.52 (all p < 0.001), mouse 2 0.39, 0.22, 0.21 (p = 0.0067, 0.14, 0.16) and mouse 4 0.57, 0.55, 0.32 (p = 0.00035, 0.0007, 0.063). Reading (b) gives mouse 2 0.36, 0.07, 0.21 and mouse 4 0.29, 0.26, 0.12. Under the reading of the legend's mice as the paper's mice 2 and 4, mouse 2 matches none of the reported values and mouse 4 matches 0.57 and 0.32 but not 0.63 (0.55). Not all p < 0.05, so neither the reproduced nor the partial band holds.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "3 excitatory subsamples per session.",
+      "Early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a) of the criterion (the code's perc_thb); reading (b), the runs at the start and end of training, gives 0 or 1 day for most mice and cannot be tested. Days are ordered by session_start_time.",
+      "16 Hz trials are rewarded on a random side (Methods) and all carry trial_type High-rate, so their choice side is unknown; they are left out of every analysis (138 trials with a response). The trial table has no column for helped trials or the first trials of a session, and trial_is_good is exactly a correct or incorrect response, so the code's other exclusions (setTrs2rmv.m) could not be applied."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8ce-choice-signal-onset",
+     "statement": "The choice signal emerges progressively earlier in the trial as mice become experts, so the onset of above-chance decoding correlates negatively with performance (r = -0.60, -0.34, -0.38 in mouse 2 and -0.60, -0.27, -0.28 in mouse 3 for all, excitatory and inhibitory).",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 1; Figure 8C and 8E",
+     "quote": "This resulted in a negative correlation between mouse performance and the onset of super-threshold decoding accuracy ( Figure 8C , left; Figure 8E , black)",
+     "statistics": [
+      {
+       "about": "onset against performance, mice 2 and 3, each population",
+       "test": "Pearson correlation",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "03_learning_decoders.ipynb",
+     "notes": "The onset of the first 500 ms run of above-shuffle accuracy correlates negatively with performance in mouse 1 for the all-neuron and excitatory decoders (r = -0.49, -0.42; p = 0.0013, 0.01), not for inhibitory (r = -0.06). In mice 2 and 4 it does not (r -0.24 to -0.04, p >= 0.16), under trial reading (a) and the Methods alpha 0.05. Reading (b) and the code's alpha 0.001 give no more. None of the six reported values is matched. Per-bin C was not run for these decoders (estimated over 6 hours of CPU).",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "The time courses train a decoder at every bin with the C chosen at bin -1 (the paper chooses C at every bin), with 25 random splits per bin (the paper 50), and 3 excitatory subsamples, for runtime.",
+      "A bin counts as above chance when its accuracy exceeds the shuffle with p < 0.05 by an unpaired t-test across the 25 splits."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8de-learning-parallel",
+     "statement": "The choice signal emerges at the same time in excitatory and inhibitory populations, and its magnitude and timing are matched for the two cell types throughout learning.",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 1; Figure 8A to 8E",
+     "quote": "Importantly, the choice signal emerged at the same time in both populations, and its magnitude and timing was matched for the two cell types throughout learning ( Figure 8A - C , middle, right; Figure 8D - E , blue, red)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "03_learning_decoders.ipynb",
+     "notes": "With all trials, reading (a), and early and late days by reading (a), the subsampled excitatory and inhibitory decoders do not differ in accuracy or onset in early or late days in any learning mouse (p 0.2 to 0.81 where testable). Late accuracy exceeds early for both types in mice 1 and 4 (p 0.0013 to 0.03), but not in mouse 2 (p = 0.084, 0.24). Under trial reading (b), late-day accuracy differs between types in mouse 2 (I 67.9 against E 60.6, p = 0.016), and late exceeds early for excitatory neurons in neither mouse 2 nor mouse 4. Early and late days by reading (b) give 0 or 1 day in most mice and cannot be tested, so the outcome rests on reading (a), an assumption. The claim fails under both trial readings, so it is not reproduced.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "The time courses train a decoder at every bin with the C chosen at bin -1 (the paper chooses C at every bin), with 25 random splits per bin (the paper 50), and 3 excitatory subsamples, for runtime.",
+      "Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a) of the criterion (the code's perc_thb = [20, 80]). Reading (b), the runs of such days at the start and end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone. Reading (a) is adopted because it is what the paper's code does, and because the Methods speak of several days (\"Early days: first few training days in which the animal's performance was lower than the 20th percentile\"), which reading (b) cannot give here. Days are ordered by session_start_time."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs13c-equal-trials",
+     "statement": "The learning-related increase in decoding accuracy remains when the number of trials is equal in every session.",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 1; Figure S13C",
+     "quote": "This was not due to the presence of more correct trials in later sessions: an improvement in classification accuracy was clear even when the number of correct trials was matched for each session ( Figure S13C )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "03_learning_decoders.ipynb",
+     "notes": "With 12, 14 and 15 correct trials of each choice in every session, all-neuron accuracy is higher late than early in every learning mouse (+7.4, +4.4 and +16.7 points), significantly only in mouse 4 (p = 0.0046), not in mice 1 and 2 (p = 0.073, 0.32).",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a) of the criterion (the code's perc_thb = [20, 80]). Reading (b), the runs of such days at the start and end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone. Reading (a) is adopted because it is what the paper's code does, and because the Methods speak of several days (\"Early days: first few training days in which the animal's performance was lower than the 20th percentile\"), which reading (b) cannot give here. Days are ordered by session_start_time.",
+      "The number of trials per choice is the minimum over the sessions of a mouse that have at least 10 (12, 14 and 15)."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs12-licking-running",
+     "statement": "Licking and running do not explain the learning-related changes; centre-spout licks before left and right choices are similar early and late in training, and decoding remains accurate in sessions where running did not differ between choices.",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 2; Figure S12",
+     "quote": "Nonetheless, when we restricted our analysis to days in which running distance was indistinguishable for the two choices (0-97 ms before the choice, t-test, P>0.05), classifiers could still accurately predict the choice ( Figure S12D )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "02_decoders.ipynb",
+     "notes": "The lick part cannot be tested, as the only lick series (firstSideTryAl_lick, 0 or 1 per ms) does not say which spout was licked. In sessions where running did not differ between choices, all-neuron accuracy exceeds the shuffle in mice 2 and 4 (10 and 16 sessions, p = 1.3e-06 and 7.7e-13) and not in mouse 1 (2 sessions, 69.2 against 63.2, p = 0.47). The running part fails in a learning mouse, so the claim is not reproduced whatever the lick part would show.",
+     "deviations": [
+      "The lick part is not tested; the lick series names no spout. The running part decides."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8f-correlations-decrease",
+     "statement": "Pairwise noise correlations are higher early in training than late, for all combinations of neuron types.",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 3; Figure 8F",
+     "quote": "Pairwise correlations in neural activity were higher early in training, when mice were novices, compared to late in training, when mice approached expert behavior ( Figure 8F , unsaturated colors above saturated colors). This was observed for all combinations of neural pairs ( Figure 8F )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "With early and late days by reading (a), noise correlations are higher early than late for EE, II and EI in every learning mouse in the mean. The difference is significant only in mouse 2 (p = 0.032, 0.014, 0.031), not in mice 1 and 4 (p 0.16 to 0.43). Reading (b) of early and late days gives no days in mice 1 and 4 and 1 late day in mouse 2, so it cannot be tested.",
+     "deviations": [
+      "Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a) of the criterion (the code's perc_thb = [20, 80]). Reading (b), the runs of such days at the start and end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone. Reading (a) is adopted because it is what the paper's code does, and because the Methods speak of several days (\"Early days: first few training days in which the animal's performance was lower than the 20th percentile\"), which reading (b) cannot give here. Days are ordered by session_start_time."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs13ab-pseudo-learning",
+     "statement": "Decoding accuracy of pseudo populations, which lack noise correlations, also increases significantly with training, so reduced noise correlations do not alone explain the improved accuracy.",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 3; Figure S13A and S13B",
+     "quote": "Interestingly, a significant increase in the classification accuracy of pseudo populations was present ( Figure S13A , B )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "03_learning_decoders.ipynb",
+     "notes": "Pseudo-population accuracy of the all-neuron decoder rises from early to late days in every learning mouse (75.5 to 95.5, 80.5 to 88.3, 73.3 to 92.9). The rise is significant in mice 1 and 4 (p = 0.00025, 0.0011) and not in mouse 2 (p = 0.18). Excitatory and inhibitory pseudo populations rise in the same direction in every mouse.",
+     "deviations": [
+      "The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for runtime; on four sessions the accuracy differs by 0 to 0.44 points.",
+      "Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a) of the criterion (the code's perc_thb = [20, 80]). Reading (b), the runs of such days at the start and end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone. Reading (a) is adopted because it is what the paper's code does, and because the Methods speak of several days (\"Early days: first few training days in which the animal's performance was lower than the 20th percentile\"), which reading (b) cannot give here. Days are ordered by session_start_time.",
+      "3 excitatory subsamples per session."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8g-fraction-selective-triples",
+     "statement": "The fraction of choice-selective neurons increases about threefold from early to late training, in both excitatory and inhibitory neurons.",
+     "source": "Results, Selectivity increases in parallel in inhibitory and excitatory populations during learning, paragraph 3; Figure 8G",
+     "quote": "Indeed, the fraction of choice-selective neurons increased threefold during training, in both excitatory and inhibitory neurons ( Figure 8G )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "01_single_neurons_correlations.ipynb",
+     "notes": "With early and late days by reading (a), the fraction selective rises from early to late in every mouse and type (per-mouse ratios 1.43 to 10.44). The ratio is E 3.81 and I 4.66 as the mean of per-mouse ratios, and E 3.05 (within tolerance) and I 2.66 (outside 3 +/- 0.3) on pooled fractions. Late exceeds early significantly in mice 1 and 4 for E and only mouse 1 for I (p = 0.12 E and 0.063 I in mouse 2, 0.4 I in mouse 4). The reproduced and partial bands both need the increase significant in every learning mouse.",
+     "deviations": [
+      "Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a) of the criterion (the code's perc_thb = [20, 80]). Reading (b), the runs of such days at the start and end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone. Reading (a) is adopted because it is what the paper's code does, and because the Methods speak of several days (\"Early days: first few training days in which the animal's performance was lower than the 20th percentile\"), which reading (b) cannot give here. Days are ordered by session_start_time."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2-temporal-dynamics-similar",
+     "statement": "Excitatory and inhibitory neurons have similar temporal dynamics, with similar distributions of peak-activity times across the trial.",
+     "source": "Results, paragraph 4; Figure S2",
+     "quote": "Diverse temporal dynamics were evident in both cell types ( Figure 1E , F ) and did not appreciably differ between the two ( Figure S2 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not reached within the run's five hours. It needs trial averages of every alignment (initiation tone, stimulus, go tone, choice, reward), each about 7 minutes of streaming for all sessions; the traces are in the files.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs14-neuropil",
+     "statement": "CNMF removes neuropil contamination as well as annulus subtraction; for an example component the two traces correlate with r = 0.96.",
+     "source": "STAR Methods, Neuropil Contamination removal; Figure S14",
+     "quote": "The comparison showed a very high degree of similarity between the two traces ( Figure S14 ; example component; r=0.96)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw imaging movies; the files hold ROI masks and trial-segmented traces only. The CSHL repository was not searched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs15-labeling-specificity",
+     "statement": "In GAD-Cre;Ai14 mice 98.2% of tdTomato neurons in PPC express GABA, and all GABA neurons express tdTomato.",
+     "source": "STAR Methods, Immunofluorescence staining for TdTomato and GABA; Figure S15",
+     "quote": "98.2 % of tdTomato neurons expressed GABA, and all of the GABAergic neurons expressed tdTomato",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the immunostained sections; they are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The trial-segmented traces under processing/Ophys/dFoF_* are named and typed as Delta F/F (DfOverF), but their values are the normalised inferred spiking activity the paper analyses: sparse, 90 percent of values below 1e-6, each neuron's maximum 1.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "No fluorescence trace (Delta F/F or CNMF denoised) is in the files, so the paper's analysis of raw calcium traces (Figure S5) cannot be repeated; the raw movies and the histology are not in the dandiset either.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The starting_time of every trial series carries an attribute named rate whose value, 0.0324, is the frame interval in seconds, not a rate; the imaging plane states 30 Hz.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Trial times are relative to each trial's own start (start_time -0.48 to 0.21 s) and the files hold no session clock, so inter-trial intervals, which the paper's behavioural model uses, cannot be computed.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The lick trace (firstSideTryAl_lick) is 0 or 1 per ms with no spout identity, and no field gives the side of the choice; the side must be inferred from trial_type and the response, and centre-spout licks cannot be separated.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The NWB session_id is the timestamp of the CNMF run (for example 161227154657), not the recording; the recording date and file number are only in session_description and session_start_time.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "trial_pulse_rate is an integer in some files and a non-integer rate (for example 5.335 Hz) in others, with no description of the difference.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The ROI table columns fitness, roi2surr_sig and offsets_ch1_pix have empty descriptions, and roi2surr_sig and offsets_ch1_pix hold the minimum int64 as a fill value.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The dandiset metadata lists no species and only a behavioural measurement technique, and its related publication in the files is the bioRxiv preprint (10.1101/354340), not the Neuron paper.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The trial table has no column for helped trials or for the first trials of a session, and trial_is_good is true exactly for a correct or incorrect response, so the paper's code's trial exclusions (setTrs2rmv.m) cannot be repeated.",
+     "found": null,
+     "status": null,
+     "n": 15,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "16 Hz trials are rewarded on a random side, and their trial_type is always High-rate, so the side the mouse licked on these trials cannot be recovered from the files.",
+     "found": null,
+     "status": null,
+     "n": 16,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-11",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The executed notebooks 01 to 03 with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text. The verifier had no attempt record.",
+     "agreed": 25,
+     "of": 38,
+     "disagreements": [
+      {
+       "claim": "figs1b-trial-history",
+       "outcome": "blocked",
+       "reason": "Blocked (metadata_insufficient) in the verifier's table. Trial times are relative to each trial (start_time -0.48 to 0.21 s), so there is no ITI. Part is testable, since the stimulus-strength coefficients and the previous-outcome terms without the ITI split can be fitted from the consecutive trial table, but this was not attempted."
+      },
+      {
+       "claim": "fig1gi-inferred-spiking-differs",
+       "outcome": "not_reproduced",
+       "reason": "01 cell 10, bin -1. Reading (a) gives p = 0.05, 7.5e-10, 0.1, 0.031 and reading (b) gives mouse 1 p = 0.0013, so neither reading gives p < 0.001 in every mouse. The time course reaches p < 0.001 in all bins in no mouse (best is mouse 2, 14 of 15). Inhibitory is higher everywhere, and the pooled counts 44546/5530 are within tolerance."
+      },
+      {
+       "claim": "fig2bd-selectivity-time-course",
+       "outcome": "blocked",
+       "reason": "Blocked (methods_underspecified). In 01 cell 18, mouse 1, all four peaks fall in bins 1-2. Reading (b) (within 300 ms) passes and reading (a) (bin 0) fails, and the claims file's rule makes differing readings blocked."
+      },
+      {
+       "claim": "figs3c-wider-window",
+       "outcome": "not_reproduced",
+       "reason": "Borderline not reproduced. In 01 cell 24 the fractions are within tolerance under both readings. The inhibitory count per session is 9.8 under (a), outside 11 \u00b1 1.1, and 9.9 under (b), exactly at the limit at printed precision. If (b) is >= 9.90, the readings differ and the claim becomes blocked (methods_underspecified)."
+      },
+      {
+       "claim": "figs3e-correct-error-correlation",
+       "outcome": "not_reproduced",
+       "reason": "In 01 cell 26 mouse 4 mean r is E 0.041 and I -0.027, so not positive for both types. E and I do not differ in any mouse, and mouse 4 is lowest. Mouse 3 has only 3 sessions."
+      },
+      {
+       "claim": "fig3b-decoding-time-course",
+       "outcome": "not_reproduced",
+       "reason": "In 03 cell 5 no mouse peaks in bins -1/0. Within 300 ms only mice 1 and 4 qualify, and mouse 2 peaks at bin 3 (86.1 vs 86.0) and mouse 3 at bin 6. Problem 4 notes that C is chosen at bin -1 and reused at every bin with 25 splits and 3 excitatory subsamples, and mouse 2's outcome hinges on 0.1 points."
+      },
+      {
+       "claim": "figs6de-incorrect-trials",
+       "outcome": "not_reproduced",
+       "reason": "In 02 cell 11 incorrect-trial accuracy is not above the shuffle in mouse 3 (p = 0.12) or mouse 4, where it is below chance (44.0 vs 48.2). The reductions do not differ, and mouse 4's is largest. Problem 2 flags a possible claims-file misreading, since the S6D legend says \"high\" accuracy for an example animal and S6E and S3E describe mouse 4 as stimulus-driven, while the criterion requires above-shuffle accuracy in every mouse."
+      },
+      {
+       "claim": "fig6bc-inhibitory-correlations-higher",
+       "outcome": "blocked",
+       "reason": "Blocked (methods_underspecified). In 01 cell 32 reading (b) (pooled neurons) gives II > EE in every mouse and condition, EI always between. Reading (a) (sessions) fails for spontaneous mouse 3 (p = 0.15) and matched mice 1 and 3 (p = 0.093, 0.094). Mouse 1 counts match exactly (11867/1583). Problem 9 notes that for the matched condition it is never shown that activity is actually matched."
+      },
+      {
+       "claim": "fig7-noise-correlations-limit-decoding",
+       "outcome": "blocked",
+       "reason": "Blocked (methods_underspecified). In 02 cell 15 the change is positive in every mouse under both trial sets (+4.3 to +6.7). Correct trials with the one-sample test give p < 0.05 in all mice. The unpaired reading fails in mouse 3 (p = 0.32), and all-trials fails in mice 3 and 4. Problem 11 notes that the shuffle mixes train and test trials, but a synthetic test showed no measurable bias."
+      },
+      {
+       "claim": "fig8de-learning-parallel",
+       "outcome": "not_reproduced",
+       "reason": "In 03 cell 11 late > early fails in mouse 2 (p = 0.35, 0.26). Under trial reading (b), mouse 2 late accuracy differs between types (p = 0.012). Early/late reading (b) gives 0-1 days. Problem 10 notes the outcomes rest on early/late reading (a), and problem 5 notes the reduced excitatory subsamples bias toward no difference."
+      },
+      {
+       "claim": "figs13c-equal-trials",
+       "outcome": "not_reproduced",
+       "reason": "In 03 cell 13 mouse 2 p = 0.22. Problem 10 notes early/late reading (b) is never testable, so the outcome rests on reading (a)."
+      },
+      {
+       "claim": "figs12-licking-running",
+       "outcome": "not_reproduced",
+       "reason": "The lick part is blocked because the spout is not identified in firstSideTryAl_lick. The running part already fails, since mouse 1 has 2 eligible sessions and accuracy vs shuffle p = 0.47 (02 cell 17)."
+      },
+      {
+       "claim": "figs13ab-pseudo-learning",
+       "outcome": "not_reproduced",
+       "reason": "In 03 cell 15 mouse 2 all-neuron p = 0.18. Problem 10 notes early/late reading (b) is never testable, so the outcome rests on reading (a)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-11",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The full executed notebooks 01 to 04 with the conclusions and summaries, the attempt record, the README, the helper module and the claims file, with the paper's full text (round 2).",
+     "agreed": 38,
+     "of": 38,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors: is the peak of choice selectivity (Figure 2B, D) meant to lie in the first bin after the choice, or within the 300 ms of the confirmation lick? Here it falls 97 to 291 ms after the choice in the example mouse.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors: are the noise-correlation comparisons of Figure 6C and S10 tested across days or on neurons pooled over days? The code tests pooled neurons; across days, spontaneous and matched-activity correlations do not differ in mouse 3, or in mice 1 and 3, at p < 0.05.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors: is the change in accuracy of pseudo populations (Figure 7B) tested by a one-sample test of the per-session changes or by an unpaired test of pseudo against real accuracy? The second fails in mouse 3.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors: do the learning decoders of Figure 8 use all trials balanced by choice or equal numbers of correct and incorrect trials within each choice? The comparison of cell types in late days of mouse 2 depends on it.",
+     "found": null,
+     "status": null,
+     "n": 13,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors: are the early and late days of Figure 8, S12 and S13 every day below the 20th or above the 80th percentile of performance (the code's perc_thb), or only the run of such days at the start and end of training? Here the second gives 0 or 1 day in most learning mice, so the learning outcomes rest on the first, as an assumption.",
+     "found": null,
+     "status": null,
+     "n": 14,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "najafi-2020",
+   "type": "reproduction",
+   "title": "Excitatory and inhibitory choice selectivity in mouse PPC (Najafi et al. 2020)",
+   "description": "Tests the findings of Najafi, Elsayed, Cao, Pnevmatikakis, Latham, Cunningham and Churchland (2020) on dandiset 000016, which holds the inferred spiking activity, ROI classes and trial tables of 135 two-photon imaging sessions from 4 mice. It compares choice selectivity of single excitatory and inhibitory neurons, choice decoders built from each population, noise correlations, and their changes during learning.",
+   "datasets": [
+    "dandi:000016"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2019.09.045"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "01_single_neurons_correlations.ipynb",
+     "title": "Data, behaviour, single-neuron selectivity and correlations",
+     "executed": "notebooks/najafi-2020/01_single_neurons_correlations.html"
+    },
+    {
+     "path": "02_decoders.ipynb",
+     "title": "Choice decoders in expert sessions",
+     "executed": "notebooks/najafi-2020/02_decoders.html"
+    },
+    {
+     "path": "03_learning_decoders.ipynb",
+     "title": "Decoder time course and learning",
+     "executed": "notebooks/najafi-2020/03_learning_decoders.html"
+    },
+    {
+     "path": "04_time_course_per_bin_C.ipynb",
+     "title": "Decoder time course and weights with C chosen at every bin, mice 1 to 3",
+     "executed": "notebooks/najafi-2020/04_time_course_per_bin_C.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 32,
+   "hashed": true
+  }
+ ],
+ "badge": {
+  "text": "7 findings reproduced",
+  "reproduced": 7,
+  "papers": [
+   {
+    "doi": "10.1016/j.neuron.2019.09.045",
+    "key": "najafi-2020",
+    "byline": "Najafi et al. 2020",
+    "title": "Excitatory and Inhibitory Subnetworks Are Equally Selective during Decision-Making and Emerge Simultaneously during Learning",
+    "relation": "primary",
+    "reproduced": 7,
+    "url": "https://encorescience.org/papers/najafi-2020/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/dandi/000016/",
+  "svg": "https://encorescience.org/badge/dandi/000016.svg",
+  "alt": "Encore: 7 findings reproduced, from DANDI:000016"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/dandi/000016.svg",
+  "outcomes": "https://encorescience.org/badge/dandi/000016-outcomes.svg",
+  "card": "https://encorescience.org/badge/dandi/000016-card.svg"
+ }
+}

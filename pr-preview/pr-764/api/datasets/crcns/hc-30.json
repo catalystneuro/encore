@@ -1,0 +1,1086 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "hc-30",
+  "label": "CRCNS:hc-30"
+ },
+ "page": "datasets/crcns/hc-30/",
+ "generated": "2026-11-14T04:33:17+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 21,
+  "partially_reproduced": 2,
+  "not_reproduced": 3,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "hazon-2022-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "hc-30",
+    "version": "unversioned",
+    "doi": "10.6080/K0GH9G5X",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:hc-30"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:hc-30",
+   "label": "CRCNS:hc-30",
+   "dataset_version": "unversioned",
+   "paper": "10.1038/s41467-022-31254-y",
+   "paper_title": null,
+   "date": "2026-11-11",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43082448402"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "hazon-2022",
+   "entry_title": "Noise correlations limit hippocampal spatial accuracy (Hazon et al. 2022)",
+   "summary": "Most of the paper's main findings held up: noise correlations among CA1 place cells were strongest for nearby place fields, worsened position decoding, made accuracy saturate with ensemble size, and cost most in mice with a low normalized signal variance. Two details differ: the signal-to-noise ratio along noise components peaked at the 7th component, not the 6th, and the signal slope rose over runs, opposite to the Figure 3f legend. The ensemble size at which accuracy saturates did not reproduce, possibly owing to this attempt's decoder. Whether correlations depend on the distance between cells could not be tested, as the dataset lacks cell positions. Supplementary place-field statistics and the link between task performance and accuracy did not reproduce.",
+   "description": "Tests the findings of Hazon, Minces, Tom\u00e0s, Ganguli, Schnitzer and Jercog (2022) on CRCNS hc-30, which holds the event onsets and track positions of 110 CA1 calcium imaging sessions from 12 mice on a linear track. It rebuilds the paper's activity tensor, trial shuffle, linear SVM position decoders and signal and noise measures, and tests the effect of noise correlations on decoding accuracy, its saturation with ensemble size, the geometry of noise and signal, and the normalized signal variance.",
+   "notebooks": [
+    {
+     "path": "reproduce_hazon_2022.ipynb",
+     "title": "Tensor, noise correlation and signal and noise analyses",
+     "executed": "notebooks/hazon-2022/reproduce_hazon_2022.html"
+    },
+    {
+     "path": "reproduce_hazon_2022_decoding.ipynb",
+     "title": "Position decoding, IMSE saturation and bin count",
+     "executed": "notebooks/hazon-2022/reproduce_hazon_2022_decoding.html"
+    },
+    {
+     "path": "reproduce_hazon_2022_fitcheck.ipynb",
+     "title": "IMSE fits with more subsets on 17 sessions, and with other decoder settings",
+     "executed": "notebooks/hazon-2022/reproduce_hazon_2022_fitcheck.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "data-sessions-and-neurons",
+     "statement": "The analysed data are 110 sessions from 12 mice with 27,898 neurons (151 to 497 per session, median 235), selected from 239 sessions for more than 150 neurons and 30 running trials in each direction; a subset of 73 sessions from 10 mice with at least 200 neurons is the large-data set.",
+     "source": "Results, paragraph 1; Methods, Data preprocessing for decoding mouse position",
+     "quote": "we tracked the concurrent calcium dynamics of hundreds of CA1 pyramidal neurons in 12 mice (151-497 neurons per session, median 235; a total of 27,898 neurons over 110 sessions) ... we opted to further restrict the selection of sessions to those with at least 200 neurons. We referred to the limited subset of sessions as the \u201clarge-data\u201d sessions (73 sessions from 10 mice)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "All 110 sessions in the file meet the working rule (more than 150 neurons, more than 30 valid trials each way), from 12 mice, 27,898 neurons, median 235, 151 to 497. More than 200 neurons (code) gives 73 large-data sessions from 10 mice; 200 or more (Methods) gives 74 from 10. The file holds only the 110 working sessions, so the selection from 239 cannot be checked.",
+     "deviations": [
+      "The 239 recorded sessions are not in the dataset; the 110 count is checked as the number of sessions meeting the rule, as the criterion allows."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "single-cell-variability",
+     "statement": "Single-neuron responses vary strongly between visits to the same bin (response variance 0.7263 +/- 0.6117), and the single-cell signal-to-noise ratio, variance between bins over variance within bins, is 0.41 +/- 0.34, pooled over 27,898 neurons.",
+     "source": "Results, paragraph 1; Supplementary Table 1 (last column and footnote ***)",
+     "quote": "Neuronal response fluctuations were, in general, large for different visits to each spatial bin (response variance = 0.7263 + /\u2212 0.6117, variance between bins / variance within bins = single-cell signal-to-noise ratio = 0.41 + /\u2212 0.34, pooled from 27,898 neurons)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Code reading (SD over trials per neuron and class, pooled over 1,115,920 session, class and neuron values) 0.7263 +/- 0.6117, equal to the paper to four decimals; variance reading 0.9016 +/- 1.5301. Single-cell SNR with the 40 classes together 0.437 +/- 0.464 over 27,898 neurons (5 with no response); per direction 0.295 +/- 0.294. Both means match under the first reading; the SNR spread (0.464) is larger than the paper's 0.34.",
+     "deviations": [
+      "The file holds event onsets only; the event trace is rebuilt from them with the Methods' alpha kernel (tau 0.2 s, sampled at 20 Hz from 0.05 to 1.5 s, causal) and divided by its standard deviation (Methods, Event detection algorithm, last two steps; code DecodeTensor.tensor_loader, 'HD_gamma').",
+      "All valid trials of each direction are used (code variance_per_neuron.mlx works on the session tensor), not the equalised trials of the decoder."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl-table1-place-field-properties",
+     "statement": "In these data the mean event rate is 0.33 +/- 0.24 Hz, the in-field and out-of-field rates 0.88 +/- 0.72 and 0.034 +/- 0.07 Hz, the maximum rate 1.4 +/- 0.72 Hz, the place-field width at half amplitude 37.8 +/- 48.5 cm, the trial-by-trial variability 1.2 +/- 0.66 and the spatial information 0.24 +/- 0.051 bits per event, similar to electrophysiological reports.",
+     "source": "Supplementary Table 1, row \"Our Data\"; Results, paragraph 1",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "The values are only in Supplementary Table 1 (\"Our Data\" row); the Results say only that the place-field characteristics were similar to previous reports.",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Two of seven values are within 10% under some reading, the mean event rate over running frames in cells with more than 100 events per 10 min (0.362 Hz) and the maximum binned rate in those cells (1.461 Hz). Out of tolerance under every reading run are the in-field rate (1.04 to 1.34 Hz against 0.88), the out-of-field rate (0.15 to 0.25 against 0.034), the fitted FWHM (16.4 to 18.5 cm against 37.8), the trial-by-trial variability (0.036 to 0.043 in event counts, 0.88 to 0.90 in the event trace, against 1.2) and the spatial information (0.15 to 0.16 by the footnote's formula read literally, 1.06 to 1.30 bits as log2(20) minus the entropy, against 0.24). The widths leave out 195 fits wider than 1180 cm (ten times the track). With no cap the mean FWHM over both directions is 37.8 cm (n 52,849), within tolerance (37.6 cm, n 52,838, in the previous run; a few Gaussian fits differ between runs), which would give three values and a partial reproduction; that mean comes from the 195 runaway fits, as the median is 11.5 cm and the mean of fits up to the track length 15.5 cm. The outcome rests on leaving those fits out. The minimal-modulation rule (maximum above 20% of the SD of the tuning curve) keeps 27,715 rightward and 27,770 leftward of 27,898 cells, against the paper's 27,793, so it is the paper's rule and removes only silent cells; it does not move the width. Gaussian fits failed for 1536 rightward and 1411 leftward tuning curves.",
+     "deviations": [
+      "Readings run for the open details (criterion) are rates over running frames or the whole session; in-field within the fitted half-amplitude width or above half the peak; per-direction fits and fits pooled over both directions; all cells and cells with more than 100 events per 10 min (Supplementary Figure 3 legend). The measured values listed are, per quantity, the reading closest to the paper.",
+      "Trial-by-trial variability was computed both on event counts per visit, as the footnote says (spike count), and on the event trace tensor, a reading added because the counts are far from the paper's scale.",
+      "The footnote formula for spatial information is garbled in the text; it was read literally ((1/N) sum p log2 p, sign dropped) and as log2(N) minus the entropy of the binned rate distribution.",
+      "Assumed, Gaussian fits with a FWHM above 1180 cm (ten times the track) are fit failures and are left out of the width; the paper names no cap. Without it the mean width is within tolerance (notes).",
+      "The log2(N) minus entropy reading of spatial information assumes uniform occupancy over the 20 bins; the literal footnote formula, H/20, cannot exceed log2(20)/20 = 0.216 and so cannot reach 0.24."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-noise-correlation-by-field-distance",
+     "statement": "Noise correlations between neuron pairs depend on the distance between their place-field peaks, highest for nearby fields, and trial shuffling drastically reduces them.",
+     "source": "Figure 1d and legend; Results, paragraph 2",
+     "quote": "The shuffling procedure drastically reduced noise correlations in the shuffled data ... we found that noise correlations\u2019 dependence on PF distance was similar to previously measured values in other brain regions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Mean over 110 sessions, rightward, distance 0 0.0386 against 0.0064 at 10 or more bins; leftward 0.0374 against 0.0058. Shuffled means at the printed distances are within 0.0002 of zero, and the 95% intervals separate from the unshuffled ones at every distance 0 to 10, in both directions; pooling all pairs gives the same. 7,859,771 pairs over both directions against the legend's 3,941,140, about half, which fits counting each pair once over the two directions.",
+     "deviations": [
+      "Pairs whose correlation is undefined in a bin (a neuron silent over all trials of that bin) are averaged over the remaining bins; a pair with no defined bin is dropped."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "noise-correlation-not-physical-distance",
+     "statement": "Pairwise correlations do not depend on the physical distance between the neurons in the field of view, so they are not produced by contamination from nearby cells.",
+     "source": "Results, paragraph 2",
+     "quote": "to test if the correlations were generated through contamination from nearby cells, we confirmed that pairwise correlations were independent of the physical distance of the neurons within the recording field of view",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The test needs the positions of the cells in the field of view (code neuropil_contamination_argument.m uses cell centroids, cellAnatomicLocat). event_traces.mat holds only mouse_name, session_ID, traces and position, and the data set has no other file.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "position-measurement-noise",
+     "statement": "Position tracking noise is small, 0.28 cm on average (0.12 to 1.0 cm across 110 sessions), far below the decoding errors.",
+     "source": "Methods, Estimate of position measurement noise; Results, paragraph 4",
+     "quote": "On average, the scale of the jitter was 0.28 cm, with a range of 0.12\u20131.0 cm across 110 sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Robust jitter over 110 sessions, mean 0.277 cm, range 0.118 to 1.001 cm, median 0.235; none above 1.1 cm.",
+     "deviations": [
+      "Position is converted to cm with the code's 118 cm over the 5th to 95th percentile span (the file gives pixels without a scale)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3cd-signal-and-noise-growth",
+     "statement": "The spatial signal grows linearly with ensemble size and does not change with trial shuffling, while the noise along the signal direction keeps growing linearly in the unmodified data but saturates within about 100 neurons in the shuffled data.",
+     "source": "Figure 3c and 3d; Methods, Analyzing signal and noise in the spatial code, paragraph 1",
+     "quote": "This quantity grew linearly with ensemble size and was independent of trial shuffling (Fig. 3b, c ). Similarly, we defined noise \u03c3 2 as the trial-by-trial variance of the neuronal population responses along the signal direction between two adjacent spatial bins (Fig. 3b ). The noise in the unmodified data kept increasing linearly with ensemble size, whereas in the shuffled data, it reached saturation well within the first ~100 neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Shuffling leaves the bin means unchanged (largest change 7e-16), so the signal and its slope are identical with and without shuffling. Median session, unshuffled noise slope 0.0154 with R squared 0.983 at 100 neurons or more (slope positive in 110 of 110 sessions, R squared at least 0.9 in 109); shuffled noise slope 0.0012, a median 0.084 of the unshuffled slope (below 0.1 in 72 of 110 sessions).",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.",
+      "The file holds event onsets only; the event trace is rebuilt from them with the Methods' alpha kernel (tau 0.2 s, sampled at 20 Hz from 0.05 to 1.5 s, causal) and divided by its standard deviation (Methods, Event detection algorithm, last two steps; code DecodeTensor.tensor_loader, 'HD_gamma')."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl10-asymptotic-snr-lower-with-correlations",
+     "statement": "Across all mice the asymptotic SNR (signal slope over noise slope) is lower in the unmodified data than in the shuffled data.",
+     "source": "Results, paragraph 7; Supplementary Figure 10b; Supplementary Figure 11a",
+     "quote": "Across all mice, the asymptotic SNR values were consistently lower in the unmodified data than in the shuffled data",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "110 sessions from 12 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Asymptotic SNR medians 1.94 unshuffled and 23.4 shuffled; shuffled higher in 110 of 110 sessions, Wilcoxon p = 8.8e-20; per-animal median higher for shuffled in 12 of 12 mice.",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-signal-slope-beginning-vs-end",
+     "statement": "The asymptotic signal slope differs between the beginning and the end of runs, decreasing over the run as the legend states.",
+     "source": "Figure 3f legend",
+     "quote": "Signal slope decreases significantly between the beginning and end of runs ( p = 2 \u00d7 10 \u221218 , one-tailed Wilcoxon signed-rank test, n = 110 sessions)",
+     "statistics": [
+      {
+       "test": "one-tailed Wilcoxon signed-rank test",
+       "p": 2e-18,
+       "n": "110 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "The signal slope is larger at the end of runs than at the beginning (pooled medians 0.208 and 0.313, 220 values). The code's test (beginning lower) gives p = 1.1e-18 pooled over 110 sessions, as the code printed (2.19e-18), p = 1.8e-09 for rightward runs and 3.9e-15 over the 73 large-data sessions. The legend's one-tailed test (beginning greater) gives p = 1.00 under every reading. The criterion records an outcome that holds only in the code's direction as resting on that reading, so the outcome is reproduced, resting on the code's direction; the claim statement's 'decreasing over the run' does not hold. Medians along the run are U-shaped, highest in the end bins. The question is recorded for the authors.",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.",
+      "Assumed, the direction of the test is the code's (signrank(begin, end, 'tail', 'left')), as the criterion allows; the legend states the opposite."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3g-noise-slope-decreases-over-run",
+     "statement": "The asymptotic noise slope decreases monotonically and significantly from the beginning to the end of runs.",
+     "source": "Figure 3g legend",
+     "quote": "Asymptotic noise slope displayed monotonic and significant decreases over the run ( p = 8 \u00d7 10 \u221210 , one-tailed Wilcoxon sign rank test, pooling left and right runs, n = 110 sessions)",
+     "statistics": [
+      {
+       "test": "one-tailed Wilcoxon signed-rank test, left and right runs pooled",
+       "p": 8e-10,
+       "n": "110 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Pooled medians 0.0175 at the beginning and 0.0116 at the end; one-tailed (beginning greater) p = 1.9e-09 over 110 sessions (code printed 7.7e-10), p = 1.2e-10 over the 73 large-data sessions. Medians along rightward runs fall from 0.0174 to 0.0107, not strictly monotonic; monotonicity is not tested.",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-snr-higher-at-run-end",
+     "statement": "The asymptotic SNR (signal slope over noise slope) is significantly higher at the end of runs than at their start.",
+     "source": "Figure 3h legend; Results, paragraph 7",
+     "quote": "The asymptotic SNR (signal-slope / noise-slope) was significantly higher at the end of the run than at its initiation ( p = 2 \u00d7 10 \u221229 , one-tailed Wilcoxon sign rank test, n = 110 sessions)",
+     "statistics": [
+      {
+       "test": "one-tailed Wilcoxon signed-rank test",
+       "p": 2e-29,
+       "n": "110 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Pooled medians 11.7 at the beginning and 25.1 at the end; one-tailed (beginning lower) p = 2.8e-26 over 110 sessions (code printed 2.4e-29), 5.7e-21 over 73; rightward only p = 9.4e-17.",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-snr-along-noise-pcs-peaks-at-6",
+     "statement": "Along the eigenvectors of the noise covariance, each component's SNR contribution rises to a maximum at the sixth component, and the first six carry only a small part of the total, so spatial information is spread over many dimensions.",
+     "source": "Figure 4a and legend; Results, paragraph 8; Supplementary Figure 12",
+     "quote": "We found that each noise component\u2019s contribution to the SNR increased until it reached its maximum at the sixth largest component ... The first six components only accounted for a small proportion of the neuronal ensemble\u2019s total information",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "With 100 splits per bin pair as in the code, the mean over 73 sessions of the per-session median over bin pairs peaks at the 7th component (0.0730), the 6th close (0.0719). Per-session peaks have median 8; per-mouse peaks 4 to 13. The first six carry 0.358 of the sum over the 14 components that all sessions have, and a median 0.103 of each session's own sum; below one half either way.",
+     "deviations": [
+      "The SNR per component uses the first h trials of each direction (h the smaller count), not a random set, and the session-mean curve is cut to the 14 components every session has. The values at components 6, 7 and 8 (0.0719, 0.0730, 0.0720) are within 1.5% of each other."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-correlations-increase-noise-signal-overlap",
+     "statement": "Noise correlations increase the overlap (squared cosine) between the noise principal directions and the signal direction compared with shuffled data.",
+     "source": "Figure 4b and legend; Results, paragraph 9; Supplementary Figure 15",
+     "quote": "We used the area between the two curves (gray) to quantify how noise correlations increased the overlap between the noise modes and the signal direction",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "All components, covariance eigenvectors, the unshuffled minus shuffled sum of cos squared is positive in 73 of 73 sessions (median 0.119) and in all 10 animal means (smallest 0.066). Up to the sixth component, median 0.137, and with correlation-matrix eigenvectors 0.200 (all) and 0.089 (six), positive in every session and animal under each reading.",
+     "deviations": [
+      "The shuffle and the eigenvectors use all trials of each direction (code Cloud.m), not equalised trials."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-overlap-predicts-asymptotic-snr",
+     "statement": "Across animals, the increase in noise and signal overlap caused by noise correlations is inversely correlated with the asymptotic SNR (r squared 0.50, p = 0.014), so the geometry of the noise predicts where information saturates.",
+     "source": "Results, paragraph 9; Figure 4c legend",
+     "quote": "We found that the average change in total overlap between noise and signal direction was inversely correlated with the asymptotic SNR slope (i.e., Fig. 3e & Suppl. Fig. 10b ) across animals (Fig. 4c , r 2 = 0.50, p = 0.014), confirming the intuition",
+     "statistics": [
+      {
+       "test": "Pearson correlation across animals",
+       "statistic": "r2 = 0.50",
+       "p": 0.014,
+       "n": "73 sessions with 10 mice, averaged per animal"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Across 10 mice, overlap change (all components) against unshuffled asymptotic SNR, r = -0.743, r squared 0.552, adjusted 0.496, p = 0.0139 (code printed r = -0.744, adjusted 0.498, p = 0.0136). Other readings are not significant, six components r = -0.441 (p = 0.20), SNR ratio r = -0.304 (p = 0.39). Across 73 sessions r = -0.356, p = 0.002.",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-pf-width-variance-vs-nsv",
+     "statement": "Across animals, the broader the distribution of place-field widths, the smaller the normalized signal variance (NSV) (Pearson r = -0.65, r squared 0.36, p = 0.039).",
+     "source": "Figure 5f legend; Results, paragraph 11",
+     "quote": "f Correlation between animal\u2019s PF width and NSV. The broader the width distribution, the narrower the NSV values per animal. Pearson\u2019s corr. = \u22120.65, r 2 = 0.36, p val = 0.039",
+     "statistics": [
+      {
+       "test": "Pearson correlation across animals",
+       "statistic": "r = -0.65, r2 = 0.36",
+       "p": 0.039,
+       "n": "animals, each the average of its sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Across 10 mice r = -0.658, r squared 0.433, p = 0.0385 (code printed r = -0.657, p = 0.0389). Across 73 sessions r = -0.140, p = 0.24.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5hi-nsv-predicts-noise-correlation-effect",
+     "statement": "Across animals, the NSV correlates with the ratio of asymptotic SNR with and without noise correlations (Pearson 0.83, r squared 0.65, p = 0.003); animals with a small NSV lose more information to noise correlations.",
+     "source": "Figure 5h and 5i legends; Results, paragraph 11; Supplementary Table 2, row 1",
+     "quote": "i Correlation between the asymptotic SNR ratio (i.e., ensemble with noise correlations over ensemble shuffled) and averaged NSV (Pearson\u2019s corr. = 0.83, r 2 = 0.65, p val = 0.003)",
+     "statistics": [
+      {
+       "about": "across animals",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.83, r2 = 0.65",
+       "p": 0.003,
+       "n": "animals, each the average of its sessions"
+      },
+      {
+       "about": "across sessions",
+       "test": "Pearson correlation",
+       "statistic": "rho = 0.76, adjusted R2 = 0.57",
+       "p": 1.6e-14,
+       "n": "73 sessions with more than 200 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Ratio unshuffled over shuffled. No filter, across 10 mice r = 0.869 (r squared 0.755, p = 0.0011), across 73 sessions r = 0.716 (p = 1.1e-12). With the code's filters as approximated here (69 sessions) r = 0.872 and 0.708. The inverse ratio gives r = -0.620 and -0.354.",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.",
+      "The confidence intervals for the code's filter (values larger than their interval) are delta-method 95% intervals from the standard errors of the two line slopes; the code's intervals over subsets were not reproduced."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl-table2-nsv-best-predictor",
+     "statement": "Of the variables tested, the NSV explains the effect of noise correlations on the asymptotic SNR best (highest adjusted R squared), and the result does not depend on the number of neurons or trials in a session.",
+     "source": "Results, paragraph 11; Supplementary Table 2; Supplementary Figure 19",
+     "quote": "NSV described the relation between noise correlation and asymptotic SNR ratio better than other variables that parametrized PF shape (see Suppl. Table 2 for comparisons with other quantities). We confirmed that our result does not depend on the number of neurons active or trials performed in a given session",
+     "statistics": [
+      {
+       "about": "number of neurons against the ratio, across sessions",
+       "test": "Pearson correlation",
+       "statistic": "rho = -0.54",
+       "p": 9.3e-07
+      },
+      {
+       "about": "number of trials against the ratio, across sessions",
+       "test": "Pearson correlation",
+       "statistic": "rho = -0.18",
+       "p": 0.12
+      },
+      {
+       "about": "NSV against the ratio at a fixed number of neurons, across sessions",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.470",
+       "p": 3e-05
+      },
+      {
+       "about": "NSV against the ratio at a fixed number of neurons, across animals",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.738",
+       "p": 0.01
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "NSV has the highest adjusted R squared across 73 sessions (0.505; next the number of neurons, 0.191) and across animals (0.724); with the filters (69 sessions) 0.494, next 0.233. At a fixed 200 neurons (100 subsets) the NSV correlates with the ratio across sessions r = 0.475, p = 2.2e-05, and animals r = 0.730, p = 0.017. Number of neurons against the ratio r = -0.450, p = 1e-04 (paper -0.54); number of trials r = -0.205, p = 0.08 (paper -0.18, p = 0.12).",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.",
+      "The eleven variables were computed from the definitions in the table's notes, per bin pair and averaged over the 38 pairs; the effective number of modes is read as (sum lambda)^2 / sum lambda^2 of the noise covariance of the first bin, and the two inverse sums of fourth powers as (sum cos^2)^2 / sum cos^4."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pf-width-variance-not-predictive",
+     "statement": "The variance of place-field widths or amplitudes does not directly correlate with the effect of noise correlations on information saturation.",
+     "source": "Results, paragraph 11; Supplementary Table 2, row \"Var(PF's halfwidths)\"",
+     "quote": "We did not find a direct correlation between the variance of PF amplitudes or widths with the effect of noise correlations on information saturation",
+     "statistics": [
+      {
+       "about": "variance of PF half-widths against the ratio, across sessions",
+       "test": "Pearson correlation",
+       "statistic": "rho = -0.21",
+       "p": 0.082
+      },
+      {
+       "about": "variance of PF half-widths against the ratio, across animals",
+       "test": "Pearson correlation",
+       "statistic": "rho = -0.51",
+       "p": 0.13
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "With the filter of Supplementary Table 2 (values whose confidence interval is larger than the value left out), 69 of 73 sessions, the variance of place-field widths against the asymptotic SNR ratio gives r = -0.199, p = 0.102 across sessions and r = -0.583, p = 0.077 across animals, neither below 0.05. The four sessions dropped (51, 83, 84, 92) are four of the six whose events do not track the position. Intervals of 1, 1.645, 1.96, 2.576 and 3 standard errors keep 71 to 63 sessions and give p = 0.056 to 0.139 across sessions and 0.077 to 0.085 across animals. Without the filter, r = -0.240, p = 0.041 across sessions (r = -0.571, p = 0.085 across animals), which reaches 0.05; leaving out any one of 11 of the 73 sessions brings p above 0.05. The paper's values are r = -0.21, p = 0.082. The variance of PF amplitudes, which the text also names, correlates with the ratio across sessions (r = 0.327, p = 0.005) and animals (r = 0.746, p = 0.013; filtered 0.774, p = 0.009), so the statement's 'or amplitudes' does not hold; the criterion only asks for it to be shown.",
+     "deviations": [
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.",
+      "Assumed, the filter of Supplementary Table 2 ('excluded data points wherein the confidence interval was larger than the estimated value', table note) applies to this test, as the row is in that table. Its intervals are built here as delta-method intervals from the standard errors of the line slopes; the paper's intervals over neuron subsets were not reproduced, and the result is shown for interval widths of 1 to 3 standard errors."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5cd-synthetic-narrow-widths-broader-nsv",
+     "statement": "In synthetic Gaussian place-field populations, a narrow distribution of field widths gives a broader distribution of PF slopes, a higher NSV, than a broad width distribution, up to ten thousand neurons.",
+     "source": "Figure 5a to 5d and legend; Results, paragraph 11; Supplementary Figures 16 and 17",
+     "quote": "Although counterintuitive, the narrower the distribution of PF widths, the broader the distribution of PF slope, quantified by the NSV (Fig. 5c, d )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022.ipynb",
+     "notes": "Legend reading (uniform half-widths 0.2 to 1.42 and 0.8 to 2.0 bins), median NSV over 1000 simulations of 50 cells 0.0033 narrow against 0.0020 broad; mean NSV still higher for narrow at 100, 1,000 and 10,000 cells. Methods reading (log-normal half-widths, log variance 0.3 and 2), 0.0030 narrow against 0.0044 broad, and broad higher at every size. The two readings give opposite results; the legend's, also shown in Supplementary Figure 16, is adopted. The question is recorded for the authors.",
+     "deviations": [
+      "Assumed, the width distributions of the legend and Supplementary Figure 16; the Methods' log-normal distributions give the opposite result.",
+      "Standard choices, centres uniform over the continuous 20-bin track, amplitude 1, tuning evaluated at the bin centres, half-width at half maximum converted to the Gaussian SD; 200 simulations at 100 and 1,000 cells and 50 at 10,000."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "simulation from the paper's model; GitHub approbatory/ML-project at commit 2057af9 (the script of this model was not located)",
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-rms-error-ensemble-vs-shuffled",
+     "statement": "The RMS decoding error with all neurons is 9.38 +/- 4.06 cm with noise correlations and 5.15 +/- 2.40 cm after trial shuffling (median +/- IQR over 110 sessions), so noise correlations impair position estimates.",
+     "source": "Results, paragraph 3; Figure 2d; Discussion, paragraph 8",
+     "quote": "the root mean square (RMS) error between predicted and recorded mouse positions showed that the effect of noise correlations was detrimental for position estimation across all spatial bins ... 9.38 + /\u22124.06 cm ... 5.15 + /\u22122.40 cm (median + /\u2212 IQR, n = 110 sessions)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "Median RMS error over 110 sessions 9.36 cm (IQR 3.92) with correlations and 4.80 cm (IQR 1.73) shuffled; both medians and the ensemble IQR within tolerance, the shuffled IQR not. Ensemble larger in 109 of 110 sessions (Wilcoxon p = 9.0e-20). Without the six misaligned sessions 9.14 and 4.78 cm. With C = 0.1, 1 and 10 on 12 sessions the medians are 8.52, 8.86 and 8.56 cm (ensemble) and 4.98, 5.03 and 4.99 cm (shuffled). Six sessions whose event trace does not track position at lag 0 (data check) are kept, as the paper's selection includes them. The decoder's docstring now gives C = 1, the value used; it had said 100.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit.",
+      "The file holds event onsets only; the event trace is rebuilt from them with the Methods' alpha kernel (tau 0.2 s, sampled at 20 Hz from 0.05 to 1.5 s, causal) and divided by its standard deviation (Methods, Event detection algorithm, last two steps; code DecodeTensor.tensor_loader, 'HD_gamma')."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2cd-shuffle-better-in-all-bins",
+     "statement": "Decoding is less accurate with noise correlations than without in every spatial bin; misclassifications are typically one bin and reach up to three bins.",
+     "source": "Figure 2c and 2d; Supplementary Figure 5; Results, paragraph 3",
+     "quote": "The misclassification error for ensemble activity data was worse than the case of ensemble activity without noise correlations. This effect was consistent across all spatial bins (Fig. 2c & Suppl. Fig. 5 ). The misclassification errors were typical of the order of one but could reach up to three spatial bins",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "Session-mean RMS larger with correlations in 20 of 20 positions and 40 of 40 classes. Correct-class fraction averaged over sessions higher for shuffled in 40 of 40 classes; in the six sessions of animal 2022, 39 to 40 of 40 (the Fig. 2c session is not identified in the file). Misclassified samples are a median 1 bin off (70.6% one bin, 16.7% two); errors up to 5 bins hold at least 1% of them with correlations, up to 3 bins shuffled.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2ef-imse-saturates-with-correlations",
+     "statement": "With noise correlations the decoding accuracy (IMSE) approaches a bound as ensembles grow, while without them it keeps increasing; the asymptotic IMSE (I0 N) and the saturation size N are larger for the shuffled data.",
+     "source": "Figure 2e and 2f; Results, paragraphs 4 and 5; Supplementary Figure 7c and 7d",
+     "quote": "The decoding error approached an asymptotic minimum value for ensembles with large numbers of neurons. In contrast, the error decreased without apparent bound for the shuffled data ... The asymptotic IMSE value ( I 0 N ) was significantly larger in the trial-shuffled data than in the ensemble data for all animals",
+     "statistics": [
+      {
+       "about": "asymptotic IMSE I0 N, unshuffled against shuffled",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "fitted N, unshuffled against shuffled",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "110 sessions, I0 N higher for shuffled in 97 (Wilcoxon p = 3.6e-17), N in 94 (p = 5.4e-15); 12 per-animal means p = 4.9e-04 and 1.5e-03, I0 N higher for shuffled in 12 of 12 animals. Median unshuffled IMSE at all neurons is 0.49 of its fitted asymptote. The fits follow the points (median R squared 0.986 unshuffled, 0.987 shuffled). 78 shuffled fits give N above 1e6 or below 0 (near-linear curves, which fits 'no apparent bound'); of the 7 degenerate unshuffled fits, 6 are near-linear curves (N above 1e9, R squared 0.968 to 0.994) and one is a misaligned session with a flat IMSE. Of the six misaligned sessions, 51, 83, 84 and 92 have flat IMSE curves; 73 and 97 rise slowly to 1.46e-3 per cm^2 with all neurons (fitted N 2.6 and 53).",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit.",
+      "The fit uses scipy curve_fit (Levenberg-Marquardt) from I0 = 1, N = 100, unbounded, as the code's fit options; MATLAB's fit was not run."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl7b-initial-slope-lower-with-correlations",
+     "statement": "The initial slope I0 of the IMSE curve differs significantly between unshuffled and shuffled data across all sessions, which the paper attributes to an artifactual sublinear growth of accuracy at small ensemble sizes.",
+     "source": "Supplementary Figure 7b",
+     "quote": "There was a significant difference across all sessions due to a sublinear increase in accuracy for small ensemble sizes (Wilcoxon signed-rank test, P < 0.001)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "all sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "Wilcoxon p = 9.8e-16 over 110 sessions; median I0 0.00010 unshuffled and 0.00019 shuffled, shuffled higher in 102 sessions.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "saturation-ensemble-size",
+     "statement": "Spatial accuracy approaches saturation (fitted slope 5% of I0) at 346 to 1402 neurons across animals, and reaches 95% of the asymptotic IMSE at 1894 to 7671 neurons.",
+     "source": "Results, paragraph 5; Methods, Determining where spatial accuracy approaches saturation",
+     "quote": "Using the geometric mean over each animal, the spatial accuracy reached 5% of its original slope at [346 - 1402] neurons. As another measure of saturation, we computed the ensemble size needed to reach 95% of the asymptotic IMSE, equivalent to 19 N . In that case, the values were [1894\u20137671] neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "Reading (a), 73 sessions, geometric-mean N per animal 30 to 886, 5% slope at 105 to 3,076 neurons, 19 N at 575 to 16,830; both bounds outside tolerance. The low bound comes from Mouse2011's misaligned sessions; the high bound, Mouse2028's 886, includes the near-linear fit of session 19 (N = 1.0e9), and without the fits with N outside 0 to 1e6 Mouse2028 gives 327 and the range is 105 to 2,487. Reading (b), 110 sessions, 105 to 4,918,374 from degenerate fits (animals 2010 and 2029). A variant without the misaligned sessions and without fits with N outside 0 to 1e6 (65 sessions) gives per-animal N of 207 (Mouse2022) to 716 (Mouse2023), a 5% slope at 717 to 2,487 neurons, still outside tolerance. The fit-check notebook repeats the fits with more subsets: with the paper's 80 subsets on steps of 10 for all large-data sessions of Mouse2011 and Mouse2012 and one of Mouse2028, N changes by a median factor of 1.09 (0.67 to 2.02) on 13 sessions, and without misaligned sessions the per-animal N goes from 458 to 490 (Mouse2011) and 268 to 231 (Mouse2012); with 40 subsets Mouse2023's one session goes from 716 to 474 (a 5% slope at 1,646 neurons, still above 1,402 + 10%). Mouse2022, which sets the lower bound, was not refitted. On 9 sessions, N with C = 0.1 and 10 is a median 1.25 and 0.97 times N with C = 1, and with the paper's loss-weighted decoding 0.71 times (0.29 to 1.81); geometric-mean N falls from 523 to 369 (five Mouse2011 sessions) and from 268 to 208 (Mouse2012). For the animals checked, the reduced repetitions do not explain the failure; whether the paper's decoder gives the paper's range was not tested, and the outcome may reflect this attempt's decoder.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl11b-i0-vs-single-cell-snr",
+     "statement": "Across mice, the initial slope I0 of the IMSE curve correlates with the average single-cell SNR (r squared 0.73, p < 0.01).",
+     "source": "Supplementary Figure 11b; Methods, Analyzing signal and noise in the spatial code, paragraph 4",
+     "quote": "The linear slope coefficients, I0, from the IMSE of decoding, were strongly correlated with the SNR computed across each neuron individually ... The variables were directly correlated across mice (r2=0.73, p < 0.01)",
+     "statistics": [
+      {
+       "test": "Pearson correlation across mice",
+       "statistic": "r2 = 0.73",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "73 sessions from 10 mice, averaged per mouse"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "On all 73 sessions, across 10 mice, r = -0.071 (Methods reading, r squared 0.005), -0.114 (mean of per-pair ratios) and -0.016 (median). Animal 2011's mean I0 is 23.7, from sessions whose events do not track position; the others are 0.00005 to 0.00031. Leaving out the misaligned sessions and fits with N outside 0 to 1e6 (65 sessions) gives r = 0.750, r squared 0.562, p = 0.0125: positive and below 0.05, so partially reproduced, but not below 0.01 and r squared outside 0.73 +/- 0.073. The fit-check notebook shows the excluded fits fail with the paper's 80 subsets too (sessions 83 and 84 have flat IMSE curves, I0 = 241 and 231), and that without the misaligned sessions Mouse2011's mean I0 is 6.5e-05 with 4 subsets and 6.3e-05 with 80. fig4c and fig5f match the values the code printed with the misaligned sessions included, so the paper probably fitted those sessions too, and its fit may have behaved differently on flat IMSE curves; leaving them out stands in for that difference.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit.",
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit.",
+      "Assumed, fits on sessions whose events do not track position, and fits with N outside 0 to 1e6, are failed fits and are left out of the per-mouse means; with them the correlation is absent."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl11c-asymptotic-imse-vs-asymptotic-snr",
+     "statement": "Across mice, the fitted asymptotic IMSE (I0 N) correlates with the asymptotic SNR (r squared 0.88).",
+     "source": "Supplementary Figure 11c",
+     "quote": "The fitted asymptotic IMSE of the decoders (as in Fig. 2f), I0N, correlated with the asymptotic SNR values ... The variables were directly correlated across mice (r2=0.88, p < 4\u30fb10-5)",
+     "statistics": [
+      {
+       "test": "Pearson correlation across mice",
+       "statistic": "r2 = 0.88",
+       "p": 4e-05,
+       "p_relation": "<",
+       "n": "73 sessions from 10 mice, averaged per mouse"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "Log scale reading, across 10 mice r = 0.894, r squared 0.800, p = 4.8e-04. Linear reading r = 0.039, dominated by degenerate fits with very large I0 N; without the misaligned sessions and degenerate fits (65 sessions) the linear r = 0.919, r squared 0.845, p = 1.7e-04.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit.",
+      "Signal and noise use 20 random neuron subsets per ensemble size, each with its own trial split, where the paper uses 80 (Methods, Analyzing signal and noise, paragraph 3), to fit the time limit."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl8-task-performance-and-accuracy",
+     "statement": "Task performance correlates with the number of trials (r 0.85) and with asymptotic decoding accuracy (r 0.52); the number of trials correlates weakly with accuracy (r 0.34), and a path analysis shows performance predicts accuracy while trial number does not.",
+     "source": "Supplementary Figure 8a to 8d; Methods, Path analysis",
+     "quote": "Performance, computed as the ratio of correct over total trials, correlated with the number of trials done by an animal on a given session, using n = 73 sessions (r2 = 0.71, Pearson-corr = 0.85, pval = 4x10-21)",
+     "statistics": [
+      {
+       "about": "performance against number of trials",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.85, r2 = 0.71",
+       "p": 4e-21,
+       "n": "73 sessions"
+      },
+      {
+       "about": "asymptotic accuracy against number of trials",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.34, r2 = 0.11",
+       "p": 0.0029,
+       "n": "73 sessions"
+      },
+      {
+       "about": "asymptotic accuracy against performance",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.52, r2 = 0.26",
+       "p": 2.1e-06,
+       "n": "73 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "73 sessions. Performance against trials r = 0.847, p = 3.8e-21 (within tolerance). Asymptotic accuracy (log10 I0 N) against trials r = -0.054 and against performance r = 0.189 (p = 0.11); linear I0 N r = -0.127 and -0.012. Path model, performance p = 1.0e-04, trials p = 3.5e-04 with a negative coefficient. Without the misaligned sessions and degenerate fits (65 sessions), performance against trials r = 0.853, log10 I0 N against trials r = 0.231 (p = 0.064) and against performance r = 0.362 (p = 0.0031), path model performance p = 0.009 and trials p = 0.21: the path pattern holds, but two r are outside tolerance and accuracy against trials is not significant, so that variant is not reproduced either. In the fit-check notebook the I0 and N fits change little with the paper's 80 subsets on 13 sessions of Mouse2011, Mouse2012 and Mouse2028; the other animals were not refitted, and N falls to a median 0.71 of its value with the paper's loss-weighted decoding on 9 sessions, so the outcome may reflect this attempt's decoder. Performance ranges 0.40 to 0.99.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "10 repetitions with all neurons, and 4 neuron subsets at ensemble sizes 1, 25, 50, ... (steps of 25) plus all neurons, where the paper uses 80 and steps of 10 (code decode_series, default_opt d_neurons 10), to fit the time limit.",
+      "Performance is computed with the code's error_trial_counter.m logic from the position alone; the session's own reward record is not in the dataset."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl6-twenty-bins-near-optimal",
+     "statement": "Twenty spatial bins give close to the smallest decoding error relative to the continuous position (11.75 cm, 95% CI 10.33 to 13.18 cm), similar to 30 bins (11.53 cm).",
+     "source": "Supplementary Figure 6; Methods, Analysis of behavioral data",
+     "quote": "For 20 bins, the RMS error across sessions was 11.75 cm with a 95% CI of [10.33 - 13.18 cm] based on the SEM. For 30 bins, the RMS error was 11.53 cm with a 95% CI of [10.08 - 12.98 cm]",
+     "statistics": [
+      {
+       "about": "RMS error with 20 bins",
+       "ci": {
+        "level": 0.95,
+        "low": 10.33,
+        "high": 13.18,
+        "unit": "cm"
+       },
+       "n": "110 sessions, 12 mice"
+      },
+      {
+       "about": "RMS error with 30 bins",
+       "ci": {
+        "level": 0.95,
+        "low": 10.08,
+        "high": 12.98,
+        "unit": "cm"
+       },
+       "n": "110 sessions, 12 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "Mean RMS relative to continuous position over 110 sessions, 20 bins 11.84 cm (SEM 0.96), 30 bins 11.94 cm; 10, 15, 25 and 40 bins give 11.20, 11.26, 11.81 and 12.22 cm; none is more than one SEM below 20 bins. Class-mean prediction gives values within 0.06 cm.",
+     "deviations": [
+      "The decoder is libsvm's one-vs-one linear SVM (scikit-learn SVC on a linear kernel) with C = 1 and majority voting, in place of MATLAB fitcecoc of templateLinear learners with lasso, Lambda 0, SpaRSA and loss-weighted decoding (code decoding/my_algs.m). The paper's unregularised fit has no exact equivalent here; C = 1 is assumed as the standard choice, and C = 0.1 and 10 are shown on 12 sessions as variants.",
+      "2 repetitions per session and bin count, where the paper uses 80.",
+      "Bin counts 10, 15, 20, 25, 30 and 40 were tested; the paper does not list its own.",
+      "Trials are those of the 20-bin selection for every bin count, and (trial, bin) samples with no frame are dropped (code bin_integration_time_checker.m); the code's single random frame per bin with an integration window is replaced by the mean over the bin's frames (the common method of the criterion)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppl9-fit-recovers-saturation",
+     "statement": "On simulated place cells with information-limiting input noise, the IMSE fit gives consistent saturation estimates N from ensembles of 500 and 2000 neurons.",
+     "source": "Supplementary Figure 9; Results, paragraph 5",
+     "quote": "We validated our method for finding the saturation point; we created artificial data and compared the procedure with populations of 500 and 2000 neurons and found no significant difference in the saturation parameter estimates N",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hazon_2022_decoding.ipynb",
+     "notes": "Simulation of the legend's model. Fitted N 704 +/- 554 (500 neurons) and 338 +/- 87 (2,000 neurons), 95% intervals overlap. The 500-neuron estimate is imprecise.",
+     "deviations": [
+      "Standard choices for what the legend leaves open, runs at a constant 30 cm/s over 118 cm, 20 Hz frames, independent Gaussian input noise per frame, peak rate 0.05 events per frame, events summed per run and bin as in the paper's tensor, 40 classes, half the runs for training."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "simulation from the paper's model (Supplementary Figure 9 legend); GitHub approbatory/ML-project at commit 2057af9, simulation/ (the script of this figure was not identified)",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds only the 110 working sessions of the 239 recorded, and no positions of the cells in the field of view, so the paper's test that noise correlations do not depend on the distance between cells cannot be run. There is no reward or trial record; trials and task performance are rebuilt from the position.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The traces array holds event onsets (single frames with the event amplitude), as the descriptor says, not the alpha-convolved and normalised event trace the paper decodes from; the trace must be rebuilt with the Methods' kernel. Rebuilt this way, the response variability matches the paper's 0.7263 +/- 0.6117 exactly.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No sampling rate, frame times or spatial scale are stored; position is in camera pixels. 20 Hz and 118 cm over the 5th to 95th percentile of position are taken from the paper and its code.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The descriptor and the paper describe sessions of about 20 min; at 20 Hz the sessions last a median 30.1 min (20.1 to 46.0).",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In six sessions the event trace does not track the position at lag 0 (a quick decoder gives 14.7 to 44.0 cm mean error, against a median 5.6 cm). In Mouse2012 141832 and Mouse2011 142436 the events lead by 80 to 90 frames (best lag error 5.4 and 2.8 cm); Mouse2011 105556 and 104511 show no position information at any lag within 200 frames; Mouse2026 115639 and Mouse2021 132808 are weaker at lag 0 (14.7 and 15.3 cm). The paper's code trims the first 350 frames of Mouse2026 115639, which suggests a known offset there. Four of them (Mouse2012 141832 and the three of Mouse2011) have flat IMSE curves and the other two low, slowly rising ones, so the IMSE fits give meaningless I0 and N: Mouse2011 105556 gives I0 = 260 with 4 subsets and 241 with 80 (against a median 1e-4), and 104511 a negative I0 and N with 4 subsets and I0 = 231 with 80.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "format_error",
+     "statement": "Four sessions have negative positions (Mouse2012 141832 down to -3.7e7 pixels over 795 frames, Mouse2022 093722 down to -1.5e5 over 79 frames, Mouse2024 090858&091446 a ramp from -12,628 over the first 503 frames, and Mouse2028 105610 down to -23 over 6 frames, where the track spans about 60 to 700 pixels). The first valid trial of Mouse2022 093722 holds the 79 frames; no valid trial of the other three holds any.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Two session IDs join two recordings (Mouse2024 090858&091446 with 55,247 frames, and 130536&130559) without saying how; the first has 77.6 events per neuron per minute against a median 12.0, and its rate rises from 38.6 in the first quarter of the frames to 103.1 in the last.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-12",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The executed notebooks reproduce_hazon_2022.ipynb and reproduce_hazon_2022_decoding.ipynb with the conclusion cells and the summaries removed, the helper module hc30.py and the claims file, with the paper's full text. The verifier listed the CRCNS bucket hc-30/ and tested helpers on synthetic inputs (shuffle_tensor, fit_imse, jitter, select_trials). It could read only the text outputs, not the figures, and could not read the paper's MATLAB code. It had no attempt record and took the claims from the claims file.",
+     "agreed": 26,
+     "of": 29,
+     "disagreements": [
+      {
+       "claim": "fig3f-signal-slope-beginning-vs-end",
+       "outcome": "reproduced",
+       "reason": "Reproduced, resting on the code's direction. Cell 28: the legend's direction (beginning greater) gives p = 1.0. The code's direction gives p = 1.1e-18, against the code's printed 2.19e-18. The signal slope increases over the run, opposite to the claim statement."
+      },
+      {
+       "claim": "pf-width-variance-not-predictive",
+       "outcome": "reproduced",
+       "reason": "Reproduced, resting on the confidence-interval filter. Cell 46: unfiltered, the session-level test gives p = 0.041 (<0.05, so not reproduced). With the filter Supplementary Table 2 describes, p = 0.10 for sessions and 0.077 for animals. The amplitude variance correlates across animals (r = 0.75, p = 0.013), which goes against the text's 'or amplitudes'. Problem 3: the intervals of the filter are the author's delta-method construction from slope standard errors, not the paper's method. It keeps 69 sessions where the code kept 72. The outcome depends on about 4 sessions."
+      },
+      {
+       "claim": "suppl11b-i0-vs-single-cell-snr",
+       "outcome": "partially_reproduced",
+       "reason": "NB2 cell 22: the main reading gives r = -0.07, p = 0.84, because Mouse2011's mean I0 is 23.7, set by one failed fit. Excluding failed fits and misaligned sessions gives r = 0.75, p = 0.0125: positive and p < 0.05, but not p < 0.01, and r squared = 0.56 is outside 0.73 +/- 0.073."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-12",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The full executed notebooks reproduce_hazon_2022.ipynb, reproduce_hazon_2022_decoding.ipynb and reproduce_hazon_2022_fitcheck.ipynb with their conclusions and summaries, the helper module hc30.py, the README, the claims file, the attempt record and the paper. It checked every Result sentence, the summaries and the notes against the printed outputs, and the round-1 points.",
+     "agreed": 29,
+     "of": 29,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Figure 3f legend says the signal slope decreases over the run, while the code's test (signrank(begin, end, tail left)) and its printed p = 2.19e-18 test an increase; the data show an increase (medians 0.208 at the start and 0.313 at the end of runs).",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The synthetic place-field model has uniform half-width distributions in the Figure 5 legend and Supplementary Figure 16, and log-normal ones in the Methods; simulated, they give opposite results for which distribution has the higher NSV.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the paper's authors. (1) Which direction does the Figure 3f signal-slope test take, the legend's decrease or the code's increase? This attempt follows the code. (2) Which half-width distributions produced Figure 5a to 5d, the legend's uniform ones or the Methods' log-normal ones? This attempt follows the legend. (3) The decoder is fitted with Lambda 0 (no regularisation); was this the setting for all published results? This attempt uses an L2 SVM with C = 1 and voting; C = 0.1 and 10 change the median error by less than 0.4 cm, and on 9 sessions loss-weighted decoding gives a median 0.71 of the fitted N. (4) How were the Supplementary Table 1 values computed (rates over running or all frames, the in-field definition, the cells averaged, the spatial information formula, and whether trial-by-trial variability uses counts or the event trace)? The readings tried give at most two of the seven values within tolerance, three if the fitted widths are not capped. (5) How were the confidence intervals of the Supplementary Table 2 filter computed? With delta-method intervals here the filter decides whether the variance of PF widths reaches p < 0.05 (0.102 with it, 0.041 without).",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "hazon-2022",
+   "type": "reproduction",
+   "title": "Noise correlations limit hippocampal spatial accuracy (Hazon et al. 2022)",
+   "description": "Tests the findings of Hazon, Minces, Tom\u00e0s, Ganguli, Schnitzer and Jercog (2022) on CRCNS hc-30, which holds the event onsets and track positions of 110 CA1 calcium imaging sessions from 12 mice on a linear track. It rebuilds the paper's activity tensor, trial shuffle, linear SVM position decoders and signal and noise measures, and tests the effect of noise correlations on decoding accuracy, its saturation with ensemble size, the geometry of noise and signal, and the normalized signal variance.",
+   "datasets": [
+    "crcns:hc-30"
+   ],
+   "papers": [
+    "10.1038/s41467-022-31254-y"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_hazon_2022.ipynb",
+     "title": "Tensor, noise correlation and signal and noise analyses",
+     "executed": "notebooks/hazon-2022/reproduce_hazon_2022.html"
+    },
+    {
+     "path": "reproduce_hazon_2022_decoding.ipynb",
+     "title": "Position decoding, IMSE saturation and bin count",
+     "executed": "notebooks/hazon-2022/reproduce_hazon_2022_decoding.html"
+    },
+    {
+     "path": "reproduce_hazon_2022_fitcheck.ipynb",
+     "title": "IMSE fits with more subsets on 17 sessions, and with other decoder settings",
+     "executed": "notebooks/hazon-2022/reproduce_hazon_2022_fitcheck.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 38,
+   "hashed": true
+  }
+ ],
+ "badge": {
+  "text": "21 findings reproduced",
+  "reproduced": 21,
+  "papers": [
+   {
+    "doi": "10.1038/s41467-022-31254-y",
+    "key": "hazon-2022",
+    "byline": "Hazon et al. 2022",
+    "title": "Noise correlations in neural ensemble activity limit the accuracy of hippocampal spatial representations",
+    "relation": "primary",
+    "reproduced": 21,
+    "url": "https://encorescience.org/papers/hazon-2022/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/crcns/hc-30/",
+  "svg": "https://encorescience.org/badge/crcns/hc-30.svg",
+  "alt": "Encore: 21 findings reproduced, from CRCNS:hc-30"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/crcns/hc-30.svg",
+  "outcomes": "https://encorescience.org/badge/crcns/hc-30-outcomes.svg",
+  "card": "https://encorescience.org/badge/crcns/hc-30-card.svg"
+ }
+}
