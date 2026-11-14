@@ -1,0 +1,687 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000252",
+  "label": "DANDI:000252"
+ },
+ "page": "datasets/dandi/000252/",
+ "generated": "2026-11-14T02:38:16+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 9,
+  "partially_reproduced": 1,
+  "not_reproduced": 1,
+  "blocked": 8
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "guan-2022-finger-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000252",
+    "version": "0.230408.2207",
+    "doi": "10.48324/dandi.000252/0.230408.2207",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000252"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000252",
+   "label": "DANDI:000252",
+   "dataset_version": "0.230408.2207",
+   "paper": "10.1101/2022.12.07.22283227",
+   "paper_title": "Compositional coding of individual finger movements in human posterior parietal cortex and motor cortex enables ten-finger decoding",
+   "date": "2026-11-04",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41825254986"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "guan-2022-finger",
+   "entry_title": "Ten-finger decoding and compositional finger coding in human PPC and MC (Guan et al. 2022)",
+   "summary": "The ten-finger decoding findings held up in this data, the share of finger-selective neurons did not, and the contralateral-task and online interface findings could not be tested. Ten fingers were decoded well above chance, with most errors on adjacent or matching fingers, and right and left finger representations generalized across hands. Right-left finger pairs were closer than other pairs, but the size of that effect depends on an assumed noise scaling. Only 48% of neurons in the first array were finger selective, against the paper's 66%, and the paper does not say which window or test it used. The other sessions are missing from the dataset.",
+   "description": "Tests the ten-finger findings of Guan et al. (preprint 2022) on dandiset 000252, which holds sorted single-unit spikes from 10 sessions of participant N (PPC) and 2 sessions of participant J (PPC and MC) during the ten-finger press task. It counts the neurons, tests single-neuron selectivity, ten-finger decoding and its errors, the cross-validated distances between matching and non-matching fingers of the two hands, and the cross-condition generalization of hand and finger-type decoders. The alternating-cues and BMI sessions of the paper's Figures 4 to 6 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_guan_2022.ipynb",
+     "title": "Reproducing Guan et al. (2022) from dandiset 000252",
+     "executed": "notebooks/guan-2022-finger/reproduce_guan_2022.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "tenfinger-recording-counts",
+     "statement": "In the ten-finger task, N-PPC yielded 111 neurons per session (102 to 119) over 10 sessions of 100 trials, J-PPC 160 (159 to 160) and J-MC 130 (120 to 130) over 2 sessions of 100 trials.",
+     "source": "Results, Decoding individual finger presses of either hand, paragraph 2",
+     "quote": "participant N: 100 trials / session for 10 sessions; participant J: 100 trials / session for 2 sessions). We recorded 111 neurons per session (min: 102; max: 119) from N-PPC, 160 neurons per session (min: 159; max: 160) from J-PPC, and 130 neurons per session (min: 120; max: 130) from J-MC",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "The dandiset has 10 sessions of participant N and 2 of J, each of 100 trials (10 per condition). Before the 0.5 Hz exclusion N-PPC has 111.4 units per session (102 to 119), J-PPC 159.5 (159 to 160) and J-MC 129.5 (120 to 139); the J-MC maximum of 139 is above the paper's 130 but inside the 10% widening of that bound (143). After the exclusion the means are 94.3 and 93.0 for N-PPC under O1 (a) and (b), outside tolerance, and 157.5 or 156.0 for J-PPC and 126.0 or 125.0 for J-MC. The paper's counts are those before the exclusion.",
+     "deviations": [
+      "The counts that match are those before the 0.5 Hz exclusion, which the Methods (Feature Extraction) say applies to all analyses; the criterion names this count among its readings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tenfinger-pooled-npcc-neurons",
+     "statement": "1111 N-PPC neurons were recorded across the 10 sessions of the ten-finger task.",
+     "source": "Supplementary Figure 11 legend",
+     "quote": "1111 N-PPC neurons were recorded across 10 sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "1114 N-PPC units over the 10 sessions before the exclusion (paper 1111), 943 under O1 (a) and 930 under O1 (b), both outside tolerance.",
+     "deviations": [
+      "As for tenfinger-recording-counts, the matching count is the one before the exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tenfinger-discriminative-fraction",
+     "statement": "Most neurons discriminate firing rates across the ten fingers (N-PPC 66%, J-PPC 57%, J-MC 78%, q < 0.05).",
+     "source": "Results, Decoding individual finger presses of either hand, paragraph 2",
+     "quote": "most neurons (N-PPC: 66%; J-PPC: 57%; J-MC: 78%) discriminated firing rates across fingers (q < 0.05)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "One-way ANOVA of Go-window rates across the ten conditions, Benjamini-Hochberg over the neurons of each array pooled over sessions. Under O1 (a) 47.8% of 943 N-PPC, 38.1% of 315 J-PPC and 65.1% of 252 J-MC neurons have q below 0.05; under O1 (b) 48.9%, 38.1% and 65.6%; before the exclusion 40.4%, 37.6% and 63.7%. All are below the lower tolerance bounds (59.4%, 51.3%, 70.2%). As variants, uncorrected p below 0.05 gives at most 56.1%, 46.5% and 68.8%, FDR per session, averaged over sessions, gives at most 0.3 points more than pooled FDR (40.7% against 40.4% for N-PPC before the exclusion, 38.4% against 38.1% for J-PPC under O1 a; cell 13), and the Delay, Cue and ITI windows give fewer (0 to 49%). Moving the 500 ms window's start from 0.5 s before to 0.5 s after the Go cue gives at most 47.8%, 43.5% and 72.2%. A 1 s window from the Go cue gives 60.8%, 56.8% and 82.9%, all within tolerance; it is a variant only, as the Methods use 500 ms windows unless stated and the claims file fixes the 200 to 700 ms Go window (O11). Ten-finger decoding on the same rates matches the paper, so the gap is in the single-neuron test or its window, not in the data's information.",
+     "deviations": [
+      "The Go window is used, as claims-file O11 says the text supports no other.",
+      "Units with the same rate in every trial (5 N-PPC and 2 J-MC before the exclusion, none after it) have no ANOVA p; they are counted in the FDR's m and as not discriminative."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tenfinger-decoding-accuracy",
+     "statement": "A linear classifier discriminates all ten fingers well above the 10% chance level (cross-validated accuracy N-PPC 70%, J-PPC 66%, J-MC 75%).",
+     "source": "Results, Decoding individual finger presses of either hand, paragraph 3; Figure 7c to 7e",
+     "quote": "A linear classifier (Methods) was able to discriminate between all ten fingers (cross-validated classification accuracy, N-PPC: 70%; J-PPC: 66%; J-MC: 75%; chance: 10%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "Diagonal LDA per session, stratified 8-fold, predictions pooled over sessions. Under O1 (a) and O2 (a), 72.2% (N-PPC, 1000 trials), 69.5% (J-PPC, 200) and 78.5% (J-MC, 200); over all readings of O1 (including no exclusion) and O2 the values are 71.4 to 73.0%, 68.0 to 70.0% and 78.0 to 78.5%, and single seeds of O2 (b) 69.9 to 73.6%, 66.0 to 72.5% and 76.5 to 80.0%, all within tolerance. Chance is 10%; with shuffled labels per-session accuracies are 0.04 to 0.17.",
+     "deviations": [
+      "The variance floor of the diagonal LDA (1e-9 of the largest variance, as scikit-learn's GaussianNB) is a standard choice that only prevents division by zero."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tenfinger-error-structure",
+     "statement": "Most ten-finger classification errors confuse an adjacent finger of the same hand or the matching finger of the other hand (N-PPC 76%, J-PPC 66%, J-MC 68% of errors).",
+     "source": "Results, Decoding individual finger presses of either hand, paragraph 3; Figure 7c to 7e",
+     "quote": "The majority (N-PPC: 76%; J-PPC: 66%; J-MC: 68%) of classification errors were adjacent-finger-confusion or matching-across-hand-confusion",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "Under O1 (a) and O2 (a), 213 of 278 N-PPC errors (119 adjacent, 94 matching), 44 of 61 J-PPC errors and 27 of 43 J-MC errors are adjacent or matching; over all readings the shares are 73.9 to 76.6%, 66.2 to 72.1% and 62.8 to 65.3%, within tolerance of 76%, 66% and 68%.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-matching-closer",
+     "statement": "Matching right and left finger pairs are closer in neural distance than non-matching pairs, by 1.56 units in N-PPC (95% CI 1.33 to 1.78) and 4.30 in J-MC (2.74 to 5.46), but not conclusively in J-PPC (0.27, -0.17 to 0.64).",
+     "source": "Results, Compositional representation of finger and laterality, paragraph 1; Figure 8b; Supplementary Figures 9b and 10b",
+     "quote": "On average, matching right/left finger pairs were 1.56 distance-units (95% CI: [1.33, 1.78], Figure 8b ) closer to each other than non-matching fingers were. Matching fingers were also represented more similarly than non-matching fingers in J-MC (mean difference: 4.30, 95% CI: [2.74, 5.46]), but this result was not conclusive in J-PPC (mean difference: 0.27, 95% CI: [-0.17, 0.64])",
+     "statistics": [
+      {
+       "about": "N-PPC, non-matching minus matching distance",
+       "ci": {
+        "level": 0.95,
+        "low": 1.33,
+        "high": 1.78
+       },
+       "n": "RDM elements of 10 sessions"
+      },
+      {
+       "about": "J-MC, non-matching minus matching distance",
+       "ci": {
+        "level": 0.95,
+        "low": 2.74,
+        "high": 5.46
+       },
+       "n": "RDM elements of 2 sessions"
+      },
+      {
+       "about": "J-PPC, non-matching minus matching distance",
+       "ci": {
+        "level": 0.95,
+        "low": -0.17,
+        "high": 0.64
+       },
+       "n": "RDM elements of 2 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "Under O4 (a), with each partition's precision scaled to that of the partition mean, the non-matching minus matching difference is 1.42 (BCa 95% CI 1.19 to 1.64) in N-PPC, 3.06 (1.73 to 4.13) in J-MC and 0.22 (-0.10 to 0.67) in J-PPC for O1 (a) and O3 (a); over O1 and O3 the values are 1.42 to 1.71, 2.99 to 3.38 and 0.19 to 0.22, all within tolerance, with N-PPC and J-MC CIs above 0 and the J-PPC CI including 0 (also by the percentile CI, in all 18 readings). Under O4 (b), and the unscaled variant O4 (a1), the sign pattern is the same but the values are about a fifth as large (N-PPC 0.28 to 0.36, J-MC 0.51 to 0.68), outside tolerance, which would be partially reproduced. On synthetic data with a known distance, O4 (a) returns 5.17 times the distance in single-trial noise units and O4 (a1) and (b) 1.03 times; the N-PPC mean RDM spans 0.57 to 3.90 under O4 (a), 0.11 to 0.78 under O4 (a1) and 0.12 to 0.79 under O4 (b). The paper's text gives no colour-bar range for Figure 8a to tell the scales apart. One N-PPC unit with zero residual variance in a partition is dropped.",
+     "deviations": [
+      "Assumed that the per-partition noise passed to rsatoolbox is the precision of the partition mean, the single-trial precision times the 5 trials per condition in each partition. The Methods say the toolbox (ref 57) incorporates the noise covariances of both folds, which is its list-of-noises branch, and the toolbox's calc_rdm_crossnobis documents that this list must hold the precision of the mean of each fold. The paper does not say how it computed the noise, and the scaling changes the values about fivefold; the unscaled result is shown.",
+      "Units with zero residual variance in a partition make the noise covariance singular and are left out of that session's distance (one N-PPC unit); a standard choice."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8a-npcc-index-distinct",
+     "statement": "In N-PPC the inter-finger geometry is similar across hands, with the index finger relatively distinct from the middle and ring fingers in both hands.",
+     "source": "Results, Compositional representation of finger and laterality, paragraph 4; Figure 8a and 8d",
+     "quote": "We found that inter-finger vectors were similar across hands, with the index finger relatively distinct from the middle and ring fingers",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "In the N-PPC distances averaged over 10 sessions, under every reading of O1, O3 and O4, the index-middle and index-ring distances exceed the middle-ring distance in both hands (O1 a, O3 a, O4 a, right 2.16 and 2.96 against 0.62, left 1.30 and 2.23 against 0.57). In single sessions the pattern holds in both hands in 7 to 10 of 10 sessions. The outcome does not depend on the noise scaling assumed for fig8b-matching-closer, as all readings agree.",
+     "deviations": [
+      "The MDS of the figure is drawn by classical MDS of the clipped squared distances and aligned by Generalized Procrustes with scaling; it is shown only and does not decide the outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8e-hand-ccgp",
+     "statement": "Hand (left against right) decoders trained on four finger types generalize to the held-out finger type significantly above chance (p < 0.001, permutation test), with hand CCGP close to standard decoding accuracy, in N-PPC, J-MC and J-PPC.",
+     "source": "Results, Compositional representation of finger and laterality, paragraphs 5 and 6; Figure 8e; Supplementary Figures 8, 9e, 10e and 11",
+     "quote": "Consistent with this hypothesis, cross-condition hand-decoding generalization performance (hand CCGP) was significantly above chance (p < 0.001, permutation test). Furthermore, hand CCGP was close to the standard decoding accuracy",
+     "statistics": [
+      {
+       "about": "N-PPC hand CCGP against chance",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "pseudo-population of N-PPC neurons pooled over 10 sessions, 1001 shuffles"
+      },
+      {
+       "about": "J-MC hand CCGP against chance",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "pseudo-population of J-MC neurons pooled over 2 sessions"
+      },
+      {
+       "about": "J-PPC hand CCGP against chance",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "pseudo-population of J-PPC neurons pooled over 2 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "In N-PPC (943 neurons under O1 a), J-PPC (315) and J-MC (252), under every reading of O1, O6 and O7, no one of 1001 shuffles reaches the hand CCGP (p = 1/1002). Hand CCGP is 0.970 to 0.990 in N-PPC and J-PPC and 0.860 to 0.870 in J-MC, against shuffle means near 0.50, and at least 0.913 of the hand accuracy on the same pseudo-population, so close by both O9 (a) and (b).",
+     "deviations": [
+      "The shuffle permutes the ten condition labels across pseudo-trials and recomputes CCGP; the paper says only that labels were shuffled 1001 times. For O6 (b) each shuffle uses a new random matching of trials.",
+      "Standard accuracy is computed on the same pseudo-population (assumption, see jppc-finger-ccgp-low); the per-session accuracy, run under every O1 x O7, does not change this outcome, as hand CCGP is at least 0.940 of it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8e-finger-ccgp",
+     "statement": "Finger-type decoders trained on one hand generalize to the other hand significantly above chance (p < 0.001), with finger-type CCGP close to standard decoding accuracy, in N-PPC and J-MC.",
+     "source": "Results, Compositional representation of finger and laterality, paragraphs 5 and 6; Figure 8e; Supplementary Figure 9e",
+     "quote": "The finger-type dimension also generalized across hands (p < 0.001), and finger-type CCGP was close to the standard decoding accuracy",
+     "statistics": [
+      {
+       "about": "N-PPC finger-type CCGP against chance",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "pseudo-population of N-PPC neurons pooled over 10 sessions, 1001 shuffles"
+      },
+      {
+       "about": "J-MC finger-type CCGP against chance",
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "pseudo-population of J-MC neurons pooled over 2 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "In N-PPC and J-MC, under every reading, no shuffle reaches the finger-type CCGP (p = 1/1002). N-PPC CCGP is 0.918 to 0.954, at least 0.925 of its standard accuracy. J-MC CCGP is 0.735 to 0.790, 0.770 to 0.823 of the within-hand accuracy (O8 a) and 0.775 to 0.857 of the accuracy over both hands (O8 b). Closeness holds for both arrays under O9 (b), a ratio above 0.55, and fails for J-MC under the 0.9 margin of O9 (a). The criterion asks for one reading, so the claim is reproduced. With the per-session standard accuracy both arrays also pass O9 (a) in some readings (J-MC 0.908 of the within-hand accuracy for O1 a, O6 a, SVM), and N-PPC CCGP exceeds the per-session accuracy (ratio 1.15 to 1.31); the outcome is the same under both populations.",
+     "deviations": [
+      "As for fig8e-hand-ccgp, the shuffle scheme and the population of the standard accuracy are choices the paper does not state."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "jppc-finger-ccgp-low",
+     "statement": "J-PPC finger representations are less compositional; finger-type CCGP (36%) is above chance (p < 0.001) but much lower than within-hand accuracy (65%).",
+     "source": "Results, Compositional representation of finger and laterality, paragraph 6; Supplementary Figure 10e",
+     "quote": "Interestingly, J-PPC finger representations were less compositional. While above chance (p < 0.001), the finger-type CCGP (36%) was much lower than the within-hand accuracy (65%)",
+     "statistics": [
+      {
+       "test": "permutation test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "pseudo-population of J-PPC neurons pooled over 2 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "J-PPC finger-type CCGP is 0.290 to 0.380 over the readings (shuffle mean 0.20), far below the within-hand accuracy on the pseudo-population (0.828 to 0.890). The permutation p is below 0.001 in one of eight readings (O1 b, O6 a, linear SVM, no null value of 1001 reaching the CCGP of 0.380, p = 1/1002, within-hand 0.850); in the others 1 to 37 null values reach it (p 0.002 to 0.038), so the paper's p below 0.001 holds only in that reading, at the floor of the test. There the CCGP is within tolerance of 36% and the within-hand accuracy is outside the tolerance of 65%, with CCGP below 0.9 of it, which the criterion calls partially reproduced. With the within-hand accuracy computed per session, run under every O1 x O7, it is 0.680 to 0.690, within tolerance in all eight readings, and the same reading (O1 b, O6 a, SVM) is reproduced. The two populations give different outcomes; the pseudo-population is kept for the reasons in the deviation below, a judgement call, as the round-2 verifier notes.",
+     "deviations": [
+      "Assumed that the standard (within-hand) accuracy is computed on the same pseudo-population as CCGP, since the Methods (Compositionality of finger representations) call it an upper bound on CCGP, which holds only for the same neurons, and the CCGP literature it cites (ref 60) computes both on one pseudo-population; with the per-session accuracy N-PPC finger CCGP exceeds the bound (ratio up to 1.31). The Methods' offline classification trains a separate classifier per session, and that reading, now run under every O1 x O7 next to each O6 row, gives 0.680 to 0.690, near the paper's 65%, and would change the outcome to reproduced.",
+      "The shuffle scheme of the permutation test is not stated; condition labels are permuted across pseudo-trials. The J-PPC p-values lie near the 0.001 bound, so the scheme can matter. For O6 (b) the observed CCGP is a mean over 100 matchings and each null value uses one matching, which makes p conservative; it does not decide the outcome, which rests on an O6 (a) reading."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs11-jppc-lower-matched-size",
+     "statement": "Even at matched neural population size, J-PPC finger-type CCGP is lower than that of N-PPC and J-MC.",
+     "source": "Results, Compositional representation of finger and laterality, paragraph 6; Supplementary Figure 11",
+     "quote": "Even when accounting for differences in neural population size, finger-type CCGP for J-PPC was lower than finger-type CCGP for N-PPC and J-MC",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_guan_2022.ipynb",
+     "notes": "With 100 random subsets per size, at 50, 100, 150, 200 and 250 neurons and under every reading of O1, O6 and O7, the mean J-PPC finger-type CCGP (0.253 to 0.338) is below the means of N-PPC (0.472 to 0.867) and J-MC (0.559 to 0.790) at the same size.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-contra-discriminative",
+     "statement": "In the contralateral alternating-cues task many neurons discriminate between finger conditions in the Go window (N-PPC 54%, J-PPC 30%, J-MC 78%), selective neurons differ from No-Go for about two fingers on average (2.1, 1.9, 2.7), and many have large effect sizes (eta2 > 0.14 in 40%, 25%, 64%).",
+     "source": "Results, Single-neuron modulation to individual finger presses, paragraph 2; Figure 4c to 4e; Supplementary Figures 2 and 3",
+     "quote": "A large portion of neurons (N-PPC: 54%; J-PPC: 30%; J-MC: 78%; Figure 4c ) discriminated firing rates across conditions (q < 0.05), and selective neurons were often selective for multiple finger movements (mean number of significant fingers, N-PPC: 2.1; J-PPC: 1.9; J-MC: 2.7). Moreover, many neurons discriminated between finger conditions with large effect sizes (percentage of neurons with \u03b7 2 > 0.14, N-PPC: 40%; J-PPC: 25%; J-MC: 64%",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the alternating-cues task with No-Go (N 4 sessions, J 3). All 12 files of the dandiset are the ten-finger task, with conditions Rt to Lp and no No-Go; the dandiset's metadata and the paper's Data Availability name no other source.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-plan-vs-move",
+     "statement": "Slightly fewer PPC neurons are strongly tuned (q < 0.05 and eta2 > 0.14) during movement preparation (N-PPC 24%, J-PPC 23%) than during execution (N-PPC 43%, J-PPC 24%).",
+     "source": "Results, Single-neuron modulation to individual finger presses, paragraph 3; Figure 4e and Supplementary Figure 2e",
+     "quote": "slightly fewer PPC neurons had strong tuning (q < 0.05 and \u03b7 2 > 0.14) during movement preparation (N-PPC: 24%; J-PPC: 23%) than during movement execution (N-PPC: 43%; J-PPC: 24%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-contra-decoding",
+     "statement": "Contralateral finger movements (five fingers and No-Go) are classified offline well above the 17% chance level (N-PPC 86%, J-PPC 64%, J-MC 84%), and most errors are adjacent fingers (75%, 42%, 67%).",
+     "source": "Results, Classifying finger presses from neural activity, paragraph 1; Figure 5a; Supplementary Figures 4a and 5a",
+     "quote": "Classification accuracies substantially exceeded chance (N-PPC: 86%; J-PPC: 64%; J-MC: 84%; chance: 17%). The majority (N-PPC: 75%; J-PPC: 42%; J-MC: 67%) of errors misclassified an adjacent finger",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5bcd-npcc-data-requirements",
+     "statement": "For N-PPC, cross-validated accuracy reaches 80% with about 40 training trials, about 70 neurons, and window durations of about 350 ms.",
+     "source": "Results, Classifying finger presses from neural activity, paragraphs 3 and 4; Figure 5b to 5d",
+     "quote": "Cross-validated accuracy increased with more training data, reaching 80% accuracy when training on about 40 trials (2.7 minutes) for N-PPC. Higher neuron counts provide more finger information and thus improved classification accuracy, reaching 80% accuracy at about 70 neurons for N-PPC",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-planning-decoding",
+     "statement": "Finger movements are also decoded from PPC during the planning period, with lower accuracy than during execution (N-PPC 66%, J-PPC 61%, chance 17%).",
+     "source": "Results, Classifying finger presses from neural activity, paragraph 5; Figure 5e",
+     "quote": "Finger movements could also be decoded from PPC during the planning period ( Figure 5e )), although classification accuracy was lower (N-PPC: 66%; J-PPC: 61%; chance: 17%) than during movement execution",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Alternating-cues task not in the dandiset (see fig4c-contra-discriminative).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-online-bmi",
+     "statement": "During online BMI control of right-hand fingers, participant N reached 86% accuracy (4016 trials over 9 sessions) and J 92% (1488 trials over 8 sessions), against 17% chance.",
+     "source": "Results, Brain-machine interface control of finger movements, paragraphs 3 and 4; Figure 6a and 6b",
+     "quote": "Confusion matrix for participant N (PPC), right-hand finger presses. 86% accuracy, 4016 trials over 9 sessions ... Confusion matrix for participant J (PPC+MC), right-hand finger presses. 92% accuracy, 1488 trials over 8 sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the online BMI sessions with the decoded class of each trial. The dandiset has none. Its metadata says it continues DANDI:000147, whose description (printed in the notebook's last code cell) is a BCI finger-press task of the PC-IP array, with in-session classified finger, the reaction-time task whose figure the paper adapts from ref 46 (Methods, Reaction-time finger-press task, feedback 1.5 s after the cue); the claims file does not name it as a source of this paper's data and it holds nothing of participant J, so it was not used. The same cell lists its 10 files, all of subject P1 from 2018, and its IsDescribedBy link to doi 10.7554/eLife.74478 (Stability of motor representations after paralysis); it holds no alternating-cues task either. J's BMI sessions are not public anywhere the paper names.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6-single-array-retrospective",
+     "statement": "Retrospectively decoding J's BMI trials from a single array, with a classifier trained on earlier run-blocks, gives 83% (plus or minus 7%) from J-PPC and 87% (plus or minus 8%) from J-MC.",
+     "source": "Results, Brain-machine interface control of finger movements, paragraph 4; Supplementary Figure 6",
+     "quote": "We trained the linear classifier on earlier run-blocks [0, 1, \u2026, M-1] and evaluated on run-block M, repeating for all run-blocks in each session. 83% +/- 7% accuracy (chance 17%), 1488 trials over 8 sessions ... Same as (a) using J-MC population activity. 87% +/- 8% accuracy (chance 17%), 1488 trials over 8 sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs J's BMI run-blocks with threshold crossings or sorted units; not in the dandiset nor in DANDI:000147, which holds participant N only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7-left-hand-bmi",
+     "statement": "Participant J controlled left-hand finger presses through the BMI with 94% accuracy (336 trials over 3 sessions).",
+     "source": "Supplementary Figure 7",
+     "quote": "Confusion matrix for participant J (PPC+MC), left-hand finger presses. 94% accuracy, 336 trials over 3 sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "J's left-hand BMI sessions are not in the dandiset (see fig6-online-bmi).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds only the ten-finger press task (10 sessions of N, 2 of J). The alternating-cues task (Figures 1, 4 and 5, Supplementary Figures 2 to 5) and the online BMI sessions of J (Figure 6b, Supplementary Figures 6 and 7) are not in it, though the paper's Data Availability names only this dandiset. N's BMI sessions of ref 46 appear to be in DANDI:000147.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "format_error",
+     "statement": "In 1509 of 1692 units the spike times are not stored in increasing time order, which NWB expects. Counts in windows are unaffected once sorted, as this attempt does.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files name the participants P1 (the paper's N) and N1 (the paper's J); no mapping to the paper's labels is given, and N1 is not participant N. The mapping follows from the sex and electrode locations.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The trial columns Run, TrialNumber, cue_on_time, cue_off_time and go_on_time have no description. The Delay screen onset, which defines the paper's Delay window, is implied only by cue_off_time.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The per-session unit counts the paper reports match the units in the files before the 0.5 Hz exclusion that the Methods apply to all analyses; the J-MC session of 2019-02-12 has 139 units against the paper's stated maximum of 130.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-04",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier tested helpers on synthetic data and against statsmodels and scipy, read rsatoolbox 0.3.2, and checked the archive metadata. It gave its own outcome for each of the 19 claims; all agree with the record.",
+     "agreed": 19,
+     "of": 19,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-04",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, with its conclusion cells and summary, the helper module, the claims file, the attempt record and the README, with the paper. The verifier checked every number in the Result cells, the Summary, the README and the record's notes against the printed outputs. It agreed with all 19 outcomes.",
+     "agreed": 19,
+     "of": 19,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the authors. How was the noise precision passed to rsatoolbox for the cross-validated Mahalanobis distance (Methods, Neural distance between fingers)? With two partitions and each partition's single-trial precision the differences are about a fifth of the paper's (N-PPC 0.28 against 1.56); with the precision of the partition mean, as the toolbox documents for a list of noises, they match (1.42). This attempt assumed the latter.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the authors. Was the standard (within-condition) accuracy compared with CCGP computed on the pseudo-population or per session (Methods, Compositionality of finger representations)? For J-PPC within-hand accuracy is 0.83 to 0.89 on the pseudo-population and 0.68 to 0.69 per session, against the paper's 65%. This attempt assumed the pseudo-population.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the authors. What did the 1001 label shuffles of the CCGP permutation test permute, and how were trials of different sessions matched in the pseudo-population? With condition labels permuted across pseudo-trials, J-PPC finger-type CCGP has p from 0.001 to 0.038 over the readings, against the paper's p below 0.001.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the authors. With the Methods' one-way ANOVA on Go-window rates and FDR over pooled neurons, 48%, 38% and 65% of N-PPC, J-PPC and J-MC neurons are discriminative in the ten-finger task, against 66%, 57% and 78%. A 1 s window from the Go cue gives 61%, 57% and 83%. Which window, exclusion and correction gave the paper's values?",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "guan-2022-finger",
+   "type": "reproduction",
+   "title": "Ten-finger decoding and compositional finger coding in human PPC and MC (Guan et al. 2022)",
+   "description": "Tests the ten-finger findings of Guan et al. (preprint 2022) on dandiset 000252, which holds sorted single-unit spikes from 10 sessions of participant N (PPC) and 2 sessions of participant J (PPC and MC) during the ten-finger press task. It counts the neurons, tests single-neuron selectivity, ten-finger decoding and its errors, the cross-validated distances between matching and non-matching fingers of the two hands, and the cross-condition generalization of hand and finger-type decoders. The alternating-cues and BMI sessions of the paper's Figures 4 to 6 are not in the dandiset.",
+   "datasets": [
+    "dandi:000252"
+   ],
+   "papers": [
+    "10.1101/2022.12.07.22283227"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_guan_2022.ipynb",
+     "title": "Reproducing Guan et al. (2022) from dandiset 000252",
+     "executed": "notebooks/guan-2022-finger/reproduce_guan_2022.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 32,
+   "hashed": false
+  }
+ ],
+ "badge": {
+  "text": "9 findings reproduced",
+  "reproduced": 9,
+  "papers": [
+   {
+    "doi": "10.1101/2022.12.07.22283227",
+    "key": "guan-2022-finger",
+    "byline": "Guan et al. 2022",
+    "title": "Compositional coding of individual finger movements in human posterior parietal cortex and motor cortex enables ten-finger decoding",
+    "relation": "primary",
+    "reproduced": 9,
+    "url": "https://encorescience.org/papers/guan-2022-finger/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/dandi/000252/",
+  "svg": "https://encorescience.org/badge/dandi/000252.svg",
+  "alt": "Encore: 9 findings reproduced, from DANDI:000252"
+ }
+}
