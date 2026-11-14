@@ -1,41 +1,41 @@
-I've written `claims/gao-2018.yaml` with 44 claims. The quote checker passes with 0 problems; nothing was committed.
+I've updated `claims/gao-2018.yaml` to pilot-15. The quote checker passes: 46 claims, 46 quotes, 17 statistical values, 0 problems. Nothing is committed.
 
-**Text read**
-- **Main paper:** the NIH author manuscript (PMC6212318) from Europe PMC: main text, Methods, and the legends of Figs. 1–4 and Extended Data Figs. 1–10.
-- **Supplement 1:** the Supplementary Information, including Supplemental Table 1, which lists the mice and manipulated hemispheres.
-- **Supplement 2:** the reporting summary.
-- **No PDF of the main paper**, so anything shown only inside the figures (values, which bar a significance mark belongs to) could not be read. Claims rest on the text and legends.
-- **No code:** the paper links none. It says code is "available ... upon reasonable request" and "will be deposited on CRCNS.org", with no identifier.
-- **Dataset:** its archive description reads "Extracellular recording in ALM".
+**Text read.** The stored text is now the version of record (PMC6212318, open access, Europe PMC XML). It holds the main text, the Methods, the legends of Extended Data Figs. 1 to 10, and the Supplementary Information, including Supplemental Table 1. The last file was written from the NIH author manuscript. `supp2.pdf` is the Nature reporting summary. The paper links no code. The reporting summary says scripts "will be deposited on CRCNS.org" but gives no identifier, so no code was read.
 
-**Counts**
-- All 44 claims have quotes; none needed `inferred`.
-- 16 claims carry statistics (21 values), 18 have expected values with tolerances, and all 44 have criteria.
-- The claims cover lesions, photo-activation and photo-inhibition behavior, ALM and CN selectivity, the cross-area perturbations, anatomy, coding-direction analyses and the Extended Data Fig. 10 experiments.
+**Missing from the text.** The legends of main Figs. 1 to 4 are not in the stored text, and there is no PDF of the main paper. The previous file took several details from those legends, and I can't check them now:
+- the significance marks of Fig. 1d, 1e, 1g and 1h;
+- the Fig. 3f neuron count (n = 329) and the Fig. 2d count (197);
+- the split of the 912 ALM neurons into fastigial and dentate sessions (446/466);
+- the power ranges in the Fig. 3d and 4d legends.
 
-**Details the paper leaves open, with the readings named**
-- **Response epoch window:** 1.3 s from the go cue, or the 1.5 s answer window.
-- **Trials in the selectivity test:** correct trials only, or all trials grouped by instructed direction.
-- **Preferred trial type:** whether the 10 or 20 trials that fix it are counted in total or per type, and which epoch fixes it.
-- **Trials in photostimulation tests:** all trials, or correct trials only.
-- **Neurons entering the latency estimate:** modulated during the photostimulus, or over the whole delay.
-- **Denominator for 59%/35% preparatory and 67%/66% peri-movement:** all neurons, or selective neurons.
-- **CN n = 197 in Fig. 2d:** all 416 selective neurons, or only those with sample or delay selectivity.
-- **Window for "selectivity abolished":** the whole delay, or the last 500 ms. "Collapse" along the coding direction is read as either indistinguishable from zero or lower than control.
-- **Fig. 4f "persists >1 s":** compared against the 1% chance level, or against the fraction before the photostimulus.
-- **Mean rate of 4.15 vs 4.39 spikes/s:** over all 454 neurons or the 197 modulated ones, and with a paired or unpaired t-test.
+I removed the statistics that came only from those legends (Fig. 1d, 1e, 1g delay, 1h response) and the n = 329 expected value. Where the paper gives no other threshold, the criteria now use the bootstrap at p < 0.05 (the lowest mark in the paper's bootstrap legends), named as a choice. Power ranges now cite the Methods and Extended Data Fig. 5e. If the main figure legends can be supplied, these details can go back in.
+
+**What changed.**
+- Every claim now has `datasets: ["000007", crcns-alm-4]`. The opening comment says which experiments each dataset is described as holding: ALM recordings only, with no CN recordings. Claims on the lesions, the CN recordings, the 1.3 s photostimulation, the movement tests, the VGAT behavior and the anatomy are kept; the author blocks them as data_missing if neither dataset has them. The comment also notes that the 6 mice of the 0.5 s fastigial photo-activation behavior are the 6 ALM-recording mice (Supplemental Table 1).
+- New claim `ed10b-fastigial-activation-errors-during-recording`: performance drops during the ALM recording sessions (Extended Data Fig. 10b, p < 0.001, 6 mice). I moved that statistic off `ed10d`, where the test was not the finding.
+- Sources now give main-text paragraph numbers counted from the opening paragraph. The old numbers were off.
+- I removed the old `checks` block, because its "ready" verdict was for the previous version. The file needs a new check.
+
+**Counts.** 46 claims, all with quotes and criteria. 12 claims have statistics (17 entries), and 17 have expected values.
+
+**Details the paper leaves open, with the readings named:**
+- **Response-epoch window for selectivity:** 1.3 s from the go cue, or 0 to 1.5 s.
+- **Which trials enter selectivity:** correct trials only, or all trials with a lick grouped by instruction.
+- **Which trials enter the photostimulation effect test:** all trials, or correct trials only.
+- **Window that decides "modulated" for latency:** the photostimulation period, or the whole delay.
+- **Lesion test:** mice pooled, or tested one by one.
+- **Photostimulus for Fig. 1h, the Fig. 1g dentate bar, and delay photo-inhibition:** 0.455 or 0.5 s, against 1.3 s.
+- **Lick bouts:** before against after the lesion, or contra- against ipsilesional.
+- **Denominator for preparatory and peri-movement fractions:** all neurons, or selective neurons.
+- **Population for the CN averages:** all selective neurons, or those selective in the sample or delay.
 - **Lick-modulation t-test:** paired or unpaired.
-- **"Captured fraction" of selectivity:** a ratio of RMS values or of their squares. The baseline window is also not given.
-- **VGAT performance percentages:** pooled over trials, or averaged over mice.
+- **Window for selectivity under photostimulation:** the whole delay, or its last 500 ms.
+- **ALM mean-rate test:** all 454 neurons or the 197 modulated, and paired or unpaired.
+- **ED10 VGAT percentages:** pooled over trials, or averaged over mice.
+- **Comparison for the persistent fastigial effect:** the 1% chance rate, or the bins before the photostimulus.
+- **"Collapse" along the coding direction:** not different from zero, or lower than control.
+- **Captured fraction:** a ratio of RMS values, or of squared RMS values.
 
-**Choices I made where the paper gives none**
-- Several absence claims have no test in the paper (licking unaffected, Extended Data Fig. 10d). I used the Methods' hierarchical bootstrap or a logistic regression and labelled each as a choice in the criterion.
-- How trials are split for the coding direction is not given. I used a random half split as a standard choice.
+These are fixed as standard choices: the coding-direction trial split, the 200 ms averaging window, the baseline window, and the tests the paper doesn't give (per-mouse bias, the licking absence claims, the endpoint logistic regression).
 
-**Gaps that affect claims**
-- Two legends give p-values without the figure to show which bar each belongs to (Extended Data Fig. 2h: p = 0.04 and 0.0002; Extended Data Fig. 10f–g). Both values are recorded.
-- It is not clear which mice carried bilateral ALM photo-inhibition during ALM recording (Extended Data Fig. 10c, n = 690 trials). Supplemental Table 1 lists no such mice.
-- The number of ALM-recorded mice disagrees: the Methods add up to 12 (10 left, 2 right) but the table lists 13.
-- The CN, anatomy and behavior-only claims are kept as findings, but the dataset described as ALM recordings likely does not hold their data.
-
-Nothing the claims needed was missing from the text itself.
+**Other gaps.** The supplement presents the Extended Data Fig. 10c trials (bilateral ALM photo-inhibition) as an earlier finding citing Li et al. 2016 and Inagaki et al. 2017, so they may not be in either dataset. The paper doesn't say whether the ±3.4% and ±4.2% spreads on the coding-direction figures are s.e.m. or s.d.
