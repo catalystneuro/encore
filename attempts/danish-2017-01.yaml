@@ -1,0 +1,396 @@
+schema_version: 3
+id: danish-2017-01
+datasets:
+- archive: crcns
+  id: aa-3
+  version: unversioned
+  doi: 10.6080/K0GQ6VP4
+  relation: primary
+paper: doi:10.1371/journal.pone.0169568
+date: '2026-11-13'
+entry: danish-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43501452848
+inputs: []
+outcomes:
+- claim: lesion-directed-song-abolished
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The lesion folders hold one day before and one day after the lesion per bird. Neither the
+    wav files, their analysis files (which carry no properties) nor the data descriptor mark any
+    recording as directed song, so the post-lesion directed context cannot be found.
+- claim: lesion-undirected-rate-similar
+  outcome: not_reproduced
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:lesion-undirected-rate-similar
+  notes: Per hour of the recording span (first to last file of the day), syllables per hour fall
+    after the lesion in 6 of 7 birds (post/pre ratios 0.08 to 1.01, Wilcoxon p = 0.031); bouts per
+    hour p = 0.047, singing time per hour p = 0.031. Spans range from 2.2 to 41.6 h and recordings
+    are triggered by sound, so the span is a weak measure of time; raw bout counts per day do not
+    differ significantly (p = 0.156) but are not a rate. Only one day per condition is in the data
+    set, so the two readings of the days compared coincide.
+  deviations:
+  - The recording hours are taken as the span between the first and last file of the day, as the
+    files hold no record of when the recorder was running.
+- claim: fig2g-maturity-index-drop
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig2g-maturity-index-drop
+  measured:
+  - 0.235
+  - 0.096
+  notes: With log spectra centred and scaled per frequency on the condition's mean spectrum, lag
+    reading (a) and 300 ms bout gaps, MI is 0.235 +- 0.087 before and 0.096 +- 0.031 after, both
+    within tolerance, falling in all 7 birds (Wilcoxon p = 0.016). With 350 ms gaps, 0.213 and
+    0.098 (pre just outside). Lag reading (b) gives 0.355 and 0.249 (decrease in 7 of 7, values
+    outside). Read literally (Pearson correlation of raw power or log power spectra), MI does not
+    fall (0 to 2 birds decrease) and lies between 0.32 and 0.62, far from the paper's values; the
+    shared background spectrum makes silent slices correlate. Only one post-lesion day is in the
+    data set, so the claims file's two readings of the post-lesion day coincide.
+  deviations:
+  - Assumed that the power spectra are log-scaled and that each frequency's mean (over all slices
+    of the bird's condition) is removed, and divided by its SD, before correlating. The Methods say
+    only "correlation of power spectra" and cite Aronov et al. 2008, which this run could not read.
+    The literal reading cannot give values near the paper's 0.08, so it is unlikely to be the
+    paper's computation; all four forms are shown. Asked of the authors (methods_unavailable).
+  - 100 bouts per bird and condition drawn with a fixed seed from bouts of 0.7 to 2 s built from the
+    selected segments of the authors' analysis files.
+- claim: fig2f-closer-to-exponential
+  outcome: partially_reproduced
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig2f-closer-to-exponential
+  measured:
+  - 30.41
+  - 15.19
+  notes: Durations of the selected segments of each day (2,129 to 20,127 syllables). Reading (a), D
+    times root n, gives 30.41 +- 6.31 before and 15.19 +- 6.57 after; reading (b), D over the
+    Lilliefors critical value, 28.69 and 14.33. Both fall in all 7 birds (Wilcoxon p = 0.016) and
+    stay above 2, but are about twice the paper's 16 and 3.7. The raw D falls from 0.29 to 0.21. The
+    one SyllGaps.mat file (Purple94 post-lesion) gives Gamma 9.26, lower than the analysis file's
+    16.32 for the same day, so the authors' segmentation for Gamma may differ from the analysis
+    files.
+  deviations:
+  - The scale of Gamma is not defined in the paper; ref 41 could not be read in this run, so the
+    claims file's two readings were used.
+- claim: fig2c-small-syllable-peak
+  outcome: partially_reproduced
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig2c-small-syllable-peak
+  measured: 7
+  notes: With 5 ms bins all 7 lesioned birds have a local maximum between 50 and 100 ms above the
+    fitted exponential, and above its Poisson 95% bound (readings a and b). With 10 ms bins
+    (variant) 6 of 7 do (Red92 has none), the paper's count. The main count is 7 against 6.
+- claim: fig2d-gaps-broader
+  outcome: reproduced
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig2d-gaps-broader
+  notes: Reading (a), 16 to 38% of post-lesion gaps fall outside the bird's pre-lesion 5th to 95th
+    percentiles (10% if unchanged; Wilcoxon p = 0.016); the long fraction exceeds 5% in all 7 birds
+    (11 to 26%) and the short fraction in 6 of 7 (Purple53 2.9%). Reading (b), the interquartile
+    range of log gap widens in 5 of 7 birds (p = 0.078).
+- claim: fig2e-rhythmicity-drop
+  outcome: partially_reproduced
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig2e-rhythmicity-drop
+  measured:
+  - 4.84
+  - 2.44
+  notes: With the dB amplitude and null (a), R is 4.84 +- 1.69 before and 2.44 +- 0.45 after, falling
+    in all 7 birds (Wilcoxon p = 0.016); null (b) gives 5.87 and 2.41 (p = 0.016). Both values are
+    above the paper's tolerances. The log of the rectified amplitude (reading c) gives ratios
+    dominated by 25 to 30 Hz and no consistent decrease (2 of 7 birds).
+  deviations:
+  - Bouts shorter than 1 s, and longer than 4.1 s, are left out (the shortest is not given; a
+    standard choice for a 4 Hz taper resolution). R is the maximum between 3 and 30 Hz (the upper
+    bound is not given; 3 to 50 Hz is shown).
+  - The synthetic null uses square syllable and gap levels at the bird's mean levels, smoothed at
+    2.5 ms, averaged over 5 synthetic bout sets; the paper does not describe the synthetic
+    amplitude.
+- claim: fig2e-residual-rhythm-peak
+  outcome: partially_reproduced
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig2e-residual-rhythm-peak
+  measured: 7
+  notes: All 7 lesioned birds have a ratio maximum between 3 and 8 Hz (2.11 to 3.34) above the 95th
+    percentile of the same maximum over synthetic null sets (1.11 to 1.27), and all 7 between 4 and
+    8 Hz. The paper reports 6 of 7. For post-lesion song the two null readings are the same.
+  deviations:
+  - 200 synthetic null sets per bird, where the claims file asks for 1000, to fit the run time.
+- claim: figs1-control-lesions-no-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The lesion archive holds 7 birds, all with pre- and post-lesion folders, matching the
+    paper's 7 Uva-lesioned birds; the 4 control-lesion birds are not in it.
+- claim: fig3-antidromic
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run's time. The archive holds the stimulation files (the
+    spreadsheets mark them "stim", at 150, 200 and 320 uA; 147 recordings show saturating
+    artefacts), but no stimulus times, so latencies would have to be measured from the artefacts,
+    with responses separated from artefact recovery, on a channel the data set does not identify.
+    The 320 uA of Orange150 lies inside the claim's widened 63 to 330 uA range.
+- claim: single-unit-spontaneous-rates
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The analysis files hold no spike times (EventTimes empty in all five) and no sorted units;
+    the "spontaneous activity" files are multiunit recordings without unit identities or locations
+    at the level the claim needs.
+- claim: fig4c-call-premotor
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig4c-call-premotor
+  measured:
+  - 22
+  - 15
+  notes: Calls are the segments labelled "k" (145 in b871, 86 in Uva4; Orange150 has none labelled).
+    The call-aligned MUA peaks 13 and 17 ms before onset (mean 15.0; paper 15 +- 5). Only Uva4
+    rises above the inside-bout band, 22 ms before onset (paper 30 +- 7); b871 does not, and against
+    a band drawn from the call files neither does. The measured latency from baseline is Uva4's
+    alone.
+  deviations:
+  - The label "k" is read as distance calls from its duration (about 210 ms) and from the
+    spreadsheets, which mark the files where it occurs as distance calls; the data set does not
+    name its labels.
+  - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
+- claim: fig4b-introductory-note-premotor
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig4b-introductory-note-premotor
+  measured:
+  - 35.5
+  - 23.3
+  notes: Introductory notes are the segments labelled "i" (20 in b871, 113 in Orange150, 10 in
+    Uva4). The average peaks 20, 24 and 26 ms before onset (mean 23.3; paper 21 +- 9). Under shuffle
+    reading (b) Orange150 and Uva4 leave the band 33 and 38 ms before onset (mean 35.5; paper 39 +-
+    8); b871 does not. Under reading (a) the band for maxima, built from as few as 10 windows, is
+    wide and no bird leaves it.
+  deviations:
+  - Rests on the channel chosen for each bird.
+- claim: fig4a-elevated-during-song
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig4a-elevated-during-song
+  notes: On the chosen channels mean MUA inside bouts exceeds MUA more than 300 ms from any segment
+    at all 18 sites (ratios 1.04 to 2.13; paired t-test over sites t = 7.09, p = 1.8e-06). The other
+    channels are higher inside bouts at 3 to 7 of 4 to 7 sites, with median ratios 1.01 to 1.19.
+  deviations:
+  - Assumed that the neural channel of each bird is the one of its three with the largest range of
+    the syllable-onset-aligned MUA (b871 channel 6, Orange150 channel 7, Uva4 channel 3). The paper
+    describes one electrode and the data set does not say which channel it is; channels 5 and 6 of
+    Orange150 are near copies of each other. The choice uses the syllable modulation that later
+    claims measure, so it favours finding modulation, though not its timing. Asked of the authors.
+  - Files whose properties mark them above, below or outside Uva are left out.
+- claim: fig5-consistent-across-renditions
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig5-consistent-across-renditions
+  measured:
+  - 0.701
+  - 0.585
+  notes: 112, 153 and 44 motif renditions. Reading (a), all pairs, gives correlation 0.701 (paper
+    0.64 +- 0.06, just above) and coherence 0.585 over 1 to 12 Hz (paper 0.68 +- 0.09, just below);
+    reading (b) correlation 0.740; reading (c), against the mean of the others, 0.829 and 0.730.
+    All are far above the shifted null (95th percentile of the 1 to 12 Hz maximum 0.21 to 0.35). No
+    reading puts both in tolerance.
+  deviations:
+  - The motif of each bird is its most common sequence of motif letters (abcd, abcdefgh, abcdef),
+    taken from the labels.
+  - Coherence over all pairs uses a random sample of 2000 pairs where there are more.
+- claim: fig5-consistent-across-sites
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig5-consistent-across-sites
+  measured:
+  - 0.893
+  - 0.688
+  notes: Sites with at least 5 renditions, paired within a recording day (3 pairs in b871, 3 in
+    Orange150, 6 in Uva4). Coherence between single renditions of two sites averages 0.688 (paper
+    0.65 +- 0.13). Correlation is higher than the paper's, 0.893 between site averages (reading a)
+    and 0.705 between single renditions (reading b; paper 0.62 +- 0.03).
+  deviations:
+  - Coherence of two site averages with one taper is identically 1, so coherence is taken from
+    single renditions (reading b) under both readings.
+  - The penetration of each Uva4 site is not recorded (its spreadsheet lists three dates, its
+    analysis file one folder); all Uva4 sites are paired.
+- claim: fig6-peak-before-onset
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig6-peak-before-onset
+  measured:
+  - 17.0
+  - 28.0
+  notes: The onset-aligned MUA peaks 13, 16 and 22 ms before onset (mean 17.0, SEM 2.6; paper 20 +-
+    2, outside) and rises above the band 25, 27 and 32 ms before (mean 28.0 under shuffle a, 29.0
+    under b; paper 32 +- 5, within). The 40 ms before onset exceed the bout mean and the window at
+    the preceding offset in every bird (paired t-tests, p below 1e-24).
+  deviations:
+  - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
+- claim: fig6-dip-before-offset
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig6-dip-before-offset
+  measured:
+  - 18.0
+  - 40.3
+  notes: The minimum averages 18.0 ms before offset (12, 17 and 25 ms; paper 18 +- 1) and the average
+    drops below the band 40.3 ms before offset under shuffle reading (b) (paper 48 +- 8; 36.3 under
+    reading a, outside). The 50 ms before offset are below the bout mean and the 40 ms before the
+    next onset in every bird (p below 1e-7). The drop time sits 0.3 ms inside the tolerance.
+  deviations:
+  - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
+- claim: fig7a-correlation-with-amplitude
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig7a-correlation-with-amplitude
+  measured:
+  - 0.382
+  - 40.7
+  notes: With motif segments and the rectified amplitude (reading c), peak correlation 0.382 with
+    MUA leading by 40.7 ms (paper 0.40 +- 0.04 at 42 +- 6). Bouts with the same amplitude give 0.459
+    at 40.7 ms (just outside); the dB amplitude gives 0.55 to 0.60 at 26 to 38 ms; power without the
+    log 0.32 to 0.35.
+  deviations:
+  - Bouts of 1 to 8.192 s (3 longer Uva4 bouts left out).
+- claim: spectral-features-weak
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run's time. It needs the six Sound Analysis Pro features computed on
+    the raw audio of the electrophysiology recordings, which this run reduces to amplitude traces
+    as it streams them; the audio is in the data set.
+- claim: fig7b-10hz-power-peaks
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig7b-10hz-power-peaks
+  measured:
+  - 9.03
+  - 8.91
+  notes: Over motifs with the dB amplitude, the average spectra peak at 9.03 Hz for song and 8.91 Hz
+    for MUA (paper 8.0 and 8.8); MUA is within tolerance, song just above it (7.2 to 8.8). The
+    rectified amplitude gives 9.16 to 9.28 Hz. Over bouts the song amplitude peaks at 3.4 to 6.3 Hz.
+    No reading puts both peaks in tolerance.
+  deviations:
+  - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
+- claim: fig7d-10hz-coherence
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig7d-10hz-coherence
+  measured:
+  - 9.03
+  - 0.789
+  - -0.721
+  notes: Over motifs with the amplitude as power (reading b), the bird-averaged coherency peaks at
+    9.03 Hz, coherence 0.789, phase -0.721 pi as Chronux returns it for (MUA, amplitude), above the
+    null of shifted MUA (99th percentile of maxima 0.209, p = 0.001 with 1000 shifts). The dB and
+    rectified amplitudes peak at 8.79 and 8.91 Hz with coherence 0.85 (outside) and phase -0.80 and
+    -0.74 pi. Over bouts the peak is at 6.3 Hz.
+  deviations:
+  - Coherency is averaged over segments within a bird (Chronux trial averaging), then over birds.
+- claim: fig8-no-gte-relation
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: GTE times need the syrinx-model method of Boari et al. (ref 50). The paper links no code
+    and no implementation was found or pinned in this run; the claims file names none.
+- claim: fig9-long-syllable-gamma
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:fig9-long-syllable-gamma
+  measured:
+  - 6
+  - 0.33
+  - 5
+  - 10.7
+  - 40.0
+  notes: 6 of 18 syllable types (3 birds) have a median duration above 150 ms (0.33; paper 0.43). 5
+    of the 6 have a significant MUA peak above 10 Hz (0.83; paper 0.62), at 10.7, 20.5, 21.5, 22.5
+    and 40.0 Hz. The coherence with amplitude averaged over long types exceeds its null only at 3.9,
+    5.9 to 12.7 and 40.0 to 43.0 Hz, not over 1.1 to 49.5 Hz.
+  deviations:
+  - The scrambled null permutes the 1 kHz MUA samples (the reduced trace), not the raw signal,
+    before smoothing again at 2 ms.
+- claim: bout-offset-suppression
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:bout-offset-suppression
+  measured: 127
+  notes: MUA falls below the non-singing band after bout offsets in all 3 birds but returns into it
+    30, 309 and 42 ms after offset (mean 127; paper about 200). It returns to the baseline level
+    256, 381 and 63 ms after (mean 233). Uva4 has 14 bout offsets.
+  deviations:
+  - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
+  - Bout offsets are those of bouts holding song syllables; the band is the 2.5 percentile of shuffled minima over -100 to +500 ms, from random times more than 300 ms from any segment.
+- claim: no-motif-bout-signal
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:no-motif-bout-signal
+  notes: In Orange150 MUA before motif onsets exceeds that before other syllable onsets (0.0635
+    against 0.0607 V, 4.6% higher, one-sided p = 0.0012); not in b871 (p = 0.46) or Uva4 (p = 0.18).
+    Bout onsets are not higher in any bird (p 0.78 to 0.99), and no average rises above the band
+    after motif or bout offsets (largest excess negative in all). The claim fails on one bird's
+    small motif-onset effect.
+  deviations:
+  - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
+  - The test and level (one-sided two-sample t-test, p < 0.05) are the claims file's standard choice; the window is the 40 ms before onset of the fig6 test.
+findings:
+- kind: metadata_insufficient
+  about: data
+  statement: Each electrophysiology recording has three neural channels (5, 6 and 7, or 1, 2 and 3
+    for Uva4), and neither the data descriptor nor the files say which is the Uva electrode; the
+    descriptor describes a single electrode, and its plotting script asks the user to choose 1 to
+    3. Only one channel per bird carries strong song-locked activity (b871 6, Orange150 7, Uva4 3),
+    and Orange150's channels 5 and 6 are near copies of each other.
+- kind: metadata_insufficient
+  statement: The syllable labels are not described. From the data, a to h are motif syllables, "i"
+    introductory notes and "k" distance calls; Orange150 has no call labels.
+- kind: metadata_error
+  statement: The descriptor says introductory notes and calls are unselected (SegmentIsSelected 0),
+    but segments labelled "i" and "k" are selected in all three birds.
+- kind: other
+  about: data
+  statement: The electrophysiology archive holds Bird_2-Orange150/2013-10-06.tar.gz, a second copy of
+    the folder Bird_2-Orange150/2013-10-06 (173 files, identical MD5).
+- kind: format_error
+  statement: One Uva4 recording (UVA4_d000020, all four channels) has an invalid closing sample
+    number and time, so its length and rate must be inferred from the file size.
+- kind: data_missing
+  statement: The data set holds 3 of the 5 recorded birds, no control-lesion birds, no directed-song
+    labels for the lesion recordings and no sorted single units, which the paper's results also
+    rest on.
+- kind: other
+  about: data
+  statement: The Uva4 spreadsheet tab is named "October 6, 2016", lists recordings dated 2007-07-25
+    to 2007-07-27 and covers 56 of the analysis file's 178 recordings, whose times run to
+    2007-08-06. The Orange150 second-day tab is also named 2016. The lesion folders also hold
+    undescribed files (SyllGaps.mat in one bird, whose durations differ from the analysis file's,
+    and vector clustering files, two of which have the same size in two birds' folders).
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) Maturity index; are the spectra log-scaled and
+    is the mean spectrum removed before correlating slices? The literal reading gives 0.32 to 0.62
+    and no decrease; log spectra centred per frequency give 0.235 and 0.096, as the paper reports.
+    How is the lag correlation function normalized? (2) Which of the three neural channels is the
+    Uva electrode in each bird? (3) How is Gamma scaled from the Lilliefors statistic, and which
+    segmentation was used (SyllGaps.mat gives lower values than the analysis files)? (4) How were
+    the synthetic null bouts for song rhythm built (levels, smoothing, number), and up to what
+    frequency is R taken? (5) How was the shuffled baseline of Figs 4 and 6 built?
