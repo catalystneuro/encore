@@ -1,0 +1,748 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "vim-1",
+  "label": "CRCNS:vim-1"
+ },
+ "page": "datasets/crcns/vim-1/",
+ "generated": "2026-11-14T14:17:42+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 7,
+  "partially_reproduced": 3,
+  "not_reproduced": 3,
+  "blocked": 6
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 4
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "kay-2008-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "vim-1",
+    "version": "unversioned",
+    "doi": "10.6080/K0QN64NG",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:vim-1"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:vim-1",
+   "label": "CRCNS:vim-1",
+   "dataset_version": "unversioned",
+   "paper": "10.1038/nature06713",
+   "paper_title": null,
+   "date": "2026-11-14",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-15"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43548126132"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "kay-2008",
+   "entry_title": "Identifying natural images from human brain activity (Kay et al. 2008)",
+   "summary": "The central result, identifying which new natural image a person saw from fMRI activity with a receptive-field model, holds up for both subjects (90.8% and 72.5% correct), but only under a field-of-view rule the paper does not describe. The other main findings could not be tested: single-trial identification needs a refit of every voxel's time series too large for the run, and the larger image sets and later sessions are not in the dataset. The example voxel of Figure 2 reproduces in part. Among minor claims, voxel counts, the fall in predictive power from V1 to V3 and errors on similar images reproduce; the band-pass V1 tuning, a classification control and the V1 share of selected voxels do not.",
+   "description": "Tests the findings of Kay, Naselaris, Prenger and Gallant (2008) on CRCNS data set vim-1, which holds the estimated fMRI responses of two subjects to 1,750 model estimation images and 120 identification images, with ROI labels, the stimuli and the raw time series. It fits the Gabor wavelet pyramid receptive-field models of the paper, identifies the 120 images from the responses, and tests the retinotopy-only model, voxel counts and predictive power by area, receptive-field size, tuning, and the classification extension. The 999-image library, the later sessions of S1 and the retinotopic mapping scans are not in the data set.",
+   "notebooks": [
+    {
+     "path": "reproduce_kay_2008.ipynb",
+     "title": "Reproducing Kay et al. (2008) from CRCNS vim-1",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig3-s1-repeated-120",
+     "statement": "For subject S1, the image seen was identified correctly for 92% (110 of 120) of the repeated-trial voxel activity patterns from 120 novel natural images, against chance of 0.8%.",
+     "source": "Main text, paragraph 6 (\"Identification performance for one subject is illustrated in Fig. 3\"); Figure 3 and its legend; Figure 4a",
+     "quote": "For this subject, 92% (110/120) of the images were identified correctly (subject S1), whereas chance performance is just 0.8% (1/120)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "Under O1 (a) with O5 (a), 109 of 120 S1 images are identified (90.8%, paper 110 of 120), binomial p against chance 1/120 of 2.5e-212; O1 (b) with O5 (a) gives 110 (91.7%). With the final model over the best initial model's field of view (O5 b) it is 91 of 120 (75.8%) under both readings of O1, outside tolerance, and the best initial models alone give 96. Ten bootstrap fits give 90 under O5 (b). The value holds under the O5 (a) readings, as the criterion allows.",
+     "deviations": [
+      "Each model is fitted once by gradient descent with early stopping; the paper's final parameters are the mean of 100 bootstrap fits (SM 6, \"Estimation of variance\"), not run for time. Ten bootstrap fits, run as a variant under O5 (b), change the result by one image (S1) and three (S2).",
+      "One stopping set (20% of the 1,750 responses) is drawn per fit and shared by the voxels fitted together, a standard choice for a random draw (SM 6 draws one per fit).",
+      "The initial fields of view are 10.0 and 5.12 degrees, from the paper's resolution list min(500, round(2^(9 - x/8))) (SM 6); the paper states 10.1 and 5.2 degrees (SM 5), which the list does not give.",
+      "The Gaussian SD of each wavelet follows from a 1-octave spatial frequency bandwidth (full width at half maximum), which gives an orientation bandwidth of 37 degrees where SM 6 states 41 (O3, standard choice). Wavelet centres at the grid cell centres (O3).",
+      "Stimulus values are taken as linear in luminance (O4); the goggles' response is not given.",
+      "Stimuli are resampled by area averaging; SM 6 does not say how.",
+      "An isotropic Gaussian with a constant offset is fitted to each initial model's envelope at 32 x 32; SM 5 says only \"an isotropic two-dimensional Gaussian\".",
+      "The significance of predictive power is by 1,000 bootstrap resamples of the 120 image pairs (O2, standard choice).",
+      "The responses are the data set's estimated repeated-trial responses, z-scored per voxel by the data set; the paper standardized per session (SM 3). Voxels with NaN responses are left out (S1 345, S2 214 of V1 to V3).",
+      "The p-values that pick the O1 (a) candidate voxels use all 120 identification images, the one being identified included, where P5 leaves that image out; O1 (b), which has no such step, gives the same S1 count and one image fewer for S2.",
+      "The stopping rule is read as stopping at the first iteration whose stopping-set error does not decrease, so a fit whose first step raises that error keeps the zero kernel and the voxel has no model (about a third of the initial fits, 29% to 38% across the six)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-s2-repeated-120",
+     "statement": "For subject S2, 72% (86 of 120) of the images were identified correctly from repeated-trial patterns.",
+     "source": "Main text, paragraph 6; Figure 4a",
+     "quote": "For a second subject, 72% (86/120) of the images were identified correctly (subject S2)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "Under O1 (a) with O5 (a), 87 of 120 S2 images are identified (72.5%, paper 86); O1 (b) with O5 (a) also gives 87 (72.5%). Under O5 (b) it is 56 of 120 (46.7%) for both readings of O1, and 59 with ten bootstrap fits; the best initial models alone give 77.",
+     "deviations": [
+      "As fig3-s1-repeated-120 (one fit in place of 100 bootstrap fits, shared stopping set, field of view sizes, wavelet SD, linear luminance, resampling, Gaussian with offset, NaN voxels left out)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-single-trial",
+     "statement": "Identification from single-trial voxel activity patterns was 51% (834 of 1,620) for S1 and 32% (516 of 1,620) for S2, against chance of 0.8%.",
+     "source": "Main text, paragraph 7; Figure 4a",
+     "quote": "Single-trial performance was 51% (834/1620) and 32% (516/1620) for subjects S1 and S2, respectively (Fig. 4a); once again, chance performance is just 0.8% (13.5/1620)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The data set holds no single-trial responses, only the raw time series (70 runs) and the repeated-trial estimates. Single-trial amplitudes need the BRS model (SM 3 and 4) fitted to every voxel's time series, first with a Fourier basis per session to get its HRF, then with one amplitude per trial (1,024 trials and 28 polynomial terms on 4,752 time points per session) and first-order autoregressive noise, iterated to convergence; each voxel has its own design after the HRF and the noise transform. The notebook's estimate (about 1,175 minutes in the run of round 2, 581 in the run the verifier saw, on a slower machine) times one dense single-trial solve over all seven runs of a session and scales it to every V1 to V3 voxel; as the verifier found, it overstates the cost, since the trials of different runs share no regressors and reading O6 (a) needs single trials only for the candidate voxels. In the revision after round 1 a vectorized BRS fit was written and run while preparing, on two sessions of S1 (not run in the notebook, so it decides nothing here); a full run of the entry with a second notebook built on it did not finish within the revision's time, so the claim stays blocked. Nothing in the executed notebook was computed on single trials.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-noise-ceiling",
+     "statement": "The estimated noise ceilings suggest that the lower performance of S2 is due to intrinsically noisier data; the ceilings are near 99% for both subjects with repeated trials, and about 80% (S1) and 64% (S2) with single trials.",
+     "source": "Figure 4a and its legend; Supplementary Methods 7, Estimation of the noise ceiling",
+     "quote": "The noise ceiling estimates suggest that the difference in performance across subjects is due to intrinsic differences in the level of noise",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the single-trial patterns of fig4a-single-trial, which are blocked as too large (see there for how far the revision got). Two readings of the claims file are asked of a reader (questions/kay-2008.yaml), the sample sizes of the available trials (13, 14 or 15 per image in seqVal, where the criterion says 13 or 14) and the sample size of the predicted patterns.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-set-size-1000",
+     "statement": "For S1 with repeated trials, performance declined only from 92% to 82% as the set size rose from 100 to 1,000 images.",
+     "source": "Main text, paragraph 8; Figure 4b; Supplementary Methods 7, Identification performance for different set sizes",
+     "quote": "As set size increased tenfold from 100 to 1,000, performance only declined slightly, from 92% to 82% (subject S1, ... repeated trial)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's 999-image library (SM 7), which the paper does not deposit or name a source for. The data set holds only the 1,750 and 120 images of the experiment (its file list and readme); the paper's text and supplement give no other location.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-extrapolation",
+     "statement": "Extrapolated, performance falls to 10% at set sizes of 10^11.3 (S1, repeated trial), 10^7.3 (S2, repeated), 10^5.5 (S1, single trial) and 10^3.5 (S2, single).",
+     "source": "Figure 4b; main text, paragraph 8; Supplementary Methods 7, extrapolation",
+     "quote": "Extrapolation of these measurements (see Supplementary Methods) suggests that performance for this subject would remain above 10% even up to a set size of 1011.3 images",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the 999-image library of fig4b-set-size-1000, which is not public.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-retinotopy-only-extrapolation",
+     "statement": "A retinotopy-only model, capturing only the location and size of each voxel's receptive field, falls to 10% correct at a set size of 10^5.1 images, against 10^9.5 for the Gabor wavelet pyramid model (repeated trials, averaged across subjects); it is worse for each subject, with single trials too.",
+     "source": "Main text, paragraph 9; Figure 4c; Supplementary Figure 5a to 5d",
+     "quote": "Performance for this retinotopy-only model declined to 10% correct at a set size of just 105.1 images, whereas performance for the Gabor wavelet pyramid model did not decline to 10% correct until 109.5 images were included in the set",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the 999-image library of fig4b-set-size-1000, which is not public. The retinotopy-only model itself is tested at set size 120 under suppm8-retinotopy-only-120.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppm8-retinotopy-only-120",
+     "statement": "At set size 120 with repeated trials, averaged across subjects, the retinotopy-only model identified 55% of images with spatially-weighted luminance and contrast and 42% with the standard (unweighted) metrics, both below the Gabor wavelet pyramid model.",
+     "source": "Supplementary Methods 8, Validation of the spatially-weighted metrics; Figure 4c",
+     "quote": "Identification performance was 55% and 42% for the spatiallyweighted metrics and standard metrics, respectively (repeated trial, 120 images, performance averaged across subjects)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "With the luminance channel as SM 8 defines it (absolute deviation from the mean luminance), averaged over subjects, 52.1% with the spatially-weighted metrics (S1 66.7, S2 37.5) and 43.3% with the standard metrics (S1 59.2, S2 27.5), candidate voxels under O1 (a); 50.8% and 43.3% under O1 (b). Both are within tolerance and below the GWP mean of 81.7% (O1a-O5a) and of 61.2% (O5 b readings). With the luminance relative to the grey background, the reading of the first version, they are 53.3% and 43.8% (52.9% and 42.5% under O1 b), within tolerance too, so the outcome does not depend on the reading.",
+     "deviations": [
+      "The contrast channel is read as the square root of the weighted variance (the SM 8 formula is garbled in the text); fitted by the gradient descent of SM 6 with the deviations of fig3-s1-repeated-120.",
+      "The luminance channel is the absolute weighted mean of the stimulus values minus the mean luminance of all stimuli (SM 8, \"absolute deviation from mean luminance\"; SM 6 subtracts the same mean). The reading of the first version, relative to the grey background, is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig8-constrained-models",
+     "statement": "In constrained versions of the GWP model, both orientation and spatial frequency tuning add to identification (C > A, G > A), spatial frequency more (G > C), and voxel-to-voxel variation in both adds too (F > E, H > E); at 1,000 images the nine models give A 17%, B 22%, C 28%, D 30%, E 51%, F 60%, G 64%, H 62% and I 63%.",
+     "source": "Supplementary Figure 8a and 8b; main text, paragraph 10; Supplementary Methods 9",
+     "quote": "Both orientation and spatial frequency tuning contribute to identification performance (C > A and G > A), but spatial frequency tuning is relatively more important (G > C). Voxel-to-voxel variation in orientation and spatial frequency tuning also contributes to identification performance (F > E and H > E)",
+     "statistics": [
+      {
+       "about": "C > A, G > A, G > C, F > E and H > E",
+       "test": "one-tailed paired sign test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "not stated; repeated trial, 1,000 images, performance averaged across subjects"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Judged at set size 1,000 by P6, which needs the 999-image library of fig4b-set-size-1000, not public. The variant at set size 120 that the criterion allows was not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "time-two-months",
+     "statement": "For 120 novel images seen about two months after the main experiment, 82% (99 of 120) were identified correctly (S1, repeated trials), using the models from the main experiment.",
+     "source": "Main text, paragraph 11; Methods, Data collection, paragraph 3",
+     "quote": "In this case 82% (99/120) of the images were identified correctly (chance performance 0.8%; subject S1, repeated trial)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The two later S1 sessions (120 new images) are not in the data set; its 93 files hold the five main sessions of each subject only (seqVal lists 10 identification runs and 120 images), and the readme does not mention them. The paper gives no other location.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "time-fourteen-months",
+     "statement": "For 12 novel images seen more than a year (about 14 months) after the main experiment, all 12 were identified correctly (S1, repeated trials; chance 8%).",
+     "source": "Main text, paragraph 11; Methods, Data collection, paragraph 3",
+     "quote": "In this case 100% (12/12) of the images were identified correctly (chance performance 8%; subject S1, repeated trial)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The single-run S1 session about 14 months later is not in the data set, as for time-two-months.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "errors-similar-images",
+     "statement": "Identification errors tended to occur when the selected image was visually similar to the correct image.",
+     "source": "Main text, paragraph 12",
+     "quote": "Inspection revealed that identification errors tended to occur when the selected image was visually similar to the correct image",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "Under reading (b), local RMS contrast in 0.6 degree blocks, the 44 errors of O1a-O5a pooled over subjects have a median percentile of 68.9 (S1 93.3, S2 64.7), one-sided Wilcoxon p = 0.00031. Under reading (a), pixel luminance, the median is 42.4 (p = 0.7). The other identification readings agree (contrast 61.3 to 68.9, p <= 0.00015; luminance p >= 0.7). Random choices give a median percentile of 49.6. The claim holds under one reading, as the criterion allows.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig4-500-voxels",
+     "statement": "Identification performance rises with the number of voxels used and is best at about 500 voxels for both subjects, with repeated and single trials.",
+     "source": "Supplementary Figure 4 and legend; Supplementary Methods 7, Voxel selection",
+     "quote": "In all cases optimal performance was achieved using about 500 voxels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "The criterion calls the claim partially reproduced when the rule holds in two or three of its four conditions; it holds in both repeated-trial conditions, and the two single-trial conditions are blocked (fig4a-single-trial). For repeated trials (O1a-O5a), performance at 1, 5, 10, 20, 50, 100, 200, 500 and 1,000 voxels is 0.8, 7.5, 19.2, 36.7, 61.7, 72.5, 85.8, 90.8 and 90.8% for S1 and 0.8, 6.7, 16.7, 22.5, 45.8, 62.5, 74.2, 72.5 and 67.5% for S2, so the rule holds in both repeated-trial conditions (500 is the highest or within 3 points of it, and above 50). It holds under the other three readings too (500 the highest or within 1.7 points of it, and above 50).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supptable1-voxel-counts",
+     "statement": "The visual areas hold 1331 (V1), 2208 (V2) and 1973 (V3) voxels in S1, and 1513, 1982 and 1780 in S2.",
+     "source": "Supplementary Table 1, column Total number of voxels",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Numbers from Supplementary Table 1; no sentence states them. Supplementary Methods 7 says about 5000 voxels lay in the stimulated parts of V1 to V3.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "The data set's ROI labels give exactly the paper's six counts.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supptable1-predictive-power-by-area",
+     "statement": "The fraction of voxels whose best initial model has significant predictive power falls from V1 to V2 to V3 (S1 40%, 31%, 17%; S2 25%, 21%, 13%).",
+     "source": "Supplementary Table 1 and legend, column High predictive power",
+     "quote": "Predictive power generally decreased from V1 to V2 to V3, likely reflecting the fact that the Gabor wavelet pyramid model is not optimal for visual areas beyond V1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "All six fractions are within 10% of the paper's and V1 > V2 > V3 in both subjects. The denominators are all voxels labelled in each area; voxels with NaN responses count as not significant. At p < 0.001 and p < 0.05 the order holds as well. Over the voxels without NaN only, 3 of the 6 values are within 10% (S1 V3 20.1%, S2 V1 29.0% and S2 V2 23.7% are not), which would be partially reproduced.",
+     "deviations": [
+      "The initial models carry the fitting deviations of fig3-s1-repeated-120.",
+      "Assumed, voxels with NaN responses in the data set (S1 345, S2 214 of V1 to V3) count in the denominators as not significant. Supplementary Table 1 gives the fractions as percentages of the area totals, and those totals equal the data set's label counts including the NaN voxels; the data set gives no estimates for them, so they cannot have significant predictive power here. Whether the paper had estimates for them is not known."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supptable1-snr",
+     "statement": "SNR differs greatly between subjects but is similar across V1, V2 and V3 within a subject; the fraction of voxels with SNR above 1.5 is 32%, 30% and 22% in S1 and 18%, 19% and 13% in S2.",
+     "source": "Supplementary Table 1 and legend, column High SNR",
+     "quote": "Although SNR varied greatly across subjects, SNR was fairly consistent for areas V1, V2, and V3 within each subject",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The data set gives no standard errors for its response estimates. Reading (a) needs the repeated-trial BRS fit of every voxel's time series per session, reading (b) a bootstrap over runs of the same fits. The notebook's estimate (about 339 minutes in the run of round 2, 161 in the run the verifier saw) scales a dense solve over the five runs of a session to every voxel; as the verifier found, it overstates the cost, as each run has its own images. The vectorized BRS fit written in the revision after round 1 (see fig4a-single-trial) also gives the standard errors of reading (a), but it was not run in the executed notebook, so nothing was computed for this claim.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "methods-v4-poor",
+     "statement": "The GWP model characterizes the responses of voxels in V1, V2 and V3 but does poorly for higher areas such as V4.",
+     "source": "Methods, Model estimation, paragraph 1",
+     "quote": "The model was able to characterize responses of voxels in visual areas V1, V2 and V3 (Supplementary Table 1), but it did a poor job of characterizing responses in higher visual areas such as V4",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "V4 voxels with significant predictive power are 17.5% (S1) and 8.6% (S2), below V3 (18.2% and 13.0%) in both subjects; the S1 margin is 0.7 points. With the S1 initial models refitted under two other seeds, V4 stays below V3 (16.6% against 18.6%, 16.8% against 17.4%). Median r in V4 is 0.019 and 0.000, against 0.135 and 0.069 in V1.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-representative-voxel",
+     "statement": "A representative V1 voxel of S1 (voxel 42205) has its receptive field in the left hemifield just below the horizontal meridian, broadband orientation tuning and high-pass spatial frequency tuning.",
+     "source": "Figure 2a and 2b and legend",
+     "quote": "This receptive field is located in the left hemifield, just below the horizontal meridian ... This receptive field has broadband orientation tuning and high-pass spatial frequency tuning",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "The data set's voxIdx holds 42205 for one S1 voxel, in V1, taken to be the paper's voxel. Its best initial model has r = 0.75 and its Gaussian centre is (-3.89, -0.57) deg. Under O5 (a), the reading adopted, the envelope peaks at (-3.42, +0.24) deg, left of the vertical meridian but 0.24 degrees above the horizontal one; the SF tuning is highest at the highest frequency, 2.94 cycles/deg; the orientation tuning's max/min is 2.23, so the broadband rule fails. Left hemifield and high-pass hold; just below and broadband do not. Under O5 (b) the peak is at (-4.22, -0.47), SF tuning is highest at the highest frequency (0.80 cycles/deg) and the max/min is 1.77, so all three parts hold. A Gaussian fitted to the final envelope has its centre at (-3.60, +0.04) deg under O5 (a), also above the meridian, and at (-4.25, -0.48) under O5 (b), so the peak and the fitted centre agree under each reading. The ratios with the DC offset added (16.2 and 6.54) depend on the arbitrary grating amplitude and bear on nothing; the ratios without it do not depend on the amplitude.",
+     "deviations": [
+      "The readings differ in outcome. O5 (a) is adopted as an assumption, as the paper best supports it; its 5.45 degree field of view gives a highest frequency of 2.94 cycles/deg, the end of the spatial frequency axis of Figure 2b (2.9), where the O5 (b) model's ends at 0.80, and only O5 (a) reproduces the identification results.",
+      "Tuning curves are taken without the DC offset; SM 6 does not say whether the tuning curves include it, and with it the shape of the curves depends on the grating amplitude, which the paper does not give, so only the curves without it can be compared with the rule.",
+      "The paper does not say how it numbers voxels; voxIdx is assumed to be its numbering."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig7-roi-tuning",
+     "statement": "The V1-averaged orientation tuning curve is nearly flat and the V1-averaged spatial frequency tuning curve is band-pass; voxels have only a slight orientation bias.",
+     "source": "Supplementary Figure 7a and 7b and legend; main text, paragraph 10",
+     "quote": "The orientation tuning curve is nearly flat ... The spatial frequency tuning curve is band-pass",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "Over all V1 voxels with a final model (1,084 in S1 and 1,083 in S2), no reading run gives a band-pass spatial frequency curve by the rule. Under O5 (b), and under O5 (a) with gratings inside the stimulus aperture or with the median over voxels, the curve rises to the highest level (16 cycles per field of view) in both subjects, so it is high-pass. The orientation curve's range is 31% to 1349% of its mean, against the 10% rule. Under O5 (a) with full-field gratings a few voxels with very large responses dominate the mean (SE up to about 210,000); there the S1 curve rises to the highest level and the S2 curve peaks at level 2 without exceeding its ends by 2 SE. Gratings inside the aperture remove those voxels (orientation range 42.5% in S1 and 31.4% in S2) and change the curve's shape (S1 [0.145, 0.257, 0.483, 0.801, 0.935] against [1007, 1888, 3540, 19663, 116869] full-field), which still peaks at the highest level. These full-field O5 (a) values differ from the run the verifier saw (SE up to about 740 there), as they rest on a few unstable fits. The curves with the DC offset, also printed, depend on the arbitrary grating amplitude and bear on nothing. Reading (b) of the models (model I of the constrained models) and reading (b) of the voxels were not run, so the outcome holds only for the readings run.",
+     "deviations": [
+      "The curves are averaged over each model's five spatial frequency levels in cycles per field of view, as the fields of view differ between voxels; the paper does not say how the curves of voxels with different fields of view are combined.",
+      "Grating amplitude 0.5, a standard choice that scales the curves without the DC offset but does not change their shape."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig10-retinotopy-validation",
+     "statement": "Receptive-field angle and eccentricity estimated from the GWP model match those from independent multifocal retinotopic mapping, with discrepancies in eccentricity at the lowest and highest eccentricities.",
+     "source": "Supplementary Figure 10a to 10c and legend",
+     "quote": "Notice that the MF and GWP angle estimates are well matched ... The MF and GWP eccentricity estimates are generally well matched, but there appear to be systematic discrepancies at the lowest and highest eccentricities",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The multifocal retinotopic mapping scans are not in the data set; its readme says the localizer scans behind the ROIs are not included, and its file list holds none. The paper gives no other location.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig11-rf-size-eccentricity",
+     "statement": "Receptive-field size increases with eccentricity, and from V1 to V2 to V3.",
+     "source": "Supplementary Figure 11 and legend",
+     "quote": "RF size increases with eccentricity and across visual areas, consistent with previous fMRI studies",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "RF size increases with eccentricity in each area under all four filters run (Spearman rho 0.391 to 0.676, p < 1e-9). With the +/-2 SD square inside the 10 degree circle, the reading adopted (V1 546, V2 607, V3 247 voxels over both subjects), the medians order V1 < V2 < V3 in 2 of the 5 shared 1 degree bins and 1 of 7 shared 0.5 degree bins, not most; inside the mask's 9.5 degree radius it is the same, and the disc filter of the first version gives 3 of 6 and 3 of 9. Only with RFs inside the 20 degree square and 1 degree bins does the order hold in most bins (5 of 8; 6 of 12 with 0.5 degree bins). Under every filter the median RF size over all eccentricities is smallest in V3 (3.44, 3.25 and 2.41 degrees for V1, V2 and V3 under the reading adopted). The first part of the claim holds and the area order does not.",
+     "deviations": [
+      "The legend's \"estimated RF location was not completely within the stimulus bounds\" is read as the RF, the +/-2 SD square of SM 5, inside the circular aperture of 10 degrees radius (the 20 degree stimulus), as an assumption; Figure 2's legend calls the white circle \"the bounds of the stimulus\". The mask's own radius (9.5 degrees, from its area) and the disc filter of the first version are shown as variants and give the same outcome. The first version of this record adopted the 20 degree square, under which the order holds in most 1 degree bins."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppdisc1-classification-extension",
+     "statement": "Extending classification to novel images (matching the measured pattern to the most similar of the 1,750 training patterns, then picking the identification image most similar to that training image) works poorly, 1.7% and 0.8% correct with pixel luminance similarity (not above chance) and 5% and 5.8% with local contrast (above chance), for S1 and S2.",
+     "source": "Supplementary Discussion 1, An extension of classification-based decoding methods yields poor identification performance, paragraphs 2 and 3",
+     "quote": "Identification performance using the pixel luminance metric was 1.7% (2/120) and 0.8% (1/120) for subjects S1 and S2, respectively (repeated trial). These values were not significantly above chance (p \u2265 0.05, one-tailed binomial test). Identification performance using the local contrast metric was 5% (6/120) and 5.8% (7/120) for subjects S1 and S2, respectively (repeated trial). These values were above chance (p < 0.0001, one-tailed binomial test)",
+     "statistics": [
+      {
+       "about": "pixel luminance metric, each subject against chance 1/120",
+       "test": "one-tailed binomial test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "120 repeated-trial patterns per subject"
+      },
+      {
+       "about": "local contrast metric, each subject against chance 1/120",
+       "test": "one-tailed binomial test",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "120 repeated-trial patterns per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "The luminance metric is not above chance under any reading (0 to 3 of 120, p >= 0.08), as in the paper. The contrast metric is above chance at p < 0.0001 only for S1 with the 500 voxels of P5 and the SD measure (9 of 120, p = 8.8e-07, paper 6); for S2 it is 1 or 2 of 120 (p >= 0.26) under every reading, against 7 in the paper. No reading gives the paper's significance pattern.",
+     "deviations": [
+      "For the relative contrast reading, stimulus values are shifted to start at 0, as the absolute luminance is not given. Image similarity uses the full 500 px images, blocks of 15 px (0.6 degrees)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppm7-selected-voxels-v1",
+     "statement": "Most of the 500 voxels used for identification were located in V1, where predictive power was highest.",
+     "source": "Supplementary Methods 7, Voxel selection, paragraph 2",
+     "quote": "Most of these voxels were located in area V1 where predictive power was highest (Supplementary Table 1)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kay_2008.ipynb",
+     "notes": "Under O1a-O5a, 48% of the selected voxels lie in V1 in both subjects under both readings of the selection (V2 41 to 42%, V3 10 to 11%); O1b-O5a gives the same, and the O5 (b) readings give 42 to 43%. V1 holds the largest share but not more than half.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds the two subjects' five main sessions only. The two later S1 sessions and the session about 14 months later, the 999-image library of the set-size analyses, and the multifocal retinotopic mapping scans are not in it (the readme says the localizer scans are not included). Seven of the paper's findings cannot be tested for this reason.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The data set gives the repeated-trial response estimates without their standard errors and holds no single-trial estimates, so the SNR of Supplementary Table 1 and the single-trial results of Figure 4a can be had only by refitting the BRS model to every voxel's time series.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The readme says the .mat files are MATLAB 7.3 (HDF5) files readable with PyTables; Stimuli.mat and mask.mat are MATLAB 5 files, which h5py and PyTables cannot open. It gives Stimuli_Trn_FullRes_15.mat as 70 x 120 x 120; it holds 70 images of 500 x 500.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "345 V1 to V3 voxels of S1 and 214 of S2 (and 15 S1 V4 voxels) have NaN responses in EstimatedResponses.mat; the readme does not mention them or say why.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The readme does not say whether voxIdx is 0-based or 1-based in the 64 x 64 x 18 volume, or how it relates to the paper's voxel numbers (Figure 2 names voxel 42205, which voxIdx holds for one S1 V1 voxel).",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The NIfTI headers of the time series give a TR of 0 (pixdim[4]); the TR of 1 s is only in the paper.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module vim1.py and the claims file, with the paper under paper/. The verifier read the archive's file list and tested the helpers on synthetic inputs (area_matrix, resize_stack, gwp, fit_gd, loo_power, identify_repeated, boot_p, fit_gaussian). It had no attempt record.",
+     "agreed": 21,
+     "of": 23,
+     "disagreements": [
+      {
+       "claim": "suppfig4-500-voxels",
+       "outcome": "partially_reproduced",
+       "reason": "The notebook calls this blocked, but cell 28 computes the two repeated-trial conditions and both meet the rule. S1 O1a-O5a gives 90.8% at 500 voxels (the maximum), above 61.7% at 50. S2 gives 72.5% at 500 against a maximum of 73.3%, above 45.8% at 50. The criterion defines \"partially\" as the rule holding in two or three conditions; the two single-trial conditions are untested. Cell 28 also prints only two of the four O1/O5 combinations."
+      },
+      {
+       "claim": "suppfig11-rf-size-eccentricity",
+       "outcome": "partially_reproduced",
+       "reason": "Cell 25 gives Spearman rho of 0.54 to 0.68 with p < 1e-27 in every area, so RF size rising with eccentricity holds. V1 < V2 < V3 holds in most bins only for the square bounds with 1 degree bins (5/8); with 0.5 degree bins it is 6/12, and with the circular bounds 3/6 and 3/9. The circle filter tests ecc + 2 SD <= R, a disc, not the +/-2 SD square of SM 5 and Fig 2. Fig 2's legend calls the white circle \"the bounds of the stimulus\", which makes the square reading, the only one that passes, the less supported one. The radius is 9.5 degrees, from the mask's area; the paper describes a 20 degree circle."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook after the first revision, with its conclusions and summary, the helper module vim1.py, the claims file, the entry README and this attempt record, with the paper under paper/.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "The final model's field of view is \"specifically tailored to the estimated RF location\" (SM 5), with no rule given. Identification depends on it here; with the square of +/-2 SD of the fitted Gaussian the paper's 92% and 72% are reproduced (90.8% and 72.5%), with the best initial model's field of view the result is 75.8% and 46.7%. Which rule, and at which of the 25 resolutions, did the paper use?",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "SM 6 does not say whether the grating tuning curves include the DC offset, whether the gratings were restricted to the stimulus aperture, or how ROI-averaged curves combine voxels whose fields of view, and so whose spatial frequencies in cycles per degree, differ. Here the V1 average is high-pass under every choice tried, where Supplementary Figure 7 shows it band-pass.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Supplementary Figure 11 omits voxels whose RF was \"not completely within the stimulus bounds\"; whether the bounds are the 20 degree square or the circular aperture changes whether V1 < V2 < V3 holds in most eccentricity bins here.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "SM 5 gives the initial fields of view as 10.1 and 5.2 degrees, but at 128 px the resolution list of SM 6 gives 10.0 (256 px) and 5.12 (500 px) degrees; and a 1-octave bandwidth with an isotropic Gaussian gives an orientation bandwidth of about 37 degrees, not the 41 stated.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "kay-2008",
+   "type": "reproduction",
+   "title": "Identifying natural images from human brain activity (Kay et al. 2008)",
+   "description": "Tests the findings of Kay, Naselaris, Prenger and Gallant (2008) on CRCNS data set vim-1, which holds the estimated fMRI responses of two subjects to 1,750 model estimation images and 120 identification images, with ROI labels, the stimuli and the raw time series. It fits the Gabor wavelet pyramid receptive-field models of the paper, identifies the 120 images from the responses, and tests the retinotopy-only model, voxel counts and predictive power by area, receptive-field size, tuning, and the classification extension. The 999-image library, the later sessions of S1 and the retinotopic mapping scans are not in the data set.",
+   "datasets": [
+    "crcns:vim-1"
+   ],
+   "papers": [
+    "10.1038/nature06713"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_kay_2008.ipynb",
+     "title": "Reproducing Kay et al. (2008) from CRCNS vim-1",
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 28,
+   "hashed": true
+  }
+ ],
+ "badge": {
+  "text": "7 findings reproduced",
+  "reproduced": 7,
+  "papers": [
+   {
+    "doi": "10.1038/nature06713",
+    "key": "kay-2008",
+    "byline": "Kay et al. 2008",
+    "title": "Identifying natural images from human brain activity",
+    "relation": "primary",
+    "reproduced": 7,
+    "url": "https://encorescience.org/papers/kay-2008/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/crcns/vim-1/",
+  "svg": "https://encorescience.org/badge/crcns/vim-1.svg",
+  "alt": "Encore: 7 findings reproduced, from CRCNS:vim-1"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/crcns/vim-1.svg",
+  "outcomes": "https://encorescience.org/badge/crcns/vim-1-outcomes.svg",
+  "card": "https://encorescience.org/badge/crcns/vim-1-card.svg"
+ }
+}
