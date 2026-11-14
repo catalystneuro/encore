@@ -11,7 +11,7 @@ Figures 5 and 6 are not in the data set.
 | Recording counts (305 probes in 39 A1 cells, 93 in 14 MGB cells, 123 A1 cells in all) | Partially reproduced |
 | Low firing rates in A1, high in MGB | Partially reproduced |
 | Trial-to-trial reliability (0.31 over the population, 0.61 in the example cell) | Reproduced |
-| Example context effect lasting about 4 s, with a gap from 2 to 4 s | Reproduced (a selected candidate) |
+| Example context effect lasting about 4 s, with a gap from 2 to 4 s | Reproduced (a selected candidate, not the paper's example cell) |
 | 204 of 305 probes context dependent, a quarter of the events after 1 s | Reproduced |
 | Two-exponential decay of the proportion of significant probes | Partially reproduced |
 | Normalized context-dependent power decays with a 1.04 s constant | Not reproduced |
@@ -37,7 +37,7 @@ open the analysis follows it. The attempt record, with the reasons and the diffe
 paper's method, is [`attempts/asari-2009-01.yaml`](../../attempts/asari-2009-01.yaml).
 
 - `reproduce_asari_2009.ipynb`: the analysis. It streams all 346 of Asari's recordings once
-  (2.8 GB) and takes about 25 minutes.
+  (2.8 GB) and takes about 29 minutes.
 - `strf_wehr.ipynb`: the STRF and LN models of Figure 4, fitted to Wehr's recordings of Machens et
   al. (2004) in the same data set; it takes about 22 minutes.
 - `wehr_strf.py`: reading Wehr's trial files and stimuli, spectrograms, the lagged designs and

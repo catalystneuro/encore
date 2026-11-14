@@ -46,6 +46,7 @@ from __future__ import annotations
 
 import io
 import re
+import zlib
 from functools import lru_cache
 
 import fsspec
@@ -393,6 +394,36 @@ def frac_power(data):
     return pred, inv
 
 
+BOOT_N = 200          # paper (Eq. 21): 200 resamplings
+BOOT_BIN = 200        # 20-ms bins for the resampled curves (a standard choice, to keep them in memory)
+BOOT_T = 40000        # the first 4 s, the range of the areas of Figure 8C
+
+
+def frac_power_trial_boot(data, rng, n_boot=BOOT_N, chunk=25):
+    """Trial reading of a resampled 'sample' (Eq. 21): trials drawn with replacement within each
+    context, Eqs. 17 and 18 recomputed as frac_power does for each draw, kept over the first 4 s
+    in 20-ms bins. Returns pred and inv (n_boot x 200, float32) and the number of whole bins the
+    probe covers."""
+    n, rep, T = data.shape
+    d = data.astype(np.float32)
+    d = d - d.mean(axis=2, keepdims=True)
+    nb = min(T, BOOT_T) // BOOT_BIN
+    d = d[:, :, :nb * BOOT_BIN]
+    d2 = d ** 2
+    out_p = np.zeros((n_boot, BOOT_T // BOOT_BIN), np.float32)
+    out_i = np.zeros_like(out_p)
+    for b0 in range(0, n_boot, chunk):
+        B = min(chunk, n_boot - b0)
+        w = rng.multinomial(rep, np.full(rep, 1 / rep), size=(B, n)).astype(np.float32) / rep
+        mt = np.stack([w[:, c] @ d[c] for c in range(n)], 1)         # B x n x L, context means
+        tot = np.stack([w[:, c] @ d2[c] for c in range(n)], 1)
+        pred = ((rep * mt ** 2 - tot) / (rep - 1)).mean(1)
+        inv = (n * mt.mean(1) ** 2 - (mt ** 2).mean(1)) / (n - 1)
+        out_p[b0:b0 + B, :nb] = pred.reshape(B, nb, BOOT_BIN).mean(2)
+        out_i[b0:b0 + B, :nb] = inv.reshape(B, nb, BOOT_BIN).mean(2)
+    return out_p, out_i, nb
+
+
 def psth_sd(spk, T_s, rep=None, dt=PSTH_BIN_S):
     """psth in CxtDep.m: PSTH per context (bins from 0 by dt, histc), SD over contexts (n-1)."""
     edges = np.arange(0, T_s + 1e-12, dt)
@@ -581,8 +612,9 @@ def file_info(m):
             "n_probes": count_probes(p) if seqs else {"with_silence": 0, "without_silence": 0}}
 
 
-def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE):
-    """One whole-cell recording: firing rates, and when do_context, the per-probe measures."""
+def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE, boot_rng=None):
+    """One whole-cell recording: firing rates, and when do_context, the per-probe measures.
+    With boot_rng, the trial-resampled fractional powers of each probe (frac_power_trial_boot)."""
     p = m["param"]
     x_raw = trace_mv(m["response"], getattr(p.recording, "offset", None))
     trigs = sequence_triggers(m["triggers"])
@@ -625,6 +657,8 @@ def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE):
             p2, i2 = frac_power(d[keep])
             nosil = {"signif": s2, "noise": n2.astype(np.float32), "pred": p2.astype(np.float32),
                      "inv": i2.astype(np.float32)}
+            if boot_rng is not None:
+                nosil["boot"] = frac_power_trial_boot(d[keep], boot_rng)
         elif len(keep) == len(pr["contexts"]):
             nosil = "same"
         probes.append({"probe": pr["probe"], "contexts": pr["contexts"], "rep": pr["rep"], "T": pr["T"],
@@ -632,7 +666,8 @@ def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE):
                        "signif": sig, "noise": noise.astype(np.float32), "signif_avg_ties": sig_avg,
                        "pred": pred.astype(np.float32), "inv": inv.astype(np.float32),
                        "rel_pairs": float(np.mean(pairs)), "rel_loo": float(np.mean(loo)),
-                       "rel_pairs_ctx": [float(v) for v in pairs], "noise_ac": ac})
+                       "rel_pairs_ctx": [float(v) for v in pairs], "noise_ac": ac,
+                       "boot": frac_power_trial_boot(d, boot_rng) if boot_rng is not None else None})
     out["probes"] = probes
     return out
 
@@ -693,11 +728,13 @@ def _num(v):
 
 
 STIM_FIELDS = ("ff", "df", "attenuation", "f0", "AMmean", "AMstd", "AMrange", "FMrange", "FMstd")
+DMR_MOD_FIELDS = ("tempmod", "specmod", "SFtemp", "SFspec", "envphase", "sinphase", "dx")
 
 
 def stimulus_table(param):
     """Per stimulus (1-based): name, description and the parameters that define the property
-    sets (DMR and TORC bands 'ff', SoundTrans shift 'df' and 'attenuation', MHT parameters)."""
+    sets (DMR and TORC bands 'ff', SoundTrans shift 'df' and 'attenuation', MHT parameters), and for
+    DMRs a checksum of their modulation parameters."""
     rows = []
     for k, s in enumerate(np.atleast_1d(getattr(param, "stimulus", [])), 1):
         d = {"stim": k, "name": " ".join(str(s.name).split()), "description": " ".join(str(s.description).split())}
@@ -705,6 +742,10 @@ def stimulus_table(param):
             v = getattr(s.param, f, None)
             if v is not None and np.size(v):
                 d[f] = tuple(float(np.round(a, 3)) for a in np.atleast_1d(v))
+        if hasattr(s.param, "tempmod"):
+            # DMR modulation parameters (DMRipple2.m): one CRC-32 over them, equal when two DMRs share them
+            raw = b"".join(np.atleast_1d(getattr(s.param, f, [])).astype(np.float64).tobytes() for f in DMR_MOD_FIELDS)
+            d["modulation"] = "%08x" % zlib.crc32(raw)
         rows.append(d)
     return rows
 
@@ -808,12 +849,13 @@ def property_families(param, ttype):
     return fam
 
 
-def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE):
+def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE, boot_rng=None):
     """Significance and fractional power per probe, property and property set, with only the
     conditioning stimuli of that set as contexts (Methods, Stimulus design, paragraph 2), each
     cut to the smallest number of trials over those contexts. Every set a probe was tested with
     (at least two of its contexts in the set) gives one entry; `largest` marks, per probe and
-    property, the set with the most contexts (the first when tied)."""
+    property, the set with the most contexts (the first when tied). With boot_rng, the
+    trial-resampled fractional powers of each entry (frac_power_trial_boot)."""
     p = m["param"]
     trigs = sequence_triggers(m["triggers"])
     ttype = trigs[0]["type"] if trigs else ""
@@ -843,5 +885,6 @@ def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE):
                             "probe_type": "natural" if "track" in descs[pr["probe"] - 1] else "synthetic",
                             "contexts": keep, "rep": n, "T": pr["T"],
                             "signif": sig, "noise": noise.astype(np.float32), "pred": pred.astype(np.float32),
-                            "inv": inv.astype(np.float32)})
+                            "inv": inv.astype(np.float32),
+                            "boot": frac_power_trial_boot(d, boot_rng) if boot_rng is not None else None})
     return out

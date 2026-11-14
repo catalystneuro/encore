@@ -64,7 +64,9 @@ outcomes:
     to 0.23 Hz. MGB with the code's automatic detector is 0.618 Hz spontaneous (silences; 0.72 to 0.82 Hz with the baseline, within
     tolerance) and 4.99 to 5.07 Hz evoked (SD 11.5), and with half its threshold 0.77 to 1.04 Hz and 7.07 to 7.15 Hz, against 0.78 (1.25)
     and 11.4 (16.9). A1 means are below 1 Hz in every reading, and A1 below 1 Hz with the MGB evoked mean above 5 Hz, the criterion's
-    rule for partial, holds in 28 of the 32 readings. The data set has 145 A1 and 14 MGB cells, not 194 and 16.
+    rule for partial, holds in 28 of the 32 readings. With the code's own MGB detector it rests on a margin of 0.03 to 0.07 Hz over
+    5 Hz (6 of its 8 readings; the other 2 give 4.99 Hz); it is met by a wide margin only with half that detector's threshold, a choice
+    made here. The data set has 145 A1 and 14 MGB cells, not 194 and 16.
   deviations:
   - The paper does not say how A1 spikes were detected; its code (ViewResp.m, GetSpikes.m) detects them by hand for whole-cell data.
     Two detectors are run, the starting values of the code's manual detector (threshold 1 on its high-passed trace) and a 10 mV/ms upstroke
@@ -101,8 +103,12 @@ outcomes:
     (contexts 2, 3 and silence) meets the criterion: significant periods at 0.67 to 1.36 s, none from 2 to 4 s, and one at 4.00 to 4.06
     s. It is a selected example (1 of 20 candidates), and its late period lasts 60 ms. In 20051222-ha1-001-002, the cell whose reliability
     matches the example, probe 4 is significant up to 1.60 s, not from 1.60 to 3.97 s, and again from 3.97 to 4.60 s; its run at 3.97
-    to 4.01 s starts inside the 2 to 4 s window, so it fails the strict test. The notebook lists every significant period of each candidate.
-    17 of 305 natural sound probes have a significant period later than 4 s.'
+    to 4.01 s starts inside the 2 to 4 s window, so it fails the strict test. Probe 4 is the probe of that cell with reliability 0.737
+    (the 0.74 of Figure 2A), and the Figure 2B legend says its red trace is the context shown in A, so that probe is most likely the
+    paper''s example. The passing probe is from a cell with mean reliability 0.309, which is not the paper''s example cell. The criterion
+    does not use this link and accepts any of the 20 candidates, so the outcome follows it as written; the link is a question for a
+    reader (questions/asari-2009.yaml). The notebook lists every significant period of each candidate and the reliability of each probe
+    of 20051222-ha1-001-002. 17 of 305 natural sound probes have a significant period later than 4 s.'
   deviations:
   - Probe responses are formed as the paper's analysis script asari/Tools/CxtDep.m (in the data set) forms them, a detail the Methods
     leave open. Each sequence presentation is cut at its trigger, fragments at the sum of the rounded durations before them, the first
@@ -215,7 +221,8 @@ outcomes:
   notes: Eq. 43 with the denominator smoothed over [0, 2t] (main reading) gives 1 + alpha1 of 0.43 to 0.49 and time constants of 1.66
     to 2.81 s; two fits to 6 s over all probes ran to the 100 s bound of the time constant and are not counted (the smoothed ratio reaches
     1.67 to 2.61 in some bins). Unsmoothed, 1 + alpha1 is 0.50 (silence counted) or 0.53 to 0.54 (not), within tolerance of 0.51, with
-    time constants of 1.46 to 1.92 s. The mean of the smoothed ratio over the first 100 ms is 0.50. The bound near onset is about half,
+    time constants of 1.46 to 1.92 s. The mean of the smoothed ratio over the first 100 ms is 0.50 with silence counted and 0.57 without
+    (unsmoothed 0.39 and 0.44). The bound near onset is about half,
     as the paper says, but the time constant is outside tolerance of 1.04 s under every reading, so the criterion's joint test fails;
     the criterion gives no rule for partial.
   deviations:
@@ -243,7 +250,11 @@ outcomes:
     performance reaches 0.241 at 3540 ms. No reading meets both parts of the criterion, which gives no rule for partial. The performance
     is low, near the paper''s 20%; the part of the statement that a longer window does not help holds only with folds made of whole
     stimuli. The LN model is not better than the STRF on average (mean gain -0.010). In one cell (20020602-mw-001) no model predicts
-    (performance near 0, best ridge at the end of the grid in 22 of its 27 fits).'
+    (STRF performance near 0, LN -0.574 at 180 ms and -0.713 at 4052 ms, best ridge at the end of the grid in 22 of its 27 fits). Two
+    of these statements rest on that cell, the LN model not being better and the performance being at most 0.22 at every window. Without
+    it (15 cells, main reading) the LN model is better by 0.025 on average and the mean validation performance reaches 0.222 for STRF
+    and 0.253 for LN, above 0.22; the longer window still helps significantly (p = 0.011 for STRF, 0.0075 for LN), so the outcome is
+    the same.'
   deviations:
   - Assumption. The paper's 20 cells are not listed (Methods, Neural encoding models, 'the recording data (20 cells) from the previous
     work'). Every cell with at least one natural sound presented at least twice is used (16 cells), with those sounds only, as Eq. 52
@@ -276,9 +287,9 @@ outcomes:
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig7-example-frequency-context
   notes: 'No recording in the data set has DMR conditioning stimuli in 0.625-2.5, 2.5-10 and 10-40 kHz, each a single band. The notebook
-    prints the names, descriptions, bands (''ff''), SoundTrans shifts (''df'') and attenuations of every DMR, TORC and SoundTrans recording.
-    The DMR frequency variants are one DMR shifted in frequency (they share their modulation parameters, and each shift is recorded
-    in its band): six 2-octave bands from 0.25 to 32 kHz in 1-octave steps, forward and time-reversed (5 recordings). The other DMR
+    prints the names, descriptions, bands (''ff''), SoundTrans shifts (''df'') and attenuations of every DMR, TORC and SoundTrans recording,
+    and for each DMR a checksum of its modulation parameters (tempmod, specmod, SFtemp, SFspec, envphase, sinphase, dx). The DMR frequency
+    variants are one DMR in different bands (one modulation checksum among the 12 stimuli of each of the 5 recordings): six 2-octave bands from 0.25 to 32 kHz in 1-octave steps, forward and time-reversed (5 recordings). The other DMR
     recordings hold the broad and two-band stimuli 625-10000, 1250-20000, 2500-40000 and 625-2500 with 10000-40000 Hz (5 recordings;
     DMRipple2.m reads the 4-element band as two bands) or amplitude variants. As a weaker check, 3 of 10 natural sound probe tests with
     DMR frequency variants as the only contexts (in 3 recordings) have a significant period ending at least 3.6 s after probe onset.'
@@ -418,7 +429,13 @@ outcomes:
     include 1, and the amplitude and frequency point estimates are below 1 in all six, so neither the rule for reproduced nor the rule
     for partial is met. AM, FM and higher-order are below 1 and below amplitude and frequency in every reading, so the part of the statement
     that higher-order changes give smaller effects holds; the part that amplitude and frequency changes give effects as large as natural
-    sounds does not.'
+    sounds does not. In the trial reading (trials drawn with replacement within each probe and context) the amplitude and frequency
+    intervals lie above 1 under all six readings (lowest bound 1.027), and the AM and FM intervals lie below them and below 1 except
+    AM with the largest set and silence left out (0.829 to 1.010), but the higher-order upper bound is 1.003 to 1.078, so the rule for
+    reproduced is not met under any trial reading either (closest, every set with silence counted, higher-order 0.909 to 1.003). The
+    trial-resampled areas are not centred on the measured ones (natural sounds, median 1.69 s against 0.752 s): a trial drawn twice
+    adds its noise to the predictable power of Eq. 17, which assumes distinct trials, and this pulls every ratio towards 1. The point
+    estimates do not depend on the resampling, so the rule for partial is not met.'
   deviations:
   - Probe responses are formed as the paper's analysis script asari/Tools/CxtDep.m (in the data set) forms them, a detail the Methods
     leave open. Each sequence presentation is cut at its trigger, fragments at the sum of the rounded durations before them, the first
@@ -438,8 +455,10 @@ outcomes:
     set, for amplitude, frequency and higher-order; it gives the five totals of Table 1 exactly (95, 110, 96, 82, 137), and no other
     reading run does. One test per probe with its largest set (95, 110, 39, 25, 137) and one test per set (104, 120, 96, 82, 354) are
     shown as readings. Each set's contexts are cut to the smallest number of trials among them.
-  - Only the probe reading of a resampled 'sample' is run; resampling trials within probes needs the single trials, which the pass does
-    not keep. The interval of each ratio resamples the property and the natural sounds independently. The natural reference is run with
+  - Both readings of a resampled 'sample' the criterion names are run, probes and trials within each probe and context. The trial reading
+    is computed in the pass (asari.frac_power_trial_boot, with its own random generator) and keeps the resampled curves over the first
+    4 s in 20-ms bins (a standard choice, to hold them in memory). The interval of each ratio resamples the property and the natural
+    sounds independently. The natural reference is run with
     silence counted as a context and without it, since the synthetic property sets never include silence.
   assumed: true
 - claim: fig8-natural-synthetic-probes-alike
@@ -727,4 +746,149 @@ verifications:
     outcome: reproduced
     reason: 19 cells have a significant period starting within 0.5 s. Eq. 17 power falls below 10% of its onset value by 0.55 s. Not
       every later bin stays below 10% (mean over 2-2.5 s is 0.45, against an onset value of 5.6 mV^2).
+    response: No change.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full re-executed notebooks reproduce_asari_2009.ipynb and strf_wehr.ipynb with their conclusions and summaries, the
+    helper modules asari.py and wehr_strf.py, the README, the claims file and the attempt record, with the paper's full text. The
+    verifier checked every outcome, every Result cell, the Summary sections and the record's notes against the printed outputs.
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 13.
+    response: No change.
+  - claim: a1-mgb-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 16: 0 of 32 readings have all four means in tolerance, and the partial rule holds in 28 of 32. With the code''s own
+      MGB detector the margin over 5 Hz is still only 0.03-0.07 Hz. The rule is comfortably met only at half that detector''s threshold
+      (7.1 Hz), which is an ad hoc choice.'
+    response: No change of outcome. The notes now say that with the code's own detector the partial rule rests on a margin of 0.03
+      to 0.07 Hz (and 2 of its 8 readings give 4.99 Hz), and that it is met by a wide margin only with half its threshold, a choice
+      made here.
+  - claim: fig2-example-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19.
+    response: No change.
+  - claim: fig2-example-long-context
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes, with a caveat. The Figure 2B legend says the red trace is "the one shown in A", so the long-context probe is the 0.74-reliability
+      probe of the 0.61-reliability cell; only 20051222-ha1-001-002 matches those values. The passing probe comes from 20060105-ha1-001-002,
+      whose mean reliability is 0.309, so it cannot be the paper''s example. In the identified cell, probe 4 shows the paper''s pattern
+      and misses the strict 2-4 s rule only because a run starts 30 ms before 4 s. Which probe of that cell has reliability 0.737 is
+      not printed. The claims file''s criterion does not use this link between 2A and 2B, a gap in the claims file. Reproduced is defensible
+      under the criterion as written, but the record should say that the passing probe is not from the paper''s example cell.'
+    response: Kept reproduced, as the criterion is written. The notebook now prints the reliability of each probe of 20051222-ha1-001-002
+      (probe 4 is the 0.737 probe), and the notes, the Result cell, the README and the summary say that the passing probe is not from
+      the paper's example cell. The link between Figures 2A and 2B is added to questions/asari-2009.yaml as a question for a reader.
+  - claim: fig3a-proportion-significant
+    agrees: true
+    outcome: reproduced
+    reason: Cell 25, with_silence/all reading.
+    response: No change.
+  - claim: fig3a-significance-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 31.
+    response: No change.
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 34: tau is 1.29-1.78 s in all 8 readings.'
+    response: No change.
+  - claim: timescale-longer-than-membrane
+    agrees: true
+    outcome: reproduced
+    reason: Cell 38.
+    response: No change.
+  - claim: fig4-predictability-upper-bound
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 41: no tau within 1.04 +/- 0.10 s. The record''s "The mean of the smoothed ratio over the first 100 ms is 0.50" is
+      true only with silence counted; without silence it is 0.571 (cell 41). Cell 42 states the qualifier; the record leaves it out.'
+    response: No change of outcome. The record now gives 0.50 with silence counted and 0.57 without (unsmoothed 0.39 and 0.44), and
+      cell 42 gives both.
+  - claim: fig4-strf-performance-low
+    agrees: true
+    outcome: not_reproduced
+    reason: 'strf cell 7: no reading meets both parts. The two assumptions (16 cells, Wilcoxon test) are stated and reasonable. Two statements,
+      "LN ... not better than the STRF on average (mean gain -0.010)" and "at most 0.22 at every window", depend on one cell, 20020602-mw-001,
+      with LN validation performance of -0.574 at 180 ms and -0.713 at 4052 ms and its ridge parameter at the end of the grid. Without
+      it LN is better by about 0.025-0.03, and both models exceed 0.22 at 4052 ms. The outcome stays not_reproduced either way, but
+      the notes should say that these two statements rest on that cell.'
+    response: No change of outcome. strf cell 8 now prints the means and tests without 20020602-mw-001 (15 cells), and the Result cell
+      and the notes say the two statements rest on it; without it the LN gain is 0.025, the mean validation performance reaches 0.222
+      (STRF) and 0.253 (LN), and the longer window still helps significantly (p = 0.011 and 0.0075).
+  - claim: fig5-example-conductances
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing).
+    response: No change.
+  - claim: fig6-conductance-decay
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing).
+    response: No change.
+  - claim: fig7-example-frequency-context
+    agrees: true
+    outcome: blocked
+    reason: 'Now yes. Cell 70: the DMR frequency variants are 2-octave bands at 0.25-1 up to 8-32 kHz. None is 0.625-2.5, 2.5-10 or
+      10-40 kHz, and the 4-band group has no natural probe. I withdraw my round-1 reason ("search incomplete"). But "they share their
+      modulation parameters" (record and cell 69) is not supported: cell 70 prints only name, description, ff, df and attenuation.'
+    response: No change of outcome. The stimulus table now holds a checksum of each DMR's modulation parameters (tempmod, specmod,
+      SFtemp, SFspec, envphase, sinphase, dx), cell 70 prints it, and each of the 5 recordings with DMR frequency variants has one
+      checksum among its 12 variants; cell 69 and the notes now cite that output.
+  - claim: fig8a-proportion-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 46: the order holds and every count is out of tolerance, under all three readings. The rebuilt property sets are reasonable.
+      The choice of main reading is post hoc: it reproduces Table 1''s five totals, but its probe-type and cell split does not (AM natural
+      probes 82 tests in 24 cells against 25 in 25; AM MHT probes 14 in 2 cells against 71 in 27), by counting each natural probe of
+      the 17-stimulus grid recordings up to four times. This does not change any outcome, as all three readings give the same outcome
+      for every fig8 claim.'
+    response: No change; the notes and the metadata_insufficient and methods_unavailable findings already give the split by probe
+      type and the question for the authors.
+  - claim: fig8a-significance-fits
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 49.
+    response: No change.
+  - claim: fig8b-decay-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 52: the partial pattern holds under every reading. FM is 0.278 s in the main reading, close to the 0.3 s line.'
+    response: No change.
+  - claim: fig8c-relative-effects
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 55: the frequency interval excludes 1 under every reading, the highest bound being 0.938. The trial-resampling reading
+      is still not run. It is unlikely to change the outcome: the frequency point estimate is 0.80, and its probe-resampled upper bound
+      is at most 0.938.'
+    response: Ran the trial reading (trials drawn with replacement within each probe and context, computed in the pass, 20-ms bins).
+      Its amplitude and frequency intervals lie above 1, but the higher-order upper bound is 1.003 to 1.078, so the rule for reproduced
+      is not met under any reading; its resampled areas are biased upwards (natural sounds 1.69 s against 0.752 s), and the point estimates,
+      which decide the rule for partial, are unchanged. No change of outcome.
+  - claim: fig8-natural-synthetic-probes-alike
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes, weak. Cell 58: FM has no synthetic probes and AM has 14 from 2 cells.'
+    response: No change; the notes already say the test has little power for AM and none for FM.
+  - claim: fig9-mgb-fast-decay
+    agrees: true
+    outcome: reproduced
+    reason: Cell 61.
+    response: No change.
+  - claim: fig9-example-first-bin
+    agrees: true
+    outcome: reproduced
+    reason: Cell 64.
+    response: No change.
+  - claim: figs1-silence-probe
+    agrees: true
+    outcome: reproduced
+    reason: Cell 67.
     response: No change.
