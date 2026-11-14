@@ -29,18 +29,18 @@ auditory model, with the paper's MATLAB code.
 | Model, category half widths (Fig 6A, B) | Reproduced |
 | Model, category diversity index (Fig 6C) | Reproduced |
 | Model, stationarity index (Fig 7I) | Not reproduced |
-| Model, optimal resolution 141 and 100 ms (Fig 9A) | Reproduced (one reading) |
+| Model, optimal resolution 141 and 100 ms (Fig 9A) | Reproduced (change to partially reproduced proposed: the spectro-temporal optimum is tied at 141 and 283 ms) |
 | Model, similar maximum performance (Fig 9B) | Reproduced |
 | Model, accumulation rate (Fig 9B) | Partially reproduced |
 | Model, time-averaged classifier worse (Fig 9C) | Partially reproduced |
 | Model, waves spectral and wind temporal (Fig 9E) | Partially reproduced |
-| Model, spectrum classifier lower (Fig 9) | Not reproduced |
-| Model, vocalization against background (Fig 10) | Reproduced (one reading) |
+| Model, spectrum classifier lower (Fig 9) | Not reproduced (rests on the component count) |
+| Model, vocalization against background (Fig 10) | Reproduced (change to partially reproduced proposed: the temporal deficit is 23 to 24 points, not 20) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The data set is one 5.3 GB tar.gz file; the notebooks stream it once and parse each member in
-memory. The neural notebook takes about 35 to 60 minutes, the model notebook about 15 to 25 and the model classifier notebook about 40, depending on the machine. The attempt
+memory. The neural notebook takes about 30 to 55 minutes, the model notebook about 25 to 40 (with the criticalbandwidth.m variant of Fig 7I) and the model classifier notebook about 25 to 50, depending on the machine. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/sadeghi-2019-01.yaml`](../../attempts/sadeghi-2019-01.yaml).
