@@ -1,0 +1,775 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "aa-4",
+  "label": "CRCNS:aa-4"
+ },
+ "page": "datasets/crcns/aa-4/",
+ "generated": "2026-11-14T04:10:19+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 24
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "elie-2019-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "aa-4",
+    "version": "unversioned",
+    "doi": "10.6080/K00C4T06",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:aa-4"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:aa-4",
+   "label": "CRCNS:aa-4",
+   "dataset_version": "unversioned",
+   "paper": "10.1371/journal.pcbi.1006698",
+   "paper_title": null,
+   "date": "2026-11-13",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-15"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43501306087"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "elie-2019",
+   "entry_title": "Time-varying information of avian auditory neurons for communication calls (Elie and Theunissen 2019)",
+   "summary": "None of the paper's main findings could be tested in this data: that zebra finch auditory neurons are as informative about calls in their sustained response as at onset, that a fixed rate code captures only part of that information, and that a categorical information index shows how invariantly units respond to calls of one type. The files do not mark the 404 single units the paper analyses, chosen by a decoding step it does not describe, and hold no recording-site locations. The units' Poisson statistics were blocked for the same reason. Of the Figure 1 model neurons, only the temporal one is published, and on it the rate and information estimates met the paper's values.",
+   "description": "Tests the findings of Elie and Theunissen (2019) on CRCNS data set aa-4, which holds the spike times of zebra finch auditory units to the vocal repertoire. The files do not mark the 914 single units or the 404 units the paper analyses, and hold no anatomical locations, so the population claims are blocked; the simulated model neuron of Figure 1 is tested on the paper's code repository.",
+   "notebooks": [
+    {
+     "path": "reproduce_elie_2019.ipynb",
+     "title": "Reproducing Elie and Theunissen (2019) from CRCNS aa-4",
+     "executed": "notebooks/elie-2019/reproduce_elie_2019.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "units-404",
+     "statement": "The analysis uses 404 of the 914 isolated single units, those from which call type could be decoded above chance in the authors' earlier study.",
+     "source": "Methods, Neurophysiological and histological procedures, last paragraph",
+     "quote": "The data of neural responses from 404 out of 914 isolated single units were used in this study. The 404 neurons were selected based on a prior analysis that showed that this subset of units were not only auditory but also contained information about call-types",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_elie_2019.ipynb",
+     "notes": "Neither reading of the criterion can be carried out. Reading (a): the files hold no list or flag of the 404 units, and the data description and the 2015 paper (Elie and Theunissen 2015, read at PMC4347984) give none. Reading (b): the 2015 decoding starts from the 914 single auditory units, defined in the 2015 Methods and the data description by I_AR of at least 2.3 bits/s among spike-sorted units and a spike-snippet SNR above 5. The I_AR reading matches the authors': 1401 spike-sorted files of any sortType have a stored I_AR of at least 2.3 bits/s, the 1401 auditory spike-sorted units of the description. The files hold 1281 units labelled single (sortType single, or singl in three files), 1246 of them auditory. The SNR is not stored. Computed from the snippet files (.f32, one per site and protocol, every site having one for its call protocol; layout from CRCNSCode/h5_plot_one_spike.m in the archive) on the call-protocol snippets of 1452 of the 1453 spike-sorted units, the threshold of 5 leaves 461 auditory units (SNR reading A, the SD of each snippet's maximum minus minimum) or 274 (reading B, the SD of the snippet at the samples of the average's maximum and minimum), not 914; reading A leaves 772 at a threshold of 4 and 1120 at 3. So the data set does not hold 914 identifiable single units (expected 914, tolerance 0), and a selection of 404 could only be redone on a different base set. The main reason is the missing unit labels (metadata_insufficient); methods_underspecified is the block the criterion names.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "units-337",
+     "statement": "Of the 404 units, 337 have at least one time point with significant stimulus cumulative information, and these 337 form the population analysed.",
+     "source": "Methods, Information theoretic calculations, paragraph 2",
+     "quote": "categorical instantaneous and cumulative information were calculated on a restricted set of 337 neurons that presented at least one time point with a significant value of stimulus cumulative information (significant threshold set as 3 times the local error",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s1-temporal-resolution",
+     "statement": "Low-pass filtering at 50 Hz (10 ms bins) keeps 96.7% +- 6.9% of the coherence-based information of the spike trains, only 88 of 404 units lose more than 5%, and 98.8% +- 1.6% of the power of the KDE rates lies below 50 Hz.",
+     "source": "Methods, Time-varying spike rate estimation, paragraph 4; S1 Fig",
+     "quote": "Over all units, 96.7% \u00b16.9% (mean \u00b1 SD) of information was conserved by a lowpass filtering at 50Hz and only 88 out of 404 cells had information losses greater than 5%. ... On average across units, the cumulative power reached 98.8%\u00b11.6% (mean \u00b1 SD) at 50Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for the same reason. Variant on the 1246 auditory single units, deciding nothing: the coherence stored in the files (4 to 496 Hz) puts 65.8% +- 19.0% of I_AR below 50 Hz; nothing shows that the stored curve is the computation of S1 Fig, so this says nothing about the paper's 96.7%. The KDE power part needs the KDE rates, which are too large to compute here (see units-337), and was not computed.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-model-neurons",
+     "statement": "For simulated Poisson neurons (rate, onset and temporal codes, 4 stimuli, 10 trials), the KDE recovers the model rates with an average error below 0.02 spikes/ms, the cumulative information approaches the 2-bit maximum, and the temporal neuron's peak instantaneous information is 0.5 bits.",
+     "source": "Results, Time-varying information for model neurons, paragraphs 2 and 3; Figure 1",
+     "quote": "over all stimuli and model neurons, the average error was less than 0.02 spikes/ms ... in the Temporal neuron ( Fig 1C & 1F ) a peak instantaneous information of 0.5 bits is expected as 1 out 4 stimuli will be almost perfectly discriminated",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_elie_2019.ipynb",
+     "notes": "The paper's code repository holds one model cell (ModelCell_InfoCumInfo_Tutorial.mat), a temporal neuron: 4 stimuli, 10 trials, 400 ms, each stimulus driving a response at a different time. The rate and onset neurons of Fig 1 are not there, so the criterion's 'each model neuron' can be checked for one of three. On it all three conditions hold. The mean absolute difference between the KDE and the model rate is 0.009 spikes/ms (per stimulus 0.0075 to 0.0103; RMS 0.016), below 0.02. Under the paper's procedure, as its code runs it, the bias-corrected cumulative information reaches 1.982 bits (14 bins at or above 1.8, last bin 1.884; all 40 bins computed, largest error 0.234 bits, two bins at 5,000,000 samples), at least 1.8; the MATLAB tutorial's saved results with the same procedure give 1.981 and 1.894. The peak bias-corrected instantaneous information is 0.520 bits at 140 ms, within 0.5 +- 0.05. The simplified procedure (one set of 200,000 samples for all bins, jackknife set k for every stimulus) gives 1.928 bits and a peak of 0.519, and the model rates give a largest cumulative information of 1.990 bits (last bin 1.956) and a peak of 0.540. With independent draws per jackknife replicate, which is not the code's procedure, the cumulative information rises to 2.206 bits and ends at 0.803. The Python KDE matches the KDE saved by the MATLAB tutorial to 0.0004 spikes/ms on average (largest 0.0033).",
+     "deviations": [
+      "Data, the paper's tutorial model cell only (data elsewhere, GitHub julieelie/PoissonTimeVaryingInfo at commit 978020328321c7ed83be12c0152bed85ec77e218); the rate and onset model neurons of Fig 1 are not published.",
+      "KDE, the Python port of ssvkernel in the adaptivekde package (1.2.0), in place of the MATLAB ssvkernel the paper cites (reference 42); its output matches the MATLAB KDE saved with the tutorial (mean difference 0.0004 spikes/ms).",
+      "Model rate, the tutorial's Input_Spike_count read as the mean count per 10 ms bin and divided by 10 for spikes/ms; its rows sum to 12.0, 11.0, 9.0 and 10.5 spikes per trial for the four stimuli, against 12.1, 8.3, 8.5 and 11.4 observed.",
+      "Cumulative and instantaneous information as the paper's code computes them (Methods, The cumulative information: 'Monte Carlo samples were chunked in groups of 100,000 samples ... Sampling stopped when the standard error was below 0.2 bits or at a max number of samples set to 5,000,000 samples. If the error at the maximum number of samples was greater than 0.6 bits ... the calculation was not performed for any successive time points'; Bias correction, NB = 20; cumulative_info_poisson_model_MCJK_wrapper.m, cumulative_info_poisson_model_calculus_MCJK.m and Tutorial_TimeVarying_Information.mlx at the pinned commit). Taken from the code, as the text does not give them: the jackknife sets are evaluated on the Monte Carlo samples drawn for the full data, each bootstrap pairs the jackknife sets of the stimuli at random, the error is the square root of the mean over bootstraps of the variance of the pseudo-values N I - (N-1) I_k, and the wrapper stops at 3 x 0.2 bits. NB = 20 follows the paper; the tutorial uses 10 for the cumulative and 100 for the instantaneous information."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub julieelie/PoissonTimeVaryingInfo, commit 97802032, ModelCell_InfoCumInfo_Tutorial.mat and Tutorial_TimeVarying_Information.mlx",
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-poisson-test",
+     "statement": "For most units (240 of 404) the spike counts in 10 ms bins cannot be told from a Poisson distribution in 90% of the bins, only 5 of 404 deviate in 40% of the bins, and on average 10.5% of bins are rejected.",
+     "source": "Results, Avian auditory neurons have approximate Poisson statistics, paragraph 2; Figure 2A",
+     "quote": "For the large majority of cells (240/404), the empirical spike count could not be distinguished from a Poisson distribution for 90% of the time bins. For a small number of neurons (5/404) non-Poisson spike count statistics could be observed in 40% of the time bins. The mean number of rejected time bins was 10.5%.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for the same reason. The test also needs the KDE and jackknife KDE rates of every unit and stimulus, too large to compute here (see units-337).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2cd-fano-factor",
+     "statement": "The time-averaged Fano factor of the population is 1.04 (SEM 0.04) and is not significantly different from 1.",
+     "source": "Results, Avian auditory neurons have approximate Poisson statistics, paragraph 2; Figure 2C and 2D",
+     "quote": "The mean Fano factor for the population was 1.04 with SEM of 0.04 ( Fig 2D )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for the same reason. Variant on the 1246 auditory single units (call protocol), deciding nothing: time-averaged Fano factor 1.028 (SEM 0.002) as the code, 1.054 (SEM 0.003) leaving out empty bins; both differ from 1 at this n (t-test p 3.1e-38 and 4.2e-70).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-noise-correlations",
+     "statement": "Noise correlations between successive 10 ms bins are small, centred near zero with a slight positive skew, while stimulus correlations between consecutive bins are high, centred around 0.4.",
+     "source": "Results, Avian auditory neurons have approximate Poisson statistics, paragraphs 3 and 4; Figure 2B",
+     "quote": "Significant noise correlations were observed (red bars versus non-significant values shown in blue), but they were small, centered around zero and their distribution showed a slight positive skew. ... the distribution of stimulus correlation (correlation of mean rate between pairs of consecutive time bins in the trial average response of each stimulus) across the neural population show high positive values centered around 0.4",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for the same reason. Variant on the 1246 auditory single units (call protocol), deciding nothing: noise correlation median 0.151, skewness 1.07; stimulus correlation median 0.291 over stimuli and 0.243 within stimuli.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-5-example-neurons",
+     "statement": "Three example units show distinct codes, a high-rate unit responding to all calls with high cumulative information, a low-rate unit selective for distance calls with a selective onset, and a unit selective for Wsst calls with a long latency (100 to 300 ms).",
+     "source": "Results, Time-varying Information for 3 example neurons, paragraph 1; Figures 3 to 5",
+     "quote": "The neurons in Figs 4 and 5 have much lower firing rates and exhibit selectivity for a call-type, the Distance Call (DC) and the Wsst Call (Ws) respectively.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "The paper does not name the three example units, and the S4 to S6 Fig images were not among the materials (the paper was supplied as text), so they were not inspected and no match with the data was attempted; the criterion blocks the claim when the units cannot be identified. The units would also have to be among the 404 of units-404, which cannot be identified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-onset-sustained-information",
+     "statement": "Across the population the firing rate shows an onset followed by a lower sustained response, while the instantaneous information about stimuli and about categories stays almost constant, so the onset and sustained responses are equally informative in bits/s.",
+     "source": "Results, Rate and time-varying information, Population analysis, paragraph 1; Figure 6A",
+     "quote": "On average, avian cortical auditory neurons show an onset response followed by a sustained response ... The instantaneous information, however, remains almost constant during the entire time. This is true both for the information about individual stimuli or the information about categories.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-new-information",
+     "statement": "The new information acquired per bin (the slope of the cumulative information) about categories stays roughly constant while the rate falls between 50 and 150 ms, whereas the new information about stimuli decreases and is correlated with the spike rate.",
+     "source": "Results, Rate and time-varying information, Population analysis, paragraph 1; Figure 6C",
+     "quote": "The new information for categories is relatively constant (red line Fig 6C ) and similar to the instantaneous information about category (yellow line Fig 6A ), while the spike rate is drastically decreasing between 50 and 150ms. ... In contrast, the new information for individual stimuli decreases and is, on average, remarkably correlated with spike rate ( Fig 6C ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-fixed-rate-fraction",
+     "statement": "A fixed rate code captures only 24% of the stimulus cumulative information of the time-varying rates at 100 ms and 21% at 300 ms, and 50% and 41% of the categorical cumulative information.",
+     "source": "Results, Rate and time-varying information, Population analysis, paragraph 2; Figure 6B",
+     "quote": "a fixed rate code (or assumption) captures only 24% of the information at 100 ms and 21% at 300 ms. ... for categorical information, a fixed rate code captures 50% of the information at 100 ms and 41% at 300 ms.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7a-time-constants",
+     "statement": "For the 214 of 337 units well fitted by exponentials, the time constants range from 100 to 600 ms, with a mean of 459 ms for stimulus and 372 ms for categorical cumulative information, a significant difference.",
+     "source": "Results, Rate and time-varying information, Population analysis, paragraph 3; Figure 7A",
+     "quote": "The range of time constants observed across the population of neurons was large (100 ms-600 ms) with average time constants of 459 ms for cumulative stimulus information and 372 ms for cumulative categorical information. This difference in means of time constants is statistically significant (Paired t-test t(214) = 3.49, p = 0.00058)",
+     "statistics": [
+      {
+       "about": "stimulus against category time constants",
+       "test": "paired t-test",
+       "statistic": "t(214) = 3.49",
+       "p": 0.00058,
+       "n": "214 units (215 by the degrees of freedom)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-k300",
+     "statement": "The relative cumulative information at 300 ms (k300) ranges from near zero to 0.6, with means of 0.2 for stimuli and 0.15 for categories.",
+     "source": "Results, Rate and time-varying information, Population analysis, paragraph 3; Figure 7B",
+     "quote": "There is also a wide distribution of relative cumulative information values ( k 300 ranging from close to zero to 0.6). On average across neurons, the k 300 was 0.2 (or 20%) for stimuli and 0.15 (or 15%) for categories.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "k300-rate-regression",
+     "statement": "k300 rises with the unit's average firing rate, by 1% per spike/s for stimuli (adjusted R2 0.36) and 0.8% per spike/s for categories (adjusted R2 0.34).",
+     "source": "Results, Rate and time-varying information, Population analysis, paragraph 3",
+     "quote": "For cumulative stimulus information, one finds an increase in k 300 of 1% per spike/s (Adj R 2 = 0.36, F(1,213) = 120, p = 1.82 10 \u221222 ) and, for cumulative categorical information, an increase in k 300 of 0.8% per spike/s (Adj R 2 = 0.34, F(1,213) = 112, p = 2.26 10 \u221221 )",
+     "statistics": [
+      {
+       "about": "k300 for stimuli on average firing rate",
+       "test": "linear regression",
+       "statistic": "F(1,213) = 120",
+       "p": 1.82e-22
+      },
+      {
+       "about": "k300 for categories on average firing rate",
+       "test": "linear regression",
+       "statistic": "F(1,213) = 112",
+       "p": 2.26e-21
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9a-mean-cii",
+     "statement": "The population average CII is close to the shared value of 1, and slightly but significantly above 1 between 120 and 260 ms.",
+     "source": "Results, Analysis of the categorical information, paragraph 2; Figure 9A",
+     "quote": "The average CII over neurons (bold black line) is very close to the shared value of 1 ... the average CII is also slightly (and significantly) above 1 between 120 and 260 ms",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9a-top-quartile",
+     "statement": "The CII distribution at 150 ms is skewed toward values above 1, and the quarter of units with the highest CII reach their maximum CII at 175 ms.",
+     "source": "Results, Analysis of the categorical information, paragraph 2; Figure 9A",
+     "quote": "this distribution is positively skewed towards values higher than 1 as exemplified by the density plots calculated at 150ms. ... Focusing on these 25% of neurons with the highest CII, we found a maximum value of CII at 175 ms",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s7-invariant-information",
+     "statement": "In absolute terms, the top quartile of units by CII reaches a maximum of 0.16 bits of categorical cumulative information above the shared value, at 320 ms.",
+     "source": "Results, Analysis of the categorical information, paragraph 2; S7 Fig",
+     "quote": "these same neurons reach a maximum of 0.16 bits at 320 ms ( S7 Fig )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9b-cii-tau-ratio",
+     "statement": "Units with high CII have long stimulus time constants relative to their categorical time constants; across the population CII is explained by tau_cat/tau_stim (adjusted R2 0.11).",
+     "source": "Results, Analysis of the categorical information, paragraph 3; Figure 9B",
+     "quote": "neurons with high CII have relatively long stimulus time constants in comparison to their corresponding time constant observed for categorical information. This relationship is also significant for the entire population of neurons ... Adj R 2 = 0.11, F(1,213) = 28.5, p = 2.37 10 \u22127",
+     "statistics": [
+      {
+       "test": "linear regression",
+       "statistic": "F(1,213) = 28.5",
+       "p": 2.37e-07
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9c-cii-k300",
+     "statement": "CII is strongly explained by the difference k300,cat - k300,stim (adjusted R2 0.76), an expected consequence of its definition, and units with high CII have low stimulus k300 (adjusted R2 0.28).",
+     "source": "Results, Analysis of the categorical information, paragraph 3; Figure 9C",
+     "quote": "neurons with high CII also have higher relative levels of categorical information in comparison to their relative values for stimulus information although this result is expected given our definition of CII ... Adj R 2 = 0.76, F(1,213) = 675, p = 5.5 10 \u221268 ). Finally, one can also notice that neurons with high CII have low values of relative stimulus cumulative information ... Adj R 2 = 0.28, F(1,213) = 84, p = 3.96 10 \u221217",
+     "statistics": [
+      {
+       "about": "CII on k300,cat - k300,stim",
+       "test": "linear regression",
+       "statistic": "F(1,213) = 675",
+       "p": 5.5e-68
+      },
+      {
+       "about": "CII on k300,stim",
+       "test": "linear regression",
+       "statistic": "F(1,213) = 84",
+       "p": 3.96e-17
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-anatomy-counts",
+     "statement": "303 of the 337 units have an anatomical location, in five birds, 109 in NCM, 29 in CMM, 20 in CLM, 46 in L2, 87 in L1/L3 and 12 unclassified.",
+     "source": "Methods, Neurophysiological and histological procedures, paragraph 2; Table 1",
+     "quote": "Table 1 shows the number of units from each bird for which we had an anatomical location and that had significant stimulus cumulative information (303/337 neurons; see below).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_elie_2019.ipynb",
+     "notes": "The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404, which are blocked as methods_underspecified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-cii-distance",
+     "statement": "CII is slightly higher farther from the L2 axis, rostrally or caudally, toward higher auditory areas (adjusted R2 0.036).",
+     "source": "Results, Anatomical organization, paragraph 2; Figure 10B",
+     "quote": "Using the L2 dorsal-ventral oblique axis as reference point, CII was slightly higher as one moved rostrally or caudally to higher regions of auditory processing ... Adj R 2 = 0.036, F(2,195) = 8.39, p = 0.0042",
+     "statistics": [
+      {
+       "test": "linear regression",
+       "statistic": "F(2,195) = 8.39",
+       "p": 0.0042
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_elie_2019.ipynb",
+     "notes": "The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404, which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large to run here (see units-337).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-cii-area-anova",
+     "statement": "An ANOVA across areas suggests that NCM and L2 have slightly higher mean CII (adjusted R2 0.027).",
+     "source": "Results, Anatomical organization, paragraph 2",
+     "quote": "an ANOVA also suggested that both regions NCM and L2 had slightly higher mean CII (Adj R 2 = 0.027, F(4,185) = 2.77, p = 0.042)",
+     "statistics": [
+      {
+       "test": "ANOVA",
+       "statistic": "F(4,185) = 2.77",
+       "p": 0.042
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_elie_2019.ipynb",
+     "notes": "The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404, which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large to run here (see units-337).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-tau-k300-distance",
+     "statement": "Farther from the L2 axis the time constant of the stimulus cumulative information is longer (adjusted R2 0.04) and the stimulus k300 smaller (adjusted R2 0.035), with very small effects.",
+     "source": "Results, Anatomical organization, paragraph 2; Figure 10B",
+     "quote": "We also observed an increase in the time constant ( \u03c4 ) for the stimulus cumulative information that parallel the increase in CII as one moved away from the L2 axis ... Ajd R 2 = 0.04, F(2,195) = 9.32, p = 0.00258). The saturation constant at 300 ms (\u03ba 300 ) for stimulus information was also higher in the central auditory region and smaller as one moved away from the L2 axis ... Ajd R 2 = 0.035, F(2,195) = 8.18, p = 0.0047",
+     "statistics": [
+      {
+       "about": "stimulus tau on distance from the L2 axis",
+       "test": "linear regression",
+       "statistic": "F(2,195) = 9.32",
+       "p": 0.00258
+      },
+      {
+       "about": "stimulus k300 on distance from the L2 axis",
+       "test": "linear regression",
+       "statistic": "F(2,195) = 8.18",
+       "p": 0.0047
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_elie_2019.ipynb",
+     "notes": "The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404, which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large to run here (see units-337).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10-no-anatomy-categorical",
+     "statement": "Anatomy has no effect on the time constant or the k300 of the categorical cumulative information.",
+     "source": "Results, Anatomical organization, paragraph 2",
+     "quote": "We did not find, however, any effects of anatomy on the time constant, ( \u03c4 ), or saturation constants (\u03ba 300 ) for the cumulative categorical information",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_elie_2019.ipynb",
+     "notes": "The data set holds no anatomical area or x, y, z coordinate for any unit or site: the h5 files store the electrode, the site and the depth of each array (also in the file names) as attributes, class_info holds the coherence and mean rate and extra_info the inter-spike-interval and section statistics (their datasets, and the attribute names of every group and dataset in the files, are listed in the notebook; the groups under class_info and extra_info carry no attributes), and the data description mentions no histology. The claim also rests on units-337 and units-404, which are blocked as methods_underspecified. It also needs the CII or the exponential fits, which are too large to run here (see units-337).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cii-unimodal",
+     "statement": "The distribution of the categorical information index across units is unimodal, with no separate population of invariant units.",
+     "source": "Discussion, paragraph 8",
+     "quote": "the distribution of our categorical index was unimodal",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 337 units of units-337, which rests on the 404 units of units-404; neither can be identified, so the claim is blocked for the same reason. Even with the units, the locally adaptive KDE rates and their jackknife estimates alone were estimated in the notebook at more than 100 hours on one core (128 h in the executed run), before the Monte Carlo cumulative information, so the claim would also be too_large here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s2-spike-counts",
+     "statement": "Over the 404 units, all stimuli and all 10 ms bins, no bin holds more than 8 spikes, a single bin holds 8, and the mean count per bin is 0.108 spikes.",
+     "source": "S2 Fig legend; Methods, The instantaneous information, paragraph 1",
+     "quote": "Not a single neuron had more than 8 spikes in a 10 ms bins and high spiking events were very rare (only one 10ms bin with 8 spikes over all neurons, all time bins and all stimuli). The average number of spikes per 10 ms bin was 0.108.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Rests on the 404 units of units-404, which cannot be identified in the files (see units-404); blocked for the same reason. As a variant that decides nothing, on all 1246 single units with I_AR of at least 2.3 bits/s: largest count 9 (4 units), 442 bins with 8 spikes, mean count per bin 0.136 (0.126 over trial-averaged counts), call protocol only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files do not mark the 914 single auditory units the data description and the paper report, nor the 404 units the paper analyses. 1281 h5 files are labelled single units (sortType), 1246 of them with stored I_AR of at least 2.3 bits/s, the 2015 auditory threshold. The spike-snippet SNR that defines a single unit is not stored; computed from the snippet files as the description defines it, the threshold of 5 leaves 461 or 274 of the 1401 auditory spike-sorted units (two readings of the definition), not 914. Without a list of units, none of the paper's population results can be repeated on its units.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The data description says the data set holds 688 multi-units and 914 single auditory units, one h5 file each. The files are 845 unsorted multi-unit files (sortType tdt) and 1453 spike-sorted files (named _ss): 1281 labelled single, 63 multi and 109 noise.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The anatomical area and the x, y, z coordinates of the recording sites, used in the paper's Table 1 and Figure 10, are not in the data set; only the electrode, site and array depths are stored.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The numbers of stimuli and trials differ from the stated ones. In the call protocol (groups Call, Call1, Call1c, Call2, Call3) single units have 115.3 stimuli on average (sd 34.2, 34 to 133) against the paper's 114 (sd 22, 34 to 123), and 90.7 call stimuli of the nine call types (34 to 110); over every group they have 121.9 stimuli (73 to 137) against the description's 144 (64 to 153). 1874 unit-stimulus pairs of the call protocol have 12 trials, against a stated maximum of 11. The other protocols in the files (Sel1 to Sel7, Mask1, STRF1), which also hold call stimuli, are not described.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Three h5 files store sortType as 'singl'; and the description's section on file organisation names a bird WhiBlu5896M, where the files and the summary say WhiBlu5396M.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The per-site .f32 files of spike waveforms are described only as the waveform of the action potentials. Their layout (18 float32 samples per spike, indexed from 1 by the spike_ids of the h5 files) is documented only by the plotting function h5_plot_one_spike.m in the archive's CRCNSCode.tar.gz. There is one per site and protocol; bird BlaBro09xxF has two files for site 4 and Call1 (1,956,253 and 33,047 snippets, named with _ and -).",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-13",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module elie.py and the claims file, with the paper's full text. The verifier listed the archive's S3 bucket, opened CRCNSCode.tar.gz (no bird data downloaded) and tested cum_info_mc against exact enumeration on a synthetic case. It had no attempt record and took the claims from the claims file. It found no place where the claims file misreads the paper.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2: the full executed notebook after the round-1 revision, with its conclusion cells and summary, the helper module elie.py, the claims file, the attempt record, the entry README and the round-1 report, with the paper's full text. It found no place where the claims file misreads the paper, and found all round-1 points resolved.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper selects its 404 units by a decoding analysis it does not describe, citing Elie and Theunissen 2015, and its code repository holds neither that selection nor the selection of the 337 units, the locally adaptive KDE step, the exponential fits or the CII. The single-unit SNR defined in the Methods, computed from the snippet files, does not recover the 914 units. Question for the authors: can the lists of the 914, 404 and 337 units be published, with the file names of the data set, and on which snippets and with which noise measure was the SNR computed?",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The paper gives NB = 20 bootstraps of the jackknife for the error on information, while the tutorial of its code repository uses 10 for the cumulative and 100 for the instantaneous information. The text does not say that the jackknife sets are paired across stimuli at random in each bootstrap, nor that the jackknife sets are evaluated on the Monte Carlo samples of the full data; the code does both.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "elie-2019",
+   "type": "reproduction",
+   "title": "Time-varying information of avian auditory neurons for communication calls (Elie and Theunissen 2019)",
+   "description": "Tests the findings of Elie and Theunissen (2019) on CRCNS data set aa-4, which holds the spike times of zebra finch auditory units to the vocal repertoire. The files do not mark the 914 single units or the 404 units the paper analyses, and hold no anatomical locations, so the population claims are blocked; the simulated model neuron of Figure 1 is tested on the paper's code repository.",
+   "datasets": [
+    "crcns:aa-4"
+   ],
+   "papers": [
+    "10.1371/journal.pcbi.1006698"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_elie_2019.ipynb",
+     "title": "Reproducing Elie and Theunissen (2019) from CRCNS aa-4",
+     "executed": "notebooks/elie-2019/reproduce_elie_2019.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 21,
+   "hashed": true
+  }
+ ],
+ "badge": null,
+ "badges": {
+  "reproduced": null,
+  "outcomes": "https://encorescience.org/badge/crcns/aa-4-outcomes.svg",
+  "card": "https://encorescience.org/badge/crcns/aa-4-card.svg"
+ }
+}
