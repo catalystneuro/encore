@@ -306,34 +306,28 @@ outcomes:
   - As in fig5-speech-water-widths; the SI equation is lost from the text and the claims file's two
     readings are run.
 - claim: fig9a-optimal-resolution
-  outcome: reproduced
+  outcome: partially_reproduced
   assumed: true
-  proposed:
-    outcome: partially_reproduced
-    reason: In the final run no reading puts both optima on the reported grid points. Under (6b)(7b) the
-      spectral and temporal classifiers are best at 141 ms and the spectro-temporal maximum (81.5%, 159 of
-      195 sounds) is tied at 141 and 283 ms, with 81.0% at 100 ms. The first of the tie, 141 ms, is one
-      grid step from 100 ms, which meets the partial rule; 283 ms would not. The verified outcome rested
-      on a three-way tie that included 100 ms in the round-2 run; one sound decides the maximum, as the
-      bootstrap shares (283 ms 29%, 141 ms 24%, 100 ms 15%) show, so the data do not pick out 100 ms.
   notebook: reproduce_sadeghi_2019_classifier.ipynb
   output: claim:fig9a-optimal-resolution
   measured: [141.4, 141.4]
-  notes: The outcome is the one recorded before round 2, kept as round 2 may not change it; the verifier
-    disagreed, and a change to partially reproduced is proposed. In the final run, under readings (6b)
-    (windows spaced by the full Kaiser length) and (7b) (the reported PC and component counts), the
-    spectral and temporal classifiers are best at 141 ms (82.1 and 80.5% at the full duration) and the
-    spectro-temporal one is tied at 141 and 283 ms (81.5%; 81.0% at 100 ms). Under (6a)(7b) the optima are
-    283, 141 and 141 ms, and under the (7a) readings the spectro-temporal optimum is 283 ms, so no reading
-    puts both optima on the reported points, and (6b)(7b) with the first of the tie is the one reading
-    within one grid step. The tie-breaks disagree (posterior of the true category 81.54% at 283 against
-    81.40% at 141 ms; mean accuracy at 1, 2, 4 and 8 s 77.1% at 141 against 71.2% at 283 ms). The round-2
-    run, on another machine, gave 81.5% at 100, 141 and 283 ms for the same classifier; the two runs
-    differ by one sound at a few resolutions (100, 25 and 35 ms), a floating-point difference between
-    machines that moves marginal decisions, which shows how little separates the grid points. Every
-    correlation classifier is above 7.69% at every resolution under every reading (lowest 58.5%, temporal
-    at 25 ms; largest Bonferroni p over the 195 per-sound outcomes 1.3e-31, over the 13 category means
-    7.9e-05). The accuracy curves over resolution are flat (spectral 72 to 82%).
+  notes: Changed from reproduced after verification round 3, which agreed with the change proposed after round
+    2. Under readings (6b) (windows spaced by the full Kaiser length) and (7b) (the reported PC and component
+    counts), the spectral and temporal classifiers are best at 141 ms (82.1 and 80.5% at the full duration)
+    and the spectro-temporal maximum (81.5%, 159 of 195 sounds) is tied. The tie changes from machine to
+    machine. Of the five runs of the notebook in rounds 2 and 3, three (the last two among them) gave 81.0%
+    at 100 ms and a tie at 141 and 283 ms, and two gave 81.5% at 100 ms as well, a three-way tie at 100, 141 and
+    283 ms in which ties going to the first grid point put both optima on the reported points; the runs
+    differ by one sound at a few resolutions, a floating-point difference that moves marginal decisions.
+    Either way the data do not single out 100 ms. In a bootstrap over sounds the spectro-temporal maximum
+    falls at 283 ms in 27 to 29%, at 141 ms in 20 to 24% and at 100 ms in 15 to 19% of resamples, and the
+    tie-breaks disagree (posterior of the true category 81.54% at 283 against 81.40% at 141 ms; mean
+    accuracy at 1, 2, 4 and 8 s 71.2% at 283 against 77.1% at 141 ms, and 77.2% at 100 ms in the three-way
+    tie). 141 ms is within one grid step of 100 ms, which meets the partial rule; 283 ms is not. Under
+    (6a)(7b) the optima are 283, 141 and 141 ms, and under the (7a) readings the spectro-temporal optimum is
+    283 ms. Every correlation classifier is above 7.69% at every resolution under every reading (lowest
+    58.5%, temporal at 25 ms; largest Bonferroni p over the 195 per-sound outcomes 1.3e-31, over the 13
+    category means 7.9e-05). The accuracy curves over resolution are flat (spectral 72 to 82%).
   deviations:
   - The classifier is the Methods' pipeline, with choices the paper does not make, stated in
     model.py and the notebook; the spectro-temporal feature vector is the spectral and temporal
@@ -373,10 +367,11 @@ outcomes:
     every optimum is unique (spectral 283, temporal and spectro-temporal 141 ms), so it does not rest on
     a tie there. Under (6b)(7b), with the spectro-temporal classifier at 141 ms, linear interpolation gives
     spectral 1.92 s (1.7 +/- 0.17), temporal 2.67 s (3.0 +/- 0.3) and spectro-temporal 0.85 s (1.2 +/-
-    0.12); the first sampled duration 2.31, 3.08 and 1.16 s (two of three within tolerance); an
-    exponential fit 1.45, 1.90 and 0.73 s. With the spectro-temporal classifier at the tied 283 ms its rise
-    time is 3.42 s and the order fails. Under (6a)(7b) the times are shorter (0.6 to 1.9 s). Under
-    (6b)(7a) the spectro-temporal classifier (at 283 ms) is no faster than the spectral one.
+    0.12); the first sampled duration 2.31, 3.08 and 1.16 s (two of three within tolerance); an exponential
+    fit 1.45, 1.90 and 0.73 s. In the runs where 100 ms ties for the spectro-temporal optimum and is taken,
+    its rise time is 1.23 s interpolated and 1.65 s first sampled (one of three within tolerance). With it at
+    the tied 283 ms its rise time is 3.42 s and the order fails. Under (6a)(7b) the times are shorter (0.6
+    to 1.9 s). Under (6b)(7a) the spectro-temporal classifier (at 283 ms) is no faster than the spectral one.
   deviations:
   - As in fig9a-optimal-resolution.
 - claim: fig9c-time-averaged-worse
@@ -387,14 +382,15 @@ outcomes:
   measured: 6.7
   notes: At the spectro-temporal optimum and the full duration, reading (a) (time-averaged category
     models, one diagonal Gaussian per category) is 5.1 to 6.7 points below the short-term classifier
-    under every reading ((6b)(7b) 74.9 against 81.5%; 6.0 to 8.2% relative), not 25. Reading (b) (the
-    running average of the test sound scored under the short-term models) is 15.4 to 33.8 points lower
-    ((6b)(7b) 51.8 against 81.5%, 29.7 points, 36.5% relative). No reading gives 25 +/- 2.5 at the optima
-    used; the time-averaged classifier is at least 10 points lower under reading (b) only, which meets the
-    partial rule. With the spectro-temporal classifier at the tied 283 ms under (6b)(7b), reading (b) is
-    25.6 points lower, within 25 +/- 2.5, and reading (a) 1.0 point, so the outcome also rests on the
-    tie-break of fig9a-optimal-resolution. The outcome rests on reading (b), whose test feature differs
-    from the training features of the models.
+    under every reading ((6b)(7b) at 141 ms 74.9 against 81.5%; 6.0 to 8.2% relative), not 25. Reading (b)
+    (the running average of the test sound scored under the short-term models) is 15.4 to 33.8 points lower
+    ((6b)(7b) 51.8 against 81.5%, 29.7 points, 36.5% relative), and 36.9 points at 100 ms in the runs where
+    100 ms ties for the spectro-temporal optimum. No reading gives 25 +/- 2.5 at the optima used; the
+    time-averaged classifier is at least 10 points lower under reading (b) only, which meets the partial
+    rule. With the spectro-temporal classifier at the tied 283 ms under (6b)(7b), reading (b) is 25.6 points
+    lower, within 25 +/- 2.5, and reading (a) 1.0 point, so the outcome also rests on the tie-break of
+    fig9a-optimal-resolution. The outcome rests on reading (b), whose test feature differs from the training
+    features of the models.
   deviations:
   - As in fig9a-optimal-resolution. Reading (a) uses N_c = 1, as a category has only 14 or 15
     time-averaged vectors, and the vectors are the time averages of the short-term PC scores.
@@ -432,36 +428,32 @@ outcomes:
     the PCs for 90% (5 to 8) and 8 components are used, an assumption; 13 (the cross-validated choice)
     and 5 components are run as variants.
 - claim: fig10-vocalization-background
-  outcome: reproduced
+  outcome: partially_reproduced
   assumed: true
-  proposed:
-    outcome: partially_reproduced
-    reason: With the temporal and spectro-temporal curves matched by duration, not by window index, the
-      temporal classifier is 23.2 ((6b)(7b)) or 24.3 ((6a)(7b)) points below the spectro-temporal one on
-      vocalizations averaged over durations under reading (a), and 25.0 points at the full duration,
-      outside -20 +/- 2 under every reading. The duration trends and the spectral advantage hold
-      (vocalizations rise from 91.7 to 98.3%, background within 85.2 to 95.6%; spectral above temporal at
-      every matched duration, at Bonferroni p < 0.01 at 8 of 10 under (6a)(7b)), which meets the partial
-      rule.
   notebook: reproduce_sadeghi_2019_classifier.ipynb
   output: claim:fig10-vocalization-background
   measured: [94.8, 98.3, -23.2]
-  notes: The outcome is the one recorded before round 2, kept as round 2 may not change it; the verifier
-    disagreed, and a change to partially reproduced is proposed. Under (6b)(7b) and reading (a) (one GMM per
-    class), with all three classifiers at 141 ms in the final run, the spectro-temporal classifier is 94.8%
-    for background and 98.3% for vocalizations at the full duration, vocalization accuracy rises from
-    91.7%, background stays within 85.9 to 95.6%, and the temporal classifier is 23.2 points below the
-    spectro-temporal one on vocalizations averaged over durations (reading d, matched by duration; 25.0 at
-    the full duration, reading c). Spectral beats temporal on the vocalizations at every duration (90.0
-    against 73.3% at the full duration) but at Bonferroni-corrected p < 0.01 (paired t test over the 60
-    vocalizations) at 1 of 10 durations only. Under (6a)(7b) reading (a), where the spectral curve is at
-    283 ms and the others at 141 ms, the values are 94.8 and 98.3%, the difference -25.0 (c) and -24.3
-    (d, matched by duration), and spectral beats temporal at p < 0.01 at 8 of 10 matched durations. Under
-    reading (b) (13-category decisions mapped to the class) the temporal classifier reaches 96.7 to 98.3%
-    on vocalizations and the difference is -1.7 to -11.8 points. With the spectro-temporal classifier at
-    the tied 283 ms under (6b)(7b), the matched difference is -17.3 points and the pairing by window index
-    -19.6; the round-2 value of -20.5 paired the curves by window index across different resolutions.
-    No reading meets the full rule with the matched difference.
+  notes: Changed from reproduced after verification round 3, which agreed with the change proposed after round
+    2. Under (6b)(7b) and reading (a) (one GMM per class), with all three classifiers at 141 ms, the
+    spectro-temporal classifier is 94.8% for background and 98.3% for vocalizations at the full duration,
+    vocalization accuracy rises from 91.7%, background stays within 85.9 to 95.6%, and the temporal
+    classifier is 23.2 points below the spectro-temporal one on vocalizations averaged over matched durations
+    (reading d; 25.0 at the full duration, reading c), outside -20 +/- 2. In the runs where 100 ms ties for
+    the spectro-temporal optimum (fig9a-optimal-resolution) and is taken as the first of the tie, the values
+    are 93.3 and 96.7%, vocalizations rise from 81.7%, background stays within 87.4 to 94.1%, and the matched
+    difference is -21.1 over 9 durations (-23.3 at the full duration), within the tolerance; that is the one
+    reading that meets the full rule, and it does so only through the choice of 100 ms from the tie, which
+    the data do not support and which three of five runs do not give. With the tied 283 ms the matched
+    difference is -17.3. Spectral beats temporal on the vocalizations at every matched duration (90.0 against
+    73.3% at the full duration) but at Bonferroni-corrected p < 0.01 (paired t test over the 60
+    vocalizations) at 1 of 10 durations only (p = 9.1e-3). Under (6a)(7b) reading (a), where every optimum is
+    unique (spectral 283 ms, the others 141 ms), the values are 94.8 and 98.3%, vocalizations rise from
+    91.7%, background stays within 85.2 to 94.8%, the difference is -25.0 (c) and -24.3 (d), and spectral
+    beats temporal at p < 0.01 at 8 of 10 matched durations. Under reading (b) (13-category decisions mapped
+    to the class) the temporal classifier reaches 96.7 to 98.3% on vocalizations and the difference is -1.7
+    to -11.8 points. The duration trends and the spectral advantage hold under every reading and the
+    difference is out of tolerance except with the spectro-temporal classifier at 100 ms, which meets the
+    partial rule.
   deviations:
   - As in fig9a-optimal-resolution. The class models use the 13-category classifier's PC and
     component counts. The curves of two classifiers are compared at matched durations (the temporal
@@ -517,8 +509,8 @@ findings:
     and temporal features side by side), how the test windows are spaced (tau_W or the full Kaiser
     window), whether the PC and component counts were refitted at each resolution, and how the
     time-averaged classifier of Fig 9C was built, and the spectrum classifier's PC and component counts. The
-    optimal resolutions and the Fig 9C reduction change with these choices (spectro-temporal optimum 141 to
-    283 ms; reduction 1 to 34 points), and the spectrum classifier is below all three correlation classifiers
+    optimal resolutions and the Fig 9C reduction change with these choices (spectro-temporal optimum 100 to
+    283 ms; reduction 1 to 37 points), and the spectrum classifier is below all three correlation classifiers
     at 10 s with 5 components but not with 8 or 13. Which were used?
 verifications:
 - date: '2026-11-14'
@@ -861,3 +853,29 @@ verifications:
     agrees: false
     reason: 'Does not agree as recorded. Reading (d), the only value that passes (-20.5 against -20 +/- 2), is computed by pairing the temporal curve (141 ms, 381 ms spacing) with the spectro-temporal curve (the tied 100 ms, 269 ms spacing) by window index, not by duration; the record''s remark that the (6b)(7b) rows are at the same optimum holds only for spectral against temporal. The spectral advantage is significant at 1 of 10 durations. The difference has to be recomputed with matched durations before any verdict.'
     response: 'The difference and the paired tests are now computed with the curves matched by duration. Matched, the difference is -23.2 ((6b)(7b)) and -24.3 ((6a)(7b)) under reading (a), outside the tolerance under every reading. The outcome is kept, as round 2 may not change it, and partially reproduced is proposed.'
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. The changes of outcome proposed after round 2 for fig9a-optimal-resolution and
+    fig10-vocalization-background, with the re-executed classifier notebook behind them, the helpers and the
+    claims file, with the paper. It found no place where the claims file misreads the paper. Report in
+    transcripts/sadeghi-2019/verifier-3-report.md. In reply both changes were applied, and the Result cells,
+    the Summary, the README and the notes, which gave the numbers of an earlier run on another machine, were
+    rewritten from the outputs of the notebook, with the difference between machines stated. The entry was
+    run twice with python tools/entry.py all; both runs gave the tie at 141 and 283 ms only (81.0% at 100
+    ms), so the text now covers both kinds of run and the measured values are those of the final run. Each
+    run stopped at the tool's two-hour limit after the classifier (46 and 45 min) and neural (54 min)
+    notebooks, during the model notebook, whose content did not change in this revision; its executed copy
+    is the one made just before round 3 (29 min). The count of runs in the fig9a Result cell was corrected
+    from four to five after the last run, a change to markdown only.
+  results:
+  - claim: fig9a-optimal-resolution
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome, not with the reason. The numbers in the reason are not in the notebook: cells 7, 10 and 32 give 81.5% at 100 ms as well, so the tie is three-way, and cell 10 gives the bootstrap shares as 283 ms 0.27, 141 ms 0.20 and 100 ms 0.19; cell 9 still reports the reported grid points as True under (6b)(7b), because ties go to the first grid point. The outcome still holds: spectral and temporal are both best at 141 ms, the spectro-temporal maximum is tied across 100, 141 and 283 ms, the bootstrap gives no resolution more than 27% of the maximum, and two machines differ on whether 100 ms ties at all, so the data do not single out 100 ms. Picking the first tied point is the author''s choice, not a reading from the claims file; under the criterion that is within one grid step (141 ms). The reason must quote the outputs of this notebook.'
+    response: 'Outcome changed to partially reproduced. The Result cell, the Summary, the README and the notes now give the outputs of both kinds of run: the three-way tie at 100, 141 and 283 ms of the notebook reviewed (bootstrap 27, 20 and 19%), and the tie at 141 and 283 ms, with 81.0% at 100 ms, that the two re-runs of this revision gave (bootstrap 29, 24 and 15%), with both tie-breaks, and say that the tie changes between machines. The measured optima are those of the final run under the first-of-tie rule (141.4 and 141.4 ms). The notes of fig9b-accumulation-rate and fig9c-time-averaged-worse give the values at 100 ms as well (rise time 1.23 s; reading b 36.9 points lower); their outcomes do not change.'
+  - claim: fig10-vocalization-background
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome, not with the reason. The reason''s "outside -20 +/- 2 under every reading" is false in this notebook: in cell 29, under (6b)(7b) reading (a), with the spectro-temporal classifier at the first-tied 100 ms, the duration-matched mean (reading d) is -21.1 over 9 durations, inside the tolerance, background is 93.3%, vocalizations 96.7%, vocalizations rise from 81.7%, background ranges 87.4 to 94.1, and spectral beats temporal at Bonferroni p < 0.01 at 1 of 10 durations (p = 9.1e-3), so by the author''s first-of-tie rule this run would meet the full rule. The -23.2 comes from the 141 ms tie member; at 283 ms the matched value is -17.3. The duration matching itself is correct. The outcome still holds: the only value in tolerance depends on the arbitrary 100 ms tie-break, as in fig9a, and its spectral advantage is significant at a single duration; at 141 and 283 ms and under (6a)(7b) the difference is out of tolerance while the duration trends and the spectral advantage hold (8 of 10 durations under (6a)(7b)). The reason must say that -21.1 at 100 ms passes and why it is set aside.'
+    response: 'Outcome changed to partially reproduced. The Result cell, the Summary, the README and the notes now say that -21.1 at the first-tied 100 ms is within the tolerance and that this reading meets the full rule only through the choice of 100 ms from the tie, which the data do not support; the measured values are those of the final run, where 100 ms does not tie (94.8, 98.3 and -23.2 at 141 ms), and the values at 283 ms (-17.3) and under (6a)(7b) (-24.3) are given.'

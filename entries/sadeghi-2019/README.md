@@ -29,13 +29,13 @@ auditory model, with the paper's MATLAB code.
 | Model, category half widths (Fig 6A, B) | Reproduced |
 | Model, category diversity index (Fig 6C) | Reproduced |
 | Model, stationarity index (Fig 7I) | Not reproduced |
-| Model, optimal resolution 141 and 100 ms (Fig 9A) | Reproduced (change to partially reproduced proposed: the spectro-temporal optimum is tied at 141 and 283 ms) |
+| Model, optimal resolution 141 and 100 ms (Fig 9A) | Partially reproduced (the spectro-temporal maximum is tied at 141 and 283 ms, and on some machines at 100 ms as well; the data do not single out 100 ms) |
 | Model, similar maximum performance (Fig 9B) | Reproduced |
 | Model, accumulation rate (Fig 9B) | Partially reproduced |
 | Model, time-averaged classifier worse (Fig 9C) | Partially reproduced |
 | Model, waves spectral and wind temporal (Fig 9E) | Partially reproduced |
 | Model, spectrum classifier lower (Fig 9) | Not reproduced (rests on the component count) |
-| Model, vocalization against background (Fig 10) | Reproduced (change to partially reproduced proposed: the temporal deficit is 23 to 24 points, not 20) |
+| Model, vocalization against background (Fig 10) | Partially reproduced (the temporal deficit is about 20 points only with the spectro-temporal classifier at 100 ms, where that ties; 17 to 24 points otherwise) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
