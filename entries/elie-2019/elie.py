@@ -70,9 +70,27 @@ def _paths(g: h5py.Group) -> list[str]:
     return out
 
 
+def _attr_names(h: h5py.File) -> list[str]:
+    """Attribute names of every group and dataset in a file, with the path
+    generalised: a protocol group as <protocol>, a numbered group as <n>."""
+    out = {f"/ {k}" for k in h.attrs}
+
+    def visit(n, o):
+        parts = n.split("/")
+        if parts[0] not in ("class_info", "extra_info"):
+            parts[0] = "<protocol>"
+        elif len(parts) > 1:
+            parts[1] = "<protocol>"
+        p = "/".join("<n>" if x.isdigit() else x for x in parts)
+        out.update(f"{p} {k}" for k in o.attrs)
+    h.visititems(visit)
+    return sorted(out)
+
+
 def read_unit(h: h5py.File, name: str, bird: str) -> dict:
     """Reduce one unit's h5 file to its attributes, its stored coherence
-    (class_info), the dataset paths of class_info and extra_info, and, for single
+    (class_info), the dataset paths of class_info and extra_info, the attribute
+    names of every group and dataset (generalised paths), and, for single
     units, the spike times of each trial of its call and song stimuli in KEEP, in
     seconds from stimulus onset, as stored. For spike-sorted files (_ss) the
     spike_ids of every protocol are kept in "ids" (all spikes of all trials), for
@@ -136,6 +154,7 @@ def read_unit(h: h5py.File, name: str, bird: str) -> dict:
     u["has_extra_info"] = "extra_info" in h
     u["class_info_paths"] = _paths(h["class_info"]) if "class_info" in h else []
     u["extra_info_paths"] = _paths(h["extra_info"]) if "extra_info" in h else []
+    u["attr_names"] = _attr_names(h)
     u["ids"] = ids_all
     return u
 
