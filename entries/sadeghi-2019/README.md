@@ -35,6 +35,6 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The data set is one 5.3 GB tar.gz file; the notebooks stream it once and parse each member in
-memory. The neural notebook takes about 35 minutes, the model notebook about 16. The attempt
+memory. The neural notebook takes about 35 to 55 minutes, the model notebook about 15 to 25, depending on the machine. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/sadeghi-2019-01.yaml`](../../attempts/sadeghi-2019-01.yaml).
