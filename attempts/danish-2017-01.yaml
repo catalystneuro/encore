@@ -31,17 +31,25 @@ outcomes:
     mark any recording as directed, so directed recordings, if present, cannot be told apart.
 - claim: lesion-undirected-rate-similar
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_danish_2017.ipynb
   output: claim:lesion-undirected-rate-similar
-  notes: Per hour of the recording span (first to last file of the day), syllables per hour fall
-    after the lesion in 6 of 7 birds (post/pre ratios 0.08 to 1.01, Wilcoxon p = 0.031); bouts per
-    hour p = 0.047, singing time per hour p = 0.031. Spans range from 2.2 to 41.6 h and recordings
-    are triggered by sound, so the span is a weak measure of time; raw bout counts per day do not
-    differ significantly (p = 0.156) but are not a rate. Only one day per condition is in the data
-    set, so the two readings of the days compared coincide.
+  notes: Per hour of the recording span (first to last file of the day), selected syllables per hour
+    fall after the lesion in 6 of 7 birds (post/pre ratios 0.08 to 1.01, Wilcoxon p = 0.031); bouts
+    per hour p = 0.047, singing time per hour p = 0.031. The result rests on counting the selected
+    segments; with all segments, selected or not, the decreases are not significant (segments,
+    bouts and singing time per hour p = 0.078, 0.109 and 0.078), and the selected fraction differs
+    between days (Purple53 0.59 before, 0.34 after). Per hour of recorded audio, all segments give
+    p = 1.000 and selected segments p = 0.078, but recordings are triggered by sound. Spans range
+    from 2.2 to 41.6 h, so the span is a weak measure of time; raw bout counts per day do not differ
+    significantly (p = 0.156) but are not a rate. Only one day per condition is in the data set, so
+    the two readings of the days compared coincide.
   deviations:
   - The recording hours are taken as the span between the first and last file of the day, as the
-    files hold no record of when the recorder was running.
+    files hold no record of when the recorder was running (an assumption).
+  - Song is counted from the segments the authors selected in their analysis files, assumed to be
+    the song syllables they analysed; all segments are shown as a variant and do not give a
+    significant decrease.
 - claim: fig2g-maturity-index-drop
   outcome: partially_reproduced
   assumed: true
@@ -77,7 +85,7 @@ outcomes:
   - 15.19
   notes: Durations of the selected segments of each day (2,129 to 20,127 syllables). Reading (a), D
     times root n, gives 30.41 +- 6.31 before and 15.19 +- 6.57 after; reading (b), D over the
-    Lilliefors critical value, 28.69 and 14.33. Both fall in all 7 birds (Wilcoxon p = 0.016) and
+    Lilliefors critical value, 28.69 and 14.33. Both fall in all 7 birds (Wilcoxon p = 0.0156) and
     stay above 2, but are about twice the paper's 16 and 3.7. The raw D falls from 0.29 to 0.21. The
     one SyllGaps.mat file (Purple94 post-lesion) gives Gamma 9.26, lower than the analysis file's
     16.32 for the same day, so the authors' segmentation for Gamma may differ from the analysis
@@ -91,7 +99,7 @@ outcomes:
   output: claim:fig2c-small-syllable-peak
   measured: 7
   notes: With 5 ms bins all 7 lesioned birds have a local maximum between 50 and 100 ms above the
-    fitted exponential, and above its Poisson 95% bound (readings a and b). With 10 ms bins
+    fitted exponential, and above its 97.5% Poisson bound (readings a and b). With 10 ms bins
     (variant) 6 of 7 do (Red92 has none), the paper's count. The main count is 7 against 6.
 - claim: fig2d-gaps-broader
   outcome: reproduced
@@ -124,14 +132,18 @@ outcomes:
   notebook: reproduce_danish_2017.ipynb
   output: claim:fig2e-residual-rhythm-peak
   measured: 7
-  notes: All 7 lesioned birds have a ratio maximum between 3 and 8 Hz (2.11 to 3.34) above the 95th
-    percentile of the same maximum over synthetic null sets (1.11 to 1.27), and all 7 between 4 and
-    8 Hz. The paper reports 6 of 7 with tolerance 0. In 3 birds (Purple94, LPink13, LPink15) the
-    3 to 8 Hz maximum is the band's lower edge, 3.17 Hz, and the null thresholds near 1.1 to 1.3
-    are passed by any of these ratios, as the synthetic null has no amplitude texture within
-    syllables. For post-lesion song the two null readings are the same.
+  notes: With 1000 synthetic null sets per bird, all 7 lesioned birds have a ratio maximum between
+    3 and 8 Hz (2.11 to 3.34) above the 95th percentile of the same maximum over the null sets (1.11
+    to 1.26), and all 7 between 4 and 8 Hz. The paper reports 6 of 7 with tolerance 0. In 3 birds
+    (Purple94, LPink13, LPink15) the 3 to 8 Hz maximum is the band's lower edge, 3.17 Hz. Requiring
+    a local maximum inside the band, all 7 still pass (local maxima 1.286 to 3.342, at 5.1 to 7.1
+    Hz, against null thresholds of 1.11 to 1.26), as the synthetic null has no amplitude texture
+    within syllables. Requiring the peak's prominence to exceed the 95th percentile of the null's
+    prominences, 4 of 7 pass in 3 to 8 Hz and 5 of 7 in 4 to 8 Hz. No version gives 6 of 7. For
+    post-lesion song the two null readings are the same.
   deviations:
-  - 200 synthetic null sets per bird, where the claims file asks for 1000, to fit the run time.
+  - The local-maximum and prominence tests are added variants; the claims file's test takes the
+    ratio's maximum in the band.
 - claim: figs1-control-lesions-no-effect
   outcome: blocked
   blocked_by: data_missing
@@ -140,11 +152,17 @@ outcomes:
 - claim: fig3-antidromic
   outcome: blocked
   blocked_by: other
-  notes: Not attempted in this run's time. The archive holds the stimulation files (the
-    spreadsheets mark them "stim", at 150, 200 and 320 uA; 147 recordings show saturating
-    artefacts), but no stimulus times, so latencies would have to be measured from the artefacts,
-    with responses separated from artefact recovery, on a channel the data set does not identify.
-    The 320 uA of Orange150 lies inside the claim's widened 63 to 330 uA range.
+  notes: The claims file makes the claim untestable without stimulation recordings with stimulus
+    times, and its latency and jitter are those of identified single units. The archive holds the
+    stimulation files (the spreadsheets mark them "stim", at 150, 200 and 320 uA; 40 of them have
+    artefacts on the chosen channel), but no stimulus times and no sorted or identified units. The
+    notebook describes the artefacts; they come back to within 0.25 V of baseline a median 2.3 ms
+    after onset (1.3 to 8.7 ms over files), inside the 1.5 to 5 ms window, and 36 of 779 stimuli
+    have recovered before 1.5 ms. In a multiunit trace a response locked to the stimulus with under
+    100 us of jitter repeats on every trial like the artefact and cannot be told apart from it
+    without identified units and collision tests, so no antidromic response was looked for and none
+    is reported either way. The 320 uA of Orange150 lies inside the claim's widened 63 to 330 uA
+    range.
 - claim: single-unit-spontaneous-rates
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -175,12 +193,13 @@ outcomes:
   notebook: reproduce_danish_2017.ipynb
   output: claim:fig4b-introductory-note-premotor
   measured:
-  - 35.5
+  - 37.0
   - 23.3
   notes: Introductory notes are the segments labelled "i" (20 in b871, 113 in Orange150, 10 in
     Uva4). The average peaks 20, 24 and 26 ms before onset (mean 23.3; paper 21 +- 9). Under shuffle
-    reading (b) Orange150 and Uva4 leave the band 33 and 38 ms before onset (mean 35.5; paper 39 +-
-    8); b871 does not. Under reading (a) the band for maxima, built from as few as 10 windows, is
+    reading (b), with the windows cut from the shifted bout taken as periodic, Orange150 and Uva4
+    leave the band 36 and 38 ms before onset (mean 37.0 over these two birds; paper 39 +- 8); b871
+    does not. Under reading (a) the band for maxima, built from as few as 10 windows, is
     wide and no bird leaves it.
   deviations:
   - Rests on the channel chosen for each bird.
@@ -244,7 +263,10 @@ outcomes:
   notes: The onset-aligned MUA peaks 13, 16 and 22 ms before onset (mean 17.0, SEM 2.6; paper 20 +-
     2, outside) and rises above the band 25, 27 and 32 ms before (mean 28.0 under shuffle a, 29.0
     under b; paper 32 +- 5, within). The 40 ms before onset exceed the bout mean and the window at
-    the preceding offset in every bird (paired t-tests, p below 1e-24).
+    the preceding offset in every bird (paired t-tests, p below 1e-24). The peak time depends on the
+    assumed channel; b871's channel 7 peaks 18 ms before onset against 13 ms on channel 6, which
+    would make the mean 18.7 ms, within the tolerance, though on channel 7 the b871 average does not
+    rise above the band before onset.
   deviations:
   - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
 - claim: fig6-dip-before-offset
@@ -254,11 +276,12 @@ outcomes:
   output: claim:fig6-dip-before-offset
   measured:
   - 18.0
-  - 40.3
+  - 40.7
   notes: The minimum averages 18.0 ms before offset (12, 17 and 25 ms; paper 18 +- 1) and the average
-    drops below the band 40.3 ms before offset under shuffle reading (b) (paper 48 +- 8; 36.3 under
-    reading a, outside). The 50 ms before offset are below the bout mean and the 40 ms before the
-    next onset in every bird (p below 1e-7). The drop time sits 0.3 ms inside the tolerance.
+    drops below the band 40.7 ms before offset under shuffle reading (b) (40, 43 and 39 ms; paper
+    48 +- 8; 36.3 under reading a, outside). The 50 ms before offset are below the bout mean and the
+    40 ms before the next onset in every bird (p below 1e-7). The drop time sits 0.7 ms inside the
+    tolerance.
   deviations:
   - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
 - claim: fig7a-correlation-with-amplitude
@@ -278,9 +301,28 @@ outcomes:
 - claim: spectral-features-weak
   outcome: blocked
   blocked_by: other
-  notes: Not attempted in this run's time. It needs the six Sound Analysis Pro features computed on
-    the raw audio of the electrophysiology recordings, which this run reduces to amplitude traces
-    as it streams them; the audio is in the data set.
+  notebook: reproduce_danish_2017.ipynb
+  output: claim:spectral-features-weak
+  notes: Kept as blocked, the outcome round 2 of verification reviewed; the revised notebook tests
+    the claim, and a change to not_reproduced is proposed. Six features computed per 1 ms from the
+    raw audio by uva.sap_features. Within single birds, 9 of 18 bird-feature pairs correlate
+    significantly with MUA (Bonferroni over 6 features) per rendition (reading a) and 15 of 18 per
+    1 ms bin (reading b); the paper reports none. Pooled over birds, amplitude r = 0.156 (a) and
+    0.183 (b, within 0.18 +- 0.018); gravity center r = 0.291 (a) and 0.082 (b), outside 0.17 +-
+    0.017; pitch goodness and FM are significant under every pooling, and Wiener entropy under (a)
+    and (b) but not with features z-scored within syllable type (p = 0.06).
+  deviations:
+  - The features follow Sound Analysis Pro's definitions only approximately (a Hann taper where SAP
+    uses two Slepian tapers, and the helper's own forms of FM and pitch goodness), as the claims
+    file adopts SAP's definitions as an assumption.
+  proposed:
+    outcome: not_reproduced
+    reason: The revised notebook ran the test (cells of spectral-features-weak). Under the claims
+      file's criterion no single-bird correlation should be significant, but 9 of 18 bird-feature
+      pairs are under reading (a) and 15 of 18 under (b); pooled, gravity center gives r = 0.291 (a)
+      and 0.082 (b), outside 0.17 +- 0.017, and pitch goodness and FM are significant under every
+      pooling. The outcome rests on the approximate SAP features (assumed). Verifier, round 2, would
+      give not_reproduced, assumed.
 - claim: fig7b-10hz-power-peaks
   outcome: partially_reproduced
   assumed: true
@@ -289,10 +331,12 @@ outcomes:
   measured:
   - 9.03
   - 8.91
-  notes: Over motifs with the dB amplitude, the average spectra peak at 9.03 Hz for song and 8.91 Hz
-    for MUA (paper 8.0 and 8.8); MUA is within tolerance, song just above it (7.2 to 8.8). The
-    rectified amplitude gives 9.16 to 9.28 Hz. Over bouts the song amplitude peaks at 3.4 to 6.3 Hz.
-    No reading puts both peaks in tolerance.
+  notes: With each spectrum normalized by its sum, over motifs with the dB amplitude, the average
+    spectra peak at 9.03 Hz for song and 8.91 Hz for MUA (paper 8.0 and 8.8); MUA is within
+    tolerance, song just above it (7.2 to 8.8). The power and rectified amplitudes give 9.28 Hz.
+    Normalized by length and averaged without renormalizing, the MUA peak moves to 12.6 Hz over
+    motifs and 11.6 Hz over bouts. Over bouts the song amplitude peaks at 6.10 to 6.23 Hz. No reading
+    puts both peaks in tolerance.
   deviations:
   - Rests on the channel chosen for each bird (see fig4a-elevated-during-song).
 - claim: fig7d-10hz-coherence
@@ -331,11 +375,14 @@ outcomes:
   - 40.0
   notes: 6 of 18 syllable types (3 birds) have a median duration above 150 ms (0.33; paper 0.43). 5
     of the 6 have a significant MUA peak above 10 Hz (0.83; paper 0.62), at 10.7, 20.5, 21.5, 22.5
-    and 40.0 Hz. The coherence with amplitude averaged over long types exceeds its null only at 3.9,
-    5.9 to 12.7 and 40.0 to 43.0 Hz, not over 1.1 to 49.5 Hz.
+    and 40.0 Hz; the lowest is outside 15.3 to 56.1 Hz. The coherence with amplitude averaged over
+    long types exceeds its null (0.107) from 2.0 to 59.6 Hz without a break; averaged within each
+    bird and then over the 3 birds, as the criterion says, it exceeds its null (0.141) over the same
+    range. The coherence part holds; the fraction of long types, the fraction with a fast peak and
+    the lowest peak frequency do not.
   deviations:
   - The scrambled null permutes the 1 kHz MUA samples (the reduced trace), not the raw signal,
-    before smoothing again at 2 ms.
+    before smoothing again at 2 ms, treating the window as periodic so that no edge dip is added.
 - claim: bout-offset-suppression
   outcome: partially_reproduced
   assumed: true
@@ -412,11 +459,11 @@ verifications:
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
   reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the
     helper module and the claims file, with the paper's full text. The verifier checked the
-    archive's checksums and listing and tested helper functions on synthetic inputs. The revision changed the helper and the notebook in reply (listed per claim), but
-    the revised notebook did not finish executing within this run (two full runs were stopped, the
-    second at 47 minutes). Its outputs are therefore not in the executed copy, and every number and
-    outcome in this record rests on the round-1 executed notebook. Outcome changes made here are
-    those the round-1 numbers support.
+    archive's checksums and listing and tested helper functions on synthetic inputs. The revision
+    changed the helper and the notebook in reply (listed per claim). The revision run itself did not
+    finish executing the revised notebook, and changed outcomes only where the round-1 numbers
+    supported it; the revised notebook was executed afterwards (43 minutes) and is the one round 2
+    reviewed.
   results:
   - claim: lesion-directed-song-abolished
     agrees: false
@@ -434,8 +481,8 @@ verifications:
       segments are counted and the selected fraction differs before and after the lesion. With all
       segments the verifier computed p of about 0.08.
     response: Outcome kept. The revised notebook adds rates from all segments and per hour of
-      recorded audio, and its conclusion states the dependence on the count; these outputs are not
-      executed in this run. Marked as resting on the measure in the text.
+      recorded audio, and its conclusion states the dependence on the count. Marked as resting on
+      the measure in the text.
   - claim: fig2g-maturity-index-drop
     agrees: false
     outcome: partially_reproduced
@@ -457,7 +504,7 @@ verifications:
     reason: With 5 ms bins 7 of 7 birds have a peak against the paper's 6, tolerance 0; 10 ms gives
       6 of 7. The local maxima include noise bumps.
     response: No change of outcome. The revised notebook plots the 5 ms histograms with the fitted
-      exponential and its bound (not executed in this run).
+      exponential and its bound.
   - claim: fig2d-gaps-broader
     agrees: true
     outcome: reproduced
@@ -477,8 +524,7 @@ verifications:
       0. In 3 birds the peak is the band edge (3.17 Hz), and thresholds of about 1.1 to 1.3 mean the
       test cannot fail.
     response: Changed to not_reproduced. The revised notebook requires a local maximum inside the
-      band, adds a prominence test, uses 1000 null draws and plots the ratio spectra (not executed
-      in this run).
+      band, adds a prominence test, uses 1000 null draws and plots the ratio spectra.
   - claim: figs1-control-lesions-no-effect
     agrees: true
     outcome: blocked
@@ -490,8 +536,8 @@ verifications:
     outcome: blocked
     reason: This was testable; the helper already extracts stimulation-artefact snippets (147 files
       flagged with_stim) and the spreadsheets give intensities of 150, 200 and 320 uA.
-    response: The revised notebook measures artefact recovery and short-latency spikes in the
-      stimulation files (not executed in this run). Blocked, other, kept.
+    response: The revised notebook measured artefact recovery and counted short-latency spikes in the
+      stimulation files. Blocked, other, kept. (The spike count was dropped in the round-2 revision.)
   - claim: single-unit-spontaneous-rates
     agrees: false
     outcome: blocked
@@ -512,7 +558,7 @@ verifications:
       only 2 of 3 birds cross, and the shuffle-(b) band is contaminated because the 150 ms padding
       is never shifted.
     response: No change of outcome. circ_shift_band now cuts the windows from the shifted bout taken
-      as periodic, and the birds behind each mean are printed (not executed in this run).
+      as periodic, and the birds behind each mean are printed.
   - claim: fig4a-elevated-during-song
     agrees: true
     outcome: reproduced
@@ -538,7 +584,7 @@ verifications:
       -18 ms on channel 7).
     response: No change of outcome. The revised notebook prints the analysis files' channel lists
       (all three channels listed; Orange150's first-day file runs its event detectors on channel 7,
-      the chosen one) and the onset latencies on every channel (not executed in this run).
+      the chosen one) and the onset latencies on every channel.
   - claim: fig6-dip-before-offset
     agrees: true
     outcome: reproduced
@@ -556,8 +602,8 @@ verifications:
     outcome: blocked
     reason: The raw sound channel is in the archive, so this could be tested.
     response: The revised helper computes six features after Sound Analysis Pro's definitions and the
-      revised notebook tests the claim, but it did not finish executing in this run, so the claim
-      stays blocked (other).
+      revised notebook tests the claim. The revision run did not finish executing it, so the claim
+      stayed blocked (other).
   - claim: fig7b-10hz-power-peaks
     agrees: true
     outcome: partially_reproduced
@@ -565,7 +611,7 @@ verifications:
       under any (best 9.03 Hz against 8.0 +- 0.8). Each bird's spectrum is re-normalized over 3 to
       30 Hz, which overrides the length reading.
     response: No change of outcome. The revised notebook averages each reading's spectra without
-      renormalizing (not executed in this run).
+      renormalizing.
   - claim: fig7d-10hz-coherence
     agrees: true
     outcome: reproduced
@@ -586,19 +632,210 @@ verifications:
       nulls have a bug (zero-padded smoothing gives every scrambled window the same edge dip), so the
       coherence and peak parts cannot be judged from these outputs; the count fails regardless.
     response: Outcome kept. scrambled_ffts now smooths the scrambled window circularly, without the
-      edge dip, and the notebook prints each type's coherence null; these outputs are not executed
-      in this run.
+      edge dip, and the notebook prints each type's coherence null.
   - claim: bout-offset-suppression
     agrees: false
     outcome: partially_reproduced
     reason: Activity falls below the band after offset in 3 of 3 birds and returns after 30, 309 and
       42 ms (mean 127 ms; tolerance 180 to 220).
     response: Changed to partially_reproduced. The revised notebook plots each bird's average with
-      its band (not executed in this run).
+      its band.
   - claim: no-motif-bout-signal
     agrees: true
     outcome: not_reproduced
     reason: In Orange150 activity before motif onsets is higher than before other onsets, p =
       0.0012, though small (0.0635 against 0.0607); no band excursion follows motif or bout
       offsets.
+    response: No change.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The fully executed revised notebook (execution counts 1 to 40 in order), the
+    helper module, the claims file and the attempt record, with the paper's full text. The verifier
+    found that the record and README described the notebook as not executed, which was no longer
+    true, and asked that the record be regenerated from the executed notebook. The round-2 revision
+    changed the fig3 cell and added an across-bird coherence variant to fig9, sped up two helper
+    functions without changing their results (the rhythm nulls, to keep the notebook under 60
+    minutes), re-ran the entry (40 minutes) and updated the record from it. No outcome changed;
+    one change is proposed (spectral-features-weak).
+  results:
+  - claim: lesion-directed-song-abolished
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, metadata_insufficient.
+    response: No change.
+  - claim: lesion-undirected-rate-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced, but it rests on two measurement choices, selected segments and
+      the first-to-last-file span as recording time. With all segments p = 0.078, 0.109 and 0.078
+      (cell 63). The notebook summary marks it "(assumption)", but the record has no `assumed true`
+      and its notes leave out the all-segment result.
+    response: Added assumed true, a deviation for the count of selected segments, and the all-segment
+      and per-audio-hour results to the notes.
+  - claim: fig2g-maturity-index-drop
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reasonable as partial. The adopted form ("log centred") was chosen after the fact, as the
+      only one of 16 combinations that matches, and the record says so. The maturity-index outcome
+      depends on a form chosen after the fact; Aronov et al. 2008 could not be reached.
+    response: No change. The form stays an assumption, stated in the deviations and asked of the
+      authors.
+  - claim: fig2f-closer-to-exponential
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced.
+    response: No change.
+  - claim: fig2c-small-syllable-peak
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced; the histograms are plotted and the noise bumps are
+      acknowledged.
+    response: No change. The notes now give the bound as the notebook does (97.5% Poisson bound).
+  - claim: fig2d-gaps-broader
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with reproduced.
+    response: No change.
+  - claim: fig2e-rhythmicity-drop
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced. Of the round-1 point on nulls, 1000 draws are now used;
+      the 5-draw null mean and the 30 Hz bound remain, which do not bear on a conclusion.
+    response: No change.
+  - claim: fig2e-residual-rhythm-peak
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced. The record's deviation "200 synthetic null sets" is wrong; it
+      is 1000 (cell 79). The notes also leave out the local-maximum test (7 of 7) and the prominence
+      test (4 of 7, or 5 of 7) from cell 82. Cell 83 says "local maxima 1.29 to 3.39" where cell 82
+      prints 1.286 to 3.342.
+    response: Removed the 200-set deviation, added the local-maximum and prominence results to the
+      notes, and corrected cell 83 to 1.29 to 3.34.
+  - claim: figs1-control-lesions-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change.
+  - claim: fig3-antidromic
+    agrees: true
+    outcome: blocked
+    reason: Blocked is still right under the claims file, which calls the claim untestable without
+      stimulus times and identified units, but the stated reason should be that. The record says
+      "Not attempted", while cell 85 and the README say "no antidromic response identifiable", which
+      is not supported, because cell 85 subtracts each file's median trace across stimuli before
+      detecting spikes. That removes any response time-locked in more than half the trials, which
+      is what an antidromic spike with jitter under 100 us looks like, so the count of files with
+      more than half of their stimuli followed by a spike is low by construction; the 1.5 to 5 ms
+      detection window also makes the latency part pass automatically.
+    response: Dropped the median-subtracted spike count from cell 85, which now only describes the
+      artefacts and their recovery (median 2.3 ms, 36 of 779 stimuli recovered before 1.5 ms).
+      The negative finding is removed from the notebook, the summary, the README and the record,
+      and the blocked reason is now the claims file's (no stimulus times, no identified units).
+  - claim: single-unit-spontaneous-rates
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, metadata_insufficient.
+    response: No change.
+  - claim: fig4c-call-premotor
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced; the channel assumption is stated and reasonable.
+    response: No change.
+  - claim: fig4b-introductory-note-premotor
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced. The record says "leave the band 33 and 38 ms before
+      onset (mean 35.5)", with measured 35.5; cell 15 gives 36 and 38 ms, a mean of 37.0.
+    response: Notes and measured value corrected to 36 and 38 ms, mean 37.0 (within 39 +- 8).
+  - claim: fig4a-elevated-during-song
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with reproduced; the channel assumption is stated and reasonable.
+    response: No change.
+  - claim: fig5-consistent-across-renditions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced.
+    response: No change.
+  - claim: fig5-consistent-across-sites
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced.
+    response: No change.
+  - claim: fig6-peak-before-onset
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced. It depends on the channel assumption; on b871's channel
+      7 the peaks would be 18, 16 and 22 ms, a mean of 18.7, which is inside 20 +- 2 (cell 21). The
+      channel assumption decides whether fig6-peak is partial or reproduced.
+    response: No change of outcome; the channel stays the one chosen by a rule fixed before this
+      claim was measured, and Orange150's analysis file runs its detectors on the chosen channel.
+      The notes now state the channel-7 alternative and its mean of 18.7 ms.
+  - claim: fig6-dip-before-offset
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with reproduced. The record says "drops below the band 40.3 ms ... sits 0.3 ms
+      inside the tolerance", with measured 40.3; cell 23 gives 40.7 ms.
+    response: Notes and measured value corrected to 40.7 ms (40, 43 and 39 ms), 0.7 ms inside the
+      tolerance.
+  - claim: fig7a-correlation-with-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with reproduced.
+    response: No change.
+  - claim: spectral-features-weak
+    agrees: false
+    outcome: not_reproduced
+    reason: The record says blocked ("not executed"), but cells 42 and 43 executed it. Under the
+      claims file's criterion it is not_reproduced; 9 of 18 bird-feature pairs are significant in
+      single birds under reading (a) and 15 of 18 under (b). Pooled gravity center is 0.291 (a) and
+      0.082 (b) against 0.17 +- 0.017, and pitch goodness and FM pass under every pooling. It should
+      read not_reproduced, assumed, because uva.sap_features only approximates SAP (Hann taper, its
+      own FM and pitch-goodness definitions). Cell 43 says pitch goodness, Wiener entropy and FM are
+      significant under every reading; under the z-scored variant Wiener entropy has p = 0.06.
+    response: Outcome kept as blocked, the outcome round 2 reviewed, and not_reproduced proposed under
+      proposed for round 3, its reason stating that it rests on the approximate features (a blocked
+      outcome cannot carry assumed true), with a deviation for them. The
+      notes now give the executed numbers. Cell 43 corrected for Wiener entropy under the z-scored
+      variant.
+  - claim: fig7b-10hz-power-peaks
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced. The record says "The rectified amplitude gives 9.16 to
+      9.28 Hz. Over bouts the song amplitude peaks at 3.4 to 6.3 Hz."; cell 37 gives 9.28 Hz, and
+      6.10 to 6.23 Hz over bouts. The notes also leave out that the length normalization puts the
+      MUA peak at 12.6 Hz (motifs) and 11.6 Hz (bouts).
+    response: Notes corrected to 9.28 Hz and 6.10 to 6.23 Hz, and the length-normalized MUA peaks
+      added.
+  - claim: fig7d-10hz-coherence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with reproduced.
+    response: No change.
+  - claim: fig8-no-gte-relation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (other, not attempted).
+    response: No change; GTE extraction was not attempted in this revision either.
+  - claim: fig9-long-syllable-gamma
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced; the long-type fraction is 0.33, the fraction with a fast peak
+      0.83 and the lowest peak 10.7 Hz, all outside tolerance. The record's notes are out of date;
+      cell 45 prints one unbroken range from 2.0 to 59.6 Hz above a threshold of 0.107, so the
+      coherence part now holds. The coherence is averaged over long types, where the criterion says
+      "across-bird" average.
+    response: Notes updated to the executed numbers. Cell 45 now also averages the coherence within
+      each bird and then over birds; that average exceeds its null (0.141) from 2.0 to 59.6 Hz, so
+      the coherence part holds under both averages.
+  - claim: bout-offset-suppression
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced; the channel assumption is stated and reasonable.
+    response: No change.
+  - claim: no-motif-bout-signal
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced; the channel assumption is stated and reasonable.
     response: No change.

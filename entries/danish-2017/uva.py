@@ -100,11 +100,16 @@ def read_dat(b):
     return (d[:, 0] if nch == 1 else d), fs, typ
 
 
-def gauss_smooth(x, sd):
-    """Gaussian smoothing with SD `sd` samples (kernel to +-4 SD), by overlap-add convolution."""
+def gauss_kernel(sd):
+    """Normalized Gaussian kernel with SD `sd` samples, to +-4 SD."""
     h = int(np.ceil(4 * sd))
     k = np.exp(-0.5 * (np.arange(-h, h + 1) / sd) ** 2)
-    return signal.oaconvolve(x, k / k.sum(), mode="same")
+    return k / k.sum()
+
+
+def gauss_smooth(x, sd):
+    """Gaussian smoothing with SD `sd` samples (kernel to +-4 SD), by overlap-add convolution."""
+    return signal.oaconvolve(x, gauss_kernel(sd), mode="same")
 
 
 def gauss_smooth_circular(x, sd):
@@ -450,7 +455,11 @@ NFFT_RHYTHM = 4096  # 1 kHz traces; 0.24 Hz grid, a standard choice
 def bout_spectrum(trace):
     """Song rhythm spectrum of one bout (Methods, Song rhythmicity): mean-subtracted, detrended,
     one Slepian taper with time half-bandwidth 2, FFT, squared magnitude normalized by length."""
-    y = signal.detrend(trace - trace.mean())
+    # least-squares linear detrend, as signal.detrend, written out for speed (the nulls call it
+    # millions of times)
+    y = trace - trace.mean()
+    t = np.arange(len(y)) - (len(y) - 1) / 2
+    y = y - y.mean() - t * (t @ y) / (t @ t)
     tap = tapers(len(y)).ravel()
     X = np.fft.rfft(y * tap, NFFT_RHYTHM)
     return np.abs(X) ** 2 / len(y)
@@ -469,7 +478,7 @@ def synthetic_bout(n, syl_mean, gap_logmu, gap_logsd, lev_syl, lev_gap, rng):
         out[t: t + d] = lev_syl if on else lev_gap
         t += d
         on = not on
-    return gauss_smooth(out, 2.5)
+    return np.convolve(out, gauss_kernel(2.5), mode="same")  # as gauss_smooth; direct, faster for short traces
 
 
 # ---------------------------------------------------------------- electrophysiology tables
