@@ -173,6 +173,17 @@ def test_claims_read_again_after_an_attempt_are_the_next_attempts_to_test(repo):
     assert not any("claim 'fig2' has no outcome" in e for e in errors(repo))
 
 
+def test_a_tested_claim_names_its_notebook(repo):
+    def check(outcome):
+        (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "outcomes": [outcome]}))
+        return [e for e in errors(repo) if "names no notebook" in e]
+    tested = ATTEMPT["outcomes"][0]
+    assert check(tested) == []
+    # A tested claim without a notebook is refused; a blocked claim needs none.
+    assert check({k: v for k, v in tested.items() if k not in ("notebook", "output")})
+    assert check({"claim": "fig1", "outcome": "blocked", "blocked_by": "data_missing"}) == []
+
+
 def test_the_dandiset_version_must_be_pinned(repo):
     entry = {**ENTRY, "related": [{"id": "dandi:000001", "relation": "uses_data"}, ENTRY["related"][1]]}
     (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump(entry))

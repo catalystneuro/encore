@@ -120,6 +120,23 @@ def _git(cwd, *args):
                           capture_output=True, text=True).stdout
 
 
+def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
+    # docs/replicates.md: every reference to the chain's branch goes through $br, which a replicate sets to
+    # replicate/<paper>/<rN>; its runs are found by the name <paper>/<rN>; it ends before the reconcile step and the
+    # finish, and it never reads the claims again.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    body = chain[chain.index("set -uo pipefail"):]
+    assert body.count("attempt/$d") == body.count('br="attempt/$d"') == 2
+    assert 'br="replicate/$d/$REPLICATE"; tag="$d/$REPLICATE"' in body and 'run "$tag" "$1"' in body
+    assert body.count('${REPLICATE:+-f replicate="$REPLICATE"}') == 2
+    done = body.index('end "$d REPLICATE $REPLICATE DONE"')
+    assert done < body.index("step reconcile") < body.index('log "finishing"')
+    assert body.index('log "replicate $REPLICATE: the claims on main"') < body.index("step claims\n")
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in workflow and "format('replicate/{0}/{1}'" in workflow
+    assert "format('-{0}', inputs.replicate)" in workflow   # its own concurrency group: one waits for no other
+
+
 def _finish_sandbox(tmp_path, branch_change, main_change):
     """An origin with main and attempt/x, a clone of it, and chain.sh's merge_main run in the clone."""
     import subprocess
@@ -141,7 +158,7 @@ def _finish_sandbox(tmp_path, branch_change, main_change):
     _git(clone, "checkout", "-q", "-b", "elsewhere")
     chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
     body = chain[chain.index("drop_work(){"):chain.index('log "finishing"')]
-    script = ('set -uo pipefail\nd=x\nwork=$(mktemp -d)\nnotify(){ :; }\n'
+    script = ('set -uo pipefail\nd=x\nbr=attempt/x\nwork=$(mktemp -d)\nnotify(){ :; }\n'
               'fetch(){ git fetch -q origin main "attempt/$d"; }\n' + body + 'merge_main; rc=$?\n'
               'echo "rc=$rc"; [ $rc = 0 ] && git -C "$work" log -1 --format=%s; drop_work\n')
     out = subprocess.run(["bash", "-c", script], cwd=clone, capture_output=True, text=True,

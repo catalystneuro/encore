@@ -374,6 +374,12 @@ def check(entry_dir: Path) -> Report:
             if outcome.get("claim") not in known:
                 report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is not in the claims file")
             notebook = outcome.get("notebook")
+            # A claim that was tested names the notebook that tested it. One whose outcome changed from blocked
+            # in a late revision can be left without (andrews-2024, 2026-11-13): the site then lists it with the
+            # claims no notebook tests.
+            if outcome.get("outcome") != "blocked" and not notebook:
+                report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r} "
+                             "and names no notebook; give the notebook that tests it (`notebook`) and its cell (`output`)")
             if notebook and notebook not in listed:
                 report.error(path.relative_to(ROOT), f"notebook {notebook!r} is not in the entry")
             tag = outcome.get("output")

@@ -90,10 +90,15 @@ GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><p
                '-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 '
                '7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
 
+# The mark for "not reproduced": an equals sign struck through, "the result differs". It is drawn, not typed, because
+# the font's "≠" is too thin to read in the 14px legend square. It is neutral on purpose: not a cross, as a failure to
+# reproduce may be the attempt's failure, not the paper's. It takes the text colour of the square it sits in.
+DIFFERS_MARK = ('<svg viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M2 3.8h6M2 6.2h6M6.6 1.6 3.4 8.4" '
+                'fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>')
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
     "partially_reproduced": ("Partially reproduced", "warning", "◐"),
-    "not_reproduced": ("Not reproduced", "unresolved", "?"),
+    "not_reproduced": ("Not reproduced", "unresolved", DIFFERS_MARK),
     "blocked": ("Blocked", "blocked", "⊘"),
 }
 BLOCKED_BY = {
@@ -844,7 +849,7 @@ def paper_pipeline_rows(data: dict) -> list[dict]:
             "datasets": [dataset_cell(k) for k in p["datasets"]], "state": state,
             "issue": issues_by_name.get(key) or next((issues[dataset_label(k)] for k in p["datasets"]
                                                       if dataset_label(k) in issues), None),
-            "page": f"papers/{key}/" if atts or p["status"] == "claims" else None,
+            "page": f"papers/{key}/",
             **queued([key] + ([] if by_paper else folders))})
         by_doi[doi] = row
         out.append(row)
@@ -943,8 +948,15 @@ def rows(data: dict) -> dict[str, list]:
     by_id = {t["key"]: t for t in data["targets"]}
     dandisets, claims, findings = [], [], []
     journal = journals_of(data["targets"])
+    # The papers associated with each dataset: the paper its data were published with and the papers that reuse
+    # them (papers/datasets/), attempted or not.
+    papers_on: dict = {}
+    for q in papers_of(data):
+        for k in q["datasets"]:
+            papers_on.setdefault(k, []).append(q)
     for t in data["targets"]:
         atts = current.get(t["key"])
+        mine = sorted(papers_on.get(t["key"], []), key=lambda q: (not q["attempts"], q["key"]))
         outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
         dandisets.append({
             "id": t["key"], "label": t["label"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
@@ -972,6 +984,11 @@ def rows(data: dict) -> dict[str, list]:
                 atts or [], key=version_order, reverse=True) if not a.get("deprecated"))),
             "tested": sorted({version_state(a) for a in atts or [] if not a.get("deprecated")}),
             "n_tested": len({a["paper"].lower() for a in atts or [] if not a.get("deprecated")}),
+            # Every paper associated with the dataset, those with an attempt first.
+            "n_papers": len(mine), "paper_count": "one" if len(mine) == 1 else "several" if mine else None,
+            "papers": [{"byline": q["byline"], "doi": q["doi"], "attempted": bool(q["attempts"]),
+                        "page": f'papers/{q["key"]}/'}
+                       for q in mine],
             "badge": (badge_of(data, t["key"]) or {}).get("text") if atts else None,
             "deprecated": any(a.get("deprecated") for a in atts or []),
             "converted": "catalystneuro" if t["catalystneuro"] else "other",
@@ -1156,8 +1173,7 @@ def author_rows(data: dict) -> list[dict]:
             "counts": counts if sum(counts.values()) else None,
             "attempted": "yes" if attempted else "no",
             "as": [k for k, on in (("author", a["papers"]), ("contributor", a["datasets"])) if on],
-            "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims"
-                        else None, "doi": q["doi"]} for q in a["papers"]],
+            "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/', "doi": q["doi"]} for q in a["papers"]],
             "datasets": [dataset_label(d["key"]) for d in a["datasets"]],
         })
     return sorted(out, key=lambda r: (-r["n_papers"], -r["n_datasets"], r["family"].lower()))
@@ -1392,7 +1408,7 @@ def card_badge_svg(o: dict) -> str:
     """A card: the person's name, how many claims in how many papers, the outcomes as one bar, and each count."""
     pad = 14
     legend, end = _legend(o["counts"], pad, 80)
-    tested = f'{o["claims"]} claim{"" if o["claims"] == 1 else "s"} · {o["papers"]} paper{"" if o["papers"] == 1 else "s"}'
+    tested = o.get("line") or f'{o["claims"]} claim{"" if o["claims"] == 1 else "s"} · {o["papers"]} paper{"" if o["papers"] == 1 else "s"}'
     name_w = _text_width(o["name"]) * 1.18
     w = round(max(end + pad, pad + 62 + _text_width(tested) + pad + 20, name_w + 2 * pad, 300))
     # The bar: a segment for each outcome, in the site's order, with a gap of the card's colour between two.
@@ -1413,6 +1429,73 @@ def card_badge_svg(o: dict) -> str:
             f'<text x="{w - pad}" y="23" text-anchor="end" fill="#6b6475">{e(tested)}</text>'
             f'<text x="{pad}" y="43" font-size="13" font-weight="bold" fill="#120e17">{e(o["name"])}</text>'
             f'{bar_}<g font-weight="bold" fill="#2b2333">{legend}</g></g></svg>\n')
+
+
+def dataset_outcomes(data: dict, key: str) -> dict | None:
+    """Every outcome of the claims tested on a dataset, over all its papers, in every current attempt, verified or
+    not, leaving out a deprecated attempt. For the two badges that show all the outcomes. None when no claim was
+    tested on it."""
+    atts = [a for a in current_attempts(data).get(key, []) if not a.get("deprecated")]
+    counts = outcome_counts(atts) if atts else {k: 0 for k in OUTCOMES}
+    claims = sum(counts.values())
+    if not claims:
+        return None
+    papers = len({a["paper"].lower() for a in atts})
+    said = ", ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items())
+    archive, ident = split_key(key)
+    base = SITE_URL + f"badge/{archive}/{ident}"
+    return {"counts": counts, "claims": claims, "papers": papers, "name": dataset_label(key),
+            "url": SITE_URL + page_of(key), "svg_outcomes": base + "-outcomes.svg", "svg_card": base + "-card.svg",
+            "alt": f'Encore: {said}, of {claims} claim{"" if claims == 1 else "s"} tested on {dataset_label(key)}'}
+
+
+def paper_badge(data: dict, q: dict) -> dict | None:
+    """A paper's badge (docs/badges.md): how many of its findings were reproduced, counted as a dataset's badge
+    counts them (claims on its datasets, reproduced in full, in current attempts an independent verifier has
+    checked). None when that is nothing."""
+    total = sum(outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+    if not total:
+        return None
+    text = f'{total} finding{"" if total == 1 else "s"} reproduced'
+    return {"text": text, "reproduced": total, "url": SITE_URL + f'papers/{q["key"]}/',
+            "svg": SITE_URL + f'badge/papers/{q["key"]}.svg', "alt": f'Encore: {text}, {q["byline"]}'}
+
+
+def paper_outcomes(data: dict, q: dict) -> dict | None:
+    """Every outcome of a paper's claims, as the bar at the top of its page has them (the claims that rest on its
+    datasets, in every current attempt, verified or not), for the two badges that show all the outcomes. None when
+    the paper has no attempt."""
+    row = next((r for r in rows_cache(data)["papers"] if r["id"] == q["key"]), {})
+    counts = {k: (row.get("counts") or {}).get(k, 0) for k in OUTCOMES}
+    claims = sum(counts.values())
+    if not claims:
+        return None
+    sets = len({k for a in q["live"] for k in a.get("datasets") or [a["key"]]})
+    said = ", ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items())
+    base = SITE_URL + f'badge/papers/{q["key"]}'
+    return {"counts": counts, "claims": claims, "papers": 1, "name": q["byline"],
+            "line": f'{claims} claim{"" if claims == 1 else "s"} · {sets} dataset{"" if sets == 1 else "s"}',
+            "url": SITE_URL + f'papers/{q["key"]}/', "svg_outcomes": base + "-outcomes.svg", "svg_card": base + "-card.svg",
+            "alt": f'Encore: {said}, of {claims} claim{"" if claims == 1 else "s"} of {q["byline"]}'}
+
+
+def paper_badges_panel(data: dict, q: dict, root: str) -> str:
+    """The section of a paper's page with its badges and the code to show one elsewhere."""
+    badge, every = paper_badge(data, q), paper_outcomes(data, q)
+    all_note = ("It counts every claim of the paper in a current attempt, verified or not, as the bar at the top of "
+                "this page does.")
+    local = f'{root}badge/papers/{e(q["key"])}'
+    styles = ([{"name": "Findings reproduced", "src": f"{local}.svg", "svg": badge["svg"], "alt": badge["alt"],
+                "url": badge["url"], "counts": "It counts the paper&rsquo;s findings reproduced in full by attempts "
+                                               "an independent verifier has checked."}] if badge else [])
+    if every:
+        styles += [{"name": "All outcomes", "src": f"{local}-outcomes.svg", "svg": every["svg_outcomes"],
+                    "alt": every["alt"], "url": every["url"], "counts": all_note},
+                   {"name": "Card", "src": f"{local}-card.svg", "svg": every["svg_card"], "alt": every["alt"],
+                    "url": every["url"], "counts": all_note}]
+    return badges_how(styles, "Badges for this paper" if len(styles) > 1 else "Badge for this paper",
+                      "beside the paper, on a lab&rsquo;s site or in a repository&rsquo;s README",
+                      f'{root}api/papers/{e(q["key"])}.json') if styles else ""
 
 
 def badge_how(badge: dict, src: str, title: str, counts: str, where: str, json_href: str) -> str:
@@ -1545,6 +1628,7 @@ def paper_rows(data: dict) -> list[dict]:
             "species": sorted({x for k in p["datasets"] for x in by_key.get(k, {}).get("species", [])}),
             "status": p["status"], "tier": weakest_tier(live) if live else None, "date": p["date"],
             "counts": counts, "claims": len(outcomes) if live else None,
+            "badge": (paper_badge(data, p) or {}).get("text") if live else None,
             "elsewhere": sum(sum(outcome_counts(live, g).values()) for g in ("with_inputs", "elsewhere")) if live else None,
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if live else None,
             "reproduced": (round(share, 4) if (share := reproduced_share(counts)) is not None else None) if live else None,
@@ -1556,7 +1640,7 @@ def paper_rows(data: dict) -> list[dict]:
             "found": sorted({f["kind"] for a in live for f in a["findings"]}),
             "converted": "catalystneuro" if any(by_key.get(k, {}).get("catalystneuro") for k in p["datasets"]) else "other",
             "missing": sum(len(a.get("missing_datasets") or []) for a in live),
-            "page": f"papers/{p['key']}/" if atts or p["status"] == "claims" else None,
+            "page": f"papers/{p['key']}/",
         })
     return rows_
 
@@ -1653,6 +1737,29 @@ def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None, ask
     return html
 
 
+# Words the notes abbreviate with a full stop, which does not end a sentence there ("Fig. 2", "et al. 2019").
+ABBREVIATIONS = {"fig", "figs", "eq", "eqs", "al", "ref", "refs", "s.d", "s.e", "s.e.m", "a.u", "e.g", "i.e", "vs",
+                 "cf", "approx", "ext", "supp", "no", "sec", "ca", "resp"}
+
+
+def gist(notes: str, limit: int = 110, shortest: int = 40) -> str:
+    """The first sentence of a claim's notes, cut at a word before `limit` characters with an ellipsis if longer.
+
+    The notes are the agent's account of what it measured and mostly open with the result, so this line lets a
+    reader scanning the claims learn the result without opening each one. It is the record's own text, unchanged.
+    A first sentence shorter than `shortest` characters is often a label ("Reading (b)."), so the next one follows.
+    """
+    text = squash(notes)
+    for m in re.finditer(r"[.!?](?=\s+[A-Z0-9(\"'`])", text):
+        word = text[:m.start()].rsplit(" ", 1)[-1].lower()
+        if m.end() >= shortest and word not in ABBREVIATIONS:
+            text = text[:m.end()]
+            break
+    if len(text) <= limit:
+        return text
+    return text[:limit + 1].rsplit(" ", 1)[0].rstrip(",;:(–—-") + "…"
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
@@ -1704,10 +1811,12 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
     ident = f'<code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
     body += (f'<p class="claim-link small muted">Claim id <code>{e(o["claim"])}</code> &middot; '
              f'<a href="#claim-{e(o["claim"])}">link to this claim</a></p>')
+    # What was found, in a line under the statement while the claim is closed; open, the full notes show.
+    lead = f'<p class="gist">{e(gist(o["notes"]))}</p>' if o["notes"] else ""
     # The chip is not a link here: inside the summary a click should open the claim.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
             f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}{ident}</div>'
-            f'<p class="statement">{e(o["statement"])}</p></summary>'
+            f'<p class="statement">{e(o["statement"])}</p>{lead}</summary>'
             f'<div class="claim-body">{body}</div></details></li>')
 
 
@@ -1774,16 +1883,18 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     r = rows_cache(data)
     n_papers = sum(1 for p in papers_of(data) if p["attempts"])
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
-    tabs = [("overview", "Overview", root or "./", None), ("papers", "Papers", f"{root}papers/", n_papers),
-            ("datasets", "Datasets", f"{root}datasets/", n_datasets),
-            ("authors", "Authors", f"{root}authors/", None),
-            ("pipeline", "Pipeline", f"{root}pipeline/", None),
-            ("about", "About", f"{root}about/", None)]
+    # The bar's tabs are the pages for readers. Pipeline, the maintainers' page of which step each paper is at, is
+    # in the phone menu (class "menuonly") and the footer, not in the bar on a wide screen.
+    tabs = [("overview", "Overview", root or "./", None, ""), ("papers", "Papers", f"{root}papers/", n_papers, ""),
+            ("datasets", "Datasets", f"{root}datasets/", n_datasets, ""),
+            ("authors", "Authors", f"{root}authors/", None, ""),
+            ("about", "About", f"{root}about/", None, ""),
+            ("pipeline", "Pipeline", f"{root}pipeline/", None, " menuonly")]
     nav = ""
-    for key, label, href, n in tabs:
+    for key, label, href, n, extra in tabs:
         current = ' aria-current="page"' if key == active else ""
         count = f'<span class="n">{n:,}</span>' if n is not None else ""
-        nav += f'<a class="tab" href="{href}"{current}>{label}{count}</a>'
+        nav += f'<a class="tab{extra}" href="{href}"{current}>{label}{count}</a>'
     banner = '<div class="demo">Demo data: made-up attempts, for testing the site only</div>' if data["demo"] else ""
     home = root or "./"
     return f'''<!doctype html>
@@ -1798,9 +1909,9 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow" id="tabrow">{nav}
+  <a class="tab ext menuonly" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
-  <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
-  <a class="tab ext runs" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
+  <a class="tab ext cta" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a></div>
   <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false" aria-controls="tabrow" aria-label="Menu"><span aria-hidden="true"></span></button>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
@@ -1808,7 +1919,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 {body}
 <footer>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
-<a href="{REPO_URL}/actions">Agent runs</a> ·
+<a href="{root}pipeline/">Pipeline</a> · <a href="{REPO_URL}/actions">Agent runs</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
 the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
 a judgement of the paper.</footer>
@@ -1837,7 +1948,8 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')set(false)
 
 def caution_block() -> str:
     return f'''<div class="caution" id="caution">
-  <p class="lead"><strong>{CAUTION}</strong> It may be a failure of the attempt.</p>
+  <p class="lead"><span><strong>{CAUTION}</strong> It may be a failure of the attempt.</span></p>
+  <details><summary>More on reading outcomes</summary>
   <div class="body">
     <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it. A
     “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
@@ -1846,8 +1958,14 @@ def caution_block() -> str:
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
     from the paper’s. Authors who think an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>, from the attempt's page.</p>
-  </div>
+  </div></details>
 </div>'''
+
+
+# A reader who follows a link to #caution came for the explanation: open it for them.
+CAUTION_JS = """<script>(function(){function go(){if(location.hash!=='#caution')return;var c=document.getElementById('caution'),
+d=c&&c.querySelector('details');if(!d)return;d.open=true;c.scrollIntoView();}
+go();addEventListener('load',go);addEventListener('hashchange',go);})();</script>"""
 
 
 # --- pages ---------------------------------------------------------------------
@@ -1993,7 +2111,7 @@ def progress_data(data: dict) -> dict:
 
 
 def progress_panel(data: dict) -> str:
-    """The dashboard at the top of the overview: totals and two charts of the effort over time.
+    """The dashboard on the overview, under the outcomes: totals and two charts of the effort over time.
 
     The page draws the charts from the JSON it carries (assets/progress.js); without scripts, the table
     below them gives the same numbers.
@@ -2127,15 +2245,18 @@ def page_overview(data: dict) -> str:
   each attempt, and every finding gets
   an outcome, whether or not it reproduced. <a href="about/">How it works</a> ·
   <a href="{ENCORE_DOCS}">Run the same check on your own data</a></p>
-  {"" if dashboard else f'<div class="tiles">{tile_html}</div>'}
+  <form class="home-search" method="get" action="papers/" role="search">
+    <input name="q" type="search" placeholder="Search papers" aria-label="Search papers">
+    <button class="ghost" type="submit">Search</button>
+  </form>
 </header>
 <main>
-  {dashboard}
-  <div class="panel">
+  <div class="panel outcomes-panel">
     <h2>Outcomes of the {n_claims:,} claims that rest on the dataset alone</h2>
     {outcomes}{outside_note(attempts, collapsed=True)}
     {caution_block()}
   </div>
+  {dashboard or f'<div class="tiles">{tile_html}</div>'}
   <div class="grid2" style="margin-top:16px">{panels}</div>
   <div class="panel attempts" style="padding:0">
     <div class="tabs" role="tablist"><button type="button" role="tab" data-panel="most-reproduced" aria-selected="true">Most
@@ -2153,7 +2274,7 @@ def page_overview(data: dict) -> str:
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + TABS_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               + TABS_JS + CAUTION_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
@@ -2165,17 +2286,18 @@ def page_overview(data: dict) -> str:
 
 ABOUT_STEPS = [
     ("Choose a target",
-     "The queue holds every public dataset whose metadata names a paper; so far all come from the DANDI Archive, the only archive the registry reads yet. Datasets converted "
-     "by CatalystNeuro go first."),
+     "A target is a paper and the public datasets that hold its data. So far attempts have used datasets in "
+     "{archives}. Run requests go first, then datasets converted by CatalystNeuro."),
     ("Write down the claims",
-     "An author agent reads the paper and records its key findings as claims, each with the numbers it rests on, a "
-     "tolerance, and the test that will decide it. The claims are written before any analysis is run."),
+     "A reader agent reads the paper and records its key findings as claims, each with the numbers it rests on, a "
+     "tolerance, and the test that will decide it. A second reader checks the claims against the paper. The claims "
+     "are written before any analysis is run, and the readers never see the data."),
     ("Check the data and test each claim",
      "The author checks the dataset against its own description, then writes a notebook that streams the data from "
      "the archive and tests each claim. Every claim gets an outcome: reproduced, partially reproduced, not reproduced, "
      "or blocked, with the reason. What the author learns about the data along the way is recorded as findings."),
     ("First verification",
-     "A second agent, in a separate run that has not seen the author's reasoning or conclusions, reviews the notebook "
+     "A verifier agent, in a separate run that has not seen the author's reasoning or conclusions, reviews the notebook "
      "and the paper and decides its own outcome for each claim. The author then answers each point, revising the "
      "analysis where needed."),
     ("Second verification",
@@ -2186,6 +2308,41 @@ ABOUT_STEPS = [
      "The attempt is added to the registry's records. The notebook runs again in a clean environment, "
      "and once the checks pass the attempt is merged and appears here."),
 ]
+# Who does each step, as the diagram on the About page labels it (docs/pipeline.md, "Steps").
+ABOUT_ROLES = ["Queue runner", "Reader agents", "Author agent", "Verifier agent", "Verifier agent",
+               "Checks, then the recorder agent"]
+
+
+def about_flow() -> str:
+    """The six steps of ABOUT_STEPS as a picture: one box a step, with who does it, and the author's revision after
+    each verification. Drawn with the site's colours, so that it follows the theme; the list beside it says the rest."""
+    w, box, gap, pill, pgap = 300, 46, 22, 26, 18
+    parts, y = [], 1
+    arrow = lambda y0, y1: (f'<line x1="{w // 2}" y1="{y0}" x2="{w // 2}" y2="{y1 - 2}" class="fa" '
+                            f'marker-end="url(#flow-arrow)"/>')
+    for i, (head, _) in enumerate(ABOUT_STEPS):
+        if i:
+            parts.append(arrow(y - gap, y))
+        parts.append(f'<rect x="1" y="{y}" width="{w - 2}" height="{box}" rx="4" class="fb"/>'
+                     f'<circle cx="19" cy="{y + box // 2}" r="11" class="fc"/>'
+                     f'<text x="19" y="{y + box // 2 + 4}" class="fn">{i + 1}</text>'
+                     f'<text x="38" y="{y + 20}" class="ft">{e(head)}</text>'
+                     f'<text x="38" y="{y + 37}" class="fr">{e(ABOUT_ROLES[i])}</text>')
+        y += box + gap
+        if head.endswith("verification"):
+            top = y - gap
+            parts.append(arrow(top, top + pgap))
+            parts.append(f'<rect x="{w // 2 - 70}" y="{top + pgap}" width="140" height="{pill}" rx="{pill // 2}" class="fp"/>'
+                         f'<text x="{w // 2}" y="{top + pgap + 17}" class="fq">Author revises</text>')
+            y = top + pgap + pill + gap
+    label = ("The six steps of an attempt, in order: " + "; ".join(
+        f"{i + 1}, {head.lower()}, by the {ABOUT_ROLES[i][0].lower() + ABOUT_ROLES[i][1:]}"
+        for i, (head, _) in enumerate(ABOUT_STEPS)) + ". The author revises after each verification.")
+    h = y - gap + 1
+    return (f'<figure class="flow" id="flow"><svg viewBox="0 0 {w} {h}" role="img" aria-label="{e(label)}">'
+            f'<title>{e(label)}</title><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" '
+            f'markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="fm"/></marker></defs>'
+            + "".join(parts) + "</svg></figure>")
 
 
 PIPELINE_STATES = [("done", "Done"), ("older", "Made before the step existed"), ("waiting", "Waiting on a person"),
@@ -2395,25 +2552,51 @@ t.textContent+=" ("+ago+")";}})();
                  description="Where every paper of the reproduction registry stands in its pipeline.")
 
 
+def attempted_archives(data: dict) -> list[str]:
+    """The archives with at least one attempt, in the order of ARCHIVES."""
+    order = list(ARCHIVES)
+    return sorted({split_key(a["key"])[0] for a in data["attempts"]},
+                  key=lambda k: (order.index(k) if k in order else 99, k))
+
+
 def page_about(data: dict) -> str:
-    """How an attempt is made: the agents, their roles, and where they run."""
+    """How an attempt is made: the agents, their roles, and where they run; and what the site has for a paper's
+    authors and for the archives that hold its data."""
     root = "../"
-    steps = "".join(f'<li><h3>{e(head)}</h3><p>{e(text)}</p></li>' for head, text in ABOUT_STEPS)
+    names = [ARCHIVES.get(k, {}).get("name", k) for k in attempted_archives(data)]
+    archives = (", ".join(names[:-1]) + " and " + names[-1]) if len(names) > 1 else (names[0] if names else "public archives")
+    steps = "".join(f'<li><h3>{e(head)}</h3><p>{e(text.replace("{archives}", archives))}</p></li>'
+                    for head, text in ABOUT_STEPS)
+    # The badge shown is that of the first dataset with one, so that it is always a real badge.
+    order = list(ARCHIVES)
+    shown = next((k for k in sorted({a["key"] for a in data["attempts"]},
+                                    key=lambda k: (order.index(split_key(k)[0]) if split_key(k)[0] in order else 99, k))
+                  if badge_of(data, k)), None)
+    if shown:
+        badge = badge_of(data, shown)
+        archive_, ident_ = split_key(shown)
+        example = (f'<p class="about-badge"><a href="{root}{e(page_of(shown))}"><img src="{root}badge/{e(archive_)}/'
+                   f'{e(ident_)}.svg" alt="{e(badge["alt"])}"></a> <span class="small muted">The badge of '
+                   f'{e(dataset_label(shown))}</span></p>')
+    else:
+        example = ""
     body = f'''<header class="page">
   <h1>How the registry works</h1>
   <p class="lede">Every attempt here is made by AI agents, in a fixed sequence of roles, following a
-  <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The author and the verifiers are separate runs
-  that do not share their reasoning.</p>
+  <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The readers, the author and the verifiers are
+  separate runs that do not share their reasoning.</p>
 </header>
 <main class="about">
-  <div class="panel"><h2>An attempt, step by step</h2><ol class="steps">{steps}</ol></div>
+  <div class="panel"><h2>An attempt, step by step</h2>
+    <div class="flowwrap">{about_flow()}<ol class="steps">{steps}</ol></div></div>
   <div class="grid2" style="margin-top:16px">
     <div class="panel"><h2>Where the agents run</h2>
       <p>Each role runs in GitHub Actions on a fresh machine with no personal configuration. The agent's commands
       cannot see the credentials it runs on, and a verifier sees only the materials it is given: the repository is
       removed before it starts. Each run commits its work, its cleaned transcript and its report, so every step can
       be read afterwards in the <a href="{REPO_URL}/tree/main/transcripts">transcripts</a> and the
-      <a href="{REPO_URL}/actions">agent runs</a>.</p></div>
+      <a href="{REPO_URL}/actions">agent runs</a>. The <a href="{root}pipeline/">pipeline</a> page shows where each
+      paper stands, from the match to its datasets to verification.</p></div>
     <div class="panel"><h2>Reading an outcome</h2>
       <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it.
       A failure to reproduce may be a failure of the attempt, and is not a finding that the paper is wrong. Claims that
@@ -2421,17 +2604,31 @@ def page_about(data: dict) -> str:
       apart. <a href="{root}#caution">More on reading outcomes</a></p></div>
     <div class="panel"><h2>Repeat attempts</h2>
       <p>When a dataset changes, for example after its data are corrected, or when the protocol changes, a new attempt
-      can be made on the same paper. The author agent then reports, for each earlier finding, whether it is fixed,
-      partly fixed or still present. Earlier attempts stay in the record.</p></div>
+      can be made on the same paper. Its author does not see the earlier attempt. Once the new attempt is verified, a
+      separate run compares the two and reports, for each earlier finding, whether it is fixed, partly fixed or still
+      present. Earlier attempts stay in the record.</p></div>
     <div class="panel"><h2>Disagreeing with an attempt</h2>
       <p>The agents make mistakes. If you are an author of a paper here, or know the data, and think an attempt is
       wrong, <a href="{RESPOND_URL}">respond to it</a> with the form for authors. Every attempt links to its notebook, its
       claims and the reasoning behind each outcome.</p></div>
   </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel" id="authors"><h2>For authors</h2>
+      <p>Each paper's page and each attempt's page link to a <a href="{RESPOND_URL}">form for responding</a> to the
+      attempt. Once a maintainer confirms who wrote a response, it is shown on the paper's page
+      (<a href="{REPO_URL}/blob/main/docs/author-responses.md">how responses are handled</a>). Each author whose
+      ORCID iD the registry knows has a page with their papers, their datasets and their badges. Find yours in the
+      <a href="{root}authors/">list of authors</a>.</p></div>
+    <div class="panel" id="archives"><h2>For archives</h2>
+      <p>Each dataset an attempt has used has a page with what the attempts found about its data. The
+      <a href="{root}datasets/">list of datasets</a> has them all. A dataset with findings reproduced from it has a
+      badge, which an archive or the dataset's owner can show on their own page. Each of these datasets also has a JSON file
+      with the same numbers (<a href="{REPO_URL}/blob/main/docs/badges.md">how to use the badges</a>).</p>{example}</div>
+  </div>
 </main>'''
     return shell(data, f"How the registry works · {SITE_NAME}", root, "about", body, path="about/",
-                 description="How AI agents attempt to reproduce papers from their open data on the DANDI Archive: "
-                             "the claims, the author and verifier roles, and where the agents run.")
+                 description="How AI agents attempt to reproduce papers from their open data in public archives: "
+                             "the claims, the reader, author and verifier roles, and where the agents run.")
 
 
 # The site's lists. Only the papers list is a page (INDEX_LISTS): since 2026-11-11 the papers are the one index,
@@ -2462,8 +2659,10 @@ LISTS = {
                  "read. For a dataset&rsquo;s owner and the curators of its archive. Results on a paper&rsquo;s "
                  "claims are in the <a href=\"../papers/\">papers list</a>.",
         "facets": [("archive", "Archive"), ("found", "Open findings"), ("tested", "Tested on"),
-                   ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-findings", "Most open findings"), ("-date", "Most recently tested"), ("id", "Identifier"),
+                   ("paper_count", "Papers"), ("converted", "Converted by"), ("technique", "Technique"),
+                   ("species", "Species")],
+        "sorts": [("-findings", "Most open findings"), ("-date", "Most recently tested"), ("-n_papers", "Most papers"),
+                  ("id", "Identifier"),
                   ("-id", "Identifier, newest first"), ("-size_gb", "Largest"), ("size_gb", "Smallest"),
                   ("name", "Title")],
         "csv": None,
@@ -2507,6 +2706,7 @@ def page_list(data: dict, kind: str) -> str:
             "found": {**FINDING_KINDS, "(none)": "None recorded"},
             "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
             "attempted": {"yes": "Has a paper attempted", "no": "None attempted yet"},
+            "paper_count": {"one": "One paper", "several": "Several papers", "(none)": "None listed"},
             "as": {"author": "An author of a paper", "contributor": "A contributor of a dataset"},
             "relation": {"primary": "Its own data", "reuses": "Reused data"},
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
@@ -2957,11 +3157,21 @@ def page_dataset(data: dict, key: str) -> str:
     badge = badge_of(data, key)
     archive_, ident_ = split_key(key)
     # For the dataset's owner or its archive: the badge, and what to paste to show it.
-    badge_panel = badge_how(
-        badge, f"{root}badge/{e(archive_)}/{e(ident_)}.svg", "Badge for this dataset",
-        "It counts the findings reproduced in full from this dataset by attempts an independent verifier has "
-        "checked, over every paper tested on it.", "on the dataset&rsquo;s own page",
-        f'{root}api/{page_of(key).rstrip("/")}.json') if badge else ""
+    every = dataset_outcomes(data, key)
+    local = f"{root}badge/{e(archive_)}/{e(ident_)}"
+    all_note = ("It counts every claim tested on this dataset in a current attempt, verified or not, over every paper "
+                "tested on it.")
+    styles = ([{"name": "Findings reproduced", "src": f"{local}.svg", "svg": badge["svg"], "alt": badge["alt"],
+                "url": badge["url"],
+                "counts": "It counts the findings reproduced in full from this dataset by attempts an independent "
+                          "verifier has checked, over every paper tested on it."}] if badge else [])
+    if every:
+        styles += [{"name": "All outcomes", "src": f"{local}-outcomes.svg", "svg": every["svg_outcomes"],
+                    "alt": every["alt"], "url": every["url"], "counts": all_note},
+                   {"name": "Card", "src": f"{local}-card.svg", "svg": every["svg_card"], "alt": every["alt"],
+                    "url": every["url"], "counts": all_note}]
+    badge_panel = badges_how(styles, "Badges for this dataset",
+                             "on the dataset&rsquo;s own page", f'{root}api/{page_of(key).rstrip("/")}.json') if styles else ""
     reproduced = (f'<p class="lede reproduced-line"><strong>{badge["reproduced"]}</strong> finding'
                   f'{"" if badge["reproduced"] == 1 else "s"} reproduced from this dataset'
                   + (f', in {len(badge["papers"])} papers' if len(badge["papers"]) > 1 else "")
@@ -2988,7 +3198,7 @@ def page_dataset(data: dict, key: str) -> str:
   {fixed_html}
   {badge_panel}
 </main>'''
-    return shell(data, f"{dataset_label(key)}: {name} · {SITE_NAME}", root, "datasets", body, path=page_of(key),
+    return shell(data, f"{dataset_label(key)}: {name} · {SITE_NAME}", root, "datasets", body, BADGE_PICK_JS, path=page_of(key),
                  description=f"What attempts to reproduce papers from {dataset_label(key)} on {archive_name(key)} found "
                              f"about its data, and the papers tested on it.")
 
@@ -3014,6 +3224,9 @@ def page_paper(data: dict, p: dict) -> str:
         # Claims read from the paper, before its first attempt: they belong to the paper (claims/<paper>.yaml).
         files = data.get("paper_claims", {}).get(p["key"], [])
         claims_html, n = claims_list(files, {p["doi"]: p["title"]})
+        if not n:
+            parts.insert(0, '<p class="lede not-tested">Not tested yet. No claims have been read from this paper, and no '
+                            'attempt has tried to reproduce it.</p>')
         if n:
             prow = next((r for r in paper_pipeline_rows(data) if r.get("paper") == p["key"]), None)
             nxt = ("; next in the pipeline: " + e(prow["next"].lower())) if prow and prow["next"] else ""
@@ -3129,7 +3342,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             reasons: dict = {}
             for o in blocked:
                 reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
-            why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
+            # A record can give a tested claim no notebook (andrews-2024 did, for a claim that was blocked until
+            # its last revision). `entry.py check` refuses such a record; the page says what the record says and
+            # does not fail, so that one record cannot stop the site's build.
+            why = ", ".join(f"{count} {(BLOCKED_BY.get(k, k) or 'with no notebook named in the record').lower()}"
+                            for k, count in reasons.items())
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
@@ -3456,27 +3673,49 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
                f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
                f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
-               f'<div class="dhead"><h1>{e(paper["title"])}</h1>{tier_badge(tier, tier_link)}</div>'
-               f'{authors_html(data, paper["doi"], root)}'
-               f'<p class="sub"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · paper key '
-               f'<code>{e(paper["key"])}</code></p>'
-               f'{sets}{could_not}')
+               f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
+               f'{authors_html(data, paper["doi"], root)}')
+        # The result leads (the outcomes and the summary); what the paper is and which data were used are in a
+        # column at the side, which goes under the result on a narrow screen.
+        side = (f'<aside class="phead-side" aria-label="About the paper and its data">'
+                f'<p class="phead-tier">{tier_badge(tier, tier_link)}</p>'
+                f'<p class="sub small"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · <span class="key">paper key '
+                f'<code>{e(paper["key"])}</code></span></p>'
+                f'{sets}{could_not}'
+                + (f'<div class="phead-tags">{tags}</div>' if tags else "") + '</aside>')
     else:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
                f'<div class="dhead"><h1>{e(dataset_label(dandiset))}</h1>{tier_badge(tier, tier_link)}</div>'
                f'<p class="sub">{e(name)}</p>')
-    body = f'''<header class="page">
+    if paper:
+        header = f'''<header class="page">
+  {top}
+  <div class="phead">
+  <div class="phead-main">
+  <div class="result"><p class="result-head">Outcomes of {n} claims</p>{bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}</div>
+  {outside_note(atts)}
+  {summary_block(atts, name=lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
+  {responses_block(data, paper, one, root)}
+  {superseded}
+  <p class="actions">{" ".join(actions)}</p>
+  </div>
+  {side}
+  </div>
+</header>
+'''
+    else:
+        header = f'''<header class="page">
   {top}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
-  {summary_block(atts, name=(lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a))) if paper else None)}
-  {responses_block(data, paper, one, root) if paper else ""}
+  {summary_block(atts)}
   {f'<p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>' if tested_on else ""}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
-<main>
+'''
+    body = f'''{header}<main>
   {attempts_timeline(data, dandiset, root, atts, paper=paper)}
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>
@@ -3497,6 +3736,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     {deviations_html}</section>
   <section class="tabpanel" id="provenance"><h2>Provenance</h2>{provenance_html}</section>
   {related}
+  {paper_badges_panel(data, paper, root) if paper and not one else ""}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
     if one:
@@ -3506,7 +3746,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                                  f'open data: {n} claims, their outcomes, notebooks and verification.')
     if paper:
         return shell(data, f'{paper["byline"]}: {paper["title"]} · {SITE_NAME}', root, "papers", body,
-                     CLAIMS_JS + TABS_JS, path=f'papers/{paper["key"]}/',
+                     CLAIMS_JS + TABS_JS + BADGE_PICK_JS, path=f'papers/{paper["key"]}/',
                      description=f'Reproduction attempts on {paper["byline"]}, "{paper["title"]}", from its open data: '
                                  f'{n} claims, their outcomes, notebooks and verification.')
     path = f"{page_of(dandiset)}{attempt['id']}/" if attempt else page_of(dandiset)
@@ -3626,11 +3866,18 @@ def build(data: dict, output: Path) -> None:
             "entries": entries_for(data, key),
             # For a page elsewhere about the dataset (docs/badges.md); null when there is nothing to show.
             "badge": badge_of(data, key),
+            "badges": {"reproduced": (badge_of(data, key) or {}).get("svg"),
+                       "outcomes": dataset_outcomes(data, key)["svg_outcomes"] if dataset_outcomes(data, key) else None,
+                       "card": dataset_outcomes(data, key)["svg_card"] if dataset_outcomes(data, key) else None},
         }, indent=1) + "\n"
+        every = dataset_outcomes(data, key)
+        svg = output / "badge" / split_key(key)[0] / f"{split_key(key)[1]}.svg"
+        svg.parent.mkdir(parents=True, exist_ok=True)
         if badge_of(data, key):
-            svg = output / "badge" / split_key(key)[0] / f"{split_key(key)[1]}.svg"
-            svg.parent.mkdir(parents=True, exist_ok=True)
             svg.write_text(badge_svg(badge_of(data, key)))
+        if every:
+            svg.with_name(f"{split_key(key)[1]}-outcomes.svg").write_text(outcomes_badge_svg(every))
+            svg.with_name(f"{split_key(key)[1]}-card.svg").write_text(card_badge_svg(every))
         (output / "api" / page_of(key).rstrip("/")).parent.mkdir(parents=True, exist_ok=True)
         (output / "api" / f'{page_of(key).rstrip("/")}.json').write_text(api)
         # The DANDI pages and API files were at dandisets/<id>/ before; links to them are kept working.
@@ -3642,9 +3889,38 @@ def build(data: dict, output: Path) -> None:
                 (old / sub / "index.html").write_text(redirect_page(target, "../../" + ("../" if sub else "")))
             (output / "api" / "dandiset" / f"{split_key(key)[1]}.json").write_text(api)
     for p in papers_of(data):
-        if p["attempts"] or p["status"] == "claims":
-            (output / "papers" / p["key"]).mkdir(parents=True, exist_ok=True)
-            (output / "papers" / p["key"] / "index.html").write_text(page_paper(data, p))
+        # Every paper listed has a page, tested or not, so that every list can link to it.
+        (output / "papers" / p["key"]).mkdir(parents=True, exist_ok=True)
+        (output / "papers" / p["key"] / "index.html").write_text(page_paper(data, p))
+        badge, every = paper_badge(data, p), paper_outcomes(data, p)
+        (output / "badge" / "papers").mkdir(parents=True, exist_ok=True)
+        if badge:
+            (output / "badge" / "papers" / f'{p["key"]}.svg').write_text(badge_svg(badge))
+        if every:
+            (output / "badge" / "papers" / f'{p["key"]}-outcomes.svg').write_text(outcomes_badge_svg(every))
+            (output / "badge" / "papers" / f'{p["key"]}-card.svg').write_text(card_badge_svg(every))
+        # For a page elsewhere about the paper (docs/badges.md): its results in short, and its badges.
+        row = next((x for x in r["papers"] if x["id"] == p["key"]), {})
+        (output / "api" / "papers").mkdir(parents=True, exist_ok=True)
+        (output / "api" / "papers" / f'{p["key"]}.json').write_text(json.dumps({
+            "key": p["key"], "doi": p["doi"], "title": p["title"], "byline": p["byline"],
+            "journal": journal_name(p["doi"]), "url": SITE_URL + f'papers/{p["key"]}/', "status": p["status"],
+            "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+            "authors": [{"name": a["name"], "orcid": a.get("orcid"),
+                         "url": SITE_URL + f'authors/{a["orcid"]}/' if a.get("orcid") else None}
+                        for a in authors_of(data, p["doi"])],
+            "datasets": [{"key": k, "label": dataset_label(k),
+                          "url": SITE_URL + page_of(k) if k in current_attempts(data) else None}
+                         for k in p["datasets"]],
+            "outcome_counts": every["counts"] if every else None, "tier": row.get("tier"),
+            "attempts": [{"id": a["id"], "date": a["date"], "tier": a["tier"],
+                          "datasets": a.get("datasets") or [a["key"]],
+                          "url": SITE_URL + attempt_path(data, a)} for a in p["attempts"]],
+            "badge": badge,
+            "badges": {"reproduced": badge["svg"] if badge else None,
+                       "outcomes": every["svg_outcomes"] if every else None,
+                       "card": every["svg_card"] if every else None},
+        }, indent=1) + "\n")
         # Every attempt on the paper has an address of its own, which stays when a later attempt replaces it. The
         # paper's one current attempt is read on the paper's page, and its address leads there.
         for a in paper_attempts(data, p):
@@ -3679,7 +3955,7 @@ def build(data: dict, output: Path) -> None:
             "papers": [{"key": q["key"], "byline": q["byline"], "title": q["title"], "doi": q["doi"],
                         "status": q["status"], "outcome_counts": counts.get(q["key"], {}).get("counts"),
                         "tier": counts.get(q["key"], {}).get("tier"),
-                        "url": SITE_URL + f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims" else None}
+                        "url": SITE_URL + f'papers/{q["key"]}/'}
                        for q in author["papers"]],
             "datasets": [{"key": d["key"], "label": dataset_label(d["key"]), "roles": d["roles"],
                           "url": SITE_URL + page_of(d["key"]) if d["key"] in current_attempts(data) else None}
@@ -3760,8 +4036,7 @@ def sitemap(data: dict) -> str:
     pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
-    pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)
-              if p["attempts"] or p["status"] == "claims"]
+    pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)]
     pages += [(f"authors/{orcid}/", max([q["date"] for q in a["papers"] if q["date"]] or [data["generated"][:10]]))
               for orcid, a in author_index(data).items()]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)

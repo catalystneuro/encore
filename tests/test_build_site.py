@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html
 import json
 import re
 import sys
@@ -164,6 +165,19 @@ def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
         assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
+def test_the_caution_shows_its_lead_and_keeps_the_rest_behind_a_disclosure(built):
+    _, out = built
+    home = (out / "index.html").read_text()
+    block = home[home.index('<div class="caution" id="caution">'):]
+    block = block[:block.index("</details>") + len("</details>")]
+    lead, details = block.split("<details>", 1)
+    assert site.CAUTION in lead and "It may be a failure of the attempt." in lead
+    assert "<details open" not in block
+    assert "An outcome says what one attempt could recover" in details
+    assert "Most attempts are made by AI agents." in details and site.RESPOND_URL in details
+    assert site.CAUTION_JS in home and "#caution" in site.CAUTION_JS
+
+
 def test_a_papers_page_lists_every_notebook_of_every_entry_that_uses_its_datasets(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
@@ -317,6 +331,19 @@ def test_a_deprecated_attempt_counts_for_nothing():
     assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
 
 
+def test_an_outcome_reached_outside_the_notebooks_does_not_stop_the_site(tmp_path):
+    # A record that gives a tested claim no notebook (andrews-2024 did) must not stop the build: the paper's page
+    # lists the claim with those no notebook tests, and says the record names none.
+    data = site.collect()
+    q = next(q for q in site.papers_of(data) if len(q["attempts"]) == 1 and q["attempts"][0]["notebooks"])
+    a = q["attempts"][0]
+    moved = next(o for o in a["outcomes"] if o["outcome"] == "reproduced" and o.get("notebook"))
+    moved["notebook"] = None
+    page = site.page_paper(data, q)
+    assert "Not tested in a notebook" in page and "with no notebook named in the record" in page
+    assert f'id="claim-{moved["claim"]}"' in page
+
+
 def test_a_person_has_two_more_badges_with_all_the_outcomes(built):
     data, out = built
     papers = {x["id"]: x for x in json.loads((out / "data" / "papers.json").read_text())}
@@ -434,6 +461,18 @@ def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
                     assert f'Notebook <code>{nb["path"]}</code>' in page
 
 
+def test_each_outcome_has_its_own_mark_and_not_reproduced_is_not_a_question_or_a_cross():
+    icons = [icon for _, _, icon in site.OUTCOMES.values()]
+    assert len(set(icons)) == len(icons)
+    assert all("?" not in icon for icon in icons)
+    differs = site.OUTCOMES["not_reproduced"][2]
+    assert differs == site.DIFFERS_MARK and not any(c in differs for c in "✗✕×!")
+    # The mark is decorative: a screen reader hears the label next to it, not the symbol.
+    assert 'aria-hidden="true"' in differs
+    assert site.chip("not_reproduced").startswith('<span class="chip unresolved"><span class="icon" aria-hidden="true">')
+    assert all(f'aria-hidden="true">{icon}</span>' in site.legend({k: 1 for k in site.OUTCOMES}) for icon in icons)
+
+
 def test_claims_with_outside_names_count_as_the_dandiset():
     attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "with_labels"},
                             {"claim": "b", "outcome": "reproduced", "data": "with_inputs"}]}
@@ -498,6 +537,17 @@ def test_the_overview_shows_the_dashboard(built):
         assert (out / "assets" / "progress.js").is_file()
 
 
+def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
+    data, out = built
+    page = (out / "index.html").read_text()
+    # A plain form, so it works without scripts: the papers list reads q from the URL.
+    assert re.search(r'<form class="home-search" method="get" action="papers/"[^>]*>\s*<input name="q" type="search"', page)
+    # Under the lede, then the outcomes (with the caution attached), then the counters and charts.
+    order = [page.index('class="lede"'), page.index('class="home-search"'), page.index("claims that rest on the dataset alone"),
+             page.index('id="caution"'), page.index('class="progress"' if 'class="progress"' in page else 'class="tiles"')]
+    assert order == sorted(order)
+
+
 def test_view_on_dandi_opens_a_new_window(built):
     data, out = built
     dandiset = next(iter(site.current_attempts(data)))
@@ -541,12 +591,56 @@ def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
 
 
+def test_the_about_page_names_the_archives_draws_the_steps_and_points_authors_and_archives_on(built):
+    data, out = built
+    about = (out / "about" / "index.html").read_text()
+    archives = {site.split_key(a["key"])[0] for a in data["attempts"]}
+    assert archives and site.attempted_archives(data)
+    for k in archives:
+        assert html.escape(site.ARCHIVES[k]["name"]) in about
+    assert "the only archive" not in about
+    # The diagram: one box a step, labelled for screen readers, and the list still in full.
+    assert 'id="flow"' in about and 'role="img" aria-label="The six steps of an attempt' in about
+    for head, _ in site.ABOUT_STEPS:
+        assert about.count(f">{html.escape(head)}<") >= 2
+    assert html.escape(site.RESPOND_URL) in about and "docs/badges.md" in about
+    assert 'href="../authors/"' in about and 'href="../datasets/"' in about
+    # The badge shown is a real one, of the first dataset with a badge.
+    shown = re.search(r'src="\.\./badge/([a-z]+)/([^"]+)\.svg"', about)
+    assert shown and (out / "badge" / shown[1] / f"{shown[2]}.svg").exists()
+
+
+def test_the_bar_is_for_readers_and_check_your_data_is_its_button(built):
+    """Pipeline is the maintainers' page: in the footer, the phone menu (menuonly, hidden on a wide screen) and the
+    About page, not among the bar's tabs. "Check your data" is the bar's one button."""
+    import re
+    data, out = built
+    home = (out / "index.html").read_text()
+    bar = home[home.index('<nav class="top"'):home.index("</nav>")]
+    footer = home[home.index("<footer>"):home.index("</footer>")]
+    assert 'href="pipeline/">Pipeline</a>' in footer
+    shown = [m for m in re.findall(r'<a class="(tab[^"]*)" href="([^"]*)"', bar) if "menuonly" not in m[0]]
+    assert [h for _, h in shown][:5] == ["./", "papers/", "datasets/", "authors/", "about/"]
+    assert not any("pipeline" in h for _, h in shown)
+    assert '<a class="tab menuonly" href="pipeline/">Pipeline</a>' in bar
+    assert re.search(rf'<a class="tab ext cta" href="{re.escape(site.ENCORE_DOCS)}" title="Run the same check', bar)
+    # The menu-only links are hidden in the bar and shown in the phone menu; the button is filled in the accent.
+    css = (site.ASSETS / "app.css").read_text()
+    wide = css[:css.index("@media (max-width:920px)")]
+    assert "nav.top a.tab.menuonly{display:none}" in wide and "nav.top a.tab.menuonly{display:flex}" in css
+    assert "background:var(--accent);color:var(--surface)" in wide[wide.index("nav.top a.tab.cta{"):]
+    pipeline = (out / "pipeline" / "index.html").read_text()
+    assert '<a class="tab menuonly" href="../pipeline/" aria-current="page">Pipeline</a>' in pipeline
+    assert 'href="../pipeline/">pipeline</a>' in (out / "about" / "index.html").read_text()
+
+
 def test_a_claim_shows_the_papers_own_words_when_quoted():
     claim = {"claim": "fig2", "statement": "Rates rise.", "source": "Figure 2B", "quote": "Firing rates rose <sharply>.",
              "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
     assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p><cite>Figure 2B</cite>' in html
-    assert html.index("blockquote") < html.index("It rose.")
+    body = html.split("</summary>")[1]
+    assert body.index("blockquote") < body.index("It rose.")
     assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
 
 
@@ -569,7 +663,8 @@ def test_a_claim_lists_the_statistics_the_paper_reports():
     claim = {"claim": "a", "statement": "S.", "source": None, "statistics": stats, "outcome": "reproduced",
              "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in html and html.index("stats") < html.index("N.")
+    body = html.split("</summary>")[1]
+    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in body and body.index("stats") < body.index("N.")
 
 
 def test_link_claims_are_counted_apart_from_the_papers_findings():
@@ -625,6 +720,24 @@ def test_a_claim_shows_its_id_which_the_response_form_asks_for():
     # The form's hint names ids as the page shows them, not numbers the page does not have.
     form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
     assert "C3, C7" not in form and "end of the claim's first line" in form
+
+
+def test_a_closed_claim_gives_the_first_sentence_of_its_notes():
+    notes = ("GC median latency 0.710 ms against MC 0.740 ms (Mann-Whitney P = 2.3e-14, Fig. 1E). The stored "
+             "waveforms are cut off.")
+    claim = {"claim": "fig1", "statement": "Rates <rise>.", "source": "Figure 1E", "outcome": "reproduced",
+             "blocked_by": None, "notes": notes, "deviations": [], "disagreed": False}
+    head, body = site.claim_item(claim, "../").split("</summary>")
+    # In the summary, after the statement, whose markup is unchanged; the full notes are in the body.
+    assert ('<p class="statement">Rates &lt;rise&gt;.</p><p class="gist">GC median latency 0.710 ms against MC '
+            '0.740 ms (Mann-Whitney P = 2.3e-14, Fig. 1E).</p>') in head
+    assert f'<p class="notes">{site.e(notes)}</p>' in body
+    # A long first sentence is cut at a word, with an ellipsis; a short label is joined by the next sentence.
+    long = site.gist("In " + "many long words " * 20 + "the rate rose. Then more.")
+    assert long == "In " + "many long words " * 6 + "many long…"
+    assert site.gist("Reading (b). The rate is 3 Hz in 9 sessions. More.") == "Reading (b). The rate is 3 Hz in 9 sessions."
+    # No notes, no line.
+    assert 'class="gist"' not in site.claim_item({**claim, "notes": ""}, "../")
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
@@ -927,11 +1040,41 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
                 assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
     # And a dataset's page names the paper's page.
     assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    # The result leads: under the title, the full outcome bar and the summary come before the datasets, which
+    # sit with the paper's DOI, tags and verification badge in the side column. So on an attempt's page.
+    for path in (("papers", "tingley-2021"), ("papers", "kim-2022", "kim-2022-01")):
+        text = site.joinpath(*path, "index.html").read_text()
+        head = text[text.index('<header class="page"'):text.index("</header>")]
+        result, summary = head.index('<div class="result">'), head.index('<div class="attempt-summary">')
+        side, sets = head.index('<aside class="phead-side"'), head.index('<div class="sets">')
+        assert head.index("<h1>") < result < summary < side < sets, path
+        assert '<div class="bar" role="img" aria-label="Outcomes of ' in head[result:summary]
+        assert 'class="tier' in head[side:] and "doi:" in head[side:] and "doi:" not in head[:side]
     # A paper on several datasets lists them all; the tab bar leads to the papers and to the datasets.
     semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
     nav = (site / "index.html").read_text()
     assert 'href="papers/"' in nav and 'href="datasets/"' in nav and 'class="menu"' not in nav
+
+
+def test_links_are_underlined_except_where_nearly_every_word_is_one():
+    """Links keep the browser's underline by default. Only the dense areas (the datasets table, list rows, crumbs,
+    attempts, footer) quiet it, each with one scoped rule, and there it comes back on hover and keyboard focus."""
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    # The base rule colours links and does not remove their underline.
+    assert re.search(r"^a\{color:var\(--link\)\}$", css, re.M)
+    assert not re.search(r"^a\{[^}]*text-decoration", css, re.M)
+    quiet = re.search(r"^:where\((.*?)\) a:not\(\[class\]\)\{text-decoration:none\}$", css, re.M)
+    thin = re.search(r"^:where\((.*?)\) a:not\(\[class\]\)\{text-decoration:underline;", css, re.M)
+    back = re.search(r"^:where\((.*?)\) a:not\(\[class\]\):is\(:hover,:focus-visible\)\{text-decoration:underline", css, re.M)
+    assert quiet and thin and back
+    assert {".sets th", ".row .id", ".row .meta"} <= set(quiet[1].split(","))
+    assert {".crumbs", "footer"} <= set(thin[1].split(","))
+    assert {".sets", ".row .meta", ".crumbs", ".timeline", "footer"} <= set(back[1].split(","))
+    # Running text is never in the scope, and keyboard focus keeps its outline.
+    for prose in (".lede", ".notes", ".caution", ".about", ".claim", ".sub"):
+        assert prose not in quiet[1] + thin[1] + back[1]
+    assert ":focus-visible{outline:2px solid var(--accent)" in css and "outline:none" not in css
 
 
 def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
@@ -979,6 +1122,34 @@ def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives()
     assert "--archive-4" not in css
 
 
+def test_muted_text_keeps_the_wcag_aa_contrast_in_both_themes():
+    """Small gray text (dates, journals, claim sources, counts) needs 4.5:1 on every background it sits on, and must
+    stay lighter than the secondary text so the two still read as two levels."""
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+
+    def theme(selector):
+        block = css.split(selector, 1)[1].split("}", 1)[0]
+        return dict(re.findall(r"--([a-z0-9-]+):(#[0-9a-f]{6})", block))
+
+    def ratio(a, b):
+        def lum(h):
+            c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+            c = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+            return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+        hi, lo = sorted([lum(a), lum(b)], reverse=True)
+        return (hi + 0.05) / (lo + 0.05)
+
+    light = theme(":root{")
+    dark_system = theme(":root:not([data-theme=light]){")
+    dark_chosen = theme(":root[data-theme=dark]{")
+    assert dark_system == dark_chosen  # the two copies of the dark theme stay in step
+    for colours in (light, {**light, **dark_chosen}):
+        for text in ("muted", "good-text"):
+            for background in ("surface", "panel", "hover"):
+                assert ratio(colours[text], colours[background]) >= 4.5, (text, background, colours[text])
+        assert ratio(colours["muted"], colours["surface"]) < ratio(colours["text2"], colours["surface"]) - 2
+
+
 def test_the_datasets_list_is_for_curators_and_the_papers_list_finds_a_paper_by_its_datasets(built):
     import json
     data, out = built
@@ -1007,6 +1178,30 @@ def test_the_datasets_list_is_for_curators_and_the_papers_list_finds_a_paper_by_
     assert 'papers/?found=' not in (out / "index.html").read_text()
 
 
+def test_the_datasets_list_says_how_many_papers_each_dataset_has(built):
+    data, out = built
+    rows = json.loads((out / "data" / "datasets.json").read_text())
+    theirs: dict = {}
+    for q in site.papers_of(data):
+        for k in q["datasets"]:
+            theirs.setdefault(k, []).append(q)
+    several = 0
+    for r in rows:
+        papers = theirs.get(r["id"], [])
+        # Every paper associated with the dataset, attempted or not, those with an attempt first.
+        assert r["n_papers"] == len(papers) == len(r["papers"])
+        assert {q["byline"] for q in papers} == {x["byline"] for x in r["papers"]}
+        assert [x["attempted"] for x in r["papers"]] == sorted((x["attempted"] for x in r["papers"]), reverse=True)
+        assert r["paper_count"] == ("one" if len(papers) == 1 else "several" if papers else None)
+        several += len(papers) > 1
+    assert several
+    config = json.loads((out / "datasets" / "index.html").read_text().split('id="list-config">')[1].split("</script>")[0])
+    assert {"key": "-n_papers", "label": "Most papers"} in config["sorts"]
+    assert {"key": "paper_count", "label": "Papers"} in config["facets"]
+    js = (site.ASSETS / "list.js").read_text()
+    assert "r.papers" in js and "not yet tested" in js
+
+
 def test_a_version_is_said_in_words(built):
     a = {"dataset_version": "0.240101.0000", "dataset": {"doi": "10.48324/dandi.000001/0.240101.0000"}}
     assert site.version_state(a) == "published" and site.version_plain(a) == "version 0.240101.0000"
@@ -1020,6 +1215,27 @@ def test_a_version_is_said_in_words(built):
     order = [{"dataset_version": v, "date": "2026-01-01", "id": "x"} for v in ("0.240101.0000", "draft", None, "0.230101.0000")]
     assert [a["dataset_version"] for a in sorted(order, key=site.version_order, reverse=True)] == [
         "draft", "0.240101.0000", "0.230101.0000", None]
+
+
+def test_every_paper_has_a_page_and_every_list_links_to_it(built):
+    # A paper not tested yet has a page too, which says so, so that the lists of datasets, papers and authors open
+    # the paper's page in the registry, never the paper's DOI.
+    data, out = built
+    untested = 0
+    for q in site.papers_of(data):
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        assert site.e(q["title"]) in page and f'https://doi.org/{site.e(q["doi"])}' in page
+        if not q["attempts"] and q["status"] != "claims":
+            untested += 1
+            assert "Not tested yet." in page
+    assert untested
+    for name in ("datasets", "papers", "authors"):
+        rows = json.loads((out / "data" / f"{name}.json").read_text())
+        pages = [r["page"] for r in rows] if name == "papers" else [q["page"] for r in rows for q in r.get("papers") or []]
+        assert pages and all(x and x.startswith("papers/") and (out / x / "index.html").is_file() for x in pages), name
+    # The list opens each paper's page; the DOI is offered only as a link of its own, labelled "doi".
+    js = (site.ASSETS / "list.js").read_text()
+    assert "doi.org/${esc(q.doi)}" not in js and "r.page ? root + r.page : `https://doi.org" not in js
 
 
 def test_a_paper_with_claims_and_no_attempt_shows_its_claims_on_its_page(built):
@@ -1103,14 +1319,11 @@ def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_th
         assert {q["key"] for q in author["papers"]} == {q["key"] for q in papers}
         for q in papers:
             assert site.e(q["title"]) in page
-            if q["attempts"] or q["status"] == "claims":
-                assert f'href="../../papers/{q["key"]}/"' in page
+            assert f'href="../../papers/{q["key"]}/"' in page
         assert rows[orcid]["n_papers"] == len(papers) and rows[orcid]["n_attempted"] == sum(1 for q in papers if q["attempts"])
     # A paper's page names its authors in order; one with an ORCID iD opens the author's page, one without is a name.
     linked = plain = long = 0
     for q in site.papers_of(data):
-        if not (q["attempts"] or q["status"] == "claims"):
-            continue
         page = (out / "papers" / q["key"] / "index.html").read_text()
         people = site.authors_of(data, q["doi"])
         at = 0
@@ -1187,7 +1400,7 @@ def test_a_dataset_has_a_badge_for_the_findings_reproduced_from_it_in_verified_a
         badge = site.badge_of(data, key)
         assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and api["badge"] == badge
         page = (out / site.page_of(key) / "index.html").read_text()
-        assert ("Badge for this dataset" in page) == bool(total)
+        assert ("Badges for this dataset" in page) == bool(site.dataset_outcomes(data, key)) and (not total or site.dataset_outcomes(data, key))
         if not total:
             continue
         with_badge += 1
@@ -1203,6 +1416,89 @@ def test_a_dataset_has_a_badge_for_the_findings_reproduced_from_it_in_verified_a
     # A dataset's page leads with its papers; what was found about its data comes after.
     page = (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
     assert page.index('id="papers"') < page.index('id="findings"')
+
+
+def test_a_dataset_has_two_more_badges_with_all_the_outcomes(built):
+    # Every outcome of the claims tested on the dataset, verified or not, as one line and as a card: a dataset whose
+    # attempts no verifier has checked has these two and not the first.
+    data, out = built
+    seen = unverified = 0
+    for key, attempts in site.current_attempts(data).items():
+        archive, ident = site.split_key(key)
+        live = [a for a in attempts if not a.get("deprecated")]
+        counts = site.outcome_counts(live) if live else dict.fromkeys(site.OUTCOMES, 0)
+        every = site.dataset_outcomes(data, key)
+        line, card = (out / "badge" / archive / f"{ident}-{kind}.svg" for kind in ("outcomes", "card"))
+        api = json.loads((out / "api" / f'{site.page_of(key).rstrip("/")}.json').read_text())
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["badges"] == {"reproduced": (site.badge_of(data, key) or {}).get("svg"),
+                                 "outcomes": every["svg_outcomes"] if every else None, "card": every["svg_card"] if every else None}
+        if not every:
+            continue
+        seen += 1
+        unverified += site.badge_of(data, key) is None
+        assert every["counts"] == counts and list(counts) == list(site.OUTCOMES)
+        assert every["papers"] == len({a["paper"].lower() for a in live})
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg and f'fill="{site.OUTCOME_FILL[k]}"' in svg
+            assert site.e(every["alt"]) in svg
+        assert site.e(site.dataset_label(key)) in card.read_text()
+        assert f'· {every["papers"]} paper' in card.read_text()
+        page = (out / site.page_of(key) / "index.html").read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+    assert seen and unverified
+
+
+def test_a_paper_has_badges_and_a_json_file_of_its_results(built):
+    # The same three styles as a dataset and a person, at badge/papers/<key>; the first only when a verified attempt
+    # reproduced something. They are offered at the end of the paper's page, not on the page of one attempt.
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "papers.json").read_text())}
+    seen = without = claims_only = 0
+    for q in site.papers_of(data):
+        key = q["key"]
+        first, line, card = (out / "badge" / "papers" / f"{key}{kind}.svg" for kind in ("", "-outcomes", "-card"))
+        file = out / "api" / "papers" / f"{key}.json"
+        if not (q["attempts"] or q["status"] == "claims"):
+            # A paper not tested yet has a page and a JSON file, and no badge.
+            assert file.is_file() and not first.exists() and not card.exists()
+            assert json.loads(file.read_text())["badges"] == {"reproduced": None, "outcomes": None, "card": None}
+            continue
+        api = json.loads(file.read_text())
+        badge, every = site.paper_badge(data, q), site.paper_outcomes(data, q)
+        total = sum(site.outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+        counts = {k: (rows[key].get("counts") or {}).get(k, 0) for k in site.OUTCOMES}
+        assert (badge is None) == (total == 0) and first.is_file() == bool(total)
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["badge"] == badge and api["outcome_counts"] == (counts if every else None)
+        assert api["badges"] == {"reproduced": (badge or {}).get("svg"), "outcomes": every["svg_outcomes"] if every else None,
+                                 "card": every["svg_card"] if every else None}
+        assert api["doi"] == q["doi"] and api["url"] == site.SITE_URL + f"papers/{key}/"
+        assert rows[key]["badge"] == (badge or {}).get("text")
+        page = (out / "papers" / key / "index.html").read_text()
+        assert ("for this paper</h2>" in page) == bool(badge or every)
+        if not every:
+            claims_only += 1
+            continue
+        seen += 1
+        without += badge is None
+        if badge:
+            assert badge["reproduced"] == total and badge["text"] == f'{total} finding{"" if total == 1 else "s"} reproduced'
+            assert f">{site.e(badge['text'])}</text>" in first.read_text() and badge["svg"] in page
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg
+        # The card names the paper and says how many claims and datasets, not "1 paper".
+        assert site.e(q["byline"]) in card.read_text() and f'{every["claims"]} claim' in card.read_text()
+        assert " dataset" in card.read_text() and "1 paper" not in card.read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+        # One attempt's own page does not offer the paper's badges.
+        for a in q["live"][:1]:
+            own = site.attempt_own_path(data, a)
+            if own and own.rstrip("/") != f"papers/{key}":
+                assert "for this paper</h2>" not in (out / own / "index.html").read_text()
+    assert seen and without and claims_only
 
 
 def test_a_badge_sums_the_papers_and_leaves_out_what_is_not_verified():

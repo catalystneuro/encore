@@ -1,5 +1,5 @@
 name: Agent run
-run-name: "Agent run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
+run-name: "Agent run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('/{0}', inputs.replicate) || '' }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
 
 # One agent run on a target, in a clean environment: the author's attempt, a
 # verification round, or the author's revision after one (docs/protocol.md).
@@ -51,6 +51,9 @@ on:
         type: choice
         options: [verified, unverified, api]
         default: verified
+      replicate:
+        description: "For a replicate (docs/replicates.md): its name, r1, r2, ... Empty for an attempt"
+        default: ""
   # Called by attempt-sequence.yml, which runs the five roles of one attempt in order.
   workflow_call:
     inputs:
@@ -75,6 +78,9 @@ on:
       account:
         type: string
         default: verified
+      replicate:
+        type: string
+        default: ""
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
@@ -87,7 +93,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}
+  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('-{0}', inputs.replicate) || '' }}
   cancel-in-progress: false
 
 env:
@@ -96,6 +102,7 @@ env:
   MODEL: ${{ inputs.model }}
   ACCOUNT: ${{ inputs.account || 'verified' }}
   VERSION: ${{ inputs.version }}
+  REPLICATE: ${{ inputs.replicate }}
   CLAUDE_CODE_VERSION: 2.1.284
   # The tools the agent may use without asking. With CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set, Claude
   # Code forces permission mode `default`, so this list and --permission-prompts none decide what
@@ -129,6 +136,11 @@ jobs:
           FOLDER=$PAPER
           [[ "$FOLDER" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || { echo "::error::Not a paper key: '$PAPER'"; exit 1; }
           BRANCH="attempt/$FOLDER"
+          # A replicate repeats the attempt on a branch of its own, which is never merged (docs/replicates.md).
+          if [ -n "$REPLICATE" ]; then
+            [[ "$REPLICATE" =~ ^r[0-9]+$ ]] || { echo "::error::Not a replicate's name: '$REPLICATE'"; exit 1; }
+            BRANCH="replicate/$FOLDER/$REPLICATE"
+          fi
           { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; } >> "$GITHUB_ENV"
           echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
@@ -167,7 +179,7 @@ jobs:
 
       - name: Write the prompt
         run: |
-          python tools/agent_run.py prompt "$ROLE" "$FOLDER" --model "$MODEL" ${VERSION:+--version "$VERSION"} > "$RUNNER_TEMP/prompt.md"
+          python tools/agent_run.py prompt "$ROLE" "$FOLDER" --model "$MODEL" ${VERSION:+--version "$VERSION"} ${REPLICATE:+--replicate} > "$RUNNER_TEMP/prompt.md"
           # The paper's datasets, read now: a verifier's step removes the repository before the papers are fetched.
           echo "DATASETS=$(python tools/paper_records.py datasets "$FOLDER" --available | paste -sd, -)" >> "$GITHUB_ENV"
           echo "PAPER_DOI=$(python tools/paper_records.py doi "$FOLDER")" >> "$GITHUB_ENV"
@@ -460,7 +472,7 @@ jobs:
       contents: write
     env:
       FOLDER: ${{ needs.run.outputs.folder }}
-      BRANCH: attempt/${{ needs.run.outputs.folder }}
+      BRANCH: ${{ inputs.replicate && format('replicate/{0}/{1}', needs.run.outputs.folder, inputs.replicate) || format('attempt/{0}', needs.run.outputs.folder) }}
     steps:
       - uses: actions/checkout@v4
         with:
