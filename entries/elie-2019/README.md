@@ -16,6 +16,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The files hold 1281 units labelled single units, of which 1246 pass the 2015 auditory threshold, and
-mark neither the 914 single auditory units nor the 404 the paper analyses. The anatomical locations
+mark neither the 914 single auditory units nor the 404 the paper analyses. The snippet SNR that the
+description gives as the single-unit criterion, computed from the archive's snippet files, leaves 461
+or 274 units, not 914. The anatomical locations
 of the recording sites are not in the data set. The attempt record, with the reasons and the
 differences from the paper's method, is [`attempts/elie-2019-01.yaml`](../../attempts/elie-2019-01.yaml).

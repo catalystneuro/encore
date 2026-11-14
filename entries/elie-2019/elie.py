@@ -9,14 +9,28 @@ to disk.
 Parameters and where they come from (claims file header, Methods R, B, P):
 - Window 0 to 600 ms after stimulus onset, 60 bins of 10 ms (Methods B; paper,
   Methods, "Here, we analyzed the neural response in the first 600ms").
-- Call stimuli: in the unit's Call group, stim_type "call" with call types Ag
-  (Wsst, Ws), Be, DC, Di, LT, Ne, Te, Th, and the songs of the vocalization bank
-  (So). Whines (Wh), noise and the search songs are dropped (claims header,
-  selVoc.m; paper, S4 Fig legend).
+- Call stimuli: in the unit's call protocol (the groups Call, Call1 to Call3,
+  Call1b, Call1c), stim_type "call" with call types Ag (Wsst, Ws), Be, DC, Di, LT,
+  Ne, Te, Th, and the songs of the vocalization bank (So). Whines (Wh), noise and
+  the search songs are dropped (claims header, selVoc.m; paper, S4 Fig legend).
+  The other protocols (Sel1 to Sel7, Mask1, STRF1) are read but not used as call
+  stimuli; the notebook shows how many call and song stimuli each holds.
+- Spike snippets: each site and protocol has a file "<site>... <protocol>
+  waves.f32" of float32 snippets of 18 samples, indexed (from 1) by the
+  spike_ids of the h5 files (CRCNSCode/h5_plot_one_spike.m in the archive's
+  CRCNSCode.tar.gz). The single-unit SNR is "the difference between the maximum
+  and the minimum of the average snippet" over "the standard deviation of this
+  measure across all snippets", with single units at SNR > 5 (paper, Methods,
+  Neurophysiological recordings; data description). Reading A takes the SD of
+  each snippet's maximum minus minimum; reading B the SD, across snippets, of the
+  snippet's value at the sample of the average's maximum minus its value at the
+  sample of the average's minimum. Both are computed on all spikes of the unit's
+  call protocol.
 """
 from __future__ import annotations
 
 import io
+import re
 import tarfile
 
 from concurrent.futures import ProcessPoolExecutor
@@ -49,21 +63,40 @@ def _s(x):
     return x.decode() if isinstance(x, bytes) else x
 
 
+def _paths(g: h5py.Group) -> list[str]:
+    """Paths of the datasets under a group, with their shapes."""
+    out = []
+    g.visititems(lambda n, o: out.append(f"{n} {o.shape}") if isinstance(o, h5py.Dataset) else None)
+    return out
+
+
 def read_unit(h: h5py.File, name: str, bird: str) -> dict:
     """Reduce one unit's h5 file to its attributes, its stored coherence
-    (class_info) and, for single units, the spike times of each trial of its call
-    and song stimuli in KEEP, in seconds from stimulus onset, as stored."""
+    (class_info), the dataset paths of class_info and extra_info, and, for single
+    units, the spike times of each trial of its call and song stimuli in KEEP, in
+    seconds from stimulus onset, as stored. For spike-sorted files (_ss) the
+    spike_ids of every protocol are kept in "ids" (all spikes of all trials), for
+    the snippet SNR; stream_bird drops them once the SNR is computed."""
     u = {"bird": bird, "file": name.split("/")[-1]}
     for k, v in h.attrs.items():
         u[k] = _s(v)
     u["groups"] = list(h.keys())
     # spikes are kept for single units only; other files keep their metadata
     single = is_single(u)
+    sorted_file = "_ss" in u["file"]
     stims = []
+    ids_all = {}
     n_unsorted = 0  # trials whose stored spike times are not in increasing order
     for g in h.keys():
         if g in ("class_info", "extra_info"):
             continue
+        if sorted_file:
+            ids_g = []
+            for sg in h[g].values():
+                for tg in sg.values():
+                    x = np.asarray(tg["spike_ids"][()]).ravel()
+                    ids_g.append(x[x != -999].astype(np.int64))
+            ids_all[g] = np.concatenate(ids_g) if ids_g else np.empty(0, np.int64)
         for sn, sg in h[g].items():
             a = {k: _s(v) for k, v in sg.attrs.items()}
             st = {"group": g, "number": sn, **{k: a.get(k) for k in (
@@ -101,12 +134,56 @@ def read_unit(h: h5py.File, name: str, bird: str) -> dict:
     u["class_info"] = ci
     u["has_class_info"] = "class_info" in h
     u["has_extra_info"] = "extra_info" in h
+    u["class_info_paths"] = _paths(h["class_info"]) if "class_info" in h else []
+    u["extra_info_paths"] = _paths(h["extra_info"]) if "extra_info" in h else []
+    u["ids"] = ids_all
     return u
 
 
+def f32_key(name: str) -> tuple[str, str]:
+    """(site, protocol) of a snippet file, e.g. "Site2_depthL2000R1600_Call2
+    waves.f32" or "Site3 depth 4600 Call waves.f32" -> ("Site2", "Call2")."""
+    stem = name.split("/")[-1].replace(" waves.f32", "")
+    return re.match(r"Site\d+", stem).group(0), re.split(r"[ _-]", stem)[-1]
+
+
+def snippet_snr(snips: np.ndarray) -> tuple[float, float]:
+    """SNR of a unit's snippets (n x 18), readings A and B (module docstring)."""
+    m = snips.mean(0)
+    sig = m.max() - m.min()
+    a = sig / (snips.max(1) - snips.min(1)).std(ddof=1)
+    b = sig / (snips[:, m.argmax()] - snips[:, m.argmin()]).std(ddof=1)
+    return float(a), float(b)
+
+
+def unit_snr(u: dict, f32: dict) -> dict:
+    """Snippet SNR of a spike-sorted unit on its call protocol: the Call group
+    with a snippet file and the most spikes. When two files share a site and
+    protocol, the largest that holds every spike_id is used."""
+    best = None
+    for g, ids in u["ids"].items():
+        if not g.startswith("Call") or ids.size < 2:
+            continue
+        cands = [(a.shape[0], n) for n, a in f32.items() if f32_key(n) == (u.get("site"), g)]
+        cands = [c for c in cands if c[0] >= ids.max()]
+        if cands and (best is None or ids.size > best[1].size):
+            best = (max(cands)[1], ids, len(cands))
+    if best is None:
+        return {"snr_a": np.nan, "snr_b": np.nan, "snr_file": None, "snr_n": 0, "snr_n_files": 0}
+    a, b = snippet_snr(f32[best[0]][best[1] - 1])
+    return {"snr_a": a, "snr_b": b, "snr_file": best[0].split("/")[-1], "snr_n": int(best[1].size),
+            "snr_n_files": best[2]}
+
+
 def stream_bird(bird: str, block_size: int = 2**23) -> list[dict]:
-    """Stream one bird's tar.gz and return the reduced units of all its h5 files."""
+    """Stream one bird's tar.gz and return the reduced units of all its h5 files.
+    The snippet files (.f32) come between the h5 files in the archive, so they
+    are held in memory (float32, at most 1.4 GB per bird) until the end of the
+    bird, when the SNR of each spike-sorted unit is computed and they and the
+    spike_ids are dropped. Each unit gets "f32_files", the bird's snippet files
+    and their numbers of snippets."""
     units = []
+    f32 = {}
     with fsspec.open(BASE + bird + ".tar.gz", block_size=block_size).open() as f:
         with tarfile.open(fileobj=f, mode="r|gz") as tar:
             for m in tar:
@@ -116,11 +193,21 @@ def stream_bird(bird: str, block_size: int = 2**23) -> list[dict]:
                     b = tar.extractfile(m).read()
                     with h5py.File(io.BytesIO(b), "r") as h:
                         units.append(read_unit(h, m.name, bird))
+                elif m.name.endswith(".f32"):
+                    f32[m.name] = np.frombuffer(tar.extractfile(m).read(), np.float32).reshape(-1, 18)
+    files = {n.split("/")[-1]: a.shape[0] for n, a in f32.items()}
+    for u in units:
+        if u["ids"]:
+            u.update(unit_snr(u, f32))
+        u["f32_files"] = files
+        del u["ids"]
     return units
 
 
-def load_all(birds=BIRDS, workers: int = 4) -> list[dict]:
-    """All units of all birds, the birds streamed in parallel processes."""
+def load_all(birds=BIRDS, workers: int = 3) -> list[dict]:
+    """All units of all birds, the birds streamed in parallel processes. Three
+    workers, as each holds up to 2.4 GB while it streams a large bird (measured
+    on GreBlu9508M)."""
     order = sorted(birds, key=lambda b: ["LblBlu2028M", "WhiBlu5396M"].count(b))
     with ProcessPoolExecutor(workers) as ex:
         res = dict(zip(order, ex.map(stream_bird, order)))
@@ -151,12 +238,14 @@ def call_type(s: dict) -> str | None:
     return None
 
 
-def call_stims(u: dict) -> list[dict]:
-    """The call stimuli of a unit, with their call type in "ct"."""
+def call_stims(u: dict, protocol: str = "Call") -> list[dict]:
+    """The call stimuli of a unit in the groups whose name starts with
+    `protocol` (the call protocol by default; "" for every group), with their
+    call type in "ct"."""
     out = []
     for s in u["stims"]:
         ct = call_type(s)
-        if ct is not None and s["trials"] is not None:
+        if ct is not None and s["trials"] is not None and s["group"].startswith(protocol):
             out.append({**s, "ct": ct})
     return out
 
@@ -227,38 +316,160 @@ def cum_info_mc(mu: np.ndarray, n_samples: int, seed: int,
     importance sampling (paper, Methods, The cumulative information): samples
     are drawn from the proposal q, the product over bins of the marginal p(y_t),
     and the entropy of the response is the mean of -log2 p(y) weighted by p/q.
-    The conditional entropy is exact, as bins are independent given the stimulus
-    (or given the category, whose p(y|c) is then the mixture over its stimuli,
-    computed by summing over stimuli).
+    The conditional entropy uses the same samples, weighted by p(y|c)/q.
 
-    The uniform draws come from a generator seeded with `seed`, so that the
-    jackknife replicates, called with the same seed, use common random numbers
-    (an assumption: the paper does not say how the replicates are sampled, and
-    independent draws multiply the Monte Carlo noise by about Ntrials in the
-    bias-corrected value)."""
+    With groups (a category per stimulus), p(y_1..t|c) is the mixture over the
+    stimuli of the category of the products over bins, and categories are
+    weighted equally in p(y) and in the conditional entropy, as in inst_info
+    (code info_model_Calculus_wrapper2.m). Without groups each stimulus is its
+    own category.
+
+    One set of draws serves every bin. The uniform draws come from a generator
+    seeded with `seed`, so that jackknife replicates called with the same seed
+    use common random numbers, as the paper's code does
+    (cumulative_info_poisson_model_calculus_MCJK.m draws the samples once from
+    the full data and evaluates every jackknife set on them)."""
     rng = np.random.default_rng(seed)
     n_stim, T = mu.shape
     p = _pyx(mu)  # s, t, y
     if groups is None:
         groups = np.arange(n_stim)
     cats = np.unique(groups)
-    pm = p.mean(0)  # marginal per bin (t, y)
+    pm = np.stack([p[groups == c].mean(0) for c in cats]).mean(0)  # marginal per bin (t, y)
     cdf = np.cumsum(pm, -1)
     u = rng.random((n_samples, T))
     ys = np.minimum((u[..., None] > cdf[None]).sum(-1), R_MAX)  # n x T
     logq = np.cumsum(np.log(pm[np.arange(T), ys]), 1)  # n x T
     lps = np.log(np.maximum(p[:, np.arange(T), ys], 1e-300))  # s x n x T
     cl = np.cumsum(lps, -1)  # s x n x T
-    lp = np.logaddexp.reduce(cl, 0) - np.log(n_stim)  # log p(y_1..t)
+    lc = np.stack([np.logaddexp.reduce(cl[groups == c], 0) - np.log((groups == c).sum()) for c in cats])
+    lp = np.logaddexp.reduce(lc, 0) - np.log(cats.size)  # log p(y_1..t)
     w = np.exp(lp - logq)
     hy = -(w * lp).mean(0) / np.log(2)
-    # conditional entropy H(Y_1..t | C), with C the category (stimulus by default)
-    hyc = np.zeros(T)
-    for c in cats:
-        idx = np.flatnonzero(groups == c)
-        lc = np.logaddexp.reduce(cl[idx], 0) - np.log(idx.size)  # log p(y|c)
-        hyc += -(w * np.exp(lc - lp) * lc).mean(0) / np.log(2) / cats.size
+    hyc = -(np.exp(lc - logq[None]) * lc).mean((0, 1)) / np.log(2)
     return hy - hyc
+
+
+def cum_info_exact(mu: np.ndarray, groups: np.ndarray | None = None) -> np.ndarray:
+    """Cumulative information by enumerating every response sequence, for a few
+    bins only (21**T sequences); the check of cum_info_mc. Categories as in
+    cum_info_mc."""
+    n_stim, T = mu.shape
+    p = _pyx(mu)
+    if groups is None:
+        groups = np.arange(n_stim)
+    cats = np.unique(groups)
+    out = []
+    for t in range(1, T + 1):
+        ps = np.ones((n_stim, 1))
+        for k in range(t):
+            ps = (ps[:, :, None] * p[:, k][:, None, :]).reshape(n_stim, -1)  # s x sequences
+        pc = np.stack([ps[groups == c].mean(0) for c in cats])
+        py = pc.mean(0)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            hy = -np.sum(np.where(py > 0, py * np.log2(py), 0))
+            hyc = -np.sum(np.where(pc > 0, pc * np.log2(pc), 0)) / cats.size
+        out.append(hy - hyc)
+    return np.array(out)
+
+
+def cum_info_mcjk(mu: np.ndarray, mu_jk: np.ndarray, n_trials: int, n_boot: int, seed: int,
+                  chunk: int = 100_000, max_samples: int = 5_000_000, conv: float = 0.2,
+                  stop: float = 0.6) -> dict:
+    """Bias-corrected cumulative information for stimuli with the paper's
+    procedure (Methods, The cumulative information, and Bias correction; code
+    cumulative_info_poisson_model_MCJK_wrapper.m,
+    cumulative_info_poisson_model_calculus_MCJK.m and the tutorial
+    Tutorial_TimeVarying_Information.mlx, all at the pinned commit):
+
+    - mu (stimulus x bin) is the full-data Poisson mean, mu_jk (set x stimulus x
+      bin) the n_trials jackknife sets. Each of the n_boot bootstraps pairs the
+      jackknife sets of the stimuli at random (a permutation of the sets per
+      stimulus, as the tutorial's SetIndices_JK); the paper gives NB = 20.
+    - For each end bin t from 2 on, a new Monte Carlo estimate over bins 1..t:
+      chunks of `chunk` samples from the proposal of the full data, the
+      jackknife sets evaluated on the same samples; entropies are averaged over
+      chunks. After each chunk the pseudo-values N I - (N-1) I_jk give the
+      bias-corrected value (their mean) and the error (the square root of the
+      mean over bootstraps of their variance over sets, ddof 1). Sampling stops
+      when the error is below `conv` bits or at `max_samples`.
+    - The bins stop after the first one whose error is above `stop` bits (3 x
+      0.2, the wrapper's rule; the paper's 0.6-bit rule).
+    - Bin 1 is not estimated here; the tutorial sets it to the instantaneous
+      value.
+    Returns per bin (nan where not computed) "bc", "raw", "err", "n_samples",
+    and "stopped_at" (the last bin computed, 1-based)."""
+    rng = np.random.default_rng(seed)
+    K, S, T = mu_jk.shape
+    perm = np.stack([np.stack([rng.permutation(K) for _ in range(S)], 1) for _ in range(n_boot)])  # b, jk, s
+    P = _pyx(mu)
+    P = P / P.sum(-1, keepdims=True)  # ScaleY in the code
+    PJ = _pyx(mu_jk)
+    PJ = PJ / PJ.sum(-1, keepdims=True)
+    lP = np.log(np.maximum(P, 1e-300))
+    lPJ = np.log(np.maximum(PJ, 1e-300))
+    pm = P.mean(0)  # proposal marginals from the full data (t, y)
+    cdf = np.cumsum(pm / pm.sum(-1, keepdims=True), -1)
+    out = {k: np.full(T, np.nan) for k in ("bc", "raw", "err", "n_samples")}
+    sidx = np.arange(S)[None, :]
+    ln2 = np.log(2)
+    stopped = 1
+    for t in range(2, T + 1):
+        n_tot, err = 0, conv + 1
+        acc = None
+        while err > conv and n_tot < max_samples:
+            u = rng.random((chunk, t))
+            ys = np.minimum((u[..., None] > cdf[None, :t]).sum(-1), R_MAX)  # n x t
+            lq = np.log(pm[np.arange(t), ys]).sum(1)  # n
+            cl = np.zeros((S, chunk))
+            clj = np.zeros((K, S, chunk))
+            for k in range(t):
+                cl += lP[:, k, ys[:, k]]
+                clj += lPJ[:, :, k, ys[:, k]]
+
+            def ent(c):  # c: (..., S, n) log p(y|s) -> H(Y), H(Y|S) for this chunk
+                lp = np.logaddexp.reduce(c, -2) - np.log(S)
+                hy = -(np.exp(lp - lq) * lp).mean(-1) / ln2
+                hys = -(np.exp(c - lq) * c).mean((-1, -2)) / ln2
+                return hy, hys
+
+            hy, hys = ent(cl)
+            cb = clj[perm, sidx[None]]  # b, jk, s, n
+            hyj, hysj = ent(cb)
+            new = np.array([hy, hys]), np.stack([hyj, hysj])
+            acc = new if acc is None else ((acc[0] * n_tot + new[0] * chunk) / (n_tot + chunk),
+                                           (acc[1] * n_tot + new[1] * chunk) / (n_tot + chunk))
+            n_tot += chunk
+            i_full = acc[0][0] - acc[0][1]
+            i_jk = acc[1][0] - acc[1][1]  # b, jk
+            pseudo = n_trials * i_full - (n_trials - 1) * i_jk
+            err = float(np.sqrt(pseudo.var(1, ddof=1).mean()))
+        out["bc"][t - 1], out["raw"][t - 1] = pseudo.mean(), i_full
+        out["err"][t - 1], out["n_samples"][t - 1] = err, n_tot
+        stopped = t
+        if err > stop:
+            break
+    out["stopped_at"] = stopped
+    return out
+
+
+def inst_info_bootjk(mu: np.ndarray, mu_jk: np.ndarray, n_trials: int, n_boot: int, seed: int):
+    """Bias-corrected instantaneous information and its error as the tutorial
+    computes them (Info_bcorr, Info_err): per bootstrap a random pairing of the
+    jackknife sets across stimuli, pseudo-values N I - (N-1) I_jk, the mean over
+    sets and bootstraps, and the square root of the mean over bootstraps of their
+    variance over sets (ddof 1)."""
+    rng = np.random.default_rng(seed)
+    K, S, T = mu_jk.shape
+    full = inst_info(mu)
+    bc, var = [], []
+    for _ in range(n_boot):
+        perm = np.stack([rng.permutation(K) for _ in range(S)], 1)  # jk, s
+        ij = np.array([inst_info(mu_jk[perm[k], np.arange(S)]) for k in range(K)])
+        ps = n_trials * full - (n_trials - 1) * ij
+        bc.append(ps.mean(0))
+        var.append(ps.var(0, ddof=1))
+    return np.mean(bc, 0), np.sqrt(np.mean(var, 0))
 
 
 # ---------------------------------------------------------------------------
