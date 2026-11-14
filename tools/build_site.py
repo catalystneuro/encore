@@ -1409,7 +1409,7 @@ def card_badge_svg(o: dict) -> str:
     """A card: the person's name, how many claims in how many papers, the outcomes as one bar, and each count."""
     pad = 14
     legend, end = _legend(o["counts"], pad, 80)
-    tested = f'{o["claims"]} claim{"" if o["claims"] == 1 else "s"} · {o["papers"]} paper{"" if o["papers"] == 1 else "s"}'
+    tested = o.get("line") or f'{o["claims"]} claim{"" if o["claims"] == 1 else "s"} · {o["papers"]} paper{"" if o["papers"] == 1 else "s"}'
     name_w = _text_width(o["name"]) * 1.18
     w = round(max(end + pad, pad + 62 + _text_width(tested) + pad + 20, name_w + 2 * pad, 300))
     # The bar: a segment for each outcome, in the site's order, with a gap of the card's colour between two.
@@ -1430,6 +1430,73 @@ def card_badge_svg(o: dict) -> str:
             f'<text x="{w - pad}" y="23" text-anchor="end" fill="#6b6475">{e(tested)}</text>'
             f'<text x="{pad}" y="43" font-size="13" font-weight="bold" fill="#120e17">{e(o["name"])}</text>'
             f'{bar_}<g font-weight="bold" fill="#2b2333">{legend}</g></g></svg>\n')
+
+
+def dataset_outcomes(data: dict, key: str) -> dict | None:
+    """Every outcome of the claims tested on a dataset, over all its papers, in every current attempt, verified or
+    not, leaving out a deprecated attempt. For the two badges that show all the outcomes. None when no claim was
+    tested on it."""
+    atts = [a for a in current_attempts(data).get(key, []) if not a.get("deprecated")]
+    counts = outcome_counts(atts) if atts else {k: 0 for k in OUTCOMES}
+    claims = sum(counts.values())
+    if not claims:
+        return None
+    papers = len({a["paper"].lower() for a in atts})
+    said = ", ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items())
+    archive, ident = split_key(key)
+    base = SITE_URL + f"badge/{archive}/{ident}"
+    return {"counts": counts, "claims": claims, "papers": papers, "name": dataset_label(key),
+            "url": SITE_URL + page_of(key), "svg_outcomes": base + "-outcomes.svg", "svg_card": base + "-card.svg",
+            "alt": f'Encore: {said}, of {claims} claim{"" if claims == 1 else "s"} tested on {dataset_label(key)}'}
+
+
+def paper_badge(data: dict, q: dict) -> dict | None:
+    """A paper's badge (docs/badges.md): how many of its findings were reproduced, counted as a dataset's badge
+    counts them (claims on its datasets, reproduced in full, in current attempts an independent verifier has
+    checked). None when that is nothing."""
+    total = sum(outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+    if not total:
+        return None
+    text = f'{total} finding{"" if total == 1 else "s"} reproduced'
+    return {"text": text, "reproduced": total, "url": SITE_URL + f'papers/{q["key"]}/',
+            "svg": SITE_URL + f'badge/papers/{q["key"]}.svg', "alt": f'Encore: {text}, {q["byline"]}'}
+
+
+def paper_outcomes(data: dict, q: dict) -> dict | None:
+    """Every outcome of a paper's claims, as the bar at the top of its page has them (the claims that rest on its
+    datasets, in every current attempt, verified or not), for the two badges that show all the outcomes. None when
+    the paper has no attempt."""
+    row = next((r for r in rows_cache(data)["papers"] if r["id"] == q["key"]), {})
+    counts = {k: (row.get("counts") or {}).get(k, 0) for k in OUTCOMES}
+    claims = sum(counts.values())
+    if not claims:
+        return None
+    sets = len({k for a in q["live"] for k in a.get("datasets") or [a["key"]]})
+    said = ", ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items())
+    base = SITE_URL + f'badge/papers/{q["key"]}'
+    return {"counts": counts, "claims": claims, "papers": 1, "name": q["byline"],
+            "line": f'{claims} claim{"" if claims == 1 else "s"} · {sets} dataset{"" if sets == 1 else "s"}',
+            "url": SITE_URL + f'papers/{q["key"]}/', "svg_outcomes": base + "-outcomes.svg", "svg_card": base + "-card.svg",
+            "alt": f'Encore: {said}, of {claims} claim{"" if claims == 1 else "s"} of {q["byline"]}'}
+
+
+def paper_badges_panel(data: dict, q: dict, root: str) -> str:
+    """The section of a paper's page with its badges and the code to show one elsewhere."""
+    badge, every = paper_badge(data, q), paper_outcomes(data, q)
+    all_note = ("It counts every claim of the paper in a current attempt, verified or not, as the bar at the top of "
+                "this page does.")
+    local = f'{root}badge/papers/{e(q["key"])}'
+    styles = ([{"name": "Findings reproduced", "src": f"{local}.svg", "svg": badge["svg"], "alt": badge["alt"],
+                "url": badge["url"], "counts": "It counts the paper&rsquo;s findings reproduced in full by attempts "
+                                               "an independent verifier has checked."}] if badge else [])
+    if every:
+        styles += [{"name": "All outcomes", "src": f"{local}-outcomes.svg", "svg": every["svg_outcomes"],
+                    "alt": every["alt"], "url": every["url"], "counts": all_note},
+                   {"name": "Card", "src": f"{local}-card.svg", "svg": every["svg_card"], "alt": every["alt"],
+                    "url": every["url"], "counts": all_note}]
+    return badges_how(styles, "Badges for this paper" if len(styles) > 1 else "Badge for this paper",
+                      "beside the paper, on a lab&rsquo;s site or in a repository&rsquo;s README",
+                      f'{root}api/papers/{e(q["key"])}.json') if styles else ""
 
 
 def badge_how(badge: dict, src: str, title: str, counts: str, where: str, json_href: str) -> str:
@@ -1562,6 +1629,7 @@ def paper_rows(data: dict) -> list[dict]:
             "species": sorted({x for k in p["datasets"] for x in by_key.get(k, {}).get("species", [])}),
             "status": p["status"], "tier": weakest_tier(live) if live else None, "date": p["date"],
             "counts": counts, "claims": len(outcomes) if live else None,
+            "badge": (paper_badge(data, p) or {}).get("text") if live else None,
             "elsewhere": sum(sum(outcome_counts(live, g).values()) for g in ("with_inputs", "elsewhere")) if live else None,
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if live else None,
             "reproduced": (round(share, 4) if (share := reproduced_share(counts)) is not None else None) if live else None,
@@ -3090,11 +3158,21 @@ def page_dataset(data: dict, key: str) -> str:
     badge = badge_of(data, key)
     archive_, ident_ = split_key(key)
     # For the dataset's owner or its archive: the badge, and what to paste to show it.
-    badge_panel = badge_how(
-        badge, f"{root}badge/{e(archive_)}/{e(ident_)}.svg", "Badge for this dataset",
-        "It counts the findings reproduced in full from this dataset by attempts an independent verifier has "
-        "checked, over every paper tested on it.", "on the dataset&rsquo;s own page",
-        f'{root}api/{page_of(key).rstrip("/")}.json') if badge else ""
+    every = dataset_outcomes(data, key)
+    local = f"{root}badge/{e(archive_)}/{e(ident_)}"
+    all_note = ("It counts every claim tested on this dataset in a current attempt, verified or not, over every paper "
+                "tested on it.")
+    styles = ([{"name": "Findings reproduced", "src": f"{local}.svg", "svg": badge["svg"], "alt": badge["alt"],
+                "url": badge["url"],
+                "counts": "It counts the findings reproduced in full from this dataset by attempts an independent "
+                          "verifier has checked, over every paper tested on it."}] if badge else [])
+    if every:
+        styles += [{"name": "All outcomes", "src": f"{local}-outcomes.svg", "svg": every["svg_outcomes"],
+                    "alt": every["alt"], "url": every["url"], "counts": all_note},
+                   {"name": "Card", "src": f"{local}-card.svg", "svg": every["svg_card"], "alt": every["alt"],
+                    "url": every["url"], "counts": all_note}]
+    badge_panel = badges_how(styles, "Badges for this dataset",
+                             "on the dataset&rsquo;s own page", f'{root}api/{page_of(key).rstrip("/")}.json') if styles else ""
     reproduced = (f'<p class="lede reproduced-line"><strong>{badge["reproduced"]}</strong> finding'
                   f'{"" if badge["reproduced"] == 1 else "s"} reproduced from this dataset'
                   + (f', in {len(badge["papers"])} papers' if len(badge["papers"]) > 1 else "")
@@ -3121,7 +3199,7 @@ def page_dataset(data: dict, key: str) -> str:
   {fixed_html}
   {badge_panel}
 </main>'''
-    return shell(data, f"{dataset_label(key)}: {name} · {SITE_NAME}", root, "datasets", body, path=page_of(key),
+    return shell(data, f"{dataset_label(key)}: {name} · {SITE_NAME}", root, "datasets", body, BADGE_PICK_JS, path=page_of(key),
                  description=f"What attempts to reproduce papers from {dataset_label(key)} on {archive_name(key)} found "
                              f"about its data, and the papers tested on it.")
 
@@ -3656,6 +3734,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     {deviations_html}</section>
   <section class="tabpanel" id="provenance"><h2>Provenance</h2>{provenance_html}</section>
   {related}
+  {paper_badges_panel(data, paper, root) if paper and not one else ""}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
     if one:
@@ -3665,7 +3744,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                                  f'open data: {n} claims, their outcomes, notebooks and verification.')
     if paper:
         return shell(data, f'{paper["byline"]}: {paper["title"]} · {SITE_NAME}', root, "papers", body,
-                     CLAIMS_JS + TABS_JS, path=f'papers/{paper["key"]}/',
+                     CLAIMS_JS + TABS_JS + BADGE_PICK_JS, path=f'papers/{paper["key"]}/',
                      description=f'Reproduction attempts on {paper["byline"]}, "{paper["title"]}", from its open data: '
                                  f'{n} claims, their outcomes, notebooks and verification.')
     path = f"{page_of(dandiset)}{attempt['id']}/" if attempt else page_of(dandiset)
@@ -3785,11 +3864,18 @@ def build(data: dict, output: Path) -> None:
             "entries": entries_for(data, key),
             # For a page elsewhere about the dataset (docs/badges.md); null when there is nothing to show.
             "badge": badge_of(data, key),
+            "badges": {"reproduced": (badge_of(data, key) or {}).get("svg"),
+                       "outcomes": dataset_outcomes(data, key)["svg_outcomes"] if dataset_outcomes(data, key) else None,
+                       "card": dataset_outcomes(data, key)["svg_card"] if dataset_outcomes(data, key) else None},
         }, indent=1) + "\n"
+        every = dataset_outcomes(data, key)
+        svg = output / "badge" / split_key(key)[0] / f"{split_key(key)[1]}.svg"
+        svg.parent.mkdir(parents=True, exist_ok=True)
         if badge_of(data, key):
-            svg = output / "badge" / split_key(key)[0] / f"{split_key(key)[1]}.svg"
-            svg.parent.mkdir(parents=True, exist_ok=True)
             svg.write_text(badge_svg(badge_of(data, key)))
+        if every:
+            svg.with_name(f"{split_key(key)[1]}-outcomes.svg").write_text(outcomes_badge_svg(every))
+            svg.with_name(f"{split_key(key)[1]}-card.svg").write_text(card_badge_svg(every))
         (output / "api" / page_of(key).rstrip("/")).parent.mkdir(parents=True, exist_ok=True)
         (output / "api" / f'{page_of(key).rstrip("/")}.json').write_text(api)
         # The DANDI pages and API files were at dandisets/<id>/ before; links to them are kept working.
@@ -3804,6 +3890,35 @@ def build(data: dict, output: Path) -> None:
         if p["attempts"] or p["status"] == "claims":
             (output / "papers" / p["key"]).mkdir(parents=True, exist_ok=True)
             (output / "papers" / p["key"] / "index.html").write_text(page_paper(data, p))
+            badge, every = paper_badge(data, p), paper_outcomes(data, p)
+            (output / "badge" / "papers").mkdir(parents=True, exist_ok=True)
+            if badge:
+                (output / "badge" / "papers" / f'{p["key"]}.svg').write_text(badge_svg(badge))
+            if every:
+                (output / "badge" / "papers" / f'{p["key"]}-outcomes.svg').write_text(outcomes_badge_svg(every))
+                (output / "badge" / "papers" / f'{p["key"]}-card.svg').write_text(card_badge_svg(every))
+            # For a page elsewhere about the paper (docs/badges.md): its results in short, and its badges.
+            row = next((x for x in r["papers"] if x["id"] == p["key"]), {})
+            (output / "api" / "papers").mkdir(parents=True, exist_ok=True)
+            (output / "api" / "papers" / f'{p["key"]}.json').write_text(json.dumps({
+                "key": p["key"], "doi": p["doi"], "title": p["title"], "byline": p["byline"],
+                "journal": journal_name(p["doi"]), "url": SITE_URL + f'papers/{p["key"]}/', "status": p["status"],
+                "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+                "authors": [{"name": a["name"], "orcid": a.get("orcid"),
+                             "url": SITE_URL + f'authors/{a["orcid"]}/' if a.get("orcid") else None}
+                            for a in authors_of(data, p["doi"])],
+                "datasets": [{"key": k, "label": dataset_label(k),
+                              "url": SITE_URL + page_of(k) if k in current_attempts(data) else None}
+                             for k in p["datasets"]],
+                "outcome_counts": every["counts"] if every else None, "tier": row.get("tier"),
+                "attempts": [{"id": a["id"], "date": a["date"], "tier": a["tier"],
+                              "datasets": a.get("datasets") or [a["key"]],
+                              "url": SITE_URL + attempt_path(data, a)} for a in p["attempts"]],
+                "badge": badge,
+                "badges": {"reproduced": badge["svg"] if badge else None,
+                           "outcomes": every["svg_outcomes"] if every else None,
+                           "card": every["svg_card"] if every else None},
+            }, indent=1) + "\n")
         # Every attempt on the paper has an address of its own, which stays when a later attempt replaces it. The
         # paper's one current attempt is read on the paper's page, and its address leads there.
         for a in paper_attempts(data, p):
