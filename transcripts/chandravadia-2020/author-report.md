@@ -1,62 +1,55 @@
-The attempt on dandiset 000004 is done through step 6: the entry is locked, `check` and `all` pass, and the handover package is built in `executed/000004-chandravadia-2020/handover/` with the conclusions removed. Nothing is committed.
+I've finished the attempt, run the handover, and the entry passes its checks: `python tools/entry.py all` gave 0 errors and a clean-environment run of 169 s. Nothing is committed. The record is `attempts/chandravadia-2020-02.yaml` and the entry is in `entries/chandravadia-2020/`.
 
-I used the paper's full text, which is open access (CC BY 4.0), including Tables 1 and 2 and Online-only Table 1; it is saved under `paper/`. The pinned version is 0.220126.1852. The paper cites no DANDI version, and the two published versions hold the same 87 assets, so I took the newer one; the notebook header says this.
+**(1) Outcomes**
 
-**1. Outcome per claim** (counts from the attempt record: 10 reproduced, 8 partially, 4 not reproduced, 2 blocked)
+| Claim | Outcome | Key number |
+|---|---|---|
+| counts-neurons-subjects | reproduced | 1864 unit rows, 59 subjects |
+| counts-sessions | reproduced | same 87 (subject, session) pairs as Online-only Table 1 |
+| table1-demographics | partially reproduced | 56 of 59 subjects match; C24, H33 and H48 differ |
+| task-structure | partially reproduced | 8 sessions have 50 or 97 encoding trials |
+| new-old-label-coding | not reproduced | label 1 is old in all 87 sessions |
+| ttl-codes | partially reproduced | 78 of 87 files pass |
+| experiment-ids | partially reproduced | 83 of 87 files pass |
+| session-dates | partially reproduced | H28_48 dated the 13th; H44_68 dated 2000 |
+| units-table | partially reproduced | IsolationDist NaN for 493 units, SNR NaN for 75 and infinite for 11 |
+| electrodes-table | not reproduced | impedance empty for all 887 electrodes |
+| isi-criterion | partially reproduced | 6 units at or above 3% |
+| fig5a-mtl-locations | reproduced | all units in amygdala or hippocampus |
+| fig5c-auc-all | reproduced | 0.753 ± 0.094 |
+| fig5c-auc-sites | reproduced | CS 0.760 ± 0.085, TWH 0.688 ± 0.138 |
+| fig5b-roc-asymmetric | reproduced | mean slope 0.782, p = 4e-9 |
+| fig5d-confidence-accuracy | reproduced | p < 0.001 under both splits |
+| vs-cells-proportion | reproduced | 332 cells (17.8%) |
+| ms-cells-proportion | not reproduced | 110 cells (5.9%); the code's choices give 147 |
+| dual-cells-proportion | not reproduced | 12 cells; the code's choices give 26 |
+| fig5f-site-proportions | partially reproduced | no site difference, but only 1 of 6 values in tolerance |
+| twh-sessions | reproduced | 9 |
+| previous-release-link | partially reproduced | 64 of 65 earlier sessions found |
+| previous-release-additions | partially reproduced | 23 sessions, 17 subjects, but 325 neurons |
+| fig4-example-vs-neuron | reproduced | p = 1e-22, animals highest |
+| fig3-example-vs-neuron | blocked (data_missing) | session 144 is not in the dandiset |
 
-| Claim | Outcome |
-|---|---|
-| counts-neurons-subjects (1864 units vs 1863; 59 subjects) | reproduced |
-| counts-sessions (87, matching Online-only Table 1) | reproduced |
-| table1-demographics (56 of 59 subjects match) | partially |
-| task-structure (8 sessions have fewer than 100 encoding trials) | partially |
-| new-old-label-coding (the data use 1 = old) | not reproduced |
-| ttl-codes (78 of 87 files) | partially |
-| experiment-ids (83 of 87 files) | partially |
-| session-dates (86 of 87 files) | partially |
-| units-table (NaN or infinite quality metrics) | partially |
-| electrodes-table (impedance empty for all 887 electrodes) | not reproduced |
-| isi-criterion (99.7% of units pass) | partially |
-| fig5a-mtl-locations | reproduced |
-| fig5c-auc-all (0.753 ± 0.094) | reproduced |
-| fig5c-auc-sites | reproduced |
-| fig5b-roc-asymmetric | reproduced |
-| fig5d-confidence-accuracy | reproduced |
-| vs-cells-proportion (332, 17.8%) | reproduced |
-| ms-cells-proportion (110, 5.9% vs 146, 7.8%) | not reproduced |
-| dual-cells-proportion (12 vs 26) | not reproduced |
-| fig5f-site-proportions | partially |
-| twh-sessions (9) | reproduced |
-| fig4-example-vs-neuron | reproduced |
-| previous-release-additions | blocked (other) |
-| fig3-example-vs-neuron | blocked (data_missing: session 144 is absent) |
+**(2) What the dataset showed**
+- **Label coding is reversed:** label 1 marks old images, against the paper and the column description. Read as described, the mean AUC would be 0.25.
+- **Missing values:** impedance is empty everywhere, and coordinates are missing for 99 electrodes.
+- **Short sessions:** 8 sessions lack encoding trials, and CS53_123 starts mid-trial.
+- **Event codes and ids:** 9 files hold codes not in Table 1, and 4 files use experiment ids not in Table 2.
+- **Unsorted spikes:** the spike times of 13 units are not in time order.
+- **Shared units:** three pairs of sessions (43/44, 54/55, 38/39) share 66 spike trains. Each pair is one continuous recording through two consecutive sessions, so these are the same neurons, and nothing in the files says so.
+- **Subject metadata:** H48 is 32 and female in the file but 54 and male in both papers.
+- **Missing sessions:** session 98 of the earlier release and session 144 (the Figure 3 neuron) are absent.
+- **Methods versus code:** the paper's code (200 to 1700 ms window, correct trials only for MS cells) gives exactly the paper's counts, including every value of Figure 5f. The Methods' 1 s window and all 50 and 50 trials do not. I recorded this as a code_mismatch finding.
+- I made no assumptions (no outcome is marked `assumed`), added no questions for the authors, and asked the reader nothing.
 
-The memory-selective and dual counts follow the Methods (all 50 new and 50 old trials, 200 to 1200 ms window). The paper's code uses correct trials only and a 200 to 1700 ms window; with those choices I get 343 VS, 147 MS and 26 dual cells, and the Figure 5f values to within 0.1 point.
+**(3) Where the protocol or claims file was unclear**
+1. **Possible break in blindness:** the claims file's opening comment describes an earlier author's data checks: the duplicated sessions 43/44 and 54/55, label 1 receiving most "old" responses, three subjects whose age or sex differ, and 1864 units. I read it because it is part of the claims file I was told to use. I found no other trace of the earlier attempts.
+2. **Reading the files:** docs/archives.md says to read NWB files with pynwb. I read them with h5py over remfile, which is faster and gives the same data, and I never read the images.
+3. **The paper's own tables:** the protocol does not say how to use the paper's tables as reference values. I fetched Online-only Table 1 (and Faraut et al.'s Table 1) from Europe PMC in the notebook and listed both under `inputs`.
+4. **Clock check:** a per-session check cannot establish alignment in sessions with few units. I named the 15 such sessions in the notebook.
+5. **ttl-codes:** the criterion does not say how to cut trials out of the event stream. I cut at each stimulus onset and recorded that as a deviation.
+6. **Duplicate rule versus counting:** the protocol says to count each recording once. The claims file instead counts units per file and treats counting once as a variant. I followed the claims file.
 
-**2. What was found about the dandiset**
-- **Label coding:** `new_old_labels_recog` uses 1 = old, the reverse of the paper's text and of the files' own column description. Anyone following the description gets an AUC of 0.25.
-- **Duplicated spike trains:** sessions 43/44 and 54/55 hold identical spike trains, so 55 units are counted twice. Session 55 also repeats session 54's learning block.
-- **Missing encoding trials:** 7 sessions have 50 encoding trials and one has 97. Part of the images later shown as old are not in the stored encoding block.
-- **Empty or broken metadata:** impedance is empty everywhere; coordinates are missing for 99 electrodes; IsolationDist is NaN for 493 units and SNR is not finite for 86.
-- **Spike times:** 13 units have unsorted spike times, and two units in session 58 store every spike twice.
-- **Subjects and dates:** age or sex differ from Online-only Table 1 for 3 subjects (H48 is a 32-year-old woman in the files, a 54-year-old man in the table). Session 48 keeps its real day (2010-03-13), and session 68 is dated 2000-01-01.
-- **Codes:** event codes outside Table 1 appear in 9 files, and experiment ids outside Table 2 in 4.
-- **Inconsistencies in the paper and its code:** the Methods say 89 sessions where the table and the files have 87. The code's `plotFigure5.ipynb` writes the Figure 5f percentages into the plot as constants and does not compute them.
-
-**3. Where the protocol was unclear, wrong or missing something**
-1. **Methods vs code:** here the code reproduces the paper's numbers exactly and the Methods do not. The protocol makes the Methods decide the outcome, so MS and dual cells are "not reproduced". I followed that rule and recorded a `code_mismatch` finding.
-2. **Stated spread as tolerance:** "use the stated spread" makes the tolerance of a mean ± SD equal to the SD (0.74 ± 0.10), which is very loose. I also held the SD itself to 10%.
-3. **Default 10% on record counts:** for the counts in a data descriptor (neurons, subjects, sessions), 10% is loose. I kept it and recorded the exact differences.
-4. **Data descriptors:** the protocol assumes papers with findings. I made each described data element a claim.
-5. **"Count each recording once":** this is unclear when two sessions share spike trains but have different trial data. I kept the paper's per-file count as the main reading and counted the units once as a second reading.
-6. **Unreachable public input:** the earlier release on Dryad is public but refuses automated download (HTTP 403, or a token is required). No blocking reason fits, so I used `other`.
-7. **Per-session clock check:** with 1 to 64 units per session, 49 of 87 sessions cannot show the shared clock. I listed them, as the protocol asks.
-8. **Criteria written after the data check:** for descriptor claims, the data check is the test itself. I wrote the criteria after it, and the claims file's opening comment says what I had already seen.
-9. **Thresholds for partial outcomes:** the protocol gives no default for "partially reproduced" in count-based criteria. My criteria said "most files" without a number; I took 78 of 87 as most and recorded that as a deviation.
-10. **Reference tables:** whether a paper table or constants in the paper's code count as "inputs" or as "embedded numbers" is not stated. I copied Online-only Table 1 into the helper module as text and listed it, and the code's Figure 5f constants, under `inputs`.
-11. **Chance level:** the paper states none for its cell selections. I still report a label-shuffle null (4.5% VS, 5.3% MS); the MS rate under the Methods' test (5.9%) is barely above it.
-
-**4. Runtime and failures**
-- The notebook runs in about 125 s, of which 81 to 96 s is streaming the 87 files with 8 threads.
-- The only thing that failed was the Dryad download, which blocked one claim. No notebook errors.
-- The untracked `.bashrc`, `.profile` and similar entries in `git status`, and `scripts`, are links to /dev/null created by the sandbox, not by me. They may show up when the workflow commits.
+**(4) Runtime and failures**
+- The notebook runs in about 2.5 to 3 minutes (169 s in the clean environment), peak memory 0.31 GB. The whole session took about 35 minutes of the 5 hours.
+- Nothing failed. One permission-gated `sed` command was denied, and I read the same file another way.
