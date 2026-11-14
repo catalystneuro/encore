@@ -42,6 +42,11 @@ detail open and those scripts settle it, the script is named next to the paramet
 - Joystick movement time (`move_time`): InfoGathering_Behaviour.m, a 5-sample boxcar of the
   first joystick channel from fixation end to response, threshold 1 when the fixation-period
   mean is below 0.8 in absolute value, otherwise 2.9.
+- Fig 6 random halves: the 100 halves the scripts drew and stored (`randproj_trials` of
+  info_gathering_cue123_alltrials_attentional_final.mat, drawn per unit), read from the data set;
+  a variant draws halves once per session, shared by the session's units.
+- Cluster test of Figure 5g-j (`clusters`): 8-connected clusters, as MATLAB's bwconncomp and
+  bwboundaries use by default (cross_corr_tstats.m, Fig5_OFCcrosscorrelation.m).
 - Random seeds are standard choices that cannot change a result beyond permutation noise; each
   analysis passes its own generator.
 """
@@ -71,6 +76,13 @@ RESP_LONG = np.arange(-2900, 401, 10)     # Ramp_to_choice.m timebins_ResponseLo
 def read_bytes(path: str) -> bytes:
     with fsspec.open(BASE + path, block_size=2**24).open() as f:
         return f.read()
+
+
+def script_lines(name: str, numbers) -> list[str]:
+    """Lines `numbers` (1-based) of scripts/<name> in the data set's scripts.zip."""
+    z = zipfile.ZipFile(io.BytesIO(read_bytes("scripts.zip")))
+    text = z.read(f"scripts/{name}").decode("latin-1").splitlines()
+    return [f"{name}:{i}: {text[i - 1].strip()}" for i in numbers]
 
 
 def checksums() -> dict:
@@ -241,7 +253,9 @@ def slide(raster: np.ndarray, window=200, step=10) -> np.ndarray:
 
 
 def conv_same_200(x: np.ndarray) -> np.ndarray:
-    """MATLAB conv2(1, ones(1,200)/200, x, 'same') along rows."""
+    """MATLAB conv2(1, ones(1,200)/200, x, 'same') along rows: output k sums inputs k-99 to k+100.
+    For an even kernel MATLAB's 'same' keeps one sample later than numpy's 'same' (k-100 to k+99),
+    so the two differ by one sample by design."""
     n = x.shape[1]
     c = np.concatenate([np.zeros((x.shape[0], 1)), np.cumsum(x, axis=1, dtype=float)], 1)
     k = np.arange(n)
@@ -555,8 +569,14 @@ def binom_p_code(k, n, p0=0.05):
     return 2 * stats.binom.sf(k, n, p0)
 
 
+def binom_p_exact(k, n, p0=0.05):
+    """Exact one-sided binomial test, P(X >= k) at chance rate p0 (a check on binom_p_code, which
+    leaves out P(X = k) and doubles the rest)."""
+    return stats.binomtest(int(k), int(n), p0, alternative="greater").pvalue
+
+
 def clusters(mask: np.ndarray):
-    lab, n = ndimage.label(mask)
+    lab, n = ndimage.label(mask, structure=np.ones((3, 3), int))   # 8-connected, as bwconncomp
     return lab, n
 
 
