@@ -1,10 +1,20 @@
 # Badges
 
-The registry makes two kinds of badge. Both state how many findings were reproduced, and both link back to a page
-in the registry.
+The registry makes three kinds of badge. Each states how many findings were reproduced, and each links back to a
+page in the registry.
 
 - **Dataset badges** are for archives. An archive can show one on a dataset's own page.
+- **Paper badges** are for a paper's authors. They can show one beside the paper on a lab's site, or in the README
+  of the paper's code.
 - **Author badges** are for people. An author can show one on a lab's site or a profile.
+
+Each kind comes in the same three styles:
+
+| Style | What it shows |
+|---|---|
+| Findings reproduced | One number: the findings reproduced in full, in attempts a verifier has checked. |
+| All outcomes | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. |
+| Card | A name, the number of claims, the outcomes as one bar, and the four counts. |
 
 ## Dataset badges
 
@@ -52,7 +62,31 @@ To show the badge with a link to the dataset's page:
 </a>
 ```
 
-The dataset's page in the registry has a "Badge for this dataset" section with this code filled in.
+The dataset's page in the registry has a "Badges for this dataset" section with this code filled in.
+
+### Styles with all the outcomes
+
+A dataset has two more styles. They show every outcome, not only the findings reproduced.
+
+| Style | Address | What it shows |
+|---|---|---|
+| Findings reproduced | `badge/<archive>/<id>.svg` | One number: the findings reproduced in full, in verified attempts. |
+| All outcomes | `badge/<archive>/<id>-outcomes.svg` | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. An outcome with no claim is shown as 0. |
+| Card | `badge/<archive>/<id>-card.svg` | The dataset's name, the number of claims and papers, the outcomes as one bar, and the four counts. |
+
+![All outcomes](https://encorescience.org/badge/dandi/000003-outcomes.svg)
+
+![Card](https://encorescience.org/badge/dandi/000003-card.svg)
+
+The two styles with all the outcomes count differently from the first:
+
+- They count every claim tested on the dataset in a current attempt, whether or not a verifier has checked the
+  attempt. A deprecated attempt is left out.
+- "Blocked" means the claim could not be tested, most often because the data it needs are not in the dataset.
+- A dataset has these two styles when at least one claim was tested on it, even if nothing was reproduced.
+
+The "Badges for this dataset" section of the dataset's page shows all three, and gives the code for the one
+chosen.
 
 ### JSON
 
@@ -74,6 +108,9 @@ it has these fields:
 | `svg` | The address of the badge image. |
 | `alt` | Alternative text for the image. |
 
+The file's `badges` field gives the address of each style's image (`reproduced`, `outcomes`, `card`), or `null`
+for a style the dataset does not have.
+
 Each entry in `papers` has:
 
 | Field | Meaning |
@@ -89,6 +126,69 @@ A dataset that no attempt has used has no JSON file, and the address returns 404
 
 `https://encorescience.org/data/datasets.json` lists every dataset in one file. Each row has a `badge` field
 with the badge's text, or `null`. Use it to find out which datasets have a badge without requesting each one.
+
+## Paper badges
+
+A paper badge says how many of the paper's findings were reproduced. It links to the paper's page in the
+registry.
+
+![Example paper badge](https://encorescience.org/badge/papers/senzai-2017.svg)
+
+### What the badge counts
+
+The count follows the same rule as a dataset badge, for one paper:
+
+- Claims that rest on the paper's datasets.
+- Outcome "reproduced". Partial reproductions do not count.
+- Current attempts that an independent verifier has checked.
+
+A paper has this badge only when at least one finding counts.
+
+### Styles
+
+| Style | Address | What it shows |
+|---|---|---|
+| Findings reproduced | `badge/papers/<key>.svg` | One number: the findings reproduced in full, in verified attempts. |
+| All outcomes | `badge/papers/<key>-outcomes.svg` | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. An outcome with no claim is shown as 0. |
+| Card | `badge/papers/<key>-card.svg` | The paper's short name, the number of claims and datasets, the outcomes as one bar, and the four counts. |
+
+![All outcomes](https://encorescience.org/badge/papers/senzai-2017-outcomes.svg)
+
+![Card](https://encorescience.org/badge/papers/senzai-2017-card.svg)
+
+`<key>` is the paper's key in the registry, the last part of its page's address. For
+`https://encorescience.org/papers/senzai-2017/` the key is `senzai-2017`.
+
+The two styles with all the outcomes count every claim of the paper in a current attempt, whether or not a
+verifier has checked the attempt. This is the same count as the bar at the top of the paper's page. A paper has
+these two styles when it has an attempt, even if nothing was reproduced.
+
+The paper's page has a "Badges for this paper" section at the end. It shows the styles the paper has, and gives
+the code for the one chosen, as HTML and as Markdown.
+
+### JSON
+
+```
+https://encorescience.org/api/papers/<key>.json
+```
+
+Every paper listed in the registry has this file, tested or not. It allows requests from any origin. Its fields are:
+
+| Field | Meaning |
+|---|---|
+| `key`, `doi`, `title`, `byline`, `journal` | The paper. |
+| `url` | The paper's page in the registry. |
+| `status` | Whether the paper has been attempted. |
+| `authors` | Each author's name, ORCID iD and page in the registry, where known. |
+| `datasets` | Each dataset of the paper: its key, label and page. |
+| `attempts` | Each attempt: its id, date, verification tier, datasets and page. |
+| `tier` | The verification tier of the paper's current attempts. |
+| `badge` | The first style, with `text`, `reproduced`, `url`, `svg` and `alt`, or `null`. |
+| `outcome_counts` | The four counts of the styles with all the outcomes, or `null`. |
+| `badges` | The address of each style's image (`reproduced`, `outcomes`, `card`), or `null` for a style the paper does not have. |
+| `caution` | A sentence to show next to any outcome. |
+
+Each row of `https://encorescience.org/data/papers.json` has a `badge` field with the badge's text, or `null`.
 
 ## Author badges
 

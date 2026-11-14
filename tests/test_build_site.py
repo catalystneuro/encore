@@ -1400,7 +1400,7 @@ def test_a_dataset_has_a_badge_for_the_findings_reproduced_from_it_in_verified_a
         badge = site.badge_of(data, key)
         assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and api["badge"] == badge
         page = (out / site.page_of(key) / "index.html").read_text()
-        assert ("Badge for this dataset" in page) == bool(total)
+        assert ("Badges for this dataset" in page) == bool(site.dataset_outcomes(data, key)) and (not total or site.dataset_outcomes(data, key))
         if not total:
             continue
         with_badge += 1
@@ -1416,6 +1416,89 @@ def test_a_dataset_has_a_badge_for_the_findings_reproduced_from_it_in_verified_a
     # A dataset's page leads with its papers; what was found about its data comes after.
     page = (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
     assert page.index('id="papers"') < page.index('id="findings"')
+
+
+def test_a_dataset_has_two_more_badges_with_all_the_outcomes(built):
+    # Every outcome of the claims tested on the dataset, verified or not, as one line and as a card: a dataset whose
+    # attempts no verifier has checked has these two and not the first.
+    data, out = built
+    seen = unverified = 0
+    for key, attempts in site.current_attempts(data).items():
+        archive, ident = site.split_key(key)
+        live = [a for a in attempts if not a.get("deprecated")]
+        counts = site.outcome_counts(live) if live else dict.fromkeys(site.OUTCOMES, 0)
+        every = site.dataset_outcomes(data, key)
+        line, card = (out / "badge" / archive / f"{ident}-{kind}.svg" for kind in ("outcomes", "card"))
+        api = json.loads((out / "api" / f'{site.page_of(key).rstrip("/")}.json').read_text())
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["badges"] == {"reproduced": (site.badge_of(data, key) or {}).get("svg"),
+                                 "outcomes": every["svg_outcomes"] if every else None, "card": every["svg_card"] if every else None}
+        if not every:
+            continue
+        seen += 1
+        unverified += site.badge_of(data, key) is None
+        assert every["counts"] == counts and list(counts) == list(site.OUTCOMES)
+        assert every["papers"] == len({a["paper"].lower() for a in live})
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg and f'fill="{site.OUTCOME_FILL[k]}"' in svg
+            assert site.e(every["alt"]) in svg
+        assert site.e(site.dataset_label(key)) in card.read_text()
+        assert f'· {every["papers"]} paper' in card.read_text()
+        page = (out / site.page_of(key) / "index.html").read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+    assert seen and unverified
+
+
+def test_a_paper_has_badges_and_a_json_file_of_its_results(built):
+    # The same three styles as a dataset and a person, at badge/papers/<key>; the first only when a verified attempt
+    # reproduced something. They are offered at the end of the paper's page, not on the page of one attempt.
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "papers.json").read_text())}
+    seen = without = claims_only = 0
+    for q in site.papers_of(data):
+        key = q["key"]
+        first, line, card = (out / "badge" / "papers" / f"{key}{kind}.svg" for kind in ("", "-outcomes", "-card"))
+        file = out / "api" / "papers" / f"{key}.json"
+        if not (q["attempts"] or q["status"] == "claims"):
+            # A paper not tested yet has a page and a JSON file, and no badge.
+            assert file.is_file() and not first.exists() and not card.exists()
+            assert json.loads(file.read_text())["badges"] == {"reproduced": None, "outcomes": None, "card": None}
+            continue
+        api = json.loads(file.read_text())
+        badge, every = site.paper_badge(data, q), site.paper_outcomes(data, q)
+        total = sum(site.outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+        counts = {k: (rows[key].get("counts") or {}).get(k, 0) for k in site.OUTCOMES}
+        assert (badge is None) == (total == 0) and first.is_file() == bool(total)
+        assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
+        assert api["badge"] == badge and api["outcome_counts"] == (counts if every else None)
+        assert api["badges"] == {"reproduced": (badge or {}).get("svg"), "outcomes": every["svg_outcomes"] if every else None,
+                                 "card": every["svg_card"] if every else None}
+        assert api["doi"] == q["doi"] and api["url"] == site.SITE_URL + f"papers/{key}/"
+        assert rows[key]["badge"] == (badge or {}).get("text")
+        page = (out / "papers" / key / "index.html").read_text()
+        assert ("for this paper</h2>" in page) == bool(badge or every)
+        if not every:
+            claims_only += 1
+            continue
+        seen += 1
+        without += badge is None
+        if badge:
+            assert badge["reproduced"] == total and badge["text"] == f'{total} finding{"" if total == 1 else "s"} reproduced'
+            assert f">{site.e(badge['text'])}</text>" in first.read_text() and badge["svg"] in page
+        for svg in (line.read_text(), card.read_text()):
+            for k, n in counts.items():
+                assert f">{n} {site.OUTCOME_SHORT[k]}</text>" in svg
+        # The card names the paper and says how many claims and datasets, not "1 paper".
+        assert site.e(q["byline"]) in card.read_text() and f'{every["claims"]} claim' in card.read_text()
+        assert " dataset" in card.read_text() and "1 paper" not in card.read_text()
+        assert every["svg_outcomes"] in page and every["svg_card"] in page and 'class="badge-pick"' in page
+        # One attempt's own page does not offer the paper's badges.
+        for a in q["live"][:1]:
+            own = site.attempt_own_path(data, a)
+            if own and own.rstrip("/") != f"papers/{key}":
+                assert "for this paper</h2>" not in (out / own / "index.html").read_text()
+    assert seen and without and claims_only
 
 
 def test_a_badge_sums_the_papers_and_leaves_out_what_is_not_verified():
