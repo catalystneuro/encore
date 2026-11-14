@@ -250,6 +250,69 @@ The workflows take a dataset in any of these forms.
 - **In an entry.** The entry names the dataset as `openneuro:<id>/<tag>`
   under `related`, and gives in the notebook header the `id` of each file read.
 
+## SPARC
+
+- **Datasets.** A dataset on the SPARC Portal (`sparc.science`), the data
+  portal of the NIH SPARC program on the peripheral nervous system and the
+  organs it controls. SPARC publishes through Pennsieve Discover, and a
+  dataset is named by its Pennsieve Discover id:
+  `https://sparc.science/datasets/206` is `SPARC:206`, in folders
+  `sparc-206`. Many SPARC datasets are computational models, scaffolds or
+  tools, not experiments. So the registry's list, `targets/sparc.json`, is
+  built from chosen ids by `tools/build_sparc_targets.py`. For now it holds
+  three experimental datasets whose paper is in PubMed Central, to test the
+  pipeline on SPARC. The builder reads each dataset's metadata, versions and
+  file list from Pennsieve Discover's public API
+  (`https://api.pennsieve.io/discover/datasets/<id>`). The papers are the
+  dataset's related publications marked `IsDescribedBy` (and
+  `IsReferencedBy`, `IsSupplementTo` or `IsDocumentedBy`). SPARC's own DOIs
+  (`10.26275/`) and protocols (`10.17504/`, protocols.io) are left out.
+  Otherwise give the paper's DOI to the builder (`<id>=<paper DOI>`).
+- **Versions.** Each version has a number and its own DOI
+  (`10.26275/xxxx-xxxx`). The DOI of a version does not change, and an older
+  version stays readable. The number is `published_version` in the target
+  list and pins it, with its DOI under `doi`. `version_dois` lists every
+  version's DOI, since a paper may cite any of them. Record the number under
+  `dataset: version` and the DOI under `dataset: doi`. List the versions
+  with `https://api.pennsieve.io/discover/datasets/<id>/versions`.
+- **Reading.** Everything is public, with no account. Every SPARC dataset is
+  in the AWS Open Data bucket `sparc-prod-aod-discover-publish50-use1`
+  (us-east-1, `bucket` in the target list), under `<id>/`. The bucket keeps
+  every version of every file as an S3 object version. Each version of a
+  dataset has a `manifest.json`, which lists every file with its `path`,
+  `size`, `s3VersionId` and `sha256`. The target list gives the object
+  version of the pinned version's manifest as `manifest_version`, so the
+  manifest is at
+  `https://<bucket>.s3.amazonaws.com/<id>/manifest.json?versionId=<manifest_version>`.
+  Each file is at
+  `https://<bucket>.s3.amazonaws.com/<id>/<path>?versionId=<s3VersionId>`.
+  Open files with `fsspec.open(url, block_size=2**20)`, which reads ranges,
+  and read only what a claim needs. A key without `versionId` holds the
+  latest version, which may not be the pinned one. Pennsieve's API also lists
+  one folder at a time, with the same object versions:
+  `/discover/datasets/<id>/versions/<n>/files/browse?path=<folder>`. Its
+  download endpoints need an account, and are not needed.
+- **Checksums.** The manifest gives each file's SHA-256 in base64. The
+  target list gives it in hex. Give in the notebook header the SHA-256 of
+  each file read.
+- **SPARC Data Structure.** Every dataset follows the SPARC Data Structure
+  (SDS). Start from `readme.md` (the dataset's description), and
+  `files/README.txt` when there is one. Then read the sheets at the top of
+  `files/`: `dataset_description.xlsx` (the study, its contributors, its
+  protocols and its originating article), `subjects.xlsx` (one row for each
+  subject, with species, sex, age and experimental group) and
+  `samples.xlsx`. The data are under `files/primary/` (as recorded),
+  `files/derivative/` (processed), `files/source/`, `files/code/`,
+  `files/docs/` and `files/protocol/`, each with a `manifest.xlsx` that
+  describes its files. The sheets' layout differs between versions of SDS:
+  read every column. `metadata/records/` holds the same subjects and
+  samples as CSV, from Pennsieve's records. The formats vary: MATLAB, HDF5,
+  CSV, Excel, TIFF and JPEG 2000 images, and acquisition formats
+  (LabChart, Spike2, Intan).
+- **In an entry.** The entry names the dataset as `sparc:<id>/<version>`
+  under `related`, and gives in the notebook header the SHA-256 of each file
+  read.
+
 ## Local and remote (`encore check`)
 
 Two kinds of dataset exist only inside a run of `encore check`

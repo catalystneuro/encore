@@ -145,6 +145,54 @@ def test_openneuro_targets_are_bids_datasets_with_a_paper_in_pmc_and_checksums()
                    for f in t["files"]), t["id"]
 
 
+def test_a_sparc_dataset_is_named_by_its_id_and_pinned_by_its_version():
+    key = datasets.parse("SPARC:206")
+    found = next(t for t in datasets.targets() if t["key"] == key)
+    assert key == "sparc:206" and found["folder"] == "sparc-206" and datasets.parse("sparc-206") == key
+    assert datasets.label(key) == "SPARC:206" and datasets.url(key) == "https://sparc.science/datasets/206?type=dataset"
+    assert found["doi"].startswith("10.26275/") and found["doi"] in found["version_dois"]
+    text = datasets.access(key)
+    assert f'206/manifest.json?versionId={found["manifest_version"]}' in text and "{" not in text
+    assert f'(version {found["published_version"]}' not in text and f'({found["published_version"]}, DOI {found["doi"]})' in text
+
+
+def test_sparc_targets_are_experiments_with_a_paper_in_pmc_and_checksums():
+    from archives import ALL
+    found = [t for t in datasets.targets() if t["archive"] == "sparc"]
+    assert len(found) == 3 and ALL["sparc"].stage is None and not ALL["sparc"].secrets
+    assert ALL["sparc"].builder == "tools/build_sparc_targets.py" and (REPO / ALL["sparc"].builder).is_file()
+    for t in found:
+        assert t["data_standards"][0] == "SDS" and "dataset_description" in t["sds"]["sheets"], t["id"]
+        assert t["bucket"] and t["manifest_version"] and t["files_listed"] == "all", t["id"]
+        assert any(p["pmcid"] for p in t["papers"]) and not any(p["preprint"] for p in t["papers"]), t["id"]
+        assert not any(p["doi"].startswith(("10.26275/", "10.17504/")) for p in t["papers"]), t["id"]
+        assert len(t["files"]) == t["asset_count"] and all(len(f["sha256"]) == 64 and f["s3_version"]
+                                                           for f in t["files"]), t["id"]
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("206", ("206", None, "")),
+    ("SPARC:60:5", ("60", 5, "")),
+    ("212=https://doi.org/10.1113/JP278016", ("212", None, "10.1113/jp278016")),
+    ("https://doi.org/10.26275/LG3C-1KJF", ("10.26275/lg3c-1kjf", None, "")),
+    ("https://sparc.science/datasets/206?type=dataset", ("206", None, "")),
+    ("https://sparc.science/datasets/60/version/4", ("60", 4, "")),
+])
+def test_the_sparc_builder_takes_an_id_a_doi_or_a_page(text, expected):
+    import build_sparc_targets
+    assert build_sparc_targets.parse(text) == expected
+
+
+def test_the_sparc_builder_gives_checksums_in_hex_and_knows_the_sds_parts():
+    import build_sparc_targets as b
+    # SPARC:226 version 2's readme.md: the manifest's base64, and `shasum -a 256` of the file.
+    assert b.hex_sha256("XtYwQV4v2eBTh54/gf1rbpsBJwyQuTucfraFefbD2Bs=") \
+        == "5ed630415e2fd9e053879e3f81fd6b6e9b01270c90b93b9c7eb68579f6c3d81b" and b.hex_sha256(None) is None
+    assert b.sds(["files/dataset_description.xlsx", "files/subjects.xlsx", "files/primary/manifest.xlsx",
+                  "files/primary/sub-1/a.mat", "files/code/run.m", "readme.md"]) \
+        == {"folders": ["code", "primary"], "sheets": ["dataset_description", "subjects"], "folder_manifests": 1}
+
+
 @pytest.mark.parametrize("text, expected", [
     ("ds002778", ("ds002778", None, "")),
     ("ds004752:1.0.1", ("ds004752", "1.0.1", "")),
