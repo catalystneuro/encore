@@ -68,8 +68,9 @@ outcomes:
   notebook: reproduce_gao_2018.ipynb
   output: claim:fig1g-fastigial-activation-delay-errors
   notes: >-
-    Early delay photo-activation (code 2, light for 0.455 s from delay onset, ending 0.845 s before
-    the go cue by the laser traces) lowers pooled performance from 0.870 to 0.630 (change -0.240; no
+    Early delay photo-activation (code 2; by the laser traces, light for 0.455 s from delay onset in
+    the 2017 sessions, ending 0.845 s before the go cue, and 0.500 s in the 2015 sessions, ending
+    0.8 s before it, except 1.3 s, up to the go cue, in ANM314746_20151020) lowers pooled performance from 0.870 to 0.630 (change -0.240; no
     resample of 10,000 without a drop, p < 0.0001). Every mouse drops, by 0.083 to 0.450. Without
     the MISMATCH sessions 0.871 to 0.619 (p = 0.0004).
   deviations:
@@ -106,10 +107,10 @@ outcomes:
     laser_power channels in all 54 sessions, though the descriptor says they record tongue
     movements), so lick rate within bouts and bout duration cannot be measured, and there is no
     response-epoch photo-activation. The early-lick part was tested from the per-trial LickEarly
-    flag and holds; the fraction of trials with an early lick is 0.083 in control and 0.130 with
-    early delay photo-activation (two-sided bootstrap p = 0.33, 6 mice, 21 sessions; 0.322 without
-    the MISMATCH sessions). Per mouse only BAYLORCD6 differs (0.081 to 0.324, p < 0.0001; also 0.304
-    with sample photo-activation). Since the criterion needs all three measures and two cannot be
+    flag and holds pooled over mice, not in every mouse; the fraction of trials with an early lick
+    is 0.083 in control and 0.130 with early delay photo-activation (two-sided bootstrap p = 0.33, 6
+    mice, 21 sessions; 0.322 without the MISMATCH sessions). Per mouse BAYLORCD6 licks early more
+    (0.081 to 0.324, p < 0.0001; also 0.304 with sample photo-activation). Since the criterion needs all three measures and two cannot be
     taken, the claim stays blocked.
 - claim: fig1g-dentate-activation-little-effect
   outcome: partially_reproduced
@@ -180,7 +181,8 @@ outcomes:
   notes: >-
     No lick times, no video or jaw tracking, and no response-epoch photo-inhibition in either
     dataset, so the lick-bout part cannot be tested. The early-lick part was tested from the
-    LickEarly flag in the 4 recorded mice (the criterion names 7 behavior mice) and holds; 0.109 in
+    LickEarly flag in the 4 recorded mice (the criterion names 7 behavior mice) and holds pooled over
+    mice, not in every mouse; 0.109 in
     control against 0.164 with 0.5 s delay photo-inhibition (two-sided bootstrap p = 0.13) and 0.112
     against 0.068 with 1.3 s photo-inhibition (p = 0.22). Per mouse BAYLORCD8 licks early more with
     code 5 (0.083 to 0.209, p = 0.008) and less with code 6 (0.090 to 0.011, p < 0.0001). The claim
@@ -360,6 +362,15 @@ outcomes:
     0.27 [0.02, 0.53]. Selectivity falls by 73% to 82% but its interval excludes zero in both windows,
     so it is not abolished by the criterion. With 5 screening trials (the deposited script) 0.37
     [0.17, 0.57] and 0.32 [0.06, 0.56].
+  proposed:
+    outcome: not_reproduced
+    reason: >-
+      The criterion's only test of the claim is that photo-inhibition selectivity cannot be told
+      from zero, and it fails under every reading the notebook runs (cell 74); whole delay 0.39
+      [0.19, 0.60], last 500 ms 0.27 [0.02, 0.53], and with 5 screening trials 0.37 [0.17, 0.57] and
+      0.32 [0.06, 0.56]. The criterion has no partial condition, and the control part only sets the
+      precondition, so the 73% to 82% reduction does not make the claim hold in part. Both
+      verification rounds gave not_reproduced for this reason.
   deviations:
   - >-
     The criterion's 10 screening trials per type are from the Methods; the deposited script uses 5,
@@ -385,10 +396,10 @@ outcomes:
     latency 3.6 +- 2.9 ms, within 4.5 +- 2.6. Labelled by centre it is 8.6 ms, outside; with the whole
     delay as window 7.8 ms. The count is 177 of 445 tested (whole-delay window 187, correct trials
     67 to 68, without the script's minimum trial counts 190 of 538), against 227 +- 22.7 from the
-    same 6 mice; the count does not reproduce. The fraction of tested neurons (0.40 to 0.42) is
-    close to 227 of the paper's unknown denominator. By mouse 11 to 66 modulated neurons. The tested
-    set is the lab's (its compiled FR file has p-values for the same 445 pyramidal neurons, equal to
-    those here to 3e-13). Without the MISMATCH sessions 166 of 401 are modulated and the latency is
+    same 6 mice; the count does not reproduce. By mouse 11 to 66 modulated neurons. The tested set
+    is the lab's (its compiled FR file has p-values for the same 445 pyramidal neurons; its 400 ms-bin
+    p-values equal those here to 3e-13 where it has a value, and its NaN entries are 1.0 here; the
+    window p-values were not compared). Without the MISMATCH sessions 166 of 401 are modulated and the latency is
     4.22 ms by bin start (9.22 by centre). A bin labelled by its start holds spikes up to 10 ms
     later, so this label gives the earliest time the effect could begin in its bin.
   deviations:
@@ -426,29 +437,32 @@ outcomes:
     epoch, where photo-activation changes the mix of licks; within the licked direction the fraction
     is 0.127 ("lick right", 399 neurons) and 0.072 ("lick left", 286), above 1% (p = 3e-39 and 3e-12)
     and above before onset (p = 3e-10 and 0.0016). Without the MISMATCH sessions 0.1457. The per-bin
-    p-values equal those in the lab's compiled FR file (p_stim2_FN) to 3e-13.
+    p-values equal those in the lab's compiled FR file (p_stim2_FN) to 3e-13 wherever it has a
+    value; its 381 NaN entries are 1.0 here, so neither counts them significant.
 - claim: fig4g-dentate-effect-recovers
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_gao_2018.ipynb
   output: claim:fig4g-dentate-effect-recovers
   measured:
-  - 8.3
+  - 3.30
   - 172
   notes: >-
-    Stimulation window, all trials, bins labelled by centre: latency 8.3 +- 3.1 ms and 172 modulated
-    neurons of 517, both within tolerance (by start 3.3 ms, just below 3.3 to 13.3; whole-delay window
-    146 neurons). After the light the fraction of significant neurons falls from 0.33 to 0.0476 in the
+    Stimulation window, all trials, bins labelled by start as in fig4-fastigial-activation-alm-latency:
+    latency 3.3022 +- 3.07 ms, just inside 3.3 to 13.3, and 172 modulated neurons of 517, both within
+    tolerance (by centre 8.30 ms, also within; whole-delay window 146 neurons). After the light the fraction of significant neurons falls from 0.33 to 0.0476 in the
     bins 1 s or more after offset, lower than fastigial (0.1345, one-sided p = 1e-6), but still above
     1% (binomial p = 2e-10) and above the 0.0147 before light onset (p = 0.0013). The recovery test
     fails under both comparisons, so the claim holds in part. Without the MISMATCH sessions 0.0475
-    (p = 6e-9 against 1%, 0.0007 against before onset), latency 8.62 ms by centre with 166 modulated
+    (p = 6e-9 against 1%, 0.0007 against before onset), latency 3.62 ms by start (8.62 by centre) with 166 modulated
     neurons. Within the licked direction 0.036 ("lick right") and 0.027 ("lick left"), above 1% in
     both (p = 7e-6 and 8e-4); against before onset p = 0.024 and 0.098.
   deviations:
   - >-
-    The latency match rests on labelling bins by their centre (assumed); no single labelling
-    matches both the fastigial and the dentate latency.
+    The latency match rests on labelling each 10 ms bin by its start (assumed), the label used for
+    the fastigial latency; the paper does not say how a bin is placed in time. The start label
+    matches both latencies, the dentate one at the lower bound; the centre label also matches the
+    dentate latency (8.30 ms), not the fastigial one.
 - claim: fig4i-cd-control-separation
   outcome: reproduced
   notebook: reproduce_gao_2018.ipynb
@@ -556,8 +570,9 @@ findings:
 - kind: data_missing
   statement: >-
     DANDI:000007 lacks trials that CRCNS:alm-4 holds with GoodTrials = 1 and a valid
-    photostimulation code; ANM314746 2015-10-22 has 258 of 284 (the last 26 missing) and ANM314757
-    2015-10-21 has 34 of 302 (trials 48 to 315 missing). In the other 52 sessions DANDI holds exactly
+    photostimulation code; ANM314746 2015-10-22 has 258 of 284 (trials 279 to 304, the last 26 such
+    trials, missing) and ANM314757 2015-10-21 has 34 of 302 (trials 48 to 315 missing); in both,
+    DANDI holds no trial after the first missing one. In the other 52 sessions DANDI holds exactly
     those trials, with the same codes and outcomes, and every unit's spike times are identical.
   datasets:
   - "000007"
@@ -572,7 +587,8 @@ findings:
   statement: >-
     For the photo-inhibition mice BAYLORCD12, BAYLORCD13 and BAYLORCD14 both datasets give the
     photostimulation site as the left fastigial nucleus and the ALM recording at ML -1.5 mm (left),
-    on the same side, while the paper, the CRCNS descriptor and the trial code descriptions say the
+    on the same side (DANDI: optogenetics hemisphere left, ML -0.8 mm; electrode group ML -1.5 mm;
+    for BAYLORCD8 right and -1.5 mm), while the paper, the CRCNS descriptor and the trial code descriptions say the
     CN was manipulated contralateral to the recorded ALM; Supplemental Table 1 lists BAYLORCD14 as
     recorded in right ALM. Which side was manipulated cannot be told from the files.
   datasets:
@@ -643,9 +659,9 @@ findings:
   statement: >-
     For the response latencies (4.5, 8.3 and 7.1 ms), how is a 10 ms bin placed in time (start,
     centre or end) and which window decides that a neuron is significantly modulated? Labelling by
-    start gives 3.6 ms for fastigial and 3.3 ms for dentate photo-activation, by centre 8.6 and 8.3
-    ms, so no single choice here matches both reported values; for CN photo-inhibition every choice
-    gives 15 ms or more.
+    start gives 3.64 ms for fastigial and 3.30 ms for dentate photo-activation, by centre 8.64 and
+    8.30 ms. Only the start label matches both reported values, the dentate one at the lower bound
+    of 8.3 +- 5.0; for CN photo-inhibition every choice gives 15 ms or more against 7.1.
 - kind: methods_unavailable
   statement: >-
     For the fractions captured by the coding direction (64.1% of selectivity, 27.0% of variance),
@@ -671,7 +687,8 @@ verifications:
     fig2-preparatory-more-in-alm, fig3d-alm-altered-by-cn-inhibition, fig3e-alm-increase-decrease,
     fig3f-alm-selectivity-abolished-by-cn-inhibition, cd-captures-selectivity). It reported no place
     where the claims file misreads the paper, so no question was added for a reader. Report in
-    transcripts/gao-2018/verifier-1-report.md.
+    transcripts/gao-2018/verifier-1-report.md. The cell numbers in the reasons below are those of
+    the round-1 notebook, not of the current one.
   results:
   - claim: fig1d-fastigial-lesion-contra-choice
     agrees: true
@@ -700,7 +717,7 @@ verifications:
     outcome: reproduced
     reason: >-
       Cell 14, one-sided p_drop is 0.364 for contra and 0.635 for ipsi, both above 0.05. Tested on
-      the recording sessions of the same 6 mice. Problem 7, hier_boot gave 0 false positives on a
+      the recording sessions of the same 6 mice. Problem 7 (does not affect a conclusion), hier_boot gave 0 false positives on a
       synthetic null, so being conservative it favours the absence claims (fig1g early sample,
       dentate with 3 mice).
     response: >-
@@ -813,14 +830,14 @@ verifications:
     outcome: reproduced
     reason: >-
       Cell 26, 0.740 to 0.797 under all four readings, all within 0.82 +- 0.082. Counts are not
-      judged because the data hold 34 of 39 sessions. Problem 10, selectivity_tests runs the t-test
-      on rate; the paper says spike counts. Problem 11, the waveforms are never checked against the
+      judged because the data hold 34 of 39 sessions. Problem 10 (does not affect a conclusion), selectivity_tests runs the t-test
+      on rate; the paper says spike counts. Problem 11 (does not affect a conclusion), the waveforms are never checked against the
       > 0.45 ms rule.
     response: >-
       Outcome kept. Added the test on spike counts (856, the same as on rates), the unit-by-unit
       comparison with the lab's compiled sig_selective (same verdict for all 1084 units), and a
       spike-width check of the cellType labels (all agree at 25 kHz for 2015 and 20 kHz for 2017 and
-      2018 sessions, except 14 pyramidal units at 0.40 to 0.45 ms).
+      2018 sessions, except 14 pyramidal units at exactly 0.45 ms, not above the > 0.45 ms rule).
   - claim: fig2-cn-selective-fraction
     agrees: true
     outcome: blocked
@@ -918,8 +935,8 @@ verifications:
       Cell 45, latency is 15 to 42 ms under every reading and label, against 7.1 +- 3.8. The count
       is 228 (all trials) or 106 (correct only), against 197 +- 19.7. The data hold more neurons
       than the paper (486 tested, 682 pyramidal), so the fraction fallback does not apply. Problem
-      6, the unit counts do not reconcile with the paper and the lab's compiled lists were not used
-      to reconcile. Problem 9, the clock check leaves out the inhibition sessions.
+      6 (affects a conclusion), the unit counts do not reconcile with the paper and the lab's compiled lists were not used
+      to reconcile. Problem 9 (does not affect a conclusion), the clock check leaves out the inhibition sessions.
     response: >-
       Outcome changed to not_reproduced and the assumption that the fraction could stand in for the
       count was dropped. The lab's compiled photo-inhibition file holds the same 737 units (682
@@ -974,8 +991,9 @@ verifications:
     reason: >-
       Cell 39, latency is 3.64 ms only with all trials, the stimulation window, and bins labelled by
       their start; centre labelling gives 8.6 ms, outside. The count is 177 to 190, against 227 +-
-      22.7, although all 6 mice are present. Problem 5, a bin labelled by its start includes spikes
-      up to 10 ms later; on a synthetic effect starting at 5 ms it returned 0 ms. Problem 1, the
+      22.7, although all 6 mice are present. Problem 5 (does not affect a conclusion), a bin labelled by its start includes spikes
+      up to 10 ms later; on a synthetic effect starting at 5 ms it returned 0 ms. Problem 1 (affects a
+      conclusion), the
       anomalous 2015 laser sessions stay in every code-2 analysis.
     response: >-
       Outcome kept. The latency docstring and the notes now say that the start label gives the
@@ -1000,7 +1018,8 @@ verifications:
     outcome: reproduced
     reason: >-
       Cell 43, 13.4% of neurons are significant at >= 1 s after offset, against 1% (p = 3e-47) and
-      against 0.9% before onset (p = 2e-13). Problem 4, every bin >= 1 s after offset lies in the
+      against 0.9% before onset (p = 2e-13). Problem 4 (does not affect a conclusion under the
+      criterion), every bin >= 1 s after offset lies in the
       response epoch with trial types pooled; photo-activation shifts choices, so rate differences
       can come from movement. Splitting by licked direction would separate this.
     response: >-
@@ -1083,3 +1102,424 @@ verifications:
       No VGAT-ChR2 sessions.
     response: >-
       Outcome kept.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the author-revise-1 run with its Result cells and
+    summary, the helper module, the entry README, the claims file, the attempt record and the
+    round-1 report. The verifier agreed with 45 of the 46 outcomes and disagreed with
+    fig3f-alm-selectivity-abolished-by-cn-inhibition. It found no place where the claims file
+    misreads the paper, so no question was added for a reader. It also listed sentences the printed
+    outputs did not support: the DANDI fiber side, which compare_deposits did not print (cell 5 now
+    prints both deposits' sites), and the trial ranges missing from DANDI (cell 5 now prints them;
+    the finding now gives trials 279 to 304 for ANM314746 2015-10-22). Report in
+    transcripts/gao-2018/verifier-2-report.md.
+  results:
+  - claim: fig1d-fastigial-lesion-contra-choice
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1e-fastigial-lesion-slow-initiation
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1d-dentate-lesion-no-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1g-fastigial-activation-early-sample-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1g-fastigial-activation-delay-errors
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. The notes and cell 18 say "light for 0.455 s from delay onset, ending 0.845 s before
+      the go cue", but cell 9 shows 0.500 s in the 2015 sessions and 1.300 s in ANM314746_20151020;
+      0.455 s holds only for the 2017 sessions.
+    response: >-
+      Outcome kept. The notes and the criterion cell now give the light duration by session from the
+      laser table: 0.455 s in the 2017 sessions (ending 0.845 s before the go cue), 0.500 s in the
+      2015 sessions (0.8 s before), and 1.3 s, up to the go cue, in ANM314746_20151020, a MISMATCH
+      session; the result without the MISMATCH sessions is unchanged (0.871 to 0.619, p = 0.0004).
+  - claim: fig1h-fastigial-activation-delay-bias
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1h-fastigial-activation-response-contra-bias
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1i-fastigial-activation-licking-unaffected
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees. "The early-lick part holds" is true pooled over mice, but cell 34 shows BAYLORCD6
+      rising from 0.081 to 0.324 (p < 0.0001); "holds" should be qualified as pooled. It does not
+      change the blocked outcome.
+    response: >-
+      Outcome kept. The notes, the result cell, the summary and the README now say the early-lick
+      part holds pooled over mice, not in every mouse, and name BAYLORCD6.
+  - claim: fig1g-dentate-activation-little-effect
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1j-photoinhibition-silences-fastigial
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1k-inhibition-early-sample-no-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1k-inhibition-late-sample-delay-errors
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1k-inhibition-delay-bias
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1k-inhibition-response-ipsi-bias
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig1l-inhibition-execution-unaffected
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees. "The early-lick part holds" is true pooled over mice, but BAYLORCD8 differs under both
+      codes (cell 34); "holds" should be qualified as pooled. It does not change the blocked
+      outcome. The "per mouse (n = 6)" wording of the early-lick criteria is not a misreading, as
+      the Extended Data Fig. 1f and 2i legends ("Lines, individual mice") support a test pooled over
+      mice.
+    response: >-
+      Outcome kept. The notes, the result cell, the summary and the README now qualify the
+      early-lick part as holding pooled over mice, and name BAYLORCD8.
+  - claim: ed10-vgat-fastigial-perturbation-performance
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig2-alm-selective-fraction
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. The record says 14 pyramidal units are "at 0.40 to 0.45 ms", but cell 7 prints only a
+      0.35 to 0.45 ms bin.
+    response: >-
+      Outcome kept. Cell 7 now prints the widths of these units at 20 kHz; all 14 are at exactly
+      0.45 ms, and the round-1 response says so.
+  - claim: fig2-cn-selective-fraction
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig2-preparatory-more-in-alm
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig2-peri-movement-equal
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed4-lick-modulated-few
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig2cd-selectivity-emerges-gradually
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed4e-cn-predicts-movement
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed4f-preparatory-all-nuclei
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed4g-fastigial-contra-late-delay
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig3-cn-altered-by-alm-inhibition
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig3b-cn-net-disinhibition
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig3c-cn-selectivity-abolished
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed6-cn-selectivity-both-alm-hemispheres
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig3d-alm-altered-by-cn-inhibition
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees. Round-1 problem 6 remains; the lab's compiled files hold the deposited units, not the
+      paper's 454 pyramidal neurons, so the count is judged on a population the paper did not use;
+      this is disclosed and cannot be fixed from the deposits. Problem 9 remains in part; the clock
+      check in the inhibition sessions has 200 ms resolution and cannot rule out a 10 to 30 ms
+      offset, the size of the latency gap. The record's sentence is worded correctly and the outcome
+      does not depend on it, because the count fails as well.
+    response: >-
+      Outcome kept, as it does not depend on the clock check; the notes keep its 200 ms limit. No
+      finer check was added.
+  - claim: fig3e-alm-mean-rate-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig3e-alm-increase-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees. Round-1 problem 6 remains (the count is judged on the deposited population, which the
+      paper did not use); disclosed and not fixable from the deposits.
+    response: >-
+      Outcome kept.
+  - claim: fig3f-alm-selectivity-abolished-by-cn-inhibition
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      Disagrees; would record not_reproduced. The criterion's only test is that photo-inhibition
+      selectivity cannot be told from zero. It fails under every reading, [0.19, 0.60] and [0.02,
+      0.53] in cell 74, and both 5-screening-trial variants. The author's response calls a 73% to
+      82% drop "present but weaker"; that is a judgement about the protocol's categories, and the
+      record states the disagreement fairly.
+    response: >-
+      The verified outcome is kept, as round 2 may not change it, and a change to not_reproduced is
+      proposed under proposed: the criterion has no partial condition, and the analysis behind it is
+      the one in cell 74. The result cell, the summary and the README say a change is proposed.
+  - claim: fig4bc-fastigial-targets-alm-thalamus
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed8-snr-sc-converge
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig4-fastigial-activation-alm-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees. The assumption (10 ms bins labelled by their start) is stated and is the most lenient
+      label; it is acceptable because the outcome is only partial and the count fails anyway. The
+      notes' sentence "The fraction of tested neurons (0.40 to 0.42) is close to 227 of the paper's
+      unknown denominator" cannot be supported by anything printed, because the denominator is
+      unknown. Round-1 problem 6 remains (count judged on the deposited population).
+    response: >-
+      Outcome kept. The sentence about the fraction was removed, and the note on the lab's p-values
+      now says that only the 400 ms-bin p-values were compared.
+  - claim: fig4e-fastigial-activation-abolishes-alm-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig4f-fastigial-effect-persists
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. The summary's "the per-neuron photostimulation p-values here equal those in the lab's
+      compile" goes beyond what was compared; only the 400 ms-bin photo-activation p-values were
+      compared (cell 59), the 381 and 704 NaN entries in the lab's file were skipped by nanmax, and
+      no E4 whole-window or photo-inhibition p-values were compared.
+    response: >-
+      Outcome kept. The summary now says only the 400 ms-bin photo-activation p-values were compared
+      and that the window and photo-inhibition p-values were not. Cell 59 now prints the values here
+      at the lab's NaN entries; all 381 and 704 are 1.0, so neither counts them significant. The
+      notes and the result cell say so.
+  - claim: fig4g-dentate-effect-recovers
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees. Bins labelled by centre is stated and reasonable, the opposite label from fig4, which
+      the record admits; the outcome is partial whatever the label, because the recovery part fails.
+      But "by start 3.3 ms, just below 3.3 to 13.3" is not shown by cell 52, which prints 3.30,
+      exactly the bottom of 8.3 +- 5.0; if it is within, the start label matches both the fastigial
+      and the dentate latency and the methods_unavailable finding is wrong. The value needs more
+      decimal places.
+    response: >-
+      Outcome kept. Cell 57 now prints the start-label latency to four places, 3.3022 ms, within 3.3
+      to 13.3. The assumption is now the start label, the same as for fig4, and measured gives 3.30
+      (8.30 by centre, also within). The latency finding now says the start label matches both
+      photo-activation latencies, the dentate one at the bound, and that no label matches the CN
+      photo-inhibition latency.
+  - claim: fig4i-cd-control-separation
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: fig4i-fastigial-collapses-cd
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: cd-captures-selectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees. The assumption that selectivity is measured on held-out trials is stated and
+      reasonable, since E6 projects independent trials; it is the only reading under which the
+      selectivity part passes.
+    response: >-
+      Outcome kept.
+  - claim: ed10b-fastigial-activation-errors-during-recording
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed10c-alm-inhibition-endpoints-predict
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed10d-fastigial-endpoints-no-prediction
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.
+  - claim: ed10ef-alm-drives-licking-after-fastigial
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs
+      do not support.
+    response: >-
+      No change.

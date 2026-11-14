@@ -11,7 +11,7 @@ VGAT-ChR2 experiments and anatomy are in neither, so 24 of the 46 claims are blo
 |---|---|
 | Behavior in the recording sessions (Fig. 1g, 1h, 1k; Extended Data Fig. 10b), five claims | Reproduced |
 | Dentate photo-activation has little effect on choice | Partially reproduced (3 of 8 mice; no drop at p < 0.05 on all sessions, a drop without two sessions whose light disagrees with the codes) |
-| Licking unaffected by fastigial photo-activation or photo-inhibition (two claims) | Blocked: no lick times (the early-lick part, tested, holds) |
+| Licking unaffected by fastigial photo-activation or photo-inhibition (two claims) | Blocked: no lick times (the early-lick part, tested, holds pooled over mice but not in every mouse) |
 | Most ALM pyramidal neurons are selective (Fig. 2) | Reproduced |
 | Preparatory activity in 59% of ALM neurons, more than in the CN | Partially reproduced (ALM only) |
 | Peri-movement activity, ALM and CN | Partially reproduced (ALM only) |
@@ -19,7 +19,7 @@ VGAT-ChR2 experiments and anatomy are in neither, so 24 of the 46 claims are blo
 | CN photo-inhibition alters 197 of 454 ALM neurons, 7.1 ms latency | Not reproduced |
 | Mean ALM rate unchanged by CN photo-inhibition | Reproduced |
 | 108 increase and 89 decrease among modulated ALM neurons | Not reproduced |
-| CN photo-inhibition abolishes ALM selectivity | Partially reproduced |
+| CN photo-inhibition abolishes ALM selectivity | Partially reproduced (a change to not reproduced is proposed) |
 | Fastigial photo-activation changes ALM within 4.5 ms | Partially reproduced |
 | Fastigial photo-activation abolishes ALM selectivity | Reproduced |
 | The fastigial effect persists for more than 1 s | Reproduced |
