@@ -1,0 +1,400 @@
+schema_version: 3
+id: robotka-2023-01
+datasets:
+- archive: crcns
+  id: aa-5
+  version: unversioned
+  doi: 10.6080/K0TT4P5Q
+  relation: primary
+paper: doi:10.1016/j.celrep.2023.112034
+date: 2026-11-14
+entry: robotka-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43639548754
+inputs:
+- what: The names of the paper's 100 good units (site folder and pickle file), read from the printed
+    output of decodingCallTypesNaiveBayesPart2.ipynb, used only for the link claim
+    paper-good-units-link and for a variant of fig4b-ensemble-20 that draws ensembles from them.
+    The method details taken from the same repository (decoders.py, GenerateReport.ipynb,
+    GenerateDataBase.ipynb, GenerateMLFilters.ipynb, SummaryStatistics.ipynb,
+    plotConfusionsBird.ipynb) are cited in the helper and the deviations.
+  source: https://github.com/ftheunissen/Ensemble-Code-Cell-Reports-2022 at commit
+    f2d237639217425e7fc81d694708f19428a3b026
+- what: BioSound (soundsig) for the spectrograms and modulation power spectra, the package the paper
+    names; the lock pins soundsig 3.1.1 where the paper cites v1.0.1.
+  source: doi:10.5281/zenodo.7378476
+outcomes:
+- claim: stimulus-set-link
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:stimulus-set-link
+  measured:
+  - 110
+  - 4
+  notes: The files hold 4 birds (ZF4F, ZF5M, ZF6M, ZF7F) and 110 distinct vocalization stimuli, with
+    Be 12, LT 13, Th 5, Di 5, Ag 9, Wh 13, Ne 15, Te 15, DC 14 and So 9, equal to the paper's counts
+    for every call type. Each stimulus waveform is identical in every unit that heard it. The files
+    also hold 60 song, spectrally filtered and temporally filtered song stimuli with no call type.
+- claim: paper-good-units-link
+  outcome: partially_reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:paper-good-units-link
+  notes: Units are matched by site folder and pickle name. 91 of the 100 good units listed by
+    decodingCallTypesNaiveBayesPart2.ipynb are in the dataset, and all 91 are auditory with all 110
+    stimuli here (printed in the following data-check cell). The 9 others come from a site folder
+    named ZF4F_2t_190613_101015.old. The dataset's ZF4F_2t_190613_101015 holds 18 pickles, none
+    with those names, so that site was deposited from a different spike sorting than the one
+    analysed. The names are used only here and in a variant of fig4b-ensemble-20.
+- claim: auditory-units
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:auditory-units
+  measured:
+  - 726
+  - 287
+  - 39.53
+  notes: 287 units are auditory (SNR at least 5, t-test p at most 0.01 on the 0 to 500 ms minus
+    -500 to 0 ms spike-count difference over all trials), identically under the Methods' t-test
+    (n - 1 df) and the code's (n df); paper 292. With the denominator read as the units the
+    dataset holds with vocalization trials (reading b, which the code's summary also uses), the
+    total is 726 and the fraction 39.5%, both within tolerance. Every pickle (872, 32.9%) and every
+    non-empty pickle (838, 34.3%) are outside the tolerance on the total, and reading (a), the 414
+    units with SNR above 5, gives 69.3%. By bird, 103, 84, 42 and 58 auditory units.
+  deviations:
+  - The denominator is read as the units with vocalization trials (726), the only count that
+    matches; the dataset holds 872 unit pickles, 34 of them empty and 112 with song stimuli only.
+- claim: inhibited-units
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:inhibited-units
+  measured:
+  - 47
+  - 16.4
+  notes: 47 of the 287 auditory units have a negative mean spike-count difference (16.4%); paper 46
+    of 292 (15.7%). By bird 5, 29, 2 and 11.
+- claim: fig3c-peak-call-types
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig3c-peak-call-types
+  measured:
+  - 53
+  - 58
+  notes: Under the code's zCT (reading b, mean(d)/sd(d) over the trials of a call type), Di has the
+    highest mean over the 287 auditory units (0.623) and So the second (0.564); 53 units peak on Di
+    and 58 on So, within tolerance of 51 and 61; the five call types with the most peak units are
+    So, Ag, Di, Be and Th, which include Ag, Be, So and Di. Under the Methods' reading (a, the mean
+    of the trial Z per call type), So ranks first (0.591), Ag second (0.573) and Di third (0.527),
+    with peak counts So 71 and Di 57, so the claim would not be reproduced. The outcome rests on
+    reading (b). Four units lack a call type and are ranked on the others.
+  deviations:
+  - Assumption. The Methods define zCT as the average of the trial z-scores over the trials of a
+    call type; the code (GenerateReport.ipynb calc_zscore_category) computes mean(d)/sd(d) within
+    the call type, and SummaryStatistics.ipynb (cells 11 and 15) builds Figure 3C from that zcall
+    in summarySel.pkl. The two readings give different outcomes; the code's is adopted because it
+    is what the figure plots. Both are shown.
+- claim: fig4a-unit-z-vs-zt
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig4a-unit-z-vs-zt
+  measured:
+  - 187
+  - 10.68
+  - 12.05
+  notes: 187 auditory units have all 110 stimuli (paper 191); 125 of them have at least 2 trials of
+    every stimulus. Methods reading (exemplar held out per call type, PCC as the mean diagonal),
+    Z 10.68% and Z+T 12.05%, paired t(186) = 7.17. Code reading, one repetition, Z 10.75% and Z+T
+    12.17%, t(186) = 8.99; with 100 repetitions 10.76% and 12.27% (a 14.0% increase), t(186) =
+    12.30. All p far below 1e-5 and all means within tolerance. Z+T exceeds Z in every bird.
+  deviations:
+  - The units are those with all 110 vocalization stimuli, as the code (nstimsUnit == 110); the
+    Methods add at least 2 trials of each, which 125 of the 187 have; stimuli with one trial are
+    trained on and not tested, as in decoders.naiveBayes.
+- claim: good-units-100
+  outcome: not_reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:good-units-100
+  measured:
+  - 89
+  - 39
+  - 20
+  - 10
+  - 20
+  notes: One run of the code's reading (one random trial per stimulus held out, one repetition)
+    gives 89 units with single-unit PCC Z+T above 12%, one below the tolerance of 90 to 110. Every
+    bird contributes (ZF4F 39, ZF5M 20, ZF6M 10, ZF7F 20; ZF6M is outside its tolerance of 16 +-
+    1.6). The Methods' reading gives 77 (ZF4F 30, ZF5M 24, ZF6M 9, ZF7F 14). The count depends on
+    the random draw. Over 10 other seeds the code's reading gives 87 to 101 (mean 93.0, 8 of 10
+    within tolerance) and the Methods' 70 to 94 (1 of 10); 100 repetitions give 91 (ZF4F 42, ZF5M
+    21, ZF6M 10, ZF7F 18). Of the 91 listed good units of the paper held by the dataset, 70 are good
+    here under the code's reading and 51 under the Methods'. Nine of the paper's good units are in
+    a site sorting not deposited (paper-good-units-link), which accounts for part of the shortfall
+    in ZF4F.
+  deviations:
+  - The good-unit set selected here (89 units, code reading) is used by every ensemble claim of
+    that reading, so their corrected statistics use ns = 89 (neff 70) where the paper has 100
+    (neff 81).
+- claim: fig4b-ensemble-20
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig4b-ensemble-20
+  measured:
+  - 43.15
+  - 30.36
+  notes: Code reading, 10,000 random ensembles of 20 from the 89 good units, mean PCC Z+T 43.15% and
+    Z 30.36% (a 42% increase), corrected t(138) = 9.53, p = 7.5e-17; Z+T rises at every size (13.9,
+    17.3, 20.2, 22.7, 24.8, 32.8, 38.6 and 43.2% for 1, 2, 3, 4, 5, 10, 15 and 20 units). Methods
+    reading, 77 good units, Z+T 32.0% and Z 24.1%, both outside tolerance, with the rise and the
+    test holding (t(114) = 5.79), which would be partially reproduced. With the code's 100
+    repetitions on 500 of the ensembles, 43.09% and 30.45%. Ensembles drawn from the paper's own
+    91 listed good units give 40.67% and 29.44%, t(142) = 7.06.
+  deviations:
+  - Assumption. The Methods hold out, for each call type, the responses to one exemplar; the code
+    (decoders.naiveBayes) holds out one random trial of every stimulus. The two give different
+    outcomes here. The code's scheme is adopted for all ensemble claims because the paper's
+    printed values come from it (the claims file notes that plotConfusions.ipynb prints 42.28 and
+    38.07, and GenerateMLFilters.ipynb the F values of Figure 5), and they match this attempt's
+    values under it and not under the Methods' scheme. Both are shown.
+  - Each ensemble of the Figure 4B curve is decoded once, as the Methods state ("a single
+    leave-one-out per call-type"); the code ran 100 repetitions. The means do not change (shown on
+    500 ensembles); the spread over ensembles does (SD 7.7 against 4.8 points).
+  - Sizes 1 and 2 use all units and all pairs of the good units, sizes 3 to 20 10,000 random draws
+    each, as the code.
+- claim: fig4b-top-ensembles
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig4b-top-ensembles
+  measured: 48.8
+  notes: Code reading, the top 10% of the 10,000 size-20 ensembles by their first decoding,
+    re-estimated with a second random held-out draw, average 48.80% (first draw 58.11%); the top
+    5% re-estimated average 50.41%. The best re-estimated ensemble reaches 86.4% (top 10%) and the
+    best first draw 88.4%, above the 55% the criterion reads as close to 65%. Single draws are
+    noisy, so these maxima overstate the best ensembles. Methods reading, top 10% re-estimated
+    33.96% and best 59.8%, outside tolerance on the mean.
+  deviations:
+  - Rests on the code's cross-validation (see fig4b-ensemble-20).
+- claim: fig4b-confusions
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig4b-confusions
+  notes: In the mean row-normalized confusion matrix of the 10,000 ensembles of 20, under the code's
+    reading, Ne as Te is 14.8% (largest off-diagonal entry of its row), LT as Be 11.6% (second, after
+    Te 24.3%), Th as Te 22.5% (largest) and Di as Ag 10.9% (second, after So 12.4%). Under the
+    Methods' reading the four pairs rank 1, 2, 2 and 1. The outcome holds under both readings.
+- claim: figs4-per-bird-and-sex
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:figs4-per-bird-and-sex
+  notes: Too few units under the claim's own rule. ZF6M has 10 good units under the code's reading
+    and 9 under the Methods' (paper 16), so no ensemble of 15 can be drawn within that bird and the
+    paper's test, which needs every bird, cannot be run. In the birds with more than 15 good units,
+    code reading, the mean PCC Z+T at 15 units is 37.9% (ZF4F, 39 units), 37.4% (ZF5M, 20) and
+    41.0% (ZF7F, 20), and 3, 3 and 4 of the four Figure 4B error pairs are among the two largest
+    entries of their rows. 100 repetitions also leave ZF6M with 10 good units.
+- claim: figs6-primary-vs-secondary
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No file gives the brain area of a unit. The unit dictionary holds Bird, Site, Electrode,
+    Sort, SNR, KDE bandwidth, rate threshold, stimulus names and trial counts, and the tables hold
+    stimulus and spike data only; the site name gives the depth in microdrive turns but not the
+    area. The paper assigns areas from histology (SI Figure 5), and its code reads them from a
+    database pickle that is not public.
+- claim: fig5e-volume
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig5e-volume
+  measured:
+  - 0.1203
+  - 1797
+  notes: 1,800 random ensembles of 20 good units, each decoded with 100 held-out repetitions. Code
+    cross-validation, the Methods' sound window (first 500 ms) and LDA axes (three largest
+    eigenvalues), ensembles with PCC above 30% (the code's filter; 1,797 here against the paper's
+    1,746), slope 2.38, R2adj 0.120, F(1,68) = 9.60, p = 0.0028; all 1,800 give 0.123. R2adj is
+    outside 0.1 +- 0.01 while the slope is positive and significant. The code's window (-500 to 500
+    ms) and its eigh axes give R2adj 0.094, F(1,68) = 7.28, p = 0.0088, within tolerance. Under the
+    Methods' cross-validation (1,329 ensembles above 30%) R2adj is 0.11 to 0.30, p of 0.008 or
+    less. Every reading gives a positive slope with p of 0.011 or less.
+  deviations:
+  - Rests on the code's cross-validation (see fig4b-ensemble-20).
+  - The sound window and the LDA axes follow the Methods for the main result (first 500 ms; the
+    first three discriminant dimensions read as those of largest eigenvalue), and the code's
+    choices (-500 to 500 ms; numpy eigh's first three columns, which are the smallest eigenvalues
+    of a non-symmetric matrix) are variants. Only the code's choices give R2adj within tolerance.
+  - The F df are (1, 68) from neff = 89 - 20 + 1 = 70, not the paper's (1, 79).
+  - The MPS are computed with soundsig 3.1.1 (the paper cites v1.0.1).
+- claim: fig5f-si-unrelated
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig5f-si-unrelated
+  notes: The corrected F-test of PCC on the ensemble mean of the Methods' SI (reading a), over the
+    ensembles with PCC above 30%, gives F(1,68) = 0.035, p = 0.85, R2adj -0.0001, slope -2.0, under
+    the code's cross-validation, and F(1,56) = 1.03, p = 0.32 under the Methods'. The code's SI
+    gives p = 0.67 and 0.30, and all 1,800 ensembles p = 0.12 to 0.85. No reading finds a relation.
+- claim: fig5g-entropy-selectivity
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig5g-entropy-selectivity
+  notes: With the Methods' ES formula (reading b, the diagonal PCC values used directly), the slope
+    is negative and significant under both cross-validations, code -69.4 with F(1,68) = 4.87, p =
+    0.031, R2adj 0.065, and Methods -50.0 with F(1,56) = 13.7, p = 0.0005, over the ensembles above
+    30%. With the code's normalized ES (reading a) it is negative under the Methods'
+    cross-validation (p = 0.046) but positive and not significant under the code's (slope 18.9, p =
+    0.79). The main reading holds under both cross-validations, so the outcome does not rest on the
+    cross-validation assumption.
+- claim: fig5h-neural-noise
+  outcome: partially_reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig5h-neural-noise
+  measured: 0.2096
+  notes: PCC falls with the ensemble mean neural noise under every reading. Code cross-validation,
+    variance, slope -139, F(1,68) = 18.6, p = 0.0001, R2adj 0.210; with the SD, R2adj 0.131, p =
+    0.0018. Methods cross-validation, R2adj 0.15 to 0.27. No reading gives R2adj within 0.1 +- 0.01.
+- claim: fig5-multiple-regression
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:fig5-multiple-regression
+  measured: 0.2515
+  notes: Code cross-validation, the code's regressors (noise variance, log volume, normalized ES and
+    the code's SI), the Methods' window and LDA axes, ensembles above 30%, R2adj 0.252, F(4,65) =
+    5.92, p = 0.0004, outside 0.22 +- 0.022. The code's window with its eigh axes gives 0.241 (p =
+    0.0006), within tolerance, and the Methods' SI changes R2adj by less than 0.002. Methods
+    cross-validation gives 0.30 to 0.49.
+  deviations:
+  - Rests on the code's cross-validation, and the window and LDA axes as for fig5e-volume.
+- claim: pcs-variance
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:pcs-variance
+  measured: 92.44
+  notes: The PCA of 11,706 trial-averaged KDE responses (unit and stimulus pairs with at least 5
+    trials, the stored KDE's first 1000 samples) gives a cumulative explained variance of 92.4% for
+    the first five PCs (75.4, 6.1, 5.2, 3.4, 2.4%); the code printed 92.2%.
+- claim: table1-snr
+  outcome: reproduced
+  notebook: reproduce_robotka_2023.ipynb
+  output: claim:table1-snr
+  measured:
+  - 6.84
+  - 6.07
+  notes: Auditory units (reading a), mean 6.84, SD 1.99, quartiles 5.37, 6.07 and 7.65, within the
+    tolerances (6.68 to 8.16, 5.85 to 7.15). Units with SNR above 5 (reading b), mean 6.97 and
+    median 6.20. Both sit below the paper's values, and the upper quartile is well below 9.03.
+- claim: figs5-region-anova
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the brain area of each good unit, which the dataset does not give (see
+    figs6-primary-vs-secondary).
+- claim: fig6a-acoustic-clusters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Runs on the Theunissen lab vocalization database (about 5,000 calls) and its acoustic
+    parameter table (vocParamTable.h5), which the dataset does not hold. The paper's key resources
+    table and data availability statement name no deposit for them, and the paper's code
+    repository at the pinned commit does not contain the table.
+- claim: acoustic-labels-decoding
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the acoustic cluster label of each stimulus, from the vocalization database of
+    fig6a-acoustic-clusters, which is not public.
+- claim: fig6c-number-of-clusters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the acoustic labels of fig6a-acoustic-clusters, which are not public. The call-type
+    values alone could be computed from the dataset, but the criterion's outcomes all need the
+    acoustic comparison; they were not run.
+- claim: fig6c-ari-call-over-acoustic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the acoustic labels of fig6a-acoustic-clusters, which are not public.
+- claim: figs10-ensemble-size
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the acoustic labels of fig6a-acoustic-clusters, which are not public.
+- claim: anesth-auditory-units
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere, CRCNS aa-4 (doi 10.6080/K00C4T06), which is public (6.9 GB in the bucket).
+    Not analysed in this run, which spent its five hours on aa-5; a later attempt can add it.
+- claim: anesth-decoding-better
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere, CRCNS aa-4, not analysed in this run (see anesth-auditory-units).
+- claim: anesth-regressions
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere, CRCNS aa-4, not analysed in this run (see anesth-auditory-units).
+- claim: figs9-per-region-regressions
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The awake part needs the brain area of each unit, which the dataset does not give; the
+    R2adj values need CRCNS aa-4, not analysed in this run.
+- claim: anesth-primary-secondary-rate
+  outcome: blocked
+  blocked_by: other
+  notes: Data elsewhere, CRCNS aa-4, not analysed in this run (see anesth-auditory-units).
+findings:
+- kind: metadata_insufficient
+  statement: No file gives the brain area (Field L, CLM, CMM, NCM or the L/NCM border) of a unit,
+    though the paper's analyses by area use one. The data descriptor says only that the arrays
+    targeted the primary and secondary auditory pallium.
+- kind: other
+  about: data
+  statement: Nine of the 100 good units the paper's code lists come from a site folder named
+    ZF4F_2t_190613_101015.old. The dataset's site ZF4F_2t_190613_101015 holds 18 unit pickles, none
+    with those names, so the deposited sorting of that site differs from the one the paper
+    analysed. The other 91 listed units are in the dataset. Unit counts are near the paper's (726
+    units with vocalization trials against 730, 287 auditory against 292, 187 with all 110 stimuli
+    against 191).
+- kind: other
+  about: data
+  statement: 34 of the 872 unit pickles hold no stimulus rows (20 of them in site
+    ZF4F_4t_190614_094759, whose tar.gz is 17 KB), and 112 hold song stimuli only. The data
+    descriptor does not say so.
+- kind: metadata_error
+  statement: The data descriptor gives KDE_BW as the bandwidth in seconds of the rate estimate; its
+    values range from 0.2 to 10, which can only be milliseconds.
+- kind: other
+  about: data
+  statement: Every site tar.gz holds an AppleDouble file (`._goodPlayback-...pkl`, 524 bytes) for each
+    unit pickle, 872 in all; they are not pickles and must be skipped. The pickles are written with
+    pandas 1.x and need pandas' pickle compatibility layer to be read with pandas 2.
+- kind: methods_unavailable
+  statement: Question for the authors. The STAR Methods describe the decoder's cross-validation as
+    holding out, for each call type, the responses to one exemplar stimulus, while the code
+    (decoders.naiveBayes) holds out one random trial of every stimulus. The two differ here by
+    about 11 points of PCC for ensembles of 20 (32.0% against 43.2% with Z+T), and only the code's
+    scheme gives the paper's values. Which scheme produced Figures 4 and 5? This attempt assumes the
+    code's.
+- kind: code_mismatch
+  statement: The Methods define the per-call-type response zCT as the average of the trial
+    z-scores; the code computes mean(d)/sd(d) within the call type, and Figure 3C is built from the
+    code's values. Under the Methods' definition song, not distress calls, has the highest average
+    response.
+- kind: code_mismatch
+  statement: The Methods compute the MPS on the first 500 ms of the stimulus and use the first three
+    linear discriminant dimensions; the code takes 500 ms before to 500 ms after onset, and takes
+    numpy eigh's first three eigenvectors of the non-symmetric matrix pinv(within) times between,
+    which eigh orders by ascending eigenvalue. Only the code's choices give the paper's R2adj of
+    about 0.1 for the volume here.
+- kind: selection_undocumented
+  about: paper
+  statement: The 1,746 ensembles of Figure 5 are those of the 1,800 with PCC above 30%
+    (GenerateMLFilters.ipynb, pcc > 30); the Methods do not state the filter.
+- kind: methods_unavailable
+  statement: Question for the authors. The good-unit selection (single-unit PCC Z+T above 12%) uses
+    one random held-out draw, and the count moves from 87 to 101 between seeds here. How was the
+    paper's count of exactly 100 obtained, and is it expected to be stable?
