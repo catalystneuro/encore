@@ -1,0 +1,580 @@
+schema_version: 3
+id: gao-2018-02
+datasets:
+- archive: dandi
+  id: "000007"
+  version: 0.220126.1903
+  doi: 10.48324/dandi.000007/0.220126.1903
+  relation: primary
+- archive: crcns
+  id: alm-4
+  version: unversioned
+  doi: 10.6080/K0NS0S26
+  relation: primary
+paper: doi:10.1038/s41586-018-0633-x
+date: 2026-11-14
+entry: gao-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43586299319
+outcomes:
+- claim: fig1d-fastigial-lesion-contra-choice
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Neither dataset holds the lesion experiments. DANDI:000007 holds 54 ALM recording sessions and
+    CRCNS:alm-4 the same 54 sessions (34 during CN photo-activation, 20 during CN photo-inhibition);
+    the CRCNS descriptor lists no lesion data, and no other deposit is named by the paper.
+- claim: fig1e-fastigial-lesion-slow-initiation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    No lesion sessions and no lick times in either dataset (the trial tables give the outcome and an
+    early-lick flag only; the CRCNS time series hold the laser command and power, not the lick
+    contacts).
+- claim: fig1d-dentate-lesion-no-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No lesion sessions in either dataset; see fig1d-fastigial-lesion-contra-choice.
+- claim: fig1g-fastigial-activation-early-sample-no-effect
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig1g-fastigial-activation-early-sample-no-effect
+  notes: >-
+    Early sample photo-activation (code 1) against control in the 6 fastigial mice: contralateral
+    trials 0.857 to 0.826 (change -0.031, one-sided bootstrap p = 0.36), ipsilateral 0.887 to 0.899
+    (+0.012, p = 0.37); pooled 0.870 to 0.861 (p = 0.42). Both p > 0.05.
+  deviations:
+  - >-
+    Tested on the behavior of the ALM recording sessions (21 sessions, 6 mice), where
+    photostimulation was on about a third of trials; the paper's Fig. 1g uses behavior sessions,
+    which are not deposited. Supplemental Table 1 gives the same 6 mice for both.
+  - >-
+    Trials with GoodTrials = 0 or a NaN photostimulation code are left out, as in the deposited
+    analysis scripts; the Methods do not mention them.
+- claim: fig1g-fastigial-activation-delay-errors
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig1g-fastigial-activation-delay-errors
+  notes: >-
+    Early delay photo-activation (code 2, light for 0.455 s from delay onset, ending 0.845 s before
+    the go cue by the laser traces) lowers pooled performance from 0.870 to 0.630 (change -0.240; no
+    resample of 10,000 without a drop, p < 0.0001). Every mouse drops, by 0.083 to 0.450.
+  deviations:
+  - Behavior from the ALM recording sessions, not the behavior sessions of Fig. 1g.
+- claim: fig1h-fastigial-activation-delay-bias
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig1h-fastigial-activation-delay-bias
+  notes: >-
+    Reading (a), early delay photo-activation. ANM314760 and BAYLORNL15 drop on contralateral trials
+    (by 0.726 and 0.719, p < 0.0001) with no ipsilateral drop; ANM314746 and ANM314757 drop on
+    ipsilateral trials (by 0.391, p = 0.003, and 0.221, p = 0.03), more than on contralateral
+    trials. ANM314758 and BAYLORCD6 show neither significantly. Reading (b), the 1.255 s whole-delay
+    experiment, is not in the datasets.
+  deviations:
+  - Recording-session behavior; reading (b) not testable.
+  - >-
+    Contra and ipsi are relative to the manipulated fastigial nucleus; for these mice the files'
+    fiber side and the recorded ALM are on opposite sides, as the paper states.
+- claim: fig1h-fastigial-activation-response-contra-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The recording sessions have photo-activation only in the sample and delay epochs (codes 1 to
+    4); response-epoch photo-activation was in behavior sessions, which are not deposited.
+- claim: fig1i-fastigial-activation-licking-unaffected
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Lick times are in neither dataset, so lick rate within bouts and bout duration cannot be
+    measured, and there is no response-epoch photo-activation. Only an early-lick flag per trial is
+    deposited.
+- claim: fig1g-dentate-activation-little-effect
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig1g-dentate-activation-little-effect
+  notes: >-
+    Reading (a), early delay dentate photo-activation (code 4) in the 3 recorded dentate mice:
+    pooled performance 0.873 to 0.835 (change -0.039, one-sided bootstrap p = 0.107, paper p = 0.06).
+    No drop at p < 0.05; contralateral -0.055 (p = 0.09), ipsilateral -0.019 (p = 0.42).
+  deviations:
+  - >-
+    3 of the paper's 8 dentate mice (the recorded ones), from recording sessions; reading (b), the
+    1.255 s photostimulus, is not in the datasets.
+- claim: fig1j-photoinhibition-silences-fastigial
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset; both hold ALM units only.
+- claim: fig1k-inhibition-early-sample-no-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The photo-inhibition recording sessions have delay photo-inhibition only (codes 5 and 6); the
+    behavior sessions with sample-epoch photo-inhibition are not deposited.
+- claim: fig1k-inhibition-late-sample-delay-errors
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Late-sample and late-delay photo-inhibition are not in the datasets. The early-delay 0.5 s
+    photo-inhibition of the recording sessions (code 5) lowers pooled performance from 0.848 to
+    0.706 (one-sided bootstrap p = 0.014, 4 mice), shown in the fig1k-inhibition-delay-bias section.
+- claim: fig1k-inhibition-delay-bias
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig1k-inhibition-delay-bias
+  notes: >-
+    Reading (b), 1.3 s delay photo-inhibition (code 6): with contra and ipsi from the paper's rule
+    (CN contralateral to the recorded ALM), BAYLORCD12 and BAYLORCD13 drop on contralateral trials
+    (by 0.464, p = 0.002, and 0.385, p = 0.009) and BAYLORCD14 on ipsilateral trials (0.234,
+    p = 0.008); with the files' CN side the labels of CD12, CD13 and CD14 swap, giving 1 contra-
+    and 2 ipsi-biased mice. Both give mice biased each way. Reading (a), 0.5 s early delay (code 5),
+    gives 0 contra- and 2 ipsi-biased mice under the paper's rule, 1 and 1 under the files' side.
+  deviations:
+  - >-
+    The 4 recorded L7-cre x Ai32 mice (CD8, CD12, CD13, CD14) from recording sessions, in place of
+    the 3 (CD12, CD13, CD16) and 7 behavior mice of Extended Data Fig. 2g and 2h; late-delay
+    photo-inhibition is not deposited.
+  - >-
+    The files put the fastigial fiber on the same side as the recorded ALM for CD12, CD13 and CD14,
+    against the paper's contralateral design; both side assignments were run and both reproduce.
+- claim: fig1k-inhibition-response-ipsi-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No response-epoch photo-inhibition in the recording sessions; behavior sessions are not deposited.
+- claim: fig1l-inhibition-execution-unaffected
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    No lick times, no video or jaw tracking, and no response-epoch photo-inhibition in either
+    dataset.
+- claim: ed10-vgat-fastigial-perturbation-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The VGAT-ChR2-EYFP behavior is in neither dataset (the 13 mice are wild type or L7-cre x Ai32).
+- claim: fig2-alm-selective-fraction
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig2-alm-selective-fraction
+  measured:
+  - 1084
+  - 856
+  - 0.79
+  notes: >-
+    In the 34 photo-activation sessions, 856 of 1084 pyramidal neurons are selective (0.790) with
+    correct trials and a 1.3 s response window, the reading of the deposited Fig. 2 script; 0.797
+    with 1.5 s, 0.740 and 0.744 with correct and error trials. All four readings are within
+    0.82 +- 0.082. By mouse 0.63 to 0.86. On the DANDI trial set (which lacks trials in two sessions)
+    842 of 1084 (0.777). The counts are not judged, as the datasets hold 34 of the 39 sessions.
+  deviations:
+  - >-
+    34 of the 39 sessions (9 of 10 mice); the tenth mouse, excluded from the photo-activation
+    analyses, is not deposited.
+  - >-
+    The response window (1.3 s from the go cue) and the trial set (correct trials) are from the
+    deposited script analysis_compile_all_ALM_data.m; the Methods do not give them. Both readings of
+    each were run.
+- claim: fig2-cn-selective-fraction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset.
+- claim: fig2-preparatory-more-in-alm
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig2-preparatory-more-in-alm
+  measured: 0.563
+  notes: >-
+    ALM only, as the criterion allows when the CN neurons are missing. 610 of 1084 pyramidal
+    neurons (0.563) are selective in the sample or delay epoch with correct trials, 0.538 with
+    correct and error trials; both within 0.59 +- 0.059. As a fraction of selective neurons, 0.71
+    to 0.73. The CN fraction and the chi-square comparison cannot be computed, so the claim's
+    comparison with the CN is untested; measured is the ALM fraction.
+  deviations:
+  - CN half not deposited.
+- claim: fig2-peri-movement-equal
+  outcome: partially_reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig2-peri-movement-equal
+  measured: 0.642
+  notes: >-
+    The ALM half holds; 696 of 1084 pyramidal neurons (0.642) are selective in the response epoch
+    with correct trials and a 1.3 s window (0.636 with 1.5 s), within 0.67 +- 0.067; with correct
+    and error trials 0.562 to 0.571, outside. The CN half, and so the equality the claim states,
+    cannot be tested; the outcome records that only part of the claim could be shown.
+  deviations:
+  - CN half not deposited.
+- claim: ed4-lick-modulated-few
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Lick times are in neither dataset, and CN recordings are not deposited.
+- claim: fig2cd-selectivity-emerges-gradually
+  outcome: partially_reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig2cd-selectivity-emerges-gradually
+  notes: >-
+    ALM, reading (a), 827 selective neurons: the bootstrap interval excludes zero from 0.13 s
+    after sample onset (117 of 129 sample-epoch points), the mean is 0.65 spikes/s in the sample,
+    1.80 in the delay and 1.91 in the response epoch, and the maximum (2.37) is 0.23 s after the go
+    cue; all three conditions hold. Reading (b), 591 neurons, peaks 0.06 s before the go cue.
+    The CN half of the claim cannot be tested.
+  deviations:
+  - CN half not deposited.
+  - >-
+    Preferred type from 10 correct control trials of each type and neurons with more than 15 trials
+    of each type, from the deposited Fig. 2 script; PSTHs with its 200 ms boxcar, on a 10 ms grid.
+- claim: ed4e-cn-predicts-movement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset.
+- claim: ed4f-preparatory-all-nuclei
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset.
+- claim: ed4g-fastigial-contra-late-delay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset.
+- claim: fig3-cn-altered-by-alm-inhibition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings during ALM photo-inhibition are in neither dataset.
+- claim: fig3b-cn-net-disinhibition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset; depends on fig3-cn-altered-by-alm-inhibition.
+- claim: fig3c-cn-selectivity-abolished
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset.
+- claim: ed6-cn-selectivity-both-alm-hemispheres
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CN recordings are in neither dataset.
+- claim: fig3d-alm-altered-by-cn-inhibition
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig3d-alm-altered-by-cn-inhibition
+  measured:
+  - 486
+  - 228
+  - 15.27
+  notes: >-
+    With 1.3 s delay photo-inhibition (19 sessions, 4 mice), 228 of 486 tested pyramidal neurons
+    change their delay rate (0.469; correct trials only, 106 of 263, 0.403). The fraction is within
+    10% of 0.43 and the count of 228 is outside 197 +- 19.7. The latency is 15.3 +- 12.9 ms (bootstrap
+    mean and s.d., bin start, all trials) and 31.7 ms with correct trials; 20 to 42 ms when bins are
+    labelled by centre or end. No reading reaches 7.1 +- 3.8 ms. Many neurons are altered, but
+    the latency does not reproduce. By mouse the modulated fraction is 0.16 (CD12) to 0.55 (CD8).
+  deviations:
+  - >-
+    The files hold 682 pyramidal neurons in the photo-inhibition sessions where the paper reports
+    454, so the count is judged by its fraction (assumed; the criterion uses the fraction when the
+    dataset holds fewer neurons, and here it holds a different, larger set).
+  - >-
+    Neurons tested need at least 8 control trials of each type and more than 3 photo-inhibition
+    trials of each type, and early-lick trials are left out, as the deposited FR script; the
+    Methods give neither.
+  - >-
+    Latency bins are labelled by their start, centre or end, which the paper does not state; all
+    three are shown.
+- claim: fig3e-alm-mean-rate-unchanged
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig3e-alm-mean-rate-unchanged
+  measured:
+  - 4.03
+  - 4.21
+  notes: >-
+    Reading (a), all 486 tested pyramidal neurons, all trials: delay rate 4.03 spikes/s in control
+    and 4.21 with CN photo-inhibition (change +0.18), paired t-test p = 0.51, unpaired p = 0.66; both
+    rates within tolerance and no difference. Reading (b), the 228 modulated neurons: 5.52 and 6.20
+    (p = 0.25 and 0.35). With correct trials only, 3.27 and 3.85 (p = 0.08 and 0.24).
+- claim: fig3e-alm-increase-decrease
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig3e-alm-increase-decrease
+  measured:
+  - 122
+  - 106
+  notes: >-
+    Of the 228 modulated neurons, 122 increase and 106 decrease (increase fraction 0.535, within 10%
+    of 0.55); the counts are above 108 +- 10.8 and 89 +- 8.9. With correct trials, 65 and 41
+    (0.613, outside 10%).
+  deviations:
+  - >-
+    Judged by the increase fraction because the files hold more neurons than the paper (682
+    pyramidal against 454), so counts are not comparable; the criterion gives the fraction for a
+    dataset holding fewer neurons, and its use here is an assumption.
+- claim: fig3f-alm-selectivity-abolished-by-cn-inhibition
+  outcome: partially_reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig3f-alm-selectivity-abolished-by-cn-inhibition
+  notes: >-
+    336 selective neurons tested on more than 3 trials in all conditions. Whole delay: control 1.46
+    spikes/s [1.14, 1.82], photo-inhibition 0.39 [0.19, 0.60]; last 500 ms: 1.52 [1.12, 1.96] and
+    0.27 [0.02, 0.53]. Selectivity falls by 73% to 82% but its interval excludes zero in both windows,
+    so it is not abolished by the criterion. With 5 screening trials (the deposited script) 0.37
+    [0.17, 0.57] and 0.32 [0.06, 0.56].
+  deviations:
+  - >-
+    The criterion's 10 screening trials per type are from the Methods; the deposited script uses 5,
+    shown as a variant.
+- claim: fig4bc-fastigial-targets-alm-thalamus
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The anatomy (injections and sections) is in neither dataset.
+- claim: ed8-snr-sc-converge
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The anatomy is in neither dataset.
+- claim: fig4-fastigial-activation-alm-latency
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig4-fastigial-activation-alm-latency
+  measured:
+  - 3.64
+  - 177
+  notes: >-
+    Neurons modulated in the 0.455 s photostimulation window, all trials, bins labelled by start:
+    latency 3.6 +- 2.9 ms, within 4.5 +- 2.6. Labelled by centre it is 8.6 ms, outside; with the whole
+    delay as window 7.8 ms. The count is 177 of 445 tested (whole-delay window 187, correct trials
+    67 to 68, without the script's minimum trial counts 190 of 538), against 227 +- 22.7 from the
+    same 6 mice; the count does not reproduce. The fraction of tested neurons (0.40 to 0.42) is
+    close to 227 of the paper's unknown denominator. By mouse 11 to 66 modulated neurons.
+  deviations:
+  - >-
+    The latency match rests on labelling each 10 ms bin by its start (assumed); the paper does not
+    say how a bin is placed in time, and the centre and end labels give 8.6 and 13.6 ms.
+  - Minimum trial counts and early-lick exclusion from the deposited FR script.
+- claim: fig4e-fastigial-activation-abolishes-alm-selectivity
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig4e-fastigial-activation-abolishes-alm-selectivity
+  measured: 328
+  notes: >-
+    328 selective neurons tested on more than 3 trials in all conditions, as Extended Data Fig. 9c.
+    From light offset to the go cue the population selectivity is 2.20 spikes/s [1.67, 2.79] in
+    control and 0.66 [0.31, 1.03] with photo-activation (difference 1.55 [1.01, 2.09]); 163 of the
+    183 neurons selective in control lose significance (0.89) and 6 gain it. In the last 500 ms,
+    157 of 174 lose it and 9 gain it. With 5 screening trials the difference is 1.20 [0.66, 1.78].
+  deviations:
+  - The per-neuron test (E2 t-test on the window) is the claims file's choice; the paper gives none.
+- claim: fig4f-fastigial-effect-persists
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig4f-fastigial-effect-persists
+  notes: >-
+    In 400 ms bins starting 1 s or more after light offset (all in the response epoch), a mean 0.1345
+    of 445 neurons change their rate at p < 0.01, against 1% (binomial p = 3e-47) and against 0.0092
+    in the bins before light onset (z = 7.27, p = 2e-13). The fraction peaks at 0.42 during the
+    light and stays at 0.12 to 0.14 up to 2 s after the go cue.
+- claim: fig4g-dentate-effect-recovers
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig4g-dentate-effect-recovers
+  measured:
+  - 8.3
+  - 172
+  notes: >-
+    Stimulation window, all trials, bins labelled by centre: latency 8.3 +- 3.1 ms and 172 modulated
+    neurons of 517, both within tolerance (by start 3.3 ms, just below 3.3 to 13.3; whole-delay window
+    146 neurons). After the light the fraction of significant neurons falls from 0.33 to 0.0476 in the
+    bins 1 s or more after offset, lower than fastigial (0.1345, one-sided p = 1e-6), but still above
+    1% (binomial p = 2e-10) and above the 0.0147 before light onset (p = 0.0013). The recovery test
+    fails under both comparisons, so the claim holds in part.
+  deviations:
+  - >-
+    The latency match rests on labelling bins by their centre (assumed); no single labelling
+    matches both the fastigial and the dentate latency.
+- claim: fig4i-cd-control-separation
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig4i-cd-control-separation
+  notes: >-
+    20 sessions (8 to 46 neurons). The separation of independent control trials along the cd
+    excludes zero from 2.06 s before the go cue, in 75 of 130 sample-epoch windows, and in all 131
+    windows centred in the delay (smallest lower bound 5.98). Before sample onset it is -0.13.
+  deviations:
+  - >-
+    20 of 34 sessions pass the neuron rule of the deposited CD script (stable from the 50th trial
+    to the 50th before the end); the paper used 28 of 39. The rule is the script's; the Methods give
+    only "> 5 neurons for > 5 trials per condition".
+  - >-
+    The cd uses correct trials of a random half of control trials; the paper does not say how the
+    trials are split (the claims file names this split as a standard choice).
+- claim: fig4i-fastigial-collapses-cd
+  outcome: partially_reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:fig4i-fastigial-collapses-cd
+  notes: >-
+    Fastigial (8 sessions), last 400 ms: control 18.39 [10.05, 27.12], photo-activation 6.09 [0.26,
+    14.46], difference 12.30 [5.84, 20.91], 67% of control; reading (b) holds and reading (a) does
+    not (interval above zero). Dentate (12 sessions): 14.68 against 12.62, difference 2.07 [0.15,
+    4.18], 14% of control; the interval of the difference excludes zero, so the dentate condition of
+    the criterion fails. From light offset to the go cue the same: fastigial -69%, dentate -18%
+    [0.75, 4.65]. The contrast the claim states is present, but the dentate effect is not nil.
+  deviations:
+  - 8 fastigial and 12 dentate sessions pass the session rule (see fig4i-cd-control-separation).
+- claim: cd-captures-selectivity
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:cd-captures-selectivity
+  measured:
+  - 66.3
+  - 28.4
+  notes: >-
+    Reading (b), squared ratios, with the selectivity measured on held-out correct control trials
+    and the variance on single trials: 66.3% (s.e.m. 5.0) and 28.4% (4.3), within 64.1 +- 3.4 and
+    27.0 +- 4.2. On the cd-estimating trials, 73.4% and 29.4%; with the variance of condition means,
+    35.9% to 38.7%; reading (a), plain ratios, 79.9% to 85.0% and 50.6% to 58.9%. Only the stated
+    combination matches both values.
+  deviations:
+  - >-
+    Assumed that the captured fractions are ratios of squared RMS (variance fractions), that
+    selectivity is measured on trials independent of those that estimated the cd, and that activity
+    variance is over single trials; the Methods state none of these, and the outcome depends on
+    each.
+- claim: ed10b-fastigial-activation-errors-during-recording
+  outcome: reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:ed10b-fastigial-activation-errors-during-recording
+  notes: >-
+    6 mice, 21 sessions: pooled performance 0.870 in control and 0.630 with early delay
+    photo-activation; no resample of 10,000 without a drop (p < 0.0001 < 0.001).
+- claim: ed10c-alm-inhibition-endpoints-predict
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    Neither dataset has ALM photo-inhibition trials (the codes are 0 to 6, CN photostimulation
+    only), and no VGAT-ChR2 mouse is deposited.
+- claim: ed10d-fastigial-endpoints-no-prediction
+  outcome: not_reproduced
+  notebook: reproduce_gao_2018.ipynb
+  output: claim:ed10d-fastigial-endpoints-no-prediction
+  notes: >-
+    181 fastigial photo-activation trials with a lick in 8 sessions. The projection on the cd in the
+    last 400 ms of the delay still predicts the lick direction (logistic slope 0.54 per s.d. [0.19,
+    0.90], p = 0.003); the probability of licking right is 0.43, 0.49, 0.47 and 0.73 by projection
+    quartile. On control trials the slope is 1.85 [1.55, 2.15] (0.16 to 0.92 by quartile). The
+    prediction is weaker after photo-activation but not absent.
+  deviations:
+  - The projection is not converted to a distance to endpoints; the criterion fits lick direction on the projection itself.
+  - 8 fastigial sessions pass the session rule (see fig4i-cd-control-separation).
+- claim: ed10ef-alm-drives-licking-after-fastigial
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The VGAT-ChR2-EYFP experiments are in neither dataset.
+inputs: []
+findings:
+- kind: data_missing
+  statement: >-
+    Both datasets hold only the ALM recordings during CN photo-activation (34 sessions, 9 mice)
+    and CN photo-inhibition (20 sessions, 4 mice). The lesion experiments, the behavior-only
+    sessions (including response-epoch and 1.3 s photostimulation), the 878 CN units, lick times,
+    video, the VGAT-ChR2-EYFP experiments, the anatomy, and the tenth mouse of the Fig. 2 ALM
+    recordings are not deposited; 24 of the 46 claims in the claims file cannot be tested.
+  datasets:
+  - "000007"
+  - crcns-alm-4
+- kind: data_missing
+  statement: >-
+    DANDI:000007 lacks trials that CRCNS:alm-4 holds with GoodTrials = 1 and a valid
+    photostimulation code; ANM314746 2015-10-22 has 258 of 284 (the last 26 missing) and ANM314757
+    2015-10-21 has 34 of 302 (trials 48 to 315 missing). In the other 52 sessions DANDI holds exactly
+    those trials, with the same codes and outcomes, and every unit's spike times are identical.
+  datasets:
+  - "000007"
+- kind: metadata_error
+  statement: >-
+    In DANDI:000007 the trial columns cue_time and pole_in_time are described
+    as relative to the trial start, but hold session times; trial start times are rounded (they
+    differ from CRCNS:alm-4 by up to 0.05 s).
+  datasets:
+  - "000007"
+- kind: metadata_error
+  statement: >-
+    For the photo-inhibition mice BAYLORCD12, BAYLORCD13 and BAYLORCD14 both datasets give the
+    photostimulation site as the left fastigial nucleus and the ALM recording at ML -1.5 mm (left),
+    on the same side, while the paper, the CRCNS descriptor and the trial code descriptions say the
+    CN was manipulated contralateral to the recorded ALM; Supplemental Table 1 lists BAYLORCD14 as
+    recorded in right ALM. Which side was manipulated cannot be told from the files.
+  datasets:
+  - "000007"
+  - crcns-alm-4
+- kind: other
+  about: data
+  statement: >-
+    The laser power traces of CRCNS:alm-4 disagree with the trial codes in some sessions. In
+    ANM314746 2015-10-20 codes 1 and 2 (described as 500 ms) have 1.3 s of light; in ANM314756
+    2015-10-20 the light lasts a median 0.83 and 0.78 s and starts at the named epoch in 90% and 78%
+    of trials; ANM314757 2015-10-21 shows almost no light on its stimulation trials (peak 0.17 mW,
+    3% to 5% at the named epoch); in BAYLORNL14 2017-06-03 only 54% of code 3 and 39% of code 4
+    trials are lit at the named epoch, the others at the other epoch. Elsewhere the light starts
+    within 2 ms of the named epoch and lasts 0.455 s (photo-activation) or 0.494 and 1.295 s
+    (codes 5 and 6), and no control trial is lit.
+  datasets:
+  - crcns-alm-4
+- kind: other
+  about: data
+  statement: >-
+    The laser_power channel of the photo-inhibition sessions reads 0.6 to 0.7 or 1.7 to 1.9 mW on
+    average while the light is on (peaks 1.45 and 3.8 to 4.1), which matches neither of the 1.5 and
+    4.5 mW of the Methods and the descriptor; its calibration is not documented.
+  datasets:
+  - crcns-alm-4
+- kind: selection_undocumented
+  about: paper
+  statement: >-
+    The datasets hold more ALM units than the paper reports for the same mice; 1186 units (1084
+    pyramidal) in the 9 photo-activation mice, where the paper reports 912 pyramidal neurons, and
+    737 units (682 pyramidal) in the 4 photo-inhibition mice, where it reports 490 units (454
+    pyramidal) over 19 sessions. Which units, and for the photo-inhibition mice which of the 20
+    sessions, entered the paper's analyses is not stated.
+- kind: metadata_insufficient
+  statement: >-
+    In 40 sessions of CRCNS:alm-4 the trial property CueTime has two columns; the second equals the
+    first on every good trial, and neither the descriptor nor the property's description says what
+    it is.
+  datasets:
+  - crcns-alm-4
+- kind: code_mismatch
+  statement: >-
+    The analysis scripts deposited with CRCNS:alm-4 differ from the Methods in places. The
+    photostimulation selectivity scripts fix each neuron's preferred trial type from 5 trials of
+    each type, where the Methods say 10 for ALM; the coding direction script averages cd_t over
+    windows starting from 3.0 s to 0.4 s before the go cue (pre-sample, sample and delay), where the
+    Methods say the delay epoch; the selectivity test uses correct trials in the Fig. 2 script and
+    correct and error trials in the photostimulation scripts.
+- kind: methods_unavailable
+  statement: >-
+    For the response latencies (4.5, 8.3 and 7.1 ms), how is a 10 ms bin placed in time (start,
+    centre or end) and which window decides that a neuron is significantly modulated? Labelling by
+    start gives 3.6 ms for fastigial and 3.3 ms for dentate photo-activation, by centre 8.6 and 8.3
+    ms, so no single choice here matches both reported values; for CN photo-inhibition every choice
+    gives 15 ms or more.
+- kind: methods_unavailable
+  statement: >-
+    For the fractions captured by the coding direction (64.1% of selectivity, 27.0% of variance),
+    are they ratios of RMS or of squared RMS, is selectivity measured on the trials that estimated
+    the cd or on independent ones, and is activity variance over single trials or condition means?
+    Only squared ratios on independent trials with single-trial variance give both values here (66.3%
+    and 28.4%); other combinations give 73% to 85% and 36% to 59%.
+- kind: methods_unavailable
+  statement: >-
+    Which neurons were tested for photostimulation effects (the minimum numbers of control and
+    photostimulation trials) and which sessions entered the coding direction analysis? With the
+    deposited scripts' rules 177 to 190 ALM neurons are modulated by fastigial photo-activation
+    (paper 227) and 20 of 34 sessions enter the coding direction analysis (paper 28 of 39).
