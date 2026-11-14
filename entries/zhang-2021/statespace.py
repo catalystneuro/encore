@@ -144,9 +144,13 @@ def load_attention_gram(subject, X_check=None, keep=None):
     return out
 
 
-def load_game(subject, keep=None):
+def load_game(subject, keep=None, zscore=True):
     """Stream one subject's video game BOLD (npy) and its state labels.
 
+    With zscore, each voxel is z-scored over the session, as the paper's Methods say
+    ("The detrended voxel responses were normalized to zero mean and unit variance",
+    Preprocessing and Visualization) and as S1's deposited data already are; S7's are
+    not. The voxel summaries (means, SDs) are those of the data as stored.
     Also the voxel maps of the OLS weights B and denoised weights B_L of every state (data
     set column order, states with no TRs dropped), for the correlation variant of
     game-weights-two-groups, and with keep the responses of those voxels (float32).
@@ -156,6 +160,10 @@ def load_game(subject, keep=None):
         shape, fortran, dtype = np.lib.format.read_array_header_1_0(f)
         Y = np.frombuffer(f.read(), dtype=dtype).reshape(shape).astype(np.float64)
     out = gram_summary(Y)
+    if zscore:
+        Y -= Y.mean(0)
+        Y /= Y.std(0)
+        out["G"] = Y @ Y.T
     st = read_hdf(f"VideoGame/Stimuli/{subject}.hdf")
     out["X"] = st["behavioural_state"].astype(float)
     out["labels"] = [s.decode().strip().lower() for s in st["state_labels"]]
@@ -492,6 +500,9 @@ GAME_REGIONS = {
     "IPS": ATT_REGIONS["IPS"],
     "FEF": ("hcp", ["FEF"]),
     "SEF": ("hcp", ["SCEF"]),
+    # variant, not used by the criterion: the medial prefrontal areas of _PFC only, the
+    # default-mode part of prefrontal cortex
+    "medial prefrontal": ("hcp", ["10r", "10v", "10d", "9m", "8BM", "p32", "d32", "s32", "a24", "25"]),
 }
 
 

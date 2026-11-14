@@ -17,4 +17,4 @@ not deposited: visfAtlas (Rosenke et al. 2021, doi:10.1093/cercor/bhaa246) and H
 fsaverage (doi:10.6084/m9.figshare.3498446.v2). Both are read into memory and checked against
 their checksums.
 
-The notebook streams about 16 GB and runs in about 55 minutes with 6 GB of memory.
+The notebook streams about 16 GB and runs in about 25 minutes with 6 GB of memory.

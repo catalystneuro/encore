@@ -27,17 +27,17 @@ outcomes:
   notebook: reproduce_zhang_2021.ipynb
   output: claim:fig1-csi-s2
   measured:
-  - 0.743
-  - 0.721
-  - 0.675
-  notes: With the paper's code run on the full voxel data (R3), S2's CSIs are 0.743 (attend-humans), 0.721 (attend-vehicles)
-    and 0.675 (passive), each within tolerance and above every one of 1000 null values under both permutation readings
+  - 0.739
+  - 0.717
+  - 0.676
+  notes: With the paper's code run on the full voxel data (R3), S2's CSIs are 0.739 (attend-humans), 0.717 (attend-vehicles)
+    and 0.676 (passive), each within tolerance and above every one of 1000 null values under both permutation readings
     (p <= 0.001, the bound reached; the paper reports p < 1e-5). The median over random third axes (R2) gives 0.723,
     0.718 and 0.657, also within tolerance, and over random third axes the attend-humans CSI ranges from 0.683 to
     0.784 (5 to 95%), within tolerance throughout. In the human-vehicle plane alone (R1) attend-humans is 0.664,
     outside tolerance. The code's own attention coefficients are about 1e-13 in norm (human and vehicle about 1e2),
-    so its third axis is set by rounding and the R3 values move slightly between runs (0.740, 0.718, 0.676 in the
-    first run).
+    so its third axis is set by rounding and the R3 values can move slightly between runs on different machines (0.740,
+    0.718, 0.676 in the first run); two runs of the final revision on the same machine gave identical values.
   deviations:
   - Assumed that the third axis of the attention state space is the one the paper's code gives. In the deposited
     deconvolved data the attentive conditions are z-scored per voxel within each condition, so the attention variable
@@ -53,13 +53,13 @@ outcomes:
   notebook: reproduce_zhang_2021.ipynb
   output: claim:att-csi-group
   measured:
-  - 0.665
-  - 0.731
-  - 0.524
-  notes: Over the five released subjects (R3) the mean CSIs are 0.665 +/- 0.104, 0.731 +/- 0.023 and 0.524 +/- 0.260
+  - 0.663
+  - 0.73
+  - 0.525
+  notes: Over the five released subjects (R3) the mean CSIs are 0.663 +/- 0.104, 0.730 +/- 0.023 and 0.525 +/- 0.260
     for attend-humans, attend-vehicles and passive, within the paper's spreads. Under group reading (b) each mean
     exceeds the maximum of 1000 mean null CSIs (at most 0.110). Under reading (a) every subject is significant at
-    the bound in the attentive conditions but S3's passive CSI (0.061) does not exceed every null value. R2 gives
+    the bound in the attentive conditions but S3's passive CSI (0.062) does not exceed every null value. R2 gives
     0.658, 0.728 and 0.523; R1 gives 0.602, 0.675 (outside tolerance) and 0.492. The means of the paper's own per-subject
     values over these subjects are 0.644, 0.728 and 0.512.
   deviations:
@@ -71,21 +71,21 @@ outcomes:
   notebook: reproduce_zhang_2021.ipynb
   output: claim:supp-csi-per-subject
   measured:
-  - 0.515
-  - 0.744
-  - 0.62
-  - 0.696
-  - 0.761
-  - 0.061
-  - 0.767
-  - 0.73
-  - 0.614
-  - 0.605
-  - 0.699
-  - 0.651
-  notes: With R3, 10 of 12 values are within 10% of the supplement's; outside are S3 passive (0.061 against 0.05,
-    tolerance 0.005) and S5 attend-humans (0.767 against 0.66). Under permutation reading (a) all 12 are significant
-    at p < 0.01 (S3 passive p = 0.002, the others 0.001); under reading (b) S3 passive has p = 0.045. R2 puts 11
+  - 0.512
+  - 0.745
+  - 0.621
+  - 0.695
+  - 0.758
+  - 0.062
+  - 0.763
+  - 0.731
+  - 0.613
+  - 0.606
+  - 0.7
+  - 0.652
+  notes: With R3, 10 of 12 values are within 10% of the supplement's; outside are S3 passive (0.062 against 0.05,
+    tolerance 0.005) and S5 attend-humans (0.763 against 0.66). Under permutation reading (a) all 12 are significant
+    at p < 0.01 (S3 passive p = 0.002, the others 0.001); under reading (b) S3 passive has p = 0.039. R2 puts 11
     of 12 within tolerance with the same significance; R1 puts 10 within but S3 passive is not significant under
     either reading (p = 0.078 and 0.355), so R1 would make the claim partially reproduced.
   deviations:
@@ -96,13 +96,14 @@ outcomes:
   output: claim:att-passive-lower
   measured: 2
   notes: At the threshold 1000 permutations allow (the difference above every null value, p <= 0.001), the passive
-    CSI is significantly lower in 2 of 5 subjects under reading (a) with the code's positions (S3, S5), and 2 or
-    3 under reading (b), for every null (refitted or not) and both permutation schemes; the criterion needs 4 of
-    5. At p < 0.05 the counts are at most 3 (R3) and at most 4 (R1, reading b, matched, refitted). In S1 and S6
-    attend-humans is below passive (0.515 against 0.620; 0.605 against 0.651), as in the paper's own figure values
-    for these subjects, and the mean attentive CSI is within 0.010 of passive (p 0.30 to 0.51). S2's mean difference,
-    0.057, lies above its null's 99th percentile (0.042 to 0.055) and below or near its maximum (0.052 to 0.084),
-    p 0.001 to 0.010. Null (ii), computed as the observed values are, gives the same counts as the refitted null
+    CSI is significantly lower in 2 of 5 subjects (S3, S5) with the code's positions under both readings, every
+    null (refitted or not) and both permutation schemes; the criterion needs 4 of 5. At p < 0.05 the counts are
+    at most 3 (R3) and at most 4 (R1, reading b, matched, refitted). S3 and S5 have mean differences of 0.665 and
+    0.134. In S1 and S6 attend-humans is below passive (0.512 against 0.621; 0.606 against 0.652), as in the paper's
+    own figure values for these subjects, and the mean attentive CSI is within 0.008 of passive (p 0.34 to 0.51).
+    S2's mean difference, 0.0525, lies above its null's 99th percentile under three of the four nulls (0.0416 to
+    0.0504) and below it under the fourth (0.0562), and below the null maximum under all four (0.0526 to 0.0840),
+    p 0.002 to 0.015. Null (ii), computed as the observed values are, gives the same counts as the refitted null
     (i). Measured is the count under reading (a), null (i), matched permutation.
   deviations:
   - Five of six subjects; S4 is not released.
@@ -114,12 +115,12 @@ outcomes:
   notebook: reproduce_zhang_2021.ipynb
   output: claim:att-classification
   measured: 43.7
-  notes: Mean accuracy over the five subjects is 43.7% (contiguous folds, Euclidean), 53.8% (contiguous, density),
+  notes: Mean accuracy over the five subjects is 43.7% (contiguous folds, Euclidean), 53.3% (contiguous, density),
     46.6% (random, Euclidean) and 56.3% (random, density), against 48.4 +/- 7.6%; three readings are within tolerance
     and all exceed every one of 1000 mean null accuracies (maxima 9.7 to 12.5%). Chance under this procedure (null
-    mean) is 7.8 to 9.1%, close to the paper's 8.3%. Per subject 39.9 to 60.6%. The first run gave 44.4% and 53.4%
-    for the contiguous readings with the same code and seeds; the cause was not traced, the likeliest being rounding
-    in the third axis of each fold's state space.
+    mean) is 7.8 to 9.1%, close to the paper's 8.3%. Per subject 40.4 to 60.6%. The first run gave 44.4% and 53.4%
+    for the contiguous readings; the likeliest cause of the difference is rounding in the third axis of each fold's
+    state space.
   deviations:
   - Five of six subjects; S4 is not released.
   - Held-out positions are z-scored with the training statistics, a standard choice the claims file names.
@@ -131,10 +132,16 @@ outcomes:
   measured: 4
   notes: With the encoding-model threshold (ii), the human-presence weight is positive and above the vehicle-presence
     weight in FFA, OFA and EBA, and the reverse holds in RSC, PPA and OPA, in 4 of 5 subjects under each weight
-    reading (OLS B, denoised B_L, Q_S); S2 fails in EBA (human 0.335, vehicle 0.416 with B, no threshold). Without
-    a threshold (i) the pattern holds in 3 of 5 under each reading, EBA failing in S2 and S3 (B, B_L) or S1 and
-    S2 (Q_S). FFA, OFA, RSC, PPA and OPA hold in all five subjects under every reading, so the outcome rests on
-    EBA and on the threshold; LOS-bodies alone holds in 5 of 5 under (ii). Of the other named regions, MT+ (4 of
+    reading (OLS B, denoised B_L, Q_S); S2 fails in EBA (human minus vehicle -0.041 with B under threshold ii).
+    Without a threshold (i) the pattern holds in 3 of 5 under each reading, EBA failing in S2 and S3 (B, B_L) or
+    S1 and S2 (Q_S); S3's failure under B is a near tie (0.313 against 0.314). The outcome therefore hinges on the
+    threshold. Under (ii) the EBA margins of the passing subjects are small in S1 and S3 (B 0.079 and 0.044) and
+    0.24 to 0.40 in S5 and S6. The t test of threshold (ii) treats the 5400 TRs as independent and passes 57 to 71%
+    of the region voxels; in a variant not in the claims file, Bonferroni over each subject's region voxels (1638
+    to 2724 voxels pass), the pattern holds in 5 of 5 subjects with B and B_L and 4 of 5 with Q_S (S6 fails in
+    RSC), with EBA holding in all five. So the outcome does not rest on the liberal test, but it does rest on thresholding
+    by the encoding model. FFA, OFA, RSC, PPA and OPA hold in all five subjects under every reading of the claims
+    file; LOS-bodies alone holds in 5 of 5 under (ii). Of the other named regions, MT+ (4 of
     5) and LO (4 or 5) follow the human-presence dimension and IPS (5 of 5) the vehicle-presence dimension; SEF
     (2), FEF (2 or 3), FO (1 to 3) and IFS (2 or 3) are mixed. Measured is the count under threshold (ii) with the
     OLS weights, the first reading that matches.
@@ -159,51 +166,62 @@ outcomes:
   output: claim:game-csi
   measured:
   - 0.702
-  - 0.581
-  notes: With one cluster per state from TRs with exactly one state (reading b), the CSI is 0.702 (S1) and 0.581
-    (S7), within tolerance of 0.72 and 0.62 and above every one of 1000 null values (maxima 0.270 and 0.258). With
+  - 0.582
+  notes: With one cluster per state from TRs with exactly one state (reading b), the CSI is 0.702 (S1) and 0.582
+    (S7), within tolerance of 0.72 and 0.62 and above every one of 1000 null values (maxima 0.270 and 0.259). With
     multi-membership clusters (reading a) S1 is 0.694 and S7 0.549, just below tolerance (0.558); with the three
-    groups of Figure 3A (reading c) 0.513 and 0.388. All are above their nulls. Clusters with no more TRs than dimensions
+    groups of Figure 3A (reading c) 0.513 and 0.386. All are above their nulls. Clusters with no more TRs than dimensions
     are left out (S1 flash under a and b, S1 kill and S7 run away and kill under b). With the labels one TR later,
     where the CSI peaks in both subjects, readings (a) and (b) are within tolerance in both subjects (S1 0.728 and
-    0.760, S7 0.566 and 0.583) and reading (c) is not; the paper does not say whether the game labels were shifted.
+    0.760, S7 0.564 and 0.584) and reading (c) is not; the paper does not say whether the game labels were shifted.
+    With S7's BOLD as stored, not z-scored, S7 gives 0.549, 0.581 and 0.388 under readings (a) to (c), the same
+    conclusions.
   deviations:
   - S7 has no flash TRs, so its state space has 8 dimensions.
+  - Each voxel of the video game BOLD is z-scored over the session, as the paper's Methods say ("The detrended voxel
+    responses were normalized to zero mean and unit variance", Preprocessing and Visualization); S1's deposited data
+    are already z-scored, S7's are not. Rounds 1 and 2 used S7 as stored; that analysis is shown as a variant.
   - The S1 video game data hold 65 min, where the paper reports 90 min for one subject.
 - claim: game-mutual-negative-projection
   outcome: reproduced
   assumed: true
   notebook: reproduce_zhang_2021.ipynb
   output: claim:game-mutual-negative-projection
-  notes: With the variables in the data set's column order, engage-close TRs lie at -1.187 (S1) and -0.191 (S7)
-    on the safe-explore dimension and safe-explore TRs at -0.399 and -0.548 on the engage-close dimension, each
+  notes: With the variables in the data set's column order, engage-close TRs lie at -1.187 (S1) and -0.190 (S7)
+    on the safe-explore dimension and safe-explore TRs at -0.399 and -0.550 on the engage-close dimension, each
     p = 5e-5 (the bound of 20,000 permutations), under both sign readings. With Table 1's order S1 holds (-0.697,
-    -0.068, p = 5e-5) but S7's safe-explore TRs lie at -0.018 on the engage-close dimension (p = 0.937), which would
-    make the claim hold in one subject only.
+    -0.068, p = 5e-5) but S7's safe-explore TRs lie at -0.016 on the engage-close dimension (p = 0.952), which would
+    make the claim hold in one subject only. With S7 as stored, not z-scored, the S7 values are -0.191 and -0.548
+    (p = 5e-5) and -0.018 under Table 1's order (p = 0.936).
   deviations:
   - Assumed the order of the variables in the QR is the order of the data set's state columns, since the paper's
     code takes the state matrix as it is stored and has no video game analysis; under Table 1's order the outcome
     would be partially reproduced.
+  - S7's BOLD z-scored per voxel over the session, as for game-csi.
 - claim: fig3b-state-relations
   outcome: reproduced
   notebook: reproduce_zhang_2021.ipynb
   output: claim:fig3b-state-relations
-  notes: Under every sign, order, Bonferroni and null-centre reading, S1 has 44 to 48 and S7 20 to 33 significant
-    off-diagonal projections (p < 0.01 corrected, 20,000 permutations, smallest p 5e-5), 10 to 20 pairs are significant
-    in one direction only, and the subjects share 12 to 27 of their significant pairs. Centring the two-sided test
-    on the null's mean in place of zero changes the counts by at most one pair. The paper's matrix could not be
-    compared pair by pair.
+  notes: Under every sign, order, Bonferroni and null-centre reading, S1 has 44 to 48 and S7 21 to 26 significant
+    off-diagonal projections (p < 0.01 corrected, 20,000 permutations, smallest p 5e-5), 9 to 20 pairs are significant
+    in one direction only, and the subjects share 12 to 20 of their significant pairs. Centring the two-sided test
+    on the null's mean in place of zero changes the counts by at most one pair. With S7 as stored (own sign, zero
+    centre, Bonferroni a) S7 has 26 and 23 significant pairs (Table 1 and data set order). The paper's matrix could
+    not be compared pair by pair.
+  deviations:
+  - S7's BOLD z-scored per voxel over the session, as for game-csi.
 - claim: game-classification
   outcome: partially_reproduced
   notebook: reproduce_zhang_2021.ipynb
   output: claim:game-classification
   measured:
   - 46.5
-  - 33.8
+  - 33.7
   notes: Every reading is above its null (p = 0.001; chance under this procedure 10.8 to 16.4%, against the paper's
-    11%). S7 is within 30.4 +/- 4.2% with contiguous folds (26.4 to 33.8%) and above it with random folds (36.8
+    11%). S7 is within 30.4 +/- 4.2% with contiguous folds (26.9 to 34.1%) and above it with random folds (36.9
     to 46.5%). S1 is above 32.8 +/- 3.8% under every reading (42.8 to 54.6%), so no reading puts both within tolerance;
-    with the labels one TR later the same holds (S1 45.7 to 60.5%, S7 28.4 to 50.9%). Random folds put autocorrelated
+    with the labels one TR later the same holds (S1 45.7 to 60.5%, S7 28.4 to 52.2%). With S7 as stored, not z-scored,
+    S7 gives 26.4 to 33.8% (contiguous) and 36.4 to 47.1% (random). Random folds put autocorrelated
     neighbouring TRs in training and test sets and give higher values; the outcome does not depend on the fold scheme.
     The S1 data are six whole runs of 325 TRs (65 min) where the paper reports 90 min, so they may not be the data
     the paper analysed, which could account for S1 being above the paper's value. Measured is the first reading
@@ -214,6 +232,7 @@ outcomes:
   - Under single-state labels a class with too few TRs in a training fold is left out of that fold and the fold's
     balanced accuracy is taken over the classes it could predict; in the first run such a class was scored with
     a recall of 0.
+  - S7's BOLD z-scored per voxel over the session, as for game-csi.
 - claim: game-weights-two-groups
   outcome: not_reproduced
   assumed: true
@@ -223,9 +242,11 @@ outcomes:
     current or superseded, so S1 and the consistency between subjects could not be tested. In S7, three to five
     of the eight dimensions fail the grouping under every reading, where one may fail: dead, safe explore and unsafe
     explore under every reading, and engage far, run away, round start or engage close under some (4 fail with OLS
-    or denoised weights and no threshold, 3 with the Bonferroni threshold, 5 with Q_S under either order). Safe
-    explore has negative OLS weights in all nine regions (-0.008 to -0.240). Since the criterion asks for the pattern
-    in both subjects, failing in S7 decides the outcome. In the variant not taken from the paper, the correlation
+    weights and no threshold, 3 with denoised weights or with the Bonferroni threshold, 5 with Q_S under either order).
+    Safe explore has negative OLS weights in all nine regions (-0.008 to -0.241). Since the criterion asks for the
+    pattern in both subjects, failing in S7 decides the outcome, which rests on S7 alone. With the medial prefrontal
+    areas (12,185 vertices) in place of the whole prefrontal region (57,895 vertices) the same dimensions fail under every reading.
+    With S7 as stored, not z-scored, three to five fail as well (4 with denoised weights and no threshold). In the variant not taken from the paper, the correlation
     of S1''s denoised weight maps across voxels splits the nine dimensions into exactly the paper''s two groups,
     while S7''s split into safe and unsafe explore against the rest.'
   deviations:
@@ -239,6 +260,7 @@ outcomes:
     is positive in each of its group's regions and the mean over them is above the mean over the other group's regions;
     a stricter variant is shown.
   - S1 could not be placed on the cortex; S7 has no flash dimension.
+  - S7's BOLD z-scored per voxel over the session, as for game-csi; the weights are those of the z-scored responses.
 findings:
 - kind: other
   about: data
@@ -429,3 +451,111 @@ verifications:
       where one may, so the claim, which asks for the pattern in both subjects, fails in S7; the outcome changes
       from blocked to not_reproduced, resting on the atlas regions. S1 and the consistency between subjects remain
       untested.
+- date: '2026-11-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the round-1 revision (commit bea4220), with its conclusions and summary,
+    the helper module, the claims file, the attempt record and the paper's full text. The verifier did not re-run
+    the notebook.
+  results:
+  - claim: fig1-csi-s2
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 17 prints R3 0.739, 0.717 and 0.676, all within tolerance and above every null value under both
+      readings. R2 also passes. The assumption is stated and reasonable, and does not decide the outcome, since R2
+      passes too. The text and the record give 0.743, 0.721 and 0.675, stale values from an earlier execution.'
+    response: 'Re-ran the entry twice on the same machine, which gave identical values (0.739, 0.717, 0.676); the
+      notebook, the measured values and the notes now give them, and the data check says the R3 values can move between
+      machines. Outcome unchanged.'
+  - claim: att-csi-group
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21 prints R3 means of 0.663, 0.730 and 0.525, and group reading (b) passes. The assumption is stated
+      and reasonable. Cell 22 and the record give 0.665, 0.731 and 0.524 and S3''s CSI as 0.061, where cells 21 and
+      15 print 0.663, 0.730, 0.525 and 0.062.'
+    response: Updated the text, measured values and notes to 0.663, 0.730, 0.525 and S3 passive 0.062. Outcome unchanged.
+  - claim: supp-csi-per-subject
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: 10 of 12 values within tolerance, and 12 of 12 have p < 0.01 under null (a). The assumption
+      is stated and reasonable. Cell 25 gives S3 passive 0.061, S5 attend-humans 0.767 and p = 0.045 under reading
+      (b), where cell 24 prints 0.062, 0.763 and 0.039; eleven of the twelve measured values in the record differ
+      from cell 24''s R3 column.'
+    response: Replaced the twelve measured values with cell 24's R3 column and corrected the text (0.062, 0.763, p
+      = 0.039). Outcome unchanged.
+  - claim: att-passive-lower
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 27 counts 2 of 5 at the bound under every R3 combination, and at most 3 at p < 0.05. "2 or 3" in
+      cell 28, the Summary and the record has no support, and several values are stale (S1 0.512 and 0.621, S6 0.606
+      and 0.652, mean differences 0.665 and 0.134, S2 0.0525, 99th percentile 0.0416 to 0.0562, maximum 0.0526 to
+      0.0840, p_mean 0.002 to 0.015, R3 p 0.34 to 0.51). S2''s 0.0525 now sits just below the 0.0526 maximum (matched,
+      null ii).'
+    response: 'Changed "2 or 3" to 2 (S3 and S5) in the conclusion, the Summary and the record, and updated every
+      value to cell 27. S2''s mean difference is now described as above the 99th percentile under three of the four
+      nulls and below it under the fourth, and below the maximum under all four, the closest 0.0526. Outcome unchanged.'
+  - claim: att-classification
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: 43.7, 53.3 and 46.6% are within tolerance, and all four readings are above every null mean.
+      Cell 31 and the record say 53.8% and a per-subject range of 39.9 to 60.6%, where cell 30 prints 53.3 and 40.4
+      to 60.6. The statement that the first run gave 53.4% "with the same code and seeds" now differs from this run
+      by only 0.1.'
+    response: Corrected to 53.3% and 40.4 to 60.6%, and shortened the note on the first run to its values and the
+      likeliest cause. Outcome unchanged.
+  - claim: att-weights-cortex
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees under the criterion: cell 34 gives 4 of 5 subjects under threshold (ii) for B, B_L and Q_S, and
+      3 of 5 under (i). The margin is thin. The atlas assumption is stated and reasonable as a stand-in. The t test
+      treats 5400 autocorrelated TRs as independent, which is liberal: 57 to 71% of region voxels pass. Under (i),
+      B and B_L fail in S3 by a near tie in EBA (human 0.313, vehicle 0.314). The values under (ii) are not printed,
+      so the margin there cannot be judged. The conclusion should say the outcome hinges on this.'
+    response: 'Printed the mean weights under threshold (ii) and the human minus vehicle EBA weight per subject under
+      every threshold and reading: under (ii) S2 fails by -0.041 (B) and S1 and S3 pass by 0.079 and 0.044 (B). Added
+      a stricter threshold as a variant, Bonferroni over each subject''s region voxels (1638 to 2724 voxels pass):
+      the pattern holds in 5 of 5 subjects for B and B_L and 4 of 5 for Q_S, with EBA holding in all five. The conclusion
+      and notes now say the outcome hinges on thresholding by the encoding model (3 of 5 without), and that it does
+      not rest on the liberal test. Outcome unchanged.'
+  - claim: game-csi
+    agrees: true
+    outcome: reproduced
+    reason: 'Under reading (b), cell 38 gives 0.702 and 0.581; lag +1 also passes (cell 39). The S7 game data are
+      not normalized: the paper says responses were "normalized to zero mean and unit variance", and load_game uses
+      S7''s BOLD as stored (voxel SDs 0.094 to 1.009), with no z-scoring before the PCA, the OLS or the region means.
+      This also affects the S7 values in game-csi.'
+    response: 'Adopted the paper''s normalization: each voxel of the video game BOLD is now z-scored over the session
+      (Methods, Preprocessing and Visualization), stated as a deviation, and S7 as stored is kept as a variant. Reading
+      (b) gives 0.702 and 0.582 (as stored 0.581); every reading keeps its result. Outcome unchanged.'
+  - claim: game-mutual-negative-projection
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees under the dataset column order (cell 42). The assumption is stated and the reasoning is sound;
+      the Table 1 order would give partially_reproduced, and the record says so. The S7 values are affected by the
+      unnormalized S7 data.'
+    response: With S7 z-scored the data set order gives -0.190 and -0.550 in S7 (p = 5e-5), and the Table 1 order
+      -0.016 (p = 0.952); as stored, -0.191, -0.548 and -0.018. Outcome unchanged.
+  - claim: fig3b-state-relations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 45). The S7 values are affected by the unnormalized S7 data.
+    response: With S7 z-scored, S7 has 21 to 26 significant pairs under the readings (as stored, in a separate set
+      of 20,000 permutations, 23 and 26); updated the counts in the text and record. Outcome unchanged.
+  - claim: game-classification
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 48: S1 is above tolerance under every reading, and every reading is significant. The S7 values
+      are affected by the unnormalized S7 data.'
+    response: With S7 z-scored, S7 gives 26.9 to 34.1% with contiguous folds and 36.9 to 46.5% with random folds (as
+      stored 26.4 to 33.8% and 36.4 to 47.1%); S1 is unchanged. Outcome unchanged.
+  - claim: game-weights-two-groups
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees only conditionally: the outcome rests on S7 alone (cell 53). The atlas assumption is stated. One
+      assumption that bears on the outcome is not stated: S7''s BOLD goes into the analysis without z-scoring. Also
+      (minor), the "prefrontal" region covers 57,895 vertices, most of the frontal lobe, so the S7 failure also depends
+      on how coarsely the regions are drawn.'
+    response: 'S7 is now z-scored as the paper says, stated as a deviation; three to five of the eight dimensions
+      still fail under every reading, and with S7 as stored (variant) three to five fail as well. Added a variant
+      with the medial prefrontal areas (12,185 vertices) in place of the whole prefrontal region: the same dimensions
+      fail under every reading. The notes say the outcome rests on S7 alone. Outcome unchanged.'
