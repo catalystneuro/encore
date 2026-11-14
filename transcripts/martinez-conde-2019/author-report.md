@@ -1,63 +1,54 @@
-I've done steps 1 to 6 of the Author section for martinez-conde-2019. The entry passes `check` with 0 errors, the clean run of `all` passes in 276 s, and the handover is built in `executed/martinez-conde-2019/handover/`. Nothing is committed.
+I've finished steps 1 to 6: the entry is at `entries/martinez-conde-2019/`, the record at `attempts/martinez-conde-2019-02.yaml`, and the handover package is built. `python tools/entry.py all` passes with 0 errors and the notebook runs in 58 s with 0.48 GB peak memory. I did not come across any earlier attempt's results.
 
-## 1. Outcomes
+**1. Outcomes**
+
+Every tested outcome except neuron-counts and fig7a rests on the baseline-placement assumption described in section 2.
 
 | Claim | Outcome |
 |---|---|
-| neuron-counts | not reproduced |
+| neuron-counts | not reproduced: 53 neurons in the data against 58 in the paper |
 | spikes-per-condition | blocked (data_missing) |
-| s4-baseline-no-difference | not reproduced, assumed |
-| fig4a-above-baseline | reproduced, assumed |
-| fig4b-spike-rate-difference | partially reproduced, assumed (P180 is 6.47 against 4.87 ± 1.15) |
+| s4-baseline-no-difference | not reproduced |
+| fig4a-above-baseline | reproduced |
+| fig4b-spike-rate-difference | reproduced: 26.32, 19.67, 8.84, 4.62 spikes/s, all within the paper's SEM |
 | fig4b-pairwise-significance | reproduced |
-| fig5-average-maps | reproduced, assumed |
-| table1-edge / table1-s90 / table1-s40 | reproduced, assumed |
-| table1-s52 | partially reproduced, assumed |
-| table1-p180 | not reproduced |
+| fig5-average-maps | reproduced |
+| table1-s40 | reproduced |
+| table1-edge, table1-p180, table1-s90, table1-s52 | partially reproduced: 4 of 5 values each |
 | fig6-midpoint-representative | reproduced |
 | fig7a-rms-contrast-fit | not reproduced |
-| fig7c-fold-edge-equivalence | not reproduced, assumed |
-| fig7c-fold-edge-significance | reproduced under the two BH readings, assumed; fails under Bonferroni |
-| fig7d-nonlinear | reproduced, assumed |
+| fig7c-fold-edge-equivalence | not reproduced |
+| fig7c-fold-edge-significance | reproduced |
+| fig7d-nonlinear | reproduced |
 | fig7d-dog-similar | blocked (data_missing) |
 | s3-latency-peak | blocked (data_missing) |
 
-## 2. Dataset, assumptions and questions
+**2. Dataset, assumptions, questions**
 
-**Version.** CRCNS has no versions, so it is recorded as `unversioned`. The notebook checks that the zip's ETag on the bucket equals its MD5 in `checksums.md5` (e1301fe4…, last modified 2026-02-11), as the header explains.
+What the data set holds:
+- It is one zip of spike-rate maps and stimuli; it has no spike times or eye positions. It holds 53 neurons (22 Square and Edge, 27 Star, 26 Corners), against 25, 30 and 28 in the paper.
+- The `image` field is spikes per ms, not the raw spike counts the descriptor says. Only one neuron has an eye time map, so spike counts cannot be recovered.
+- The two `ABS` files in the Star folder hold Corners stimuli and Corners recordings.
+- The maps the authors registered to the stimulus (`Standard`, including a stored `BaseActivity`) are not documented.
+- 15 Star neurons have no registered map and cannot be placed on the stimulus, because their receptive-field offset and aligned diagonal are missing. The Star analysis therefore uses 12 neurons.
+- Six Corners registered maps use a frame cropped by 8 DU on each side.
+- I checked that every registered map is its screen map moved rigidly (correlation 0.984 to 1.000). There are no duplicate recordings.
 
-**What the files hold:**
-- **Fewer neurons.** 53 neurons, not 58. The spreadsheet has 58 rows, but five have no data. Per condition there are 22 Square and Edge, 27 Star and 26 Corners recordings, against the paper's 25, 30 and 28.
-- **Two mislabelled files.** `ABS042700J2` and `ABS051000J3`, in the Star folder, are Corners-type recordings.
-- **The descriptor is wrong about the fields.** `image` is a spike rate per 1 ms sample, not a count. `smoothed_image_norm` is often missing and its meaning varies. Most files hold an undocumented `Standard` struct: the authors' map aligned to the stimulus, the stimulus polygons, and sometimes a `BaseActivity` value.
-- **15 Star files can't be used.** The maps are in gaze coordinates, and no file gives the receptive-field offset that places them on the stimulus. Only 12 of the 27 Star files have the aligned map, so the Star claims rest on those 12.
-- **Raw data are absent.** No spike times, eye positions or spike-count maps, and only one eye-time map, so the spike counts and the latency analysis cannot be done.
-- **Edge off screen.** In four files the 100% end of the Edge is off the screen, which the Methods say never happened.
-- **Alignment check.** Across the Edge, the mean response peaks on the Edge itself; 16 of 22 neurons peak within 8 DU of it. That is consistent with the authors' alignment.
+Assumption: the paper gives the baseline-square placement only in Fig 2. For each stimulus I took the placement whose values are closest, neuron by neuron, to the authors' stored `BaseActivity`. I chose it after seeing the results under every placement; the record says so, and the notebook shows them all.
 
-**Assumptions:**
-- **Corners fold.** The pattern has one bright and one dark 40° fold. I took the bright one, citing Methods, Corners paragraph 2 ("we only analyzed symmetric bright corner-folds"). Averaging the two breaks the fold order.
-- **Baseline squares.** I centred them on the corners of the circumscribing square. For Corners, I put them at the bottom corners of the region of interest, since Fig 2C is not in the text. The files' own `BaseActivity` matches no placement the text allows. The baseline test and several Table 1 counts change with this choice; every placement is shown in the notebook.
+Questions for the paper's authors, recorded as `methods_unavailable` findings:
+- Where exactly are the baseline squares?
+- How was the RMS contrast of Fig 7A computed?
 
-**Questions for the authors** (recorded as `methods_unavailable` findings):
-- Where the baseline squares are, and how `BaseActivity` was computed.
-- Whether the Corners response uses the bright fold alone.
-- How the RMS contrast of Fig 7A was defined. From luminance in percent, neither reading gives 0.61 to 0.943.
+I asked no questions of a reader.
 
-**Questions to a reader** (`questions/martinez-conde-2019.yaml`): for fig4b-spike-rate-difference and table1-s40. The criterion's Corners readings average a bright and a dark fold, or take "the fold at the ROI centre". In the data neither fold sits at the centre.
+**3. Protocol gaps**
+1. The clock check in step 2 does not fit a data set of precomputed maps with no time series. In its place I showed that each registered map is the screen map shifted (and rotated, for the Star), and checked the stimulus luminance at the fold points.
+2. The protocol does not say how to choose a reading using evidence from the data, such as the authors' stored baselines, once the results under every reading have been seen. I did it and disclosed it.
+3. CRCNS data sets are not versioned. I recorded `unversioned`, the zip's MD5 and its last-modified date.
+4. It does not say what to record when each part of a claim holds only under a different reading (fig7c-equivalence). I recorded not_reproduced.
+5. It does not say what `measured` should hold when no reading matches. I recorded the first reading the criterion lists (fig7a).
+6. During development I cached derived arrays in `$TMPDIR` to save time. The entry itself streams the data, and the cache is deleted.
 
-## 3. Where the protocol was unclear or did not fit
-
-1. Step 2's "shares the clock of the trial tables" does not fit data that are spatial maps with no time base. I used a spatial contrast instead: the response profile across the Edge.
-2. The protocol assumes data close to the recordings. Here the dataset is the authors' processed maps. I used their aligned frame and recorded that the eye-signal correction and registration cannot be redone.
-3. Two rules for several readings sit side by side. A claim is reproduced if any of the criterion's readings matches. For a method detail left open (author step 1.6), the readings must agree, or the best-supported one is adopted as an assumption. I applied the first to the criterion's readings and the second to the baseline placement.
-4. A claim of absence is to be judged on "the paper's test", but the paper names none, and the outcome flips with an open method detail. I recorded the main reading's result and marked it assumed.
-5. `measured` says which reading to record when several match, not when none do. I recorded the main reading.
-6. When a claims-file reading does not fit the data's geometry (the "ROI centre" fold), it is not clear whether that counts as a misreading. I asked a reader.
-7. "Pinned published version" does not map onto unversioned CRCNS. I used the ETag-to-MD5 check.
-
-## 4. Runtime and failures
-
-The notebook takes about 4.6 minutes, with peak memory about 1.1 GB; the whole session took about 45 minutes. Nothing failed. The whole dataset runs in 5 minutes, so I developed on all of it, not on a subset.
-
-One cleanup was refused: removing an empty `.claude/` directory inside the entry needed approval. It holds no files, so git will not pick it up. Stray dotfiles at the repository root (`.bashrc` and others) were not created by me and I left them alone.
+**4. Runtime and failures**
+The work took about 1 h 20 min, starting 12:52 UTC. One exploratory search for a reflection in a Star map timed out after about 28 minutes. It was outside the entry and is not needed: a faster method later matched all 12 Star maps.

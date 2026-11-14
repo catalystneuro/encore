@@ -1,0 +1,508 @@
+schema_version: 3
+id: martinez-conde-2019-02
+datasets:
+- archive: crcns
+  id: pvc-12
+  version: unversioned
+  doi: 10.6080/K05D8Q1T
+  relation: primary
+paper: doi:10.1371/journal.pone.0210941
+date: '2026-11-14'
+entry: martinez-conde-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43596847214
+outcomes:
+- claim: neuron-counts
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:neuron-counts
+  measured:
+  - 53
+  - 22
+  - 29
+  - 26
+  - 7
+  - 10
+  - 36
+  notes: The files hold 53 distinct neurons (49 from monkey J, 4 from A) against 58 analysed. By folder,
+    22 Square and Edge, 29 Star and 26 Corners neurons (paper 25, 30, 28); 7 tested in three conditions,
+    10 in two, 36 in one (paper 7, 11, 40). Counting the two ABS files of the Star folder as Corners,
+    as their stimuli are, gives 27 Star and 7, 8 and 38. The spreadsheet lists the same 53 neurons plus
+    5 rows with no condition marked, and the data descriptor says 53. Only the count tested in all three
+    conditions matches. The recorded 118 (102 and 16 per monkey) cannot be checked, as the discarded neurons
+    are not in the data set.
+  deviations:
+  - Neurons identified by the file code without the experiment prefix and the trailing run letter, which
+    matches the spreadsheet's codes.
+- claim: spikes-per-condition
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:spikes-per-condition
+  notes: The spike count maps are not in the data set; dat.image is spikes per ms (count divided by eye
+    time), and only 1 of 77 map files (Corners ABC050900J1A) carries its eye time map, from which its
+    count is 15,644 spikes, above the 10,000 minimum. Spike times are not in the data set either, so neither
+    reading of the criterion can be computed for the other neuron-conditions.
+- claim: s4-baseline-no-difference
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:s4-baseline-no-difference
+  notes: Under the main baseline placements, medians are 7.11 (Square and Edge, n = 22), 1.89 (Star, n
+    = 12) and 2.45 spikes/s (Corners, n = 26). Reading (a), pairwise rank sum tests with Benjamini-Hochberg
+    correction, finds Square and Edge above Corners (p = 0.044; Edge against Star p = 0.065, Star against
+    Corners p = 0.75); reading (b), Kruskal-Wallis, p = 0.028; reading (c), ANOVA, p = 0.0052. All three
+    readings find a difference. The result depends on the placement; with the files' BaseActivity (38
+    neurons) no test finds a difference (smallest p = 0.11), nor with Corners readings (b) or (c) (smallest
+    p 0.056 to 0.077); with squares inside the corners for Square and Edge, or centred for the Star, every
+    reading finds a difference (p 0.0009 to 0.022 for the significant comparisons). The Star squares lie
+    partly where the maps are zero (39% of their pixels), which lowers the Star baseline; leaving out
+    zero pixels, only the ANOVA finds a difference (p = 0.013).
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+- claim: fig4a-above-baseline
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4a-above-baseline
+  notes: Above baseline, 19 of 22 neurons for P180, 20 of 22 for S90, 12 of 12 for S52, 26 of 26 for S40;
+    every mass center above the unit line. Vertical distances P180 4.62, S90 8.84, S52 19.67, S40 26.32
+    spikes/s under reading (a) (means of raw values) and 0.238, 0.357, 0.946, 1.037 under reading (b)
+    (means of log10 values, 2 S40 neurons with zero baseline left out); both ordered P180 < S90 < S52
+    < S40. Reading (a) stays ordered under every baseline variant; reading (b) loses the order with Star
+    squares centred on the corners or Corners readings (b) and (c).
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+- claim: fig4b-spike-rate-difference
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4b-spike-rate-difference
+  measured:
+  - 26.32
+  - 19.67
+  - 8.84
+  - 4.62
+  notes: Mean (SEM) midpoint spike rate differences S40 26.32 (4.18, n = 26), S52 19.67 (2.99, n = 12),
+    S90 8.84 (2.04, n = 22), P180 4.62 (1.02, n = 22) spikes/s; ordered as in the paper and each within
+    the paper's SEM. The unsmoothed maps give 27.19, 19.71, 10.67 and 5.23, also 4 of 4. Under the other
+    baseline variants the order holds and 3 of 4 values are within tolerance (4 of 4 with Corners reading
+    (c)); with Corners reading (b) S40 is 20.21. By monkey, the two A neurons give lower S90 and P180
+    values (0.57 and 1.77).
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+  - Midpoints are means of the map over pixels whose centres lie within the 8 x 8 DU square at the 50%
+    point, located from the stimulus polygons stored with the registered maps (the polygon of the 50%
+    level).
+- claim: fig4b-pairwise-significance
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4b-pairwise-significance
+  notes: Rank sum tests with Benjamini-Hochberg correction over all six pairs; S40 > S90 p = 0.0003, S40
+    > P180 p < 0.0001, S52 > P180 p = 0.0001; over the three named pairs the same three are significant.
+    Of the pairs the text does not claim, S52 > S90 is significant (p = 0.0074); S40 against S52 (p =
+    0.43) and S90 against P180 (p = 0.12) are not. Every baseline variant and the unsmoothed maps keep
+    the three named pairs significant.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+- claim: fig5-average-maps
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig5-average-maps
+  notes: Average spike rate difference maps per stimulus (22, 12 and 26 neurons). At the midpoints S40
+    26.32, S52 19.73, S90 8.74, P180 4.54 spikes/s, ordered S40 > S52 > S90 > P180; the block-mean variant
+    gives 23.03, 17.32, 7.85, 3.84, the same order. As the criterion says, the midpoint reading repeats
+    the means of fig4b-spike-rate-difference.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - The six Corners maps whose frame is 16 DU smaller are placed in the larger frame by their stimulus
+    polygons and averaged where they have values.
+- claim: table1-edge
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-edge
+  measured:
+  - 6.13
+  - 29.68
+  - 17.49
+  - 17.31
+  - 19.18
+  notes: Minimum 6.13 (paper 7.98 +- 1.60, outside), maximum 29.68, mean 17.49, median 17.31 and midpoint
+    19.18 spikes/s (all within), n = 22, reading (i)(a). Reading (b), summaries of the population-average
+    profile, matches fewer values, as averaging compresses the minimum and maximum. With Edge squares
+    inside the corners 2 of 5; with the other variants 1 to 4 of 5.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+  - Blocks are 8 DU wide, centred on the fold or Edge, and one tenth of the fold from 0% to 100% luminance
+    long (15, 15, 7.07, 15 and 10 DU), located from the stored stimulus polygons; the paper rounds the
+    S90 block to 7 DU.
+- claim: table1-p180
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-p180
+  measured:
+  - -1.29
+  - 10.66
+  - 3.86
+  - 3.4
+  - 4.62
+  notes: Minimum -1.29 (paper 0.18 +- 1.01, outside), maximum 10.66, mean 3.86, median 3.40 and midpoint
+    4.62 spikes/s (within), n = 22, reading (i)(a). Reading (b), summaries of the population-average profile,
+    matches fewer values, as averaging compresses the minimum and maximum. With Edge squares inside the
+    corners 2 of 5; with zero pixels left out 2 of 5; unsmoothed maps 3 of 5.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+  - Blocks are 8 DU wide, centred on the fold or Edge, and one tenth of the fold from 0% to 100% luminance
+    long (15, 15, 7.07, 15 and 10 DU), located from the stored stimulus polygons; the paper rounds the
+    S90 block to 7 DU.
+- claim: table1-s90
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s90
+  measured:
+  - 2.96
+  - 13.86
+  - 7.91
+  - 7.98
+  - 8.84
+  notes: Minimum 2.96 (paper 4.36 +- 1.07, outside), maximum 13.86, mean 7.91, median 7.98 and midpoint
+    8.84 spikes/s (within), n = 22, reading (i)(a), halves averaged block by block; reading (ii)(a), halves
+    summarised separately, also gives 4 of 5 (minimum 1.83 outside). Reading (b), summaries of the population-average
+    profile, matches fewer values, as averaging compresses the minimum and maximum. With Edge squares
+    inside the corners 1 of 5; unsmoothed maps 2 of 5.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+  - Blocks are 8 DU wide, centred on the fold or Edge, and one tenth of the fold from 0% to 100% luminance
+    long (15, 15, 7.07, 15 and 10 DU), located from the stored stimulus polygons; the paper rounds the
+    S90 block to 7 DU.
+- claim: table1-s52
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s52
+  measured:
+  - 9.15
+  - 25.33
+  - 17.31
+  - 17.29
+  - 19.67
+  notes: Minimum 9.15 (paper 6.26 +- 1.33, outside), maximum 25.33, mean 17.31, median 17.29 and midpoint
+    19.67 spikes/s (within), n = 12, reading (i)(a); reading (ii)(a) also gives 4 of 5 (minimum 7.22 within,
+    maximum 29.21 outside). Reading (b), summaries of the population-average profile, matches fewer values,
+    as averaging compresses the minimum and maximum. With Star squares centred on the corners 1 of 5;
+    with zero pixels left out 5 of 5.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+  - Blocks are 8 DU wide, centred on the fold or Edge, and one tenth of the fold from 0% to 100% luminance
+    long (15, 15, 7.07, 15 and 10 DU), located from the stored stimulus polygons; the paper rounds the
+    S90 block to 7 DU.
+- claim: table1-s40
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s40
+  measured:
+  - 10.47
+  - 34.3
+  - 23.03
+  - 23.02
+  - 26.32
+  notes: Minimum 10.47, maximum 34.30, mean 23.03, median 23.02 and midpoint 26.32 spikes/s, all within
+    the paper's SEM, n = 26, reading (i)(a). Reading (b), summaries of the population-average profile,
+    matches fewer values, as averaging compresses the minimum and maximum. With Corners reading (b) 1
+    of 5, reading (c) 4 of 5; with zero pixels left out 1 of 5; unsmoothed maps 4 of 5.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+  - Blocks are 8 DU wide, centred on the fold or Edge, and one tenth of the fold from 0% to 100% luminance
+    long (15, 15, 7.07, 15 and 10 DU), located from the stored stimulus polygons; the paper rounds the
+    S90 block to 7 DU.
+- claim: fig6-midpoint-representative
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig6-midpoint-representative
+  notes: No rank sum test of midpoint against block mean or median is significant at 0.05 for Edge, P180,
+    S90, S52 or S40 (p 0.45 to 0.87). Median midpoint minus block value 0.06 to 1.92 spikes/s. The paired
+    signed rank variant is significant for S90 against the median (p = 0.028) and S40 against the mean
+    and the median (p = 0.027, 0.0094).
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - Uses the authors' registered, smoothed spike rate maps (Standard.smoothed_image, x 1000 for spikes/s),
+    not maps rebuilt from spikes and eye positions, which the data set does not hold.
+- claim: fig7a-rms-contrast-fit
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7a-rms-contrast-fit
+  measured:
+  - 0.75
+  - 1.93
+  - -1787.3
+  - 0.0
+  - 1788.1
+  - -0.08
+  notes: Computed on each of the 22 Edge stimuli warped into the ROI frame, 16 x 16 DU square on the Edge,
+    0 to 100% in 1.5% steps, median over stimuli. Reading (a), SD over mean, is about 2 at 0% (1.69 to
+    2.33), 0.75 at 50% and 1.08 to 1.43 at 100%, not monotonic; the exponential fit degenerates (R2 =
+    -0.08). Reading (b), SD of luminance on a 0 to 1 scale, rises from 0.013 to 0.451 and fits well (R2
+    = 0.9994) with a = -87.3, b = 0.0001, c = 87.3, far from the paper's range 0.61 to 0.943 and parameters.
+    Measured values are those of reading (a), the first the criterion lists; neither reading matches.
+  deviations:
+  - The definition of RMS contrast is the paper's reference 21, not in the text read; the two readings
+    of the claims file were run. The fit minimises the sum of absolute residuals from a least-squares
+    start, standing in for MATLAB's Levenberg-Marquardt with LAR.
+- claim: fig7c-fold-edge-equivalence
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7c-fold-edge-equivalence
+  notes: Edge spike rate differences in 16 x 16 DU squares on the Edge rise from 9.04 spikes/s at 0% luminance
+    to 20.86 at 90% (14.46 at 100%, where the square passes the end of the rectangle). Under reading (a)
+    (10% luminance steps) the S40 mean, 26.32, is nearest the 90% level, as the paper says, but the P180
+    mean, 4.62, is nearest 0%, below every Edge level, not 50%. Under reading (b) (the ten RMS levels
+    mapped by the paper's fit) P180 is nearest the lowest level, which the criterion accepts, but S40
+    is nearest 94.3, more than one step (3.7) from 90. No single reading meets both parts.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - RMS levels are mapped to Edge luminance by the inverse of the paper's fitted model (0.610 gives 0%
+    and 0.943 gives 77.7%), since the refit of fig7a-rms-contrast-fit does not reproduce.
+- claim: fig7c-fold-edge-significance
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7c-fold-edge-significance
+  notes: Two-sample t-tests of fold midpoint differences against Edge responses at the RMS levels. P180
+    is lower than the Edge at 0.943 (mean difference -15.9 spikes/s, p = 0.0007) and S40 higher than the
+    Edge at 0.610 and 0.647 (17.3 and 16.8, p = 0.0008 and 0.0011). Both parts hold under each correction
+    reading; Benjamini-Hochberg over 40 tests gives p = 0.011 for each of the three, Bonferroni over 40
+    at most 0.045. Under Benjamini-Hochberg over 40 tests S40 is also above the Edge at 0.684 to 0.795
+    (p 0.014 to 0.036), and P180 is below the Edge at every level from 0.647 up.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+  - Edge levels as in fig7c-fold-edge-equivalence.
+- claim: fig7d-nonlinear
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7d-nonlinear
+  notes: The four means fall monotonically with fold angle. A least-squares line (slope -0.139 spikes/s
+    per degree) leaves P180 (+2.22, SEM 1.03), S90 (-6.09, SEM 2.04) and S40 (+4.42, SEM 4.18) off the
+    line by more than their SEM. Variant, the slope from P180 to S90 (-0.047) differs from that from S90
+    to S52 (-0.285) by 2.4 combined SE; the S52 to S40 slope (-0.554, SE 0.43) is too uncertain to compare.
+  deviations:
+  - The paper places the baseline squares only in Fig 2 (at the corners of the 138 DU square around the
+    Square and of the square around the Star; for Corners, two squares in 0% areas of the ROI). Assumed,
+    for each stimulus, the placement closest neuron by neuron to the files' own Standard.BaseActivity
+    (the authors' baseline for 38 neurons, placement undocumented); squares centred on the box corners
+    for Square and Edge (r = 0.994 with BaseActivity), inside the box corners for the Star (r = 0.950),
+    and the ROI corners on the 0% side for Corners (median absolute difference 0.72 spikes/s). This choice
+    was made after the results under every placement had been seen while preparing; all placements are
+    shown in the notebook.
+  - Star analysed on the 12 neurons with registered maps, against 30 in the paper; the other 15 Star neurons
+    cannot be placed on the stimulus (no receptive field offset or aligned diagonal), and the two ABS
+    files in the Star folder hold Corners recordings.
+- claim: fig7d-dog-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the difference-of-Gaussians model output of the paper's reference 3 at the four fold angles.
+    The data set does not hold it, and neither the paper nor the claims file names a public deposit of
+    it; it is shown only as a line in Fig 7D.
+- claim: s3-latency-peak
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Remaking the maps at other latencies needs spike times and eye positions; the data set holds
+    only the maps made at 60 ms (and one eye time map), so no latency can be varied.
+findings:
+- kind: data_missing
+  statement: The data set holds 53 neurons, against the 58 the paper analysed; by stimulus 22 Square and
+    Edge, 27 Star and 26 Corners, against 25, 30 and 28. Neither the data set nor its descriptor says
+    which of the paper's neurons are missing or why.
+- kind: metadata_error
+  statement: The descriptor says the image field of each SpikeRateMap holds raw spike counts per pixel.
+    It holds spikes per ms (count divided by eye time in ms); its maximum is 1 and it is not integer in
+    all 75 version 5 files, and in the one file with an eyetime field image times eyetime is integer.
+    smoothed_image is its smoothed version, also in spikes per ms.
+- kind: data_missing
+  statement: Spike times, eye positions and eye time maps are not in the data set (one neuron, ABC050900J1A,
+    has an eyetime field). Spike counts per neuron, maps at other latencies and any re-registration cannot
+    be computed.
+- kind: metadata_error
+  statement: The two files named ABS042700J2 and ABS051000J3 in the Star folder hold Corners stimuli (their
+    type field reads CORNERS) and maps separate from the Corners files of the same neurons. The data set
+    holds no Star recording for these two neurons, though the spreadsheet marks both as tested with the
+    Star.
+- kind: metadata_insufficient
+  statement: The Standard struct of the map files (maps registered to the stimulus and rotated to the
+    aligned fold, the stimulus polygons in that frame, smoothed_image_norm and BaseActivity) is not described.
+    BaseActivity, present for 38 neurons, matches no fixed placement of 16 x 16 DU squares tried, and
+    smoothed_image_norm is normalised differently between files.
+- kind: metadata_insufficient
+  statement: 15 of the 27 Star neurons have no Standard map. The screen maps are in gaze coordinates and
+    the Star stimulus is stored at one orientation for every neuron, so without each neuron's receptive
+    field offset and preferred orientation (not given) these neurons cannot be placed on the stimulus.
+    For neurons with a Standard map the registration shows offsets of up to about 370 DU and Star rotations
+    from -75 to 75 degrees.
+- kind: other
+  about: data
+  statement: Six Corners Standard maps are 257 x 193 DU, against 273 x 209 for the other twenty; their
+    stimulus polygons show the same geometry cropped by 8 DU on each side.
+- kind: metadata_insufficient
+  statement: The spreadsheet V1_Vasarely_data_SMC.xlsx lists 58 rows, 5 of them (050800J1, 062000J1, 072100_C,
+    062600A2, 09250A1) with no condition marked and no files; nothing says what they are.
+- kind: methods_unavailable
+  statement: The placement of the baseline squares is given only in Fig 2. For the Square and Edge and
+    the Star, are the 16 x 16 DU squares centred on the corners of the circumscribing square or inside
+    them, and for Corners, where are the two squares? This attempt took the placement closest to the files'
+    BaseActivity (centred for Square and Edge, inside for the Star, the ROI corners on the 0% side for
+    Corners); the baseline test, Table 1 and Fig 7C change with the placement.
+- kind: methods_unavailable
+  statement: How was the local RMS contrast of Fig 7A computed? On the stimulus image, the SD over the
+    mean of a 16 x 16 DU square on the Edge falls from about 2 to 0.75 and back to 1.1 to 1.4, and the
+    SD of luminance on a 0 to 1 scale rises from 0.01 to 0.45; neither gives the paper's 0.61 to 0.943.
+    The definition (reference 21) and the luminance scale used would settle it.
