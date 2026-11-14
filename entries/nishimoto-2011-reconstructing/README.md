@@ -15,14 +15,14 @@ of subject S1. The second, `color_no_gain.ipynb`, adds the A* and B* color chann
 | Motion models beat the static model in every area and subject; V1 is best | Reproduced |
 | Receptive fields are localized and retinotopic (proxy test without the multifocal maps) | Reproduced |
 | Optimal speed rises with eccentricity in V1, V2 and V3 | Reproduced |
-| S1 identifies 464 of 486 test seconds within one volume | Partially reproduced (409 of 486) |
+| S1 identifies 464 of 486 test seconds within one volume | Partially reproduced (408 of 486); 426 with the encoding penalty chosen by cross-validation, a proposed change to reproduced |
 | Color information does not improve the models | Reproduced |
 | Identification among 1,000,000 clips, and reconstruction from the sampled prior (three claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The models are fit by ridge regression, not by the paper's L1-regularized regression (an assumption). The
+The models are fit by ridge regression, not by the paper's L1-regularized regression (an assumption); an approximate L1 fit on 120 voxels predicts slightly better than ridge. The
 sampled movie prior and the 1,000,000-clip set are not public. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/nishimoto-2011-reconstructing-01.yaml`](../../attempts/nishimoto-2011-reconstructing-01.yaml).

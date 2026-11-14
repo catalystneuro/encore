@@ -18,7 +18,9 @@ Where each parameter comes from:
   envelopes (spatial s.d. 0.6 wavelengths, 10-frame temporal window) give exactly the 6,555
   filters the paper states, which the claims file says the chosen reading should reproduce.
   Quadrature pairs are combined as the square root of the summed squares and log-compressed
-  with log(x + 1e-5) (pymoten defaults); the paper's "squared and summed" then log differs only
+  with log(x + 1e-5) (pymoten defaults), which is the claims file's log(x) reading, not its
+  standard choice log(1 + x) (a reading choice the claims file judges unlikely to change the
+  outcome; log(1 + x) was not run); the paper's "squared and summed" then log differs only
   by a factor of 2 inside the log offset, removed by the z-score (standard choice).
 - Downsampling 15 Hz -> 1 Hz by the mean of the 15 frames of each second, z-score with the
   training statistics, clipping at 3 s.d.: Motion-Energy Encoding Model; the mean and the use of
@@ -26,7 +28,7 @@ Where each parameter comes from:
 - Delays 3, 4, 5, 6 s (4 samples) and the single 4 s delay for decoding: Motion-Energy Encoding
   Model, last paragraph.
 - Ridge regression in place of the paper's L1-regularized regression (an assumption, see the
-  notebook); the penalty is chosen per voxel on a held-out 10% of the training data in 50 s
+  notebook; lasso_path is an approximate L1 fit used as a check on a voxel subsample); the penalty is chosen per voxel on a held-out 10% of the training data in 50 s
   blocks (claims file, Encoding model fit, reading a) or by 5-fold cross-validation over such
   blocks (reading b). The fits go through the kernel X X', which depends on the features only,
   so one eigendecomposition per model and split serves all three subjects.
@@ -509,3 +511,49 @@ def gaussian_fit(maps, grid=17, centers=np.arange(-8.0, 24.5, 0.5),
         best[upd] = v[upd]
         par[upd] = np.stack([cy[ok][k[upd]], cx[ok][k[upd]], np.full(upd.sum(), s)], 1)
     return par[:, 0], par[:, 1], par[:, 2], best
+
+
+def lasso_path(X, Y, evals, fracs, n_iter, n_power=30):
+    """L1-regularized least squares, 0.5 ||y - X b||^2 + lam ||b||_1, for each column of Y, by
+    accelerated proximal gradient (FISTA), along a path of penalties lam = frac * max|X' y| per
+    voxel, from the largest frac down, each warm-started from the last and run for a fixed
+    n_iter iterations (a stopping rule the paper does not give; this is an approximate L1 fit).
+    With fewer features than samples the gradient goes through the Gram matrix X'X. Returns,
+    for each frac, the predictions E @ B of each matrix E in evals, and a summary: the median
+    over voxels of the relative change of the objective over the last 10% of iterations at each
+    frac (a convergence check), and the number of nonzero weights at the last frac."""
+    gram = X.shape[1] <= X.shape[0]
+    G = X.T @ X if gram else None
+    v = np.random.default_rng(0).standard_normal(X.shape[1]).astype(np.float32)
+    for _ in range(n_power):  # largest eigenvalue of X'X
+        v = G @ v if gram else X.T @ (X @ v)
+        lip = float(np.linalg.norm(v))
+        v /= lip
+    lip *= 1.01
+    XtY = X.T @ Y
+    lam_max = np.abs(XtY).max(0)
+
+    def objective(B):
+        R = Y - X @ B
+        return 0.5 * (R * R).sum(0) + lam * lip * np.abs(B).sum(0)
+
+    B = np.zeros((X.shape[1], Y.shape[1]), np.float32)
+    out, change = [], []
+    for fr in fracs:
+        lam = (fr * lam_max / lip).astype(np.float32)
+        Z, t = B.copy(), 1.0
+        for it in range(n_iter):
+            grad = (G @ Z if gram else X.T @ (X @ Z)) - XtY
+            Bn = Z - grad / lip
+            Bn = np.sign(Bn) * np.maximum(np.abs(Bn) - lam, 0)
+            tn = (1 + (1 + 4 * t * t) ** 0.5) / 2  # a Python float, which keeps the arrays float32
+            Z = Bn + ((t - 1) / tn) * (Bn - B)
+            B, t = Bn, tn
+            if it == n_iter - max(1, n_iter // 10) - 1:
+                o0 = objective(B)
+        o1 = objective(B)
+        change.append(float(np.median(np.abs(o0 - o1) / o1)))
+        out.append([E @ B for E in evals])
+    nz = (B != 0).sum(0)
+    return out, dict(rel_change_last_10pct=change, nonzero_at_last=(int(nz.min()), int(np.median(nz)), int(nz.max())),
+                     features=X.shape[1])
