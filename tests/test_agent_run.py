@@ -39,6 +39,13 @@ def test_proposals_are_found_from_the_record():
     assert tool.proposals("001453") == []
 
 
+def test_a_replicate_author_is_told_why_the_paper_is_tested_again():
+    # A replicate (docs/replicates.md) is neither new data nor a new protocol: the prompt says what it is for.
+    key = next(k for k in ("asari-2009", "senzai-2017") if tool.attempt_of(k))
+    text = tool.fill("author", key, "m", replicate=True)
+    assert "to measure how much separate attempts agree" in text and "The data have changed" not in text
+
+
 def test_an_author_on_a_dandiset_with_an_attempt_gets_the_blind_repeat_prompt():
     latest = tool.attempt_of("001754")[0]["id"]
     n = int(latest.rsplit("-", 1)[1])
