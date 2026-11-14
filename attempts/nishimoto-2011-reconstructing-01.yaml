@@ -1,0 +1,189 @@
+schema_version: 3
+id: nishimoto-2011-reconstructing-01
+datasets:
+- archive: crcns
+  id: vim-2
+  version: unversioned
+  doi: 10.6080/K00Z715X
+  relation: primary
+paper: doi:10.1016/j.cub.2011.08.031
+date: 2026-11-14
+entry: nishimoto-2011-reconstructing
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43583031739
+inputs:
+- what: The motion-energy filter bank (filter definitions and the batched projection), from the
+    package pymoten 0.1.3, the Gallant lab's implementation of the model of this paper. It is
+    software, not data; its default envelopes give the paper's 6,555 filters.
+  source: https://pypi.org/project/pymoten/0.1.3/ (pinned with hashes in the entry's lock file)
+outcomes:
+- claim: fig2de-prediction-accuracy
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2de-prediction-accuracy
+  measured:
+  - 0.217
+  - 0.375
+  - 0.379
+  notes: With accuracy on the repeat-averaged test signal (reading a) and voxels pooled over the
+    three subjects (reading i), the means are 0.217 (static), 0.375 (nondirectional) and 0.379
+    (directional), all within tolerance, in the paper's order, with paired Wilcoxon p below 0.0001
+    for directional against static and against nondirectional (printed as 0) over 13,007 voxels.
+    The mean of subject means gives the same values. Per subject, reading a, S1 0.230, 0.389,
+    0.392; S2 0.203, 0.394, 0.400; S3 0.219, 0.341, 0.345. The single-repeat reading (b) gives
+    0.120, 0.207 and 0.209, outside tolerance, with the same order and tests. The static mean is
+    0.023 below 0.24, near the edge of the tolerance of 0.024.
+  deviations:
+  - Ridge regression replaces the paper's L1-regularized least squares (Supplemental, Model
+    Fitting, "L1-regularized least squares regression procedure was used to obtain the linear
+    weights"). An L1 fit of 26,220 regressors per voxel for about 13,000 voxels and three models
+    did not fit the run's time. The penalty is chosen per voxel from 13 values (10 to 1e7) by
+    prediction of a held-out 10% of the training data in 50 s blocks, and the model refit on all
+    training data (claims file, Encoding model fit, reading a). Reading b of the penalty
+    (cross-validation over several splits) was not run, for time.
+  - The data set's test responses are not on the scale of the z-scored training responses (s.d.
+    0.10 for rv and 0.20 for rva, against 0.99 for rt). Each test repeat is z-scored per voxel
+    before averaging, following Data Preprocessing ("For each 10 minute run and each individual
+    voxel ... signals were then normalized to mean 0.0 and standard deviation 1.0"). Correlations
+    with the mean signal hardly depend on this.
+  - Voxels are those of the data set's V1, V2, V3, V3A and V3B masks (4,183, 4,668 and 4,410 per
+    subject, against the paper's about 4,500); 179, 46 and 29 voxels with missing values are
+    dropped.
+  - The motion-energy bank is pymoten's pyramid with spatial frequencies 0 to 32 cycles/image on
+    96 x 96 frames at 15 Hz, which gives exactly 6,555 filters (spatial envelope 0.6 wavelengths,
+    10-frame window), the reading the claims file asks to reproduce that count. Quadrature pairs
+    are combined by the square root of the summed squares before the log, which after the z-score
+    differs from the paper's squared sum only through the log offset of 1e-5. Envelope variants
+    (half and double) were not run, for time.
+- claim: fig2e-directional-gain-small
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig2e-directional-gain-small
+  notes: Directional minus nondirectional accuracy is 0.0042 (reading a, pooled) against a
+    nondirectional gain over static of 0.158, a ratio of 0.026, under the bound of 0.1; Wilcoxon
+    p below 0.0001. Every reading meets the criterion (ratio 0.022 to 0.026). The directional
+    model is better in 56%, 62% and 56% of voxels of S1, S2 and S3. Whether this shows that BOLD
+    signals carry mostly nondirectional information, as the statement suggests, is an
+    interpretation the criterion does not test.
+  deviations:
+  - The fits of fig2de-prediction-accuracy, with its deviations (ridge in place of L1).
+- claim: figs1a-motion-better-every-area
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:figs1a-motion-better-every-area
+  notes: Both motion models beat the static model in 15 of 15 area and subject cells under both
+    test-signal readings. V1 has the highest mean accuracy in each subject for each model. Against
+    the other four areas pooled (rank-sum reading b), V1 is better with p below 0.0001 in all three
+    subjects for every model (largest p 1.2e-11). Against each other area in turn (reading a), this
+    holds in all three subjects for the static model, in two for the nondirectional model and in
+    one for the directional model; the exceptions are V1 against V3A (directional p = 1.3e-04 in
+    S1, 3.2e-02 in S3; S2 V1 against V2 p = 1.0e-05). The criterion is met under rank-sum reading b
+    with either model reading, and under reading a with the static model.
+  deviations:
+  - The fits of fig2de-prediction-accuracy, with its deviations (ridge in place of L1).
+  - The rank-sum test is one-sided (V1 greater), as the claim is that V1 is best.
+- claim: fig2fgh-retinotopic-receptive-fields
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run before the run's time limit. The directional fits it needs were made, but the
+    simulated white-noise probes on the 17 x 17 grid, their motion energy, and the Gaussian fits
+    were not computed. The multifocal mapping data the paper compares the maps with are not in the
+    data set and are not public; the claims file's proxy test on the ROI masks could be run in a
+    later attempt.
+- claim: fig2j-speed-eccentricity
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig2fgh-retinotopic-receptive-fields for eccentricity, which was not run for
+    time; the grating probes were not computed either.
+- claim: fig3ab-identification-s1
+  outcome: reproduced
+  notebook: reproduce_nishimoto_2011.ipynb
+  output: claim:fig3ab-identification-s1
+  measured: 424
+  notes: With the four-delay directional model (reading a), the repeat-averaged test signal
+    (reading i), the 2,000 voxels best predicted on the held-out training data, and the Tikhonov
+    penalty chosen on the held-out training data (3.0 times the mean residual variance; 553 of 750
+    held-out samples identified within 1 s), 424 of 486 test volumes (87.2%) are identified within
+    one volume, within the tolerance of 464 (at least 418). Chance is 2.96 of 486 (0.61%). Other
+    penalties give 388 to 419 between 0.1 and 10, and 311 at 100. Single repeats give 357.4 on
+    average (333 to 391); the single 4 s delay model gives 344 (repeat mean) and 265.9 (single
+    repeats). Only reading (a, i) reaches the tolerance, which the criterion allows; the count is
+    below the paper's 464 under every reading.
+  deviations:
+  - The fits use ridge regression in place of L1 (see fig2de-prediction-accuracy).
+  - The Tikhonov inverse is inv(S + lambda * mean(diag S) * I), lambda from 0.1 to 100, chosen by
+    identification of the held-out 10% of the training data with the residual covariance of the
+    90% fit (claims file, Likelihood). The scaling by the mean residual variance is a standard
+    choice.
+  - Test volumes are compared with all 486 candidate test seconds; within one volume means within
+    1 s on the 540 s test clock.
+- claim: fig3c-identification-large-set
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs a set of 1,000,000 1 s clips from the internet. The data set holds only the
+    experiment's stimuli (data descriptor and bucket listing of vim-2), and the paper names no
+    location for the clips (Results paragraph 9, Figure 3C legend). No public stand-in was tried
+    for time.
+- claim: fig4-reconstructions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the sampled prior of about 18,000,000 s of YouTube clips, which the data set does
+    not hold (bucket listing of vim-2) and the paper does not deposit or locate (Results paragraph
+    10, Figure S2 legend).
+- claim: fig4d-reconstruction-accuracy
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the sampled prior, as fig4-reconstructions.
+- claim: discussion-color-no-gain
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run before the run's time limit. It needs the filter bank applied to the A* and B*
+    channels as well (the luminance bank alone took 514 s), and a fourth model fit for each
+    subject (the three models took about 245 s per subject) plus the identification. The helper's load_stimuli can return the
+    A* and B* channels.
+findings:
+- kind: metadata_insufficient
+  statement: The data descriptor does not say that the responses include the first 6 s of each
+    600 s training run (and of each 60 s test block) that the paper discards for the onset
+    transient. They do; the mean training response over those seconds is 0.42, 0.41 and 0.28 in
+    the three subjects, against 0.01 over the other samples.
+- kind: metadata_insufficient
+  statement: The descriptor does not give the units of the test responses. rt is z-scored per run
+    (s.d. 0.99), while rv and rva have s.d. 0.10 to 0.11 and 0.20 to 0.23, so the test responses
+    are on another scale; a likelihood that uses training residuals needs them rescaled.
+- kind: metadata_insufficient
+  statement: The descriptor does not say that some voxels hold missing values; 179, 46 and 29 of
+    the V1 to V3B voxels of S1, S2 and S3 have missing training or test values.
+- kind: other
+  about: data
+  statement: The descriptor says peak BOLD responses to each timepoint were estimated, which could
+    be read as responses already aligned to the stimulus. They are not; the directional model at a
+    single delay predicts the test data with mean accuracy 0.08 to 0.10 at 0 s, 0.31 to 0.35 at
+    4 s and 0.14 to 0.17 at 8 s, so the hemodynamic delay is still in the data.
+- kind: metadata_insufficient
+  statement: The files hold 30 ROI masks (V1 to V4, V3A, V3B, MT, MTp, FFA, PPA, IP, OBJ, RSC, STS,
+    VO and lateral occipital, by hemisphere), of which the descriptor names only one by example; it
+    does not say how they were defined. One subject 3 voxel lies in two of the V1 to V3B masks.
+- kind: methods_unavailable
+  statement: The paper fits each voxel by L1-regularized least squares by coordinate descent (refs.
+    15 and 16) but does not say how the penalty or the stopping point was chosen, and publishes no
+    code. Was the penalty chosen per voxel on held-out training data, and on which split?
+- kind: methods_unavailable
+  statement: The paper does not say whether identification and prediction accuracy use the mean of
+    the ten test repeats or single repeats, nor how the Tikhonov penalty of the noise covariance
+    was chosen. Here only the repeat mean with a penalty chosen on held-out training data reaches
+    the reported S1 count; were these the choices?
+- kind: data_missing
+  statement: The sampled natural movie prior (about 18,000,000 s of YouTube clips) and the
+    1,000,000-clip identification set are not in the data set and not public, so the
+    reconstruction findings of Figure 4 and the large-set identification of Figure 3C cannot be
+    tested.
