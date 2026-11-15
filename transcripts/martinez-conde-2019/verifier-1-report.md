@@ -1,75 +1,47 @@
-**Verifier report, round 1: Martinez-Conde et al. 2019 on CRCNS pvc-12**
+**A. Outcomes** (all 19 claims in the claims file)
 
-The claims file has 19 claims. The notebook tests 16 and treats 3 as blocked. One thing to know first: cell 35 still holds an outcome table and a "how it differs" summary, even though conclusions were meant to be removed. I did not use it; the outcomes below come from the outputs of cells 3–33.
-
-### A. Outcomes
-
-| Claim | My outcome | Reason |
+| Claim | Outcome | Reason |
 |---|---|---|
-| neuron-counts | not_reproduced | Cell 20: the files hold 53 neurons, split 22 / 27 / 26 (Square and Edge / Star / Corners), with overlaps of 7 / 8 / 38 neurons in three / two / one conditions. The paper has 58, split 25 / 30 / 28, with overlaps 7 / 11 / 40. Even the spreadsheet (58 rows, 5 of them with no data) gives 22 / 29 / 26 and 7 / 10 / 36. Neither the per-condition counts nor the overlap counts all match. |
-| spikes-per-condition | blocked (data_missing) | The zip holds only `SpikeRateMap` and `Stimulus` files and the spreadsheet (I checked the zip's file list). Only one of 77 map files has an eye time map. Only one neuron-condition can be checked against the 10,000-spike minimum: ABC050900J1A has 15,644 spikes (cell 10). The mean and STD cannot be computed. |
-| s4-baseline-no-difference | not_reproduced (fragile) | Cell 21, baseline squares centred on the corners: Kruskal-Wallis p = 0.035, ANOVA p = 0.031, and the corrected pairwise test of Square and Edge against Star p = 0.043. Squares drawn inside the corners also find a difference. Only the files' own `BaseActivity` values find none (n = 9 / 10 / 19). Star has 12 of the paper's 30 neurons. |
-| fig4a-above-baseline | reproduced | Cell 22: neurons above baseline 21/22, 20/22, 12/12 and 26/26. All mass centres are above the unit line. Under reading (a) the distances are ordered 6.47 < 10.83 < 20.30 < 26.27. Reading (b) (log) breaks the order under the main baseline (S52 1.21 > S40 1.00). |
-| fig4b-spike-rate-difference | partially_reproduced | Cell 23: the order S40 > S52 > S90 > P180 holds. S90 (10.83), S52 (20.30) and S40 (26.27) are within the paper's SEM. P180 is 6.47 against 4.87 ± 1.15, so it is outside. No baseline or map variant puts all four within tolerance. |
-| fig4b-pairwise-significance | reproduced | Cell 24: S40 > S90 (corrected p = 0.0015), S40 > P180 (p = 2e-5) and S52 > P180 (p = 0.0003) are significant under both comparison families. |
-| fig5-average-maps | reproduced | Cell 25: the midpoints of the average maps (26.27 > 20.30 > 10.83 > 6.47) keep the order. The claims file itself notes this is the fig4b means again, not an independent test. |
-| table1-edge | reproduced | Cell 26, reading (ia): all five values are within tolerance (8.27, 32.25, 19.60, 19.54, 21.34). |
-| table1-p180 | not_reproduced | Only one of five is within tolerance under (ia), and none under (ib). Every value except the minimum is about 1.5 spikes/s high. |
-| table1-s90 | reproduced | All five are within tolerance under (ia). |
-| table1-s52 | partially_reproduced | Three of five under (ia): the maximum, median and midpoint. The minimum (10.17 against 6.26 ± 1.33) and the mean (18.25 against 15.66 ± 2.23) are outside. This rests on 12 neurons. |
-| table1-s40 | reproduced | All five are within tolerance under (ia), using the bright fold. |
-| fig6-midpoint-representative | reproduced | Cell 29: none of the 10 rank sum tests is significant (smallest p = 0.50). The signed rank variant finds 3 of 10 significant (S90 median; S40 mean and median), but the criterion judges on the paper's test. |
-| fig7a-rms-contrast-fit | not_reproduced | Cell 30, reading (a): the contrast runs 0.85 to 1.98 and is U-shaped. Reading (b): 0.01 to 0.45. Neither matches the paper's range or fit. This most likely reflects the missing display black level rather than the paper; see B6. |
-| fig7c-fold-edge-equivalence | not_reproduced (borderline under b) | Cell 31, reading (a): P180 (6.47) is below the whole Edge profile, whose lowest value is 11.24 at 0%, so it is nearest 0%. Reading (b): P180 is nearest the lowest level, as required. S40 is nearest the 94.3 level, which is 4.3 points from 90, outside the 3.7-point step. See B2. |
-| fig7c-fold-edge-significance | reproduced | Cell 32, Benjamini-Hochberg over 40 tests and over 10 per fold: P180 < Edge at 0.943 (corrected p = 0.017 and 0.004). S40 > Edge at 0.610 and 0.647. Bonferroni fails. S40 is also significant at 0.684 and 0.721; the paper says only "less than 68%". |
-| fig7d-nonlinear | reproduced | Cell 33: the order is monotonic. The S90 and P180 residuals from a straight line exceed their SEMs. In the variant, one of the two slope comparisons differs. |
-| fig7d-dog-similar | blocked (other: outside input) | It needs the model output of reference [3], which the archive does not hold. |
-| s3-latency-peak | blocked (data_missing) | The zip has no spike times or eye positions, only maps made at 60 ms (confirmed from the file list). Nothing can be tested. |
+| neuron-counts | not_reproduced | The files hold 53 neurons, split 22 / 29 (27 with a Star stimulus) / 26 by condition, with overlaps 7 / 10 / 36. The paper gives 58 neurons, 25 / 30 / 28, and 7 / 11 / 40 (cell 12). Only "all three = 7" matches. The xlsx sheet lists 58 cells, but 5 have no condition and the data description says the dataset holds 53 neurons. The gap fits 5 cells missing from the archive (4 tested in one condition, 1 in two), not a wrong count in the paper. |
+| spikes-per-condition | blocked (data_missing) | There are no spike count maps or spike times. Eye time is stored in only one file (ABC050900J1A, 15,644 spikes, which is at least 10,000). I confirmed from the archive's zip directory that it holds only the SpikeRateMap/Stimulus .mat files and the xlsx. |
+| s4-baseline-no-difference | not_reproduced | With the claims-file baseline, all three readings find a difference: BH-corrected rank sum p = 0.016 / 0.008 / 0.66, Kruskal-Wallis p = 0.004, ANOVA p = 0.001. The centred-square variant gives the same result (cell 15). Only the stored `BaseActivity` on smaller subsets (n = 9 / 10 / 19) is not significant, and its medians keep the same order (5.6 / 2.7 / 1.3). |
+| fig4a-above-baseline | reproduced | 91%, 91%, 100% and 100% of neurons lie above baseline. Distances from the unit line run 3.9 < 8.2 < 19.0 < 26.5 under reading (a) and 0.18 < 0.30 < 0.91 < 1.04 under reading (b) (cell 17). S52 has only 12 neurons. |
+| fig4b-spike-rate-difference | partially_reproduced | The order S40 > S52 > S90 > P180 holds: 26.48, 19.01, 8.19, 3.88. S90 is 8.19 against 10.69 ± 1.94 (outside). The centred baseline gives 8.57, still outside (cell 19). |
+| fig4b-pairwise-significance | reproduced | All 3 named pairs have BH p ≤ 0.0001 under both the 6-pair and 3-pair families (cell 21). |
+| fig5-average-maps | reproduced | Midpoints of the average maps are 26.48 > 19.14 > 8.22 > 3.79 (cell 23). This is not independent of fig4b, as the claims file notes. |
+| table1-edge | partially_reproduced (notebook: 2/5) | With the "inside" baseline, readings (a) and (b) each get 2/5. The centred placement, which the paper also allows, raises every Square and Edge difference by the same 0.38 spikes/s (cell 19: diffc − diff = 0.38 for both P180 and S90). That gives (a) 5.89 / 30.24 / 17.30 / 17.16 / 19.10, and 3/5 within tolerance (max, mean, midpoint). See problem 2. |
+| table1-p180 | partially_reproduced | 3/5 under (a) and (b) (cell 29). With the centred baseline it is 4/5. |
+| table1-s90 | partially_reproduced (notebook: at most 1/5) | With the inside baseline the best reading is 1/5. With the centred baseline, (a)(i) becomes 2.68 / 13.81 / 7.84 / 7.88 / 8.57, which is 3/5 (max, mean, median). See problem 2. |
+| table1-s52 | reproduced | Reading (a)(ii) is 7.46 / 28.71 / 17.11 / 16.43 / 19.01, all 5 within tolerance (cell 33). This rests on 12 of 30 neurons and on picking the best of 4 readings. |
+| table1-s40 | reproduced | Reading (a) is 10.22 / 34.36 / 23.04 / 23.06 / 26.48, 5/5 (cell 35). |
+| fig6-midpoint-representative | reproduced | 0 of 10 rank sum tests have p < 0.05; the smallest p is 0.43 (cell 37). The paired signed-rank variant is significant in 3 of 10 (S90 median, S40 mean and median). |
+| fig7a-rms-contrast-fit | not_reproduced as run, but the test is invalid | Under neither reading is any value within tolerance (cell 39: rms_a ≈ 1.06 flat; rms_b at most 0.47). The input does not follow the criterion, though (problem 1). With a non-zero background, reading (a) plausibly gives the paper's curve, so the evidence does not support a negative outcome. |
+| fig7c-fold-edge-equivalence | not_reproduced | Edge responses span only about 8.6 to 21 spikes/s, so P180 (3.88) falls below every Edge level and S40 (26.48) above them. No reading meets both conditions (cell 41). It uses the paper's fit parameters, as the criterion asks. |
+| fig7c-fold-edge-significance | reproduced | P180 is below the Edge at 0.943, and S40 is above it at 0.610 and 0.647, under every correction (cell 43). With Bonferroni over 40 tests, exactly 0.610 and 0.647 are significant for S40, matching the paper's "<68%". |
+| fig7d-nonlinear | reproduced | The means fall monotonically with angle. 3 of 4 points lie off the least-squares line by more than their SEM. In the slope variant, 2 of 3 slope pairs differ (cell 45). |
+| fig7d-dog-similar | blocked (data_missing) | The DOG output of reference [3] is external. The zip holds no model files (I checked its directory). |
+| s3-latency-peak | blocked (data_missing) | Only maps at 60 ms are present, with no spike times or eye traces (zip directory and data description confirm this). Nothing about it can be tested. |
 
-### B. Problems
+**B. Problems**
 
-1. [affects a conclusion] **Baseline placement decides several outcomes, and the main choice is the author's** (cells 18, 21, 26; `baseline_value`, `corners_baseline_centres`).
-   - All three placements were run, which is right. But the notebook reports outcomes under "centred", and the outcome changes with the placement:
-     - s4: a difference is found under centred and inside, none under the files' `BaseActivity`.
-     - table1-p180: 1 of 5 within tolerance under centred, 3 of 5 under the files' values, which would make it partial.
-     - table1-edge and table1-s90: 5 of 5 under centred, 2 or fewer under the others.
-   - The files' `BaseActivity` is the authors' own number, yet it agrees with neither computed placement (median difference 0.85–1.3 spikes/s). That disagreement was never examined.
-   - The two Corners squares at the bottom ROI corners are an unstated-in-the-paper assumption with no alternative placement tried.
-2. [affects a conclusion] **fig7c-equivalence reading (b) margin** (cell 31, `ok_b`).
-   - "Within one step of 90%" is measured as a numeric distance from 90.0, which excludes the 94.3 level by 0.6 points.
-   - Taking "one step" as one level away from the level that stands for 90 (90.6) would pass, and the claim would be reproduced under (b).
-   - The notebook makes this choice without stating it.
-3. [affects a conclusion] **Four Edge files have the Edge cut by the screen border, and they were kept** (cells 14 and 15, then 26, 31 and 32).
-   - In one of them even the Edge's 50% point has luminance 39.2 instead of about 50.
-   - The Edge boxes in those files partly sample off-screen area, which biases high-luminance Edge responses down (the Edge drops to 14.74 at 100%).
-   - fig7c-equivalence and table1-edge were not rerun without these four files. fig7a does exclude them; fig7c and Table 1 do not.
-4. [affects a conclusion] **The Star group is 12 of 30 neurons and was selected by whether the file has the authors' `Standard` frame** (cells 13 and 14).
-   - Dropping the 15 unaligned files is defensible: the receptive-field offset varies by tens of DU between conditions.
-   - But it is a non-random subset, and with 12 neurons the paper's SEM-based tolerances are tighter than this sample's own SEM (3.15 against the paper's 2.39).
-   - It weighs on s4 (the significant pair involves Star) and on table1-s52.
-5. [does not affect a conclusion] **The registration check silently skipped three Corners files** (cell 12).
-   - ABC051600J1, ABC051800J1 and ABC062600J1 have `map_corr` = NaN and offsets of about −1300 DU; the most likely cause is an offset larger than the 600 DU search padding.
-   - The summary's `min_corr` drops NaNs, and cell 13 says all files matched. The `Standard` maps are still the authors' own, so the analyses stand, but those three files are unverified.
-6. [does not affect a conclusion] **fig7a: a fact misstated, and a reading that cannot work** (cell 30, `rms_contrast_profile`).
-   - The notebook says the display luminance is not in the text. It is in part: 50% = 14.07 cd/m² (Methods, Square and edge).
-   - With a 0% background, SD/mean is 1.0 at every luminance. I confirmed this on synthetic inputs. So reading (a) cannot rise from 0.61 to 0.943 without a black-level offset, which neither the text nor the files give.
-   - The paper's own fit gives f(100) = 0.948, and 0.943 corresponds to 77.7% luminance. The notebook's mapping of levels to luminance is consistent with that.
-7. [does not affect a conclusion] **The units argument in cell 10 is weak.**
-   - "image × eyetime is an integer" would also hold if `image` were integer counts, and no output shows `image` is non-integer.
-   - The rate reading is still supported: Table 1 magnitudes match, and counts would mean about 1,000 spikes per map, below the 10,000 minimum.
-8. [does not affect a conclusion] **`box_mean` with a non-integer length** (S90 blocks are 7.07 DU long) takes 8 samples offset by +0.47 DU along the fold. Confirmed on synthetic inputs. The other helper tests were exact: midpoint, block profile, `fit_rigid`, and the LAR fit recovering the paper's parameters.
-9. [does not affect a conclusion] **Two choices the notebook makes as written:**
-   - The P180 and S90 rank sum tests, and the P180 against Edge t-tests, treat same-neuron data as independent. This is as the claims file says.
-   - fig5 is not independent of fig4b, as the claims file notes.
+1. [affects a conclusion] `vasarely.rms_profile` / `edge_luminance`, cell 39: luminance comes from counting polygons, with the background set to 0. The criterion says to compute RMS from "the Square and Edge stimulus image", and the dataset ships `EdgecompImage` holding "the actual grayscale values" (data description).
+   - With a zero background, SD/mean of a window half on the background and half on the Edge is ≈ 1 at every level. The test therefore cannot reproduce the paper's curve by construction.
+   - Synthetic check: take a background of 0.74, 0% = 3.05 and 100% = 25.2, with 50% = 14.07 cd/m² as the paper gives. SD/mean then runs 0.609 → 0.943, and the exponential fit gives a = −0.31, b = 0.046, c = 0.94, R² = 0.9945.
+   - The refit variant of fig7c was skipped because of this.
+2. [affects a conclusion] Baseline placement, cells 19 and 25–35: the paper does not say whether the squares sit inside the corners or centred on them. The centred variant was run only for fig4b and s4, not for the Table 1 claims. Since it shifts every Square and Edge difference by +0.38, it raises table1-edge (2/5 → 3/5) and table1-s90 (1/5 → 3/5) to partially_reproduced.
+3. [does not affect a conclusion] Cells 7–8: 15 of 27 Star files are dropped. The only evidence that they cannot be registered is r = −0.11 between screen-frame and aligned midpoints in `star_screen_measures`. The fit residual of `star_aligned_angle` is never printed, and there is no direct registration test such as cross-correlating `Standard` against the screen map. All Star results rest on n = 12 of 30.
+4. [does not affect a conclusion] Cell 15: the stored-`BaseActivity` variant is tested on smaller subsets, but the main placement is not tested on those same subsets. Power and placement cannot be separated, but the claim fails under the claims-file definition either way.
+5. [does not affect a conclusion] Corners baseline (`corners_baseline_squares`): the bottom corners of the frame are an assumption the notebook states. Against the stored values, Spearman is 0.85 and the main baseline is higher (median 2.04 vs 1.32). S40 passes under either.
+6. [does not affect a conclusion] `table1`: `sa` and `sem` are computed but unused. Cell 37 uses only block reading (i), whereas S52 reproduced under (ii). With p ≥ 0.43, this cannot change the result.
+7. [does not affect a conclusion] In the data check, `measures` offfold for P180 at x + 32 = 155 lies outside the 151-wide frame, so its box is clipped to one column. The function is used only in the data check.
+8. [does not affect a conclusion] Cell 0 / cell 13 text says "eye time in 1 of 75 files", but there are 77 map files (76 read).
+9. [does not affect a conclusion] Claims file: its checks list "whether the Corners S40 midpoint averages the two S40 folds" as open. The paper (Methods, Corners, paragraph 2: "We did not analyze dark corner-folds") and the claims file's own criteria settle it as the bright fold only. The notebook follows the criteria.
 
-No claims-file misreading of the paper found.
+**C. What I could not check**
 
-### C. What I could not check, and the output that would settle it
-
-- **Whether the computed baselines agree with the authors' per file:** a per-file scatter of centred and inside baselines against `BaseActivity` (for the 38 files that have it), and s4 and Table 1 rerun on that same subset under the computed placement.
-- **The Corners baseline placement:** results under at least one other 0%-area placement.
-- **fig7c and table1-edge without the 4 border-cut Edge files:** both reruns on the 18 complete files.
-- **The exact coincidence in cell 31:** the Edge value at the 0.943 level (77.7% luminance) is 22.77, identical to the value at 90% luminance. Printing the 1%-step Edge profile would show whether that is real.
-- **Units:** the fraction of non-integer `image` pixels in ABC050900J1A.
-- **The three NaN registrations:** a rerun with larger padding.
-- **Overall run:** I could not re-execute anything on the data; all my outcomes rest on the stored outputs.
+- The gray levels of the stimulus image (background value, Edge 0%/100% levels) and the local RMS profile computed from `EdgecompImage`. These would decide fig7a and possibly fig7c. Output needed: those values plus `rms_profile` run on the image.
+- That rasterising the polygons matches the stimulus image, and the 0%/100% direction of the Edge that fig7c's luminance mapping depends on. The module docstring asserts this but no output shows it. Output needed: a per-file agreement between polygon luminance and image gray levels.
+- That the baseline squares, especially the Corners ones, lie in 0% luminance. Output needed: the stimulus luminance inside each square.
+- Table 1, fig4b and fig7c under the centred baseline and under the stored baseline on the 38-file subset. Output needed: those tables. I derived the centred shift exactly from cell 19.
+- The fit error of `star_aligned_angle`, and a cross-correlation registration of screen-frame Star maps against `Standard`.
+- The paper's S1 and S2 Tables (exact p-values and correction family) are not in the text, so I could not compare corrections exactly.
