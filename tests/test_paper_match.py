@@ -61,6 +61,21 @@ def test_a_paper_that_names_another_dataset_is_left_for_the_agent():
     assert "verdict" not in row
 
 
+def test_a_sparc_dataset_is_named_by_its_page_or_any_version_doi_and_not_by_a_bare_number():
+    # tools/paper_match.py: SPARC ids are short numbers, which any paper holds by chance; a paper names the dataset
+    # by its page on sparc.science or the DOI of any of its versions.
+    assert pm.archives_named("Data: https://sparc.science/datasets/206 and doi:10.26275/LG3C-1KJF.") \
+        == ["SPARC:206", "SPARC:doi:10.26275/lg3c-1kjf"]
+    sparc = {"archive": "sparc", "id": "60", "key": "sparc:60", "folder": "sparc-60", "name": "A dataset",
+             "papers": [], "version_dois": ["10.26275/lg3c-1kjf", "10.26275/naiu-etls"]}
+    old_doi = pm.check(sparc, paper("10.1/a", relation="Describes"), text("Data: 10.26275/naiu-etls (version 1)."))
+    assert old_doi["checks"]["names_this"] and old_doi["verdict"] == "primary"
+    by_chance = pm.check(sparc, paper("10.1/a", relation="Describes"), text("We recorded from 60 rats."))
+    assert not by_chance["checks"]["names_this"] and "verdict" not in by_chance
+    other = pm.check(sparc, paper("10.1/a", relation="Describes"), text("Data: https://sparc.science/datasets/61."))
+    assert other["checks"]["names_others"] == ["SPARC:61"] and "verdict" not in other
+
+
 def test_a_paper_whose_text_does_not_carry_its_title_is_left_for_the_agent():
     # A mistyped DOI: the text is another paper.
     row = pm.check(target([]), paper("10.1/a"), "Energy complexity of convolutional neural networks\n\nNo data.")

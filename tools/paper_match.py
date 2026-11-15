@@ -49,10 +49,13 @@ VERDICTS = USABLE + ("other_data", "background", "not_a_paper", "wrong_doi")
 PREPRINTS = ("10.1101/", "10.64898/", "10.48550/", "10.21203/")
 
 # Datasets a paper names. A DANDI dataset by its six digits after "DANDI", "dandiset", its URL or its DOI;
-# OpenNeuro by its accession.
+# OpenNeuro by its accession; SPARC by its page on sparc.science or a version's DOI (10.26275/xxxx-xxxx), which
+# names it only through the target list's version_dois.
 DANDI_ID = re.compile(r"(?:dandiarchive\.org/dandiset/|10\.48324/dandi\.|\bdandi(?:set)?\s*(?:archive\s*)?[:#]?\s*)"
                       r"(\d{6})\b", re.I)
 OPENNEURO_ID = re.compile(r"\b(ds\d{6})\b", re.I)
+SPARC_PAGE = re.compile(r"sparc\.science/datasets/(\d+)", re.I)
+SPARC_DOI = re.compile(r"\b(10\.26275/[a-z0-9]{4}-[a-z0-9]{4})\b", re.I)
 HEAD = 6000   # the title is looked for in the first characters of the text: the header and the title page
 
 
@@ -104,8 +107,9 @@ def choose(target: dict, fix: dict, match: dict | None) -> tuple[str, list[dict]
 
 
 def archives_named(text: str) -> list[str]:
-    """The datasets a paper's text names, as DANDI:<id> or OpenNeuro:<id>."""
+    """The datasets a paper's text names, as DANDI:<id>, OpenNeuro:<id>, SPARC:<id> or SPARC:doi:<version DOI>."""
     found = [f"DANDI:{m}" for m in DANDI_ID.findall(text)] + [f"OpenNeuro:{m.lower()}" for m in OPENNEURO_ID.findall(text)]
+    found += [f"SPARC:{m}" for m in SPARC_PAGE.findall(text)] + [f"SPARC:doi:{m.lower()}" for m in SPARC_DOI.findall(text)]
     return list(dict.fromkeys(found))
 
 
@@ -133,8 +137,13 @@ def check(target: dict, paper: dict, text: str | None) -> dict:
         return {**row, "checks": {"text": False}}
     named = archives_named(text)
     me = this_dataset(target)
-    names_this = me in named or (target.get("archive") != "dandi" and target["id"].lower() in text.lower())
-    others = [a for a in named if a != me]
+    # A SPARC dataset is also named by any of its versions' DOIs. An identifier found anywhere in the text counts
+    # too, but not a short number (SPARC's ids, 206), which any paper holds by chance; Figshare's eight digits do.
+    mine = {me} | {f"SPARC:doi:{d.lower()}" for d in target.get("version_dois") or []}
+    short_number = target["id"].isdigit() and len(target["id"]) < 6
+    names_this = bool(mine & set(named)) or (target.get("archive") != "dandi" and not short_number
+                                             and target["id"].lower() in text.lower())
+    others = [a for a in named if a not in mine]
     checks = {"text": True, "title_in_text": title_in_text(paper.get("title"), text),
               "names_this": names_this, "names_others": others}
     row["checks"] = checks
