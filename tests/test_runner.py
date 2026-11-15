@@ -148,6 +148,30 @@ def test_one_chain_at_a_time_holds_a_paper(tmp_path):
     assert body.count("release; notify' EXIT") == 2
 
 
+def test_a_failure_of_githubs_artifact_service_is_github_failing():
+    # Issue 702: upload-artifact got a web page for JSON five times and failed the run; the chain then stopped for a
+    # person. GitHub failing is retried every 15 minutes (chain.sh, GITHUB_DOWN).
+    import re
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    down = re.search(r"^GITHUB_DOWN='(.*)'$", chain, re.M).group(1)
+    log = ("Attempt 4 of 5 failed with error: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON.\n"
+           "##[error]Failed to CreateArtifact: Failed to make request after 5 attempts: Unexpected token '<'")
+    assert subprocess.run(["grep", "-qE", down], input=log, text=True).returncode == 0
+    assert subprocess.run(["grep", "-qE", down], input="FAIL  reproduce.ipynb (3603 s)", text=True).returncode == 1
+
+
+def test_a_repeat_authors_commit_may_remove_the_questions_filed_by_dataset():
+    # Issues 658 and 664: blind.sh leaves out a repeat author's earlier questions, which before the cutover were
+    # questions/<paper>/<dataset>.yaml; the commit job refused their removal as a change outside the paper.
+    import re
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    allowed = re.search(r'allowed="(\^\(attempts.*?)"', workflow).group(1).replace("$FOLDER", "pakhomov-2023")
+    ok = lambda path: re.search(allowed, path) is not None
+    assert ok("questions/pakhomov-2023/000686.yaml") and ok("questions/pakhomov-2023.yaml")
+    assert not ok("questions/silkuniene-2025/001276.yaml") and not ok("questions/pakhomov-2023/a/b.yaml")
+    assert not ok("claims/silkuniene-2025.yaml")
+
+
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
     # docs/replicates.md: every reference to the chain's branch goes through $br, which a replicate sets to
     # replicate/<paper>/<rN>; its runs are found by the name <paper>/<rN>; it ends before the reconcile step and the

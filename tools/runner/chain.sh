@@ -167,7 +167,8 @@ reset_branch(){ local start=$1
   else git push -q origin --delete "$br" 2>/dev/null || true; fi
   [ "$(remote_branch)" = "$start" ]; }
 
-GITHUB_DOWN='git@github\.com: Permission denied \(publickey\)|remote: fatal error in commit_refs|remote rejected.*\((Internal Server Error|failure)\)|github\.com.*(returned error: 50[0-4]|HTTP 50[0-4]|Internal Server Error|Service Unavailable|Bad Gateway)'
+# GitHub's artifact service answering a web page, not JSON (mcguire-2016, 2026-11-11, issue 702), is GitHub failing too.
+GITHUB_DOWN='git@github\.com: Permission denied \(publickey\)|remote: fatal error in commit_refs|remote rejected.*\((Internal Server Error|failure)\)|github\.com.*(returned error: 50[0-4]|HTTP 50[0-4]|Internal Server Error|Service Unavailable|Bad Gateway)|Failed to CreateArtifact|Failed to make request after [0-9]+ attempts'
 run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acct out
   while true; do
     fetch; start=$(remote_branch)
