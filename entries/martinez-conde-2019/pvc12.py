@@ -132,6 +132,7 @@ def load_all(z):
         r = dict(folder=folder, code=code, cell=cell_of(code), monkey=monkey_of(cell_of(code)))
         m = _load_mat(z, f"{folder}/{code}_SpikeRateMap.mat")
         s = _load_mat(z, f"{folder}/{code}_Stimulus.mat")
+        r["mat_format"] = "7.3 (HDF5)" if isinstance(m, h5py.File) else "5"
         if isinstance(s, h5py.File):
             r["stim_type"] = "".join(map(chr, s["dat/type"][()].ravel()))
             r["has_standard"] = False
@@ -175,8 +176,9 @@ def load_all(z):
             if "smoothed_image_norm" in st._fieldnames and "BaseActivity" in st._fieldnames:
                 # is Standard.smoothed_image_norm the map minus BaseActivity, or that divided by its maximum?
                 sin_, S0, b0 = np.asarray(st.smoothed_image_norm, float), r["S"] / 1000.0, float(st.BaseActivity)
-                r["sin_err_diff"] = float(np.abs(sin_ - (S0 - b0)).max())
-                r["sin_err_scaled"] = float(np.abs(sin_ - (S0 - b0) / (S0.max() - b0)).max())
+                r["sin_nan"] = int(np.isnan(sin_).sum())   # compared over the pixels that are not NaN
+                r["sin_err_diff"] = float(np.nanmax(np.abs(sin_ - (S0 - b0))))
+                r["sin_err_scaled"] = float(np.nanmax(np.abs(sin_ - (S0 - b0) / (S0.max() - b0))))
             vk = [k for k in st._fieldnames if k.endswith("Vert")][0]
             V = getattr(st, vk)
             if folder == "Edge-compare":

@@ -37,7 +37,8 @@ differences from the paper's method, is
 [`attempts/martinez-conde-2019-02.yaml`](../../attempts/martinez-conde-2019-02.yaml). After the
 first verification round the squares were made to cover their full area, which moved Table 1 for
 S52 to reproduced by a margin of 0.05 spikes/s on one value; the comparison of P180 and S40 with
-the Edge (Fig 7C) is not reproduced on one reading of "one step" and would be on another.
+the Edge (Fig 7C) is not reproduced. Under the RMS reading of contrast it fails on one reading of
+"one step" and would pass on another; under the luminance reading P180 fails either way.
 
 - `reproduce_martinez_conde_2019.ipynb`: the analysis. It takes about a minute, most of it
   streaming the zip.
