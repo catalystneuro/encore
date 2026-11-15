@@ -1594,3 +1594,22 @@ def test_the_authors_list_sorts_by_findings_reproduced(built):
         assert r["counts"] == (total if sum(total.values()) else None)
     js = (site.ASSETS / "list.js").read_text()
     assert "miniBar(r.counts)" in js and "r.papers.slice(0, SHOWN)" in js and "and ${r.papers.length - SHOWN} more" in js
+
+
+def test_summaries_start_with_a_bold_label():
+    one = site.summary_block([{"summary": "It held up.", "paper": "doi:10.1/x"}])
+    assert '<p class="lede"><strong>Summary:</strong> It held up.</p>' in one
+    two = site.summary_block([{"summary": "A.", "paper": "p1", "paper_title": "First"},
+                                    {"summary": "B.", "paper": "p2", "paper_title": "Second"}])
+    assert two.count("<strong>Summary, <em>") == 2 and "<strong>Summary, <em>Second</em>:</strong> B." in two
+
+
+def test_summaries_hold_no_agent_chatter():
+    # A recorder that could not write its file answered with the paragraph and a note around it ("Here is the
+    # paragraph to save...", "I couldn't create ..."); only the paragraph belongs in summaries/.
+    import backfill_summaries
+
+    chatter = backfill_summaries.META
+    found = [p.name for p in (Path(site.ROOT) / "summaries").glob("*.md")
+             if p.name != "README.md" and chatter.search(p.read_text())]
+    assert found == []
