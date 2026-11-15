@@ -782,6 +782,8 @@ def analyze_session(s, parts=("cells", "pairs", "decode", "fast", "mono", "lfp")
                                    [u for u in U if R[u]["region"] == "PoS"])
     if "glm" in parts:
         out["glm"] = glm_session(s, cells)
+    if "glm_dense" in parts:
+        out["glm"] = glm_session(s, cells, GLM_WINDOWS_DENSE, (("PoS", "ADn"),))
     if "lfp" in parts and s.get("lfp_shape") is not None:
         out["lfp"] = lfp_session(s, cells)
     return out
@@ -910,26 +912,7 @@ def decode_session(s, name, cells, tcs, t, a):
                 gb = (t[kk:] - t[:-kk]) < (kk + 0.5) / s["hd_rate"]
                 e["speed_b_actual"] = float(np.degrees(np.median(db[gb])))
                 e["speed_bmean_actual"] = float(np.degrees(np.mean(db[gb])))
-                # OLE and Bayes over windows, cross-validated
-                for wdw in OLE_WINDOWS:
-                    Cw = gauss_smooth_counts(C, wdw)[:, idx]
-                    Fw = gauss_smooth_counts(TC[:, np.minimum((np.nan_to_num(th) / (2 * np.pi) * NBINS).astype(int), NBINS - 1)] * DEC_BIN, wdw)[:, idx]
-                    eo, es, es2, eb = [], [], [], []
-                    for q in range(10):
-                        tr, te = seg != q, seg == q
-                        Dc = ole_fit(Cw[:, tr].T, th[idx][tr])
-                        Ds = ole_fit(Cw[:, tr].T, th[idx][tr], Fw[:, tr].T)
-                        Ds2 = ole_fit(Cw[:, tr].T, th[idx][tr], Fw[:, tr].T, diag="signal")
-                        thq = th[idx][te]
-                        eo.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Dc), thq)))
-                        es.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Ds), thq)))
-                        es2.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Ds2), thq)))
-                        tcq = _tc_from_bins(C[:, idx[tr]], thb[tr], DEC_BIN)
-                        eb.append(np.abs(circ_diff(bayes_decode(Cw[:, te], tcq, DEC_BIN), thq)))
-                    e[f"ole_cov_{wdw}"] = float(np.degrees(np.median(np.concatenate(eo))))
-                    e[f"ole_sig_{wdw}"] = float(np.degrees(np.median(np.concatenate(es))))
-                    e[f"ole_sig2_{wdw}"] = float(np.degrees(np.median(np.concatenate(es2))))
-                    e[f"bayes_{wdw}"] = float(np.degrees(np.median(np.concatenate(eb))))
+                e.update(ole_errors(C, TC, th, idx, seg, thb))
         e["coherence"] = coherence(s, TC, hu, dec) if "wake" in dec else {}
         ens.append(e)
         # fig5b: tuning curves of the other structure's HD cells against decoded HD
@@ -950,16 +933,88 @@ def decode_session(s, name, cells, tcs, t, a):
                                   target_region=other, state=k, hd_a=R[u]["hd_a"], hd_b=R[u]["hd_b"],
                                   r_a=float(np.corrcoef(tca, tcs[u])[0, 1]),
                                   r_b=float(np.corrcoef(tcb, tcs[u])[0, 1])))
+    # Ensembles of HD cells under (hd-b), waking decoding only (decoding-tracks-hd,
+    # fig4d,e), asked for by the round-2 verifier.
+    for e in ens:
+        e["reading"] = "hd-a"
+    for reg in ("ADn", "PoS"):
+        hb = [c["unit"] for c in cells if c["region"] == reg and c["hd_b"]]
+        if len(hb) >= 6:
+            eb_ = wake_ensemble(s, name, hb, tcs, reg)
+            eb_["reading"] = "hd-b"
+            ens.append(eb_)
     return ens, dec5b
+
+
+def ole_errors(C, TC, th, idx, seg, thb):
+    """fig4d,e: cross-validated waking median absolute error (degrees) of the
+    covariance OLE, the two signal OLE readings (ole_fit) and the Bayesian
+    decoder, per smoothing window of OLE_WINDOWS. C, 10 ms waking counts of
+    the ensemble; TC, its tuning curves; th,
+    head direction per bin; idx, bins with a valid head direction; seg, the
+    10 segments of idx; thb, the 1 degree bin of th[idx]."""
+    e = {}
+    for wdw in OLE_WINDOWS:
+        Cw = gauss_smooth_counts(C, wdw)[:, idx]
+        Fw = gauss_smooth_counts(TC[:, np.minimum((np.nan_to_num(th) / (2 * np.pi) * NBINS).astype(int), NBINS - 1)] * DEC_BIN, wdw)[:, idx]
+        eo, es, es2, eb = [], [], [], []
+        for q in range(10):
+            tr, te = seg != q, seg == q
+            Dc = ole_fit(Cw[:, tr].T, th[idx][tr])
+            Ds = ole_fit(Cw[:, tr].T, th[idx][tr], Fw[:, tr].T)
+            Ds2 = ole_fit(Cw[:, tr].T, th[idx][tr], Fw[:, tr].T, diag="signal")
+            thq = th[idx][te]
+            eo.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Dc), thq)))
+            es.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Ds), thq)))
+            es2.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Ds2), thq)))
+            tcq = _tc_from_bins(C[:, idx[tr]], thb[tr], DEC_BIN)
+            eb.append(np.abs(circ_diff(bayes_decode(Cw[:, te], tcq, DEC_BIN), thq)))
+        e[f"ole_cov_{wdw}"] = float(np.degrees(np.median(np.concatenate(eo))))
+        e[f"ole_sig_{wdw}"] = float(np.degrees(np.median(np.concatenate(es))))
+        e[f"ole_sig2_{wdw}"] = float(np.degrees(np.median(np.concatenate(es2))))
+        e[f"bayes_{wdw}"] = float(np.degrees(np.median(np.concatenate(eb))))
+    return e
+
+
+def wake_ensemble(s, name, hu, tcs, region):
+    """Waking decoding of one ensemble (decoding-tracks-hd, fig4d,e) without
+    the sleep measures: used for the ensembles of HD cells under (hd-b),
+    asked for by the round-2 verifier. Same steps as decode_session."""
+    W = s["states"]["wake"]
+    TC = np.array([tcs[u] for u in hu])
+    e = dict(session=name, subject=s["subject"], region=region, n_hd=len(hu))
+    C = bin_matrix([s["spikes"][u] for u in hu], W, DEC_BIN)
+    _, cen = bin_counts(np.zeros(0), W, DEC_BIN)
+    Cs = gauss_smooth_counts(C, DEC_SMOOTH["wake"])
+    ang = bayes_decode(Cs, TC, DEC_BIN)
+    th = _hd_at(s, cen)
+    ok = np.isfinite(th)
+    e["err_full"] = float(np.degrees(np.median(np.abs(circ_diff(ang[ok], th[ok])))))
+    idx = np.where(ok)[0]
+    seg = (np.arange(len(idx)) * 10) // len(idx)
+    thb = np.minimum((th[idx] / (2 * np.pi) * NBINS).astype(int), NBINS - 1)
+    errs = []
+    for q in range(10):
+        tr, te = idx[seg != q], idx[seg == q]
+        tcq = _tc_from_bins(C[:, tr], thb[seg != q], DEC_BIN)
+        errs.append(np.abs(circ_diff(bayes_decode(Cs[:, te], tcq, DEC_BIN), th[te])))
+    e["err_cv"] = float(np.degrees(np.median(np.concatenate(errs))))
+    e.update(ole_errors(C, TC, th, idx, seg, thb))
+    return e
 
 
 # ---------------------------------------------------------------- GLM (fig5d,e)
 
 # Readout windows (reading g-d): 10 to 1000 ms on a log scale, 7 windows, for
-# the best-window information of fig5d and fig5e-adn-predicts-pos. The dense
-# grid fig5e-readout-windows needs (20 per decade near 50 to 200 ms) is not
-# run, for time.
+# the best-window information of fig5d and fig5e-adn-predicts-pos.
 GLM_WINDOWS = np.geomspace(0.01, 1.0, 7)
+# fig5e-readout-windows (criterion): at least 20 windows per decade near 50 to
+# 200 ms. Gaussian s.d. from 10^-1.7 (20 ms) to 10^-0.6 (251 ms) at 20 per
+# decade, so that both the s.d. reading (a) and the full width reading (b,
+# FWHM = 2.355 s.d.; 50 to 200 ms FWHM is 21 to 85 ms s.d.) are inside the
+# dense part, with 10, 500 and 1000 ms outside it (standard choice for the
+# ends). Run for PoS targets of ADn assemblies only, the claim's direction.
+GLM_WINDOWS_DENSE = np.r_[0.01, 10 ** np.arange(-1.7, -0.6 + 1e-9, 0.05), 0.5, 1.0]
 GLM_MAX_S = 1200.0  # at most the first 20 min of each state (time limit; deviation)
 
 
@@ -1001,7 +1056,7 @@ def _glm_fit(X, y, w0=None, iters=15, tol=1e-5):
     return w
 
 
-def glm_session(s, cells, windows=None):
+def glm_session(s, cells, windows=None, directions=(("PoS", "ADn"), ("ADn", "PoS"))):
     """fig5d,e: for each HD target of one structure, the information (bits per
     spike, 10-fold cross-validated) of a GLM of the other structure's HD cell
     assembly (reading g-b, HD cells; g-c, HD targets), 10 ms bins, assembly
@@ -1026,7 +1081,7 @@ def glm_session(s, cells, windows=None):
         iv = iv[:n_iv].copy()
         if cum[min(n_iv, len(cum)) - 1] > GLM_MAX_S:
             iv[-1, 1] -= cum[n_iv - 1] - GLM_MAX_S
-        for treg, areg in (("PoS", "ADn"), ("ADn", "PoS")):
+        for treg, areg in directions:
             A = bin_matrix([s["spikes"][u] for u in hd_[areg]], iv, DEC_BIN)
             T = bin_matrix([s["spikes"][u] for u in hd_[treg]], iv, DEC_BIN)
             nb = A.shape[1]
@@ -1287,16 +1342,23 @@ def _work_glm(x):
     import time as _t
     t0 = _t.time()
     s = load_session(x[1], x[0])
-    o = analyze_session(s, parts=("glm",))
+    if len(x) > 3:
+        # dense readout windows, PoS targets only (fig5e-readout-windows)
+        o = analyze_session(s, parts=("glm_dense",))
+    else:
+        o = analyze_session(s, parts=("glm",))
     o["meta"] = dict(path=x[0], subject=s["subject"], seconds=_t.time() - t0)
     return o
 
 
-def run_glm(subjects, workers=4):
-    """The GLM of fig5d,e on every session of the given mice, `workers`
-    sessions at a time, largest files first."""
+def run_glm(subjects, workers=4, dense=False, sessions=None):
+    """The GLM of fig5d,e on every session of the given mice (or only the
+    named sessions), `workers` sessions at a time, largest files first; with
+    `dense`, the dense windows of fig5e-readout-windows, PoS targets only."""
     from concurrent.futures import ProcessPoolExecutor
-    A = sorted([a for a in list_assets() if a[0].split("/")[0].replace("sub-", "") in subjects],
+    A = sorted([a + ((True,) if dense else ()) for a in list_assets()
+                if a[0].split("/")[0].replace("sub-", "") in subjects
+                and (sessions is None or any(x in a[0] for x in sessions))],
                key=lambda x: -x[2])
     with ProcessPoolExecutor(workers) as ex:
         out = list(ex.map(_work_glm, A))

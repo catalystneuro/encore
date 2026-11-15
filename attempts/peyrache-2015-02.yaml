@@ -32,11 +32,11 @@ outcomes:
   - 4
   notes: Under reading (a), the dandiset holds 7 mice and 41 sessions with an open-field epoch and spikes
     (Mouse32-140820 has no epochs), both within tolerance. By the files' unit labels, 24 of these sessions
-    in 4 mice hold units of both structures, against 21 (tolerance 2.1) in 3, because Mouse20 has PoS units
-    in 3 sessions, on electrode groups the lab labelled 'postsub' of a device the files call the post-subicular
-    probe. Under reading (b), 40 sessions, 23 of them with both structures (within tolerance) in 4 mice (not).
-    Only the paper's own list of three mice, a variant not taken from the data, gives 21 and 3. The table's
-    50 sessions are not matched.
+    in 4 mice hold units of both structures, against 21 (tolerance 2.1) in 3, because Mouse20 has PoS
+    units in 3 sessions, on electrode groups the lab labelled 'postsub' of a device the files call the
+    post-subicular probe. Under reading (b), 40 sessions, 23 of them with both structures (within tolerance)
+    in 4 mice (not). Only the paper's own list of three mice, a variant not taken from the data, gives
+    21 and 3. The table's 50 sessions are not matched.
   deviations:
   - Mice and sessions are counted from the files, and sessions with both structures from the units' region
     labels; the paper's list of three mice (Supplementary Table 1) is shown as a variant.
@@ -58,10 +58,10 @@ outcomes:
   notes: Under reading (hd-b), 5 of the 10 HD counts are within tolerance, and under (hd-a) 3. The session-rule
     variant also gives 5 under (hd-b) and 4 under (hd-a). Mouse32's count cannot be tested, as neither
     of its sessions holds head direction; its measured 0 is not a measurement, so 9 counts are testable
-    and the outcome would be the same with Mouse32 left out. Over all sessions the dual mice have more ADn HD cells
-    (26, 62 and 74 under hd-a, against 17, 23 and 37), as Supplementary Table 1 counts their ADn cells
-    from a subset of sessions. Recorded units equal the table in Mouse12, Mouse17 and Mouse32 (217, 245,
-    105), Mouse20 has 48 against 49, and the PoS counts match (48, 135, 174).
+    and the outcome would be the same with Mouse32 left out. Over all sessions the dual mice have more
+    ADn HD cells (26, 62 and 74 under hd-a, against 17, 23 and 37), as Supplementary Table 1 counts their
+    ADn cells from a subset of sessions. Recorded units equal the table in Mouse12, Mouse17 and Mouse32
+    (217, 245, 105), Mouse20 has 48 against 49, and the PoS counts match (48, 135, 174).
   deviations:
   - Every session with head direction is used. Supplementary Table 1 counts the ADn cells of Mouse24,
     25 and 28 from 2, 3 and 3 of their sessions, which the files do not mark; a reading of the Methods'
@@ -69,8 +69,8 @@ outcomes:
     and data acquisition).
   - Tuning curves smooth the spike and occupancy histograms separately before the ratio, a standard choice
     so that empty 1 degree bins are defined (Methods, Head direction cells).
-  - Mouse32's sessions have no head direction, so its count is untestable (data missing) and recorded as
-    0 only to keep one value per expected value.
+  - Mouse32's sessions have no head direction, so its count is untestable (data missing) and recorded
+    as 0 only to keep one value per expected value.
 - claim: hd-cell-fraction
   outcome: not_reproduced
   notebook: reproduce_peyrache_2015.ipynb
@@ -235,9 +235,11 @@ outcomes:
     the median SWS to waking ratio is outside 9 to 11. In ADn-ADn pairs it is 11.65 to 12.31 with all
     fits and 11.04 to 11.71 without the pairs whose fit sits at an end of the speed grid; 95.7% of ADn-ADn
     pairs are faster in SWS under hd-a and rate-a. In PoS-PoS pairs it is 5.18 to 6.15. It is above 5
-    in both, the partial criterion. No fitted speed is 0; pairs without a finite speed in both states
-    are left out. Fits are loose (median residual 0.55 of the cross-correlogram's variance in waking, 0.52
-    in SWS, 1.04 in REM), and 387 of 1950 pairs have a speed at a grid end in some state.
+    in both, the partial criterion. No fitted speed is exactly 0, but every state has fits at 1.5e-14
+    deg/s, effectively 0 (71 waking, 49 SWS and 99 REM fits below 1 deg/s); they are among the fits at
+    a grid end, which the 11.04 to 11.71 variant leaves out. Pairs without a finite speed in both states
+    are left out. Fits are loose (median residual 0.55 of the cross-correlogram's variance in waking,
+    0.52 in SWS, 1.04 in REM), and 387 of 1950 pairs have a speed at a grid end in some state.
   deviations:
   - Cross-correlograms from 10 ms bins concatenated across the intervals of a state (a standard choice);
     the coarse grid is 80 speeds from 5 to 5000 deg/s on a log scale (v-c).
@@ -269,8 +271,9 @@ outcomes:
   output: claim:fig2f-rem-similar-to-wake
   notes: Both readings hold in ADn-ADn and PoS-PoS pairs under every HD and rate reading. The median REM
     to waking speed ratio is 0.96 to 1.20, inside 0.67 to 1.5, and no Wilcoxon test of the log ratio reaches
-    p < 0.05 (p from 0.17 to 0.66). Pairs without a positive, finite speed in waking and REM are left out
-    (no fitted speed is 0).
+    p < 0.05 (p from 0.17 to 0.66). Pairs without a positive, finite speed in waking and REM are left
+    out. No fitted speed is exactly 0, but some fits sit at 1.5e-14 deg/s, effectively 0 (71 waking and
+    99 REM fits below 1 deg/s); they are kept, and the medians do not rest on them.
 - claim: fig3a-packet-60-degrees
   outcome: partially_reproduced
   notebook: reproduce_peyrache_2015.ipynb
@@ -283,8 +286,9 @@ outcomes:
   notes: Under hd-a and rate-b, the zero-lag correlation falls with the preferred-direction offset in
     all 9 state and pair-type combinations (p < 1e-6 with the absolute offset and with its cosine). The
     zero crossing is within 54 to 66 degrees in 7 of 9 combinations with 10 degree bins, and 8 of 9 with
-    20 degree bins. PoS-PoS in SWS crosses at 54 and 108 degrees. Under rate-a the PoS-PoS tests reach
-    only p = 5.5e-6 to 7.2e-5 (36 pairs). ADn-ADn pairs cross at 54 to 59 degrees in every state.
+    20 degree bins. PoS-PoS in SWS crosses at 54 and 108 degrees. Under hd-a and rate-a the PoS-PoS tests
+    reach only p = 5.5e-6 to 7.2e-5 with the absolute offset and 8.2e-6 to 1.3e-4 with its cosine (36
+    pairs); under hd-b and rate-a all 9 tests pass. ADn-ADn pairs cross at 54 to 59 degrees in every state.
   deviations:
   - Mouse25-140131 and Mouse25-140204 have no sleep scoring in the files; their open-field epoch is taken
     as wake and they enter the waking analyses only.
@@ -364,21 +368,38 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_peyrache_2015.ipynb
   output: claim:fig4d-ole-near-bayesian
-  notes: Neither part holds in both structures. With the signal Q from the tuning curves throughout, the
-    covariance OLE is better in all 25 ADn ensembles (median minimum error 12.98 against 45.97 degrees,
-    Wilcoxon p = 6.0e-8) and in all 5 PoS ensembles (20.96 against 49.63), but the PoS test gives p = 0.0625,
-    the lowest a two-sided signed-rank test on 5 pairs can give, so the first part fails in PoS for want
-    of ensembles. The covariance OLE errors are 1.26 (ADn) and 1.42 (PoS) times the Bayesian decoder's,
-    beyond the 25% margin. With the observed variances on the diagonal of the signal Q (variant), the
-    two OLEs barely differ (13.22 against 12.98 degrees in ADn, p = 0.16; PoS p = 0.13). Both readings
-    give this outcome, which rests on the estimator assumed here, as the paper defines none.
+  notes: Not reproduced under (hd-a), the verified outcome; partially reproduced under (hd-b), proposed.
+    With the adopted signal OLE (observed variances on the diagonal of Q) and the 25 ADn and 5 PoS hd-a
+    ensembles, the covariance OLE barely beats the signal OLE (median minimum error 12.98 against 13.22
+    degrees in ADn, 14 of 25, Wilcoxon p = 0.16; PoS 20.96 against 20.96, p = 0.13), so the first part
+    fails. With the 27 ADn and 11 PoS hd-b ensembles it holds in both structures (13.06 against 13.81
+    degrees, 17 of 27, p = 0.019; 27.79 against 28.37, 9 of 11, p = 0.042). The covariance OLE errors
+    are 1.26 (ADn) and 1.42 (PoS) times the Bayesian decoder's under hd-a and 1.24 and 1.76 under hd-b,
+    so the second part fails in PoS under both. With the variant signal Q (tuning curves throughout),
+    whose signal decoder errs by up to 103 degrees, beyond the 90 degrees of chance, the first part holds
+    in ADn under both readings (p = 6.0e-8 and 1.5e-8) and in PoS under hd-b (p = 0.001) but not under
+    hd-a (p = 0.0625, the floor for 5 pairs). Under (hd-b) the first part holds in both structures with
+    either signal Q. The outcome rests on the estimator assumed here, as the paper defines none, and on
+    the HD reading; whether the claims file's signal Q reads the paper rightly is asked in questions/peyrache-2015.yaml.
   deviations:
   - Assumed, as the paper does not define the OLE, weights D = Q^-1 L (Salinas and Abbott 1994), L the
     correlation of smoothed counts with (cos, sin) of head direction; Q from the counts (covariance OLE)
-    or, for the signal OLE, from the tuning curves read at the head direction (tuning curve covariances,
-    the paper's words). The earlier choice, the same with the observed variances on the diagonal, is
-    shown as a variant. Windows 10, 20, 50, 100, 200, 300, 500 and 1000 ms.
+    or, for the signal OLE, from the tuning curves read at the head direction off the diagonal with the
+    observed variances on it (independent neurons, the usual signal-only OLE, for the paper's "tuning
+    curve covariances (i.e., signal correlation only)"). Q from the tuning curves throughout, adopted
+    in round 1, is shown as a variant. Windows 10, 20, 50, 100, 200, 300, 500 and 1000 ms.
+  - Ensembles are formed from HD cells under (hd-a) and, as asked in round 2, under (hd-b), waking decoding
+    only for the latter; sessions with at least 6 HD cells in a structure.
   assumed: true
+  proposed:
+    outcome: partially_reproduced
+    reason: Decoding the hd-b ensembles, which the round-2 verifier asked for, gives 27 ADn and 11 PoS
+      ensembles, and the covariance OLE is then better than the signal OLE in both structures with p <
+      0.05 (0.019 and 0.042 with the adopted signal Q; 1.5e-8 and 0.001 with the variant), while it stays
+      beyond 25% of the Bayesian decoder in PoS (1.76). The criterion makes the claim partially reproduced
+      when the first part holds, and the HD readings are taken under one reading in the other claims of
+      this attempt. Under (hd-a) it is not reproduced with either signal Q. Shown in reproduce_peyrache_2015.ipynb,
+      cell claim:fig4d-ole-near-bayesian.
 - claim: fig4e-ole-covariance
   outcome: not_reproduced
   notebook: reproduce_peyrache_2015.ipynb
@@ -386,14 +407,15 @@ outcomes:
   measured:
   - 25
   - 5
-  notes: With the signal Q from the tuning curves, the median ratio of covariance to signal OLE error is
-    0.25 in ADn (range 0.12 to 0.90) and 0.41 in PoS, outside both 0.45 to 0.55 and 0.60 to 0.73, and
-    ADn and PoS do not differ (Mann-Whitney p = 0.17). With the observed-variance variant the ratio is
-    0.99 in ADn (0.91 to 1.04) and 0.98 in PoS (p = 0.28). There are 25 ADn and 5 PoS ensembles under
-    hd-a, against 20 and 8; under hd-b 27 and 11 sessions would qualify, not decoded. The outcome rests
-    on the estimator assumed here.
+  notes: With the adopted signal OLE (observed variances on the diagonal), the median ratio of covariance
+    to signal OLE error is 0.99 in ADn (range 0.91 to 1.04) and 0.98 in PoS under hd-a, and 0.99 and 0.99
+    under hd-b, outside both 0.45 to 0.55 and 0.60 to 0.73, and ADn and PoS do not differ (Mann-Whitney
+    p = 0.28 and 0.82). With the variant signal Q (tuning curves throughout) the ADn ratio is 0.25 under
+    both HD readings, also outside, as that signal decoder works poorly, and ADn against PoS gives p =
+    0.17 and 0.067. No reading gives either part. There are 25 ADn and 5 PoS ensembles under hd-a and
+    27 and 11 under hd-b, against 20 and 8. The outcome rests on the estimator assumed here.
   deviations:
-  - Assumed estimator, as for fig4d-ole-near-bayesian.
+  - Assumed estimator and ensembles, as for fig4d-ole-near-bayesian.
   assumed: true
 - claim: decoding-tracks-hd
   outcome: reproduced
@@ -402,8 +424,8 @@ outcomes:
   notes: The median over ensembles of the median absolute decoding error is 10.2 degrees in 25 ADn ensembles
     (maximum 13.1) and 14.4 degrees in 5 PoS ensembles (maximum 25.1) with whole-epoch tuning curves.
     Cross-validated, it is 10.7 and 14.8. All are under 30 degrees, against 76 to 77 degrees with the
-    head direction shifted by 10 s. Ensembles are formed from hd-a cells; under hd-b, 27 ADn and 11 PoS
-    sessions would qualify (not decoded).
+    head direction shifted by 10 s. With hd-b ensembles (27 ADn, 11 PoS), decoded as the round-2 verifier
+    asked, it is 10.1 and 15.0 degrees (10.7 and 16.1 cross-validated).
   deviations:
   - Mouse25-140131 and Mouse25-140204 have no sleep scoring in the files; their open-field epoch is taken
     as wake and they enter the waking analyses only.
@@ -438,26 +460,46 @@ outcomes:
     cells under either reading) kept as positively predicted at one window or more, 122 (waking), 99 (SWS)
     and 101 (REM) have median best-window information of 0.67, 0.63 and 0.49 bits per spike, Wilcoxon
     p = 9.2e-22, 5.7e-18 and 2.7e-18, each below 1e-10. With hd-a targets, 81, 66 and 69 are kept (the
-    waking count within 86 plus or minus 8.6), p = 5.4e-15, 1.6e-12 and 5.2e-13. The selection makes
-    the test one-sided by construction; without it p is 5.0e-22, 2.5e-18 and 1.1e-18. The count with
-    either-reading targets (122) is above the tolerance. Assemblies and targets are HD cells (readings
-    g-b, g-c); the all-cell readings were not run.
+    waking count within 86 plus or minus 8.6), p = 5.4e-15, 1.6e-12 and 5.2e-13. The selection makes the
+    test one-sided by construction; without it p is 5.0e-22, 2.5e-18 and 1.1e-18. The count with either-reading
+    targets (122) is above the tolerance. Assemblies and targets are HD cells (readings g-b, g-c); the
+    all-cell readings were not run.
   deviations:
   - Run in glm_peyrache_2015.ipynb on the 20 sessions with HD cells in both structures (Mouse20 has none
     in PoS), with HD cells as assembly and targets (readings g-b and g-c; hd-a or hd-b, and hd-a targets
-    as a variant), 7 readout windows from 10 to 1000 ms on a log scale (reading g-d), and at most the first
-    20 minutes of each state, for time.
+    as a variant), 7 readout windows from 10 to 1000 ms on a log scale (reading g-d), and at most the
+    first 20 minutes of each state, for time.
   - The GLM is fitted by Newton's method with a line search; the log likelihood is concave in the weights
     (the link is convex and log-concave), so its maximum is the one the Methods' derivative-free search
     finds. Each fold is iterated to convergence from the fit to all segments.
 - claim: fig5e-readout-windows
   outcome: blocked
   blocked_by: too_large
-  notes: Not run. The criterion needs at least 20 readout windows per decade near 50 to 200 ms (about
-    23 windows). The GLM with 7 windows took 21.1 minutes on 4 workers (glm_peyrache_2015.ipynb, longest
-    session Mouse28-140313 at 952 s), so the denser grid would take about 70 minutes, over the 60 minute
-    notebook limit. The median best windows on the 7-window grid are printed in that notebook for information
-    and decide nothing.
+  notes: Recorded as blocked, the outcome the first two rounds reviewed. The round-1 block rested on a
+    GLM timing of 21.1 minutes that the notebook did not print; it printed 12.2 minutes (longest session
+    561 s) in the round-2 run and prints 15.1 minutes (longest 638 s) now. The dense grid now runs in
+    glm_windows_peyrache_2015.ipynb, in 24.8 minutes, with 26 readout windows (23 at 20 per decade from
+    20 to 251 ms s.d.) for PoS targets of ADn assemblies. For the 122, 101 and 99 kept PoS targets (HD
+    under either reading), the median best window is 168 ms in waking, 178 ms in REM and 63 ms in SWS
+    read as the s.d. (a), and 396, 419 and 149 ms as the full width (b), against 123, 133 and 79 ms; none
+    is within tolerance, and the SWS median is below both others in every variant (SWS against waking
+    and REM, Mann-Whitney p = 1.6e-18 and 6.9e-12; waking against REM p = 0.96). With hd-a targets (a)
+    they are 200, 224 and 67 ms. The best window is at an end of the grid for 10 waking, 22 REM and 6
+    SWS targets. This supports partially reproduced, proposed.
+  notebook: glm_windows_peyrache_2015.ipynb
+  output: claim:fig5e-readout-windows
+  proposed:
+    outcome: partially_reproduced
+    reason: 'The round-2 verifier found the too_large block contradicted by the printed timing. Run with
+      the dense window grid the criterion asks for (glm_windows_peyrache_2015.ipynb, 24.8 minutes), the
+      median best windows are 168, 178 and 63 ms (waking, REM, SWS, s.d. reading) against 123, 133 and
+      79 ms: none within tolerance, and the SWS median below both others, which the criterion calls partially
+      reproduced. The full width reading and the hd-a targets give the same.'
+  deviations:
+  - Run in glm_windows_peyrache_2015.ipynb as for fig5d-adn-predicts-pos-reliably (HD cells as assembly
+    and targets, at most the first 20 minutes of each state, Newton's method), for PoS targets of ADn
+    assemblies only, with readout window s.d. of 10 ms, 20 to 251 ms at 20 per decade, 500 ms and 1000
+    ms.
 - claim: fig5e-adn-predicts-pos
   outcome: reproduced
   notebook: glm_peyrache_2015.ipynb
@@ -493,13 +535,14 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_peyrache_2015.ipynb
   output: claim:fig6b-adn-synchrony
-  measured: 1320
-  notes: With the peak z within 5 ms and pairs on different shanks, the three states pooled give Kruskal-Wallis
-    p = 2.2e-24 across 30 degree offset groups. The mean falls from 11.6 (0 to 30 degrees) to 3.0 (150
-    to 180 degrees). In each state p < 0.05 with the same fall (waking p = 1.4e-5, SWS 5.1e-14, REM 2.2e-6).
-    Waking alone does not reach 1e-10. The fall from the first to the last group is what the criterion
-    asks for; it is not monotonic, as in every state the mean rises again in the 120 to 150 degree group
-    (2.94 to 3.65 pooled). The zero-lag z of all pairs is negative (same-shank pairs).
+  measured: 1476
+  notes: With the peak z within 5 ms and the ADn HD pairs on different shanks (492 per state, 1476 pooled,
+    the measured value; 1320 waking pairs with same-shank pairs included), the three states pooled give
+    Kruskal-Wallis p = 2.2e-24 across 30 degree offset groups. The mean falls from 11.6 (0 to 30 degrees)
+    to 3.0 (150 to 180 degrees). In each state p < 0.05 with the same fall (waking p = 1.4e-5, SWS 5.1e-14,
+    REM 2.2e-6). Waking alone does not reach 1e-10. The fall from the first to the last group is what
+    the criterion asks for; it is not monotonic, as in every state the mean rises again in the 120 to
+    150 degree group (2.94 to 3.65 pooled). The zero-lag z of all pairs is negative (same-shank pairs).
   deviations:
   - The same jitter null as fig6a-fast-oscillation.
   assumed: true
@@ -514,20 +557,21 @@ outcomes:
   - 1583
   - 0.0107
   - 0.0044
-  notes: The ADn to PoS fraction is within tolerance; the pair count, the PoS to ADn fraction and the pyramidal
-    fractions are not. Over all 4765 ADn by PoS pairs of the sessions with both structures, 4.11% are
-    connected ADn to PoS (Methods' baseline; 4.01% with the jitter baseline) and 0.44% PoS to ADn, against
-    0.35% (0.315 to 0.385). 4765 is every ADn by PoS pair the dandiset holds (the sum over sessions of
-    ADn units times PoS units), so 6960 cannot be reached. The paper's three mice give 4699 pairs (4.17%
-    and 0.45%), and without Mouse28-140314, which has no head direction, 4111 (4.57% and 0.51%). Among
-    the 1583 pairs of ADn HD and PoS pyramidal cells, 1.07% are connected ADn to PoS and 0.44% PoS to
-    ADn (17 and 7 pairs), against 0.41% and 0.18% over 3394. The direction holds, binomial p = 0.064 (17
-    of 24 against one half) and 0.0009 (against the PoS to ADn proportion).
+  notes: The ADn to PoS fraction is within tolerance; the pair count, the PoS to ADn fraction and the
+    pyramidal fractions are not. Over all 4765 ADn by PoS pairs of the sessions with both structures,
+    4.11% are connected ADn to PoS (Methods' baseline; 4.01% with the jitter baseline) and 0.44% PoS to
+    ADn, against 0.35% (0.315 to 0.385). 4765 is every ADn by PoS pair the dandiset holds (the sum over
+    sessions of ADn units times PoS units), so 6960 cannot be reached. The paper's three mice give 4699
+    pairs (4.17% and 0.45%), and without Mouse28-140314, which has no head direction, 4111 (4.57% and
+    0.51%). Among the 1583 pairs of ADn HD and PoS pyramidal cells, 1.07% are connected ADn to PoS and
+    0.44% PoS to ADn (17 and 7 pairs), against 0.41% and 0.18% over 3394. The direction holds against
+    the PoS to ADn proportion (binomial p = 0.0009) and not against one half (17 of 24, p = 0.064).
   deviations:
   - Cross-correlograms over the whole recording, all states, in every session with units labelled ADn
     and PoS (criterion m-a), including Mouse28-140314 (no head direction is needed) and Mouse20's 3 sessions
-    with PoS units; the paper's three mice are a variant. PoS pyramidal cells from the dataset's mean waveforms
-    (buzcode_mean_waveform), with a Morlet power spectrum after 4x cubic upsampling, a standard choice.
+    with PoS units; the paper's three mice are a variant. PoS pyramidal cells from the dataset's mean
+    waveforms (buzcode_mean_waveform), with a Morlet power spectrum after 4x cubic upsampling, a standard
+    choice.
 - claim: fig7c-adn-triggered-pos-lfp
   outcome: reproduced
   notebook: reproduce_peyrache_2015.ipynb
@@ -588,8 +632,8 @@ findings:
   statement: The files and the paper disagree on Mouse20. In its sessions 130514, 130515 and 130520, 8
     units are labelled Postsubiculum, on electrode groups the lab labelled 'postsub' (GeneralInfo.mat
     shankStructure) of a device named postsubicular_probe, which 5 of its sessions hold. The paper lists
-    no post-subicular probe in that mouse (Supplementary Table 1 gives Mouse20 no PoS cells). By the
-    files' labels 24 sessions in 4 mice hold both structures, against the paper's 21 in 3.
+    no post-subicular probe in that mouse (Supplementary Table 1 gives Mouse20 no PoS cells). By the files'
+    labels 24 sessions in 4 mice hold both structures, against the paper's 21 in 3.
 - kind: selection_undocumented
   about: data
   statement: Supplementary Table 1 counts the ADn cells of Mouse24, 25 and 28 from 2, 3 and 3 sessions
@@ -608,9 +652,10 @@ findings:
 - kind: methods_unavailable
   statement: 'The Results cite the Methods for the optimal linear estimator of Fig. 4d,e, but the Methods
     have no OLE section. Question for the authors: how were the signal (tuning curve) and covariance OLEs
-    built (which Q and L, which windows, whether cross-validated)? With the standard estimator and Q
-    from the tuning curves, the covariance OLE error is a quarter of the signal OLE error in ADn (median
-    ratio 0.25); with the observed variances on the diagonal of the signal Q the two barely differ (0.99).'
+    built (which Q and L, which windows, whether cross-validated)? With the standard estimator and the
+    observed variances on the diagonal of the signal Q, the two OLEs barely differ (median error ratio
+    0.99 in ADn); with Q from the tuning curves throughout, the covariance OLE error is a quarter of the
+    signal OLE error (0.25), as that signal decoder errs near chance in some ensembles.'
 - kind: methods_unavailable
   statement: 'Question for the authors: which sessions of Mouse24, 25 and 28 gave the ADn cells of Supplementary
     Table 1, and how was the rule of discarding sessions separated by less than three days without a probe
@@ -631,35 +676,35 @@ verifications:
   - claim: recording-sample
     agrees: false
     outcome: partially_reproduced
-    reason: Cell 11 gives 7 mice and 41 sessions with an open field (reading a). The 21 sessions and 3 mice
-      with both structures come from the paper's mouse list (DUAL), not from the data. By the unit labels
-      it is 24 sessions in 4 mice (Mouse20 has PoS units), which is outside tolerance. The archive also
-      describes Mouse20 as anterior thalamus and the post-subiculum.
-    response: Changed to partially_reproduced. The counts of sessions and mice with both structures now come
-      from the units' labels (24 sessions in 4 mice, 23 under reading b), with the paper's list as a variant;
-      measured is now 7, 41, 24 and 4. The data check prints the electrode groups of Mouse20's PoS units,
-      labelled 'postsub' on a device named postsubicular_probe, and the finding on Mouse20 is restated as a
-      disagreement between the files and the paper.
+    reason: Cell 11 gives 7 mice and 41 sessions with an open field (reading a). The 21 sessions and 3
+      mice with both structures come from the paper's mouse list (DUAL), not from the data. By the unit
+      labels it is 24 sessions in 4 mice (Mouse20 has PoS units), which is outside tolerance. The archive
+      also describes Mouse20 as anterior thalamus and the post-subiculum.
+    response: Changed to partially_reproduced. The counts of sessions and mice with both structures now
+      come from the units' labels (24 sessions in 4 mice, 23 under reading b), with the paper's list as
+      a variant; measured is now 7, 41, 24 and 4. The data check prints the electrode groups of Mouse20's
+      PoS units, labelled 'postsub' on a device named postsubicular_probe, and the finding on Mouse20
+      is restated as a disagreement between the files and the paper.
   - claim: supptable1-per-animal
     agrees: true
     outcome: partially_reproduced
-    reason: Cell 13 gives 5 of 10 counts within tolerance under hd-b, 3 of 10 under hd-a, 4 or 5 under the
-      session-rule variant. Mouse32 is 0 against 35 because its files have no head direction.
+    reason: Cell 13 gives 5 of 10 counts within tolerance under hd-b, 3 of 10 under hd-a, 4 or 5 under
+      the session-rule variant. Mouse32 is 0 against 35 because its files have no head direction.
     response: Mouse32's count is now reported as untestable (data missing), not as a miss; the table marks
       it and counts 9 testable values. The outcome is unchanged.
   - claim: hd-cell-fraction
     agrees: true
     outcome: not_reproduced
-    reason: No combination of readings puts all four counts in tolerance (thalamic HD 293/312 for all sessions;
-      with the rule, 207/220 HD cells but only 593 recorded). Per-session thalamic fractions are 0.458 to
-      0.572, against 0.369 to 0.451.
-    response: No change. The notes now say that 727 classifiable thalamic cells match the paper's 720 by
-      coincidence (problem 6); Mouse32's count is named untestable in supptable1-per-animal.
+    reason: No combination of readings puts all four counts in tolerance (thalamic HD 293/312 for all
+      sessions; with the rule, 207/220 HD cells but only 593 recorded). Per-session thalamic fractions
+      are 0.458 to 0.572, against 0.369 to 0.451.
+    response: No change. The notes now say that 727 classifiable thalamic cells match the paper's 720
+      by coincidence (problem 6); Mouse32's count is named untestable in supptable1-per-animal.
   - claim: hd-fraction-hd-shanks
     agrees: true
     outcome: reproduced
-    reason: Cell 15, hd-a gives 0.733 (mean over shank-sessions) and 0.736 (pooled), within 0.71 plus or
-      minus 0.071.
+    reason: Cell 15, hd-a gives 0.733 (mean over shank-sessions) and 0.736 (pooled), within 0.71 plus
+      or minus 0.071.
     response: No change.
   - claim: ensemble-sizes
     agrees: true
@@ -668,10 +713,10 @@ verifications:
       a); readings b and c also fail. hd-b was not run (problem 1), and it could change this. Under hd-b,
       ADn 312/39 = 8.0 and PoS 120/23 = 5.2, both means could pass, but the s.d. was never computed; the
       23 PoS sessions include Mouse20's 3, without them 120/20 = 6.0.
-    response: Changed to partially_reproduced. The cell now runs every reading under hd-a and hd-b, with and
-      without Mouse20's PoS sessions. Under hd-b and reading (a) both means are within tolerance (8.00 and
-      5.22) and both s.d. are not (4.42 and 4.11). Without Mouse20 the PoS mean is 6.00, outside; the outcome
-      follows the files' labels, used throughout, and the notes say it rests on them.
+    response: Changed to partially_reproduced. The cell now runs every reading under hd-a and hd-b, with
+      and without Mouse20's PoS sessions. Under hd-b and reading (a) both means are within tolerance (8.00
+      and 5.22) and both s.d. are not (4.42 and 4.11). Without Mouse20 the PoS mean is 6.00, outside;
+      the outcome follows the files' labels, used throughout, and the notes say it rests on them.
   - claim: sleep-duration
     agrees: true
     outcome: reproduced
@@ -687,10 +732,11 @@ verifications:
   - claim: adn-pos-hd-information
     agrees: true
     outcome: reproduced
-    reason: Reproduced (marginal). Cell 20, hd-b means 1.384 and 1.004 bit/spike with p = 3.9e-11. The PoS
-      mean is just above the lower bound of 0.999. Under hd-a the values fit but p = 4.5e-5 fails 1e-6.
-    response: No change; the notes already give both readings, and the margin (1.004 against 0.999) is stated
-      here.
+    reason: Reproduced (marginal). Cell 20, hd-b means 1.384 and 1.004 bit/spike with p = 3.9e-11. The
+      PoS mean is just above the lower bound of 0.999. Under hd-a the values fit but p = 4.5e-5 fails
+      1e-6.
+    response: No change; the notes already give both readings, and the margin (1.004 against 0.999) is
+      stated here.
   - claim: supfig2a-unimodality
     agrees: true
     outcome: reproduced
@@ -699,8 +745,8 @@ verifications:
   - claim: fig2a-rates-preserved
     agrees: true
     outcome: reproduced
-    reason: Cell 23, all four r at least 0.64 with p near 0 in every selection, so the r of at least 0.5 reading
-      passes. PoS r is below 0.7.
+    reason: Cell 23, all four r at least 0.64 with p near 0 in every selection, so the r of at least 0.5
+      reading passes. PoS r is below 0.7.
     response: No change.
   - claim: fig2b-pair-correlations-preserved
     agrees: true
@@ -710,66 +756,69 @@ verifications:
   - claim: fig2f-sws-tenfold-faster
     agrees: true
     outcome: partially_reproduced
-    reason: Cell 27, the median ratio is 11.7 to 12.3 for ADn-ADn and 5.6 to 6.1 for PoS-PoS. Both are above
-      5, with 88 to 96% of pairs faster in SWS and Wilcoxon p < 1e-3. Neither is within 9 to 11.
-    response: No change of outcome. Pairs without a positive, finite speed in both states are now left out
-      before the ratio (problem 8; no fitted speed was 0), a variant without pairs at a grid end is shown
-      (ADn 11.04 to 11.71), and the fit residual and grid-end pairs are printed per state, as asked.
+    reason: Cell 27, the median ratio is 11.7 to 12.3 for ADn-ADn and 5.6 to 6.1 for PoS-PoS. Both are
+      above 5, with 88 to 96% of pairs faster in SWS and Wilcoxon p < 1e-3. Neither is within 9 to 11.
+    response: No change of outcome. Pairs without a positive, finite speed in both states are now left
+      out before the ratio (problem 8; no fitted speed was 0), a variant without pairs at a grid end is
+      shown (ADn 11.04 to 11.71), and the fit residual and grid-end pairs are printed per state, as asked.
   - claim: fig2e-decoded-speed
     agrees: false
     outcome: not_reproduced
     reason: Cell 28, reading (b), the SWS/wake ratio is 6.0 (decoded wake) or 4.3 (actual), REM/wake 0.57
-      or 0.41. Reading (a) is degenerate (problem 3), as bayes_decode returns whole degrees, so speeds over
-      10 ms steps come in multiples of 100 deg/s; a mean, or decoding finer than 1 degree, would have been
-      needed.
+      or 0.41. Reading (a) is degenerate (problem 3), as bayes_decode returns whole degrees, so speeds
+      over 10 ms steps come in multiples of 100 deg/s; a mean, or decoding finer than 1 degree, would
+      have been needed.
     response: Kept partially_reproduced and the disagreement recorded. Reading (a) now locates the posterior
-      maximum below the 1 degree grid, giving an ADn SWS ratio of 5.11 and REM ratio 0.63, so the SWS part
-      fails under every reading. The criterion makes the claim partial when one of its two parts holds under
-      a reading, and the REM part holds in the PoS ensembles (0.93 under a and 1.00 under b, decoded waking
-      speed); the verifier's reasons cite ADn only. Mean speeds are shown as a variant outside the criterion.
+      maximum below the 1 degree grid, giving an ADn SWS ratio of 5.11 and REM ratio 0.63, so the SWS
+      part fails under every reading. The criterion makes the claim partial when one of its two parts
+      holds under a reading, and the REM part holds in the PoS ensembles (0.93 under a and 1.00 under
+      b, decoded waking speed); the verifier's reasons cite ADn only. Mean speeds are shown as a variant
+      outside the criterion.
   - claim: fig2f-rem-similar-to-wake
     agrees: true
     outcome: reproduced
-    reason: Cell 29, median ratios 0.96 to 1.20, Wilcoxon p 0.17 to 0.66, for both pair types and every selection.
-    response: No change; pairs with a waking speed of 0 would now be left out too (problem 8), and there are none.
+    reason: Cell 29, median ratios 0.96 to 1.20, Wilcoxon p 0.17 to 0.66, for both pair types and every
+      selection.
+    response: No change; pairs with a waking speed of 0 would now be left out too (problem 8), and there
+      are none.
   - claim: fig3a-packet-60-degrees
     agrees: true
     outcome: partially_reproduced
-    reason: Cell 31, Pearson p < 1e-6 in 9 of 9 cases under hd-a rate-b, hd-b rate-a and hd-b rate-b. The
-      crossing is within 54 to 66 degrees in at most 8 of 9; PoS-PoS SWS reaches 102 to 108 degrees in some
-      readings.
+    reason: Cell 31, Pearson p < 1e-6 in 9 of 9 cases under hd-a rate-b, hd-b rate-a and hd-b rate-b.
+      The crossing is within 54 to 66 degrees in at most 8 of 9; PoS-PoS SWS reaches 102 to 108 degrees
+      in some readings.
     response: No change.
   - claim: fig3a-adn-stronger-than-pos
     agrees: true
     outcome: reproduced
-    reason: Cell 32, ADn higher with p < 0.05 in every state and reading. Under hd-b rate-b p is 2.4e-11 to
-      6.3e-14, so the text's 1e-5 bound is met. Pair counts (480/150) are far from 345/55.
+    reason: Cell 32, ADn higher with p < 0.05 in every state and reading. Under hd-b rate-b p is 2.4e-11
+      to 6.3e-14, so the text's 1e-5 bound is met. Pair counts (480/150) are far from 345/55.
     response: No change.
   - claim: supfig5-rate-independent
     agrees: true
     outcome: not_reproduced
-    reason: Cell 33, the region effect reaches p < 1e-7 in only 7 of 64 readings. Where it is significant (pairs
-      below 60 degrees), the rate-group effect is mostly significant too. Only 1 of 64 readings meets both
-      conditions. The peak-rate grouping uses peak_a even under hd-b, and the mean-rate grouping uses waking
-      rates for the SWS and REM tests (problem 7).
-    response: No change of outcome. The grouping now uses the peak of the HD reading's own fit and the mean
-      rate of the state tested, with waking rates as a variant. Of 96 readings, region p < 1e-7 in 12, each
-      with a significant rate-group effect, and none meets both conditions.
+    reason: Cell 33, the region effect reaches p < 1e-7 in only 7 of 64 readings. Where it is significant
+      (pairs below 60 degrees), the rate-group effect is mostly significant too. Only 1 of 64 readings
+      meets both conditions. The peak-rate grouping uses peak_a even under hd-b, and the mean-rate grouping
+      uses waking rates for the SWS and REM tests (problem 7).
+    response: No change of outcome. The grouping now uses the peak of the HD reading's own fit and the
+      mean rate of the state tested, with waking rates as a variant. Of 96 readings, region p < 1e-7 in
+      12, each with a significant rate-group effect, and none meets both conditions.
   - claim: fig3b-packet-coherence
     agrees: true
     outcome: reproduced
     reason: Cell 34, every ensemble is above 0.05 in all states and both structures. The test has little
-      power to fail (problem 9); there is no negative control, such as shuffled decoded angles, and with the
-      random reference coherence is about 0.9 almost by construction.
-    response: No change of outcome. A shuffled-angle control is added. It stays above 0.05 with random references
-      (0.25 to 0.61) and with actual-HD references and the mean summary, so those readings cannot fail; with
-      decoded-HD references and the median summary it is 0.000 in ADn and up to 0.122 in PoS, and the outcome
-      is stated as resting on that reading.
+      power to fail (problem 9); there is no negative control, such as shuffled decoded angles, and with
+      the random reference coherence is about 0.9 almost by construction.
+    response: No change of outcome. A shuffled-angle control is added. It stays above 0.05 with random
+      references (0.25 to 0.61) and with actual-HD references and the mean summary, so those readings
+      cannot fail; with decoded-HD references and the median summary it is 0.000 in ADn and up to 0.122
+      in PoS, and the outcome is stated as resting on that reading.
   - claim: fig4b-noise-correlations
     agrees: true
     outcome: reproduced
-    reason: Cell 36, all 16 readings hold for ADn-ADn and pooled pairs, positive at 0 plus or minus 15 degrees,
-      negative at 60 plus or minus 15 degrees, Wilcoxon p < 1e-11.
+    reason: Cell 36, all 16 readings hold for ADn-ADn and pooled pairs, positive at 0 plus or minus 15
+      degrees, negative at 60 plus or minus 15 degrees, Wilcoxon p < 1e-11.
     response: No change.
   - claim: fig4c-noise-adn-vs-pos
     agrees: true
@@ -781,20 +830,20 @@ verifications:
     agrees: true
     outcome: not_reproduced
     reason: Cell 38, ADn covariance OLE beats the signal OLE in 14 of 25 ensembles, Wilcoxon p = 0.156.
-      Covariance/Bayes is 1.26, above the 1.25 margin. This rests on an assumed signal OLE (problem 4), Q as
-      the tuning-curve covariance off the diagonal with the observed variances on it, the author's own
-      assumption; the plain reading (all of Q from the tuning curves) was not run.
+      Covariance/Bayes is 1.26, above the 1.25 margin. This rests on an assumed signal OLE (problem 4),
+      Q as the tuning-curve covariance off the diagonal with the observed variances on it, the author's
+      own assumption; the plain reading (all of Q from the tuning curves) was not run.
     response: The plain reading is now run and adopted, as the better supported one ("tuning curve covariances"),
-      with the earlier one as a variant. Under it the covariance OLE wins in all 25 ADn ensembles (p = 6.0e-8)
-      and all 5 PoS ensembles, but p = 0.0625 in PoS (the floor for 5 pairs) and covariance/Bayes stays 1.26,
-      so the outcome is still not_reproduced under both readings.
+      with the earlier one as a variant. Under it the covariance OLE wins in all 25 ADn ensembles (p =
+      6.0e-8) and all 5 PoS ensembles, but p = 0.0625 in PoS (the floor for 5 pairs) and covariance/Bayes
+      stays 1.26, so the outcome is still not_reproduced under both readings.
   - claim: fig4e-ole-covariance
     agrees: true
     outcome: not_reproduced
-    reason: Cell 39, the ADn median ratio is 0.990, not 0.5 or 0.67; ADn against PoS p = 0.275. There are
-      25 ADn and 5 PoS ensembles, against 20 and 8. Same caveat as fig4d.
-    response: No change of outcome. Under the plain signal reading the ADn ratio is 0.25 and PoS 0.41, ADn
-      against PoS p = 0.17, so neither reading reproduces. Ensemble counts under hd-b (27 and 11 sessions)
+    reason: Cell 39, the ADn median ratio is 0.990, not 0.5 or 0.67; ADn against PoS p = 0.275. There
+      are 25 ADn and 5 PoS ensembles, against 20 and 8. Same caveat as fig4d.
+    response: No change of outcome. Under the plain signal reading the ADn ratio is 0.25 and PoS 0.41,
+      ADn against PoS p = 0.17, so neither reading reproduces. Ensemble counts under hd-b (27 and 11 sessions)
       are printed; hd-b ensembles were not decoded (problem 2).
   - claim: decoding-tracks-hd
     agrees: true
@@ -803,7 +852,8 @@ verifications:
       against the 30 degree threshold.
     response: No change. The ensembles are formed from hd-a cells only (problem 2); the number of sessions
       that would qualify under hd-b is printed. Decoding hd-b ensembles was not run, as the verifier marked
-      it as not affecting a conclusion and the full decoding with the OLE takes most of the notebook's time.
+      it as not affecting a conclusion and the full decoding with the OLE takes most of the notebook's
+      time.
   - claim: fig5b-sleep-tuning-similar
     agrees: true
     outcome: reproduced
@@ -812,63 +862,67 @@ verifications:
   - claim: fig5b-adn-decoded-tuning
     agrees: true
     outcome: reproduced
-    reason: Cell 43, PoS cells score higher in all states, p = 7e-7, 5e-4 and 0.039 (paper below 1e-10, 0.018,
-      3e-6). Cell counts are 64 and 52, against 86 and 92.
+    reason: Cell 43, PoS cells score higher in all states, p = 7e-7, 5e-4 and 0.039 (paper below 1e-10,
+      0.018, 3e-6). Cell counts are 64 and 52, against 86 and 92.
     response: No change.
   - claim: fig5d-adn-predicts-pos-reliably
     agrees: true
     outcome: blocked
     reason: Blocked (too_large). Cell 53, the GLM was not run. The data needed are in the archive (problem
-      11). The claims are blocked for compute, not for data; a reduced window grid, or the GLM in a run of
-      its own, would have tested at least part of them.
-    response: Tested in a notebook of its own, glm_peyrache_2015.ipynb (21 minutes), with 7 readout windows
-      and at most 20 minutes of each state, and now reproduced (Wilcoxon p from 2.7e-18 to 9.2e-22 per state).
-      The timing per session is printed, as asked.
+      11). The claims are blocked for compute, not for data; a reduced window grid, or the GLM in a run
+      of its own, would have tested at least part of them.
+    response: 'Tested in a notebook of its own, glm_peyrache_2015.ipynb (21 minutes), with 7 readout windows
+      and at most 20 minutes of each state, and now reproduced (Wilcoxon p from 2.7e-18 to 9.2e-22 per
+      state). The timing per session is printed, as asked. (Corrected after round 2: the notebook printed
+      12.2 minutes, not 21, so the timing given here was wrong.)'
   - claim: fig5e-readout-windows
     agrees: true
     outcome: blocked
     reason: Blocked (too_large), same as fig5d-adn-predicts-pos-reliably.
-    response: Still blocked as too_large. Its criterion needs at least 20 windows per decade near 50 to 200
-      ms, about 70 minutes on 4 workers by the GLM notebook's timing, over the notebook limit.
+    response: 'Still blocked as too_large. Its criterion needs at least 20 windows per decade near 50
+      to 200 ms, about 70 minutes on 4 workers by the GLM notebook''s timing, over the notebook limit.
+      (Corrected after round 2: the notebook printed 12.2 minutes, not 21, so the timing given here was
+      wrong.)'
   - claim: fig5e-adn-predicts-pos
     agrees: true
     outcome: blocked
-    reason: Blocked (too_large), same as fig5d-adn-predicts-pos-reliably; a reduced window grid would have
-      tested it.
+    reason: Blocked (too_large), same as fig5d-adn-predicts-pos-reliably; a reduced window grid would
+      have tested it.
     response: Tested in glm_peyrache_2015.ipynb and now reproduced, PoS targets better predicted in every
       state (p = 0.0095, 6.3e-11, 0.020) with the gap largest in SWS.
   - claim: fig6a-fast-oscillation
     agrees: true
     outcome: reproduced
-    reason: Cell 45, pairs on different shanks, peaks at 165, 175 and 165 Hz, all inside 117 to 176 Hz. With
-      same-shank pairs kept, the peak sits at the 285 to 300 Hz edge.
+    reason: Cell 45, pairs on different shanks, peaks at 165, 175 and 165 Hz, all inside 117 to 176 Hz.
+      With same-shank pairs kept, the peak sits at the 285 to 300 Hz edge.
     response: No change.
   - claim: fig6b-adn-synchrony
     agrees: true
     outcome: reproduced
-    reason: Cell 46, zpeak5 on different shanks, pooled Kruskal-Wallis p = 2.2e-24, each state p at most 2e-6,
-      and the first group is above the last. It tests falls as first group above last group only; the
-      means are not monotonic (they rise again at 120 to 150 degrees) (problem 10).
-    response: No change of outcome, as the criterion asks for the fall from the first to the last group. A
-      monotonic column is printed and the notes say the means rise again at 120 to 150 degrees.
+    reason: Cell 46, zpeak5 on different shanks, pooled Kruskal-Wallis p = 2.2e-24, each state p at most
+      2e-6, and the first group is above the last. It tests falls as first group above last group only;
+      the means are not monotonic (they rise again at 120 to 150 degrees) (problem 10).
+    response: No change of outcome, as the criterion asks for the fall from the first to the last group.
+      A monotonic column is printed and the notes say the means rise again at 120 to 150 degrees.
   - claim: fig7-adn-pos-connections
     agrees: true
     outcome: not_reproduced
-    reason: Cell 48, 4111 pairs against 6960. ADn to PoS is 4.57%, within tolerance, but PoS to ADn is 0.51%
-      against 0.35 plus or minus 0.035%. Pyramidal fractions are 1.07% and 0.44%. The binomial test does pass.
-      The dandiset can give at most about 4765 same-session pairs, which the notebook does not say, and
-      Mouse28-140314 (588 pairs) is dropped although connection detection does not need head direction.
+    reason: Cell 48, 4111 pairs against 6960. ADn to PoS is 4.57%, within tolerance, but PoS to ADn is
+      0.51% against 0.35 plus or minus 0.035%. Pyramidal fractions are 1.07% and 0.44%. The binomial test
+      does pass. The dandiset can give at most about 4765 same-session pairs, which the notebook does
+      not say, and Mouse28-140314 (588 pairs) is dropped although connection detection does not need head
+      direction.
     response: No change of outcome. Connections now run in every session with both structures, including
-      Mouse28-140314 and Mouse20, giving all 4765 pairs (4.11% and 0.44%); the notebook prints the pairs per
-      session and that 4765 is the most the dandiset holds, with the paper's three mice and the earlier 4111
-      as variants. The Mouse20 inconsistency (problem 5) is resolved by using the files' labels throughout.
+      Mouse28-140314 and Mouse20, giving all 4765 pairs (4.11% and 0.44%); the notebook prints the pairs
+      per session and that 4765 is the most the dandiset holds, with the paper's three mice and the earlier
+      4111 as variants. The Mouse20 inconsistency (problem 5) is resolved by using the files' labels throughout.
   - claim: fig7c-adn-triggered-pos-lfp
     agrees: true
     outcome: reproduced
-    reason: Cell 49, power ratio 2.98 (jitter control) or 3.30 (random times). Sessions above control 18 or
-      20 of 20. Wilcoxon p near 1e-12.
-    response: No change of outcome; with the files' labels (25 sessions) the ratios are 2.85 and 3.17, the
-      paper's three mice shown as a variant.
+    reason: Cell 49, power ratio 2.98 (jitter control) or 3.30 (random times). Sessions above control
+      18 or 20 of 20. Wilcoxon p near 1e-12.
+    response: No change of outcome; with the files' labels (25 sessions) the ratios are 2.85 and 3.17,
+      the paper's three mice shown as a variant.
   - claim: fig7d-same-preferred-direction
     agrees: true
     outcome: reproduced
@@ -877,12 +931,254 @@ verifications:
   - claim: fig7e-driven-pos-hd-information
     agrees: true
     outcome: reproduced
-    reason: Reproduced (fragile). Cell 51, p = 0.040 with the Methods' baseline, but 0.075 with the
-      jittered-baseline variant. 13 connected cells, against 11 plus or minus 1.1.
+    reason: Reproduced (fragile). Cell 51, p = 0.040 with the Methods' baseline, but 0.075 with the jittered-baseline
+      variant. 13 connected cells, against 11 plus or minus 1.1.
     response: No change; the notes and conclusion now call the result fragile.
   - claim: fig7e-interneurons-no-difference
     agrees: true
     outcome: reproduced
     reason: Cell 52, p = 0.45 to 0.59. With n = 8 and 51 (paper 13 and 79), the test has little power.
-    response: No change of outcome; with the files' labels the unconnected count is 59 (p = 0.44), and the
-      low power is stated in the notes.
+    response: No change of outcome; with the files' labels the unconnected count is 59 (p = 0.44), and
+      the low power is stated in the notes.
+- date: '2026-11-15'
+  kind: agent
+  by: verifier-2 (Claude Code, claude-opus-5-5)
+  reviewed: Round 2, the full executed notebooks of the first revision (reproduce_peyrache_2015.ipynb,
+    glm_peyrache_2015.ipynb), hd.py, the claims file and this record, transcripts/peyrache-2015/verifier-2-report.md.
+  results:
+  - claim: recording-sample
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 33 of the 35 outcomes. Possible misreading in the claims file: the criterion
+      defines only "reproduced", so partially_reproduced is the author''s judgement. It is reasonable.'
+    response: No change of outcome. The question of what the criterion makes of a partial match is added
+      to questions/peyrache-2015.yaml for a reader.
+  - claim: supptable1-per-animal
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 33 of the 35 outcomes. R cell 15, "the 8 of 10 needed is out of reach by at
+      most one count", is wrong as written: under hd-b, 5 of the 9 testable counts are within tolerance,
+      and even if Mouse32 passed that would be 6, so 2 more would be needed. The record''s own wording
+      ("the outcome would be the same with Mouse32 left out") is correct.'
+    response: 'The sentence in the notebook is corrected to the record''s wording: 5 of 9 testable counts
+      within tolerance under hd-b, 6 with a passing Mouse32. No change of outcome.'
+  - claim: hd-cell-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: hd-fraction-hd-shanks
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: ensemble-sizes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree. It follows the criterion, but it is fragile: the PoS mean of 5.22 depends on Mouse20''s
+      3 PoS sessions, which have no HD cells. Without them the mean is 6.00 and falls outside tolerance.
+      The record states this.'
+    response: No change; the notes already state the dependence on Mouse20's sessions.
+  - claim: sleep-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes. The wake/open-field overlap check (0.9998 to 1) is resolved.
+    response: No change.
+  - claim: adn-pos-peak-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: adn-pos-hd-information
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 33 of the 35 outcomes. Borderline: the PoS mean is 1.004 against a lower bound
+      of 0.999.'
+    response: No change; the margin is stated in the round-1 response and the notes give both HD readings.
+  - claim: supfig2a-unimodality
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig2a-rates-preserved
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig2b-pair-correlations-preserved
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig2f-sws-tenfold-faster
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 33 of the 35 outcomes. "No fitted speed is 0" (record notes and R cell 39) is
+      true only literally: every state has fits at 1.5e-14 deg/s (R cell 38), which are effectively 0.
+      The medians are not affected.'
+    response: The notebook now prints the fits below 1 deg/s per state (71 waking, 49 SWS, 99 REM), and
+      the conclusion and notes say these fits are effectively 0 and are among the grid-end fits the variant
+      leaves out. No change of outcome.
+  - claim: fig2e-decoded-speed
+    agrees: true
+    outcome: partially_reproduced
+    reason: I now agree. The criterion allows "one of the two holds" per structure. The PoS REM ratio
+      is 0.93 under (a, w-a) and also 1.00 under (b, w-a), and the (b, w-a) reading does not need the
+      sub-degree interpolation. It rests on 4 ensembles.
+    response: No change.
+  - claim: fig2f-rem-similar-to-wake
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 33 of the 35 outcomes. "No fitted speed is 0" (record notes and R cell 43) is
+      true only literally: every state has fits at 1.5e-14 deg/s, effectively 0. The medians are not affected.'
+    response: The conclusion and notes now say that some fits sit at 1.5e-14 deg/s, effectively 0, that
+      they are kept, and that the medians do not rest on them. No change of outcome.
+  - claim: fig3a-packet-60-degrees
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 33 of the 35 outcomes. R cell 46 and the record's notes, "Under rate-a the PoS-PoS
+      tests reach only p = 5.5e-6 to 7.2e-5", hold only under hd-a; under hd-b rate-a all 9 tests pass.
+      With the cosine of the offset, p reaches 1.3e-4.
+    response: The sentence now names hd-a, gives the cosine p (8.2e-6 to 1.3e-4) and says that under hd-b
+      and rate-a all 9 tests pass. No change of outcome.
+  - claim: fig3a-adn-stronger-than-pos
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: supfig5-rate-independent
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 33 of the 35 outcomes. The supfig5 grouping is resolved.
+    response: No change.
+  - claim: fig3b-packet-coherence
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes. The coherence shuffle control is resolved. The record's
+      version of my round-1 reason leaves out the qualifier "with the mean summary and every reference
+      and distance".
+    response: No change of outcome. The round-1 reason is kept as recorded; the omission is noted here.
+  - claim: fig4b-noise-correlations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig4c-noise-adn-vs-pos
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig4d-ole-near-bayesian
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree only provisionally. The first part now holds in ADn (25 of 25 ensembles, p = 6.0e-8).
+      In PoS all 5 ensembles also favour the covariance OLE, but p = 0.0625, the lowest p a test on 5
+      pairs can give, because only hd-a ensembles were decoded. Under hd-b, 11 PoS sessions would qualify,
+      and that could make the outcome partially_reproduced. The OLE assumption is stated, but the reading
+      now adopted is the less reasonable of the two: with the signal Q entirely from the tuning curves
+      the signal decoder errs by up to 99 to 103 degrees in some ensembles, worse than chance, close to
+      a non-working decoder. The variant with the observed variances on the diagonal is the usual signal-only
+      OLE; under it the ADn part fails (p = 0.156). The outcome should be described as resting on that
+      variant. Covariance/Bayes is 1.264 against the 1.25 margin (borderline). Possible misreading: the
+      claims file takes the signal Q "from the tuning curves read at the head direction", while the paper''s
+      "tuning curve covariances (i.e., signal correlation only)" excludes noise correlations, not the
+      cells'' own variances.'
+    response: The observed-variance signal Q is now the adopted reading, with Q from the tuning curves
+      throughout as a variant, and the hd-b ensembles are decoded (27 ADn, 11 PoS). Under hd-a the outcome
+      is not reproduced with either signal Q; under hd-b the first part holds in both structures (adopted
+      Q, p = 0.019 and 0.042) and the second fails in PoS (1.76). The verified outcome is kept and partially_reproduced
+      is proposed. The wording of the claims file is asked in questions/peyrache-2015.yaml.
+  - claim: fig4e-ole-covariance
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 33 of the 35 outcomes. The adopted signal OLE errs at or worse than chance in
+      some ensembles, so the ratio of 0.25 measures that failure; under the observed-variance variant
+      the ratio is 0.99, so the outcome is still not_reproduced. Decoding the hd-b ensembles (27 ADn,
+      11 PoS) could possibly change fig4e; the Mann-Whitney test has little power with 5 PoS ensembles.
+    response: The observed-variance reading is now adopted and the hd-b ensembles are decoded. The ratio
+      is 0.99 in ADn under both HD readings and ADn against PoS gives p = 0.28 and 0.82; with the variant
+      Q the ratio is 0.25 and p = 0.17 and 0.067. No reading gives either part, so the outcome stands.
+  - claim: decoding-tracks-hd
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes. Round-1 point 2 (decoding uses hd-a ensembles only) remains
+      and now bears on fig4d and fig4e.
+    response: 'The hd-b ensembles are now decoded: median errors 10.1 (ADn, 27) and 15.0 degrees (PoS,
+      11), 10.7 and 16.1 cross-validated. No change of outcome.'
+  - claim: fig5b-sleep-tuning-similar
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig5b-adn-decoded-tuning
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig5d-adn-predicts-pos-reliably
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 33 of the 35 outcomes. Now tested (round-1 point 11 resolved). The timing statements
+      ("about 21 minutes" in G cell 0, G cell 11 and the README) are not supported: G cell 2 prints 12.2
+      min and G cell 4 gives 561 s as the longest session.'
+    response: The timing statements are removed from the text, which now refers to the run time each notebook
+      prints (15.1 minutes in this run, longest session 638 s). No change of outcome.
+  - claim: fig5e-readout-windows
+    agrees: false
+    reason: I disagree with the block (too_large). It rests on the GLM run taking "21.1 minutes", with
+      the longest session at 952 s. G cell 2 prints "analysed 26 sessions in 12.2 min", and G cell 4 gives
+      561 s as the longest session. At the record's own factor of 3.3, the denser grid would take about
+      40 minutes, under the 60-minute limit. It should be run with the denser window grid, or the block
+      justified with timing the notebook actually prints.
+    response: 'Run with the dense grid in a new notebook, glm_windows_peyrache_2015.ipynb (24.8 minutes;
+      26 windows, 23 at 20 per decade from 20 to 251 ms, PoS targets only). The medians are 168, 178 and
+      63 ms (waking, REM, SWS) against 123, 133 and 79: none within tolerance, the SWS median the shortest.
+      The verified outcome (blocked) is kept and partially_reproduced is proposed. The timing statements
+      are corrected.'
+  - claim: fig5e-adn-predicts-pos
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig6a-fast-oscillation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes. The analytic jitter null is stated, and reasonable.
+    response: No change.
+  - claim: fig6b-adn-synchrony
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 33 of the 35 outcomes. The analytic jitter null is stated, and reasonable. In
+      the record, measured: 1320 is the all-pairs waking count; the deciding sample is the pairs on different
+      shanks: 492 per state, 1476 pooled (R cell 72).'
+    response: measured is now 1476 (pooled pairs on different shanks, the reading that matches), and the
+      notes give 492 per state and 1320 for all waking pairs. No change of outcome.
+  - claim: fig7-adn-pos-connections
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with 33 of the 35 outcomes. R cell 76, "The direction holds: binomial p = 0.064 (17
+      of 24 against one half)": at 0.064 the first binomial reading fails; only the second reading (p
+      = 0.0009) holds.'
+    response: The sentence now says the direction holds against the PoS to ADn proportion (p = 0.0009)
+      and not against one half (p = 0.064), in the notebook and the notes. No change of outcome.
+  - claim: fig7c-adn-triggered-pos-lfp
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes. One 14-minute LFP chunk per session is stated, and reasonable.
+    response: No change.
+  - claim: fig7d-same-preferred-direction
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
+  - claim: fig7e-driven-pos-hd-information
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 33 of the 35 outcomes. Borderline: p = 0.040 with the Methods'' baseline, 0.075
+      with the jitter baseline.'
+    response: No change; the notes call the result fragile and give both p values.
+  - claim: fig7e-interneurons-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 33 of the 35 outcomes.
+    response: No change.
