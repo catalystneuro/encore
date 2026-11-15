@@ -1,0 +1,368 @@
+schema_version: 3
+id: chandravadia-2020-02
+datasets:
+- archive: dandi
+  id: "000004"
+  version: 0.220126.1852
+  doi: 10.48324/dandi.000004/0.220126.1852
+  relation: primary
+paper: doi:10.1038/s41597-020-0415-9
+date: 2026-11-15
+entry: chandravadia-2020
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43715082428
+inputs:
+- what: Table 1 of Faraut et al. 2018 (the sessions, subjects, variants, ages and sexes of the earlier
+    release of this task's data), read at run time from the full text in Europe PMC (PMC5810422), used
+    by previous-release-link and previous-release-additions.
+  source: doi:10.1038/sdata.2018.10
+- what: Online-only Table 1 of the paper itself (subjects, sessions, variants, ages, sexes and
+    diagnoses), read at run time from the full text in Europe PMC (PMC7055261) as the reference the
+    claims compare the files with.
+  source: doi:10.1038/s41597-020-0415-9
+- what: The paper's analysis code, read for the method details the claims file names (adjustHF,
+    calcZROCSlope, calcROC_AUC, bootstrapMeanEqualTest, the fixed and dynamic confidence splits, the
+    windows of single_neuron.py and NWB_singleCellAnalysis_release.m); nothing is imported from it.
+  source: https://github.com/rutishauserlab/recogmem-release-NWB at commit 1d95162d2672e71dd234a31e4b8d70017a289ee3
+outcomes:
+- claim: counts-neurons-subjects
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:counts-neurons-subjects
+  measured:
+  - 1864
+  - 59
+  notes: The units tables hold 1864 rows over 87 files (paper 1863, difference +1), from 59 distinct
+    subject_id values. Reading (b), with the 66 spike trains deposited in two files each counted once,
+    gives 1798 units, also within tolerance. 1787 unit rows are from CS sessions and 77 from TWH.
+- claim: counts-sessions
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:counts-sessions
+  measured: 87
+  notes: The identifiers of the 87 files give 87 distinct (subject, session id) pairs, the same set as
+    the 87 of Online-only Table 1 (Cedars-Sinai labels are written CS24 in the identifiers and C24 in
+    the table). The Methods' 89 differs from the file count by 2.
+- claim: table1-demographics
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:table1-demographics
+  measured:
+  - 26
+  - 33
+  notes: Age and sex match Online-only Table 1 for 56 of 59 subjects. C24 is 57 in the files and 47 in
+    the table, H33 is 30 and 29, and H48 is female and 32 in the files, male and 54 in the table. So the
+    files hold 26 female and 33 male subjects, against the table's 25 and 34 (both within tolerance).
+    Faraut et al. 2018 Table 1 gives the same ages and sexes as Online-only Table 1 for these three. The
+    files' diagnosis text equals the table's for 40 of 59 subjects; the others use coarser terms.
+- claim: task-structure
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:task-structure
+  notes: All 87 sessions have 100 recognition trials with 50 of each label and 5 categories. 79 have
+    100 encoding trials with 100 distinct image files (and 100 distinct stored images); 7 Huntington
+    sessions (18, 20, 21, 23, 26, 27, 44) have 50 encoding trials and session 123 has 97. Each file
+    stores one image per trial.
+- claim: new-old-label-coding
+  outcome: not_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:new-old-label-coding
+  notes: Under the stated coding test 1 holds in 0 of 87 sessions and test 2 in 1 of 87. No label-0
+    recognition image (compared by stored pixels and by file name, which agree) is in the session's
+    encoding block, while label-1 images are, all of them in 79 sessions, 49 of 50 in session 123 and
+    26 to 29 of 50 in the seven sessions with 50 encoding trials. Label-1 trials draw "old" responses
+    in 69% of trials on average against 27% for label 0, more in 86 of 87 sessions; the exception is
+    session 2005 (T98, AUC 0.445). Both tests hold with the labels reversed in 86 of 87 sessions, so
+    the labels are 1 for old and 0 for new, as the paper's code reads them. With the stated coding the
+    mean behavioural AUC would be 0.247.
+- claim: ttl-codes
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:ttl-codes
+  notes: In all 87 files events and experiment_ids have the same length and the same timestamps. 78
+    files hold only the codes of Table 1; 9 also hold 0, 4, 22, 23, 98 or 99. Over all files 17019 of
+    17047 trials follow 1, 2, 3, response, 6; the 28 that do not are in 7 of the 9 files with extra
+    codes. All parts hold in 78 of 87 files. Seven files have no start marker (55); every file has 66.
+- claim: experiment-ids
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:experiment-ids
+  notes: In 83 of 87 files the learning id is in {80, 83, 88} and the recognition id in {81, 84, 89},
+    as one of Table 2's pairs. Four files use 82 (CS33_77 81/82, CS39_100 and H51_105 82/83, H42_55
+    80/82); their data_collection field states the same ids. The learning block is the id whose events
+    hold the encoding answers 20 and 21.
+- claim: session-dates
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:session-dates
+  notes: 86 of 87 session_start_time values fall on the first of a month; H28_48 is 2010-03-13. H44_68
+    is dated 2000-01-01, six years before any other session (the Huntington sessions run from 2006 to
+    2016 and its neighbours H43 and H47 are 2013 and 2014), so the year looks like a placeholder.
+- claim: units-table
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:units-table
+  measured: 98400
+  notes: Every file holds spike_times, the two waveform columns, origClusterID, SNR, electrodes and the
+    isolation distance, the last under the name IsolationDist (its description is "IsolDist"). All 1864
+    units link to exactly one electrode, the waveforms (256 samples, finite for every unit) are stated
+    as sampled at 98.4 kHz, within tolerance of 100 kHz. SNR is not finite for 86 units (75 NaN, 11
+    infinite, all infinite ones in H28_48) and isolation distance is NaN for 493 units in 82 files, with
+    two values above 1e27.
+  deviations:
+  - The column the paper calls IsolDist is named IsolationDist in the files and was counted as present.
+- claim: electrodes-table
+  outcome: not_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:electrodes-table
+  notes: Every file has the columns location, x, y, z, imp, filtering, group and origChannel. Location,
+    filtering ("300-3000Hz") and origChannel have a value for all 887 electrodes and the MNI coordinates
+    for 788 (missing in 8 files), but the impedance is NaN for all 887 electrodes, which the criterion
+    calls not reproduced.
+- claim: isi-criterion
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:isi-criterion
+  measured: 99.7
+  notes: With spike times sorted, 1858 of 1864 units (99.7%) have fewer than 3% of interspike intervals
+    below 3 ms (median 0.19%). Of the six others, two (H27_58 units 35 and 37) hold every spike time
+    twice, stored as two copies one after the other, which gives 50% short intervals once sorted; with
+    each spike time once they are at 0%, and four units remain at 3.0% to 9.0% (CS54_126 units 6 and 7,
+    CS26_66 unit 2, CS54_124 unit 2). With the spike times as stored, 1860 units are below 3%. 13 units
+    store spike times out of time order.
+  deviations:
+  - The value given as measured is the percentage of units below 3%, the quantity the criterion
+    thresholds.
+- claim: fig5a-mtl-locations
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig5a-mtl-locations
+  notes: The electrode of every unit is in the right amygdala (594 units), left amygdala (498), right
+    hippocampus (407) or left hippocampus (365).
+- claim: fig5c-auc-all
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig5c-auc-all
+  measured:
+  - 0.753
+  - 0.094
+  notes: Mean AUC over the 87 sessions 0.7527, standard deviation 0.0938 (range 0.445 to 0.919; against
+    0.5, p = 2.2e-41). The ROC uses label 1 as old (claims file); the recognition data of no session are
+    duplicated.
+- claim: fig5c-auc-sites
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig5c-auc-sites
+  measured:
+  - 0.760
+  - 0.688
+  - 0.085
+  - 0.138
+  notes: CS sessions (78) mean 0.7602, SD 0.0855; TWH sessions (9) mean 0.6883, SD 0.1378; all four
+    within tolerance. Welch's t-test between sites t = 1.53, p = 0.161.
+- claim: fig5b-roc-asymmetric
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig5b-roc-asymmetric
+  measured: 0.782
+  notes: Mean z-ROC slope over 82 sessions 0.782 (SD 0.300, median 0.791), below 1 with t = -6.58,
+    p = 4.3e-09; 65 of 82 slopes are below 1. Wilcoxon signed-rank against 1 p = 2e-08; the slope of the
+    pooled ROC is 0.816.
+  deviations:
+  - Five sessions (CS24_60, CS39_93, H48_99, CS51_119, T100_2008) have fewer than two distinct false
+    alarm rates among the five interior points, so no regression slope, and are left out; the paper's
+    code would regress on a constant predictor there.
+- claim: fig5d-confidence-accuracy
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig5d-confidence-accuracy
+  notes: (a) Fixed split, 84 sessions (3 without responses in one group left out), high 80.1% and low
+    60.9% correct, paired t = 10.16, p = 3.2e-16, high above low in 73 sessions. (b) Dynamic split of
+    the Python code, 82 sessions (5 left out), 78.2% and 60.8%, p = 1.3e-11. The unpaired test and the
+    inclusion rule of plotFigure5.ipynb (73 sessions) give the same. In the 8 TWH sessions alone the
+    difference has the same sign without significance (p = 0.14 and 0.26).
+  deviations:
+  - The dynamic split is the Python helper.dynamic_split as written, which in its split mode 1 counts
+    low-confidence hits as response 4 only (the MATLAB NO_dynamic_lowHighSplit.m counts 4 and 5).
+- claim: vs-cells-proportion
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:vs-cells-proportion
+  measured:
+  - 332
+  - 17.8
+  notes: In the Methods' window (0.2 to 1.2 s), 332 of 1864 units (17.8%) are VS; 6 units with all rates
+    equal have no ANOVA p and are counted as not selected. Variants, the code's window 343 (18.4%), the
+    paper's numbers; duplicated spike trains once 321 of 1798 (17.9%); categories shuffled within
+    session 76 (4.1%). By session the VS share has median 15.4%; 5 of 59 subjects have no VS unit.
+- claim: ms-cells-proportion
+  outcome: not_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:ms-cells-proportion
+  measured:
+  - 118
+  - 6.3
+  notes: With all 50 new and 50 old trials in the Methods' window, 118 of 1864 units (6.3%) are MS, below
+    146 ± 14.6 (7.8 ± 0.78%); five other seeds give 108 to 115, and labels shuffled within session give
+    92 (4.9%). The code's choices (correct trials only, 0.2 to 1.7 s, as in single_neuron.py ms_test and
+    NWB_singleCellAnalysis_release.m) give 146 (7.8%), the paper's numbers; correct trials alone in the
+    Methods' window give 139 (7.5%), also within tolerance. Duplicated spike trains once 115 of 1798. The
+    count the paper reports thus matches the code's procedure and not the one its Methods describe.
+- claim: dual-cells-proportion
+  outcome: not_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:dual-cells-proportion
+  measured:
+  - 13
+  - 0.7
+  notes: 13 units (0.7%) are VS and MS under the main tests, against 26 ± 2.6 (1.4 ± 0.14%), and 21
+    would be expected if the two selections were independent. With the code's choices for both tests 25
+    (1.3%), within tolerance; with the Methods' window and MS on correct trials 22 (1.2%). The outcome
+    follows from ms-cells-proportion.
+- claim: fig5f-site-proportions
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig5f-site-proportions
+  measured:
+  - 17.6
+  - 6.2
+  - 0.7
+  - 22.1
+  - 10.4
+  - 1.3
+  notes: Under the main tests CS (1787 units) has 17.6% VS, 6.2% MS and 0.7% dual cells and TWH (77
+    units) 22.1%, 10.4% and 1.3%; Fisher's exact tests find no difference (p = 0.36, 0.15, 0.42), but
+    only 3 of 6 values are within tolerance. With the code's choices the values are 18.4, 7.7, 1.3, 19.5,
+    10.4 and 1.3%, all within tolerance, and no test finds a difference. TWH counts rest on 77 units in 9
+    sessions (1 to 31 units each).
+- claim: twh-sessions
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:twh-sessions
+  measured: 9
+  notes: Nine sessions, of eight subjects (T88 has two), have labels starting with T, and their
+    institution field is Toronto Western Hospital.
+- claim: previous-release-link
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:previous-release-link
+  notes: Faraut et al. 2018 Table 1 lists 42 subjects and 65 sessions. 64 of the 65 sessions are in the
+    dandiset under the same session id, subject and variant (98.5%); session 98 (H48, variant 2) is in
+    neither the dandiset nor Online-only Table 1. All 42 subjects are in the files; age and sex agree for
+    39, and the 2018 table agrees with Online-only Table 1 on the other three (C24, H33, H48), so those
+    differences are in the files. The variant of a file is read from its category names.
+- claim: previous-release-additions
+  outcome: partially_reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:previous-release-additions
+  measured:
+  - 23
+  - 17
+  - 325
+  notes: 23 sessions of the dandiset (14 CS, 9 TWH) and 17 subjects (C53 to C62, the 8 T subjects) are
+    not in the 2018 table, as the paper says, but these sessions hold 325 unit rows, above 288 ± 28.8.
+    The difference of the stated totals, 1863 - 1576 = 287, is the paper's number; it is not the units of
+    the new sessions, as the dandiset's older sessions hold 1539 unit rows, not 1576.
+  deviations:
+  - The earlier release's session list is taken from the table of Faraut et al. 2018, not from the
+    earlier release's files, as the claims file prescribes.
+- claim: fig4-example-vs-neuron
+  outcome: reproduced
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig4-example-vs-neuron
+  notes: Session 132 (CS58_132) has one unit on channel 177, unit 4 on electrode row 4 in the right
+    amygdala. Its rates differ across the 5 categories (ANOVA p = 1.2e-22 in the Methods' window,
+    7.9e-19 in the code's) and are highest for animals (6.75 Hz against 0.25 to 0.85 Hz).
+- claim: fig3-example-vs-neuron
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_chandravadia_2020.ipynb
+  output: claim:fig3-example-vs-neuron
+  notes: The figure's neuron cannot be identified. No file and no row of Online-only Table 1 has a
+    session 144. The only units on a channel 140 in the dandiset are units 1 and 2 of session 2009
+    (T103, 3 units), in the right hippocampus; unit 2, the third unit of the session, is category
+    selective (ANOVA p = 1.3e-09) with its highest rate for phones (9.1 Hz against 1.7 to 2.7 Hz). It fits
+    the figure's channel, area, cell number counted from 1 and preferred category, but not its session
+    id, so it is shown and does not decide the claim. Whether neuron 144-140-3-RH is this unit is a
+    question for the paper's authors.
+findings:
+- kind: metadata_error
+  statement: The new_old_labels_recog column is coded 1 for old (seen during encoding) and 0 for new, the
+    reverse of its description in every file ("0 == Old Stimuli") and of the paper's Data Records. In
+    all 87 sessions no label-0 recognition image is among the session's encoding images while label-1
+    images are, and label-1 trials draw more "old" responses in 86 of 87 sessions. The paper's analysis
+    code reads 1 as old, so its results are unaffected; a user who follows the description inverts the
+    behaviour (mean AUC 0.25 instead of 0.75).
+- kind: data_missing
+  statement: Eight sessions lack encoding trials. Seven Huntington sessions (18, 20, 21, 23, 26, 27 and
+    44) hold 50 encoding trials and session 123 holds 97, against 100 in the paper. In the seven, 21 to
+    24 of the 50 images labelled old in the recognition block are not among the file's encoding images
+    (they are in the encoding blocks of other sessions of the same variant), so the encoding trials that
+    showed them are not in the file.
+- kind: other
+  about: data
+  statement: 66 spike trains are deposited in two files each, sessions 38 and 39 (11 units), 43 and 44
+    (23) and 54 and 55 (32), with nothing marking them as the same units. Each pair was recorded on one
+    day, and each file holds spike trains spanning both sessions. Sessions 54 and 55 also share their
+    encoding trials (one learning block followed by two recognition blocks). Counting units per file
+    gives 1864, counting them once 1798.
+- kind: format_error
+  statement: Spike times are not in increasing order in 13 units. Two units of session 58 (H27_58 units
+    35 and 37) hold every spike time twice, as two copies one after the other, which doubles their spike
+    counts and makes half their sorted interspike intervals zero.
+- kind: metadata_error
+  statement: Subject age or sex differ from Online-only Table 1, and from Faraut et al. 2018 Table 1,
+    for three subjects. C24 (P24CS) is 57 in the files and 47 in both tables, H33 (P33HMH) 30 and 29, and
+    H48 (P48HMH) is a 32-year-old female in the files and a 54-year-old male in both tables. The
+    diagnosis is coded more coarsely than in the paper for 19 subjects.
+- kind: metadata_error
+  statement: session_start_time is not on the first of the month for session 48 (H28, 2010-03-13), and
+    session 68 (H44) is dated 2000-01-01, six years before any other session of the archive's files and
+    out of order with the subjects recorded before and after it (2013 and 2014). In 38 files the trial,
+    event and spike times are Unix seconds, while timestamps_reference_time is set to the session's
+    start date, so the stated reference does not apply to them.
+- kind: data_missing
+  statement: The electrode impedance (imp) is NaN for all 887 electrodes in all 87 files, and the MNI
+    coordinates (x, y, z) are NaN for 99 electrodes in 8 files, although the paper says the electrodes
+    table gives each electrode's coordinates and impedance.
+- kind: metadata_error
+  statement: Spike sorting quality metrics are missing or invalid for many units. SNR is NaN for 75 units
+    and infinite for 11 (session 48), and the isolation distance is NaN for 493 of 1864 units in 82
+    files, with two values above 1e27. The isolation distance column is named IsolationDist, not IsolDist
+    as in the paper.
+- kind: metadata_insufficient
+  statement: Nine files hold event codes that Table 1 of the paper and the events description do not
+    define (0, 4, 22, 23, 98, 99), and in 7 of them 28 trials break the documented order 1, 2, 3,
+    response, 6; in 4 of these files the response read three events after stimulus onset, as the
+    paper's code does, differs from response_value for 1 to 6 trials. Seven files have no start marker
+    (55). In the encoding phase response_value holds 0 or 1, not the event codes 20 and 21 the paper
+    refers to.
+- kind: metadata_error
+  statement: Four files label a block with experiment id 82 (CS33_77 81/82, CS39_100 82/83, H51_105
+    82/83, H42_55 80/82), which Table 2 of the paper does not list; the paper says each session has one
+    of the pairs (80, 81), (83, 84) or (88, 89). The institution field misspells Huntington Memorial
+    Hospital in two ways ("Hunigton" in 28 files, "Hunington" in 6).
+- kind: code_mismatch
+  statement: The paper's Methods select VS and MS cells in a 1 s window starting 200 ms after stimulus
+    onset and compare the 50 novel with the 50 familiar trials. The published code (single_neuron.py,
+    NWB_singleCellAnalysis_release.m) uses 0.2 to 1.7 s and, for MS cells, correct trials only. On the
+    dandiset the code's choices give the paper's 343 VS, 146 MS and 25 dual cells (26 in the paper), and
+    the Methods' choices give 332, 118 and 13. The reported MS and dual counts rest on the code's
+    procedure.
+- kind: paper_inconsistency
+  statement: The Methods say patients were recorded across 89 sessions, while Online-only Table 1 and the
+    dandiset hold 87.
+- kind: paper_inconsistency
+  statement: The neuron of Figure 3, 144-140-3-RH, names a session 144 that is not in Online-only Table
+    1 nor in the dandiset. The only channel-140 units in the dandiset are in session 2009 (T103, right
+    hippocampus), whose third unit is phone selective (ANOVA p = 1.3e-09). The authors could say whether
+    the figure shows this unit.

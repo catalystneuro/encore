@@ -1,181 +1,204 @@
-# 000004 · author · run 38752122282
+# chandravadia-2020 · author · run 43715082428
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; echo ======; cat README.md; echo =====; cat docs/design.md; ls; ls entries claims attempts tools
-```
-
-```
-<persisted-output>
-Output too large (38.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/acff0572-6c07-4b63-b729-08d6f5765540/tool-results/bpqsrvl7e.txt
-
-Preview (first 2KB):
-# Protocol for an attempt
-
-Version: `pilot-6`. Record this version in the attempt's provenance.
-
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-[... 25 more lines not kept]
+date -u; cd  ls; ls docs entries attempts claims paper; wc -l docs/*.md README.md
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/acff0572-6c07-4b63-b729-08d6f5765540/tool-results/bpqsrvl7e.txt"
+ "file_path": "docs/protocol.md"
 }
 ```
 
 ```
 1	# Protocol for an attempt
 2	
-3	Version: `pilot-6`. Record this version in the attempt's provenance.
+3	Version: `pilot-15`. Record this version in the attempt's provenance.
 4	
-5	This is what an agent, or a person, does to attempt a target and deposit the
-6	result. It is written from the eight pilot attempts
-7	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-8	
-9	There are two roles. The **author** makes the attempt. The **verifier** checks
-10	it and must not be the author: for agents, a separate run with a separate
-11	context that has not seen the author's reasoning.
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+10	
+11	An attempt has three roles, each a separate run with a separate context:
 12	
-13	Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-14	workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-15	`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-16	of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-17	kept in [`transcripts/<dandiset>/`](../transcripts).
-18	
-19	## Author
-20	
-[... 769 more lines not kept]
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 657 more lines not kept]
+```
+
+```
+Sun Nov 15 12:44:12 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+[... 968 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls -la entries/001453-fouke-2025/ claims/001453/; cat entries/001453-fouke-2025/entry.yaml entries/001453-fouke-2025/requirements.in; cat attempts/001453-fouke-2025-01.yaml
+cd  cat claims/chandravadia-2020.yaml; ls entries/chandravadia-2020; cat papers/datasets/chandravadia-2020.yaml; ls questions | grep chand
 ```
 
 ```
-<persisted-output>
-Output too large (36.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/acff0572-6c07-4b63-b729-08d6f5765540/tool-results/btdtoufid.txt
-
-Preview (first 2KB):
-claims/001453/:
-total 24
-drwxr-xr-x  2 runner runner  4096 Oct 15 14:35 .
-drwxr-xr-x 14 runner runner  4096 Oct 15 14:35 ..
--rw-r--r--  1 runner runner 12471 Oct 15 14:35 10.1016-j.cub.2025.04.027.yaml
-
-entries/001453-fouke-2025/:
-total 124
-drwxr-xr-x  2 runner runner  4096 Oct 15 14:35 .
-drwxr-xr-x 14 runner runner  4096 Oct 15 14:35 ..
--rw-r--r--  1 runner runner  2158 Oct 15 14:35 README.md
--rw-r--r--  1 runner runner   914 Oct 15 14:35 entry.yaml
--rw-r--r--  1 runner runner 16218 Oct 15 14:35 omr.py
--rw-r--r--  1 runner runner 79403 Oct 15 14:35 reproduce_fouke_2025.ipynb
--rw-r--r--  1 runner runner    61 Oct 15 14:35 requirements.in
--rw-r--r--  1 runner runner  5989 Oct 15 14:35 requirements.lock.txt
-[... 44 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/acff0572-6c07-4b63-b729-08d6f5765540/tool-results/btdtoufid.txt"
-}
-```
-
-```
-1	claims/001453/:
-2	total 24
-3	drwxr-xr-x  2 runner runner  4096 Oct 15 14:35 .
-4	drwxr-xr-x 14 runner runner  4096 Oct 15 14:35 ..
-5	-rw-r--r--  1 runner runner 12471 Oct 15 14:35 10.1016-j.cub.2025.04.027.yaml
-6	
-7	entries/001453-fouke-2025/:
-8	total 124
-9	drwxr-xr-x  2 runner runner  4096 Oct 15 14:35 .
-10	drwxr-xr-x 14 runner runner  4096 Oct 15 14:35 ..
-11	-rw-r--r--  1 runner runner  2158 Oct 15 14:35 README.md
-12	-rw-r--r--  1 runner runner   914 Oct 15 14:35 entry.yaml
-13	-rw-r--r--  1 runner runner 16218 Oct 15 14:35 omr.py
-14	-rw-r--r--  1 runner runner 79403 Oct 15 14:35 reproduce_fouke_2025.ipynb
-15	-rw-r--r--  1 runner runner    61 Oct 15 14:35 requirements.in
-16	-rw-r--r--  1 runner runner  5989 Oct 15 14:35 requirements.lock.txt
-17	schema_version: 1
-18	name: 001453-fouke-2025
-19	type: reproduction
-20	title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
-[... 640 more lines not kept]
+# Claims for Chandravadia, Liang, Schjetnan et al. (2020), Scientific Data 7, 78, on dandiset 000004.
+# Source: the full text of the open access article (CC BY 4.0) at nature.com, read from its Methods,
+# Data Records, Technical Validation, figure legends, Tables 1 and 2 and Online-only Table 1.
+#
+# When these criteria were written, the author had run the data check only, on every file of
+# version 0.220126.1852: the file list and the archive's metadata; per file the subject metadata,
+# session ids, session start dates, trial counts per phase, new/old label counts, stimulus categories,
+# experiment ids, unit counts (1864 in total), electrode locations, waveform sampling rate and table
+# columns; the comparison of subject age, sex and diagnosis with Online-only Table 1 (age or sex
+# differ for three subjects); the duplicated spike trains of sessions 43 and 44 and of 54 and 55; and
+# in one file (session 5) the cross-tabulation of new/old labels against confidence responses, which
+# showed label 1 receiving most "old" responses. No selection of VS or MS cells, no AUC, no z-ROC and
+# no accuracy by confidence had been computed. The author had read the paper's code
+# (github.com/rutishauserlab/recogmem-release-NWB at commit 1d95162), including plotFigure5.ipynb,
+# which writes the Figure 5f percentages into the plot as constants.
+#
+# After the first verification round the author added previous-release-link and rewrote the
+# criterion of previous-release-additions, which had been blocked for want of the earlier
+# release's session list. When writing them the author had read Table 1 of Faraut et al. 2018,
+# which lists that release's sessions, and its abstract (65 sessions, 42 patients, 1576 neurons),
+[... 409 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat claims/001453/*.yaml | head -120; cat entries/001453-fouke-2025/README.md; ls schemas;
+cd  cat README.md; sed -n 1,280p docs/design.md
 ```
 
 ```
-# Claims for Fouke, He, Loring & Naumann (2025) on dandiset 001453.
-# Source: the accepted author manuscript in PubMed Central (PMC12218792), full text, read
-# from its Results, figure legends and STAR Methods. The version of record is not open access.
-#
-# When these criteria were written, the author had seen the data check only: the file list,
-# subject metadata, frame rates, units, trial structure and stimulus codes of every file, and
-# the extent of positions. No claim's analysis had been run. The author had also read the
-# outputs printed in the paper's own analysis notebook (Fig1-S1.ipynb, GitLab commit 33a5c29),
-# which include per-stimulus median speeds and angular velocities and its statistics.
-#
-# The dandiset holds only the freely swimming tracking data of Figure 1 and Figure S1. Its
-# stimulus codes 0 to 20 carry no names. The names come from the paper's code and from the
-# stimulus software's protocol file (see stimulus-code-link), so the claims that need them
-# use outside data and depend on that claim.
-#
-# Method choices fixed here, from the paper's Fig1-S1.ipynb where the Methods are silent: a
-# trial is one stim_index; tracked frames only; positions smoothed with a Savitzky-Golay filter
-# (21 frames, order 2); trials rejected when the absolute cumulative heading change exceeds
-# 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or the mean speed exceeds
-# 100 mm/s; measures taken from 3 s to 35 s after the first frame (the 3 s stationary phase is
-[... 137 more lines not kept]
+# Encore Science: the registry
+
+Encore Science checks datasets against the papers they came from. This repository holds its public record, the Encore registry, served at <https://encorescience.org>, and the `encore` command that runs the same check on your own data ([docs/encore.md](docs/encore.md)). It is developed by [CatalystNeuro](https://www.catalystneuro.com).
+
+Agents, and people, try to reproduce the key findings of papers from the open
+data in public archives, starting with the [DANDI Archive](https://dandiarchive.org), and register the result
+here: the notebooks when it works, and the reason when it does not.
+
+- **For the archive:** evidence of whether each dandiset is complete and
+  accurate enough to support the findings of its paper.
+- **For analysts:** working notebooks to build new analyses on.
+
+Status: pilot. All eight pilot targets have been attempted and checked by an
+independent agent.
+
+**Dashboard:** <https://encorescience.org/>
+
+## Reading the outcomes
+
+An outcome says what one attempt could recover from the data in a dandiset,
+[... 399 more lines not kept]
 ```
-
-**Agent**
-
-Read the protocol and the example entry. Next: notebook conventions from the example and the entry tool, then the paper and dandiset.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
+cd  grep -n "" docs/archives.md | sed -n 1,140p; ls entries/fouke-2025; cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in
+```
+
+```
+1:# Archives
+2:
+3:The registry tests papers against data in public archives. It began with one,
+4:the DANDI Archive. The protocol is written for any archive. What is particular
+5:to an archive (how its datasets are named, versioned and read) is here, and an
+6:agent is pointed to its archive's section.
+7:
+8:A dataset is keyed as `<archive>:<id>` and shown as `<LABEL>:<id>`, for example
+9:`DANDI:000003`. Its files in this repository (`claims/`, `questions/`,
+10:`transcripts/`, the `attempt/` branch, the paper store) are under its folder
+11:name: the identifier alone for DANDI, which the registry began with, and
+12:`<archive>-<id>` for any other archive. Each archive is an adapter, a module in `tools/archives/` ("Adding an archive",
+13:below), and `tools/datasets.py` turns one form of a dataset's name into another.
+14:The workflows take a dataset in any of these forms.
+15:
+16:## DANDI
+17:
+18:- **Datasets.** A dandiset, identified by six digits (`000003`). Targets are the
+19:  public dandisets whose metadata names a paper (`targets/dandisets.json`, built
+20:  by `tools/build_targets.py` and refreshed daily by the Track DANDI workflow).
+[... 155 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat attempts/fouke-2025-01.yaml | head -250; cat entries/fouke-2025/README.md
+```
+
+```
+schema_version: 3
+id: fouke-2025-01
+datasets:
+- archive: dandi
+  id: "001453"
+  version: 0.250518.1950
+  doi: 10.48324/dandi.001453/0.250518.1950
+  relation: primary
+paper: doi:10.1016/j.cub.2025.04.027
+date: 2026-10-14
+entry: fouke-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-5
+  runner:
+[... 264 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'E'
 import json
-nb=json.load(open('entries/001453-fouke-2025/reproduce_fouke_2025.ipynb'))
-for i,c in enumerate(nb['cells'][:8]):
-    print(i,c['cell_type'],c['metadata'].get('tags'));print(''.join(c['source'])[:1500]);print('---')
-for i,c in enumerate(nb['cells']):
-    print(i,c['cell_type'],c['metadata'].get('tags'), ''.join(c['source'])[:80].replace('\n',' '))
-EOF
-wc -l tools/entry.py
+nb=json.load(open('entries/fouke-2025/reproduce_fouke_2025.ipynb'))
+for c in nb['cells'][:8]:
+    print('----',c['cell_type'],c.get('metadata',{}).get('tags'))
+    print(''.join(c['source'])[:1500])
+E
+head -80 entries/fouke-2025/omr.py
 ```
 
 ```
-0 markdown None
+---- markdown None
 # Reproducing Fouke et al. (2025) from dandiset 001453
 
 **Paper.** Fouke KE, He Z, Loring MD, Naumann EA (2025). Neural circuits underlying divergent
@@ -195,13 +218,650 @@ that holds code only). This is the only published version. The draft holds the s
 head-fixed tail tracking of Figures 2 to 4 are not in it.
 
 **Outside inputs.** The stimulus codes in the files have no names. The names come from the paper's
-[... 186 more lines not kept]
+[... 198 more lines not kept]
+```
+
+**Agent**
+
+Read the protocol, the claims file and the example entry. Now reading the paper.
+
+**Agent calls Bash**
+
+```bash
+cd  wc -c paper/*; fold -w 200 -s paper/10.1038-s41597-020-0415-9.txt | head -400
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/d7f14e3a-18d0-4802-9ba3-f053fbcbdbca/tool-results/bobm11qyo.txt"
+}
+```
+
+```
+1	62275 paper/10.1038-s41597-020-0415-9.txt
+2	DOI: 10.1038/s41597-020-0415-9
+3	Version: as served by europe_pmc
+4	Source: europe_pmc+crossref (paper-text-fetcher)
+5	Stored: 2026-10-20
+6	Extracted: as fetched
+7	------------------------------------------------------------------------
+8	2628 sdata Scientific Data Sci Data Nature Publishing Group PMC7055261 7055261 7055261 32132545 10.1038/s41597-020-0415-9 A NWB-based dataset and processing pipeline of human single-neuron activity 
+9	during a declarative memory task Chandravadia N 1 Liang D 2 Schjetnan A G P 3 Carlson A 1 Faraut M 1 Chung J M 4 Reed C M 4 Dichter B 5 6 Maoz U 2 7 Kalia S K 8 3 Valiante T A 3 8 Mamelak A N 1 
+10	Rutishauser U 1 4 7 9 10 ✉ 1 Department of Neurosurgery, Cedars-Sinai Medical Center, Los Angeles, CA USA 2 Institute for Interdisciplinary Brain and Behavioral Sciences, Crean College of Health and 
+11	Behavioral Sciences, Schmid College of Science and Technology, Chapman University, Orange, CA USA 3 Krembil Brain Institute, Toronto Western Hospital, Toronto, Canada 4 Department of Neurology, 
+12	Cedars-Sinai Medical Center, Los Angeles, CA USA 5 Biological Systems & Engineering Division, Lawrence Berkeley National Laboratory, Berkeley, CA USA 6 Department of Neurosurgery, Stanford 
+13	University, Stanford, CA USA 7 Division of Biology and Biological Engineering, California Institute of Technology, Pasadena, CA USA 8 Division of Neurosurgery, Department of Surgery, University of 
+14	Toronto, Toronto, Canada 9 Computational and Neural Systems Program, California Institute of Technology, Pasadena, CA USA 10 Center for Neural Science and Medicine, Department of Biomedical Science, 
+15	Cedars-Sinai Medical Center, Los Angeles, CA USA ✉ Corresponding author. 4 3 2020 7 78 78 19 3 2020 © The Author(s) 2020 Open Access This article is licensed under a Creative Commons Attribution 4.0 
+16	International License, which permits use, sharing, adaptation, distribution and reproduction in any medium or forma
+[... 386 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat tools/entry.py; cat schemas/claims.schema.json | head -150
+cd  ls schemas tools; ls questions | head; python -c "import json;print(json.dumps(json.load(open('schemas/attempt.schema.json')),indent=1)[:6000])" 2>/dev/null || ls schemas
+```
+
+```
+schemas:
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+paper-match.schema.json
+
+tools:
+__pycache__
+agent_run.py
+archive_transcripts.sh
+archives
+authors.py
+backfill_summaries.py
+blind.sh
+build_dryad_targets.py
+build_figshare_targets.py
+build_openneuro_targets.py
+build_reuse_targets.py
+build_site.py
+build_sparc_targets.py
+[... 275 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "import json;print(json.dumps(json.load(open('schemas/attempt.schema.json')),indent=1)[6000:16000])"
+```
+
+```
+claims file.",
+      "type": "string"
+     },
+     "outcome": {
+      "enum": [
+       "reproduced",
+       "partially_reproduced",
+       "not_reproduced",
+       "blocked"
+      ],
+      "description": "Describes the result, not the method: whether the effect the claim states was found. Differences in method from the paper go in `deviations`."
+     },
+     "blocked_by": {
+      "description": "Required when outcome is blocked.",
+      "enum": [
+       "data_missing",
+       "metadata_insufficient",
+       "methods_underspecified",
+       "data_unreadable",
+       "dataset_missing",
+[... 369 more lines not kept]
+```
+
+**Agent**
+
+Now surveying the dataset via the DANDI API.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/000004/versions/0.220126.1852/" | python -c "import json,sys;d=json.load(sys.stdin);print(json.dumps({k:d[k] for k in d if k in ('name','description','assetsSummary','relatedResource','doi','version','citation')},indent=1)[:4000])"; curl -s "https://api.dandiarchive.org/api/dandisets/000004/versions/" | python -m json.tool | grep -E '"version"|status|modified' | head -20
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && uv venv -q env && . env/bin/activate && uv pip install -q dandi h5py remfile pynwb numpy scipy pandas matplotlib pyyaml 2>&1 | tail -3; python -c "import pynwb,remfile,dandi;print(pynwb.__version__)"; echo $TMPDIR
+```
+
+```
+4.2.0
+/tmp/claude-1001
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . env/bin/activate && python - <<'E'
+from dandi.dandiapi import DandiAPIClient
+import json
+with DandiAPIClient() as c:
+    d=c.get_dandiset("000004","0.220126.1852")
+    assets=sorted([(a.path,a.size,a.identifier) for a in d.get_assets()])
+print(len(assets))
+for a in assets: print(a)
+json.dump(assets,open('assets.json','w'))
+E
+```
+
+```
+87
+('sub-P10HMH/sub-P10HMH_ses-20060901_ecephys+image.nwb', 73156888, '38304fe9-5f37-4c0d-a741-9cf2bafab9ff')
+('sub-P11HMH/sub-P11HMH_ses-20061101_ecephys+image.nwb', 72628704, '0f57f0b0-f021-42bb-8eaa-56cd482e2a29')
+('sub-P14HMH/sub-P14HMH_ses-20070601_obj-1t8wrd5_ecephys+image.nwb', 73186832, '0b6bc00c-715e-4ef0-9bc9-b4d2cbf85234')
+('sub-P14HMH/sub-P14HMH_ses-20070601_obj-7studd_ecephys+image.nwb', 55262212, '8144c86f-c7fa-4599-9a31-6db621deb6a5')
+('sub-P15HMH/sub-P15HMH_ses-20070901_obj-a5xz9n_ecephys+image.nwb', 55060760, '82b0a4b9-a544-49c7-9807-2166fe84b07c')
+('sub-P15HMH/sub-P15HMH_ses-20070901_obj-bdd49u_ecephys+image.nwb', 54677088, 'e22c078c-43d9-4713-84f5-02d2e1db707c')
+('sub-P16HMH/sub-P16HMH_ses-20071001_obj-12ambkj_ecephys+image.nwb', 54648464, 'a831c980-7b5a-4ad2-9687-7caf5ae27c56')
+('sub-P16HMH/sub-P16HMH_ses-20071001_obj-1jfnx96_ecephys+image.nwb', 73367344, 'cac4440b-ac3f-4ab2-a5de-abaafd426801')
+('sub-P17HMH/sub-P17HMH_ses-20080501_ecephys+image.nwb', 73147936, 'd1721a71-8427-4e9b-ab31-bbb8eb805f2c')
+('sub-P18HMH/sub-P18HMH_ses-20080601_ecephys+image.nwb', 54940368, '6b77229c-873b-40ad-b9e2-fa8aaa41c96e')
+('sub-P19HMH/sub-P19HMH_ses-20080601_obj-1tmj21e_ecephys+image.nwb', 72614400, '77e12554-96c7-4ee4-97b3-50aaba00ed9f')
+('sub-P19HMH/sub-P19HMH_ses-20080601_obj-uw5up9_ecephys+image.nwb', 54425024, '5b2d5087-4a72-42ac-866a-4e7d53811414')
+('sub-P21HMH/sub-P21HMH_ses-20090101_obj-1femyyi_ecephys+image.nwb', 72505896, '8c8b87bc-4877-4264-b096-731cc29cfb73')
+('sub-P21HMH/sub-P21HMH_ses-20090101_obj-3ljvpn_ecephys+image.nwb', 72396072, '03f1dcbc-d7f4-442f-ad2e-93f35f91bf0c')
+('sub-P21HMH/sub-P21HMH_ses-20090101_obj-slgaak_ecephys+image.nwb', 72419120, '81378f5b-2cec-4bea-97ab-d348b2d1cd62')
+('sub-P23HMH/sub-P23HMH_ses-20090201_obj-1k3199e_ecephys+image.nwb', 72891960, '88addf50-1048-4757-9f06-99a280b632a6')
+('sub-P23HMH/sub-P23HMH_ses-20090201_obj-1tm3w39_ecephys+image.nwb', 54862280, '4f4f3ac5-373e-4d90-a825-77fe0dc3d3f0')
+('sub-P23HMH/sub-P23HMH_ses-
+[... 70 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . env/bin/activate && time python - <<'E'
+import h5py, remfile, json
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    a=c.get_dandiset("000004","0.220126.1852").get_asset_by_path('sub-P9HMH/sub-P9HMH_ses-20060301_obj-1otd1m8_ecephys+image.nwb')
+    url=a.get_content_url(follow_redirects=1,strip_query=True)
+print(url)
+f=h5py.File(remfile.File(url),'r')
+def show(name,obj):
+    if 'stimulus/presentation/' in name and name.count('/')>2: return
+    if isinstance(obj,h5py.Dataset):
+        print(name,obj.shape,obj.dtype,dict(obj.attrs) if obj.size<5 or True else '')
+    else:
+        print(name+'/',{k:(v if not hasattr(v,'shape') or v.size<10 else v.shape) for k,v in obj.attrs.items()})
+f.visititems(show)
+E
+```
+
+```
+https://dandiarchive.s3.amazonaws.com/blobs/58f/ff7/58fff79f-ef69-4f07-a876-34dd8d11462d
+acquisition/ {}
+acquisition/events/ {'comments': 'no comments', 'description': ' The events coorespond to the TTL markers for each trial. For the learning trials, the TTL markers \n            are the following: 55 = start of the experiment, 1 = stimulus ON, 2 = stimulus OFF, 3 = Question Screen Onset [“Is this an animal?”], \n            20 = Yes (21 = NO) during learning, 6 = End of Delay after Response, 66 = End of Experiment. For the recognition trials, \n            the TTL markers are the following: 55 = start of experiment, 1 = stimulus ON, 2 = stimulus OFF, 3 = Question Screen Onset [“Have you seen this image before?”], \n            31:36 = Confidence (Yes vs. No) response [31 (new, confident), 32 (new, probably), 33 (new, guess), 34 (old, guess), \n            35 (old, probably), 36 (old, confident)], 66 = End of Experiment', 'namespace': 'core', 'neurodata_type': 'AnnotationSeries', 'object_id': 'd81b834f-7baa-4b26-88a7-2eb5e3d93a7e'}
+acquisition/events/data (1004,) object {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'n/a'}
+acquisition/events/timestamps (1004,) float64 {'interval': np.int32(1), 'unit': 'seconds'}
+acquisition/experiment_ids/ {'comments': 'no comments', 'description': 'The experiment_ids coorespond to the encoding (i.e., learning) or recogniton trials. The learning trials are demarcated by: 80. The recognition trials are demarcated by: 81. ', 'namespace': 'core', 'neurodata_type': 'TimeSeries', 'object_id': 'a75b4714-52b9-4c64-b641-39f594bfb605'}
+acquisition/experiment_ids/data (1004,) float64 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'NA'}
+acquisition/experiment_ids/timestamps (1004,) float64 {'interval': np.int32(1), 'unit': 'seconds'}
+analysis/ {}
+file_create_date (1,) object {}
+general/ {}
+general/data_collection () object {}
+general/devices/ {}
+general/devices/Neuralynx-cheetah/ {'namespace':
+[... 83 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . env/bin/activate && python - <<'E'
+import h5py, remfile, numpy as np
+url='https://dandiarchive.s3.amazonaws.com/blobs/58f/ff7/58fff79f-ef69-4f07-a876-34dd8d11462d'
+f=h5py.File(remfile.File(url),'r')
+for k in ['identifier','session_description','session_start_time','timestamps_reference_time','general/institution','general/lab','general/experiment_description','general/data_collection','general/related_publications','general/keywords']:
+    print(k, f[k][()])
+for k in f['general/subject']: print('subject',k,f['general/subject'][k][()])
+e=f['general/extracellular_ephys/electrodes']
+for k in ['id','x','y','z','imp','location','filtering','group_name','origChannel']: print(k,e[k][:])
+u=f['units']
+for k in ['id','origClusterID','IsolationDist','SNR','electrodes','electrodes_index','spike_times_index']: print(k,u[k][:])
+print(u['waveform_mean_sampling_rate'][:].ravel())
+t=f['intervals/trials']
+print(t.attrs['colnames'])
+for k in t.attrs['colnames']:
+    v=t[k][:]
+    print(k, v[:5], v[95:105], v[-3:])
+sp=f['stimulus/presentation/StimulusPresentation']
+for k in sp: print(k, sp[k].shape, sp[k].dtype, dict(sp[k].attrs))
+print({k:v for k,v in sp.attrs.items()})
+ev=f['acquisition/events/data'][:]; print(ev[:30]); print(np.unique(ev,return_counts=True))
+ex=f['acquisition/experiment_ids/data'][:]; print(np.unique(ex,return_counts=True))
+print(np.array_equal(f['acquisition/events/timestamps'][:],f['acquisition/experiment_ids/timestamps'][:]))
+st=u['spike_times'][:]; print(st[:5], st.min(), st.max())
+E
+```
+
+```
+identifier b'H09_5'
+session_description b'New/Old recognition task for ID: 5. '
+session_start_time b'2006-03-01T00:00:00-08:00'
+timestamps_reference_time b'2006-03-01T00:00:00-08:00'
+general/institution b'Hunigton Memorial Hospital'
+general/lab b'Rutishauser'
+general/experiment_description b'The data contained within this file describes a new/old recogntion task performed in patients with intractable epilepsy implanted with depth electrodes and Behnke-Fried microwires in the human Medical Temporal Lobe (MTL).'
+general/data_collection b'learning: 80, recognition: 81'
+general/related_publications [b'Faraut et al. 2018, Scientific Data; Rutishauser et al. 2015, Nat Neurosci;']
+general/keywords [b'Intracranial Recordings' b'Intractable Epilepsy'
+ b'Single-Unit Recordings' b'Cognitive Neuroscience' b'Learning' b'Memory'
+ b'Neurosurgery']
+subject age b'55'
+subject description b'Right Mesial Temporal'
+subject sex b'M'
+subject species b'Human'
+subject subject_id b'P9HMH'
+id [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13]
+x [-19. -19. -19. -19. -19. -19. -19.  22.  22.  22.  22.  22.  22.  22.]
+y [-12.2 -12.2 -12.2 -12.2 -12.2 -12.2 -12.2  -3.   -3.   -3.   -3.   -3.
+[... 90 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && git clone -q https://github.com/rutishauserlab/recogmem-release-NWB.git code && cd code && git checkout -q 1d95162 && git log -1 --format='%H %cd' && find . -type f | grep -v '^./.git/' | grep -v matnwb | head -100
+```
+
+```
+1d95162d2672e71dd234a31e4b8d70017a289ee3 Tue Jan 14 12:07:46 2025 -0800
+./README.MD
+./setup.py
+./LICENSE.txt
+./.gitignore
+./RutishauserLabtoNWB/InHouse/README.txt
+./RutishauserLabtoNWB/assets/BrainAreaLocations.png
+./RutishauserLabtoNWB/assets/Cedars-Sinai.png
+./RutishauserLabtoNWB/assets/MATLAB_SingleNeuron.png
+./RutishauserLabtoNWB/assets/Python_SingleNeuron.png
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/helper.py
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/behavior_all.py
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/main.py
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/single_neuron.py
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/behavior.py
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/demo/demoAnalysis.ipynb
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/demo/demoPlotStimuli.py
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/demo/demoQuerySpikeTimes.py
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/demo/plotFigure5.ipynb
+./RutishauserLabtoNWB/events/newolddelay/python/analysis/demo/demoPlotWaveforms.py
+[... 82 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers; for f in adjustHF.m calcZROCSlope.m getZROC_slope.m calcCumulativeD.m NWBbehaviorROC.m calcMeanSEOfSample.m NO_dynamic_lowHighSplit.m; do echo "=== $f"; grep -v '^\s*%' $f | grep -v '^\s*$'; done
+```
+
+```
+=== adjustHF.m
+function [H,F] = adjustHF(H,F, nOLD, nNEW)
+for i=1:length(H)
+    if H(i)==1
+        H(i) = 1 - 1/(2*nOLD);
+    end
+    if F(i)==1
+        F(i) = 1 - 1/(2*nNEW);
+    end
+    if H(i)==0
+        H(i) = 1/(2*nOLD);
+    end
+    if F(i)==0
+        F(i) = 1/(2*nNEW);
+    end
+end
+=== calcZROCSlope.m
+function [b, d2, s, da, Rsquare] = calcZROCSlope( typeCounters )
+d = calcCumulativeD( typeCounters );
+d = d(2:3, 1:end-1); %remove d' value, eliminate last datapoint (is always in right upper corner)
+[... 207 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers; for f in NO_behavior_evaluateSessionStatus.m calcMultipointROC.m calcEmpiricalROC.m calcDPrime.m NWB_behaviorSummary.m; do echo "=== $f"; grep -v '^\s*%' $f | grep -v '^\s*$'; done; grep -v '^\s*%' ../NWBloadDataOfBlock_release.m | grep -v '^\s*$' | head -120
+```
+
+```
+=== NO_behavior_evaluateSessionStatus.m
+function [isIncluded, AUC, percAccuracy_high, percAccuracy_low, TP, FP,respCounts,rawAccuracies, rawAccuracies2] = NO_behavior_evaluateSessionStatus(responses, newOldRecogLabels,enforceBehaviorExclusions)
+if nargin<3
+    enforceBehaviorExclusions=2;    
+end
+useDynamicSplitMode=0;
+minAccuracyLow=0.55;
+minAccuracyHigh=0.7;
+respCounts=[];
+for k=1:6
+    respCounts(k) = length(find(responses==k));
+end
+mode=2; %all 6 confidence levels
+typeCounters = calcEmpiricalROC(mode, newOldRecogLabels, responses);
+dS = calcCumulativeD( typeCounters );
+d = dS( 4:5, :); %only H/F of interest here
+FP=d(2,:);
+TP=d(1,:);
+AUC = calcROC_AUC(TP,FP);
+isIncluded=1;
+[... 426 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers; for f in calcROC_AUC.m bootstrapMeanEqualTest.m NWB_singleCellAnalysis_release.m NO_selectSigCells_simple.m extractPeriodCountsSimple.m; do echo "=== $f"; grep -v '^\s*%' $f | grep -v '^\s*$' | head -150; done
+```
+
+```
+=== calcROC_AUC.m
+function [AUC] = calcROC_AUC(TP,FP, reverseOrder)
+if nargin<3
+    reverseOrder=0;
+end
+if reverseOrder
+    TP = TP(end:-1:1);
+    FP = FP(end:-1:1);
+end
+if FP(1)~=0 || TP(1)~=1
+    FP = [0 FP];
+    TP = [0 TP];
+end
+if FP(end)~=1 || TP(end)~=1
+    FP = [FP 1];
+    TP = [TP 1];
+end
+if ~issorted(TP) || ~issorted(FP)
+   warning('TP/FP need to be sorted ascending'); 
+end
+[... 245 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/python/analysis; wc -l *.py; grep -n "def \|anova\|f_oneway\|bootstrap\|0.2\|1.2\|1.7\|200\|1700\|1200\|p_val\|< 0.05\|<0.05\|seed\|correct" single_neuron.py | head -80
+```
+
+```
+374 behavior.py
+  385 behavior_all.py
+  480 helper.py
+   97 main.py
+  423 single_neuron.py
+ 1759 total
+4:from scipy.stats import f_oneway
+14:    def __init__(self):
+22:    def vs_test(self):
+34:        # The window that we want to look at is from 200 ms after stim on until 1500 ms after.
+37:                cat_1.append(trial.win_spike_rate(self.spike_timestamps, 200, 1700))
+39:                cat_2.append(trial.win_spike_rate(self.spike_timestamps, 200, 1700))
+41:                cat_3.append(trial.win_spike_rate(self.spike_timestamps, 200, 1700))
+43:                cat_4.append(trial.win_spike_rate(self.spike_timestamps, 200, 1700))
+45:                cat_5.append(trial.win_spike_rate(self.spike_timestamps, 200, 1700))
+46:        return f_oneway(cat_1, cat_2, cat_3, cat_4, cat_5)[1]
+48:    def baseline_test(self):
+51:        :return: p value of the anova test
+58:            stim_period.append(trial.win_spike_rate(self.spike_timestamps, 200, 1700))
+59:        return f_oneway(baseline, stim_period)[1]
+[... 21 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/python/analysis; sed -n 55,103p single_neuron.py; sed -n 300,423p single_neuron.py
+```
+
+```
+stim_period = []
+        for trial in trials:
+            baseline.append(trial.win_spike_rate(self.spike_timestamps, -1000, 0))
+            stim_period.append(trial.win_spike_rate(self.spike_timestamps, 200, 1700))
+        return f_oneway(baseline, stim_period)[1]
+
+    def ms_test(self, n):
+        """
+        A bootstrap test for new old test
+        :param n: number of bootstraps
+        :return: a p value of the bootstrap test
+        """
+        trials = (trial for trial in self.trials_recog)
+
+        old = np.array([])
+        new = np.array([])
+
+        # Calculate the spike rates for new and old stimuli
+        for trial in trials:
+            if (trial.label == 0) & (trial.response <= 3.):
+[... 149 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/python/analysis; grep -n "def " behavior.py behavior_all.py helper.py; sed -n '/def extract_response_from_nwbfile/,/return/p' helper.py
+```
+
+```
+behavior.py:7:def plot_behavioral_graphs(*argv):
+behavior.py:241:def plot_prob_response():
+behavior.py:258:def plot_cumulative_roc():
+behavior.py:278:def plot_overall_performance():
+behavior.py:304:def plot_auc():
+behavior.py:324:def plot_confidence_accuracy():
+behavior_all.py:8:def plot_behavioral_graphs(NWBFilePath):
+behavior_all.py:252:def plot_prob_response():
+behavior_all.py:269:def plot_cumulative_roc():
+behavior_all.py:289:def plot_overall_performance():
+behavior_all.py:315:def plot_auc():
+behavior_all.py:335:def plot_confidence_accuracy():
+helper.py:12:def get_nwbfile_names(path):
+helper.py:26:def read(file_path):
+helper.py:35:def get_event_data(nwbfile):
+helper.py:62:def extract_recog_responses(nwbfile):
+helper.py:72:def extract_new_old_label(nwbfile):
+helper.py:88:def count_response(filenames):
+helper.py:132:def extract_probability_response(filenames):
+helper.py:145:def cal_d_prime(typecounters, n_old, n_new):
+[... 27 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/python/analysis; sed -n 62,88p helper.py; sed -n 145,400p helper.py; sed -n 315,385p behavior_all.py
+```
+
+```
+def extract_recog_responses(nwbfile):
+    """
+    Extract the recognition responses
+    """
+    events_learn, timestamps_learn, events_recog, timestamps_recog = get_event_data(nwbfile)
+    response_recog_ind = np.where((events_recog >= 30) & (events_recog <= 36))
+    response_recog = events_recog[response_recog_ind] - 30
+    return response_recog
+
+
+def extract_new_old_label(nwbfile):
+    """
+    Extracting the new old ground truths from the nwbfile.
+    """
+    labels = np.asarray(nwbfile.trials['new_old_labels_recog'].data)
+
+
+    if not (labels.dtype == 'O'): #check Matlab data type
+        new_old_labels = np.delete(labels, np.where(labels == 10)).astype(int)
+    else: #Python
+[... 335 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/python/analysis/demo; python - <<'E'
+import json
+nb=json.load(open('plotFigure5.ipynb'))
+for c in nb['cells']:
+    s=''.join(c['source'])
+    print('----',c['cell_type']); print(s[:3000])
+    for o in c.get('outputs',[]):
+        if 'text' in o: print('OUT:',''.join(o['text'])[:1500])
+        elif 'data' in o and 'text/plain' in o['data']: print('OUT:',''.join(o['data']['text/plain'])[:800])
+E
+```
+
+```
+---- markdown
+## This notebook will reproduce Figure 5 in the publication "A NWB-based Dataset and Processing Pipeline of Human Single-Neuron Activity During a Declarative Memory Task" by Chandravadia N. et al. 
+
+#### *Note: Running the code might take some time (about 5 min) -- (due to reading from and extracting data from the NWB files)*
+
+* Author: [Nand Chandravadia](mailto:[removed: an e-mail address])
+---- code
+#Figure 5 (Plot) 
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import pandas as pd
+import os
+import sys
+from pynwb import NWBHDF5IO
+import matplotlib.pyplot as plt
+import seaborn as sns
+import RutishauserLabtoNWB.events.newolddelay.python.analysis.helper as helper
+[... 341 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/code/RutishauserLabtoNWB/events/newolddelay/python/analysis/demo; python - <<'E'
+import json
+nb=json.load(open('plotFigure5.ipynb'))
+s=''.join(nb['cells'][3]['source']); i=s.find('#Get percent accuracy'); print(s[i:i+2500])
+s=''.join(nb['cells'][4]['source']); i=s.find('rects2'); print(s[i:])
+E
+```
+
+```
+#Get percent accuracy for each High and Low Confidence
+
+    recog_response = helper.extract_recog_responses(nwbfile)
+    is_included = helper.check_inclusion(recog_response, auc)
+    
+    if is_included:
+        ground_truth = helper.extract_new_old_label(nwbfile)
+        split_status, split_mode, ind_TP_high, ind_TP_low, ind_FP_high, ind_FP_low, ind_TN_high, \
+        ind_TN_low, ind_FN_high, ind_FN_low, n_response = helper.dynamic_split(recog_response, ground_truth)
+        
+        nr_TN_high = len(ind_TN_high[0])
+        nr_TP_high = len(ind_TP_high[0])
+        nr_TN_all = len(ind_TN_high[0]) + len(ind_TN_low[0])
+        nr_TN_low = len(ind_TP_high[0]) + len(ind_TP_low[0])
+        nr_TP_low = len(ind_TP_low[0])
+        nr_TN_low = len(ind_TN_low[0])
+
+        nr_high_response = len(ind_TN_high[0]) + len(ind_TP_high[0]) + len(ind_FN_high[0]) + len(ind_FP_high[0])
+        nr_low_response = len(ind_TN_low[0]) + len(ind_TP_low[0]) + len(ind_FN_low[0]) + len(ind_FP_low[0])
+    
+[... 45 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd $TMPDIR && . env/bin/activate && head -40 code/RutishauserLabtoNWB/events/newolddelay/defineNOsessions_release.ini; grep -c '^\[' code/RutishauserLabtoNWB/events/newolddelay/defineNOsessions_release.ini; time python - <<'E'
+import h5py, remfile, numpy as np, hashlib, time, resource
+url='https://dandiarchive.s3.amazonaws.com/blobs/58f/ff7/58fff79f-ef69-4f07-a876-34dd8d11462d'
+f=h5py.File(remfile.File(url),'r')
+d=f['stimulus/presentation/StimulusPresentation/data']
+print(d.chunks, d.compression)
+t=time.time(); x=d[:]; print(time.time()-t, x.nbytes)
+print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
+E
+```
+
+```
+Sun Nov 15 12:46:13 UTC 2026
+#defineNOsessions_release.ini
+
+#
+# List of all NO sessions that are part of the public data release.
+# [please note that many sessions don't exist here because they belong to different experiments]
+#
+# =============================================================================
+
+
+#P9S1 same day
+[5]
+NOsessions.session='P9HMH_NOID5'
+NOsessions.sessionID='P9S1'
+# Learning block trials in eventRaw.mat file
+NOsessions.EXPERIMENTIDLearn=80  
+# Memory test block trials in eventRaw.mat file
+NOsessions.EXPERIMENTIDRecog=81  
+# folder name in which data are stored (in 'events' and 'sorted' folders)
+NOsessions.taskDescr='NO'        
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "def \|embed\|literal\|MAX\|limit" tools/entry.py | head -80
+```
+
+```
+22:- no notebook or helper embeds a large literal array or an encoded image, or
+68:MAX_LITERAL_NUMBERS = 200                 # more numbers than this in one literal is "embedded data"
+73:LONG_LITERAL = re.compile(r"[\[(]\s*(?:-?\d+\.?\d*(?:e-?\d+)?\s*,\s*){%d,}" % MAX_LITERAL_NUMBERS)
+77:    def __init__(self):
+80:    def error(self, where, message: str) -> None:
+85:def dataset_id(record: dict) -> str | None:
+94:def dataset_ids(record: dict) -> list[str]:
+99:def claims_paths() -> list[Path]:
+105:def claims_target(data: dict) -> tuple:
+110:def lookup(index: dict, attempt: dict):
+119:def schema(name: str) -> Draft202012Validator:
+130:def _parsed(text: str):
+138:def _schema_errors(text: str, schema_name: str) -> tuple[str, ...]:
+144:def load(report: Report, path: Path):
+152:def validate(report: Report, path: Path, schema_name: str) -> dict | None:
+161:def _plain(value):
+172:def code_of(notebook_path: Path) -> str:
+179:def check(entry_dir: Path) -> Report:
+393:def _local_data(code: str, start: int) -> bool:
+400:def _derivation_checks(report: Report, where, code: str) -> None:
+[... 15 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 1,70p tools/entry.py; sed -n 179,420p tools/entry.py
 ```
 
 ```
@@ -209,6 +869,7 @@ cat tools/entry.py; cat schemas/claims.schema.json | head -150
 
     python tools/entry.py lock  entries/<name>   # pin the environment
     python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py check entries/*/       # the same for every entry, in one process
     python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
     python tools/entry.py all   entries/<name>   # check, then run
     python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
@@ -223,25 +884,23 @@ tied to the data:
 - every notebook in the directory is listed in entry.yaml, and exists;
 - notebooks are committed without outputs;
 - the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 477 more lines not kept]
+- each notebook, or a helper it imports, names the dataset the entry uses (its identifier and version);
+[... 292 more lines not kept]
 ```
-
-**Agent**
-
-Now the paper. Scientific Data is open access; fetching it.
 
 **Agent calls Bash**
 
 ```bash
-mkdir -p paper && cd paper && curl -sL -A "Mozilla/5.0" -o paper.html https://www.nature.com/articles/s41597-020-0415-9 ; ls -la; python -c "
-import re,html
-t=open('paper.html',encoding='utf8').read()
-t=re.sub(r'<script.*?</script>|<style.*?</style>','',t,flags=re.S)
-t=re.sub(r'<[^>]+>',' ',t); t=html.unescape(t); t=re.sub(r'[ \t]+',' ',t); t=re.sub(r'\n\s*\n+','\n',t)
-open('paper.txt','w').write(t); print(len(t))
-"
+cd $TMPDIR && curl -s -o faraut.xml "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5810422/fullTextXML"; ls -la faraut.xml; python - <<'E'
+import xml.etree.ElementTree as ET
+t=ET.parse('/tmp/claude-1001/faraut.xml').getroot()
+for tw in t.iter('table-wrap'):
+    print(tw.get('id'), ''.join(tw.find('label').itertext()) if tw.find('label') is not None else '', ''.join(tw.find('caption').itertext())[:200] if tw.find('caption') is not None else '')
+    rows=list(tw.iter('tr'))
+    print(len(rows))
+    for r in rows[:6]+rows[-4:]:
+        print([''.join(c.itertext()).strip() for c in r])
+E
 ```
 
 Result: the fetched text is not kept.
@@ -249,1933 +908,1243 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "Abstract" paper/paper.txt | head; awk 'NR>=1' paper/paper.txt | sed -n '/^ *Abstract/,$p' | head -c 60000
+cd $TMPDIR && curl -s -o chand.xml "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7055261/fullTextXML"; python - <<'E'
+import xml.etree.ElementTree as ET
+t=ET.parse('/tmp/claude-1001/chand.xml').getroot()
+for tw in t.iter('table-wrap'):
+    lab=tw.find('label'); print(tw.get('id'), ''.join(lab.itertext()) if lab is not None else '')
+    rows=list(tw.iter('tr')); print(len(rows))
+    for r in rows[:3]+rows[-3:]:
+        print([''.join(c.itertext()).strip() for c in r])
+E
 ```
 
-Result: not kept, because it reads the paper's text.
+Result: the fetched text is not kept.
 
-**Agent calls Read**
+**Agent**
+
+Network access is good: the paper's own Online-only Table 1 and Faraut et al. 2018 Table 1 can be fetched at runtime from Europe PMC, so neither has to be embedded. Writing the helper module now.
+
+**Agent calls Write**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/acff0572-6c07-4b63-b729-08d6f5765540/tool-results/bqyv9d6cu.txt"
+ "file_path": "entries/chandravadia-2020/nomem.py",
+ "content": "\"\"\"Loading and measures for the new/old recognition memory data of dandiset 000004.\n\nChandravadia, Liang, Schjetnan et al. (2020), Scientific Data 7, 78, doi:10.1038/s41597-020-0415-9.\n\nEach NWB file holds one session: the TTL events and experiment ids (acquisition), the trials table\n(100 encoding and 100 recognition trials), the 200 stimulus images (stimulus/presentation), the\nelectrodes table and the units table with spike times. Files are streamed from the archive at the\npinned version; nothing is written to disk. The stimulus images are reduced to one hash per frame\nas they load.\n\nWhere the parameters come from:\n\n- Recognition trials are the rows with stim_phase \"recog\"; the confidence response is\n  response_value minus 30 (1 = new, confident; 6 = old, confident); \"old\" is label 1 of\n  new_old_labels_recog. All three are fixed by the claims file (its opening comment), which\n  takes them from the paper's code (github.com/rutishauserlab/recogmem-release-NWB at commit\n  1d95162d2672e71dd234a31e4b8d70017a289ee3: NWBloadDataOfBlock_release.m subtracts 30 from\n  the event codes; NWB_singleCellAnalysis_release.m says \"1 is old, 0 is new\").\n- The ROC follows the paper's code as the claims file prescribes: the cumulative hit and false\n  alarm rates over the six confidence levels from \"old, confident\" down (calcEmpiricalROC.m,\n  calcCumulativeD.m), each adjusted for 0 and 1 as in adjustHF.m, the AUC by the trapezoid rule\n  with (0,0) and (1,1) added (calcROC_AUC.m), and the z-ROC slope as the least-squares\n  regression of z(H) on z(F) over the five interior points (calcZROCSlope.m).\n- Accuracy in high and low confidence trials: the fixed split (high 1 or 6, low 2 to 5) of\n  NO_behavior_evaluateSessionStatus.m, and the dynamic split of helper.dynamic_split in the\n  Python code, both named by the claims file (fig5d-confidence-accuracy). The Python split is\n  reproduced as written, including its count of low-confidence hits as response 4 only in split\n  mode 1 (MATLAB's NO_dynamic_lowHighSplit.m counts 4 and 5 there).\n- Firing rates are spike counts in a window after stimulus onset divided by its length (claims\n  file). The windows are 0.2 to 1.2 s (Methods, \"a 1 s long window starting 200 ms after\n  stimulus onset\") and 0.2 to 1.7 s (the code's, single_neuron.py and\n  NWB_singleCellAnalysis_release.m). Stimulus onset is the trial's start_time, which the paper\n  defines as \"the time of stimulus onset of each trial\" (Data Records, interval group).\n- The bootstrap test of equal means is Efron and Tibshirani's algorithm 16.2 as in\n  bootstrapMeanEqualTest.m (both samples shifted to the pooled mean, resampled with\n  replacement, two-sided on the absolute difference of means), with B = 1000 (Methods). The seed\n  is a standard choice and is passed in by the caller.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport hashlib\nimport re\nimport urllib.request\nimport xml.etree.ElementTree as ET\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import stats\n\nDANDISET_ID = \"000004\"\nDANDISET_VERSION = \"0.220126.1852\"\n\nWINDOW_METHODS = (0.2, 1.2)   # s after stimulus onset; Methods, Technical Validation\nWINDOW_CODE = (0.2, 1.7)      # s; single_neuron.py and NWB_singleCellAnalysis_release.m\nN_BOOT = 1000                 # Methods: \"two-tailed bootstrap comparison of means with 1,000 runs\"\nALPHA = 0.05\n\n# Full texts in Europe PMC (version of record, CC BY): this paper, and Faraut et al. 2018,\n# Sci Data 5, 180010 (doi:10.1038/sdata.2018.10), the earlier release of the task's data.\nPAPER_PMC = \"PMC7055261\"\nFARAUT_PMC = \"PMC5810422\"\nEUROPE_PMC = \"https://www.ebi.ac.uk/europepmc/webservices/rest/{}/fullTextXML\"\n\n\ndef asset_urls() -> list[tuple[str, str]]:\n    \"\"\"(path, streaming URL) of every NWB file at the pinned version.\"\"\"\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))\n                      for a in dandiset.get_assets() if a.path.endswith(\".nwb\"))\n\n\ndef _text(value) -> str:\n    if isinstance(value, bytes):\n        return value.decode()\n    if isinstance(value, np.ndarray):\n        return \"; \".join(_text(v) for v in value.ravel())\n    return str(value)\n\n\ndef _strings(dataset) -> np.ndarray:\n    return np.array([_text(v) for v in dataset[:]], dtype=object)\n\n\ndef load_session(path: str, url: str, images: bool = True) -> dict:\n    \"\"\"Everything the analyses use from one file, as plain arrays.\"\"\"\n    with h5py.File(remfile.File(url), \"r\") as f:\n        s = {\"path\": path, \"identifier\": _text(f[\"identifier\"][()]),\n             \"session_description\": _text(f[\"session_description\"][()]),\n             \"session_start_time\": _text(f[\"session_start_time\"][()]),\n             \"institution\": _text(f[\"general/institution\"][()]) if \"general/institution\" in f else \"\",\n             \"data_collection\": _text(f[\"general/data_collection\"][()]) if \"general/data_collection\" in f else \"\",\n             \"devices\": sorted(f[\"general/devices\"].keys())}\n        s[\"subject\"] = {k: _text(v[()]) for k, v in f[\"general/subject\"].items()}\n        ev, ex = f[\"acquisition/events\"], f[\"acquisition/experiment_ids\"]\n        s[\"events\"] = np.array([float(_text(v)) for v in ev[\"data\"][:]])\n        s[\"events_t\"] = ev[\"timestamps\"][:]\n        s[\"expids\"] = ex[\"data\"][:].astype(float)\n        s[\"expids_t\"] = ex[\"timestamps\"][:]\n        s[\"events_description\"] = _text(ev.attrs.get(\"description\", \"\"))\n        s[\"expids_description\"] = _text(ex.attrs.get(\"description\", \"\"))\n\n        tr = f[\"intervals/trials\"]\n        cols = [_text(c) for c in tr.attrs[\"colnames\"]]\n        table = {}\n        for c in cols:\n            d = tr[c]\n            table[c] = _strings(d) if d.dtype.kind in \"OSU\" else d[:]\n        s[\"trials\"] = pd.DataFrame(table)\n        s[\"trial_columns\"] = cols\n        s[\"label_description\"] = _text(tr[\"new_old_labels_recog\"].attrs.get(\"description\", \"\"))\n\n        el = f[\"general/extracellular_ephys/electrodes\"]\n        ecols = [_text(c) for c in el.attrs[\"colnames\"]]\n        etab = {\"id\": el[\"id\"][:]}\n        for c in ecols:\n            if c == \"group\":\n                continue\n            d = el[c]\n            etab[c] = _strings(d) if d.dtype.kind in \"OSU\" else d[:]\n        s[\"electrodes\"] = pd.DataFrame(etab)\n        s[\"electrode_columns\"] = ecols\n\n        u = f[\"units\"]\n        ucols = [_text(c) for c in u.attrs[\"colnames\"]]\n        s[\"unit_columns\"] = ucols\n        n = len(u[\"id\"])\n        idx = u[\"spike_times_index\"][:]\n        st = u[\"spike_times\"][:]\n        starts = np.concatenate([[0], idx[:-1]])\n        s[\"spikes\"] = [st[a:b] for a, b in zip(starts, idx)]\n        eidx = u[\"electrodes_index\"][:]\n        e = u[\"electrodes\"][:]\n        estarts = np.concatenate([[0], eidx[:-1]])\n        s[\"unit_electrodes\"] = [e[a:b] for a, b in zip(estarts, eidx)]\n        units = {\"id\": u[\"id\"][:]}\n        for c in (\"origClusterID\", \"SNR\", \"IsolationDist\", \"IsolDist\"):\n            if c in u:\n                units[c] = u[c][:]\n        if \"waveform_mean_sampling_rate\" in u:\n            units[\"waveform_rate\"] = u[\"waveform_mean_sampling_rate\"][:].reshape(n, -1)[:, 0]\n        for c in (\"waveform_mean_encoding\", \"waveform_mean_recognition\"):\n            if c in u:\n                w = u[c][:]\n                units[c + \"_samples\"] = np.full(n, w.shape[1])\n                units[c + \"_finite\"] = np.isfinite(w).all(axis=1)\n        s[\"units\"] = pd.DataFrame(units)\n\n        if images:\n            data = f[\"stimulus/presentation/StimulusPresentation/data\"]\n            s[\"image_shape\"] = data.shape\n            frames = data[:]\n            s[\"image_hash\"] = [hashlib.md5(frames[i].tobytes()).hexdigest() for i in range(frames.shape[0])]\n            s[\"image_t\"] = f[\"stimulus/presentation/StimulusPresentation/timestamps\"][:]\n            del frames\n    return s\n\n\ndef load_all(images: bool = True, workers: int = 6) -> list[dict]:\n    urls = asset_urls()\n    with ThreadPoolExecutor(workers) as pool:\n        return list(pool.map(lambda pu: load_session(*pu, images=images), urls))\n\n\ndef session_key(s: dict) -> tuple[str, int]:\n    \"\"\"(subject label, session id) from the identifier, e.g. 'H09_5' -> ('H09', 5).\"\"\"\n    label, sid = s[\"identifier\"].rsplit(\"_\", 1)\n    return label, int(sid)\n\n\ndef site(label: str) -> str:\n    \"\"\"CS for subjects labelled H or C, TWH for T (Figure 5 legend).\"\"\"\n    return \"TWH\" if label.startswith(\"T\") else \"CS\"\n\n\n# --- the paper's tables, read from the full text --------------------------------------------\n\ndef _tables(pmc: str) -> dict[str, list[list[str]]]:\n    with urllib.request.urlopen(EUROPE_PMC.format(pmc), timeout=60) as r:\n        root = ET.fromstring(r.read())\n    out = {}\n    for tw in root.iter(\"table-wrap\"):\n        label = tw.find(\"label\")\n        name = \"\".join(label.itertext()).strip() if label is not None else tw.get(\"id\")\n        rows = [[\"\".join(c.itertext()).strip() for c in tr] for tr in tw.iter(\"tr\")]\n        out.setdefault(name, rows)\n    return out\n\n\ndef _subject_rows(rows: list[list[str]]) -> pd.DataFrame:\n    out = []\n    for r in rows:\n        if len(r) < 7 or not re.fullmatch(r\"[HCT]\\d+\", r[0]):\n            continue\n        sessions = [int(x) for x in re.findall(r\"\\d+\", r[2])]\n        variants = [int(x) for x in re.findall(r\"\\d+\", r[3])]\n        out.append({\"label\": r[0], \"n_sessions\": int(r[1]), \"sessions\": sessions, \"variants\": variants,\n                    \"age\": int(r[4]), \"sex\": r[5], \"diagnosis\": r[6]})\n    return pd.DataFrame(out)\n\n\ndef paper_table1() -> tuple[pd.DataFrame, list[str]]:\n    \"\"\"Online-only Table 1 of the paper, one row per subject, and its totals row.\"\"\"\n    rows = _tables(PAPER_PMC)[\"Online-only Table 1\"]\n    totals = [c for c in rows[-1] if c]\n    return _subject_rows(rows), totals\n\n\ndef faraut_table1() -> tuple[pd.DataFrame, list[str], dict[str, list[list[str]]]]:\n    \"\"\"Table 1 of Faraut et al. 2018 (the earlier release), its totals, and all its tables.\"\"\"\n    tables = _tables(FARAUT_PMC)\n    rows = tables[\"Table 1\"]\n    totals = [c for c in rows[-1] if c]\n    return _subject_rows(rows), totals, tables\n\n\ndef sessions_of(table: pd.DataFrame) -> pd.DataFrame:\n    \"\"\"One row per (subject, session) of a subject table, with the session's variant.\"\"\"\n    rows = []\n    for _, r in table.iterrows():\n        for i, sid in enumerate(r.sessions):\n            rows.append({\"label\": r.label, \"session\": sid,\n                         \"variant\": r.variants[i] if i < len(r.variants) else np.nan})\n    return pd.DataFrame(rows)\n\n\n# --- behaviour --------------------------------------------------------------------------------\n\ndef recog(s: dict) -> pd.DataFrame:\n    \"\"\"Recognition trials: label (1 = old, as the paper's code), confidence 1..6 and onset.\"\"\"\n    t = s[\"trials\"]\n    r = t[t.stim_phase == \"recog\"].reset_index(drop=True)\n    out = pd.DataFrame({\"onset\": r.start_time.to_numpy(float),\n                        \"label\": r.new_old_labels_recog.astype(int).to_numpy(),\n                        \"confidence\": (r.response_value.to_numpy(float) - 30).astype(int),\n                        \"category\": r.stimCategory.to_numpy(int),\n                        \"category_name\": r.category_name.to_numpy()})\n    return out\n\n\ndef adjust_hf(h: float, f: float, n_old: int, n_new: int) -> tuple[float, float]:\n    \"\"\"adjustHF.m: rates of 0 and 1 moved to 1/(2n) and 1 - 1/(2n).\"\"\"\n    if h == 1:\n        h = 1 - 1 / (2 * n_old)\n    if f == 1:\n        f = 1 - 1 / (2 * n_new)\n    if h == 0:\n        h = 1 / (2 * n_old)\n    if f == 0:\n        f = 1 / (2 * n_new)\n    return h, f\n\n\ndef roc(confidence: np.ndarray, is_old: np.ndarray) -> tuple[np.ndarray, np.ndarray]:\n    \"\"\"Cumulative hit and false alarm rates for criteria 6, >=5, ..., >=1 (calcCumulativeD.m).\"\"\"\n    n_old, n_new = int(is_old.sum()), int((~is_old).sum())\n    hs, fs = [], []\n    for k in range(6, 0, -1):\n        said_old = confidence >= k\n        h = (said_old & is_old).sum() / n_old\n        f = (said_old & ~is_old).sum() / n_new\n        h, f = adjust_hf(h, f, n_old, n_new)\n        hs.append(h)\n        fs.append(f)\n    return np.array(hs), np.array(fs)\n\n\ndef auc(h: np.ndarray, f: np.ndarray) -> float:\n    \"\"\"calcROC_AUC.m / helper.cal_auc: trapezoid rule with (0,0) and (1,1) added.\"\"\"\n    tp, fp = list(h), list(f)\n    if fp[0] != 0 or tp[0] != 0:\n        tp, fp = [0.0] + tp, [0.0] + fp\n    if fp[-1] != 1 or tp[-1] != 1:\n        tp, fp = tp + [1.0], fp + [1.0]\n    area = 0.0\n    for i in range(1, len(tp)):\n        if fp[i - 1] < fp[i]:\n            area += (fp[i] - fp[i - 1]) * tp[i - 1] + 0.5 * (tp[i] - tp[i - 1]) * (fp[i] - fp[i - 1])\n    return area\n\n\ndef zroc_slope(h: np.ndarray, f: np.ndarray) -> float:\n    \"\"\"calcZROCSlope.m: regression of z(H) on z(F) over the first five points (the sixth is (1,1)).\"\"\"\n    zh, zf = stats.norm.ppf(h[:5]), stats.norm.ppf(f[:5])\n    return float(np.polyfit(zf, zh, 1)[0])\n\n\ndef accuracy_fixed(conf: np.ndarray, is_old: np.ndarray) -> tuple[float, float]:\n    \"\"\"NO_behavior_evaluateSessionStatus.m: high is response 1 or 6, low is 2 to 5.\"\"\"\n    correct = (is_old & (conf >= 4)) | (~is_old & (conf <= 3))\n    high = (conf == 1) | (conf == 6)\n    low = (conf >= 2) & (conf <= 5)\n    acc_h = correct[high].mean() if high.any() else np.nan\n    acc_l = correct[low].mean() if low.any() else np.nan\n    return acc_h, acc_l\n\n\ndef accuracy_dynamic(conf: np.ndarray, is_old: np.ndarray) -> tuple[float, float, int]:\n    \"\"\"helper.dynamic_split and plotFigure5.ipynb, as written. Returns (high, low, split mode).\"\"\"\n    counts = np.array([(conf == k).sum() for k in range(1, 7)])\n    c1, c2, c3 = counts[0] + counts[5], counts[1] + counts[4], counts[2] + counts[3]\n    split = np.array([c1 - (c2 + c3), (c1 + c2) - c3])\n    mode = int(np.where(np.abs(split) == np.abs(split).min())[0][0]) + 1\n    if counts[0] == 0 or counts[5] == 0:\n        mode = 2\n    if counts[1] == 0 or counts[4] == 0:\n        mode = 1\n    old, new = is_old, ~is_old\n    if mode == 1:\n        tp_h, tp_l = old & (conf >= 6), old & (conf == 4)\n        fp_h, fp_l = new & (conf >= 6), new & (conf == 4)\n        tn_h, tn_l = new & (conf <= 1), new & ((conf == 3) | (conf == 2))\n        fn_h, fn_l = old & (conf <= 1), old & ((conf == 3) | (conf == 2))\n    else:\n        tp_h, tp_l = old & (conf >= 5), old & (conf == 4)\n        fp_h, fp_l = new & (conf >= 5), new & (conf == 4)\n        tn_h, tn_l = new & (conf <= 2), new & (conf == 3)\n        fn_h, fn_l = old & (conf <= 2), old & (conf == 3)\n    n_h = tn_h.sum() + tp_h.sum() + fn_h.sum() + fp_h.sum()\n    n_l = tn_l.sum() + tp_l.sum() + fn_l.sum() + fp_l.sum()\n    acc_h = (tn_h.sum() + tp_h.sum()) / n_h if n_h else np.nan\n    acc_l = (tn_l.sum() + tp_l.sum()) / n_l if n_l else np.nan\n    return acc_h, acc_l, mode\n\n\ndef included(conf: np.ndarray, auc_value: float) -> bool:\n    \"\"\"helper.check_inclusion, applied by plotFigure5.ipynb before the accuracy panel.\"\"\"\n    counts = np.array([(conf == k).sum() for k in range(1, 7)])\n    return not (auc_value < 0.6 or (counts[:3] == 0).sum() > 1 or (counts[3:] == 0).sum() > 1)\n\n\n# --- single units -----------------------------------------------------------------------------\n\ndef window_rates(spikes: np.ndarray, onsets: np.ndarray, window: tuple[float, float]) -> np.ndarray:\n    \"\"\"Spike count in (onset + start, onset + stop] divided by the window length, per trial.\"\"\"\n    sp = np.sort(spikes)\n    lo = np.searchsorted(sp, onsets + window[0], side=\"right\")\n    hi = np.searchsorted(sp, onsets + window[1], side=\"right\")\n    return (hi - lo) / (window[1] - window[0])\n\n\ndef anova_p(rates: np.ndarray, groups: np.ndarray) -> float:\n    \"\"\"One-way ANOVA across the groups (the 5 categories); nan when every rate is equal.\"\"\"\n    samples = [rates[groups == g] for g in np.unique(groups)]\n    if np.all(rates == rates[0]):\n        return np.nan\n    return float(stats.f_oneway(*samples).pvalue)\n\n\ndef bootstrap_p(a: np.ndarray, b: np.ndarray, rng: np.random.Generator, n_boot: int = N_BOOT) -> float:\n    \"\"\"bootstrapMeanEqualTest.m (Efron and Tibshirani, algorithm 16.2), two-sided.\"\"\"\n    pooled = np.concatenate([a, b]).mean()\n    at, bt = a - a.mean() + pooled, b - b.mean() + pooled\n    ia = rng.integers(0, len(a), size=(n_boot, len(a)))\n    ib = rng.integers(0, len(b), size=(n_boot, len(b)))\n    t = np.abs(at[ia].mean(axis=1) - bt[ib].mean(axis=1))\n    return float(np.mean(t >= abs(a.mean() - b.mean())))\n\n\ndef isi_violation_fraction(spikes: np.ndarray, sort: bool = True, limit: float = 0.003) -> float:\n    \"\"\"Fraction of interspike intervals shorter than `limit` seconds (Methods: 3 ms).\"\"\"\n    sp = np.sort(spikes) if sort else spikes\n    if len(sp) < 2:\n        return np.nan\n    return float(np.mean(np.diff(sp) < limit))\n"
 }
 ```
 
 ```
-1	40: Abstract A challenge for data sharing in systems neuroscience is the multitude of different data formats used. Neurodata Without Borders: Neurophysiology 2.0 (NWB:N) has emerged as a standardized data format for the storage of cellular-level data together with meta-data, stimulus information, and behavior. A key next step to facilitate NWB:N adoption is to provide easy to use processing pipelines to import/export data from/to NWB:N. Here, we present a NWB-formatted dataset of 1863 single neurons recorded from the medial temporal lobes of 59 human subjects undergoing intracranial monitoring while they performed a recognition memory task. We provide code to analyze and export/import stimuli, behavior, and electrophysiological recordings to/from NWB in both MATLAB and Python. The data files are NWB:N compliant, which affords interoperability between programming languages and operating systems. This combined data and code release is a case study for how to utilize NWB:N for human single-neuron recordings and enables easy re-use of this hard-to-obtain data for both teaching and research on the mechanisms of human memory. Measurement(s) medial temporal lobe • memory • amygdala • hippocampus Technology Type(s) single-unit recording Factor Type(s) confidence • remembered/forgotten • old/new • visual category • stimulus onset (visual) Sample Characteristic - Organism Homo sapiens Machine-accessible metadata file describing the reported data: https://doi.org/10.6084/m9.figshare.11835801 
-2	138: Teeters, J. L. et al . Development of the Neurodata Without Borders: Neurophysiology file format. Front. Neurosci . Conference Abstract: Neuroinformatics, https://doi.org/10.3389/conf.fnins.2015.91.00033 (2015). Rubel, O. et al . NWB:N 2.0: An Accessible Data Standard for Neurophysiology. Preprint at, https://doi.org/10.1101/523035v1 (2019). Rossant, C. et al . Spike sorting for large, dense electrode arrays. Nat. Neurosci. 19 , 634–641 (2016). Article  
-3	 Abstract A challenge f
-[... 251 more lines not kept]
+File created successfully at: entries/chandravadia-2020/nomem.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/chandravadia-2020 && . $TMPDIR/env/bin/activate && python - <<'E'
+import time, resource, pickle, nomem
+t=time.time()
+urls=nomem.asset_urls()
+print(len(urls), time.time()-t)
+t=time.time()
+ss=[nomem.load_session(*u) for u in urls[:2]]
+print('2 files', time.time()-t, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+s=ss[0]; print(s['identifier'], s['subject'], s['trial_columns'], s['unit_columns'], s['electrode_columns'])
+print(s['units'].head()); print(nomem.recog(s).head())
+E
+```
+
+```
+87 3.8492398262023926
+2 files 3.385416269302368 0.405996
+H10_7 {'age': '37', 'description': 'Left Lateral Frontal', 'sex': 'M', 'species': 'Human', 'subject_id': 'P10HMH'} ['start_time', 'stop_time', 'stim_on_time', 'stim_off_time', 'delay1_time', 'delay2_time', 'stim_phase', 'stimCategory', 'category_name', 'external_image_file', 'new_old_labels_recog', 'response_value', 'response_time'] ['origClusterID', 'waveform_mean_encoding', 'waveform_mean_recognition', 'IsolationDist', 'SNR', 'waveform_mean_sampling_rate', 'spike_times', 'electrodes'] ['x', 'y', 'z', 'imp', 'location', 'filtering', 'group', 'group_name', 'origChannel']
+   id  ...  waveform_mean_recognition_finite
+0   0  ...                              True
+1   1  ...                              True
+2   2  ...                              True
+3   3  ...                              True
+4   4  ...                              True
+
+[5 rows x 9 columns]
+         onset  label  confidence  category category_name
+0  7045.061168      0           1         3      mobility
+1  7050.427808      1           1         1        houses
+2  7054.434928      0           1         2    landscapes
+3  7057.816328      1           2         4        phones
+4  7064.243768      1           5         4        phones
 ```
 
 **Agent**
 
-Full text obtained (open access, CC BY). Now the tables and the dandiset metadata.
+Helper works (about 1.7 s per file). Loading all 87 files into a development cache.
 
 **Agent calls Bash**
 
 ```bash
-cd paper; for i in 1 2 3; do curl -sL -A "Mozilla/5.0" -o table$i.html https://www.nature.com/articles/s41597-020-0415-9/tables/$i; python -c "
-import re,html,sys
-t=open('table$i.html',encoding='utf8').read()
-m=re.search(r'<table.*?</table>',t,flags=re.S)
-if not m: print('no table'); sys.exit()
-t=m.group(0); t=re.sub(r'</tr>','\n',t); t=re.sub(r'</t[dh]>',' | ',t); t=re.sub(r'<[^>]+>','',t); t=html.unescape(t)
-open('table$i.txt','w').write(t); print(t[:6000])
-"; done
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; curl -sL -A "Mozilla/5.0" -o table4.html https://www.nature.com/articles/s41597-020-0415-9/tables/4; python -c "
-import re,html,sys
-t=open('table4.html',encoding='utf8').read()
-m=re.search(r'<table.*?</table>',t,flags=re.S)
-if not m: print('no table'); print(re.findall(r'href=\"([^\"]*(?:xls|csv|pdf|docx|MOESM)[^\"]*)\"',t)[:10]); sys.exit()
-t=m.group(0); t=re.sub(r'</tr>','\n',t); t=re.sub(r'</t[dh]>',' | ',t); t=re.sub(r'<[^>]+>','',t); t=html.unescape(t)
-open('table4.txt','w').write(t); print(t)
-"
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-Note: the Methods say 89 sessions while Online-only Table 1 totals 87. Now the archive.
-
-**Agent calls Bash**
-
-```bash
-cd  curl -s https://api.dandiarchive.org/api/dandisets/000004/ | python -m json.tool; curl -s "https://api.dandiarchive.org/api/dandisets/000004/versions/?page_size=100" | python -m json.tool
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; for v in 0.220126.1851 0.220126.1852 draft; do curl -s "https://api.dandiarchive.org/api/dandisets/000004/versions/$v/assets/?page_size=200" > assets_$v.json; curl -s "https://api.dandiarchive.org/api/dandisets/000004/versions/$v/" > meta_$v.json; done; python - <<'EOF'
-import json
-A={}
-for v in ['0.220126.1851','0.220126.1852','draft']:
-    a=json.load(open(f'assets_{v}.json'))
-    A[v]={x['path']:(x['blob'] if 'blob' in x else x.get('asset_id'),x['size']) for x in a['results']}
-    print(v,a['count'],len(A[v]))
-print(A['0.220126.1851']==A['0.220126.1852'])
-print({k:(A['0.220126.1851'][k][1]==A['draft'].get(k,(0,0))[1]) for k in list(A['draft'])[:3]})
-same=all(A['draft'].get(k,(0,-1))[1]==s for k,(b,s) in A['0.220126.1852'].items())
-print('sizes same as draft',same, set(A['draft'])==set(A['0.220126.1852']))
-for k,(b,s) in sorted(A['0.220126.1852'].items()): print(k,s)
-m1=json.load(open('meta_0.220126.1851.json')); m2=json.load(open('meta_0.220126.1852.json')); md=json.load(open('meta_draft.json'))
-def diff(a,b,p=''):
-    if isinstance(a,dict) and isinstance(b,dict):
-        for k in set(a)|set(b): diff(a.get(k),b.get(k),p+'/'+k)
-    elif a!=b: print('DIFF',p,str(a)[:200],'|',str(b)[:200])
-diff(m1,m2); print('--- 1852 vs draft'); diff(m2,md)
-EOF
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-Both published versions have identical assets; I will pin the newer, 0.220126.1852. Two P42HMH files have the identical size (73057632 bytes), a possible duplicate deposit. Reading the full metadata.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; python - <<'EOF'
-import json
-m=json.load(open('meta_0.220126.1852.json'))
-for k,v in m.items():
-    if k in ('contributor',): 
-        for c in v: print('contributor',c.get('name'),c.get('roleName'))
-        continue
-    print(k,':',json.dumps(v)[:1500])
-a=json.load(open('assets_0.220126.1852.json'))['results']
-subs=sorted({x['path'].split('/')[0] for x in a}); print(len(subs),subs)
-print(a[0].keys())
-EOF
+. $TMPDIR/env/bin/activate && python - <<'E'
+import time, resource, pickle, nomem
+t=time.time()
+ss=nomem.load_all()
+print(len(ss), time.time()-t, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
+pickle.dump(ss, open('/tmp/claude-1001/sessions.pkl','wb'))
+E
 ```
 
 ```
-id : "DANDI:000004/0.220126.1852"
-doi : "10.48324/dandi.000004/0.220126.1852"
-url : "https://dandiarchive.org/dandiset/000004/0.220126.1852"
-name : "A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task"
-about : [{"name": "Medial Temporal Lobe", "schemaKey": "GenericType"}]
-access : [{"status": "dandi:OpenAccess", "schemaKey": "AccessRequirements", "contactPoint": {"schemaKey": "ContactPoint"}}]
-license : ["spdx:CC-BY-4.0"]
-version : "0.220126.1852"
-@context : "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json"
-citation : "Chandravadia, Nand; Liang, Dehua; Schjetnan, Andrea Gomez Palacio; Carlson, April; Faraut, Mailys; Chung, Jeffrey M.; Reed, Chrystal M.; Dichter, Ben; Maoz, Uri; Kalia, Suneil K.; Valiante, Taufik A.; Mamelak, Adam N.; Rutishauser, Ueli (2022) A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task (Version 0.220126.1852) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000004/0.220126.1852"
-keywords : ["cognitive neuroscience", "data standardization", "decision making", "declarative memory", "neurophysiology", "neurosurgery", "NWB", "open source", "single-neurons"]
-protocol : []
-schemaKey : "Dandiset"
-identifier : "DANDI:000004"
-repository : "https://dandiarchive.org/"
-contributor Chandravadia, Nand ['dcite:Author', 'dcite:ContactPerson', 'dcite:DataCurator', 'dcite:DataManager', 'dcite:FormalAnalysis', 'dcite:Investigation', 'dcite:Maintainer', 'dcite:Methodology', 'dcite:ProjectLeader', 'dcite:ProjectManager', 'dcite:ProjectMember', 'dcite:Researcher', 'dcite:Software', 'dcite:Validation', 'dcite:Visualization']
-contributor Liang, Dehua ['dcite:Author', 'dcite:Methodology', 'dcite:ProjectMember', 'dcite:Software', 'dcite:Validation']
-contributor Schjetnan, Andrea Gomez Palacio ['dcite:Author', 'dcite:DataCollector', 'dcite:ProjectMember', 'dcite:Validation']
-contributor Carlson, April ['dcite:Autho
-[... 30 more lines not kept]
-```
-
-**Agent**
-
-59 subjects match the paper. Now the paper's code repository and an exploration environment.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && git clone -q https://github.com/rutishauserlab/recogmem-release-NWB.git && cd recogmem-release-NWB && git log -1 --format='%H %ad' && find . -type f -not -path './.git/*' | grep -v -i matnwb | head -100
-```
-
-```
-1d95162d2672e71dd234a31e4b8d70017a289ee3 Tue Jan 14 12:07:46 2025 -0800
-./README.MD
-./.gitignore
-./MANIFEST.IN
-./setup.py
-./RutishauserLabtoNWB/NWBData/README.txt
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/demoHelper.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/demoExportEvents.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/demoImport.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/import.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/NWBpaper_exportSpikeTimes.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/demoExportSpikeTimes.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/demoExportSpikeTimes.ipynb
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/export.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/demo/demoExport.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/cell.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/no2nwb_main.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/trial.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/data.py
-./RutishauserLabtoNWB/events/newolddelay/python/export/no2nwb.py
-[... 82 more lines not kept]
+87 119.26671481132507 0.827836 GB
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay; wc -l python/analysis/*.py matlab/analysis/*.m matlab/analysis/helpers/{NWBneural_loopOverSessions_release,NO_selectSigCells_simple,NWB_singleCellAnalysis_release,bootstrapMeanEqualTest,bootstrapMeanEqualTestSimple,NWB_behaviorSummary,NO_behavioralExclusionCriteria,calcROC_AUC,NWBbehaviorROC_prepare,defineNWBsessions_release,extractPeriodCounts,determinePeriods,NWBrunForAllCellsInSession,prepareData_forSession_release,NO_behavior_evaluateSessionStatus,calcCumulativeD,calcMultipointROC}.m; cat README* 2>/dev/null | head -50; cat ../../../README.MD | head -80
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem, collections
+pd.set_option('display.width',250); pd.set_option('display.max_rows',200)
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+rows=[]
+for s in ss:
+    t=s['trials']; lab,sid=nomem.session_key(s)
+    r=t[t.stim_phase=='recog']; l=t[t.stim_phase=='learn']
+    rows.append(dict(id=s['identifier'],subj=s['subject']['subject_id'],age=s['subject']['age'],sex=s['subject']['sex'],diag=s['subject']['description'],
+      date=s['session_start_time'][:10],n_tr=len(t),n_learn=len(l),n_recog=len(r),phases=set(t.stim_phase),
+      lab=dict(collections.Counter(r.new_old_labels_recog)), ncat=t.stimCategory.nunique(), cats=sorted(set(t.category_name)),
+      units=len(s['units']), elec=len(s['electrodes']), exp=sorted(set(s['expids'])), ev_eq=len(s['events'])==len(s['expids']),
+      ts_eq=np.array_equal(s['events_t'],s['expids_t']), dc=s['data_collection'], inst=s['institution'], img=s['image_shape'],
+      ucols=','.join(s['unit_columns'])))
+df=pd.DataFrame(rows)
+print(df.drop(columns=['ucols','cats']).to_string())
+print(df.ucols.value_counts())
+print(df.subj.nunique(), df.units.sum())
+for s in ss[:1]: print(s['session_description'], s['subject'])
+print(collections.Counter(x for s in ss for x in s['trials'].stim_phase))
+print(collections.Counter(s['institution'] for s in ss))
+print(collections.Counter(tuple(s['devices']) for s in ss))
+E
 ```
 
 ```
-374 python/analysis/behavior.py
-   385 python/analysis/behavior_all.py
-   480 python/analysis/helper.py
-    97 python/analysis/main.py
-   423 python/analysis/single_neuron.py
-   129 matlab/analysis/EpilepticSitesExclusion.m
-   138 matlab/analysis/NWBloadDataOfBlock_release.m
-   102 matlab/analysis/NWBneural_main.m
-    63 matlab/analysis/NWBneural_main_addpath.m
-    49 matlab/analysis/helpers/NWBneural_loopOverSessions_release.m
-    29 matlab/analysis/helpers/NO_selectSigCells_simple.m
-   211 matlab/analysis/helpers/NWB_singleCellAnalysis_release.m
-   100 matlab/analysis/helpers/bootstrapMeanEqualTest.m
-    45 matlab/analysis/helpers/bootstrapMeanEqualTestSimple.m
-   293 matlab/analysis/helpers/NWB_behaviorSummary.m
-    30 matlab/analysis/helpers/NO_behavioralExclusionCriteria.m
-    51 matlab/analysis/helpers/calcROC_AUC.m
-    37 matlab/analysis/helpers/NWBbehaviorROC_prepare.m
-   943 matlab/analysis/helpers/defineNWBsessions_release.m
-    25 matlab/analysis/helpers/extractPeriodCounts.m
+id    subj age sex                            diag        date  n_tr  n_learn  n_recog          phases                 lab  ncat  units  elec           exp  ev_eq  ts_eq                             dc                         inst                 img
+0       H10_7  P10HMH  37   M            Left Lateral Frontal  2006-09-01   200      100      100  {learn, recog}  {'0': 50, '1': 50}     5     38    18  [80.0, 81.0]   True   True  learning: 80, recognition: 81   Hunigton Memorial Hospital  (200, 400, 300, 3)
+1       H11_9  P11HMH  16   M           Right Lateral Frontal  2006-11-01   200      100      100  {learn, recog}  {'0': 50, '1': 50}     5     25     9  [80.0, 81.0]   True   True  learning: 80, recognition: 81   Hunigton Memorial Hospital  (200, 400, 300, 3)
+2      H14_17  P14HMH  31   M  Bilateral Independent Temporal  2007-06-01   200      100      100  {learn, recog}  {'0': 50, '1': 50}     5     23     9  [83.0, 84.0]   True   True  learning: 83, recognition: 84   Hunigton Memorial Hospital  (200, 400, 300, 3)
+3      H14_18  P14HMH  31   M  Bilateral Independent Temporal  2007-06-01   150       50      100  {learn, recog}  {'0': 50, '1': 50}     5     33    10  [80.0, 81.0]   True   True  learning: 80, recognition: 81   Hunigton Memorial Hospital  (150, 400, 300, 3)
+4      H15_21  P15HMH  45   M           Right Mesial Temporal  2007-09-01   150       50      100  {learn, recog}  {'0': 50, '1': 50}     5     14     7  [83.0, 84.0]   True   True  learning: 83, recognition: 84   Hunigton Memorial Hospital  (150, 400, 300, 3)
+5      H15_20  P15HMH  45   M           Right Mesial Temporal  2007-09-01   150       50      100  {learn, recog}  {'0': 50, '1': 50}     5     20    11  [80.0, 81.0]   True   True  learning: 80, recognition: 81   Hunigton Memorial Hospital  (150, 400, 300, 3)
+6      H16_23  P16HMH  34   F           Right Lateral Frontal  2007-10-01   150       50      100  {learn, recog}  {'0': 50, '1': 50}     5     18     9  [83.0, 84.0]   True   True  le
 [... 88 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay/python/analysis; cat main.py single_neuron.py
-```
-
-```
-'''Main file to plot behavior and VS/MS Neurons'''
-
-
-import RutishauserLabtoNWB.events.newolddelay.python.analysis.behavior_all as behavior_all
-import RutishauserLabtoNWB.events.newolddelay.python.analysis.behavior as behavior
-import RutishauserLabtoNWB.events.newolddelay.python.analysis.single_neuron as single_neuron
-import RutishauserLabtoNWB.events.newolddelay.python.analysis.helper as helper
-import warnings
-
-
-def NO2NWB_analysis(NWBFilePath, list_of_patients_behavior, list_of_patients_neurons):
-
-    '''Section 1 -- NWB file input '''
-    #Specify data directory (i.e., where NWB files are located)
-    #NWBFilePath = 'V:/LabUsers/chandravadian/NWB Data/p'
-
-
-    '''Section 2 - Behavioral Analysis '''
-    # Specify Patient
-    #list_of_patients = [5, 6]
-[... 496 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay/matlab/analysis; cat NWBneural_main.m helpers/NWBneural_loopOverSessions_release.m helpers/NWBrunForAllCellsInSession.m helpers/NWB_singleCellAnalysis_release.m helpers/NO_selectSigCells_simple.m
-```
-
-```
-%% Main file for new/old analysis using the NWB data format (behavior and single-unit)
-%==================================================================
-% NWBneural_main_release.m
-%
-% Code that demonstrates how to read and utilize the human single-unit MTL data acquired during the new/old recognition task.
-% This version of the code relies on the NWB-formated version of the data.
-%
-% See Chandravadia et al. 2019, submitted.
-%==================================================================
-
-
-%% Section 1: Set Parameters - modify this section before running this code !
-
-% Point this directory to where the downloaded code is located.
-%codePath = 'C:\svnwork\nwbsharing\RutishauserLabtoNWB\'; % => enter here your path where the code is located. For Windows: 'nwb_example\'; For Linux or Mac: 'nwb_example/'
-codePath = 'C:\svnwork\nwbsharing\RutishauserLabtoNWB\';
-
-% Point this directory to where the downloaded NWB data is located.
-%basepathData = 'V:\LabUsers\chandravadian\NWB Data\matlab_win\';%  => enter here your path where the data is located. For Windows: 'data\'; For Linux or Mac: 'data/'
-basepathData = 'V:\LabUsers\chandravadian\NWB Data\NWBData\';
-[... 487 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay/matlab/analysis; cat NWBloadDataOfBlock_release.m helpers/extractPeriodCounts.m helpers/determinePeriods.m helpers/bootstrapMeanEqualTest.m helpers/bootstrapMeanEqualTestSimple.m helpers/prepareData_forSession_release.m
-```
-
-```
-% New/Old Experiment. Load behavioral and stimulus data.
-%
-%loads stimuli definitions, eventfile and logfile of a specific experimental block.
-%extractionMode: 1 recog, 2 learn
-%
-%returns:
-%stimuliLearn, stimuliRecog, newOldRecogLabels: data from experimentStimuli file (ground truth)
-%recogResponses: recognition response from log file
-%responsesEventfile: recognition response from events file (should be same)
-%
-
-function [stimuliLearn, stimuliRecog, newOldRecogLabels, recogResponses, responsesEventfile, recallResponses, recallEventfile, newOldRecall, events_all, categoryMapping, ...
-    errorRateLearn, RTs,RTs_vsQonset, StimOff_toQ_delay, StimOn_toOff_delay] = NWBloadDataOfBlock_release( NWBsession, ind, extractionMode, basepath )
-errorRateLearn=nan;
-recallResponses=[];
-recallEventfile=[];
-newOldRecall=[];
-
-% Read in nwbfiles
-
-[... 410 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay; grep -rn "NO_selectSigCells_simple\|EpilepticSitesExclusion\|translateArea" --include=*.m . | grep -v "^./matlab/analysis/helpers/NO_selectSigCells_simple.m:1"; cat matlab/analysis/helpers/translateArea.m; grep -c "^\[" defineNOsessions_release.ini; head -40 defineNOsessions_release.ini
-```
-
-```
-./matlab/export/NWBexport_demo.m:161:    brainAreaStr = translateArea( electrodeTable_raw(inds(1),3) );
-./matlab/export/exportNO2NWB_main.m:444:        brainAreaStr = translateArea( electrodeTable_raw(inds(1),3) );
-./matlab/export/helpers/runForAllCellsInSession.m:104:        brainAreaDescr = translateArea ( brainAreaOfCell );
-./matlab/export/helpers/getBrainAreaLOC.m:11:    brainAreaLOC{i} = translateArea(brainAreaIDs(i));
-./matlab/analysis/EpilepticSitesExclusion.m:2:function [ListOfCellsToUse, cellStatsAll_exclusion,totStats_exclusion ] = EpilepticSitesExclusion(cellStatsAll, totStats, epilepsyExclusionMode)
-./matlab/analysis/helpers/NO_selectSigCells_simple.m:5:function [sigCellListMS, sigCellListVS, sigCellListVisResp, sigCellList_valid] = NO_selectSigCells_simple(areaToProcessList, totStats, minRateToUse, minNrTrials, cellStatsAll,enforceBehaviorExclusions, alphaLimBootstrap )
-./matlab/analysis/helpers/translateArea.m:6:function descr = translateArea(areaCode)
-./matlab/analysis/NWBneural_main.m:90:paramsInPreset.onlyAreas = [1, 2, 3, 4, 8, 13];   % which areas to process. see translateArea.m 
-%
-% convert numerical brain area code to string
-% this convention is used in brainArea.mat to assign each channel/cell to a brain area
-%
-%
-function descr = translateArea(areaCode)
-descr=[];
-
-if length(areaCode)==1
-    descr = translateOneArea(areaCode);
-else
-    for i=1:length(areaCode)
-[... 65 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay; cat python/analysis/behavior_all.py; sed -n 1,200p python/analysis/helper.py
-```
-
-```
-import RutishauserLabtoNWB.events.newolddelay.python.analysis.helper as helper
-import scipy.stats as stats
-import logging
-import os
-import matplotlib.pyplot as plt
-import numpy as np
-
-def plot_behavioral_graphs(NWBFilePath):
-    """
-    Behavioral analysis, plotting six graphs:
-    1. Probability of responses
-    2. ROC curves for different sessions
-    3. Overall performance
-    4. Histogram of AUC
-    5. Accuracy over confidence high low
-    6. Confidence level over correctness of responses
-    """
-    # Get NWB files
-    allNWBfiles = os.listdir(NWBFilePath)
-
-[... 567 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay; sed -n 200,480p python/analysis/helper.py
-```
-
-```
-F = 1 - 1/(2*n_new)
-    if H == 0:
-        H = 1/(2*n_old)
-    if F == 0:
-        F = 1/(2*n_new)
-
-    return H, F
-
-def cal_cumulative_d(nwbfile):
-    """
-    calculate cummulative d' values as well as z-transformed hit/false alarm rates. used to construct empirical ROCs constructed using different
-    confidence ratings.
-
-    the format of C is described in calcEmpiricalROC.m
-
-    statsAll: each column is a confidence level. each row is d', zH, zF, H, F
-
-    urut/oct06
-    """
-    typecounter = cal_typecounter(nwbfile)
-[... 260 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers; cat NWB_behaviorSummary.m NWBbehaviorROC_prepare.m calcROC_AUC.m calcCumulativeD.m
-```
-
-```
-% plots summary of new/old task behavior.
-%
-%doPlot: 0 no, 1 summary plot, 2 z-ROC plots
-%
-%urut/march09
-%urut/aug18 split out from NO_DM_behaviorSummary.m and simplified.
-function [T,allSlopes, AUC, isIncluded_exclMode1, accuracyHighLow, typeCountersSame] = NWB_behaviorSummary(NWBsessions, allLearnSessionsToUse, modeBehavior, doPlot, basepath, modeExcludeSlowRT)
-
-T=[]; %decision threshold for each session. T(j)>= is OLD
-Thigh=[];%decision threshold for a stimulus to be of high confidence
-nrT=[];
-allConfCountsTP=[]; %for each session, probability of each confidence button press
-countersAv=[];
-TP_FP_chosen=[]; %TP/FP at the picked decision point
-Tp_FP_HighLowConf=[]; %TP/FP at the picked low/high confidence decision point
-allSlopes=[]; % slope of line fit in z-ROC space
-countersHistory=[]; %store all for later use in plotting
-fitHistory=[];
-errorRatesLearn=[]; %animal yes/no perc correct during learning
-
-[... 389 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers; cat NO_behavior_evaluateSessionStatus.m NO_dynamic_lowHighSplit.m calcZROCSlope.m calcDPrime.m adjustHF.m; grep -n "typeCounters\|function" ../../analysis/*.m | head; ls ..; grep -rn "function.*NWBbehaviorROC(" ../..
-```
-
-```
-%
-% evaluates whether a particular session should be included or not for NO retrieval analysis
-%
-%newOldRecogLabels: ground truth. 0-new, 1-old
-%
-% AUC behavioral AUC
-% respCounts raw response (1-6) to each trial
-%
-% enforceBehaviorExclusions : 0 include all; 1 include all with valid behavior; 2 include only those that distinguished high/low correctly
-%
-% rawAccuracies: high med low; accuracy separately for each conf level, without applying a high/low split
-% rawAccuracies2: accuracy separately for high/low and for new/old.   order: Old high, Old med, Old low, New low, New med, New High
-%
-%urut/CSMC/oct13
-function [isIncluded, AUC, percAccuracy_high, percAccuracy_low, TP, FP,respCounts,rawAccuracies, rawAccuracies2] = NO_behavior_evaluateSessionStatus(responses, newOldRecogLabels,enforceBehaviorExclusions)
-if nargin<3
-    enforceBehaviorExclusions=2;    
-end
-
-useDynamicSplitMode=0;
-[... 311 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers; cat NWBbehaviorROC.m calcEmpiricalROC.m 2>/dev/null | head -200; ls
-```
-
-```
-%behavioral data for new/old with certainty task
-%
-%produces ROCs 
-%
-%typeCounters: for each confidence rating (1-3), lists how many TP/FN/TN/FP. 3 columns, 4 rows
-%
-%modeExcludeSlowRT: 0 all included, 1 strict, 2 lenient
-%
-%responses/recogState are returned with too high RT items removed if this is enabled (modeExcludeSlowRT)
-%
-%===
-function [FPOld,TPOld, FPNew,TPNew, typeCounters, percError, percCorrect,errorRateLearn, RTsRecog, RTsLearn,percAccuracy_high, percAccuracy_low, responses, recogState,RTsRecog_vsQonset,StimOff_toQ_delay,StimOn_toOff_delay] = NWBbehaviorROC(NOsession, ind, NOsessionLearn, doPlot, basepath, modeExcludeSlowRT)
-if nargin<4
-    basepath='/data/';
-end
-if nargin<5
-    modeExcludeSlowRT=0;
-end
-
-extractionMode=1; %recog
-[... 242 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay/python/analysis/demo; python - <<'EOF'
-import json
-for f in ['plotFigure5.ipynb','demoAnalysis.ipynb']:
-    nb=json.load(open(f))
-    print('=====',f,len(nb['cells']))
-    for c in nb['cells']:
-        print('---',c['cell_type']); print(''.join(c['source'])[:3000])
-        for o in c.get('outputs',[]):
-            t=''.join(o.get('text',[])) or ''.join(o.get('data',{}).get('text/plain',[]))
-            if t: print('>>>',t[:1500])
-EOF
-```
-
-```
-===== plotFigure5.ipynb 5
---- markdown
-## This notebook will reproduce Figure 5 in the publication "A NWB-based Dataset and Processing Pipeline of Human Single-Neuron Activity During a Declarative Memory Task" by Chandravadia N. et al. 
-
-#### *Note: Running the code might take some time (about 5 min) -- (due to reading from and extracting data from the NWB files)*
-
-* Author: [Nand Chandravadia](mailto:[removed: an e-mail address])
---- code
-#Figure 5 (Plot) 
-
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-import pandas as pd
-import os
-import sys
-from pynwb import NWBHDF5IO
-import matplotlib.pyplot as plt
-import seaborn as sns
-[... 646 more lines not kept]
-```
-
-**Agent**
-
-The paper's Figure 5 notebook hardcodes the Figure 5f percentages instead of computing them. Setting up an exploration environment to open one file.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q --python 3.13 explore && uv pip install -q --python explore/bin/python dandi pynwb remfile h5py numpy pandas scipy statsmodels matplotlib 2>&1 | tail -3; explore/bin/python -c "import pynwb,dandi,remfile,h5py;print(pynwb.__version__,dandi.__version__,h5py.__version__)"
-```
-
-```
-4.2.0 0.81.0 3.16.0
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > ex1.py <<'EOF'
-import time, h5py, remfile, numpy as np
-from dandi.dandiapi import DandiAPIClient
-t=time.time()
-c=DandiAPIClient()
-ds=c.get_dandiset('000004','0.220126.1852')
-a=ds.get_asset_by_path('sub-P9HMH/sub-P9HMH_ses-20060301_obj-1otd1m8_ecephys+image.nwb')
-url=a.get_content_url(follow_redirects=1, strip_query=True)
-print(url)
-f=h5py.File(remfile.File(url),'r')
-def show(name,obj):
-    if isinstance(obj,h5py.Dataset):
-        print('D',name,obj.shape,obj.dtype, dict(obj.attrs) if len(obj.attrs)<6 else list(obj.attrs))
-    else:
-        if not name.startswith('stimulus/presentation/') : print('G',name,dict(obj.attrs))
-f.visititems(show)
-print(time.time()-t)
-EOF
-explore/bin/python ex1.py 2>&1 | grep -v "stimulus/presentation/stim" | head -150
-```
-
-```
-https://dandiarchive.s3.amazonaws.com/blobs/58f/ff7/58fff79f-ef69-4f07-a876-34dd8d11462d
-G acquisition {}
-G acquisition/events {'comments': 'no comments', 'description': ' The events coorespond to the TTL markers for each trial. For the learning trials, the TTL markers \n            are the following: 55 = start of the experiment, 1 = stimulus ON, 2 = stimulus OFF, 3 = Question Screen Onset [“Is this an animal?”], \n            20 = Yes (21 = NO) during learning, 6 = End of Delay after Response, 66 = End of Experiment. For the recognition trials, \n            the TTL markers are the following: 55 = start of experiment, 1 = stimulus ON, 2 = stimulus OFF, 3 = Question Screen Onset [“Have you seen this image before?”], \n            31:36 = Confidence (Yes vs. No) response [31 (new, confident), 32 (new, probably), 33 (new, guess), 34 (old, guess), \n            35 (old, probably), 36 (old, confident)], 66 = End of Experiment', 'namespace': 'core', 'neurodata_type': 'AnnotationSeries', 'object_id': 'd81b834f-7baa-4b26-88a7-2eb5e3d93a7e'}
-D acquisition/events/data (1004,) object {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'n/a'}
-D acquisition/events/timestamps (1004,) float64 {'interval': np.int32(1), 'unit': 'seconds'}
-G acquisition/experiment_ids {'comments': 'no comments', 'description': 'The experiment_ids coorespond to the encoding (i.e., learning) or recogniton trials. The learning trials are demarcated by: 80. The recognition trials are demarcated by: 81. ', 'namespace': 'core', 'neurodata_type': 'TimeSeries', 'object_id': 'a75b4714-52b9-4c64-b641-39f594bfb605'}
-D acquisition/experiment_ids/data (1004,) float64 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'NA'}
-D acquisition/experiment_ids/timestamps (1004,) float64 {'interval': np.int32(1), 'unit': 'seconds'}
-G analysis {}
-D file_create_date (1,) object {}
-G general {}
-D general/data_collection () object {}
-G general/devices {}
-G general/devices/Neuralynx-ch
-[... 89 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > ex2.py <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd
-url='https://dandiarchive.s3.amazonaws.com/blobs/58f/ff7/58fff79f-ef69-4f07-a876-34dd8d11462d'
-f=h5py.File(remfile.File(url),'r')
-for k in ['general/data_collection','general/experiment_description','general/institution','general/keywords','general/lab','general/related_publications','general/subject/age','general/subject/description','general/subject/sex','general/subject/species','general/subject/subject_id','identifier','session_description','session_start_time','timestamps_reference_time','file_create_date']:
-    print(k,'=',f[k][()])
-T={}
-for k in f['intervals/trials']:
-    d=f['intervals/trials'][k][()]
-    if d.dtype==object: d=np.array([x.decode() if isinstance(x,bytes) else x for x in d])
-    T[k]=d
-T=pd.DataFrame(T)
-pd.set_option('display.width',250); pd.set_option('display.max_columns',30)
-print(T.head(5)); print(T.iloc[98:106]); print(T.tail(3))
-print(T.dtypes)
-for c in ['stim_phase','stimCategory','category_name','new_old_labels_recog','response_value']:
-    print(c, T[c].value_counts().to_dict())
-r=T[T.stim_phase!='learn']
-print(pd.crosstab(r.new_old_labels_recog, r.response_value))
-print(pd.crosstab(T.stimCategory,T.category_name))
-ev=f['acquisition/events/data'][()]; ts=f['acquisition/events/timestamps'][()]; ex=f['acquisition/experiment_ids/data'][()]
-print(ev[:20], ts[:20], ex[:5], np.unique(ex,return_counts=True))
-print(pd.Series([x.decode() if isinstance(x,bytes) else x for x in ev]).value_counts().to_dict())
-st=f['units/spike_times'][()]; print('spikes',st.min(),st.max(), ts.min(), ts.max(), T.start_time.min(), T.stop_time.max())
-print('E loc',[x.decode() for x in f['general/extracellular_ephys/electrodes/location'][()]], f['general/extracellular_ephys/electrodes/origChannel'][()], f['units/electrodes'][()], f['units/electrodes_index'][()])
-print(f['general/extracellular_ephys/electrodes/x'][()],f['general/extracellular_ephys/electrodes/imp'][()],f['general/extracellular_ephys/electrodes/filtering'][()][:2])
-print(f['units/origClusterID'][()], f['units/SNR'][()], f['units/IsolationDist'][()], f['units/waveform_mean_sampling_rate'][()][:3].ravel())
-print(f['stimulus/presentation/StimulusPresentation/timestamps'][()][:5])
-EOF
-explore/bin/python ex2.py
-```
-
-```
-general/data_collection = b'learning: 80, recognition: 81'
-general/experiment_description = b'The data contained within this file describes a new/old recogntion task performed in patients with intractable epilepsy implanted with depth electrodes and Behnke-Fried microwires in the human Medical Temporal Lobe (MTL).'
-general/institution = b'Hunigton Memorial Hospital'
-general/keywords = [b'Intracranial Recordings' b'Intractable Epilepsy'
- b'Single-Unit Recordings' b'Cognitive Neuroscience' b'Learning' b'Memory'
- b'Neurosurgery']
-general/lab = b'Rutishauser'
-general/related_publications = [b'Faraut et al. 2018, Scientific Data; Rutishauser et al. 2015, Nat Neurosci;']
-general/subject/age = b'55'
-general/subject/description = b'Right Mesial Temporal'
-general/subject/sex = b'M'
-general/subject/species = b'Human'
-general/subject/subject_id = b'P9HMH'
-identifier = b'H09_5'
-session_description = b'New/Old recognition task for ID: 5. '
-session_start_time = b'2006-03-01T00:00:00-08:00'
-timestamps_reference_time = b'2006-03-01T00:00:00-08:00'
-file_create_date = [b'2020-05-26T19:08:01.684501-07:00']
-  category_name  delay1_time  delay2_time            external_image_file  id new_old_labels_recog  response_time  response_value   start_time  stimCategory  stim_off_time  stim_on_time stim_phase    stop_time
-0   smallAnimal  4219.809162  4221.912082  newolddelay\smallAnimal\7.jpg   0                   NA    4220.912202             1.0  4218.311402             5    4219.308442   4218.311402      learn  4221.912082
-[... 68 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > survey.py <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd, pickle, time
-from concurrent.futures import ThreadPoolExecutor
-from dandi.dandiapi import DandiAPIClient
-c=DandiAPIClient(); ds=c.get_dandiset('000004','0.220126.1852')
-assets=sorted(ds.get_assets(), key=lambda a:a.path)
-def dec(x): return x.decode() if isinstance(x,bytes) else x
-def load(a):
-    url=a.get_content_url(follow_redirects=1, strip_query=True)
-    f=h5py.File(remfile.File(url),'r')
-    out={'path':a.path}
-    for k in ['identifier','session_description','session_start_time','general/subject/age','general/subject/sex','general/subject/subject_id','general/subject/description','general/subject/species','general/institution','general/data_collection','general/devices']:
-        try:
-            v=f[k]; out[k]= list(v.keys()) if isinstance(v,h5py.Group) else dec(v[()])
-        except KeyError: out[k]=None
-    T={}
-    for k in f['intervals/trials']:
-        d=f['intervals/trials'][k][()]
-        if d.dtype==object: d=np.array([dec(x) for x in d])
-        T[k]=d
-    out['trials']=pd.DataFrame(T)
-    out['trial_attrs']={k:dec(f['intervals/trials'][k].attrs.get('description','')) for k in f['intervals/trials']}
-    out['events']=np.array([dec(x) for x in f['acquisition/events/data'][()]])
-    out['events_ts']=f['acquisition/events/timestamps'][()]
-    out['exp_ids']=f['acquisition/experiment_ids/data'][()]
-    out['exp_ids_ts']=f['acquisition/experiment_ids/timestamps'][()]
-    u=f['units']
-    out['unit_cols']=list(u.keys())
-    out['spike_times']=u['spike_times'][()]; out['spike_index']=u['spike_times_index'][()]
-    out['unit_elec']=u['electrodes'][()]; out['unit_elec_index']=u['electrodes_index'][()]
-    for k in ['origClusterID','SNR','IsolationDist','waveform_mean_sampling_rate','id']:
-        out['u_'+k]=u[k][()] if k in u else None
-    out['wf_shape']=u['waveform_mean_encoding'].shape
-    out['wf_enc']=u['waveform_mean_encoding'][()]
-    e=f['general/extracellular_ephys/electrodes']
-    out['elec']=pd.DataFrame({k:(np.array([dec(x) for x in e[k][()]]) if e[k].dtype==object else e[k][()]) for k in e if k not in ('group',)})
-    sp=f['stimulus/presentation']
-    out['stim']={k:(sp[k]['data'].shape, sp[k]['timestamps'][()] if 'timestamps' in sp[k] else None) for k in sp}
-    out['top']=list(f.keys()); out['acq']=list(f['acquisition'].keys())
-    out['processing']=list(f['processing'].keys()); out['analysis']=list(f['analysis'].keys())
-    return out
-t=time.time()
-with ThreadPoolExecutor(8) as ex: res=list(ex.map(load, assets))
-print(len(res), time.time()-t)
-pickle.dump(res, open('survey.pkl','wb'))
-EOF
-explore/bin/python survey.py 2>&1 | tail -5
-```
-
-```
-87 78.69193887710571
-Shell cwd was reset to
-```
-
-**Agent**
-
-All 87 files stream in 79 s with 8 threads. Summarising them.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > an1.py <<'EOF'
-import pickle, numpy as np, pandas as pd, collections
-pd.set_option('display.width',250); pd.set_option('display.max_rows',200); pd.set_option('display.max_columns',30)
-res=pickle.load(open('survey.pkl','rb'))
-rows=[]
-for r in res:
-    T=r['trials']; rec=T[T.stim_phase!='learn']
-    nunits=len(r['spike_index'])
-    locs=r['elec'].location.values[r['unit_elec']]
-    rows.append(dict(path=r['path'].split('/')[1][:45], ident=r['identifier'], sid=r['general/subject/subject_id'], age=r['general/subject/age'], sex=r['general/subject/sex'],
-      diag=r['general/subject/description'], inst=r['general/institution'], dc=r['general/data_collection'], start=r['session_start_time'][:10],
-      ntr=len(T), phases=dict(T.stim_phase.value_counts()), nrec=len(rec), labels=dict(rec.new_old_labels_recog.value_counts()), ncat=T.stimCategory.nunique(),
-      cats=tuple(sorted(T.category_name.unique())), units=nunits, nspk=len(r['spike_times']), elec_idx_ok=bool((r['unit_elec_index']==np.arange(1,nunits+1)).all()),
-      locs=dict(collections.Counter(locs)), expids=tuple(np.unique(r['exp_ids']).astype(int)), cols=len(T.columns), ucols=len(r['unit_cols']), wfsr=tuple(np.unique(r['u_waveform_mean_sampling_rate'])) if r['u_waveform_mean_sampling_rate'] is not None else None,
-      stim=tuple((k,v[0]) for k,v in r['stim'].items()), acq=tuple(r['acq']), devices=tuple(r['general/devices'] or [])))
-D=pd.DataFrame(rows)
-print(D[['ident','sid','age','sex','inst','start','ntr','nrec','labels','ncat','units','nspk','expids']].to_string())
-print('total units',D.units.sum(), 'subjects',D.sid.nunique(), 'sessions', len(D))
-for c in ['phases','cats','cols','ucols','wfsr','stim','acq','devices','dc','elec_idx_ok','inst','diag']:
-    print(c, D[c].astype(str).value_counts().to_dict())
-allloc=collections.Counter()
-for l in D.locs: allloc.update(l)
-print(allloc)
-print(set(c for r in res for c in r['trials'].columns))
-print(set(c for r in res for c in r['unit_cols']))
-print(set(c for r in res for c in r['elec'].columns))
-print(res[0]['trial_attrs'])
-EOF
-explore/bin/python an1.py
-```
-
-```
-ident     sid age sex                         inst       start  ntr  nrec              labels  ncat  units    nspk    expids
-0       H10_7  P10HMH  37   M   Hunigton Memorial Hospital  2006-09-01  200   100  {'0': 50, '1': 50}     5     38   97804  (80, 81)
-1       H11_9  P11HMH  16   M   Hunigton Memorial Hospital  2006-11-01  200   100  {'0': 50, '1': 50}     5     25   40835  (80, 81)
-2      H14_17  P14HMH  31   M   Hunigton Memorial Hospital  2007-06-01  200   100  {'0': 50, '1': 50}     5     23  111625  (83, 84)
-3      H14_18  P14HMH  31   M   Hunigton Memorial Hospital  2007-06-01  150   100  {'0': 50, '1': 50}     5     33  118870  (80, 81)
-4      H15_21  P15HMH  45   M   Hunigton Memorial Hospital  2007-09-01  150   100  {'0': 50, '1': 50}     5     14  104841  (83, 84)
-5      H15_20  P15HMH  45   M   Hunigton Memorial Hospital  2007-09-01  150   100  {'0': 50, '1': 50}     5     20   52212  (80, 81)
-6      H16_23  P16HMH  34   F   Hunigton Memorial Hospital  2007-10-01  150   100  {'0': 50, '1': 50}     5     18   50587  (83, 84)
-7      H16_24  P16HMH  34   F   Hunigton Memorial Hospital  2007-10-01  200   100  {'0': 50, '1': 50}     5     21  132807  (80, 81)
-8      H17_32  P17HMH  19   M   Hunigton Memorial Hospital  2008-05-01  200   100  {'0': 50, '1': 50}     5     43   94536  (80, 81)
-9      H18_26  P18HMH  40   M   Hunigton Memorial Hospital  2008-06-01  150   100  {'0': 50, '1': 50}     5     33   77297  (80, 81)
-10     H19_28  P19HMH  34   M   Hunigton Memorial Hospital  2008-06-01  200   100  {'0': 50, '1': 50}     5     15   44842  (80, 81)
-11     H19_27  P19HMH  34   M   Hunigton Memorial Hospital  2008-06-01  150   100  {'0': 50, '1': 50}     5     16   24535  (83, 84)
-12     H21_38  P21HMH  20   M   Hunigton Memorial Hospital  2009-01-01  200   100  {'0': 50, '1': 50}     5     20   28237  (83, 84)
-13     H21_41  P21HMH  20   M   Hunigton Memorial Hospital  2009-01-01  200   100  {'0': 50, '1': 50}     5     15   17580  (88, 89)
-14     H21_39
-[... 91 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > an2.py <<'EOF'
-import pickle, numpy as np, pandas as pd, re
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem, collections, hashlib
 pd.set_option('display.width',250); pd.set_option('display.max_rows',200)
-res=pickle.load(open('survey.pkl','rb'))
-tab=[l.split(' | ') for l in open('paper/table4.txt').read().strip().split('\n')[1:-1]]
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
 rows=[]
-for t in tab:
-    pid=t[0].strip(); sess=[int(s) for s in re.split(r'[,\s]+',t[2].strip()) if s]; var=[int(s) for s in re.split(r'[,\s]+',t[3].strip()) if s]
-    for s,v in zip(sess,var): rows.append(dict(tid=pid,session=s,variant=v,age=int(t[4]),sex=t[5].strip(),diag=t[6].strip()))
-TB=pd.DataFrame(rows); print(len(TB), TB.tid.nunique())
-F=pd.DataFrame([dict(ident=r['identifier'],session=int(r['identifier'].split('_')[1]),sid=r['general/subject/subject_id'],age=int(r['general/subject/age']),sex=r['general/subject/sex'],diag=r['general/subject/description'],cats=sorted(r['trials'].category_name.unique())[0]) for r in res])
-M=F.merge(TB,on='session',how='outer',suffixes=('_f','_t'),indicator=True)
-print(M._merge.value_counts())
-M['idpref']=M.ident.str.split('_').str[0]
-bad=M[(M.age_f!=M.age_t)|(M.sex_f!=M.sex_t)]
-print(bad[['ident','sid','tid','age_f','age_t','sex_f','sex_t','diag_f','diag_t']])
-print((M.diag_f!=M.diag_t).sum())
-print(M[['ident','tid','diag_f','diag_t']][M.diag_f.str.lower()!=M.diag_t.str.lower()].to_string())
-# id prefix vs table id
-M['tnum']=M.tid.str.extract(r'(\d+)').astype(int); M['fnum']=M.ident.str.extract(r'^[A-Z]+(\d+)').astype(int)
-print('id number mismatch', M[M.tnum!=M.fnum][['ident','tid']])
-print(pd.crosstab(M.variant,M.cats))
-# sex totals per subject
-S=F.groupby('sid').agg(sex=('sex','first'),nsex=('sex','nunique'),age=('age','first'))
-print(S.sex.value_counts(), S.nsex.max())
-ST=TB.groupby('tid').sex.first(); print(ST.value_counts())
-EOF
-explore/bin/python an2.py
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat >> an2.py <<'EOF'
-print(bad[['ident','age_f','age_t','sex_f','sex_t']].to_string())
-EOF
-explore/bin/python an2.py | tail -5
-cat > an3.py <<'EOF'
-import pickle, numpy as np, pandas as pd
-res={r['identifier']:r for r in pickle.load(open('survey.pkl','rb'))}
-for a,b in [('H23_43','H23_44'),('H42_54','H42_55')]:
-    A,B=res[a],res[b]
-    print(a,b,'spikes equal',np.array_equal(A['spike_times'],B['spike_times']),'index eq',np.array_equal(A['spike_index'],B['spike_index']), 'clusters eq', np.array_equal(A['u_origClusterID'],B['u_origClusterID']), 'wf eq', np.array_equal(A['wf_enc'],B['wf_enc'],equal_nan=True))
-    for k in (a,b):
-        R=res[k]; T=R['trials']
-        print(k,'spikes',R['spike_times'].min().round(1),R['spike_times'].max().round(1),'trials',T.start_time.min().round(1),T.stop_time.max().round(1),'events',R['events_ts'].min().round(1),R['events_ts'].max().round(1), 'ntr',len(T), 'imgs', T.external_image_file.iloc[[0,100]].tolist())
-    TA,TB=A['trials'],B['trials']
-    print('trials identical?', TA.shape==TB.shape and TA.equals(TB))
-    print('events identical?', np.array_equal(A['events'],B['events']) if len(A['events'])==len(B['events']) else 'len differ', len(A['events']),len(B['events']))
-# general pairwise check of all sessions: same spike count or same first spikes or same trial times
-keys=sorted(res)
-import itertools
-sig={k:(len(res[k]['spike_times']), tuple(np.round(res[k]['spike_times'][:5],4))) for k in keys}
-tsig={k:tuple(np.round(res[k]['trials'].start_time.values[:5],4)) for k in keys}
-esig={k:(len(res[k]['events']), tuple(np.round(res[k]['events_ts'][:5],4))) for k in keys}
-for x,y in itertools.combinations(keys,2):
-    s=[n for n,d in (('spikes',sig),('trials',tsig),('events',esig)) if d[x]==d[y]]
-    if s: print('PAIR',x,y,s)
-# within-file duplicated units
-for k in keys:
-    R=res[k]; idx=np.r_[0,R['spike_index']]; units=[R['spike_times'][idx[i]:idx[i+1]] for i in range(len(idx)-1)]
-    for i,j in itertools.combinations(range(len(units)),2):
-        if len(units[i])==len(units[j]) and np.array_equal(units[i],units[j]): print('dup unit',k,i,j)
-    # sortedness
-    uns=[i for i,u in enumerate(units) if np.any(np.diff(u)<0)]
-    if uns: print('unsorted',k,uns)
-    if any(len(u)==0 for u in units): print('empty unit',k)
-EOF
-explore/bin/python an3.py
+for s in ss:
+    t=s['trials']; learn=t.stim_phase=='learn'; rec=t.stim_phase=='recog'
+    h=np.array(s['image_hash']); f=t.external_image_file.to_numpy()
+    lab=t.new_old_labels_recog.to_numpy()
+    enc_h=set(h[learn]); enc_f=set(f[learn])
+    r=nomem.recog(s)
+    inenc_h=np.array([x in enc_h for x in h[rec]]); inenc_f=np.array([x in enc_f for x in f[rec]])
+    l=r.label.to_numpy(); c=r.confidence.to_numpy()
+    rows.append(dict(id=s['identifier'], n_enc_files=len(enc_f), n_enc_hash=len(enc_h),
+       l0_in_enc_f=inenc_f[l==0].mean(), l1_in_enc_f=inenc_f[l==1].mean(), l0_in_enc_h=inenc_h[l==0].mean(), l1_in_enc_h=inenc_h[l==1].mean(),
+       old_resp_l0=(c[l==0]>=4).mean(), old_resp_l1=(c[l==1]>=4).mean(), conf_range=(c.min(),c.max()),
+       img_t_eq=np.allclose(s['image_t'], t.start_time) if len(s['image_t'])==len(t) else 'len'))
+df=pd.DataFrame(rows); print(df.to_string())
+print((df.l1_in_enc_h==1).sum(), (df.l0_in_enc_h==0).sum())
+E
 ```
 
 ```
-ident  age_f  age_t sex_f sex_t
-23   H33_52     30     29     M     M
-28  CS24_59     57     47     F     F
-29  CS24_60     57     47     F     F
-48   H48_99     32     54     F     M
-H23_43 H23_44 spikes equal True index eq True clusters eq True wf eq True
-H23_43 spikes 1494.4 4477.7 trials 3292.3 4477.7 events 3291.0 4477.7 ntr 200 imgs ['newolddelay3\\3people\\44.jpg', 'newolddelay3\\1cars\\23.jpg']
-H23_44 spikes 1494.4 4477.7 trials 1495.1 3035.1 events 1493.8 3035.1 ntr 150 imgs ['newolddelay2\\zzanimal\\17.jpg', 'newolddelay2\\zzanimal\\7.jpg']
-trials identical? False
-events identical? len differ 1006 754
-H42_54 H42_55 spikes equal True index eq True clusters eq True wf eq True
-H42_54 spikes 1610.0 4525.0 trials 1610.7 3626.3 events 1609.6 3626.3 ntr 200 imgs ['newolddelay\\smallAnimal\\7.jpg', 'newolddelay\\mobility\\17.jpg']
-H42_55 spikes 1610.0 4525.0 trials 1610.7 4524.9 events 1609.6 4524.9 ntr 200 imgs ['newolddelay\\smallAnimal\\7.jpg', 'newolddelay\\mobility\\20.jpg']
-trials identical? False
-events identical? False 1004 1004
-PAIR H23_43 H23_44 ['spikes']
-PAIR H42_54 H42_55 ['spikes', 'trials', 'events']
-unsorted CS29_70 [18, 25, 27]
-unsorted CS31_73 [3]
-unsorted CS33_77 [3, 21]
-[... 5 more lines not kept]
+id  n_enc_files  n_enc_hash  l0_in_enc_f  l1_in_enc_f  l0_in_enc_h  l1_in_enc_h  old_resp_l0  old_resp_l1 conf_range  img_t_eq
+0       H10_7          100         100          0.0         1.00          0.0         1.00         0.46         0.66     (1, 6)      True
+1       H11_9          100         100          0.0         1.00          0.0         1.00         0.24         0.70     (1, 6)      True
+2      H14_17          100         100          0.0         1.00          0.0         1.00         0.30         0.66     (1, 6)      True
+3      H14_18           50          50          0.0         0.58          0.0         0.58         0.02         0.44     (1, 6)      True
+4      H15_21           50          50          0.0         0.52          0.0         0.52         0.70         0.80     (1, 6)      True
+5      H15_20           50          50          0.0         0.58          0.0         0.58         0.76         0.88     (1, 6)      True
+6      H16_23           50          50          0.0         0.52          0.0         0.52         0.06         0.58     (1, 6)      True
+7      H16_24          100         100          0.0         1.00          0.0         1.00         0.20         0.56     (1, 4)      True
+8      H17_32          100         100          0.0         1.00          0.0         1.00         0.24         0.70     (1, 6)      True
+9      H18_26           50          50          0.0         0.58          0.0         0.58         0.14         0.44     (1, 6)      True
+10     H19_28          100         100          0.0         1.00          0.0         1.00         0.48         0.80     (1, 6)      True
+11     H19_27           50          50          0.0         0.52          0.0         0.52         0.30         0.82     (1, 6)      True
+12     H21_38          100         100          0.0         1.00          0.0         1.00         0.60         0.92     (2, 6)      True
+13     H21_41          100         100          0.0         1.00          0.0  
+[... 74 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/recogmem-release-NWB/RutishauserLabtoNWB/events/newolddelay; for s in 43 44 54 55 59 99 52 68 48 135; do awk -v s="[$s]" '$0==s{p=1} p&&/^\[/&&$0!=s{p=0} p' defineNOsessions_release.ini | grep -v "^#" | grep -E "session=|EXPERIMENT|variant|ID =|age|sex|date|diagnosis|recogNrTrials|filename" | tr '\n' ' '; echo; done
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem, collections
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+byid={s['identifier']:s for s in ss}
+allenc={}
+for s in ss:
+    t=s['trials']; h=np.array(s['image_hash'])
+    allenc[s['identifier']]=set(h[(t.stim_phase=='learn').to_numpy()])
+for s in ss:
+    t=s['trials']
+    if (t.stim_phase=='learn').sum()==100: continue
+    h=np.array(s['image_hash']); rec=(t.stim_phase=='recog').to_numpy(); lab=t.new_old_labels_recog.to_numpy()
+    old=set(h[rec & (lab=='1')]); new=set(h[rec&(lab=='0')])
+    found={k:len(old & v) for k,v in allenc.items() if len(old&v)}
+    foundnew={k:len(new & v) for k,v in allenc.items() if len(new&v)}
+    lt=t[t.stim_phase=='learn']; rt=t[t.stim_phase=='recog']
+    print(s['identifier'], len(old), found, 'new in other enc:',foundnew, 'learn span',lt.start_time.min().round(), lt.start_time.max().round(), 'recog', rt.start_time.min().round())
+    ev=s['events']; print('   events n',len(ev), collections.Counter(ev)[1.0], collections.Counter(zip(s['expids'], ev==1)))
+E
 ```
 
 ```
-NOsessions.session='P23HMH_NOID43' NOsessions.EXPERIMENTIDLearn=88 NOsessions.EXPERIMENTIDRecog=89 NOsessions.variant=3 NOsessions.patientsession=1 NOsessions.diagnosisCode=2 NOsessions.ID = 'H23'             NOsessions.age = 40              NOsessions.sex = 'M' NOsessions.date = '2009-02-01' NOsessions.filename='P23HMH_NOID43.nwb' 
-NOsessions.session='P23HMH_NOID44' NOsessions.EXPERIMENTIDLearn=83 NOsessions.EXPERIMENTIDRecog=84 NOsessions.variant=2 NOsessions.patientsession=2 NOsessions.diagnosisCode=2 NOsessions.ID = 'H23'             NOsessions.age = 40              NOsessions.sex = 'M' NOsessions.date = '2009-02-01' NOsessions.filename='P23HMH_NOID44.nwb' 
-NOsessions.session='P42HMH_NOID54' NOsessions.EXPERIMENTIDLearn=80 NOsessions.EXPERIMENTIDRecog=81   NOsessions.variant=1 NOsessions.patientsession=1 NOsessions.diagnosisCode=0 NOsessions.ID = 'H42'             NOsessions.age = 29              NOsessions.sex = 'M' NOsessions.date = '2013-03-01' NOsessions.filename='P42HMH_NOID54.nwb' 
-NOsessions.session='P42HMH_NOID55' NOsessions.EXPERIMENTIDLearn=80 NOsessions.EXPERIMENTIDRecog=82 NOsessions.variant=1 NOsessions.patientsession=2 NOsessions.diagnosisCode=0 NOsessions.ID = 'H42'             NOsessions.age = 29              NOsessions.sex = 'M' NOsessions.date = '2013-03-01' NOsessions.filename='P42HMH_NOID55.nwb' 
-NOsessions.session='P24CS_NOID59' NOsessions.EXPERIMENTIDLearn=80 NOsessions.EXPERIMENTIDRecog=81 NOsessions.variant=1 NOsessions.patientsession=1 NOsessions.diagnosisCode=0 NOsessions.ID = 'CS24'             NOsessions.age = 57             NOsessions.sex = 'F' NOsessions.date = '2012-09-01' NOsessions.filename='P24CS_NOID59.nwb' 
-NOsessions.session='P48HMH_NOID99' NOsessions.EXPERIMENTIDLearn=80 NOsessions.EXPERIMENTIDRecog=81 NOsessions.variant=1 NOsessions.patientsession=2 NOsessions.diagnosisCode=2 NOsessions.ID =  'H48'              NOsessions.age = 32            NOsessions.sex = 'F' NOsessions.date = '2014-12-01' NOsessions.filename='P48HMH_NOI
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > an4.py <<'EOF'
-import pickle, numpy as np, pandas as pd
-pd.set_option('display.width',250)
-res={r['identifier']:r for r in pickle.load(open('survey.pkl','rb'))}
-for k in ['CS58_132','CS58_133']:
-    R=res[k]; E=R['elec']
-    print(k, E[['origChannel','location','x','y','z','imp','group_name']].to_string())
-    print('unit elec',R['u_origClusterID'], R['unit_elec'], [len(x) for x in np.split(R['spike_times'],R['spike_index'][:-1])])
-print([k for k in res if k.endswith('_144') or '_14' in k])
-# metadata quality
-allE=pd.concat([r['elec'].assign(s=k) for k,r in res.items()])
-print('electrodes',len(allE),'imp nan',allE.imp.isna().mean(),'xyz nan',allE[['x','y','z']].isna().mean().to_dict(), 'xyz zero',(allE[['x','y','z']]==0).all(axis=1).mean())
-print(allE.filtering.value_counts().to_dict())
-iso=np.concatenate([r['u_IsolationDist'] for r in res.values()]); snr=np.concatenate([r['u_SNR'] for r in res.values()])
-print('isoldist nan',np.isnan(iso).mean(), 'snr range',np.nanmin(snr),np.nanmax(snr), 'iso range',np.nanmin(iso),np.nanmax(iso))
-# per-file: electrodes per unit single?
-print('units per electrode-index 1:1', all((r['unit_elec_index']==np.arange(1,len(r['unit_elec'])+1)).all() for r in res.values()))
-# session start day
-print(sorted(set(r['session_start_time'] for r in res.values()))[:3], [ (k,r['session_start_time']) for k,r in res.items() if r['session_start_time'][8:10]!='01' or r['session_start_time'][:4]=='2000'])
-EOF
-explore/bin/python an4.py
-```
-
-```
-CS58_132    origChannel        location      x     y      z  imp                      group_name
-0          146   Left Amygdala -18.26 -3.03 -17.02  NaN  Neuralynx-Atlas-microwires-146
-1          148   Left Amygdala -18.26 -3.03 -17.02  NaN  Neuralynx-Atlas-microwires-148
-2          149   Left Amygdala -18.26 -3.03 -17.02  NaN  Neuralynx-Atlas-microwires-149
-3          150   Left Amygdala -18.26 -3.03 -17.02  NaN  Neuralynx-Atlas-microwires-150
-4          177  Right Amygdala  22.10 -5.13 -15.40  NaN  Neuralynx-Atlas-microwires-177
-5          181  Right Amygdala  22.10 -5.13 -15.40  NaN  Neuralynx-Atlas-microwires-181
-6          182  Right Amygdala  22.10 -5.13 -15.40  NaN  Neuralynx-Atlas-microwires-182
-7          183  Right Amygdala  22.10 -5.13 -15.40  NaN  Neuralynx-Atlas-microwires-183
-unit elec [ 614  776  821 1093  551 1422  527  529] [0 1 2 3 4 5 6 7] [1037, 1365, 2324, 3589, 722, 5699, 937, 749]
-CS58_133    origChannel       location      x     y      z  imp                      group_name
-0          150  Left Amygdala -18.26 -3.03 -17.02  NaN  Neuralynx-Atlas-microwires-150
-1          151  Left Amygdala -18.26 -3.03 -17.02  NaN  Neuralynx-Atlas-microwires-151
-unit elec [885 602] [0 1] [3643, 1134]
-[]
-electrodes 887 imp nan 1.0 xyz nan {'x': 0.11161217587373168, 'y': 0.11161217587373168, 'z': 0.11161217587373168} xyz zero 0.0
-{'300-3000Hz': 887}
-isoldist nan 0.2644849785407725 snr range 0.3787592753889356 inf iso range 4.513248116413887 8.081694408988397e+32
-units per electrode-index 1:1 True
-['2000-01-01T00:00:00-08:00', '2006-03-01T00:00:00-08:00', '2006-09-01T00:00:00-07:00'] [('H28_48', '2010-03-13T00:00:00-08:00'), ('H44_68', '2000-01-01T00:00:00-08:00')]
-[... 1 more lines not kept]
+H14_18 50 {'H10_7': 50, 'H11_9': 50, 'H14_18': 29, 'H15_20': 29, 'H16_24': 50, 'H17_32': 50, 'H18_26': 29, 'H19_28': 50, 'H21_39': 50, 'H23_47': 50, 'CS24_59': 50, 'CS25_61': 50, 'CS26_64': 50, 'CS27_67': 50, 'CS29_69': 50, 'CS33_78': 50, 'H33_52': 50, 'CS39_93': 50, 'CS42_111': 50, 'H42_55': 50, 'H42_54': 50, 'H43_56': 50, 'H44_68': 50, 'H47_92': 50, 'H48_99': 50, 'CS49_118': 50, 'CS51_120': 50, 'H51_105': 50, 'CS53_123': 49, 'CS54_125': 50, 'CS55_127': 50, 'CS58_133': 50, 'CS60_134': 50, 'CS61_135': 50, 'CS62_136': 50, 'H09_5': 50, 'T89_2004': 50, 'T98_2005': 50, 'T100_2008': 50, 'T101_2011': 50, 'T103_2009': 50, 'T107_2007': 50} new in other enc: {} learn span 3018.0 3245.0 recog 3957.0
+   events n 754 150 Counter({(np.float64(81.0), np.False_): 402, (np.float64(80.0), np.False_): 202, (np.float64(81.0), np.True_): 100, (np.float64(80.0), np.True_): 50})
+H15_21 50 {'H14_17': 50, 'H15_21': 26, 'H16_23': 26, 'H19_27': 26, 'H21_38': 50, 'H23_44': 26, 'CS24_60': 50, 'CS25_63': 50, 'CS26_66': 50, 'H27_58': 50, 'CS29_70': 50, 'H31_50': 50, 'CS32_74': 50, 'CS33_77': 50, 'CS42_112': 50, 'CS54_126': 50, 'CS56_128': 50, 'CS57_131': 50, 'H09_6': 50, 'T88_2001': 50} new in other enc: {} learn span 1557.0 1789.0 recog 2206.0
+   events n 754 150 Counter({(np.float64(84.0), np.False_): 402, (np.float64(83.0), np.False_): 202, (np.float64(84.0), np.True_): 100, (np.float64(83.0), np.True_): 50})
+H15_20 50 {'H10_7': 50, 'H11_9': 50, 'H14_18': 29, 'H15_20': 29, 'H16_24': 50, 'H17_32': 50, 'H18_26': 29, 'H19_28': 50, 'H21_39': 50, 'H23_47': 50, 'CS24_59': 50, 'CS25_61': 50, 'CS26_64': 50, 'CS27_67': 50, 'CS29_69': 50, 'CS33_78': 50, 'H33_52': 50, 'CS39_93': 50, 'CS42_111': 50, 'H42_55': 50, 'H42_54': 50, 'H43_56': 50, 'H44_68': 50, 'H47_92': 50, 'H48_99': 50, 'CS49_118': 50, 'CS51_120': 50, 'H51_105': 50, 'CS53_123': 49, 'CS54_125': 50, 'CS55_127': 50, 'CS58_133': 50, 'CS60_134': 50, 'CS61_135': 50, 'CS62_136': 50, 'H09_5': 50, 'T89_2004': 50, 'T98_2005': 50, 'T100_2008': 50, 'T101
+[... 11 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && curl -s https://api.github.com/orgs/rutishauserlab/repos?per_page=100 | python3 -c "import json,sys; [print(r['name'],r['html_url']) for r in json.load(sys.stdin)]"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && curl -sL "https://datadryad.org/api/v2/datasets/doi%3A10.5061%2Fdryad.46st5" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('title'), d.get('versionNumber'), d.get('_links',{}).get('stash:version'))"; curl -sL "https://datadryad.org/api/v2/datasets/doi%3A10.5061%2Fdryad.46st5/versions" | python3 -c "
-import json,sys; d=json.load(sys.stdin)
-for v in d['_embedded']['stash:versions']: print(v['versionNumber'], v['_links']['self']['href'], v.get('publicationDate'))"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && curl -sL "https://datadryad.org/api/v2/versions/2633/files?per_page=100" | python3 -c "
-import json,sys; d=json.load(sys.stdin)
-for f in d['_embedded']['stash:files']: print(f['path'], f['size'], f['_links'].get('stash:download',{}).get('href'))"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && curl -sL -o dryad.zip "https://datadryad.org/api/v2/files/17736/download" && ls -la dryad.zip && python3 -c "
-import zipfile; z=zipfile.ZipFile('dryad.zip'); n=z.namelist(); print(len(n)); [print(x) for x in n if not x.endswith('/') and ('define' in x.lower() or x.endswith('.ini') or 'readme' in x.lower())]
-print(sorted(set(x.split('/')[1] for x in n if x.count('/')>1))[:30])"; curl -sL "https://datadryad.org/api/v2/files/17737/download"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && for u in "https://datadryad.org/stash/downloads/file_stream/17736" "https://datadryad.org/downloads/file_stream/17736" "https://datadryad.org/stash/dataset/doi:10.5061/dryad.46st5"; do curl -sL -A "Mozilla/5.0" -o t.bin -w "%{http_code} %{size_download} %{content_type}\n" "$u"; head -c 200 t.bin | tr -d '\0' | head -c 200; echo; done
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem, collections, hashlib
+pd.set_option('display.width',250); pd.set_option('display.max_rows',200)
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+# clocks
+rows=[]
+for s in ss:
+    t=s['trials']; sp=np.concatenate(s['spikes']) if s['spikes'] else np.array([])
+    unsorted=sum((np.diff(x)<0).any() for x in s['spikes'])
+    ev=s['events']; et=s['events_t']
+    rows.append(dict(id=s['identifier'], tr0=t.start_time.min(), tr1=t.stop_time.max(), sp0=sp.min(), sp1=sp.max(), ev0=et.min(), ev1=et.max(),
+       frac_in=np.mean((sp>t.start_time.min()-60)&(sp<t.stop_time.max()+60)), unsorted_units=unsorted, n_units=len(s['spikes']),
+       stim_on_eq=np.allclose(t.start_time,t.stim_on_time), stop_eq_d2=np.allclose(t.stop_time,t.delay2_time),
+       ev_codes=''.join(sorted(set(str(int(x)) + ',' for x in ev)))))
+df=pd.DataFrame(rows); print(df.to_string())
+E
 ```
 
 ```
-403 118 text/html
-<html>
-<head><title>403 Forbidden</title></head>
-<body>
-<center><h1>403 Forbidden</h1></center>
-</body>
-</html>
-
-403 118 text/html
-<html>
-<head><title>403 Forbidden</title></head>
-<body>
-<center><h1>403 Forbidden</h1></center>
-</body>
-</html>
-
-200 39225 text/html; charset=utf-8
-<!DOCTYPE html>
-<html lang="en">
-<head>
-[... 4 more lines not kept]
-```
-
-**Agent**
-
-Dryad refuses automated downloads (HTTP 403, token required), so the earlier release's session list cannot be fetched from a notebook. Checking what the code's "±" is before writing criteria.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/recogmem-release-NWB; cat RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers/calcMeanSEOfSample.m; cat RutishauserLabtoNWB/events/newolddelay/matlab/analysis/helpers/calcEmpiricalROC.m | sed -n 20,60p
-```
-
-```
-%
-%mean/std/se/n of a sample. each column is one sample
-%
-%sample is expected to be a column. multiple columns are treated independently. (mean/std/se/n of each)
-%
-%ignorenan: 0 none
-%           1 ignore nans if data is an array (treat it as such)
-%           2 row-wise nan -- if a row has at least one nan, ignore the row
-%
-%dim: dimension along which to operate (same as for mean or std)
-%
-%str_mse returns a string of m/se/n for easy labeling of figures
-%
-%urut/march08 initial
-%urut/april12 added ignorenan flag
-%urut/march13 added str_mse return
-function [m,s,se,n, valsUsed, str_mse] = calcMeanSEOfSample( sample, ignorenan, dim )
-if nargin<2
-    ignorenan=0;
-end
-[... 69 more lines not kept]
-```
-
-**Agent**
-
-The "±" is the SD across sessions. Writing the claims file now, before any claim's analysis is run.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "claims/000004/10.1038-s41597-020-0415-9.yaml",
- "content": "# Claims for Chandravadia, Liang, Schjetnan et al. (2020), Scientific Data 7, 78, on dandiset 000004.\n# Source: the full text of the open access article (CC BY 4.0) at nature.com, read from its Methods,\n# Data Records, Technical Validation, figure legends, Tables 1 and 2 and Online-only Table 1.\n#\n# When these criteria were written, the author had run the data check only, on every file of\n# version 0.220126.1852: the file list and the archive's metadata; per file the subject metadata,\n# session ids, session start dates, trial counts per phase, new/old label counts, stimulus categories,\n# experiment ids, unit counts (1864 in total), electrode locations, waveform sampling rate and table\n# columns; the comparison of subject age, sex and diagnosis with Online-only Table 1 (age or sex\n# differ for three subjects); the duplicated spike trains of sessions 43 and 44 and of 54 and 55; and\n# in one file (session 5) the cross-tabulation of new/old labels against confidence responses, which\n# showed label 1 receiving most \"old\" responses. No selection of VS or MS cells, no AUC, no z-ROC and\n# no accuracy by confidence had been computed. The author had read the paper's code\n# (github.com/rutishauserlab/recogmem-release-NWB at commit 1d95162), including plotFigure5.ipynb,\n# which writes the Figure 5f percentages into the plot as constants.\n#\n# Method choices fixed here. Recognition trials are the trial rows with stim_phase \"recog\"; the\n# confidence response is the trial's response_value minus 30 (1 = new, confident; 6 = old,\n# confident), checked in the notebook against the event codes the paper's code reads; \"old\" is\n# label 1, as in the paper's code (the paper's text and the files' column description say 0; see\n# new-old-label-coding). Firing rates are spike counts in a window divided by its length. The\n# Methods' window, 200 ms to 1200 ms after stimulus onset, is the main one; the paper's code uses\n# 200 ms to 1700 ms, shown as a variant. Units are counted per file, as the paper counts neurons\n# per session; the counts with duplicated spike trains counted once are also shown. Behavioural\n# measures follow the paper's code: cumulative ROC over the six confidence levels from \"old,\n# confident\" down, hit and false alarm rates adjusted for 0 and 1 as in its adjustHF, AUC by the\n# trapezoid rule with (0,0) and (1,1) added, and \"±\" read as the standard deviation over sessions\n# (calcMeanSEOfSample). CS sessions are those of subjects labelled H or C, TWH those labelled T,\n# as the Figure 5 legend defines.\nschema_version: 1\ndandiset: \"000004\"\npaper: doi:10.1038/s41597-020-0415-9\nclaims:\n- id: counts-neurons-subjects\n  statement: The dataset holds 1863 single neurons recorded from the medial temporal lobes of 59\n    subjects.\n  source: Abstract; Technical Validation, proportion of selective cells\n  expected:\n  - quantity: neurons\n    value: 1863\n    tolerance: 186.3\n  - quantity: subjects\n    value: 59\n    tolerance: 5.9\n  criterion: Neurons are the rows of the units tables over all files, subjects the distinct\n    subject_id values. The readings are (a) every unit row of every file, as the paper counts\n    neurons per session, and (b) units whose spike trains are deposited in two files counted\n    once. Reproduced when both values are within tolerance under one reading. The exact\n    differences are reported.\n- id: counts-sessions\n  statement: The patients performed 87 sessions, listed by subject and session id in Online-only\n    Table 1 (the Methods give 89).\n  source: Methods, Subjects; Online-only Table 1\n  expected:\n    quantity: sessions\n    value: 87\n    tolerance: 8.7\n  criterion: Each file's identifier gives a subject label and a session id. Reproduced when the\n    set of (subject, session id) pairs in the files equals the set in Online-only Table 1;\n    partially reproduced when the count is within tolerance but the sets differ; not reproduced\n    otherwise. The Methods' 89 is the other reading of the count and is reported.\n- id: table1-demographics\n  statement: Online-only Table 1 gives the age and sex of every subject; there are 25 female and 34\n    male subjects.\n  source: Online-only Table 1\n  expected:\n  - quantity: female subjects\n    value: 25\n    tolerance: 2.5\n  - quantity: male subjects\n    value: 34\n    tolerance: 3.4\n  criterion: The subject age and sex in the files are compared with the table, subject by\n    subject. Reproduced when every subject matches; partially reproduced when some do not;\n    not reproduced when fewer than half match. The diagnosis is reported side by side, as the\n    files use a coarser coding (the paper's session list defines it).\n- id: task-structure\n  statement: Each session has 100 encoding trials showing 100 novel images and 100 recognition\n    trials, of which 50 show new and 50 old images, and the images come from 5 visual categories.\n  source: Methods, Task; Data Records, stimuli group; Technical Validation, proportion of\n    selective cells\n  criterion: Per session, counted from the trials table and the stimulus images. Reproduced when\n    every session has 100 encoding trials with 100 distinct image files, 100 recognition trials\n    with 50 of each label, and 5 categories; partially reproduced when each part holds in more\n    than half of the sessions; not reproduced otherwise.\n- id: new-old-label-coding\n  statement: In the trials table, new_old_labels_recog is 0 for old stimuli (seen during encoding)\n    and 1 for new stimuli.\n  source: Data Records, interval group\n  criterion: Two tests per session. (1) Under the stated coding, old trials (label 0) should\n    show image files from the session's encoding block and new trials (label 1) should not.\n    (2) Old trials should receive \"old\" responses (4 to 6) more often than new trials. Reproduced\n    when both hold in every session; not reproduced when, in most sessions, both hold with the\n    labels reversed.\n- id: ttl-codes\n  statement: The events stream holds the TTL markers 55, 1, 2, 3, 20 or 21, 31 to 36, 6 and 66\n    with the meanings of Table 1, and the events and experiment_ids streams have one entry each,\n    in the same order.\n  source: Data Records, acquisition group; Table 1\n  criterion: Reproduced when, in every file, events and experiment_ids have the same length and\n    timestamps, the events hold only the listed codes, and every trial shows stimulus onset (1),\n    offset (2), question (3), a response of the phase's kind and end of trial (6) in this order;\n    partially reproduced when this holds in most files.\n- id: experiment-ids\n  statement: The learning block is labelled with one of 80, 83 or 88 and the recognition block with\n    one of 81, 84 or 89.\n  source: Data Records, acquisition group; Table 2\n  criterion: Reproduced when the two experiment ids of every file fall in these sets; partially\n    reproduced when they do in most files.\n- id: session-dates\n  statement: To protect patient information, session_start_time keeps only the year and month of\n    the experiment, with the day set to the first of the month for all sessions.\n  source: Data Records, structure of the NWB file\n  criterion: Reproduced when every file's session_start_time falls on the first of a month and\n    its year and month match the date of the paper's session list; partially reproduced when some\n    do not.\n- id: units-table\n  statement: The units table holds spike_times, waveform_mean_encoding, waveform_mean_recognition\n    (sampled at 100 kHz), origClusterID, SNR, IsolDist and electrodes, with one electrode per\n    neuron.\n  source: Data Records, units group\n  expected:\n    quantity: waveform sampling rate\n    value: 100000\n    tolerance: 10000\n    unit: Hz\n  criterion: Reproduced when every file holds each column, each unit links to exactly one\n    electrode, the stated sampling rate of the waveforms is within tolerance, and the quality\n    metrics are finite for every unit; partially reproduced when the columns are there but some\n    values are missing or not finite.\n- id: electrodes-table\n  statement: The electrodes table gives each electrode's brain area, MNI coordinates, impedance,\n    the filter applied before spike sorting (300 to 3000 Hz) and the original hardware channel.\n  source: Data Records, general group; Methods, data acquisition\n  criterion: Reproduced when every file has these columns and every electrode has a value for\n    each; partially reproduced when the columns are there but some are empty for some\n    electrodes; not reproduced when a column is empty for every electrode.\n- id: isi-criterion\n  statement: Clusters were accepted as units only when fewer than 3% of their interspike intervals\n    were shorter than 3 ms.\n  source: Methods, data acquisition\n  criterion: For each unit, the fraction of interspike intervals below 3 ms, from its spike times\n    sorted in time. Reproduced when every unit is below 3%; partially reproduced when at least\n    95% of units are; not reproduced otherwise. The count with the spike times as stored is a\n    variant.\n- id: fig5a-mtl-locations\n  statement: All neurons were recorded from the medial temporal lobe, in the amygdala and the\n    hippocampus.\n  source: Abstract; Figure 5a\n  criterion: Reproduced when the electrode location of every unit names the amygdala or the\n    hippocampus.\n- id: fig5c-auc-all\n  statement: Subjects distinguished new from old images; the behavioural AUC averaged over all\n    sessions is 0.74 ± 0.10.\n  source: Technical Validation, behaviour; Figure 5b and 5c\n  expected:\n  - quantity: mean AUC over sessions\n    value: 0.74\n    tolerance: 0.10\n  - quantity: standard deviation of AUC over sessions\n    value: 0.10\n    tolerance: 0.01\n  criterion: The tolerance of the mean is the stated spread, as the protocol prescribes; the\n    spread itself is held to 10%. AUC per session as in the paper's code (see the opening\n    comment), over all 87 sessions. Reproduced when both values are within tolerance.\n- id: fig5c-auc-sites\n  statement: Performance was similar at the two study sites, with an average AUC of 0.74 ± 0.09 for\n    CS sessions and 0.69 ± 0.13 for TWH sessions.\n  source: Technical Validation, behaviour; Figure 5c\n  depends_on:\n  - fig5c-auc-all\n  expected:\n  - quantity: mean AUC, CS sessions\n    value: 0.74\n    tolerance: 0.09\n  - quantity: mean AUC, TWH sessions\n    value: 0.69\n    tolerance: 0.13\n  - quantity: standard deviation of AUC, CS sessions\n    value: 0.09\n    tolerance: 0.009\n  - quantity: standard deviation of AUC, TWH sessions\n    value: 0.13\n    tolerance: 0.013\n  criterion: Reproduced when all four values are within tolerance; partially reproduced when\n    both means are but a spread is not. The difference between sites (Welch's t-test) is\n    reported.\n- id: fig5b-roc-asymmetric\n  statement: The ROC curve is asymmetric (p < 0.05), as expected for declarative memory.\n  source: Technical Validation, behaviour; Figure 5b\n  criterion: The paper does not name the measure or the test. Asymmetry is measured, as in the\n    paper's code (calcZROCSlope), by the slope of the z-ROC, the regression of z(hit rate) on\n    z(false alarm rate) over the five interior points of each session. Reproduced when the mean\n    slope over sessions is below 1 with a two-sided one-sample t-test against 1 at p < 0.05. The\n    Wilcoxon signed-rank test and the slope of the pooled ROC are variants.\n- id: fig5d-confidence-accuracy\n  statement: Accuracy is significantly higher in high than in low confidence trials (P < 0.001,\n    paired t test) across all sessions.\n  source: Technical Validation, behaviour; Figure 5d\n  criterion: Per session, the percentage of correct responses among high and among low confidence\n    responses. The readings of the split are (a) the fixed split of the paper's MATLAB code\n    (high is 1 or 6, low is 2 to 5) and (b) the dynamic split of its Python code. Sessions\n    without responses in one group are left out and counted. Reproduced when, under one reading,\n    high exceeds low with a paired t-test p < 0.001. The unpaired test the code runs is a variant.\n- id: vs-cells-proportion\n  statement: 343 of the 1863 cells (18.4%) are visually selective, by a one-way ANOVA (P < 0.05) of\n    the firing rate in recognition trials, in a 1 s window starting 200 ms after stimulus onset,\n    across the 5 visual categories.\n  source: Technical Validation, proportion of selective cells; Figure 5f\n  expected:\n  - quantity: VS cells\n    value: 343\n    tolerance: 34.3\n  - quantity: VS cells, percent of all cells\n    value: 18.4\n    tolerance: 1.84\n    unit: '%'\n  criterion: Every unit, Methods' window. Reproduced when both values are within tolerance. The\n    code's window, units of duplicated spike trains counted once, and the proportion with the\n    category labels shuffled within each session (a null) are variants.\n- id: ms-cells-proportion\n  statement: 146 of the 1863 cells (7.8%) are memory selective, by a two-tailed bootstrap comparison\n    of mean firing rates (1,000 runs, P < 0.05) between the 50 novel and 50 familiar recognition\n    trials in a 1 s window starting 200 ms after stimulus onset.\n  source: Technical Validation, proportion of selective cells; Figure 5f\n  expected:\n  - quantity: MS cells\n    value: 146\n    tolerance: 14.6\n  - quantity: MS cells, percent of all cells\n    value: 7.8\n    tolerance: 0.78\n    unit: '%'\n  criterion: Every unit, Methods' window and all 50 and 50 trials, with the bootstrap of the\n    paper's code (bootstrapMeanEqualTest, Efron and Tibshirani algorithm 16.2), at a fixed seed.\n    Reproduced when both values are within tolerance. The code's choices (correct trials only,\n    its window), units of duplicated spike trains counted once, and a null with labels shuffled\n    within each session are variants.\n- id: dual-cells-proportion\n  statement: 26 cells (1.4%) are both visually and memory selective.\n  source: Technical Validation, proportion of selective cells; Figure 5f\n  depends_on:\n  - vs-cells-proportion\n  - ms-cells-proportion\n  expected:\n  - quantity: cells both VS and MS\n    value: 26\n    tolerance: 2.6\n  - quantity: cells both VS and MS, percent of all cells\n    value: 1.4\n    tolerance: 0.14\n    unit: '%'\n  criterion: Units selected by both main tests. Reproduced when both values are within tolerance.\n- id: fig5f-site-proportions\n  statement: The percentages of VS, MS and dual cells are comparable between CS sessions (18.4%,\n    7.7% and 1.4%) and the new TWH sessions (19.4%, 10.4% and 1.3%).\n  source: Technical Validation, proportion of selective cells; Figure 5f (the values as written\n    into plotFigure5.ipynb at commit 1d95162)\n  depends_on:\n  - vs-cells-proportion\n  - ms-cells-proportion\n  - dual-cells-proportion\n  expected:\n  - quantity: VS percent, CS\n    value: 18.4\n    tolerance: 1.84\n    unit: '%'\n  - quantity: MS percent, CS\n    value: 7.7\n    tolerance: 0.77\n    unit: '%'\n  - quantity: dual percent, CS\n    value: 1.4\n    tolerance: 0.14\n    unit: '%'\n  - quantity: VS percent, TWH\n    value: 19.4\n    tolerance: 1.94\n    unit: '%'\n  - quantity: MS percent, TWH\n    value: 10.4\n    tolerance: 1.04\n    unit: '%'\n  - quantity: dual percent, TWH\n    value: 1.3\n    tolerance: 0.13\n    unit: '%'\n  criterion: The paper names no test for \"comparable\". Two-sided Fisher's exact test between\n    sites for each of VS, MS and dual cells, at 0.05. Reproduced when no test finds a difference\n    and at least four of the six values are within tolerance; partially reproduced when only one\n    of these holds.\n- id: twh-sessions\n  statement: The dataset includes 9 sessions from a new institution, Toronto Western Hospital.\n  source: Technical Validation, proportion of selective cells; Online-only Table 1\n  expected:\n    quantity: TWH sessions\n    value: 9\n    tolerance: 0.9\n  criterion: Sessions whose subject label starts with T. Reproduced when the count is within\n    tolerance.\n- id: previous-release-additions\n  statement: Relative to the earlier release of this task's data (Faraut et al. 2018), this\n    release adds 23 sessions, 17 subjects and 288 neurons.\n  source: Background and Summary; Technical Validation\n  data: with_inputs\n  criterion: Needs the list of sessions of the earlier release (Dryad, doi:10.5061/dryad.46st5)\n    to mark which sessions here are new; then the new sessions, subjects and units are counted.\n- id: fig4-example-vs-neuron\n  statement: Neuron 132-177-4-RA (session 132, channel 177, cell 4, right amygdala) is visually\n    selective, responding most to images of animals.\n  source: Figure 4\n  criterion: The unit on channel 177 of session 132 with electrode row 4, in the right amygdala.\n    Reproduced when the one-way ANOVA across the 5 categories of recognition trials, Methods'\n    window, has p < 0.05 and the animal category has the highest mean rate. The code's window is\n    a variant.\n- id: fig3-example-vs-neuron\n  statement: Neuron 144-140-3-RH (session 144, channel 140, cell 3, right hippocampus) is visually\n    selective for phones.\n  source: Figure 3\n  criterion: As for fig4-example-vs-neuron, with phones as the preferred category.\n"
-}
-```
-
-```
-File created successfully at: claims/000004/10.1038-s41597-020-0415-9.yaml (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Fixing one criterion that referred to an outside session list.
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/000004/10.1038-s41597-020-0415-9.yaml",
- "old_string": "  criterion: Reproduced when every file's session_start_time falls on the first of a month and\n    its year and month match the date of the paper's session list; partially reproduced when some\n    do not.",
- "new_string": "  criterion: Reproduced when every file's session_start_time falls on the first of a month;\n    partially reproduced when some do not. Years outside the span of the recordings are reported."
-}
-```
-
-```
-The file claims/000004/10.1038-s41597-020-0415-9.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Now the helper module.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000004-chandravadia-2020/recogmem.py",
- "content": "\"\"\"Loading and measures for dandiset 000004 (Chandravadia et al. 2020, Scientific Data 7, 78).\n\nHuman single neurons from the amygdala and hippocampus during a new/old recognition memory task,\none NWB file per session. Files are streamed from the archive at a pinned version with h5py over\nremfile; the stimulus images (most of each file's size) are not read, only their shape and\ntimestamps.\n\nWhere the parameters come from:\n\n- Analysis windows. The Methods use a 1 s window starting 200 ms after stimulus onset\n  (``WINDOW_METHODS``). The paper's code (rutishauserlab/recogmem-release-NWB, commit 1d95162,\n  NWB_singleCellAnalysis_release.m and single_neuron.py) uses 200 ms to 1700 ms\n  (``WINDOW_CODE``).\n- Visual selectivity: one-way ANOVA of the window rate across the 5 categories of the\n  recognition trials (Methods; code's anovan and f_oneway).\n- Memory selectivity: two-sided bootstrap test of equal means, Efron and Tibshirani algorithm\n  16.2, as in the code's bootstrapMeanEqualTest.m (B = 1000, Methods and code).\n- Behaviour: the cumulative ROC over the six confidence levels, the adjustment of rates of 0\n  and 1 (Macmillan and Creelman, p. 8), the AUC by the trapezoid rule and the z-ROC slope follow\n  the code's calcEmpiricalROC.m, calcCumulativeD.m, adjustHF.m, calcROC_AUC.m and\n  calcZROCSlope.m. The fixed high/low confidence split follows NO_behavior_evaluateSessionStatus.m\n  and the dynamic split NO_dynamic_lowHighSplit.m / helper.dynamic_split.\n- Labels. ``OLD`` is 1, as in the code (its comments say \"1 is old, 0 is new\"); the paper's text\n  and the files' column description say the reverse. The notebook tests which is right.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import stats\n\nDANDISET_ID = \"000004\"\nDANDISET_VERSION = \"0.220126.1852\"\n\nWINDOW_METHODS = (0.2, 1.2)   # s after stimulus onset; Methods\nWINDOW_CODE = (0.2, 1.7)      # s after stimulus onset; the paper's code\nOLD, NEW = 1, 0               # label coding of new_old_labels_recog, as the code reads it\n\n# Online-only Table 1 of the paper (CC BY 4.0): subject, session ids, task variants, age, sex,\n# diagnosis. Copied from the article as text; used only to compare with the files' metadata.\nONLINE_TABLE_1 = \"\"\"\\\nH09|5, 6|1, 2|55|M|Right Mesial Temporal\nH10|7|1|37|M|Left Frontal\nH11|9|1|16|M|Right Lateral Frontal\nH14|17,18|2, 1|31|M|Bilateral Independent Temporal\nH15|20, 21|1, 2|45|M|Right Mesial Temporal\nH16|23, 24|2, 1|34|F|Right Frontal\nH17|32|1|19|M|Left Inferior Frontal\nH18|26|1|40|M|Right Mesial Temporal\nH19|27, 28|2, 1|34|M|Left Frontal\nH21|38, 39, 41|2,1,3|20|M|Not Localized\nH23|43, 44, 47|3, 2, 1|40|M|Left Mesial Temporal\nH27|58|2|40|M|Bilateral Independent Temporal\nH28|48|3|22|M|Right Mesial Temporal\nH29|49|3|17|F|Left Deep Insula\nH31|50|2|30|M|Right Mesial Temporal\nH33|52|1|29|M|Left Mesial Temporal\nH42|54, 55|1, 1|29|M|Not Localized\nH43|56|1|27|F|Left Mesial Temporal\nH44|68|1|57|F|Right Mesial Temporal\nH47|92, 97|1, 3|20|M|Right Mesial Temporal\nH48|99|1|54|M|Left Mesial Temporal\nH51|104, 105|3, 1|24|M|Bilateral Frontal and Temporal\nC24|59, 60|1, 2|47|F|Not Localized\nC25|61, 63|1, 2|36|F|Bilateral Independent Mesial Temporal\nC26|64, 66|1, 2|56|F|Left Mesial Temporal\nC27|67|1|44|M|Left Mesial Temporal\nC29|69, 70|1, 2|19|M|Left Neocortical Temporal\nC31|73|3|32|M|Left Neocortical Temporal\nC32|74|2|19|M|Not Localized (Generalized)\nC33|76, 77, 78|3, 2, 1|44|F|Right Mesial Temporal\nC34|85|3|70|M|Bilateral Mesial Temporal\nC37|96|3|33|F|Right Mesial Temporal\nC38|102|3|63|F|Right Mesial Temporal\nC39|93, 100|1, 3|26|M|Right Insula\nC40|101|3|25|M|Right Motor Cortex\nC42|111, 112|1, 2|25|F|Not Localized\nC43|113|3|42|F|Left Mesial Temporal\nC44|114|3|53|F|Right Mesial Temporal\nC47|115|3|32|M|Right Mesial Temporal\nC48|116|3|32|F|Left Mesial Temporal\nC49|117, 118|3, 1|24|F|Left Mesial Temporal\nC51|119, 120|3, 1|17|M|Not Localized (No Seizures)\nC53|122, 123|3, 1|60|M|Bilateral Independent Mesial Temporal Lobe\nC54|124, 125, 126|3, 1, 2|59|F|Right Mesial Temporal\nC55|127|1|43|F|Right Mesial Temporal\nC56|128|2|48|M|Multifocal, Bitemporal + Orbitofrontal\nC57|130, 131|3, 2|46|M|Left Neocortical Parietal\nC58|132, 133|3, 1|32|F|Right Frontal Neocortical\nC60|134|1|67|M|Left Mesial Temporal\nC61|135|1|52|F|Left Mesial Temporal\nC62|136|1|25|F|Right Mesial Temporal\nT88|2001, 2002|2, 3|26|M|Right Mesial Temporal\nT89|2004|1|45|F|Right Frontal\nT90|2003|3|20|M|Occipital Cortex\nT98|2005|1|46|F|Left Neocortical Temporal\nT100|2008|1|19|F|Right Insula\nT101|2011|1|25|F|Left Neocortical Temporal\nT103|2009|1|49|M|Right Mesial Temporal\nT107|2007|1|64|F|Left Mesial Temporal\n\"\"\"\n\n\ndef online_table_1() -> pd.DataFrame:\n    \"\"\"Online-only Table 1 as one row per session.\"\"\"\n    rows = []\n    for line in ONLINE_TABLE_1.strip().splitlines():\n        sid, sessions, variants, age, sex, diagnosis = line.split(\"|\")\n        for s, v in zip(re.findall(r\"\\d+\", sessions), re.findall(r\"\\d+\", variants)):\n            rows.append({\"table_subject\": sid, \"session\": int(s), \"variant\": int(v), \"age\": int(age),\n                         \"sex\": sex, \"diagnosis\": diagnosis})\n    return pd.DataFrame(rows)\n\n\n# --- loading ------------------------------------------------------------------\n\ndef _text(x):\n    return x.decode() if isinstance(x, bytes) else x\n\n\ndef _column(group, name):\n    d = group[name][()]\n    if d.dtype == object:\n        d = np.array([_text(x) for x in d])\n    return d\n\n\ndef asset_urls() -> list[tuple[str, str]]:\n    \"\"\"(path, S3 URL) of every asset of the pinned version, sorted by path.\"\"\"\n    dandiset = DandiAPIClient().get_dandiset(DANDISET_ID, DANDISET_VERSION)\n    return [(a.path, a.get_content_url(follow_redirects=1, strip_query=True))\n            for a in sorted(dandiset.get_assets(), key=lambda a: a.path)]\n\n\ndef load_session(path: str, url: str) -> dict:\n    \"\"\"Everything the analysis uses from one file, without the stimulus images.\"\"\"\n    with h5py.File(remfile.File(url), \"r\") as f:\n        s = {\"path\": path}\n        for key, name in [(\"identifier\", \"identifier\"), (\"session_start_time\", \"session_start_time\"),\n                          (\"subject_id\", \"general/subject/subject_id\"), (\"age\", \"general/subject/age\"),\n                          (\"sex\", \"general/subject/sex\"), (\"diagnosis\", \"general/subject/description\"),\n                          (\"species\", \"general/subject/species\"), (\"institution\", \"general/institution\"),\n                          (\"data_collection\", \"general/data_collection\")]:\n            s[key] = _text(f[name][()])\n        s[\"devices\"] = list(f[\"general/devices\"].keys())\n        g = f[\"intervals/trials\"]\n        s[\"trials\"] = pd.DataFrame({k: _column(g, k) for k in g})\n        s[\"trial_descriptions\"] = {k: _text(g[k].attrs.get(\"description\", \"\")) for k in g}\n        s[\"events\"] = np.array([float(_text(x)) for x in f[\"acquisition/events/data\"][()]])\n        s[\"events_t\"] = f[\"acquisition/events/timestamps\"][()]\n        s[\"events_description\"] = _text(f[\"acquisition/events\"].attrs[\"description\"])\n        s[\"experiment_ids\"] = f[\"acquisition/experiment_ids/data\"][()]\n        s[\"experiment_ids_t\"] = f[\"acquisition/experiment_ids/timestamps\"][()]\n        u = f[\"units\"]\n        s[\"unit_columns\"] = sorted(u.keys())\n        times, index = u[\"spike_times\"][()], u[\"spike_times_index\"][()]\n        s[\"spikes\"] = np.split(times, index[:-1])\n        s[\"unit_electrode\"] = u[\"electrodes\"][()]\n        s[\"unit_electrode_index\"] = u[\"electrodes_index\"][()]\n        s[\"cluster_id\"] = u[\"origClusterID\"][()]\n        s[\"snr\"] = u[\"SNR\"][()]\n        s[\"isolation_distance\"] = u[\"IsolationDist\"][()]\n        s[\"waveform_rate\"] = u[\"waveform_mean_sampling_rate\"][()].ravel()\n        s[\"waveform_shape\"] = u[\"waveform_mean_encoding\"].shape\n        e = f[\"general/extracellular_ephys/electrodes\"]\n        s[\"electrodes\"] = pd.DataFrame({k: _column(e, k) for k in e if k != \"group\"})\n        p = f[\"stimulus/presentation\"]\n        s[\"stimulus\"] = {k: (p[k][\"data\"].shape, p[k][\"timestamps\"][()]) for k in p}\n    s[\"session\"] = int(s[\"identifier\"].split(\"_\")[1])\n    s[\"label\"] = s[\"identifier\"].split(\"_\")[0]\n    s[\"site\"] = \"TWH\" if s[\"label\"].startswith(\"T\") else \"CS\"\n    return s\n\n\ndef load_all(workers: int = 8) -> list[dict]:\n    \"\"\"All sessions of the pinned version, streamed in parallel, sorted by session id.\"\"\"\n    urls = asset_urls()\n    with ThreadPoolExecutor(workers) as pool:\n        sessions = list(pool.map(lambda pu: load_session(*pu), urls))\n    return sorted(sessions, key=lambda s: s[\"session\"])\n\n\ndef recognition(s: dict) -> pd.DataFrame:\n    \"\"\"Recognition trials with integer label, confidence response (1-6) and category.\"\"\"\n    r = s[\"trials\"][s[\"trials\"].stim_phase == \"recog\"].copy()\n    r[\"label\"] = r.new_old_labels_recog.astype(int)\n    r[\"response\"] = (r.response_value - 30).astype(int)\n    r[\"category\"] = r.stimCategory.astype(int)\n    return r.reset_index(drop=True)\n\n\n# --- spikes -------------------------------------------------------------------\n\ndef window_rates(spikes: np.ndarray, onsets: np.ndarray, window: tuple[float, float]) -> np.ndarray:\n    \"\"\"Spikes per second in (onset + start, onset + stop] for each onset; spikes need not be sorted.\"\"\"\n    sp = np.sort(spikes)\n    lo = np.searchsorted(sp, onsets + window[0], side=\"right\")\n    hi = np.searchsorted(sp, onsets + window[1], side=\"right\")\n    return (hi - lo) / (window[1] - window[0])\n\n\ndef anova_p(rates: np.ndarray, groups: np.ndarray) -> float:\n    \"\"\"One-way ANOVA p across groups; 1.0 when the rates do not vary.\"\"\"\n    parts = [rates[groups == g] for g in np.unique(groups)]\n    if np.all(rates == rates[0]):\n        return 1.0\n    return float(stats.f_oneway(*parts).pvalue)\n\n\ndef bootstrap_p(z: np.ndarray, y: np.ndarray, rng: np.random.Generator, B: int = 1000) -> float:\n    \"\"\"Two-sided bootstrap test of equal means (Efron and Tibshirani 16.2; bootstrapMeanEqualTest.m).\"\"\"\n    xm = np.mean(np.concatenate([z, y]))\n    zt, yt = z - z.mean() + xm, y - y.mean() + xm\n    zs = zt[rng.integers(0, len(z), size=(B, len(z)))].mean(axis=1)\n    ys = yt[rng.integers(0, len(y), size=(B, len(y)))].mean(axis=1)\n    return float(np.mean(np.abs(zs - ys) >= abs(z.mean() - y.mean())))\n\n\ndef isi_fraction(spikes: np.ndarray, limit: float = 0.003, sort: bool = True) -> float:\n    \"\"\"Fraction of interspike intervals shorter than ``limit`` seconds.\"\"\"\n    sp = np.sort(spikes) if sort else spikes\n    isi = np.diff(sp)\n    return float(np.mean(isi < limit)) if len(isi) else np.nan\n\n\n# --- behaviour ----------------------------------------------------------------\n\ndef type_counters(labels: np.ndarray, responses: np.ndarray) -> np.ndarray:\n    \"\"\"Hits and false alarms per confidence level, from \"old, confident\" (6) down to 1.\"\"\"\n    levels = range(6, 0, -1)\n    hits = [np.sum((responses == k) & (labels == OLD)) for k in levels]\n    fas = [np.sum((responses == k) & (labels == NEW)) for k in levels]\n    return np.array([hits, fas])\n\n\ndef _adjust(rate: float, n: int) -> float:\n    if rate == 1:\n        return 1 - 1 / (2 * n)\n    if rate == 0:\n        return 1 / (2 * n)\n    return rate\n\n\ndef cumulative_rates(labels: np.ndarray, responses: np.ndarray) -> tuple[np.ndarray, np.ndarray]:\n    \"\"\"Cumulative hit and false alarm rates over the six criteria, adjusted for 0 and 1.\"\"\"\n    c = type_counters(labels, responses)\n    n_old, n_new = c[0].sum(), c[1].sum()\n    h = [_adjust(c[0, :i + 1].sum() / n_old, n_old) for i in range(6)]\n    f = [_adjust(c[1, :i + 1].sum() / n_new, n_new) for i in range(6)]\n    return np.array(h), np.array(f)\n\n\ndef auc(labels: np.ndarray, responses: np.ndarray) -> float:\n    \"\"\"Area under the cumulative ROC (trapezoid rule, with (0,0) and (1,1) added; calcROC_AUC.m).\"\"\"\n    h, f = cumulative_rates(labels, responses)\n    if f[0] != 0 or h[0] != 1:      # the code's condition, which always adds (0,0) here\n        h, f = np.r_[0, h], np.r_[0, f]\n    if f[-1] != 1 or h[-1] != 1:\n        h, f = np.r_[h, 1], np.r_[f, 1]\n    area = 0.0\n    for i in range(1, len(h)):\n        if f[i - 1] < f[i]:\n            area += (f[i] - f[i - 1]) * h[i - 1] + 0.5 * (h[i] - h[i - 1]) * (f[i] - f[i - 1])\n    return area\n\n\ndef zroc_slope(labels: np.ndarray, responses: np.ndarray) -> float:\n    \"\"\"Slope of z(hit) on z(false alarm) over the five interior points (calcZROCSlope.m).\"\"\"\n    h, f = cumulative_rates(labels, responses)\n    zh, zf = stats.norm.ppf(h[:-1]), stats.norm.ppf(f[:-1])\n    return float(np.polyfit(zf, zh, 1)[0])\n\n\ndef confidence_accuracy(labels: np.ndarray, responses: np.ndarray, split: str = \"fixed\") -> tuple[float, float]:\n    \"\"\"Percent correct among high and among low confidence responses.\n\n    ``fixed``: high is 1 or 6, low is 2 to 5 (NO_behavior_evaluateSessionStatus.m).\n    ``dynamic``: high is 1 and 6, or 1, 2, 5 and 6, whichever split balances the counts better\n    (NO_dynamic_lowHighSplit.m). NaN when a group has no responses.\n    \"\"\"\n    correct = ((responses >= 4) & (labels == OLD)) | ((responses <= 3) & (labels == NEW))\n    if split == \"fixed\":\n        high = (responses == 1) | (responses == 6)\n    else:\n        n = [np.sum(responses == k) for k in range(1, 7)]\n        c1, c2, c3 = n[0] + n[5], n[1] + n[4], n[2] + n[3]\n        mode = 1 if abs(c1 - (c2 + c3)) <= abs((c1 + c2) - c3) else 2\n        if n[0] == 0 or n[5] == 0:\n            mode = 2\n        if n[1] == 0 or n[4] == 0:\n            mode = 1\n        high = np.isin(responses, [1, 6]) if mode == 1 else np.isin(responses, [1, 2, 5, 6])\n    low = ~high\n    acc = lambda m: 100 * correct[m].mean() if m.any() else np.nan\n    return acc(high), acc(low)\n"
-}
-```
-
-```
-File created successfully at: entries/000004-chandravadia-2020/recogmem.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Helper written. Next I write the notebook through a small builder script, so I can also run the same code as a plain script while debugging.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p $TMPDIR/build && cd  && printf "dandi\nh5py\nmatplotlib\nnumpy\npandas\nremfile\nscipy\n" > entries/000004-chandravadia-2020/requirements.in && cat tools/../schemas/entry.schema.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d['properties'],indent=0)[:2500]); print(d.get('required'))"
-```
-
-```
-{
-"schema_version": {
-"const": 1
-},
-"name": {
-"description": "Unique across the registry, and the name of the entry's directory.",
-"type": "string",
-"pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-"maxLength": 100
-},
-"type": {
-"enum": [
-"orientation",
-"reproduction",
-"analysis"
-]
-},
-"title": {
-"type": "string",
-"minLength": 1,
-[... 72 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude/build_nb.py",
- "content": "\"\"\"Builds entries/000004-chandravadia-2020/reproduce_chandravadia_2020.ipynb from the cell list below.\n\nRun with --script to write a plain .py of the code cells for debugging.\n\"\"\"\nimport sys\nimport nbformat\nfrom pathlib import Path\n\nROOT = Path(\" = ROOT / \"entries\" / \"000004-chandravadia-2020\"\nNB = ENTRY / \"reproduce_chandravadia_2020.ipynb\"\nRESULTS = Path(\"/tmp/claude/results.py\")   # the conclusions, kept apart while drafting\n\ncells = []\n\n\ndef md(text):\n    cells.append((\"markdown\", text.strip(\"\\n\"), []))\n\n\ndef code(text, *tags):\n    cells.append((\"code\", text.strip(\"\\n\"), list(tags)))\n\n\nns = {}\nexec(RESULTS.read_text(), ns)\nHEADER, RESULT, SUMMARY = ns[\"HEADER\"], ns[\"RESULT\"], ns[\"SUMMARY\"]\n\nmd(HEADER)\n\ncode('''\nimport time\nimport warnings\nfrom itertools import combinations\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nfrom scipy import stats\n\nimport recogmem as rm\n\npd.set_option(\"display.width\", 220)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nstarted = time.time()\nsessions = rm.load_all()\nby_id = {s[\"session\"]: s for s in sessions}\nprint(f\"loaded {len(sessions)} files from dandiset {rm.DANDISET_ID} version {rm.DANDISET_VERSION} \"\n      f\"in {time.time() - started:.0f} s\")\n''')\n\nmd('''\n## Data check\n\nEach check of the metadata against the values is stated under its output.\n''')\n\ncode('''\ninfo = pd.DataFrame([{\n    \"session\": s[\"session\"], \"label\": s[\"label\"], \"subject\": s[\"subject_id\"], \"site\": s[\"site\"],\n    \"institution\": s[\"institution\"], \"start\": s[\"session_start_time\"][:10], \"age\": s[\"age\"], \"sex\": s[\"sex\"],\n    \"trials\": len(s[\"trials\"]), \"learn\": int((s[\"trials\"].stim_phase == \"learn\").sum()),\n    \"recog\": int((s[\"trials\"].stim_phase == \"recog\").sum()), \"units\": len(s[\"spikes\"]),\n    \"electrodes\": len(s[\"electrodes\"]), \"categories\": s[\"trials\"].stimCategory.nunique(),\n    \"experiment_ids\": tuple(int(x) for x in np.unique(s[\"experiment_ids\"])),\n    \"data_collection\": s[\"data_collection\"]} for s in sessions])\nprint(\"Files:\", len(info), \" subjects:\", info.subject.nunique(), \" species:\", sorted({s[\"species\"] for s in sessions}))\nprint(\"\\\\nBy site (CS = subjects labelled H or C, TWH = labelled T):\")\nprint(info.groupby(\"site\").agg(sessions=(\"session\", \"size\"), subjects=(\"subject\", \"nunique\"), units=(\"units\", \"sum\")).to_string())\nprint(\"\\\\nInstitution strings:\", info.institution.value_counts().to_dict())\nprint(\"Devices:\", pd.Series([d for s in sessions for d in s[\"devices\"]]).value_counts().to_dict())\nprint(\"\\\\nTrials per file (learn, recog):\", info.groupby([\"learn\", \"recog\"]).size().to_dict())\nprint(\"Units per file: min\", info.units.min(), \"median\", info.units.median(), \"max\", info.units.max(), \"total\", info.units.sum())\nprint(\"Is there a session 144 (Figure 3 example)?\", 144 in by_id)\nprint()\nprint(info.drop(columns=[\"institution\", \"data_collection\"]).to_string(index=False))\n''', \"sanity\")\n\nmd('''\nThe archive's summary gives 59 subjects and 87 files, which the files confirm. There are 1864\nunit rows, one more than the paper's 1863. Eight files have fewer than 100 learning trials (seven\nwith 50 and one with 97). The institution is spelled three ways (\"Hunigton\", \"Hunington\" and\n\"Cedars-Sinai\"/\"Toronto\" correctly), and the device both \"Neuralynx-cheetah\" and\n\"Neuralynx-Cheetah\". There is no session 144, the session of the example neuron of Figure 3.\n''')\n\ncode('''\n# Units and coding of the variables used: times, responses, labels, categories.\nrows = []\nfor s in sessions:\n    t = s[\"trials\"]\n    r = rm.recognition(s)\n    ev, et = s[\"events\"], s[\"events_t\"]\n    stim_on = et[ev == 1]\n    resp_ev = ev[(ev >= 20) & (ev <= 36) & (ev != 30)]\n    sp = np.concatenate(s[\"spikes\"])\n    rows.append({\n        \"session\": s[\"session\"],\n        \"stim_s_median\": np.median(t.stim_off_time - t.stim_on_time),\n        \"start_is_stim_on\": bool(np.allclose(t.start_time, t.stim_on_time)),\n        \"onsets_match_events\": bool(len(stim_on) == len(t) and np.allclose(np.sort(stim_on), np.sort(t.stim_on_time.values))),\n        \"resp_matches_events\": bool(len(resp_ev) == len(t) and np.array_equal(\n            np.where(t.stim_phase == \"recog\", t.response_value, t.response_value + 20), resp_ev)),\n        \"resp_range\": (int(r.response.min()), int(r.response.max())),\n        \"labels\": tuple(sorted(r.label.unique())),\n        \"spikes_from_s\": sp.min() - t.start_time.min(), \"spikes_to_s\": sp.max() - t.stop_time.max(),\n        \"trial_s_median\": np.median(t.stop_time - t.start_time)})\nunits = pd.DataFrame(rows)\nprint(\"Stimulus duration (s), median per file: range\", units.stim_s_median.min().round(3), \"to\", units.stim_s_median.max().round(3))\nprint(\"Trial duration, stimulus onset to end of trial (s), median per file:\", units.trial_s_median.min().round(2), \"to\", units.trial_s_median.max().round(2))\nprint(\"start_time equals stim_on_time in every file:\", units.start_is_stim_on.all())\nprint(\"Trial onsets equal the stimulus-onset events (TTL 1) in every file:\", units.onsets_match_events.all())\nprint(\"Recognition response_value equals the response events (31-36), learning response_value + 20 the events (20/21):\",\n      units.resp_matches_events.sum(), \"of\", len(units))\nprint(\"Recognition responses span\", units.resp_range.min(), \"to\", units.resp_range.max(), \"; labels:\", set(units.labels))\nprint(\"First spike relative to first trial onset (s): range\", units.spikes_from_s.min().round(1), \"to\", units.spikes_from_s.max().round(1))\nprint(\"Last spike relative to last trial end (s): range\", units.spikes_to_s.min().round(1), \"to\", units.spikes_to_s.max().round(1))\nprint(\"Files whose first spike is more than 60 s before the first trial:\", units[units.spikes_from_s < -60].session.tolist())\nprint(\"\\\\nDescription of new_old_labels_recog in the files:\", repr(sessions[0][\"trial_descriptions\"][\"new_old_labels_recog\"]))\nprint(\"Learning response_value values:\", sorted(set(np.concatenate([s[\"trials\"][s[\"trials\"].stim_phase == \"learn\"].response_value.unique() for s in sessions]))))\n''', \"sanity\")\n\nmd('''\nTimes are in seconds on one clock per file: trial start times equal the stimulus-onset events,\nstimuli last a median of 1.0 s, and the response values of the trials table equal the response\nevents the paper's code reads (31 to 36 in recognition; in learning the trials table stores 0 and\n1 for the events 20 and 21). Responses are therefore taken from response_value minus 30. In two\nfiles spikes start long before the first trial: they are the second session of a pair whose\nspike trains are shared (see the next check).\n''')\n\ncode('''\n# Recordings deposited more than once: identical spike trains, trial times or event sequences.\npairs = []\nfor a, b in combinations(sessions, 2):\n    same_spikes = len(a[\"spikes\"]) == len(b[\"spikes\"]) and all(\n        len(x) == len(y) and np.array_equal(x, y) for x, y in zip(a[\"spikes\"], b[\"spikes\"]))\n    ta, tb = a[\"trials\"], b[\"trials\"]\n    n = min(len(ta), len(tb))\n    shared_trials = int(np.sum(np.isin(np.round(ta.start_time.values, 4), np.round(tb.start_time.values, 4))))\n    if same_spikes or shared_trials:\n        pairs.append({\"a\": a[\"session\"], \"b\": b[\"session\"], \"units\": len(a[\"spikes\"]), \"identical_spike_trains\": same_spikes,\n                      \"shared_trial_onsets\": shared_trials, \"trials_a\": len(ta), \"trials_b\": len(tb),\n                      \"exp_ids_a\": tuple(int(x) for x in np.unique(a[\"experiment_ids\"])),\n                      \"exp_ids_b\": tuple(int(x) for x in np.unique(b[\"experiment_ids\"])),\n                      \"a_trials_s\": (round(ta.start_time.min()), round(ta.stop_time.max())),\n                      \"b_trials_s\": (round(tb.start_time.min()), round(tb.stop_time.max())),\n                      \"spikes_s\": (round(np.concatenate(a[\"spikes\"]).min()), round(np.concatenate(a[\"spikes\"]).max()))})\npairs = pd.DataFrame(pairs)\nprint(pairs.to_string(index=False))\nDUPLICATE_SECOND = sorted(pairs[pairs.identical_spike_trains].b.tolist())\nprint(\"\\\\nSessions whose units repeat another session's (dropped when each recording is counted once):\", DUPLICATE_SECOND)\nprint(\"Units in them:\", sum(len(by_id[k][\"spikes\"]) for k in DUPLICATE_SECOND))\nsame_pair = pairs[(pairs.a == 54) & (pairs.b == 55)]\nr54, r55 = rm.recognition(by_id[54]), rm.recognition(by_id[55])\nl54 = by_id[54][\"trials\"][by_id[54][\"trials\"].stim_phase == \"learn\"]\nl55 = by_id[55][\"trials\"][by_id[55][\"trials\"].stim_phase == \"learn\"]\nprint(\"Sessions 54 and 55: learning trials identical:\", l54.reset_index(drop=True).equals(l55.reset_index(drop=True)),\n      \"; recognition onsets shared:\", int(np.isin(r54.start_time.round(4), r55.start_time.round(4)).sum()),\n      \"; recognition images shared:\", len(set(r54.external_image_file) & set(r55.external_image_file)))\n''', \"sanity\")\n\nmd('''\nTwo pairs of files hold identical spike trains for every unit. Sessions 43 and 44 (subject H23)\nare two different task blocks of one continuous recording: the spike trains span both blocks,\nsession 44's trials come first and session 43's later. Sessions 54 and 55 (subject H42) share\nthe same learning block, trial for trial, and differ in their recognition blocks (experiment ids\n81 and 82), so session 55 is a second recognition test of the same encoding block, deposited with\na copy of the learning trials and the same spike trains. In both pairs the units are the same\nneurons. The paper counts neurons per session, so its 1863 includes them twice; results are also\ngiven with sessions 44 and 55 dropped.\n''')\n\ncode('''\n# Clock check: category selectivity of the units in 1 s windows shifted around stimulus onset, with\n# the true labels and with the labels of the previous trial. A response to the stimulus can only\n# appear after onset and with the true labels; an offset between spikes and trials would move it.\noffsets = np.arange(-1.6, 1.61, 0.2)\nfrac_true, frac_shift = [], []\nper_unit = []\nfor s in sessions:\n    r = rm.recognition(s)\n    on, cat = r.start_time.values, r.category.values\n    for k, sp in enumerate(s[\"spikes\"]):\n        p_true = [rm.anova_p(rm.window_rates(sp, on, (o, o + 1.0)), cat) for o in offsets]\n        p_shift = [rm.anova_p(rm.window_rates(sp, on, (o, o + 1.0)), np.roll(cat, 1)) for o in offsets]\n        per_unit.append({\"session\": s[\"session\"], \"p_true\": p_true, \"p_shift\": p_shift,\n                         \"p_pre\": rm.anova_p(rm.window_rates(sp, on, (-1.0, 0.0)), cat),\n                         \"p_post\": rm.anova_p(rm.window_rates(sp, on, rm.WINDOW_METHODS), cat)})\nP = np.array([u[\"p_true\"] for u in per_unit]); PS = np.array([u[\"p_shift\"] for u in per_unit])\nclock = pd.DataFrame({\"window_start_s\": offsets.round(1), \"frac_p<0.05_true_labels\": (P < 0.05).mean(0).round(3),\n                      \"frac_p<0.05_previous_trial_labels\": (PS < 0.05).mean(0).round(3)})\nprint(clock.to_string(index=False))\npu = pd.DataFrame(per_unit)\nses = pu.groupby(\"session\").agg(units=(\"p_post\", \"size\"), sig_pre=(\"p_pre\", lambda p: int((p < 0.05).sum())),\n                                sig_post=(\"p_post\", lambda p: int((p < 0.05).sum())))\nses[\"binom_p_post_vs_5pct\"] = [stats.binomtest(k, n, 0.05, alternative=\"greater\").pvalue for k, n in zip(ses.sig_post, ses.units)]\nses[\"established\"] = (ses.binom_p_post_vs_5pct < 0.05) & (ses.sig_post > ses.sig_pre)\nprint(\"\\\\nSessions where the stimulus response (more category-selective units after onset than expected by chance,\")\nprint(\"and more than before onset) establishes the shared clock:\", int(ses.established.sum()), \"of\", len(ses))\nprint(\"Not established (too few units or no excess):\", ses[~ses.established].index.tolist())\nprint(\"Units in sessions not established:\", int(ses[~ses.established].units.sum()))\nfig, ax = plt.subplots(figsize=(6, 3))\nax.plot(offsets, (P < 0.05).mean(0), \"o-\", label=\"true labels\")\nax.plot(offsets, (PS < 0.05).mean(0), \"s-\", label=\"previous trial's labels\")\nax.axhline(0.05, color=\"k\", lw=0.8)\nax.set_xlabel(\"window start relative to stimulus onset (s), 1 s windows\")\nax.set_ylabel(\"fraction of units p < 0.05\")\nax.legend(); plt.tight_layout(); plt.show()\nprint(\"Plotted fractions range from\", round(min(P.mean(0).min(), 0), 3) if False else round(float(min((P < 0.05).mean(0).min(), (PS < 0.05).mean(0).min())), 3),\n      \"to\", round(float(max((P < 0.05).mean(0).max(), (PS < 0.05).mean(0).max())), 3), \"; none outside the axes.\")\n''', \"sanity\")\n\nmd('''\nCategory selectivity with the true labels rises only in windows that start after stimulus onset\nand stays near the 5% chance level before it, and with the labels of the previous trial it stays\nnear chance at every offset, so spikes and trials share a clock overall. Per session this can be\nshown only where enough units respond; the sessions listed as not established have too few units\nor too few selective units to tell, and for them the shared clock is assumed.\n''')\n\n# --- claims -----------------------------------------------------------------------------------\n\nmd('''\n## counts-neurons-subjects\n\n> The dataset holds 1863 single neurons recorded from the medial temporal lobes of 59 subjects.\n''')\ncode('''\nn_units = int(info.units.sum())\nn_units_once = int(info[~info.session.isin(DUPLICATE_SECOND)].units.sum())\nn_subjects = info.subject.nunique()\nprint(f\"(a) every unit row: {n_units} neurons (paper 1863, tolerance 1676.7 to 2049.3; difference {n_units - 1863:+d})\")\nprint(f\"(b) duplicated spike trains counted once: {n_units_once} neurons (difference {n_units_once - 1863:+d})\")\nprint(f\"subjects: {n_subjects} (paper 59)\")\nprint(\"units by site:\", info.groupby(\"site\").units.sum().to_dict())\n''', \"claim:counts-neurons-subjects\")\nmd(RESULT[\"counts-neurons-subjects\"])\n\nmd('''\n## counts-sessions\n\n> The patients performed 87 sessions, listed by subject and session id in Online-only Table 1\n> (the Methods give 89).\n''')\ncode('''\ntable = rm.online_table_1()\nfiles_set = set(zip(info.label.str.replace(\"CS\", \"C\").str.replace(r\"^([A-Z])0*\", r\"\\\\1\", regex=True), info.session))\ntable_set = set(zip(table.table_subject.str.replace(r\"^([A-Z])0*\", r\"\\\\1\", regex=True), table.session))\nprint(\"sessions in the files:\", len(info), \"; in Online-only Table 1:\", len(table), \"; Methods: 89\")\nprint(\"(subject, session) pairs only in the files:\", sorted(files_set - table_set))\nprint(\"(subject, session) pairs only in the table:\", sorted(table_set - files_set))\nprint(\"Task variant against the stimulus set of the file:\")\nvar = table.set_index(\"session\").variant\nprint(pd.crosstab(info.session.map(var).rename(\"variant (table)\"),\n                  pd.Series([sorted(s[\"trials\"].category_name.unique())[0] for s in sessions], name=\"first category name\")).to_string())\n''', \"claim:counts-sessions\")\nmd(RESULT[\"counts-sessions\"])\n\nmd('''\n## table1-demographics\n\n> Online-only Table 1 gives the age and sex of every subject; there are 25 female and 34 male\n> subjects.\n''')\ncode('''\nsubj = info.groupby(\"subject\").agg(label=(\"label\", \"first\"), age=(\"age\", \"first\"), sex=(\"sex\", \"first\"),\n                                   ages=(\"age\", \"nunique\"), sexes=(\"sex\", \"nunique\")).reset_index()\nsubj[\"session\"] = info.groupby(\"subject\").session.first().values\ntab_subj = table.drop_duplicates(\"table_subject\").set_index(\"session\")\nfirst_session = table.groupby(\"table_subject\").session.first()\nm = subj.merge(table[[\"session\", \"table_subject\", \"age\", \"sex\", \"diagnosis\"]], on=\"session\", suffixes=(\"_file\", \"_table\"))\nm[\"age_file\"] = m.age_file.astype(int)\nm[\"match\"] = (m.age_file == m.age_table) & (m.sex_file == m.sex_table)\ndiag = {s[\"subject_id\"]: s[\"diagnosis\"] for s in sessions}\nm[\"diagnosis_file\"] = m.subject.map(diag)\nprint(\"Subjects with one age and one sex across their files:\", int(((subj.ages == 1) & (subj.sexes == 1)).sum()), \"of\", len(subj))\nprint(\"Subjects matching the table in age and sex:\", int(m.match.sum()), \"of\", len(m))\nprint(m[~m.match][[\"subject\", \"table_subject\", \"age_file\", \"age_table\", \"sex_file\", \"sex_table\"]].to_string(index=False))\nprint(\"\\\\nFemale / male in the files:\", subj.sex.value_counts().to_dict(), \"; in the table: F 25, M 34\")\nprint(\"\\\\nDiagnosis, files against table, where the text differs:\")\nprint(m[m.diagnosis_file.str.lower() != m.diagnosis.str.lower()][[\"table_subject\", \"diagnosis_file\", \"diagnosis\"]].to_string(index=False))\n''', \"claim:table1-demographics\")\nmd(RESULT[\"table1-demographics\"])\n\nmd('''\n## task-structure\n\n> Each session has 100 encoding trials showing 100 novel images and 100 recognition trials, of\n> which 50 show new and 50 old images, and the images come from 5 visual categories.\n''')\ncode('''\nrows = []\nfor s in sessions:\n    t = s[\"trials\"]; learn = t[t.stim_phase == \"learn\"]; r = rm.recognition(s)\n    (shape, img_t), = s[\"stimulus\"].values()\n    rows.append({\"session\": s[\"session\"], \"learn\": len(learn), \"learn_distinct_images\": learn.external_image_file.nunique(),\n                 \"recog\": len(r), \"label_counts\": tuple(r.label.value_counts().sort_index()), \"categories\": t.stimCategory.nunique(),\n                 \"category_names\": t.category_name.nunique(), \"images_stored\": shape[0],\n                 \"image_times_are_onsets\": bool(np.allclose(np.sort(img_t), np.sort(t.start_time.values)))})\ntask = pd.DataFrame(rows)\nok_learn = (task.learn == 100) & (task.learn_distinct_images == 100)\nok_recog = (task.recog == 100) & (task.label_counts == (50, 50))\nok_cat = (task.categories == 5) & (task.category_names == 5)\nprint(\"100 encoding trials with 100 distinct images:\", int(ok_learn.sum()), \"of\", len(task))\nprint(\"100 recognition trials, 50 per label:\", int(ok_recog.sum()), \"of\", len(task))\nprint(\"5 categories (ids and names):\", int(ok_cat.sum()), \"of\", len(task))\nprint(\"One stored image per trial, timestamped at trial onset:\", int(((task.images_stored == task.learn + task.recog) & task.image_times_are_onsets).sum()), \"of\", len(task))\nprint(\"\\\\nSessions with other encoding blocks:\")\nprint(task[~ok_learn].to_string(index=False))\nprint(\"\\\\nStimulus storage: one ImageSeries per file,\", sorted({k for s in sessions for k in s[\"stimulus\"]}),\n      \"(the paper describes stimuli_learn_x and stimuli_recog_x entries)\")\n''', \"claim:task-structure\")\nmd(RESULT[\"task-structure\"])\n\nmd('''\n## new-old-label-coding\n\n> In the trials table, new_old_labels_recog is 0 for old stimuli (seen during encoding) and 1 for\n> new stimuli.\n''')\ncode('''\nrows = []\nfor s in sessions:\n    t = s[\"trials\"]; r = rm.recognition(s)\n    learned = set(t[t.stim_phase == \"learn\"].external_image_file)\n    seen = r.external_image_file.isin(learned)\n    rows.append({\"session\": s[\"session\"],\n                 \"label0_seen_in_encoding\": seen[r.label == 0].mean(), \"label1_seen_in_encoding\": seen[r.label == 1].mean(),\n                 \"label0_old_responses\": (r.response[r.label == 0] >= 4).mean(), \"label1_old_responses\": (r.response[r.label == 1] >= 4).mean()})\nlab = pd.DataFrame(rows)\nprint(\"Fraction of recognition trials whose image file was shown during encoding, median over sessions:\")\nprint(\"  label 0:\", lab.label0_seen_in_encoding.median(), \" label 1:\", lab.label1_seen_in_encoding.median())\nprint(\"Sessions where every label-1 image and no label-0 image was shown in encoding:\",\n      int(((lab.label1_seen_in_encoding == 1) & (lab.label0_seen_in_encoding == 0)).sum()), \"of\", len(lab))\nprint(\"Sessions where label 0 matches the stated coding (all label-0 images seen, no label-1 image seen):\",\n      int(((lab.label0_seen_in_encoding == 1) & (lab.label1_seen_in_encoding == 0)).sum()))\nprint(\"\\\\nFraction of 'old' responses (4-6), median over sessions: label 0\", round(lab.label0_old_responses.median(), 3),\n      \" label 1\", round(lab.label1_old_responses.median(), 3))\nprint(\"Sessions with more 'old' responses to label 1 than to label 0:\", int((lab.label1_old_responses > lab.label0_old_responses).sum()), \"of\", len(lab))\nprint(\"Sign test, label 1 above label 0: p =\", stats.binomtest(int((lab.label1_old_responses > lab.label0_old_responses).sum()),\n      int((lab.label1_old_responses != lab.label0_old_responses).sum())).pvalue)\nprint(\"Sessions with imperfect image match:\")\nprint(lab[(lab.label1_seen_in_encoding < 1) | (lab.label0_seen_in_encoding > 0)].round(3).to_string(index=False))\n''', \"claim:new-old-label-coding\")\nmd(RESULT[\"new-old-label-coding\"])\n\nmd('''\n## ttl-codes\n\n> The events stream holds the TTL markers 55, 1, 2, 3, 20 or 21, 31 to 36, 6 and 66 with the\n> meanings of Table 1, and the events and experiment_ids streams have one entry each, in the same\n> order.\n''')\ncode('''\nLISTED = {55, 1, 2, 3, 20, 21, 31, 32, 33, 34, 35, 36, 6, 66}\nrows = []\nfor s in sessions:\n    ev, et = s[\"events\"], s[\"events_t\"]\n    same = len(ev) == len(s[\"experiment_ids\"]) and np.allclose(et, s[\"experiment_ids_t\"])\n    other = sorted(set(ev.astype(int)) - LISTED)\n    on = np.flatnonzero(ev == 1)\n    seq_ok = 0\n    for i in on:\n        nxt = ev[i + 1:i + 5]\n        if len(nxt) == 4 and nxt[0] == 2 and nxt[1] == 3 and (nxt[2] in (20, 21) or 31 <= nxt[2] <= 36) and nxt[3] == 6:\n            seq_ok += 1\n    rows.append({\"session\": s[\"session\"], \"events\": len(ev), \"same_length_and_times\": same, \"unlisted_codes\": tuple(other),\n                 \"trials\": len(on), \"trials_in_order\": seq_ok,\n                 \"starts_55\": int((ev == 55).sum()), \"ends_66\": int((ev == 66).sum())})\nttl = pd.DataFrame(rows)\nprint(\"events and experiment_ids of equal length and timestamps:\", int(ttl.same_length_and_times.sum()), \"of\", len(ttl))\nprint(\"files with codes not in Table 1:\", ttl[ttl.unlisted_codes != ()][[\"session\", \"unlisted_codes\"]].to_string(index=False))\nprint(\"trials showing 1, 2, 3, response, 6 in order:\", int(ttl.trials_in_order.sum()), \"of\", int(ttl.trials.sum()))\nprint(\"55 and 66 per file:\", ttl.groupby([\"starts_55\", \"ends_66\"]).size().to_dict())\n''', \"claim:ttl-codes\")\nmd(RESULT[\"ttl-codes\"])\n\nmd('''\n## experiment-ids\n\n> The learning block is labelled with one of 80, 83 or 88 and the recognition block with one of\n> 81, 84 or 89.\n''')\ncode('''\nrows = []\nfor s in sessions:\n    ids = s[\"experiment_ids\"]; ev = s[\"events\"]\n    first_resp = {int(e): int(ev[(ids == e) & (((ev >= 20) & (ev <= 21)) | ((ev >= 31) & (ev <= 36)))][0]) for e in np.unique(ids)}\n    learn_id = [e for e, r in first_resp.items() if r in (20, 21)]\n    recog_id = [e for e, r in first_resp.items() if 31 <= r <= 36]\n    rows.append({\"session\": s[\"session\"], \"learn_id\": learn_id[0] if learn_id else None,\n                 \"recog_id\": recog_id[0] if recog_id else None, \"data_collection\": s[\"data_collection\"]})\neid = pd.DataFrame(rows)\neid[\"ok\"] = eid.learn_id.isin([80, 83, 88]) & eid.recog_id.isin([81, 84, 89])\nprint(\"Block identified by its responses (20/21 learning, 31-36 recognition).\")\nprint(\"files whose ids are in the stated sets:\", int(eid.ok.sum()), \"of\", len(eid))\nprint(eid[~eid.ok].to_string(index=False))\nprint(\"\\\\nid pairs:\", eid.groupby([\"learn_id\", \"recog_id\"]).size().to_dict())\n''', \"claim:experiment-ids\")\nmd(RESULT[\"experiment-ids\"])\n\nmd('''\n## session-dates\n\n> session_start_time keeps only the year and month of the experiment, with the day set to the\n> first of the month for all sessions.\n''')\ncode('''\ndates = pd.DataFrame({\"session\": [s[\"session\"] for s in sessions], \"start\": [s[\"session_start_time\"] for s in sessions]})\ndates[\"day\"] = dates.start.str[8:10]; dates[\"year\"] = dates.start.str[:4].astype(int)\nprint(\"files on the first of a month:\", int((dates.day == \"01\").sum()), \"of\", len(dates))\nprint(dates[dates.day != \"01\"].to_string(index=False))\nprint(\"years:\", dates.year.min(), \"to\", dates.year.max(), \"; by year:\", dates.year.value_counts().sort_index().to_dict())\n''', \"claim:session-dates\")\nmd(RESULT[\"session-dates\"])\n\nmd('''\n## units-table\n\n> The units table holds spike_times, waveform_mean_encoding, waveform_mean_recognition (sampled\n> at 100 kHz), origClusterID, SNR, IsolDist and electrodes, with one electrode per neuron.\n''')\ncode('''\nneeded = {\"spike_times\", \"waveform_mean_encoding\", \"waveform_mean_recognition\", \"origClusterID\", \"SNR\", \"IsolationDist\", \"electrodes\"}\ncols_ok = sum(needed <= set(s[\"unit_columns\"]) for s in sessions)\none_elec = sum(bool(np.array_equal(s[\"unit_electrode_index\"], np.arange(1, len(s[\"spikes\"]) + 1))) for s in sessions)\nrates = np.unique(np.concatenate([s[\"waveform_rate\"] for s in sessions]))\nsnr = np.concatenate([s[\"snr\"] for s in sessions]); iso = np.concatenate([s[\"isolation_distance\"] for s in sessions])\nprint(\"files with every column (IsolDist is named IsolationDist):\", cols_ok, \"of\", len(sessions))\nprint(\"columns in every file:\", sorted(set.intersection(*[set(s[\"unit_columns\"]) for s in sessions])))\nprint(\"files where every unit links to exactly one electrode:\", one_elec, \"of\", len(sessions))\nprint(\"stated waveform sampling rate (Hz):\", rates, \"; waveform samples:\", sorted({s[\"waveform_shape\"][1] for s in sessions}))\nprint(f\"SNR: {np.isfinite(snr).sum()} of {len(snr)} finite; {np.isinf(snr).sum()} infinite; finite range {np.nanmin(snr[np.isfinite(snr)]):.2f} to {np.nanmax(snr[np.isfinite(snr)]):.2f}\")\nprint(f\"IsolationDist: {np.isfinite(iso).sum()} of {len(iso)} finite; {np.isnan(iso).sum()} NaN; finite range {np.nanmin(iso):.3g} to {np.nanmax(iso[np.isfinite(iso)]):.3g}; above 1e4: {(iso > 1e4).sum()}\")\nunsorted = [(s[\"session\"], k) for s in sessions for k, sp in enumerate(s[\"spikes\"]) if np.any(np.diff(sp) < 0)]\nprint(\"units whose spike times are not in increasing order:\", len(unsorted), \"in sessions\", sorted({a for a, _ in unsorted}))\n''', \"claim:units-table\")\nmd(RESULT[\"units-table\"])\n\nmd('''\n## electrodes-table\n\n> The electrodes table gives each electrode's brain area, MNI coordinates, impedance, the filter\n> applied before spike sorting (300 to 3000 Hz) and the original hardware channel.\n''')\ncode('''\nE = pd.concat([s[\"electrodes\"].assign(session=s[\"session\"]) for s in sessions], ignore_index=True)\nprint(\"electrodes:\", len(E), \"; columns in every file:\", sorted(set.intersection(*[set(s[\"electrodes\"].columns) for s in sessions])))\nfor c in [\"location\", \"x\", \"y\", \"z\", \"imp\", \"filtering\", \"origChannel\"]:\n    v = E[c]\n    empty = v.isna() | (v.astype(str).str.strip() == \"\")\n    print(f\"{c:12s} empty for {int(empty.sum())} of {len(E)}; files with any empty: {E[empty].session.nunique()}\")\nprint(\"filtering values:\", E.filtering.value_counts().to_dict())\nprint(\"sessions with missing coordinates:\", sorted(E[E.x.isna()].session.unique()))\nprint(\"coordinate ranges (mm): x\", E.x.min(), \"to\", E.x.max(), \"; y\", E.y.min(), \"to\", E.y.max(), \"; z\", E.z.min(), \"to\", E.z.max())\nside = E.dropna(subset=[\"x\"])\nprint(\"left-named electrodes with x < 0:\", int((side.location.str.startswith(\"Left\") & (side.x < 0)).sum()), \"of\", int(side.location.str.startswith(\"Left\").sum()),\n      \"; right-named with x > 0:\", int((side.location.str.startswith(\"Right\") & (side.x > 0)).sum()), \"of\", int(side.location.str.startswith(\"Right\").sum()))\n''', \"claim:electrodes-table\")\nmd(RESULT[\"electrodes-table\"])\n\nmd('''\n## isi-criterion\n\n> Clusters were accepted as units only when fewer than 3% of their interspike intervals were\n> shorter than 3 ms.\n''')\ncode('''\nisi = pd.DataFrame([{\"session\": s[\"session\"], \"unit\": k, \"spikes\": len(sp), \"isi_sorted\": rm.isi_fraction(sp),\n                     \"isi_as_stored\": rm.isi_fraction(sp, sort=False)} for s in sessions for k, sp in enumerate(s[\"spikes\"])])\nprint(\"units:\", len(isi))\nfor c in [\"isi_sorted\", \"isi_as_stored\"]:\n    print(f\"{c}: below 3% {int((isi[c] < 0.03).sum())} ({100 * (isi[c] < 0.03).mean():.1f}%); median {100 * isi[c].median():.2f}%; max {100 * isi[c].max():.1f}%\")\nfor thr in (0.03, 0.05, 0.10):\n    print(f\"units at or above {thr:.0%} (sorted): {int((isi.isi_sorted >= thr).sum())}\")\nprint(\"by site, fraction below 3%:\", isi.assign(site=isi.session.map({s['session']: s['site'] for s in sessions})).groupby(\"site\").isi_sorted.apply(lambda v: round((v < 0.03).mean(), 3)).to_dict())\nfig, ax = plt.subplots(figsize=(5, 3))\nax.hist(100 * isi.isi_sorted.clip(upper=0.2), bins=50)\nax.axvline(3, color=\"k\"); ax.set_xlabel(\"% of ISIs < 3 ms (clipped at 20%)\"); ax.set_ylabel(\"units\")\nplt.tight_layout(); plt.show()\nprint(\"units above 20% (clipped into the last bin):\", int((isi.isi_sorted > 0.2).sum()))\n''', \"claim:isi-criterion\")\nmd(RESULT[\"isi-criterion\"])\n\nmd('''\n## fig5a-mtl-locations\n\n> All neurons were recorded from the medial temporal lobe, in the amygdala and the hippocampus.\n''')\ncode('''\nloc = pd.Series([s[\"electrodes\"].location.values[e] for s in sessions for e in s[\"unit_electrode\"]])\nprint(\"unit locations:\", loc.value_counts().to_dict())\nprint(\"units in amygdala or hippocampus:\", int(loc.str.contains(\"Amygdala|Hippocampus\").sum()), \"of\", len(loc))\n''', \"claim:fig5a-mtl-locations\")\nmd(RESULT[\"fig5a-mtl-locations\"])\n\nmd('''\n## fig5c-auc-all\n\n> Subjects distinguished new from old images; the behavioural AUC averaged over all sessions is\n> 0.74 ± 0.10.\n''')\ncode('''\nbeh = []\nfor s in sessions:\n    r = rm.recognition(s)\n    lab_, resp = r.label.values, r.response.values\n    hi_f, lo_f = rm.confidence_accuracy(lab_, resp, \"fixed\")\n    hi_d, lo_d = rm.confidence_accuracy(lab_, resp, \"dynamic\")\n    beh.append({\"session\": s[\"session\"], \"site\": s[\"site\"], \"auc\": rm.auc(lab_, resp), \"zroc_slope\": rm.zroc_slope(lab_, resp),\n                \"acc_high_fixed\": hi_f, \"acc_low_fixed\": lo_f, \"acc_high_dynamic\": hi_d, \"acc_low_dynamic\": lo_d,\n                \"hit_rate\": np.mean(resp[lab_ == rm.OLD] >= 4), \"fa_rate\": np.mean(resp[lab_ == rm.NEW] >= 4)})\nbeh = pd.DataFrame(beh)\nprint(f\"AUC over {len(beh)} sessions: mean {beh.auc.mean():.3f}, SD {beh.auc.std(ddof=1):.3f} (paper 0.74 ± 0.10)\")\nprint(f\"range {beh.auc.min():.3f} to {beh.auc.max():.3f}; sessions below 0.6: {int((beh.auc < 0.6).sum())}; at or below 0.5: {int((beh.auc <= 0.5).sum())}\")\nprint(f\"chance AUC is 0.5; one-sample t-test of AUC against 0.5: t = {stats.ttest_1samp(beh.auc, 0.5).statistic:.1f}, p = {stats.ttest_1samp(beh.auc, 0.5).pvalue:.2g}\")\nprint(f\"hit rate {beh.hit_rate.mean():.3f}, false alarm rate {beh.fa_rate.mean():.3f} (means over sessions)\")\nonce = beh[~beh.session.isin(DUPLICATE_SECOND)]\nprint(f\"variant, sessions 44 and 55 dropped: mean {once.auc.mean():.3f}, SD {once.auc.std(ddof=1):.3f}\")\nprint(f\"variant, label coding as the paper states (0 = old): mean AUC {np.mean([1 - a for a in beh.auc]):.3f}\")\nfig, ax = plt.subplots(figsize=(5, 3))\nax.hist(beh.auc, bins=20); ax.set_xlabel(\"AUC\"); ax.set_ylabel(\"sessions\"); plt.tight_layout(); plt.show()\n''', \"claim:fig5c-auc-all\")\nmd(RESULT[\"fig5c-auc-all\"])\n\nmd('''\n## fig5c-auc-sites\n\n> Performance was similar at the two study sites, with an average AUC of 0.74 ± 0.09 for CS\n> sessions and 0.69 ± 0.13 for TWH sessions.\n''')\ncode('''\ng = beh.groupby(\"site\").auc.agg([\"size\", \"mean\", lambda v: v.std(ddof=1)]).rename(columns={\"<lambda_0>\": \"sd\"})\nprint(g.round(3).to_string())\nprint(\"paper: CS 0.74 ± 0.09, TWH 0.69 ± 0.13\")\nw = stats.ttest_ind(beh[beh.site == \"CS\"].auc, beh[beh.site == \"TWH\"].auc, equal_var=False)\nprint(f\"CS against TWH, Welch's t-test: t = {w.statistic:.2f}, p = {w.pvalue:.3f}; difference of means {g.loc['CS', 'mean'] - g.loc['TWH', 'mean']:.3f}\")\nprint(\"TWH sessions:\", beh[beh.site == \"TWH\"][[\"session\", \"auc\"]].round(3).to_dict(\"records\"))\n''', \"claim:fig5c-auc-sites\")\nmd(RESULT[\"fig5c-auc-sites\"])\n\nmd('''\n## fig5b-roc-asymmetric\n\n> The ROC curve is asymmetric (p < 0.05), as expected for declarative memory.\n''')\ncode('''\nsl = beh.zroc_slope\nt1 = stats.ttest_1samp(sl, 1.0)\nwx = stats.wilcoxon(sl - 1.0)\nprint(f\"z-ROC slope over {len(sl)} sessions: mean {sl.mean():.3f}, median {sl.median():.3f}, SD {sl.std(ddof=1):.3f}, range {sl.min():.2f} to {sl.max():.2f}\")\nprint(f\"one-sample t-test against 1: t = {t1.statistic:.2f}, p = {t1.pvalue:.2g}; sessions with slope below 1: {int((sl < 1).sum())} of {len(sl)}\")\nprint(f\"variant, Wilcoxon signed-rank against 1: p = {wx.pvalue:.2g}\")\npooled_lab = np.concatenate([rm.recognition(s).label.values for s in sessions])\npooled_resp = np.concatenate([rm.recognition(s).response.values for s in sessions])\nprint(f\"variant, slope of the pooled ROC (all trials of all sessions): {rm.zroc_slope(pooled_lab, pooled_resp):.3f}\")\nonce = beh[~beh.session.isin(DUPLICATE_SECOND)].zroc_slope\nprint(f\"variant, sessions 44 and 55 dropped: mean {once.mean():.3f}, p = {stats.ttest_1samp(once, 1.0).pvalue:.2g}\")\n''', \"claim:fig5b-roc-asymmetric\")\nmd(RESULT[\"fig5b-roc-asymmetric\"])\n\nmd('''\n## fig5d-confidence-accuracy\n\n> Accuracy is significantly higher in high than in low confidence trials (P < 0.001, paired t\n> test) across all sessions.\n''')\ncode('''\nfor split in (\"fixed\", \"dynamic\"):\n    h, l = beh[f\"acc_high_{split}\"], beh[f\"acc_low_{split}\"]\n    ok = h.notna() & l.notna()\n    tr = stats.ttest_rel(h[ok], l[ok])\n    tu = stats.ttest_ind(h[ok], l[ok])\n    print(f\"({'a' if split == 'fixed' else 'b'}) {split} split: {int(ok.sum())} sessions, {int((~ok).sum())} left out (no responses in a group): \"\n          f\"{beh[~ok].session.tolist()}\")\n    print(f\"    high {h[ok].mean():.1f}% against low {l[ok].mean():.1f}% (means); high > low in {int((h[ok] > l[ok]).sum())} sessions\")\n    print(f\"    paired t-test: t = {tr.statistic:.2f}, p = {tr.pvalue:.2g};  variant, unpaired (the code's ttest2): p = {tu.pvalue:.2g}\")\n    print(f\"    mean difference {np.mean(h[ok] - l[ok]):.1f} points, 95% CI {np.percentile(h[ok] - l[ok], [2.5, 97.5]).round(1)} (percentiles over sessions)\")\n''', \"claim:fig5d-confidence-accuracy\")\nmd(RESULT[\"fig5d-confidence-accuracy\"])\n\nmd('''\n## Single-unit selectivity\n\nEvery unit is tested on the recognition trials of its file. The firing rate in the window is the\nspike count divided by the window length. Results for VS, MS and dual cells come from this one\ncomputation; each claim's section prints its own numbers.\n''')\ncode('''\nrng_vs = np.random.default_rng(20200304)\nrng_ms = np.random.default_rng(78)\nrng_null = np.random.default_rng(415)\nN_NULL = 5\nrows = []\nstarted = time.time()\nfor s in sessions:\n    r = rm.recognition(s)\n    on, cat, lab_, resp = r.start_time.values, r.category.values, r.label.values, r.response.values\n    correct = ((resp >= 4) & (lab_ == rm.OLD)) | ((resp <= 3) & (lab_ == rm.NEW))\n    names = r.groupby(\"category\").category_name.first()\n    for k, sp in enumerate(s[\"spikes\"]):\n        row = {\"session\": s[\"session\"], \"site\": s[\"site\"], \"unit\": k,\n               \"channel\": int(s[\"electrodes\"].origChannel.values[s[\"unit_electrode\"][k]]),\n               \"electrode_row\": int(s[\"unit_electrode\"][k]),\n               \"location\": s[\"electrodes\"].location.values[s[\"unit_electrode\"][k]]}\n        for wname, w in ((\"methods\", rm.WINDOW_METHODS), (\"code\", rm.WINDOW_CODE)):\n            x = rm.window_rates(sp, on, w)\n            row[f\"p_vs_{wname}\"] = rm.anova_p(x, cat)\n            row[f\"p_ms_{wname}_all\"] = rm.bootstrap_p(x[lab_ == rm.OLD], x[lab_ == rm.NEW], rng_ms)\n            row[f\"p_ms_{wname}_correct\"] = rm.bootstrap_p(x[(lab_ == rm.OLD) & correct], x[(lab_ == rm.NEW) & correct], rng_ms)\n            row[f\"best_{wname}\"] = names[pd.Series(x).groupby(cat).mean().idxmax()]\n        x = rm.window_rates(sp, on, rm.WINDOW_METHODS)\n        row[\"null_vs\"] = np.mean([rm.anova_p(x, rng_null.permutation(cat)) < 0.05 for _ in range(N_NULL)])\n        row[\"null_ms\"] = np.mean([rm.bootstrap_p(*(lambda L: (x[L == rm.OLD], x[L == rm.NEW]))(rng_null.permutation(lab_)), rng_null) < 0.05\n                                  for _ in range(N_NULL)])\n        row[\"rate_hz\"] = len(sp) / (s[\"trials\"].stop_time.max() - s[\"trials\"].start_time.min())\n        rows.append(row)\ncells = pd.DataFrame(rows)\ncells[\"vs\"] = cells.p_vs_methods < 0.05\ncells[\"ms\"] = cells.p_ms_methods_all < 0.05\ncells[\"once\"] = ~cells.session.isin(DUPLICATE_SECOND)\nprint(f\"{len(cells)} units tested in {time.time() - started:.0f} s; none dropped. Recognition trials per unit: 100 in every file.\")\nprint(f\"units with no spike in any recognition window (Methods' window): {int((cells.p_vs_methods == 1).sum())}\")\nprint(\"correct trials per session (old, new):\", sorted({(int((((rm.recognition(s).response >= 4) & (rm.recognition(s).label == 1))).sum()),\n      int((((rm.recognition(s).response <= 3) & (rm.recognition(s).label == 0))).sum())) for s in sessions})[:5], \"... (first five)\")\n''')\n\nmd('''\n## vs-cells-proportion\n\n> 343 of the 1863 cells (18.4%) are visually selective, by a one-way ANOVA (P < 0.05) of the\n> firing rate in recognition trials, in a 1 s window starting 200 ms after stimulus onset, across\n> the 5 visual categories.\n''')\ncode('''\ndef share(mask, base=None):\n    base = cells if base is None else base\n    return f\"{int(mask.sum())} of {len(base)} ({100 * mask.mean():.1f}%)\"\nprint(\"main (Methods' window, every unit):\", share(cells.vs), \" paper: 343 of 1863 (18.4%)\")\nprint(\"variant, code's window 200-1700 ms:\", share(cells.p_vs_code < 0.05))\nprint(\"variant, duplicated spike trains counted once:\", share(cells[cells.once].vs, cells[cells.once]))\nprint(f\"null, categories shuffled within session ({N_NULL} shuffles per unit): {100 * cells.null_vs.mean():.1f}% (expected 5%)\")\nfor thr in (0.01, 0.05, 0.10):\n    print(f\"threshold p < {thr}: {100 * (cells.p_vs_methods < thr).mean():.1f}%\")\nprint(\"\\\\nby session (main), sessions with at least 20 units:\")\nbs = cells.groupby(\"session\").agg(units=(\"vs\", \"size\"), vs=(\"vs\", \"sum\"))\nprint(bs[bs.units >= 20].assign(pct=lambda d: (100 * d.vs / d.units).round(1)).T.to_string())\nprint(\"range of per-session percentages (sessions with at least 20 units):\", (100 * bs[bs.units >= 20].vs / bs[bs.units >= 20].units).min().round(1),\n      \"to\", (100 * bs[bs.units >= 20].vs / bs[bs.units >= 20].units).max().round(1))\nprint(\"by area:\", cells.groupby(\"location\").vs.apply(lambda v: f\"{int(v.sum())}/{len(v)}\").to_dict())\n''', \"claim:vs-cells-proportion\")\nmd(RESULT[\"vs-cells-proportion\"])\n\nmd('''\n## ms-cells-proportion\n\n> 146 of the 1863 cells (7.8%) are memory selective, by a two-tailed bootstrap comparison of mean\n> firing rates (1,000 runs, P < 0.05) between the 50 novel and 50 familiar recognition trials in a\n> 1 s window starting 200 ms after stimulus onset.\n''')\ncode('''\nprint(\"main (Methods' window, all 50 and 50 trials):\", share(cells.ms), \" paper: 146 of 1863 (7.8%)\")\nprint(\"variant, Methods' window, correct trials only:\", share(cells.p_ms_methods_correct < 0.05))\nprint(\"variant, code's window, all trials:\", share(cells.p_ms_code_all < 0.05))\nprint(\"variant, code's choices (code's window, correct trials only):\", share(cells.p_ms_code_correct < 0.05))\nprint(\"variant, duplicated spike trains counted once:\", share(cells[cells.once].ms, cells[cells.once]))\nprint(f\"null, labels shuffled within session ({N_NULL} shuffles per unit): {100 * cells.null_ms.mean():.1f}% (expected 5%)\")\nfor thr in (0.01, 0.05, 0.10):\n    print(f\"threshold p < {thr}: {100 * (cells.p_ms_methods_all < thr).mean():.1f}%\")\nprint(\"by site:\", cells.groupby(\"site\").ms.apply(lambda v: f\"{int(v.sum())}/{len(v)}\").to_dict())\nprint(\"by area:\", cells.groupby(\"location\").ms.apply(lambda v: f\"{int(v.sum())}/{len(v)}\").to_dict())\n''', \"claim:ms-cells-proportion\")\nmd(RESULT[\"ms-cells-proportion\"])\n\nmd('''\n## dual-cells-proportion\n\n> 26 cells (1.4%) are both visually and memory selective.\n''')\ncode('''\ndual = cells.vs & cells.ms\nprint(\"main:\", share(dual), \" paper: 26 of 1863 (1.4%)\")\nprint(\"expected if VS and MS were independent:\", f\"{len(cells) * cells.vs.mean() * cells.ms.mean():.1f} units\")\nprint(\"variant, code's choices:\", share((cells.p_vs_code < 0.05) & (cells.p_ms_code_correct < 0.05)))\nprint(\"variant, duplicated spike trains counted once:\", share(dual[cells.once], cells[cells.once]))\n''', \"claim:dual-cells-proportion\")\nmd(RESULT[\"dual-cells-proportion\"])\n\nmd('''\n## fig5f-site-proportions\n\n> The percentages of VS, MS and dual cells are comparable between CS sessions (18.4%, 7.7% and\n> 1.4%) and the new TWH sessions (19.4%, 10.4% and 1.3%).\n''')\ncode('''\ncells[\"dual\"] = cells.vs & cells.ms\nPAPER = {(\"vs\", \"CS\"): 18.4, (\"ms\", \"CS\"): 7.7, (\"dual\", \"CS\"): 1.4, (\"vs\", \"TWH\"): 19.4, (\"ms\", \"TWH\"): 10.4, (\"dual\", \"TWH\"): 1.3}\nwithin = 0\nfor kind in (\"vs\", \"ms\", \"dual\"):\n    a = cells[cells.site == \"CS\"][kind]; b = cells[cells.site == \"TWH\"][kind]\n    tab2 = [[int(a.sum()), int((~a).sum())], [int(b.sum()), int((~b).sum())]]\n    p = stats.fisher_exact(tab2).pvalue\n    for site, v in ((\"CS\", a), (\"TWH\", b)):\n        ok = abs(100 * v.mean() - PAPER[(kind, site)]) <= 0.1 * PAPER[(kind, site)]\n        within += ok\n        print(f\"{kind:4s} {site:3s}: {int(v.sum())} of {len(v)} = {100 * v.mean():.1f}% (paper {PAPER[(kind, site)]}%, within 10%: {ok})\")\n    print(f\"     Fisher's exact test CS against TWH: p = {p:.3f}\")\nprint(\"values within tolerance:\", within, \"of 6\")\nfor kind, col in ((\"vs\", \"p_vs_code\"), (\"ms\", \"p_ms_code_correct\")):\n    print(f\"variant, code's choices, {kind}:\", cells.assign(x=cells[col] < 0.05).groupby(\"site\").x.apply(lambda v: f\"{100 * v.mean():.1f}%\").to_dict())\n''', \"claim:fig5f-site-proportions\")\nmd(RESULT[\"fig5f-site-proportions\"])\n\nmd('''\n## twh-sessions\n\n> The dataset includes 9 sessions from a new institution, Toronto Western Hospital.\n''')\ncode('''\ntwh = info[info.site == \"TWH\"]\nprint(\"TWH sessions:\", len(twh), twh.session.tolist(), \"; subjects:\", twh.subject.nunique(), \"; units:\", int(twh.units.sum()))\nprint(\"institution of these files:\", twh.institution.unique().tolist())\n''', \"claim:twh-sessions\")\nmd(RESULT[\"twh-sessions\"])\n\nmd('''\n## fig4-example-vs-neuron\n\n> Neuron 132-177-4-RA (session 132, channel 177, cell 4, right amygdala) is visually selective,\n> responding most to images of animals.\n''')\ncode('''\nex = cells[(cells.session == 132) & (cells.channel == 177)]\nprint(ex[[\"session\", \"channel\", \"electrode_row\", \"location\", \"p_vs_methods\", \"p_vs_code\", \"best_methods\", \"best_code\"]].to_string(index=False))\ns = by_id[132]; r = rm.recognition(s); k = int(ex.unit.iloc[0])\nfor wname, w in ((\"Methods' window\", rm.WINDOW_METHODS), (\"code's window\", rm.WINDOW_CODE)):\n    x = rm.window_rates(s[\"spikes\"][k], r.start_time.values, w)\n    print(wname, \"mean rate (Hz) by category:\", pd.Series(x).groupby(r.category_name.values).mean().round(2).to_dict())\nprint(\"units on channel 177 in session 132:\", len(ex))\n''', \"claim:fig4-example-vs-neuron\")\nmd(RESULT[\"fig4-example-vs-neuron\"])\n\nmd(SUMMARY)\n\n\ndef build():\n    nb = nbformat.v4.new_notebook()\n    nb.metadata[\"kernelspec\"] = {\"name\": \"python3\", \"display_name\": \"Python 3\", \"language\": \"python\"}\n    for kind, src, tags in cells:\n        c = nbformat.v4.new_markdown_cell(src) if kind == \"markdown\" else nbformat.v4.new_code_cell(src)\n        if tags:\n            c.metadata[\"tags\"] = tags\n        nb.cells.append(c)\n    nbformat.write(nb, NB)\n    print(\"wrote\", NB, len(nb.cells), \"cells\")\n\n\nif __name__ == \"__main__\":\n    if \"--script\" in sys.argv:\n        out = [\"import matplotlib; matplotlib.use('Agg')\"]\n        for i, (kind, src, tags) in enumerate(cells):\n            if kind == \"code\":\n                out.append(f\"print('\\\\n##### CELL {i} {tags}')\\n\" + src)\n        Path(\"/tmp/claude/nb_script.py\").write_text(\"\\n\\n\".join(out))\n        print(\"wrote script\")\n    else:\n        build()\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude/build_nb.py (file state is current in your context — no need to Read it back)
+id           tr0           tr1           sp0           sp1           ev0           ev1   frac_in  unsorted_units  n_units  stim_on_eq  stop_eq_d2                                      ev_codes
+0       H10_7  5.850331e+03  7.482133e+03  4.771882e+03  7.481865e+03  5.848969e+03  7.482135e+03  0.732025               0       38        True        True        1,2,20,21,3,31,32,33,34,35,36,55,6,66,
+1       H11_9  6.821208e+03  9.093128e+03  5.932154e+03  9.099369e+03  6.820092e+03  9.093130e+03  0.782539               0       25        True        True        1,2,20,21,3,31,32,33,34,35,36,55,6,66,
+2      H14_17  3.575173e+03  5.468032e+03  3.390509e+03  5.468046e+03  3.573828e+03  5.468034e+03  0.999982               0       23        True        True        1,2,20,21,3,31,32,33,34,35,36,55,6,66,
+3      H14_18  3.018314e+03  4.490632e+03  1.233838e+03  4.490644e+03  3.016914e+03  4.490634e+03  0.504274               0       33        True        True        1,2,20,21,3,31,32,33,34,35,36,55,6,66,
+4      H15_21  1.556596e+03  2.713390e+03  1.539805e+03  4.768509e+03  1.555208e+03  2.713393e+03  0.359726               1       14        True        True        1,2,20,21,3,31,32,33,34,35,36,55,6,66,
+5      H15_20  5.620958e+03  6.739481e+03  5.619644e+03  7.389235e+03  5.619579e+03  6.739483e+03  0.601548               0       20        True        True        1,2,20,21,3,31,32,33,34,35,36,55,6,66,
+6      H16_23  3.493186e+03  4.883474e+03  3.492144e+03  4.883412e+03  3.492094e+03  4.883476e+03  1.000000               0       18        True        True                 1,2,20,21,3,31,35,36,55,6,66,
+7      H16_24  3.234109e+03  4.711952e+03  1.983954e+03  4.712385e+03  3.232728e+03  4.711955e+03  0.658166               0       21        True        True                    1,2,20,21,3,31,34,55,6,66,
+8      H17_32  4.287530e+03  5.924252e+03  4.286078e+03  5.924043e+03  4.286133e+03  5.924254e+03  1.000000               0       43        True        True        1,2,20,21,3,31,32,33
+[... 78 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && python3 - <<'EOF'
-p='/tmp/claude/build_nb.py'; t=open(p).read()
-t=t.replace('''tab_subj = table.drop_duplicates("table_subject").set_index("session")
-first_session = table.groupby("table_subject").session.first()
-''','')
-t=t.replace('''print("Plotted fractions range from", round(min(P.mean(0).min(), 0), 3) if False else round(float(min((P < 0.05).mean(0).min(), (PS < 0.05).mean(0).min())), 3),
-      "to", round(float(max((P < 0.05).mean(0).max(), (PS < 0.05).mean(0).max())), 3), "; none outside the axes.")''',
-'''lo_, hi_ = min((P < 0.05).mean(0).min(), (PS < 0.05).mean(0).min()), max((P < 0.05).mean(0).max(), (PS < 0.05).mean(0).max())
-print(f"Plotted fractions range from {lo_:.3f} to {hi_:.3f}; none outside the axes.")''')
-t=t.replace('''        row["null_ms"] = np.mean([rm.bootstrap_p(*(lambda L: (x[L == rm.OLD], x[L == rm.NEW]))(rng_null.permutation(lab_)), rng_null) < 0.05
-                                  for _ in range(N_NULL)])''','''        shuffled = [rng_null.permutation(lab_) for _ in range(N_NULL)]
-        row["null_ms"] = np.mean([rm.bootstrap_p(x[L == rm.OLD], x[L == rm.NEW], rng_null) < 0.05 for L in shuffled])''')
-open(p,'w').write(t)
-EOF
-cat > /tmp/claude/results.py <<'EOF'
-HEADER = "# header TBD"
-IDS = ["counts-neurons-subjects","counts-sessions","table1-demographics","task-structure","new-old-label-coding","ttl-codes","experiment-ids","session-dates","units-table","electrodes-table","isi-criterion","fig5a-mtl-locations","fig5c-auc-all","fig5c-auc-sites","fig5b-roc-asymmetric","fig5d-confidence-accuracy","vs-cells-proportion","ms-cells-proportion","dual-cells-proportion","fig5f-site-proportions","twh-sessions","fig4-example-vs-neuron"]
-RESULT = {i: "**Result: TBD.**" for i in IDS}
-SUMMARY = "## Summary\n\nTBD"
-EOF
-python3 /tmp/claude/build_nb.py --script && cd entries/000004-chandravadia-2020 && time $TMPDIR/explore/bin/python /tmp/claude/nb_script.py > /tmp/claude/run1.txt 2>&1; tail -5 /tmp/claude/run1.txt
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem, collections, hashlib
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+h=collections.defaultdict(list)
+for s in ss:
+    for i,sp in enumerate(s['spikes']):
+        h[hashlib.md5(np.sort(sp).tobytes()).hexdigest()].append((s['identifier'],i))
+d=[v for v in h.values() if len(v)>1]
+print(len(d), collections.Counter(tuple(sorted(set(x[0] for x in v))) for v in d))
+print('within-file dup', sum(1 for v in d if len(set(x[0] for x in v))<len(v)))
+# sessions with identical files?
+print([ (s['identifier'], len(s['spikes'])) for s in ss if s['identifier'] in ('H42_54','H42_55','H23_43','H23_44','H21_38','H21_39')])
+# trials identical between 54/55?
+a=[s for s in ss if s['identifier']=='H42_54'][0]; b=[s for s in ss if s['identifier']=='H42_55'][0]
+print(a['trials'].start_time.iloc[:3].tolist(), b['trials'].start_time.iloc[:3].tolist(), a['trials'].start_time.iloc[100:103].tolist(), b['trials'].start_time.iloc[100:103].tolist())
+print(a['image_hash'][:2]==b['image_hash'][:2], a['image_hash'][100:]==b['image_hash'][100:], a['path'], b['path'])
+print(np.array_equal(a['events'],b['events']), len(a['events']),len(b['events']))
+E
 ```
 
 ```
-wrote script
-
-real	0m0.018s
-user	0m0.012s
-sys	0m0.006s
-  File "/tmp/claude/nb_script.py", line 26
-    print('\n##### CELL 3 ['sanity']')
-          ^^^^^^^^^^^^^^^^^^^^^^^^
-SyntaxError: invalid syntax. Perhaps you forgot a comma?
+66 Counter({('H42_54', 'H42_55'): 32, ('H23_43', 'H23_44'): 23, ('H21_38', 'H21_39'): 11})
+within-file dup 0
+[('H21_38', 20), ('H21_39', 18), ('H23_43', 23), ('H23_44', 23), ('H42_55', 32), ('H42_54', 32)]
+[1610.74458, 1616.774086, 1621.54481] [1610.74458, 1616.774086, 1621.54481] [3125.085905, 3130.815799, 3136.591098] [4046.523304, 4057.85499, 4063.630995]
+True False sub-P42HMH/sub-P42HMH_ses-20130301_obj-4rl7w2_ecephys+image.nwb sub-P42HMH/sub-P42HMH_ses-20130301_obj-1ysquep_ecephys+image.nwb
+False 1004 1004
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && sed -i "s|out.append(f\"print('\\\\\\\\n##### CELL {i} {tags}')\\\\n\" + src)|out.append(f\"print('##### CELL {i}', {tags!r})\\\\n\" + src)|" build_nb.py && grep -n "CELL" build_nb.py
-```
-
-```
-765:                out.append(f"print('##### CELL {i}', {tags!r})\n" + src)
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-python3 /tmp/claude/build_nb.py --script && cd entries/000004-chandravadia-2020 && (time $TMPDIR/explore/bin/python /tmp/claude/nb_script.py) > /tmp/claude/run1.txt 2>&1; tail -30 /tmp/claude/run1.txt
-```
-
-```
-wrote script
-##### CELL 1 []
-Traceback (most recent call last):
-  File "/tmp/claude/nb_script.py", line 13, in <module>
-    import recogmem as rm
-ModuleNotFoundError: No module named 'recogmem'
-
-real	0m2.499s
-user	0m2.846s
-sys	0m0.142s
-```
-
-**Agent calls Bash**
-
-```bash
-(time PYTHONPATH=. $TMPDIR/explore/bin/python /tmp/claude/nb_script.py) > /tmp/claude/run1.txt 2>&1; tail -30 /tmp/claude/run1.txt
-```
-
-```
-main: 12 of 1864 (0.6%)  paper: 26 of 1863 (1.4%)
-expected if VS and MS were independent: 19.6 units
-variant, code's choices: 26 of 1864 (1.4%)
-variant, duplicated spike trains counted once: 11 of 1809 (0.6%)
-##### CELL 71 ['claim:fig5f-site-proportions']
-vs   CS : 315 of 1787 = 17.6% (paper 18.4%, within 10%: True)
-vs   TWH: 17 of 77 = 22.1% (paper 19.4%, within 10%: False)
-     Fisher's exact test CS against TWH: p = 0.360
-ms   CS : 103 of 1787 = 5.8% (paper 7.7%, within 10%: False)
-ms   TWH: 7 of 77 = 9.1% (paper 10.4%, within 10%: False)
-     Fisher's exact test CS against TWH: p = 0.215
-dual CS : 12 of 1787 = 0.7% (paper 1.4%, within 10%: False)
-dual TWH: 0 of 77 = 0.0% (paper 1.3%, within 10%: False)
-     Fisher's exact test CS against TWH: p = 1.000
-values within tolerance: 1 of 6
-variant, code's choices, vs: {'CS': '18.4%', 'TWH': '19.5%'}
-variant, code's choices, ms: {'CS': '7.8%', 'TWH': '10.4%'}
-##### CELL 74 ['claim:twh-sessions']
-TWH sessions: 9 [2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009, 2011] ; subjects: 8 ; units: 77
-institution of these files: ['Toronto Western Hospital']
-[... 10 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-head -c 30000 /tmp/claude/run1.txt
-```
-
-```
-##### CELL 1 []
-loaded 87 files from dandiset 000004 version 0.220126.1852 in 96 s
-##### CELL 3 ['sanity']
-Files: 87  subjects: 59  species: ['Human']
-
-By site (CS = subjects labelled H or C, TWH = labelled T):
-      sessions  subjects  units
-site                           
-CS          78        51   1787
-TWH          9         8     77
-
-Institution strings: {'Cedars-Sinai Medical Center': 44, 'Hunigton Memorial Hospital': 28, 'Toronto Western Hospital': 9, 'Hunington Memorial Hospital': 6}
-Devices: {'Neuralynx-Atlas': 53, 'Neuralynx-cheetah': 29, 'Neuralynx-Cheetah': 5}
-
-Trials per file (learn, recog): {(50, 100): 7, (97, 100): 1, (100, 100): 79}
-Units per file: min 1 median 18.0 max 64 total 1864
-Is there a session 144 (Figure 3 example)? False
-
- session label subject site      start age sex  trials  learn  recog  units  electrodes  categories experiment_ids
-       5   H09   P9HMH   CS 2006-03-01  55   M     200    100    100     24          14           5       (80, 81)
-[... 355 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > an5.py <<'EOF'
-import pickle, numpy as np, pandas as pd
-res={int(r['identifier'].split('_')[1]):r for r in pickle.load(open('survey.pkl','rb'))}
-for k,r in sorted(res.items()):
-    t=r['trials']; ev=r['events'].astype(float)
-    resp_ev=ev[(ev>=20)&(ev<=36)&(ev!=30)]
-    rv=np.where(t.stim_phase=='recog', t.response_value, t.response_value+20)
-    if not (len(resp_ev)==len(t) and np.array_equal(rv,resp_ev)):
-        # events-based per trial: event after 3
-        on=np.flatnonzero(ev==1); per=[ev[i+3] if i+3<len(ev) else np.nan for i in on]
-        print(k,len(resp_ev),len(t), 'per-trial event resp vs rv mismatches:', int(np.sum(np.array(per)!=rv)), 'unique per-trial',sorted(set(per))[:12], 'rv uniq', sorted(set(rv)))
-# unsorted units
-for k,r in sorted(res.items()):
-    sp=np.split(r['spike_times'],r['spike_index'][:-1])
-    for i,u in enumerate(sp):
-        if np.any(np.diff(u)<0):
-            d=np.diff(u); brk=np.flatnonzero(d<0)
-            s=np.sort(u); dup=np.sum(np.diff(s)==0)
-            print('unsorted',k,i,len(u),'breaks',len(brk),'at',brk[:3],'exact dup spikes',dup, 'isi<3ms sorted',np.mean(np.diff(s)<0.003).round(3))
-EOF
-explore/bin/python an5.py
-```
-
-```
-58 201 200 per-trial event resp vs rv mismatches: 1 unique per-trial [np.float64(20.0), np.float64(21.0), np.float64(23.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)] rv uniq [np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)]
-123 198 197 per-trial event resp vs rv mismatches: 18 unique per-trial [np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)] rv uniq [np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)]
-2001 202 200 per-trial event resp vs rv mismatches: 6 unique per-trial [np.float64(3.0), np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)] rv uniq [np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)]
-2002 201 200 per-trial event resp vs rv mismatches: 9 unique per-trial [np.float64(3.0), np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)] rv uniq [np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)]
-2003 203 200 per-trial event resp vs rv mismatches: 4 unique per-trial [np.float64(3.0), np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)] rv uniq [np.float64(20.0), np.float64(21.0), np.float64(31.0), np.float64(32.0), np.float64(33.0), np.float64(34.0), np.float64(35.0), np.float64(36.0)]
-unsorted 21 9 3404 breaks 1 at [1953] exact dup spikes 0 isi<3ms sorted 0.001
-unsorted 5
-[... 12 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd /tmp/claude && python3 - <<'EOF'
-p='/tmp/claude/build_nb.py'; t=open(p).read()
-# version comparison in first sanity cell
-t=t.replace('''print("Is there a session 144 (Figure 3 example)?", 144 in by_id)''','''print("Is there a session 144 (Figure 3 example)?", 144 in by_id)
-client = rm.DandiAPIClient()
-versions = {}
-for v in ("0.220126.1851", "0.220126.1852", "draft"):
-    versions[v] = {a.path: (a.identifier, a.size) for a in client.get_dandiset(rm.DANDISET_ID, v).get_assets()}
-print("Published versions 0.220126.1851 and 0.220126.1852 hold the same assets (ids and sizes):", versions["0.220126.1851"] == versions["0.220126.1852"])
-print("The draft holds the same paths and sizes as the pinned version:",
-      {p: s for p, (_, s) in versions["draft"].items()} == {p: s for p, (_, s) in versions["0.220126.1852"].items()})''')
-# per-trial response check
-t=t.replace('''    resp_ev = ev[(ev >= 20) & (ev <= 36) & (ev != 30)]
-''','''    on_idx = np.flatnonzero(ev == 1)
-    resp_ev = np.array([ev[i + 3] if i + 3 < len(ev) else np.nan for i in on_idx])
-''')
-t=t.replace('''        "resp_matches_events": bool(len(resp_ev) == len(t) and np.array_equal(
-            np.where(t.stim_phase == "recog", t.response_value, t.response_value + 20), resp_ev)),
-        "resp_range": (int(r.response.min()), int(r.response.max())),''','''        "resp_mismatch": int(np.sum(resp_ev != np.where(t.stim_phase == "recog", t.response_value, t.response_value + 20)))
-                         if len(resp_ev) == len(t) else -1,
-        "unlisted_after_question": sorted({int(x) for x in resp_ev} - set(range(20, 22)) - set(range(31, 37))),
-        "resp_min": int(r.response.min()), "resp_max": int(r.response.max()),''')
-t=t.replace('''print("Recognition response_value equals the response events (31-36), learning response_value + 20 the events (20/21):",
-      units.resp_matches_events.sum(), "of", len(units))
-print("Recognition responses span", units.resp_range.min(), "to", units.resp_range.max(), "; labels:", set(units.labels))''','''print("Per trial, the event three after stimulus onset (the response the paper's MATLAB code reads) against response_value")
-print("(recognition: 31-36; learning: response_value + 20 against 20/21): files with every trial equal:", int((units.resp_mismatch == 0).sum()), "of", len(units))
-print(units[units.resp_mismatch != 0][["session", "resp_mismatch", "unlisted_after_question"]].to_string(index=False))
-print("Recognition responses (response_value - 30) span", units.resp_min.min(), "to", units.resp_max.max(), "; labels:", sorted({x for l in units.labels for x in l}))''')
-t=t.replace('''    if same_spikes or shared_trials:''','''    if same_spikes or shared_trials >= 10:''')
-t=t.replace('''print("Files whose first spike is more than 60 s before the first trial:", units[units.spikes_from_s < -60].session.tolist())''','''print("Files whose first spike is more than 60 s before the first trial:", len(units[units.spikes_from_s < -60]), units[units.spikes_from_s < -60].session.tolist())''')
-# ttl all-conditions
-t=t.replace('''print("55 and 66 per file:", ttl.groupby(["starts_55", "ends_66"]).size().to_dict())''','''print("55 and 66 per file:", ttl.groupby(["starts_55", "ends_66"]).size().to_dict())
-ttl["all_ok"] = ttl.same_length_and_times & (ttl.unlisted_codes == ()) & (ttl.trials_in_order == ttl.trials)
-print("files meeting every condition:", int(ttl.all_ok.sum()), "of", len(ttl))
-print(ttl[~ttl.all_ok].to_string(index=False))''')
-# duplicated spikes within unit
-t=t.replace('''print("units whose spike times are not in increasing order:", len(unsorted), "in sessions", sorted({a for a, _ in unsorted}))''','''print("units whose spike times are not in increasing order:", len(unsorted), "in sessions", sorted({a for a, _ in unsorted}))
-for a, k in unsorted:
-    sp = by_id[a]["spikes"][k]
-    n_dup = int(np.sum(np.diff(np.sort(sp)) == 0))
-    if n_dup:
-        print(f"  session {a} unit {k}: {len(sp)} spike times, {n_dup} of them repeat another exactly")''')
-# fig5f dual code variant
-t=t.replace('''for kind, col in (("vs", "p_vs_code"), ("ms", "p_ms_code_correct")):
-    print(f"variant, code's choices, {kind}:", cells.assign(x=cells[col] < 0.05).groupby("site").x.apply(lambda v: f"{100 * v.mean():.1f}%").to_dict())''','''code_sel = {"vs": cells.p_vs_code < 0.05, "ms": cells.p_ms_code_correct < 0.05}
-code_sel["dual"] = code_sel["vs"] & code_sel["ms"]
-for kind, sel in code_sel.items():
-    print(f"variant, code's choices, {kind}:", cells.assign(x=sel).groupby("site").x.apply(lambda v: f"{int(v.sum())} of {len(v)} = {100 * v.mean():.1f}%").to_dict())''')
-open(p,'w').write(t)
-EOF
-grep -n "rm.DandiAPIClient" /tmp/claude/build_nb.py | head -2
-```
-
-```
-78:client = rm.DandiAPIClient()
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-python3 /tmp/claude/build_nb.py --script && cd entries/000004-chandravadia-2020 && (time PYTHONPATH=. $TMPDIR/explore/bin/python /tmp/claude/nb_script.py) > /tmp/claude/run2.txt 2>&1; sed -n '1,12p;/CELL 5 /,/CELL 9 /p;/CELL 27 /,/CELL 30 /p;/CELL 36 /,/CELL 39 /p;/CELL 71 /,$p' /tmp/claude/run2.txt
-```
-
-```
-wrote script
-##### CELL 1 []
-loaded 87 files from dandiset 000004 version 0.220126.1852 in 81 s
-##### CELL 3 ['sanity']
-Files: 87  subjects: 59  species: ['Human']
-
-By site (CS = subjects labelled H or C, TWH = labelled T):
-      sessions  subjects  units
-site                           
-CS          78        51   1787
-TWH          9         8     77
-
-Institution strings: {'Cedars-Sinai Medical Center': 44, 'Hunigton Memorial Hospital': 28, 'Toronto Western Hospital': 9, 'Hunington Memorial Hospital': 6}
-##### CELL 5 ['sanity']
-Stimulus duration (s), median per file: range 0.998 to 2.016
-Trial duration, stimulus onset to end of trial (s), median per file: 2.87 to 5.81
-start_time equals stim_on_time in every file: True
-Trial onsets equal the stimulus-onset events (TTL 1) in every file: True
-Per trial, the event three after stimulus onset (the response the paper's MATLAB code reads) against response_value
-(recognition: 31-36; learning: response_value + 20 against 20/21): files with every trial equal: 81 of 87
-[... 87 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n "Published versions\|draft holds\|Error\|Traceback" /tmp/claude/run2.txt; sed -n '/CELL 9 /,/CELL 12 /p' /tmp/claude/run2.txt | tail -8
-```
-
-```
-18:Published versions 0.220126.1851 and 0.220126.1852 hold the same assets (ids and sizes): True
-19:The draft holds the same paths and sizes as the pinned version: True
-            1.6                    0.070                              0.039
-
-Sessions where the stimulus response (more category-selective units after onset than expected by chance,
-and more than before onset) establishes the shared clock: 38 of 87
-Not established (too few units or no excess): [5, 6, 9, 17, 18, 20, 21, 24, 26, 27, 38, 39, 47, 50, 52, 55, 56, 61, 63, 64, 66, 67, 68, 78, 85, 92, 96, 97, 101, 111, 113, 114, 116, 117, 118, 120, 122, 125, 127, 128, 133, 135, 136, 2001, 2002, 2003, 2005, 2007, 2008]
-Units in sessions not established: 801
-Plotted fractions range from 0.039 to 0.178; none outside the axes.
-##### CELL 12 ['claim:counts-neurons-subjects']
-```
-
-**Agent calls Bash**
-
-```bash
-cat > /tmp/claude/chk55.py <<'EOF'
-import numpy as np, pandas as pd, recogmem as rm
+date -u; . $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem
 from scipy import stats
-urls=dict(rm.asset_urls())
-S={k:rm.load_session(p,urls[p]) for k,p in [(54,'sub-P42HMH/sub-P42HMH_ses-20130301_obj-1ysquep_ecephys+image.nwb'),(55,'sub-P42HMH/sub-P42HMH_ses-20130301_obj-4rl7w2_ecephys+image.nwb')]}
-for k,s in S.items():
-    print(k, s['identifier'])
-    for phase in ['learn','recog']:
-        t=s['trials'][s['trials'].stim_phase==phase]; on=t.start_time.values; cat=t.stimCategory.values
-        resp=[]; sig=[]
-        for sp in s['spikes']:
-            pre=rm.window_rates(sp,on,(-1,0)); post=rm.window_rates(sp,on,(0.2,1.2))
-            resp.append(post.mean()-pre.mean()); sig.append(rm.anova_p(post,cat)<0.05)
-        print(' ',phase,'trials',len(t),'span',round(on.min()),round(on.max()),'VS units',sum(sig),'mean post-pre rate',np.round(np.mean(resp),3),'units with post>pre',int(np.sum(np.array(resp)>0)))
-EOF
-$TMPDIR/explore/bin/python /tmp/claude/chk55.py
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+rows=[]
+for s in ss:
+    r=nomem.recog(s); c=r.confidence.to_numpy(); old=r.label.to_numpy()==1
+    h,f=nomem.roc(c,old); a=nomem.auc(h,f); z=nomem.zroc_slope(h,f)
+    ah,al=nomem.accuracy_fixed(c,old); dh,dl,m=nomem.accuracy_dynamic(c,old)
+    a_rev=nomem.auc(*nomem.roc(c,~old))
+    lab,sid=nomem.session_key(s)
+    rows.append(dict(id=s['identifier'],site=nomem.site(lab),auc=a,auc_rev=a_rev,slope=z,ah=ah,al=al,dh=dh,dl=dl,mode=m,inc=nomem.included(c,a)))
+df=pd.DataFrame(rows)
+print(df.auc.mean(), df.auc.std(ddof=1), df.groupby('site').auc.agg(['mean','std','count']))
+print('rev', df.auc_rev.mean())
+print(stats.ttest_ind(df.auc[df.site=='CS'], df.auc[df.site=='TWH'], equal_var=False))
+print('slope', df.slope.mean(), df.slope.std(), stats.ttest_1samp(df.slope,1), stats.wilcoxon(df.slope-1))
+for a,b in [('ah','al'),('dh','dl')]:
+    d=df[[a,b]].dropna(); print(a, len(d), d.mean().values, stats.ttest_rel(d[a],d[b]), stats.ttest_ind(d[a],d[b]))
+    d=df[df.inc][[a,b]].dropna(); print(' inc',len(d), d.mean().values, stats.ttest_rel(d[a],d[b]))
+print(df[df.auc<0.6])
+E
+```
+
+```
+Sun Nov 15 12:51:40 UTC 2026
+entries/chandravadia-2020/nomem.py:290: RankWarning: Polyfit may be poorly conditioned
+  return float(np.polyfit(zf, zh, 1)[0])
+entries/chandravadia-2020/nomem.py:290: RankWarning: Polyfit may be poorly conditioned
+  return float(np.polyfit(zf, zh, 1)[0])
+entries/chandravadia-2020/nomem.py:290: RankWarning: Polyfit may be poorly conditioned
+  return float(np.polyfit(zf, zh, 1)[0])
+entries/chandravadia-2020/nomem.py:290: RankWarning: Polyfit may be poorly conditioned
+  return float(np.polyfit(zf, zh, 1)[0])
+entries/chandravadia-2020/nomem.py:290: RankWarning: Polyfit may be poorly conditioned
+  return float(np.polyfit(zf, zh, 1)[0])
+0.752716091954023 0.0937848941245067           mean       std  count
+site                           
+CS    0.760152  0.085498     78
+TWH   0.688272  0.137784      9
+rev 0.24728390804597697
+TtestResult(statistic=np.float64(1.5314060655167459), pvalue=np.float64(0.16108533561147875), df=np.float64(8.724855017391024))
+slope 0.7256674124520925 0.37899045509168733 TtestResult(statistic=np.float64(-6.751631858525214), pvalue=np.float64(1.6307195195154453e-09), df=np.int64(86)) WilcoxonResult(statistic=np.float64(488.0), pvalue=np.float64(1.5858167031143077e-09))
+ah 84 [0.80145739 0.60918562] TtestResult(statistic=np.float64(10.155954563740682), pvalue=np.float64(3.2235735607435254e-16), df=np.int64(83)) TtestResult(statistic=np.float64(9.439901473331899), pvalue=np.float64(3.3518427530749946e-17), df=np.float64(166.0))
+ inc 73 [0.8175996  0.60949315] TtestResult(statistic=np.float64(13.031054370712502), pvalue=np.float64(1.2737045483291715e-20), df=np.int64(72))
+[... 11 more lines not kept]
+```
+
+**Agent**
+
+Behaviour lands close to the paper: AUC 0.753 ± 0.094 overall, CS 0.760 ± 0.085, TWH 0.688 ± 0.138; z-ROC slope 0.73 (p = 1.6e-9). Now the VS and MS cell selection.
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem, time, warnings
+warnings.filterwarnings('ignore')
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+t0=time.time(); rng=np.random.default_rng(2020)
+rows=[]
+for s in ss:
+    r=nomem.recog(s); lab,sid=nomem.session_key(s)
+    on=r.onset.to_numpy(); cat=r.category.to_numpy(); old=r.label.to_numpy()==1; c=r.confidence.to_numpy()
+    correct=(old&(c>=4))|(~old&(c<=3))
+    for i,sp in enumerate(s['spikes']):
+        for wname,w in [('m',nomem.WINDOW_METHODS),('c',nomem.WINDOW_CODE)]:
+            rt=nomem.window_rates(sp,on,w)
+            pv=nomem.anova_p(rt,cat)
+            pm=nomem.bootstrap_p(rt[~old],rt[old],rng)
+            pmc=nomem.bootstrap_p(rt[~old&correct],rt[old&correct],rng)
+            rows.append(dict(id=s['identifier'],site=nomem.site(lab),unit=i,w=wname,pv=pv,pm=pm,pmc=pmc))
+df=pd.DataFrame(rows); print(time.time()-t0)
+for w in 'mc':
+    d=df[df.w==w]; n=len(d)
+    vs=(d.pv<0.05); ms=(d.pm<0.05); msc=(d.pmc<0.05)
+    print(w, n, vs.sum(), round(100*vs.mean(),1), ms.sum(), round(100*ms.mean(),1), (vs&ms).sum(), 'msc',msc.sum(), (vs&msc).sum(), 'nan',d.pv.isna().sum())
+    for st in ['CS','TWH']:
+        e=d[d.site==st]; print('  ',st,len(e), round(100*(e.pv<0.05).mean(),1), round(100*(e.pm<0.05).mean(),1), round(100*((e.pv<0.05)&(e.pm<0.05)).mean(),1), round(100*(e.pmc<0.05).mean(),1))
+df.to_pickle('/tmp/claude-1001/sel.pkl')
+E
+```
+
+```
+5.109023571014404
+m 1864 332 17.8 114 6.1 13 msc 134 22 nan 6
+   CS 1787 17.6 5.9 0.7 6.9
+   TWH 77 22.1 10.4 1.3 13.0
+c 1864 343 18.4 111 6.0 14 msc 150 26 nan 3
+   CS 1787 18.4 5.8 0.7 7.9
+   TWH 77 19.5 9.1 1.3 10.4
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+print(sorted(nomem.session_key(s)[1] for s in ss))
+for s in ss:
+    if nomem.session_key(s)[1] in (132,144):
+        e=s['electrodes']; print(s['identifier']); print(e[['id','origChannel','location','group_name']].to_string())
+        u=s['units']; print(pd.DataFrame({'unit':u.id,'elec':[x[0] for x in s['unit_electrodes']],'clu':u.origClusterID,'n':[len(x) for x in s['spikes']]}).to_string())
+E
+```
+
+```
+[5, 6, 7, 9, 17, 18, 20, 21, 23, 24, 26, 27, 28, 32, 38, 39, 41, 43, 44, 47, 48, 49, 50, 52, 54, 55, 56, 58, 59, 60, 61, 63, 64, 66, 67, 68, 69, 70, 73, 74, 76, 77, 78, 85, 92, 93, 96, 97, 99, 100, 101, 102, 104, 105, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 122, 123, 124, 125, 126, 127, 128, 130, 131, 132, 133, 134, 135, 136, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009, 2011]
+CS58_132
+   id  origChannel        location                      group_name
+0   0          146   Left Amygdala  Neuralynx-Atlas-microwires-146
+1   1          148   Left Amygdala  Neuralynx-Atlas-microwires-148
+2   2          149   Left Amygdala  Neuralynx-Atlas-microwires-149
+3   3          150   Left Amygdala  Neuralynx-Atlas-microwires-150
+4   4          177  Right Amygdala  Neuralynx-Atlas-microwires-177
+5   5          181  Right Amygdala  Neuralynx-Atlas-microwires-181
+6   6          182  Right Amygdala  Neuralynx-Atlas-microwires-182
+7   7          183  Right Amygdala  Neuralynx-Atlas-microwires-183
+   unit  elec   clu     n
+0     0     0   614  1037
+1     1     1   776  1365
+2     2     2   821  2324
+3     3     3  1093  3589
+4     4     4   551   722
+5     5     5  1422  5699
+6     6     6   527   937
+7     7     7   529   749
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+for s in ss:
+    e=s['electrodes']
+    for ui,el in enumerate(s['unit_electrodes']):
+        row=e.iloc[el[0]]
+        if row.origChannel==140: print(s['identifier'], ui, row.origChannel, row.location, el[0])
+E
+```
+
+```
+T103_2009 1 140 Right Hippocampus 1
+T103_2009 2 140 Right Hippocampus 1
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, pandas as pd, nomem
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+import collections
+print(collections.Counter(tuple(sorted(set(s['trials'].category_name))) for s in ss))
+imp=[s['electrodes'].imp.to_numpy() for s in ss]; print('imp finite', sum(np.isfinite(x).sum() for x in imp), sum(len(x) for x in imp))
+for c in ['x','y','z']: print(c, sum(np.isfinite(s['electrodes'][c].to_numpy()).sum() for s in ss))
+print(collections.Counter(v for s in ss for v in s['electrodes'].filtering))
+print(collections.Counter(v for s in ss for v in s['electrodes'].location))
+print(collections.Counter(len(x) for s in ss for x in s['unit_electrodes']))
+u=pd.concat([s['units'] for s in ss]); print(u.isna().sum()); print(u.waveform_rate.describe()); print((u.IsolationDist<=0).sum(), np.isinf(u.IsolationDist).sum())
+print(collections.Counter(s['label_description'][:60] for s in ss))
+E
+```
+
+```
+Counter({('houses', 'landscapes', 'mobility', 'phones', 'smallAnimal'): 42, ('1cars', '2food', '3people', '4spatial', '5animals'): 25, ('fruit', 'kids', 'military', 'space', 'zzanimal'): 20})
+imp finite 0 887
+x 788
+y 788
+z 788
+Counter({'300-3000Hz': 887})
+Counter({'Right Amygdala': 281, 'Left Amygdala': 218, 'Right Hippocampus': 200, 'Left Hippocampus': 188})
+Counter({1: 1864})
+id                                     0
+origClusterID                          0
+SNR                                   75
+IsolationDist                        493
+waveform_rate                          0
+waveform_mean_encoding_samples         0
+waveform_mean_encoding_finite          0
+waveform_mean_recognition_samples      0
+waveform_mean_recognition_finite       0
+dtype: int64
+count     1864.0
+mean     98400.0
+[... 9 more lines not kept]
+```
+
+**Agent**
+
+Impedance is empty for all 887 electrodes, coordinates are missing for 99, and the units table lacks SNR for 75 units and isolation distance for 493. Writing the notebook.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/build.py",
+ "content": "\"\"\"Builds the entry's notebook from the cell sources below (development aid, not part of the entry).\"\"\"\nimport sys\nimport nbformat\nfrom nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook\n\ncells = []\n\n\ndef md(text, tags=None):\n    c = new_markdown_cell(text.strip(\"\\n\"))\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\ndef code(text, tags=None):\n    c = new_code_cell(text.strip(\"\\n\"))\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\nexec(open(sys.argv[1]).read())\nnb = new_notebook(cells=cells, metadata={\"kernelspec\": {\"name\": \"python3\", \"display_name\": \"Python 3\", \"language\": \"python\"},\n                                         \"language_info\": {\"name\": \"python\"}})\nnbformat.write(nb, sys.argv[2])\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/build.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/cells.py",
+ "content": "md(r\"\"\"\n# Reproducing Chandravadia et al. (2020) from dandiset 000004\n\n**Paper.** Chandravadia N, Liang D, Schjetnan AGP, Carlson A, Faraut M, Chung JM, Reed CM, Dichter B,\nMaoz U, Kalia SK, Valiante TA, Mamelak AN, Rutishauser U (2020). A NWB-based dataset and processing\npipeline of human single-neuron activity during a declarative memory task. *Scientific Data* 7, 78.\n[doi:10.1038/s41597-020-0415-9](https://doi.org/10.1038/s41597-020-0415-9). The claims file was written\nfrom the open access full text (CC BY 4.0), its Methods, Data Records, Technical Validation, figure\nlegends, Tables 1 and 2 and Online-only Table 1, and from the paper's code\n(github.com/rutishauserlab/recogmem-release-NWB at commit 1d95162).\n\n**Dandiset.** [DANDI:000004](https://dandiarchive.org/dandiset/000004/0.220126.1852), version\n0.220126.1852 (doi:10.48324/dandi.000004/0.220126.1852). This version was asked for in the task that\nstarted this attempt. The paper cites no DANDI version (its data citation is the OSF project\ndoi:10.17605/OSF.IO/HV7JA, which the dandiset names as its source). The archive has two published\nversions, 0.220126.1851 and 0.220126.1852, and a draft; the cell \"Versions\" below compares their files.\n\n**Outside inputs.** Online-only Table 1 of the paper and Table 1 of Faraut et al. 2018 (Sci Data 5,\n180010, doi:10.1038/sdata.2018.10, the earlier release of this task's data) are read at run time from\ntheir full texts in Europe PMC (PMC7055261 and PMC5810422). The first is the paper's own list of\nsubjects and sessions, the reference the claims compare with; the second is used only by the two\nclaims about the earlier release (`previous-release-link`, `previous-release-additions`).\n\n**Method choices** fixed by the claims file (its opening comment) are in the docstring of `nomem.py`:\nrecognition trials are the rows with `stim_phase` \"recog\", the confidence is `response_value` minus 30,\n\"old\" is label 1 (as the paper's code reads it), firing rates are spike counts in a window over its\nlength, the Methods' window 0.2 to 1.2 s after stimulus onset is the main one and the code's 0.2 to\n1.7 s a variant, and the behavioural measures follow the paper's code.\n\n| Claim | Tested here |\n|---|---|\n| counts-neurons-subjects | tested |\n| counts-sessions | tested |\n| table1-demographics | tested |\n| task-structure | tested |\n| new-old-label-coding | tested |\n| ttl-codes | tested |\n| experiment-ids | tested |\n| session-dates | tested |\n| units-table | tested |\n| electrodes-table | tested |\n| isi-criterion | tested |\n| fig5a-mtl-locations | tested |\n| fig5c-auc-all | tested |\n| fig5c-auc-sites | tested |\n| fig5b-roc-asymmetric | tested |\n| fig5d-confidence-accuracy | tested |\n| vs-cells-proportion | tested |\n| ms-cells-proportion | tested |\n| dual-cells-proportion | tested |\n| fig5f-site-proportions | tested |\n| twh-sessions | tested |\n| previous-release-link | tested, with Faraut et al. 2018 Table 1 |\n| previous-release-additions | tested, with Faraut et al. 2018 Table 1 |\n| fig4-example-vs-neuron | tested |\n| fig3-example-vs-neuron | blocked: session 144 is not in the dandiset |\n\"\"\")\n\ncode(r\"\"\"\nimport collections\nimport hashlib\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import stats\n\nimport nomem\n\npd.set_option(\"display.width\", 220)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\nwarnings.filterwarnings(\"ignore\", category=np.exceptions.RankWarning)\n\nstarted = time.time()\nsessions = nomem.load_all()\nprint(f\"loaded {len(sessions)} files from dandiset {nomem.DANDISET_ID} version {nomem.DANDISET_VERSION} \"\n      f\"in {time.time() - started:.0f} s\")\npaper_t1, paper_totals = nomem.paper_table1()\nprint(\"Online-only Table 1:\", len(paper_t1), \"subject rows; totals row:\", paper_totals)\n\"\"\")\n\nmd(r\"\"\"\n## Data check\n\nEach file is one session. Its identifier (`H09_5`) gives the subject label of Online-only Table 1 and\nthe session id (\"NOID\"); Cedars-Sinai labels are written `CS24` in the identifiers and `C24` in the\ntable, and are matched as the same label. The paper's variant of a session is read from its category\nnames (Faraut et al. 2018, Table 2: variant 1 houses, landscapes, mobility, phones, animals; variant 2\nfruit, kids, military, space, animals; variant 3 cars, food, people, spatial, animals).\n\"\"\")\n\ncode(r\"\"\"\nVARIANT_OF_CATEGORY = {\"houses\": 1, \"fruit\": 2, \"1cars\": 3}\n\n\ndef norm_label(label):\n    return \"C\" + label[2:] if label.startswith(\"CS\") else label\n\n\ndef variant(s):\n    names = set(s[\"trials\"].category_name)\n    found = [v for k, v in VARIANT_OF_CATEGORY.items() if k in names]\n    return found[0] if len(found) == 1 else np.nan\n\n\ndef learn_recog_ids(s):\n    # the experiment id whose events hold the encoding answers (20, 21) is the learning block\n    ev, ex = s[\"events\"], s[\"expids\"]\n    learn = sorted(set(ex[np.isin(ev, [20, 21])]))\n    recog = sorted(set(ex[(ev >= 31) & (ev <= 36)]))\n    return learn, recog\n\n\nrows = []\nfor s in sessions:\n    label, sid = nomem.session_key(s)\n    t = s[\"trials\"]\n    r = t[t.stim_phase == \"recog\"]\n    lid, rid = learn_recog_ids(s)\n    rows.append({\"file\": s[\"path\"].split(\"/\")[-1][:40], \"identifier\": s[\"identifier\"], \"label\": norm_label(label),\n                 \"session\": sid, \"site\": nomem.site(label), \"subject_id\": s[\"subject\"][\"subject_id\"],\n                 \"age\": s[\"subject\"][\"age\"], \"sex\": s[\"subject\"][\"sex\"], \"start\": s[\"session_start_time\"][:10],\n                 \"n_learn\": int((t.stim_phase == \"learn\").sum()), \"n_recog\": len(r),\n                 \"label0\": int((r.new_old_labels_recog == \"0\").sum()), \"label1\": int((r.new_old_labels_recog == \"1\").sum()),\n                 \"n_cat\": t.stimCategory.nunique(), \"variant\": variant(s), \"units\": len(s[\"units\"]),\n                 \"electrodes\": len(s[\"electrodes\"]), \"learn_id\": lid, \"recog_id\": rid,\n                 \"institution\": s[\"institution\"], \"device\": \",\".join(s[\"devices\"])})\ninfo = pd.DataFrame(rows).sort_values([\"site\", \"label\", \"session\"]).reset_index(drop=True)\nprint(\"Files:\", len(info), \"; distinct subject_id:\", info.subject_id.nunique(), \"; distinct labels:\", info.label.nunique())\nprint(\"Files by site:\", info.site.value_counts().to_dict())\nprint(\"Unit rows:\", info.units.sum(), \"; electrode rows:\", info.electrodes.sum())\nprint(\"Trial phases over all files:\", collections.Counter(x for s in sessions for x in s[\"trials\"].stim_phase))\nprint(\"Institution field:\", collections.Counter(info.institution))\nprint(\"Devices:\", collections.Counter(info.device))\nprint(info.drop(columns=[\"file\"]).to_string())\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nThe subject ids of the files (`P9HMH`, `P24CS`, `TWH088`) are a third spelling of the subject labels;\neach subject id goes with one label. The institution field is spelled two ways for Huntington\nMemorial Hospital (\"Hunigton\" in 28 files, \"Hunington\" in 6), neither correct.\n\"\"\")\n\ncode(r\"\"\"\n# Versions: the files of the two published versions and the draft, by path, size and blob.\nwith DandiAPIClient() as client:\n    ds = client.get_dandiset(nomem.DANDISET_ID)\n    listings = {}\n    for v in [\"0.220126.1851\", nomem.DANDISET_VERSION, \"draft\"]:\n        d = client.get_dandiset(nomem.DANDISET_ID, v)\n        listings[v] = {a.path: (a.size, a.blob if hasattr(a, \"blob\") else None) for a in d.get_assets()}\npinned = listings[nomem.DANDISET_VERSION]\nfor v, files in listings.items():\n    same = sum(1 for p in pinned if p in files and files[p][0] == pinned[p][0])\n    print(f\"{v}: {len(files)} files; {same} with the pinned version's path and size; \"\n          f\"paths only in one: {sorted(set(files) ^ set(pinned))[:5]}\")\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nThe versions are compared by path and size here; the archive's blob ids are not exposed by every\nclient version, so a change of content at an identical size would not be seen.\n\"\"\")\n\ncode(r\"\"\"\n# Units and ranges of every variable used.\nspk = np.concatenate([np.concatenate(s[\"spikes\"]) for s in sessions])\nunits_all = pd.concat([s[\"units\"].assign(identifier=s[\"identifier\"]) for s in sessions], ignore_index=True)\nprint(\"Spike times: stated unit 'seconds' (NWB); range per file from\", f\"{min(np.concatenate(s['spikes']).min() for s in sessions):.1f}\",\n      \"to\", f\"{max(np.concatenate(s['spikes']).max() for s in sessions):.4g} s\")\nstarts = info.set_index(\"identifier\")\nepoch = [s[\"identifier\"] for s in sessions if s[\"trials\"].start_time.min() > 1e8]\nprint(f\"Files whose trial and spike times are Unix time (> 1e8 s): {len(epoch)}; the others count from an \"\n      \"arbitrary origin\")\ndur = [(s[\"trials\"].stop_time - s[\"trials\"].start_time).median() for s in sessions]\nprint(f\"Median trial duration (start_time to stop_time) per file: {min(dur):.2f} to {max(dur):.2f} s\")\non_off = [(s[\"trials\"].stim_off_time - s[\"trials\"].stim_on_time).median() for s in sessions]\nprint(f\"Median stimulus duration (stim_off - stim_on): {min(on_off):.3f} to {max(on_off):.3f} s (Faraut 2018: 1 s)\")\nprint(\"start_time equals stim_on_time in every file:\",\n      all(np.allclose(s[\"trials\"].start_time, s[\"trials\"].stim_on_time) for s in sessions))\nrv = pd.concat([s[\"trials\"][[\"stim_phase\", \"response_value\"]] for s in sessions])\nprint(\"response_value by phase:\", {k: sorted(set(v.astype(int))) for k, v in rv.groupby(\"stim_phase\").response_value})\nprint(\"Waveform sampling rate (Hz):\", sorted(set(units_all.waveform_rate)), \"; samples per waveform:\",\n      sorted(set(units_all.waveform_mean_encoding_samples)))\nprint(\"SNR range:\", np.nanmin(units_all.SNR).round(2), \"to\", np.nanmax(units_all.SNR).round(2),\n      \"; IsolationDist range:\", np.nanmin(units_all.IsolationDist).round(2), \"to\", np.nanmax(units_all.IsolationDist).round(1))\nprint(\"Units with spike times not in increasing order:\",\n      sum(int((np.diff(x) < 0).any()) for s in sessions for x in s[\"spikes\"]))\nprint(\"Label column description (all files):\", collections.Counter(s[\"label_description\"] for s in sessions))\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nIn the recognition phase `response_value` holds the event code (31 to 36), so the confidence is\n`response_value` minus 30, as the claims file says. In the encoding phase it holds 0 or 1 (and 20 or\n21 in some files), not the 20 and 21 of the events. Trial and spike times share one clock in each file\n(checked below); 47 files count it in Unix seconds, so only differences of times are meaningful. The\nconfidence read from `response_value` is checked against the event codes the paper's code reads:\n\"\"\")\n\ncode(r\"\"\"\n# The confidence from the trials table against the code read by the paper's code: the event three\n# after each stimulus onset (1) in the recognition block (NWBloadDataOfBlock_release.m).\nmismatch = {}\nfor s in sessions:\n    ev, ex = s[\"events\"], s[\"expids\"]\n    _, rid = learn_recog_ids(s)\n    block = ev[np.isin(ex, rid)]\n    on = np.where(block == 1)[0]\n    from_events = block[on + 3] - 30\n    from_table = nomem.recog(s).confidence.to_numpy()\n    if len(from_events) != len(from_table) or (from_events != from_table).any():\n        mismatch[s[\"identifier\"]] = int((from_events != from_table).sum()) if len(from_events) == len(from_table) else \"length\"\nprint(\"Files where the confidence from response_value differs from the events:\", mismatch or \"none\")\n\"\"\", tags=[\"sanity\"])\n\ncode(r\"\"\"\n# Spike trains deposited in more than one file (identical sorted spike times).\nowners = collections.defaultdict(list)\nfor s in sessions:\n    for i, sp in enumerate(s[\"spikes\"]):\n        owners[hashlib.md5(np.sort(sp).tobytes()).hexdigest()].append((s[\"identifier\"], i))\ndups = [v for v in owners.values() if len(v) > 1]\nprint(\"Spike trains found in two files:\", len(dups), \"; in more than two:\", sum(len(v) > 2 for v in dups))\nprint(\"By pair of files:\", dict(collections.Counter(tuple(sorted({x[0] for x in v})) for v in dups)))\nduplicate_second = {v[1] for v in dups}      # (identifier, unit) of the second copy, left out when counted once\nprint(\"Unit rows:\", len(units_all), \"; with each duplicated spike train counted once:\", len(units_all) - len(duplicate_second))\n# Do these pairs also share trials?\nbyid = {s[\"identifier\"]: s for s in sessions}\nfor a, b in sorted({tuple(sorted({x[0] for x in v})) for v in dups}):\n    ta, tb = byid[a][\"trials\"], byid[b][\"trials\"]\n    la, lb = ta[ta.stim_phase == \"learn\"], tb[tb.stim_phase == \"learn\"]\n    same_learn = len(la) == len(lb) and np.allclose(la.start_time, lb.start_time)\n    ra, rb = ta[ta.stim_phase == \"recog\"], tb[tb.stim_phase == \"recog\"]\n    print(f\"  {a} / {b}: same encoding trial times {same_learn}; same recognition trial times \"\n          f\"{len(ra) == len(rb) and np.allclose(ra.start_time, rb.start_time)}; spike-train range \"\n          f\"{np.concatenate(byid[a]['spikes']).min():.0f} to {np.concatenate(byid[a]['spikes']).max():.0f} s; \"\n          f\"trials of {a} {ta.start_time.min():.0f} to {ta.stop_time.max():.0f} s, of {b} {tb.start_time.min():.0f} to {tb.stop_time.max():.0f} s\")\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nThree pairs of files hold the same spike trains: sessions 38 and 39 (11 units), 43 and 44 (23) and 54\nand 55 (32), each pair recorded on the same day from one patient. The spike trains span both sessions'\ntrials, so each file holds the units of the whole recording. Sessions 54 and 55 also share the encoding\ntrials: the same learning block was followed by two recognition blocks. Counts with each duplicated\nspike train counted once are given as a variant where the claims ask for them.\n\"\"\")\n\ncode(r\"\"\"\n# Clock check: are the spike times on the clock of the trial table? For each unit, the rate 0.2 to 1.2 s\n# after stimulus onset against the rate 1 s before it (paired t-test over the 200 trials), with the true\n# onsets and with every onset moved 37 s later, which keeps the trial structure but misaligns it.\n# A second contrast, between conditions: the one-way ANOVA over the 5 categories of the recognition\n# trials, with the window moved by a lag from -3 to +3 s; it can only peak near 0 if the clocks agree.\nrows = []\nfor s in sessions:\n    on = s[\"trials\"].start_time.to_numpy()\n    rec = nomem.recog(s)\n    for shift in (0.0, 37.0):\n        resp = 0\n        for sp in s[\"spikes\"]:\n            post = nomem.window_rates(sp, on + shift, (0.2, 1.2))\n            pre = nomem.window_rates(sp, on + shift, (-1.0, 0.0))\n            if np.any(post != pre) and stats.ttest_rel(post, pre).pvalue < 0.05:\n                resp += 1\n        rows.append({\"identifier\": s[\"identifier\"], \"shift\": shift, \"responsive\": resp, \"units\": len(s[\"spikes\"])})\nclock = pd.DataFrame(rows).pivot_table(index=[\"identifier\", \"units\"], columns=\"shift\", values=\"responsive\").reset_index()\nclock.columns = [\"identifier\", \"units\", \"responsive_true\", \"responsive_shifted\"]\nprint(\"Units with an evoked response (p < 0.05), all files: true onsets\",\n      int(clock.responsive_true.sum()), \"of\", int(clock.units.sum()), \"; onsets + 37 s\", int(clock.responsive_shifted.sum()))\nweak = clock[clock.responsive_true <= clock.responsive_shifted]\nprint(\"Files where the true onsets give no more responsive units than the shifted ones:\")\nprint(weak.to_string(index=False))\nlags = np.arange(-3.0, 3.01, 0.5)\nlag_counts = []\nfor lag in lags:\n    n = 0\n    for s in sessions:\n        rec = nomem.recog(s)\n        for sp in s[\"spikes\"]:\n            p = nomem.anova_p(nomem.window_rates(sp, rec.onset.to_numpy() + lag, (0.2, 1.2)), rec.category.to_numpy())\n            n += int(p < 0.05) if np.isfinite(p) else 0\n    lag_counts.append(n)\nprint(\"Units with a category effect (ANOVA p < 0.05) by lag of the window (s):\")\nprint(dict(zip(lags.round(1).tolist(), lag_counts)))\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nOver all files, 1105 more or fewer units (see the printed counts) respond to the stimulus at the true\nonsets than at onsets moved by 37 s, and the category effect peaks at lag 0 among lags from -3 to\n+3 s. Both are consistent with spikes and trials sharing a clock. The files listed above, with few\nunits, are those where the check cannot establish it on its own.\n\"\"\")\n\n# ---------------------------------------------------------------- claims\nmd(r\"\"\"\n## counts-neurons-subjects\n\n> The dataset holds 1863 single neurons recorded from the medial temporal lobes of 59 subjects.\n\nCriterion: neurons are the rows of the units tables over all files, subjects the distinct\n`subject_id` values; readings (a) every unit row, (b) duplicated spike trains counted once.\nReproduced when both values are within tolerance (1863 ± 186.3, 59 ± 5.9) under one reading.\n\"\"\")\n\ncode(r\"\"\"\nn_rows = len(units_all)\nn_once = n_rows - len(duplicate_second)\nn_subjects = info.subject_id.nunique()\nprint(f\"(a) unit rows: {n_rows} (paper 1863, difference {n_rows - 1863:+d}); within 1863 +- 186.3: {abs(n_rows - 1863) <= 186.3}\")\nprint(f\"(b) duplicated spike trains counted once: {n_once} (difference {n_once - 1863:+d}); within: {abs(n_once - 1863) <= 186.3}\")\nprint(f\"distinct subject_id: {n_subjects} (paper 59); within 59 +- 5.9: {abs(n_subjects - 59) <= 5.9}\")\nprint(\"Unit rows by site:\", info.groupby(\"site\").units.sum().to_dict())\n\"\"\", tags=[\"claim:counts-neurons-subjects\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** The units tables hold 1864 rows, one more than the paper's 1863, and the files\ncome from 59 distinct subjects. Counting each of the 66 duplicated spike trains once gives 1798 units,\nalso within tolerance.\n\"\"\")\n\nmd(r\"\"\"\n## counts-sessions\n\n> The patients performed 87 sessions, listed by subject and session id in Online-only Table 1 (the Methods give 89).\n\nCriterion: reproduced when the set of (subject, session id) pairs of the files equals the set of\nOnline-only Table 1; partially when the count is within tolerance (87 ± 8.7) but the sets differ.\n\"\"\")\n\ncode(r\"\"\"\nfiles_pairs = set(zip(info.label, info.session))\ntable_sessions = nomem.sessions_of(paper_t1)\ntable_pairs = set(zip(table_sessions.label, table_sessions.session))\nprint(\"Files:\", len(info), \"; distinct (subject, session) pairs in the files:\", len(files_pairs))\nprint(\"Pairs in Online-only Table 1:\", len(table_pairs), \"; its stated total:\", [t for t in paper_totals if \"Sessions\" in t])\nprint(\"In the files, not the table:\", sorted(files_pairs - table_pairs))\nprint(\"In the table, not the files:\", sorted(table_pairs - files_pairs))\nprint(\"Sets equal:\", files_pairs == table_pairs, \"; the Methods' 89 differs from the file count by\", len(info) - 89)\n\"\"\", tags=[\"claim:counts-sessions\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** The 87 files carry 87 distinct (subject, session) pairs, the same set as\nOnline-only Table 1. The Methods' 89 is not the number of sessions in the files.\n\"\"\")\n\nmd(r\"\"\"\n## table1-demographics\n\n> Online-only Table 1 gives the age and sex of every subject; there are 25 female and 34 male subjects.\n\nCriterion: the age and sex in the files are compared with the table subject by subject; reproduced\nwhen every subject matches, partially when some do not, not reproduced when fewer than half match.\nThe diagnosis is shown side by side.\n\"\"\")\n\ncode(r\"\"\"\nsubj = info.drop_duplicates(\"label\").set_index(\"label\")\ndiag = {s[\"identifier\"]: s[\"subject\"].get(\"description\", \"\") for s in sessions}\nsubj[\"diagnosis_file\"] = [diag[i] for i in subj.identifier]\ncmp = paper_t1.set_index(\"label\")[[\"age\", \"sex\", \"diagnosis\"]].join(subj[[\"age\", \"sex\", \"diagnosis_file\"]], rsuffix=\"_file\", how=\"outer\")\ncmp[\"age_file\"] = pd.to_numeric(cmp.age_file)\ncmp[\"age_match\"] = cmp.age == cmp.age_file\ncmp[\"sex_match\"] = cmp.sex == cmp.sex_file\ncmp[\"both_match\"] = cmp.age_match & cmp.sex_match\nprint(\"Subjects in the table:\", len(paper_t1), \"; in the files:\", len(subj), \"; in both:\", int(cmp.age.notna().sum()))\nprint(\"Age and sex both match:\", int(cmp.both_match.sum()), \"of\", len(cmp))\nprint(\"Female / male in the table:\", (paper_t1.sex == \"F\").sum(), \"/\", (paper_t1.sex == \"M\").sum(),\n      \"; in the files:\", (subj.sex == \"F\").sum(), \"/\", (subj.sex == \"M\").sum())\nprint(\"\\nSubjects that differ:\")\nprint(cmp[~cmp.both_match].to_string())\nprint(\"\\nDiagnosis, table against file (first 15 subjects):\")\nprint(cmp[[\"diagnosis\", \"diagnosis_file\"]].head(15).to_string())\nprint(\"Diagnosis text identical:\", int((cmp.diagnosis.str.lower() == cmp.diagnosis_file.str.lower()).sum()), \"of\", len(cmp))\n\"\"\", tags=[\"claim:table1-demographics\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** The files hold 25 female and 34 male subjects, as the table says,\nbut age or sex differ for 3 of 59 subjects (listed above); the other 56 match.\n\"\"\")\n\nmd(r\"\"\"\n## task-structure\n\n> Each session has 100 encoding trials showing 100 novel images and 100 recognition trials, of which 50 show new and 50 old images, and the images come from 5 visual categories.\n\nCriterion: per session, from the trials table and the stimulus images; reproduced when every session\nhas 100 encoding trials with 100 distinct image files, 100 recognition trials with 50 of each label,\nand 5 categories; partially when each part holds in more than half of the sessions.\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor s in sessions:\n    t = s[\"trials\"]\n    learn = (t.stim_phase == \"learn\").to_numpy()\n    h = np.array(s[\"image_hash\"])\n    r = t[~learn]\n    rows.append({\"identifier\": s[\"identifier\"], \"encoding_trials\": int(learn.sum()),\n                 \"distinct_files\": t.external_image_file[learn].nunique(), \"distinct_images\": len(set(h[learn])),\n                 \"recognition_trials\": len(r), \"label0\": int((r.new_old_labels_recog == \"0\").sum()),\n                 \"label1\": int((r.new_old_labels_recog == \"1\").sum()), \"categories\": t.stimCategory.nunique(),\n                 \"image_frames\": s[\"image_shape\"][0]})\nts = pd.DataFrame(rows)\nparts = {\"100 encoding trials, 100 distinct files\": (ts.encoding_trials == 100) & (ts.distinct_files == 100),\n         \"100 recognition trials, 50 of each label\": (ts.recognition_trials == 100) & (ts.label0 == 50) & (ts.label1 == 50),\n         \"5 categories\": ts.categories == 5}\nfor k, v in parts.items():\n    print(f\"{k}: {int(v.sum())} of {len(ts)} sessions\")\nprint(\"Distinct image files equal distinct image contents in every session:\", bool((ts.distinct_files == ts.distinct_images).all()))\nprint(\"One stored image per trial in every session:\", bool((ts.image_frames == ts.encoding_trials + ts.recognition_trials).all()))\nprint(\"\\nSessions that differ:\")\nprint(ts[~parts[\"100 encoding trials, 100 distinct files\"]].to_string(index=False))\n\"\"\", tags=[\"claim:task-structure\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** Every session has 100 recognition trials with 50 of each label and 5\ncategories, but 9 of 87 sessions have fewer encoding trials: 8 have 50 and one (session 123) has 97.\nThe other 78 have 100 encoding trials with 100 distinct images.\n\"\"\")\n\nmd(r\"\"\"\n## new-old-label-coding\n\n> In the trials table, new_old_labels_recog is 0 for old stimuli (seen during encoding) and 1 for new stimuli.\n\nCriterion: (1) under the stated coding, old trials (label 0) show images of the session's encoding\nblock and new trials (label 1) do not; (2) old trials receive \"old\" responses (4 to 6) more often than\nnew trials. Reproduced when both hold in every session; not reproduced when, in most sessions, both\nhold with the labels reversed. Images are compared by their stored pixels (a hash per frame) and by\nfile name.\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor s in sessions:\n    t = s[\"trials\"]\n    learn = (t.stim_phase == \"learn\").to_numpy()\n    h, fn = np.array(s[\"image_hash\"]), t.external_image_file.to_numpy()\n    rec = ~learn\n    lab = t.new_old_labels_recog.to_numpy()[rec]\n    in_enc = np.isin(h[rec], h[learn])\n    in_enc_name = np.isin(fn[rec], fn[learn])\n    conf = nomem.recog(s).confidence.to_numpy()\n    rows.append({\"identifier\": s[\"identifier\"], \"encoding_trials\": int(learn.sum()),\n                 \"label0_in_encoding\": in_enc[lab == \"0\"].mean(), \"label1_in_encoding\": in_enc[lab == \"1\"].mean(),\n                 \"names_agree\": bool((in_enc == in_enc_name).all()),\n                 \"old_resp_label0\": (conf[lab == \"0\"] >= 4).mean(), \"old_resp_label1\": (conf[lab == \"1\"] >= 4).mean()})\nlc = pd.DataFrame(rows)\nstated_1 = (lc.label0_in_encoding == 1) & (lc.label1_in_encoding == 0)\nreversed_1 = (lc.label1_in_encoding == 1) & (lc.label0_in_encoding == 0)\nreversed_1_partial = (lc.label1_in_encoding > 0.5) & (lc.label0_in_encoding == 0)\nstated_2 = lc.old_resp_label0 > lc.old_resp_label1\nreversed_2 = lc.old_resp_label1 > lc.old_resp_label0\nprint(\"Test 1, stated coding (label 0 images all from encoding, label 1 none):\", int(stated_1.sum()), \"of\", len(lc))\nprint(\"Test 1, reversed coding (label 1 images all from encoding, label 0 none):\", int(reversed_1.sum()), \"of\", len(lc))\nprint(\"   label 0 images found in encoding block, over all sessions:\", lc.label0_in_encoding.max())\nprint(\"   reversed, with label 1 mostly (> 50%) from the encoding block:\", int(reversed_1_partial.sum()), \"of\", len(lc))\nprint(\"Test 2, stated coding (more 'old' responses to label 0):\", int(stated_2.sum()), \"of\", len(lc))\nprint(\"Test 2, reversed coding (more 'old' responses to label 1):\", int(reversed_2.sum()), \"of\", len(lc))\nprint(\"Image names and pixels agree on every trial:\", bool(lc.names_agree.all()))\nprint(\"Both tests hold with the labels reversed:\", int((reversed_1_partial & reversed_2).sum()), \"of\", len(lc))\nprint(\"\\nSessions not fully consistent with the reversed coding:\")\nprint(lc[~(reversed_1 & reversed_2)].round(2).to_string(index=False))\nprint(\"\\nMean 'old' response rate: label 0\", lc.old_resp_label0.mean().round(3), \"; label 1\", lc.old_resp_label1.mean().round(3))\n\"\"\", tags=[\"claim:new-old-label-coding\"])\n\ncode(r\"\"\"\n# Where are the other 'old' images of the sessions with 50 encoding trials? Sessions of one variant show\n# the same images; look for each old image among the encoding images of all files.\nenc_sets = {s[\"identifier\"]: set(np.array(s[\"image_hash\"])[(s[\"trials\"].stim_phase == \"learn\").to_numpy()]) for s in sessions}\nfor s in sessions:\n    t = s[\"trials\"]\n    if (t.stim_phase == \"learn\").sum() == 100:\n        continue\n    h = np.array(s[\"image_hash\"])\n    old = set(h[((t.stim_phase == \"recog\") & (t.new_old_labels_recog == \"1\")).to_numpy()])\n    anywhere = set().union(*[v for k, v in enc_sets.items()])\n    print(f\"{s['identifier']}: {len(old & enc_sets[s['identifier']])} of {len(old)} old images in its own encoding \"\n          f\"block; {len(old & anywhere)} in the encoding block of some file\")\n\"\"\", tags=[\"claim:new-old-label-coding\"])\n\nmd(r\"\"\"\n**Result: Not reproduced.** In no session do label-0 trials show an image of the encoding block, while\nlabel-1 trials do (all of them in the 78 sessions with 100 encoding trials, and 26 to 29 of 50 in the\neight with 50); and label-1 trials receive more \"old\" responses than label-0 trials in 86 of 87\nsessions. The labels are the reverse of the stated coding: 1 is old and 0 is new, as the paper's code\nreads them. In the eight sessions with 50 encoding trials, 21 to 24 old images are not in the file's\nencoding block; they are in the encoding blocks of other files of the same variant, so the encoding\ntrials that showed them are missing from these files.\n\"\"\")\n\nmd(r\"\"\"\n## ttl-codes\n\n> The events stream holds the TTL markers 55, 1, 2, 3, 20 or 21, 31 to 36, 6 and 66 with the meanings of Table 1, and the events and experiment_ids streams have one entry each, in the same order.\n\nCriterion: reproduced when, in every file, events and experiment_ids have the same length and\ntimestamps, the events hold only the listed codes, and every trial shows stimulus onset (1), offset\n(2), question (3), a response of the phase's kind and end of trial (6) in this order; partially when\nthis holds in most files.\n\"\"\")\n\ncode(r\"\"\"\nLISTED = {55, 1, 2, 3, 20, 21, 31, 32, 33, 34, 35, 36, 6, 66}\nrows = []\nfor s in sessions:\n    ev, ex = s[\"events\"], s[\"expids\"]\n    lid, rid = learn_recog_ids(s)\n    same = len(ev) == len(ex) and np.array_equal(s[\"events_t\"], s[\"expids_t\"])\n    extra = sorted(set(ev.astype(int)) - LISTED)\n    ok_trials, n_on = 0, 0\n    for ids, kind in ((lid, {20, 21}), (rid, set(range(31, 37)))):\n        block = ev[np.isin(ex, ids)].astype(int)\n        for i in np.where(block == 1)[0]:\n            n_on += 1\n            seq = block[i:i + 5]\n            ok_trials += int(len(seq) == 5 and seq[1] == 2 and seq[2] == 3 and seq[3] in kind and seq[4] == 6)\n    rows.append({\"identifier\": s[\"identifier\"], \"same_length_and_times\": same, \"extra_codes\": extra,\n                 \"has_55\": 55 in ev, \"has_66\": 66 in ev, \"stim_onsets\": n_on, \"trials\": len(s[\"trials\"]),\n                 \"trials_in_order\": ok_trials, \"times_increasing\": bool(np.all(np.diff(s[\"events_t\"]) >= 0))})\ntt = pd.DataFrame(rows)\ntt[\"all_ok\"] = tt.same_length_and_times & (tt.extra_codes.str.len() == 0) & (tt.trials_in_order == tt.trials) & (tt.stim_onsets == tt.trials)\nprint(\"Same length and timestamps:\", int(tt.same_length_and_times.sum()), \"of\", len(tt))\nprint(\"Only listed codes:\", int((tt.extra_codes.str.len() == 0).sum()), \"of\", len(tt), \"; extra codes found:\",\n      dict(collections.Counter(c for x in tt.extra_codes for c in x)))\nprint(\"Every trial in order 1, 2, 3, response, 6:\", int((tt.trials_in_order == tt.trials).sum()), \"of\", len(tt),\n      \"; trials in order over all files:\", int(tt.trials_in_order.sum()), \"of\", int(tt.trials.sum()))\nprint(\"Files without 55 (start):\", tt[~tt.has_55].identifier.tolist(), \"; without 66 (end):\", tt[~tt.has_66].identifier.tolist())\nprint(\"All parts hold:\", int(tt.all_ok.sum()), \"of\", len(tt))\nprint(tt[~tt.all_ok].to_string(index=False))\n\"\"\", tags=[\"claim:ttl-codes\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** In all 87 files events and experiment_ids have the same length and\ntimestamps and every trial follows the order 1, 2, 3, response, 6; but 9 files hold codes Table 1 does\nnot list (0, 4, 22, 23, 98, 99), so the three parts hold together in 78 of 87 files. Seven files have\nno start marker (55), which the criterion does not require.\n\"\"\")\n\nmd(r\"\"\"\n## experiment-ids\n\n> The learning block is labelled with one of 80, 83 or 88 and the recognition block with one of 81, 84 or 89.\n\nCriterion: reproduced when the two experiment ids of every file fall in these sets; partially when\nthey do in most files. The learning block is the id whose events hold the encoding answers (20, 21).\n\"\"\")\n\ncode(r\"\"\"\nex = info[[\"identifier\", \"learn_id\", \"recog_id\"]].copy()\nex[\"learn_ok\"] = ex.learn_id.apply(lambda v: len(v) == 1 and v[0] in (80, 83, 88))\nex[\"recog_ok\"] = ex.recog_id.apply(lambda v: len(v) == 1 and v[0] in (81, 84, 89))\nex[\"pair_ok\"] = ex.apply(lambda r: len(r.learn_id) == 1 and len(r.recog_id) == 1 and (r.learn_id[0], r.recog_id[0]) in ((80, 81), (83, 84), (88, 89)), axis=1)\nprint(\"Learning id in {80, 83, 88}:\", int(ex.learn_ok.sum()), \"of\", len(ex), \"; recognition id in {81, 84, 89}:\", int(ex.recog_ok.sum()))\nprint(\"Both in the sets:\", int((ex.learn_ok & ex.recog_ok).sum()), \"; pair one of Table 2's:\", int(ex.pair_ok.sum()))\nprint(\"Pairs:\", dict(collections.Counter((r.learn_id[0], r.recog_id[0]) for r in ex.itertuples())))\ndesc = {s[\"identifier\"]: s[\"data_collection\"] for s in sessions}\nbad = ex[~(ex.learn_ok & ex.recog_ok)].assign(data_collection=lambda d: d.identifier.map(desc))\nprint(bad.to_string(index=False))\n\"\"\", tags=[\"claim:experiment-ids\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** In 83 of 87 files the two ids are in Table 2's sets; four files use\n82 for a block (pairs 80/82, 81/82 and 82/83), which Table 2 does not list. The file's own description\n(`data_collection`) gives the same ids.\n\"\"\")\n\nmd(r\"\"\"\n## session-dates\n\n> To protect patient information, session_start_time keeps only the year and month of the experiment, with the day set to the first of the month for all sessions.\n\nCriterion: reproduced when every file's session_start_time falls on the first of a month; partially\nwhen some do not; years outside the span of the recordings are reported.\n\"\"\")\n\ncode(r\"\"\"\ndates = pd.to_datetime(info.start.values)\ninfo[\"day\"], info[\"year\"] = dates.day, dates.year\nprint(\"On the first of a month:\", int((info.day == 1).sum()), \"of\", len(info))\nprint(\"Not on the first:\", info[info.day != 1][[\"identifier\", \"start\"]].to_string(index=False))\nprint(\"Years by site:\", info.groupby(\"site\").year.agg([\"min\", \"max\"]).to_dict())\nprint(\"Years of the H subjects in label order:\")\nh = info[info.label.str.startswith(\"H\")].assign(n=lambda d: d.label.str[1:].astype(int)).sort_values(\"n\")\nprint(h[[\"label\", \"session\", \"start\"]].drop_duplicates(\"label\").to_string(index=False))\n\"\"\", tags=[\"claim:session-dates\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** 86 of 87 start times fall on the first of a month; session 48\n(H28) is dated 2010-03-13. Session 68 (H44) is dated 2000-01-01, years before every other Huntington\nsession (2006 to 2016) and out of order with its neighbours (H43 in 2013, H47 in 2014), so its year is\nprobably a placeholder.\n\"\"\")\n\nmd(r\"\"\"\n## units-table\n\n> The units table holds spike_times, waveform_mean_encoding, waveform_mean_recognition (sampled at 100 kHz), origClusterID, SNR, IsolDist and electrodes, with one electrode per neuron.\n\nCriterion: reproduced when every file holds each column, each unit links to exactly one electrode, the\nstated sampling rate of the waveforms is within 100 kHz ± 10 kHz, and the quality metrics are finite for\nevery unit; partially when the columns are there but some values are missing or not finite.\n\"\"\")\n\ncode(r\"\"\"\nwanted = [\"spike_times\", \"waveform_mean_encoding\", \"waveform_mean_recognition\", \"origClusterID\", \"SNR\", \"IsolDist\", \"electrodes\"]\ncols = collections.Counter(c for s in sessions for c in s[\"unit_columns\"])\nprint(\"Columns over all files:\", dict(cols))\nprint(\"Missing by name in every file:\", [c for c in wanted if cols[c] == 0])\nprint(\"IsolationDist column description:\", \"'IsolDist'\", \"(read from the files' VectorData description)\")\nprint(\"Electrodes per unit:\", dict(collections.Counter(len(x) for s in sessions for x in s[\"unit_electrodes\"])))\nrate = sorted(set(units_all.waveform_rate))\nprint(\"Waveform sampling rate:\", rate, \"Hz; within 100000 +- 10000:\", all(abs(r - 1e5) <= 1e4 for r in rate))\nprint(\"Waveforms finite for every unit:\", bool(units_all.waveform_mean_encoding_finite.all() and units_all.waveform_mean_recognition_finite.all()))\nfor c in (\"SNR\", \"IsolationDist\", \"origClusterID\"):\n    v = units_all[c].astype(float)\n    print(f\"{c}: not finite for {int((~np.isfinite(v)).sum())} of {len(v)} units, in \"\n          f\"{units_all[~np.isfinite(v)].identifier.nunique()} files\")\n\"\"\", tags=[\"claim:units-table\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** Every file holds the columns (IsolDist under the name\n`IsolationDist`, described as \"IsolDist\"), each of the 1864 units links to one electrode, and the\nwaveforms are stated as sampled at 98.4 kHz, within tolerance. SNR is missing (NaN) for 75 units and\nisolation distance for 493.\n\"\"\")\n\nmd(r\"\"\"\n## electrodes-table\n\n> The electrodes table gives each electrode's brain area, MNI coordinates, impedance, the filter applied before spike sorting (300 to 3000 Hz) and the original hardware channel.\n\nCriterion: reproduced when every file has these columns and every electrode has a value for each;\npartially when some are empty for some electrodes; not reproduced when a column is empty for every\nelectrode.\n\"\"\")\n\ncode(r\"\"\"\nel = pd.concat([s[\"electrodes\"].assign(identifier=s[\"identifier\"]) for s in sessions], ignore_index=True)\nprint(\"Columns over all files:\", dict(collections.Counter(c for s in sessions for c in s[\"electrode_columns\"])))\nfor c in [\"location\", \"x\", \"y\", \"z\", \"imp\", \"filtering\", \"origChannel\"]:\n    v = el[c]\n    empty = v.isna() | (v.astype(str).str.strip().isin([\"\", \"nan\", \"NaN\"]))\n    print(f\"{c}: value for {int((~empty).sum())} of {len(el)} electrodes; files with an empty value: {el[empty].identifier.nunique()}\")\nprint(\"filtering values:\", dict(collections.Counter(el.filtering)))\nprint(\"coordinate ranges (mm):\", {c: (float(np.nanmin(el[c])), float(np.nanmax(el[c]))) for c in \"xyz\"})\n\"\"\", tags=[\"claim:electrodes-table\"])\n\nmd(r\"\"\"\n**Result: Not reproduced.** The impedance column is empty (NaN) for all 887 electrodes. Location,\nfilter (300-3000Hz) and original channel are given for every electrode, and the MNI coordinates for\n788 of 887.\n\"\"\")\n\nmd(r\"\"\"\n## isi-criterion\n\n> Clusters were accepted as units only when fewer than 3% of their interspike intervals were shorter than 3 ms.\n\nCriterion: per unit, the fraction of interspike intervals below 3 ms from its spike times sorted in\ntime; reproduced when every unit is below 3%, partially when at least 95% are. The spike times as\nstored are a variant.\n\"\"\")\n\ncode(r\"\"\"\nisi = pd.DataFrame([{\"identifier\": s[\"identifier\"], \"unit\": i, \"spikes\": len(sp),\n                     \"sorted\": nomem.isi_violation_fraction(sp), \"stored\": nomem.isi_violation_fraction(sp, sort=False)}\n                    for s in sessions for i, sp in enumerate(s[\"spikes\"])])\nfor c in (\"sorted\", \"stored\"):\n    v = isi[c] * 100\n    print(f\"{c}: below 3% for {int((v < 3).sum())} of {len(v)} units ({(v < 3).mean() * 100:.1f}%); \"\n          f\"median {v.median():.2f}%, max {v.max():.2f}%; units with fewer than 2 spikes: {int(v.isna().sum())}\")\nprint(\"Units at 3% or more (sorted):\")\nprint(isi[isi.sorted >= 0.03].sort_values(\"sorted\", ascending=False).round(4).to_string(index=False))\n\"\"\", tags=[\"claim:isi-criterion\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** See the counts above: the share of units below 3% is at least 95%\nbut not every unit is below it.\n\"\"\")\n\nmd(r\"\"\"\n## fig5a-mtl-locations\n\n> All neurons were recorded from the medial temporal lobe, in the amygdala and the hippocampus.\n\nCriterion: reproduced when the electrode location of every unit names the amygdala or the hippocampus.\n\"\"\")\n\ncode(r\"\"\"\nlocs = collections.Counter()\nfor s in sessions:\n    loc = s[\"electrodes\"].location.to_numpy()\n    for e in s[\"unit_electrodes\"]:\n        locs[loc[e[0]]] += 1\nprint(\"Units by electrode location:\", dict(locs))\nmtl = sum(v for k, v in locs.items() if \"amygdala\" in k.lower() or \"hippocampus\" in k.lower())\nprint(\"Units in amygdala or hippocampus:\", mtl, \"of\", sum(locs.values()))\n\"\"\", tags=[\"claim:fig5a-mtl-locations\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** All 1864 units are on electrodes located in the left or right amygdala or\nhippocampus.\n\"\"\")\n\nmd(r\"\"\"\n## Behaviour (Figure 5b to 5d)\n\nPer session, from the 100 recognition trials: the cumulative ROC over the six confidence levels, the\nAUC and the z-ROC slope, computed as in the paper's code (`nomem.roc`, `nomem.auc`, `nomem.zroc_slope`).\n\"\"\"\n)\n\ncode(r\"\"\"\nrows = []\nfor s in sessions:\n    rec = nomem.recog(s)\n    conf, old = rec.confidence.to_numpy(), rec.label.to_numpy() == 1\n    h, f = nomem.roc(conf, old)\n    a = nomem.auc(h, f)\n    fx, fl = nomem.accuracy_fixed(conf, old)\n    dx, dl, mode = nomem.accuracy_dynamic(conf, old)\n    label, sid = nomem.session_key(s)\n    rows.append({\"identifier\": s[\"identifier\"], \"site\": nomem.site(label), \"auc\": a,\n                 \"auc_stated_coding\": nomem.auc(*nomem.roc(conf, ~old)),\n                 \"zroc_slope\": nomem.zroc_slope(h, f) if len(set(np.round(f[:5], 9))) > 1 else np.nan,\n                 \"distinct_zF\": len(set(np.round(f[:5], 9))), \"H\": h, \"F\": f,\n                 \"acc_high_fixed\": fx, \"acc_low_fixed\": fl, \"acc_high_dyn\": dx, \"acc_low_dyn\": dl, \"split_mode\": mode,\n                 \"included\": nomem.included(conf, a), \"responses_used\": len(set(conf))})\nbeh = pd.DataFrame(rows)\nprint(\"Sessions:\", len(beh), \"by site:\", beh.site.value_counts().to_dict())\nprint(\"AUC range:\", beh.auc.min().round(3), \"to\", beh.auc.max().round(3), \"; sessions below 0.5:\", int((beh.auc < 0.5).sum()))\n\"\"\")\n\nmd(r\"\"\"\n## fig5c-auc-all\n\n> Subjects distinguished new from old images; the behavioural AUC averaged over all sessions is 0.74 ± 0.10.\n\nCriterion: AUC per session as in the paper's code over all 87 sessions; mean within 0.74 ± 0.10 and\nstandard deviation within 0.10 ± 0.01.\n\"\"\")\n\ncode(r\"\"\"\nm, sd = beh.auc.mean(), beh.auc.std(ddof=1)\nprint(f\"Mean AUC {m:.4f} (0.74 +- 0.10: {abs(m - 0.74) <= 0.10}); SD {sd:.4f} (0.10 +- 0.01: {abs(sd - 0.10) <= 0.01}); n = {len(beh)}\")\nprint(f\"Against chance (0.5): t = {stats.ttest_1samp(beh.auc, 0.5).statistic:.2f}, p = {stats.ttest_1samp(beh.auc, 0.5).pvalue:.2g}\")\nprint(f\"With the labels as the paper's text states them (0 = old): mean AUC {beh.auc_stated_coding.mean():.4f}\")\nprint(f\"Duplicated recognition data: none (sessions 54 and 55 share the encoding block only).\")\nfig, ax = plt.subplots(1, 2, figsize=(9, 3.5))\nfor _, r in beh.iterrows():\n    ax[0].plot(np.r_[0, r.F, 1], np.r_[0, r.H, 1], color=\"0.8\", lw=0.7)\nax[0].plot(np.r_[0, np.mean(np.stack(beh.F), 0), 1], np.r_[0, np.mean(np.stack(beh.H), 0), 1], \"o-\", color=\"C0\")\nax[0].plot([0, 1], [0, 1], \"k:\")\nax[0].set(xlabel=\"false alarm rate\", ylabel=\"hit rate\", title=\"ROC per session (grey) and mean\")\nax[1].hist([beh.auc[beh.site == \"CS\"], beh.auc[beh.site == \"TWH\"]], bins=np.arange(0.4, 1.01, 0.025), stacked=True, label=[\"CS\", \"TWH\"])\nax[1].set(xlabel=\"AUC\", ylabel=\"sessions\", title=\"AUC per session\")\nax[1].legend()\nplt.tight_layout()\nplt.show()\nprint(\"All plotted values lie in [0, 1]; AUC range\", beh.auc.min().round(3), \"to\", beh.auc.max().round(3))\n\"\"\", tags=[\"claim:fig5c-auc-all\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** The mean AUC over the 87 sessions is 0.753 with a standard deviation of 0.094,\nboth within tolerance of 0.74 ± 0.10.\n\"\"\")\n\nmd(r\"\"\"\n## fig5c-auc-sites\n\n> Performance was similar at the two study sites, with an average AUC of 0.74 ± 0.09 for CS sessions and 0.69 ± 0.13 for TWH sessions.\n\nCriterion: means within 0.74 ± 0.09 (CS) and 0.69 ± 0.13 (TWH), standard deviations within 0.09 ±\n0.009 and 0.13 ± 0.013; partially reproduced when both means are but a spread is not. Welch's t-test\nbetween sites is reported.\n\"\"\")\n\ncode(r\"\"\"\ng = beh.groupby(\"site\").auc.agg([\"mean\", \"std\", \"count\"])\nprint(g.round(4))\nchecks = {\"mean CS\": abs(g.loc[\"CS\", \"mean\"] - 0.74) <= 0.09, \"mean TWH\": abs(g.loc[\"TWH\", \"mean\"] - 0.69) <= 0.13,\n          \"SD CS\": abs(g.loc[\"CS\", \"std\"] - 0.09) <= 0.009, \"SD TWH\": abs(g.loc[\"TWH\", \"std\"] - 0.13) <= 0.013}\nprint(checks)\nw = stats.ttest_ind(beh.auc[beh.site == \"CS\"], beh.auc[beh.site == \"TWH\"], equal_var=False)\nprint(f\"Welch's t-test CS against TWH: t = {w.statistic:.2f}, p = {w.pvalue:.3f}\")\nprint(\"TWH AUCs:\", beh[beh.site == \"TWH\"].set_index(\"identifier\").auc.round(3).to_dict())\n\"\"\", tags=[\"claim:fig5c-auc-sites\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** CS sessions have a mean AUC of 0.760 (SD 0.085, n = 78) and TWH sessions 0.688\n(SD 0.138, n = 9); all four values are within tolerance. The difference between sites is not\nsignificant (Welch's t-test p = 0.16).\n\"\"\")\n\nmd(r\"\"\"\n## fig5b-roc-asymmetric\n\n> The ROC curve is asymmetric (p < 0.05), as expected for declarative memory.\n\nCriterion: the slope of the z-ROC per session (regression of z(H) on z(F) over the five interior\npoints, calcZROCSlope); reproduced when the mean slope is below 1 with a two-sided one-sample t-test\nagainst 1 at p < 0.05. The Wilcoxon signed-rank test and the slope of the pooled ROC are variants.\n\"\"\")\n\ncode(r\"\"\"\nsl = beh.zroc_slope.dropna()\nprint(f\"Sessions with a slope: {len(sl)} of {len(beh)}; left out (fewer than 2 distinct false alarm rates): \"\n      f\"{beh[beh.zroc_slope.isna()].identifier.tolist()}\")\nt = stats.ttest_1samp(sl, 1.0)\nprint(f\"Mean slope {sl.mean():.3f} (SD {sl.std():.3f}, median {sl.median():.3f}); t-test against 1: t = {t.statistic:.2f}, p = {t.pvalue:.2g}\")\nwx = stats.wilcoxon(sl - 1)\nprint(f\"Variant, Wilcoxon signed-rank against 1: p = {wx.pvalue:.2g}; sessions with slope < 1: {int((sl < 1).sum())} of {len(sl)}\")\n# pooled ROC: summed counts over sessions (countersAv in NWB_behaviorSummary.m)\nconf_all, old_all = [], []\nfor s in sessions:\n    rec = nomem.recog(s)\n    conf_all.append(rec.confidence.to_numpy()); old_all.append(rec.label.to_numpy() == 1)\nhp, fp = nomem.roc(np.concatenate(conf_all), np.concatenate(old_all))\nprint(f\"Variant, slope of the pooled ROC: {nomem.zroc_slope(hp, fp):.3f}\")\nprint(\"Slope range:\", sl.min().round(3), \"to\", sl.max().round(3))\n\"\"\", tags=[\"claim:fig5b-roc-asymmetric\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** The mean z-ROC slope over 87 sessions is 0.73, below 1 (t-test against 1,\np = 1.6e-09); the Wilcoxon test and the pooled ROC (slope 0.75) agree.\n\"\"\")\n\nmd(r\"\"\"\n## fig5d-confidence-accuracy\n\n> Accuracy is significantly higher in high than in low confidence trials (P < 0.001, paired t test) across all sessions.\n\nCriterion: per session, the percentage correct among high and among low confidence responses, under\n(a) the fixed split of the MATLAB code (high 1 or 6, low 2 to 5) and (b) the dynamic split of the\nPython code. Sessions without responses in one group are left out and counted. Reproduced when, under\none reading, high exceeds low with a paired t-test p < 0.001. The unpaired test the code runs, and the\ninclusion rule plotFigure5.ipynb applies before this panel (helper.check_inclusion), are variants.\n\"\"\")\n\ncode(r\"\"\"\nfor name, hi, lo in ((\"(a) fixed split\", \"acc_high_fixed\", \"acc_low_fixed\"), (\"(b) dynamic split\", \"acc_high_dyn\", \"acc_low_dyn\")):\n    d = beh[[hi, lo, \"included\", \"site\"]].dropna(subset=[hi, lo])\n    t = stats.ttest_rel(d[hi], d[lo])\n    u = stats.ttest_ind(d[hi], d[lo], equal_var=False)\n    di = d[d.included]\n    ti = stats.ttest_rel(di[hi], di[lo])\n    print(f\"{name}: {len(d)} sessions ({len(beh) - len(d)} left out); high {100 * d[hi].mean():.1f}%, low {100 * d[lo].mean():.1f}%; \"\n          f\"paired t = {t.statistic:.2f}, p = {t.pvalue:.2g}; high > low in {int((d[hi] > d[lo]).sum())} sessions\")\n    print(f\"    unpaired (Welch) p = {u.pvalue:.2g}; with plotFigure5's inclusion rule, {len(di)} sessions, paired p = {ti.pvalue:.2g}\")\n    for st, e in d.groupby(\"site\"):\n        print(f\"    {st}: {len(e)} sessions, high {100 * e[hi].mean():.1f}%, low {100 * e[lo].mean():.1f}%, paired p = {stats.ttest_rel(e[hi], e[lo]).pvalue:.2g}\")\nprint(\"Split modes chosen by (b):\", beh.split_mode.value_counts().to_dict())\n\"\"\", tags=[\"claim:fig5d-confidence-accuracy\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** Under both readings accuracy is higher for high than for low confidence (fixed\nsplit 80.1% against 60.9% over 84 sessions, paired p = 3.2e-16; dynamic split 78.2% against 60.8% over\n82 sessions, p = 1.3e-11), and within each site.\n\"\"\")\n\nmd(r\"\"\"\n## Single units: VS and MS selection\n\nFor every unit, the firing rate of each recognition trial in the Methods' window (0.2 to 1.2 s after\nonset) and in the code's (0.2 to 1.7 s). VS: one-way ANOVA across the 5 categories, p < 0.05. MS:\nbootstrap comparison of mean rates (1000 runs, `nomem.bootstrap_p`) between new and old trials,\np < 0.05, with all 50 and 50 trials (main) or correct trials only (the code's choice). A unit whose rates\nare all equal has no ANOVA p and is counted as not selected. The seed is a standard choice; the spread of\nthe MS count over five more seeds is shown.\n\"\"\")\n\ncode(r\"\"\"\nrng = np.random.default_rng(20200304)\nrows = []\nfor s in sessions:\n    rec = nomem.recog(s)\n    label, sid = nomem.session_key(s)\n    on, cat = rec.onset.to_numpy(), rec.category.to_numpy()\n    old, conf = rec.label.to_numpy() == 1, rec.confidence.to_numpy()\n    correct = (old & (conf >= 4)) | (~old & (conf <= 3))\n    for i, sp in enumerate(s[\"spikes\"]):\n        row = {\"identifier\": s[\"identifier\"], \"session\": sid, \"site\": nomem.site(label), \"unit\": i,\n               \"duplicate\": (s[\"identifier\"], i) in duplicate_second}\n        for wn, w in ((\"m\", nomem.WINDOW_METHODS), (\"c\", nomem.WINDOW_CODE)):\n            rt = nomem.window_rates(sp, on, w)\n            row[f\"vs_p_{wn}\"] = nomem.anova_p(rt, cat)\n            row[f\"ms_p_{wn}\"] = nomem.bootstrap_p(rt[~old], rt[old], rng)\n            row[f\"ms_p_{wn}_correct\"] = nomem.bootstrap_p(rt[~old & correct], rt[old & correct], rng)\n        rows.append(row)\ncells = pd.DataFrame(rows)\nfor c in [c for c in cells if c.endswith((\"_m\", \"_c\", \"_correct\"))]:\n    cells[c.replace(\"_p_\", \"_\")] = cells[c] < nomem.ALPHA\nprint(\"Units:\", len(cells), \"; without an ANOVA p (all rates equal): Methods' window\",\n      int(cells.vs_p_m.isna().sum()), \", code's window\", int(cells.vs_p_c.isna().sum()))\nprint(\"Recognition trials per unit: 100 in every session; correct trials per session from\",\n      min(int(((nomem.recog(s).label == 1) & (nomem.recog(s).confidence >= 4) | (nomem.recog(s).label == 0) & (nomem.recog(s).confidence <= 3)).sum()) for s in sessions),\n      \"to\", max(int(((nomem.recog(s).label == 1) & (nomem.recog(s).confidence >= 4) | (nomem.recog(s).label == 0) & (nomem.recog(s).confidence <= 3)).sum()) for s in sessions))\n\"\"\")\n\nmd(r\"\"\"\n## vs-cells-proportion\n\n> 343 of the 1863 cells (18.4%) are visually selective, by a one-way ANOVA (P < 0.05) of the firing rate in recognition trials, in a 1 s window starting 200 ms after stimulus onset, across the 5 visual categories.\n\nCriterion: every unit, Methods' window; reproduced when the count is within 343 ± 34.3 and the\npercentage within 18.4 ± 1.84. Variants: the code's window, duplicated spike trains counted once, and a\nnull with the category labels shuffled within each session.\n\"\"\")\n\ncode(r\"\"\"\ndef show(mask, total, name):\n    print(f\"{name}: {int(mask.sum())} of {total} ({100 * mask.sum() / total:.1f}%)\")\n\nn = len(cells)\nshow(cells.vs_m, n, \"VS, Methods' window, every unit\")\nprint(\"   within 343 +- 34.3:\", abs(cells.vs_m.sum() - 343) <= 34.3, \"; within 18.4 +- 1.84%:\", abs(100 * cells.vs_m.mean() - 18.4) <= 1.84)\nshow(cells.vs_c, n, \"VS, code's window\")\nonce = cells[~cells.duplicate]\nshow(once.vs_m, len(once), \"VS, Methods' window, duplicated spike trains once\")\nrng_null = np.random.default_rng(343)\nnull = 0\nfor s in sessions:\n    rec = nomem.recog(s)\n    cat = rng_null.permutation(rec.category.to_numpy())\n    for sp in s[\"spikes\"]:\n        p = nomem.anova_p(nomem.window_rates(sp, rec.onset.to_numpy(), nomem.WINDOW_METHODS), cat)\n        null += int(np.isfinite(p) and p < 0.05)\nprint(f\"Null, categories shuffled within session: {null} of {n} ({100 * null / n:.1f}%); expected by chance 5%\")\nprint(\"VS by site (Methods' window):\", cells.groupby(\"site\").vs_m.agg([\"sum\", \"count\"]).to_dict())\nprint(\"VS percentage by session: median\", (100 * cells.groupby(\"identifier\").vs_m.mean()).median().round(1),\n      \"; range\", (100 * cells.groupby(\"identifier\").vs_m.mean()).min().round(1), \"to\", (100 * cells.groupby(\"identifier\").vs_m.mean()).max().round(1))\n\"\"\", tags=[\"claim:vs-cells-proportion\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** 332 of 1864 units (17.8%) are VS in the Methods' window, within tolerance of 343\n(18.4%); the code's window gives 343 (18.4%), and the shuffled null about 5%.\n\"\"\")\n\nmd(r\"\"\"\n## ms-cells-proportion\n\n> 146 of the 1863 cells (7.8%) are memory selective, by a two-tailed bootstrap comparison of mean firing rates (1,000 runs, P < 0.05) between the 50 novel and 50 familiar recognition trials in a 1 s window starting 200 ms after stimulus onset.\n\nCriterion: every unit, Methods' window and all 50 and 50 trials, bootstrap of bootstrapMeanEqualTest at\na fixed seed; reproduced when the count is within 146 ± 14.6 and the percentage within 7.8 ± 0.78.\nVariants: the code's choices (correct trials only, its window), duplicated spike trains once, and a null\nwith labels shuffled within each session.\n\"\"\")\n\ncode(r\"\"\"\nshow(cells.ms_m, n, \"MS, Methods' window, all trials (main)\")\nprint(\"   within 146 +- 14.6:\", abs(cells.ms_m.sum() - 146) <= 14.6, \"; within 7.8 +- 0.78%:\", abs(100 * cells.ms_m.mean() - 7.8) <= 0.78)\nshow(cells.ms_m_correct, n, \"MS, Methods' window, correct trials\")\nshow(cells.ms_c, n, \"MS, code's window, all trials\")\nshow(cells.ms_c_correct, n, \"MS, code's window, correct trials (the code's choices)\")\nshow(once.ms_m, len(once), \"MS, main, duplicated spike trains once\")\n# bootstrap noise: the main count with five other seeds\ncounts = []\nfor seed in range(1, 6):\n    r2 = np.random.default_rng(seed)\n    k = 0\n    for s in sessions:\n        rec = nomem.recog(s)\n        old = rec.label.to_numpy() == 1\n        for sp in s[\"spikes\"]:\n            rt = nomem.window_rates(sp, rec.onset.to_numpy(), nomem.WINDOW_METHODS)\n            k += int(nomem.bootstrap_p(rt[~old], rt[old], r2) < 0.05)\n    counts.append(k)\nprint(\"Main count with seeds 1 to 5:\", counts)\nrng_null = np.random.default_rng(146)\nnull = 0\nfor s in sessions:\n    rec = nomem.recog(s)\n    old = rng_null.permutation(rec.label.to_numpy() == 1)\n    for sp in s[\"spikes\"]:\n        rt = nomem.window_rates(sp, rec.onset.to_numpy(), nomem.WINDOW_METHODS)\n        null += int(nomem.bootstrap_p(rt[~old], rt[old], rng_null) < 0.05)\nprint(f\"Null, labels shuffled within session: {null} of {n} ({100 * null / n:.1f}%)\")\nprint(\"MS by site (main):\", cells.groupby(\"site\").ms_m.agg([\"sum\", \"count\"]).to_dict())\n\"\"\", tags=[\"claim:ms-cells-proportion\"])\n\nmd(r\"\"\"\n**Result: Not reproduced.** With all 50 and 50 trials in the Methods' window, 114 of 1864 units (6.1%)\nare MS, below the tolerance of 146 (7.8%); other seeds give similar counts (printed above). The code's\nchoices, correct trials only in its 0.2 to 1.7 s window, give 150 (8.0%), within tolerance, and correct\ntrials alone in the Methods' window give 134 (7.2%).\n\"\"\")\n\nmd(r\"\"\"\n## dual-cells-proportion\n\n> 26 cells (1.4%) are both visually and memory selective.\n\nCriterion: units selected by both main tests; reproduced when the count is within 26 ± 2.6 and the\npercentage within 1.4 ± 0.14.\n\"\"\")\n\ncode(r\"\"\"\ndual = cells.vs_m & cells.ms_m\nshow(dual, n, \"VS and MS, main tests\")\nprint(\"   within 26 +- 2.6:\", abs(dual.sum() - 26) <= 2.6, \"; within 1.4 +- 0.14%:\", abs(100 * dual.mean() - 1.4) <= 0.14)\nshow(cells.vs_c & cells.ms_c_correct, n, \"Variant, the code's choices for both\")\nshow(cells.vs_m & cells.ms_m_correct, n, \"Variant, Methods' window, MS on correct trials\")\nexp = cells.vs_m.mean() * cells.ms_m.mean() * n\nprint(f\"Expected if VS and MS were independent: {exp:.1f}\")\n\"\"\", tags=[\"claim:dual-cells-proportion\"])\n\nmd(r\"\"\"\n**Result: Not reproduced.** 13 units (0.7%) are both VS and MS under the main tests, half the paper's\n26. The code's choices give 26 (1.4%).\n\"\"\")\n\nmd(r\"\"\"\n## fig5f-site-proportions\n\n> The percentages of VS, MS and dual cells are comparable between CS sessions (18.4%, 7.7% and 1.4%) and the new TWH sessions (19.4%, 10.4% and 1.3%).\n\nCriterion: two-sided Fisher's exact test between sites for each of VS, MS and dual cells at 0.05;\nreproduced when no test finds a difference and at least four of the six values are within tolerance;\npartially when only one of these holds. Main tests; the code's choices are a variant.\n\"\"\")\n\ncode(r\"\"\"\nexpected = {(\"VS\", \"CS\"): 18.4, (\"MS\", \"CS\"): 7.7, (\"dual\", \"CS\"): 1.4, (\"VS\", \"TWH\"): 19.4, (\"MS\", \"TWH\"): 10.4, (\"dual\", \"TWH\"): 1.3}\n\n\ndef site_table(vs, ms, label):\n    sets = {\"VS\": vs, \"MS\": ms, \"dual\": vs & ms}\n    within, fisher = 0, []\n    for kind, mask in sets.items():\n        a = [int(mask[cells.site == st].sum()) for st in (\"CS\", \"TWH\")]\n        tot = [int((cells.site == st).sum()) for st in (\"CS\", \"TWH\")]\n        p = stats.fisher_exact([[a[0], tot[0] - a[0]], [a[1], tot[1] - a[1]]]).pvalue\n        fisher.append(p)\n        for st, k, t in zip((\"CS\", \"TWH\"), a, tot):\n            pct = 100 * k / t\n            ok = abs(pct - expected[(kind, st)]) <= 0.1 * expected[(kind, st)]\n            within += ok\n            print(f\"  {label} {kind} {st}: {k} of {t} = {pct:.1f}% (paper {expected[(kind, st)]}%; within 10%: {ok})\")\n        print(f\"  {label} {kind}: Fisher's exact p = {p:.3f}\")\n    print(f\"  {label}: {within} of 6 within tolerance; tests finding a difference: {sum(p < 0.05 for p in fisher)}\")\n\n\nsite_table(cells.vs_m, cells.ms_m, \"main\")\nsite_table(cells.vs_c, cells.ms_c_correct, \"code\")\nprint(\"TWH units by session:\", cells[cells.site == \"TWH\"].groupby(\"identifier\").size().to_dict())\n\"\"\", tags=[\"claim:fig5f-site-proportions\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** Under the main tests no Fisher's test finds a difference between CS\n(1787 units) and TWH (77 units), but only 3 of the 6 percentages are within tolerance. With the code's\nchoices, the tests again find no difference.\n\"\"\")\n\nmd(r\"\"\"\n## twh-sessions\n\n> The dataset includes 9 sessions from a new institution, Toronto Western Hospital.\n\nCriterion: sessions whose subject label starts with T; reproduced when the count is within 9 ± 0.9.\n\"\"\")\n\ncode(r\"\"\"\ntwh = info[info.label.str.startswith(\"T\")]\nprint(\"Sessions with a T label:\", len(twh), \"; subjects:\", twh.label.nunique(), \"; institution field:\", set(twh.institution))\nprint(twh[[\"identifier\", \"subject_id\", \"start\", \"units\"]].to_string(index=False))\n\"\"\", tags=[\"claim:twh-sessions\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** Nine sessions, of eight subjects, have T labels, and their institution field\nis Toronto Western Hospital.\n\"\"\")\n\nmd(r\"\"\"\n## previous-release-link\n\n> The sessions of the earlier release (Faraut et al. 2018) are found in this dandiset under the same subject, session id and task variant.\n\nLink claim, with Table 1 of Faraut et al. 2018 (read from its full text). Criterion: sessions matched\nby session id; a matched session agrees when its subject label and task variant are those of the\nearlier table. Reproduced when every session of the earlier table is found and agrees; partially when\nat least 90% are found and agree, with the others listed. Age and sex of the matched subjects are\ncompared. The variant of a file is read from its category names (see the data check).\n\"\"\")\n\ncode(r\"\"\"\nfar_t1, far_totals, far_tables = nomem.faraut_table1()\nfar = nomem.sessions_of(far_t1)\nprint(\"Faraut et al. 2018 Table 1:\", len(far_t1), \"subjects,\", len(far), \"sessions; totals row:\", far_totals)\nfiles_by_session = info.set_index(\"session\")\nrows = []\nfor r in far.itertuples():\n    found = r.session in files_by_session.index\n    f = files_by_session.loc[r.session] if found else None\n    rows.append({\"session\": r.session, \"label_2018\": r.label, \"variant_2018\": r.variant, \"found\": found,\n                 \"label_file\": f.label if found else None, \"variant_file\": f.variant if found else None,\n                 \"agrees\": bool(found and f.label == r.label and f.variant == r.variant)})\nlink = pd.DataFrame(rows)\nprint(f\"Found by session id: {int(link.found.sum())} of {len(link)}; found and agree: {int(link.agrees.sum())} \"\n      f\"({100 * link.agrees.mean():.1f}%)\")\nprint(\"Not found or not agreeing:\")\nprint(link[~link.agrees].to_string(index=False))\nages = far_t1.set_index(\"label\")[[\"age\", \"sex\"]].join(paper_t1.set_index(\"label\")[[\"age\", \"sex\"]], rsuffix=\"_2020\", how=\"inner\")\nsubj_file = info.drop_duplicates(\"label\").set_index(\"label\")[[\"age\", \"sex\"]].rename(columns={\"age\": \"age_file\", \"sex\": \"sex_file\"})\nages = ages.join(subj_file, how=\"left\")\nages[\"age_file\"] = pd.to_numeric(ages.age_file)\nprint(f\"\\nSubjects of the 2018 table also in the files: {int(ages.age_file.notna().sum())} of {len(far_t1)}\")\nprint(\"Age and sex, 2018 table against the files: both match for\",\n      int(((ages.age == ages.age_file) & (ages.sex == ages.sex_file)).sum()), \"of\", int(ages.age_file.notna().sum()))\nprint(ages[(ages.age != ages.age_file) | (ages.sex != ages.sex_file)].to_string())\n\"\"\", tags=[\"claim:previous-release-link\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** 64 of the 65 sessions of the 2018 table are in the dandiset under the\nsame subject and variant (98.5%). Session 98 is not in the dandiset, nor in Online-only Table 1.\n\"\"\")\n\nmd(r\"\"\"\n## previous-release-additions\n\n> Relative to the earlier release of this task's data (Faraut et al. 2018), this release adds 23 sessions, 17 subjects and 288 neurons.\n\nCriterion: new sessions are those of the dandiset not in the 2018 list, new subjects those with no\nsession in it, and new neurons the unit rows of the new sessions. Reproduced when all three are within\ntolerance (23 ± 2.3, 17 ± 1.7, 288 ± 28.8); partially when one or two are. The differences of the\ntotals the two papers state are a variant.\n\"\"\")\n\ncode(r\"\"\"\nold_sessions, old_labels = set(far.session), set(far.label)\nnew = info[~info.session.isin(old_sessions)]\nnew_subjects = sorted(set(info.label) - old_labels)\nnew_units = int(new.units.sum())\nprint(f\"New sessions: {len(new)} (23 +- 2.3: {abs(len(new) - 23) <= 2.3})\")\nprint(f\"New subjects: {len(new_subjects)} (17 +- 1.7: {abs(len(new_subjects) - 17) <= 1.7}): {new_subjects}\")\nprint(f\"New neurons (unit rows of new sessions): {new_units} (288 +- 28.8: {abs(new_units - 288) <= 28.8})\")\nprint(\"New sessions by site:\", new.site.value_counts().to_dict())\nprint(new[[\"identifier\", \"units\"]].to_string(index=False))\nprint(f\"Variant, differences of totals: sessions 87 - 65 = 22, subjects 59 - 42 = 17, neurons 1863 - 1576 = 287 \"\n      f\"(Faraut et al. 2018 abstract); here {len(info)} - {len(far)} = {len(info) - len(far)} files, \"\n      f\"{info.label.nunique()} - {len(far_t1)} = {info.label.nunique() - len(far_t1)} subjects\")\n\"\"\", tags=[\"claim:previous-release-additions\"])\n\nmd(r\"\"\"\n**Result: Partially reproduced.** The dandiset has 23 sessions and 17 subjects that the 2018 table does\nnot list, as the paper says, but their units number far fewer than 288 (printed above).\n\"\"\")\n\nmd(r\"\"\"\n## fig4-example-vs-neuron\n\n> Neuron 132-177-4-RA (session 132, channel 177, cell 4, right amygdala) is visually selective, responding most to images of animals.\n\nCriterion: the unit on channel 177 of session 132 with electrode row 4, in the right amygdala;\nreproduced when the one-way ANOVA across the 5 categories of recognition trials, Methods' window, has\np < 0.05 and the animal category has the highest mean rate. The code's window is a variant.\n\"\"\")\n\ncode(r\"\"\"\ndef example(session, channel, row, area):\n    s = [x for x in sessions if nomem.session_key(x)[1] == session]\n    if not s:\n        print(f\"session {session} is not in the dandiset\")\n        return\n    s = s[0]\n    el = s[\"electrodes\"]\n    found = [i for i, e in enumerate(s[\"unit_electrodes\"]) if el.origChannel.iloc[e[0]] == channel]\n    print(f\"{s['identifier']}: units on channel {channel}: {found}; their electrode rows \"\n          f\"{[int(s['unit_electrodes'][i][0]) for i in found]}; location {set(el.location.iloc[[s['unit_electrodes'][i][0] for i in found]])}\")\n    rec = nomem.recog(s)\n    for i in found:\n        for wn, w in ((\"Methods\", nomem.WINDOW_METHODS), (\"code\", nomem.WINDOW_CODE)):\n            rt = nomem.window_rates(s[\"spikes\"][i], rec.onset.to_numpy(), w)\n            means = pd.Series(rt).groupby(rec.category_name.to_numpy()).mean()\n            print(f\"  unit {i} (electrode row {int(s['unit_electrodes'][i][0])}), {wn} window: ANOVA p = {nomem.anova_p(rt, rec.category.to_numpy()):.3g}; \"\n                  f\"mean rate by category (Hz): {means.round(2).to_dict()}; highest: {means.idxmax()}\")\n\n\nexample(132, 177, 4, \"Right Amygdala\")\n\"\"\", tags=[\"claim:fig4-example-vs-neuron\"])\n\nmd(r\"\"\"\n**Result: Reproduced.** Session 132 has one unit on channel 177, on electrode row 4 in the right\namygdala; its rates differ across categories (ANOVA p printed above, below 0.05) and are highest for\nanimals in both windows.\n\"\"\")\n\nmd(r\"\"\"\n## fig3-example-vs-neuron\n\n> Neuron 144-140-3-RH (session 144, channel 140, cell 3, right hippocampus) is visually selective for phones.\n\nBlocked: there is no session 144 in the dandiset or in Online-only Table 1. The only units on a\nchannel 140 in the right hippocampus are in session 2009 (T103); they are shown here, but nothing links\nthem to the figure's neuron, so they do not decide the claim.\n\"\"\")\n\ncode(r\"\"\"\nexample(144, 140, 3, \"Right Hippocampus\")\nprint(\"Sessions with a unit on channel 140:\", [s[\"identifier\"] for s in sessions\n      if any(s[\"electrodes\"].origChannel.iloc[e[0]] == 140 for e in s[\"unit_electrodes\"])])\nexample(2009, 140, 3, \"Right Hippocampus\")\n\"\"\", tags=[\"claim:fig3-example-vs-neuron\"])\n\nmd(r\"\"\"\n## Summary\n\"\"\")\n\ncode(r\"\"\"\nprint(f\"Notebook ran in {(time.time() - started) / 60:.1f} min\")\n\"\"\")\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/cells.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/env/bin/activate && python -c "
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    for v in ['0.220126.1851','draft']:
+        a=next(c.get_dandiset('000004',v).get_assets()); print(v, type(a).__name__, getattr(a,'blob',None), a.path, a.size)
+"
+```
+
+```
+0.220126.1851 RemoteBlobAsset 284eb346-0bc5-42a6-9b33-268e6b0b0bde sub-P10HMH/sub-P10HMH_ses-20060901_ecephys+image.nwb 73156888
+draft RemoteBlobAsset 284eb346-0bc5-42a6-9b33-268e6b0b0bde sub-P10HMH/sub-P10HMH_ses-20060901_ecephys+image.nwb 73156888
+```
+
+**Agent**
+
+Blob ids are available, so the version comparison can use them. Updating that cell, then building and executing the notebook.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python - <<'E'
+p='/tmp/claude-1001/cells.py'; s=open(p).read()
+s=s.replace('''        listings[v] = {a.path: (a.size, a.blob if hasattr(a, "blob") else None) for a in d.get_assets()}
+pinned = listings[nomem.DANDISET_VERSION]
+for v, files in listings.items():
+    same = sum(1 for p in pinned if p in files and files[p][0] == pinned[p][0])
+    print(f"{v}: {len(files)} files; {same} with the pinned version's path and size; "
+          f"paths only in one: {sorted(set(files) ^ set(pinned))[:5]}")''','''        listings[v] = {a.path: a.blob for a in d.get_assets()}
+pinned = listings[nomem.DANDISET_VERSION]
+for v, files in listings.items():
+    same = sum(1 for p in pinned if files.get(p) == pinned[p])
+    print(f"{v}: {len(files)} files; {same} with the pinned version's path and blob (content); "
+          f"paths only in one of the two: {sorted(set(files) ^ set(pinned))[:5]}")''')
+s=s.replace('''The versions are compared by path and size here; the archive's blob ids are not exposed by every
+client version, so a change of content at an identical size would not be seen.''','''Files are compared by path and by the archive's blob id, which changes when the content changes.''')
+s=s.replace('''with DandiAPIClient() as client:
+    ds = client.get_dandiset(nomem.DANDISET_ID)
+    listings''','''with DandiAPIClient() as client:
+    listings''')
+open(p,'w').write(s)
+E
+. env/bin/activate && uv pip install -q nbconvert ipykernel nbformat 2>&1|tail -1; python build.py cells.py entries/chandravadia-2020/reproduce_chandravadia_2020.ipynb && cd entries/chandravadia-2020 && time jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3600 reproduce_chandravadia_2020.ipynb --output $TMPDIR/run1.ipynb 2>&1 | tail -5
+```
+
+```
+[NbConvertApp] Converting notebook reproduce_chandravadia_2020.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 266771 bytes to /tmp/claude-1001/run1.ipynb
+
+real	3m5.899s
+user	0m55.566s
+sys	0m14.224s
+```
+
+**Agent**
+
+Executed cleanly in about 3 minutes. Reading the outputs.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python - <<'E'
+import json
+nb=json.load(open('/tmp/claude-1001/run1.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    tags=c['metadata'].get('tags',[])
+    out=''
+    for o in c.get('outputs',[]):
+        if 'text' in o: out+=''.join(o['text'])
+        elif o.get('output_type')=='error': out+='ERROR '+o['ename']+o['evalue']
+        elif 'data' in o and 'text/plain' in o['data']: out+=''.join(o['data']['text/plain'])
+    if i==4: out=out[:1500]
+    print(f'==== cell {i} {tags}\n{out[:3500]}')
+E
+```
+
+```
+==== cell 1 []
+loaded 87 files from dandiset 000004 version 0.220126.1852 in 119 s
+Online-only Table 1: 59 subject rows; totals row: ['Total Subjects: 59', 'Total Sessions: 87', 'Total Female: 25', 'Total Male: 34']
+
+==== cell 3 ['sanity']
+Files: 87 ; distinct subject_id: 59 ; distinct labels: 59
+Files by site: {'CS': 78, 'TWH': 9}
+Unit rows: 1864 ; electrode rows: 887
+Trial phases over all files: Counter({'recog': 8700, 'learn': 8347})
+Institution field: Counter({'Cedars-Sinai Medical Center': 44, 'Hunigton Memorial Hospital': 28, 'Toronto Western Hospital': 9, 'Hunington Memorial Hospital': 6})
+Devices: Counter({'Neuralynx-Atlas': 53, 'Neuralynx-cheetah': 29, 'Neuralynx-Cheetah': 5})
+   identifier label  session site subject_id age sex       start  n_learn  n_recog  label0  label1  n_cat  variant  units  electrodes learn_id recog_id                  institution             device
+0     CS24_59   C24       59   CS      P24CS  57   F  2012-09-01      100      100      50      50      5        1     21           7   [80.0]   [81.0]  Cedars-Sinai Medical Center    Neuralynx-Atlas
+1     CS24_60   C24       60   CS      P24CS  57   F  2012-09-01      100      100      50      50      5        2     22           9   [83.0]   [84.0]  Cedars-Sinai Medical Center    Neuralynx-Atlas
+2     CS25_61   C25       61   CS      P25CS  36   F  2012-09-01      100      100      50      50      5        1      8           6   [80.0]   [81.0]  Cedars-Sinai Medical Center    Neuralynx-Atlas
+3     CS25_63   C25       63   CS      P25CS  36   F  2012-09-01      100      100      50      50      5        2     14          11   [83.0]   [84.0]  Cedars-Sinai Medical Center    Neuralynx-Atlas
+4     CS26_64   C26       64   CS      P26CS  56   F  2012-12-01      100      100      50      50      5        1     33           9   [80.0]   [81.0]  Cedars-Sinai Medical Center    Neuralynx-Atlas
+5     CS26_66   C26       66   CS      P26CS  56   F  2012-12-01      100      100      50      50      5
+[... 414 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, nomem
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+s=[x for x in ss if x['identifier']=='H27_58'][0]
+for i in (35,37):
+    sp=s['spikes'][i]; d=np.diff(sp); k=np.where(d<0)[0]
+    print(i,len(sp),k[:5], len(np.unique(sp)), sp[:3], sp[k[0]:k[0]+3] if len(k) else None)
+    half=len(sp)//2; print(np.allclose(np.sort(sp[:half]),np.sort(sp[half:])) if len(sp)%2==0 else 'odd')
+    print(np.sum(np.diff(np.sort(sp))==0))
+u=[ (x['identifier'],i,v) for x in ss for i,v in enumerate(x['units'].SNR) if np.isinf(v)]; print(len(u),u[:5])
+iso=[ (x['identifier'],i,v) for x in ss for i,v in enumerate(x['units'].IsolationDist) if v>1e6]; print(len(iso),iso[:5])
+E
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "/tmp/claude/chk55.py", line 1, in <module>
-    import numpy as np, pandas as pd, recogmem as rm
-ModuleNotFoundError: No module named 'recogmem'
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'nomem'
 ```
 
 **Agent calls Bash**
 
 ```bash
-PYTHONPATH=. $TMPDIR/explore/bin/python /tmp/claude/chk55.py
+cd entries/chandravadia-2020 && . $TMPDIR/env/bin/activate && python - <<'E'
+import pickle, numpy as np, nomem
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+s=[x for x in ss if x['identifier']=='H27_58'][0]
+for i in (35,37):
+    sp=s['spikes'][i]; d=np.diff(sp); k=np.where(d<0)[0]
+    print(i,len(sp),k[:5], len(np.unique(sp)), np.sum(np.diff(np.sort(sp))<0.0005))
+    others=[j for j,x in enumerate(s['spikes']) if j!=i and len(np.intersect1d(np.round(x,5),np.round(sp,5)))>0.3*len(sp)]
+    print('  overlaps with units', others, s['units'].origClusterID[i])
+u=[ (x['identifier'],i) for x in ss for i,v in enumerate(x['units'].SNR) if np.isinf(v)]; print(len(u),u[:5])
+iso=[ (x['identifier'],i,v) for x in ss for i,v in enumerate(x['units'].IsolationDist) if v>1e6]; print(len(iso),iso[:5])
+E
 ```
 
 ```
-54 H42_55
-  learn trials 100 span 1611 2060 VS units 2 mean post-pre rate 0.118 units with post>pre 21
-  recog trials 100 span 4047 4520 VS units 1 mean post-pre rate 0.091 units with post>pre 20
-55 H42_54
-  learn trials 100 span 1611 2060 VS units 2 mean post-pre rate 0.118 units with post>pre 21
-  recog trials 100 span 3125 3622 VS units 6 mean post-pre rate 0.109 units with post>pre 19
+35 3268 [1633] 1634 1634
+  overlaps with units [] 1507
+37 824 [411] 412 412
+  overlaps with units [] 1745
+11 [('H28_48', 9), ('H28_48', 10), ('H28_48', 11), ('H28_48', 12), ('H28_48', 13)]
+2 [('H21_38', 8, 2.9223032923899105e+27), ('CS26_66', 5, 8.081694408988397e+32)]
 ```
 
-**Agent calls Write**
+**Agent calls Bash**
 
-```json
-{
- "file_path": "/tmp/claude/results.py",
- "content": "HEADER = r\"\"\"\n# Reproducing Chandravadia et al. (2020) from dandiset 000004\n\n**Paper.** Chandravadia N, Liang D, Schjetnan AGP, Carlson A, Faraut M, Chung JM, Reed CM, Dichter B,\nMaoz U, Kalia SK, Valiante TA, Mamelak AN, Rutishauser U (2020). A NWB-based dataset and processing\npipeline of human single-neuron activity during a declarative memory task. *Scientific Data* 7, 78.\n[doi:10.1038/s41597-020-0415-9](https://doi.org/10.1038/s41597-020-0415-9). The article is open\naccess (CC BY 4.0); this attempt used its full text, including Tables 1 and 2 and Online-only Table 1.\n\n**Dandiset.** [DANDI:000004](https://dandiarchive.org/dandiset/000004/0.220126.1852), version\n0.220126.1852. The paper cites no DANDI version: its data statement points to the Open Science\nFramework (doi:10.17605/OSF.IO/HV7JA), and the dandiset was created on 2020-03-16, after the paper\nappeared. The archive has two published versions, 0.220126.1851 and 0.220126.1852, published a\nminute apart with the same 87 assets (checked in the first data cell) and metadata that differs only\nin version fields. The most recent is pinned. The draft holds the same files.\n\n**What the dandiset holds.** One NWB file per session: 87 sessions of 59 subjects, with the trials\ntable, the TTL event stream, the stimulus images, the spike-sorted units with mean waveforms, and\nthe electrodes table. Raw broadband data are not included, as the paper also says.\n\n**Code read.** [rutishauserlab/recogmem-release-NWB](https://github.com/rutishauserlab/recogmem-release-NWB)\nat commit 1d95162 (2025-01-14): the Python and MATLAB export and analysis code, the session list\n`defineNOsessions_release.ini`, and `plotFigure5.ipynb`. The code settles what the Methods leave\nopen (the AUC, the z-ROC, the high/low confidence split, the label coding). Where it disagrees with\nthe Methods (the analysis window, and correct trials only for memory selectivity), the Methods give\nthe main result and the code's choice is shown as a variant. `plotFigure5.ipynb` writes the Figure\n5f percentages into the plot as constants, so the code does not show how they were computed.\n\n**Outside inputs.** None are used in an analysis. Online-only Table 1 of the paper is copied into\nthe helper module as text, to compare with the files' subject metadata.\n\n| Claim | Status |\n|---|---|\n| counts-neurons-subjects: 1863 neurons, 59 subjects | tested |\n| counts-sessions: 87 sessions of Online-only Table 1 | tested |\n| table1-demographics: age and sex of every subject | tested |\n| task-structure: 100 encoding and 100 recognition trials, 5 categories | tested |\n| new-old-label-coding: label 0 is old, 1 is new | tested |\n| ttl-codes: event codes of Table 1 | tested |\n| experiment-ids: block ids of Table 2 | tested |\n| session-dates: day set to the first of the month | tested |\n| units-table: columns, 100 kHz waveforms, one electrode per unit | tested |\n| electrodes-table: area, coordinates, impedance, filter, channel | tested |\n| isi-criterion: fewer than 3% of ISIs below 3 ms | tested |\n| fig5a-mtl-locations: all units in amygdala or hippocampus | tested |\n| fig5c-auc-all: AUC 0.74 ± 0.10 | tested |\n| fig5c-auc-sites: AUC 0.74 ± 0.09 (CS) and 0.69 ± 0.13 (TWH) | tested |\n| fig5b-roc-asymmetric: asymmetric ROC | tested |\n| fig5d-confidence-accuracy: high confidence more accurate | tested |\n| vs-cells-proportion: 343 VS cells (18.4%) | tested |\n| ms-cells-proportion: 146 MS cells (7.8%) | tested |\n| dual-cells-proportion: 26 dual cells (1.4%) | tested |\n| fig5f-site-proportions: comparable proportions at CS and TWH | tested |\n| twh-sessions: 9 TWH sessions | tested |\n| fig4-example-vs-neuron: neuron 132-177-4-RA | tested |\n| previous-release-additions: 23 sessions, 17 subjects, 288 neurons added | blocked (other) |\n| fig3-example-vs-neuron: neuron 144-140-3-RH | blocked (data missing) |\n\"\"\"\n\nRESULT = {\n    \"counts-neurons-subjects\": \"\"\"**Result: reproduced.** The files hold 1864 unit rows, one more than the paper's 1863, and 59\nsubjects, both within tolerance. Counting the 55 units of sessions 44 and 55 once, as their spike\ntrains repeat those of sessions 43 and 54, gives 1809, also within tolerance.\"\"\",\n    \"counts-sessions\": \"\"\"**Result: reproduced.** The 87 files match the 87 (subject, session) pairs of Online-only Table 1\nexactly, with none missing or extra; the Methods' 89 sessions disagree with the paper's own table.\nEach table variant corresponds to one stimulus set in the files.\"\"\",\n    \"table1-demographics\": \"\"\"**Result: partially reproduced.** Age and sex match the table for 56 of 59 subjects. C24 is 57 in\nthe files and 47 in the table, H33 is 30 and 29, and H48 is a 32-year-old woman in the files and a\n54-year-old man in the table. The files hold 26 female and 33 male subjects, within tolerance of the\ntable's 25 and 34. The diagnosis is coded more coarsely in the files; for C61 it differs in\nsubstance (Left Lateral Frontal against Left Mesial Temporal).\"\"\",\n    \"task-structure\": \"\"\"**Result: partially reproduced.** All 87 sessions have 100 recognition trials with 50 of each\nlabel and 5 categories, and one stored image per trial. The encoding block has 100 trials with 100\ndistinct images in 79 sessions; seven sessions have 50 encoding trials and session 123 has 97. The\nimages are stored as one image series per file, not as the stimuli_learn_x and stimuli_recog_x\nentries the paper describes.\"\"\",\n    \"new-old-label-coding\": \"\"\"**Result: not reproduced.** The coding is the reverse of the stated one. In 79 of 87 sessions every\nlabel-1 image and no label-0 image was shown during encoding, and in no session does label 0 mark\nthe encoded images. Label-1 trials draw \"old\" responses more often than label-0 trials in 86 of 87\nsessions (median 0.70 against 0.24, sign test p = 1.1e-24). Label 1 is old, as the paper's code\nreads it; the paper's text and the files' column description say 0. In the eight sessions with\nshortened encoding blocks only 52% to 98% of the label-1 images are among the stored encoding\ntrials, so encoding trials are missing from those files.\"\"\",\n    \"ttl-codes\": \"\"\"**Result: partially reproduced.** In all 87 files the events and experiment_ids streams have the\nsame length and timestamps, and 17019 of 17047 trials show onset, offset, question, response and end\nin order. 78 of 87 files meet every condition; nine hold codes Table 1 does not list (0, 4, 22, 23,\n98 or 99), and seven files have no start-of-experiment code 55.\"\"\",\n    \"experiment-ids\": \"\"\"**Result: partially reproduced.** 83 of 87 files use the ids of Table 2. Session 55 labels its\nrecognition block 82, session 77 uses 81 for learning and 82 for recognition, and sessions 100 and\n105 use 82 for learning and 83 for recognition.\"\"\",\n    \"session-dates\": \"\"\"**Result: partially reproduced.** 86 of 87 files start on the first of a month. Session 48 starts on\n2010-03-13, a day that was not set to the first. Session 68 is dated 2000-01-01, outside the span\nof the other recordings (2006 to 2019).\"\"\",\n    \"units-table\": \"\"\"**Result: partially reproduced.** Every file has every column (IsolDist is named IsolationDist),\nand every unit links to one electrode. The stated waveform sampling rate is 98.4 kHz, within the\ntolerance of the paper's 100 kHz. The quality metrics are not finite for every unit: SNR is finite\nfor 1778 of 1864 units, 11 being infinite, and the isolation distance is NaN for 493 units, with 4\nvalues above 1e4 (up to 8.08e+32). The spike times of 13 units in 7 sessions are not in increasing\norder, and two units of session 58 hold every spike time twice.\"\"\",\n    \"electrodes-table\": \"\"\"**Result: not reproduced.** Location, filter (300-3000Hz) and original channel are filled for all 887\nelectrodes, and the coordinates match the hemisphere of the location wherever they are given. The\nimpedance is empty for all 887 electrodes, and the coordinates are missing for 99 electrodes in 8\nsessions.\"\"\",\n    \"isi-criterion\": \"\"\"**Result: partially reproduced.** 1858 of 1864 units (99.7%) have fewer than 3% of their interspike\nintervals below 3 ms, above the 95% the criterion sets for a partial result. Six units are at or\nabove 3%, two of them above 20%; these include the two units of session 58 whose spike times repeat.\nWith the spike times as stored (unsorted in 13 units), 1860 units pass.\"\"\",\n    \"fig5a-mtl-locations\": \"\"\"**Result: reproduced.** All 1864 units are on electrodes located in the left or right amygdala or\nhippocampus.\"\"\",\n    \"fig5c-auc-all\": \"\"\"**Result: reproduced.** The AUC over 87 sessions is 0.753 with a standard deviation of 0.094, both\nwithin tolerance of 0.74 ± 0.10, and well above the chance level of 0.5 (p = 2.2e-41). With the label\ncoding the paper states, the mean AUC would be 0.247, below chance.\"\"\",\n    \"fig5c-auc-sites\": \"\"\"**Result: reproduced.** CS sessions have an AUC of 0.760 ± 0.085 (78 sessions) and TWH sessions\n0.688 ± 0.138 (9 sessions), all four values within tolerance. The sites do not differ significantly\n(Welch's t-test p = 0.161).\"\"\",\n    \"fig5b-roc-asymmetric\": \"\"\"**Result: reproduced.** The z-ROC slope is below 1 in 70 of 87 sessions, with a mean of 0.726\n(t-test against 1, p = 1.6e-09). The Wilcoxon test gives the same p, and the pooled ROC has a slope of\n0.816.\"\"\",\n    \"fig5d-confidence-accuracy\": \"\"\"**Result: reproduced.** Under the fixed split, accuracy is 80.1% for high and 60.9% for low confidence\nover 84 sessions (paired t-test p = 3.2e-16); under the dynamic split 78.3% and 60.4% (p = 1.2e-13).\nThree sessions without responses in one group are left out. The unpaired test the code runs also\ngives p below 0.001.\"\"\",\n    \"vs-cells-proportion\": \"\"\"**Result: reproduced.** With the Methods' window, 332 of 1864 units (17.8%) are visually selective,\nwithin tolerance of 343 (18.4%), against 4.5% with shuffled categories. The code's window gives\n343 of 1864 (18.4%), the paper's numbers. Counting duplicated spike trains once gives 18.0%.\"\"\",\n    \"ms-cells-proportion\": \"\"\"**Result: not reproduced.** The test the Methods describe, all 50 new and 50 old trials in a 1 s\nwindow, finds 110 of 1864 units (5.9%), outside the tolerance of 146 (7.8%) and close to the 5.3%\nfound with shuffled labels. The code's choices, correct trials only in a 1.5 s window, give 147\n(7.9%), and correct trials in the Methods' window 143 (7.7%), both matching the paper. The\ndifference comes from the trials used: the paper's number follows its code, not its Methods.\"\"\",\n    \"dual-cells-proportion\": \"\"\"**Result: not reproduced.** Under the Methods' tests 12 units (0.6%) are both VS and MS, outside the\ntolerance of 26 (1.4%) and below the 19.6 expected if the two were independent. The code's choices\ngive 26 (1.4%), the paper's numbers.\"\"\",\n    \"fig5f-site-proportions\": \"\"\"**Result: partially reproduced.** The sites do not differ by Fisher's exact test (VS p = 0.360, MS\np = 0.215, dual p = 1.000), but only 1 of the 6 site values is within tolerance under the Methods'\ntests (CS VS 17.6%). The code's choices give CS 18.4%, 7.8% and 1.4% and TWH 19.5%, 10.4% and 1.3%,\nthe values of Figure 5f to within 0.1 point. TWH has 77 units, so its percentages rest on 17, 7 and\n0 cells under the main tests.\"\"\",\n    \"twh-sessions\": \"\"\"**Result: reproduced.** Nine sessions (2001 to 2011) of 8 subjects come from Toronto Western Hospital,\nwith 77 units.\"\"\",\n    \"fig4-example-vs-neuron\": \"\"\"**Result: reproduced.** The single unit on channel 177 of session 132 sits in the right amygdala at\nelectrode row 4. It is category selective (ANOVA p = 1.2e-22 in the Methods' window, 7.9e-19 in the\ncode's) and fires most to animals (6.75 Hz against 0.25 to 0.85 Hz for the other categories).\"\"\",\n}\n\nSUMMARY = r\"\"\"\n## Summary\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning\nand the differences from the paper's method.\n\n| Claim | Outcome |\n|---|---|\n| counts-neurons-subjects | reproduced |\n| counts-sessions | reproduced |\n| table1-demographics | partially reproduced |\n| task-structure | partially reproduced |\n| new-old-label-coding | not reproduced |\n| ttl-codes | partially reproduced |\n| experiment-ids | partially reproduced |\n| session-dates | partially reproduced |\n| units-table | partially reproduced |\n| electrodes-table | not reproduced |\n| isi-criterion | partially reproduced |\n| fig5a-mtl-locations | reproduced |\n| fig5c-auc-all | reproduced |\n| fig5c-auc-sites | reproduced |\n| fig5b-roc-asymmetric | reproduced |\n| fig5d-confidence-accuracy | reproduced |\n| vs-cells-proportion | reproduced |\n| ms-cells-proportion | not reproduced |\n| dual-cells-proportion | not reproduced |\n| fig5f-site-proportions | partially reproduced |\n| twh-sessions | reproduced |\n| fig4-example-vs-neuron | reproduced |\n| previous-release-additions | blocked: the earlier release's session list is on Dryad, which refuses automated download |\n| fig3-example-vs-neuron | blocked: session 144 is not in the dandiset |\n\n**How the analysis differs from the paper's.**\n\n- Selectivity uses the Methods' window (200 to 1200 ms) and, for memory selectivity, all 50 new and\n  50 old trials. The paper's code uses 200 to 1700 ms and correct trials only; with these choices\n  the counts are 343 VS, 147 MS and 26 dual cells, the paper's numbers. The MS and dual outcomes\n  rest on the Methods' description.\n- The bootstrap is the code's algorithm with a fixed seed, so p-values near 0.05 can change with\n  the seed.\n- The paper names no test for the ROC asymmetry or for \"comparable\" proportions; a t-test of the\n  z-ROC slope against 1 and Fisher's exact test were chosen.\n- Accuracy by confidence uses a paired test, as the Results say; the code runs an unpaired one,\n  shown as a variant.\n- Units are counted per file, as in the paper; counts with the duplicated spike trains of sessions\n  44 and 55 dropped are shown.\n\n**What was found about the dandiset.**\n\n- The new/old label is coded 1 = old, the reverse of the paper's text and the files' own column\n  description. A user following the description would compute an AUC of 0.25.\n- Sessions 43 and 44, and 54 and 55, hold identical spike trains: the same neurons are deposited\n  under two sessions, so 55 of the 1864 units are repeats. Session 55 also repeats session 54's\n  learning block.\n- Seven sessions have 50 encoding trials and one has 97, where the paper describes 100; part of the\n  images later shown as old are missing from their encoding blocks.\n- Electrode impedance is empty for every electrode, coordinates are missing for 99 electrodes, the\n  isolation distance is NaN for 493 units, and SNR is not finite for 86.\n- Spike times are unsorted in 13 units, and two units of session 58 hold each spike time twice.\n- Age or sex differ from Online-only Table 1 for three subjects. One session date keeps its day, and\n  another is set to 2000-01-01.\n- Event codes outside Table 1 occur in nine files and experiment ids outside Table 2 in four.\n- The Methods give 89 sessions where the paper's table and the files have 87, and the unit count is\n  1864 where the paper gives 1863.\n- The paper's Figure 3 example neuron is from session 144, which is not in the dandiset.\n\"\"\"\n"
-}
+```bash
+date -u; cd $TMPDIR && python - <<'E'
+p='/tmp/claude-1001/cells.py'; s=open(p).read()
+def rep(a,b):
+    global s
+    assert a in s, a[:80]
+    s=s.replace(a,b)
+rep('''In the recognition phase `response_value` holds the event code (31 to 36), so the confidence is
+`response_value` minus 30, as the claims file says. In the encoding phase it holds 0 or 1 (and 20 or
+21 in some files), not the 20 and 21 of the events. Trial and spike times share one clock in each file
+(checked below); 47 files count it in Unix seconds, so only differences of times are meaningful. The
+confidence read from `response_value` is checked against the event codes the paper's code reads:''',
+'''In the recognition phase `response_value` holds the event code (31 to 36), so the confidence is
+`response_value` minus 30, as the claims file says. In the encoding phase it holds 0 or 1, not the 20
+and 21 of the events. Trial and spike times share one clock in each file (checked below); 38 files
+count it in Unix seconds, the others from an arbitrary origin, so only differences of times are
+meaningful. The median stimulus duration is 1 s in most files and up to 2 s in some. Spike times are
+not in increasing order in 13 units (see isi-criterion). SNR is infinite for some units and isolation
+distance reaches 1e32 (see units-table). The confidence read from `response_value` is checked against
+the event codes the paper's code reads:''')
+rep('''code(r"""
+# Spike trains deposited in more than one file''','''md(r"""
+In 4 files the confidence from the trials table differs from the code the paper's code reads for 1 to
+6 trials; these files hold extra event codes (22, 23 or 0, see ttl-codes) that shift the position the
+code reads. The analyses use the trials table, as the claims file says.
+""")
+
+code(r"""
+# Spike trains deposited in more than one file''')
+rep('''Over all files, 1105 more or fewer units (see the printed counts) respond to the stimulus at the true
+onsets than at onsets moved by 37 s, and the category effect peaks at lag 0 among lags from -3 to
++3 s. Both are consistent with spikes and trials sharing a clock. The files listed above, with few
+units, are those where the check cannot establish it on its own.''',
+'''Over all files, 830 of 1864 units respond to the stimulus at the true onsets against 115 at onsets
+moved by 37 s, and the number of units with a category effect peaks at lag 0 (332) among lags from -3
+to +3 s. Both are consistent with spikes and trials sharing a clock. In the five files listed above (1
+to 19 units each) the check cannot establish it on its own.''')
+rep('''cmp = paper_t1.set_index("label")[["age", "sex", "diagnosis"]].join(subj[["age", "sex", "diagnosis_file"]], rsuffix="_file", how="outer")''',
+'''cmp = paper_t1.set_index("label")[["age", "sex", "diagnosis"]].join(
+    subj[["age", "sex", "diagnosis_file"]].rename(columns={"age": "age_file", "sex": "sex_file"}), how="outer")''')
+rep('''**Result: Partially reproduced.** The files hold 25 female and 34 male subjects, as the table says,
+but age or sex differ for 3 of 59 subjects (listed above); the other 56 match.''',
+'''**Result: Partially reproduced.** Age and sex match Online-only Table 1 for 56 of 59 subjects. C24 is
+57 in the files and 47 in the table, H33 30 and 29, and H48 is a 32-year-old woman in the files and a
+54-year-old man in the table, so the files hold 26 female and 33 male subjects against the table's 25
+and 34. The files' diagnosis text equals the table's for 40 of 59 subjects; the others use coarser
+terms ("Right Other" for "Right Insula").''')
+rep('''**Result: Partially reproduced.** Every session has 100 recognition trials with 50 of each label and 5
+categories, but 9 of 87 sessions have fewer encoding trials: 8 have 50 and one (session 123) has 97.
+The other 78 have 100 encoding trials with 100 distinct images.''',
+'''**Result: Partially reproduced.** Every session has 100 recognition trials with 50 of each label and 5
+categories, but 8 of 87 sessions have fewer encoding trials: 7 have 50 (sessions 18, 20, 21, 23, 26,
+27 and 44, all from Huntington) and one (session 123) has 97. The other 79 have 100 encoding trials
+with 100 distinct images.''')
+rep('''**Result: Not reproduced.** In no session do label-0 trials show an image of the encoding block, while
+label-1 trials do (all of them in the 78 sessions with 100 encoding trials, and 26 to 29 of 50 in the
+eight with 50); and label-1 trials receive more "old" responses than label-0 trials in 86 of 87
+sessions. The labels are the reverse of the stated coding: 1 is old and 0 is new, as the paper's code
+reads them. In the eight sessions with 50 encoding trials, 21 to 24 old images are not in the file's
+encoding block; they are in the encoding blocks of other files of the same variant, so the encoding
+trials that showed them are missing from these files.''',
+'''**Result: Not reproduced.** Under the stated coding test 1 holds in 0 of 87 sessions and test 2 in 1.
+With the labels reversed both tests hold in 86 of 87 sessions: no label-0 image is in the encoding
+block of its session, label-1 images are (all of them in 79 sessions, 49 of 50 in session 123, and 26
+to 29 of 50 in the seven with 50 encoding trials), and label-1 trials draw more "old" responses (69%
+against 27% on average). The exception for test 2 is session 2005 (T98, AUC 0.445). The labels are 1
+for old and 0 for new, as the paper's code reads them and the reverse of the paper's text and the
+column's description. In the seven sessions with 50 encoding trials, 21 to 24 old images are not in
+the file's encoding block but are in the encoding blocks of other files of the same variant, so these
+files lack the encoding trials that showed them.''')
+rep('''**Result: Partially reproduced.** In all 87 files events and experiment_ids have the same length and
+timestamps and every trial follows the order 1, 2, 3, response, 6; but 9 files hold codes Table 1 does
+not list (0, 4, 22, 23, 98, 99), so the three parts hold together in 78 of 87 files. Seven files have
+no start marker (55), which the criterion does not require.''',
+'''**Result: Partially reproduced.** In all 87 files events and experiment_ids have the same length and
+timestamps. 9 files hold codes Table 1 does not list (0, 4, 22, 23, 98, 99), and in 7 of them 1 to 10
+trials break the order 1, 2, 3, response, 6 (17019 of 17047 trials follow it), so all parts hold in
+78 of 87 files. Seven files have no start marker (55).''')
+rep('''**Result: Partially reproduced.** Every file holds the columns (IsolDist under the name
+`IsolationDist`, described as "IsolDist"), each of the 1864 units links to one electrode, and the
+waveforms are stated as sampled at 98.4 kHz, within tolerance. SNR is missing (NaN) for 75 units and
+isolation distance for 493.''',
+'''**Result: Partially reproduced.** Every file holds the columns (IsolDist under the name
+`IsolationDist`, described as "IsolDist"), each of the 1864 units links to one electrode, and the
+waveforms are stated as sampled at 98.4 kHz, within tolerance. SNR is not finite for 86 units (NaN or
+infinite) and isolation distance is NaN for 493 units in 82 files; two isolation distances are above
+1e27.''')
+rep('''for c in ("SNR", "IsolationDist", "origClusterID"):
+    v = units_all[c].astype(float)
+    print(f"{c}: not finite for {int((~np.isfinite(v)).sum())} of {len(v)} units, in "
+          f"{units_all[~np.isfinite(v)].identifier.nunique()} files")''','''for c in ("SNR", "IsolationDist", "origClusterID"):
+    v = units_all[c].astype(float)
+    print(f"{c}: not finite for {int((~np.isfinite(v)).sum())} of {len(v)} units (NaN {int(v.isna().sum())}, "
+          f"infinite {int(np.isinf(v).sum())}), in {units_all[~np.isfinite(v)].identifier.nunique()} files; above 1e6: {int((v > 1e6).sum())}")''')
+rep('''isi = pd.DataFrame([{"identifier": s["identifier"], "unit": i, "spikes": len(sp),
+                     "sorted": nomem.isi_violation_fraction(sp), "stored": nomem.isi_violation_fraction(sp, sort=False)}
+                    for s in sessions for i, sp in enumerate(s["spikes"])])
+for c in ("sorted", "stored"):''','''isi = pd.DataFrame([{"identifier": s["identifier"], "unit": i, "spikes": len(sp), "distinct": len(np.unique(sp)),
+                     "unsorted": bool((np.diff(sp) < 0).any()),
+                     "sorted": nomem.isi_violation_fraction(sp), "stored": nomem.isi_violation_fraction(sp, sort=False),
+                     "distinct_sorted": nomem.isi_violation_fraction(np.unique(sp))}
+                    for s in sessions for i, sp in enumerate(s["spikes"])])
+print("Units stored out of time order:", int(isi.unsorted.sum()), "; units holding repeated spike times:",
+      isi[isi.spikes > isi.distinct][["identifier", "unit", "spikes", "distinct"]].to_dict("records"))
+for c in ("sorted", "stored", "distinct_sorted"):''')
+rep('''**Result: Partially reproduced.** See the counts above: the share of units below 3% is at least 95%
+but not every unit is below it.''','''**Result: Partially reproduced.** With spike times sorted, 1858 of 1864 units (99.7%) have fewer
+than 3% of intervals below 3 ms; six do not. Two of them (H27_58 units 35 and 37) hold each spike time
+twice, stored as two copies one after the other, which gives 50% short intervals once sorted; with
+each spike time counted once they are below 3%, and four units (3.0% to 9.0%) remain above.''')
+rep('''**Result: Reproduced.** The mean z-ROC slope over 87 sessions is 0.73, below 1 (t-test against 1,
+p = 1.6e-09); the Wilcoxon test and the pooled ROC (slope 0.75) agree.''','''**Result: Reproduced.** Over the 82 sessions with a defined slope the mean z-ROC slope is 0.78, below 1
+(t-test against 1, p = 4.3e-09); 65 of 82 slopes are below 1, and the Wilcoxon test (p = 2e-08) and the
+pooled ROC (slope 0.82) agree. Five sessions have fewer than two distinct false alarm rates among the
+five points, so no slope.''')
+rep('''**Result: Reproduced.** Under both readings accuracy is higher for high than for low confidence (fixed
+split 80.1% against 60.9% over 84 sessions, paired p = 3.2e-16; dynamic split 78.2% against 60.8% over
+82 sessions, p = 1.3e-11), and within each site.''','''**Result: Reproduced.** Under both readings accuracy is higher for high than for low confidence (fixed
+split 80.1% against 60.9% over 84 sessions, paired p = 3.2e-16; dynamic split 78.2% against 60.8% over
+82 sessions, p = 1.3e-11). The effect holds in the CS sessions alone; in the 8 TWH sessions it has the
+same direction without significance (p = 0.14 and 0.26).''')
+rep('''**Result: Reproduced.** 332 of 1864 units (17.8%) are VS in the Methods' window, within tolerance of 343
+(18.4%); the code's window gives 343 (18.4%), and the shuffled null about 5%.''','''**Result: Reproduced.** 332 of 1864 units (17.8%) are VS in the Methods' window, within tolerance of 343
+(18.4%); the code's window gives 343 (18.4%), counting duplicated spike trains once 321 of 1798 (17.9%),
+and the shuffled null 76 (4.1%).''')
+rep('''**Result: Not reproduced.** With all 50 and 50 trials in the Methods' window, 114 of 1864 units (6.1%)
+are MS, below the tolerance of 146 (7.8%); other seeds give similar counts (printed above). The code's
+choices, correct trials only in its 0.2 to 1.7 s window, give 150 (8.0%), within tolerance, and correct
+trials alone in the Methods' window give 134 (7.2%).''','''**Result: Not reproduced.** With all 50 and 50 trials in the Methods' window, 118 of 1864 units (6.3%)
+are MS, below the tolerance of 146 ± 14.6 (7.8 ± 0.78%); five other seeds give 108 to 115. The
+shuffled null gives 92 (4.9%). The code's choices, correct trials only in its 0.2 to 1.7 s window, give
+146 (7.8%), the paper's numbers; correct trials alone in the Methods' window give 139 (7.5%), also
+within tolerance.''')
+rep('''**Result: Not reproduced.** 13 units (0.7%) are both VS and MS under the main tests, half the paper's
+26. The code's choices give 26 (1.4%).''','''**Result: Not reproduced.** 13 units (0.7%) are both VS and MS under the main tests, half the paper's
+26 and below the 21 expected if the two were independent. The code's choices give 25 (1.3%), within
+tolerance.''')
+rep('''**Result: Partially reproduced.** Under the main tests no Fisher's test finds a difference between CS
+(1787 units) and TWH (77 units), but only 3 of the 6 percentages are within tolerance. With the code's
+choices, the tests again find no difference.''','''**Result: Partially reproduced.** Under the main tests no Fisher's test finds a difference between CS
+(1787 units) and TWH (77 units; p = 0.36, 0.15 and 0.42), but only 3 of the 6 percentages are within
+tolerance (CS VS 17.6%, TWH MS 10.4% and TWH dual 1.3%). With the code's choices all 6 are within
+tolerance and no test finds a difference.''')
+rep('''**Result: Partially reproduced.** 64 of the 65 sessions of the 2018 table are in the dandiset under the
+same subject and variant (98.5%). Session 98 is not in the dandiset, nor in Online-only Table 1.''','''**Result: Partially reproduced.** 64 of the 65 sessions of the 2018 table are in the dandiset under the
+same subject and variant (98.5%). Session 98 (H48, variant 2) is in neither the dandiset nor Online-only
+Table 1. Of the 42 subjects, 39 have the same age and sex in the 2018 table and the files; the 2018
+table agrees with Online-only Table 1 on the three others (C24, H33, H48).''')
+rep('''ages = far_t1.set_index("label")[["age", "sex"]].join(paper_t1.set_index("label")[["age", "sex"]], rsuffix="_2020", how="inner")''',
+'''ages = far_t1.set_index("label")[["age", "sex"]].join(
+    paper_t1.set_index("label")[["age", "sex"]].rename(columns={"age": "age_2020", "sex": "sex_2020"}), how="inner")''')
+rep('''**Result: Partially reproduced.** The dandiset has 23 sessions and 17 subjects that the 2018 table does
+not list, as the paper says, but their units number far fewer than 288 (printed above).''','''**Result: Partially reproduced.** The dandiset has 23 sessions and 17 subjects that the 2018 table does
+not list, as the paper says, but these sessions hold 325 unit rows, above the tolerance of 288 ± 28.8.
+The difference of the totals the two papers state (1863 - 1576 = 287) is the paper's number.''')
+rep('''**Result: Reproduced.** Session 132 has one unit on channel 177, on electrode row 4 in the right
+amygdala; its rates differ across categories (ANOVA p printed above, below 0.05) and are highest for
+animals in both windows.''','''**Result: Reproduced.** Session 132 has one unit on channel 177, unit 4 on electrode row 4 in the right
+amygdala; its rates differ across categories (ANOVA p = 1.2e-22) and are highest for animals (6.75 Hz
+against 0.25 to 0.85 Hz), in both windows.''')
+rep('''Blocked: there is no session 144 in the dandiset or in Online-only Table 1. The only units on a
+channel 140 in the right hippocampus are in session 2009 (T103); they are shown here, but nothing links
+them to the figure's neuron, so they do not decide the claim.''','''Blocked: there is no session 144 in the dandiset or in Online-only Table 1. The only units on a
+channel 140 in the dandiset are in session 2009 (T103), in the right hippocampus; they are shown here,
+but no identifier links them to the figure's neuron, so they do not decide the claim.''')
+open(p,'w').write(s)
+E
 ```
 
 ```
-<tool_use_error>File has not been read yet. Read it first before writing to it.</tool_use_error>
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude/results.py"
-}
-```
-
-```
-1	HEADER = "# header TBD"
-2	IDS = ["counts-neurons-subjects","counts-sessions","table1-demographics","task-structure","new-old-label-coding","ttl-codes","experiment-ids","session-dates","units-table","electrodes-table","isi-criterion","fig5a-mtl-locations","fig5c-auc-all","fig5c-auc-sites","fig5b-roc-asymmetric","fig5d-confidence-accuracy","vs-cells-proportion","ms-cells-proportion","dual-cells-proportion","fig5f-site-proportions","twh-sessions","fig4-example-vs-neuron"]
-3	RESULT = {i: "**Result: TBD.**" for i in IDS}
-4	SUMMARY = "## Summary\n\nTBD"
-5
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude/results.py",
- "content": "HEADER = r\"\"\"\n# Reproducing Chandravadia et al. (2020) from dandiset 000004\n\n**Paper.** Chandravadia N, Liang D, Schjetnan AGP, Carlson A, Faraut M, Chung JM, Reed CM, Dichter B,\nMaoz U, Kalia SK, Valiante TA, Mamelak AN, Rutishauser U (2020). A NWB-based dataset and processing\npipeline of human single-neuron activity during a declarative memory task. *Scientific Data* 7, 78.\n[doi:10.1038/s41597-020-0415-9](https://doi.org/10.1038/s41597-020-0415-9). The article is open\naccess (CC BY 4.0); this attempt used its full text, including Tables 1 and 2 and Online-only Table 1.\n\n**Dandiset.** [DANDI:000004](https://dandiarchive.org/dandiset/000004/0.220126.1852), version\n0.220126.1852. The paper cites no DANDI version: its data statement points to the Open Science\nFramework (doi:10.17605/OSF.IO/HV7JA), and the dandiset was created on 2020-03-16, after the paper\nappeared. The archive has two published versions, 0.220126.1851 and 0.220126.1852, published a\nminute apart with the same 87 assets (checked in the first data cell) and metadata that differs only\nin version fields. The most recent is pinned. The draft holds the same files.\n\n**What the dandiset holds.** One NWB file per session: 87 sessions of 59 subjects, with the trials\ntable, the TTL event stream, the stimulus images, the spike-sorted units with mean waveforms, and\nthe electrodes table. There are no raw broadband recordings.\n\n**Code read.** [rutishauserlab/recogmem-release-NWB](https://github.com/rutishauserlab/recogmem-release-NWB)\nat commit 1d95162 (2025-01-14): the Python and MATLAB export and analysis code, the session list\n`defineNOsessions_release.ini`, and `plotFigure5.ipynb`. The code settles what the Methods leave\nopen (the AUC, the z-ROC, the high/low confidence split, the label coding). Where it disagrees with\nthe Methods (the analysis window, and correct trials only for memory selectivity), the Methods give\nthe main result and the code's choice is shown as a variant. `plotFigure5.ipynb` writes the Figure\n5f percentages into the plot as constants, so the code does not show how they were computed.\n\n**Outside inputs.** None are used in an analysis. Online-only Table 1 of the paper is copied into\nthe helper module as text, to compare with the files' subject metadata.\n\n| Claim | Status |\n|---|---|\n| counts-neurons-subjects: 1863 neurons, 59 subjects | tested |\n| counts-sessions: 87 sessions of Online-only Table 1 | tested |\n| table1-demographics: age and sex of every subject | tested |\n| task-structure: 100 encoding and 100 recognition trials, 5 categories | tested |\n| new-old-label-coding: label 0 is old, 1 is new | tested |\n| ttl-codes: event codes of Table 1 | tested |\n| experiment-ids: block ids of Table 2 | tested |\n| session-dates: day set to the first of the month | tested |\n| units-table: columns, 100 kHz waveforms, one electrode per unit | tested |\n| electrodes-table: area, coordinates, impedance, filter, channel | tested |\n| isi-criterion: fewer than 3% of ISIs below 3 ms | tested |\n| fig5a-mtl-locations: all units in amygdala or hippocampus | tested |\n| fig5c-auc-all: AUC 0.74 ± 0.10 | tested |\n| fig5c-auc-sites: AUC 0.74 ± 0.09 (CS) and 0.69 ± 0.13 (TWH) | tested |\n| fig5b-roc-asymmetric: asymmetric ROC | tested |\n| fig5d-confidence-accuracy: high confidence more accurate | tested |\n| vs-cells-proportion: 343 VS cells (18.4%) | tested |\n| ms-cells-proportion: 146 MS cells (7.8%) | tested |\n| dual-cells-proportion: 26 dual cells (1.4%) | tested |\n| fig5f-site-proportions: comparable proportions at CS and TWH | tested |\n| twh-sessions: 9 TWH sessions | tested |\n| fig4-example-vs-neuron: neuron 132-177-4-RA | tested |\n| previous-release-additions: 23 sessions, 17 subjects, 288 neurons added | blocked (other) |\n| fig3-example-vs-neuron: neuron 144-140-3-RH | blocked (data missing) |\n\"\"\"\n\nRESULT = {\n    \"counts-neurons-subjects\": \"\"\"**Result: reproduced.** The files hold 1864 unit rows, one more than the paper's 1863, and 59\nsubjects, both within tolerance. Counting the 55 units of sessions 44 and 55 once, as their spike\ntrains repeat those of sessions 43 and 54, gives 1809, also within tolerance.\"\"\",\n    \"counts-sessions\": \"\"\"**Result: reproduced.** The 87 files match the 87 (subject, session) pairs of Online-only Table 1\nexactly, with none missing or extra; the Methods' 89 sessions disagree with the paper's own table.\nEach table variant corresponds to one stimulus set in the files.\"\"\",\n    \"table1-demographics\": \"\"\"**Result: partially reproduced.** Age and sex match the table for 56 of 59 subjects. C24 is 57 in\nthe files and 47 in the table, H33 is 30 and 29, and H48 is a 32-year-old woman in the files and a\n54-year-old man in the table. The files hold 26 female and 33 male subjects, within tolerance of the\ntable's 25 and 34. The diagnosis is coded more coarsely in the files; for C61 it differs in\nsubstance (Left Lateral Frontal against Left Mesial Temporal).\"\"\",\n    \"task-structure\": \"\"\"**Result: partially reproduced.** All 87 sessions have 100 recognition trials with 50 of each\nlabel and 5 categories, and one stored image per trial. The encoding block has 100 trials with 100\ndistinct images in 79 sessions; seven sessions have 50 encoding trials and session 123 has 97. The\nimages are stored as one image series per file, not as the stimuli_learn_x and stimuli_recog_x\nentries the paper describes.\"\"\",\n    \"new-old-label-coding\": \"\"\"**Result: not reproduced.** The coding is the reverse of the stated one. In 79 of 87 sessions every\nlabel-1 image and no label-0 image was shown during encoding, and in no session does label 0 mark\nthe encoded images. Label-1 trials draw \"old\" responses more often than label-0 trials in 86 of 87\nsessions (median 0.70 against 0.24, sign test p = 1.1e-24). Label 1 is old, as the paper's code\nreads it; the paper's text and the files' column description say 0. In the eight sessions with\nshortened encoding blocks only 52% to 98% of the label-1 images are among the stored encoding\ntrials, so encoding trials are missing from those files.\"\"\",\n    \"ttl-codes\": \"\"\"**Result: partially reproduced.** In all 87 files the events and experiment_ids streams have the\nsame length and timestamps, and 17019 of 17047 trials show onset, offset, question, response and end\nin order. 78 of 87 files meet every condition; nine hold codes Table 1 does not list (0, 4, 22, 23,\n98 or 99), and seven files have no start-of-experiment code 55.\"\"\",\n    \"experiment-ids\": \"\"\"**Result: partially reproduced.** 83 of 87 files use the ids of Table 2. Session 55 labels its\nrecognition block 82, session 77 uses 81 for learning and 82 for recognition, and sessions 100 and\n105 use 82 for learning and 83 for recognition.\"\"\",\n    \"session-dates\": \"\"\"**Result: partially reproduced.** 86 of 87 files start on the first of a month. Session 48 starts on\n2010-03-13, a day that was not set to the first. Session 68 is dated 2000-01-01, outside the span\nof the other recordings (2006 to 2019).\"\"\",\n    \"units-table\": \"\"\"**Result: partially reproduced.** Every file has every column (IsolDist is named IsolationDist),\nand every unit links to one electrode. The stated waveform sampling rate is 98.4 kHz, within the\ntolerance of the paper's 100 kHz. The quality metrics are not finite for every unit: SNR is finite\nfor 1778 of 1864 units, 11 being infinite, and the isolation distance is NaN for 493 units, with 4\nvalues above 1e4 (up to 8.08e+32). The spike times of 13 units in 7 sessions are not in increasing\norder, and two units of session 58 hold every spike time twice.\"\"\",\n    \"electrodes-table\": \"\"\"**Result: not reproduced.** Location, filter (300-3000Hz) and original channel are filled for all 887\nelectrodes, and the coordinates match the hemisphere of the location wherever they are given. The\nimpedance is empty for all 887 electrodes, and the coordinates are missing for 99 electrodes in 8\nsessions.\"\"\",\n    \"isi-criterion\": \"\"\"**Result: partially reproduced.** 1858 of 1864 units (99.7%) have fewer than 3% of their interspike\nintervals below 3 ms, above the 95% the criterion sets for a partial result. Six units are at or\nabove 3%, two of them above 20%. With the spike times as stored (unsorted in 13 units), 1860 units\npass.\"\"\",\n    \"fig5a-mtl-locations\": \"\"\"**Result: reproduced.** All 1864 units are on electrodes located in the left or right amygdala or\nhippocampus.\"\"\",\n    \"fig5c-auc-all\": \"\"\"**Result: reproduced.** The AUC over 87 sessions is 0.753 with a standard deviation of 0.094, both\nwithin tolerance of 0.74 ± 0.10, and well above the chance level of 0.5 (p = 2.2e-41). With the label\ncoding the paper states, the mean AUC would be 0.247, below chance.\"\"\",\n    \"fig5c-auc-sites\": \"\"\"**Result: reproduced.** CS sessions have an AUC of 0.760 ± 0.085 (78 sessions) and TWH sessions\n0.688 ± 0.138 (9 sessions), all four values within tolerance. The sites do not differ significantly\n(Welch's t-test p = 0.161).\"\"\",\n    \"fig5b-roc-asymmetric\": \"\"\"**Result: reproduced.** The z-ROC slope is below 1 in 70 of 87 sessions, with a mean of 0.726\n(t-test against 1, p = 1.6e-09). The Wilcoxon test gives the same p, and the pooled ROC has a slope of\n0.816.\"\"\",\n    \"fig5d-confidence-accuracy\": \"\"\"**Result: reproduced.** Under the fixed split, accuracy is 80.1% for high and 60.9% for low confidence\nover 84 sessions (paired t-test p = 3.2e-16); under the dynamic split 78.3% and 60.4% (p = 1.2e-13).\nThree sessions without responses in one group are left out. The unpaired test the code runs also\ngives p below 0.001.\"\"\",\n    \"vs-cells-proportion\": \"\"\"**Result: reproduced.** With the Methods' window, 332 of 1864 units (17.8%) are visually selective,\nwithin tolerance of 343 (18.4%), against 4.5% with shuffled categories. The code's window gives\n343 of 1864 (18.4%), the paper's numbers. Counting duplicated spike trains once gives 18.0%.\"\"\",\n    \"ms-cells-proportion\": \"\"\"**Result: not reproduced.** The test the Methods describe, all 50 new and 50 old trials in a 1 s\nwindow, finds 110 of 1864 units (5.9%), outside the tolerance of 146 (7.8%) and close to the 5.3%\nfound with shuffled labels. The code's choices, correct trials only in a 1.5 s window, give 147\n(7.9%), and correct trials in the Methods' window 143 (7.7%), both matching the paper. The\ndifference comes from the trials used: the paper's number follows its code, not its Methods.\"\"\",\n    \"dual-cells-proportion\": \"\"\"**Result: not reproduced.** Under the Methods' tests 12 units (0.6%) are both VS and MS, outside the\ntolerance of 26 (1.4%) and below the 19.6 expected if the two were independent. The code's choices\ngive 26 (1.4%), the paper's numbers.\"\"\",\n    \"fig5f-site-proportions\": \"\"\"**Result: partially reproduced.** The sites do not differ by Fisher's exact test (VS p = 0.360, MS\np = 0.215, dual p = 1.000), but only 1 of the 6 site values is within tolerance under the Methods'\ntests (CS VS 17.6%). The code's choices give CS 18.4%, 7.8% and 1.4% and TWH 19.5%, 10.4% and 1.3%,\nthe values of Figure 5f to within 0.1 point. TWH has 77 units, so its percentages rest on 17, 7 and\n0 cells under the main tests.\"\"\",\n    \"twh-sessions\": \"\"\"**Result: reproduced.** Nine sessions (2001 to 2011) of 8 subjects come from Toronto Western Hospital,\nwith 77 units.\"\"\",\n    \"fig4-example-vs-neuron\": \"\"\"**Result: reproduced.** The single unit on channel 177 of session 132 sits in the right amygdala at\nelectrode row 4. It is category selective (ANOVA p = 1.2e-22 in the Methods' window, 7.9e-19 in the\ncode's) and fires most to animals (6.75 Hz against 0.25 to 0.85 Hz for the other categories).\"\"\",\n}\n\nSUMMARY = r\"\"\"\n## Summary\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning\nand the differences from the paper's method.\n\n| Claim | Outcome |\n|---|---|\n| counts-neurons-subjects | reproduced |\n| counts-sessions | reproduced |\n| table1-demographics | partially reproduced |\n| task-structure | partially reproduced |\n| new-old-label-coding | not reproduced |\n| ttl-codes | partially reproduced |\n| experiment-ids | partially reproduced |\n| session-dates | partially reproduced |\n| units-table | partially reproduced |\n| electrodes-table | not reproduced |\n| isi-criterion | partially reproduced |\n| fig5a-mtl-locations | reproduced |\n| fig5c-auc-all | reproduced |\n| fig5c-auc-sites | reproduced |\n| fig5b-roc-asymmetric | reproduced |\n| fig5d-confidence-accuracy | reproduced |\n| vs-cells-proportion | reproduced |\n| ms-cells-proportion | not reproduced |\n| dual-cells-proportion | not reproduced |\n| fig5f-site-proportions | partially reproduced |\n| twh-sessions | reproduced |\n| fig4-example-vs-neuron | reproduced |\n| previous-release-additions | blocked: the earlier release's session list is on Dryad, which refuses automated download |\n| fig3-example-vs-neuron | blocked: session 144 is not in the dandiset |\n\n**How the analysis differs from the paper's.**\n\n- Selectivity uses the Methods' window (200 to 1200 ms) and, for memory selectivity, all 50 new and\n  50 old trials. The paper's code uses 200 to 1700 ms and correct trials only; with these choices\n  the counts are 343 VS, 147 MS and 26 dual cells, the paper's numbers. The MS and dual outcomes\n  rest on the Methods' description.\n- The bootstrap is the code's algorithm with a fixed seed, so p-values near 0.05 can change with\n  the seed.\n- The paper names no test for the ROC asymmetry or for \"comparable\" proportions; a t-test of the\n  z-ROC slope against 1 and Fisher's exact test were chosen.\n- Accuracy by confidence uses a paired test, as the Results say; the code runs an unpaired one,\n  shown as a variant.\n- Units are counted per file, as in the paper; counts with the duplicated spike trains of sessions\n  44 and 55 dropped are shown.\n\n**What was found about the dandiset.**\n\n- The new/old label is coded 1 = old, the reverse of the paper's text and the files' own column\n  description. A user following the description would compute an AUC of 0.25.\n- Sessions 43 and 44, and 54 and 55, hold identical spike trains: the same neurons are deposited\n  under two sessions, so 55 of the 1864 units are repeats. Session 55 also repeats session 54's\n  learning block.\n- Seven sessions have 50 encoding trials and one has 97, where the paper describes 100; part of the\n  images later shown as old are missing from their encoding blocks.\n- Electrode impedance is empty for every electrode, coordinates are missing for 99 electrodes, the\n  isolation distance is NaN for 493 units, and SNR is not finite for 86.\n- Spike times are unsorted in 13 units, and two units of session 58 hold each spike time twice.\n- Age or sex differ from Online-only Table 1 for three subjects. One session date keeps its day, and\n  another is set to 2000-01-01.\n- Event codes outside Table 1 occur in nine files and experiment ids outside Table 2 in four.\n- The Methods give 89 sessions where the paper's table and the files have 87, and the unit count is\n  1864 where the paper gives 1863.\n- The paper's Figure 3 example neuron is from session 144, which is not in the dandiset.\n\"\"\"\n"
-}
-```
-
-```
-The file /tmp/claude/results.py has been updated successfully. (file state is current in your context — no need to Read it back)
+Sun Nov 15 13:01:53 UTC 2026
+Shell cwd was reset to
 ```
 
 **Agent**
 
-Now updating the data-check prose in the builder to match the outputs.
+Time is 13:02, well ahead of schedule. Adding a per-subject breakdown of VS/MS, the Figure 3 candidate note, and the summary, then rebuilding.
 
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && python3 - <<'EOF'
-p='/tmp/claude/build_nb.py'; t=open(p).read()
-old1=t[t.index("md('''\nThe archive's summary gives 59 subjects"):t.index("code('''\n# Units and coding")]
-new1="""md('''
-The archive's summary gives 59 subjects and 87 files, which the files confirm, and the two
-published versions hold the same assets. There are 1864 unit rows, one more than the paper's 1863.
-Eight files have fewer than 100 learning trials (seven with 50 and one with 97). The institution
-is written "Hunigton Memorial Hospital" in 28 files and "Hunington Memorial Hospital" in 6, and
-the device both "Neuralynx-cheetah" and "Neuralynx-Cheetah". There is no session 144, the session
-of the example neuron of Figure 3.
-''')
+cd $TMPDIR && python - <<'E'
+p='/tmp/claude-1001/cells.py'; s=open(p).read()
+def rep(a,b):
+    global s
+    assert a in s, a[:80]
+    s=s.replace(a,b)
+rep('''exp = cells.vs_m.mean() * cells.ms_m.mean() * n
+print(f"Expected if VS and MS were independent: {exp:.1f}")''','''exp = cells.vs_m.mean() * cells.ms_m.mean() * n
+print(f"Expected if VS and MS were independent: {exp:.1f}")
+by_subject = cells.assign(label=cells.identifier.map(info.set_index("identifier").label), dual=dual).groupby("label").agg(
+    sessions=("identifier", "nunique"), units=("unit", "size"), VS=("vs_m", "sum"), MS=("ms_m", "sum"), dual=("dual", "sum"))
+print("By subject (main tests); subjects with no VS unit:", int((by_subject.VS == 0).sum()), "; with no MS unit:", int((by_subject.MS == 0).sum()))
+print(by_subject.T.to_string())''')
+rep('''example(2009, 140, 3, "Right Hippocampus")
+""", tags=["claim:fig3-example-vs-neuron"])
+''','''example(2009, 140, 3, "Right Hippocampus")
+""", tags=["claim:fig3-example-vs-neuron"])
 
-"""
-t=t.replace(old1,new1)
-old2=t[t.index("md('''\nTimes are in seconds on one clock per file"):t.index("code('''\n# Recordings deposited more than once")]
-new2="""md('''
-Times are in seconds on one clock per file: trial start times equal the stimulus-onset events and
-stimuli last a median of 1.0 to 2.0 s per file (the Methods give no duration). In 81 of 87 files the
-trials table's response_value equals, trial by trial, the response event the paper's MATLAB code
-reads; in the six others 1 to 18 trials differ, where extra codes (3 or 23) or a shifted sequence
-follow the question. The analysis takes responses from response_value minus 30, which spans 1 to 6.
-In learning trials the table stores 0 and 1 for the events 20 and 21. The column description of
-new_old_labels_recog says 0 is old; this is tested under new-old-label-coding. In 15 files spikes
-start more than 60 s before the first trial (up to 2462 s), so the units cover more than the task.
+md(r"""
+Session 2009 (T103) holds three units; the third (unit 2, on channel 140 in the right hippocampus) is
+category selective (ANOVA p = 1.3e-09) with its highest rate for phones (9.1 Hz against 1.7 to 2.7 Hz).
+It fits the figure's channel, cell number (counted from 1), area and preferred category, but not its
+session id, so the claim stays blocked and the question goes to the paper's authors.
+""")
 ''')
+rep('''md(r"""
+## Summary
+""")
+''','''md(r"""
+## Summary
 
-"""
-t=t.replace(old2,new2)
-old3=t[t.index("md('''\nCategory selectivity with the true labels"):t.index("# --- claims")]
-new3="""md('''
-With the true labels, the fraction of category-selective units is 4.1% to 4.9% for windows that end
-at or before stimulus onset (start at -1.0 s or earlier), rises once the window reaches past 200 ms
-after onset, peaks at 17.8% for the window starting at 0.2 s and declines after. With the labels of
-the previous trial it stays between 3.9% and 6.0% at every offset. Spikes and trials therefore share
-a clock overall. Per session this is shown for 38 of 87 sessions; the 49 others, listed above with
-801 units, have too few units or too few selective ones to tell, and for them the shared clock is
-consistent with the data but assumed.
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
+the differences from the paper's method.
+
+| Claim | Outcome |
+|---|---|
+| counts-neurons-subjects | Reproduced: 1864 unit rows (1798 with duplicated spike trains once), 59 subjects |
+| counts-sessions | Reproduced: the 87 (subject, session) pairs equal Online-only Table 1 |
+| table1-demographics | Partially reproduced: age or sex differ for 3 of 59 subjects |
+| task-structure | Partially reproduced: 8 sessions have 50 or 97 encoding trials |
+| new-old-label-coding | Not reproduced: label 1 is old and 0 new, the reverse of the stated coding |
+| ttl-codes | Partially reproduced: 9 files hold unlisted codes |
+| experiment-ids | Partially reproduced: 4 files use id 82 |
+| session-dates | Partially reproduced: one date on the 13th, one year 2000 |
+| units-table | Partially reproduced: SNR or isolation distance missing for many units |
+| electrodes-table | Not reproduced: impedance empty for every electrode |
+| isi-criterion | Partially reproduced: 1858 of 1864 units below 3% |
+| fig5a-mtl-locations | Reproduced: every unit in amygdala or hippocampus |
+| fig5c-auc-all | Reproduced: AUC 0.753 ± 0.094 |
+| fig5c-auc-sites | Reproduced: CS 0.760 ± 0.085, TWH 0.688 ± 0.138 |
+| fig5b-roc-asymmetric | Reproduced: mean z-ROC slope 0.78, p = 4.3e-09 |
+| fig5d-confidence-accuracy | Reproduced: paired p = 3.2e-16 (fixed split) |
+| vs-cells-proportion | Reproduced: 332 (17.8%) |
+| ms-cells-proportion | Not reproduced: 118 (6.3%); the code's choices give 146 (7.8%) |
+| dual-cells-proportion | Not reproduced: 13 (0.7%); the code's choices give 25 (1.3%) |
+| fig5f-site-proportions | Partially reproduced: no site difference, 3 of 6 values within tolerance |
+| twh-sessions | Reproduced: 9 sessions |
+| previous-release-link | Partially reproduced: 64 of 65 earlier sessions found and agree |
+| previous-release-additions | Partially reproduced: 23 sessions and 17 subjects new, but 325 units |
+| fig4-example-vs-neuron | Reproduced: ANOVA p = 1.2e-22, animals highest |
+| fig3-example-vs-neuron | Blocked: session 144 is in neither the dandiset nor Online-only Table 1 |
+
+**How the analysis differs from the paper's.** The selection of VS and MS cells follows the Methods
+(a 1 s window from 200 ms, all 50 new and 50 old trials), as the claims file prescribes; the paper's
+code uses 0.2 to 1.7 s and, for MS cells, correct trials only, and those choices give the paper's 343,
+146 and 26 (25 here). The bootstrap is seeded. Sessions without a defined z-ROC slope (5) and without
+responses in a confidence group (3 or 5) are left out of those tests. Online-only Table 1 and Faraut et
+al. 2018 Table 1 are read from Europe PMC.
+
+**What was found about the dataset.** The new/old labels are coded 1 = old, the reverse of the paper's
+text and the column's description. Seven sessions hold only 50 of their encoding trials and one holds
+97, so 21 to 24 old images of those sessions were never shown in the file's encoding block. 66 spike
+trains are deposited in two files each (sessions 38/39, 43/44 and 54/55), and 54/55 share the encoding
+trials. 13 units store spike times out of order, two of them with every spike twice. Electrode
+impedance is empty, SNR or isolation distance missing or infinite for many units, ages or sex differ
+from the paper's table for three subjects, four files use experiment id 82, nine hold event codes
+Table 1 does not list, one start date is not on the 1st and one has the year 2000.
+""")
 ''')
-
-"""
-t=t.replace(old3,new3)
-open(p,'w').write(t)
-EOF
-python3 /tmp/claude/build_nb.py && cd  && grep -c "Result: TBD" entries/000004-chandravadia-2020/reproduce_chandravadia_2020.ipynb
+open(p,'w').write(s)
+E
+. env/bin/activate && python build.py cells.py entries/chandravadia-2020/reproduce_chandravadia_2020.ipynb && echo built
 ```
 
 ```
-wrote entries/000004-chandravadia-2020/reproduce_chandravadia_2020.ipynb 80 cells
-0
+built
+Shell cwd was reset to
 ```
 
 **Agent**
 
-Notebook built. Now entry.yaml and README, then lock and run.
+Now the entry files (entry.yaml, requirements.in, README), then lock and run.
 
 **Agent calls Bash**
 
 ```bash
-cat > entry.yaml <<'EOF'
+cd entries/chandravadia-2020 && cat > requirements.in <<'E'
+dandi
+h5py
+matplotlib
+numpy
+pandas
+remfile
+scipy
+E
+cat > entry.yaml <<'E'
 schema_version: 1
-name: 000004-chandravadia-2020
+name: chandravadia-2020
 type: reproduction
-title: Human single neurons during a recognition memory task (Chandravadia et al. 2020)
-description: Tests the data descriptor of Chandravadia et al. (2020) on dandiset 000004, which holds
-  87 sessions of 59 epilepsy patients with single units from the amygdala and hippocampus during a
-  new/old recognition task. It checks the files against the paper's description of the data records
-  and subjects, and repeats the behavioural results (AUC, ROC asymmetry, accuracy by confidence) and
-  the proportions of visually and memory selective cells of Figure 5.
+title: Human MTL single neurons during a new/old recognition task (Chandravadia et al. 2020)
+description: Tests the findings of Chandravadia et al. (2020) on dandiset 000004, which holds 87 sessions
+  of 59 epilepsy patients performing a new/old recognition memory task, with 1864 units from the
+  amygdala and hippocampus. It checks the file contents the data descriptor documents (subjects,
+  sessions, trials, event codes, units and electrodes tables, the new/old labels), the behavioural
+  ROC, AUC and confidence results, and the proportions of visually and memory selective cells.
 license: Apache-2.0
 notebooks:
 - path: reproduce_chandravadia_2020.ipynb
   title: Reproducing Chandravadia et al. (2020) from dandiset 000004
   runtime_minutes: 4
 helpers:
-- recogmem.py
+- nomem.py
 related:
 - id: dandi:000004/0.220126.1852
   relation: uses_data
 - id: doi:10.1038/s41597-020-0415-9
   relation: reproduces
-EOF
-cat > README.md <<'EOF'
-# Chandravadia et al. (2020) from dandiset 000004
-
-Tests the findings of [Chandravadia et al. (2020)](https://doi.org/10.1038/s41597-020-0415-9) on
-[DANDI:000004](https://dandiarchive.org/dandiset/000004/0.220126.1852), which holds 87 sessions of
-59 patients with 1864 single units from the amygdala and hippocampus during a new/old recognition
-memory task. The paper is a data descriptor, so most claims check the files against its description
-of the data; the others repeat the behavioural and single-unit results of Figure 5.
-
-| Claim | Outcome |
-|---|---|
-| 1863 neurons from 59 subjects | Reproduced |
-| The 87 sessions of Online-only Table 1 | Reproduced |
-| Age and sex of every subject as in Online-only Table 1 | Partially reproduced |
-| 100 encoding and 100 recognition trials, 5 categories per session | Partially reproduced |
-| new_old_labels_recog is 0 for old and 1 for new stimuli | Not reproduced |
-| Event codes of Table 1 | Partially reproduced |
-| Experiment ids of Table 2 | Partially reproduced |
-| Session dates set to the first of the month | Partially reproduced |
-| Units table as described | Partially reproduced |
-| Electrodes table as described (impedance, coordinates) | Not reproduced |
-| Fewer than 3% of interspike intervals below 3 ms | Partially reproduced |
-| All units in amygdala or hippocampus | Reproduced |
-| Behavioural AUC 0.74 ± 0.10 | Reproduced |
-| AUC by site, 0.74 ± 0.09 (CS) and 0.69 ± 0.13 (TWH) | Reproduced |
-| Asymmetric ROC | Reproduced |
-| Higher accuracy with high confidence | Reproduced |
-| 343 visually selective cells (18.4%) | Reproduced |
-| 146 memory selective cells (7.8%) | Not reproduced |
-| 26 cells both visually and memory selective (1.4%) | Not reproduced |
-| Comparable proportions at the two sites (Figure 5f) | Partially reproduced |
-| 9 sessions from Toronto Western Hospital | Reproduced |
-| Example neuron 132-177-4-RA of Figure 4 | Reproduced |
-| 23 sessions, 17 subjects and 288 neurons added to the earlier release | Blocked: other |
-| Example neuron 144-140-3-RH of Figure 3 | Blocked: data missing |
-
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
-and the differences from the paper's method.
-
-The memory selective and dual counts follow the Methods (all trials, a 1 s window). The paper's code
-selects on correct trials in a 1.5 s window, and with its choices the counts are 147 and 26, the
-paper's numbers. The new/old label in the files is coded 1 = old, the reverse of the paper's text
-and the files' column description. Two pairs of sessions hold identical spike trains. The attempt
-record, with the reasons and the differences from the paper's method, is
-[`attempts/000004-chandravadia-2020-01.yaml`](../../attempts/000004-chandravadia-2020-01.yaml).
-
-- `reproduce_chandravadia_2020.ipynb`: the analysis. It takes about four minutes, most of it
-  streaming the files.
-- `recogmem.py`: loading the files, Online-only Table 1, and the selectivity and behavioural
-  measures of the paper's code. Other notebooks on this dandiset can import it.
-EOF
-cd ../.. && python tools/entry.py lock entries/000004-chandravadia-2020
+E
+cat ../fouke-2025/entry.yaml | grep -n python; cd  && python tools/entry.py lock entries/chandravadia-2020 2>&1 | tail -3 && cat entries/chandravadia-2020/entry.yaml | tail -3
 ```
 
 ```
-wrote entries/000004-chandravadia-2020/requirements.lock.txt
+wrote chandravadia-2020/requirements.lock.txt (Python 3.13, with hashes)
+  relation: uses_data
+- id: doi:10.1038/s41597-020-0415-9
+  relation: reproduces
 ```
-
-**Agent**
-
-Now the attempt record. Checking the attempt schema first.
 
 **Agent calls Bash**
 
 ```bash
-python3 -c "
-import json; d=json.load(open('schemas/attempt.schema.json'))
-print(d.get('required')); print(json.dumps(d['properties'],indent=0)[:6000])"
+grep -n python entries/chandravadia-2020/entry.yaml; python tools/entry.py check entries/chandravadia-2020 2>&1 | tail -15
 ```
 
 ```
-['schema_version', 'id', 'dandiset', 'paper', 'date', 'provenance', 'outcomes']
+11:python: "3.13"
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+time python tools/entry.py all entries/chandravadia-2020 2>&1 | tail -15
+```
+
+```
+Installed kernelspec registry-chandravadia-2020 in executed/chandravadia-2020/.venv/share/jupyter/kernels/registry-chandravadia-2020
+0 error(s)
+pass  reproduce_chandravadia_2020.ipynb  (162 s)
+
+real	2m51.892s
+user	1m3.869s
+sys	0m16.219s
+```
+
+**Agent calls Bash**
+
+```bash
+ls executed/chandravadia-2020/ && python - <<'E'
+import json
+nb=json.load(open('executed/chandravadia-2020/reproduce_chandravadia_2020.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    tags=c['metadata'].get('tags',[])
+    if not any(t in tags for t in ['claim:isi-criterion','claim:ms-cells-proportion','claim:dual-cells-proportion','claim:units-table','claim:fig5f-site-proportions','claim:vs-cells-proportion','claim:fig3-example-vs-neuron']) and i not in (1,12,14): continue
+    out=''
+    for o in c.get('outputs',[]):
+        if 'text' in o: out+=''.join(o['text'])
+        elif o.get('output_type')=='error': out+='ERROR '+o['ename']+o['evalue']
+    print(f'==== cell {i} {tags}\n{out[:3000]}')
+E
+```
+
+```
+reproduce_chandravadia_2020.ipynb
+result.json
+==== cell 1 []
+loaded 87 files from dandiset 000004 version 0.220126.1852 in 120 s
+Online-only Table 1: 59 subject rows; totals row: ['Total Subjects: 59', 'Total Sessions: 87', 'Total Female: 25', 'Total Male: 34']
+
+==== cell 41 ['claim:units-table']
+Columns over all files: {'origClusterID': 87, 'waveform_mean_encoding': 87, 'waveform_mean_recognition': 87, 'IsolationDist': 87, 'SNR': 87, 'waveform_mean_sampling_rate': 87, 'spike_times': 87, 'electrodes': 87}
+Missing by name in every file: ['IsolDist']
+IsolationDist column description: 'IsolDist' (read from the files' VectorData description)
+Electrodes per unit: {1: 1864}
+Waveform sampling rate: [98400.0] Hz; within 100000 +- 10000: True
+Waveforms finite for every unit: True
+SNR: not finite for 86 of 1864 units (NaN 75, infinite 11), in 33 files; above 1e6: 11
+IsolationDist: not finite for 493 of 1864 units (NaN 493, infinite 0), in 82 files; above 1e6: 2
+origClusterID: not finite for 0 of 1864 units (NaN 0, infinite 0), in 0 files; above 1e6: 0
+
+==== cell 47 ['claim:isi-criterion']
+Units stored out of time order: 13 ; units holding repeated spike times: [{'identifier': 'H27_58', 'unit': 35, 'spikes': 3268, 'distinct': 1634}, {'identifier': 'H27_58', 'unit': 37, 'spikes': 824, 'distinct': 412}]
+sorted: below 3% for 1858 of 1864 units (99.7%); median 0.19%, max 50.06%; units with fewer than 2 spikes: 0
+[... 76 more lines not kept]
+```
+
+**Agent**
+
+Clean run passes (162 s) with the same numbers. Writing the entry README and the attempt record.
+
+**Agent calls Write**
+
+```json
 {
-"schema_version": {
-"const": 1
-},
-"id": {
-"type": "string",
-"pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
-},
-"dandiset": {
-"type": "string",
-"pattern": "^[0-9]{6}$"
-},
-"dandiset_version": {
-"description": "The version the attempt read, e.g. 0.220127.0436 or draft.",
-"type": "string"
-},
-"paper": {
-"type": "string",
-"pattern": "^doi:10\\.[0-9]{4,9}/.+$"
-[... 319 more lines not kept]
+ "file_path": "entries/chandravadia-2020/README.md",
+ "content": "# Chandravadia et al. (2020) from dandiset 000004\n\nTests the findings of [Chandravadia et al. (2020)](https://doi.org/10.1038/s41597-020-0415-9), a data\ndescriptor of human single-neuron recordings during a new/old recognition memory task, on\n[DANDI:000004](https://dandiarchive.org/dandiset/000004/0.220126.1852) (version 0.220126.1852). The\ndandiset holds 87 sessions of 59 patients with 1864 units in the amygdala and hippocampus.\n\n| Claim | Outcome |\n|---|---|\n| 1863 neurons from 59 subjects | Reproduced |\n| 87 sessions, as in Online-only Table 1 | Reproduced |\n| Age and sex of each subject as in Online-only Table 1 | Partially reproduced |\n| 100 encoding and 100 recognition trials per session, 5 categories | Partially reproduced |\n| new_old_labels_recog is 0 for old and 1 for new stimuli | Not reproduced |\n| TTL event codes of Table 1 | Partially reproduced |\n| Experiment ids of Table 2 | Partially reproduced |\n| Session dates set to the first of the month | Partially reproduced |\n| Units table columns and quality metrics | Partially reproduced |\n| Electrodes table with location, coordinates, impedance, filter, channel | Not reproduced |\n| Fewer than 3% of interspike intervals below 3 ms | Partially reproduced |\n| All neurons in amygdala or hippocampus | Reproduced |\n| Behavioural AUC 0.74 ± 0.10 | Reproduced |\n| AUC 0.74 ± 0.09 (CS) and 0.69 ± 0.13 (TWH) | Reproduced |\n| Asymmetric ROC | Reproduced |\n| Higher accuracy with high confidence | Reproduced |\n| 343 VS cells (18.4%) | Reproduced |\n| 146 MS cells (7.8%) | Not reproduced |\n| 26 dual VS and MS cells (1.4%) | Not reproduced |\n| Comparable proportions at the two sites | Partially reproduced |\n| 9 TWH sessions | Reproduced |\n| Sessions of the 2018 release found in the dandiset (link check) | Partially reproduced |\n| 23 sessions, 17 subjects and 288 neurons added since 2018 | Partially reproduced |\n| Example neuron of Figure 4 selective for animals | Reproduced |\n| Example neuron of Figure 3 selective for phones | Blocked: session 144 is not in the dandiset |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nThe MS and dual-cell counts follow the Methods (a 1 s window from 200 ms, all trials); the paper's code\nuses 0.2 to 1.7 s and correct trials only, and gives the paper's numbers. The attempt record, with the\nreasons and the differences from the paper's method, is\n[`attempts/chandravadia-2020-02.yaml`](../../attempts/chandravadia-2020-02.yaml).\n\n- `reproduce_chandravadia_2020.ipynb`: the analysis. It takes about three minutes, most of it streaming\n  the files.\n- `nomem.py`: loading the files (the stimulus images reduced to one hash per frame), the paper's\n  tables from Europe PMC, and the behavioural and single-unit measures of the paper's code. Other\n  notebooks on this dandiset can import it.\n"
+}
+```
+
+```
+File created successfully at: entries/chandravadia-2020/README.md (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "attempts/000004-chandravadia-2020-01.yaml",
- "content": "schema_version: 1\nid: 000004-chandravadia-2020-01\ndandiset: \"000004\"\ndandiset_version: 0.220126.1852\npaper: doi:10.1038/s41597-020-0415-9\ndate: 2026-10-15\nentry: 000004-chandravadia-2020\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-6\ninputs:\n- what: Online-only Table 1 of the paper (subject, sessions, variants, age, sex, diagnosis), copied\n    into the helper module as text and used only to compare with the files' subject metadata.\n  source: doi:10.1038/s41597-020-0415-9\n- what: The per-site percentages of Figure 5f as written into plotFigure5.ipynb, used as expected\n    values of fig5f-site-proportions; and the analysis choices of the paper's code (windows, trial\n    selection, bootstrap, ROC measures, confidence split), followed where the Methods leave them open.\n  source: https://github.com/rutishauserlab/recogmem-release-NWB at commit\n    1d95162d2672e71dd234a31e4b8d70017a289ee3\noutcomes:\n- claim: counts-neurons-subjects\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:counts-neurons-subjects\n  measured:\n  - 1864\n  - 59\n  notes: 1864 unit rows over 87 files (paper 1863, one more) and 59 subjects. With the 55 units of\n    sessions 44 and 55 counted once, as their spike trains repeat those of sessions 43 and 54, 1809.\n    Both readings are within tolerance. CS sessions hold 1787 units and TWH sessions 77.\n  deviations:\n  - The exact count differs from the paper's by one unit; the tolerance is the protocol's 10%.\n- claim: counts-sessions\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:counts-sessions\n  measured: 87\n  notes: The 87 (subject, session) pairs of the files equal those of Online-only Table 1, none\n    missing and none extra. The Methods' 89 sessions disagree with the table and the files. Every\n    task variant of the table corresponds to one stimulus set in the files.\n- claim: table1-demographics\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:table1-demographics\n  measured:\n  - 26\n  - 33\n  notes: Age and sex match for 56 of 59 subjects. C24 is 57 in the files and 47 in the table, H33 is\n    30 and 29, and H48 is female aged 32 in the files and male aged 54 in the table. The files have\n    26 female and 33 male subjects (table 25 and 34), within tolerance. Each subject has one age and\n    one sex across its files. The files code the diagnosis more coarsely; for C61 it differs in\n    substance (Left Lateral Frontal in the files, Left Mesial Temporal in the table). The files agree\n    with the paper's session list defineNOsessions_release.ini, so the table is the outlier.\n- claim: task-structure\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:task-structure\n  notes: All 87 sessions have 100 recognition trials with 50 per label, 5 categories (ids and names)\n    and one stored image per trial timestamped at its onset. 79 sessions have 100 encoding trials\n    with 100 distinct images; sessions 18, 20, 21, 23, 26, 27 and 44 have 50 and session 123 has 97.\n    The images are stored as one ImageSeries per file, not as stimuli_learn_x and stimuli_recog_x.\n- claim: new-old-label-coding\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:new-old-label-coding\n  notes: The labels are coded the other way. In 79 of 87 sessions every label-1 image and no label-0\n    image was shown during encoding; in no session do label-0 images match the encoding block.\n    Label 1 draws \"old\" responses (4 to 6) more often than label 0 in 86 of 87 sessions (medians 0.70\n    and 0.24, sign test p = 1.1e-24). In the 8 sessions with short encoding blocks, 52% to 98% of the\n    label-1 images are among the stored encoding trials and no label-0 image is. The paper's code\n    reads 1 as old, and every analysis here does the same; with the stated coding the mean AUC is\n    0.247.\n- claim: ttl-codes\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:ttl-codes\n  notes: Events and experiment_ids have the same length and timestamps in all 87 files, and 17019 of\n    17047 trials show the codes 1, 2, 3, a response and 6 in order. 78 files meet every condition.\n    Codes not in Table 1 occur in sessions 43 (98, 99), 58 (23), 93 (99), 123 (0), 127 (0), 128 (4),\n    2001 (22, 23), 2002 (23) and 2003 (23). Seven files have no start code 55 and one has a third\n    end code 66. In 6 files 1 to 18 trials have a response event that differs from the trials\n    table's response_value; the analysis uses response_value.\n  deviations:\n  - \"Most files\" for a partial result was not given a number in the criterion; 78 of 87 was taken as\n    most.\n- claim: experiment-ids\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:experiment-ids\n  notes: 83 of 87 files use the ids of Table 2. Session 55 uses 80 and 82, session 77 uses 81 and 82,\n    and sessions 100 and 105 use 82 and 83 (learning and recognition, identified by their\n    responses). The files' data_collection field states the same ids.\n- claim: session-dates\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:session-dates\n  notes: 86 of 87 files start on the first of a month; session 48 starts on 2010-03-13. Session 68 is\n    dated 2000-01-01, outside the 2006 to 2019 span of the others.\n- claim: units-table\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:units-table\n  measured: 98400\n  notes: All 87 files hold every column (IsolDist is named IsolationDist) and link each unit to one\n    electrode. The stated waveform sampling rate is 98400 Hz, within tolerance of 100 kHz, with 256\n    samples. SNR is finite for 1778 of 1864 units (11 infinite, 75 NaN); the isolation distance is\n    NaN for 493 units and above 1e4 for 4 (up to 8.08e+32). Spike times are not in increasing order\n    for 13 units in sessions 21, 58, 68, 70, 73, 77 and 128, and units 35 and 37 of session 58 hold\n    every spike time twice.\n- claim: electrodes-table\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:electrodes-table\n  notes: Location, filtering (300-3000Hz for all) and origChannel are filled for all 887 electrodes.\n    The impedance column is empty for all 887. Coordinates are missing for 99 electrodes in sessions\n    7, 20, 21, 23, 24, 50, 52 and 2004; where given, the sign of x matches the hemisphere of the\n    location for all 788.\n- claim: isi-criterion\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:isi-criterion\n  notes: 1858 of 1864 units (99.7%) have fewer than 3% of interspike intervals below 3 ms (median\n    0.19%). Six units are at or above 3%, four at or above 5% and two above 20% (maximum 50.1%); the\n    two above 20% are the session 58 units whose spike times repeat. With the spike times as stored,\n    1860 units pass. All 77 TWH units pass.\n- claim: fig5a-mtl-locations\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5a-mtl-locations\n  notes: All 1864 units are on electrodes in the right amygdala (594), left amygdala (498), right\n    hippocampus (407) or left hippocampus (365).\n- claim: fig5c-auc-all\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5c-auc-all\n  measured:\n  - 0.753\n  - 0.094\n  notes: Mean AUC 0.753, SD 0.094 over 87 sessions (range 0.445 to 0.919; 6 sessions below 0.6, one at\n    or below 0.5). Against chance (0.5), t = 25.1, p = 2.2e-41. With sessions 44 and 55 dropped, 0.754\n    and 0.095.\n  deviations:\n  - The tolerance of the mean is the stated spread (0.10), as the protocol prescribes; the spread\n    itself was held to 10%.\n- claim: fig5c-auc-sites\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5c-auc-sites\n  measured:\n  - 0.760\n  - 0.688\n  - 0.085\n  - 0.138\n  notes: CS 0.760 ± 0.085 over 78 sessions and TWH 0.688 ± 0.138 over 9, all within tolerance. Welch's\n    t-test between sites p = 0.161 (difference 0.072).\n- claim: fig5b-roc-asymmetric\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5b-roc-asymmetric\n  notes: z-ROC slope mean 0.726, median 0.775, SD 0.379 over 87 sessions; below 1 in 70. One-sample\n    t-test against 1, t = -6.75, p = 1.6e-09; Wilcoxon p = 1.6e-09. The pooled ROC has slope 0.816.\n  deviations:\n  - The paper names no measure or test for asymmetry; the z-ROC slope of the paper's code and a\n    t-test against 1 were fixed in the criterion.\n- claim: fig5d-confidence-accuracy\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5d-confidence-accuracy\n  notes: Fixed split, high 80.1% against low 60.9% over 84 sessions, high above low in 73, paired\n    t-test p = 3.2e-16. Dynamic split, 78.3% against 60.4%, paired p = 1.2e-13. Sessions 93, 99 and\n    2008 have no responses in one group and are left out. The unpaired test of the code gives p =\n    3.4e-17 and 1.3e-15.\n  deviations:\n  - Three sessions without responses in one confidence group are left out; the paper says all\n    sessions.\n- claim: vs-cells-proportion\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:vs-cells-proportion\n  measured:\n  - 332\n  - 17.8\n  notes: Methods' window (200 to 1200 ms), 332 of 1864 units (17.8%), within tolerance. The code's\n    window (200 to 1700 ms) gives 343 of 1864 (18.4%), the paper's count. Counting duplicated spike\n    trains once, 326 of 1809 (18.0%). Shuffled categories give 4.5%. At p < 0.01, 8.6%; at p < 0.1,\n    25.6%. Among sessions with at least 20 units, 0.0% to 35.7%.\n  deviations:\n  - The main result uses the Methods' 1 s window; the paper's code uses 1.5 s, shown as a variant.\n- claim: ms-cells-proportion\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:ms-cells-proportion\n  measured:\n  - 110\n  - 5.9\n  notes: The Methods' test (all 50 new and 50 old trials, 200 to 1200 ms) selects 110 of 1864 units\n    (5.9%), against 5.3% with shuffled labels and the paper's 146 (7.8%). Correct trials only in the\n    Methods' window give 143 (7.7%), and the code's choices (correct trials only, 200 to 1700 ms)\n    147 (7.9%), both within tolerance. All trials in the code's window give 108 (5.8%). The paper's\n    number therefore follows its code's restriction to correct trials, which the Methods do not\n    mention. The outcome is judged on the Methods' procedure, as the protocol requires.\n  deviations:\n  - The paper's code restricts the test to correct trials and uses a 1.5 s window; the Methods\n    describe all 50 and 50 trials and a 1 s window. The Methods give the main result.\n  - The bootstrap uses the code's algorithm with a fixed seed.\n- claim: dual-cells-proportion\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:dual-cells-proportion\n  measured:\n  - 12\n  - 0.6\n  notes: Under the Methods' tests 12 of 1864 units (0.6%) are both VS and MS, against 19.6 expected if\n    the two were independent and the paper's 26 (1.4%). The code's choices give 26 (1.4%). Counting\n    duplicated spike trains once, 11 of 1809.\n  deviations:\n  - Depends on ms-cells-proportion, whose main test follows the Methods and not the code.\n- claim: fig5f-site-proportions\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5f-site-proportions\n  measured:\n  - 17.6\n  - 5.8\n  - 0.7\n  - 22.1\n  - 9.1\n  - 0.0\n  notes: Fisher's exact test finds no difference between sites (VS p = 0.360, MS p = 0.215, dual p =\n    1.000). Under the Methods' tests CS has 17.6%, 5.8% and 0.7% and TWH 22.1%, 9.1% and 0.0%; only CS\n    VS is within tolerance. The code's choices give CS 18.4%, 7.8% and 1.4% (328, 139 and 25 of 1787)\n    and TWH 19.5%, 10.4% and 1.3% (15, 8 and 1 of 77), matching Figure 5f to within 0.1 point.\n  deviations:\n  - The paper names no test for \"comparable\"; Fisher's exact test was fixed in the criterion.\n  - The expected values come from plotFigure5.ipynb, which writes them into the plot as constants.\n- claim: twh-sessions\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:twh-sessions\n  measured: 9\n  notes: Sessions 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009 and 2011, from 8 subjects, with 77\n    units; all name Toronto Western Hospital as institution.\n- claim: fig4-example-vs-neuron\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig4-example-vs-neuron\n  notes: Session 132 has one unit on channel 177, at electrode row 4 in the right amygdala, which\n    matches the label 132-177-4-RA (the code's cell number is the electrode row). ANOVA across\n    categories p = 1.2e-22 (Methods' window) and 7.9e-19 (code's window); mean rate 6.75 Hz for\n    animals against 0.25 to 0.85 Hz for the other four categories.\n- claim: previous-release-additions\n  outcome: blocked\n  blocked_by: other\n  notes: Testing needs to know which sessions were in the earlier release (Faraut et al. 2018, Dryad\n    doi:10.5061/dryad.46st5). The dandiset does not mark them, and the Dryad archive, which is public,\n    refuses automated download (HTTP 403 on the file stream, and its API asks for a bearer token), so\n    a notebook cannot fetch its session list. The 9 TWH sessions of the 23 new ones are tested under\n    twh-sessions.\n- claim: fig3-example-vs-neuron\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The neuron's session id, 144, is not among the dandiset's 87 sessions, nor in Online-only\n    Table 1 or the paper's session list. Whether the label is a typo or the session was left out\n    cannot be told from the paper or the archive.\nfindings:\n- kind: metadata_error\n  statement: The new_old_labels_recog column is described in every file, and in the paper, as 0 for\n    old and 1 for new stimuli. The data have 1 for old; label-1 images are those shown during\n    encoding and draw most \"old\" responses. The paper's code reads it correctly, but a user\n    following the description gets an AUC of 0.25.\n- kind: other\n  statement: Sessions 43 and 44 (subject H23) and sessions 54 and 55 (subject H42) hold identical\n    spike trains for every unit, 23 and 32 units. In each pair the units are the same neurons, so 55\n    of the 1864 units are repeats and the paper's neuron count includes them twice. Session 55 also\n    repeats session 54's learning block trial for trial and differs only in its recognition block.\n- kind: data_missing\n  statement: Seven sessions (18, 20, 21, 23, 26, 27, 44) have 50 encoding trials and session 123 has\n    97, where the paper describes 100. Only 52% to 98% of the images later shown as old are in the\n    stored encoding blocks of these sessions.\n- kind: metadata_insufficient\n  statement: Electrode impedance is empty for all 887 electrodes, though the paper lists it in the\n    electrodes table. MNI coordinates are missing for 99 electrodes in 8 sessions.\n- kind: metadata_insufficient\n  statement: The isolation distance is NaN for 493 of 1864 units and implausibly large for 4 (up to\n    8.08e+32), and SNR is NaN for 75 units and infinite for 11.\n- kind: format_error\n  statement: The spike times of 13 units in 7 sessions (21, 58, 68, 70, 73, 77, 128) are not in\n    increasing order, and units 35 and 37 of session 58 hold every spike time twice, which doubles\n    their firing rates and puts half their interspike intervals at zero.\n- kind: metadata_error\n  statement: Age or sex differ from the paper's Online-only Table 1 for three subjects (C24 57 against\n    47, H33 30 against 29, H48 female 32 against male 54). The files follow the code's session list,\n    so the table or the files are wrong for these subjects.\n- kind: metadata_error\n  statement: Session 48 keeps the day of the experiment (2010-03-13) in session_start_time, where the\n    paper says every day was set to the first of the month to protect patient information. Session\n    68 is dated 2000-01-01.\n- kind: metadata_error\n  statement: Experiment ids outside Table 2 are used in four files (sessions 55, 77, 100, 105), and\n    event codes outside Table 1 (0, 4, 22, 23, 98, 99) occur in nine files. In six files 1 to 18\n    trials have a response event that differs from the trials table's response_value.\n- kind: paper_inconsistency\n  statement: The Methods state 89 sessions; Online-only Table 1 and the dandiset have 87. The paper\n    gives 1863 neurons; the dandiset has 1864 unit rows.\n- kind: code_mismatch\n  statement: The Methods select memory selective cells by comparing all 50 novel and 50 familiar\n    trials in a 1 s window. The paper's code uses correct trials only and a 200 to 1700 ms window for\n    both selections. The paper's counts (343 VS, 146 MS, 26 dual) and Figure 5f follow the code; the\n    Methods' procedure gives 332, 110 and 12.\n- kind: code_mismatch\n  statement: plotFigure5.ipynb, the notebook the code provides to reproduce Figure 5, writes the\n    per-site percentages of Figure 5f into the plot as constants and does not compute them.\n- kind: data_missing\n  statement: The example neuron of Figure 3 is labelled as from session 144, which is not in the\n    dandiset or in the paper's session list.\n- kind: other\n  statement: The institution is written \"Hunigton Memorial Hospital\" in 28 files and \"Hunington\n    Memorial Hospital\" in 6, and the device as \"Neuralynx-cheetah\" and \"Neuralynx-Cheetah\".\n"
+ "file_path": "attempts/chandravadia-2020-02.yaml",
+ "content": "schema_version: 3\nid: chandravadia-2020-02\ndatasets:\n- archive: dandi\n  id: \"000004\"\n  version: 0.220126.1852\n  doi: 10.48324/dandi.000004/0.220126.1852\n  relation: primary\npaper: doi:10.1038/s41597-020-0415-9\ndate: 2026-11-15\nentry: chandravadia-2020\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code\n    model: claude-opus-5-5\n    protocol: pilot-15\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/catalystneuro/encore/actions/runs/43715082428\ninputs:\n- what: Table 1 of Faraut et al. 2018 (the sessions, subjects, variants, ages and sexes of the earlier\n    release of this task's data), read at run time from the full text in Europe PMC (PMC5810422), used\n    by previous-release-link and previous-release-additions.\n  source: doi:10.1038/sdata.2018.10\n- what: Online-only Table 1 of the paper itself (subjects, sessions, variants, ages, sexes and\n    diagnoses), read at run time from the full text in Europe PMC (PMC7055261) as the reference the\n    claims compare the files with.\n  source: doi:10.1038/s41597-020-0415-9\n- what: The paper's analysis code, read for the method details the claims file names (adjustHF,\n    calcZROCSlope, calcROC_AUC, bootstrapMeanEqualTest, the fixed and dynamic confidence splits, the\n    windows of single_neuron.py and NWB_singleCellAnalysis_release.m); nothing is imported from it.\n  source: https://github.com/rutishauserlab/recogmem-release-NWB at commit 1d95162d2672e71dd234a31e4b8d70017a289ee3\noutcomes:\n- claim: counts-neurons-subjects\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:counts-neurons-subjects\n  measured:\n  - 1864\n  - 59\n  notes: The units tables hold 1864 rows over 87 files (paper 1863, difference +1), from 59 distinct\n    subject_id values. Reading (b), with the 66 spike trains deposited in two files each counted once,\n    gives 1798 units, also within tolerance. 1787 unit rows are from CS sessions and 77 from TWH.\n- claim: counts-sessions\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:counts-sessions\n  measured: 87\n  notes: The identifiers of the 87 files give 87 distinct (subject, session id) pairs, the same set as\n    the 87 of Online-only Table 1 (Cedars-Sinai labels are written CS24 in the identifiers and C24 in\n    the table). The Methods' 89 differs from the file count by 2.\n- claim: table1-demographics\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:table1-demographics\n  measured:\n  - 26\n  - 33\n  notes: Age and sex match Online-only Table 1 for 56 of 59 subjects. C24 is 57 in the files and 47 in\n    the table, H33 is 30 and 29, and H48 is female and 32 in the files, male and 54 in the table. So the\n    files hold 26 female and 33 male subjects, against the table's 25 and 34 (both within tolerance).\n    Faraut et al. 2018 Table 1 gives the same ages and sexes as Online-only Table 1 for these three. The\n    files' diagnosis text equals the table's for 40 of 59 subjects; the others use coarser terms.\n- claim: task-structure\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:task-structure\n  notes: All 87 sessions have 100 recognition trials with 50 of each label and 5 categories. 79 have\n    100 encoding trials with 100 distinct image files (and 100 distinct stored images); 7 Huntington\n    sessions (18, 20, 21, 23, 26, 27, 44) have 50 encoding trials and session 123 has 97. Each file\n    stores one image per trial.\n- claim: new-old-label-coding\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:new-old-label-coding\n  notes: Under the stated coding test 1 holds in 0 of 87 sessions and test 2 in 1 of 87. No label-0\n    recognition image (compared by stored pixels and by file name, which agree) is in the session's\n    encoding block, while label-1 images are, all of them in 79 sessions, 49 of 50 in session 123 and\n    26 to 29 of 50 in the seven sessions with 50 encoding trials. Label-1 trials draw \"old\" responses\n    in 69% of trials on average against 27% for label 0, more in 86 of 87 sessions; the exception is\n    session 2005 (T98, AUC 0.445). Both tests hold with the labels reversed in 86 of 87 sessions, so\n    the labels are 1 for old and 0 for new, as the paper's code reads them. With the stated coding the\n    mean behavioural AUC would be 0.247.\n- claim: ttl-codes\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:ttl-codes\n  notes: In all 87 files events and experiment_ids have the same length and the same timestamps. 78\n    files hold only the codes of Table 1; 9 also hold 0, 4, 22, 23, 98 or 99. Over all files 17019 of\n    17047 trials follow 1, 2, 3, response, 6; the 28 that do not are in 7 of the 9 files with extra\n    codes. All parts hold in 78 of 87 files. Seven files have no start marker (55); every file has 66.\n- claim: experiment-ids\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:experiment-ids\n  notes: In 83 of 87 files the learning id is in {80, 83, 88} and the recognition id in {81, 84, 89},\n    as one of Table 2's pairs. Four files use 82 (CS33_77 81/82, CS39_100 and H51_105 82/83, H42_55\n    80/82); their data_collection field states the same ids. The learning block is the id whose events\n    hold the encoding answers 20 and 21.\n- claim: session-dates\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:session-dates\n  notes: 86 of 87 session_start_time values fall on the first of a month; H28_48 is 2010-03-13. H44_68\n    is dated 2000-01-01, six years before any other session (the Huntington sessions run from 2006 to\n    2016 and its neighbours H43 and H47 are 2013 and 2014), so the year looks like a placeholder.\n- claim: units-table\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:units-table\n  measured: 98400\n  notes: Every file holds spike_times, the two waveform columns, origClusterID, SNR, electrodes and the\n    isolation distance, the last under the name IsolationDist (its description is \"IsolDist\"). All 1864\n    units link to exactly one electrode, the waveforms (256 samples, finite for every unit) are stated\n    as sampled at 98.4 kHz, within tolerance of 100 kHz. SNR is not finite for 86 units (75 NaN, 11\n    infinite, all infinite ones in H28_48) and isolation distance is NaN for 493 units in 82 files, with\n    two values above 1e27.\n  deviations:\n  - The column the paper calls IsolDist is named IsolationDist in the files and was counted as present.\n- claim: electrodes-table\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:electrodes-table\n  notes: Every file has the columns location, x, y, z, imp, filtering, group and origChannel. Location,\n    filtering (\"300-3000Hz\") and origChannel have a value for all 887 electrodes and the MNI coordinates\n    for 788 (missing in 8 files), but the impedance is NaN for all 887 electrodes, which the criterion\n    calls not reproduced.\n- claim: isi-criterion\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:isi-criterion\n  measured: 99.7\n  notes: With spike times sorted, 1858 of 1864 units (99.7%) have fewer than 3% of interspike intervals\n    below 3 ms (median 0.19%). Of the six others, two (H27_58 units 35 and 37) hold every spike time\n    twice, stored as two copies one after the other, which gives 50% short intervals once sorted; with\n    each spike time once they are at 0%, and four units remain at 3.0% to 9.0% (CS54_126 units 6 and 7,\n    CS26_66 unit 2, CS54_124 unit 2). With the spike times as stored, 1860 units are below 3%. 13 units\n    store spike times out of time order.\n  deviations:\n  - The value given as measured is the percentage of units below 3%, the quantity the criterion\n    thresholds.\n- claim: fig5a-mtl-locations\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5a-mtl-locations\n  notes: The electrode of every unit is in the right amygdala (594 units), left amygdala (498), right\n    hippocampus (407) or left hippocampus (365).\n- claim: fig5c-auc-all\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5c-auc-all\n  measured:\n  - 0.753\n  - 0.094\n  notes: Mean AUC over the 87 sessions 0.7527, standard deviation 0.0938 (range 0.445 to 0.919; against\n    0.5, p = 2.2e-41). The ROC uses label 1 as old (claims file); the recognition data of no session are\n    duplicated.\n- claim: fig5c-auc-sites\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5c-auc-sites\n  measured:\n  - 0.760\n  - 0.688\n  - 0.085\n  - 0.138\n  notes: CS sessions (78) mean 0.7602, SD 0.0855; TWH sessions (9) mean 0.6883, SD 0.1378; all four\n    within tolerance. Welch's t-test between sites t = 1.53, p = 0.161.\n- claim: fig5b-roc-asymmetric\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5b-roc-asymmetric\n  measured: 0.782\n  notes: Mean z-ROC slope over 82 sessions 0.782 (SD 0.300, median 0.791), below 1 with t = -6.58,\n    p = 4.3e-09; 65 of 82 slopes are below 1. Wilcoxon signed-rank against 1 p = 2e-08; the slope of the\n    pooled ROC is 0.816.\n  deviations:\n  - Five sessions (CS24_60, CS39_93, H48_99, CS51_119, T100_2008) have fewer than two distinct false\n    alarm rates among the five interior points, so no regression slope, and are left out; the paper's\n    code would regress on a constant predictor there.\n- claim: fig5d-confidence-accuracy\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5d-confidence-accuracy\n  notes: (a) Fixed split, 84 sessions (3 without responses in one group left out), high 80.1% and low\n    60.9% correct, paired t = 10.16, p = 3.2e-16, high above low in 73 sessions. (b) Dynamic split of\n    the Python code, 82 sessions (5 left out), 78.2% and 60.8%, p = 1.3e-11. The unpaired test and the\n    inclusion rule of plotFigure5.ipynb (73 sessions) give the same. In the 8 TWH sessions alone the\n    difference has the same sign without significance (p = 0.14 and 0.26).\n  deviations:\n  - The dynamic split is the Python helper.dynamic_split as written, which in its split mode 1 counts\n    low-confidence hits as response 4 only (the MATLAB NO_dynamic_lowHighSplit.m counts 4 and 5).\n- claim: vs-cells-proportion\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:vs-cells-proportion\n  measured:\n  - 332\n  - 17.8\n  notes: In the Methods' window (0.2 to 1.2 s), 332 of 1864 units (17.8%) are VS; 6 units with all rates\n    equal have no ANOVA p and are counted as not selected. Variants, the code's window 343 (18.4%), the\n    paper's numbers; duplicated spike trains once 321 of 1798 (17.9%); categories shuffled within\n    session 76 (4.1%). By session the VS share has median 15.4%; 5 of 59 subjects have no VS unit.\n- claim: ms-cells-proportion\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:ms-cells-proportion\n  measured:\n  - 118\n  - 6.3\n  notes: With all 50 new and 50 old trials in the Methods' window, 118 of 1864 units (6.3%) are MS, below\n    146 ± 14.6 (7.8 ± 0.78%); five other seeds give 108 to 115, and labels shuffled within session give\n    92 (4.9%). The code's choices (correct trials only, 0.2 to 1.7 s, as in single_neuron.py ms_test and\n    NWB_singleCellAnalysis_release.m) give 146 (7.8%), the paper's numbers; correct trials alone in the\n    Methods' window give 139 (7.5%), also within tolerance. Duplicated spike trains once 115 of 1798. The\n    count the paper reports thus matches the code's procedure and not the one its Methods describe.\n- claim: dual-cells-proportion\n  outcome: not_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:dual-cells-proportion\n  measured:\n  - 13\n  - 0.7\n  notes: 13 units (0.7%) are VS and MS under the main tests, against 26 ± 2.6 (1.4 ± 0.14%), and 21\n    would be expected if the two selections were independent. With the code's choices for both tests 25\n    (1.3%), within tolerance; with the Methods' window and MS on correct trials 22 (1.2%). The outcome\n    follows from ms-cells-proportion.\n- claim: fig5f-site-proportions\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig5f-site-proportions\n  measured:\n  - 17.6\n  - 6.2\n  - 0.7\n  - 22.1\n  - 10.4\n  - 1.3\n  notes: Under the main tests CS (1787 units) has 17.6% VS, 6.2% MS and 0.7% dual cells and TWH (77\n    units) 22.1%, 10.4% and 1.3%; Fisher's exact tests find no difference (p = 0.36, 0.15, 0.42), but\n    only 3 of 6 values are within tolerance. With the code's choices the values are 18.4, 7.7, 1.3, 19.5,\n    10.4 and 1.3%, all within tolerance, and no test finds a difference. TWH counts rest on 77 units in 9\n    sessions (1 to 31 units each).\n- claim: twh-sessions\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:twh-sessions\n  measured: 9\n  notes: Nine sessions, of eight subjects (T88 has two), have labels starting with T, and their\n    institution field is Toronto Western Hospital.\n- claim: previous-release-link\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:previous-release-link\n  notes: Faraut et al. 2018 Table 1 lists 42 subjects and 65 sessions. 64 of the 65 sessions are in the\n    dandiset under the same session id, subject and variant (98.5%); session 98 (H48, variant 2) is in\n    neither the dandiset nor Online-only Table 1. All 42 subjects are in the files; age and sex agree for\n    39, and the 2018 table agrees with Online-only Table 1 on the other three (C24, H33, H48), so those\n    differences are in the files. The variant of a file is read from its category names.\n- claim: previous-release-additions\n  outcome: partially_reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:previous-release-additions\n  measured:\n  - 23\n  - 17\n  - 325\n  notes: 23 sessions of the dandiset (14 CS, 9 TWH) and 17 subjects (C53 to C62, the 8 T subjects) are\n    not in the 2018 table, as the paper says, but these sessions hold 325 unit rows, above 288 ± 28.8.\n    The difference of the stated totals, 1863 - 1576 = 287, is the paper's number; it is not the units of\n    the new sessions, as the dandiset's older sessions hold 1539 unit rows, not 1576.\n  deviations:\n  - The earlier release's session list is taken from the table of Faraut et al. 2018, not from the\n    earlier release's files, as the claims file prescribes.\n- claim: fig4-example-vs-neuron\n  outcome: reproduced\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig4-example-vs-neuron\n  notes: Session 132 (CS58_132) has one unit on channel 177, unit 4 on electrode row 4 in the right\n    amygdala. Its rates differ across the 5 categories (ANOVA p = 1.2e-22 in the Methods' window,\n    7.9e-19 in the code's) and are highest for animals (6.75 Hz against 0.25 to 0.85 Hz).\n- claim: fig3-example-vs-neuron\n  outcome: blocked\n  blocked_by: other\n  notebook: reproduce_chandravadia_2020.ipynb\n  output: claim:fig3-example-vs-neuron\n  notes: The figure's neuron cannot be identified. No file and no row of Online-only Table 1 has a\n    session 144. The only units on a channel 140 in the dandiset are units 1 and 2 of session 2009\n    (T103, 3 units), in the right hippocampus; unit 2, the third unit of the session, is category\n    selective (ANOVA p = 1.3e-09) with its highest rate for phones (9.1 Hz against 1.7 to 2.7 Hz). It fits\n    the figure's channel, area, cell number counted from 1 and preferred category, but not its session\n    id, so it is shown and does not decide the claim. Whether neuron 144-140-3-RH is this unit is a\n    question for the paper's authors.\nfindings:\n- kind: metadata_error\n  statement: The new_old_labels_recog column is coded 1 for old (seen during encoding) and 0 for new, the\n    reverse of its description in every file (\"0 == Old Stimuli\") and of the paper's Data Records. In\n    all 87 sessions no label-0 recognition image is among the session's encoding images while label-1\n    images are, and label-1 trials draw more \"old\" responses in 86 of 87 sessions. The paper's analysis\n    code reads 1 as old, so its results are unaffected; a user who follows the description inverts the\n    behaviour (mean AUC 0.25 instead of 0.75).\n- kind: data_missing\n  statement: Eight sessions lack encoding trials. Seven Huntington sessions (18, 20, 21, 23, 26, 27 and\n    44) hold 50 encoding trials and session 123 holds 97, against 100 in the paper. In the seven, 21 to\n    24 of the 50 images labelled old in the recognition block are not among the file's encoding images\n    (they are in the encoding blocks of other sessions of the same variant), so the encoding trials that\n    showed them are not in the file.\n- kind: other\n  about: data\n  statement: 66 spike trains are deposited in two files each, sessions 38 and 39 (11 units), 43 and 44\n    (23) and 54 and 55 (32), with nothing marking them as the same units. Each pair was recorded on one\n    day, and each file holds spike trains spanning both sessions. Sessions 54 and 55 also share their\n    encoding trials (one learning block followed by two recognition blocks). Counting units per file\n    gives 1864, counting them once 1798.\n- kind: format_error\n  statement: Spike times are not in increasing order in 13 units. Two units of session 58 (H27_58 units\n    35 and 37) hold every spike time twice, as two copies one after the other, which doubles their spike\n    counts and makes half their sorted interspike intervals zero.\n- kind: metadata_error\n  statement: Subject age or sex differ from Online-only Table 1, and from Faraut et al. 2018 Table 1,\n    for three subjects. C24 (P24CS) is 57 in the files and 47 in both tables, H33 (P33HMH) 30 and 29, and\n    H48 (P48HMH) is a 32-year-old female in the files and a 54-year-old male in both tables. The\n    diagnosis is coded more coarsely than in the paper for 19 subjects.\n- kind: metadata_error\n  statement: session_start_time is not on the first of the month for session 48 (H28, 2010-03-13), and\n    session 68 (H44) is dated 2000-01-01, six years before any other session of the archive's files and\n    out of order with the subjects recorded before and after it (2013 and 2014). In 38 files the trial,\n    event and spike times are Unix seconds, while timestamps_reference_time is set to the session's\n    start date, so the stated reference does not apply to them.\n- kind: data_missing\n  statement: The electrode impedance (imp) is NaN for all 887 electrodes in all 87 files, and the MNI\n    coordinates (x, y, z) are NaN for 99 electrodes in 8 files, although the paper says the electrodes\n    table gives each electrode's coordinates and impedance.\n- kind: metadata_error\n  statement: Spike sorting quality metrics are missing or invalid for many units. SNR is NaN for 75 units\n    and infinite for 11 (session 48), and the isolation distance is NaN for 493 of 1864 units in 82\n    files, with two values above 1e27. The isolation distance column is named IsolationDist, not IsolDist\n    as in the paper.\n- kind: metadata_insufficient\n  statement: Nine files hold event codes that Table 1 of the paper and the events description do not\n    define (0, 4, 22, 23, 98, 99), and in 7 of them 28 trials break the documented order 1, 2, 3,\n    response, 6; in 4 of these files the response read three events after stimulus onset, as the\n    paper's code does, differs from response_value for 1 to 6 trials. Seven files have no start marker\n    (55). In the encoding phase response_value holds 0 or 1, not the event codes 20 and 21 the paper\n    refers to.\n- kind: metadata_error\n  statement: Four files label a block with experiment id 82 (CS33_77 81/82, CS39_100 82/83, H51_105\n    82/83, H42_55 80/82), which Table 2 of the paper does not list; the paper says each session has one\n    of the pairs (80, 81), (83, 84) or (88, 89). The institution field misspells Huntington Memorial\n    Hospital in two ways (\"Hunigton\" in 28 files, \"Hunington\" in 6).\n- kind: code_mismatch\n  statement: The paper's Methods select VS and MS cells in a 1 s window starting 200 ms after stimulus\n    onset and compare the 50 novel with the 50 familiar trials. The published code (single_neuron.py,\n    NWB_singleCellAnalysis_release.m) uses 0.2 to 1.7 s and, for MS cells, correct trials only. On the\n    dandiset the code's choices give the paper's 343 VS, 146 MS and 25 dual cells (26 in the paper), and\n    the Methods' choices give 332, 118 and 13. The reported MS and dual counts rest on the code's\n    procedure.\n- kind: paper_inconsistency\n  statement: The Methods say patients were recorded across 89 sessions, while Online-only Table 1 and the\n    dandiset hold 87.\n- kind: paper_inconsistency\n  statement: The neuron of Figure 3, 144-140-3-RH, names a session 144 that is not in Online-only Table\n    1 nor in the dandiset. The only channel-140 units in the dandiset are in session 2009 (T103, right\n    hippocampus), whose third unit is phone selective (ANOVA p = 1.3e-09). The authors could say whether\n    the figure shows this unit.\n"
 }
 ```
 
 ```
-File created successfully at: attempts/000004-chandravadia-2020-01.yaml (file state is current in your context — no need to Read it back)
+File created successfully at: attempts/chandravadia-2020-02.yaml (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && python3 - <<'EOF'
-p='/tmp/claude/build_nb.py'; t=open(p).read()
-t=t.replace('''for thr in (0.03, 0.05, 0.10):
-    print(f"units at or above {thr:.0%} (sorted): {int((isi.isi_sorted >= thr).sum())}")''','''for thr in (0.03, 0.05, 0.10):
-    print(f"units at or above {thr:.0%} (sorted): {int((isi.isi_sorted >= thr).sum())}")
-print(isi[isi.isi_sorted >= 0.03].round(4).to_string(index=False))''')
-open(p,'w').write(t)
-EOF
-python3 /tmp/claude/build_nb.py >/dev/null && cd  && python3 - <<'EOF'
-p='attempts/000004-chandravadia-2020-01.yaml'; t=open(p).read()
-t=t.replace("one sex across its files. The files code the diagnosis more coarsely; for C61 it differs in\n    substance (Left Lateral Frontal in the files, Left Mesial Temporal in the table). The files agree\n    with the paper's session list defineNOsessions_release.ini, so the table is the outlier.",
-"one sex across its files. The files code the diagnosis more coarsely; for C61 it differs in\n    substance (Left Lateral Frontal in the files, Left Mesial Temporal in the table). The files agree\n    with the session list of the paper's code, defineNOsessions_release.ini (read, not shown in the\n    notebook).")
-t=t.replace("nor in Online-only\n    Table 1 or the paper's session list.","nor in Online-only\n    Table 1 or in the session list of the paper's code (read, not shown in the notebook).")
-open(p,'w').write(t)
-import yaml; d=yaml.safe_load(open(p)); print(len(d['outcomes']), len(d['findings']))
-EOF
-python tools/entry.py check entries/000004-chandravadia-2020
+cd entries/chandravadia-2020 && . $TMPDIR/env/bin/activate && python -c "
+import pickle,numpy as np
+ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
+print(set(x['identifier'] for x in ss for v in x['units'].SNR if np.isinf(v)))
+" ; cd  && grep -nE '^[^#]*[^"]: [^|>]' attempts/chandravadia-2020-02.yaml | grep -vE '^\s*[0-9]+:\s*-?\s*[a-z_]+: ' | head; python tools/entry.py check entries/chandravadia-2020 2>&1 | tail -5
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "<stdin>", line 6, in <module>
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
-    return load(stream, SafeLoader)
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
-    return loader.get_single_data()
-           ~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/constructor.py", line 49, in get_single_data
-    node = self.get_single_node()
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 36, in get_single_node
-    document = self.compose_document()
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 55, in compose_document
-    node = self.compose_node(None, None)
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 84, in compose_node
-    node = self.compose_mapping_node(anchor)
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 133, in compose_mapping_node
-    item_value = self.compose_node(node, item_key)
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 82, in compose_node
-    node = self.compose_sequence_node(anchor)
-[... 27 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/  - "Most files" for a partial result was not given a number in the criterion; 78 of 87 was taken as/  - The criterion did not give a number for most files in a partial result; 78 of 87 was taken as/' attempts/000004-chandravadia-2020-01.yaml && python3 -c "
-import yaml,re; t=open('attempts/000004-chandravadia-2020-01.yaml').read(); d=yaml.safe_load(t); print(len(d['outcomes']), len(d['findings']))
-# plain scalars containing ': ' check
-for i,l in enumerate(t.splitlines()):
-    s=l.strip()
-    body=s.split(': ',1)[1] if re.match(r'^-? ?[a-z_]+: ',s) else s
-    if ': ' in body: print(i+1,l)
-" && sed -n 1,200p claims/000004/*.yaml | grep -n ": .*: " | head; python tools/entry.py check entries/000004-chandravadia-2020
-```
-
-```
-24 14
+{'H28_48'}
 0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'E'
+import yaml
+d=yaml.safe_load(open('attempts/chandravadia-2020-02.yaml'))
+def walk(x,p=''):
+    if isinstance(x,dict):
+        for k,v in x.items(): walk(v,p+'/'+str(k))
+    elif isinstance(x,list):
+        for i,v in enumerate(x): walk(v,p+f'[{i}]')
+    elif isinstance(x,str) and (': ' in x or '—' in x or 'rather' in x): print(p, x[:80])
+walk(d); print(len(d['outcomes']), collections if False else '')
+import collections; print(collections.Counter(o['outcome'] for o in d['outcomes']))
+E
+grep -n -- '—\|rather' entries/chandravadia-2020/*.py entries/chandravadia-2020/README.md /tmp/claude-1001/cells.py | head
+```
+
+```
+25 
+Counter({'reproduced': 10, 'partially_reproduced': 10, 'not_reproduced': 4, 'blocked': 1})
 ```
 
 **Agent**
 
-Check passes. Running the entry from a clean environment.
+Record validates: 10 reproduced, 10 partially, 4 not reproduced, 1 blocked. Removing the bold labels from the notebook header and summary (only the Result openers may be bold), then re-running.
 
 **Agent calls Bash**
 
 ```bash
-time python tools/entry.py all entries/000004-chandravadia-2020 2>&1 | tail -15
+cd $TMPDIR && python - <<'E'
+p='/tmp/claude-1001/cells.py'; s=open(p).read()
+for a,b in [('**Paper.**','Paper.'),('**Dandiset.**','Dandiset.'),('**Outside inputs.**','Outside inputs.'),('**Method choices**','Method choices'),('**How the analysis differs from the paper\'s.**','How the analysis differs from the paper\'s.'),('**What was found about the dataset.**','What was found about the dataset.')]:
+    assert a in s, a; s=s.replace(a,b)
+import re; print([m for m in re.findall(r'\*\*[^*]+\*\*', s) if not m.startswith('**Result')])
+open(p,'w').write(s)
+E
+. env/bin/activate && python build.py cells.py entries/chandravadia-2020/reproduce_chandravadia_2020.ipynb && cd  && python tools/entry.py all entries/chandravadia-2020 2>&1 | tail -3
 ```
 
 ```
-Installed kernelspec registry-000004-chandravadia-2020 in executed/000004-chandravadia-2020/.venv/share/jupyter/kernels/registry-000004-chandravadia-2020
+[]
+Installed kernelspec registry-chandravadia-2020 in executed/chandravadia-2020/.venv/share/jupyter/kernels/registry-chandravadia-2020
 0 error(s)
-pass  reproduce_chandravadia_2020.ipynb  (128 s)
-
-real	2m15.729s
-user	0m46.113s
-sys	0m2.921s
-```
-
-**Agent**
-
-Passed in 128 s. Now I read the executed copy and compare every conclusion with its numbers.
-
-**Agent calls Bash**
-
-```bash
-python3 - <<'EOF'
-import nbformat
-nb=nbformat.read('executed/000004-chandravadia-2020/reproduce_chandravadia_2020.ipynb',as_version=4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type=='code':
-        out=''.join(o.get('text','') if o.output_type=='stream' else (o.get('data',{}).get('text/plain','') if o.output_type!='display_data' else '[figure]') for o in c.outputs)
-        errs=[o for o in c.outputs if o.output_type=='error']
-        print(f'--- cell {i} {c.metadata.get("tags")}', 'ERROR' if errs else '')
-        print(out[:3500])
-EOF
-```
-
-```
---- cell 1 None 
-loaded 87 files from dandiset 000004 version 0.220126.1852 in 89 s
-
---- cell 3 ['sanity'] 
-Files: 87  subjects: 59  species: ['Human']
-
-By site (CS = subjects labelled H or C, TWH = labelled T):
-      sessions  subjects  units
-site                           
-CS          78        51   1787
-TWH          9         8     77
-
-Institution strings: {'Cedars-Sinai Medical Center': 44, 'Hunigton Memorial Hospital': 28, 'Toronto Western Hospital': 9, 'Hunington Memorial Hospital': 6}
-Devices: {'Neuralynx-Atlas': 53, 'Neuralynx-cheetah': 29, 'Neuralynx-Cheetah': 5}
-
-Trials per file (learn, recog): {(50, 100): 7, (97, 100): 1, (100, 100): 79}
-Units per file: min 1 median 18.0 max 64 total 1864
-Is there a session 144 (Figure 3 example)? False
-Published versions 0.220126.1851 and 0.220126.1852 hold the same assets (ids and sizes): True
-The draft holds the same paths and sizes as the pinned version: True
-[... 359 more lines not kept]
-```
-
-**Agent**
-
-All conclusions match the executed numbers. One label in the accuracy cell says "95% CI" for what is a percentile range over sessions; fixing that, adjusting the runtime figures, and re-running.
-
-**Agent calls Bash**
-
-```bash
-sed -i 's|95% CI {np.percentile(h\[ok\] - l\[ok\], \[2.5, 97.5\]).round(1)} (percentiles over sessions)|2.5th to 97.5th percentile of the per-session differences {np.percentile(h[ok] - l[ok], [2.5, 97.5]).round(1)}|' /tmp/claude/build_nb.py && grep -c "97.5th percentile" /tmp/claude/build_nb.py && python3 /tmp/claude/build_nb.py && sed -i 's/runtime_minutes: 4/runtime_minutes: 3/' entries/000004-chandravadia-2020/entry.yaml && sed -i 's/It takes about four minutes, most of it/It takes two to three minutes, most of it/' entries/000004-chandravadia-2020/README.md && python tools/entry.py all entries/000004-chandravadia-2020 2>&1 | tail -3
-```
-
-```
-1
-wrote entries/000004-chandravadia-2020/reproduce_chandravadia_2020.ipynb 80 cells
-Installed kernelspec registry-000004-chandravadia-2020 in executed/000004-chandravadia-2020/.venv/share/jupyter/kernels/registry-000004-chandravadia-2020
-0 error(s)
-pass  reproduce_chandravadia_2020.ipynb  (125 s)
+pass  reproduce_chandravadia_2020.ipynb  (160 s)
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-import nbformat
-nb=nbformat.read('executed/000004-chandravadia-2020/reproduce_chandravadia_2020.ipynb',as_version=4)
-import re
-key=['332 of 1864','110 of 1864','12 of 1864','0.753, SD 0.094','78.3% against 60.4%','1858 (99.7%)','86 of 87','79 of 87','p = 0.360']
-txt='\n'.join(''.join(o.get('text','') for o in c.outputs if o.output_type=='stream') for c in nb.cells if c.cell_type=='code')
-print({k:(k in txt) for k in key}); print([l for l in txt.splitlines() if 'percentile of the per-session' in l])
-EOF
-python tools/entry.py handover entries/000004-chandravadia-2020 && ls executed/000004-chandravadia-2020/handover/ && git status --short
+python - <<'E'
+import json
+nb=json.load(open('executed/chandravadia-2020/reproduce_chandravadia_2020.ipynb'))
+txt=''.join(''.join(o.get('text','')) for c in nb['cells'] if c['cell_type']=='code' for o in c.get('outputs',[]))
+for k in ['main): 118 of 1864','332 of 1864','VS and MS, main tests: 13','Mean slope 0.782','Mean AUC 0.7527','New neurons (unit rows of new sessions): 325','true onsets 830 of 1864','below 3% for 1858','Age and sex both match: 56']:
+    print(k in txt, k)
+print([o.get('ename') for c in nb['cells'] for o in c.get('outputs',[]) if o.get('output_type')=='error'])
+E
+python tools/entry.py handover entries/chandravadia-2020 2>&1 | tail -3; ls executed/chandravadia-2020/handover; date -u
 ```
 
 ```
-{'332 of 1864': True, '110 of 1864': True, '12 of 1864': True, '0.753, SD 0.094': True, '78.3% against 60.4%': False, '1858 (99.7%)': True, '86 of 87': True, '79 of 87': True, 'p = 0.360': True}
-['    mean difference 19.2 points, 2.5th to 97.5th percentile of the per-session differences [-15.1  47.2]', '    mean difference 17.9 points, 2.5th to 97.5th percentile of the per-session differences [-20.3  47.2]']
-wrote executed/000004-chandravadia-2020/handover
-10.1038-s41597-020-0415-9.yaml
-recogmem.py
+True main): 118 of 1864
+True 332 of 1864
+True VS and MS, main tests: 13
+True Mean slope 0.782
+True Mean AUC 0.7527
+True New neurons (unit rows of new sessions): 325
+True true onsets 830 of 1864
+True below 3% for 1858
+True Age and sex both match: 56
+[]
+wrote executed/chandravadia-2020/handover
+chandravadia-2020.yaml
+nomem.py
 reproduce_chandravadia_2020.ipynb
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? attempts/000004-chandravadia-2020-01.yaml
-?? claims/000004/
-?? entries/000004-chandravadia-2020/
-?? scripts
-```
-
-**Agent calls Bash**
-
-```bash
-grep -c '\*\*Result' executed/000004-chandravadia-2020/handover/reproduce_chandravadia_2020.ipynb; grep -c "## Summary" executed/000004-chandravadia-2020/handover/reproduce_chandravadia_2020.ipynb; git check-ignore -v paper executed | head; git log -1 --format=%H -- .bashrc 2>/dev/null; ls -la --time-style=+%H:%M .bashrc scripts | head -3
-```
-
-```
-0
-0
-.gitignore:8:paper/	paper
-.gitignore:6:executed/	executed
-crw-rw-rw- 1 nobody nogroup 1, 3 14:25 .bashrc
-crw-rw-rw- 1 nobody nogroup 1, 3 14:25 scripts
+Sun Nov 15 13:10:55 UTC 2026
 ```
 
 **Agent**
 
-The attempt on dandiset 000004 is done through step 6: the entry is locked, `check` and `all` pass, and the handover package is built in `executed/000004-chandravadia-2020/handover/` with the conclusions removed. Nothing is committed.
+## Report: chandravadia-2020, repeat attempt 02 (blind)
 
-I used the paper's full text, which is open access (CC BY 4.0), including Tables 1 and 2 and Online-only Table 1; it is saved under `paper/`. The pinned version is 0.220126.1852. The paper cites no DANDI version, and the two published versions hold the same 87 assets, so I took the newer one; the notebook header says this.
+The entry is at `entries/chandravadia-2020/` and the record at `attempts/chandravadia-2020-02.yaml`. `tools/entry.py all` reports 0 errors, and the notebook passes a clean run in 160 s. The verifier's package is built in `executed/chandravadia-2020/handover/`. I did not commit anything.
 
-**1. Outcome per claim** (counts from the attempt record: 10 reproduced, 8 partially, 4 not reproduced, 2 blocked)
+### 1. Outcomes
 
-| Claim | Outcome |
-|---|---|
-| counts-neurons-subjects (1864 units vs 1863; 59 subjects) | reproduced |
-| counts-sessions (87, matching Online-only Table 1) | reproduced |
-| table1-demographics (56 of 59 subjects match) | partially |
-| task-structure (8 sessions have fewer than 100 encoding trials) | partially |
-| new-old-label-coding (the data use 1 = old) | not reproduced |
-| ttl-codes (78 of 87 files) | partially |
-| experiment-ids (83 of 87 files) | partially |
-| session-dates (86 of 87 files) | partially |
-| units-table (NaN or infinite quality metrics) | partially |
-| electrodes-table (impedance empty for all 887 electrodes) | not reproduced |
-| isi-criterion (99.7% of units pass) | partially |
-| fig5a-mtl-locations | reproduced |
-| fig5c-auc-all (0.753 ± 0.094) | reproduced |
-| fig5c-auc-sites | reproduced |
-| fig5b-roc-asymmetric | reproduced |
-| fig5d-confidence-accuracy | reproduced |
-| vs-cells-proportion (332, 17.8%) | reproduced |
-| ms-cells-proportion (110, 5.9% vs 146, 7.8%) | not reproduced |
-| dual-cells-proportion (12 vs 26) | not reproduced |
-| fig5f-site-proportions | partially |
-| twh-sessions (9) | reproduced |
-| fig4-example-vs-neuron | reproduced |
-| previous-release-additions | blocked (other) |
-| fig3-example-vs-neuron | blocked (data_missing: session 144 is absent) |
+| Claim | Outcome | Key numbers |
+|---|---|---|
+| counts-neurons-subjects | reproduced | 1864 unit rows (1798 with duplicated spike trains counted once), 59 subjects |
+| counts-sessions | reproduced | the 87 (subject, session) pairs equal Online-only Table 1 |
+| table1-demographics | partially reproduced | 56 of 59 subjects match; C24, H33 and H48 differ |
+| task-structure | partially reproduced | 7 sessions have 50 encoding trials, 1 has 97 |
+| new-old-label-coding | not reproduced | labels are reversed: 1 = old (86 of 87 sessions on both tests) |
+| ttl-codes | partially reproduced | 78 of 87 files; 9 hold codes Table 1 does not list |
+| experiment-ids | partially reproduced | 83 of 87; 4 files use id 82 |
+| session-dates | partially reproduced | one date on 2010-03-13, one session dated 2000-01-01 |
+| units-table | partially reproduced | SNR not finite for 86 units, isolation distance missing for 493 |
+| electrodes-table | not reproduced | impedance empty for all 887 electrodes |
+| isi-criterion | partially reproduced | 1858 of 1864 units below 3% |
+| fig5a-mtl-locations | reproduced | every unit in amygdala or hippocampus |
+| fig5c-auc-all | reproduced | 0.753 ± 0.094 |
+| fig5c-auc-sites | reproduced | CS 0.760 ± 0.085, TWH 0.688 ± 0.138 |
+| fig5b-roc-asymmetric | reproduced | mean z-ROC slope 0.78, p = 4.3e-9 |
+| fig5d-confidence-accuracy | reproduced | paired p = 3.2e-16 (fixed split), 1.3e-11 (dynamic split) |
+| vs-cells-proportion | reproduced | 332 (17.8%) |
+| ms-cells-proportion | not reproduced | 118 (6.3%); the code's choices give 146 (7.8%) |
+| dual-cells-proportion | not reproduced | 13 (0.7%); the code's choices give 25 |
+| fig5f-site-proportions | partially reproduced | no site difference, but only 3 of 6 values within tolerance |
+| twh-sessions | reproduced | 9 sessions |
+| previous-release-link | partially reproduced | 64 of 65 sessions of the 2018 release found (session 98 missing) |
+| previous-release-additions | partially reproduced | 23 sessions and 17 subjects match, but 325 units against 288 |
+| fig4-example-vs-neuron | reproduced | ANOVA p = 1.2e-22, animals highest |
+| fig3-example-vs-neuron | blocked (`other`) | no session 144 exists |
 
-The memory-selective and dual counts follow the Methods (all 50 new and 50 old trials, 200 to 1200 ms window). The paper's code uses correct trials only and a 200 to 1700 ms window; with those choices I get 343 VS, 147 MS and 26 dual cells, and the Figure 5f values to within 0.1 point.
+Totals: 10 reproduced, 10 partially reproduced, 4 not reproduced, 1 blocked.
 
-**2. What was found about the dandiset**
-- **Label coding:** `new_old_labels_recog` uses 1 = old, the reverse of the paper's text and of the files' own column description. Anyone following the description gets an AUC of 0.25.
-- **Duplicated spike trains:** sessions 43/44 and 54/55 hold identical spike trains, so 55 units are counted twice. Session 55 also repeats session 54's learning block.
-- **Missing encoding trials:** 7 sessions have 50 encoding trials and one has 97. Part of the images later shown as old are not in the stored encoding block.
-- **Empty or broken metadata:** impedance is empty everywhere; coordinates are missing for 99 electrodes; IsolationDist is NaN for 493 units and SNR is not finite for 86.
-- **Spike times:** 13 units have unsorted spike times, and two units in session 58 store every spike twice.
-- **Subjects and dates:** age or sex differ from Online-only Table 1 for 3 subjects (H48 is a 32-year-old woman in the files, a 54-year-old man in the table). Session 48 keeps its real day (2010-03-13), and session 68 is dated 2000-01-01.
-- **Codes:** event codes outside Table 1 appear in 9 files, and experiment ids outside Table 2 in 4.
-- **Inconsistencies in the paper and its code:** the Methods say 89 sessions where the table and the files have 87. The code's `plotFigure5.ipynb` writes the Figure 5f percentages into the plot as constants and does not compute them.
+### 2. What was found
 
-**3. Where the protocol was unclear, wrong or missing something**
-1. **Methods vs code:** here the code reproduces the paper's numbers exactly and the Methods do not. The protocol makes the Methods decide the outcome, so MS and dual cells are "not reproduced". I followed that rule and recorded a `code_mismatch` finding.
-2. **Stated spread as tolerance:** "use the stated spread" makes the tolerance of a mean ± SD equal to the SD (0.74 ± 0.10), which is very loose. I also held the SD itself to 10%.
-3. **Default 10% on record counts:** for the counts in a data descriptor (neurons, subjects, sessions), 10% is loose. I kept it and recorded the exact differences.
-4. **Data descriptors:** the protocol assumes papers with findings. I made each described data element a claim.
-5. **"Count each recording once":** this is unclear when two sessions share spike trains but have different trial data. I kept the paper's per-file count as the main reading and counted the units once as a second reading.
-6. **Unreachable public input:** the earlier release on Dryad is public but refuses automated download (HTTP 403, or a token is required). No blocking reason fits, so I used `other`.
-7. **Per-session clock check:** with 1 to 64 units per session, 49 of 87 sessions cannot show the shared clock. I listed them, as the protocol asks.
-8. **Criteria written after the data check:** for descriptor claims, the data check is the test itself. I wrote the criteria after it, and the claims file's opening comment says what I had already seen.
-9. **Thresholds for partial outcomes:** the protocol gives no default for "partially reproduced" in count-based criteria. My criteria said "most files" without a number; I took 78 of 87 as most and recorded that as a deviation.
-10. **Reference tables:** whether a paper table or constants in the paper's code count as "inputs" or as "embedded numbers" is not stated. I copied Online-only Table 1 into the helper module as text and listed it, and the code's Figure 5f constants, under `inputs`.
-11. **Chance level:** the paper states none for its cell selections. I still report a label-shuffle null (4.5% VS, 5.3% MS); the MS rate under the Methods' test (5.9%) is barely above it.
+**About the dataset:**
+- The `new_old_labels_recog` coding is the reverse of what the file description and the paper's text say.
+- Eight sessions are missing encoding trials. In the seven with 50 trials, 21 to 24 of the "old" images were never shown in that file's encoding block.
+- 66 spike trains are deposited in two files each (session pairs 38/39, 43/44 and 54/55). Sessions 54 and 55 also share their encoding block.
+- 13 units store spike times out of order, and two of them hold every spike twice.
+- Smaller problems:
+  - Electrode impedance is empty everywhere, and coordinates are missing for 99 electrodes.
+  - SNR is NaN or infinite, and isolation distance missing or around 1e27, for many units.
+  - Three subjects' age or sex differ from the paper's table.
+  - Some event codes and experiment ids are undocumented.
+  - One date is wrong and one year looks like a placeholder.
+  - 38 files use Unix-time clocks, and the institution name is misspelled two ways.
 
-**4. Runtime and failures**
-- The notebook runs in about 125 s, of which 81 to 96 s is streaming the 87 files with 8 threads.
-- The only thing that failed was the Dryad download, which blocked one claim. No notebook errors.
-- The untracked `.bashrc`, `.profile` and similar entries in `git status`, and `scripts`, are links to /dev/null created by the sandbox, not by me. They may show up when the workflow commits.
+**About the paper:**
+- The Methods' window and trial choice for selecting cells differ from the published code. The code's choices (0.2 to 1.7 s, correct trials only for MS) reproduce the paper's 343, 146 and 26 (25 here).
+- The Methods say 89 sessions; the paper's own table and the files have 87.
+
+**Assumptions:** none affect an outcome. I left out five sessions where the z-ROC slope is undefined; this is recorded as a deviation.
+
+**Question for the paper's authors:** is the Figure 3 neuron 144-140-3-RH the third unit of session 2009 (T103)? That is the only channel-140 unit set in the dataset, and that unit is strongly phone-selective (p = 1.3e-9).
+
+**Questions to a reader:** none.
+
+**Possible exposure to earlier work:** the claims file's opening comment describes the earlier author's data check (duplicated spike trains in sessions 43/44 and 54/55, label 1 drawing most "old" responses) and how the link claim was added. That is the only earlier-attempt material I saw. I found the same things independently.
+
+### 3. Where the protocol was unclear or did not fit
+1. None of the blocking reasons fits a paper identifier that names no session in the dataset. I used `other` and explained it in the notes.
+2. There is no finding kind for a question to the authors that is not about a method. For the Figure 3 question I used `paper_inconsistency`.
+3. For a criterion that sets a threshold on a share of units (isi-criterion), it is unclear what `measured` should hold. I recorded the percentage of units below 3% and noted that as a deviation.
+4. The claims file's opening comment can carry an earlier author's observations, which works against a blind repeat. I am only reporting this.
+5. It is unclear whether the paper's own table, read at run time from Europe PMC, counts as an input. I listed it under `inputs` alongside Faraut et al. 2018 and the paper's code.
+
+### 4. Runtime and failures
+- The notebook runs in about 2.7 minutes (2 of them streaming), using 0.8 GB of memory.
+- The session ran from 12:41 to about 13:11 UTC.
+- Nothing failed.
 
 ## End of run
 
-73 turns, 30 minutes, result: success.
+64 turns, 27 minutes, $7.02 at API prices, result: success.
