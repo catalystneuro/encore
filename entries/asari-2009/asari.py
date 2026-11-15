@@ -80,6 +80,7 @@ BLANK_PROBE_S = 2.5         # CxtDep.m blank(1)
 MIN_TRIALS_CC = 4           # Methods, at least four repeats
 MIN_TRIALS_MGB = 10         # Methods, at least 10 repeats
 PSTH_DT = 0.1               # s, Methods, suprathreshold level; CxtDep.m psth
+BOOT_SEED_OFFSET = 7_000_000  # separate generator for the trial resamples of fig8c-relative-effects
 A1_THRESHOLDS = (-20.0, -10.0, -30.0)   # mV, A1 spike detection (assumption; first is the main one)
 
 # GetSpikes.m ExtractSpikes: high-pass FIR coefficients, applied with filtfilt
@@ -175,8 +176,10 @@ def effective_repeats(param) -> int | None:
     return None
 
 
-def load_recording(archive: Archive, member: str, smooth: bool = True, keep_raw: bool = False) -> dict:
-    """Trace in mV (median-filtered when `smooth`), the sequence triggers and the fragments."""
+def load_recording(archive: Archive, member: str, smooth: bool = True, keep_raw: bool = False,
+                   fix_swaps: bool = True) -> dict:
+    """Trace in mV (median-filtered when `smooth`), the sequence triggers and the fragments.
+    `fix_swaps=False` keeps the stored fragment list even when it does not fit the triggers."""
     m = archive.loadmat(member)
     resp, param = m["response"], m["param"]
     raw = resp.trace.astype(np.float64) * float(resp.scale)
@@ -200,7 +203,7 @@ def load_recording(archive: Archive, member: str, smooth: bool = True, keep_raw:
     stims = _stimuli(param)
     mismatch = _duration_mismatch(trig, stims)
     source = member
-    if mismatch > MAX_MISMATCH_MS:
+    if mismatch > MAX_MISMATCH_MS and fix_swaps:
         # The fragment list does not fit the trigger durations. In two cells the fragment lists
         # of two files are swapped (data check); take the list of a sibling file that fits. When
         # none fits, the stored list is kept, as CxtDep.m would use it, and the file is flagged.
@@ -605,8 +608,33 @@ def runs(mask: np.ndarray, sf: int = SF) -> list[tuple[float, float]]:
     return [(a / sf, b / sf) for a, b in zip(s, e)]
 
 
-def analyze_probe(X, labels, rng, n_shuffle=N_SHUFFLE, extras=True):
-    """Significance and power measures of one probe, the traces stored as 1-ms means."""
+def boot_power(X, labels, rng, n_boot: int, t_max: float = 4.0, bin10: int = 10 * BIN):
+    """Trial reading of the Figure 8C resampling (claim fig8c-relative-effects): in each of
+    `n_boot` resamples, the trials of every context are drawn with replacement, as many as the
+    context holds, and Eqs. 17 and 18 are computed. To keep the cost low the trials are first
+    averaged in 1-ms bins (the traces are median-filtered at 10 ms), and the results are stored
+    as 10-ms means up to `t_max`. Returns the unresampled estimate on the same binned trials
+    (`pred10`, `inv10`) and the resamples (`boot_pred`, `boot_inv`, n_boot x bins)."""
+    nb = int(min(X.shape[1], int(t_max * SF)) // bin10)
+    Xb = X[:, :X.shape[1] // BIN * BIN].reshape(X.shape[0], -1, BIN).mean(2)
+    groups = np.unique(labels)
+    idx = [np.nonzero(labels == g)[0] for g in groups]
+
+    def tenms(v):
+        return v[:nb * 10].reshape(nb, 10).mean(1).astype(np.float32)
+
+    fp = frac_power(Xb, labels)
+    bp, bi = np.empty((n_boot, nb), np.float32), np.empty((n_boot, nb), np.float32)
+    for b in range(n_boot):
+        sel = np.concatenate([rng.choice(ix, len(ix), replace=True) for ix in idx])
+        f = frac_power(Xb[sel], labels[sel])
+        bp[b], bi[b] = tenms(f["predictable"]), tenms(f["invariant"])
+    return dict(pred10=tenms(fp["predictable"]), inv10=tenms(fp["invariant"]), boot_pred=bp, boot_inv=bi)
+
+
+def analyze_probe(X, labels, rng, n_shuffle=N_SHUFFLE, extras=True, n_boot=0, boot_rng=None):
+    """Significance and power measures of one probe, the traces stored as 1-ms means; with
+    `n_boot`, also the trial resamples of the power measures (boot_power)."""
     ok = np.isfinite(X).all(0)
     T = int(ok.sum()) if not ok.all() else X.shape[1]
     X = X[:, :T]
@@ -621,6 +649,8 @@ def analyze_probe(X, labels, rng, n_shuffle=N_SHUFFLE, extras=True):
     if extras:
         out["corr"] = trial_correlations(X, labels)
         out["noise_ac"] = noise_autocorr(X, labels, max_lag=5000)[::BIN].astype(np.float32)
+    if n_boot:
+        out["boot"] = boot_power(X, labels, boot_rng, n_boot)
     return out
 
 
@@ -631,12 +661,14 @@ def spont_segments(rec: dict) -> list[tuple[int, int]]:
 
 
 def analyze_cc_cell(archive: Archive, member: str, seed: int, include_silence=True,
-                    n_shuffle=N_SHUFFLE, extras=True, silence_probe=False):
-    """All eligible probes of one current-clamp recording."""
-    rec = load_recording(archive, member, smooth=True, keep_raw=True)
+                    n_shuffle=N_SHUFFLE, extras=True, silence_probe=False, fix_swaps=True, n_boot=0):
+    """All eligible probes of one current-clamp recording. The trial resamples (`n_boot`) use
+    their own generator, so the other measures do not depend on them."""
+    rec = load_recording(archive, member, smooth=True, keep_raw=True, fix_swaps=fix_swaps)
     a1_rates = {thr: firing_rates(rec, detect_spikes_vm(rec["raw"], thr)) for thr in A1_THRESHOLDS}
     rec["raw"] = None
     rng = np.random.default_rng(seed)
+    boot_rng = np.random.default_rng(seed + BOOT_SEED_OFFSET)
     probes = probe_table(rec, MIN_TRIALS_CC, include_silence=include_silence) if rec["stimulus_source"] else []
     res = []
     for p in probes:
@@ -644,7 +676,8 @@ def analyze_cc_cell(archive: Archive, member: str, seed: int, include_silence=Tr
         r = dict(member=member, probe=p["probe"], duration=p["duration"] / SF,
                  n_trials=p["n_trials"], eligible=p["eligible"], contexts_all=p["contexts"])
         if p["eligible"]:
-            r.update(analyze_probe(X, lab, rng, n_shuffle=n_shuffle, extras=extras))
+            r.update(analyze_probe(X, lab, rng, n_shuffle=n_shuffle, extras=extras,
+                                   n_boot=n_boot, boot_rng=boot_rng))
         res.append(r)
     cell = dict(member=member, rep=rec["rep"], n_fragments=len(rec["stimuli"]),
                 n_sequences=len(sequences(rec)), recording_type=rec["recording_type"],
@@ -861,12 +894,13 @@ def property_classes(rec: dict, contexts: list[int], prop: str) -> list[list[int
     return out
 
 
-def analyze_synthetic_file(archive: Archive, member: str, seed: int, n_shuffle=N_SHUFFLE):
+def analyze_synthetic_file(archive: Archive, member: str, seed: int, n_shuffle=N_SHUFFLE, n_boot=0):
     """Every probe x property ensemble of one synthetic recording: significance and power."""
     rec = load_recording(archive, member, smooth=True, keep_raw=True)
     a1_rates = {thr: firing_rates(rec, detect_spikes_vm(rec["raw"], thr)) for thr in A1_THRESHOLDS}
     rec["raw"] = None
     rng = np.random.default_rng(seed)
+    boot_rng = np.random.default_rng(seed + BOOT_SEED_OFFSET)
     trig_type = next(t["type"] for t in rec["triggers"] if t["seq"] is not None)
     base = probe_table(rec, 1) if rec["stimulus_source"] else []
     n_eligible_any = sum(p["eligible"] for p in probe_table(rec, MIN_TRIALS_CC)) if base else 0
@@ -882,7 +916,8 @@ def analyze_synthetic_file(archive: Archive, member: str, seed: int, n_shuffle=N
                          n_trials=q[0]["n_trials"] if q else 0, duration=p["duration"] / SF)
                 if r["eligible"]:
                     X, lab = probe_matrix(rec, q[0])
-                    r.update(analyze_probe(X, lab, rng, n_shuffle=n_shuffle, extras=False))
+                    r.update(analyze_probe(X, lab, rng, n_shuffle=n_shuffle, extras=False,
+                                           n_boot=n_boot, boot_rng=boot_rng))
                 out.append(r)
     info = dict(member=member, rep=rec["rep"], trigger_type=trig_type, n_fragments=len(rec["stimuli"]),
                 recording_type=rec["recording_type"], n_sequences=len(sequences(rec)),

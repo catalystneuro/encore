@@ -12,7 +12,7 @@ the STRF models, which `strf_wehr.ipynb` tests.
 | Counts of cells and probes | Partially reproduced |
 | A1 and MGB firing rates | Partially reproduced (assumption: spike detectors) |
 | Trial-to-trial reliability (Figure 2) | Reproduced |
-| Example of an intermittent, 4-s context effect (Figure 2) | Reproduced |
+| Example of an intermittent, 4-s context effect (Figure 2) | Reproduced (assumption: matching on the mean correlations) |
 | 204 of 305 probes significant, a quarter of events after 1 s (Figure 3A) | Not reproduced |
 | Two-exponential decay of the significance curve (Figure 3A) | Partially reproduced (assumption) |
 | Normalized context-dependent power decays with 1.04 s (Figure 3B) | Reproduced (assumption) |
@@ -20,7 +20,7 @@ the STRF models, which `strf_wehr.ipynb` tests.
 | Upper bound on model performance (Figure 4) | Not reproduced |
 | STRF model performance (Figure 4) | Not reproduced (assumptions) |
 | Voltage-clamp conductances (Figures 5 and 6) | Blocked: data missing |
-| Proportion significant by sound property (Figure 8A) | Partially reproduced (assumption) |
+| Proportion significant by sound property (Figure 8A) | Partially reproduced (assumption); not reproduced under the Table 1 reading, a change proposed for a third verification round |
 | Decay of normalized power by property (Figure 8B) | Partially reproduced (assumption) |
 | Exponential fits of the significance curves by property (Figure 8A) | Not reproduced |
 | Relative size of the effects by property (Figure 8C) | Partially reproduced (assumption) |
