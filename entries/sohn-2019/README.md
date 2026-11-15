@@ -39,7 +39,7 @@ has 8 over two animals and pools 17 sessions of monkey H for its behavioural sta
 record, with the reasons and the differences from the paper's method, is
 [`attempts/sohn-2019-02.yaml`](../../attempts/sohn-2019-02.yaml).
 
-- `reproduce_sohn_2019.ipynb`: the analysis. It takes about 26 minutes, most of it the GPFA fits.
+- `reproduce_sohn_2019.ipynb`: the analysis. It took 27.5 minutes in the last run, most of it the GPFA fits.
 - `rsg.py`: loading the files, unit selection, binned and trial-averaged rates, PCA, the encoding
   axis, the Bayesian observer model and a split-half estimate of the noise in trajectory speeds.
   Other notebooks on this dandiset can import it.

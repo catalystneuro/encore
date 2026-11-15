@@ -248,9 +248,15 @@ def split_noise_sq(spikes, t: pd.DataFrame, epoch: str, rng, n_splits: int = 20,
         nb = int(length_ms // BIN_MS)
         c = bin_counts(spikes, t.set_time.values, 0, nb * BIN_MS)
         incl = np.ones(c.shape[:2], bool)
+    return split_noise_sq_counts(c, incl, rng, n_splits, project, sd_ms)
+
+
+def split_noise_sq_counts(c: np.ndarray, incl: np.ndarray, rng, n_splits: int = 20, project=None,
+                          sd_ms: float | None = SMOOTH_SD_MS) -> np.ndarray:
+    """split_noise_sq from counts (trials x bins x units) and the trials included in each bin."""
     out = []
     for _ in range(n_splits):
-        half = rng.permutation(len(t)) % 2 == 0
+        half = rng.permutation(len(c)) % 2 == 0
         d = (_attrition_mean(c[half], incl[half]) - _attrition_mean(c[~half], incl[~half])) / 2
         d = smooth(d, sd_ms)
         if project is not None:

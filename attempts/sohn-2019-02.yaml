@@ -199,7 +199,9 @@ outcomes:
     tolerance. Within datasets r is -0.74 to -1.0. Speed divided by the mean Set-to-Go time gives
     -0.916 and -0.908. Noise, estimated from random halves of the trials, makes up a median 0.31
     (0.17 to 0.54) of the speed; the noise-only speed does not correlate with Xu when pooled (r =
-    0.184 and -0.024), and with the noise removed r is -0.933 and -0.802, also outside tolerance.
+    0.184 and -0.024), though within datasets it is -0.77, -0.82 and -0.87 in Eye Right Short, Eye
+    Left Long and Hand Right Long; with the noise removed r is -0.933 and -0.802, also outside
+    tolerance.
   deviations:
   - Speed is the mean step distance in the production PC space (claims header); the Methods'
     division by the Set-to-Go time is shown as a variant.
@@ -237,23 +239,32 @@ outcomes:
   output: claim:alt-speed-unmodulated
   notes: By the paper's test, p = 0.125 for each prior, the smallest a two-sided signed-rank test over 4
     can give, so the test cannot find the effect. Measured step length rises through the support in
-    all 8 dataset-priors (slopes 3.95 to 10.61 per s, 30% to 82% over the support), but the rise is
-    no larger than that of noise alone. Attrition leaves fewer trials late in the support (for
-    example 129 to 25); the noise-only step, from random halves of the trials, grows from 1.5 to 2.0
-    to 5.1 to 6.9 over the support (slopes 7.06 to 14.53 per s), and with the noise removed from
-    each squared step every slope is negative (-0.84 to -10.99 per s). With the trials of the
-    longest ts only, the slopes are 0.97 to 5.29 per s in 7 of 8 and -1.07 in Hand Right Long, and
-    with the noise removed all 8 are negative. Resampling trials with replacement shifts the middle
-    of the bootstrap interval up by 4.0 to 7.1 per s, so the percentile intervals of the first
-    version were not confidence intervals; the basic bootstrap intervals include 0 in 8 of 8, and
-    neither is a reliable bound with a shift this large. The measured rise in speed is accounted
-    for by noise, so these data do not show the modulation the claim denies; the outcome follows
-    the criterion and says nothing about the paper's 8 datasets.
+    all 8 dataset-priors (slopes 3.95 to 10.61 per s), and the noise-only step, from random halves of
+    the trials, rises too (slopes 7.06 to 14.53 per s, and 2.43 to 7.96 per s with the trials of the
+    longest ts only, so not only through attrition). Bin by bin the measured step comes close to the
+    noise-only step at the end of the support (6.58 and 6.58 at 800 ms in Eye Right Short, 5.71 and
+    5.61 at 1200 ms in Eye Right Long) and is below it in 0 to 10 bins per dataset-prior. On simulated
+    Poisson counts with known rates, in the same trials and bins, the noise estimate is 0.91 to 1.15
+    times the actual noise in the squared step, early and late, so it is not inflated late in the
+    support. With the noise removed every slope is negative (-0.84 to -10.99 per s, and 8 of 8 with
+    the trials of the longest ts), which would be a falling speed, also a modulation; in the
+    simulation the corrected slope is off from the true slope by -3.46 to 3.22 per s on average, with
+    an SD of 2.65 to 6.80 per s over repeats, so each corrected slope is imprecise and the signed-rank
+    test over 4 cannot confirm the fall (p = 0.125). Without smoothing, as the STAR Methods compute
+    speed, every slope is positive (p = 0.125) and with the noise removed 5 of 8 are (p = 1.0 and
+    0.25). The basic bootstrap intervals include 0 in 8 of 8, but resampling shifts the bootstrap
+    interval up by 4.0 to 7.1 per s, so neither interval is a reliable bound. These data show no rise
+    of speed beyond that of noise and, with smoothed rates, a tendency to fall; the outcome follows
+    the criterion and says nothing about the paper's 8 datasets. Whether the criterion should use
+    smoothed rates is asked of a reader.
   deviations:
   - The bootstrap intervals over trials (claims file) are shown as basic and percentile intervals;
     both are distorted by the noise that resampling adds.
-  - The split-half estimate of noise in the steps is the author's addition, not the paper's
-    method.
+  - The split-half estimate of noise in the steps, and its test on simulated counts, are the
+    author's addition, not the paper's method.
+  - The criterion uses smoothed rates; the STAR Methods ("Test of alternative mechanisms") compute
+    speed "in the full neural space to avoid any potential distortion by smoothing and PCA". The
+    unsmoothed measure is shown and gives the same outcome.
 - claim: alt-transient-parallel
   outcome: reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -337,8 +348,8 @@ findings:
   statement: The `tp` column, described as the time between Set and the response, exceeds go_time -
     set_time by a median of 17.9 ms (0.1 to 200.6 ms), more for eye trials (median 21.2 ms) than hand
     trials (17.3 ms); `ts` differs from set_time - ready_time by up to 23.5 ms. Which clock each uses
-    is not documented. For aborted trials `tp` holds negative values (such as -1600 or -2400 ms) that
-    are not described.
+    is not documented. For the 134 trials with tp <= 0, `tp` holds negative values (-2400 to -0.06 ms,
+    most often -1600, -1440 and -960 ms) that are not described.
 - kind: metadata_insufficient
   statement: The unit table has no electrode, probe, area or single-unit or multi-unit label, and the
     electrode table (72 electrodes in 3 groups) has no positions. Units cannot be placed on a probe or
@@ -418,7 +429,7 @@ verifications:
     agrees: true
     outcome: not_reproduced
     reason: Prior-dependent units are 79.2% (expected 65 ± 6.5). Time-dependent units are 45.8% (expected 27 ± 2.7; 95% CI
-      31.4 to 60.8 excludes 27). Neither is within tolerance (cell 22). Problem 9, windows are placed at nominal ts after
+      31.4 to 60.8 excludes 27). Neither is within tolerance (cell 22). Problem 9, which the verifier marked as not affecting a conclusion, windows are placed at nominal ts after
       ready_time, but actual Set falls within ±24 ms of that.
     response: Kept not reproduced. Added the variant with the window before each trial's own Set aligned to its set_time
       (75.0% and 43.8%, 2 and 1 units change class), also outside both ranges.
@@ -443,7 +454,7 @@ verifications:
     outcome: reproduced
     reason: Hand Left gives 0.994 / 0.986, and the mean over datasets gives 0.955 / 0.986; both clear the tolerance under
       both readings (cell 30). The test has little specificity, random axes have median R2 0.75 to 0.99, and in 7 of 8
-      dataset-priors at least 10% of random axes score at least as high. Problem 4, this is shown but not discussed as a
+      dataset-priors at least 10% of random axes score at least as high. Problem 4, which the verifier marked as not affecting a conclusion, this is shown but not discussed as a
       limit on encoding-r2.
     response: Kept reproduced. The conclusion and the notes now say that u is not singled out in most dataset-priors and
       that ts reaches the same R2 as te, and that the outcome follows a criterion that asks only for the R2 values.
@@ -516,7 +527,7 @@ verifications:
     agrees: true
     outcome: not_reproduced
     reason: Median time of the minimum distance is −230 ms at 60% variance and −200 ms at 75%. That is outside the last 200
-      ms, and 29 of 32 curves rise again by Go (cell 48). Problem 8, smoothing with mode nearest truncated at Go distorts
+      ms, and 29 of 32 curves rise again by Go (cell 48). Problem 8, which the verifier marked as not affecting a conclusion, smoothing with mode nearest truncated at Go distorts
       the last 2 to 4 bins, and at 60% variance the eye datasets keep 1 PC, so the minimum distance is a crossing point,
       not convergence.
     response: Kept not reproduced. Added the variant smoothed from Go - 1000 to Go + 200 ms and cropped; at 60% (the
@@ -558,3 +569,126 @@ verifications:
     response: No change. Problem 10 (cell 0 called 0.241017.1448 the only published version) is corrected; the data
       check now lists both published versions and shows they hold the same files. The GPFA-session wording in the data
       check now says the 48-unit count is the only link, since the paper does not date that session.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, the helper module rsg.py, the attempt record, the
+    questions file and the claims file, with the paper's full text and supplement. The verifier checked every number in
+    the conclusions, the Summary, the README table and the notes against the outputs, and checked the round-1 reasons
+    and responses in the record.
+  results:
+  - claim: beh-slopes
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the outcome. The claims file still misreads the paper here: the per-condition rule is stricter than the median-slope test in Table S1 (a round-1 point that stays a question to a reader). The intercept is a choice that is stated and run both ways."
+    response: "No change to the analysis; the question to a reader stands (questions/sohn-2019.yaml). The round-1 response \"Corrected the header\" meant the notebook's header (cell 0); the claims file is not changed, and its header is part of the question on beh-bayes-model."
+  - claim: beh-overlap-prior
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: beh-sigmoid-increments
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: beh-long-more-bias
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome. Only beh-long-more-bias changes with one of the choices run both ways: it would be partial without the intercept. The notes say so, and the criterion fixes the regression."
+    response: "No change; the intercept stays part of the question on beh-slopes asked of a reader."
+  - claim: beh-bayes-model
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the outcome. The header of the claims file and the beh-bayes-model criterion still say the supplement was not available."
+    response: "No change to the claims file, as the protocol asks; the question to a reader on Table S3 and the claims header stands."
+  - claim: glm-prior-ts
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the outcome. Its round-1 problem 9, marked as not affecting a conclusion, is attached to the reason without that qualifier."
+    response: "Added the qualifier to the round-1 reason."
+  - claim: dfr-overlap-support
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: pca-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the outcome. The Summary says other readings of the kernel width do not change the 2-dimensional estimation space, but under FWHM 40 ms Hand Left needs 3 components; minor, since 7 of 8 values are still 2."
+    response: "Corrected the Summary: under the other readings the estimation space stays 2-dimensional in all datasets but Hand Left, which needs 3 components with a FWHM of 40 ms."
+  - claim: encoding-r2
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome. Its round-1 problem 4, marked as not affecting a conclusion, is attached to the reason without that qualifier."
+    response: "Added the qualifier to the round-1 reason."
+  - claim: encoding-bayes-beats-linear
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: short-in-long-control
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome. From round 1, the claims file leaves out the paper's interaction test (F1,7 = 161.43), which stays a question to a reader on which the outcome depends."
+    response: "No change; the question to a reader stands."
+  - claim: neural-long-more-bias
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: speed-vs-projection
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the outcome. \"The noise-only speed is not correlated with Xu when pooled\" is true, but within datasets it is -0.77, -0.82 and -0.87 in three dataset-priors (cell 50). This does not affect the outcome, which uses the pooled value."
+    response: "The conclusion and the notes now give the three within-dataset correlations and say the criterion uses the pooled value."
+  - claim: initial-speed-biased
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome. With the noise removed it is 7 of 8 but p = 0.078; this is reported, and the outcome rests on the raw speeds the criterion specifies."
+    response: "No change."
+  - claim: speed-predicts-tp
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: alt-speed-unmodulated
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome, which is reproduced only because the test cannot fail with 4 datasets. \"The speed rise in the measured steps is accounted for by noise\" is not supported: with the noise removed the slope is negative in 8 of 8, a falling speed, which is also modulation. The noise estimate looks too large late in the support, as the noise-only step at the end (5.07 to 6.85) is above the mean measured step (2.79 to 6.06) and above the fitted measured step at the end. With fixed trials the noise-only slope is still positive in 8 of 8, so the rise is not only attrition. The output that would settle it is the measured and noise-only step per bin, plus a check of the noise estimator on rates with constant noise. The criterion's use of smoothed rates departs from the STAR Methods, which compute speed in the full neural space to avoid distortion by smoothing and PCA. The outcome cannot change, but the conclusion's interpretation should."
+    response: "Kept reproduced. Added a cell with the measured and noise-only step per bin (they come close at the end of the support, for example 6.58 and 6.58, and the measured step is below the noise in 0 to 10 bins per dataset-prior), a test of the noise estimator on simulated Poisson counts with constant rates and with the measured trajectory as rates (estimate 0.91 to 1.15 times the actual noise, early and late, so not inflated late; the corrected slope is off by -3.46 to 3.22 per s with an SD of 2.65 to 6.80 per s), and the measure without smoothing (slopes positive in 8 of 8, p = 0.125; noise-removed 5 of 8 positive). Rewrote the conclusion and the notes: no rise beyond that of noise, and with smoothed rates a tendency to fall, which is also a modulation and which the test over 4 cannot confirm; the fixed-trial noise slope (2.43 to 7.96 per s) is stated. Added a question to a reader on the smoothed rates."
+  - claim: alt-transient-parallel
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: alt-threshold-monotonic
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the outcome. Its round-1 problem 8, marked as not affecting a conclusion, is attached to the reason without that qualifier."
+    response: "Added the qualifier to the round-1 reason."
+  - claim: gpfa-variance-inverted-u
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the outcome: with 1000 EM iterations p = 0.0547, 6 of 8 below zero. p ranges from 0.055 to 0.125 across the three fits; the outcome holds under all three, but the result is fragile."
+    response: "No change; the notes already say the p value lies near the threshold and moves with the fit."
+  - claim: gpfa-mean-sigmoid
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome: 7 of 8, p = 0.0156, and 4 of 4 slopes."
+    response: "No change."
+  - claim: rnn-curved-manifold
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: rnn-perturbation
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the outcome."
+    response: "No change."
+  - claim: monkey-g
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the outcome. Separately, the README said the notebook takes about 26 minutes where cell 74 printed 21.4 min, and the findings said aborted trials hold tp values such as -1600 or -2400 ms, which no printed output showed."
+    response: "The README now gives the run time of this run, and the data check prints the tp values of the 134 trials with tp <= 0 (-2400 to -0.06 ms, most often -1600, -1440 and -960 ms); the finding cites them."
