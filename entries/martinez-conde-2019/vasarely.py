@@ -47,8 +47,12 @@ Where the parameters come from:
   that circumscribes the 0% star's circumscribed circle (radius 150 DU; Methods, Star). Corners:
   the paper says only "two 1 x 1 DVA square regions in 0% luminance areas within the ROI"
   (Fig 2C shows them); the squares taken here are the two bottom corners of the ROI, the only
-  0% band inside it. This placement is an assumption. Reading "dataset": the file's own
-  `Standard.BaseActivity`, undocumented, present for 40 of the 60 registered files.
+  0% band inside it. This placement is an assumption. The squares inside the corners are
+  adopted because the Methods say the baseline was measured within the ROI, and squares centred
+  on the corners of the Square and Edge cross its border; reading "centred" (squares centred on
+  the corners, the part outside the ROI dropped) is a variant. Reading "dataset": the file's own
+  `Standard.BaseActivity`, undocumented, present for 40 of the 60 registered files; the files'
+  `smoothed_image_norm` is normalised by it (`norm_relation`).
 - RMS contrast: 16 x 16 DU square centred on the Edge, moved from 0% to 100% in 1.5% steps
   (Results, "Neuron responses to corner-folds vs. different contrasts along edge"). The
   definition of RMS contrast is open; `rms_contrast` gives the readings of the claims file.
@@ -295,10 +299,14 @@ def fold_is_ridge(lum: np.ndarray, fold, side: float = 10.0) -> float:
     return float(np.nanmean(out))
 
 
-def baseline_squares(shape, condition: str, folds: dict) -> list[tuple[float, float]]:
-    """Centres of the 16 x 16 DU baseline squares (reading "squares"; module docstring)."""
+def baseline_squares(shape, condition: str, folds: dict, placement: str = "inside") -> list[tuple[float, float]]:
+    """Centres of the 16 x 16 DU baseline squares (reading "squares"; module docstring).
+
+    placement "inside": each square inside a corner of the circumscribing square (the main
+    reading); "centred": each square centred on the corner, the part outside the ROI dropped
+    (a variant; the Methods say only "at the corners"). Corners has one placement."""
     H, W = shape
-    s = BASE_SIZE / 2
+    s = BASE_SIZE / 2 if placement == "inside" else 0.0
     if condition == "Edge-compare":
         cx, cy = folds["_square_centre"]
         return [(cx + sx * (CIRC_HALF - s), cy + sy * (CIRC_HALF - s)) for sx in (-1, 1) for sy in (-1, 1)]
@@ -306,12 +314,33 @@ def baseline_squares(shape, condition: str, folds: dict) -> list[tuple[float, fl
         cx, cy = folds["_centre"]
         R = folds["_outer_radius"]
         return [(cx + sx * (R - s), cy + sy * (R - s)) for sx in (-1, 1) for sy in (-1, 1)]
+    s = BASE_SIZE / 2
     # Corners: the two bottom corners of the ROI, in the 0% band (an assumption)
     return [(s + 0.5, H - s + 0.5), (W - s + 0.5, H - s + 0.5)]
 
 
 def baseline(M, centres) -> float:
-    return float(np.mean([box_mean(M, x, y, BASE_SIZE) for x, y in centres]))
+    """Mean over the squares of each square's mean; a square wholly outside the map is dropped."""
+    return float(np.nanmean([box_mean(M, x, y, BASE_SIZE) for x, y in centres]))
+
+
+def norm_relation(sm: np.ndarray, sm_norm: np.ndarray, base: float) -> str:
+    """How `smoothed_image_norm` relates to `smoothed_image` (both per 1 ms sample) and the
+    file's BaseActivity: "difference" (sm - base), "index" ((sm - base) / (sm + base)), "all nan",
+    or "other". Checked on the pixels where both are finite."""
+    ok = np.isfinite(sm_norm) & np.isfinite(sm)
+    if not ok.any():
+        return "all nan"
+    if not np.isfinite(base):
+        return "other (no BaseActivity)"
+    a, n = sm[ok], sm_norm[ok]
+    if np.allclose(n, a - base, atol=1e-9):
+        return "difference"
+    den = a + base
+    pos = den > 0
+    if pos.any() and np.allclose(n[pos], (a[pos] - base) / den[pos], atol=1e-6):
+        return "index"
+    return "other"
 
 
 def load_all(z: zipfile.ZipFile | None = None, shifts: bool = True) -> list[dict]:
@@ -337,9 +366,19 @@ def load_all(z: zipfile.ZipFile | None = None, shifts: bool = True) -> list[dict
         if hasattr(d, "eyetime"):
             et = _dense(d.eyetime)
             rec["eyetime_s"] = float(et.sum() / 1000)
+            rec["eyetime_max"] = float(et.max())
             rec["spikes_from_eyetime"] = float(np.round(img * et).sum())
             rec["count_is_integer"] = bool(np.allclose(img * et, np.round(img * et)))
+        sm = np.asarray(d.smoothed_image, float)
+        rec["full_smoothed_median_hz"] = float(np.median(sm[sm > 0]) * RATE_SCALE)
+        if hasattr(d, "norm"):
+            rec["norm_values"] = np.atleast_1d(_dense(d.norm)).ravel()[:5].tolist()
         std = getattr(d, "Standard", None)
+        if hasattr(d, "smoothed_image_norm"):
+            base = float(std.BaseActivity) if std is not None and hasattr(std, "BaseActivity") else np.nan
+            sn = _dense(d.smoothed_image_norm)
+            rec["smoothed_norm_range"] = (float(np.nanmin(sn)), float(np.nanmax(sn))) if np.isfinite(sn).any() else (np.nan, np.nan)
+            rec["smoothed_norm_relation"] = norm_relation(sm, sn, base)
         rec["registered"] = std is not None
         if std is not None:
             rec["std_fields"] = list(std._fieldnames)
