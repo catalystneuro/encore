@@ -11,8 +11,8 @@ it.
 | Grid, head direction and border cells are found in the MEC recordings | Reproduced (resting on an assumption) |
 | Laser-responsive cells (2 to 4 ms latency) include grid cells | Reproduced |
 | Rates, latencies and fidelities of the three example cells of Figure 5C | Reproduced (resting on an assumption) |
-| One input cell stays stable and responsive over six sessions (Figure S3) | Partially reproduced |
-| Non-responsive head direction, border and grid cells (Figure S4) | Partially reproduced |
+| One input cell stays stable and responsive over six sessions (Figure S3) | Partially reproduced (resting on an assumption) |
+| Non-responsive head direction, border and grid cells (Figure S4) | Partially reproduced (resting on an assumption) |
 | Responsive cells with spatial firing at 19 days | Reproduced |
 | Input cells detected in the MEC from about 2 weeks | Reproduced |
 | Histology of single-cell tracing, controls and population labelling (19 claims) | Blocked: data missing |
@@ -26,6 +26,6 @@ analysis, with details from the code that paper links. The attempt record, with 
 differences from the paper's method, is
 [`attempts/jacobsen-2022-01.yaml`](../../attempts/jacobsen-2022-01.yaml).
 
-- `reproduce_jacobsen_2022.ipynb`: the analysis. It takes about four minutes, most of it the shuffles.
+- `reproduce_jacobsen_2022.ipynb`: the analysis. It takes about three minutes, most of it the shuffles.
 - `mec_units.py`: loading the files, latency and fidelity, and the spatial scores and shuffles used to
   classify cells. Other notebooks on this dandiset can import it.

@@ -17,7 +17,7 @@ Where the parameters come from:
   over pulses followed by a spike within 10 ms, and the percentage of pulses followed by one.
   `LATENCY_WINDOW_S` is that 10 ms. The pulse time is the TTL onset (reading a) or offset
   (reading b), as the claims file lists.
-- The first TTL event of each laser epoch starts exactly at the epoch's start time and lasts 0.6
+- The first TTL event of each laser epoch starts exactly at the epoch's start time and lasts 45 ms
   to 1.9 s, where every other event lasts about 1.06 ms; its onset is not a pulse onset. Events
   longer than `MAX_PULSE_S` are left out (a check of the data, not a method of the paper).
 - Open-field firing rate: spikes in the open field over its duration (claims file, opening
