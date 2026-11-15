@@ -1,0 +1,670 @@
+# Claims for Jacobsen, Nair, Obenhaus, Donato, Slettmoen, Moser & Moser (2022), "All-viral
+# tracing of monosynaptic inputs to single birthdate-defined neurons in the intact brain",
+# Cell Reports Methods 2, 100221, tested on DANDI:000230.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-15, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (PDF supplied by a person, paper and supplement), as
+# paper/10.1016-j.crmeth.2022.100221.txt: main text, figure legends, STAR Methods, and the
+# supplement's Tables S1 and S2. The supplement's Figures S1 to S4 and their legends are images
+# in the PDF and do not appear in the text; they were read from PDF pages 23 to 26. Values read
+# from figures (pie charts of Figures 3 and 4, latency, fidelity and firing rates printed in
+# Figures 5C, S3 and S4) were read from the PDF and are marked as such. The quote checker cannot
+# find the p-values 0.0036 and 0.0317 (Figure S2A legend) because that legend is not in the
+# text; both were confirmed by reading PDF page 24.
+#
+# Code: the paper reports no original code ("This paper does not report original code"). The
+# STAR Methods say the electrophysiology was analysed "with custom Python code ... as reported
+# in Rowland et al. (2018)" (eLife 7, doi:10.7554/eLife.36664), and that head direction score and
+# mean vector length were calculated as described there. No repository is linked, so none was
+# read. Where a criterion needs a cell classification or score, it is taken from Rowland et al.
+# (2018), as the Methods direct; the reader has not read that paper, and the author takes the
+# definitions and thresholds from it.
+#
+# Data the paper used.
+# - Single-cell tracing (Figures 2 to 4, S2; Table S1): 31 wild-type C57BL/6JBomTac mice
+#   injected in utero at E13 with diluted AAV-CKII-Cre, then as adults with AAV-hS-FLEX-TVA-HA-
+#   N2cG into the right dorsal hippocampus and, at least 2 weeks later, RABV-tdTomato (or
+#   RABV-ChR2-YFP for animal 59457); perfused 16 to 30 days after the rabies injection. Measured
+#   by histology (40 um sagittal sections, antibody staining for HA or 2A helper tags, confocal
+#   checks of colocalization): starter cells, rabies-positive cells in the dorsal hippocampus and
+#   entorhinal cortex, their spread along the longitudinal axis, and input cell types. Four
+#   control mice (Table S2, 99864, 99584, 99877, 99878) had no Cre and 28 days of rabies.
+# - Optogenetic tagging (Figures 5, S3, S4; Table S2): two mice. Mouse 58313 (F, E12 undiluted
+#   Cre in utero, 404.8 nl helper virus, RABV-ChR2-YFP, perfused 30 days after rabies; Figures 5
+#   and S4) and mouse 70375 (M, Cre and helper virus mixed and injected as an adult, RABV-ChR2-
+#   YFP, 20 days; Figure S3). Each carried an optrode (four tetrodes, 16 channels, optic fibre)
+#   in the right MEC. Sessions 14 to 19 days after the rabies injection, up to two per day: about
+#   30 min of open-field foraging (1 x 1 m box, white cue card), then laser trials in a holding
+#   box (473 nm, 1 ms pulses at 10 Hz, 7.5 to 15.14 mW at the patch cable). Spikes stored at
+#   48 kHz, position and head direction from two LEDs at 50 Hz, laser TTL on a digital input.
+#   Spikes of both parts were sorted together with KlustaKwik and manual refinement. Cells are
+#   labelled in the figures by tetrode (T) and cell ID (C).
+# - Two-photon imaging (Figures 6, 7): mouse 58253 (E14, RABV-GCaMP6f, prism, benchtop
+#   microscope, about 30 Hz) and mouse 60388 (E13 single-cell protocol, AAV-Syn-GCaMP6m in MEC,
+#   RABV-tdTomato, GRIN lens and prism, two-photon miniscope at about 7.52 Hz). Traces are dF/F
+#   from Suite2p ROIs.
+#
+# The Data and code availability section says the electrophysiology data were deposited on
+# DANDI (000230, version 0.220506.1516). The archive's title and description name the paper and
+# the photostimulation power set points (20 and 40 mW set, 7.5 and 15.1 mW actual). The
+# histology counts and the imaging data are not said to be deposited anywhere; the claims on
+# them are listed with data from the paper's own recordings, and the author will find whether
+# the dandiset holds them. The counts of Table S1 are printed in the supplement.
+#
+# Shared definitions, from the STAR Methods ("Analysis of electrophysiology data").
+# - Latency: the mean, over laser pulses followed by a spike within 10 ms, of the time from the
+#   pulse to the first spike; pulses with no spike within 10 ms are left out.
+# - Fidelity: the percentage of laser pulses followed by a spike within 10 ms.
+# - Open: the time of a pulse. Readings (a) the TTL onset, (b) the TTL offset 1 ms later. (a) is
+#   the plain reading of "the average time between a laser pulse ... and the first spike".
+# - Open: what makes a cell "responsive". The Results say cells "responded robustly to laser
+#   stimulation with a 2- to 4-ms latency" and the Figure 5C legend says "robust and reliable
+#   responses"; no threshold is given. Readings (R-a) latency between 2 and 4 ms and fidelity at
+#   least 11.64%, the lowest fidelity among the cells Figure 5C shows as responsive; (R-b)
+#   latency between 2 and 4 ms and more pulses followed by a spike within 10 ms than pulses
+#   preceded by one in the 10 ms before (one-sided paired test, p < 0.05).
+# - Open-field firing rate: the values above the path plots are "the average firing rate for
+#   the open field session", read as spikes over session duration.
+schema_version: 2
+paper: doi:10.1016/j.crmeth.2022.100221
+claims:
+- id: fig2a-four-or-fewer-starters
+  statement: With the single-cell protocol, starter cells could be identified conclusively in 15
+    of 31 animals (48%), and each of these had four or fewer starter cells.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 4; Figure 2A
+  quote: With this approach, we could unambiguously target four or fewer starter cells in 48% of
+    animals (15 of 31) (Figure 2A)
+  expected:
+  - quantity: fraction of animals with conclusive starter cells
+    value: 48.4
+    tolerance: 4.8
+    unit: percent
+  - quantity: animals with conclusive starter cells
+    value: 15
+    tolerance: 1.5
+    unit: animals
+  criterion: Counted from histology, with the classification of the STAR Methods
+    (Conclusive/inconclusive classification) over the 31 animals of Table S1, after the
+    exclusions the Methods name (two missed injections, one lost section). Reproduced when the
+    count and fraction are within tolerance and no conclusive animal has more than four starter
+    cells.
+- id: fig2a-starter-count-distribution
+  statement: Among the 31 single-cell animals, 4 had zero starter cells, 5 one, 2 two, 2 three
+    and 2 four, and 16 were inconclusive.
+  source: Figure 2A; Table S1
+  inferred: Counts read from the bar chart of Figure 2A and the Starter cells column of Table
+    S1; no sentence gives them.
+  expected:
+  - quantity: animals with 0 starter cells
+    value: 4
+  - quantity: animals with 1 starter cell
+    value: 5
+  - quantity: animals with 2 starter cells
+    value: 2
+  - quantity: animals with 3 starter cells
+    value: 2
+  - quantity: animals with 4 starter cells
+    value: 2
+  - quantity: inconclusive animals
+    value: 16
+  criterion: Counts of animals are small integers, so they are to match exactly (a tolerance of
+    10% is less than one animal). Reproduced when all six counts match.
+- id: fig2a-single-starter-rate
+  statement: A single starter cell was labelled in 5 of the 15 conclusive animals (33%), an
+    overall success rate of 16% (5 of 31) for targeting a single hippocampal cell.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 4; Figure 2A
+  quote: In this group, a single starter cell was labeled 33% of the time (5 of 15) (Figure 2A),
+    resulting in an overall success rate of 16% (5 of 31) for targeting a single cell in the
+    hippocampus
+  expected:
+  - quantity: single starter cell, fraction of conclusive animals
+    value: 33
+    tolerance: 3.3
+    unit: percent
+  - quantity: single starter cell, fraction of all animals
+    value: 16
+    tolerance: 1.6
+    unit: percent
+  depends_on:
+  - fig2a-four-or-fewer-starters
+- id: no-starter-cells-in-mec
+  statement: No starter cells were found in the MEC.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 3
+  quote: No starter cells were found in the MEC.
+  criterion: Reproduced when no cell in the entorhinal sections of the single-cell animals shows
+    both a helper tag and the rabies payload under the STAR Methods classification.
+- id: fig2b-rabies-cells-increase-with-time
+  statement: The number of rabies-positive cells in the ipsilateral dorsal hippocampus increases
+    with the days after the rabies injection (Spearman R = 0.58, p = 0.0014, n = 27 animals).
+  source: Figure 2B, left, and legend; Results, A virus-based method for targeting a single cell
+    and identifying its inputs, paragraph 4
+  quote: the total number of rabies-positive cells observed in the ipsilateral dorsal hippocampus
+    increases as a function of days after the rabies injection (R = 0.58, p = 0.0014, Spearman's
+    rho, n = 27 animals not including control animals)
+  statistics:
+  - test: Spearman's rho
+    statistic: R = 0.58
+    p: 0.0014
+    n: 27 animals, single-cell animals without the four with zero starter cells, no controls
+  expected:
+  - quantity: Spearman R, rabies-positive cells in dorsal hippocampus against days with rabies
+    value: 0.58
+    tolerance: 0.058
+  criterion: Over the animals of Table S1 with rabies-positive cells (the legend leaves out
+    animals with zero starter cells and the control animals), Spearman's rank correlation of
+    the count of rabies-positive cells in the dorsal hippocampus (starter cells included, as in
+    Table S1) against days with rabies. Reproduced when R is within tolerance and p < 0.05.
+- id: fig2b-conclusive-more-than-control
+  statement: Conclusive animals (days 26 to 30) have more rabies-positive cells in the dorsal
+    hippocampus than the no-Cre control animals, which were all inconclusive.
+  source: Figure 2B, right, and legend
+  quote: the number of rabies-positive cells is larger in conclusive animals compared with control
+    animals, which were all inconclusive (p = 0.0159, Wilcoxon rank-sum test, n = 5 conclusive and
+    4 control animals
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.0159
+    n: 5 conclusive and 4 control animals
+  criterion: Conclusive animals with 26 to 30 days of rabies (the x-axis label of the panel; in
+    Table S1 these are 60652, 60823, 60259, 60824 and 60219) against the four no-Cre controls of
+    Table S2. Two-sided Wilcoxon rank-sum test of the counts. Reproduced when p < 0.05 with the
+    conclusive median higher. With 5 and 4 animals and no ties, complete separation gives the
+    exact two-sided p of 0.0159.
+- id: figs2a-spread-increases-with-time
+  statement: The spread of rabies-positive cells along the longitudinal axis of the dorsal
+    hippocampus increases with days after the rabies injection (Spearman r = 0.54, p = 0.0036,
+    n = 27 animals).
+  source: Figure S2A, left, and legend; Results, A virus-based method for targeting a single cell
+    and identifying its inputs, paragraph 4
+  quote: longer expression times of the RABV increased the number of rabies-positive cells (Figure
+    2B), the anatomical area over which they were found in the dorsal hippocampus (Figure S2A)
+  statistics:
+  - test: Spearman's rho
+    statistic: r = 0.54
+    p: 0.0036
+    n: 27 animals, not including control animals
+  expected:
+  - quantity: Spearman r, spread against days with rabies
+    value: 0.54
+    tolerance: 0.054
+  criterion: The legend of Figure S2A (read from the PDF; the supplement's legends are not in
+    the text) says spread is "calculated based on the number of sections in which rabies-positive
+    cells were observed", leaving out the ventral hippocampus; sections are 40 um sagittal
+    sections (STAR Methods, Histology). Spread in um is read as that number of sections times
+    40 um. Reproduced when Spearman r is within tolerance and p < 0.05 over the same 27 animals
+    as fig2b-rabies-cells-increase-with-time.
+- id: figs2a-conclusive-spread-more-than-control
+  statement: The spread of rabies-positive cells in the hippocampus is larger in conclusive
+    animals (days 26 to 30) than in no-Cre controls (p = 0.0317, Wilcoxon rank sum, 5 and 4
+    animals).
+  source: Figure S2A, right, and legend; Results, A virus-based method for targeting a single cell
+    and identifying its inputs, paragraph 5
+  quote: Although some spurious rabies expression was observed in the hippocampus, the number and
+    anatomical ... spread of rabies-positive cells was significantly lower than in conclusive
+    animals (Figures 2B and S2A)
+  statistics:
+  - test: Wilcoxon rank sum
+    p: 0.0317
+    n: 5 conclusive and 4 control animals
+  criterion: The same animals as fig2b-conclusive-more-than-control and the spread measure of
+    figs2a-spread-increases-with-time; two-sided Wilcoxon rank-sum test. Reproduced when
+    p < 0.05 with the conclusive median higher.
+- id: figs2b-mec-inputs-increase-with-time
+  statement: Longer rabies expression increases the number of input cells labelled in the MEC;
+    MEC-labelled cells appear only in animals with 22 or more days of rabies.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 4; Figure S2B
+  quote: As expected, longer expression times of the RABV increased ... as well as the number of
+    input cells labeled in the more distant MEC (Figure S2B)
+  criterion: The paper reports no test for this panel. Counts of rabies-positive cells in the
+    ipsilateral MEC against days with rabies over the 27 animals of fig2b-rabies-cells-increase-
+    with-time. Readings (a) Spearman's rank correlation positive with p < 0.05, the test the
+    paper uses for the parallel panels Figures 2B and S2A; (b) no animal below 22 days has MEC
+    cells, as the panel shows. Reproduced when a reading holds. Table S1 gives entorhinal cortex
+    counts (EC), and Figure S2B MEC counts; the two are taken to be the same cells, which the
+    paper does not state.
+- id: controls-no-mec-spread
+  statement: In no-Cre control animals rabies did not spread to the MEC, even with 2.5 times the
+    volume and a higher titre (10^11 infectious particles/ml) of helper virus.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 5; Figures S2B and S1C
+  quote: and spread to the MEC did not occur (Figure S2B), not even when a larger volume (2.5
+    times more) and higher titer (1011 infectious particles/ml) of the helper virus were used
+    (Figure S1C)
+  criterion: Reproduced when the four no-Cre controls of Table S2 (28 days) and the high-titre
+    control 79986 (138 nl, 14 days) have no rabies-positive cells in the MEC.
+- id: figs1a-no-expression-without-tva
+  statement: Without Cre and helper virus, RABV-tdTomato alone produces no tdTomato expression
+    in the hippocampus, so unpseudotyped rabies virus does not contribute to the labelling.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 5; Figure S1A, left
+  quote: This can be due to the presence of unpseudotyped RABVs ... The former does not seem to be
+    an issue here (Figure S1A)
+  criterion: Reproduced when mouse 72359 (Table S2, RABV-tdTomato only, 14 days) shows no
+    tdTomato-expressing cells in the hippocampus.
+- id: figs1b-sparse-cre
+  statement: Diluted AAV-CKII-Cre injected in utero at E13 leaves only a few Cre-expressing
+    cells in the adult hippocampus.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 2; Figure S1B
+  quote: only a few cells express Cre in the adult hippocampus of these animals (Figure S1B)
+  criterion: The paper gives no count. Judged on mice 58482 and 58483 (Table S2, E13, 1:500
+    Cre, AAV1-CAG-FLEX-tdTomato in the adult); reproduced when tdTomato-expressing cells in
+    their hippocampus are sparse, read as individually separable cells and not a filled layer,
+    as in the panel.
+- id: fig3-inputs-reflect-starter-identity
+  statement: The inputs of a single starter cell reflect its identity; a CA3 pyramidal starter
+    cell (16 days) and a CA2 stratum oriens interneuron starter cell (30 days) in neighbouring
+    regions received very different sets of hippocampal inputs.
+  source: Results, A virus-based method for targeting a single cell and identifying its inputs,
+    paragraph 4; Figure 3B and D
+  quote: The identity of the inputs reflected the identity of the starter cell (Figures 3 and 4),
+    which is an important indication that the RABV is indeed transsynaptic. For example, the
+    constellation of inputs a single pyramidal neuron and a single interneuron received was very
+    different despite them being located in neighboring regions (distal CA3 and CA2) in the
+    hippocampus (Figure 3)
+  expected:
+  - quantity: input cells to the CA3 pyramidal starter (animal 59457)
+    value: 7
+  - quantity: CA pyramidal cell inputs, CA3 pyramidal starter
+    value: 85.7
+    tolerance: 8.6
+    unit: percent
+  - quantity: granule cell inputs, CA3 pyramidal starter
+    value: 14.3
+    tolerance: 1.4
+    unit: percent
+  - quantity: input cells to the interneuron starter (animal 60219)
+    value: 26
+  - quantity: CA pyramidal cell inputs, interneuron starter
+    value: 65.4
+    tolerance: 6.5
+    unit: percent
+  - quantity: interneuron inputs, interneuron starter
+    value: 30.8
+    tolerance: 3.1
+    unit: percent
+  - quantity: granule cell inputs, interneuron starter
+    value: 3.8
+    tolerance: 0.4
+    unit: percent
+  criterion: Percentages read from the pie charts of Figure 3B and D; input counts from the
+    legends (n = 7 and n = 26 input cells), matching Table S1 less the starter cell. Counts are
+    to match exactly; with 7 and 26 cells each percentage is a whole number of cells, so a
+    percentage matches when the number of cells of that type matches (6 and 1 of 7; 17, 8 and 1
+    of 26). Reproduced when the counts by type match and the interneuron starter receives
+    interneuron inputs while the pyramidal starter receives none.
+- id: fig4a-distant-granule-input
+  statement: After 20 days of rabies, a single granule cell starter received input from one other
+    granule cell more than 320 um away along the longitudinal axis.
+  source: Results, Targeting single starter cells in the hippocampus highlights granule-granule
+    cell connectivity, paragraph 1; Figure 4A legend
+  quote: After 20 days of rabies expression, one granule cell was found to receive input from
+    another granule cell located several hundred micrometers away along the longitudinal axis of
+    the hippocampus (Figure 4A)
+  expected:
+  - quantity: distance from starter to input cell along the longitudinal axis, lower bound
+    value: 320
+    unit: um
+  criterion: Animal 60047 (Table S1, 20 days, 1 granule cell starter, 2 rabies cells). Reproduced
+    when the one input is a granule cell more than 320 um from the starter along the
+    longitudinal axis, as the legend states ("more than 320 mm away", um garbled in the text).
+- id: fig4b-granule-inputs-dominate
+  statement: After 26 days, a single granule cell starter had 35 hippocampal input cells, 80% of
+    them granule cells; subtracting the highest background count of the controls (18) still
+    leaves 58.8% granule cell inputs.
+  source: Results, Targeting single starter cells in the hippocampus highlights granule-granule
+    cell connectivity, paragraph 1; Figure 4B
+  quote: After 26 days (in a different animal), the virus had spread to a total of 35 input cells in
+    the hippocampus, 80% of which were other granule cells (Figure 4B). Even when accounting for
+    background expression, granule cells were still the dominant input type
+  expected:
+  - quantity: hippocampal input cells (animal 60652)
+    value: 35
+  - quantity: granule cell inputs
+    value: 28
+  - quantity: granule cell fraction of inputs
+    value: 80.0
+    tolerance: 8.0
+    unit: percent
+  - quantity: granule cell fraction after subtracting 18 background cells
+    value: 58.8
+    tolerance: 5.9
+    unit: percent
+  - quantity: other dentate cell fraction
+    value: 11.4
+    tolerance: 1.1
+    unit: percent
+  - quantity: glia fraction
+    value: 5.7
+    tolerance: 0.6
+    unit: percent
+  - quantity: interneuron fraction
+    value: 2.9
+    tolerance: 0.3
+    unit: percent
+  criterion: The background correction is the paper's, (28 - 18)/(35 - 18), with 18 the highest
+    rabies-positive count among the control animals. Counts are to match exactly (each type
+    fraction is a whole number of cells, 28, 4, 2 and 1 of 35); the type fractions other than
+    granule cells were read from the pie chart. Reproduced when the counts match and the
+    corrected fraction is above 50%.
+- id: fig4-subgranular-inputs
+  statement: Many granule cell inputs lay in the subgranular zone, suggesting immature granule
+    cells; 1 of 1 after 20 days and 11 of 28 after 26 days.
+  source: Results, Targeting single starter cells in the hippocampus highlights granule-granule
+    cell connectivity, paragraph 1
+  quote: a substantial number of their inputs was found in the subgranular zone (1 of 1 granule cell
+    inputs after 20 days, 11 of 28 after 26 days)
+  expected:
+  - quantity: subgranular granule cell inputs, 20 days (animal 60047)
+    value: 1
+  - quantity: subgranular granule cell inputs, 26 days (animal 60652)
+    value: 11
+  criterion: Counts are to match exactly.
+- id: fig4c-dg-starter-local-and-mec-inputs
+  statement: A single dentate gyrus starter cell (possibly a molecular layer perforant
+    path-associated interneuron) had 34 hippocampal input cells and 4 input cells in the MEC
+    after 28 days.
+  source: Figure 4C legend
+  quote: The pie chart (center left) shows the proportions of hippocampal input cell types to the
+    single starter cell highlighted on the left 28 days after the rabies injection (n = 34 input
+    cells in the hippocampus to a single starter cell)
+  expected:
+  - quantity: hippocampal input cells (animal 60259)
+    value: 34
+  - quantity: MEC input cells
+    value: 4
+  - quantity: CA pyramidal cell inputs
+    value: 41.2
+    tolerance: 4.1
+    unit: percent
+  - quantity: granule cell inputs
+    value: 32.4
+    tolerance: 3.2
+    unit: percent
+  - quantity: other dentate, glia and interneuron inputs, each
+    value: 8.8
+    tolerance: 0.9
+    unit: percent
+  criterion: Fractions read from the pie chart of Figure 4C. Counts are to match exactly (14, 11,
+    3, 3 and 3 of 34; 4 MEC cells). Reproduced when the counts match.
+- id: cytotoxicity-after-30-days
+  statement: When targeting single cells, cell damage was typically not seen until more than 30
+    days after the rabies injection; dendritic blebbing appeared at 34 days.
+  source: Discussion, paragraph 4; Figure 7A legend
+  quote: we typically did not see cell damage until more than 30 days after the rabies injection
+    when attempting to target single cells (Figure 7A)
+  criterion: The paper gives no measure of cell damage beyond the image. Reproduced when the
+    hippocampal sections of mouse 60388 (34 days) show dendritic blebbing and those of the
+    single-cell animals of Table S1 (16 to 30 days) do not, judged by eye.
+- id: fig5c-functional-cell-types
+  statement: In mice with widespread RABV-ChR2-YFP expression, MEC recordings include grid, head
+    direction and border cells, so the network as a whole is not disrupted by the rabies
+    expression.
+  source: Results, The functional properties of input cells to birthdate-defined cell populations
+    can be determined with optogenetics in vivo, paragraph 3; Figures 5C and S4
+  quote: We found several functional cell types, including grid, head direction, and border cells
+    (Figures 5C and S4), indicating that the network as a whole was not affected by the widespread
+    rabies expression
+  criterion: Open-field sessions of mice 58313 and 70375. Grid, head direction and border cells
+    are classified with the scores and thresholds of Rowland et al. (2018), which the STAR
+    Methods cite for the analysis; this paper gives no score or threshold of its own except
+    that it shows a head direction score and mean vector length (Figure S4). Reproduced when at
+    least one unit of each of the three types is found. The example units named in the figures
+    (grid cells T1 C89, 19 days, Figure 5C, and T1 C50, 19 days, Figure S4; head direction cell
+    T4 C16, 17 days; border cell T4 C50, 18 days; all mouse 58313) are reported with their
+    scores, when the dandiset's unit labels allow them to be found.
+- id: fig5c-responsive-grid-cell
+  statement: Among the cells that responded to laser stimulation with a 2 to 4 ms latency, a sign
+    of direct ChR2 activation and so of a monosynaptic projection to the hippocampus, were grid
+    cells.
+  source: Results, The functional properties of input cells to birthdate-defined cell populations
+    can be determined with optogenetics in vivo, paragraph 3; Figure 5C
+  quote: Cells that responded robustly to laser stimulation with a 2- to 4-ms latency (demonstrating
+    direct activation as opposed to later, ... included grid cells (Figure 5C)
+  depends_on:
+  - fig5c-functional-cell-types
+  criterion: Latency, fidelity and responsiveness as defined in the opening comment, with both
+    responsiveness readings (R-a, R-b) and both pulse-time readings. The 2 to 4 ms range, a
+    reported range, is widened to 1.8 to 4.4 ms. Reproduced when, under one reading, at least
+    one unit classed as a grid cell in fig5c-functional-cell-types is responsive. The number of
+    responsive units and their types are reported.
+- id: fig5c-example-cells
+  statement: Three example responsive cells of mouse 58313 had these open-field rates, latencies
+    and fidelities; a grid cell (T1 C89, 19 days) 1.10 Hz, 2.75 ms, 40.73%; a high-rate cell
+    (T1 C57, 17 days) 12.67 Hz, 3.90 ms, 35.64%; a low-rate cell (T1 C52, 17 days) 0.30 Hz,
+    2.65 ms, 11.64%.
+  source: Figure 5C
+  inferred: Values printed in the panels of Figure 5C, read from the PDF; the legend names the
+    cells and days but no sentence gives the values.
+  expected:
+  - quantity: T1 C89 open-field rate
+    value: 1.10
+    tolerance: 0.11
+    unit: Hz
+  - quantity: T1 C89 latency
+    value: 2.75
+    tolerance: 0.275
+    unit: ms
+  - quantity: T1 C89 fidelity
+    value: 40.73
+    tolerance: 4.07
+    unit: percent
+  - quantity: T1 C57 open-field rate
+    value: 12.67
+    tolerance: 1.27
+    unit: Hz
+  - quantity: T1 C57 latency
+    value: 3.90
+    tolerance: 0.39
+    unit: ms
+  - quantity: T1 C57 fidelity
+    value: 35.64
+    tolerance: 3.56
+    unit: percent
+  - quantity: T1 C52 open-field rate
+    value: 0.30
+    tolerance: 0.03
+    unit: Hz
+  - quantity: T1 C52 latency
+    value: 2.65
+    tolerance: 0.265
+    unit: ms
+  - quantity: T1 C52 fidelity
+    value: 11.64
+    tolerance: 1.16
+    unit: percent
+  criterion: Latency and fidelity as defined in the opening comment, under both pulse-time
+    readings. The units are found by tetrode and cell ID in the session of the stated day. Where
+    the dandiset does not keep those labels, the unit on tetrode 1 of that session whose
+    open-field rate is closest to the printed value is taken, and the match is marked as
+    resting on that choice. Which of the day's sessions (up to two per day) is meant is not
+    stated; each is tried. Reproduced when all nine values are within tolerance under one
+    reading; partially reproduced when the latencies all lie within 1.8 to 4.4 ms but other
+    values miss.
+- id: figs3-stable-input-cell
+  statement: The firing properties of one input cell stayed stable across six sessions on three
+    days (14, 15 and 16 days after the rabies injection); it responded to every laser session
+    with a latency of 2.50 to 2.95 ms.
+  source: Results, The functional properties of input cells to birthdate-defined cell populations
+    can be determined with optogenetics in vivo, paragraph 3; Figure S3B
+  quote: The firing properties of an individual input cell were also found to remain stable for at
+    least 3 days of continuous rabies expression (Figure S3)
+  expected:
+  - quantity: open-field rate, day 14 session 1
+    value: 0.89
+    tolerance: 0.089
+    unit: Hz
+  - quantity: open-field rate, day 14 session 2
+    value: 1.06
+    tolerance: 0.106
+    unit: Hz
+  - quantity: open-field rate, day 15 session 1
+    value: 0.28
+    tolerance: 0.028
+    unit: Hz
+  - quantity: open-field rate, day 15 session 2
+    value: 1.61
+    tolerance: 0.161
+    unit: Hz
+  - quantity: open-field rate, day 16 session 1
+    value: 0.95
+    tolerance: 0.095
+    unit: Hz
+  - quantity: open-field rate, day 16 session 2
+    value: 1.84
+    tolerance: 0.184
+    unit: Hz
+  - quantity: latency, day 14 session 1
+    value: 2.83
+    tolerance: 0.283
+    unit: ms
+  - quantity: latency, day 14 session 2
+    value: 2.95
+    tolerance: 0.295
+    unit: ms
+  - quantity: latency, day 15 session 1
+    value: 2.77
+    tolerance: 0.277
+    unit: ms
+  - quantity: latency, day 15 session 2
+    value: 2.77
+    tolerance: 0.277
+    unit: ms
+  - quantity: latency, day 16 session 1
+    value: 2.58
+    tolerance: 0.258
+    unit: ms
+  - quantity: latency, day 16 session 2
+    value: 2.50
+    tolerance: 0.25
+    unit: ms
+  - quantity: fidelity, day 14 session 1
+    value: 27.64
+    tolerance: 2.76
+    unit: percent
+  - quantity: fidelity, day 14 session 2
+    value: 48.00
+    tolerance: 4.80
+    unit: percent
+  - quantity: fidelity, day 15 session 1
+    value: 68.71
+    tolerance: 6.87
+    unit: percent
+  - quantity: fidelity, day 15 session 2
+    value: 64.36
+    tolerance: 6.44
+    unit: percent
+  - quantity: fidelity, day 16 session 1
+    value: 76.73
+    tolerance: 7.67
+    unit: percent
+  - quantity: fidelity, day 16 session 2
+    value: 81.82
+    tolerance: 8.18
+    unit: percent
+  criterion: Mouse 70375 (Table S2). Values printed in the panels of Figure S3B, read from the
+    PDF, in session order (left to right). Laser trials were 1 ms pulses at 10 Hz and 7.5 mW
+    (legend of Figure S3B). The paper does not say how the same cell was matched across
+    sessions; the Methods say the tetrodes were not turned down between these sessions. The
+    unit is taken as the one sorted under the same cluster label in all six sessions when the
+    dandiset keeps one; otherwise as the unit whose waveform on the four channels best matches
+    across sessions, a choice the paper does not make and which is marked as an assumption.
+    Reproduced when the unit is found in all six sessions, every latency lies within 1.8 to 4.4
+    ms, and at least 15 of the 18 values are within tolerance; partially reproduced when the
+    unit is found and responsive in every session but fewer values match.
+- id: figs4-nonresponsive-cells
+  statement: Some MEC cells recorded in the same area did not respond to laser stimulation,
+    among them a head direction cell (T4 C16, 17 days, head direction score 0.81, mean vector
+    length 0.90, peak rate 9.02 Hz, open-field rate 1.05 Hz), a border cell (T4 C50, 18 days,
+    1.69 Hz) and a grid cell (T1 C50, 19 days, 0.78 Hz).
+  source: Figure S4
+  inferred: Read from Figure S4 and its legend in the PDF (the supplement's legends are not in
+    the text); no sentence of the main text states it.
+  expected:
+  - quantity: T4 C16 head direction score
+    value: 0.81
+    tolerance: 0.081
+  - quantity: T4 C16 mean vector length
+    value: 0.90
+    tolerance: 0.09
+  - quantity: T4 C16 peak firing rate of the head direction tuning curve
+    value: 9.02
+    tolerance: 0.90
+    unit: Hz
+  - quantity: T4 C16 open-field rate
+    value: 1.05
+    tolerance: 0.105
+    unit: Hz
+  - quantity: T4 C50 open-field rate
+    value: 1.69
+    tolerance: 0.169
+    unit: Hz
+  - quantity: T1 C50 open-field rate
+    value: 0.78
+    tolerance: 0.078
+    unit: Hz
+  criterion: Mouse 58313; laser trials of 1 ms pulses at 10 Hz and 7.5 mW (legend). Head
+    direction score and mean vector length as in Rowland et al. (2018), as the STAR Methods
+    state. Units found as in fig5c-example-cells. Reproduced when the three units are not
+    responsive under either responsiveness reading and the values are within tolerance.
+- id: responsive-cells-at-19-days
+  statement: Laser-responsive cells with clear spatial firing patterns could be identified for at
+    least 19 days after the rabies injection.
+  source: Results, The functional properties of input cells to birthdate-defined cell populations
+    can be determined with optogenetics in vivo, paragraph 3; Figure 5C
+  quote: responsive cells with clear spatial firing patterns could be identified for at least 19
+    days after the rabies injection (Figure 5C)
+  depends_on:
+  - fig5c-responsive-grid-cell
+  criterion: Reproduced when a session 19 or more days after the rabies injection holds a unit
+    that is responsive (either reading) and classed as a grid, head direction or border cell
+    under Rowland et al. (2018). "Clear spatial firing patterns" is read as one of these
+    classes; the paper's example is the grid cell T1 C89.
+- id: mec-inputs-from-two-weeks
+  statement: In the optogenetic experiments, input cells could be detected in the MEC from about
+    2 weeks after the rabies injection.
+  source: Results, The functional properties of input cells to birthdate-defined cell populations
+    can be determined with optogenetics in vivo, paragraph 3
+  quote: In these experiments, input cells could be detected in the MEC from approximately 2 weeks
+    after the rabies injection.
+  criterion: The sentence does not say whether detection was by recording or by histology. Read
+    as detection by recording, the test available in the dandiset; reproduced when the earliest
+    session holding a responsive unit (either reading) is about 14 days after the rabies
+    injection, within 10% of 14 days (12.6 to 15.4 days). Figure S3 shows such a unit at day
+    14.
+- id: fig6b-imaged-input-cells
+  statement: Two-photon imaging through a prism in a head-fixed mouse identified several MEC cells
+    expressing RABV-GCaMP6f, that is, cells projecting to an E14 birthdate-matched hippocampal
+    population; five such cells were imaged 19 days after the rabies injection, with different
+    activity onsets.
+  source: Results, In vivo two-photon calcium imaging enables functional detection of distant input
+    cells to birthdate-defined cell populations, paragraph 1; Figure 6B
+  quote: This enabled us to perform ... imaging in awake, head-fixed mice and identify
+    several cells projecting to a population of birthdate-matched cells in the hippocampus
+    (Figure 6B)
+  expected:
+  - quantity: imaged input cells in the field of view
+    value: 5
+  criterion: Mouse 58253, benchtop recording 19 days after the rabies injection, about 2 min long
+    (legend), Suite2p ROIs and dF/F as in the STAR Methods (neuropil coefficient 0.7; baseline
+    the median of the lowest 20% of frames after Hanning smoothing; the window length is not
+    given and is a standard choice). Reproduced when five cells are found in the field and
+    at least two show calcium transients with different onset times.
+- id: fig7b-dual-labelled-input-cell
+  statement: With GCaMP6m expressed in the MEC by AAV and RABV-tdTomato injected into the
+    hippocampus, a two-photon miniscope identified in vivo an MEC cell expressing both, an input
+    to the targeted hippocampal starter cells, next to a GCaMP6m-only cell, 29 days after the
+    rabies injection.
+  source: Results, In vivo two-photon calcium imaging enables functional detection of distant input
+    cells to birthdate-defined cell populations, paragraph 2; Figure 7B
+  quote: When the RABV reached the MEC, we were able to identify a cell expressing both the calcium
+    indicator and tdTomato in vivo with a two-photon miniscope (Figure 7B
+  criterion: Mouse 60388, miniscope recording 29 days after the rabies injection, dual channel.
+    Reproduced when a GCaMP6m ROI with calcium transients coincides with a tdTomato-positive cell
+    in the mean red-channel image.
