@@ -11,7 +11,7 @@ voltage-clamp recordings of Figures 5 and 6 are not in it.
 | Cell and probe counts (305 natural sound probes in 39 cells, 93 MGB probes in 14 cells) | Partially reproduced |
 | Low firing rates in A1, high evoked rates in MGB | Partially reproduced |
 | Trial-to-trial reliability, 0.31 over the population | Reproduced |
-| Example neuron with context effects for about 4 s, absent from 2 to 4 s | Reproduced |
+| Example neuron with context effects for about 4 s, absent from 2 to 4 s | Reproduced, resting on an assumption (pairwise reliability) |
 | 204 of 305 probes (66.9%) significant, a quarter of events after 1 s | Reproduced |
 | Proportion significant decays as two exponentials (0.20 and 0.90 s) | Partially reproduced |
 | Normalized context-dependent power decays with a constant of 1.04 s | Partially reproduced |
