@@ -189,6 +189,9 @@ def reduce_sess(raw: bytes, wtag=None):
     out["touch_on"], out["touch_off"], out["touch_trial"] = et[0::2], et[1::2], etr[0::2]
     out["theta_at_touch"] = hv.get("thetaAtTouchOnset", np.array([]))[0::2]
     out["kappa_at_touch"] = hv.get("kappaMaxAbsOverTouch", np.array([]))[0::2]
+    # for the check of the [0::2] rule: property keys and lengths against the event edges
+    out["touch_prop_lens"] = {k: len(v) for k, v in hv.items()}
+    out["n_touch_edges"] = len(et)
     # clock check: population dF/F of this file's touch-scored cells around the first touch
     # of each trial, and around the same number of pseudo-onsets 2 s earlier
     dff = np.asarray(c.dffTimeSeriesArray.valueMatrix, dtype=np.float32)
@@ -281,6 +284,9 @@ def reduce_sess_h5(raw: bytes, wtag=None):
     out["touch_on"], out["touch_off"], out["touch_trial"] = et[0::2], et[1::2], etr[0::2]
     out["theta_at_touch"] = hv.get("thetaAtTouchOnset", np.array([]))[0::2]
     out["kappa_at_touch"] = hv.get("kappaMaxAbsOverTouch", np.array([]))[0::2]
+    # for the check of the [0::2] rule: property keys and lengths against the event edges
+    out["touch_prop_lens"] = {k: len(v) for k, v in hv.items()}
+    out["n_touch_edges"] = len(et)
     ca_t = np.asarray(c["time"][()], dtype=float).ravel()
     out["ca_dt_ms"] = float(np.median(np.diff(ca_t)))
     out["n_frames"] = len(ca_t)
