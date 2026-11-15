@@ -1787,3 +1787,245 @@ findings:
     episodes) is not stated, and outcomes depend on it, the CV over SLEEP decreases with p = 0.0022 per packet but p = 0.19
     in 10 s bins on CRCNS, and spindle and UP/DOWN incidence trends differ between readings. Question for the paper's authors,
     which unit Figures 3 and 4 use.
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    The files hold 51 WAKE-SLEEP cycles (WakeSleepTimePairFormat of _WSRestrictedIntervals over the 27 sessions), where
+    the paper reports 54; the Wake and Sleep intervals are the same 51 pairs, with none unpaired.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    345 WakeInterruption intervals within the SLEEP of the cycles are shorter than the 40 s minimum the data description
+    gives for them (40-120 s). None lies between two packets (123 lie between two REM intervals, 80 between a REM interval
+    and the packet after it, 25 between a packet and the REM after it), so they are not MAs by the paper's definition
+    either; counted with the 434 MAs they give 779 events. One nonREM packet, in BWRat17_121912, lasts 14 s, under the 20
+    s minimum of Table S1.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    In Rizzo_022715 and Splinter_020515 a WAKE-SLEEP cycle's WAKE starts before the previous cycle's SLEEP ends (WAKE
+    9919-14394 s against SLEEP 5655-10010 s; WAKE 5335-7210 s against SLEEP 3543-5455 s), so the cycles overlap.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    The data description says the motion field of _Motion.mat is z-scored motion for each second. It is non-negative in
+    every session, with per-session means from 0.553 to 4076 in the sessions without NaN, and BWRat19_032513 holds 158
+    NaN values in its 3928 seconds.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    RecordingFileIntervals in _BasicMetaData.mat is [0, inf] in the three sessions of rat B22 (20140526_277um,
+    20140527_421um, 20140528_565um), and the UP/DOWN file of every session is named _UPDOWNINtervals.mat, where the data
+    description gives _UPDOWNInts.mat and _UPDOWNIntervals.mat.
+  found: on_prompt
+- kind: metadata_insufficient
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    Scored WAKE exists only as the WAKE of a WAKE-SLEEP cycle, so a scored WAKE follows the SLEEP of only 23 of the 51
+    cycles, within 1 s in 6 of them and 166 to 10344 s later in the others. The paper's 5 min post-sleep WAKE windows
+    cannot be located from the scored intervals for most cycles.
+  found: on_prompt
+- kind: other
+  about: data
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    Each session is one tar.gz of 0.94 to 6.12 GB (88.9 GB in all), and the order of members differs between files. In 18
+    of the 27 the LFP .eeg comes before at least one of the spike, cell or state files (_SStable, _CellIDs,
+    _WSRestrictedIntervals, _BasicMetaData), so reading those small files needs the whole archive streamed. Reading all 27
+    took 488 s from the bucket with four at a time.
+  found: on_prompt
+- kind: methods_unavailable
+  statement: >-
+    Questions for the paper's authors. (1) Whether the burst index is the proportion of ISIs of 15 ms or less
+    (Supplemental Experimental Procedures) or the fraction of spikes with such an ISI (Results). (2) The model and fit
+    range of the autocorrelogram decay exponent. (3) How triplets are formed, which WAKE counts between two packets, and
+    whether REM-packet-REM triplets allow an arousal after the first REM. (4) Whether the motion signal was z-scored before
+    the movement correlation, and which measure of movement was used. (5) How the WAKE sextiles are computed for cells
+    recorded over several cycles, from the session's WAKE or from each cycle's WAKE.
+  found: on_prompt
+reconciliation:
+  earlier: watson-2016-02
+  date: 2026-11-15
+  blind: false
+  blind_note: >-
+    The author run and the two author-revise runs show nothing of watson-2016-02; the audit lines in author.md are the
+    repository's README and the code that wrote this attempt's record. The author-answers run, after the outcomes were
+    recorded, printed transcripts/watson-2016/answer-report.md, which quotes one line of watson-2016-02's record, that the
+    response there for claim post-sleep-wake-lower left the question of the post-sleep WAKE window "with a reader
+    (questions file)", and a file search in that run listed the path of the earlier entry's entry.yaml
+    (entries/watson-2016-crcns-fcx-1) without opening it. It saw no outcome, value or finding of the earlier attempt, and
+    it changed no outcome, note, finding or file of this attempt.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 12
+    note: >-
+      earlier_findings.ipynb counts 51 WakeSleep pairs, with the 51 Wake and 51 Sleep intervals all paired, against the
+      paper's 54. The blind attempt gives the 51 in its wake-sleep-cycles outcome, within that claim's tolerance, but
+      reports no finding on it.
+  - finding: 2
+    status: still_present
+    now: 7
+    note: >-
+      Finding 7 reports the same 434 of 2130 MAs within SLEEP against the paper's 790. The parts it does not report are
+      still there in earlier_findings.ipynb (345 WakeInterruptions under 40 s, none between two packets, and the 14 s
+      packet of BWRat17_121912) and are added as finding 13.
+  - finding: 3
+    status: still_present
+    now: 14
+    note: >-
+      earlier_findings.ipynb finds the same two overlapping pairs of cycles, WAKE 9919-14394 s against SLEEP 5655-10010 s
+      in Rizzo_022715 and WAKE 5335-7210 s against SLEEP 3543-5455 s in Splinter_020515, and no other.
+  - finding: 4
+    status: still_present
+    now: 6
+    note: >-
+      Finding 6 reports the same ACC and mPFC folders of Dino 061914 and 062014 as one recording deposited twice and
+      counted as two sessions. earlier_findings.ipynb shows the two scorings of Dino_062014 still differ (mean SLEEP per
+      cycle 59.5 and 27.1 min, 41 and 17 packets), while those of Dino_061914 agree within 1 s.
+  - finding: 5
+    status: still_present
+    now: 15
+    note: >-
+      The data description still calls the motion field z-scored, and earlier_findings.ipynb finds no negative value,
+      per-session means of 0.553 to 4076 and 158 NaN values in BWRat19_032513. The earlier range of 0.55 to 4076 is the
+      same, as it left out that session, whose mean is NaN.
+  - finding: 6
+    status: still_present
+    now: 16
+    note: >-
+      earlier_findings.ipynb finds RecordingFileIntervals [0, inf] in the three 2014052x sessions and finite in the other
+      24, and the file _UPDOWNINtervals.mat in all 27 tars, while the description names _UPDOWNInts.mat and
+      _UPDOWNIntervals.mat.
+  - finding: 7
+    status: still_present
+    now: 8
+    note: >-
+      Both report 1.94 per minute in the Results against 0.049 Hz (2.94 per minute) in Table S1, with the deposited
+      spindles at 2.85 per minute, agreeing with Table S1.
+  - finding: 8
+    status: still_present
+    now: 17
+    note: >-
+      earlier_findings.ipynb finds every Wake interval to be a cycle's WAKE and a later scored WAKE for 23 of 51 cycles, 6
+      within 1 s and the others 166 to 10344 s after SLEEP ends. The new claims file adds a reading of the WAKE after
+      SLEEP as the arousal that ends it (reading ii), which the blind attempt uses; the scored WAKE is unchanged.
+  - finding: 9
+    status: still_present
+    now: 18
+    note: >-
+      earlier_findings.ipynb finds tars of 0.94 to 6.12 GB, the .eeg before a spike, cell or state file in 18 of 27, and
+      a full read of 488 s with four at a time, within the earlier 7 to 9 minutes.
+  - finding: 10
+    status: still_present
+    now: 11
+    note: >-
+      Finding 11 asks the same question (1), the sampling unit of the correlations against normalized time; the earlier
+      question on the SLEEP clock is settled in the new claims file (M3, nonREM time only, from the Fig. 3B legend).
+      Questions (2) to (6) concern the paper's text, which is the same, and the new claims file states each as open and
+      tests it as readings (burst-index-by-state, fig2c-acg-decay, M6, fig5c-wake-movement, M2), so they are added as
+      finding 19.
+  outcomes:
+  - claim: table1-dataset-counts
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file. The earlier claim included the 54 WAKE-SLEEP episodes, and the 51 in the files made
+      it partial; the new file moved that count to wake-sleep-cycles and added the 1121 stable units, so every count it
+      judges matches on the same data.
+  - claim: ma-statistics
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file. Both attempts measure the same 434 MAs, 11.0 s, 0.184 per minute and 3.7%, none within
+      tolerance; the earlier attempt gave partial because the trends over episodes held, and the new file moved those
+      trends to ma-fraction-over-nrem-episodes and gives partial only when three of the four values hold.
+  - claim: fig1e-up-state-dynamics
+    earlier: not_reproduced
+    note: >-
+      A change in the claims file. Both attempts get the same R values (pE -0.293, pI -0.983, synchrony -0.447, E/(E+I)
+      +0.470) and a spectral order that fails; the earlier criterion compared the last bin with the first two, where the
+      pE rate did not fall, and the new one compares it with the first, where it does, so three of four measures decrease.
+  - claim: post-sleep-wake-lower
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file. The earlier file read the WAKE after SLEEP only as the next scored WAKE, which gives
+      signed-rank p = 0.018 in both attempts; the new file adds the arousal that ends SLEEP (reading ii) and one-sided
+      tests, and under reading ii the blind attempt gets p = 3.1e-11, below the 1e-6 bound.
+  - claim: cv-decreases-over-sleep
+    earlier: not_reproduced
+    note: >-
+      A change in the claims file. The earlier file judged only 10 s bins (p = 0.73), and its per-packet result (R =
+      -0.101, p = 0.0073) was a variant; the new file adds one point per packet as a reading, and the blind attempt gets
+      p = 0.0022 there. In 10 s bins the two notebooks also differ (p = 0.73 and 0.19), from how each builds the bins.
+  - claim: fig3c-spindles-over-sleep
+    earlier: partially_reproduced
+    note: >-
+      A difference in method together with the claims file. The earlier notebook found a decrease in 10 s bins on the
+      period's clock (R = -0.021, p = 0.03), partial by M4, where the blind notebook finds none under any reading (p =
+      0.19 in 10 s bins); the new file judges on the Results' 1.94 per minute and gives partial only when the decrease
+      holds.
+  - claim: figs3a-first-last-rem-ma-slopes
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file, through post-sleep-wake-lower. The REM and MA slopes are the same in both (0.807 and
+      0.656); the WAKE slope is 0.687 with the next scored WAKE in the earlier attempt and 0.820, within 0.83 +- 0.03, with
+      the arousal that ends SLEEP (reading ii), which the new file adds.
+  - claim: fig3e-wake-before-after-sextiles
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file, through post-sleep-wake-lower. With the next scored WAKE neither attempt has the four
+      sextile changes; with the arousal that ends SLEEP (reading ii), which the new file adds, and one entry per cell and
+      cycle, the blind attempt has all four.
+  - claim: fig4-spindles-within-nrem
+    earlier: reproduced
+    note: >-
+      A change in the claims file. Both attempts find the four increases, the same durations (0.597 to 0.650 s and 0.603
+      to 0.651 s) and a change in frequency within packets (p = 0.0096 and 0.011); the new criterion requires the two
+      absences for reproduced, where the earlier one did not judge them.
+  - claim: fig4cd-packet-rate-lfp-correlations
+    earlier: partially_reproduced
+    note: >-
+      A difference in method. Both count a correlation as holding at its bound, but the band power differs, 10 s
+      spectrogram windows in the earlier notebook and 2 s Hann windows in the blind one, and delta (R = -0.200 and -0.144)
+      and gamma (0.358 and 0.257) differ with it; gamma then misses its 1e-10 bound (p = 5.7e-10), leaving three of six,
+      under the four needed for partial.
+  - claim: figs5d-rem-nrem-rem
+    earlier: partially_reproduced
+    note: >-
+      A difference in method, the triplet rule. The earlier notebook allowed an MA or WakeInterruption between REM n and
+      the packet (80 triplets, 660 cells, p = 0.015); the blind one takes consecutive REM intervals with only packets and
+      MAs between them (35 triplets, 78 cells, p = 0.11).
+  - claim: fig5b-wake-between-packets
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file and a difference in method. The new statement drops the movement correlation, now
+      fig5c-wake-movement, and judges the number of triplets; and the blind notebook pairs the last packet of one cycle's
+      SLEEP with the first of the next across the next cycle's WAKE, which gives 24 triplets and a top-sextile increase (p
+      = 0.017), where the earlier reading a gave 8 triplets and p = 0.21.
+  - claim: sleep-homogenizes-rates
+    earlier: partially_reproduced
+    note: >-
+      It follows the claims it rests on. fig3d-first-last-packet-slope is reproduced in both, and
+      fig3e-wake-before-after-sextiles and cv-decreases-over-sleep, partial and not reproduced in the earlier attempt,
+      are reproduced in the blind one for the claims file changes given for them.
+  protocol: >-
+    watson-2016-02 was made under pilot-13 and watson-2016-03 under pilot-15. docs/pilot-notes.md has a section for
+    pilot-14 and none for pilot-15. Pilot-13 itself, the 60-minute limit on a notebook, was already in force for the
+    earlier attempt. Pilot-14 files records by paper, with one claims file for the paper and one attempt on every dataset
+    it rests on. That is why the blind attempt used DANDI:000041 as well as CRCNS:fcx-1 (judging its outcomes on CRCNS, a
+    choice of its own), under the new claims/watson-2016.yaml with 53 claims, which replaced the per-dataset file of 41
+    the earlier attempt used, merging and splitting some ids and changing criteria. Those changes account for most of
+    the outcome differences above. tools/entry.py names one rule as the protocol's from pilot-15, that a finding of kind
+    other or selection_undocumented says whether it is about the data or the paper and that a finding about the data
+    names its datasets when an attempt uses several; the blind attempt's findings follow it. It changes where findings
+    are shown and no outcome.
