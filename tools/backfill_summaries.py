@@ -46,7 +46,12 @@ def folder_of(attempt_id: str) -> str:
     return attempt_id.rsplit("-", 1)[0]
 
 
-META = re.compile(r"write tool|file-writing|no tools|I could(?:n't| not) (?:write|save)|I did not (?:write|save)|<invoke|parameter name|the paragraph above", re.I)
+META = re.compile(r"write tool|file-writing|no tools|I could(?:n't| not) (?:write|save|create)|I did not (?:write|save)|<invoke|"
+                  r"parameter name|the paragraph above|paragraph (?:is below|for (?:that|the) file)|here is the paragraph|"
+                  r"this is the paragraph|ready to save|save (?:it|the paragraph)|write is disabled|"
+                  r"file still needs to be created|text above is ready", re.I)
+# A note that leads into the paragraph, up to its colon: "Here is the paragraph to save as that file: ..."
+LEAD_IN = re.compile(r"^.{0,300}?(?:here is the paragraph|this is the paragraph|the paragraph (?:is below|for (?:that|the) file is))[^:.]*[:.]\s*", re.I | re.S)
 
 
 def paragraph(reply: str) -> str:
@@ -55,7 +60,8 @@ def paragraph(reply: str) -> str:
         m = re.search(pat, reply, re.S)
         if m:
             reply = m.group(1); break
-    sentences = re.split(r"(?<=[.!?])\s+", " ".join(reply.split()))
+    reply = LEAD_IN.sub("", " ".join(reply.split()), count=1)
+    sentences = re.split(r"(?<=[.!?])\s+", reply)
     return " ".join(x for x in sentences if not META.search(x)).strip()
 
 
