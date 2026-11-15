@@ -19,7 +19,8 @@ method choices its opening comment fixes):
 - `BIN_MS` = 20 ms bins and `SMOOTH_SD_MS` = 40 ms Gaussian smoothing of trial-averaged rates
   (claims header; STAR Methods, "Principal component analysis": "bin size: 20 ms, Gaussian
   smoothing kernel width: 40 ms"). Edges of a smoothed trajectory use the nearest value, a
-  standard choice.
+  standard choice. The Methods do not say whether "width" is the SD; the notebook also runs SD
+  20 ms, a full width at half maximum of 40 ms (SD 17 ms) and no smoothing (`sd_ms`).
 - Estimation epoch: from Ready to the longest ts of the prior; bin k (ending at 20(k+1) ms after
   Ready) averages the trials with ts >= 20(k+1) ms, so that Set comes after the end of the bin
   (attrition; claims header and STAR Methods, "Principal component analysis"). The state "at
@@ -36,6 +37,11 @@ method choices its opening comment fixes):
   posterior mean as te, production noise SD wp*te, offset b per prior, fit by maximum
   likelihood per dataset (claims header; STAR Methods, "Analysis of behavior with a Bayesian
   model"). The integration grids (`TM_GRID_N`, `TS_GRID_N`) are a standard numerical choice.
+- Noise in trial-averaged trajectories (`split_noise_sq`): the half-difference of the averages of
+  two random halves of the trials has the noise variance of the full average and no signal, so
+  the squared step it makes between bins estimates the part of a squared step that comes from
+  noise. This is the author's addition, to separate speed from noise that grows as trials drop
+  out; it is not a method of the paper.
 """
 
 from __future__ import annotations
@@ -68,6 +74,19 @@ TS_GRID_N = 400
 # The four "datasets" of the paper (effector x target direction); theta 0 is right, 180 left.
 DATASETS = {"Eye Right": (True, 0.0), "Eye Left": (True, 180.0),
             "Hand Right": (False, 0.0), "Hand Left": (False, 180.0)}
+
+
+def version_assets() -> pd.DataFrame:
+    """Path, size and asset identifier of every file in each published version."""
+    rows = []
+    with DandiAPIClient() as client:
+        for v in client.get_dandiset(DANDISET_ID).get_versions():
+            if v.identifier == "draft":
+                continue
+            for a in client.get_dandiset(DANDISET_ID, v.identifier).get_assets():
+                rows.append({"version": v.identifier, "path": a.path, "size": a.size,
+                             "asset_id": a.identifier})
+    return pd.DataFrame(rows)
 
 
 def asset_urls() -> dict[str, str]:
@@ -168,36 +187,76 @@ def bin_counts(spikes: list[np.ndarray], align_s: np.ndarray, start_ms: float, s
     return out
 
 
-def smooth(rates: np.ndarray, sd_ms: float = SMOOTH_SD_MS, bin_ms: float = BIN_MS) -> np.ndarray:
-    """Gaussian smoothing along the time axis (axis 0)."""
+def smooth(rates: np.ndarray, sd_ms: float | None = SMOOTH_SD_MS, bin_ms: float = BIN_MS) -> np.ndarray:
+    """Gaussian smoothing along the time axis (axis 0); none when sd_ms is None."""
+    if sd_ms is None:
+        return rates
     return gaussian_filter1d(rates, sd_ms / bin_ms, axis=0, mode="nearest")
 
 
-def estimation_rates(spikes, t: pd.DataFrame, ts_max: int, smoothed: bool = True):
-    """Trial-averaged rates (spikes/s) from Ready to ts_max with attrition, and trials per bin."""
+def _estimation_counts(spikes, t: pd.DataFrame, ts_max: int):
     c = bin_counts(spikes, t.ready_time.values, 0, ts_max)
     ends = np.arange(1, c.shape[1] + 1) * BIN_MS
     incl = t.ts.values[:, None] >= ends[None, :]          # Set at or after the end of the bin
-    n = incl.sum(0)
-    rates = (c * incl[:, :, None]).sum(0) / np.maximum(n, 1)[:, None] * (1000 / BIN_MS)
-    return (smooth(rates) if smoothed else rates), n
+    return c, incl
 
 
-def production_rates(spikes, t: pd.DataFrame, length_ms: float | None = None, smoothed=True):
+def _attrition_mean(c, incl):
+    return (c * incl[:, :, None]).sum(0) / np.maximum(incl.sum(0), 1)[:, None] * (1000 / BIN_MS)
+
+
+def estimation_rates(spikes, t: pd.DataFrame, ts_max: int, sd_ms: float | None = SMOOTH_SD_MS):
+    """Trial-averaged rates (spikes/s) from Ready to ts_max with attrition, and trials per bin."""
+    c, incl = _estimation_counts(spikes, t, ts_max)
+    return smooth(_attrition_mean(c, incl), sd_ms), incl.sum(0)
+
+
+def production_rates(spikes, t: pd.DataFrame, length_ms: float | None = None,
+                     sd_ms: float | None = SMOOTH_SD_MS):
     """Trial-averaged rates from Set; by default up to the shortest Set-to-Go time of the trials."""
     if length_ms is None:
         length_ms = np.min((t.go_time - t.set_time).values) * 1000
     nb = int(length_ms // BIN_MS)
     c = bin_counts(spikes, t.set_time.values, 0, nb * BIN_MS)
-    rates = c.mean(0) * (1000 / BIN_MS)
-    return smooth(rates) if smoothed else rates
+    return smooth(c.mean(0) * (1000 / BIN_MS), sd_ms)
 
 
-def go_rates(spikes, t: pd.DataFrame, before_ms: float = 800, smoothed=True):
-    """Trial-averaged rates from Go - before_ms to Go."""
-    c = bin_counts(spikes, t.go_time.values, -before_ms, 0)
-    rates = c.mean(0) * (1000 / BIN_MS)
-    return smooth(rates) if smoothed else rates
+def go_rates(spikes, t: pd.DataFrame, before_ms: float = 800, pad_ms: float = 0,
+             sd_ms: float | None = SMOOTH_SD_MS):
+    """Trial-averaged rates from Go - before_ms to Go. With pad_ms > 0 the rates are binned and
+    smoothed from Go - before_ms - pad_ms to Go + pad_ms and then cropped, so that the smoothing
+    does not meet an edge at Go."""
+    c = bin_counts(spikes, t.go_time.values, -before_ms - pad_ms, pad_ms)
+    rates = smooth(c.mean(0) * (1000 / BIN_MS), sd_ms)
+    k = int(pad_ms // BIN_MS)
+    return rates[k:len(rates) - k]
+
+
+def split_noise_sq(spikes, t: pd.DataFrame, epoch: str, rng, n_splits: int = 20,
+                   project=None, ts_max: int | None = None, length_ms: float | None = None,
+                   sd_ms: float | None = SMOOTH_SD_MS) -> np.ndarray:
+    """Mean over random half-splits of the squared step between successive bins made by noise
+    alone: ||P (D(k+1) - D(k))||^2, with D the half-difference of the two halves' averages,
+    smoothed as the rates are, and P an optional projection (a function of a [bins x units]
+    array). epoch is "estimation" (Ready to ts_max, with attrition) or "production" (Set, for
+    length_ms or the shortest Set-to-Go time)."""
+    if epoch == "estimation":
+        c, incl = _estimation_counts(spikes, t, ts_max)
+    else:
+        if length_ms is None:
+            length_ms = np.min((t.go_time - t.set_time).values) * 1000
+        nb = int(length_ms // BIN_MS)
+        c = bin_counts(spikes, t.set_time.values, 0, nb * BIN_MS)
+        incl = np.ones(c.shape[:2], bool)
+    out = []
+    for _ in range(n_splits):
+        half = rng.permutation(len(t)) % 2 == 0
+        d = (_attrition_mean(c[half], incl[half]) - _attrition_mean(c[~half], incl[~half])) / 2
+        d = smooth(d, sd_ms)
+        if project is not None:
+            d = project(d)
+        out.append(np.sum(np.diff(d, axis=0) ** 2, axis=1))
+    return np.mean(out, axis=0)
 
 
 def n_components(pca: PCA, threshold: float = VAR_THRESHOLD) -> int:

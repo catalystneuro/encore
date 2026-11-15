@@ -18,12 +18,12 @@ sessions of monkey H and 12 of monkey G; only this session is here.
 | 3 to 4 and 5 to 10 PCs explain 75% of the variance | Not reproduced |
 | Projections on the encoding axis match the Bayesian estimate (R2) | Reproduced |
 | Projections fit the Bayesian model better than a linear one | Not reproduced |
-| No sigmoid in the "Short In Long" control | Reproduced |
+| No sigmoid in the "Short In Long" control | Reproduced (by a test that cannot fail with 4 datasets) |
 | Smaller neural slope for the Long prior | Reproduced |
 | Projection at Set predicts production speed | Partially reproduced |
 | Initial speed biased toward the middle of the prior | Reproduced |
 | Production speed predicts tp | Partially reproduced |
-| Speed unmodulated during the support (H1) | Reproduced |
+| Speed unmodulated during the support (H1) | Reproduced (by a test that cannot fail with 4 datasets) |
 | Trajectories parallel after Set (H2) | Reproduced |
 | Distances decrease up to Go (H3) | Not reproduced |
 | GPFA variance has an inverted-U profile | Not reproduced |
@@ -39,6 +39,7 @@ has 8 over two animals and pools 17 sessions of monkey H for its behavioural sta
 record, with the reasons and the differences from the paper's method, is
 [`attempts/sohn-2019-02.yaml`](../../attempts/sohn-2019-02.yaml).
 
-- `reproduce_sohn_2019.ipynb`: the analysis. It takes about 13 minutes, most of it the GPFA fits.
+- `reproduce_sohn_2019.ipynb`: the analysis. It takes about 26 minutes, most of it the GPFA fits.
 - `rsg.py`: loading the files, unit selection, binned and trial-averaged rates, PCA, the encoding
-  axis and the Bayesian observer model. Other notebooks on this dandiset can import it.
+  axis, the Bayesian observer model and a split-half estimate of the noise in trajectory speeds.
+  Other notebooks on this dandiset can import it.
