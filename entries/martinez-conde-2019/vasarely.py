@@ -23,9 +23,13 @@ show about these fields (checked in the notebook):
   ("dividing the spike count by the Eye Time. The resulting 2D image was subsequently smoothed",
   Fig 3B legend), so all measures use `Standard.smoothed_image` x 1000.
 - The polygon vertices are in MATLAB 1-based pixel coordinates (x = column, y = row): a pixel
-  with 0-based index (i, j) has coordinates (j + 1, i + 1); rasterising the screen-frame
-  polygons reproduces the stimulus images best with this offset. Luminance is the number of
-  polygons containing a pixel for Square, Edge rectangle and Star, and 100 minus it for Corners.
+  with 0-based index (i, j) has coordinates (j + 1, i + 1). The stimulus file's image holds the
+  gray levels, 0 to 100 in steps of 100/99 (data description: "the actual grayscale values").
+  For Square and Edge and for Star the gray level of a pixel inside n polygons is
+  (n - 1) x 100/99, and 0 outside them, so the background has the gray level of the 0%
+  polygon; for Corners it is about 100 minus n. `image_agreement` measures how well the
+  rasterised screen-frame polygons reproduce the image (printed in the notebook);
+  `stimulus_luminance` gives the same gray levels in the aligned frame.
 
 Where the parameters come from:
 
@@ -47,9 +51,12 @@ Where the parameters come from:
   luminance (Methods, Visual stimuli). The squares of Square and Edge and of Star are at the
   corners of the circumscribing square (138 DU for the Square, the 300 DU square around the
   Star's circumscribed circle). Whether they sit inside the corners or are centred on them is not
-  stated; `baseline_squares` gives both, and the notebook compares them with the stored
-  `BaseActivity`. The Corners squares are only drawn in Fig 2C, so for Corners the stored
-  `BaseActivity` is the baseline (an assumption, stated in the notebook).
+  stated; `baseline_squares` gives both. The adopted placement (`BASE_PLACEMENT`, an assumption)
+  is the one whose values are closer to the stored `BaseActivity`, the authors' own baseline in
+  the files that hold it: centred on the corners for Square and Edge, inside them for Star
+  (comparison printed in the notebook). The Corners squares are only drawn in Fig 2C; they are
+  taken at the two bottom corners of the aligned frame, moved up in the 2 files where those are
+  not at 0% luminance (`corners_baseline_squares`, an assumption).
 - Pixel selection in a box: pixels whose coordinates lie in [c - w/2, c + w/2) on each axis. This
   is a standard choice; a half-pixel shift cannot change a result.
 """
@@ -82,6 +89,10 @@ BASE_BOX = 16                # DU
 RMS_BOX = 16                 # DU
 P180_OFFSET = 48             # DU from the Edge, inside the rectangle
 SQUARE_CIRCUMSCRIBING = 138  # DU (Methods, Square and edge)
+# Baseline squares relative to the corners of the circumscribing square: an assumption, the
+# placement closer to the stored BaseActivity (module docstring)
+BASE_PLACEMENT = {"Edge-compare": "centred", "Star": "inside"}
+IMAGE_FIELD = {"Edge-compare": "EdgecompImage", "Star": "DiagImage", "Corners": "CornersImage"}
 
 _CELL = re.compile(r"^([A-Z]{3})(\d+)([JA])(\d)([A-Z]?)$")
 
@@ -190,6 +201,46 @@ def stimulus_type(z: zipfile.ZipFile, folder: str, code: str) -> str:
             return "v7.3 type " + "".join(map(chr, h["dat/type"][()].ravel()))
 
 
+def _count(polys, shape) -> np.ndarray:
+    """Number of polygons containing each pixel (1-based pixel coordinates)."""
+    yy, xx = np.mgrid[0:shape[0], 0:shape[1]]
+    pts = np.c_[xx.ravel() + 1.0, yy.ravel() + 1.0]
+    n = np.zeros(len(pts))
+    for poly in polys:
+        n += Path(poly).contains_points(pts)
+    return n.reshape(shape)
+
+
+def _gray(folder: str, n: np.ndarray) -> np.ndarray:
+    """Gray level (0-100) from the polygon count, as the stimulus images show it."""
+    if folder == "Corners":
+        return 100.0 - np.minimum(n, 100)
+    return np.maximum(n - 1, 0) * 100 / 99
+
+
+def image_agreement(z: zipfile.ZipFile, folder: str, code: str) -> dict | None:
+    """Stimulus image against its rasterised screen-frame polygons.
+
+    Shares of pixels whose gray level from the polygons equals the image's (to 1e-6) and lies
+    within one level (100/99) of it, and the image's gray level outside every polygon. None for a
+    file scipy cannot read (MATLAB 7.3) or without its condition's image.
+    """
+    try:
+        st = sio.loadmat(io.BytesIO(z.read(f"{ROOT}/{folder}/{code}_Stimulus.mat")))["dat"][0, 0]
+    except NotImplementedError:
+        return None
+    if IMAGE_FIELD[folder] not in st.dtype.names:
+        return None
+    im = _dense(st[IMAGE_FIELD[folder]])
+    polys = (_polys(st["SquareVert"]) + _polys(st["RectVert"]) if folder == "Edge-compare"
+             else _polys(st[VERT_FIELD[folder]]))
+    n = _count(polys, im.shape)
+    d = np.abs(_gray(folder, n) - im)
+    return dict(exact=float(np.mean(d < 1e-6)), within_one_level=float(np.mean(d < 100 / 99 + 1e-6)),
+                image_min=float(im.min()), image_max=float(im.max()),
+                outside_polygons=float(np.median(im[n == 0])) if (n == 0).any() else np.nan)
+
+
 # ---------------------------------------------------------------- geometry (Standard frame)
 
 def box_mean(m: np.ndarray, cx: float, cy: float, wx: float, wy: float) -> float:
@@ -291,27 +342,42 @@ def luminance_point(fold, lum_percent: float) -> tuple[float, float]:
 
 # ---------------------------------------------------------------- Edge luminance image
 
-def edge_luminance(rec: dict) -> np.ndarray:
-    """Luminance (0-100) of the Square and Edge stimulus in the Standard frame, from its polygons."""
-    shape = rec["smoothed"].shape
-    yy, xx = np.mgrid[0:shape[0], 0:shape[1]]
-    pts = np.c_[xx.ravel() + 1.0, yy.ravel() + 1.0]
-    lum = np.zeros(len(pts))
-    for poly in rec["rect"] + rec["square"]:
-        lum += Path(poly).contains_points(pts)
-    return lum.reshape(shape)
+def stimulus_luminance(rec: dict) -> np.ndarray:
+    """Gray level (0-100) of the stimulus in the Standard frame, from its polygons.
+
+    The mapping from polygon count to gray level is the one the stimulus images show
+    (module docstring; `image_agreement`).
+    """
+    polys = rec["rect"] + rec["square"] if rec["folder"] == "Edge-compare" else rec["polys"]
+    return _gray(rec["folder"], _count(polys, rec["smoothed"].shape))
+
+
+def box_values(m: np.ndarray, cx: float, cy: float, wx: float, wy: float) -> np.ndarray:
+    """Values of map `m` in the box centred at (cx, cy), as `box_mean` selects them."""
+    xs = np.arange(m.shape[1]) + 1.0
+    ys = np.arange(m.shape[0]) + 1.0
+    cols = (xs >= cx - wx / 2) & (xs < cx + wx / 2)
+    rows = (ys >= cy - wy / 2) & (ys < cy + wy / 2)
+    return m[np.ix_(rows, cols)]
 
 
 def corners_baseline_squares(rec: dict) -> list[tuple[float, float]]:
-    """Centres of the two Corners baseline squares: the bottom corners of the Standard frame.
+    """Centres of the two Corners baseline squares, at the left and right edges of the Standard frame.
 
     The paper only draws them (Fig 2C, "two 1 x 1 DVA (16 x 16 DU) square regions in 0%
-    luminance areas within the ROI"). The bottom corners of the frame are in 0% luminance in every
-    file (below the last luminance line); this placement is an assumption.
+    luminance areas within the ROI"). They are taken at the two bottom corners of the frame, or,
+    where a square there is not wholly at 0% luminance (2 files, where the next zigzag of the
+    pattern enters the bottom of the frame), at the lowest height where both squares are; this
+    placement is an assumption.
     """
     h, w = rec["smoothed"].shape
     half = BASE_BOX / 2
-    return [(half + 0.5, h - half + 0.5), (w - half + 0.5, h - half + 0.5)]
+    lum = stimulus_luminance(rec)
+    for yc in np.arange(h - half + 0.5, half, -1.0):
+        centres = [(half + 0.5, yc), (w - half + 0.5, yc)]
+        if all(box_values(lum, x, y, BASE_BOX, BASE_BOX).max() == 0 for x, y in centres):
+            return centres
+    raise ValueError(f"no 0% luminance squares at the frame edges in {rec['code']}")
 
 
 FOLDS = {"Edge-compare": ["Edge", "P180", "S90"], "Star": ["S52"], "Corners": ["S40", "S40_dark"]}
@@ -322,7 +388,8 @@ def measures(rec: dict, smoothed: bool = True) -> dict:
 
     midpoint_<fold>: the 8 x 8 DU midpoint mean (two midpoints averaged for S90 and S52);
     blocks_<fold>: array (n halves, 10 blocks) from 0% to 100% luminance;
-    base_inside / base_centred (Square and Edge, Star), base_corners (Corners), base_stored.
+    base_main (the adopted placement, `BASE_PLACEMENT`; bottom corners for Corners),
+    base_inside and base_centred (both placements; equal to base_main for Corners), base_stored.
     `smoothed=False` uses the unsmoothed rate map (Standard.image).
     """
     m = rec["smoothed"] if smoothed else rec["image"]
@@ -330,16 +397,21 @@ def measures(rec: dict, smoothed: bool = True) -> dict:
     out = {}
     if rec["folder"] == "Corners":
         out["base_main"] = baseline_from_map(m, corners_baseline_squares(rec))
+        out["base_inside"] = out["base_centred"] = out["base_main"]
     else:
-        out["base_main"] = baseline_from_map(m, baseline_squares(rec, g, "inside"))
+        out["base_inside"] = baseline_from_map(m, baseline_squares(rec, g, "inside"))
         out["base_centred"] = baseline_from_map(m, baseline_squares(rec, g, "centred"))
+        out["base_main"] = out["base_" + BASE_PLACEMENT[rec["folder"]]]
     out["base_stored"] = rec.get("base_stored", np.nan)
     for f in FOLDS[rec["folder"]]:
         out[f"midpoint_{f}"] = midpoint(m, g[f])
         out[f"blocks_{f}"] = np.array([blocks(m, fold) for fold in g[f]])
-        # the same midpoint square moved 32 DU (2 DVA) sideways, off the fold, for the data check
+        # the same midpoint square moved 32 DU (2 DVA) sideways, off the fold, for the data check;
+        # a shift whose square would leave the frame is not used
+        shifts = [s for s in (-32, 32)
+                  if all(MID_BOX / 2 + 1 <= x + s <= m.shape[1] - MID_BOX / 2 for x, _, _ in g[f])]
         out[f"offfold_{f}"] = float(np.mean([midpoint(m, [(x + s, y0, y1) for x, y0, y1 in g[f]])
-                                             for s in (-32, 32)]))
+                                             for s in shifts]))
     return out
 
 
@@ -350,24 +422,21 @@ def edge_window(rec: dict, lum_percent: float, smoothed: bool = True, size: floa
     return box_mean(m, x, y, size, size)
 
 
-def rms_profile(rec: dict, levels: np.ndarray) -> pd.DataFrame:
+def rms_profile(rec: dict, levels: np.ndarray, offset: float = 0.0) -> pd.DataFrame:
     """Local RMS contrast of the Edge stimulus in a 16 x 16 DU square centred on the Edge.
 
-    Readings of the claims file: (a) standard deviation of luminance over its mean; (b) standard
-    deviation of luminance normalised to 0-1.
+    Luminance is the stimulus gray level (0-100, `stimulus_luminance`), plus `offset` in the same
+    units for the black-level variant of the notebook. Readings of the claims file: (a) standard
+    deviation of luminance over its mean; (b) standard deviation of luminance normalised to 0-1.
     """
-    lum = edge_luminance(rec)
+    lum = stimulus_luminance(rec) + offset
     fold = geometry(rec)["Edge"][0]
-    xs = np.arange(lum.shape[1]) + 1.0
-    ys = np.arange(lum.shape[0]) + 1.0
     rows = []
     for l in levels:
         x, y = luminance_point(fold, l)
-        c = (xs >= x - RMS_BOX / 2) & (xs < x + RMS_BOX / 2)
-        r = (ys >= y - RMS_BOX / 2) & (ys < y + RMS_BOX / 2)
-        w = lum[np.ix_(r, c)]
+        w = box_values(lum, x, y, RMS_BOX, RMS_BOX)
         rows.append(dict(luminance=l, rms_a=w.std() / w.mean() if w.mean() > 0 else np.nan,
-                         rms_b=(w / 100.0).std()))
+                         rms_b=((w - offset) / 100.0).std()))
     return pd.DataFrame(rows)
 
 
@@ -452,11 +521,13 @@ def star_screen_measures(rec: dict, diagonal_angle: float | None = None) -> dict
                 base_main=float(np.nanmean(base)), n_diagonals=len(diagonals))
 
 
-def star_aligned_angle(rec: dict) -> float:
-    """Screen-frame direction (degrees) of the aligned diagonal of a Star file with a Standard frame.
+def star_alignment(rec: dict) -> dict:
+    """Map from the Standard frame to the screen frame of a Star file with a Standard frame.
 
-    Fits the rotation and shift that maps the Standard-frame polygon onto the screen polygon,
-    allowing a cyclic shift of the vertex order, and returns the direction from the centre to the
+    Fits the rotation, scale and shift (z_screen = coef[0] z_standard + coef[1], points as complex
+    numbers) that maps the Standard-frame polygon onto the screen polygon, allowing a cyclic shift
+    of the vertex order. Returns `coef`, the largest vertex error of the fit in DU (`fit_error`),
+    the scale |coef[0]|, and `angle`, the screen-frame direction (degrees) from the centre to the
     vertex that the Standard frame places at the top of its vertical fold.
     """
     a = rec["screen_polys"][0]
@@ -475,4 +546,44 @@ def star_aligned_angle(rec: dict) -> float:
     centre_b = b.mean(axis=0)
     q = coef[0] * (top[0] + 1j * top[1]) + coef[1]
     qc = coef[0] * (centre_b[0] + 1j * centre_b[1]) + coef[1]
-    return float(np.degrees(np.angle(q - qc)))
+    return dict(coef=coef, fit_error=float(err), scale=float(abs(coef[0])),
+                angle=float(np.degrees(np.angle(q - qc))))
+
+
+def star_aligned_angle(rec: dict) -> float:
+    """Screen-frame direction (degrees) of the aligned diagonal (`star_alignment`)."""
+    return star_alignment(rec)["angle"]
+
+
+def star_registration_shift(rec: dict, max_shift: int = 64) -> dict:
+    """Shift between the screen-frame Star map and the Standard map placed by the stimulus.
+
+    The Standard smoothed map is moved into the screen frame with the polygon fit of
+    `star_alignment` (nearest pixel), and correlated with the screen-frame smoothed map over the
+    pixels it covers, for every shift of the screen map up to `max_shift` DU on each axis. If the
+    two frames were registered to the stimulus in the same way, the best shift would be (0, 0).
+    Returns the best shift (dx, dy) in DU, the Pearson r there and at zero shift.
+    """
+    coef = star_alignment(rec)["coef"]
+    std, scr = rec["smoothed"], rec["screen_smoothed"]
+    yy, xx = np.mgrid[0:scr.shape[0], 0:scr.shape[1]]
+    zs = (xx + 1.0) + 1j * (yy + 1.0)
+    zb = (zs - coef[1]) / coef[0]
+    cb, rb = np.round(zb.real).astype(int) - 1, np.round(zb.imag).astype(int) - 1
+    ok = (cb >= 0) & (cb < std.shape[1]) & (rb >= 0) & (rb < std.shape[0])
+    rows_, cols_ = np.nonzero(ok)
+    ref = std[rb[ok], cb[ok]]
+    best = None
+    r0 = np.nan
+    for dy in range(-max_shift, max_shift + 1, 2):
+        for dx in range(-max_shift, max_shift + 1, 2):
+            rr, cc = rows_ + dy, cols_ + dx
+            inside = (rr >= 0) & (rr < scr.shape[0]) & (cc >= 0) & (cc < scr.shape[1])
+            if inside.mean() < 0.9:
+                continue
+            r = np.corrcoef(ref[inside], scr[rr[inside], cc[inside]])[0, 1]
+            if dx == 0 and dy == 0:
+                r0 = r
+            if best is None or r > best[0]:
+                best = (r, dx, dy)
+    return dict(shift_x=best[1], shift_y=best[2], r_best=float(best[0]), r_zero=float(r0))

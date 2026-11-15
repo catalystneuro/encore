@@ -1,100 +1,69 @@
-# martinez-conde-2019 · author-revise-1 · run 43211538076
+# martinez-conde-2019 · author-revise-1 · run 43680048223
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-date -u; cat docs/protocol.md | head -400; ls entries/martinez-conde-2019 transcripts/martinez-conde-2019 questions paper
+date -u; cat transcripts/martinez-conde-2019/verifier-1-report.md; ls entries/martinez-conde-2019 transcripts/martinez-conde-2019 questions | head -50
 ```
 
 ```
-Thu Nov 12 11:46:04 UTC 2026
-# Protocol for an attempt
+Sun Nov 15 05:17:03 UTC 2026
+**A. Outcomes** (all 19 claims in the claims file)
 
-Version: `pilot-14`. Record this version in the attempt's provenance.
-
-This is what agents, or people, do to attempt a target and deposit the
-result. A target is a dataset in a public archive and a paper it names. How
-each archive's datasets are named, versioned and read is in
-[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-An attempt has three roles, each a separate run with a separate context:
-
-- The **reader** reads the paper and writes the claims file: every finding,
-  and how each is to be tested, taken from the paper. A second reader checks
-  it against the paper. Readers never see the dataset's data.
-- The **author** tests the claims on the dataset. It reads the paper to
-  understand the claims, but the claims file binds it: it cannot change a
-  claim's statement, expected values or criterion. A method detail the file
-  lacks it takes from the paper, citing the passage, and it asks a reader
-[... 549 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 400,900p docs/protocol.md
-```
-
-```
-not run it. To survey the dataset, read each file's
-  metadata and array shapes, not its data.
-
-The notebook has these parts, in this order:
-
-1. **Header.** The paper, the dataset and version, the text the claims file
-   was written from, and a table of the claims saying which are tested and which blocked.
-2. **Data check.** A cell tagged `sanity` that prints what was loaded: counts
-   by subject, session and condition, and the ranges and units of every
-   variable used. State each check of the metadata against the data.
-3. **One section per tested claim.** Quote the claim. The cells that show the
-   result carry the tag `claim:<id>`.
-   - Print the numbers the conclusion rests on; a figure alone is not enough.
-   - Give the range of every plotted quantity, or say how many points fall
-     outside the axes.
-   - When cells or trials come from several animals, break the result down by
-     animal, or by session when there is one subject.
-   - When a threshold or criterion is a choice, show how the result changes
-     with it. Give every number its null or reference where the conclusion
-     compares it with chance.
-[... 257 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat transcripts/martinez-conde-2019/verifier-1-report.md
-```
-
-```
-**Verifier report, round 1: Martinez-Conde et al. 2019 on CRCNS pvc-12**
-
-The claims file has 19 claims. The notebook tests 16 and treats 3 as blocked. One thing to know first: cell 35 still holds an outcome table and a "how it differs" summary, even though conclusions were meant to be removed. I did not use it; the outcomes below come from the outputs of cells 3–33.
-
-### A. Outcomes
-
-| Claim | My outcome | Reason |
+| Claim | Outcome | Reason |
 |---|---|---|
-| neuron-counts | not_reproduced | Cell 20: the files hold 53 neurons, split 22 / 27 / 26 (Square and Edge / Star / Corners), with overlaps of 7 / 8 / 38 neurons in three / two / one conditions. The paper has 58, split 25 / 30 / 28, with overlaps 7 / 11 / 40. Even the spreadsheet (58 rows, 5 of them with no data) gives 22 / 29 / 26 and 7 / 10 / 36. Neither the per-condition counts nor the overlap counts all match. |
-| spikes-per-condition | blocked (data_missing) | The zip holds only `SpikeRateMap` and `Stimulus` files and the spreadsheet (I checked the zip's file list). Only one of 77 map files has an eye time map. Only one neuron-condition can be checked against the 10,000-spike minimum: ABC050900J1A has 15,644 spikes (cell 10). The mean and STD cannot be computed. |
-| s4-baseline-no-difference | not_reproduced (fragile) | Cell 21, baseline squares centred on the corners: Kruskal-Wallis p = 0.035, ANOVA p = 0.031, and the corrected pairwise test of Square and Edge against Star p = 0.043. Squares drawn inside the corners also find a difference. Only the files' own `BaseActivity` values find none (n = 9 / 10 / 19). Star has 12 of the paper's 30 neurons. |
-| fig4a-above-baseline | reproduced | Cell 22: neurons above baseline 21/22, 20/22, 12/12 and 26/26. All mass centres are above the unit line. Under reading (a) the distances are ordered 6.47 < 10.83 < 20.30 < 26.27. Reading (b) (log) breaks the order under the main baseline (S52 1.21 > S40 1.00). |
-| fig4b-spike-rate-difference | partially_reproduced | Cell 23: the order S40 > S52 > S90 >
-[... 62 more lines not kept]
+| neuron-counts | not_reproduced | The files hold 53 neurons, split 22 / 29 (27 with a Star stimulus) / 26 by condition, with overlaps 7 / 10 / 36. The paper gives 58 neurons, 25 / 30 / 28, and 7 / 11 / 40 (cell 12). Only "all three = 7" matches. The xlsx sheet lists 58 cells, but 5 have no condition and the data description says the dataset holds 53 neurons. The gap fits 5 cells missing from the archive (4 tested in one condition, 1 in two), not a wrong count in the paper. |
+| spikes-per-condition | blocked (data_missing) | There are no spike count maps or spike times. Eye time is stored in only one file (ABC050900J1A, 15,644 spikes, which is at least 10,000). I confirmed from the archive's zip directory that it holds only the SpikeRateMap/Stimulus .mat files and the xlsx. |
+| s4-baseline-no-difference | not_reproduced | With the claims-file baseline, all three readings find a difference: BH-corrected rank sum p = 0.016 / 0.008 / 0.66, Kruskal-Wallis p = 0.004, ANOVA p = 0.001. The centred-square variant gives the same result (cell 15). Only the stored `BaseActivity` on smaller subsets (n = 9 / 10 / 19) is not significant, and its medians keep the same order (5.6 / 2.7 / 1.3). |
+| fig4a-above-baseline | reproduced | 91%, 91%, 100% and 100% of neurons lie above baseline. Distances from the unit line run 3.9 < 8.2 < 19.0 < 26.5 under reading (a) and 0.18 < 0.30 < 0.91 < 1.04 under reading (b) (cell 17). S52 has only 12 neurons. |
+| fig4b-spike-rate-difference | partially_reproduced | The order S40 > S52 > S90 > P180 holds: 26.48, 19.01, 8.19, 3.88. S90 is 8.19 against 10.69 ± 1.94 (outside). The centred baseline gives 8.57, still outside (cell 19). |
+| fig4b-pairwise-significance | reproduced | All 3 named pairs have BH p ≤ 0.0001 under both the 6-pair and 3-pair families (cell 21). |
+| fig5-average-maps | reproduced | Midpoints of the average m
+[... 86 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep martinez; cat attempts/martinez-conde-2019-01.yaml; cat entries/martinez-conde-2019/entry.yaml; cat questions/martinez-conde-2019.yaml
+sed -n '/^## .*Author/,/^## [^A]/p' docs/protocol.md | head -400; grep -n "^#" docs/protocol.md
 ```
 
 ```
-martinez-conde-2019-01.yaml
+## Author
+
+The workflow puts the paper under `paper/`, as for the reader. Read it to
+understand the claims, their data and their figures. The claims file still
+decides what is tested: do not change a claim's statement, expected values or
+criterion. A method detail the claims file lacks is taken from the paper
+(step 6).
+
+**Time.** An author run is stopped five hours after it starts, and whatever
+is not recorded by then is lost. The prompt says when the run started and the
+time by which to finish. Check the clock (`date -u`) between steps. When that
+time comes, stop analysing and finish: record each claim not yet tested as
+blocked, `too_large` where the computation is what stopped it, saying how far
+it got, then write the attempt record and run the entry's checks. A record
+with some claims blocked for time is worth more than a run that is cut off.
+
+### 1. Establish what can be tested
+
+Do this before any analysis.
+
+[... 366 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts | grep martinez; cat attempts/martinez-conde-2019-02.yaml; cat questions/martinez-conde-2019.yaml 2>/dev/null; ls executed/martinez-conde-2019 2>/dev/null
+```
+
+```
+martinez-conde-2019-02.yaml
 schema_version: 3
-id: martinez-conde-2019-01
+id: martinez-conde-2019-02
 datasets:
 - archive: crcns
   id: pvc-12
@@ -102,7 +71,7 @@ datasets:
   doi: 10.6080/K05D8Q1T
   relation: primary
 paper: doi:10.1371/journal.pone.0210941
-date: 2026-11-12
+date: '2026-11-15'
 entry: martinez-conde-2019
 provenance:
   kind: agent
@@ -111,174 +80,121 @@ provenance:
   agent:
     harness: Claude Code
     model: claude-opus-5-5
-    protocol: pilot-14
-[... 433 more lines not kept]
+    protocol: pilot-15
+[... 404 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -l "verifications:" attempts/*.yaml | head -5; f=$(grep -l "verifications:" attempts/*.yaml | head -1); sed -n '/^verifications:/,$p' $f | head -60; ls docs; grep -n "verifications" -A30 docs/*schema* tools/*.py 2>/dev/null | head -80
+cd entries/martinez-conde-2019; wc -l *; cat entry.yaml README.md; ls ../../paper; ls ../../claims 2>/dev/null | grep martinez
 ```
 
 ```
-attempts/amjad-2025-01.yaml
-attempts/armstrong-2026-01.yaml
-attempts/ashworth-2025-01.yaml
-attempts/athalye-2023-01.yaml
-attempts/azcorra-2023-01.yaml
-verifications:
-- date: '2026-10-15'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
-    module and the claims file, with the paper's full text (PMC12183687). The verifier read the
-    archive's file list and metadata through the DANDI API and tested the helpers on synthetic inputs
-    (beta_power, burst_onsets, window_mean, codes_per_trial, rereference, fscv_window_mean, best_lag,
-    reward_blocks). It had no attempt record and took the claims from the claims file.
-  results:
-  - claim: insertion-yield
-    agrees: true
-    outcome: blocked
-    reason: The archive has 3 assets with sites c8dg, c3bs, c3a and cl3, and nothing about implanted
-      or failed sensors. Figure 3 names 4 functional Monkey T sites against the paper's "3/14", so
-[... 137 more lines not kept]
+41 README.md
+    23 entry.yaml
+  1296 reproduce_martinez_conde_2019.ipynb
+    10 requirements.in
+  1835 requirements.lock.txt
+   478 vasarely.py
+  3683 total
+schema_version: 1
+name: martinez-conde-2019
+type: reproduction
+title: V1 responses to illusory corner-folds (Martinez-Conde et al. 2019)
+description: Tests the findings of Martinez-Conde, McCamy, Troncoso, Otero-Millan and Macknik (2019)
+  on CRCNS pvc-12, which holds spike rate maps and stimuli of 53 V1 neurons from two monkeys viewing
+  the Square and Edge, Star and Corners stimuli. It compares midpoint responses to corner-folds of
+  40, 52, 90 and 180 degrees with baseline and with responses along a luminance edge, and the
+  responses along each fold (Table 1). Only 12 of the 27 Star neurons carry the aligned frame the
+  analysis needs, and the data set holds no spike times or eye positions.
+license: Apache-2.0
+python: "3.13"
+notebooks:
+[... 54 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; wc -l vasarely.py; python -c "
-import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
+cat vasarely.py
+```
+
+```
+"""Loading and measures for CRCNS pvc-12, V1 responses to Vasarely-based illusions.
+
+Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019), PLoS ONE 14(3): e0210941,
+doi:10.1371/journal.pone.0210941.
+
+The data set is one zip file, V1_Vasarely_data.zip, read in place from the public S3 bucket
+crcnsarchive over range requests; nothing is written to disk. CRCNS data sets are not
+versioned, so the zip's MD5 sum from the data set's checksums.md5 is recorded (`ZIP_MD5`).
+
+Each neuron and condition has a `<prefix><cell>_SpikeRateMap.mat` and a `_Stimulus.mat` file,
+in the folders Edge-compare (Square and Edge), Star and Corners. The map file's `dat` holds
+`image` (480 x 640, screen frame), `smoothed_image`, `smoothed_image_norm` and `Standard`, the
+same maps cut out and rotated into the region of interest (ROI) with the aligned fold vertical,
+the stimulus's luminance polygons in that frame (100 levels) and `BaseActivity`. What the data
+show about these fields (checked in the notebook):
+
+- `image` is spikes per 1 ms eye sample: its nonzero values are 1/n (one spike over n samples),
+  so it is the spike count divided by the eye time, in spikes per ms, and not raw spike counts
+  as the data description says. Multiplying by 1000 (`RATE_SCALE`) gives spikes/s; the 1 kHz eye
+  sampling is in the Methods ("We recorded eye movements ... at 1 kHz").
+[... 458 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "
+import json;nb=json.load(open('entries/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'))
 for i,c in enumerate(nb['cells']):
-  s=''.join(c['source']); print('=====',i,c['cell_type'],c['metadata'].get('tags'),len(s)); print(s[:300])
-"; ls ../../executed/martinez-conde-2019 2>/dev/null
+  print('=====',i,c['cell_type'],c['metadata'].get('tags'));print(''.join(c['source']))
+" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt; date -u
 ```
 
 ```
-461 vasarely.py
-===== 0 markdown None 3189
-# Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12
-
-**Paper.** Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1
-responses to illusory corner-folds in Vasarely's nested squares and the Alternating Brightness Star
-illusions. *PLoS ONE* 14(3): e0210941.
-[do
-===== 1 code None 869
-import time
-import resource
-import urllib.request
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from scipy import ndimage, stats
-from statsmodels.stats.multitest import multipletests
-
-import warnings
-[... 267 more lines not kept]
+743 /tmp/claude-1001/nb.txt
+Sun Nov 15 05:17:17 UTC 2026
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-cd  cat claims/martinez-conde-2019.yaml
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt"
+}
 ```
 
 ```
-<persisted-output>
-Output too large (30KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/2708cc77-f272-4ea7-93c9-482abcf4583e/tool-results/bujsjz95s.txt
-
-Preview (first 2KB):
-# Claims for Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019), PLoS ONE 14(3)
-# e0210941, tested on CRCNS pvc-12.
-# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
-# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
-#
-# Text read: the version of record, PMC6438452 (open access), from the Europe PMC full text XML
-# (paper/10.1371-journal.pone.0210941.txt): main text, Materials and methods, figure legends,
-# Table 1, and the legends of the supporting information (S1 to S4 Fig, S1 and S2 Table). The
-# supplementary files themselves are not in the text. S1 Table (exact p-values of Fig 4B) and
-# S2 Table (the t-tests of Fig 7C, with confidence intervals and t-statistics) are missing, so
-# the claims record only the bounds and statements the main text gives. The reference list is
-# not in the text either, so reference [3] (the DOG model output of Fig 7D) cannot be named
-# beyond its number. The paper links no analysis code; none was read.
-#
-# Data the paper used (Materials and methods; Results, paragraphs 1 to 4). Two adult rhesus
-# monkeys (Macaca mulatta, one male, one female; monkey J and monkey A). 118 V1 single units
-[... 10 more lines not kept]
+1	===== 0 markdown None
+2	# Martinez-Conde et al. (2019) on CRCNS pvc-12
+3	
+4	Paper: Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1
+5	responses to illusory corner-folds in Vasarely's nested squares and the Alternating Brightness Star
+6	illusions. PLoS ONE 14(3): e0210941, doi:10.1371/journal.pone.0210941.
+7	
+8	Claims: `claims/martinez-conde-2019.yaml`, written from the version of record (PMC6438452, Europe PMC
+9	full text: main text, Methods, legends, Table 1 and the legends of the supporting information; S1 and
+10	S2 Table themselves are not in the text).
+11	
+12	Dataset: CRCNS pvc-12, doi:10.6080/K05D8Q1T, the single zip file `pvc-12/live/V1_Vasarely_data.zip`
+13	(MD5 `e1301fe463e72332e2303b2053ee0559` in the data set's `checksums.md5`), streamed from the public S3
+14	bucket `crcnsarchive`. Version: CRCNS data sets are not versioned, so the version is recorded as
+15	`unversioned` and the MD5 sum above identifies the file read; there is no other version to choose
+16	from, and the data description (version 0.7, 15 Feb 2018) names this paper. Checking the MD5 would mean reading
+17	the whole 175 MB file, so the notebook confirms that `checksums.md5` still lists this sum.
+18	
+19	What the dataset holds: per neuron and condition a spike rate map (spikes per eye sample at each
+20	display unit, smoothed, and an aligned copy in the region of interest, "Standard") and the stimulus.
+[... 724 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'EOF'
-import yaml
-c=yaml.safe_load(open('claims/martinez-conde-2019.yaml'))
-for cl in c['claims']:
-    if cl['id'] in ('s4-baseline-no-difference','table1-p180','table1-edge','fig7c-fold-edge-equivalence','table1-s90','table1-s52','fig7a-rms-contrast-fit'):
-        print(cl['id']); print(yaml.safe_dump({k:cl[k] for k in cl if k in('statement','expected','criterion')},width=110)); print()
-EOF
-```
-
-```
-s4-baseline-no-difference
-criterion: A claim of absence. Absolute baseline per neuron and condition is the mean of the spike rate map in the
-  four (Square and Edge, Star) or two (Corners) 16 x 16 DU 0% luminance squares (Methods, Visual stimuli). The paper
-  does not name the test or threshold. Readings, each at alpha 0.05 (the alpha the paper states for Fig 6); (a)
-  pairwise Wilcoxon rank sum tests between the three conditions corrected with Benjamini and Hochberg, the test
-  of Fig 4B; (b) a Kruskal-Wallis test across the three conditions; (c) a one-way ANOVA. Reproduced when the readings
-  find no difference; not reproduced when they find one. If they disagree, the author adopts reading (a) as the
-  paper's own test elsewhere, as an assumption. The medians and quartiles of each condition (the S4 Fig box plots)
-  are reported either way.
-statement: Absolute baseline activity did not differ significantly across the three visual stimuli (Square and Edge,
-  Star, Corners).
-
-
-table1-edge
-criterion: "The Edge is segmented into ten non-overlapping blocks along its luminance gradient from 0% to 100%,\
-  \ each 8 DU wide and 15 DU long (0.94 DVA per 10% luminance), and the mean spike rate difference in each block\
-  \ is taken (Results, Responses averaged along the entire fold, paragraph 1). The tolerance is the paper's SEM.\
-  \ Open is the order of summary; readings (a) per neuron the minimum, maximum, mean and median over its ten blocks,\
-  \ then the mean over neurons (the \"mean \xB1 SEM\" of the legend suggests this); (b) the summaries over the ten\
-  \ blocks of the population-average profile. The Edge midpoint is the 8 x 8 DU square at 50% luminance on the Edge.\
-[... 161 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat entries/martinez-conde-2019/vasarely.py
-```
-
-```
-"""Loading and measures for CRCNS pvc-12 (Martinez-Conde et al. 2019, PLoS ONE 14(3) e0210941).
-
-The data set is one zip, ``pvc-12/live/V1_Vasarely_data.zip``, read in place from the public S3
-bucket ``crcnsarchive`` over range requests (docs/archives.md, "CRCNS"). It holds one folder per
-experiment (``Corners``, ``Star``, ``Edge-compare``), and per neuron and experiment a
-``<code>_SpikeRateMap.mat`` and a ``<code>_Stimulus.mat``, plus ``V1_Vasarely_data_SMC.xlsx``.
-
-What the files hold, as found here (the data descriptor says otherwise in places):
-
-- ``image``: the unsmoothed spike rate map on the 480 x 640 display-unit (DU) screen, in spikes
-  per eye-time sample. In the one file that also holds ``eyetime`` (in samples, 1 kHz),
-  ``image * eyetime`` is an integer spike count at every pixel, so the unit is spikes per ms;
-  rates here are multiplied by 1000 to give spikes/s. The descriptor calls ``image`` the raw
-  spike counts.
-- ``smoothed_image``: ``image`` smoothed (Fig 3B legend: Gaussian, 16 DU, STD 7 DU).
-- Both maps are in gaze coordinates: spikes are placed at the gaze position, not at the place of
-  the stimulus the receptive field (RF) covered, so they are offset from the stimulus by the RF
-  eccentricity, which no file states.
-- ``Standard`` (in all Corners and Edge-compare files and 12 of the 27 star files): the authors'
-  ROI-aligned maps (``image``, ``smoothed_image``), the stimulus polygons in the same frame
-[... 441 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -i "baseline\|circumscrib\|0% luminance area\|never its edge\|off the display\|partially" paper/10.1371-journal.pone.0210941.txt | head -40
+cd  grep -n -i -E "cd/m|baseline|RMS|circumscrib|0% luminance|gamma|background" paper/10.1371-journal.pone.0210941.txt | head -80
 ```
 
 Result: not kept, because it reads the paper's text.
@@ -286,81 +202,46 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'EOF'
-import json
-nb=json.load(open('executed/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'))
-for i in [12,13,14,15,16,17,18,19,22,23]:
-    c=nb['cells'][i]
-    print('=====',i); print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:4000])
-        elif 'data' in o and 'text/plain' in o['data']: print('--OUT--');print(''.join(o['data']['text/plain'])[:3000])
-EOF
+cd  grep -n -o -i -E ".{200}(cd per|monitor|black|display).{200}" paper/10.1371-journal.pone.0210941.txt | head -20; grep -n -i -E "EdgecompImage|Image|gray|grey" paper/pvc-12.data-description.txt | head -30
 ```
 
-```
-===== 12
-# The Standard frame: the screen map moved by an offset and rotated as the stimulus polygons are
-reg = []
-for rr in files.to_dict("records"):
-    q = v.load_record(rr, with_screen=True)
-    if not q["has_standard"]:
-        continue
-    s, R, t, err, k0 = q["transform"]
-    tries = [(s, R, t, err)]
-    if q["folder"] == "Star":  # the star is symmetric under 30 degree turns: try every one
-        a = q["screen_poly"]
-        tries = [v.fit_rigid(np.roll(a, k, axis=1).reshape(-1, 2), q["poly"].reshape(-1, 2)) for k in range(24)]
-        tries = [x for x in tries if np.linalg.det(x[1]) > 0]
-    best = max(((v.register_shift(q["screen_smoothed"], *x[:3], q["smoothed"]), x) for x in tries), key=lambda y: y[0][1])
-    (shift, corr), x = best
-    off = x[1].T @ np.array(shift)
-    reg.append({"code": q["code"], "folder": q["folder"], "polygon_fit_residual_DU": x[3], "map_corr": corr,
-                "rotation_deg": np.degrees(np.arctan2(x[1][1, 0], x[1][0, 0])), "rf_offset_x": off[0], "rf_offset_y": off[1]})
-reg = pd.DataFrame(reg)
-print(reg.groupby("folder").agg(n=("code", "size"), max_residual=("polygon_fit_residual_DU", "max"),
-[... 291 more lines not kept]
-```
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; mkdir -p $TMPDIR/mc; cat > $TMPDIR/mc/load.py <<'EOF'
-import pickle, time, sys
-sys.path.insert(0,'.')
-import vasarely as v
-t=time.time()
-files=v.list_files()
-recs=[]
-for r in files:
-    q=v.load_record(r)
-    if q.get("has_standard"):
-        q.pop("stimulus",None)
-        recs.append(q)
-pickle.dump(recs,open(sys.argv[1],'wb'))
-print(len(recs), time.time()-t)
-EOF
-time python $TMPDIR/mc/load.py $TMPDIR/mc/recs.pkl
+cd entries/martinez-conde-2019; time python -c "
+import vasarely as v, scipy.io as sio, io, numpy as np
+z=v.open_zip(); f=v.file_table(z)
+c=f[f.folder=='Edge-compare'].code.iloc[0]; print(c)
+st=sio.loadmat(io.BytesIO(z.read(f'{v.ROOT}/Edge-compare/{c}_Stimulus.mat')))['dat'][0,0]
+print(st.dtype.names)
+for n in st.dtype.names:
+  a=st[n]; print(n, type(a), getattr(a,'shape',None), getattr(a,'dtype',None))
+im=v._dense(st['EdgecompImage']); print(im.shape, im.dtype, im.min(), im.max())
+u,cnt=np.unique(im,return_counts=True); print(len(u)); print(list(zip(u[:10],cnt[:10]))); print(list(zip(u[-5:],cnt[-5:])))
+vt=st['EdgecompVert'][0,0]; print(vt.dtype.names)
+"
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "/tmp/claude-1001/mc/load.py", line 3, in <module>
-    import vasarely as v
-  File "entries/martinez-conde-2019/vasarely.py", line 68, in <module>
+  File "<string>", line 2, in <module>
+    import vasarely as v, scipy.io as sio, io, numpy as np
+  File "entries/martinez-conde-2019/vasarely.py", line 63, in <module>
     import fsspec
 ModuleNotFoundError: No module named 'fsspec'
 
-real	0m0.042s
-user	0m0.033s
-sys	0m0.009s
+real	0m0.039s
+user	0m0.028s
+sys	0m0.011s
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -a; ls .venv* envs 2>/dev/null | head; grep -n "venv\|def cmd_run\|env" tools/entry.py | head -40
+cd  ls -a; ls .venv* envs 2>/dev/null | head; grep -n -i "venv\|env" tools/entry.py | head -30
 ```
 
 ```
@@ -390,2537 +271,714 @@ cd  ls -a; ls .venv* envs 2>/dev/null | head; grep -n "venv\|def cmd_run\|env" t
 **Agent calls Bash**
 
 ```bash
-cd  ls executed/martinez-conde-2019/ -a; ls executed/martinez-conde-2019/.venv/bin 2>/dev/null | head -3
+cd  uv venv --quiet --python 3.13 $TMPDIR/venv && uv pip install --quiet --python $TMPDIR/venv/bin/python -r entries/martinez-conde-2019/requirements.lock.txt 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "import fsspec, scipy; print('ok')"
 ```
 
 ```
-.
-..
-.clean-run.json
-.venv
-reproduce_martinez_conde_2019.ipynb
-result.json
-activate
-activate.bat
-activate.csh
+ok
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; time $PY $TMPDIR/mc/load.py $TMPDIR/mc/recs.pkl
-```
-
-```
-60 35.53773093223572
-
-real	0m36.787s
-user	0m4.066s
-sys	0m0.650s
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex1.py <<'EOF'
-import pickle, sys, numpy as np
-sys.path.insert(0,'.')
-import vasarely as v
-recs=pickle.load(open(sys.argv[1],'rb'))
-withb=[r for r in recs if np.isfinite(r['base_activity'])]
-print(len(withb))
-for r in withb[:]:
-    if r['folder']=='Corners': continue
-    p=r['poly']; c=p[-1].mean(0); half=np.abs(p[0]-c).max()
-    res=[]
-    for mapn in ['smoothed','raw']:
-        img=r[mapn]
-        for k in range(-24,25,2):
-            cs=[c+np.array([sx,sy])*(half-k) for sx in(-1,1) for sy in(-1,1)]
-            res.append((abs(v.baseline(img,cs)-r['base_activity']),mapn,k))
-    res.sort()
-    print(r['code'],r['folder'],round(r['base_activity'],3),res[:3], 'shape',r['smoothed'].shape, 'centre',c.round(1),'half',round(half,1))
-EOF
-$PY $TMPDIR/mc/ex1.py $TMPDIR/mc/recs.pkl
-```
-
-```
-38
-AEC052900J1 Edge-compare 5.604 [(0.12766551402373683, 'smoothed', 2), (0.3087642582709904, 'raw', 2), (0.9126924043773972, 'smoothed', 4)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC063000J1 Edge-compare 2.082 [(0.009752640201313945, 'smoothed', 4), (0.011274424772636849, 'raw', 8), (0.011567188350422253, 'raw', 24)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC070500J2 Edge-compare 13.767 [(0.5881764371491709, 'smoothed', 4), (0.6991179862243548, 'raw', 4), (1.479460890068264, 'raw', 2)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC071000J4 Edge-compare 24.145 [(1.1793676244780151, 'raw', 6), (1.269313051069041, 'raw', 4), (1.5835424968728375, 'smoothed', 20)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC071800J1 Edge-compare 2.486 [(0.048999823918497665, 'smoothed', 2), (0.26274089768306697, 'raw', 2), (0.2811747929948947, 'raw', 4)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC07240J1C Edge-compare 6.93 [(0.16302262601445694, 'smoothed', 2), (0.391458766232768, 'raw', 2), (0.4431122603217421, 'raw', 10)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC07250J1D Edge-compare 9.008 [(0.30206551816053384, 'smoothed', 2), (0.43377229639117765, 'raw', 2), (0.9685218333544849, 'smoothed', 4)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC09010J1C Edge-compare 5.64 [(0.07505997528826391, 'raw', 24), (0.09690417023970088, 'smoothed', 22), (0.10463219810424018, 'smoothed', 24)] shape (337, 151) centre [ 75.  257.6] half 70.7
-AEC09270A1C Edge-compare 1.132 [(0.2615207240280879, 'raw', 24), (0.2668244553169654, 'smoothed', 24), (0.282662097620731, 'raw', 22)] shape (337, 151) centre [ 75.  257.6] half 70.7
-ABD062800A4 Star 3.635 [(0.010954982864299634, 'smoothed', 12), (0.02529492595894922, 'smoothed', 10), (0.02697845488857853, 'raw', 10)] shape (321, 321) centre [160. 160.] half 150.0
-ABD062800J1 Star 0.807 [(0.01283128848892856, 'smoothed', -2), (0.17044349123702662, 'raw', 8), (0.20330363189229583, 'raw', -2)] shape (321, 321) c
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex2.py <<'EOF'
-import pickle, sys, numpy as np
-sys.path.insert(0,'.')
-import vasarely as v
-recs=pickle.load(open(sys.argv[1],'rb'))
-for f in ['Edge-compare','Star','Corners']:
-    r=[r for r in recs if r['folder']==f][0]
-    h,w=r['smoothed'].shape
-    cs=v.corners_baseline_centres(r) if f=='Corners' else v.baseline_centres(r)
-    print(f,(h,w),[c.round(1) for c in cs])
-    if f!='Corners': print(' inside',[c.round(1) for c in v.baseline_centres_inside(r)])
-    # where is the rectangle / 0% area
-    lum=r['lum']; print(' lum corners of frame', lum[0,0],lum[0,-1],lum[-1,0],lum[-1,-1], 'frac zero',(lum<0.5).mean().round(2))
-EOF
-$PY $TMPDIR/mc/ex2.py $TMPDIR/mc/recs.pkl
-```
-
-```
-Edge-compare (337, 151) [array([  4.3, 186.9]), array([  4.3, 328.4]), array([145.7, 186.9]), array([145.7, 328.4])]
- inside [array([ 12.3, 194.9]), array([ 12.3, 320.4]), array([137.7, 194.9]), array([137.7, 320.4])]
- lum corners of frame 0.0 0.0 0.0 0.0 frac zero 0.57
-Star (321, 321) [array([10., 10.]), array([ 10., 310.]), array([310.,  10.]), array([310., 310.])]
- inside [array([18., 18.]), array([ 18., 302.]), array([302.,  18.]), array([302., 302.])]
- lum corners of frame 0.0 0.0 0.0 0.0 frac zero 0.55
-Corners (273, 209) [array([  9.5, 264.5]), array([200.5, 264.5])]
- lum corners of frame 100.0 100.0 1.0101010101010102 1.0101010101010104 frac zero 0.0
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex3.py <<'EOF'
-import pickle, sys, numpy as np
-sys.path.insert(0,'.')
-import vasarely as v
-rows=[r for r in v.list_files()]
-out=[]
-for row in rows:
-    q=v.load_record(row, with_screen=True)
-    if not q.get('has_standard') or not np.isfinite(q['base_activity']): continue
-    s,R,t,err,k0=q['transform']
-    shift,corr=v.register_shift(q['screen_smoothed'],s,R,t,q['smoothed'])
-    pad=40
-    big=v.warp(q['screen_smoothed'],s,R,t+np.array([pad,pad]),(q['smoothed'].shape[0]+2*pad,q['smoothed'].shape[1]+2*pad),shift=shift)
-    bigraw=v.warp(q['screen_image'],s,R,t+np.array([pad,pad]),(q['smoothed'].shape[0]+2*pad,q['smoothed'].shape[1]+2*pad),shift=shift)
-    out.append(dict(code=q['code'],folder=q['folder'],poly=q['poly'],base=q['base_activity'],big=big,bigraw=bigraw,pad=pad,corr=corr,std=q['smoothed'],raw=q['raw'],h=q['smoothed'].shape))
-pickle.dump(out,open(sys.argv[1],'wb'))
-EOF
-time $PY $TMPDIR/mc/ex3.py $TMPDIR/mc/big.pkl
-```
-
-```
-executed/martinez-conde-2019/.venv/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3037: RuntimeWarning: invalid value encountered in divide
-  c /= stddev[:, None]
-executed/martinez-conde-2019/.venv/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3038: RuntimeWarning: invalid value encountered in divide
-  c /= stddev[None, :]
-
-real	0m53.829s
-user	0m33.592s
-sys	0m1.498s
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex4.py <<'EOF'
-import pickle, sys, numpy as np
-sys.path.insert(0,'.')
-import vasarely as v
-out=pickle.load(open(sys.argv[1],'rb'))
-for o in out:
-    if o['folder']=='Corners': continue
-    pad=o['pad']; p=o['poly']; c=p[-1].mean(0)+pad; half=np.abs(p[0]-p[-1].mean(0)).max()
-    # check consistency of big within frame vs std
-    h,w=o['h']; inner=o['big'][pad:pad+h,pad:pad+w]
-    cc=np.corrcoef(inner.ravel(),o['std'].ravel())[0,1]
-    res=[]
-    for mapn in ['big','bigraw']:
-        for hs in [half, 69.0]:
-          for k in range(-12,13,1):
-            cs=[c+np.array([sx,sy])*(hs-k) for sx in(-1,1) for sy in(-1,1)]
-            res.append((round(abs(v.baseline(o[mapn],cs)-o['base']),3),mapn,round(hs,1),k))
-    res.sort()
-    k0=[x for x in res if x[1]=='big' and x[2]==round(half,1) and x[3]==0][0]
-    k8=[x for x in res if x[1]=='big' and x[2]==round(half,1) and x[3]==8][0]
-    print(o['code'],round(o['base'],2),'corr',round(cc,4),'best',res[:3],'centred',k0[0],'inside',k8[0])
-EOF
-$PY $TMPDIR/mc/ex4.py $TMPDIR/mc/big.pkl
-```
-
-```
-AEC052900J1 5.6 corr 0.9985 best [(0.005, 'bigraw', np.float64(70.7), 1), (0.02, 'bigraw', np.float64(70.7), 0), (0.025, 'bigraw', np.float64(70.7), -5)] centred 0.463 inside 1.366
-AEC063000J1 2.08 corr 0.9989 best [(0.019, 'bigraw', 69.0, 0), (0.032, 'big', np.float64(70.7), 3), (0.035, 'bigraw', np.float64(70.7), 2)] centred 0.506 inside 0.383
-AEC070500J2 13.77 corr 0.9986 best [(0.103, 'bigraw', np.float64(70.7), 0), (0.159, 'big', np.float64(70.7), 1), (0.175, 'big', 69.0, 0)] centred 0.622 inside 2.554
-AEC071000J4 24.14 corr 0.9941 best [(0.615, 'bigraw', np.float64(70.7), 6), (0.668, 'bigraw', 69.0, 4), (1.15, 'bigraw', np.float64(70.7), 4)] centred 3.648 inside 2.18
-AEC071800J1 2.49 corr 0.9997 best [(0.017, 'bigraw', np.float64(70.7), -12), (0.028, 'bigraw', np.float64(70.7), 0), (0.029, 'bigraw', np.float64(70.7), 1)] centred 0.375 inside 1.336
-AEC07240J1C 6.93 corr 0.9985 best [(0.017, 'bigraw', np.float64(70.7), 11), (0.051, 'big', 69.0, -3), (0.061, 'bigraw', 69.0, -11)] centred 0.45 inside 1.128
-AEC07250J1D 9.01 corr 0.9975 best [(0.029, 'bigraw', np.float64(70.7), 1), (0.039, 'bigraw', 69.0, -1), (0.116, 'bigraw', np.float64(70.7), 0)] centred 0.495 inside 1.915
-AEC09010J1C 5.64 corr 0.9968 best [(0.004, 'bigraw', 69.0, 7), (0.026, 'big', 69.0, 5), (0.056, 'bigraw', np.float64(70.7), 9)] centred 0.787 inside 0.263
-AEC09270A1C 1.13 corr 0.9992 best [(0.021, 'bigraw', np.float64(70.7), -6), (0.027, 'bigraw', np.float64(70.7), -1), (0.069, 'bigraw', 69.0, -3)] centred 0.151 inside 0.481
-ABD062800A4 3.63 corr 0.9995 best [(0.009, 'big', np.float64(150.0), 11), (0.01, 'big', np.float64(150.0), 10), (0.027, 'big', np.float64(150.0), 9)] centred 0.831 inside 0.053
-ABD062800J1 0.81 corr 0.3874 best [(0.0, 'bigraw', np.float64(150.0), 5), (0.026, 'bigraw', np.float64(150.0), -1), (0.047, 'bigraw', np.float64(150.0), 3)] centred 0.065 inside 0.301
-ABD063000J1 2.08 corr 0.56 best [(0.045, 'bigraw', np.float64(150.0), -11), (0.071, 'bigraw', np.float64(150.0), -12
-[... 7 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex5.py <<'EOF'
-import pickle, sys, numpy as np
-sys.path.insert(0,'.')
-import vasarely as v
-recs=pickle.load(open(sys.argv[1],'rb'))
-r=[r for r in recs if r['folder']=='Corners'][0]
-lum=r['lum']; h,w=lum.shape
-print(h,w)
-# coarse luminance map print every 16 DU
-for y in range(0,h,16):
-    print(' '.join(f"{lum[y,x]:3.0f}" for x in range(0,w,16)))
-EOF
-$PY $TMPDIR/mc/ex5.py $TMPDIR/mc/recs.pkl
-```
-
-```
-Thu Nov 12 11:49:30 UTC 2026
-273 209
-100 100 100 100 100 100 100 100 100 100 100 100 100 100
-100 100 100 100 100 100 100 100 100 100 100 100 100 100
-100 100 100 100 100 100 100 100  99 100 100 100 100 100
-100 100 100 100 100 100 100 100  84 100 100 100 100 100
-100 100 100 100 100 100 100  97  67 100 100 100 100 100
-100 100 100 100 100 100 100  81  51  94 100 100 100 100
- 90  90  89  89 100 100 100  65  35  78  89  90  90  90
- 74  73  73  73  90 100  91  49  19  62  73  73  73  74
- 57  57  57  57  74 100  76  33   3  46  57  57  58  57
- 41  41  41  41  57  99  60  17   1  30  41  41  41  41
- 25  25  25  25  41  84  44   1   1  14  25  25  25  25
-  9   9   9   9  25  68  28   1   1   1   9   9   9   9
-  1   1   1   1   8  51  12   1   1   1   1   1   1   1
-  1   1   1   1   1  35   1   1   1   1   1   1   1   1
-  1   1   1   1   1  19   1   1   1   1   1   1   1   1
-  1   1   1   1   1   2   1   1   1   1   1   1   1   1
-  1   1   1   1   1   1   1   1   1   1   1   1   1   1
-  1   1   1   1   1   1   1   1   1   1   1   1   1   1
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex6.py <<'EOF'
-import pickle, sys, numpy as np
-sys.path.insert(0,'.')
-import vasarely as v
-recs=pickle.load(open(sys.argv[1],'rb'))
-C=[r for r in recs if r['folder']=='Corners' and np.isfinite(r['base_activity'])]
-print(len(C), set(r['smoothed'].shape for r in C))
-def pair(r,img,xoff,y):
-    h,w=img.shape
-    return v.baseline(img,[np.array([1+7.5+xoff, y]), np.array([w-7.5-xoff, y])])
-for mapn in ['smoothed','raw']:
-  print(mapn)
-  for xoff in [0,16,32,48,64]:
-    line=[]
-    for yfrom_bottom in [8.5,24,40,56]:
-        e=[abs(pair(r,r[mapn],xoff,r[mapn].shape[0]-yfrom_bottom)-r['base_activity']) for r in C]
-        line.append(f"y-{yfrom_bottom}: med {np.median(e):.2f} n<0.1 {(np.array(e)<0.1).sum()}")
-    print(' xoff',xoff,' | '.join(line))
-# per-file whole-dark-area mean
-for r in C[:19]:
-    img=r['smoothed']; dark=r['lum']<1.5
-    print(r['code'], round(r['base_activity'],2), 'bottom pair',round(pair(r,img,0,img.shape[0]-8.5),2), 'raw',round(pair(r,r['raw'],0,img.shape[0]-8.5),2),'dark-area mean',round(img[dark].mean(),2))
-EOF
-$PY $TMPDIR/mc/ex6.py $TMPDIR/mc/recs.pkl
-```
-
-```
-19 {(273, 209)}
-smoothed
- xoff 0 y-8.5: med 0.73 n<0.1 2 | y-24: med 0.62 n<0.1 2 | y-40: med 1.58 n<0.1 1 | y-56: med 3.59 n<0.1 0
- xoff 16 y-8.5: med 1.33 n<0.1 4 | y-24: med 2.09 n<0.1 1 | y-40: med 2.42 n<0.1 0 | y-56: med 2.71 n<0.1 0
- xoff 32 y-8.5: med 2.68 n<0.1 2 | y-24: med 2.90 n<0.1 0 | y-40: med 3.43 n<0.1 0 | y-56: med 4.85 n<0.1 1
- xoff 48 y-8.5: med 2.71 n<0.1 0 | y-24: med 3.58 n<0.1 0 | y-40: med 5.09 n<0.1 0 | y-56: med 7.49 n<0.1 0
- xoff 64 y-8.5: med 3.35 n<0.1 0 | y-24: med 6.39 n<0.1 0 | y-40: med 12.53 n<0.1 0 | y-56: med 14.02 n<0.1 0
-raw
- xoff 0 y-8.5: med 1.60 n<0.1 3 | y-24: med 1.63 n<0.1 3 | y-40: med 1.56 n<0.1 2 | y-56: med 3.70 n<0.1 0
- xoff 16 y-8.5: med 1.55 n<0.1 2 | y-24: med 1.55 n<0.1 1 | y-40: med 2.68 n<0.1 0 | y-56: med 2.18 n<0.1 2
- xoff 32 y-8.5: med 2.49 n<0.1 2 | y-24: med 2.69 n<0.1 0 | y-40: med 3.35 n<0.1 0 | y-56: med 4.25 n<0.1 1
- xoff 48 y-8.5: med 2.48 n<0.1 2 | y-24: med 3.92 n<0.1 0 | y-40: med 4.76 n<0.1 0 | y-56: med 7.42 n<0.1 0
- xoff 64 y-8.5: med 3.52 n<0.1 1 | y-24: med 6.00 n<0.1 0 | y-40: med 13.18 n<0.1 0 | y-56: med 14.39 n<0.1 0
-ABC042000J1 0.11 bottom pair 0.53 raw 0.18 dark-area mean 24.24
-ABC042400J2 0.35 bottom pair 0.81 raw 1.02 dark-area mean 2.01
-ABC042600J2 9.2 bottom pair 3.19 raw 3.48 dark-area mean 22.23
-ABC042700J2 12.34 bottom pair 4.13 raw 3.75 dark-area mean 12.32
-ABC042800J2 4.27 bottom pair 3.54 raw 2.03 dark-area mean 10.46
-ABC050900J1A 0.1 bottom pair 0.5 raw 0.32 dark-area mean 8.71
-ABC051000J3 0.0 bottom pair 1.51 raw 2.05 dark-area mean 6.39
-[... 12 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-import json
-nb=json.load(open('executed/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'))
-for i in [3,10,11,20,26,32,33,34,37,38,39,40,41,42,46]:
-    c=nb['cells'][i]
-    print('=====',i); print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:5000])
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print('--OUT--');print(''.join(o['data']['text/plain'])[:3000])
-EOF
-```
-
-```
-<persisted-output>
-Output too large (39.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/2708cc77-f272-4ea7-93c9-482abcf4583e/tool-results/b5wn2rfzt.txt
-
-Preview (first 2KB):
-===== 3
-z = v.zip_file()
-members = [i for i in z.infolist() if not i.is_dir()]
-print(len(members), "files in the zip,", round(sum(i.file_size for i in members) / 1e6, 1), "MB uncompressed")
-files = pd.DataFrame(v.list_files())
-print(files.groupby(["folder", "prefix"]).size().to_string())
-recs = [v.load_record(r) for r in files.to_dict("records")]
-print("loaded in", round(time.time() - T0), "s; peak memory", round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 2), "GB")
-info = pd.DataFrame([{"code": r["code"], "folder": r["folder"], "cell": r["cell"], "monkey": r["monkey"],
-                      "stimulus_type": r["stim_type"], "mat": r["mat"] + "/" + r["stim_mat"],
-                      "standard": r["has_standard"], "BaseActivity": np.isfinite(r.get("base_activity", np.nan)),
-                      "fields": " ".join(r["fields"])} for r in recs])
-print(info.groupby(["folder", "stimulus_type", "standard"]).size().to_string())
-print()
-print(info.groupby(["folder", "fields"]).size().to_string())
---OUT--
-[... 24 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/2708cc77-f272-4ea7-93c9-482abcf4583e/tool-results/b5wn2rfzt.txt",
- "offset": 30
-}
-```
-
-```
-30	              STAR           False       15
-31	                             True        12
-32	
-33	folder        fields                                                        
-34	Corners       norm image eyetime smoothed_image Standard smoothed_image_norm     1
-35	              norm image smoothed_image Standard                                 7
-36	              norm image smoothed_image Standard smoothed_image_norm            18
-37	Edge-compare  image smoothed_image Standard smoothed_image_norm                  3
-38	              norm image smoothed_image Standard                                13
-39	              norm image smoothed_image Standard smoothed_image_norm             6
-40	Star          image norm original_image smoothed_image                           1
-41	              norm image smoothed_image                                         15
-42	              norm image smoothed_image Standard                                 2
-43	              norm image smoothed_image Standard smoothed_image_norm            10
-44	              original_image norm image smoothed_image                           1
-45	
-46	===== 10
-47	# Units: the one file with an eye time map
-48	r = [x for x in recs if "eyetime" in x][0]
-49	counts = r["screen_image"] / v.PER_MS_TO_PER_S * r["eyetime"]
-[... 514 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex7.py <<'EOF'
-import pickle, sys, numpy as np
-sys.path.insert(0,'.')
-import vasarely as v
-out=pickle.load(open(sys.argv[1],'rb'))
-recs=pickle.load(open(sys.argv[2],'rb'))
-star=[r for r in recs if r['folder']=='Star' and np.isfinite(r['base_activity'])]
-sq=[o for o in out if o['folder']=='Edge-compare']
-for mapn in ['smoothed','raw']:
-  for k in [0,2,4,6,8,10,12]:
-    es=[]
-    for r in star:
-        c=r['poly'][-1].mean(0); half=np.abs(r['poly'][0]-c).max()-k
-        es.append(v.baseline(r[mapn],[c+np.array([a,b])*half for a in(-1,1) for b in(-1,1)])-r['base_activity'])
-    eq=[]
-    for o in sq:
-        c=o['poly'][-1].mean(0)+o['pad']; half=np.abs(o['poly'][0]-o['poly'][-1].mean(0)).max()-k
-        eq.append(v.baseline(o['big' if mapn=='smoothed' else 'bigraw'],[c+np.array([a,b])*half for a in(-1,1) for b in(-1,1)])-o['base'])
-    es,eq=np.array(es),np.array(eq)
-    print(mapn,k,'Star med|e|',np.median(np.abs(es)).round(2),'med e',np.median(es).round(2),' Square med|e|',np.median(np.abs(eq)).round(2),'med e',np.median(eq).round(2))
-EOF
-$PY $TMPDIR/mc/ex7.py $TMPDIR/mc/big.pkl $TMPDIR/mc/recs.pkl
-```
-
-```
-smoothed 0 Star med|e| 1.3 med e -1.3  Square med|e| 0.49 med e -0.15
-smoothed 2 Star med|e| 1.12 med e -1.02  Square med|e| 0.61 med e 0.31
-smoothed 4 Star med|e| 0.89 med e -0.72  Square med|e| 0.96 med e 0.64
-smoothed 6 Star med|e| 0.61 med e -0.4  Square med|e| 1.19 med e 0.99
-smoothed 8 Star med|e| 0.39 med e -0.08  Square med|e| 1.34 med e 1.13
-smoothed 10 Star med|e| 0.62 med e 0.13  Square med|e| 1.41 med e 1.15
-smoothed 12 Star med|e| 0.53 med e 0.26  Square med|e| 1.42 med e 1.34
-raw 0 Star med|e| 1.59 med e -1.32  Square med|e| 0.24 med e -0.12
-raw 2 Star med|e| 1.37 med e -0.89  Square med|e| 0.27 med e 0.2
-raw 4 Star med|e| 1.04 med e -0.65  Square med|e| 0.94 med e 0.41
-raw 6 Star med|e| 0.82 med e -0.61  Square med|e| 0.97 med e 0.97
-raw 8 Star med|e| 0.51 med e -0.51  Square med|e| 1.09 med e 1.06
-raw 10 Star med|e| 0.47 med e 0.01  Square med|e| 1.53 med e 0.55
-raw 12 Star med|e| 0.66 med e 0.66  Square med|e| 1.86 med e 1.71
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex8.py <<'EOF'
-import sys, numpy as np, time
-sys.path.insert(0,'.')
-import vasarely as v
-rows=[r for r in v.list_files() if r['code'] in ('ABC051600J1','ABC051800J1','ABC062600J1','ABC041900J2')]
-for row in rows:
-    q=v.load_record(row, with_screen=True)
-    s,R,t,err,k0=q['transform']
-    print(row['code'],'screen sum',q['screen_smoothed'].sum().round(1),'nonzero',(q['screen_smoothed']>0).mean().round(3),'std map sum',q['smoothed'].sum().round(1), 'screen shape',q['screen_smoothed'].shape)
-    a=q['screen_poly']; n=a.shape[1]
-    for k in range(n):
-        s2,R2,t2,e2=v.fit_rigid(np.roll(a,k,axis=1).reshape(-1,2),q['poly'].reshape(-1,2))
-        if e2<1e-6 and np.linalg.det(R2)>0:
-            t0=time.time()
-            for pad in (600,):
-                sh,c=v.register_shift(q['screen_smoothed'],s2,R2,t2,q['smoothed'],pad=pad)
-                print('  k',k,'rot',round(np.degrees(np.arctan2(R2[1,0],R2[0,0])),1),'pad',pad,'shift',sh,'corr',c, round(time.time()-t0,1),'s')
-    # where is the stimulus on screen vs where the map has data
-    ys,xs=np.nonzero(q['screen_smoothed']>0)
-    print('  map data x',xs.min(),xs.max(),'y',ys.min(),ys.max(),' stim poly x',a[...,0].min().round(),a[...,0].max().round(),'y',a[...,1].min().round(),a[...,1].max().round())
-EOF
-$PY $TMPDIR/mc/ex8.py
-```
-
-```
-Thu Nov 12 11:51:16 UTC 2026
-executed/martinez-conde-2019/.venv/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3037: RuntimeWarning: invalid value encountered in divide
-  c /= stddev[:, None]
-executed/martinez-conde-2019/.venv/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:3038: RuntimeWarning: invalid value encountered in divide
-  c /= stddev[None, :]
-ABC041900J2 screen sum 1675454.9 nonzero 0.743 std map sum 803657.8 screen shape (480, 640)
-  k 0 rot -30.0 pad 600 shift (np.int64(247), np.int64(-167)) corr 0.9983848614929024 0.4 s
-  map data x 0 639 y 0 479  stim poly x -288.0 878.0 y -34.0 986.0
-ABC051600J1 screen sum 485943.0 nonzero 0.311 std map sum 317587.0 screen shape (480, 640)
-  k 0 rot -85.0 pad 600 shift (np.int64(38), np.int64(1405)) corr nan 0.4 s
-  map data x 1 395 y 73 405  stim poly x -107.0 596.0 y -249.0 799.0
-ABC051800J1 screen sum 303265.6 nonzero 0.226 std map sum 272921.7 screen shape (480, 640)
-  k 0 rot -70.0 pad 600 shift (np.int64(126), np.int64(1406)) corr nan 0.4 s
-  map data x 3 313 y 129 421  stim poly x -184.0 722.0 y -229.0 916.0
-ABC062600J1 screen sum 830349.1 nonzero 0.397 std map sum 556681.6 screen shape (480, 640)
-  k 0 rot -70.0 pad 600 shift (np.int64(45), np.int64(1378)) corr nan 0.4 s
-  map data x 0 449 y 95 476  stim poly x -218.0 688.0 y -274.0 871.0
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; cat > $TMPDIR/mc/ex9.py <<'EOF'
-import sys, numpy as np, time
-sys.path.insert(0,'.')
-import vasarely as v
-rows=[r for r in v.list_files() if r['code'] in ('ABC051600J1','ABC051800J1','ABC062600J1')]
-for row in rows:
-    q=v.load_record(row, with_screen=True)
-    s,R,t,err,k0=q['transform']
-    for pad in (1000,1600):
-        t0=time.time()
-        sh,c=v.register_shift(q['screen_smoothed'],s,R,t,q['smoothed'],pad=pad)
-        off=R.T@np.array(sh)
-        print(row['code'],'pad',pad,'shift',sh,'offset',off.round(1),'corr',round(c,4), round(time.time()-t0,1),'s')
-EOF
-$PY $TMPDIR/mc/ex9.py 2>&1 | grep -v Warn
-```
-
-```
-c /= stddev[:, None]
-  c /= stddev[None, :]
-ABC051600J1 pad 1000 shift (np.int64(38), np.int64(2205)) offset [-2193.3   230. ] corr nan 0.7 s
-ABC051600J1 pad 1600 shift (np.int64(38), np.int64(3405)) offset [-3388.7   334.6] corr nan 2.0 s
-ABC051800J1 pad 1000 shift (np.int64(126), np.int64(2206)) offset [-2029.9   872.9] corr nan 0.7 s
-ABC051800J1 pad 1600 shift (np.int64(126), np.int64(3406)) offset [-3157.5  1283.3] corr nan 2.1 s
-ABC062600J1 pad 1000 shift (np.int64(45), np.int64(2178)) offset [-2031.3   787.2] corr nan 1.0 s
-ABC062600J1 pad 1600 shift (np.int64(45), np.int64(3378)) offset [-3158.9  1197.6] corr nan 2.3 s
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
-p='vasarely.py'; s=open(p).read()
-s=s.replace("""    i = i - hh if i > hh // 2 else i
-    j = j - ww if j > ww // 2 else j""","""    # lags run from -(target size - 1) to (big size - 1); larger indices are the negative lags
-    i = i - hh if i >= big.shape[0] else i
-    j = j - ww if j >= big.shape[1] else j""")
-open(p,'w').write(s)
-EOF
-PY=executed/martinez-conde-2019/.venv/bin/python; $PY $TMPDIR/mc/ex9.py 2>&1 | grep -v Warn; $PY $TMPDIR/mc/ex8.py 2>&1 | grep "k 0"
-```
-
-```
-ABC051600J1 pad 1000 shift (np.int64(38), np.int64(-341)) offset [343.    8.1] corr 0.9982 0.7 s
-ABC051600J1 pad 1600 shift (np.int64(38), np.int64(-341)) offset [343.    8.1] corr 0.9982 2.0 s
-ABC051800J1 pad 1000 shift (np.int64(126), np.int64(-340)) offset [362.6   2.1] corr 0.9991 0.7 s
-ABC051800J1 pad 1600 shift (np.int64(126), np.int64(-340)) offset [362.6   2.1] corr 0.9991 2.0 s
-ABC062600J1 pad 1000 shift (np.int64(45), np.int64(-336)) offset [331.1 -72.6] corr 1.0 1.0 s
-ABC062600J1 pad 1600 shift (np.int64(45), np.int64(-336)) offset [331.1 -72.6] corr 1.0 2.3 s
-  k 0 rot -30.0 pad 600 shift (np.int64(247), np.int64(-167)) corr 0.9983848614929024 0.4 s
-  k 0 rot -85.0 pad 600 shift (np.int64(38), np.int64(-341)) corr 0.9981761029828655 0.4 s
-  k 0 rot -70.0 pad 600 shift (np.int64(126), np.int64(-340)) corr 0.9991019663431437 0.4 s
-  k 0 rot -70.0 pad 600 shift (np.int64(45), np.int64(-336)) corr 0.9999749955998587 0.4 s
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
-p='vasarely.py'; s=open(p).read()
-old_box='''    a = np.arange(length) - (length - 1) / 2
-    b = np.arange(width) - (width - 1) / 2
-'''
-new_box='''    # samples 1 DU apart (or slightly more for a non-integer side, such as the 7.07 DU S90 blocks),
-    # placed symmetrically about the centre
-    a = (np.arange(max(1, round(length))) + 0.5) * length / max(1, round(length)) - length / 2
-    b = (np.arange(max(1, round(width))) + 0.5) * width / max(1, round(width)) - width / 2
-'''
-assert old_box in s; s=s.replace(old_box,new_box)
-
-old_load='''    rec["transform"] = best
-    rec["lum"] = warp(rec["stimulus"], best[0], best[1], best[2], rec["smoothed"].shape, order=1)
-    return rec
-'''
-new_load='''    rec["transform"] = best
-    rec["lum"] = warp(rec["stimulus"], best[0], best[1], best[2], rec["smoothed"].shape, order=1)
-    if folder == "Edge-compare":
-        # The authors' frame is 151 DU wide, so 16 x 16 DU squares centred on the corners of the
-        # 141.4 DU circumscribing square run 5 DU beyond it. For those, the screen maps are moved
-        # into the frame widened by PAD on every side (registered as in the notebook's check).
-        screen_s = _arr(d["smoothed_image"]) * PER_MS_TO_PER_S
-        screen_r = _arr(d["image"]) * PER_MS_TO_PER_S
-        shift, corr = register_shift(screen_s, best[0], best[1], best[2], rec["smoothed"])
-        shape = (rec["smoothed"].shape[0] + 2 * PAD, rec["smoothed"].shape[1] + 2 * PAD)
-        tp = best[2] + np.array([PAD, PAD])
-        on_screen = warp(np.ones_like(screen_s), best[0], best[1], tp, shape, shift=shift)
-        rec["padded"] = {"smoothed": warp(screen_s, best[0], best[1], tp, shape, shift=shift),
-                         "raw": warp(screen_r, best[0], best[1], tp, shape, shift=shift),
-                         "on_screen": on_screen, "corr": corr}
-    return rec
-'''
-assert old_load in s; s=s.replace(old_load,new_load)
-s=s.replace('''_ZIP = None
-''','''_ZIP = None
-PAD = 16  # DU added on each side of the Square and Edge frame for the baseline squares (load_record)
-''')
-
-old_base=s[s.index('def baseline_centres(rec):'):s.index('FOLD_ANGLE =')]
-new_base='''def baseline_centres(rec):
-    """Centres of the baseline squares in the Standard frame (Star, Square and Edge), centred on the
-    corners of the square circumscribing the 0% polygon."""
-    p = rec["poly"]
-    centre = p[-1].mean(0)
-    outer = p[0]
-    half = np.abs(outer - centre).max()  # half the side of the circumscribing square
-    return [centre + np.array([sx, sy]) * half for sx in (-1, 1) for sy in (-1, 1)]
-
-
-def baseline(img, centres, size=16):
-    return float(np.mean([box_mean(img, c, (1, 0), size, size) for c in centres]))
-
-
-def baseline_centres_inside(rec):
-    """Variant: the 16 x 16 DU squares drawn inside the corners of the circumscribing square."""
-    centre = rec["poly"][-1].mean(0)
-    half = np.abs(rec["poly"][0] - centre).max() - 8
-    return [centre + np.array([sx, sy]) * half for sx in (-1, 1) for sy in (-1, 1)]
-
-
-CORNERS_PLACES = ("bottom", "bottom, 32 DU in", "sides, 24 DU up")
-
-
-def corners_baseline_centres(rec, place="bottom"):
-    """Corners: two 16 x 16 DU squares in the 0% area of the ROI (Methods, "Corners").
-
-    The text says only that the two squares are in 0% luminance areas within the ROI, "shown in
-    Fig 2C", whose drawing is not in the text read. Assumption: the two bottom corners of the ROI,
-    8 DU in from each side ("bottom"), which are in the darkest (1%) area in every file (checked in
-    the notebook) and lie on either side of the folds. Two other placements in that area are run as
-    readings: the squares 32 DU further in from the sides ("bottom, 32 DU in") and 24 DU further up
-    ("sides, 24 DU up"). The files' BaseActivity matches none of them closely (notebook).
-    """
-    h, w = rec["smoothed"].shape
-    dx = 32 if place == "bottom, 32 DU in" else 0
-    dy = 24 if place == "sides, 24 DU up" else 0
-    return [np.array([8.5 + 1 + dx, h - 8.5 - dy]), np.array([w - 8.5 - dx, h - 8.5 - dy])]
-
-
-def baseline_value(rec, map_name="smoothed", reading="matched", corners_place="bottom"):
-    """Absolute baseline (spikes/s) under a reading of where the squares are.
-
-    "centred": centred on the corners of the circumscribing square (Square and Edge on the widened
-    map, see load_record); "inside": drawn inside those corners; "files": the file's own
-    ``BaseActivity`` (NaN where the file has none); "matched" (the main reading, an assumption):
-    for each stimulus the placement whose values come closest to the files' BaseActivity, which is
-    centred for Square and Edge and inside for the Star (shown in the notebook). Corners uses
-    ``corners_baseline_centres(rec, corners_place)`` under every reading but "files".
-    """
-    if reading == "files":
-        return rec["base_activity"]
-    if rec["folder"] == "Corners":
-        return baseline(rec[map_name], corners_baseline_centres(rec, corners_place))
-    if reading == "matched":
-        reading = "centred" if rec["folder"] == "Edge-compare" else "inside"
-    if reading == "inside":
-        return baseline(rec[map_name], baseline_centres_inside(rec))
-    if rec["folder"] == "Edge-compare":
-        return baseline(rec["padded"][map_name], [c + PAD for c in baseline_centres(rec)])
-    return baseline(rec[map_name], baseline_centres(rec))
-
-
-'''
-s=s.replace(old_base,new_base)
-
-old_nt='''def neuron_table(recs, corners_mode="bright", baseline_reading="centred", map_name="smoothed"):'''
-new_nt='''def neuron_table(recs, corners_mode="bright", baseline_reading="matched", map_name="smoothed",
-                 corners_place="bottom"):'''
-assert old_nt in s; s=s.replace(old_nt,new_nt)
-old='''        base = baseline_value(r, img, baseline_reading)'''
-assert old in s
-s=s.replace(old,'''        base = baseline_value(r, map_name, baseline_reading, corners_place)''')
-open(p,'w').write(s)
-EOF
-grep -n "Absolute baseline: the mean" -A8 vasarely.py
-```
-
-```
-51:- Absolute baseline: the mean of the map in four 16 x 16 DU squares at the corners of the
-52-  square circumscribing the Square (side 141.4 DU, its diagonal; the text says 8.84 DVA, which
-53-  is 141.4 DU, and also 138 DU) or the Star's 0% polygon (side 300 DU), and for Corners in two
-54-  16 x 16 DU squares in the 0% area (Methods, "Visual stimuli"). Where the squares are centred is
-55-  not stated; the choice is checked against the files' ``BaseActivity`` in the notebook. For
-56-  Corners the two squares' positions are not given in the text; see ``corners_baseline_centres``.
-57-- Spike rate difference: response minus absolute baseline (Methods, "Spike rate and spike rate
-58-  difference map").
-59-
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
-p='vasarely.py'; s=open(p).read()
-old='''  16 x 16 DU squares in the 0% area (Methods, "Visual stimuli"). Where the squares are centred is
-  not stated; the choice is checked against the files' ``BaseActivity`` in the notebook. For
-  Corners the two squares' positions are not given in the text; see ``corners_baseline_centres``.
-'''
-new='''  16 x 16 DU squares in the 0% area (Methods, "Visual stimuli"). Whether the squares are centred
-  on the corners or drawn inside them is not stated. The main reading (an assumption) takes, for
-  each stimulus, the placement closest to the files' own ``BaseActivity``: centred for Square and
-  Edge, inside for the Star (``baseline_value``). For Corners the two squares' positions are not
-  given in the text; see ``corners_baseline_centres``.
-'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-```
-
-```
-(Bash completed with no output)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; PY=executed/martinez-conde-2019/.venv/bin/python; $PY -c "
-import numpy as np, vasarely as v
-yy,xx=np.mgrid[0:100,0:100].astype(float); img=xx+1  # value = 1-based x
-print(v.box_mean(img,np.array([50.,50.]),(1,0),7.07,8), v.box_mean(img,np.array([50.,50.]),(1,0),8,8), v.box_mean(img,np.array([50.,50.]),(1,0),16,16))
+cd entries/martinez-conde-2019; time $TMPDIR/venv/bin/python -c "
+import vasarely as v, scipy.io as sio, io, numpy as np
+z=v.open_zip(); f=v.file_table(z)
+c=f[f.folder=='Edge-compare'].code.iloc[0]; print(c)
+st=sio.loadmat(io.BytesIO(z.read(f'{v.ROOT}/Edge-compare/{c}_Stimulus.mat')))['dat'][0,0]
+print(st.dtype.names)
+for n in st.dtype.names:
+  a=st[n]; print(n, type(a), getattr(a,'shape',None), getattr(a,'dtype',None))
+im=v._dense(st['EdgecompImage']); print(im.shape, im.dtype, im.min(), im.max())
+u,cnt=np.unique(im,return_counts=True); print(len(u)); print(list(zip(u[:10],cnt[:10]))); print(list(zip(u[-5:],cnt[-5:])))
+vt=st['EdgecompVert'][0,0]; print(vt.dtype.names)
 "
 ```
 
 ```
-50.0 50.0 50.0
+Exit code 1
+Traceback (most recent call last):
+  File "<string>", line 11, in <module>
+    vt=st['EdgecompVert'][0,0]; print(vt.dtype.names)
+       ~~^^^^^^^^^^^^^^^^
+ValueError: no field of name EdgecompVert
+AEC042500J2
+('EdgecompImage', 'SquareVert', 'RectVert')
+EdgecompImage <class 'numpy.ndarray'> (480, 640) float64
+SquareVert <class 'numpy.ndarray'> (100, 1) [('x', 'O'), ('y', 'O')]
+RectVert <class 'numpy.ndarray'> (100, 1) [('x', 'O'), ('y', 'O')]
+(480, 640) float64 0.0 100.0
+100
+[(np.float64(0.0), np.int64(267459)), (np.float64(1.0101010101010102), np.int64(586)), (np.float64(2.0202020202020203), np.int64(582)), (np.float64(3.0303030303030303), np.int64(306)), (np.float64(4.040404040404041), np.int64(578)), (np.float64(5.050505050505051), np.int64(575)), (np.float64(6.0606060606060606), np.int64(580)), (np.float64(7.070707070707071), np.int64(305)), (np.float64(8.080808080808081), np.int64(564)), (np.float64(9.090909090909092), np.int64(511))]
+[(np.float64(95.95959595959597), np.int64(396)), (np.float64(96.96969696969697), np.int64(210)), (np.float64(97.97979797979798), np.int64(382)), (np.float64(98.98989898989899), np.int64(291)), (np.float64(100.0), np.int64(192))]
+
+real	0m3.753s
+user	0m2.416s
+sys	0m0.165s
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
-import json
-nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
-for i in [0,1,24,25,27,28,29,30,31,35,36,43,44]:
-    print('=====',i); print(''.join(nb['cells'][i]['source']))
+cd  grep -n -B2 -A40 "id: fig7a-rms" claims/martinez-conde-2019.yaml; grep -n -A30 "id: table1-edge" claims/martinez-conde-2019.yaml | head -50; grep -n -i "baseline" claims/martinez-conde-2019.yaml | head -30
+```
+
+```
+389-    reported. Block and midpoint readings are those of the Table 1 claims; a signed rank test
+390-    (the values are paired) is shown as a variant.
+391:- id: fig7a-rms-contrast-fit
+392-  statement: Local RMS contrast along the Edge rises from 0.61 to 0.943 with luminance and is fit
+393-    by an exponential model, f(l) = -0.34 exp(-0.05 l) + 0.95, with R2 = 0.9983.
+394-  source: Results, Neuron responses to corner-folds vs. different contrasts along edge,
+395-    paragraph 1; Figure 7A
+396-  quote: This resulted in smooth contrasts ranging from 0.61 to 0.943. In order to acquire neural
+397-    responses to the Edge at equally spaced RMS contrast intervals, we fit the RMS contrast with
+398-    an exponential model ( R 2 = 0.9983; Fig 7A ).
+399-  expected:
+400-  - quantity: lowest local RMS contrast along the Edge
+401-    value: 0.61
+402-    tolerance: 0.061
+403-  - quantity: highest local RMS contrast along the Edge
+404-    value: 0.943
+405-    tolerance: 0.094
+406-  - quantity: fit amplitude a
+407-    value: -0.34
+408-    tolerance: 0.034
+[... 66 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 1,60p claims/martinez-conde-2019.yaml; sed -n 100,118p claims/martinez-conde-2019.yaml; sed -n 231,250p claims/martinez-conde-2019.yaml; grep -n "checks" -A30 claims/martinez-conde-2019.yaml | tail -35
+```
+
+```
+# Claims for Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019), PLoS ONE 14(3)
+# e0210941, tested on CRCNS pvc-12.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record, PMC6438452 (open access), from the Europe PMC full text XML
+# (paper/10.1371-journal.pone.0210941.txt): main text, Materials and methods, figure legends,
+# Table 1, and the legends of the supporting information (S1 to S4 Fig, S1 and S2 Table). The
+# supplementary files themselves are not in the text. S1 Table (exact p-values of Fig 4B) and
+# S2 Table (the t-tests of Fig 7C, with confidence intervals and t-statistics) are missing, so
+# the claims record only the bounds and statements the main text gives. The reference list is
+# not in the text either, so reference [3] (the DOG model output of Fig 7D) cannot be named
+# beyond its number. The paper links no analysis code; none was read.
+#
+# Data the paper used (Materials and methods; Results, paragraphs 1 to 4). Two adult rhesus
+# monkeys (Macaca mulatta, one male, one female; monkey J and monkey A). 118 V1 single units
+# recorded (102 from J, 16 from A), 60 discarded before analysis, 58 analysed. Each neuron was
+# tested in one to three conditions during a guided-viewing task (fixation cross jumping over a
+# grid, 2x2 DVA window). Conditions, with the corner-fold aligned to the neuron's preferred
+# orientation: Square and Edge (25 neurons; folds P180 (flat gradient) and S90, plus the Edge),
+[... 93 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/s1.py <<'EOF'
+import vasarely as v, scipy.io as sio, io, numpy as np
+from matplotlib.path import Path
+z=v.open_zip(); f=v.file_table(z)
+FIELD={"Edge-compare":"EdgecompImage","Star":"DiagImage","Corners":"CornersImage"}
+for folder in v.CONDITIONS:
+    for c in f[f.folder==folder].code.iloc[:3]:
+        try:
+            st=sio.loadmat(io.BytesIO(z.read(f'{v.ROOT}/{folder}/{c}_Stimulus.mat')))['dat'][0,0]
+        except NotImplementedError: continue
+        names=st.dtype.names
+        if FIELD[folder] not in names: print(c, names); continue
+        im=v._dense(st[FIELD[folder]])
+        if folder=="Edge-compare": polys=v._polys(st["SquareVert"])+v._polys(st["RectVert"])
+        else: polys=v._polys(st[v.VERT_FIELD[folder]])
+        yy,xx=np.mgrid[0:im.shape[0],0:im.shape[1]]; pts=np.c_[xx.ravel()+1.0,yy.ravel()+1.0]
+        cnt=np.zeros(len(pts))
+        for p in polys: cnt+=Path(p).contains_points(pts)
+        cnt=cnt.reshape(im.shape)
+        u=np.unique(im)
+        # mapping
+        for name,pred in [("(n-1)*100/99",np.maximum(cnt-1,0)*100/99),("100-(n-1)*100/99 inside",np.where(cnt>0,100-np.maximum(cnt-1,0)*100/99,0)), ("n",cnt), ("100 - n*100/99", 100-cnt*100/99)]:
+            print(folder,c,name,"share equal %.4f"%np.mean(np.isclose(pred,im,atol=1e-6)))
+        print("  bg value (cnt==0) unique:", np.unique(im[cnt==0])[:5], " n unique", len(u), "max", im.max(), "cnt max", cnt.max())
 EOF
+$TMPDIR/venv/bin/python $TMPDIR/s1.py
 ```
 
 ```
-===== 0
-# Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12
-
-**Paper.** Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1
-responses to illusory corner-folds in Vasarely's nested squares and the Alternating Brightness Star
-illusions. *PLoS ONE* 14(3): e0210941.
-[doi:10.1371/journal.pone.0210941](https://doi.org/10.1371/journal.pone.0210941)
-
-**Dataset.** CRCNS pvc-12, "Single-neuron extracellular recordings from area V1 of awake behaving
-rhesus monkeys viewing brightness illusions based on Victor Vasarely's artworks",
-[doi:10.6080/K05D8Q1T](https://doi.org/10.6080/K05D8Q1T). Read in place from the public S3 bucket
-`crcnsarchive` (`pvc-12/live/V1_Vasarely_data.zip`), never written to disk.
-
-**Version.** CRCNS data sets are not versioned, so the version is recorded as `unversioned`
-(docs/archives.md, "CRCNS"); there is only one published copy to choose, the `live` folder, which
-the paper's data statement points to through the DOI. To make a later change detectable, the
-notebook prints the data set's `checksums.md5` and checks that the zip's ETag on the bucket equals
-its MD5 there, `e1301fe463e72332e2303b2053ee0559` (the zip was last modified 2026-02-11). The data
-descriptor read is version 0.7 (Feb 15, 2018).
-
-[... 248 more lines not kept]
-```
-
-**Agent**
-
-Now the notebook. I'll rewrite the affected code cells in one script.
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; cat > $TMPDIR/mc/edit1.py <<'PYEOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p))
-C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def put(i,s):
-    C[i]['source']=s.splitlines(keepends=True)
-def rep(i,old,new):
-    s=src(i); assert old in s,(i,old[:60]); put(i,s.replace(old,new))
-
-# cell 10: units, fraction of non-integer image pixels
-rep(10,'''print("  image (as stored) max", r["screen_image"].max() / 1000, "= one spike in one sample")''',
-'''print("  image (as stored) max", r["screen_image"].max() / 1000, "= one spike in one sample")
-img_stored = r["screen_image"] / v.PER_MS_TO_PER_S
-seen = r["eyetime"] > 0
-print("  pixels with eye time:", int(seen.sum()), "; of these, image is not an integer at",
-      int((np.abs(img_stored[seen] - np.round(img_stored[seen])) > 1e-9).sum()),
-      f"({(np.abs(img_stored[seen] - np.round(img_stored[seen])) > 1e-9).mean():.1%}); values strictly between 0 and 1 at",
-      int(((img_stored[seen] > 0) & (img_stored[seen] < 1)).sum()))''')
-
-# cell 12: count failed registrations explicitly
-rep(12,'''min_corr=("map_corr", "min"), median_corr=("map_corr", "median")).to_string())''',
-'''min_corr=("map_corr", "min"), median_corr=("map_corr", "median"),
-                               failed=("map_corr", lambda x: int(x.isna().sum()))).to_string())''')
-
-# cell 14: baseline squares' luminance under every placement; widened Square and Edge map
-rep(14,'''    cs = v.corners_baseline_centres(r) if r["folder"] == "Corners" else v.baseline_centres(r)
-    row["baseline lum max"] = round(max(v.box_mean(r["lum"], c, (1, 0), 16, 16) for c in cs), 2)''',
-'''    if r["folder"] == "Corners":
-        for place in v.CORNERS_PLACES:
-            row[f"baseline lum max, {place}"] = round(max(v.box_mean(r["lum"], c, (1, 0), 16, 16)
-                                                          for c in v.corners_baseline_centres(r, place)), 2)
-    else:
-        row["baseline lum max, inside"] = round(max(v.box_mean(r["lum"], c, (1, 0), 16, 16) for c in v.baseline_centres_inside(r)), 2)
-        if r["folder"] == "Star":
-            row["baseline lum max, centred"] = round(max(v.box_mean(r["lum"], c, (1, 0), 16, 16) for c in v.baseline_centres(r)), 2)''')
-rep(14,'''print("Edge files whose Edge is cut by the screen border (luminance at 95% below 90):",''',
-'''# Square and Edge: the centred baseline squares run past the authors' 151 DU frame, so they are read
-# from the screen maps moved into the frame widened by v.PAD DU (vasarely.load_record)
-sq = [r for r in aligned if r["folder"] == "Edge-compare"]
-inner = [np.corrcoef(r["padded"]["smoothed"][v.PAD:-v.PAD, v.PAD:-v.PAD].ravel(), r["smoothed"].ravel())[0, 1] for r in sq]
-outside = [np.mean([(np.abs(c - [ (r["smoothed"].shape[1] + 1) / 2, 0])[0] + 8 > (r["smoothed"].shape[1] - 1) / 2)
-                    for c in v.baseline_centres(r)]) for r in sq]
-print("Square and Edge, widened map against the authors' map inside their frame: r from", round(min(inner), 4), "to", round(max(inner), 4))
-print("  centred baseline squares partly outside the authors' frame:", sum(o > 0 for o in outside), "of", len(sq), "files; ",
-      "part of those squares off the screen: at most", round(max(1 - np.mean([v.box_mean(r["padded"]["on_screen"], c + v.PAD, (1, 0), 16, 16)
-                                                                         for c in v.baseline_centres(r)]) for r in sq), 3))
-print("Edge files whose Edge is cut by the screen border (luminance at 95% below 90):",''')
-put(13, src(13).replace("(correlations above).", "(correlations above; all 60 files register, none fails)."))
-
-# cell 18: main baseline reading, per-file comparison with BaseActivity
-rep(18,'''main = v.neuron_table(aligned, corners_mode="bright", baseline_reading="centred")
-both = v.neuron_table(aligned, corners_mode="both", baseline_reading="centred")''',
-'''main = v.neuron_table(aligned, corners_mode="bright", baseline_reading="matched")
-both = v.neuron_table(aligned, corners_mode="both", baseline_reading="matched")
-# every baseline reading, with the bright S40 fold: (name, table)
-READINGS = {"matched [main]": main,
-            "centred": v.neuron_table(aligned, "bright", "centred"),
-            "inside": v.neuron_table(aligned, "bright", "inside"),
-            "files' BaseActivity": v.neuron_table(aligned, "bright", "files").dropna(subset=["base"]),
-            **{f"matched, Corners {p}": v.neuron_table(aligned, "bright", "matched", corners_place=p) for p in v.CORNERS_PLACES[1:]}}
-has_files = set(READINGS["files' BaseActivity"].code)
-READINGS["matched, files with BaseActivity only"] = main[main.code.isin(has_files)]''')
-s=src(18)
-i0=s.index('print("baseline against the files\' BaseActivity (where present):")')
-s=s[:i0]+'''print("computed baselines against the files' BaseActivity, per file (spikes/s):")
-cmp = []
-for r in aligned:
-    if not np.isfinite(r["base_activity"]):
-        continue
-    row = {"code": r["code"], "folder": r["folder"], "files": r["base_activity"]}
-    if r["folder"] == "Corners":
-        for place in v.CORNERS_PLACES:
-            row[place] = v.baseline_value(r, "smoothed", "centred", place)
-    else:
-        row["centred"] = v.baseline_value(r, "smoothed", "centred")
-        row["inside"] = v.baseline_value(r, "smoothed", "inside")
-        row["centred, unsmoothed"] = v.baseline_value(r, "raw", "centred")
-        row["inside, unsmoothed"] = v.baseline_value(r, "raw", "inside")
-    cmp.append(row)
-cmp = pd.DataFrame(cmp)
-print(cmp.round(2).to_string(index=False))
-print("median |computed - files| and Spearman r with the files' values, by stimulus:")
-for f, g in cmp.groupby("folder"):
-    cols = [c for c in g.columns if c not in ("code", "folder", "files") and g[c].notna().all()]
-    print(f"  {f} (n = {len(g)}): " + "; ".join(f"{c} {np.median(np.abs(g[c] - g.files)):.2f}, r = {stats.spearmanr(g[c], g.files)[0]:.2f}" for c in cols))
-# Squares moved inward step by step: which offset comes closest to BaseActivity
-print("median |computed - files| with the squares moved k DU inward from centred (k = 8 is 'inside'):")
-for f in ["Edge-compare", "Star"]:
-    rs = [r for r in aligned if r["folder"] == f and np.isfinite(r["base_activity"])]
-    line = []
-    for k in range(0, 17, 2):
-        e = []
-        for r in rs:
-            c0 = r["poly"][-1].mean(0); half = np.abs(r["poly"][0] - c0).max() - k
-            cs = [c0 + np.array([sx, sy]) * half for sx in (-1, 1) for sy in (-1, 1)]
-            img, off = (r["padded"]["smoothed"], v.PAD) if f == "Edge-compare" else (r["smoothed"], 0)
-            e.append(abs(v.baseline(img, [c + off for c in cs]) - r["base_activity"]))
-        line.append(f"k={k}: {np.median(e):.2f}")
-    print(f"  {f}: " + ", ".join(line))
-fig, ax = plt.subplots(1, 3, figsize=(13, 3.8))
-for a, f in zip(ax, ["Edge-compare", "Star", "Corners"]):
-    g = cmp[cmp.folder == f]
-    for c, mk in zip([c for c in g.columns if c not in ("code", "folder", "files") and "unsmoothed" not in c and g[c].notna().all()], "osd"):
-        a.plot(g.files, g[c], mk, label=c, alpha=0.7)
-    hi = float(np.nanmax(g.drop(columns=["code", "folder"]).values)) * 1.05
-    a.plot([0, hi], [0, hi], ":k"); a.set_title(f"{f} (n = {len(g)})"); a.set_xlabel("files' BaseActivity (spikes/s)"); a.legend(fontsize=7)
-ax[0].set_ylabel("computed baseline (spikes/s)"); plt.tight_layout(); plt.show()
-print("all points are drawn (axes from 0 to the largest value)")
-'''
-put(18,s)
-
-# cell 22: s4 readings
-rep(22,'''for reading in ["centred", "inside", "files"]:
-    vals = {}
-    for r in aligned:
-        b = v.baseline_value(r, r["smoothed"], reading)
-        if np.isfinite(b):
-            vals.setdefault(name[r["folder"]], []).append(b)
-    print(f"baseline reading: {reading}")''',
-'''s4 = {}
-for reading, df in READINGS.items():
-    vals = {c: df.drop_duplicates("code").loc[lambda x: x.condition.map(lambda k: k) .isin([c]) if False else df.drop_duplicates("code").condition == c, "base"].values
-            for c in ["Square and Edge", "Star", "Corners"]}
-    print(f"baseline reading: {reading}")''')
-s=src(22)
-s=s.replace('''    vals = {c: df.drop_duplicates("code").loc[lambda x: x.condition.map(lambda k: k) .isin([c]) if False else df.drop_duplicates("code").condition == c, "base"].values
-            for c in ["Square and Edge", "Star", "Corners"]}''','''    one = df.drop_duplicates("code")  # one baseline per recording
-    vals = {c: one.loc[one.condition == c, "base"].values for c in ["Square and Edge", "Star", "Corners"]}''')
-s=s.replace('''    for k, p in baseline_tests(vals).items():
-        print(f"  {k}: {p:.3f}")''','''    s4[reading] = baseline_tests(vals)
-    for k, p in s4[reading].items():
-        print(f"  {k}: {p:.3f}")
-print("readings finding a difference at 0.05 (any of a, b, c):", [k for k, t in s4.items() if min(t.values()) < 0.05])
-print("readings finding none:", [k for k, t in s4.items() if min(t.values()) >= 0.05])''')
-put(22,s)
-
-# cell 24: fig4a readings
-rep(24,'''for label, df in [("main (bright S40, centred baseline)", main),
-                  ("baseline inside the corners", v.neuron_table(aligned, "bright", "inside")),
-                  ("files' BaseActivity", v.neuron_table(aligned, "bright", "files").dropna(subset=["base"]))]:''',
-'''for label, df in READINGS.items():''')
-
-# cell 26: fig4b readings
-rep(26,'''compare(v.neuron_table(aligned, "dark", "centred"), "dark S40 fold alone (reference)")
-compare(v.neuron_table(aligned, "bright", "inside"), "bright S40, baseline inside the corners")
-compare(v.neuron_table(aligned, "bright", "files").dropna(subset=["base"]), "bright S40, files' BaseActivity (files that have it)")
-compare(v.neuron_table(aligned, "bright", "centred", map_name="raw"), "bright S40, unsmoothed map")''',
-'''compare(v.neuron_table(aligned, "dark", "matched"), "dark S40 fold alone (reference)")
-fig4b_var = {}
-for label, df in list(READINGS.items())[1:] + [("matched, unsmoothed map", v.neuron_table(aligned, "bright", "matched", map_name="raw"))]:
-    fig4b_var[label] = compare(df, f"bright S40, baseline {label}")
-print("readings with the order and all four within tolerance:",
-      [k for k, s in fig4b_var.items() if s["within"].all() and all(s["mean"].values[i] < s["mean"].values[i + 1] for i in range(3))])''')
-
-# cell 28: pairwise readings
-rep(28,'''pairwise(v.neuron_table(aligned, "bright", "files").dropna(subset=["base"]), "bright S40, files' BaseActivity")''',
-'''for label, df in list(READINGS.items())[1:]:
-    pairwise(df, f"bright S40, baseline {label}")''')
-
-# cell 30: fig5 baseline
-rep(30,'''m = r["smoothed"] - v.baseline_value(r, r["smoothed"], "centred")''','''m = r["smoothed"] - v.baseline_value(r)''')
-
-# cell 32: table1 baseline readings, complete Edge files
-rep(32,'''print("values within tolerance under reading (ia), by baseline reading (bright S40 fold):")
-for reading in ["centred", "inside", "files"]:
-    df = v.neuron_table(aligned, "bright", reading).dropna(subset=["base"])
-    print(f"  {reading:8s}", {fold: sum(abs(x - e[0]) <= e[1] for x, e in zip(table1(df, fold, "averaged", "a")[0], TABLE1[fold]))
-                              for fold in ["Edge", "P180", "S90", "S52", "S40"]})''',
-'''print("values within tolerance under reading (ia), by baseline reading (bright S40 fold):")
-complete_codes = set(geo.loc[geo["Edge lum95"] >= 90, "code"])
-for reading, df in list(READINGS.items()) + [("matched, the 18 files with the whole Edge on the screen",
-                                              main[(main.condition != "Square and Edge") | main.code.isin(complete_codes)])]:
-    print(f"  {reading:56s}", {fold: int(sum(abs(x - e[0]) <= e[1] for x, e in zip(table1(df, fold, "averaged", "a")[0], TABLE1[fold])))
-                                for fold in ["Edge", "P180", "S90", "S52", "S40"]})
-d18 = main[main.code.isin(complete_codes)]
-print("Edge (ia) on the", d18.code.nunique(), "files with the whole Edge on the screen:",
-      "  ".join(f"{s} {x:.2f} (paper {e[0]:.2f}±{e[1]:.2f}) {'ok' if abs(x - e[0]) <= e[1] else '--'}"
-                for s, x, e in zip(STATS, table1(d18, "Edge", "averaged", "a")[0], TABLE1["Edge"])))''')
-
-# cell 39: fig7c
-s=src(39)
-s=s.replace('''edge_rms = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r, r["smoothed"]), lum_rms) for r in edge_recs])
-edge_10 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r, r["smoothed"]), lum_10) for r in edge_recs])''',
-'''edge_rms = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), lum_rms) for r in edge_recs])
-edge_10 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), lum_10) for r in edge_recs])
-edge_1 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), np.arange(0, 100.1, 1)) for r in edge_recs])
-print("Edge response at 1% luminance steps (mean over neurons), 70% to 95%:",
-      dict(zip(range(70, 96), np.round(edge_1.mean(0)[70:96], 2))))''')
-s=s.replace('''ok_b = abs(res["P180"][1] - 61.0) < 0.05 and abs(res["S40"][1] - 90) <= 3.7
-print("reading (a) P180 within one step of 50% and S40 within one step of 90%:", ok_a)
-print("reading (b) P180 nearest the lowest level and S40 within one step of 90:", ok_b)''',
-'''ok_b = abs(res["P180"][1] - 61.0) < 0.05 and abs(res["S40"][1] - 90) <= 3.7
-ok_b_level = abs(res["P180"][1] - 61.0) < 0.05 and abs(res["S40"][1] - 90.6) <= 3.7 + 0.05
-print("reading (a) P180 within one step of 50% and S40 within one step of 90%:", ok_a)
-print("reading (b) P180 nearest the lowest level and S40 within 3.7 of 90 [main]:", ok_b)
-print("reading (b), one level from the level nearest 90 (90.6) [variant]:", ok_b_level)
-
-def fig7c_eval(df, recs_, label):
-    fm = df[df.fold.isin(folds4)].groupby("fold")["diff"].mean()
-    e10 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r, "smoothed", *READING_ARGS[label]), lum_10) for r in recs_]).mean(0)
-    erm = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r, "smoothed", *READING_ARGS[label]), lum_rms) for r in recs_]).mean(0)
-    na = {f: lum_10[np.argmin(np.abs(e10 - fm[f]))] for f in ("P180", "S40")}
-    nb = {f: rms_levels[np.argmin(np.abs(erm - fm[f]))] * 100 for f in ("P180", "S40")}
-    print(f"  {label}: P180 {fm['P180']:.2f}, S40 {fm['S40']:.2f}; Edge {e10.min():.2f} to {e10.max():.2f}; "
-          f"(a) nearest P180 {na['P180']:.0f}%, S40 {na['S40']:.0f}%; (b) P180 {nb['P180']:.1f}, S40 {nb['S40']:.1f}; "
-          f"holds (a) {na['P180'] in (40, 50, 60) and na['S40'] in (80, 90, 100)}, (b) {abs(nb['P180'] - 61) < 0.05 and abs(nb['S40'] - 90) <= 3.7}")
-READING_ARGS = {"matched [main]": ("matched",), "centred": ("centred",), "inside": ("inside",), "files' BaseActivity": ("files",),
-                "matched, 18 files with the whole Edge on the screen": ("matched",)}
-print("other baselines and the 18 Square and Edge files with the whole Edge on the screen:")
-for label in READING_ARGS:
-    if label.startswith("matched, 18"):
-        df = main[(main.condition != "Square and Edge") | main.code.isin(complete_codes)]
-        fig7c_eval(df, [r for r in edge_recs if r["code"] in complete_codes], label)
-    elif label == "files' BaseActivity":
-        fig7c_eval(READINGS[label], [r for r in edge_recs if np.isfinite(r["base_activity"])], label)
-    else:
-        fig7c_eval(READINGS[label], edge_recs, label)''')
-put(39,s)
-
-# cell 41: fig7c significance on the 18 complete files
-rep(41,'''    print(f"{col}: claim holds {ok}; S40 significantly higher at RMS {sig}; P180 lower at 0.943: p = {p180[col]:.3g}")''',
-'''    print(f"{col}: claim holds {ok}; S40 significantly higher at RMS {sig}; P180 lower at 0.943: p = {p180[col]:.3g}")
-# variant: the 18 Square and Edge files with the whole Edge on the screen (Edge, P180 and S90 all from them)
-keep = [i for i, r in enumerate(edge_recs) if r["code"] in complete_codes]
-d18 = main[(main.condition != "Square and Edge") | main.code.isin(complete_codes)]
-fv18 = {f: d18.loc[d18.fold == f, "diff"].values for f in folds4}
-t18 = pd.DataFrame([{"fold": f, "rms": round(c, 3), "mean difference": fv18[f].mean() - edge_rms[keep, j].mean(),
-                     "p": stats.ttest_ind(fv18[f], edge_rms[keep, j]).pvalue} for f in folds4 for j, c in enumerate(rms_levels)])
-t18["(a) BH over 40"] = multipletests(t18.p, method="fdr_bh")[1]
-t18["(b) BH per fold"] = t18.groupby("fold")["p"].transform(lambda p: multipletests(p, method="fdr_bh")[1])
-for col in ["(a) BH over 40", "(b) BH per fold"]:
-    p180 = t18[(t18.fold == "P180") & (t18.rms == 0.943)].iloc[0]
-    s40 = t18[(t18.fold == "S40") & (t18.rms.isin([0.61, 0.647]))]
-    ok = p180[col] < 0.05 and p180["mean difference"] < 0 and (s40[col] < 0.05).all() and (s40["mean difference"] > 0).all()
-    print(f"18 complete Edge files, {col}: claim holds {ok}; P180 lower at 0.943: p = {p180[col]:.3g}; S40 at 0.610 and 0.647: p =",
-          np.round(s40[col].values, 4).tolist(), "; mean differences", np.round(s40["mean difference"].values, 2).tolist())''')
-
-# cell 43: fig7d under other readings
-rep(43,'''print("  successive slopes differ by more than their combined SE:", [bool(abs(sl[i + 1] - sl[i]) > np.hypot(sl_se[i], sl_se[i + 1])) for i in range(2)])''',
-'''print("  successive slopes differ by more than their combined SE:", [bool(abs(sl[i + 1] - sl[i]) > np.hypot(sl_se[i], sl_se[i + 1])) for i in range(2)])
-print("other baselines (monotonic; folds with |residual| > SEM):")
-for label, df in list(READINGS.items())[1:]:
-    g = df[df.fold.isin(folds4)].groupby("fold")["diff"]
-    m_, se_ = g.mean().reindex(["S40", "S52", "S90", "P180"]).values, g.sem().reindex(["S40", "S52", "S90", "P180"]).values
-    r_ = m_ - np.polyval(np.polyfit(ang, m_, 1), ang)
-    print(f"  {label}: monotonic {bool(np.all(np.diff(m_) < 0))}; off the line by more than the SEM:",
-          [f for f, x, e in zip(["S40", "S52", "S90", "P180"], r_, se_) if abs(x) > e])''')
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-print('ok')
-PYEOF
-python $TMPDIR/mc/edit1.py; git diff --stat
-```
-
-```
-ok
- .../reproduce_martinez_conde_2019.ipynb            | 198 +++++++++++++++++----
- entries/martinez-conde-2019/vasarely.py            |  77 ++++++--
- 2 files changed, 218 insertions(+), 57 deletions(-)
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/s1.py", line 1, in <module>
+    import vasarely as v, scipy.io as sio, io, numpy as np
+ModuleNotFoundError: No module named 'vasarely'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; git show HEAD:entries/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb | head -c 300; echo; head -c 300 reproduce_martinez_conde_2019.ipynb; echo; git show HEAD:entries/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb | tail -c 200 | od -c | tail -3
+cd entries/martinez-conde-2019; PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s1.py
 ```
 
 ```
-{
- "cells": [
-  {
-   "cell_type": "markdown",
-   "id": "1f1a86d5",
-   "metadata": {},
-   "source": [
-    "# Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12\n",
-    "\n",
-    "**Paper.** Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1\n",
-    "responses
-{
- "cells": [
-  {
-   "cell_type": "markdown",
-   "id": "1f1a86d5",
-   "metadata": {},
-   "source": [
-    "# Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12\n",
-    "\n",
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; tail -c 50 reproduce_martinez_conde_2019.ipynb | od -c | tail -2; cat > $TMPDIR/mc/edit2.py <<'PYEOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.splitlines(keepends=True)
-s=src(14)
-old=s[s.index('outside = ['):s.index('print("Square and Edge, widened map')]
-new='''w_ = sq[0]["smoothed"].shape[1]
-outside = [sum((c[0] - 8 < 0.5) or (c[0] + 8 > w_ + 0.5) for c in v.baseline_centres(r)) for r in sq]
-'''
-s=s.replace(old,new)
-s=s.replace('''print("  centred baseline squares partly outside the authors' frame:", sum(o > 0 for o in outside), "of", len(sq), "files; ",''',
-'''print("  centred baseline squares partly outside the authors' frame:", sum(outside), "of", 4 * len(sq), "; ",''')
-put(14,s)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False)
-open(p,'a').write('\n')
-PYEOF
-python $TMPDIR/mc/edit2.py; python -c "
-import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'));print(''.join(nb['cells'][14]['source'])[-1500:])"
-```
-
-```
-0000060   }  \n
-0000062
-(geo)
-for f, g in geo.groupby("folder"):
-    print(f)
-    print(g.dropna(axis=1, how="all").drop(columns=["code", "folder"]).describe().loc[["count", "min", "max"]].round(1).to_string())
-print("Corners: bright and dark S40 folds per file:", geo["bright/dark S40 folds"].dropna().value_counts().to_dict())
-# Square and Edge: the centred baseline squares run past the authors' 151 DU frame, so they are read
-# from the screen maps moved into the frame widened by v.PAD DU (vasarely.load_record)
-sq = [r for r in aligned if r["folder"] == "Edge-compare"]
-inner = [np.corrcoef(r["padded"]["smoothed"][v.PAD:-v.PAD, v.PAD:-v.PAD].ravel(), r["smoothed"].ravel())[0, 1] for r in sq]
-w_ = sq[0]["smoothed"].shape[1]
-outside = [sum((c[0] - 8 < 0.5) or (c[0] + 8 > w_ + 0.5) for c in v.baseline_centres(r)) for r in sq]
-print("Square and Edge, widened map against the authors' map inside their frame: r from", round(min(inner), 4), "to", round(max(inner), 4))
-print("  centred baseline squares partly outside the authors' frame:", sum(outside), "of", 4 * len(sq), "; ",
-      "part of those squares off the screen: at most", round(max(1 - np.mean([v.box_mean(r["padded"]["on_screen"], c + v.PAD, (1, 0), 16, 16)
-                                                                         for c in v.baseline_centres(r)]) for r in sq), 3))
-print("Edge files whose Edge is cut by the screen border (luminance at 95% below 90):",
-      geo.loc[geo["Edge lum95"] < 90, "code"].tolist() if "Edge lum95" in geo else [])
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; time python tools/entry.py run entries/martinez-conde-2019 2>&1 | tail -30
-```
-
-```
-Thu Nov 12 11:54:27 UTC 2026
-Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
-pass  reproduce_martinez_conde_2019.ipynb  (351 s)
-
-real	5m58.429s
-user	6m11.717s
-sys	0m11.444s
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; cat > $TMPDIR/mc/show.py <<'EOF'
-import json,sys
-nb=json.load(open('executed/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'))
-for i in map(int,sys.argv[1:]):
-    c=nb['cells'][i]
-    print('=====',i)
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif o.get('output_type')=='error': print('ERROR',o['ename'],o['evalue'])
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
-EOF
-python $TMPDIR/mc/show.py 10 12 14 18 | grep -v "^ ABC\|^ AEC\|^ABC\|^ABD" | head -150
-```
-
-```
-Thu Nov 12 12:00:30 UTC 2026
-===== 10
-  spikes in the map: 15644 ; eye time on the map: 1165.4 s ; overall rate 13.42 spikes/s
-  image (as stored) max 1.0 = one spike in one sample
-  pixels with eye time: 8989 ; of these, image is not an integer at 8856 (98.5%); values strictly between 0 and 1 at 8856
-
-
-AEC052900J1 : smoothed_image against image smoothed by a 16 DU, STD 7 Gaussian, r = 0.9934 , ratio of totals 1.0004
-
-
-===== 12
-               n  max_residual  min_corr  median_corr  failed
-folder                                                       
-Corners       26  2.955858e-12  0.985817     0.999054       0
-Edge-compare  22  4.860112e-12  0.994096     0.998686       0
-Star          12  5.684342e-13  0.995865     0.998827       0
-        code       folder  map_corr  rotation_deg  rf_offset_x  rf_offset_y
- ABD051700J1         Star    0.9993         -15.0        328.7        -17.5
- ABD062700J1         Star    0.9984          15.0        233.5       -106.1
- ABD062800A4         Star    0.9995         -75.0         79.8        -88.7
-[... 104 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python $TMPDIR/mc/show.py 22 24 26 | head -230
-```
-
-```
-===== 22
-baseline reading: matched [main]
-  Square and Edge  n = 22, median   6.72, quartiles   1.75 to   9.66, range 0.74 to 24.82 spikes/s
-  Star             n = 12, median   1.90, quartiles   1.55 to   4.08, range 0.61 to 7.91 spikes/s
-  Corners          n = 26, median   2.57, quartiles   0.87 to   4.30, range 0.00 to 19.13 spikes/s
-  (a) Square and Edge vs Star, BH p: 0.099
-  (a) Square and Edge vs Corners, BH p: 0.052
-  (a) Star vs Corners, BH p: 0.851
-  (b) Kruskal-Wallis p: 0.039
-  (c) one-way ANOVA p: 0.009
-baseline reading: centred
-  Square and Edge  n = 22, median   6.72, quartiles   1.75 to   9.66, range 0.74 to 24.82 spikes/s
-  Star             n = 12, median   1.42, quartiles   0.54 to   3.10, range 0.21 to 6.76 spikes/s
-  Corners          n = 26, median   2.57, quartiles   0.87 to   4.30, range 0.00 to 19.13 spikes/s
-  (a) Square and Edge vs Star, BH p: 0.013
-  (a) Square and Edge vs Corners, BH p: 0.026
-  (a) Star vs Corners, BH p: 0.315
-  (b) Kruskal-Wallis p: 0.007
-  (c) one-way ANOVA p: 0.003
-baseline reading: inside
-[... 195 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
-p='vasarely.py'; s=open(p).read()
-old='''    if rec["folder"] == "Edge-compare":
-        return baseline(rec["padded"][map_name], [c + PAD for c in baseline_centres(rec)])
-    return baseline(rec[map_name], baseline_centres(rec))
-'''
-new='''    if rec["folder"] == "Edge-compare":
-        # mean over the part of each square that is on the screen (off it the map holds no data)
-        cs = [c + PAD for c in baseline_centres(rec)]
-        num = baseline(rec["padded"][map_name], cs)
-        den = baseline(rec["padded"]["on_screen"], cs)
-        return num / den
-    return baseline(rec[map_name], baseline_centres(rec))
-'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''    "centred": centred on the corners of the circumscribing square (Square and Edge on the widened
-    map, see load_record);''','''    "centred": centred on the corners of the circumscribing square (Square and Edge on the widened
-    map, see load_record, averaged over the part of the squares on the screen);''')
-open(p,'w').write(s)
-EOF
-grep -n "on the widened" vasarely.py
-```
-
-```
-394:    "centred": centred on the corners of the circumscribing square (Square and Edge on the widened
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; cat > $TMPDIR/mc/edit3.py <<'PYEOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.splitlines(keepends=True)
-def rep(i,old,new):
-    s=src(i); assert old in s,(i,old[:60]); put(i,s.replace(old,new))
-rep(18,'''            img, off = (r["padded"]["smoothed"], v.PAD) if f == "Edge-compare" else (r["smoothed"], 0)
-            e.append(abs(v.baseline(img, [c + off for c in cs]) - r["base_activity"]))''',
-'''            if f == "Edge-compare":  # on the widened map, over the part of the squares on the screen
-                b = v.baseline(r["padded"]["smoothed"], [c + v.PAD for c in cs]) / v.baseline(r["padded"]["on_screen"], [c + v.PAD for c in cs])
-            else:
-                b = v.baseline(r["smoothed"], cs)
-            e.append(abs(b - r["base_activity"]))''')
-rep(14,'''print("  centred baseline squares partly outside the authors' frame:", sum(outside), "of", 4 * len(sq), "; ",
-      "part of those squares off the screen: at most", round(max(1 - np.mean([v.box_mean(r["padded"]["on_screen"], c + v.PAD, (1, 0), 16, 16)
-                                                                         for c in v.baseline_centres(r)]) for r in sq), 3))''',
-'''off = np.array([[1 - v.box_mean(r["padded"]["on_screen"], c + v.PAD, (1, 0), 16, 16) for c in v.baseline_centres(r)] for r in sq])
-print("  centred baseline squares partly outside the authors' frame:", sum(outside), "of", 4 * len(sq),
-      "; squares partly off the screen:", int((off > 0.01).sum()), "in", int((off > 0.01).any(1).sum()), "files, at most",
-      round(off.max(), 2), "of a square; the baseline averages the part on the screen")''')
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-PYEOF
-python $TMPDIR/mc/edit3.py && echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python $TMPDIR/mc/show.py 28 30 32 39 41 43 | grep -v "^P180 0\|^ S40 0\|^ S52\|^ S90" | head -150
-```
-
-```
-===== 28
-bright S40 fold [main]
-              z         p  median difference  (a) BH over 6  (b) BH over 3
-S40 S52  0.9107    0.3624              6.293         0.3624            NaN
-    S90   3.787 0.0001527              16.16      0.0003055      0.0001527
-    P180  5.049 4.447e-07               19.5      2.668e-06      1.334e-06
-S52 S90   2.667  0.007658              9.864        0.01149            NaN
-    P180  4.072 4.656e-05               13.2      0.0001397      6.985e-05
-S90 P180  1.432    0.1522               3.34         0.1826            NaN
-  the three named pairs significant and in the stated direction under (a) BH over 6: True
-  the three named pairs significant and in the stated direction under (b) BH over 3: True
-bright S40, baseline centred
-              z         p  median difference  (a) BH over 6  (b) BH over 3
-S40 S52  0.6281      0.53              6.501           0.53            NaN
-    S90   3.787 0.0001527              16.16      0.0003055      0.0001527
-    P180  5.049 4.447e-07               19.5      2.668e-06      1.334e-06
-S52 S90   2.775  0.005522              9.657       0.008283            NaN
-    P180  4.216 2.482e-05                 13      7.447e-05      3.724e-05
-S90 P180  1.432    0.1522               3.34         0.1826            NaN
-  the three named pairs significant and in the stated direction under (a) BH over 6: True
-[... 130 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; python tools/entry.py run entries/martinez-conde-2019 2>&1 | tail -3; date -u
-```
-
-```
-Thu Nov 12 12:01:08 UTC 2026
-Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
-pass  reproduce_martinez_conde_2019.ipynb  (367 s)
-Thu Nov 12 12:07:21 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python $TMPDIR/mc/show.py 14 18 22 | grep -v "^ ABC\|^ AEC\|^ABC\|^ABD\|^Corners \|^Star \|count\|^min\|^max\|^ *S\|^ *Edge" | head -120; python $TMPDIR/mc/show.py 18 | grep "^ AEC\|code"
-```
-
-```
-===== 14
-aligned recordings by condition and monkey:
-monkey        A   J
-folder             
-Corners
-       baseline lum max, inside  S52 length  S52 lum5  S52 lum50  S52 lum95  baseline lum max, centred
-Corners: bright and dark S40 folds per file: {(1, 1): 26}
-  centred baseline squares partly outside the authors' frame: 88 of 88 ; squares partly off the screen: 6 in 5 files, at most 1.0 of a square; the baseline averages the part on the screen
-
-===== 18
-variables used (spikes/s), main reading:
-       n   mean   sem  median   min    max
-fold                                      
-P180  22  12.63  1.92   10.87  0.56  30.08
-       n  mean   sem  median   min    max
-fold                                     
-P180  22  8.60  1.64    6.72  0.74  24.82
-computed baselines against the files' BaseActivity, per file (spikes/s):
-        code       folder  files  bottom  bottom, 32 DU in  sides, 24 DU up  centred  inside  centred, unsmoothed  inside, unsmoothed
- ABD062800A4         Star   3.63     NaN               NaN              NaN     2.83    3.57                 3.01                3.21
-[... 78 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python $TMPDIR/mc/show.py 14 18 22 | grep -i "Edge-compare (n\|Edge-compare: k\|Star (n\|Star: k\|widened\|Square and Edge  n\|Star             n"; python $TMPDIR/mc/show.py 24 26 28 30 32 35 37 39 41 43 > $TMPDIR/mc/out2.txt; grep -n "ordered\|order S40\|readings with\|^P180  22\|^S90   22\|^S52   12\|^S40   26\|named pairs\|^  matched\|^  centred\|^  inside\|^  files\|on the 18\|holds\|reading (\|nearest\|monotonic\|line:\|off the line\|significant at\|range\|^Edge (ia)\|^P180 (ia)\|^S90 (ia)\|^S52 (ia)\|^S40 (ia) bright\|^S52 (iia)\|^S90 (iia)" $TMPDIR/mc/out2.txt | head -150
-```
-
-```
-Square and Edge, widened map against the authors' map inside their frame: r from 0.9941 to 0.9998
-  Edge-compare (n = 9): centred 0.46, r = 0.98; inside 1.33, r = 0.98; centred, unsmoothed 0.30, r = 0.98; inside, unsmoothed 1.35, r = 0.98
-  Star (n = 10): centred 1.30, r = 0.58; inside 0.39, r = 0.98; centred, unsmoothed 1.59, r = 0.57; inside, unsmoothed 0.51, r = 0.98
-  Edge-compare: k=0: 0.46, k=2: 0.61, k=4: 0.96, k=6: 1.19, k=8: 1.34, k=10: 1.41, k=12: 1.42, k=14: 1.73, k=16: 1.89
-  Star: k=0: 1.30, k=2: 1.12, k=4: 0.89, k=6: 0.61, k=8: 0.39, k=10: 0.62, k=12: 0.53, k=14: 0.56, k=16: 0.91
-  Square and Edge  n = 22, median   6.72, quartiles   2.11 to  12.27, range 0.74 to 24.82 spikes/s
-  Star             n = 12, median   1.90, quartiles   1.55 to   4.08, range 0.61 to 7.91 spikes/s
-  Square and Edge  n = 22, median   6.72, quartiles   2.11 to  12.27, range 0.74 to 24.82 spikes/s
-  Star             n = 12, median   1.42, quartiles   0.54 to   3.10, range 0.21 to 6.76 spikes/s
-  Square and Edge  n = 22, median   7.58, quartiles   2.42 to  12.68, range 0.66 to 22.77 spikes/s
-  Star             n = 12, median   1.90, quartiles   1.55 to   4.08, range 0.61 to 7.91 spikes/s
-  Square and Edge  n =  9, median   5.64, quartiles   2.49 to   9.01, range 1.13 to 24.14 spikes/s
-  Star             n = 10, median   2.68, quartiles   1.16 to   4.94, range 0.71 to 8.45 spikes/s
-  Square and Edge  n = 22, median   6.72, quartiles   2.11 to  12.27, range 0.74 to 24.82 spikes/s
-  Star             n = 12, median   1.90, quartiles   1.55 to   4.08, range 0.61 to 7.91 spikes/s
-  Square and Edge  n = 22, median   6.72, quartiles   2.11 to  12.27, range 0.74 to 24.82 spikes/s
-  Star             n = 12, median   1.90, quartiles   1.55 to   4.08, range 0.61 to 7.91 spikes/s
-  Square and Edge  n =  9, median   6.07, quartiles   2.86 to   9.50, range 0.98 to 20.50 spikes/s
-  Star             n = 10, median   1.90, quartiles   1.49 to   3.59, range 0.61 to 7.06 spikes/s
-5:P180  22     18   
-[... 142 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 226,236p $TMPDIR/mc/out2.txt; grep -n "^S90 (\|^S52 (\|^Edge (\|^P180 (" $TMPDIR/mc/out2.txt; sed -n 266,300p $TMPDIR/mc/out2.txt; sed -n 340,370p $TMPDIR/mc/out2.txt; python - <<'EOF'
-import yaml
-c=yaml.safe_load(open('claims/martinez-conde-2019.yaml'))
-for cl in c['claims']:
-    if cl['id'] in ('fig4b-spike-rate-difference','fig4a-above-baseline','fig7d-nonlinear','fig6-midpoint-representative','fig7c-fold-edge-significance','fig5-average-maps'):
-        print(cl['id'], '::', cl.get('criterion'))
-EOF
-```
-
-```
-midpoint of the average map  mean of its ten blocks
-fold                                                     
-S90                          8.39                    7.61
-P180                         4.03                    3.61
-S52                         19.19                   17.15
-S40                         26.27                   23.01
-order S40 > S52 > S90 > P180 (bright S40): True
-variant, block means, order (bright S40): True
-
-===== 32
-237:Edge (ia)                    min   5.78 (paper  7.98±1.60) --  max  29.87 (paper 33.13±5.11) ok  mean  17.16 (paper 20.44±3.33) ok  median  17.09 (paper 20.77±3.48) --  midpoint  18.90 (paper 22.01±3.41) ok
-238:Edge (ib)                    min  10.15 (paper  7.98±1.60) --  max  21.23 (paper 33.13±5.11) --  mean  17.16 (paper 20.44±3.33) ok  median  17.92 (paper 20.77±3.48) ok  midpoint  18.90 (paper 22.01±3.41) ok
-239:P180 (ia)                    min  -1.55 (paper  0.18±1.01) --  max  10.33 (paper 10.28±1.53) ok  mean   3.61 (paper  4.55±1.12) ok  median   3.03 (paper  4.03±1.06) ok  midpoint   4.03 (paper  4.87±1.15) ok
-240:P180 (ib)                    min   1.72 (paper  0.18±1.01) --  max   4.98 (paper 10.28±1.53) --  mean   3.61 (paper  4.55±1.12) ok  median   3.67 (paper  4.03±1.06) ok  midpoint   4.03 (paper  4.87±1.15) ok
-241:S90 (ia)                     min   2.46 (paper  4.36±1.07) --  max  13.58 (paper 14.61±2.48) ok  mean   7.61 (paper  9.22±1.61) ok  median   7.66 (paper  9.31±1.62) --  midpoint   8.39 (paper 10.69±1.94) --
-242:S90 (ib)                     min   6.17 (paper  4.36±1.07) --  max   8.59 (paper 14.61±2.48) --  mean   7.61 (paper  9.22±1.61) ok  median   7.77 (paper  9.31±1.62) ok  midpoint   8.39 (paper 10.69±1.94) --
-243:S90 (iia)                    min   1.50 (paper  4.36±1.07) --  max  15.39 (paper 14.61±2.48) ok  mean   7.61 (paper  9.22±1.61) ok  median   7.43 (paper  9.31±1.62) --  midpoint   8.39 (paper 10.69±1.94) --
-244:S90 (iib)                    min   5.63 (paper  4.36±1.07) --  max  10.0
-[... 77 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
-p='vasarely.py'; s=open(p).read()
-old='''                         "on_screen": on_screen, "corr": corr}'''
-new='''                         "on_screen": on_screen, "corr": corr,
-                         "lum": warp(rec["stimulus"], best[0], best[1], tp, shape, order=1)}'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-cat > $TMPDIR/mc/edit4.py <<'PYEOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.splitlines(keepends=True)
-def rep(i,old,new):
-    s=src(i); assert old in s,(i,old[:60]); put(i,s.replace(old,new))
-rep(14,'''      round(off.max(), 2), "of a square; the baseline averages the part on the screen")''',
-'''      round(off.max(), 2), "of a square; the baseline averages the part on the screen")
-print("  stimulus luminance in the centred squares on the widened frame: at most",
-      round(max(v.box_mean(r["padded"]["lum"], c + v.PAD, (1, 0), 16, 16) for r in sq for c in v.baseline_centres(r)), 2), "%")''')
-# cell 35: fig6 Edge on the 18 complete files
-rep(35,'''m6 = f6[(f6.reading == "bright S40 [main]") & (f6.halves == "averaged")]''',
-'''m6 = f6[(f6.reading == "bright S40 [main]") & (f6.halves == "averaged")]
-d18e = main[(main.fold == "Edge") & main.code.isin(complete_codes)]
-s18 = v.block_summaries(d18e, "averaged")
-print("Edge on the", len(d18e), "files with the whole Edge on the screen, rank sum p against the mean and the median:",
-      [round(stats.ranksums(d18e["diff"].values, s18[:, j]).pvalue, 3) for j in (2, 3)])''')
-# cell 39: Edge responses from the 18 complete files [main], all 22 as a variant
-rep(39,'''edge_rms = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), lum_rms) for r in edge_recs])
-edge_10 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), lum_10) for r in edge_recs])
-edge_1 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), np.arange(0, 100.1, 1)) for r in edge_recs])''',
-'''# Edge responses from the 18 files whose Edge is wholly on the screen, as the Methods say it always was
-# (Methods, Square and edge); all 22 are shown below as a reading
-edge_used = [r for r in edge_recs if r["code"] in complete_codes]
-print("Edge responses from", len(edge_used), "of", len(edge_recs), "Square and Edge files")
-edge_rms = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), lum_rms) for r in edge_used])
-edge_10 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), lum_10) for r in edge_used])
-edge_1 = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), np.arange(0, 100.1, 1)) for r in edge_used])
-edge_rms_all = np.array([v.edge_response(r, r["smoothed"], v.baseline_value(r), lum_rms) for r in edge_recs])''')
-rep(39,'''def fig7c_eval(df, recs_, label):''','''def fig7c_eval(df, recs_, label):
-    """Nearest Edge levels for P180 and S40 under a baseline reading (fold means from df, Edge from recs_)."""''')
-rep(39,'''READING_ARGS = {"matched [main]": ("matched",), "centred": ("centred",), "inside": ("inside",), "files' BaseActivity": ("files",),
-                "matched, 18 files with the whole Edge on the screen": ("matched",)}
-print("other baselines and the 18 Square and Edge files with the whole Edge on the screen:")
-for label in READING_ARGS:
-    if label.startswith("matched, 18"):
-        df = main[(main.condition != "Square and Edge") | main.code.isin(complete_codes)]
-        fig7c_eval(df, [r for r in edge_recs if r["code"] in complete_codes], label)
-    elif label == "files' BaseActivity":
-        fig7c_eval(READINGS[label], [r for r in edge_recs if np.isfinite(r["base_activity"])], label)
-    else:
-        fig7c_eval(READINGS[label], edge_recs, label)''',
-'''READING_ARGS = {"matched [main]": ("matched",), "centred": ("centred",), "inside": ("inside",), "files' BaseActivity": ("files",),
-                "matched, Edge from all 22 files": ("matched",)}
-print("other baselines, and the Edge from all 22 Square and Edge files:")
-for label in READING_ARGS:
-    if label == "matched, Edge from all 22 files":
-        fig7c_eval(main, edge_recs, label)
-    elif label == "files' BaseActivity":
-        fig7c_eval(READINGS[label], [r for r in edge_used if np.isfinite(r["base_activity"])], label)
-    else:
-        fig7c_eval(READINGS[label], edge_used, label)''')
-s=src(41)
-i0=s.index('# variant: the 18 Square and Edge files')
-s=s[:i0]+'''# variant: the Edge from all 22 Square and Edge files
-t22 = pd.DataFrame([{"fold": f, "rms": round(c, 3), "mean difference": fold_vals[f].mean() - edge_rms_all[:, j].mean(),
-                     "p": stats.ttest_ind(fold_vals[f], edge_rms_all[:, j]).pvalue} for f in folds4 for j, c in enumerate(rms_levels)])
-t22["(a) BH over 40"] = multipletests(t22.p, method="fdr_bh")[1]
-t22["(b) BH per fold"] = t22.groupby("fold")["p"].transform(lambda p: multipletests(p, method="fdr_bh")[1])
-for col in ["(a) BH over 40", "(b) BH per fold"]:
-    p180 = t22[(t22.fold == "P180") & (t22.rms == 0.943)].iloc[0]
-    s40 = t22[(t22.fold == "S40") & (t22.rms.isin([0.61, 0.647]))]
-    ok = p180[col] < 0.05 and p180["mean difference"] < 0 and (s40[col] < 0.05).all() and (s40["mean difference"] > 0).all()
-    print(f"Edge from all 22 files, {col}: claim holds {ok}; P180 lower at 0.943: p = {p180[col]:.3g}; S40 at 0.610 and 0.647: p =",
-          np.round(s40[col].values, 4).tolist(), "; mean differences", np.round(s40["mean difference"].values, 2).tolist())
-'''
-put(41,s)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-print('ok')
-PYEOF
-python $TMPDIR/mc/edit4.py
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; python tools/entry.py run entries/martinez-conde-2019 2>&1 | tail -2; python $TMPDIR/mc/show.py 14 22 24 26 28 30 32 35 39 41 43 > $TMPDIR/mc/out3.txt; grep -n "ERROR\|luminance in the centred\|off the screen" $TMPDIR/mc/out3.txt
-```
-
-```
-Thu Nov 12 12:08:45 UTC 2026
-Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
-pass  reproduce_martinez_conde_2019.ipynb  (357 s)
-26:  centred baseline squares partly outside the authors' frame: 88 of 88 ; squares partly off the screen: 6 in 5 files, at most 1.0 of a square; the baseline averages the part on the screen
-27:  stimulus luminance in the centred squares on the widened frame: at most 0.0 %
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; grep -n "Edge on the\|Edge responses from\|^  matched\|^  centred\|^  inside\|^  files\|holds\|reading (\|nearest\|range\|Edge response at 1%\|(a) Edge at\|(b) Edge at\|fold means\|all 22" $TMPDIR/mc/out3.txt | sed -n '1,200p' | grep -v "^[0-9]*:  matched \[main\]  *{" | tail -45
-```
-
-```
-Thu Nov 12 12:14:51 UTC 2026
-172:both S40 folds averaged (reading (a) before the claims file was amended; reference only) | order S40 > S52 > S90 > P180: False | all within tolerance: False
-319:Edge-compare average map range -4.56 to 23.14 spikes/s (colour scale -5 to 40)
-320:Star average map range -3.18 to 27.28 spikes/s (colour scale -5 to 40)
-321:Corners average map range -2.64 to 30.92 spikes/s (colour scale -5 to 40)
-352:values within tolerance under reading (ia), by baseline reading (bright S40 fold):
-354:  centred                                                  {'Edge': 3, 'P180': 4, 'S90': 2, 'S52': 3, 'S40': 5}
-355:  inside                                                   {'Edge': 2, 'P180': 3, 'S90': 1, 'S52': 4, 'S40': 5}
-356:  files' BaseActivity                                      {'Edge': 0, 'P180': 3, 'S90': 2, 'S52': 2, 'S40': 5}
-357:  matched, Corners bottom, 32 DU in                        {'Edge': 3, 'P180': 4, 'S90': 2, 'S52': 4, 'S40': 4}
-358:  matched, Corners sides, 24 DU up                         {'Edge': 3, 'P180': 4, 'S90': 2, 'S52': 4, 'S40': 5}
-359:  matched, files with BaseActivity only                    {'Edge': 0, 'P180': 5, 'S90': 4, 'S52': 1, 'S40': 3}
-360:  matched, the 18 files with the whole Edge on the screen  {'Edge': 5, 'P180': 1, 'S90': 1, 'S52': 4, 'S40': 5}
-361:Edge (ia) on the 18 files with the whole Edge on the screen: min 6.52 (paper 7.98±1.60) ok  max 31.53 (paper 33.13±5.11) ok  mean 18.56 (paper 20.44±3.33) ok  median 18.76 (paper 20.77±3.48) ok  midpoint 21.09 (paper 22.01±3.41) ok
-381:Edge on the 18 files with the whole Edge on the screen, rank sum p against the mean and the median: [np.float64(0.704), np.float64(0.95)]
-386:Edge responses from 18 of 22 Square and Edge files
-388:Edge response at 1% luminance steps (mean over neurons), 70% to 95%: {70: np.float64(19.92), 71: np.float64(20.12), 72: np.float64(20.32), 73: np.float64(20.51), 74: np.float64(20.69), 75: np.float64(20.85), 76: np.float64(20.99), 77: np.
-[... 29 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 1,30p $TMPDIR/mc/out3.txt | cut -c1-250; grep -n "baseline reading: matched \[main\]" -A8 $TMPDIR/mc/out3.txt; sed -n 160,170p $TMPDIR/mc/out3.txt; grep -n "bright S40 fold \[main\]" -A10 $TMPDIR/mc/out3.txt | head -12; sed -n 408,430p $TMPDIR/mc/out3.txt; sed -n 437,448p $TMPDIR/mc/out3.txt; grep -n "by monkey" -A8 $TMPDIR/mc/out3.txt | head -10
-```
-
-```
-===== 14
-aligned recordings by condition and monkey:
-monkey        A   J
-folder             
-Corners       1  25
-Edge-compare  2  20
-Star          2  10
-Star recordings without a Standard frame: ['ABD070300J1', 'ABD071000J3', 'ABD071200J1', 'ABD071400J1', 'ABD071400J3', 'ABD071700J1', 'ABD071700J2', 'ABD071900J3', 'ABD072000J1', 'ABD072100J1', 'ABD07260J1C', 'ABD07310J1B', 'ABD08080J4D', 'ABD08100J1D
-Corners
-       S40 length  S40 lum5  S40 lum50  S40 lum95  baseline lum max, bottom  baseline lum max, bottom, 32 DU in  baseline lum max, sides, 24 DU up
-count        26.0      26.0       26.0       26.0                      26.0                                26.0                               26.0
-min         100.0       3.9       48.7       93.9                       0.0                                 0.0                                0.8
-max         100.0       4.5       49.7       94.5                       1.0                                 1.0                                1.0
-Edge-compare
-       S90 length  S90 lum5  S90 lum50  S90 lum95  Edge length  Edge lum5  Edge lum50  Edge lum95  P180 length  P180 lum5  P180 lum50  P180 lum95  baseline lum max, inside
-count        22.0      22.0       22.0       22.0         22.0       22.0        22.0        22.0         22.0       22.0        22.0        22.0                      22.0
-min          70.7       4.7       49.7       94.8        150.0        3.9        39.2        72.2        150.0        4.4        49.5        94.4                       0.0
-max          70.7       5.2       50.3       95.5        150.0        5.0        49.8        94.9        150.0        5.3        50.1        95.2                       0.0
-Star
-       baseline lum max, inside  S52 length  S52 lum5  S52 lum50  S52 lum95  baseline lum max, centred
-[... 85 more lines not kept]
-```
-
-**Agent**
-
-Results are in. Before writing text, I'll check why the handover kept the summary table (the verifier's first remark).
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "def cmd_handover\|def handover" -A40 tools/entry.py | grep -n "Summary\|Result\|summary\|startswith\|heading" | head
-```
-
-```
-17:620-                 for r in entry.get("related", []) if not r["id"].startswith(("doi:", "entry:"))}
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "handover" tools/entry.py | head; grep -rn "Result:\*\*\|\"\*\*Result\|## Summary\|summary" tools/entry.py | head
-```
-
-```
-8:    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-35:`handover` builds what a verifier is given in its first round
-39:executed/<name>/handover/. Run the entry first.
-588:# --- handover -----------------------------------------------------------------
-604:def handover(entry_dir: Path, output_dir: Path) -> int:
-606:    target = output_dir / "handover"
-634:    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover", "upgrade-python", "hash"])
-681:    if args.command == "handover":
-682:        return handover(entry_dir, output_dir)
-37:markdown cell that begins "**Result:" and everything from the "## Summary"
-595:        if cell.cell_type == "markdown" and text.startswith("## Summary"):
-597:        if cell.cell_type == "markdown" and text.startswith("**Result:"):
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; python -c "
-import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
-for i in [11,15,19,21,23]: print('=====',i);print(''.join(nb['cells'][i]['source']))"
-```
-
-```
-===== 11
-`image` is not a spike count: multiplied by the eye time (in 1 ms samples) it gives an integer
-count at every pixel, so it is the unsmoothed spike rate in spikes per sample, and its maximum of
-1 is one spike in one sample. Rates are multiplied by 1000 to give spikes/s. `smoothed_image`
-matches `image` smoothed by the Fig 3B Gaussian. Only one file of 77 holds the eye time, and none
-holds the spike count map, so the number of spikes per condition cannot be computed (claim
-spikes-per-condition).
-===== 15
-Along each fold the stimulus runs from 5% to 95% luminance at 5% and 95% of the fold's length and
-is 50% at its middle, so the 50% midpoints and the ten blocks are placed as the Methods describe.
-Fold lengths give the block lengths of the Results (15 DU for Edge, P180 and S52, 7.07 for S90,
-10 for S40). The Corners pattern has two S40 folds, one bright and one dark, in every file. The
-Corners luminance is 1% at its darkest (the image holds no 0); every baseline square lies there or
-on the 0% background. In four Square and Edge files the 100% end of the Edge is cut by the screen
-border, which the Methods say happened to the rectangle "but never its edge"; the Edge
-measures there partly sample the black screen beyond the border. The paper's ROI for the Star is
-10 x 10 DVA (160 DU), but the authors' Star frame is 321 DU wide, which the 300 DU star needs.
-===== 19
-The baseline squares' positions are not fixed by the text (centred on the corners of the
-circumscribing square, or drawn inside them; for Corners, where in the 0% area). The files'
-[... 50 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "readings with" $TMPDIR/mc/out3.txt; grep -n "files with BaseActivity only | order" -A7 $TMPDIR/mc/out3.txt; grep -n "files' BaseActivity | order" -A7 $TMPDIR/mc/out3.txt; sed -n 365,382p $TMPDIR/mc/out3.txt
-```
-
-```
-236:readings with the order and all four within tolerance: []
-222:bright S40, baseline matched, files with BaseActivity only | order S40 > S52 > S90 > P180: True | all within tolerance: False
-223-       n   mean   sem  median   min    max  paper  tolerance  within
-224-fold                                                                
-225-P180   9   3.99  1.12    4.54 -0.22   9.32   4.87       1.15    True
-226-S90    9   9.40  2.51    8.97  0.66  26.32  10.69       1.94    True
-227-S52   10  21.13  3.30   20.11  7.78  37.83  18.10       2.39   False
-228-S40   19  29.83  5.51   24.11  6.77  97.80  25.60       4.18   False
-229-bright S40, baseline matched, unsmoothed map | order S40 > S52 > S90 > P180: True | all within tolerance: False
-201:bright S40, baseline files' BaseActivity | order S40 > S52 > S90 > P180: True | all within tolerance: False
-202-       n   mean   sem  median   min    max  paper  tolerance  within
-203-fold                                                                
-204-P180   9   3.62  1.11    1.87  0.09   8.75   4.87       1.15   False
-205-S90    9   9.03  2.45    7.52  0.51  25.75  10.69       1.94    True
-206-S52   10  20.71  3.22   19.96  8.38  37.77  18.10       2.39   False
-207-S40   19  29.10  5.54   22.62  6.48  98.27  25.60       4.18    True
-208-bright S40, baseline matched, Corners bottom, 32 DU in | order S40 > S52 > S90 > P180: True | all within tolerance: False
-bright S40 [main] Edge averaged    mean 22             0.2873      0.8144                   0.4628
-bright S40 [main] Edge averaged  median 22           -0.08108      0.9345                    0.357
-bright S40 [main] P180 averaged    mean 22              0.166      0.7072                   0.8987
+Edge-compare AEC042500J2 (n-1)*100/99 share equal 0.9445
+Edge-compare AEC042500J2 100-(n-1)*100/99 inside share equal 0.8704
+Edge-compare AEC042500J2 n share equal 0.8698
+Edge-compare AEC042500J2 100 - n*100/99 share equal 0.0012
+  bg value (cnt==0) unique: [0.         1.01010101 2.02020202 3.03030303 4.04040404]  n unique 100 max 100.0 cnt max 99.0
+Edge-compare AEC052900J1 (n-1)*100/99 share equal 0.9443
+Edge-compare AEC052900J1 100-(n-1)*100/99 inside share equal 0.8716
+Edge-compare AEC052900J1 n share equal 0.8713
+Edge-compare AEC052900J1 100 - n*100/99 share equal 0.0010
+  bg value (cnt==0) unique: [0.         1.01010101 2.02020202 5.05050505 6.06060606]  n unique 100 max 100.0 cnt max 99.0
+Edge-compare AEC063000J1 (n-1)*100/99 share equal 0.9436
+Edge-compare AEC063000J1 100-(n-1)*100/99 inside share equal 0.8554
+Edge-compare AEC063000J1 n share equal 0.8548
+Edge-compare AEC063000J1 100 - n*100/99 share equal 0.0013
+  bg value (cnt==0) unique: [0.         1.01010101 3.03030303 4.04040404 5.05050505]  n unique 100 max 100.0 cnt max 99.0
+Star ABD051700J1 (n-1)*100/99 share equal 0.9035
+Star ABD051700J1 100-(n-1)*100/99 inside share equal 0.8508
+Star ABD051700J1 n share equal 0.8497
+Star ABD051700J1 100 - n*100/99 share equal 0.0005
+  bg value (cnt==0) unique: [0.         1.01010101]  n unique 100 max 100.0 cnt max 99.0
 [... 15 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; cat > $TMPDIR/mc/edit5.py <<'PYEOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.splitlines(keepends=True)
-def rep(i,old,new):
-    s=src(i); assert old in s,(i,old[:60]); put(i,s.replace(old,new))
-rep(32,'''    print(f"  {reading:56s}", {fold: int(sum(abs(x - e[0]) <= e[1] for x, e in zip(table1(df, fold, "averaged", "a")[0], TABLE1[fold])))
-                                for fold in ["Edge", "P180", "S90", "S52", "S40"]})''',
-'''    best = {}
-    for fold in ["Edge", "P180", "S90", "S52", "S40"]:
-        n_in = {f"{h}{o}": int(sum(abs(x - e[0]) <= e[1] for x, e in zip(table1(df, fold, "averaged" if h == "i" else "separate", o)[0], TABLE1[fold])))
-                for h in (["i", "ii"] if fold in ("S90", "S52") else ["i"]) for o in "ab"}
-        best[fold] = f"(ia) {n_in['ia']}, best {max(n_in.values())} {[k for k, x in n_in.items() if x == max(n_in.values())]}"
-    print(f"  {reading:56s}", best)''')
-put(11,'''`image` is not a spike count: multiplied by the eye time (in 1 ms samples) it gives an integer
-count at every pixel, and at 98.5% of the pixels with eye time its value lies strictly between 0
-and 1, so it is the unsmoothed spike rate in spikes per sample, and its maximum of 1 is one spike
-in one sample. Rates are multiplied by 1000 to give spikes/s. `smoothed_image` matches `image`
-smoothed by the Fig 3B Gaussian. Only one file of 77 holds the eye time, and none holds the spike
-count map, so the number of spikes per condition cannot be computed (claim spikes-per-condition).
-''')
-put(15,'''Along each fold the stimulus runs from 5% to 95% luminance at 5% and 95% of the fold's length and
-is 50% at its middle, so the 50% midpoints and the ten blocks are placed as the Methods describe.
-Fold lengths give the block lengths of the Results (15 DU for Edge, P180 and S52, 7.07 for S90,
-10 for S40). The Corners pattern has two S40 folds, one bright and one dark, in every file. The
-Corners luminance is 1% at its darkest (the image holds no 0); every Corners baseline square lies
-there, and every Square and Star baseline square on the 0% background. The authors' Square and
-Edge frame is 151 DU wide, so the 16 x 16 DU squares centred on the corners of the 141.4 DU
-circumscribing square run past it on both sides (all 88 squares). They are read from the screen
-maps moved into a frame widened by 16 DU, which match the authors' maps inside their frame (r of
-0.994 or more) and are 0% there too; 6 squares in 5 files lie partly off the screen, and their
-baseline is the mean over the part on the screen. In four Square and Edge files the 100% end of
-the Edge is cut by the screen border, which the Methods say happened to the rectangle "but never
-its edge"; the Edge measures there partly sample the black screen beyond the border. The paper's
-ROI for the Star is 10 x 10 DVA (160 DU), but the authors' Star frame is 321 DU wide, which the
-300 DU star needs.
-''')
-s=src(19)
-i0=s.index('## neuron-counts')
-put(19,'''The text does not fix where the baseline squares are: centred on the corners of the circumscribing
-square, or drawn inside them, and for Corners where in the 0% area. The files' own `BaseActivity`,
-held by 38 of 60 aligned files, is the authors' value, so the placements are compared with it file
-by file above. For Square and Edge the squares centred on the corners come closest (median
-difference 0.46 spikes/s, against 1.33 for squares inside the corners, n = 9), and moving them
-inward only moves them away. For the Star the squares inside the corners come closest (0.39,
-against 1.30 for centred, n = 10; Spearman r 0.98 against 0.58). For Corners none of the three
-placements tried matches closely (0.85 to 2.79). The main reading, called "matched", takes for each
-stimulus the placement closest to `BaseActivity`: centred for Square and Edge, inside for the
-Star, the bottom corners of the ROI for Corners. This is an assumption. The centred and inside
-readings for both stimuli, the files' values themselves, two other Corners placements and the
-main reading on the 38 files with `BaseActivity` are shown with every claim the baseline bears on.
-
-'''+s[i0:])
-s=src(23); i0=s.index('## fig4a-above-baseline')
-put(23,'''**Result: not reproduced.** Under the main reading all three tests find a difference at alpha
-0.05: (a) Square and Edge against Corners, BH p = 0.037 (Square and Edge against Star 0.065), (b)
-Kruskal-Wallis p = 0.025, (c) ANOVA p = 0.004. The Square and Edge baseline is the highest (median
-6.72 spikes/s, against 1.90 for Star and 2.57 for Corners). The squares centred or inside the
-corners for both stimuli find a larger difference (Kruskal-Wallis p = 0.005 and 0.008). With the
-files' own `BaseActivity` no test finds a difference (smallest p = 0.109), and neither does the main
-reading on the same 38 files (smallest p = 0.060) or with the Corners squares 32 DU further in
-(smallest p = 0.063). The outcome rests on where the baseline squares are, which the text does not
-fix, on fewer neurons per stimulus than the paper's (22, 12 and 26 against 25, 30 and 28), and on
-the paper's test, which is not named.
-
-'''+s[i0:])
-s=src(25); i0=s.index('## fig4b-spike-rate-difference')
-put(25,'''**Result: reproduced.** Under the main reading most neurons respond above baseline for each fold
-(18 of 22 for P180, 18 of 22 for S90, 12 of 12 for S52, 26 of 26 for S40), every mass centre lies
-above the unit line, and its distance from the line grows from P180 through S90 and S52 to S40,
-under reading (a) (4.03, 8.39, 19.19, 26.27 spikes/s) and under reading (b) (log ratios 0.221,
-0.351, 0.916, 1.002). The order under (a) holds under every baseline reading shown; under (b) it
-fails with the Star squares centred on the corners (S52 1.210 > S40 1.002) and with the Corners
-squares 32 DU further in (S40 0.837 < S52 0.916).
-
-'''+s[i0:])
-s=src(27); i0=s.index('## fig4b-pairwise-significance')
-put(27,'''**Result: partially reproduced.** Under the main reading the means are ordered S40 (26.27) > S52
-(19.19) > S90 (8.39) > P180 (4.03 spikes/s); S40, S52 and P180 are within the paper's SEM, but S90
-is 2.30 below 10.69, outside its 1.94. The order holds under every baseline reading shown and on
-the unsmoothed map, and under none of them are all four within tolerance: S90 falls outside with
-the squares centred or inside for both stimuli and with both other Corners placements; P180 and
-S52 with the files' `BaseActivity`; S52 and S40 with the main reading on the files that have it;
-P180 on the unsmoothed map. The two monkey A neurons give negative P180 and S90 values (-2.94 and
--4.44) against 4.72 and 9.68 for monkey J. The Star mean comes from 12 neurons, not 30.
-
-'''+s[i0:])
-s=src(29); i0=s.index('## fig5-average-maps')
-put(29,'''**Result: reproduced.** Under the main reading, S40 against S90 (BH p = 0.00028 over six pairs)
-and against P180 (p = 2.1e-06), and S52 against P180 (p = 0.00014), are significant in the stated
-direction under both comparison families, and under every other baseline reading shown. Of the
-pairs the text does not claim, S52 against S90 is significant (p = 0.011), and S40 against S52 (p =
-0.36) and S90 against P180 (p = 0.16) are not.
-
-'''+s[i0:])
-s=src(31); i0=s.index('## Table 1')
-put(31,'''**Result: reproduced.** At the fold midpoints the average maps are ordered S40 (26.27) > S52
-(19.19) > S90 (8.39) > P180 (4.03 spikes/s), and the variant of block means gives the same order
-(23.01, 17.15, 7.61, 3.61). As the claims file says, this repeats the means of
-fig4b-spike-rate-difference and is not an independent test.
-
-'''+s[i0:])
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-print('ok')
-PYEOF
-python $TMPDIR/mc/edit5.py
+cd entries/martinez-conde-2019; cat > $TMPDIR/s2.py <<'EOF'
+import vasarely as v, scipy.io as sio, io, numpy as np
+from matplotlib.path import Path
+z=v.open_zip(); f=v.file_table(z)
+FIELD={"Edge-compare":"EdgecompImage","Star":"DiagImage","Corners":"CornersImage"}
+for folder in v.CONDITIONS:
+    for c in f[f.folder==folder].code.iloc[:2]:
+        st=sio.loadmat(io.BytesIO(z.read(f'{v.ROOT}/{folder}/{c}_Stimulus.mat')))['dat'][0,0]
+        im=v._dense(st[FIELD[folder]])
+        if folder=="Edge-compare": polys=v._polys(st["SquareVert"])+v._polys(st["RectVert"])
+        else: polys=v._polys(st[v.VERT_FIELD[folder]])
+        best=None
+        for dx in (0,0.5,1,1.5):
+          for dy in (0,0.5,1,1.5):
+            yy,xx=np.mgrid[0:im.shape[0],0:im.shape[1]]; pts=np.c_[xx.ravel()+dx,yy.ravel()+dy]
+            cnt=np.zeros(len(pts))
+            for p in polys: cnt+=Path(p).contains_points(pts)
+            cnt=cnt.reshape(im.shape)
+            pred = np.maximum(cnt-1,0)*100/99 if folder!="Corners" else 100-np.maximum(cnt-1,0)*100/99
+            d=np.abs(pred-im)
+            r=(np.mean(d<1e-6), np.mean(d<1.02), d.max(), dx, dy)
+            if best is None or r[0]>best[0]: best=r
+        print(folder,c,"exact %.4f within one level %.4f max diff %.1f offset %s %s"%best)
+        if folder=="Corners":
+            print("  levels in image", np.unique(im)[:4], "count of 100:", (im==100).sum(), "of", im.size, "polys", len(polys))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s2.py
 ```
 
 ```
 Exit code 1
+Edge-compare AEC042500J2 exact 0.9637 within one level 0.9912 max diff 100.0 offset 1 0.5
+Edge-compare AEC052900J1 exact 0.9610 within one level 0.9909 max diff 100.0 offset 1 0.5
 Traceback (most recent call last):
-  File "/tmp/claude-1001/mc/edit5.py", line 78, in <module>
-    s=src(27); i0=s.index('## fig4b-pairwise-significance')
-                  ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: substring not found
+  File "/tmp/claude-1001/s2.py", line 7, in <module>
+    st=sio.loadmat(io.BytesIO(z.read(f'{v.ROOT}/{folder}/{c}_Stimulus.mat')))['dat'][0,0]
+       ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/scipy/io/matlab/_mio.py", line 241, in loadmat
+    MR, _ = mat_reader_factory(f, **kwargs)
+            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/scipy/io/matlab/_mio.py", line 76, in mat_reader_factory
+    raise NotImplementedError('Please use HDF reader for matlab v7.3 '
+                              'files, e.g. h5py')
+NotImplementedError: Please use HDF reader for matlab v7.3 files, e.g. h5py
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; python -c "
-import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
-for i,c in enumerate(nb['cells']):
-  s=''.join(c['source'])
-  if c['cell_type']=='markdown': print(i, [l for l in s.splitlines() if l.startswith('#') or l.startswith('**Result')])"
-```
-
-```
-0 ['# Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12']
-2 ['## Data check']
-4 []
-7 []
-9 []
-11 []
-13 []
-15 []
-17 []
-19 ['## neuron-counts']
-21 ["**Result: not reproduced.** The spreadsheet has 58 rows, the paper's total, but 5 of them mark no", '## spikes-per-condition', '## s4-baseline-no-difference']
-23 ['**Result: not reproduced.** With the baseline squares centred on the corners (the main reading),', '## fig4a-above-baseline']
-25 ['**Result: reproduced.** For each fold most neurons respond above baseline (21 of 22 for P180, 20', '## fig4b-spike-rate-difference']
-27 ['**Result: partially reproduced.** With the Corners response taken at the bright S40 fold, as the']
-29 ['**Result: reproduced.** S40 against S90 (BH p = 0.0015 over six pairs) and against P180 (p =', '## fig5-average-maps']
-31 ['**Result: reproduced.** At the fold midpoints the average maps are ordered S40 (26.27) > S52', '## Table 1: table1-edge, table1-p180, table1-s90, table1-s52, table1-s40']
-34 ["**Result.** The rule is all five values within the paper's SEM for reproduced and at least three", '## fig6-midpoint-representative']
-36 ['**Result: reproduced.** None of the ten rank sum tests of the main reading is significant (p =', '## fig7a-rms-contrast-fit']
-38 ['**Result: not reproduced.** Under neither definition of RMS contrast does the local contrast along', '## fig7c-fold-edge-equivalence']
-40 ['**Result: not reproduced.** The Edge response ranges from 11.24 spikes/s (at 0% luminance) to', '## fig7c-fold-edge-significance']
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-import yaml
-c=yaml.safe_load(open('claims/martinez-conde-2019.yaml'))
-for cl in c['claims']:
-    if cl['id'] in ('fig4b-pairwise-significance',): print(cl['statement'])
+cd entries/martinez-conde-2019; cat > $TMPDIR/s3.py <<'EOF'
+import vasarely as v, scipy.io as sio, io, numpy as np
+from matplotlib.path import Path
+z=v.open_zip(); f=v.file_table(z)
+c=f[f.folder=="Corners"].code.iloc[0]
+st=sio.loadmat(io.BytesIO(z.read(f'{v.ROOT}/Corners/{c}_Stimulus.mat')))['dat'][0,0]
+im=v._dense(st["CornersImage"]); polys=v._polys(st["CornersVert"])
+print(len(polys), [p.shape for p in polys[:3]])
+p0=polys[0]; print(p0.min(0), p0.max(0)); print(polys[-1].min(0), polys[-1].max(0))
+yy,xx=np.mgrid[0:im.shape[0],0:im.shape[1]]; pts=np.c_[xx.ravel()+1,yy.ravel()+0.5]
+cnt=np.zeros(len(pts))
+for p in polys: cnt+=Path(p).contains_points(pts)
+cnt=cnt.reshape(im.shape)
+for n in [0,1,2,50,99,100]:
+    sel=cnt==n
+    if sel.any(): print(n, sel.sum(), np.round(np.unique(im[sel],return_counts=True)[0][:5],2), np.unique(im[sel],return_counts=True)[1][:5])
+print(np.unique(im,return_counts=True)[1][:5], np.unique(im)[:3])
+# row profile through middle
+r=int(p0[:,1].mean()); print(np.round(im[r, int(p0[:,0].min())-5:int(p0[:,0].max())+5:6],0)); print(cnt[r, int(p0[:,0].min())-5:int(p0[:,0].max())+5:6])
 EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s3.py
 ```
 
 ```
-The midpoint spike rate difference for S40 is significantly larger than for S90 and for P180, and that for S52 is significantly larger than for P180.
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; cat > $TMPDIR/mc/split.py <<'PYEOF'
-import json, secrets
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def md(s): return {"cell_type":"markdown","id":secrets.token_hex(4),"metadata":{},"source":s.splitlines(keepends=True)}
-out=[]
-for c in C:
-    s=''.join(c['source'])
-    if c['cell_type']=='markdown' and s.startswith('**Result') and '\n## ' in s:
-        i=s.index('\n## ')
-        c['source']=s[:i].rstrip('\n').splitlines(keepends=True)
-        out.append(c)
-        rest=s[i+1:]
-        # the last one holds Blocked and Summary: split Summary off, it moves into the summary cell
-        if '\n## Summary' in rest:
-            j=rest.index('\n## Summary'); out.append(md(rest[:j].rstrip('\n'))); summary_head=True
-        else:
-            out.append(md(rest.rstrip('\n')))
-    else:
-        out.append(c)
-# heading for fig4b-pairwise-significance before its code cell
-for k,c in enumerate(out):
-    if c['cell_type']=='code' and ''.join(c['source']).startswith('def pairwise('):
-        out.insert(k, md('## fig4b-pairwise-significance\n\n> The midpoint spike rate difference for S40 is significantly larger than for S90 and for P180, and\n> that for S52 is significantly larger than for P180.'))
-        break
-# the summary cell starts with its heading
-last=out[-1]; assert last['cell_type']=='markdown' and ''.join(last['source']).startswith('| Claim')
-last['source']=('## Summary\n\n'+''.join(last['source'])).splitlines(keepends=True)
-nb['cells']=out
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-for i,c in enumerate(out):
-    s=''.join(c['source'])
-    if c['cell_type']=='markdown': print(i, s[:70].replace('\n',' | '))
-    else: print(i,'code',c['metadata'].get('tags'))
-PYEOF
-python $TMPDIR/mc/split.py
-```
-
-```
-0 # Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12 |  | **Paper.
-1 code None
-2 ## Data check
-3 code ['sanity']
-4 The descriptor says each spike rate map file holds `image` (raw spike 
-5 code ['sanity']
-6 code ['sanity']
-7 The two `ABS` files are recordings with a Corners-type stimulus (`CORN
-8 code ['sanity']
-9 No recording is deposited twice. The same neuron appears in several fo
-10 code ['sanity']
-11 `image` is not a spike count: multiplied by the eye time (in 1 ms samp
-12 code ['sanity']
-13 For every file with a `Standard` struct, the stimulus polygons of the 
-14 code ['sanity']
-15 Along each fold the stimulus runs from 5% to 95% luminance at 5% and 9
-16 code ['sanity']
-17 The maps have no time base, so the check of a shared clock becomes a c
-18 code ['sanity']
-19 The baseline squares' positions are not fixed by the text (centred on 
-[... 39 more lines not kept]
+100 [(11, 2), (11, 2), (11, 2)]
+[-238.01270189  -34.        ] [878.01270189 899.01270189]
+[-288.01270189   52.60254038] [828.01270189 985.61524227]
+0 93667 [ 97.98  98.99 100.  ] [   10   109 93548]
+1 662 [ 95.96  96.97  97.98  98.99 100.  ] [  9   5  41 515  92]
+2 675 [94.95 95.96 96.97 97.98 98.99] [  8  34  40 498  95]
+50 750 [46.46 47.47 48.48 49.49 50.51] [  1  30  19 664  36]
+99 746 [1.01] [746]
+100 141061 [1.01] [141061]
+[142559    731   1021    379    822] [1.01010101 2.02020202 3.03030303]
+[ 11.   1.   1.   1.   1.   1.   1.   3.  19.  35.  38.  41.  43.  47.
+  49.  54.  57.  59.  63.  66.  68.  72.  74.  78.  80.  83.  86.  90.
+  92.  96.  98. 100. 100. 100. 100. 100. 100. 100. 100. 100. 100.]
+[ 87.  98. 100. 100. 100. 100. 100.  97.  80.  64.  61.  58.  55.  52.
+  49.  47.  44.  41.  38.  35.  32.  29.  26.  23.  20.  17.  14.  11.
+   8.   5.   2.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
+cd entries/martinez-conde-2019; cat > $TMPDIR/s4.py <<'EOF'
+import vasarely as v, numpy as np, time
+from matplotlib.path import Path
+from scipy.optimize import curve_fit, minimize
+z=v.open_zip(); f=v.file_table(z)
+c=f[f.folder=="Edge-compare"].code.iloc[0]
+rec=v.load_map(z,"Edge-compare",c)
+cnt=v.edge_luminance(rec)
+gray=np.maximum(cnt-1,0)*100/99
+fold=v.geometry(rec)["Edge"][0]
+levels=np.arange(0,100.0001,1.5)
+xs=np.arange(gray.shape[1])+1.0; ys=np.arange(gray.shape[0])+1.0
+wins=[]
+for l in levels:
+    x,y=v.luminance_point(fold,l)
+    cc=(xs>=x-8)&(xs<x+8); r=(ys>=y-8)&(ys<y+8)
+    wins.append(gray[np.ix_(r,cc)])
+def expo(l,a,b,c): return a*np.exp(-b*l)+c
+for L0 in [0,0.5,1,2,3,5,8,10,20]:
+    y=np.array([(w+L0).std()/(w+L0).mean() for w in wins])
+    try:
+        p,_=curve_fit(expo,levels,y,p0=[-0.34,0.05,0.95],maxfev=20000)
+        q=minimize(lambda q: np.abs(expo(levels,*q)-y).sum(), p, method="Nelder-Mead",options=dict(maxiter=20000,xatol=1e-8,fatol=1e-10)).x
+        r2=1-np.sum((y-expo(levels,*q))**2)/np.sum((y-y.mean())**2)
+    except RuntimeError: q=[np.nan]*3; r2=np.nan
+    print(L0, "min %.3f max %.3f first %.3f last %.3f  a %.3f b %.4f c %.3f R2 %.4f"%(y.min(),y.max(),y[0],y[-1],*q,r2))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s4.py
+```
+
+```
+0 min 1.058 max 2.345 first 2.345 last 1.631  a 1.406 b 0.2869 c 1.075 R2 0.8285
+0.5 min 1.011 max 1.600 first 1.205 last 1.600  a -518.048 b 0.0000 c 519.033 R2 0.0599
+1 min 0.811 max 1.571 first 0.811 last 1.571  a -1044.209 b 0.0000 c 1045.130 R2 0.5764
+2 min 0.490 max 1.515 first 0.490 last 1.515  a -0.439 b 0.0225 c 1.135 R2 0.7773
+3 min 0.351 max 1.464 first 0.351 last 1.464  a -0.559 b 0.0287 c 1.092 R2 0.8575
+5 min 0.224 max 1.370 first 0.224 last 1.370  a -0.704 b 0.0302 c 1.046 R2 0.9203
+8 min 0.145 max 1.250 first 0.145 last 1.250  a -0.798 b 0.0273 c 1.005 R2 0.9538
+10 min 0.118 max 1.182 first 0.118 last 1.182  a -0.825 b 0.0256 c 0.981 R2 0.9647
+20 min 0.060 max 0.927 first 0.060 last 0.927  a -0.850 b 0.0179 c 0.919 R2 0.9866
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd entries/martinez-conde-2019; cat > $TMPDIR/s5.py <<'EOF'
+import vasarely as v, numpy as np, pandas as pd
+from scipy import stats
+z=v.open_zip(); f=v.file_table(z)
+rows=[]
+for r in f.itertuples():
+    if r.folder=="Corners": continue
+    rec=v.load_map(z,r.folder,r.code)
+    if "smoothed" not in rec or "base_stored" not in rec: continue
+    m=v.measures(rec); rows.append(dict(folder=r.folder, code=r.code, inside=m["base_main"], centred=m["base_centred"], stored=m["base_stored"]))
+d=pd.DataFrame(rows)
+for fo,g in d.groupby("folder"):
+    for col in ["inside","centred"]:
+        print(fo,col,len(g),"median abs diff %.2f, median diff %.2f, spearman %.3f, pearson %.3f"%((g[col]-g.stored).abs().median(),(g[col]-g.stored).median(),stats.spearmanr(g[col],g.stored)[0],np.corrcoef(g[col],g.stored)[0,1]))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s5.py
+```
+
+```
+Sun Nov 15 05:21:22 UTC 2026
+Edge-compare inside 9 median abs diff 1.51, median diff 1.32, spearman 0.983, pearson 0.978
+Edge-compare centred 9 median abs diff 0.67, median diff 0.30, spearman 0.983, pearson 0.992
+Star inside 10 median abs diff 0.32, median diff -0.12, spearman 0.976, pearson 0.965
+Star centred 10 median abs diff 1.28, median diff -1.28, spearman 0.576, pearson 0.729
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/s6.py <<'EOF'
+import vasarely as v, numpy as np
+z=v.open_zip(); f=v.file_table(z)
+for fo in ["Edge-compare","Star","Corners"]:
+    r=f[f.folder==fo].code.iloc[0]
+    rec=v.load_map(z,fo,r)
+    if "smoothed" not in rec: r=f[f.folder==fo].code.iloc[3]; rec=v.load_map(z,fo,r)
+    g=v.geometry(rec); print(fo, rec["smoothed"].shape, {k:val for k,val in g.items() if k in("square_centre","star_centre","star_radius")})
+    if fo!="Corners":
+        for pl in ["inside","centred"]: print("  ",pl, [tuple(np.round(c,1)) for c in v.baseline_squares(rec,g,pl)])
+    else: print("  ", v.corners_baseline_squares(rec))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s6.py
+```
+
+```
+Edge-compare (337, 151) {'square_centre': (np.float64(75.0), np.float64(257.6446609406726))}
+   inside [(np.float64(14.0), np.float64(196.6)), (np.float64(14.0), np.float64(318.6)), (np.float64(136.0), np.float64(196.6)), (np.float64(136.0), np.float64(318.6))]
+   centred [(np.float64(6.0), np.float64(188.6)), (np.float64(6.0), np.float64(326.6)), (np.float64(144.0), np.float64(188.6)), (np.float64(144.0), np.float64(326.6))]
+Star (321, 321) {'star_centre': (np.float64(160.00000000000006), np.float64(160.0)), 'star_radius': np.float64(150.0)}
+   inside [(np.float64(18.0), np.float64(18.0)), (np.float64(18.0), np.float64(302.0)), (np.float64(302.0), np.float64(18.0)), (np.float64(302.0), np.float64(302.0))]
+   centred [(np.float64(10.0), np.float64(10.0)), (np.float64(10.0), np.float64(310.0)), (np.float64(310.0), np.float64(10.0)), (np.float64(310.0), np.float64(310.0))]
+Corners (273, 209) {}
+   [(8.5, 265.5), (201.5, 265.5)]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
 import re
-s=open('/tmp/claude-1001/mc/edit5.py').read() if False else open(__import__('os').environ['TMPDIR']+'/mc/edit5.py').read()
-# strip the old result-cell edits (from 's=src(23)' on) and fix the table1 code index
-s=s[:s.index("s=src(23); i0")]+"json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\\n')\nprint('ok')\n"
-s=s.replace("rep(32,","rep(38,")
-open(__import__('os').environ['TMPDIR']+'/mc/edit5b.py','w').write(s)
+s=open("vasarely.py").read()
+old_doc="""- The polygon vertices are in MATLAB 1-based pixel coordinates (x = column, y = row): a pixel
+  with 0-based index (i, j) has coordinates (j + 1, i + 1); rasterising the screen-frame
+  polygons reproduces the stimulus images best with this offset. Luminance is the number of
+  polygons containing a pixel for Square, Edge rectangle and Star, and 100 minus it for Corners."""
+new_doc="""- The polygon vertices are in MATLAB 1-based pixel coordinates (x = column, y = row): a pixel
+  with 0-based index (i, j) has coordinates (j + 1, i + 1). The stimulus file's image holds the
+  gray levels, 0 to 100 in steps of 100/99 (data description: "the actual grayscale values").
+  For Square and Edge and for Star the gray level of a pixel inside n polygons is
+  (n - 1) x 100/99, and 0 outside them, so the background has the gray level of the 0%
+  polygon; for Corners it is about 100 minus n. `image_agreement` measures how well the
+  rasterised screen-frame polygons reproduce the image (printed in the notebook);
+  `stimulus_luminance` gives the same gray levels in the aligned frame."""
+assert old_doc in s; s=s.replace(old_doc,new_doc)
+old_b="""- Absolute baseline: four (Square and Edge, Star) or two (Corners) 16 x 16 DU squares in 0%
+  luminance (Methods, Visual stimuli). The squares of Square and Edge and of Star are at the
+  corners of the circumscribing square (138 DU for the Square, the 300 DU square around the
+  Star's circumscribed circle). Whether they sit inside the corners or are centred on them is not
+  stated; `baseline_squares` gives both, and the notebook compares them with the stored
+  `BaseActivity`. The Corners squares are only drawn in Fig 2C, so for Corners the stored
+  `BaseActivity` is the baseline (an assumption, stated in the notebook)."""
+new_b="""- Absolute baseline: four (Square and Edge, Star) or two (Corners) 16 x 16 DU squares in 0%
+  luminance (Methods, Visual stimuli). The squares of Square and Edge and of Star are at the
+  corners of the circumscribing square (138 DU for the Square, the 300 DU square around the
+  Star's circumscribed circle). Whether they sit inside the corners or are centred on them is not
+  stated; `baseline_squares` gives both. The adopted placement (`BASE_PLACEMENT`, an assumption)
+  is the one whose values are closer to the stored `BaseActivity`, the authors' own baseline in
+  the files that hold it: centred on the corners for Square and Edge, inside them for Star
+  (comparison printed in the notebook). The Corners squares are only drawn in Fig 2C; they are
+  taken at the two bottom corners of the aligned frame (`corners_baseline_squares`, an
+  assumption)."""
+assert old_b in s; s=s.replace(old_b,new_b)
+s=s.replace('''SQUARE_CIRCUMSCRIBING = 138  # DU (Methods, Square and edge)
+''','''SQUARE_CIRCUMSCRIBING = 138  # DU (Methods, Square and edge)
+# Baseline squares relative to the corners of the circumscribing square: an assumption, the
+# placement closer to the stored BaseActivity (module docstring)
+BASE_PLACEMENT = {"Edge-compare": "centred", "Star": "inside"}
+IMAGE_FIELD = {"Edge-compare": "EdgecompImage", "Star": "DiagImage", "Corners": "CornersImage"}
+''')
+# stimulus image + agreement after stimulus_type
+anchor='''# ---------------------------------------------------------------- geometry (Standard frame)'''
+add='''def _count(polys, shape) -> np.ndarray:
+    """Number of polygons containing each pixel (1-based pixel coordinates)."""
+    yy, xx = np.mgrid[0:shape[0], 0:shape[1]]
+    pts = np.c_[xx.ravel() + 1.0, yy.ravel() + 1.0]
+    n = np.zeros(len(pts))
+    for poly in polys:
+        n += Path(poly).contains_points(pts)
+    return n.reshape(shape)
+
+
+def _gray(folder: str, n: np.ndarray) -> np.ndarray:
+    """Gray level (0-100) from the polygon count, as the stimulus images show it."""
+    if folder == "Corners":
+        return 100.0 - np.minimum(n, 100)
+    return np.maximum(n - 1, 0) * 100 / 99
+
+
+def image_agreement(z: zipfile.ZipFile, folder: str, code: str) -> dict | None:
+    """Stimulus image against its rasterised screen-frame polygons.
+
+    Shares of pixels whose gray level from the polygons equals the image's (to 1e-6) and lies
+    within one level (100/99) of it, and the image's gray level outside every polygon. None for a
+    file scipy cannot read (MATLAB 7.3) or without its condition's image.
+    """
+    try:
+        st = sio.loadmat(io.BytesIO(z.read(f"{ROOT}/{folder}/{code}_Stimulus.mat")))["dat"][0, 0]
+    except NotImplementedError:
+        return None
+    if IMAGE_FIELD[folder] not in st.dtype.names:
+        return None
+    im = _dense(st[IMAGE_FIELD[folder]])
+    polys = (_polys(st["SquareVert"]) + _polys(st["RectVert"]) if folder == "Edge-compare"
+             else _polys(st[VERT_FIELD[folder]]))
+    n = _count(polys, im.shape)
+    d = np.abs(_gray(folder, n) - im)
+    return dict(exact=float(np.mean(d < 1e-6)), within_one_level=float(np.mean(d < 100 / 99 + 1e-6)),
+                image_min=float(im.min()), image_max=float(im.max()),
+                outside_polygons=float(np.median(im[n == 0])) if (n == 0).any() else np.nan)
+
+
+'''
+assert anchor in s; s=s.replace(anchor, add+anchor)
+# baseline_squares docstring unchanged. edge_luminance -> stimulus_luminance
+old_el=s[s.index("def edge_luminance"):s.index("def corners_baseline_squares")]
+new_el='''def stimulus_luminance(rec: dict) -> np.ndarray:
+    """Gray level (0-100) of the stimulus in the Standard frame, from its polygons.
+
+    The mapping from polygon count to gray level is the one the stimulus images show
+    (module docstring; `image_agreement`).
+    """
+    polys = rec["rect"] + rec["square"] if rec["folder"] == "Edge-compare" else rec["polys"]
+    return _gray(rec["folder"], _count(polys, rec["smoothed"].shape))
+
+
+def box_values(m: np.ndarray, cx: float, cy: float, wx: float, wy: float) -> np.ndarray:
+    """Values of map `m` in the box centred at (cx, cy), as `box_mean` selects them."""
+    xs = np.arange(m.shape[1]) + 1.0
+    ys = np.arange(m.shape[0]) + 1.0
+    cols = (xs >= cx - wx / 2) & (xs < cx + wx / 2)
+    rows = (ys >= cy - wy / 2) & (ys < cy + wy / 2)
+    return m[np.ix_(rows, cols)]
+
+
+'''
+s=s.replace(old_el,new_el)
+# measures: base_main per placement, offfold in frame
+old_m='''    if rec["folder"] == "Corners":
+        out["base_main"] = baseline_from_map(m, corners_baseline_squares(rec))
+    else:
+        out["base_main"] = baseline_from_map(m, baseline_squares(rec, g, "inside"))
+        out["base_centred"] = baseline_from_map(m, baseline_squares(rec, g, "centred"))'''
+new_m='''    if rec["folder"] == "Corners":
+        out["base_main"] = baseline_from_map(m, corners_baseline_squares(rec))
+        out["base_inside"] = out["base_centred"] = out["base_main"]
+    else:
+        out["base_inside"] = baseline_from_map(m, baseline_squares(rec, g, "inside"))
+        out["base_centred"] = baseline_from_map(m, baseline_squares(rec, g, "centred"))
+        out["base_main"] = out["base_" + BASE_PLACEMENT[rec["folder"]]]'''
+assert old_m in s; s=s.replace(old_m,new_m)
+old_o='''        # the same midpoint square moved 32 DU (2 DVA) sideways, off the fold, for the data check
+        out[f"offfold_{f}"] = float(np.mean([midpoint(m, [(x + s, y0, y1) for x, y0, y1 in g[f]])
+                                             for s in (-32, 32)]))'''
+new_o='''        # the same midpoint square moved 32 DU (2 DVA) sideways, off the fold, for the data check;
+        # a shift whose square would leave the frame is not used
+        shifts = [s for s in (-32, 32)
+                  if all(MID_BOX / 2 + 1 <= x + s <= m.shape[1] - MID_BOX / 2 for x, _, _ in g[f])]
+        out[f"offfold_{f}"] = float(np.mean([midpoint(m, [(x + s, y0, y1) for x, y0, y1 in g[f]])
+                                             for s in shifts]))'''
+assert old_o in s; s=s.replace(old_o,new_o)
+old_d='''    base_inside / base_centred (Square and Edge, Star), base_corners (Corners), base_stored.'''
+new_d='''    base_main (the adopted placement, `BASE_PLACEMENT`; bottom corners for Corners),
+    base_inside and base_centred (both placements; equal to base_main for Corners), base_stored.'''
+assert old_d in s; s=s.replace(old_d,new_d)
+# rms_profile
+old_r=s[s.index("def rms_profile"):s.index("# ---------------------------------------------------------------- Star in the screen frame")]
+new_r='''def rms_profile(rec: dict, levels: np.ndarray, offset: float = 0.0) -> pd.DataFrame:
+    """Local RMS contrast of the Edge stimulus in a 16 x 16 DU square centred on the Edge.
+
+    Luminance is the stimulus gray level (0-100, `stimulus_luminance`), plus `offset` in the same
+    units for the black-level variant of the notebook. Readings of the claims file: (a) standard
+    deviation of luminance over its mean; (b) standard deviation of luminance normalised to 0-1.
+    """
+    lum = stimulus_luminance(rec) + offset
+    fold = geometry(rec)["Edge"][0]
+    rows = []
+    for l in levels:
+        x, y = luminance_point(fold, l)
+        w = box_values(lum, x, y, RMS_BOX, RMS_BOX)
+        rows.append(dict(luminance=l, rms_a=w.std() / w.mean() if w.mean() > 0 else np.nan,
+                         rms_b=((w - offset) / 100.0).std()))
+    return pd.DataFrame(rows)
+
+
+'''
+s=s.replace(old_r,new_r)
+open("vasarely.py","w").write(s)
 EOF
-python $TMPDIR/mc/edit5b.py
+grep -n "edge_luminance\|base_corners" vasarely.py
 ```
 
 ```
-ok
-```
-
-**Agent**
-
-Now the conclusion cells, header and summary.
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; cat > $TMPDIR/mc/edit6.py <<'PYEOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.rstrip('\n').splitlines(keepends=True)
-def res(i,prefix,s):
-    assert src(i).startswith(prefix),(i,src(i)[:40]); put(i,s)
-res(24,'**Result: not reproduced.**','''**Result: not reproduced.** Under the main reading all three tests find a difference at alpha
-0.05: (a) Square and Edge against Corners, BH p = 0.037 (Square and Edge against Star 0.065), (b)
-Kruskal-Wallis p = 0.025, (c) ANOVA p = 0.004. The Square and Edge baseline is the highest (median
-6.72 spikes/s, against 1.90 for Star and 2.57 for Corners). The squares centred or inside the
-corners for both stimuli find a larger difference (Kruskal-Wallis p = 0.005 and 0.008). With the
-files' own `BaseActivity` no test finds a difference (smallest p = 0.109), and neither does the main
-reading on the same 38 files (smallest p = 0.060) or with the Corners squares 32 DU further in
-(smallest p = 0.063). The outcome rests on where the baseline squares are, which the text does not
-fix, and on fewer neurons per stimulus than the paper's (22, 12 and 26 against 25, 30 and 28).''')
-res(27,'**Result: reproduced.**','''**Result: reproduced.** Under the main reading most neurons respond above baseline for each fold
-(18 of 22 for P180, 18 of 22 for S90, 12 of 12 for S52, 26 of 26 for S40), every mass centre lies
-above the unit line, and its distance from the line grows from P180 through S90 and S52 to S40,
-under reading (a) (4.03, 8.39, 19.19, 26.27 spikes/s) and under reading (b) (log ratios 0.221,
-0.351, 0.916, 1.002). The order under (a) holds under every baseline reading shown; under (b) it
-fails with the Star squares centred on the corners (S52 1.210 > S40 1.002) and with the Corners
-squares 32 DU further in (S40 0.837 < S52 0.916).''')
-res(30,'**Result: partially reproduced.**','''**Result: partially reproduced.** Under the main reading the means are ordered S40 (26.27) > S52
-(19.19) > S90 (8.39) > P180 (4.03 spikes/s); S40, S52 and P180 are within the paper's SEM, but S90
-is 2.30 below 10.69, outside its 1.94. The order holds under every baseline reading shown and on
-the unsmoothed map, and under none of them are all four within tolerance: S90 falls outside with
-the squares centred or inside for both stimuli and with both other Corners placements; P180 and
-S52 with the files' `BaseActivity`; S52 and S40 with the main reading on the files that have it;
-P180 on the unsmoothed map. The two monkey A neurons give negative P180 and S90 values (-2.94 and
--4.44) against 4.72 and 9.68 for monkey J. The Star mean comes from 12 neurons, not 30.''')
-res(33,'**Result: reproduced.**','''**Result: reproduced.** Under the main reading, S40 against S90 (BH p = 0.00028 over six pairs)
-and against P180 (p = 2.1e-06), and S52 against P180 (p = 0.00014), are significant in the stated
-direction under both comparison families, and under every other baseline reading shown. Of the
-pairs the text does not claim, S52 against S90 is significant (p = 0.011), and S40 against S52 (p =
-0.36) and S90 against P180 (p = 0.16) are not.''')
-res(36,'**Result: reproduced.**','''**Result: reproduced.** At the fold midpoints the average maps are ordered S40 (26.27) > S52
-(19.19) > S90 (8.39) > P180 (4.03 spikes/s), and the variant of block means gives the same order
-(23.01, 17.15, 7.61, 3.61). As the claims file says, this repeats the means of
-fig4b-spike-rate-difference and is not an independent test.''')
-res(40,'**Result.**','''**Result: by claim.** The rule is all five values within the paper's SEM for reproduced and at
-least three for partially reproduced, under any one reading. The Edge values are taken from the 18
-files whose Edge is wholly on the screen, as the Methods say it always was (Methods, Square and
-edge: the rectangle "but never its edge" was partly off the display); this is an assumption, and
-all 22 files are shown.
-
-- table1-edge: reproduced; on the 18 files all five are within tolerance under (ia) (minimum 6.52,
-  maximum 31.53, mean 18.56, median 18.76, midpoint 21.09 spikes/s). On all 22 files three are
-  (the minimum 5.78 and the median 17.09 fall outside).
-- table1-p180: partially reproduced; four of five under (ia) (maximum 10.33, mean 3.61, median
-  3.03, midpoint 4.03); the minimum, -1.55, is below 0.18 ± 1.01.
-- table1-s90: not reproduced; at most two of five under any reading. Under (ia) the maximum (13.58)
-  and the mean (7.61) are within tolerance; the minimum (2.46), median (7.66) and midpoint (8.39)
-  are below it.
-- table1-s52: reproduced; under (iia), each half of the diagonal as its own ten blocks, all five
-  are within tolerance (7.38, 28.62, 17.15, 16.55, 19.19); under (ia) four are (the minimum, 9.08,
-  is above 6.26 ± 1.33). On 12 neurons in place of 30.
-- table1-s40: reproduced; all five under (a) (10.52, 34.26, 23.01, 23.02, 26.27).
-
-These outcomes rest on the baseline placement (table above): TABLE1_BASELINES''')
-res(43,'**Result: reproduced.**','''**Result: reproduced.** None of the ten rank sum tests of the main reading is significant (p =
-0.49 to 0.93), nor any under the other reading of the halves, nor the two Edge tests on the 18
-files whose Edge is wholly on the screen (p = 0.70 and 0.95). The midpoint is above the block mean
-or median by a median of -0.08 to 2.39 spikes/s. The paired signed rank test, shown as a variant,
-finds 3 of the 10 main comparisons significant (S90 against the median, p = 0.025; S40 against the
-mean, p = 0.015, and the median, p = 0.009); the claim is judged on the paper's rank sum test.''')
-res(46,'**Result: not reproduced.**','''**Result: not reproduced.** Under neither definition of RMS contrast does the local contrast along
-the Edge rise from 0.61 to 0.943. With the standard deviation over the mean (a) it is 1.98 at 0%,
-near 0.86 from 25% to 75% and 1.28 at 100%; with the standard deviation of luminance scaled to 0
-to 1 (b) it rises from 0.013 to 0.449. The fitted parameters are outside tolerance under both
-(only c under (a) and R2 under (b) are within). The stimulus image holds luminance in percent with
-black at 0. The text gives the display luminance at one level, 14.07 cd/m2 at 50% (Methods, Square
-and edge), but not the black level, and a contrast that saturates near 0.95 would need a black
-level above zero; no such level was tried here, as neither the text nor the files give one.''')
-res(49,'**Result: not reproduced.**','''**Result: not reproduced.** With the Edge from the 18 files whose Edge is wholly on the screen, the
-Edge response ranges from 9.23 spikes/s (at 0% luminance) to 21.26 (at 80%), so the P180 mean
-(4.03) lies below the whole Edge profile and is nearest the 0% level, not within one step of 50%
-(reading a); S40 (26.27) is nearest 80%, within one step of 90%. Under reading (b) P180 is nearest
-the lowest RMS level, which the rule accepts, and S40 is nearest 94.3, which is 4.3 from 90, beyond
-the step of 3.7. Read as one level away from the level nearest 90 (90.6), the variant printed
-above, (b) would pass; this attempt measures "within one step of 90%" as a distance from 90, an
-assumption on which the outcome rests. Every other baseline reading and the Edge from all 22 files
-give the same under (a) (P180 nearest 0%) and under (b) (S40 nearest 94.3). The RMS levels are
-placed with the paper's fitted parameters, as the claims file says, since fig7a-rms-contrast-fit
-could not reproduce them.''')
-res(52,'**Result: reproduced.**','''**Result: reproduced.** With the Edge from the 18 files whose Edge is wholly on the screen, under
-BH correction over all 40 tests (a) P180 is significantly lower than the Edge at RMS 0.943
-(adjusted p = 0.015) and S40 significantly higher at 0.610 and 0.647 (both 0.033); BH per fold (b)
-gives the same (0.0038; 0.022 and 0.022), and so does Bonferroni per fold (0.0076; 0.033 and
-0.045). Bonferroni over 40 tests fails (S40 at 0.610, p = 0.13). With the Edge from all 22 files
-the claim holds under (a) and (b). Under (a) S40 is also significantly higher than the Edge at
-0.684, 0.721 and 0.758, beyond the paper's "less than 68%", and P180 is lower than the Edge at
-every level from 0.647 up.''')
-res(55,'**Result: reproduced.**','''**Result: reproduced.** The four means decrease monotonically with angle, and three lie off the
-least-squares line (-0.142 spikes/s per degree) by more than their SEM (S40 by 4.63 against 4.29,
-S90 by -6.15 against 2.22, P180 by 2.26 against 1.18), which the claims file's rule, an
-assumption, reads as non-linear; S90 and P180 lie off it under every other baseline reading shown.
-In the variant the slope from 52 to 90 degrees (-0.284 spikes/s per degree) differs from that from
-90 to 180 (-0.049) by more than their combined SE, while the slopes from 40 to 52 (-0.59 ± 0.44)
-and from 52 to 90 do not differ.''')
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-print('ok')
-PYEOF
-python $TMPDIR/mc/edit6.py
-```
-
-```
-ok
+[This command modified 1 file you've previously read: vasarely.py. Call Read before editing.]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/martinez-conde-2019; python -c "
-import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
-print(''.join(nb['cells'][58]['source'])[:400]); print(''.join(nb['cells'][56]['source']))"
-```
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+s=open("vasarely.py").read()
+old=s[s.index("def star_aligned_angle"):]
+new='''def star_alignment(rec: dict) -> dict:
+    """Map from the Standard frame to the screen frame of a Star file with a Standard frame.
 
-```
-## Summary
+    Fits the rotation, scale and shift (z_screen = coef[0] z_standard + coef[1], points as complex
+    numbers) that maps the Standard-frame polygon onto the screen polygon, allowing a cyclic shift
+    of the vertex order. Returns `coef`, the largest vertex error of the fit in DU (`fit_error`),
+    the scale |coef[0]|, and `angle`, the screen-frame direction (degrees) from the centre to the
+    vertex that the Standard frame places at the top of its vertical fold.
+    """
+    a = rec["screen_polys"][0]
+    b = rec["polys"][0]
+    za, zb = a[:, 0] + 1j * a[:, 1], b[:, 0] + 1j * b[:, 1]
+    best = None
+    for s in range(len(zb)):
+        bb = np.roll(zb, s)
+        mat = np.c_[bb, np.ones_like(bb)]
+        coef = np.linalg.lstsq(mat, za, rcond=None)[0]
+        err = np.abs(mat @ coef - za).max()
+        if best is None or err < best[0]:
+            best = (err, coef)
+    err, coef = best
+    top = b[np.argmin(b[:, 1])]
+    centre_b = b.mean(axis=0)
+    q = coef[0] * (top[0] + 1j * top[1]) + coef[1]
+    qc = coef[0] * (centre_b[0] + 1j * centre_b[1]) + coef[1]
+    return dict(coef=coef, fit_error=float(err), scale=float(abs(coef[0])),
+                angle=float(np.degrees(np.angle(q - qc))))
 
-| Claim | Outcome |
-|---|---|
-| neuron-counts | not reproduced |
-| spikes-per-condition | blocked: data missing |
-| s4-baseline-no-difference | not reproduced (rests on an assumption) |
-| fig4a-above-baseline | reproduced (rests on an assumption) |
-| fig4b-spike-rate-difference | partially reproduced (rests on an assumption) |
-| fig4b-pairwise-significance | reproduced |
-| fig5-average
-## Blocked: fig7d-dog-similar, s3-latency-peak
 
-fig7d-dog-similar needs the output of the difference-of-Gaussians model of reference [3], which
-the paper shows only as a line in Fig 7D; it names no deposited data, and the data set holds none.
-s3-latency-peak needs spike times and eye positions to rebuild the maps at other latencies; the
-files hold only maps made at 60 ms.
-```
+def star_aligned_angle(rec: dict) -> float:
+    """Screen-frame direction (degrees) of the aligned diagonal (`star_alignment`)."""
+    return star_alignment(rec)["angle"]
 
-**Agent calls Bash**
 
-```bash
-cd entries/martinez-conde-2019; cat > $TMPDIR/mc/edit7.py <<'PYEOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def src(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.rstrip('\n').splitlines(keepends=True)
-put(58,'''## Summary
+def star_registration_shift(rec: dict, max_shift: int = 64) -> dict:
+    """Shift between the screen-frame Star map and the Standard map placed by the stimulus.
 
-| Claim | Outcome |
-|---|---|
-| neuron-counts | not reproduced |
-| spikes-per-condition | blocked: data missing |
-| s4-baseline-no-difference | not reproduced (rests on an assumption) |
-| fig4a-above-baseline | reproduced (rests on an assumption) |
-| fig4b-spike-rate-difference | partially reproduced (rests on an assumption) |
-| fig4b-pairwise-significance | reproduced |
-| fig5-average-maps | reproduced (rests on an assumption) |
-| table1-edge | reproduced (rests on an assumption) |
-| table1-p180 | partially reproduced (rests on an assumption) |
-| table1-s90 | not reproduced (rests on an assumption) |
-| table1-s52 | reproduced (rests on an assumption) |
-| table1-s40 | reproduced (rests on an assumption) |
-| fig6-midpoint-representative | reproduced |
-| fig7a-rms-contrast-fit | not reproduced |
-| fig7c-fold-edge-equivalence | not reproduced (rests on an assumption) |
-| fig7c-fold-edge-significance | reproduced (rests on an assumption) |
-| fig7d-nonlinear | reproduced (rests on an assumption) |
-| fig7d-dog-similar | blocked: data missing |
-| s3-latency-peak | blocked: data missing |
-
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
-
-**How the analysis differs from the paper's.**
-
-- It uses the maps the files hold, already made by the authors at 60 ms latency and smoothed,
-  in the authors' ROI frame (`Standard`). It cannot redo the eye-signal correction or the
-  registration, and it cannot use the 15 Star recordings whose files lack that frame, so the
-  Star claims rest on 12 neurons (the paper has 30), Corners on 26 (28) and Square and Edge on
-  22 (25).
-- The Corners response is taken at the bright S40 fold, as the claims file says since a reader
-  amended it in answer to this attempt's questions.
-- The text does not say where the baseline squares are. The main reading takes, per stimulus, the
-  placement closest to the files' own `BaseActivity`: centred on the corners of the circumscribing
-  square for Square and Edge (read from the screen maps, as these squares run past the authors'
-  frame), inside the corners for the Star, and the bottom corners of the ROI for Corners, where no
-  placement tried matches closely. The other placements and the files' values are shown; the
-  baseline test across stimuli changes outcome with them, and Table 1 counts change.
-- The Edge measures use the 18 of 22 Square and Edge files whose Edge is wholly on the screen, as
-  the Methods say it always was; all 22 are shown.
-- RMS contrast is computed from the stimulus image in percent luminance; the paper's
-  definition (its reference 21) and the display's black level are not in the text or the files.
-
-**What was found about the dataset.**
-
-- The files hold 53 neurons, not the paper's 58 (the spreadsheet lists 58, five with no data),
-  and fewer per condition (26 Corners, 27 Star, 22 Square and Edge against 28, 30, 25).
-- Two files in the `Star` folder (`ABS042700J2`, `ABS051000J3`) are Corners-type recordings; the
-  spreadsheet marks both neurons as tested with the Star.
-- The descriptor's field list is wrong: `image` is a spike rate in spikes per 1 ms sample, not a
-  count; most files hold an undocumented `Standard` struct with the authors' aligned maps,
-  polygons and in some a `BaseActivity`; `smoothed_image_norm` is missing from 35 of 77 files and
-  is a baseline-subtracted map in some and a map scaled to -1 to 1 in others.
-- The maps are in gaze coordinates, and the receptive-field offset needed to place them on the
-  stimulus is in no file; 15 Star recordings cannot be aligned for that reason.
-- No file holds spike times, eye positions or (but for one) the eye time map, so the spike counts
-  per condition and the latency analysis cannot be repeated.
-- In four Square and Edge files the 100% end of the Edge is cut by the screen border, which the
-  Methods say never happened.
-- The authors' Square and Edge frame (151 DU wide) is too narrow to hold the baseline squares
-  centred on the corners of the circumscribing square, which the files' `BaseActivity` matches best.''')
-s=src(0)
-add='''
-
-**Revision after verification round 1.** The verifier's report
-(`transcripts/martinez-conde-2019/verifier-1-report.md`) led to these changes. The baseline
-placement is now chosen per stimulus by comparison with the files' `BaseActivity`, shown file by
-file in the data check, with two more Corners placements and the main reading on the files that
-have `BaseActivity`. Revising it showed that the Square and Edge squares centred on the corners
-had run past the authors' frame, where the helper had read zeros; they are now read from the
-screen maps. The Edge measures use the 18 files whose Edge is wholly on the screen. The
-registration check had failed for three Corners files through an error in unwrapping the
-correlation lag; it is fixed and all 60 files register. Blocks of non-integer length (S90) are
-now sampled symmetrically. The Fig 7C margin, the 1% Edge profile and the units check are printed.'''
-put(0, s.rstrip('\n')+add)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-print('ok')
-PYEOF
-python $TMPDIR/mc/edit7.py; cd  date -u; python tools/entry.py run entries/martinez-conde-2019 2>&1 | tail -1; python $TMPDIR/mc/show.py 39 | grep -A12 "by baseline reading"
-```
-
-```
-ok
-Thu Nov 12 12:17:47 UTC 2026
-pass  reproduce_martinez_conde_2019.ipynb  (362 s)
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python $TMPDIR/mc/show.py 38 | grep -A12 "by baseline reading"
-```
-
-```
-values within tolerance under reading (ia), by baseline reading (bright S40 fold):
-  matched [main]                                           {'Edge': "(ia) 3, best 3 ['ia', 'ib']", 'P180': "(ia) 4, best 4 ['ia']", 'S90': "(ia) 2, best 2 ['ia', 'ib', 'iia']", 'S52': "(ia) 4, best 5 ['iia']", 'S40': "(ia) 5, best 5 ['ia']"}
-  centred                                                  {'Edge': "(ia) 3, best 3 ['ia', 'ib']", 'P180': "(ia) 4, best 4 ['ia']", 'S90': "(ia) 2, best 2 ['ia', 'ib', 'iia']", 'S52': "(ia) 3, best 3 ['ia']", 'S40': "(ia) 5, best 5 ['ia']"}
-  inside                                                   {'Edge': "(ia) 2, best 2 ['ia', 'ib']", 'P180': "(ia) 3, best 3 ['ia', 'ib']", 'S90': "(ia) 1, best 1 ['ia', 'iia']", 'S52': "(ia) 4, best 5 ['iia']", 'S40': "(ia) 5, best 5 ['ia']"}
-  files' BaseActivity                                      {'Edge': "(ia) 0, best 0 ['ia', 'ib']", 'P180': "(ia) 3, best 3 ['ia']", 'S90': "(ia) 2, best 3 ['iia']", 'S52': "(ia) 2, best 2 ['ia']", 'S40': "(ia) 5, best 5 ['ia']"}
-  matched, Corners bottom, 32 DU in                        {'Edge': "(ia) 3, best 3 ['ia', 'ib']", 'P180': "(ia) 4, best 4 ['ia']", 'S90': "(ia) 2, best 2 ['ia', 'ib', 'iia']", 'S52': "(ia) 4, best 5 ['iia']", 'S40': "(ia) 4, best 4 ['ia']"}
-  matched, Corners sides, 24 DU up                         {'Edge': "(ia) 3, best 3 ['ia', 'ib']", 'P180': "(ia) 4, best 4 ['ia']", 'S90': "(ia) 2, best 2 ['ia', 'ib', 'iia']", 'S52': "(ia) 4, best 5 ['iia']", 'S40': "(ia) 5, best 5 ['ia']"}
-  matched, files with BaseActivity only                    {'Edge': "(ia) 0, best 0 ['ia', 'ib']", 'P180': "(ia) 5, best 5 ['ia']", 'S90': "(ia) 4, best 5 ['iia']", 'S52': "(ia) 1, best 1 ['ia', 'ib', 'iib']", 'S40': "(ia) 3, best 3 ['ia']"}
-  matched, the 18 files with the whole Edge on the screen  {'Edge': "(ia) 5, best 5 ['ia']", 'P180': "(ia) 1, best 2 ['ib']", 'S90': "(ia) 1, best 1 ['ia', 'iia', 'iib']", 'S52': "(ia) 4, best 5 ['iia']", 'S40': "(ia) 5, best 5 ['ia']"}
-
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/martinez-conde-2019; python - <<'EOF'
-import json
-p='reproduce_martinez_conde_2019.ipynb'
-nb=json.load(open(p)); c=nb['cells'][40]; s=''.join(c['source'])
-s=s.replace('These outcomes rest on the baseline placement (table above): TABLE1_BASELINES','''These outcomes rest on the baseline placement and on which neurons are included (the counts by
-reading printed above, best over the readings of each claim). With the squares centred for both
-stimuli S52 has 3 of 5; with the squares inside for both, Edge (22 files) has 2, P180 3 and S90 1;
-with the files' `BaseActivity` (9, 10 and 19 neurons) Edge has 0, P180 3, S90 3 and S52 2; with the
-Corners squares 32 DU further in, S40 has 4. The main reading on the files that have
-`BaseActivity` gives P180 5, S90 5, S52 1 and S40 3, and restricting P180 and S90 to the 18 files
-with the whole Edge on the screen gives 2 and 1.''')
-c['source']=s.splitlines(keepends=True)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+    The Standard smoothed map is moved into the screen frame with the polygon fit of
+    `star_alignment` (nearest pixel), and correlated with the screen-frame smoothed map over the
+    pixels it covers, for every shift of the screen map up to `max_shift` DU on each axis. If the
+    two frames were registered to the stimulus in the same way, the best shift would be (0, 0).
+    Returns the best shift (dx, dy) in DU, the Pearson r there and at zero shift.
+    """
+    coef = star_alignment(rec)["coef"]
+    std, scr = rec["smoothed"], rec["screen_smoothed"]
+    yy, xx = np.mgrid[0:scr.shape[0], 0:scr.shape[1]]
+    zs = (xx + 1.0) + 1j * (yy + 1.0)
+    zb = (zs - coef[1]) / coef[0]
+    cb, rb = np.round(zb.real).astype(int) - 1, np.round(zb.imag).astype(int) - 1
+    ok = (cb >= 0) & (cb < std.shape[1]) & (rb >= 0) & (rb < std.shape[0])
+    rows_, cols_ = np.nonzero(ok)
+    ref = std[rb[ok], cb[ok]]
+    best = None
+    r0 = np.nan
+    for dy in range(-max_shift, max_shift + 1, 2):
+        for dx in range(-max_shift, max_shift + 1, 2):
+            rr, cc = rows_ + dy, cols_ + dx
+            inside = (rr >= 0) & (rr < scr.shape[0]) & (cc >= 0) & (cc < scr.shape[1])
+            if inside.mean() < 0.9:
+                continue
+            r = np.corrcoef(ref[inside], scr[rr[inside], cc[inside]])[0, 1]
+            if dx == 0 and dy == 0:
+                r0 = r
+            if best is None or r > best[0]:
+                best = (r, dx, dy)
+    return dict(shift_x=best[1], shift_y=best[2], r_best=float(best[0]), r_zero=float(r0))
+'''
+s=s.replace(old,new)
+open("vasarely.py","w").write(s)
 EOF
-grep -c "TABLE1_BASELINES" reproduce_martinez_conde_2019.ipynb
-```
-
-```
-0
-```
-
-**Agent**
-
-Notebook text is done. Now the attempt record. First I'll check how `entry.py check` treats outcomes that change after a verification round.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -rn "agrees" tools/*.py | head -20
-```
-
-```
-tools/build_site.py:26:verification decides, and it counts only if it agrees with every outcome.
-tools/build_site.py:120:    "code_mismatch": "Published code disagrees",
-tools/build_site.py:146:    agreed = {r["claim"] for r in latest.get("results", []) if r.get("agrees")}
-tools/build_site.py:283:        disagreed = {r["claim"] for v in verifications for r in v["results"] if not r.get("agrees")}
-tools/build_site.py:338:                "agreed": sum(1 for r in v["results"] if r.get("agrees")),
-tools/build_site.py:342:                                  for r in v["results"] if not r.get("agrees")],
-tools/build_site.py:1696:     "it agrees with each outcome. The author revises once more. Any change of outcome proposed after this goes to a "
-tools/build_site.py:2708:                   f'method or rule it does not give, a place where it disagrees with itself, published code that '
-tools/entry.py:347:                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 325,375p tools/entry.py; ls schemas; grep -n "verifications" -A60 schemas/attempt*.json | grep -n "\"[a-z_]*\":" | head -40
-```
-
-```
-# A finding is about the data (its dataset's page) or the paper (the paper's page). Its kind says which,
-        # except for these two kinds, which must say; and in an attempt on several datasets a finding about the data
-        # names the datasets it is about (docs/protocol.md, the attempt record).
-        import datasets as archive_datasets
-        used = [archive_datasets.folder(archive_datasets.key_of(d["archive"], str(d["id"])))
-                for d in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else [])]
-        for n, f in enumerate(attempt.get("findings") or [], 1):
-            if f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
-                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
-            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
-                                                                   "paper_inconsistency") else "data")
-            if about == "data" and len(used) > 1 and not f.get("datasets"):
-                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
-                                    f"(`datasets:`, from {', '.join(used)})")
-            for d in f.get("datasets") or []:
-                if str(d) not in used:
-                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
-        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
-        # does not bind: the revision after it may change outcomes, and round 2 reviews them.
-        agreed = {}
-[... 67 more lines not kept]
-```
-
-**Agent**
-
-Round 1 doesn't bind outcomes, so the changed outcomes can be recorded directly. Writing the attempt record now.
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-s=open('attempts/martinez-conde-2019-01.yaml').read()
-print(s.index('outcomes:'), s.index('findings:'))
+cat > $TMPDIR/s7.py <<'EOF'
+import vasarely as v, numpy as np, time
+z=v.open_zip(); f=v.file_table(z)
+t=time.time()
+for r in f[f.folder=="Star"].itertuples():
+    rec=v.load_map(z,"Star",r.code)
+    if "smoothed" not in rec: continue
+    a=v.star_alignment(rec); s=v.star_registration_shift(rec)
+    print(r.code, round(a["angle"],1), "err %.3f scale %.3f"%(a["fit_error"],a["scale"]), s, "%.1fs"%(time.time()-t))
+print(v.image_agreement(z,"Edge-compare",f[f.folder=="Edge-compare"].code.iloc[0]), time.time()-t)
 EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s7.py
 ```
 
 ```
-498 17668
+ABD051700J1 -75.0 err 0.000 scale 1.000 {'shift_x': 28, 'shift_y': 40, 'r_best': -0.10069987651042317, 'r_zero': -0.17058257186896447} 4.2s
+ABD062700J1 -15.0 err 0.000 scale 1.000 {'shift_x': -4, 'shift_y': 64, 'r_best': 0.1905749879664228, 'r_zero': 0.04067766027606495} 8.3s
+ABD062800A4 -105.0 err 0.000 scale 1.000 {'shift_x': -36, 'shift_y': -30, 'r_best': 0.21694298898560258, 'r_zero': 0.05422650168325883} 13.0s
+ABD062800J1 -135.0 err 0.000 scale 1.000 {'shift_x': -8, 'shift_y': -64, 'r_best': 0.27908506310186126, 'r_zero': 0.02904821219994993} 17.5s
+ABD063000J1 -135.0 err 0.000 scale 1.000 {'shift_x': -64, 'shift_y': -34, 'r_best': 0.2547873570933178, 'r_zero': 0.07683199039099972} 21.8s
+ABD070500J2 -75.0 err 0.000 scale 1.000 {'shift_x': -64, 'shift_y': 0, 'r_best': 0.1650175503371857, 'r_zero': -0.006503782702538591} 26.2s
+ABD071000J4 -105.0 err 0.000 scale 1.000 {'shift_x': 22, 'shift_y': -48, 'r_best': 0.012703304480190985, 'r_zero': -0.03404087329440006} 30.9s
+ABD071800A1 -45.0 err 0.000 scale 1.000 {'shift_x': -64, 'shift_y': 50, 'r_best': 0.336011725871667, 'r_zero': 0.12962126653165446} 37.3s
+ABD071800J1 -45.0 err 0.000 scale 1.000 {'shift_x': -64, 'shift_y': -64, 'r_best': 0.11207198863015859, 'r_zero': -0.03928629441120182} 41.4s
+ABD07240J1B -135.0 err 0.000 scale 1.000 {'shift_x': -64, 'shift_y': -54, 'r_best': 0.4333496052044398, 'r_zero': 0.09561874945374971} 46.6s
+ABD07250J1C -105.0 err 0.000 scale 1.000 {'shift_x': -64, 'shift_y': -64, 'r_best': 0.264864443142155, 'r_zero': 0.01666014465919628} 50.4s
+ABD09010J1D -135.0 err 0.000 scale 1.000 {'shift_x': -16, 'shift_y': -14, 'r_best': 0.36888070840351955, 'r_zero': 0.3026700104202793} 56.4s
+{'exact': 0.944453125, 'within_one_level': 0.9963444010416667, 'image_min': 0.0, 'image_max': 100.0, 'outside_polygons': 0.0} 57.269386768341064
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat > $TMPDIR/mc/outcomes.yaml <<'EOF'
-outcomes:
-- claim: neuron-counts
-  outcome: not_reproduced
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:neuron-counts
-  measured: [53, 22, 29, 26, 7, 10, 36]
-  notes: >-
-    The spreadsheet V1_Vasarely_data_SMC.xlsx has 58 rows, the paper's total, but 5 mark no
-    condition and have no files, so the files hold 53 neurons (49 from monkey J, 4 from A), as the
-    data descriptor says. By folder they give 22 Square and Edge, 29 Star and 26 Corners neurons, with
-    7 in three conditions, 10 in two and 36 in one (measured, in the claim's order). Counting the
-    two ABS files of the Star folder as the Corners recordings they are gives 22, 27 and 26, with 7,
-    8 and 38. No per-condition count is the paper's (25, 30, 28); of the overlap counts only the 7
-    in all three conditions matches. The 118 recorded and 102 and 16 per monkey cannot be checked,
-    as the discarded neurons are not in the data set.
-  deviations:
-  - Neurons are identified across conditions by the cell code without its trailing letter (date,
-    monkey and cell number), as the spreadsheet lists them; nothing else in the files confirms it.
-- claim: spikes-per-condition
-  outcome: blocked
-  blocked_by: data_missing
-  notes: >-
-    The files hold no spike count map and no spike times. The stored image is the spike rate per 1
-    ms eye-time sample, and only one file of 77 (ABC050900J1A) also holds the eye time map, from
-    which its count is 15,644 spikes. Neither reading of the criterion can be computed for the
-    others. The data set's documentation (docs/crcns_pvc-12_data_description.pdf) names no other
-    file that holds them.
-- claim: s4-baseline-no-difference
-  outcome: not_reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:s4-baseline-no-difference
-  notes: >-
-    Under the main baseline reading (for each stimulus the placement closest to the files'
-    BaseActivity, centred on the corners for Square and Edge, inside them for the Star, the bottom
-    corners of the ROI for Corners) the medians are 6.72 (Square and Edge, n = 22), 1.90 (Star, n =
-    12) and 2.57 spikes/s (Corners, n = 26), and all three readings find a difference at 0.05; (a)
-    Square and Edge against Corners, BH p = 0.037 (against Star 0.065), (b) Kruskal-Wallis p =
-    0.025, (c) ANOVA p = 0.004. With the squares centred or inside the corners for both stimuli the
-    difference is larger (Kruskal-Wallis p = 0.005 and 0.008). With the files' own BaseActivity
-    (38 of 60 files) no test finds a difference (smallest p 0.109), nor does the main reading on
-    the same 38 files (smallest p 0.060) or with the Corners squares 32 DU further in (0.063); with
-    them 24 DU higher the ANOVA finds one (p = 0.026). The outcome rests on the placement of the
-    baseline squares and on which neurons are included, and the Star group has 12 neurons in
-    place of 30.
-  deviations:
-  - The baseline squares are placed, for each stimulus, where their values come closest to the
-    files' BaseActivity, the authors' own baseline in 38 files; centred on the corners of the
-    circumscribing square for Square and Edge (median difference 0.46 spikes/s against 1.33 inside,
-    n = 9) and inside the corners for the Star (0.39 against 1.30 centred, n = 10). The text says
-    only "at the corners of the ... circumscribing square" (Methods, Visual stimuli). This is an
-    assumption; both placements for both stimuli and the files' values are shown.
-  - The Square and Edge squares centred on the corners run past the authors' 151 DU frame; they are
-    read from the screen maps moved into a frame widened by 16 DU (r of 0.994 or more with the
-    authors' maps inside their frame), averaged over the part on the screen (6 squares in 5 files
-    are partly off it).
-  - The Corners baseline squares are placed at the two bottom corners of the ROI, 8 DU in from each
-    side, in the darkest (1%) area. The text says only "two 1 x 1 DVA (16 x 16 DU) square regions in
-    0% luminance areas within the ROI (shown in Fig 2C)" (Methods, Corners); Fig 2C is not in the
-    text read. The files' BaseActivity matches none of the three placements tried closely (median
-    difference 0.85 to 2.79 spikes/s). This is an assumption; the other two are shown.
-  - Star results rest on the 12 of 27 Star recordings that hold the authors' aligned map.
-- claim: fig4a-above-baseline
-  outcome: reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig4a-above-baseline
-  notes: >-
-    Under the main baseline reading, neurons above baseline are 18 of 22 (P180), 18 of 22 (S90), 12
-    of 12 (S52) and 26 of 26 (S40), every mass centre lies above the unit line, and its distance
-    grows from P180 through S90 and S52 to S40 under reading (a) (4.03, 8.39, 19.19, 26.27
-    spikes/s) and under reading (b), the mean log ratio (0.221, 0.351, 0.916, 1.002). The order
-    under (a) holds under every baseline reading shown; under (b) it fails with the Star squares
-    centred on the corners (S52 1.210 > S40 1.002) and with the Corners squares 32 DU further in
-    (S40 0.837 < S52 0.916).
-  deviations:
-  - Baseline placement as in s4-baseline-no-difference (assumption).
-  - Star results rest on 12 neurons in place of 30, Corners on 26 in place of 28, Square and Edge
-    on 22 in place of 25.
-- claim: fig4b-spike-rate-difference
-  outcome: partially_reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig4b-spike-rate-difference
-  measured: [26.27, 19.19, 8.39, 4.03]
-  notes: >-
-    With the bright S40 fold and the main baseline reading the means are S40 26.27 (SEM 4.29, n =
-    26), S52 19.19 (3.03, n = 12), S90 8.39 (2.22, n = 22) and P180 4.03 spikes/s (1.18, n = 22);
-    the order holds and S40, S52 and P180 are within tolerance, S90 is 2.30 below 10.69, outside
-    its 1.94. The order holds under every baseline reading shown and on the unsmoothed map, and none
-    puts all four within tolerance (S90 falls outside with the squares centred or inside for both
-    stimuli and with both other Corners placements, P180 and S52 with the files' BaseActivity, S52
-    and S40 with the main reading on the files that have it, P180 on the unsmoothed map). The two
-    monkey A neurons give P180 -2.94 and S90 -4.44, monkey J 4.72 and 9.68. Before the revision
-    the Square and Edge baseline squares were read partly outside the authors' frame as zeros,
-    which lowered the baseline; corrected, S90 moved from 10.83 to 8.39 and P180 from 6.47 to
-    4.03, so the value outside tolerance is now S90 in place of P180. On the claims file's answer
-    to this attempt's question the criterion takes the bright S40 fold alone; under the dropped
-    reading with the two S40 folds averaged S40 is 19.09, below S52, and the order fails.
-  deviations:
-  - Baseline placement as in s4-baseline-no-difference (assumption).
-  - The maps are the authors' (made at 60 ms, smoothed, aligned in their ROI frame); the eye-signal
-    correction and the registration cannot be redone, and 15 Star recordings without the aligned
-    frame cannot be used.
-- claim: fig4b-pairwise-significance
-  outcome: reproduced
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig4b-pairwise-significance
-  notes: >-
-    Rank sum tests with BH correction over six pairs, S40 against S90 p = 0.00028 and against P180
-    p = 2.1e-06, S52 against P180 p = 0.00014, all in the stated direction; over the three named
-    pairs the same. They hold under every baseline reading shown. Of the other pairs, S52 against
-    S90 is significant (p = 0.011), S40 against S52 (p = 0.36) and S90 against P180 (p = 0.16) are
-    not.
-  deviations:
-  - Star rests on 12 neurons in place of 30.
-- claim: fig5-average-maps
-  outcome: reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig5-average-maps
-  notes: >-
-    At the fold midpoints the average maps give S40 26.27, S52 19.19, S90 8.39 and P180 4.03
-    spikes/s, ordered as claimed; the variant of block means (23.01, 17.15, 7.61, 3.61) gives the
-    same order. The S40 midpoint is the bright fold's, as the claims file says. This repeats
-    fig4b-spike-rate-difference and is not an independent test.
-  deviations:
-  - Corners frames come in two sizes (273 x 209 and 257 x 193 DU) and are averaged on a common
-    canvas centred on each frame; the midpoints are read in the larger frame.
-  - Baseline placement as in s4-baseline-no-difference (assumption).
-- claim: table1-edge
-  outcome: reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:table1-edge
-  measured: [6.52, 31.53, 18.56, 18.76, 21.09]
-  notes: >-
-    On the 18 files whose Edge is wholly on the screen, under reading (a) (summaries per neuron, then
-    the mean), all five values are within the paper's SEM (measured). On all 22 files three are
-    (minimum 5.78 and median 17.09 fall outside), and under reading (b) on all 22 three are. With
-    the squares inside the corners 2 of 5 are within tolerance on the 22 files, and with the files'
-    BaseActivity (9 neurons) none, so the outcome rests on the baseline placement and on leaving
-    out the four files whose Edge is cut by the screen border.
-  deviations:
-  - Baseline placement as in s4-baseline-no-difference (assumption).
-  - In four files (AEC052900J1, AEC070500J2, AEC09010J1C, AEC09040J3B) the 100% end of the Edge is
-    cut by the screen border, so the top blocks there partly sample the black screen. The Methods
-    say the rectangle was sometimes partly off the display "but never its edge" (Methods, Square
-    and edge), so the Edge measures the paper made were on a wholly displayed Edge; the Edge values
-    are taken from the other 18 files. This is an assumption; all 22 are shown.
-- claim: table1-p180
-  outcome: partially_reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:table1-p180
-  measured: [-1.55, 10.33, 3.61, 3.03, 4.03]
-  notes: >-
-    Under reading (a) four of five values are within tolerance (maximum 10.33, mean 3.61, median
-    3.03, midpoint 4.03 spikes/s); the minimum, -1.55, is below 0.18 by more than 1.01. Under (b)
-    three are. With the squares inside the corners 3 of 5 are within tolerance, with the files'
-    BaseActivity (9 neurons) 3, with the main reading on those 9 neurons 5, and on the 18 files
-    whose Edge is wholly on the screen 2, so the count moves with the baseline and with the neurons
-    included. The outcome was not reproduced before the revision (one of five, every value but the
-    minimum about 1.5 spikes/s high); the Square and Edge baseline squares had then been read
-    partly outside the authors' frame as zeros, and corrected the baseline is higher.
-  deviations:
-  - P180 is the line parallel to the Edge, 48 DU into the rectangle, from 0% to 100% (Methods,
-    Square and edge); baseline placement as in s4-baseline-no-difference (assumption).
-- claim: table1-s90
-  outcome: not_reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:table1-s90
-  measured: [2.46, 13.58, 7.61, 7.66, 8.39]
-  notes: >-
-    Under reading (i)(a) two of five values are within tolerance (maximum 13.58 and mean 7.61); the
-    minimum 2.46, median 7.66 and midpoint 8.39 are below the paper's values by more than their SEM
-    (measured). No other reading gives more than two. With the squares inside the corners 1 of 5
-    is within tolerance and with the files' BaseActivity (9 neurons) 3 of 5 under (ii)(a); the
-    main reading on those 9 neurons gives 5 of 5 under (ii)(a), so the outcome rests on the
-    baseline and on which neurons are included. The outcome was reproduced before the revision
-    (all five under (i)(a)); the Square and Edge baseline squares had then been read partly outside
-    the authors' frame as zeros, and corrected the baseline is higher and every S90 value lower.
-  deviations:
-  - Baseline placement as in s4-baseline-no-difference (assumption).
-  - The S90 blocks are 7.07 DU long; their samples are now spaced 1.01 DU apart and placed
-    symmetrically about each block's centre.
-- claim: table1-s52
-  outcome: reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:table1-s52
-  measured: [7.38, 28.62, 17.15, 16.55, 19.19]
-  notes: >-
-    Under reading (ii)(a), each half of the aligned diagonal summarised as its own ten blocks, all
-    five values are within the paper's SEM (measured); under (i)(a) four are (the minimum 9.08 is
-    above 6.26 by more than 1.33). With the squares centred on the corners for the Star the best
-    is 3 of 5, with the files' BaseActivity (10 neurons) 2, and with the main reading on those 10
-    neurons 1, so the outcome rests on the Star baseline placement and on 12 neurons in place of
-    30. The outcome was partially reproduced before the revision, when the Star baseline squares
-    were centred on the corners; the main reading now places them inside the corners, where their
-    values come closest to the files' BaseActivity.
-  deviations:
-  - Star rests on the 12 recordings with the authors' aligned map.
-  - Baseline placement as in s4-baseline-no-difference (assumption).
-- claim: table1-s40
-  outcome: reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:table1-s40
-  measured: [10.52, 34.26, 23.01, 23.02, 26.27]
-  notes: >-
-    With the bright S40 fold under reading (a) all five values are within the paper's SEM. They stay
-    within it with the files' BaseActivity and with the Corners squares 24 DU higher; with the
-    squares 32 DU further in four are, and with the main reading on the 19 files that have
-    BaseActivity three are. On the claims file's answer to this attempt's question the criterion
-    takes the ten blocks along the bright S40 fold alone; under the dropped reading with the two
-    folds averaged at most one of five values was within tolerance.
-  deviations:
-  - Corners baseline squares at the bottom corners of the ROI (assumption).
-- claim: fig6-midpoint-representative
-  outcome: reproduced
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig6-midpoint-representative
-  notes: >-
-    None of the ten rank sum tests is significant (p = 0.49 to 0.93), nor any under the other
-    reading of the halves, nor the two Edge tests on the 18 files whose Edge is wholly on the screen
-    (p = 0.70 and 0.95); the midpoint exceeds the block mean or median by a median of -0.08 to 2.39
-    spikes/s. The paired signed rank test, the variant, finds 3 of 10 significant (S90 against the
-    median p = 0.025, S40 against the mean p = 0.015 and the median p = 0.009). The baseline
-    cancels in these comparisons.
-  deviations:
-  - Star rests on 12 neurons in place of 30.
-- claim: fig7a-rms-contrast-fit
-  outcome: not_reproduced
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig7a-rms-contrast-fit
-  measured: [0.8504, 1.9826, 1.1212, 0.2284, 0.8613, 0.9061]
-  notes: >-
-    Computed on the luminance of the stimulus image (in percent, black at 0) in the authors' frame,
-    as the median over the 18 Edge files whose Edge is wholly on the screen. Under reading (a),
-    standard deviation over mean, the contrast is 1.98 at 0%, near 0.86 from 25% to 75% and 1.28 at
-    100% (measured, lowest, highest, a, b, c and R2 of the LAR fit); only c is within tolerance.
-    Under reading (b), standard deviation of luminance scaled to 0 to 1, it rises from 0.013 to
-    0.449 and only R2 (0.9987) is within tolerance. The text gives the display luminance at one
-    level, 14.07 cd/m2 at 50% (Methods, Square and edge), but not the black level; a contrast that
-    saturates near 0.95 would need a black level above zero, which neither the text nor the files
-    give, and none was tried.
-  deviations:
-  - LAR is implemented as a least absolute residual fit started from a Levenberg-Marquardt least
-    squares fit, standing in for MATLAB's Curve Fitting Toolbox.
-- claim: fig7c-fold-edge-equivalence
-  outcome: not_reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig7c-fold-edge-equivalence
-  notes: >-
-    With the Edge from the 18 files whose Edge is wholly on the screen, the Edge response (16 x 16
-    DU squares on the Edge) ranges from 9.23 spikes/s at 0% luminance to 21.26 at 80%. Under reading
-    (a) the P180 mean (4.03) lies below the whole Edge profile and is nearest the 0% level, not
-    within one step of 50%; S40 (26.27) is nearest 80%, within one step of 90%. Under reading (b)
-    P180 is nearest the lowest RMS level, which the rule accepts, but S40 is nearest 94.3, 4.3 from
-    90 and beyond one step (3.7). Taking one step as one level away from the level nearest 90
-    (90.6), the variant, (b) would pass. Every other baseline reading and the Edge from all 22 files
-    give the same under (a) and (b). The RMS levels are placed with the paper's fitted parameters
-    (luminance 0 to 77.7%), as the claims file says.
-  deviations:
-  - The refit variant of the criterion is not run, because the recomputed contrast is not monotonic
-    in luminance.
-  - The Edge levels at 10% steps are taken at 0%, 10%, and so on to 100%, with 16 x 16 DU squares as
-    for the RMS levels; Fig 7B gives no window for them.
-  - Under reading (b) "within one step of 90%" is measured as a distance from 90 of at most 3.7,
-    the most literal reading of the criterion; one level from the level nearest 90 is shown as a
-    variant and passes. This is an assumption the outcome rests on.
-  - The Edge responses come from the 18 files whose Edge is wholly on the screen, as in
-    table1-edge (assumption); baseline placement as in s4-baseline-no-difference (assumption); the
-    S40 response is the bright fold's, as the claims file says.
-- claim: fig7c-fold-edge-significance
-  outcome: reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig7c-fold-edge-significance
-  notes: >-
-    Two-sample t-tests (equal variance) of the fold midpoint differences against the Edge responses
-    of the 18 files whose Edge is wholly on the screen. Under BH over all 40 tests (a), P180 is
-    lower than the Edge at 0.943 (adjusted p = 0.015) and S40 higher than the Edge at 0.610 and
-    0.647 (both 0.033); BH per fold (b) gives the same (0.0038; 0.022, 0.022), and so does
-    Bonferroni per fold (0.0076; 0.033, 0.045). Bonferroni over 40 tests fails (S40 at 0.610 p =
-    0.13). With the Edge from all 22 files the claim holds under (a) and (b). Under (a) S40 is also
-    significantly higher at 0.684, 0.721 and 0.758, beyond the paper's "less than 68%", and P180 is
-    lower at every level from 0.647 up.
-  deviations:
-  - The Edge responses come from the 18 files whose Edge is wholly on the screen, as in
-    table1-edge (assumption); baseline placement as in s4-baseline-no-difference (assumption); the
-    S40 response is the bright fold's, as the claims file says.
-- claim: fig7d-nonlinear
-  outcome: reproduced
-  assumed: true
-  notebook: reproduce_martinez_conde_2019.ipynb
-  output: claim:fig7d-nonlinear
-  notes: >-
-    The four means decrease monotonically with angle. A least-squares line (-0.142 spikes/s per
-    degree) leaves S40 4.63 above it (SEM 4.29), S90 6.15 below (SEM 2.22) and P180 2.26 above (SEM
-    1.18), so by the claims file's SEM rule the relation is non-linear; S90 and P180 lie off the
-    line under every other baseline reading shown. In the variant the slope from 52 to 90 degrees
-    (-0.284) differs from that from 90 to 180 (-0.049) by more than their combined SE; the slopes
-    from 40 to 52 (-0.59 +- 0.44) and from 52 to 90 do not.
-  deviations:
-  - Rests on the baseline placement of s4-baseline-no-difference (assumption); the S40 response
-    is the bright fold's, as the claims file says.
-- claim: fig7d-dog-similar
-  outcome: blocked
-  blocked_by: data_missing
-  notes: >-
-    Needs the output of the difference-of-Gaussians model of reference [3], which the paper shows
-    only as a line in Fig 7D. The paper names no deposited data for it, the data set holds none, and
-    the claims file names no public source. An outside input that is not public is blocked as
-    data_missing (docs/protocol.md, author step 4).
-- claim: s3-latency-peak
-  outcome: blocked
-  blocked_by: data_missing
-  notes: >-
-    Needs spike times and eye positions to rebuild the maps at other latencies. The files hold only
-    the maps made at 60 ms, and the data set's documentation names no other files.
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+rep(0,"| spikes-per-condition | blocked, data missing (no spike counts; eye time in 1 of 75 files) |","| spikes-per-condition | blocked, data missing (no spike counts; eye time in 1 of the 76 map files read) |")
+rep(14,"eye time is stored in one file of 75","eye time is stored in one of the 76 map files read (77 in the zip; one is MATLAB 7.3)")
+# cell 7: star registration
+rep(7,"""# the files and those 15 cannot be registered to the stimulus.
+cmp = []
+for (f, c), r in recs.items():
+    if f == "Star" and "smoothed" in r:
+        ang = v.star_aligned_angle(r)
+        scr = v.star_screen_measures(r, ang)
+        cmp.append(dict(code=c, aligned_angle=round(ang, 1), midpoint_aligned_frame=v.measures(r)["midpoint_S52"],
+                        midpoint_screen_frame=scr["midpoint_S52"]))""","""# the files and those 15 cannot be registered to the stimulus. Two checks on the 12 files that have
+# both frames: the polygon fit that places the Standard frame in the screen frame (its largest vertex
+# error and scale), and a direct registration, correlating the screen-frame map with the Standard
+# map placed by that fit, over shifts up to 64 DU (4 DVA) on each axis.
+cmp = []
+for (f, c), r in recs.items():
+    if f == "Star" and "smoothed" in r:
+        al = v.star_alignment(r)
+        scr = v.star_screen_measures(r, al["angle"])
+        reg = v.star_registration_shift(r)
+        cmp.append(dict(code=c, aligned_angle=round(al["angle"], 1), fit_error_DU=al["fit_error"], scale=al["scale"],
+                        midpoint_aligned_frame=v.measures(r)["midpoint_S52"], midpoint_screen_frame=scr["midpoint_S52"],
+                        **reg))""")
+rep(7,"""print("aligned diagonals""","""print("polygon fit: largest vertex error %.2g DU, scale %.4f to %.4f" % (cmp.fit_error_DU.max(), cmp.scale.min(), cmp.scale.max()))
+print("registration by correlation: r at zero shift median %.2f (range %.2f to %.2f); best r median %.2f (max %.2f); "
+      "best shift at the 64 DU search limit in %d of %d" % (cmp.r_zero.median(), cmp.r_zero.min(), cmp.r_zero.max(),
+      cmp.r_best.median(), cmp.r_best.max(), int(((cmp.shift_x.abs() == 64) | (cmp.shift_y.abs() == 64)).sum()), len(cmp)))
+print("aligned diagonals""")
+# new sanity cell after 7: stimulus image check
+new_cell=dict(cell_type="code",execution_count=None,metadata=dict(tags=["sanity"]),outputs=[],source="""# Stimulus images. The data description says the stimulus file's image holds "the actual grayscale
+# values". Rasterising each file's screen-frame polygons with the gray-level mapping of
+# `v.image_agreement` is compared with the image, pixel by pixel; the analysis uses that mapping in
+# the aligned frame (`v.stimulus_luminance`). The gray level outside every polygon is the background.
+agr = []
+for r in files.itertuples():
+    a = v.image_agreement(z, r.folder, r.code)
+    if a is not None:
+        agr.append(dict(folder=r.folder, code=r.code, **a))
+agr = pd.DataFrame(agr)
+print("files compared:", agr.groupby("folder").size().to_dict(), "(the rest are MATLAB 7.3 or hold another condition's image)")
+print(agr.groupby("folder")[["exact", "within_one_level", "image_min", "image_max", "outside_polygons"]]
+      .agg(["min", "median"]).round(4).to_string())
+# Direction of the Edge: gray level 1 DU inside the rectangle at the two ends the geometry calls 0% and 100%
+for r in per_codes if False else []:
+    pass
+""".splitlines(keepends=True))
+C.insert(8,new_cell)
+nb["cells"]=C
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False); open(p,"a").write("\n")
 EOF
 echo done
 ```
@@ -2932,480 +990,1530 @@ done
 **Agent calls Bash**
 
 ```bash
-cd  cat > $TMPDIR/mc/tail.yaml <<'EOF'
-findings:
-- kind: data_missing
-  statement: >-
-    The data set holds 53 neurons, not the 58 the paper analysed. The spreadsheet
-    V1_Vasarely_data_SMC.xlsx lists 58 cells, five of them (050800J1, 062000J1, 072100_C, 062600A2,
-    09250A1) with no condition marked and no files. Per condition the files hold 22 Square and Edge,
-    27 Star and 26 Corners recordings, against the paper's 25, 30 and 28.
-- kind: metadata_error
-  statement: >-
-    Two files in the Star folder, ABS042700J2 and ABS051000J3, are recordings with a Corners-type
-    stimulus (their stimulus metadata gives the type CORNERS, triangles 45 DU wide and 60 DU deep),
-    and the spreadsheet marks both cells as tested with the Star. They are not copies of the same
-    cells' Corners files (pixel correlation 0.83 and 0.72).
-- kind: metadata_error
-  statement: >-
-    The data descriptor says the spike rate map file holds image (raw spike counts), smoothed_image
-    and smoothed_image_norm (normalised by eye time). In the files, image is the spike rate per 1 ms
-    eye-time sample (times the eye time it is an integer count, and 98.5% of the pixels with eye
-    time hold values strictly between 0 and 1, in the one file with an eye time map);
-    smoothed_image_norm is absent from 35 of 77 files and holds a baseline-subtracted map in some
-    and a map scaled to -1 to 1 in others; and most files hold a Standard struct and a norm flag
-    that the descriptor does not mention.
-- kind: metadata_insufficient
-  statement: >-
-    The maps are in gaze coordinates. The receptive-field offset that places them on the stimulus is
-    in no file; the authors' aligned maps (the undocumented Standard struct) are present for all
-    Corners and Square and Edge files but only 12 of 27 Star files, so 15 Star recordings cannot be
-    analysed. The offset differs between conditions of the same neuron by up to about 50 DU, so it
-    cannot be carried across. Standard also holds BaseActivity in 38 of 60 files, with no
-    description of how it was computed; it comes closest to squares centred on the corners of the
-    circumscribing square for Square and Edge (median difference 0.46 spikes/s) and to squares
-    inside them for the Star (0.39), matches neither exactly, and matches no Corners placement tried
-    closely.
-- kind: data_missing
-  statement: >-
-    No file holds spike times, eye positions or spike count maps, and only one (ABC050900J1A) holds
-    an eye time map, so the spikes per condition, the latency analysis of S3 Fig and any map
-    rebuilt from the recordings cannot be computed.
-- kind: other
-  about: data
-  statement: >-
-    In four Square and Edge files (AEC052900J1, AEC070500J2, AEC09010J1C, AEC09040J3B) the 100% end
-    of the Edge lies beyond the screen border, where the Methods say the rectangle was sometimes
-    partly off the display "but never its edge".
-- kind: methods_unavailable
-  statement: >-
-    Where are the absolute baseline squares? The text puts four 16 x 16 DU squares "at the corners"
-    of the square circumscribing the Square or the Star, without saying whether they are centred on
-    the corners or drawn inside them, and two for Corners "in 0% luminance areas within the ROI
-    (shown in Fig 2C)" with no position. The choice changes the baseline test across stimuli (a
-    difference at Kruskal-Wallis p = 0.025 under this attempt's main reading, none with the files'
-    BaseActivity) and the Table 1 counts. This attempt takes, per stimulus, the placement closest to
-    BaseActivity (centred for Square and Edge, inside for the Star) and for Corners the ROI's bottom
-    corners. Which placement, and how was BaseActivity computed?
-- kind: methods_unavailable
-  statement: >-
-    How was the local RMS contrast of Fig 7A computed? From the stimulus luminance in percent
-    neither the standard deviation over the mean nor the standard deviation of luminance scaled to
-    0 to 1 gives a contrast rising from 0.61 to 0.943. The text gives the display luminance at 50%
-    (14.07 cd/m2) but not the black level, which a contrast saturating near 0.95 would need, and the
-    definition (reference 21) is not in the text read.
-- kind: paper_inconsistency
-  statement: >-
-    The Methods give the Star ROI as 10 x 10 DVA (160 x 160 DU), but the Star's 0% polygon has a
-    circumscribed radius of 150 DU and the authors' Star frame in the files is 321 x 321 DU. The
-    circumscribing square of the Square is given as 8.84 x 8.84 DVA and as 138 x 138 DU; 8.84 DVA is
-    141.4 DU, the Square's diagonal. The Square and Edge ROI is 9.38 DVA (150 DU) wide, and the
-    baseline squares are said to be within it, but 16 x 16 DU squares centred on the corners of a
-    138 or 141.4 DU square span 154 to 157 DU, and the files' BaseActivity comes closest to that
-    placement.
-verifications:
-- date: '2026-11-12'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: >-
-    The first executed notebook with the conclusion cells removed (the handover left in the summary
-    cell, which the verifier says it did not use), the helper module and the claims file, with the
-    paper's full text. The verifier read the zip's file list, tested the helpers on synthetic inputs
-    (box_mean, the midpoint, the block profile, fit_rigid, the LAR fit, rms_contrast_profile) and
-    did not re-run the notebook. It had no attempt record.
-  results:
-  - claim: neuron-counts
-    agrees: true
-    outcome: not_reproduced
-    reason: >-
-      The files hold 53 neurons, split 22 / 27 / 26 (Square and Edge / Star / Corners), with
-      overlaps of 7 / 8 / 38 neurons in three / two / one conditions. The paper has 58, split 25 /
-      30 / 28, with overlaps 7 / 11 / 40. Even the spreadsheet (58 rows, 5 of them with no data)
-      gives 22 / 29 / 26 and 7 / 10 / 36. Neither the per-condition counts nor the overlap counts
-      all match.
-    response: No change.
-  - claim: spikes-per-condition
-    agrees: true
-    outcome: blocked
-    reason: >-
-      The zip holds only SpikeRateMap and Stimulus files and the spreadsheet. Only one of 77 map
-      files has an eye time map. Only one neuron-condition can be checked against the 10,000-spike
-      minimum, ABC050900J1A with 15,644 spikes. The mean and STD cannot be computed.
-    response: No change.
-  - claim: s4-baseline-no-difference
-    agrees: true
-    outcome: not_reproduced
-    reason: >-
-      Not reproduced, fragile. With baseline squares centred on the corners, Kruskal-Wallis p =
-      0.035, ANOVA p = 0.031, and the corrected pairwise test of Square and Edge against Star p =
-      0.043; squares drawn inside the corners also find a difference. Only the files' own
-      BaseActivity values find none (n = 9 / 10 / 19). Star has 12 of the paper's 30 neurons.
-      Baseline placement decides several outcomes and the main choice is the author's; the files'
-      BaseActivity agrees with neither computed placement and that disagreement was never
-      examined; the two Corners squares at the bottom ROI corners had no alternative placement
-      tried.
-    response: >-
-      The baseline placement is now chosen per stimulus by comparison with BaseActivity, shown file
-      by file with a scatter and with the squares moved inward step by step: centred for Square and
-      Edge, inside for the Star. Doing so showed that the centred Square and Edge squares had run
-      past the authors' 151 DU frame, where the helper read zeros; they are now read from the screen
-      maps moved into a widened frame. Two more Corners placements were added, and every claim is
-      shown on the 38 files with BaseActivity under the main reading. Under the main reading all
-      three tests still find a difference (Kruskal-Wallis p = 0.025); the files' values, the main
-      reading on their 38 files and the Corners squares 32 DU further in find none. Outcome
-      unchanged.
-  - claim: fig4a-above-baseline
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      Neurons above baseline 21/22, 20/22, 12/12 and 26/26; all mass centres are above the unit
-      line. Under reading (a) the distances are ordered 6.47 < 10.83 < 20.30 < 26.27. Reading (b)
-      (log) breaks the order under the main baseline (S52 1.21 > S40 1.00).
-    response: >-
-      Recomputed with the revised baseline. 18/22, 18/22, 12/12 and 26/26 above baseline; the order
-      holds under (a) (4.03, 8.39, 19.19, 26.27) and now also under (b) in the main reading. Outcome
-      unchanged.
-  - claim: fig4b-spike-rate-difference
-    agrees: true
-    outcome: partially_reproduced
-    reason: >-
-      The order S40 > S52 > S90 > P180 holds. S90 (10.83), S52 (20.30) and S40 (26.27) are within
-      the paper's SEM. P180 is 6.47 against 4.87 +- 1.15, so it is outside. No baseline or map
-      variant puts all four within tolerance.
-    response: >-
-      Recomputed with the revised baseline. The order holds; P180 (4.03), S52 (19.19) and S40
-      (26.27) are within tolerance and S90 (8.39) is now the value outside. No baseline reading puts
-      all four within. Outcome unchanged.
-  - claim: fig4b-pairwise-significance
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      S40 > S90 (corrected p = 0.0015), S40 > P180 (p = 2e-5) and S52 > P180 (p = 0.0003) are
-      significant under both comparison families.
-    response: Recomputed with the revised baseline; the three pairs stay significant under every baseline reading. Outcome unchanged.
-  - claim: fig5-average-maps
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      The midpoints of the average maps (26.27 > 20.30 > 10.83 > 6.47) keep the order. The claims
-      file itself notes this is the fig4b means again, not an independent test.
-    response: Recomputed with the revised baseline (26.27 > 19.19 > 8.39 > 4.03). Outcome unchanged.
-  - claim: table1-edge
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      Under reading (ia) all five values are within tolerance (8.27, 32.25, 19.60, 19.54, 21.34).
-      Four Edge files have the Edge cut by the screen border and were kept; the Edge boxes there
-      partly sample off-screen area, which biases high-luminance Edge responses down, and
-      table1-edge was not rerun without them.
-    response: >-
-      The Edge values now come from the 18 files whose Edge is wholly on the screen, as the Methods
-      say it always was, with all 22 shown. With the revised baseline all five are within
-      tolerance on the 18 files (6.52, 31.53, 18.56, 18.76, 21.09) and three on all 22. Outcome
-      unchanged, now resting also on leaving out the four files.
-  - claim: table1-p180
-    agrees: true
-    outcome: not_reproduced
-    reason: >-
-      Only one of five is within tolerance under (ia), and none under (ib). Every value except the
-      minimum is about 1.5 spikes/s high. Under the files' values 3 of 5 are within tolerance, which
-      would make it partial.
-    response: >-
-      Changed to partially reproduced. The Square and Edge baseline squares had been read partly
-      outside the authors' frame as zeros, which lowered the baseline and raised every P180
-      difference. Corrected, four of five are within tolerance under (ia) (only the minimum, -1.55,
-      is outside); the count is 3 with the squares inside the corners or with the files' values,
-      and 2 on the 18 complete Edge files.
-  - claim: table1-s90
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      All five are within tolerance under (ia). Under the other baseline placements 2 or fewer are.
-    response: >-
-      Changed to not reproduced. With the baseline squares read inside the screen maps in place of
-      zeros, the S90 values fall (minimum 2.46, median 7.66, midpoint 8.39 below tolerance) and no
-      reading gives more than two of five. On the 9 files with BaseActivity the main reading gives
-      five under (ii)(a), shown in the notes.
-  - claim: table1-s52
-    agrees: true
-    outcome: partially_reproduced
-    reason: >-
-      Three of five under (ia), the maximum, median and midpoint. The minimum (10.17 against 6.26 +-
-      1.33) and the mean (18.25 against 15.66 +- 2.23) are outside. This rests on 12 neurons.
-    response: >-
-      Changed to reproduced. The Star baseline squares are now inside the corners, the placement
-      whose values come closest to the files' BaseActivity (median difference 0.39 spikes/s against
-      1.30 for centred). Under (ii)(a) all five are within tolerance (7.38, 28.62, 17.15, 16.55,
-      19.19); with the squares centred the best is three. The outcome rests on this assumption and
-      on 12 neurons.
-  - claim: table1-s40
-    agrees: true
-    outcome: reproduced
-    reason: All five are within tolerance under (ia), using the bright fold.
-    response: >-
-      Recomputed (10.52, 34.26, 23.01, 23.02, 26.27, all within). With the new Corners placement 32
-      DU further in four are. Outcome unchanged.
-  - claim: fig6-midpoint-representative
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      None of the 10 rank sum tests is significant (smallest p = 0.50). The signed rank variant finds
-      3 of 10 significant (S90 median; S40 mean and median), but the criterion judges on the paper's
-      test.
-    response: Recomputed (smallest p 0.49), with the Edge tests also on the 18 complete files (p = 0.70 and 0.95). Outcome unchanged.
-  - claim: fig7a-rms-contrast-fit
-    agrees: true
-    outcome: not_reproduced
-    reason: >-
-      Reading (a), the contrast runs 0.85 to 1.98 and is U-shaped; reading (b), 0.01 to 0.45. Neither
-      matches the paper's range or fit. This most likely reflects the missing display black level
-      more than the paper. The notebook says the display luminance is not in the text, but it is in
-      part, 50% = 14.07 cd/m2 (Methods, Square and edge).
-    response: >-
-      The conclusion, the notes and the finding now say that the text gives the luminance at 50%
-      (14.07 cd/m2) but not the black level. Outcome unchanged.
-  - claim: fig7c-fold-edge-equivalence
-    agrees: true
-    outcome: not_reproduced
-    reason: >-
-      Not reproduced, borderline under (b). Reading (a), P180 (6.47) is below the whole Edge
-      profile, nearest 0%. Reading (b), P180 is nearest the lowest level, as required; S40 is
-      nearest the 94.3 level, 4.3 points from 90, outside the 3.7-point step. Taking one step as one
-      level away from the level that stands for 90 (90.6) would pass, and the notebook makes this
-      choice without stating it.
-    response: >-
-      The choice is now stated as an assumption, and the level reading is printed as a variant (it
-      passes). The Edge responses use the 18 complete Edge files, with all 22 shown, and the 1%
-      Edge profile is printed: the equal values at the 0.943 level and at 90% came from a flat
-      stretch of the profile (now 21.18 and 21.01). Under every reading (a) fails for P180. Outcome
-      unchanged.
-  - claim: fig7c-fold-edge-significance
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      Under Benjamini-Hochberg over 40 tests and over 10 per fold, P180 < Edge at 0.943 (corrected p
-      = 0.017 and 0.004); S40 > Edge at 0.610 and 0.647. Bonferroni fails. S40 is also significant
-      at 0.684 and 0.721; the paper says only "less than 68%".
-    response: >-
-      Recomputed on the 18 complete Edge files and with the revised baseline; it holds under BH (p
-      = 0.015; 0.033, 0.033) and now also under Bonferroni per fold, and on all 22 files. Outcome
-      unchanged.
-  - claim: fig7d-nonlinear
-    agrees: true
-    outcome: reproduced
-    reason: >-
-      The order is monotonic. The S90 and P180 residuals from a straight line exceed their SEMs. In
-      the variant, one of the two slope comparisons differs.
-    response: Recomputed with the revised baseline (S40, S90 and P180 off the line by more than their SEM), and shown under every baseline reading. Outcome unchanged.
-  - claim: fig7d-dog-similar
-    agrees: true
-    outcome: blocked
-    reason: Blocked (other, outside input); it needs the model output of reference [3], which the archive does not hold.
-    response: >-
-      Kept as data_missing, the reason the protocol gives for an outside input that is not public
-      (author, step 4); the notes now say so.
-  - claim: s3-latency-peak
-    agrees: true
-    outcome: blocked
-    reason: The zip has no spike times or eye positions, only maps made at 60 ms (confirmed from the file list). Nothing can be tested.
-    response: No change.
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+rep(8,"""# Direction of the Edge: gray level 1 DU inside the rectangle at the two ends the geometry calls 0% and 100%
+for r in per_codes if False else []:
+    pass
+""","""# Direction of the Edge in the aligned frame: gray level 2 DU inside the rectangle, 2 DU from the
+# end that the geometry calls 0% and from the one it calls 100%
+ends = []
+for (f, c), r in recs.items():
+    if f == "Edge-compare" and "smoothed" in r:
+        lum = v.stimulus_luminance(r)
+        x, y0, y100 = v.geometry(r)["Edge"][0]
+        step = np.sign(y100 - y0) * 2
+        ends.append((lum[int(round(y0 + step)) - 1, int(round(x + 2)) - 1], lum[int(round(y100 - step)) - 1, int(round(x + 2)) - 1]))
+ends = np.array(ends)
+print("Edge, %d aligned files: gray level near the 0%% end %.1f to %.1f, near the 100%% end %.1f to %.1f"
+      % (len(ends), ends[:, 0].min(), ends[:, 0].max(), ends[:, 1].min(), ends[:, 1].max()))
+""")
+# cell 10 (was 9) markdown baselines
+setsrc(10,"""Baselines. The claims file defines the absolute baseline as the mean of the spike rate map in four
+(Square and Edge, Star) or two (Corners) 16 x 16 DU squares in 0% luminance. For Square and Edge and
+Star the paper puts them "at the corners of the circumscribing square" (Methods, Visual stimuli),
+without saying whether they sit inside the corners or are centred on them. The files store the
+authors' own baseline, `BaseActivity`, in 38 of the 60 analysed files. The adopted placement, an
+assumption, is the one closer to it: the next cell shows that this is centred on the corners for
+Square and Edge and inside them for Star. Both placements are shown as variants throughout. The
+Corners squares are only drawn in Fig 2C, which is not in the text; they are taken at the two bottom
+corners of the aligned frame, an assumption. The cell also prints the stimulus gray level inside
+every square.
+""")
+setsrc(11,"""b = per[["folder", "code", "base_main", "base_inside", "base_centred", "base_stored"]].copy()
+for f in v.FOLDS:
+    d = b[(b.folder == f) & b.base_stored.notna()]
+    cols = ["base_main"] if f == "Corners" else ["base_inside", "base_centred"]
+    for col in cols:
+        print(f"{COND[f]:16s} {col:13s} n with stored = {len(d):2d}; median %.2f vs stored %.2f spikes/s; median |difference| %.2f; "
+              "Pearson %.3f, Spearman %.3f" % (d[col].median(), d.base_stored.median(), (d[col] - d.base_stored).abs().median(),
+              np.corrcoef(d[col], d.base_stored)[0, 1], stats.spearmanr(d[col], d.base_stored)[0]))
+print("adopted placement:", v.BASE_PLACEMENT, "; Corners: bottom corners of the aligned frame")
+print("stored BaseActivity equal to 0 in:", list(b.code[b.base_stored == 0]))
+# Stimulus gray level inside each baseline square (0 is the 0% level), and how much of each square is in the frame
+rows = []
+for r in per.itertuples():
+    rec = recs[(r.folder, r.code)]
+    lum = v.stimulus_luminance(rec)
+    g = v.geometry(rec)
+    sets = ({"bottom corners": v.corners_baseline_squares(rec)} if r.folder == "Corners" else
+            {p: v.baseline_squares(rec, g, p) for p in ("inside", "centred")})
+    for name, centres in sets.items():
+        vals = [v.box_values(lum, x, y, v.BASE_BOX, v.BASE_BOX) for x, y in centres]
+        rows.append(dict(folder=COND[r.folder], placement=name, max_gray=max(w.max() for w in vals),
+                         share_at_0=np.mean(np.concatenate([w.ravel() for w in vals]) == 0),
+                         min_pixels_in_frame=min(w.size for w in vals)))
+print(pd.DataFrame(rows).groupby(["folder", "placement"]).agg(files=("max_gray", "size"), max_gray=("max_gray", "max"),
+      min_share_at_0=("share_at_0", "min"), min_pixels_in_frame=("min_pixels_in_frame", "min")).to_string())
+""")
+nb["cells"]=C
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
 EOF
-python - <<'EOF'
-import os
-T=os.environ['TMPDIR']+'/mc/'
-s=open('attempts/martinez-conde-2019-01.yaml').read()
-head=s[:s.index('outcomes:')]
-open('attempts/martinez-conde-2019-01.yaml','w').write(head+open(T+'outcomes.yaml').read()+open(T+'tail.yaml').read())
-import yaml; d=yaml.safe_load(open('attempts/martinez-conde-2019-01.yaml')); print(len(d['outcomes']), len(d['verifications'][0]['results']))
-EOF
-grep -n " — \|rather" attempts/martinez-conde-2019-01.yaml entries/martinez-conde-2019/vasarely.py entries/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb | head
+echo ok
 ```
 
 ```
-19 19
+ok
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -i 's/This most likely reflects the missing display black level more than the paper./This most likely reflects the missing display black level, not the paper./' attempts/martinez-conde-2019-01.yaml; grep -n "black level, not" attempts/martinez-conde-2019-01.yaml; cat entries/martinez-conde-2019/README.md
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+for i,c in enumerate(C):
+    if c["cell_type"]=="code": print(i, c["metadata"].get("tags"), src(i)[:60].replace("\n"," | "))
+EOF
 ```
 
 ```
-# Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019) from CRCNS pvc-12
+1 None import hashlib, io, resource, time | import numpy as np | import
+3 ['sanity'] z = v.open_zip() | files = v.file_table(z) | recs = {(r.folder, 
+4 ['sanity'] # The data set's own list of cells (V1_Vasarely_data_SMC.xls
+5 ['sanity'] # Units. `image` is described as raw spike counts. Most of i
+6 ['sanity'] # Geometry: the fold lines from the polygons are the same in
+7 ['sanity'] # Selection. Star: 2 of the 29 files in the Star folder (pre
+8 ['sanity'] # Stimulus images. The data description says the stimulus fi
+9 ['sanity'] # The analysed set: every file with an aligned frame and its
+11 ['sanity'] b = per[["folder", "code", "base_main", "base_inside", "base
+13 ['claim:neuron-counts'] def overlap(tab): |     n = tab.groupby("neuron").folder.nuniq
+17 ['claim:s4-baseline-no-difference'] def baseline_tests(col, data): |     groups = {COND[f]: data.l
+20 ['claim:fig4a-above-baseline'] FOLDS4 = [("P180", "Edge-compare"), ("S90", "Edge-compare"),
+23 ['claim:fig4b-spike-rate-difference'] EXPECTED = {"S40": (25.60, 4.18), "S52": (18.10, 2.39), "S90
+26 ['claim:fig4b-pairwise-significance'] vals = {fold: per.loc[per.folder == f, f"diff_{fold}"].dropn
+29 ['claim:fig5-average-maps'] avg = {} | for f in v.FOLDS: |     maps, ref = [], None |     for 
+32 None T1 = {"Edge": ("Edge-compare", [7.98, 33.13, 20.44, 20.77, 2
+34 ['claim:table1-edge'] T1_OUT["Edge"] = table1("Edge") | # Placement of the Edge bloc
+37 ['claim:table1-p180'] T1_OUT["P180"] = table1("P180")
+40 ['claim:table1-s90'] T1_OUT["S90"] = table1("S90")
+43 ['claim:table1-s52'] T1_OUT["S52"] = table1("S52")
+[... 7 more lines not kept]
+```
 
-Tests the findings of [Martinez-Conde et al. (2019)](https://doi.org/10.1371/journal.pone.0210941)
-on [CRCNS pvc-12](https://doi.org/10.6080/K05D8Q1T), which holds, per V1 neuron and condition, the
-spike rate map made by the authors and the stimulus image, for the Square and Edge, Star and Corners
-stimuli. The files hold 53 neurons; 60 recordings carry the authors' aligned maps and are analysed
-(22 Square and Edge, 12 Star, 26 Corners).
+**Agent calls Bash**
 
+```bash
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+# s4
+rep(16,"""Variants: the centred placement and the stored
+`BaseActivity`.""","""Variants: squares inside the corners for both
+stimuli, centred on them for both, the stored `BaseActivity`, and the adopted placement on the same
+files as the stored `BaseActivity` (to separate the placement from the smaller sample).""")
+rep(17,"""data = per.copy()
+data.loc[data.folder == "Corners", "base_centred"] = data.loc[data.folder == "Corners", "base_main"]
+for label, col in [("main placement", "base_main"), ("variant, centred squares (Corners as main)", "base_centred"),
+                   ("variant, stored BaseActivity", "base_stored")]:
+    tests, desc = baseline_tests(col, data)""","""data = per.copy()
+data["base_main_on_stored_files"] = data.base_main.where(data.base_stored.notna())
+for label, col in [("adopted placement (Square and Edge centred, Star inside)", "base_main"),
+                   ("variant, squares inside the corners for both", "base_inside"),
+                   ("variant, squares centred on the corners for both", "base_centred"),
+                   ("variant, stored BaseActivity", "base_stored"),
+                   ("variant, adopted placement on the files with a stored BaseActivity", "base_main_on_stored_files")]:
+    tests, desc = baseline_tests(col, data)""")
+# fig4b
+rep(22,"""Variants: the unsmoothed map, the centred baseline squares, the stored `BaseActivity`.""","""Variants: the unsmoothed map, baseline squares inside the corners for both stimuli, centred on them for
+both, the stored `BaseActivity`.""")
+rep(23,"""    per.loc[per.folder == f, f"diffc_{fold}"] = per[f"midpoint_{fold}"] - (per.base_centred if f != "Corners" else per.base_main)
+""","""    per.loc[per.folder == f, f"diffi_{fold}"] = per[f"midpoint_{fold}"] - per.base_inside
+    per.loc[per.folder == f, f"diffc_{fold}"] = per[f"midpoint_{fold}"] - per.base_centred
+""")
+rep(23,"""for label, prefix in [("main (smoothed map, baseline inside corners)", "diff"), ("variant, unsmoothed map", "diffraw"),
+                      ("variant, centred baseline squares", "diffc"), ("variant, stored BaseActivity (subset)", "diffs")]:""","""for label, prefix in [("main (smoothed map, adopted baseline placement)", "diff"), ("variant, unsmoothed map", "diffraw"),
+                      ("variant, squares inside the corners for both", "diffi"), ("variant, squares centred on the corners for both", "diffc"),
+                      ("variant, stored BaseActivity (subset)", "diffs")]:""")
+# pairwise: add variants
+rep(26,"""for fam in ["bh_six", "bh_three"]:""","""for label, prefix in [("variant, squares inside the corners for both", "diffi"), ("variant, squares centred for both", "diffc"),
+                      ("variant, stored BaseActivity (subset)", "diffs")]:
+    vv = {fold: per.loc[per.folder == f, f"{prefix}_{fold}"].dropna().values for fold, f in FOLDS4}
+    pv = [stats.ranksums(vv[a], vv[b]).pvalue for a, b in pairs]
+    q6 = dict(zip(pairs, multipletests(pv, method="fdr_bh")[1]))
+    print(label, ": named pairs, BH over six:", {f"{a}>{b}": round(q6[(a, b)], 4) for a, b in named},
+          "; mean differences:", {f"{a}>{b}": round(vv[a].mean() - vv[b].mean(), 2) for a, b in named})
+for fam in ["bh_six", "bh_three"]:""")
+# table1
+s=src(32)
+s=s.replace("""def block_arrays(fold, f):
+    d = per[per.folder == f]
+    B = np.stack(d[f"blocks_{fold}"].values) - d.base_main.values[:, None, None]   # neurons x halves x 10
+    return B, d[f"diff_{fold}"].values
+
+def table1(fold):
+    f, exp, tol = T1[fold]
+    B, mid = block_arrays(fold, f)""","""def block_arrays(fold, f, base="base_main"):
+    d = per[per.folder == f].dropna(subset=[base])
+    B = np.stack(d[f"blocks_{fold}"].values) - d[base].values[:, None, None]   # neurons x halves x 10
+    return B, d[f"midpoint_{fold}"].values - d[base].values
+
+def table1(fold, base="base_main", show=True):
+    f, exp, tol = T1[fold]
+    B, mid = block_arrays(fold, f, base)""")
+s=s.replace("""            sa = [np.mean([s.mean() for s in summ(B[:, h])], axis=0) for h in range(2)]
+""","")
+s=s.replace("""    rows = []
+    for k, (vv, within) in out.items():""","""    if not show:
+        return out
+    rows = []
+    for k, (vv, within) in out.items():""")
+s+="""
+def table1_variants(fold):
+    # The same readings with the other baseline placements and with the stored BaseActivity
+    rows = []
+    for label, base in [("inside corners, both", "base_inside"), ("centred, both", "base_centred"), ("stored BaseActivity", "base_stored")]:
+        n = int(per.loc[per.folder == T1[fold][0], base].notna().sum())
+        for k, (vv, within) in table1(fold, base, show=False).items():
+            rows.append(dict(baseline=label, n=n, reading=k, **{s: round(x, 2) for s, x in zip(STATS, vv)}, n_within=int(sum(within))))
+    print("variants:"); print(pd.DataFrame(rows).to_string(index=False))
+"""
+setsrc(32,s)
+s=src(31)
+setsrc(31, s.rstrip("\n")+"\nThe baseline is the adopted placement; each claim also prints the readings with the other placements\nand with the stored `BaseActivity` (on its subset).\n")
+for i,fold in [(34,"Edge"),(37,"P180"),(40,"S90"),(43,"S52"),(46,"S40")]:
+    rep(i,f'T1_OUT["{fold}"] = table1("{fold}")\n',f'T1_OUT["{fold}"] = table1("{fold}")\ntable1_variants("{fold}")\n')
+# fig6 variants
+rep(49,"""print("rank sum tests with p < 0.05:", int((f6.p_rank_sum < 0.05).sum()), "of", len(f6),
+      "| signed rank tests with p < 0.05:", int((f6.p_signed_rank < 0.05).sum()))""","""print("rank sum tests with p < 0.05:", int((f6.p_rank_sum < 0.05).sum()), "of", len(f6),
+      "| signed rank tests with p < 0.05:", int((f6.p_signed_rank < 0.05).sum()))
+for label, base in [("inside corners, both", "base_inside"), ("centred, both", "base_centred"), ("stored BaseActivity", "base_stored")]:
+    ps = []
+    for fold in ["Edge", "P180", "S90", "S52", "S40"]:
+        B, mid = block_arrays(fold, T1[fold][0], base)
+        X = B.mean(1)
+        ps += [stats.ranksums(mid, X.mean(1)).pvalue, stats.ranksums(mid, np.median(X, 1)).pvalue]
+    print(f"variant, baseline {label}: rank sum tests with p < 0.05: {int(np.sum(np.array(ps) < 0.05))} of 10, smallest p %.3f" % min(ps))""")
+nb["cells"]=C
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
+EOF
+echo ok
+```
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 83, in <module>
+  File "<stdin>", line 7, in rep
+AssertionError: (37, 'T1_OUT["P180"] = table1("P180")\n')
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; git -C ../.. status --short . 2>/dev/null | head; python3 -c "
+import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'));print(''.join(nb['cells'][17]['source'])[-300:])"
+```
+
+```
+Corners as main)", "base_centred"),
+                   ("variant, stored BaseActivity", "base_stored")]:
+    tests, desc = baseline_tests(col, data)
+    print(label)
+    for k, val in desc.items():
+        print("   ", k, val, "spikes/s")
+    for k, val in tests.items():
+        print("   ", k, val)
+```
+
+**Agent**
+
+I'll rerun the same edit with the trailing-newline case handled.
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; fc-cache >/dev/null 2>&1; history 2>/dev/null | tail -1 >/dev/null; echo
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/e3.py <<'PYEOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+rep(16,"""Variants: the centred placement and the stored
+`BaseActivity`.""","""Variants: squares inside the corners for both
+stimuli, centred on them for both, the stored `BaseActivity`, and the adopted placement on the same
+files as the stored `BaseActivity` (to separate the placement from the smaller sample).""")
+rep(17,"""data = per.copy()
+data.loc[data.folder == "Corners", "base_centred"] = data.loc[data.folder == "Corners", "base_main"]
+for label, col in [("main placement", "base_main"), ("variant, centred squares (Corners as main)", "base_centred"),
+                   ("variant, stored BaseActivity", "base_stored")]:
+    tests, desc = baseline_tests(col, data)""","""data = per.copy()
+data["base_main_on_stored_files"] = data.base_main.where(data.base_stored.notna())
+for label, col in [("adopted placement (Square and Edge centred, Star inside)", "base_main"),
+                   ("variant, squares inside the corners for both", "base_inside"),
+                   ("variant, squares centred on the corners for both", "base_centred"),
+                   ("variant, stored BaseActivity", "base_stored"),
+                   ("variant, adopted placement on the files with a stored BaseActivity", "base_main_on_stored_files")]:
+    tests, desc = baseline_tests(col, data)""")
+rep(22,"""Variants: the unsmoothed map, the centred baseline squares, the stored `BaseActivity`.""","""Variants: the unsmoothed map, baseline squares inside the corners for both stimuli, centred on them for
+both, the stored `BaseActivity`.""")
+rep(23,"""    per.loc[per.folder == f, f"diffc_{fold}"] = per[f"midpoint_{fold}"] - (per.base_centred if f != "Corners" else per.base_main)
+""","""    per.loc[per.folder == f, f"diffi_{fold}"] = per[f"midpoint_{fold}"] - per.base_inside
+    per.loc[per.folder == f, f"diffc_{fold}"] = per[f"midpoint_{fold}"] - per.base_centred
+""")
+rep(23,"""for label, prefix in [("main (smoothed map, baseline inside corners)", "diff"), ("variant, unsmoothed map", "diffraw"),
+                      ("variant, centred baseline squares", "diffc"), ("variant, stored BaseActivity (subset)", "diffs")]:""","""for label, prefix in [("main (smoothed map, adopted baseline placement)", "diff"), ("variant, unsmoothed map", "diffraw"),
+                      ("variant, squares inside the corners for both", "diffi"), ("variant, squares centred on the corners for both", "diffc"),
+                      ("variant, stored BaseActivity (subset)", "diffs")]:""")
+rep(26,"""for fam in ["bh_six", "bh_three"]:""","""for label, prefix in [("variant, squares inside the corners for both", "diffi"), ("variant, squares centred for both", "diffc"),
+                      ("variant, stored BaseActivity (subset)", "diffs")]:
+    vv = {fold: per.loc[per.folder == f, f"{prefix}_{fold}"].dropna().values for fold, f in FOLDS4}
+    pv = [stats.ranksums(vv[a], vv[b]).pvalue for a, b in pairs]
+    q6 = dict(zip(pairs, multipletests(pv, method="fdr_bh")[1]))
+    print(label, ": named pairs, BH over six:", {f"{a}>{b}": round(q6[(a, b)], 4) for a, b in named},
+          "; mean differences:", {f"{a}>{b}": round(vv[a].mean() - vv[b].mean(), 2) for a, b in named})
+for fam in ["bh_six", "bh_three"]:""")
+s=src(32)
+a1="""def block_arrays(fold, f):
+    d = per[per.folder == f]
+    B = np.stack(d[f"blocks_{fold}"].values) - d.base_main.values[:, None, None]   # neurons x halves x 10
+    return B, d[f"diff_{fold}"].values
+
+def table1(fold):
+    f, exp, tol = T1[fold]
+    B, mid = block_arrays(fold, f)"""
+assert a1 in s
+s=s.replace(a1,"""def block_arrays(fold, f, base="base_main"):
+    d = per[per.folder == f].dropna(subset=[base])
+    B = np.stack(d[f"blocks_{fold}"].values) - d[base].values[:, None, None]   # neurons x halves x 10
+    return B, d[f"midpoint_{fold}"].values - d[base].values
+
+def table1(fold, base="base_main", show=True):
+    f, exp, tol = T1[fold]
+    B, mid = block_arrays(fold, f, base)""")
+a2="""            sa = [np.mean([s.mean() for s in summ(B[:, h])], axis=0) for h in range(2)]
+"""
+assert a2 in s; s=s.replace(a2,"")
+a3="""    rows = []
+    for k, (vv, within) in out.items():"""
+assert a3 in s
+s=s.replace(a3,"""    if not show:
+        return out
+    rows = []
+    for k, (vv, within) in out.items():""")
+s=s.rstrip("\n")+"""
+
+def table1_variants(fold):
+    # The same readings with the other baseline placements and with the stored BaseActivity
+    rows = []
+    for label, base in [("inside corners, both", "base_inside"), ("centred, both", "base_centred"), ("stored BaseActivity", "base_stored")]:
+        n = int(per.loc[per.folder == T1[fold][0], base].notna().sum())
+        for k, (vv, within) in table1(fold, base, show=False).items():
+            rows.append(dict(baseline=label, n=n, reading=k, **{s: round(x, 2) for s, x in zip(STATS, vv)}, n_within=int(sum(within))))
+    print("variants:"); print(pd.DataFrame(rows).to_string(index=False))
+"""
+setsrc(32,s)
+setsrc(31, src(31).rstrip("\n")+"\nThe baseline is the adopted placement; each claim also prints the readings with the other placements\nand with the stored `BaseActivity` (on its subset).\n")
+for i,fold in [(34,"Edge"),(37,"P180"),(40,"S90"),(43,"S52"),(46,"S40")]:
+    s=src(i); a=f'T1_OUT["{fold}"] = table1("{fold}")'
+    assert a in s; setsrc(i, s.replace(a, a+f'\ntable1_variants("{fold}")',1))
+rep(49,"""print("rank sum tests with p < 0.05:", int((f6.p_rank_sum < 0.05).sum()), "of", len(f6),
+      "| signed rank tests with p < 0.05:", int((f6.p_signed_rank < 0.05).sum()))""","""print("rank sum tests with p < 0.05:", int((f6.p_rank_sum < 0.05).sum()), "of", len(f6),
+      "| signed rank tests with p < 0.05:", int((f6.p_signed_rank < 0.05).sum()))
+for label, base in [("inside corners, both", "base_inside"), ("centred, both", "base_centred"), ("stored BaseActivity", "base_stored")]:
+    ps = []
+    for fold in ["Edge", "P180", "S90", "S52", "S40"]:
+        B, mid = block_arrays(fold, T1[fold][0], base)
+        X = B.mean(1)
+        ps += [stats.ranksums(mid, X.mean(1)).pvalue, stats.ranksums(mid, np.median(X, 1)).pvalue]
+    print(f"variant, baseline {label}: rank sum tests with p < 0.05: {int(np.sum(np.array(ps) < 0.05))} of 10, smallest p %.3f" % min(ps))""")
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
+print("saved")
+PYEOF
+$TMPDIR/venv/bin/python $TMPDIR/e3.py
+```
+
+```
+saved
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/e4.py <<'PYEOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+setsrc(51,"""## fig7a-rms-contrast-fit
+
+> Local RMS contrast along the Edge rises from 0.61 to 0.943 with luminance and is fit by an
+> exponential model, f(l) = -0.34 exp(-0.05 l) + 0.95, with R2 = 0.9983.
+
+Luminance is the gray level of the stimulus image (0 to 100), in the aligned frame. The data check
+shows that the rasterised polygons reproduce the images (Square and Edge: at least 94% of pixels
+exactly, 99% within one level) and that the background has the gray level of the 0% polygon. The
+Edge geometry is the same in all 22 files. RMS contrast in a 16 x 16 DU square centred on the Edge
+from 0% to 100% in 1.5% steps; readings (a) SD over mean, (b) SD of luminance scaled to 0-1. Fit
+f(l) = a exp(-b l) + c by Levenberg-Marquardt, then least absolute residuals from that start.
+
+The files hold no display calibration (the paper gives only 14.07 cd/m2 at 50% luminance, Methods,
+Square and edge). A variant adds a uniform black level to every gray level, which is what any display
+does when the background and the 0% polygon share a gray level, and repeats reading (a).
+""")
+rep(52,"""print(prof.iloc[::6].round(3).to_string(index=False))""","""print(prof.iloc[::6].round(3).to_string(index=False))
+# Variant: a uniform black level added to the gray levels (same units, 0-100 scale), reading (a)
+rows = []
+for off in [0, 0.5, 1, 2, 3, 5, 10, 20, 50]:
+    y = v.rms_profile(edge_rec, levels, offset=off).rms_a.values
+    try:
+        q0, _ = curve_fit(expo, levels, y, p0=[-0.34, 0.05, 0.95], method="lm", maxfev=20000)
+        q = minimize(lambda q: np.abs(expo(levels, *q) - y).sum(), q0, method="Nelder-Mead",
+                     options=dict(maxiter=20000, xatol=1e-8, fatol=1e-10)).x
+        r2 = 1 - np.sum((y - expo(levels, *q)) ** 2) / np.sum((y - y.mean()) ** 2)
+    except RuntimeError:
+        q, r2 = [np.nan] * 3, np.nan
+    vals = dict(lowest=y.min(), highest=y.max(), a=q[0], b=q[1], c=q[2], R2=r2)
+    rows.append(dict(black_level=off, at_0pct=y[0], at_100pct=y[-1], **vals,
+                     n_within=int(sum(abs(vals[k] - e) <= tol for k, (e, tol) in exp7a.items()))))
+print("variant, black level added (reading a):")
+print(pd.DataFrame(rows).round(4).to_string(index=False))""")
+# fig7c
+s=src(55)
+s=s.replace("""de = per[per.folder == "Edge-compare"]
+edge_rms = np.array([[v.edge_window(recs[("Edge-compare", c)], l) for l in lum_for_rms] for c in de.code]) - de.base_main.values[:, None]
+edge_sq = np.array([[v.edge_window(recs[("Edge-compare", c)], l) for l in np.arange(0, 101, 10)] for c in de.code]) - de.base_main.values[:, None]
+edge_blk = np.stack(de.blocks_Edge.values)[:, 0, :] - de.base_main.values[:, None]
+fold_mean = {fold: per.loc[per.folder == f, f"diff_{fold}"].mean() for fold, f in FOLDS4}
+print("fold means:", {k: round(x, 2) for k, x in fold_mean.items()})
+def nearest(levels, resp, target):
+    return levels[int(np.argmin(np.abs(resp - target)))]
+rows = []
+for name, lev, resp, step, t50, t90 in [
+        ("(a1) blocks, luminance %", np.arange(5, 100, 10.0), edge_blk.mean(0), 10, 50, 90),
+        ("(a2) 16x16 squares, luminance %", np.arange(0, 101, 10.0), edge_sq.mean(0), 10, 50, 90),
+        ("(b) RMS x 100", rms_levels * 100, edge_rms.mean(0), 3.7, None, 90)]:
+    n180, n40 = nearest(lev, resp, fold_mean["P180"]), nearest(lev, resp, fold_mean["S40"])
+    ok180 = (abs(n180 - 50) <= step + 1e-9) if t50 else bool(np.isclose(n180, lev.min()))
+    ok40 = abs(n40 - 90) <= step + 1e-9
+    rows.append(dict(reading=name, edge_responses=np.round(resp, 1).tolist(), P180_nearest=round(n180, 1),
+                     P180_ok=ok180, S40_nearest=round(n40, 1), S40_ok=ok40))
+    for fold in ["S90", "S52"]:
+        rows[-1][f"{fold}_nearest"] = round(nearest(lev, resp, fold_mean[fold]), 1)
+f7c = pd.DataFrame(rows)
+print(f7c.to_string(index=False))""","""de = per[per.folder == "Edge-compare"]
+edge_rms_raw = np.array([[v.edge_window(recs[("Edge-compare", c)], l) for l in lum_for_rms] for c in de.code])
+edge_sq_raw = np.array([[v.edge_window(recs[("Edge-compare", c)], l) for l in np.arange(0, 101, 10)] for c in de.code])
+edge_blk_raw = np.stack(de.blocks_Edge.values)[:, 0, :]
+def nearest(levels, resp, target):
+    return levels[int(np.argmin(np.abs(resp - target)))]
+
+def fig7c(base):
+    b = de[base].values[:, None]
+    fold_mean = {fold: (per.loc[per.folder == f, f"midpoint_{fold}"] - per.loc[per.folder == f, base]).mean() for fold, f in FOLDS4}
+    rows = []
+    for name, lev, resp, step, t50 in [
+            ("(a1) blocks, luminance %", np.arange(5, 100, 10.0), (edge_blk_raw - b).mean(0), 10, 50),
+            ("(a2) 16x16 squares, luminance %", np.arange(0, 101, 10.0), (edge_sq_raw - b).mean(0), 10, 50),
+            ("(b) RMS x 100", rms_levels * 100, (edge_rms_raw - b).mean(0), 3.7, None)]:
+        n180, n40 = nearest(lev, resp, fold_mean["P180"]), nearest(lev, resp, fold_mean["S40"])
+        ok180 = (abs(n180 - 50) <= step + 1e-9) if t50 else bool(np.isclose(n180, lev.min()))
+        ok40 = abs(n40 - 90) <= step + 1e-9
+        rows.append(dict(reading=name, edge_responses=np.round(resp, 1).tolist(), P180_nearest=round(n180, 1),
+                         P180_ok=ok180, S40_nearest=round(n40, 1), S40_ok=ok40))
+        for fold in ["S90", "S52"]:
+            rows[-1][f"{fold}_nearest"] = round(nearest(lev, resp, fold_mean[fold]), 1)
+    return pd.DataFrame(rows), fold_mean
+
+f7c, fold_mean = fig7c("base_main")
+edge_rms = edge_rms_raw - de.base_main.values[:, None]
+print("fold means:", {k: round(x, 2) for k, x in fold_mean.items()})
+print(f7c.to_string(index=False))
+for label, base in [("inside corners, both", "base_inside"), ("centred, both", "base_centred")]:
+    t, fm = fig7c(base)
+    print(f"variant, baseline {label}: fold means", {k: round(x, 2) for k, x in fm.items()})
+    print(t[["reading", "P180_nearest", "P180_ok", "S40_nearest", "S40_ok"]].to_string(index=False))""")
+setsrc(55,s)
+# fig7c-sig variant
+rep(58,"""for corr in ["p", "bh40", "bh10", "bonf40", "bonf10"]:""","""for label, base in [("inside corners, both", "base_inside"), ("centred, both", "base_centred")]:
+    e = edge_rms_raw - de[base].values[:, None]
+    x180 = (per.loc[per.folder == "Edge-compare", "midpoint_P180"] - per.loc[per.folder == "Edge-compare", base]).values
+    x40 = (per.loc[per.folder == "Corners", "midpoint_S40"] - per.loc[per.folder == "Corners", base]).values
+    print(f"variant, baseline {label}: P180 vs Edge at 0.943 p = %.4f (difference %.2f); S40 vs Edge at 0.610 p = %.4f, at 0.647 p = %.4f"
+          % (stats.ttest_ind(x180, e[:, 9]).pvalue, x180.mean() - e[:, 9].mean(),
+             stats.ttest_ind(x40, e[:, 0]).pvalue, stats.ttest_ind(x40, e[:, 1]).pvalue))
+for corr in ["p", "bh40", "bh10", "bonf40", "bonf10"]:""")
+# fig7d variant
+rep(61,"""order = np.argsort(ang)""","""for label, prefix in [("inside corners, both", "diffi"), ("centred, both", "diffc")]:
+    mv = np.array([per.loc[per.folder == f, f"{prefix}_{fold}"].mean() for fold, f in FOLDS4])
+    sv = np.array([per.loc[per.folder == f, f"{prefix}_{fold}"].sem() for fold, f in FOLDS4])
+    rv = mv - np.polyval(np.polyfit(ang, mv, 1), ang)
+    print(f"variant, baseline {label}: means", np.round(mv, 2), "; off the line by more than the SEM:", int(np.sum(np.abs(rv) > sv)), "of 4")
+order = np.argsort(ang)""")
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
+print("saved")
+PYEOF
+$TMPDIR/venv/bin/python $TMPDIR/e4.py
+```
+
+```
+saved
+```
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; time python tools/entry.py all entries/martinez-conde-2019 2>&1 | tail -30
+```
+
+```
+Sun Nov 15 05:26:14 UTC 2026
+/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  _validate(nbdict, ref, version, version_minor, relax_add_props)
+Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
+0 error(s)
+pass  reproduce_martinez_conde_2019.ipynb  (161 s)
+
+real	2m51.702s
+user	2m9.874s
+sys	0m4.664s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF' > $TMPDIR/out.txt
+import json
+nb=json.load(open('executed/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print('=====',i,c['metadata'].get('tags'))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
+        elif o.get('output_type')=='error': print('ERROR', o['ename'], o['evalue'])
+EOF
+wc -l $TMPDIR/out.txt
+```
+
+```
+482 /tmp/claude-1001/out.txt
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/out.txt"
+}
+```
+
+```
+1	===== 1 None
+2	dataset crcns:pvc-12 unversioned doi 10.6080/K05D8Q1T
+3	
+4	9ca5ae49dfc19e516b09c99e62eefc23  docs/crcns_pvc-12_data_description.docx
+5	e67a2f96c6651ba3c9ac3a28297a00f4  docs/crcns_pvc-12_data_description.pdf
+6	06c85736f287b47c60ab2da8539ff226  filelist.txt
+7	e1301fe463e72332e2303b2053ee0559  V1_Vasarely_data.zip
+8	
+9	
+10	===== 3 ['sanity']
+11	map files by folder: {'Corners': 26, 'Edge-compare': 22, 'Star': 29}
+12	unique neurons with any file: 53 by monkey: {'J': 49, 'A': 4}
+13	
+14	stimulus type by folder and prefix:
+15	folder        prefix  stimulus         
+16	Corners       ABC     CornersImage         26
+17	Edge-compare  AEC     EdgecompImage        22
+18	Star          ABD     DiagImage            27
+19	              ABS     v7.3 type CORNERS     2
+20	
+[... 463 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/s8.py <<'EOF'
+import vasarely as v, numpy as np
+z=v.open_zip(); f=v.file_table(z)
+for r in f[f.folder=="Corners"].itertuples():
+    rec=v.load_map(z,"Corners",r.code)
+    if "smoothed" not in rec: continue
+    lum=v.stimulus_luminance(rec)
+    vals=[v.box_values(lum,x,y,16,16) for x,y in v.corners_baseline_squares(rec)]
+    h,w=lum.shape
+    print(r.code, lum.shape, [ (round(a.min(),1), round(a.max(),1), round(np.mean(a==0),2)) for a in vals], "corner px gray TL TR BL BR", lum[0,0],lum[0,-1],lum[-1,0],lum[-1,-1], "n polys", len(rec["polys"]))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s8.py
+```
+
+```
+ABC041900J2 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC042000J1 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC042400J2 (273, 209) [(np.float64(29.0), np.float64(44.0), np.float64(0.0)), (np.float64(29.0), np.float64(44.0), np.float64(0.0))] corner px gray TL TR BL BR 100.0 100.0 44.0 44.0 n polys 100
+ABC042600J2 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC042700J2 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC042800J2 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC050900J1A (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC051000J3 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC051500J1 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC051600J1 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(0.0), np.float64(1.0))] corner px gray TL TR BL BR 100.0 100.0 0.0 0.0 n polys 100
+ABC051800J1 (273, 209) [(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float
+[... 15 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/s9.py <<'EOF'
+import vasarely as v, numpy as np
+z=v.open_zip()
+for code in ["ABC042400J2","ABC041900J2"]:
+    rec=v.load_map(z,"Corners",code)
+    lum=v.stimulus_luminance(rec)
+    print(code, "base_stored", rec.get("base_stored"))
+    print(np.round(lum[::16, ::16]).astype(int))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s9.py
+```
+
+```
+ABC042400J2 base_stored 0.35222127524065233
+[[100 100 100 100 100 100 100 100 100 100 100 100 100 100]
+ [100 100 100 100 100 100 100 100 100 100 100 100 100 100]
+ [100 100 100 100 100 100 100 100 100 100 100 100 100 100]
+ [100 100 100 100 100 100 100 100  84 100 100 100 100 100]
+ [100 100 100 100 100 100 100  97  68 100 100 100 100 100]
+ [100 100 100 100 100 100 100  81  52  94 100 100 100 100]
+ [ 89  89  89  89 100 100 100  65  36  79  89  89  89  89]
+ [ 73  73  73  73  89 100  92  50  20  63  73  73  73  73]
+ [ 57  57  57  57  73 100  76  34   5  47  57  57  57  57]
+ [ 42  42  42  42  57 100  60  18   0  31  42  42  42  42]
+ [ 26  26  26  26  42  84  44   2   0  15  26  26  26  26]
+ [ 10  10  10  10  26  68  28   0   0   0  10  10  10  10]
+ [  0   0   0   0  10  52  13   0   0   0   0   0   0   0]
+ [  0   0   0   0   0  36   0   0   0   0   0   0   0   0]
+ [  0   0   0   0   0  20   0   0   0   0   0   0   0   0]
+ [ 12  12  12  12  12  17  12  12  12  12  12  12  12  12]
+ [ 28  28  28  28  28  28  28  28  28  28  28  28  28  28]
+ [ 44  44  44  44  44  44  44  44  44  44  44  44  44  44]]
+ABC041900J2 base_stored None
+[... 18 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+s=open("vasarely.py").read()
+a=s[s.index("def corners_baseline_squares"):s.index("FOLDS = {")]
+b='''def corners_baseline_squares(rec: dict) -> list[tuple[float, float]]:
+    """Centres of the two Corners baseline squares, at the left and right edges of the Standard frame.
+
+    The paper only draws them (Fig 2C, "two 1 x 1 DVA (16 x 16 DU) square regions in 0%
+    luminance areas within the ROI"). They are taken at the two bottom corners of the frame, or,
+    where a square there is not wholly at 0% luminance (2 files, where the next zigzag of the
+    pattern enters the bottom of the frame), at the lowest height where both squares are; this
+    placement is an assumption.
+    """
+    h, w = rec["smoothed"].shape
+    half = BASE_BOX / 2
+    lum = stimulus_luminance(rec)
+    for yc in np.arange(h - half + 0.5, half, -1.0):
+        centres = [(half + 0.5, yc), (w - half + 0.5, yc)]
+        if all(box_values(lum, x, y, BASE_BOX, BASE_BOX).max() == 0 for x, y in centres):
+            return centres
+    raise ValueError(f"no 0% luminance squares at the frame edges in {rec['code']}")
+
+
+'''
+s=s.replace(a,b)
+s=s.replace("""  assumption)."""+"\n","""  assumption; moved up where the bottom corners are not at 0% luminance)."""+"\n",1) if False else s
+open("vasarely.py","w").write(s)
+EOF
+grep -n "bottom corners" vasarely.py
+```
+
+```
+58:  taken at the two bottom corners of the aligned frame (`corners_baseline_squares`, an
+368:    luminance areas within the ROI"). They are taken at the two bottom corners of the frame, or,
+391:    base_main (the adopted placement, `BASE_PLACEMENT`; bottom corners for Corners),
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; sed -n 50,62p vasarely.py
+```
+
+```
+- Absolute baseline: four (Square and Edge, Star) or two (Corners) 16 x 16 DU squares in 0%
+  luminance (Methods, Visual stimuli). The squares of Square and Edge and of Star are at the
+  corners of the circumscribing square (138 DU for the Square, the 300 DU square around the
+  Star's circumscribed circle). Whether they sit inside the corners or are centred on them is not
+  stated; `baseline_squares` gives both. The adopted placement (`BASE_PLACEMENT`, an assumption)
+  is the one whose values are closer to the stored `BaseActivity`, the authors' own baseline in
+  the files that hold it: centred on the corners for Square and Edge, inside them for Star
+  (comparison printed in the notebook). The Corners squares are only drawn in Fig 2C; they are
+  taken at the two bottom corners of the aligned frame (`corners_baseline_squares`, an
+  assumption).
+- Pixel selection in a box: pixels whose coordinates lie in [c - w/2, c + w/2) on each axis. This
+  is a standard choice; a half-pixel shift cannot change a result.
+"""
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/martinez-conde-2019/vasarely.py",
+ "old_string": "  taken at the two bottom corners of the aligned frame (`corners_baseline_squares`, an\n  assumption).",
+ "new_string": "  taken at the two bottom corners of the aligned frame, moved up in the 2 files where those are\n  not at 0% luminance (`corners_baseline_squares`, an assumption)."
+}
+```
+
+```
+The file entries/martinez-conde-2019/vasarely.py has been updated successfully. (note: the file had been modified on disk since you last read it — the edit applied cleanly, but the file contains other changes not in your context. Read it before edits that depend on surrounding content.)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/s10.py <<'EOF'
+import vasarely as v, numpy as np
+z=v.open_zip()
+for code in ["ABC042400J2","ABC062100J1","ABC041900J2"]:
+    rec=v.load_map(z,"Corners",code)
+    c=v.corners_baseline_squares(rec); m=v.measures(rec)
+    print(code, c, "base_main %.2f stored %s midpoint %.2f"%(m["base_main"], m["base_stored"], m["midpoint_S40"]))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/s10.py; date -u
+```
+
+```
+ABC042400J2 [(8.5, np.float64(221.5)), (201.5, np.float64(221.5))] base_main 1.37 stored 0.35222127524065233 midpoint 8.53
+ABC062100J1 [(8.5, np.float64(201.5)), (185.5, np.float64(201.5))] base_main 6.49 stored nan midpoint 6.02
+ABC041900J2 [(8.5, np.float64(265.5)), (201.5, np.float64(265.5))] base_main 4.31 stored nan midpoint 22.33
+Sun Nov 15 05:30:21 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+print(nb.get("nbformat"), nb.get("nbformat_minor"), [c.get("id") for c in C[:3]])
+if "id" in C[0] and "id" not in C[8]: C[8]["id"]="stimulus-images"
+rep(10,"""they are taken at the two bottom corners of the aligned frame, an assumption.""","""they are taken at the two bottom corners of the aligned frame, an assumption, moved up to the lowest
+height where both are at 0% luminance in the 2 files where the next zigzag of the pattern enters the
+bottom of the frame.""")
+rep(11,'''print("adopted placement:", v.BASE_PLACEMENT, "; Corners: bottom corners of the aligned frame")''','''print("adopted placement:", v.BASE_PLACEMENT, "; Corners: frame edges, bottom corners unless not at 0% luminance")''')
+rep(11,'''    sets = ({"bottom corners": v.corners_baseline_squares(rec)}''','''    sets = ({"frame edges": v.corners_baseline_squares(rec)}''')
+rep(11,'''        rows.append(dict(folder=COND[r.folder], placement=name, max_gray=max(w.max() for w in vals),''','''        rows.append(dict(folder=COND[r.folder], placement=name, max_gray=max(w.max() for w in vals),
+                         moved_up=r.folder == "Corners" and centres[0][1] < rec["smoothed"].shape[0] - v.BASE_BOX / 2,''')
+rep(11,'''print(pd.DataFrame(rows).groupby(["folder", "placement"]).agg(files=("max_gray", "size"), max_gray=("max_gray", "max"),''','''print(pd.DataFrame(rows).groupby(["folder", "placement"]).agg(files=("max_gray", "size"), moved_up=("moved_up", "sum"), max_gray=("max_gray", "max"),''')
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
+EOF
+```
+
+```
+Exit code 1
+4 5 ['32d7a7cb', '0b4684c2', '14876b0c']
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+  File "<stdin>", line 7, in rep
+AssertionError: (10, 'they are taken at the two bottom corners of the aligned frame, an assumption.')
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+if "id" not in C[8]: C[8]["id"]="stimulus-images"
+rep(10,"""they are taken at the two bottom
+corners of the aligned frame, an assumption.""","""they are taken at the two bottom
+corners of the aligned frame, an assumption, moved up to the lowest height where both are at 0%
+luminance in the 2 files where the next zigzag of the pattern enters the bottom of the frame.""")
+rep(11,'''print("adopted placement:", v.BASE_PLACEMENT, "; Corners: bottom corners of the aligned frame")''','''print("adopted placement:", v.BASE_PLACEMENT, "; Corners: frame edges, bottom corners unless not at 0% luminance")''')
+rep(11,'''    sets = ({"bottom corners": v.corners_baseline_squares(rec)}''','''    sets = ({"frame edges": v.corners_baseline_squares(rec)}''')
+rep(11,'''        rows.append(dict(folder=COND[r.folder], placement=name, max_gray=max(w.max() for w in vals),''','''        rows.append(dict(folder=COND[r.folder], placement=name, max_gray=max(w.max() for w in vals),
+                         moved_up=r.folder == "Corners" and centres[0][1] < rec["smoothed"].shape[0] - v.BASE_BOX / 2,''')
+rep(11,'''print(pd.DataFrame(rows).groupby(["folder", "placement"]).agg(files=("max_gray", "size"), max_gray=("max_gray", "max"),''','''print(pd.DataFrame(rows).groupby(["folder", "placement"]).agg(files=("max_gray", "size"), moved_up=("moved_up", "sum"), max_gray=("max_gray", "max"),''')
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
+print("ok")
+EOF
+cd  python tools/entry.py all entries/martinez-conde-2019 2>&1 | tail -4
+```
+
+```
+ok
+Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
+0 error(s)
+pass  reproduce_martinez_conde_2019.ipynb  (166 s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF' > $TMPDIR/out2.txt
+import json
+nb=json.load(open('executed/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print('=====',i,c['metadata'].get('tags'))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
+        elif o.get('output_type')=='error': print('ERROR', o['ename'], o['evalue'])
+EOF
+diff $TMPDIR/out.txt $TMPDIR/out2.txt
+```
+
+```
+33c33
+< peak memory so far, MB: 410.84375
+---
+> peak memory so far, MB: 409.109375
+101c101
+< load and measures, s: 142
+---
+> load and measures, s: 146
+108,109c108,109
+< Corners          base_main     n with stored = 19; median 2.04 vs stored 1.32 spikes/s; median |difference| 0.72; Pearson 0.868, Spearman 0.845
+< adopted placement: {'Edge-compare': 'centred', 'Star': 'inside'} ; Corners: bottom corners of the aligned frame
+---
+> Corners          base_main     n with stored = 19; median 2.04 vs stored 1.32 spikes/s; median |difference| 0.75; Pearson 0.866, Spearman 0.835
+> adopted placement: {'Edge-compare': 'centred', 'Star': 'inside'} ; Corners: frame edges, bottom corners unless not at 0% luminance
+112,118c112,118
+<                                 files  max_gray  min_share_at_0  min_pixels_in_frame
+< folder          placement                                                           
+< Corners         bottom corners     26      48.0             0.0                  256
+< Square and Edge centred            22       0.0             1.0                  208
+<                 inside             22       0.0             1.0                  256
+[... 234 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -A28 "id: fig7c-fold-edge-significance" claims/martinez-conde-2019.yaml | grep -n -A12 criterion; grep -n -A14 "id: fig7d-nonlinear" claims/martinez-conde-2019.yaml | grep -A8 criterion; grep -n -A20 "id: fig4a-above" claims/martinez-conde-2019.yaml | grep -A8 criterion
+```
+
+```
+12:462-  criterion: Two-sample t-tests of per-neuron fold midpoint spike rate differences against
+13-463-    per-neuron Edge responses at each of the ten RMS contrast levels (S2 Table legend), as the
+14-464-    paper writes it though P180 and Edge come from the same neurons. S2 Table is missing, so
+15-465-    the correction, its family and the alpha are open; readings (a) Benjamini and Hochberg, as
+16-466-    in Fig 4B, over all fold and contrast pairs (40 tests); (b) the same over the ten levels
+17-467-    per fold; (c) Bonferroni over each of these families; alpha 0.05 in all, the paper's
+18-468-    alpha elsewhere. Reproduced when, under one reading, P180 is significantly lower than the
+19-469-    Edge at 0.943 and S40 is significantly higher than the Edge at 0.610 and 0.647 (the levels
+20-470-    below 0.68). Which other levels are significant, including 0.684, is reported.
+21-471-- id: fig7d-nonlinear
+22-472-  statement: The relationship between corner angle and V1 spike rate difference is parametric
+23-473-    but apparently not linear; the paper says it cannot be certain of this, given the few angles
+24-474-    tested.
+480-  criterion: The paper reports no test, and itself says it cannot be certain of the
+481-    non-linearity (Discussion, paragraph 5), so the measure is open. Reading taken, a straight
+482-    line fitted by least squares to the four midpoint means against fold angle (40, 52, 90,
+483-    180 degrees), judged non-linear when at least one mean lies off the line by more than its
+484-    SEM (this rule is an assumption, not the paper's); variant, the slopes between successive angles (40 to 52, 52 to 90, 90 to 180) compared
+485-    with each other, judged non-linear when they differ by more than their propagated SEMs.
+126-  criterion: Per neuron and fold, midpoint fold response against absolute baseline (Methods;
+[... 8 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; python3 -c "
+import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
+for i,c in enumerate(nb['cells']):
+  s=''.join(c['source'])
+  if c['cell_type']=='markdown' and ('**Result' in s or s.startswith('## ')): print(i, s[:90].replace(chr(10),' | '))
+"
+```
+
+```
+2 ## Data check |  | Every file is listed, and every map file is read (only the aligned maps and
+12 ## neuron-counts |  | > Of 118 V1 neurons recorded from two monkeys (102 from monkey J, 16 fro
+14 **Result: not reproduced.** The files hold 53 neurons (49 from monkey J, 4 from A) where t
+15 ## spikes-per-condition |  | > Each experimental condition required at least 10,000 spikes, an
+16 ## s4-baseline-no-difference |  | > Absolute baseline activity did not differ significantly ac
+18 **Result: not reproduced (resting on the assumed baseline placement).** With the baseline 
+19 ## fig4a-above-baseline |  | > For every fold (P180, S90, S52, S40), most neurons' midpoint fo
+21 **Result: reproduced.** Most neurons lie above the unit line for every fold: 20 of 22 for 
+22 ## fig4b-spike-rate-difference |  | > The mean spike rate difference at the fold midpoint decr
+24 **Result: partially reproduced.** The means are ordered S40 > S52 > S90 > P180: 26.48 ± 4.
+25 ## fig4b-pairwise-significance |  | > The midpoint spike rate difference for S40 is significan
+27 **Result: reproduced.** S40 is larger than S90 (BH p = 0.0001 over six pairs) and than P18
+28 ## fig5-average-maps |  | > The population-average spike rate difference maps show neural acti
+30 **Result: reproduced (not an independent test).** At the midpoints the average maps give 2
+31 ## Table 1: blocks along the folds and the Edge |  | Ten blocks of 10% luminance, 8 DU wide, f
+35 **Result: not reproduced.** Under reading (a) the Edge blocks give minimum 5.51, maximum 2
+38 **Result: partially reproduced.** Under reading (a), P180 gives minimum -1.71, maximum 10.
+41 **Result: not reproduced.** Every S90 summary is below the paper's, and only the maximum i
+44 **Result: reproduced (on 12 of 30 Star neurons).** Under reading (a)(ii), each half of the
+47 **Result: reproduced.** Under reading (a), all five S40 values are within tolerance: minim
+[... 12 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; cat > $TMPDIR/e5.py <<'PYEOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+R={}
+R[18]="""**Result: reproduced (resting on the assumed baseline placement and on the criterion's rule for readings that disagree).** With the adopted placement (squares centred on the corners for Square and Edge, inside them for Star, at the frame edges for Corners) the readings disagree. Reading (a), pairwise rank sum tests with BH, finds no difference: Square and Edge (median 7.23 spikes/s, n = 22) against Star (1.89, n = 12) BH p = 0.071, against Corners (2.90, n = 26) BH p = 0.071, and Star against Corners BH p = 0.925. Kruskal-Wallis (p = 0.042) and ANOVA (p = 0.007) find one. The criterion adopts reading (a) when the readings disagree. The result is fragile. With the squares inside the corners for both stimuli all three readings find a difference (Kruskal-Wallis p = 0.007, smallest BH p = 0.016), and so they do with the squares centred for both (Kruskal-Wallis p = 0.009, smallest BH p = 0.036). With the stored `BaseActivity` (38 files) none does (Kruskal-Wallis p = 0.114, smallest BH p = 0.109), and the adopted placement on the same 38 files finds none either (Kruskal-Wallis p = 0.081, ANOVA p = 0.054, smallest BH p = 0.075), so the gap between the stored and the computed baselines comes mostly from the smaller sample.
+"""
+R[21]="""**Result: reproduced.** Most neurons lie above the unit line for every fold: 18 of 22 for P180 and for S90, 12 of 12 for S52 and 25 of 26 for S40. Every mass centre is above the line, and its distance from it increases as the angle decreases under both readings: raw means 4.26, 8.57, 19.01 and 26.22 spikes/s for P180, S90, S52 and S40, log10 means 0.24, 0.36, 0.91 and 0.97 (2 S40 neurons with a value of 0 are left out of the log reading). The raw distance is the mean spike rate difference, whose order holds under every baseline variant (next section). S52 rests on 12 of the paper's 30 Star neurons.
+"""
+R[24]="""**Result: partially reproduced.** The means are ordered S40 > S52 > S90 > P180: 26.22 ± 4.34 (n = 26), 19.01 ± 3.00 (n = 12), 8.57 ± 2.09 (n = 22) and 4.26 ± 1.03 spikes/s (n = 22). S40, S52 and P180 are within the paper's SEM. S90 is 2.12 below 10.69, outside its tolerance of 1.94. The order holds under every variant. S90 is also outside with the squares inside the corners for both stimuli (8.19) and centred for both (8.57). With the unsmoothed map S52 is outside (20.83) and S90 within (9.93); with the stored `BaseActivity` (subset) S52 (20.57) and P180 (3.58) are outside and S90 within (9.04). S52 rests on 12 of 30 Star neurons.
+"""
+R[27]="""**Result: reproduced.** S40 is larger than S90 (BH p = 0.0005 over six pairs) and than P180 (p < 0.0001), and S52 is larger than P180 (p = 0.0001); all three are significant in the stated direction over six pairs and over the three named, and under each baseline variant (largest BH p 0.0025, stored `BaseActivity` subset). Of the other pairs, S52 is larger than S90 (BH p = 0.0103), and neither S40 against S52 (0.33) nor S90 against P180 (0.12) is significant.
+"""
+R[30]="""**Result: reproduced (not an independent test).** At the midpoints the average maps give 26.22 (S40), 19.14 (S52), 8.60 (S90) and 4.17 spikes/s (P180), ordered S40 > S52 > S90 > P180, and the mean over the ten blocks gives the same order (22.78, 17.16, 7.82, 3.85). As the claims file notes, the midpoint reading repeats the means of fig4b-spike-rate-difference.
+"""
+R[35]="""**Result: partially reproduced (resting on the assumed baseline placement).** Under reading (a) the Edge blocks give minimum 5.89, maximum 30.24, mean 17.30 and median 17.16 spikes/s and the midpoint 19.10, so 3 of 5 values are within tolerance (maximum, mean and midpoint). Reading (b) also gives 3 of 5. The minimum is 2.09 below 7.98 and the median 3.61 below 20.77. With the squares inside the corners, the earlier main placement, both readings give 2 of 5, which would make the claim not reproduced; with the stored `BaseActivity` (9 neurons) they give 0 of 5. Placing the blocks inside the rectangle gives 3 of 5, outside it 1 of 5.
+"""
+R[38]="""**Result: partially reproduced.** Under reading (a), P180 gives minimum -1.33, maximum 10.66, mean 3.85, median 3.22 and midpoint 4.26 spikes/s. All but the minimum are within tolerance, 4 of 5; the minimum is 1.51 below 0.18. Reading (b) gives 3 of 5. With the squares inside the corners, and with the stored `BaseActivity`, reading (a) gives 3 of 5.
+"""
+R[41]="""**Result: partially reproduced (resting on the assumed baseline placement).** Under reading (a)(i), S90 gives minimum 2.68, maximum 13.81, mean 7.84, median 7.88 and midpoint 8.57 spikes/s, so 3 of 5 are within tolerance (maximum, mean and median). The minimum is 1.68 below 4.36 and the midpoint 2.12 below 10.69. Readings (b)(i), (a)(ii) and (b)(ii) give 2 of 5. With the squares inside the corners, the earlier main placement, the readings give at most 1 of 5, which would make the claim not reproduced; with the stored `BaseActivity` (9 neurons), at most 2 of 5.
+"""
+R[44]="""**Result: reproduced (on 12 of 30 Star neurons).** Under reading (a)(ii), each half of the aligned diagonal taken as its own ten blocks, all five values are within tolerance: minimum 7.46, maximum 28.71, mean 17.11, median 16.43 and midpoint 19.01 spikes/s (paper 6.26, 25.39, 15.66, 15.93, 18.10). Reading (a)(i) gives 4 of 5 (minimum 9.03 is outside), and (b)(i) and (b)(ii) give 3 of 5. The Star squares are inside the corners, the placement closer to the stored `BaseActivity`. With them centred on the corners the readings give at most 3 of 5, and with the stored `BaseActivity` (10 neurons) at most 2 of 5, so the outcome rests on the placement.
+"""
+R[47]="""**Result: reproduced.** Under reading (a), all five S40 values are within tolerance: minimum 9.96, maximum 34.10, mean 22.78, median 22.80 and midpoint 26.22 spikes/s (paper 9.33, 35.11, 22.81, 22.83, 25.60). Reading (b) gives 3 of 5. With the stored `BaseActivity` (19 neurons) reading (a) also gives 5 of 5.
+"""
+R[50]="""**Result: reproduced.** None of the ten rank sum tests is significant; the smallest p is 0.42 (S40 midpoint against block medians). Paired median differences (midpoint minus block summary) range from -0.20 to 2.17 spikes/s. With the signed rank test, which pairs the values, 3 of 10 are significant: S90 against medians (p = 0.025), and S40 against means (0.013) and medians (0.0086). Under every baseline variant no rank sum test is significant (smallest p 0.42 to 0.50).
+"""
+R[53]="""**Result: blocked, methods underspecified.** On the gray levels of the stimulus image, reading (a), SD over mean, runs from 1.06 to 2.35 (fit R2 = 0.83), and reading (b), SD of luminance scaled to 0 to 1, from 0.012 to 0.468; no fitted value is within tolerance under either. The image's background has the gray level of the 0% polygon (data check), so the window at the 0% end of the Edge is nearly uniform and the window at the 100% end holds a quarter of bright rectangle. Adding a uniform black level from 0.5 to 50 (on the 0 to 100 scale) gives at most 2 of 6 values within tolerance and never the paper's rise from 0.61 to 0.943 (at a black level of 20, 0.06 to 0.93). The paper's curve needs either display luminances in which the background differs from the Edge's 0% level, or a definition of RMS contrast other than the two the claims file names; neither the text nor the files give either. The computation on the same stimulus therefore differs from the paper's in a way that cannot be settled here, and the question is put to the authors.
+"""
+R[56]="""**Result: not reproduced.** No reading meets both conditions. The P180 mean (4.26 spikes/s) is below every Edge response and the S40 mean (26.22) above every one: the Edge ranges from 8.99 to 20.43 spikes/s over the RMS levels. Reading (b) meets the P180 condition only through the rule for the lowest level (61.0), and the S40 nearest is 94.3, 4.3 from 90 where one step is 3.7. Reading (a2) puts S40 nearest 90% but P180 nearest 0%. Reading (a1) puts them at 5% and 75%. The same holds with the squares inside the corners and centred on them.
+"""
+R[59]="""**Result: reproduced.** P180 is lower than the Edge at RMS 0.943 (mean difference -16.16 spikes/s, p = 0.0006), and S40 higher than the Edge at 0.610 (17.23, p = 0.0012) and 0.647 (16.77, p = 0.0015). Both hold under BH over 40 tests, BH over 10 per fold and Bonferroni over 10. Under Bonferroni over 40, S40 is higher only at 0.610 (0.647 gives 0.060), so that reading fails. With BH over 40, S40 is also higher at 0.684 (p = 0.0024) and up to 0.795, and P180 is lower at all ten levels. Both baseline variants give the same three tests significant before correction (p at most 0.0015).
+"""
+R[62]="""**Result: reproduced.** The means decrease monotonically with angle (26.22, 19.01, 8.57, 4.26 spikes/s at 40, 52, 90 and 180 degrees). A straight line (-0.139 spikes/s per degree) leaves three of the four means off by more than their SEM: residuals 4.66 at 40, -6.01 at 90 and 2.22 at 180 degrees, against SEMs of 4.34, 2.09 and 1.03. In the variant, the slope from 90 to 180 degrees (-0.048 per degree) differs from those from 40 to 52 (-0.600) and from 52 to 90 (-0.275) by more than the propagated SE, and the first two do not differ from each other. With the squares inside the corners 3 of 4 means lie off the line, centred on them 2 of 4. S52 rests on 12 of 30 Star neurons.
+"""
+for i,t in R.items():
+    assert src(i).startswith("**Result"), i
+    setsrc(i,t)
+rep(0,"| fig7a-rms-contrast-fit | tested |","| fig7a-rms-contrast-fit | tested; blocked, methods underspecified (the paper's values cannot come from the stimulus image under the readings) |")
+rep(0,"""Star claims rest on the 12 Star neurons whose files carry the aligned frame; the other 15 Star files
+cannot be registered to the stimulus (data check, below).""","""Star claims rest on the 12 Star neurons whose files carry the aligned frame; the other 15 Star files
+cannot be registered to the stimulus (data check, below).
+
+Revised after the first verification round: the stimulus images are checked against the polygons
+and used for the RMS contrast, the baseline placement is the one closer to the stored `BaseActivity`
+(centred on the corners for Square and Edge, inside them for Star) with both placements shown for
+every claim, the Corners squares stay in 0% luminance in every file, and the Star registration is
+tested directly.""")
+s=src(65)
+s=s.replace("| s4-baseline-no-difference | not reproduced (assumed baseline placement) |","| s4-baseline-no-difference | reproduced (assumed baseline placement; readings disagree) |")
+s=s.replace("| table1-edge | not reproduced |","| table1-edge | partially reproduced (assumed baseline placement) |")
+s=s.replace("| table1-s90 | not reproduced |","| table1-s90 | partially reproduced (assumed baseline placement) |")
+s=s.replace("| fig7a-rms-contrast-fit | not reproduced |","| fig7a-rms-contrast-fit | blocked, methods underspecified |")
+old=s[s.index("How the analysis differs"):s.index("What was found about the dataset:")]
+new="""How the analysis differs from the paper's: it starts from the authors' aligned spike rate maps, so the eye-signal correction, the 60 ms registration and the smoothing are theirs, not repeated. The data set holds 53 of the 58 neurons. Star rests on the 12 of 27 Star neurons whose files carry the aligned frame, against 30 in the paper. The baseline squares are placed by assumption: centred on the corners of the circumscribing square for Square and Edge and inside them for Star, the placements closer to the stored `BaseActivity`, and at the frame edges for Corners, as Fig 2C is not in the text. The outcomes of s4-baseline-no-difference, table1-edge, table1-s90 and table1-s52 change with the placement, and every claim shows both. RMS contrast is computed on the gray levels of the stimulus image, with no display calibration.
+
+"""
+s=s.replace(old,new)
+s=s.replace("""- The Corners frames come in two sizes (273 x 209 and 257 x 193).""","""- The Corners frames come in two sizes (273 x 209 and 257 x 193). In 2 Corners files the next zigzag of the pattern enters the bottom of the aligned frame, so its bottom corners are not at 0% luminance.
+- The stimulus images hold gray levels 0 to 100 in steps of 100/99; the rasterised polygons reproduce at least 93% of pixels exactly for Square and Edge and 90% for Star (99% within one level), and 14% to 59% for Corners (84% to 99% within one level). The Square and Edge and Star backgrounds have the gray level of the 0% polygon. No display calibration is stored.
+- For the 12 Star files with both frames, the screen-frame map does not match the aligned map placed by the stimulus polygons (median r 0.03 at zero shift, at most 0.43 over shifts up to 64 DU).""")
+s=s.replace("Eye time is stored in 1 of 75 files","Eye time is stored in 1 of the 76 map files read")
+setsrc(65,s)
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
+print("ok")
+PYEOF
+$TMPDIR/venv/bin/python $TMPDIR/e5.py; python3 -c "
+import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'));print(''.join(nb['cells'][65]['source']))"
+```
+
+```
+ok
 | Claim | Outcome |
 |---|---|
-| Counts of neurons per condition | Not reproduced |
-| Spikes per condition | Blocked: data missing |
-| Baselines do not differ across stimuli | Not reproduced (rests on an assumption) |
-| Midpoint responses above baseline, growing with sharper corners (Fig 4A) | Reproduced (assumption) |
-| Midpoint spike rate differences S40 > S52 > S90 > P180 (Fig 4B) | Partially reproduced (assumption) |
-| Pairwise differences of Fig 4B | Reproduced |
-| Average maps (Fig 5) | Reproduced (assumption) |
-| Table 1, Edge, S90 and S40 | Reproduced (assumption) |
-| Table 1, S52 | Partially reproduced (assumption) |
-| Table 1, P180 | Not reproduced |
+| neuron-counts | not reproduced |
+| spikes-per-condition | blocked, data missing |
+| s4-baseline-no-difference | reproduced (assumed baseline placement; readings disagree) |
+| fig4a-above-baseline | reproduced |
+| fig4b-spike-rate-difference | partially reproduced |
+| fig4b-pairwise-significance | reproduced |
+| fig5-average-maps | reproduced |
+| table1-edge | partially reproduced (assumed baseline placement) |
+| table1-p180 | partially reproduced |
+| table1-s90 | partially reproduced (assumed baseline placement) |
+| table1-s52 | reproduced |
+| table1-s40 | reproduced |
+| fig6-midpoint-representative | reproduced |
+| fig7a-rms-contrast-fit | blocked, methods underspecified |
+| fig7c-fold-edge-equivalence | not reproduced |
+| fig7c-fold-edge-significance | reproduced |
+| fig7d-nonlinear | reproduced |
+[... 16 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+p="reproduce_martinez_conde_2019.ipynb"; nb=json.load(open(p))
+C=nb["cells"]
+def src(i): return "".join(C[i]["source"])
+def setsrc(i,s): C[i]["source"]=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert a in s,(i,a); setsrc(i,s.replace(a,b))
+rep(65,"and 14% to 59% for Corners (84% to 99% within one level)","and a median of 59% for Corners (minimum 14%; within one level, median 99% and minimum 84%)")
+rep(51,"(Square and Edge: at least 94% of pixels\nexactly, 99% within one level)","(Square and Edge: at least 93% of pixels\nexactly, 99% within one level)")
+rep(59,"S40 is also higher at 0.684 (p = 0.0024)","S40 is also higher at 0.684 (uncorrected p = 0.0024)")
+json.dump(nb,open(p,"w"),indent=1,ensure_ascii=False)
+EOF
+date -u
+```
+
+```
+Sun Nov 15 05:35:19 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -l "^verifications:" attempts/*.yaml | head -3; f=$(grep -l "^verifications:" attempts/*.yaml | head -1); sed -n '/^verifications:/,$p' $f | head -60; ls schemas; grep -n -A60 '"verifications"' schemas/attempt*.json | head -120
+```
+
+```
+attempts/amjad-2025-01.yaml
+attempts/andrews-2024-01.yaml
+attempts/armstrong-2026-01.yaml
+verifications:
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text (PMC12183687). The verifier read the
+    archive's file list and metadata through the DANDI API and tested the helpers on synthetic inputs
+    (beta_power, burst_onsets, window_mean, codes_per_trial, rereference, fscv_window_mean, best_lag,
+    reward_blocks). It had no attempt record and took the claims from the claims file.
+  results:
+  - claim: insertion-yield
+    agrees: true
+    outcome: blocked
+    reason: The archive has 3 assets with sites c8dg, c3bs, c3a and cl3, and nothing about implanted
+      or failed sensors. Figure 3 names 4 functional Monkey T sites against the paper's "3/14", so
+      "sensor" may mean probe. Neither count can be checked; an implant log of sensors per monkey is
+      not in the archive.
+[... 108 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 446,470p schemas/attempt.schema.json; grep -n '"reviewed"\|"blocked_by"\|"proposed"' schemas/attempt.schema.json | head; ls transcripts/martinez-conde-2019/
+```
+
+```
+}
+          },
+          "reviewed": {
+            "description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "findings": {
+      "description": "What the attempt found, whatever the outcomes: about the dataset itself (`about: data`, for its owner and the archive, shown on the dataset's page) or about the paper (`about: paper`, shown on the paper's page).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "properties": {
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd transcripts/martinez-conde-2019; ls -la; head -5 verifier-2-report.md; head -c 600 verifier-1.md
+```
+
+```
+total 692
+drwxr-xr-x   2 runner runner   4096 Nov 15 05:12 .
+drwxr-xr-x 286 runner runner  12288 Nov 15 05:12 ..
+-rw-r--r--   1 runner runner    934 Nov 15 05:12 answer-report.md
+-rw-r--r--   1 runner runner   5711 Nov 15 05:12 answer.md
+-rw-r--r--   1 runner runner   2174 Nov 15 05:12 author-answers-report.md
+-rw-r--r--   1 runner runner  10866 Nov 15 05:12 author-answers.md
+-rw-r--r--   1 runner runner   4512 Nov 15 05:12 author-report.md
+-rw-r--r--   1 runner runner   3996 Nov 15 05:12 author-revise-1-report.md
+-rw-r--r--   1 runner runner 191750 Nov 15 05:12 author-revise-1.md
+-rw-r--r--   1 runner runner   3035 Nov 15 05:12 author-revise-2-report.md
+-rw-r--r--   1 runner runner  71103 Nov 15 05:12 author-revise-2.md
+-rw-r--r--   1 runner runner 187536 Nov 15 05:12 author.md
+-rw-r--r--   1 runner runner   2416 Nov 15 05:12 claims-check-report.md
+-rw-r--r--   1 runner runner  17313 Nov 15 05:12 claims-check.md
+-rw-r--r--   1 runner runner   3603 Nov 15 05:12 claims-report.md
+-rw-r--r--   1 runner runner  40677 Nov 15 05:12 claims.md
+-rw-r--r--   1 runner runner   7878 Nov 15 05:12 recorder-report.md
+-rw-r--r--   1 runner runner  40791 Nov 15 05:12 recorder.md
+-rw-r--r--   1 runner runner   8985 Nov 15 05:12 verifier-1-report.md
 [... 22 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'EOF'
-import re
-p='attempts/martinez-conde-2019-01.yaml'; s=open(p).read()
-s2=re.sub(r'black level\s+more than the paper\.', 'black level, not the paper.', s)
-s2=re.sub(r'black level more\s+than the paper\.', 'black level, not the paper.', s2)
-print(s!=s2); open(p,'w').write(s2)
-p='entries/martinez-conde-2019/README.md'; s=open(p).read()
-s=s.replace('''| Table 1, Edge, S90 and S40 | Reproduced (assumption) |
-| Table 1, S52 | Partially reproduced (assumption) |
-| Table 1, P180 | Not reproduced |''','''| Table 1, Edge, S52 and S40 | Reproduced (assumption) |
-| Table 1, P180 | Partially reproduced (assumption) |
-| Table 1, S90 | Not reproduced (assumption) |''')
-s=s.replace('| Folds equivalent to Edge contrasts (Fig 7C) | Not reproduced |','| Folds equivalent to Edge contrasts (Fig 7C) | Not reproduced (assumption) |')
-s=s.replace('''The main assumption is where the baseline squares lie, which the text does
-not fix.''','''The main assumption is where the baseline squares lie, which the text does
-not fix: they are placed, per stimulus, where their values come closest to the authors' own
-baseline values held in 38 files. The Edge measures use the 18 of 22 Square and Edge files whose
-Edge is wholly on the screen.''')
-open(p,'w').write(s)
-EOF
-grep -n "not the paper" attempts/martinez-conde-2019-01.yaml
+cd  sed -n 240,360p schemas/attempt.schema.json
 ```
 
 ```
-True
-572:      matches the paper's range or fit. This most likely reflects the missing display black level, not the paper. The notebook says the display luminance is not in the text, but it is in
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n 'baseline_value(r, r\[' entries/martinez-conde-2019/*.ipynb entries/martinez-conde-2019/*.py; date -u; python tools/entry.py all entries/martinez-conde-2019 2>&1 | tail -15
-```
-
-```
-Thu Nov 12 12:26:49 UTC 2026
-Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
-0 error(s)
-pass  reproduce_martinez_conde_2019.ipynb  (354 s)
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python $TMPDIR/mc/show.py 23 29 33 39 48 51 54 > $TMPDIR/mc/final.txt; diff <(grep -v "s; peak\|loaded in\|total run" $TMPDIR/mc/final.txt) <(python $TMPDIR/mc/show.py 22 26 28 32 39 41 43 | grep -v "s; peak\|loaded in\|total run") >/dev/null; grep -n "matched \[main\]" -A8 $TMPDIR/mc/final.txt | head -9; grep -n "fold \[the claims\|^S90   22\|Edge (ia) on the 18\|^P180 (ia)\|^S90 (ia)\|^S52 (iia)\|^S40 (ia) bright\|(a) BH over 40: claim\|S40: nearest\|line:" $TMPDIR/mc/final.txt; python tools/entry.py handover entries/martinez-conde-2019 | tail -2; python -c "
-import json;nb=json.load(open('executed/martinez-conde-2019/handover/reproduce_martinez_conde_2019.ipynb'))
-print(len(nb['cells']), [''.join(c['source'])[:30] for c in nb['cells'] if c['cell_type']=='markdown'][-6:])"; git status --short
-```
-
-```
-2:baseline reading: matched [main]
-3-  Square and Edge  n = 22, median   6.72, quartiles   2.11 to  12.27, range 0.74 to 24.82 spikes/s
-4-  Star             n = 12, median   1.90, quartiles   1.55 to   4.08, range 0.61 to 7.91 spikes/s
-5-  Corners          n = 26, median   2.57, quartiles   0.87 to   4.30, range 0.00 to 19.13 spikes/s
-6-  (a) Square and Edge vs Star, BH p: 0.065
-7-  (a) Square and Edge vs Corners, BH p: 0.037
-8-  (a) Star vs Corners, BH p: 0.851
-9-  (b) Kruskal-Wallis p: 0.025
-10-  (c) one-way ANOVA p: 0.004
-69:bright S40 fold [the claims file's midpoint] | order S40 > S52 > S90 > P180: True | all within tolerance: False
-73:S90   22   8.39  2.22    7.18 -10.77  29.26  10.69       1.94   False
-80:S90   22   8.39  2.22    7.18 -10.77  29.26  10.69       1.94   False
-87:S90   22   8.39  2.22    7.18 -10.77  29.26  10.69       1.94   False
-95:S90   22   8.39  2.22    7.18 -10.77  29.26  10.69       1.94   False
-102:S90   22   8.23  1.96    6.10 -10.87  28.51  10.69       1.94   False
-116:S90   22   8.39  2.22    7.18 -10.77  29.26  10.69       1.94   False
-123:S90   22   8.39  2.22    7.18 -10.77  29.26  10.69       1.94   False
-137:S90   22   9.75  2.55    7.13 -14.28  32.87  10.69       1.94    True
-177:S40: nearest Edge level (a) 80% luminance, (b) RMS x 100 = 94.3
-215:(a) BH over 40: claim holds True; S40 significantly higher at RMS [0.61, 0.647, 0.684, 0.721, 0.758]; P180 lower at 0.943: p = 0.0153
-[... 19 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python $TMPDIR/mc/show.py 38 | grep "^Edge (ia)\|^P180 (ia)\|^S90 (ia)\|^S52 (iia)\|^S40 (ia) bright\|on the 18"; python $TMPDIR/mc/show.py 42 | tail -3; python $TMPDIR/mc/show.py 57
-```
-
-```
-Edge (ia)                    min   5.78 (paper  7.98±1.60) --  max  29.87 (paper 33.13±5.11) ok  mean  17.16 (paper 20.44±3.33) ok  median  17.09 (paper 20.77±3.48) --  midpoint  18.90 (paper 22.01±3.41) ok
-P180 (ia)                    min  -1.55 (paper  0.18±1.01) --  max  10.33 (paper 10.28±1.53) ok  mean   3.61 (paper  4.55±1.12) ok  median   3.03 (paper  4.03±1.06) ok  midpoint   4.03 (paper  4.87±1.15) ok
-S90 (ia)                     min   2.46 (paper  4.36±1.07) --  max  13.58 (paper 14.61±2.48) ok  mean   7.61 (paper  9.22±1.61) ok  median   7.66 (paper  9.31±1.62) --  midpoint   8.39 (paper 10.69±1.94) --
-S52 (iia)                    min   7.38 (paper  6.26±1.33) ok  max  28.62 (paper 25.39±3.52) ok  mean  17.15 (paper 15.66±2.23) ok  median  16.55 (paper 15.93±2.36) ok  midpoint  19.19 (paper 18.10±2.39) ok
-S40 (ia) bright fold         min  10.52 (paper  9.33±1.69) ok  max  34.26 (paper 35.11±4.17) ok  mean  23.01 (paper 22.81±3.11) ok  median  23.02 (paper 22.83±3.48) ok  midpoint  26.27 (paper 25.60±4.18) ok
-Edge (ia) on the 18 files with the whole Edge on the screen: min 6.52 (paper 7.98±1.60) ok  max 31.53 (paper 33.13±5.11) ok  mean 18.56 (paper 20.44±3.33) ok  median 18.76 (paper 20.77±3.48) ok  midpoint 21.09 (paper 22.01±3.41) ok
-Edge on the 18 files with the whole Edge on the screen, rank sum p against the mean and the median: [np.float64(0.704), np.float64(0.95)]
-main reading: rank sum tests significant at 0.05: 0 of 10 ; signed rank variant: 3 of 10
-
-===== 57
-total run time 5.8 min; peak memory 1.11 GB
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -i 's/runtime_minutes: 5/runtime_minutes: 6/' entries/martinez-conde-2019/entry.yaml; sed -i 's/It takes about five minutes/It takes about six minutes/' entries/martinez-conde-2019/README.md; python tools/entry.py all entries/martinez-conde-2019 2>&1 | tail -3; python tools/entry.py handover entries/martinez-conde-2019 | tail -1; date -u
-```
-
-```
-Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
-0 error(s)
-pass  reproduce_martinez_conde_2019.ipynb  (355 s)
-wrote executed/martinez-conde-2019/handover
-Thu Nov 12 12:39:47 UTC 2026
+"type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "reproduced",
+              "partially_reproduced",
+              "not_reproduced",
+              "blocked"
+            ],
+            "description": "Describes the result, not the method: whether the effect the claim states was found. Differences in method from the paper go in `deviations`."
+          },
+          "blocked_by": {
+            "description": "Required when outcome is blocked.",
+            "enum": [
+              "data_missing",
+              "metadata_insufficient",
+              "methods_underspecified",
+              "data_unreadable",
+              "dataset_missing",
+              "too_large",
+[... 101 more lines not kept]
 ```
 
 **Agent**
 
-I've worked through every point in the round-1 report. The entry re-runs cleanly with `python tools/entry.py all entries/martinez-conde-2019` (0 check errors, notebook passes in about 6 min, 1.1 GB peak memory). Every conclusion, note and measured value matches the final run. Nothing is committed.
+Now I'll write the attempt record updates.
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/rec.py <<'PYEOF'
+import yaml
+p="attempts/martinez-conde-2019-02.yaml"
+d=yaml.safe_load(open(p))
+O={o["claim"]:o for o in d["outcomes"]}
+BASE=("Assumed baseline placement. The paper puts the Square and Edge and Star squares at the corners of the "
+ "circumscribing square (Methods, Visual stimuli) without saying whether they sit inside the corners or are centred "
+ "on them. The adopted placement is the one closer to the stored BaseActivity, the authors' own baseline in 38 of the "
+ "60 analysed files: centred on the corners for Square and Edge (median absolute difference 0.67 spikes/s, against "
+ "1.51 inside, n = 9) and inside them for Star (0.32, against 1.28 centred, n = 10). The Corners squares are only "
+ "drawn in Fig 2C; they are taken at the two bottom corners of the aligned frame, moved up to the lowest height "
+ "where both are at 0% luminance in the 2 files where the next zigzag of the pattern enters the frame. Every "
+ "claim also shows both placements.")
+for o in d["outcomes"]:
+    if "deviations" in o:
+        o["deviations"]=[BASE if x.startswith("Assumed baseline placement") else x for x in o["deviations"]]
+O["spikes-per-condition"]["notes"]=("The maps store spike counts divided by eye time (spikes per 1 ms eye sample), and eye time is stored in "
+ "1 of the 76 map files read (77 in the zip, one in MATLAB 7.3 format): ABC050900J1A, which gives 15,644 spikes for that neuron "
+ "and condition, at least 10,000. Without eye time, spike times or spike count maps the counts of the other files "
+ "cannot be recovered.")
+s4=O["s4-baseline-no-difference"]
+s4["outcome"]="reproduced"
+s4["notes"]=("With the adopted placement the readings disagree. Reading (a) finds no difference: Square and Edge, median "
+ "7.23 spikes/s (n = 22), against Star, 1.89 (n = 12), BH p = 0.071, against Corners, 2.90 (n = 26), BH p = 0.071, and "
+ "Star against Corners BH p = 0.925. Kruskal-Wallis (p = 0.042) and ANOVA (p = 0.007) find one. The criterion adopts "
+ "reading (a) when the readings disagree, so the outcome rests on that rule and on the placement. With the squares "
+ "inside the corners for both stimuli all three readings find a difference (Kruskal-Wallis p = 0.007, smallest BH p = "
+ "0.016), and so they do with the squares centred for both (Kruskal-Wallis p = 0.009, smallest BH p = 0.036). With the "
+ "stored BaseActivity, on the 38 files that have it, no reading finds a difference (Kruskal-Wallis p = 0.114, ANOVA p = "
+ "0.166, smallest BH p = 0.109), and the adopted placement on the same files finds none either (Kruskal-Wallis p = "
+ "0.081, ANOVA p = 0.054, smallest BH p = 0.075).")
+s4["deviations"]=[BASE,
+ "Star rests on the 12 Star neurons whose files carry the aligned frame, of 27 Star neurons in the data set and 30 in the paper.",
+ "The paper does not name the test; the claims file's three readings were run, and its rule for readings that disagree (adopt reading (a)) decides the outcome."]
+f4a=O["fig4a-above-baseline"]
+f4a["notes"]=("Above the unit line: 18 of 22 neurons for P180 and for S90, 12 of 12 for S52, 25 of 26 for S40. Mass centre "
+ "distances, raw means (reading a), 4.26, 8.57, 19.01 and 26.22 spikes/s, ordered P180 < S90 < S52 < S40. Log10 means "
+ "(reading b) give 0.24, 0.36, 0.91 and 0.97, also ordered; 2 S40 neurons with a value of 0 are left out of (b).")
+f4b=O["fig4b-spike-rate-difference"]
+f4b["measured"]=[26.22,19.01,8.57,4.26]
+f4b["notes"]=("Means and SEM: S40 26.22 ± 4.34 (n = 26), S52 19.01 ± 3.00 (n = 12), S90 8.57 ± 2.09 (n = 22), P180 4.26 ± 1.03 "
+ "spikes/s (n = 22). They are ordered S40 > S52 > S90 > P180, and S40, S52 and P180 are within the paper's SEM. S90 is "
+ "2.12 below 10.69, outside its tolerance of 1.94. The order holds in every variant. S90 is outside with the squares "
+ "inside the corners for both stimuli (8.19) and centred for both (8.57). With the unsmoothed map (27.10, 20.83, 9.93, "
+ "3.74) S52 is outside and S90 within; with the stored BaseActivity (subset, 29.00, 20.57, 9.04, 3.58) S52 and P180 are "
+ "outside and S90 within. By monkey, the two A neurons of Square and Edge give S90 0.35 and P180 1.76, against 9.40 "
+ "and 4.51 for J.")
+pw=O["fig4b-pairwise-significance"]
+pw["notes"]=("Rank sum tests on per-neuron differences, BH over six pairs. S40 > S90 p = 0.0005, S40 > P180 p < 0.0001, "
+ "S52 > P180 p = 0.0001, all significant over six pairs and over the three named, and under each baseline variant "
+ "(largest BH p 0.0025, stored BaseActivity subset). The other pairs: S52 > S90 BH p = 0.0103, S40 against S52 p = 0.33, "
+ "S90 against P180 p = 0.12.")
+f5=O["fig5-average-maps"]
+f5["notes"]=("Average spike rate difference maps at the midpoints, 26.22 (S40), 19.14 (S52), 8.60 (S90), 4.17 spikes/s "
+ "(P180), ordered S40 > S52 > S90 > P180. The mean over the ten blocks of the average map gives 22.78, 17.16, 7.82 and "
+ "3.85, in the same order. As the claims file notes, the midpoint reading repeats fig4b-spike-rate-difference and is "
+ "not an independent test.")
+te=O["table1-edge"]
+te["outcome"]="partially_reproduced"; te["measured"]=[5.89,30.24,17.30,17.16,19.10]
+te["notes"]=("Reading (a), per neuron then mean, gives minimum 5.89, maximum 30.24, mean 17.30, median 17.16 and midpoint "
+ "19.10 spikes/s; 3 of 5 (maximum, mean and midpoint) are within tolerance. Reading (b) also gives 3 of 5. The minimum "
+ "is 2.09 below 7.98 and the median 3.61 below 20.77. The outcome rests on the placement: with the squares inside the "
+ "corners both readings give 2 of 5, which would be not reproduced, and with the stored BaseActivity (9 neurons) 0 of "
+ "5. Blocks placed just inside the rectangle give 3 of 5, and just outside it 1 of 5.")
+tp=O["table1-p180"]
+tp["measured"]=[-1.33,10.66,3.85,3.22,4.26]
+tp["notes"]=("Reading (a) gives minimum -1.33, maximum 10.66, mean 3.85, median 3.22 and midpoint 4.26 spikes/s. All but "
+ "the minimum are within tolerance, 4 of 5; the minimum is 1.51 below 0.18. Reading (b) gives 3 of 5. With the squares "
+ "inside the corners, and with the stored BaseActivity (9 neurons), reading (a) gives 3 of 5.")
+ts=O["table1-s90"]
+ts["outcome"]="partially_reproduced"; ts["measured"]=[2.68,13.81,7.84,7.88,8.57]
+ts["notes"]=("Reading (a)(i) gives minimum 2.68, maximum 13.81, mean 7.84, median 7.88 and midpoint 8.57 spikes/s, 3 of 5 "
+ "within tolerance (maximum, mean and median). The minimum is 1.68 below 4.36 and the midpoint 2.12 below 10.69. "
+ "Readings (b)(i), (a)(ii) and (b)(ii) give 2 of 5. The outcome rests on the placement: with the squares inside the "
+ "corners the readings give at most 1 of 5, which would be not reproduced, and with the stored BaseActivity (9 "
+ "neurons) at most 2 of 5.")
+t52=O["table1-s52"]
+t52["notes"]=("Reading (a)(ii), each half of the aligned diagonal as its own ten blocks, puts all five values within "
+ "tolerance: minimum 7.46, maximum 28.71, mean 17.11, median 16.43 and midpoint 19.01 spikes/s. Reading (a)(i) gives 4 of "
+ "5 (minimum 9.03 outside 6.26 ± 1.33). Readings (b)(i) and (b)(ii) give 3 of 5. The outcome rests on the placement and "
+ "on picking the best of four readings: with the Star squares centred on the corners the readings give at most 3 of "
+ "5, and with the stored BaseActivity (10 neurons) at most 2 of 5.")
+t40=O["table1-s40"]
+t40["measured"]=[9.96,34.10,22.78,22.80,26.22]
+t40["notes"]=("Reading (a) puts all five values within tolerance: minimum 9.96, maximum 34.10, mean 22.78, median 22.80 and "
+ "midpoint 26.22 spikes/s. Reading (b) gives 3 of 5. With the stored BaseActivity (19 neurons) reading (a) also gives 5 "
+ "of 5.")
+f6=O["fig6-midpoint-representative"]
+f6["notes"]=("None of the ten rank sum tests (midpoint against per-neuron block means and medians, for Edge, P180, S90, "
+ "S52 and S40) has p < 0.05; the smallest p is 0.42. Paired median differences range from -0.20 to 2.17 spikes/s. The "
+ "signed rank variant finds 3 of 10: S90 against medians (p = 0.025), and S40 against means (0.013) and medians (0.0086). "
+ "Under every baseline variant no rank sum test has p < 0.05 (smallest p 0.42 to 0.50).")
+a7=O["fig7a-rms-contrast-fit"]
+a7.clear()
+a7.update({"claim":"fig7a-rms-contrast-fit","outcome":"blocked","blocked_by":"methods_underspecified",
+ "notebook":"reproduce_martinez_conde_2019.ipynb","output":"claim:fig7a-rms-contrast-fit",
+ "measured":[1.0584,2.3455,1.406,0.2869,1.0746,0.8285],
+ "notes":("Computed on the gray levels of the stimulus image (0 to 100), which the rasterised polygons reproduce (Square "
+  "and Edge at least 93% of pixels exactly, 99% within one level). Reading (a), SD over mean, runs from 1.06 to 2.35 (fit "
+  "a = 1.41, b = 0.29, c = 1.07, R2 = 0.83); reading (b) from 0.012 to 0.468. No value is within tolerance under either. "
+  "The image's background has the gray level of the 0% polygon, so the window at the 0% end of the Edge is nearly "
+  "uniform. Adding a uniform black level from 0.5 to 50 on the 0 to 100 scale gives at most 2 of 6 values within "
+  "tolerance and never the paper's rise from 0.61 to 0.943 (at 20, 0.06 to 0.93). The paper's values need display "
+  "luminances in which the background differs from the Edge's 0% level, or a definition of RMS contrast other than "
+  "the claims file's two (reference 21 is not in the text read); the files hold no display calibration and the paper "
+  "gives only 14.07 cd/m2 at 50% luminance. The computation on the same stimulus differs from the paper's in a way "
+  "that cannot be settled here, so the claim is blocked; the question is put to the authors under findings. Measured "
+  "values are reading (a) with no black level."),
+ "deviations":["Luminance is the stimulus image's gray level in the aligned frame, rasterised from the polygons with "
+  "the mapping the images show; display luminance and gamma are not in the files. A uniform black level is run as a "
+  "variant."]})
+f7c=O["fig7c-fold-edge-equivalence"]
+f7c["notes"]=("Edge spike rate differences at the ten RMS levels (luminance 0 to 77.7% by the paper's fit) range from 8.99 "
+ "to 20.43 spikes/s. P180 (4.26) is below every Edge level and S40 (26.22) above every one. Reading (b) meets the P180 "
+ "condition only through the rule for the lowest level (nearest 61.0); the S40 nearest is 94.3, 4.3 from 90 where one "
+ "step is 3.7. Reading (a2), 16 x 16 DU squares at 0 to 100% luminance, puts S40 nearest 90% but P180 nearest 0%. "
+ "Reading (a1), the ten blocks, puts them at 5% and 75%. No reading meets both conditions, under either baseline "
+ "placement.")
+f7c["deviations"]=[x if not x.startswith("Uses the paper's fitted RMS") else
+ "Uses the paper's fitted RMS parameters; the refit variant was not run, as no RMS reading on the stimulus image fits the paper's curve (fig7a-rms-contrast-fit)." for x in f7c["deviations"]]
+sg=O["fig7c-fold-edge-significance"]
+sg["notes"]=("Two-sample t-tests at the ten RMS levels. P180 is lower than the Edge at 0.943 (mean difference -16.16 "
+ "spikes/s, t = -3.71, p = 0.0006). S40 is higher than the Edge at 0.610 (17.23, t = 3.47, p = 0.0012) and 0.647 (16.77, "
+ "p = 0.0015). Both hold under BH over 40, BH over 10 per fold and Bonferroni over 10. Under Bonferroni over 40, S40 is "
+ "higher only at 0.610 (0.647 gives 0.060), so that reading fails. With BH over 40, S40 is higher up to 0.795 "
+ "(including 0.684, uncorrected p = 0.0024) and P180 lower at all ten levels. Both baseline variants give the three "
+ "tests p at most 0.0015 before correction.")
+fd=O["fig7d-nonlinear"]
+fd["notes"]=("Means decrease monotonically with angle: 26.22, 19.01, 8.57 and 4.26 spikes/s at 40, 52, 90 and 180 degrees. "
+ "Against a least-squares line (-0.139 spikes/s per degree), three means lie off by more than their SEM: 4.66 at 40, "
+ "-6.01 at 90 and 2.22 at 180 degrees, against SEMs of 4.34, 2.09 and 1.03. In the variant, the slope from 90 to 180 "
+ "degrees (-0.048 per degree) differs from those from 40 to 52 (-0.600) and 52 to 90 (-0.275) by more than the "
+ "propagated SE, and the first two do not differ from each other. With the squares inside the corners 3 of 4 means lie "
+ "off the line, centred on them 2 of 4.")
+# findings
+F=d["findings"]
+for f in F:
+    st=f["statement"]
+    if st.startswith("No spike times"):
+        f["statement"]=st.replace("except an eye time map in one file of 75 (ABC050900J1A)","except an eye time map in one of the 76 map files read (ABC050900J1A)")
+    if st.startswith("15 of the 27 Star files"):
+        f["statement"]=st.replace("These 15 neurons cannot be registered to the stimulus.",
+          "For the same 12 files, the aligned map placed in the screen frame by the stimulus polygons does not match the screen-frame map (median Pearson r 0.03 at zero shift, at most 0.43 over shifts up to 64 DU, with the best shift at the search limit in 8 of 12). These 15 neurons cannot be registered to the stimulus.")
+    if st.startswith("Question for the paper's authors. Which definition of local RMS"):
+        f["statement"]=("Question for the paper's authors. Which definition of local RMS contrast, and which luminance "
+          "values, give 0.61 to 0.943 along the Edge (Fig 7A, reference 21)? The stimulus images hold gray levels 0 to "
+          "100 with the background at the gray level of the 0% polygon. On them SD over mean runs from 1.06 to 2.35 and "
+          "SD of luminance scaled to 0-1 from 0.01 to 0.47, and adding a uniform black level never gives the paper's "
+          "curve. Was contrast computed on display luminance in cd/m2, with a background that differs from the 0% level "
+          "of the gradient? The display calibration is not in the files.")
+    if st.startswith("Question for the paper's authors. Where are the baseline squares?"):
+        f["statement"]=("Question for the paper's authors. Where are the baseline squares? The Corners squares appear "
+          "only in Fig 2C. For Square and Edge and for Star, the text does not say whether the 16 x 16 DU squares sit "
+          "inside the corners of the circumscribing square or are centred on them. The stored BaseActivity is closer to "
+          "the centred placement for Square and Edge and to the inside placement for Star, and that combination was "
+          "adopted. The outcomes of four claims depend on it. Whether baseline differs between stimuli (S4 Fig): with "
+          "the adopted placement the pairwise tests find no difference (smallest BH p = 0.071) but Kruskal-Wallis does "
+          "(p = 0.042); with the squares inside the corners for both stimuli all tests find one (Kruskal-Wallis p = "
+          "0.007). Table 1, Edge and S90: 3 of 5 values within the paper's SEM with the adopted placement, 2 and 1 of 5 "
+          "with the squares inside. Table 1, S52: 5 of 5 with the Star squares inside, at most 3 of 5 centred. Also open "
+          "is where the 8 DU wide Edge blocks of Table 1 sit across the Edge line.")
+F.append({"kind":"metadata_insufficient","statement":("The stimulus files hold the images as gray levels 0 to 100 "
+  "(steps of 100/99) with no display calibration, so the luminance in cd/m2 of each level, of the background and the "
+  "monitor's gamma are not known; the paper gives only 14.07 cd/m2 at 50% luminance. In 2 Corners files "
+  "(ABC042400J2, ABC062100J1) the next zigzag of the pattern enters the bottom of the aligned frame, so that frame "
+  "differs from the other 24 away from the fold.")})
+yaml.safe_dump(d,open(p,"w"),sort_keys=False,allow_unicode=True,width=115)
+print("ok")
+PYEOF
+python3 $TMPDIR/rec.py
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/ver.py <<'PYEOF'
+import yaml
+p="attempts/martinez-conde-2019-02.yaml"
+d=yaml.safe_load(open(p))
+R=[
+("neuron-counts",True,"not_reproduced","The files hold 53 neurons, split 22 / 29 (27 with a Star stimulus) / 26 by condition, with overlaps 7 / 10 / 36. The paper gives 58 neurons, 25 / 30 / 28, and 7 / 11 / 40 (cell 12). Only \"all three = 7\" matches. The xlsx sheet lists 58 cells, but 5 have no condition and the data description says the dataset holds 53 neurons. The gap fits 5 cells missing from the archive (4 tested in one condition, 1 in two), not a wrong count in the paper.",
+ "No change."),
+("spikes-per-condition",True,"blocked","There are no spike count maps or spike times. Eye time is stored in only one file (ABC050900J1A, 15,644 spikes, which is at least 10,000). I confirmed from the archive's zip directory that it holds only the SpikeRateMap/Stimulus .mat files and the xlsx. Separately (problem 8), the text says \"eye time in 1 of 75 files\", but there are 77 map files (76 read).",
+ "The count is corrected in the notebook, the notes and the findings: 1 of the 76 map files read, 77 in the zip. Outcome unchanged."),
+("s4-baseline-no-difference",True,"not_reproduced","With the claims-file baseline, all three readings find a difference: BH-corrected rank sum p = 0.016 / 0.008 / 0.66, Kruskal-Wallis p = 0.004, ANOVA p = 0.001. The centred-square variant gives the same result (cell 15). Only the stored BaseActivity on smaller subsets (n = 9 / 10 / 19) is not significant, and its medians keep the same order (5.6 / 2.7 / 1.3). Problem 4: the main placement is not tested on the same subsets as the stored BaseActivity, so power and placement cannot be separated.",
+ "Changed to reproduced, resting on an assumption. Under problem 2 the baseline placement was revised to the one closer to the stored BaseActivity (centred for Square and Edge, inside for Star), and the Corners squares were moved up in the 2 files whose bottom corners are not at 0% luminance. With that placement reading (a) finds no difference (smallest BH p = 0.071) while Kruskal-Wallis (p = 0.042) and ANOVA (p = 0.007) do, and the criterion adopts reading (a) when the readings disagree. Both single placements still find a difference under all readings, and the notes say the outcome is fragile. The adopted placement is now also run on the files with a stored BaseActivity: it finds no difference there either (Kruskal-Wallis p = 0.081), so the gap to the stored values comes mostly from the smaller sample."),
+("fig4a-above-baseline",True,"reproduced","91%, 91%, 100% and 100% of neurons lie above baseline. Distances from the unit line run 3.9 < 8.2 < 19.0 < 26.5 under reading (a) and 0.18 < 0.30 < 0.91 < 1.04 under reading (b) (cell 17). S52 has only 12 neurons.",
+ "Numbers updated for the revised baseline (18, 18, 12 and 25 neurons above; distances 4.26 < 8.57 < 19.01 < 26.22 and 0.24 < 0.36 < 0.91 < 0.97). Outcome unchanged."),
+("fig4b-spike-rate-difference",True,"partially_reproduced","The order S40 > S52 > S90 > P180 holds: 26.48, 19.01, 8.19, 3.88. S90 is 8.19 against 10.69 ± 1.94 (outside). The centred baseline gives 8.57, still outside (cell 19).",
+ "Numbers updated for the revised baseline (26.22, 19.01, 8.57, 4.26); S90 is still outside. Outcome unchanged."),
+("fig4b-pairwise-significance",True,"reproduced","All 3 named pairs have BH p ≤ 0.0001 under both the 6-pair and 3-pair families (cell 21).",
+ "Numbers updated (largest named BH p 0.0005); the baseline variants are now printed and all hold. Outcome unchanged."),
+("fig5-average-maps",True,"reproduced","Midpoints of the average maps are 26.48 > 19.14 > 8.22 > 3.79 (cell 23). This is not independent of fig4b, as the claims file notes.",
+ "Numbers updated (26.22 > 19.14 > 8.60 > 4.17). Outcome unchanged."),
+("table1-edge",False,"partially_reproduced","With the \"inside\" baseline, readings (a) and (b) each get 2/5. The centred placement, which the paper also allows, raises every Square and Edge difference by the same 0.38 spikes/s (cell 19). That gives (a) 5.89 / 30.24 / 17.30 / 17.16 / 19.10, and 3/5 within tolerance (max, mean, midpoint). Problem 2: the centred variant was run only for fig4b and s4, not for the Table 1 claims.",
+ "Changed to partially reproduced. Every Table 1 claim now prints its readings with both placements and with the stored BaseActivity. The adopted placement is the one closer to the stored BaseActivity, which for Square and Edge is centred (median absolute difference 0.67 against 1.51 spikes/s); it gives 3 of 5 under both readings, the values the verifier derived. The outcome is marked as assumed, and the notes say that the inside placement gives 2 of 5."),
+("table1-p180",True,"partially_reproduced","3/5 under (a) and (b) (cell 29). With the centred baseline it is 4/5.",
+ "With the adopted (centred) placement reading (a) gives 4 of 5; the notes give both. Outcome unchanged."),
+("table1-s90",False,"partially_reproduced","With the inside baseline the best reading is 1/5. With the centred baseline, (a)(i) becomes 2.68 / 13.81 / 7.84 / 7.88 / 8.57, which is 3/5 (max, mean, median).",
+ "Changed to partially reproduced, under the adopted (centred) placement, with the values the verifier derived. Marked as assumed; the notes say that the inside placement gives at most 1 of 5."),
+("table1-s52",True,"reproduced","Reading (a)(ii) is 7.46 / 28.71 / 17.11 / 16.43 / 19.01, all 5 within tolerance (cell 33). This rests on 12 of 30 neurons and on picking the best of 4 readings.",
+ "Outcome unchanged. The notes now also say that the Star squares centred on the corners give at most 3 of 5 and the stored BaseActivity at most 2 of 5; the inside placement is the one closer to the stored values for Star (median absolute difference 0.32 against 1.28 spikes/s)."),
+("table1-s40",True,"reproduced","Reading (a) is 10.22 / 34.36 / 23.04 / 23.06 / 26.48, 5/5 (cell 35). Problem 5: the bottom corners of the frame are an assumption; against the stored values Spearman is 0.85 and the main baseline is higher (median 2.04 vs 1.32). S40 passes under either.",
+ "The data check now prints the stimulus gray level in every baseline square. In 2 Corners files the bottom corners were not at 0% luminance; the squares there are moved up to the lowest height where both are. Reading (a) is now 9.96 / 34.10 / 22.78 / 22.80 / 26.22, 5 of 5, and 5 of 5 with the stored BaseActivity. Outcome unchanged."),
+("fig6-midpoint-representative",True,"reproduced","0 of 10 rank sum tests have p < 0.05; the smallest p is 0.43 (cell 37). The paired signed-rank variant is significant in 3 of 10 (S90 median, S40 mean and median). Problem 6: sa and sem are computed but unused, and cell 37 uses only block reading (i), whereas S52 reproduced under (ii); with p ≥ 0.43 this cannot change the result.",
+ "The unused sa is removed (sem is printed). The smallest p is now 0.42, and the baseline variants are printed (0 of 10 in each). Reading (ii) is not added, as the verifier notes it cannot change the result. Outcome unchanged."),
+("fig7a-rms-contrast-fit",False,None,"Not reproduced as run, but the test is invalid. Under neither reading is any value within tolerance (rms_a ≈ 1.06 flat; rms_b at most 0.47). Luminance comes from counting polygons, with the background set to 0, while the criterion says to compute RMS from the stimulus image and the dataset ships EdgecompImage holding the actual grayscale values. With a zero background, SD/mean of a window half on the background and half on the Edge is ≈ 1 at every level, so the test cannot reproduce the paper's curve by construction. In a synthetic check with a background of 0.74, 0% = 3.05 and 100% = 25.2 cd/m², SD/mean runs 0.609 → 0.943 and the fit gives a = −0.31, b = 0.046, c = 0.94, R² = 0.9945. With a non-zero background, reading (a) plausibly gives the paper's curve, so the evidence does not support a negative outcome.",
+ "Changed to blocked, methods_underspecified. The notebook now reads every stimulus image: the gray levels run 0 to 100, the rasterised polygons reproduce at least 93% of the Square and Edge pixels exactly (99% within one level), and the background has the gray level of the 0% polygon. RMS contrast is computed on those gray levels, which give the same result as before. The verifier's synthetic luminances put the background below the 0% level, which the image does not show, and the files hold no display calibration, so they are not used. A variant adds a uniform black level (0.5 to 50 on the 0-100 scale): at most 2 of 6 values are within tolerance. Since the computation on the same stimulus cannot give the paper's values under the claims file's readings, the procedure differs from the paper's in a way that cannot be settled here; the question to the authors is updated."),
+("fig7c-fold-edge-equivalence",True,"not_reproduced","Edge responses span only about 8.6 to 21 spikes/s, so P180 (3.88) falls below every Edge level and S40 (26.48) above them. No reading meets both conditions (cell 41). It uses the paper's fit parameters, as the criterion asks. The refit variant was skipped because of problem 1.",
+ "Numbers updated (Edge 8.99 to 20.43, P180 4.26, S40 26.22) and both baseline placements printed; no reading meets both conditions under either. The refit variant is still not run, as no RMS reading on the image fits the paper's curve. Outcome unchanged."),
+("fig7c-fold-edge-significance",True,"reproduced","P180 is below the Edge at 0.943, and S40 is above it at 0.610 and 0.647, under every correction (cell 43). With Bonferroni over 40 tests, exactly 0.610 and 0.647 are significant for S40, matching the paper's \"<68%\".",
+ "With the revised Corners baseline, Bonferroni over 40 keeps S40 significant only at 0.610 (0.647 gives 0.060); BH over 40, BH over 10 and Bonferroni over 10 still meet the criterion, which needs one reading. The notes say so. Outcome unchanged."),
+("fig7d-nonlinear",True,"reproduced","The means fall monotonically with angle. 3 of 4 points lie off the least-squares line by more than their SEM. In the slope variant, 2 of 3 slope pairs differ (cell 45).",
+ "Numbers updated; the baseline variants give 3 and 2 of 4 points off the line. Outcome unchanged."),
+("fig7d-dog-similar",True,"blocked","The DOG output of reference [3] is external. The zip holds no model files (I checked its directory).",
+ "No change."),
+("s3-latency-peak",True,"blocked","Only maps at 60 ms are present, with no spike times or eye traces (zip directory and data description confirm this). Nothing about it can be tested.",
+ "No change."),
+]
+res=[]
+for c,ag,oc,reason,resp in R:
+    e={"claim":c,"agrees":ag}
+    if oc: e["outcome"]=oc
+    e["reason"]=reason; e["response"]=resp
+    res.append(e)
+d["verifications"]=[{"date":"2026-11-15","kind":"agent",
+ "by":"Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook), run 43679279299",
+ "reviewed":("The first executed notebook with the conclusion cells and the summary removed, the helper module and the "
+  "claims file, with the paper's full text (PMC6438452). The verifier read the archive's zip directory and the data "
+  "description. It also raised points that bear on no single claim: the Star registration rests only on r = -0.11 "
+  "between screen-frame and aligned midpoints, with no fit residual or direct registration printed (problem 3; the "
+  "notebook now prints the polygon fit error, 2.3e-13 DU, and a correlation registration over shifts up to 64 DU, best "
+  "r at most 0.43, which supports dropping the 15 files); the off-fold check clipped a box at the frame edge (problem "
+  "7; shifts that leave the frame are now skipped); and the claims file's checks list as open whether the Corners S40 "
+  "midpoint averages the two folds, which the paper settles as the bright fold only (problem 9; the notebook already "
+  "follows the criteria, no change)."),
+ "results":res}]
+yaml.safe_dump(d,open(p,"w"),sort_keys=False,allow_unicode=True,width=115)
+print("ok")
+PYEOF
+python3 $TMPDIR/ver.py && python tools/entry.py check entries/martinez-conde-2019 2>&1 | tail -15
+```
+
+```
+ok
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/martinez-conde-2019; python3 - <<'EOF'
+p="README.md"; s=open(p).read()
+for a,b in [("| Baseline does not differ across stimuli | Not reproduced (assumed baseline placement) |","| Baseline does not differ across stimuli | Reproduced (assumed baseline placement; the readings disagree) |"),
+            ("| Table 1, Edge | Not reproduced |","| Table 1, Edge | Partially reproduced (assumed baseline placement) |"),
+            ("| Table 1, S90 | Not reproduced |","| Table 1, S90 | Partially reproduced (assumed baseline placement) |"),
+            ("| Edge RMS contrast and its exponential fit (Fig 7A) | Not reproduced |","| Edge RMS contrast and its exponential fit (Fig 7A) | Blocked: methods underspecified |"),
+            ("It takes under a minute, most of it reading\n  the zip file in place.","It takes about three minutes, most of it reading\n  the zip file in place and rasterising the stimuli.")]:
+    assert a in s, a; s=s.replace(a,b)
+open(p,"w").write(s)
+p="entry.yaml"; s=open(p).read(); s=s.replace("runtime_minutes: 1","runtime_minutes: 3"); open(p,"w").write(s)
+EOF
+grep -n "runtime" entry.yaml; date -u
+```
+
+```
+16:  runtime_minutes: 3
+Sun Nov 15 05:37:28 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "edge_luminance\|1 of 75\|of 75" entries/martinez-conde-2019/* attempts/martinez-conde-2019-02.yaml; python tools/entry.py all entries/martinez-conde-2019 2>&1 | tail -3
+```
+
+```
+grep: entries/martinez-conde-2019/__pycache__: Is a directory
+attempts/martinez-conde-2019-02.yaml:509:      .mat files and the xlsx. Separately (problem 8), the text says "eye time in 1 of 75 files", but there are 77 map
+Installed kernelspec registry-martinez-conde-2019 in executed/martinez-conde-2019/.venv/share/jupyter/kernels/registry-martinez-conde-2019
+0 error(s)
+pass  reproduce_martinez_conde_2019.ipynb  (167 s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  rm -rf entries/martinez-conde-2019/__pycache__; python3 - <<'EOF' > $TMPDIR/out3.txt
+import json
+nb=json.load(open('executed/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print('=====',i,c['metadata'].get('tags'))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
+        elif o.get('output_type')=='error': print('ERROR', o['ename'], o['evalue'])
+EOF
+diff $TMPDIR/out2.txt $TMPDIR/out3.txt; python tools/entry.py check entries/martinez-conde-2019 | tail -2; ls entries/martinez-conde-2019; git status --short 2>/dev/null | head
+```
+
+```
+33c33
+< peak memory so far, MB: 409.109375
+---
+> peak memory so far, MB: 410.3046875
+101c101
+< load and measures, s: 146
+---
+> load and measures, s: 147
+480c480
+< total runtime, s: 160; peak memory, MB: 461
+---
+> total runtime, s: 161; peak memory, MB: 461
+0 error(s)
+README.md
+entry.yaml
+reproduce_martinez_conde_2019.ipynb
+requirements.in
+requirements.lock.txt
+vasarely.py
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json;nb=json.load(open('entries/martinez-conde-2019/reproduce_martinez_conde_2019.ipynb'));print(sum(len(c.get('outputs',[])) for c in nb['cells']), all('id' in c for c in nb['cells']))"; date -u
+```
+
+```
+0 True
+Sun Nov 15 05:40:46 UTC 2026
+```
+
+**Agent**
+
+I've revised the entry for every point in the round-1 report and re-ran it with `python tools/entry.py all entries/martinez-conde-2019`. The run passes in 167 s, the checks report 0 errors, and a repeat run gave the same numbers. Round 1 is recorded under `verifications` in `attempts/martinez-conde-2019-02.yaml`, with the verifier's reasons in its own words and my reply under `response`. Nothing is committed.
 
 **Outcome changes**
+- **table1-edge**: not_reproduced → partially_reproduced, and **table1-s90**: not_reproduced → partially_reproduced. The verifier was right that the baseline placement hadn't been tested on Table 1. I now use the placement whose values are closer to the authors' stored `BaseActivity`: centred on the corners for Square and Edge, inside them for Star. That gives 3 of 5 values within tolerance for both claims, which are the values the verifier worked out. With the squares inside the corners they drop to 2 of 5 and 1 of 5. Both are marked as assumptions.
+- **s4-baseline-no-difference**: not_reproduced → reproduced, and this one is fragile. With the new placement the readings disagree: the pairwise tests find no difference (smallest BH p = 0.071), while Kruskal-Wallis (p = 0.042) and ANOVA (p = 0.007) do. The claims file's rule for that case adopts the pairwise reading. If the squares are placed inside the corners for both stimuli, or centred for both, all three readings find a difference.
+- **fig7a-rms-contrast-fit**: not_reproduced → blocked, `methods_underspecified`.
+  - RMS contrast is now computed from the stimulus image's own gray levels. The image puts the background at the same gray level as the 0% polygon, so the results are the same as before.
+  - Adding any uniform black level gets at most 2 of 6 values within tolerance.
+  - The verifier's synthetic display luminances put the background below the Edge's 0% level, which the image contradicts.
+  - The files hold no display calibration, so the definition the paper used can't be settled from the data. The question to the authors is updated.
 
-| Claim | Before | Now |
-|---|---|---|
-| table1-p180 | not reproduced | partially reproduced (4 of 5 values within tolerance) |
-| table1-s90 | reproduced | not reproduced (at most 2 of 5 under any reading) |
-| table1-s52 | partially reproduced | reproduced (5 of 5 under reading (ii)(a)) |
+**Added or corrected**
+- **Stimulus images**: every image is compared with its rasterised polygons. Square and Edge match at least 93% of pixels exactly and 99% within one gray level; Star at least 90% and 99%; Corners a median of 59% (minimum 14%) exactly and at least 84% within one level. A check also confirms which end of the Edge is 0% and which is 100%.
+- **Baseline squares**: the notebook now prints the gray level inside every square. In two Corners files the bottom corners were not at 0% luminance, so the squares there now move up until they are. This moved S40 slightly, to 26.22.
+- **Every claim** that uses the baseline now prints results under both placements and under the stored `BaseActivity`.
+- **Same-files test (problem 4)**: the adopted placement is now also tested on the 38 files that have a stored `BaseActivity`. It finds no difference there either (Kruskal-Wallis p = 0.081), so the earlier gap between computed and stored baselines came mostly from the smaller sample.
+- **Star registration**: the polygon fit error is now printed (about 1e-13 DU), and I added a direct correlation test over shifts up to 64 DU. The best r is at most 0.43, which supports dropping the 15 Star files without an aligned frame.
+- **Smaller fixes**: the off-fold check now skips squares that would leave the frame, the unused `sa` variable is gone, and the file count reads "1 of the 76 map files read".
+- The notes and results text now match the new numbers. Two shifts don't change an outcome:
+  - For fig7c-fold-edge-significance, Bonferroni over 40 tests now keeps only 0.610 significant for S40. Three other corrections still meet the criterion, which needs only one.
+  - table1-s52 stays reproduced only with the Star squares inside the corners. Centred on them it gets at most 3 of 5.
+- The README, the notebook summary, the findings (including a new one on the missing display calibration) and the runtime (3 minutes) are updated.
 
-These changes come from a bug I found while revising, plus the new baseline placement:
-
-- **The bug:** the authors' Square and Edge frame is 151 DU wide. Baseline squares centred on the corners of the 141.4 DU circumscribing square run past it, and the helper had read zeros there. Those squares are now read from the screen maps moved into a widened frame, averaged over the part that is on the screen.
-- **Effect:** the Square and Edge baseline is higher, so every P180 and S90 value fell. fig4b stays partially reproduced, but the value outside tolerance is now S90 (8.39 against 10.69 ± 1.94) in place of P180 (now 4.03, within).
-
-Round 1 does not bind outcomes, so I changed these three directly. The other 16 outcomes are unchanged, with their numbers recomputed.
-
-**What I added or corrected, by point in the report**
-
-- **B1, baseline placement:** each placement is compared with the files' own `BaseActivity`, file by file, with a scatter plot and with the squares moved inward step by step.
-  - Squares centred on the corners match best for Square and Edge (median difference 0.46 spikes/s).
-  - Squares inside the corners match best for the Star (0.39).
-  - The main reading now takes that per-stimulus match. It is recorded as an assumption, with all placements shown.
-  - I added two more Corners placements, plus s4 and Table 1 rerun on the 38 files that have `BaseActivity`.
-- **B2, fig7c margin:** "within one step of 90%" is measured as a distance from 90, now stated as an assumption. The verifier's level-based reading is printed as a variant; it passes.
-- **B3, cut Edges:** the Edge measures now use the 18 files whose Edge is wholly on the screen, since the Methods say the Edge was never off the display. All 22 are shown. table1-edge is 5 of 5 on the 18 files and 3 of 5 on all 22.
-- **B5, failed registrations:** the three Corners failures were a bug in `register_shift`, which read the cross-correlation lag wrongly for large shifts. It is fixed, and all 60 files now register at r ≥ 0.986.
-- **B6, fig7a:** the text no longer says the display luminance is absent. It gives 14.07 cd/m² at 50%, but not the black level.
-- **B7 and B8:** the units check now prints that 98.5% of pixels with eye time are non-integer. The 7.07 DU S90 blocks are now sampled symmetrically.
-- **C, the 0.943 and 90% coincidence:** I printed the Edge profile at 1% steps. The equal values came from a flat stretch of the profile.
-- **The handover:** each Result cell had also carried the next claim's heading, so the handover dropped those headings (fig4b-pairwise had none at all) and left the summary in. I split the cells, and the handover now strips the conclusions and the summary.
-- **Records:** the attempt record now has a `verifications` block for round 1, with the verifier's reasons and my responses for all 19 claims. I also updated the findings, the entry README and the runtime in `entry.yaml`.
-
-**Not done, and why**
-
-- **B4 (Star rests on 12 of 30 neurons):** this can't be fixed, because 15 Star files lack the authors' aligned frame. It remains a recorded finding and a deviation.
-- **fig7d-dog-similar:** I kept it as `data_missing`, not the verifier's `other`. That is the reason the protocol gives for an outside input that is not public.
-- **Reader questions:** none added, because the verifier reported no place where the claims file misreads the paper.
+**Not done**
+- I added nothing to `questions/martinez-conde-2019.yaml`, because the verifier reported no place where the claims file misreads the paper. Its problem 9 is an open item in the claims file's check log, and the notebook already follows the criteria there.
+- I didn't add block reading (ii) to fig6. The verifier noted it can't change the result, since all p-values are at least 0.42.
 
 ## End of run
 
-74 turns, 54 minutes, $6.42 at API prices, result: success.
+59 turns, 24 minutes, $5.01 at API prices, result: success.

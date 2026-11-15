@@ -1,38 +1,26 @@
-I've worked through every point in the round-1 report. The entry re-runs cleanly with `python tools/entry.py all entries/martinez-conde-2019` (0 check errors, notebook passes in about 6 min, 1.1 GB peak memory). Every conclusion, note and measured value matches the final run. Nothing is committed.
+I've revised the entry for every point in the round-1 report and re-ran it with `python tools/entry.py all entries/martinez-conde-2019`. The run passes in 167 s, the checks report 0 errors, and a repeat run gave the same numbers. Round 1 is recorded under `verifications` in `attempts/martinez-conde-2019-02.yaml`, with the verifier's reasons in its own words and my reply under `response`. Nothing is committed.
 
 **Outcome changes**
+- **table1-edge**: not_reproduced → partially_reproduced, and **table1-s90**: not_reproduced → partially_reproduced. The verifier was right that the baseline placement hadn't been tested on Table 1. I now use the placement whose values are closer to the authors' stored `BaseActivity`: centred on the corners for Square and Edge, inside them for Star. That gives 3 of 5 values within tolerance for both claims, which are the values the verifier worked out. With the squares inside the corners they drop to 2 of 5 and 1 of 5. Both are marked as assumptions.
+- **s4-baseline-no-difference**: not_reproduced → reproduced, and this one is fragile. With the new placement the readings disagree: the pairwise tests find no difference (smallest BH p = 0.071), while Kruskal-Wallis (p = 0.042) and ANOVA (p = 0.007) do. The claims file's rule for that case adopts the pairwise reading. If the squares are placed inside the corners for both stimuli, or centred for both, all three readings find a difference.
+- **fig7a-rms-contrast-fit**: not_reproduced → blocked, `methods_underspecified`.
+  - RMS contrast is now computed from the stimulus image's own gray levels. The image puts the background at the same gray level as the 0% polygon, so the results are the same as before.
+  - Adding any uniform black level gets at most 2 of 6 values within tolerance.
+  - The verifier's synthetic display luminances put the background below the Edge's 0% level, which the image contradicts.
+  - The files hold no display calibration, so the definition the paper used can't be settled from the data. The question to the authors is updated.
 
-| Claim | Before | Now |
-|---|---|---|
-| table1-p180 | not reproduced | partially reproduced (4 of 5 values within tolerance) |
-| table1-s90 | reproduced | not reproduced (at most 2 of 5 under any reading) |
-| table1-s52 | partially reproduced | reproduced (5 of 5 under reading (ii)(a)) |
+**Added or corrected**
+- **Stimulus images**: every image is compared with its rasterised polygons. Square and Edge match at least 93% of pixels exactly and 99% within one gray level; Star at least 90% and 99%; Corners a median of 59% (minimum 14%) exactly and at least 84% within one level. A check also confirms which end of the Edge is 0% and which is 100%.
+- **Baseline squares**: the notebook now prints the gray level inside every square. In two Corners files the bottom corners were not at 0% luminance, so the squares there now move up until they are. This moved S40 slightly, to 26.22.
+- **Every claim** that uses the baseline now prints results under both placements and under the stored `BaseActivity`.
+- **Same-files test (problem 4)**: the adopted placement is now also tested on the 38 files that have a stored `BaseActivity`. It finds no difference there either (Kruskal-Wallis p = 0.081), so the earlier gap between computed and stored baselines came mostly from the smaller sample.
+- **Star registration**: the polygon fit error is now printed (about 1e-13 DU), and I added a direct correlation test over shifts up to 64 DU. The best r is at most 0.43, which supports dropping the 15 Star files without an aligned frame.
+- **Smaller fixes**: the off-fold check now skips squares that would leave the frame, the unused `sa` variable is gone, and the file count reads "1 of the 76 map files read".
+- The notes and results text now match the new numbers. Two shifts don't change an outcome:
+  - For fig7c-fold-edge-significance, Bonferroni over 40 tests now keeps only 0.610 significant for S40. Three other corrections still meet the criterion, which needs only one.
+  - table1-s52 stays reproduced only with the Star squares inside the corners. Centred on them it gets at most 3 of 5.
+- The README, the notebook summary, the findings (including a new one on the missing display calibration) and the runtime (3 minutes) are updated.
 
-These changes come from a bug I found while revising, plus the new baseline placement:
-
-- **The bug:** the authors' Square and Edge frame is 151 DU wide. Baseline squares centred on the corners of the 141.4 DU circumscribing square run past it, and the helper had read zeros there. Those squares are now read from the screen maps moved into a widened frame, averaged over the part that is on the screen.
-- **Effect:** the Square and Edge baseline is higher, so every P180 and S90 value fell. fig4b stays partially reproduced, but the value outside tolerance is now S90 (8.39 against 10.69 ± 1.94) in place of P180 (now 4.03, within).
-
-Round 1 does not bind outcomes, so I changed these three directly. The other 16 outcomes are unchanged, with their numbers recomputed.
-
-**What I added or corrected, by point in the report**
-
-- **B1, baseline placement:** each placement is compared with the files' own `BaseActivity`, file by file, with a scatter plot and with the squares moved inward step by step.
-  - Squares centred on the corners match best for Square and Edge (median difference 0.46 spikes/s).
-  - Squares inside the corners match best for the Star (0.39).
-  - The main reading now takes that per-stimulus match. It is recorded as an assumption, with all placements shown.
-  - I added two more Corners placements, plus s4 and Table 1 rerun on the 38 files that have `BaseActivity`.
-- **B2, fig7c margin:** "within one step of 90%" is measured as a distance from 90, now stated as an assumption. The verifier's level-based reading is printed as a variant; it passes.
-- **B3, cut Edges:** the Edge measures now use the 18 files whose Edge is wholly on the screen, since the Methods say the Edge was never off the display. All 22 are shown. table1-edge is 5 of 5 on the 18 files and 3 of 5 on all 22.
-- **B5, failed registrations:** the three Corners failures were a bug in `register_shift`, which read the cross-correlation lag wrongly for large shifts. It is fixed, and all 60 files now register at r ≥ 0.986.
-- **B6, fig7a:** the text no longer says the display luminance is absent. It gives 14.07 cd/m² at 50%, but not the black level.
-- **B7 and B8:** the units check now prints that 98.5% of pixels with eye time are non-integer. The 7.07 DU S90 blocks are now sampled symmetrically.
-- **C, the 0.943 and 90% coincidence:** I printed the Edge profile at 1% steps. The equal values came from a flat stretch of the profile.
-- **The handover:** each Result cell had also carried the next claim's heading, so the handover dropped those headings (fig4b-pairwise had none at all) and left the summary in. I split the cells, and the handover now strips the conclusions and the summary.
-- **Records:** the attempt record now has a `verifications` block for round 1, with the verifier's reasons and my responses for all 19 claims. I also updated the findings, the entry README and the runtime in `entry.yaml`.
-
-**Not done, and why**
-
-- **B4 (Star rests on 12 of 30 neurons):** this can't be fixed, because 15 Star files lack the authors' aligned frame. It remains a recorded finding and a deviation.
-- **fig7d-dog-similar:** I kept it as `data_missing`, not the verifier's `other`. That is the reason the protocol gives for an outside input that is not public.
-- **Reader questions:** none added, because the verifier reported no place where the claims file misreads the paper.
+**Not done**
+- I added nothing to `questions/martinez-conde-2019.yaml`, because the verifier reported no place where the claims file misreads the paper. Its problem 9 is an open item in the claims file's check log, and the notebook already follows the criteria there.
+- I didn't add block reading (ii) to fig6. The verifier noted it can't change the result, since all p-values are at least 0.42.
