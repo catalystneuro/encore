@@ -392,7 +392,11 @@ elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
 fi
 step author
 fetch
-open_questions=$(on_branch "questions/$d.yaml" | python -c "import yaml,sys; q=yaml.safe_load(sys.stdin) or []; q=q.get('questions', []) if isinstance(q, dict) else q; print(sum(1 for x in q if not x.get('answered')))" 2>/dev/null || echo 0)
+# One number. Until 2026-11-15 a paper with no questions file gave two ("0" from python, and another from "|| echo 0",
+# since on_branch fails and the pipeline with it): "0 0" is not 0, so every such chain ran the answer and
+# author-answers roles for nothing, and a replicate, whose answer run the workflow refused, retried for ever.
+open_questions=$({ on_branch "questions/$d.yaml" || true; } | python -c "import yaml,sys; q=yaml.safe_load(sys.stdin) or []; q=q.get('questions', []) if isinstance(q, dict) else q; print(sum(1 for x in q if not x.get('answered')))" 2>/dev/null | tail -n 1)
+open_questions=${open_questions:-0}
 if [ "${open_questions:-0}" != 0 ] || is_done answer; then
   log "$open_questions open questions"
   step answer

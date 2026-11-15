@@ -192,6 +192,21 @@ def test_a_run_flagged_on_the_unverified_account_is_queued_on_the_verified_one(t
     assert body.count("3) queued;;") == 2   # every role, the recorder too
 
 
+def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
+    # chain.sh counted "0\n0" for a paper with no questions file, which is not 0: the answer and author-answers roles
+    # ran for nothing on every such paper, and the first replicates hung at the answer role (2026-11-14).
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index('if [ "${open_questions:-0}" != 0 ]')]
+    def count(on_branch):
+        script = f"set -uo pipefail\nd=x\non_branch(){{ {on_branch}; }}\npython(){{ {sys.executable} \"$@\"; }}\n{lines}\necho \"[$open_questions]\""
+        return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.strip()
+    assert count("return 1") == "[0]"
+    assert count("printf 'questions:\\n- {id: a}\\n- {id: b, answered: true}\\n'") == "[1]"
+    # A replicate's answer run goes to the papers workflow with its name, and commits to the replicate's branch.
+    papers = (REPO / ".github" / "workflows" / "papers.yml").read_text()
+    assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in papers and "format('-{0}', inputs.replicate)" in papers
+
+
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
     # docs/replicates.md: every reference to the chain's branch goes through $br, which a replicate sets to
     # replicate/<paper>/<rN>; its runs are found by the name <paper>/<rN>; it ends before the reconcile step and the
