@@ -125,10 +125,15 @@ def load_session(path: str, url: str, images: bool = True) -> dict:
             etab[c] = _strings(d) if d.dtype.kind in "OSU" else d[:]
         s["electrodes"] = pd.DataFrame(etab)
         s["electrode_columns"] = ecols
+        s["imp_dtype"] = str(el["imp"].dtype) if "imp" in el else ""
 
         u = f["units"]
         ucols = [_text(c) for c in u.attrs["colnames"]]
         s["unit_columns"] = ucols
+        s["unit_descriptions"] = {c: _text(u[c].attrs.get("description", "")) for c in ucols if c in u}
+        s["spike_times_attrs"] = {k: _text(v) for k, v in u["spike_times"].attrs.items()
+                                  if k in ("description", "unit", "resolution")}
+        s["event_time_unit"] = _text(ev["timestamps"].attrs.get("unit", ""))
         n = len(u["id"])
         idx = u["spike_times_index"][:]
         st = u["spike_times"][:]
@@ -271,7 +276,12 @@ def roc(confidence: np.ndarray, is_old: np.ndarray) -> tuple[np.ndarray, np.ndar
 
 
 def auc(h: np.ndarray, f: np.ndarray) -> float:
-    """calcROC_AUC.m / helper.cal_auc: trapezoid rule with (0,0) and (1,1) added."""
+    """calcROC_AUC.m / helper.cal_auc: trapezoid rule with (0,0) and (1,1) added.
+
+    calcROC_AUC.m adds (0,0) when FP(1) ~= 0 or TP(1) ~= 1, this function when either is not 0.
+    The two differ only when the first point is (0,0) or (0, h < 1), which cannot occur after
+    adjust_hf (F is at least 1/(2n)), so both add (0,0) to every ROC here and give the same AUC.
+    """
     tp, fp = list(h), list(f)
     if fp[0] != 0 or tp[0] != 0:
         tp, fp = [0.0] + tp, [0.0] + fp
@@ -285,9 +295,30 @@ def auc(h: np.ndarray, f: np.ndarray) -> float:
 
 
 def zroc_slope(h: np.ndarray, f: np.ndarray) -> float:
-    """calcZROCSlope.m: regression of z(H) on z(F) over the first five points (the sixth is (1,1))."""
+    """calcZROCSlope.m: regression of z(H) on z(F) over the first five points.
+
+    The sixth point, criterion >= 1, is (1,1) before adjust_hf and (1 - 1/(2n), 1 - 1/(2n)) after
+    it; calcZROCSlope.m drops it ("is always in right upper corner").
+    """
     zh, zf = stats.norm.ppf(h[:5]), stats.norm.ppf(f[:5])
     return float(np.polyfit(zf, zh, 1)[0])
+
+
+def zroc_slope_regress(h: np.ndarray, f: np.ndarray) -> float:
+    """The slope MATLAB's regress returns in calcZROCSlope.m, also when z(F) is constant.
+
+    regress solves by QR with column pivoting and, when the design [1, z(F)] is rank deficient,
+    sets the coefficient of the dropped column to 0 (a basic solution). Equal to zroc_slope when
+    z(F) takes at least two values.
+    """
+    from scipy import linalg
+    zh, zf = stats.norm.ppf(h[:5]), stats.norm.ppf(f[:5])
+    x = np.column_stack([np.ones(5), zf])
+    q, r, perm = linalg.qr(x, mode="economic", pivoting=True)
+    rank = int((np.abs(np.diag(r)) > max(x.shape) * np.spacing(abs(r[0, 0]))).sum())
+    b = np.zeros(2)
+    b[perm[:rank]] = linalg.solve_triangular(r[:rank, :rank], q[:, :rank].T @ zh)
+    return float(b[1])
 
 
 def accuracy_fixed(conf: np.ndarray, is_old: np.ndarray) -> tuple[float, float]:
