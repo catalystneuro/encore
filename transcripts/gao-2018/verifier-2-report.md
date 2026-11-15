@@ -1,73 +1,72 @@
-**Verifier report, round 2: gao-2018-01**
+**Round 2 verification: Gao et al. 2018 (doi:10.1038/s41586-018-0633-x), attempt gao-2018-02**
 
-I checked the outcomes against the claims file (45 claims) and the attempt record (45 outcomes). The record counts 11 reproduced, 5 partially reproduced, 3 not reproduced and 26 blocked. The notebook Summary (cell 87) and the README count 10, 6, 3 and 26. The whole difference is `cd-captures-selectivity`, covered in 1a.
+Cell numbers below are 0-based indices in the re-executed notebook.
 
-### 1. Outcomes and assumptions
+Counts, taken from the claims file and the attempt record:
+- The claims file has 46 claims, and the attempt record has 46 outcomes.
+- 24 are blocked, 10 reproduced, 9 partially reproduced and 3 not reproduced.
+- The README's groupings agree with this: 5 behavior claims reproduced, and 22 + 2 blocked.
 
-I agree with 44 of the 45 outcomes as recorded: all 26 blocked ones and every tested outcome except the one in 1a. On the disputed ones:
+**1. Outcomes and assumptions**
 
-- **fig3d** (not reproduced): agree.
-- **fig3e-alm-increase-decrease** (partially reproduced): agree.
-- **fig2cd** (partially reproduced): agree. The CN half is missing, so it cannot be fully reproduced in any case.
-- **fig3e-alm-mean-rate-unchanged** (partially reproduced): I now accept this. The claim's two parts are the absence test and the rate level; the absence test passes under the unpaired test and the rate level fails under every reading. But see 1b.
-- **fig4-fastigial-activation-alm-latency** (partially reproduced): I now accept this. The latency is in tolerance by bin start and by bin centre (cell 57); the count fails under every reading.
-- **fig3f** (reproduced): agree. Judging by most of 20 draws is a stated deviation.
-- **fig4e** (reproduced): agree, with the power caveat in section 3.
+I agree with 45 of the 46 outcomes. I disagree with one:
 
-**a. `cd-captures-selectivity` has the wrong outcome in the record.** The `outcomes` entry says `outcome: reproduced`. Its own verification response says "Changed from reproduced to partially_reproduced". Cell 81, the Summary and the README all say partially reproduced. The numbers support partially reproduced (cell 80):
-- Under the chosen reading (independent trials, trial-type means, squared ratio) the selectivity is 62.1%, inside tolerance.
-- The variance is 34.2%, outside 22.8 to 31.2%.
+- **fig3f-alm-selectivity-abolished-by-cn-inhibition:** I would record not_reproduced; the record has partially_reproduced.
+  - The criterion's only test is that photo-inhibition selectivity cannot be told from zero. It fails under every reading: [0.19, 0.60] and [0.02, 0.53] in cell 74, and both 5-screening-trial variants.
+  - The author's response calls a 73% to 82% drop "present but weaker". That is a judgement about the protocol's categories, and the record states the disagreement fairly.
 
-The `assumed: true` flag and its stated assumption are correct and reasonable for a partially reproduced outcome.
+The six changes made since round 1 now match my round-1 outcomes. They are fig1g-dentate, fig2-preparatory, fig3d, fig3e-increase-decrease, cd-captures-selectivity, and fig3f, which is the one still recorded as a disagreement.
 
-**b. fig3e-alm-mean-rate-unchanged is missing `assumed: true`.** The claims file's criterion says "the outcome is marked as resting on the reading when paired and unpaired disagree". They disagree here: unpaired p = 0.214, paired p = 0.022 (cell 47). The author's case for the unpaired test is reasonable: the paper's p = 0.58 for a 0.24 spikes/s change fits an unpaired test. But the record has to state it as an assumption.
+Three outcomes rest on an assumption (`assumed: true`). All three are stated:
+- **fig4-fastigial-activation-alm-latency:** the latency is read from 10 ms bins labelled by their start. This is stated, and it is the most lenient label: on a synthetic effect starting at 5 ms it returned 0 ms (my round-1 problem 5). It is acceptable because the outcome is only partial, and the count fails anyway.
+- **fig4g-dentate-effect-recovers:** bins are labelled by their centre. This is stated and reasonable. It is the opposite label from fig4, which the record admits. The outcome is partial whatever the label, because the recovery part fails.
+- **cd-captures-selectivity:** selectivity is measured on held-out trials. This is stated and reasonable, since E6 projects independent trials. It is the only reading under which the selectivity part passes.
 
-**c. No other outcome rests on an unstated assumption.**
+I found no place where the claims file misreads the paper. The fig1i and fig1l early-lick criteria say "per mouse (n = 6)". The Extended Data Fig. 1f and 2i legends ("Lines, individual mice") support a test pooled over mice, which is what was run.
 
-### 2. Text against the printed outputs
+**2. Sentences the printed outputs do not support**
 
-Almost every number checks out. These are the exceptions:
+- **Attempt record, fig4g notes and the `methods_unavailable` latency finding:** "by start 3.3 ms, just below 3.3 to 13.3" and "no single choice here matches both reported values".
+  - Cell 52 prints 3.30, exactly the bottom of 8.3 ± 5.0. The printed output does not show it falls below.
+  - If it is within, the start label matches both the fastigial and the dentate latency, and the finding's claim is wrong.
+- **Attempt record, fig4 notes:** "The fraction of tested neurons (0.40 to 0.42) is close to 227 of the paper's unknown denominator." Nothing printed can support this, because the denominator is unknown.
+- **Attempt record, fig1g-delay-errors notes, and cell 18:** "light for 0.455 s from delay onset, ending 0.845 s before the go cue". Cell 9 shows 0.500 s in the 2015 sessions and 1.300 s in ANM314746_20151020. 0.455 s holds only for the 2017 sessions.
+- **Summary (cell 93):** "The per-neuron photostimulation p-values here equal those in the lab's compile."
+  - Only the 400 ms-bin photo-activation p-values were compared (cell 59).
+  - The 381 and 704 NaN entries in the lab's file were skipped by `nanmax`.
+  - No E4 whole-window or photo-inhibition p-values were compared.
+- **Summary (cell 93), and the record's metadata_error finding:** "both deposits place the fastigial fiber on the same side". Only the CRCNS side is printed (cell 3); `compare_deposits` does not print the DANDI location.
+- **Smaller details that are stated but not printed:**
+  - The attempt record says ANM314757_20151021 is missing "trials 48 to 315" and ANM314746_20151022 is missing "the last 26"; cell 5 prints only the counts.
+  - The attempt record says 14 pyramidal units are "at 0.40 to 0.45 ms"; cell 7 prints only a 0.35 to 0.45 ms bin.
+- **Cell 35, the attempt record's fig1i/fig1l notes and the README:** "the early-lick part holds". This is true pooled over mice. But cell 34 shows BAYLORCD6 rising from 0.081 to 0.324 (p < 0.0001), and BAYLORCD8 differing under both codes. "Holds" should be qualified as pooled. It does not change the blocked outcome.
 
-- **Attempt record, cd-captures-selectivity:** `outcome: reproduced` contradicts cell 80 and every other text (see 1a).
-- **Cell 48 and the fig3e notes:** "The rates are about 19% below the paper's 4.15 and 4.39 spikes/s." Only the control rate is about 19% below (3.379 against 4.15). The photo-inhibition rate, 3.767 against 4.39, is about 14% below.
-- **Cell 39 and the fig2cd notes:** "The paper says the epoch gave qualitatively similar results, so the peak's place holds under one of the three epochs only." The paper's sentence is about *preparatory* activity: "yielded qualitatively similar preparatory activity". On these data the preparatory part is similar under every epoch (cell 38: sample-epoch intervals above 0 and delay mean above sample mean in all six rows). The peak's position is outside what that sentence covers, so there is no conflict with the paper.
-  - The claims file's E3 paraphrase ("the paper says the epoch choice gave qualitatively similar results") drops "preparatory activity". I am reporting that as a misreading, not correcting it.
-  - My own round-1 reason for fig2cd made the same overstatement.
-  - The outcome does not change.
-- **Cell 67 and the fig4g notes:** "much of the late dentate effect follows the mix of lick directions." Cell 66 supports the comparison with the pre-onset level (4 of 15 bins above it). It leaves out that all 15 bins of that variant still exceed the 1% chance level. This is a minor omission and does not decide the outcome.
-- **Finding on `photo_stim_id`:** "to code 6 does not (2.8 to 2.9)". Cell 9 shows 2.95 to 3.00 early in the delay and 2.93 at its end. The point that code 6 does not fade holds, but the numbers are loose.
-- **Two findings have no printed output behind them:**
-  - The BAYLORCD8 20171020 finding ("end at 7221 s … last 127 of 462 trials, to 8481 s"). Cell 6 prints only the 120 trials left out.
-  - The 25 kHz finding ("including the 32-channel recordings … 25 kHz"). Cell 5 prints only the 20 kHz rate.
+Everything else in the Result cells (17 through 92), the Summary table and the README agrees with the printed numbers.
 
-Everything else in the "**Result:**" cells, the Summary, the README and the record's notes matches the outputs. This includes the sensitivity figures in cell 86, the fig3f draw counts and ranges in cell 54, the fig4f and fig4g bin fractions in cells 63 and 66, and the latencies in cells 43, 57 and 60.
+**My round-1 reasons in the attempt record:** they are given faithfully and in my wording, and the "disagreed with six" count is right. Two small faults:
+- My "does not affect a conclusion" labels were dropped when problems 7, 9, 10 and 11 were attached to particular claims (fig1g early sample, fig3d, fig2-alm). Those problems now read as bearing on the outcomes.
+- The cell numbers in my reasons refer to the round-1 notebook, not this one.
 
-**My round-1 reasons in the record:** they are in my own words. They are close to my round-1 table, with the relevant problem text added. The only slight misplacement is that problems 5 and 6, which I had marked as not affecting a conclusion, are attached to the fig4f and fig3d reasons. Problem 6 does bear on the fig3d latency, so that is acceptable.
+**3. Round-1 points**
 
-### 3. Round-1 points: what is resolved and what remains
+Resolved:
+- **1 (sessions whose laser traces disagree with their codes, "MISMATCH"):** every analysis of codes 1 to 4 now shows a run without them.
+  - ed10d stays significant (p = 0.035).
+  - fig4i now depends on the session set, and the record reports this.
+  - fig4i (partial) and dentate (partial) are treated consistently.
+- **2 (coding-direction variance):** the outcome no longer uses the single-trial variance.
+- **3 (fig4e, fewer trials under photo-activation):** with control trials subsampled to the same counts, 0.86 to 0.89 of neurons still lose significance (dentate 0.51 to 0.52).
+- **4 (fig4f/g, movement):** the effect persists within each licked direction.
+- **5 (latency bin label):** the notes now say the start label gives the earliest possible onset.
+- **7 (conservative bootstrap):** trial-level checks were added.
+- **8 (early licks):** now tested.
+- **10 (spike counts against rates):** counts give the same 856 neurons.
+- **11 (spike width):** checked against the labels.
+- **Section C items:** the time-series channels are printed (no lick signal), the laser-trace discussion is restored (cell 10), and the session lists are compared with the lab's coding-direction compile.
 
-**Resolved:**
-- **B2:** fig3f is now judged over 20 draws (15 and 13 of 20 pass in the last 500 ms).
-- **B3:** resolved in the notebook and README, but not in the record (see 1a).
-- **B4:** a split-half selection variant gives the same pattern; the outcome was changed.
-- **B5:** a within-trial-type variant and the last-pre-onset-bin comparison were added.
-- **B7:** hemispheres are handled.
-- **B9:** the run without the five clock-check sessions changes no outcome.
-- **B10:** the fig1l early-lick test was added.
-- From my "could not check" list:
-  - unit-table columns and file groups: cell 6;
-  - the per-code time course: cell 9;
-  - the onset time course: cell 44;
-  - the lick-early crosstab: cell 7.
-- Also resolved: the count/fraction fallback is now applied correctly, and the observation-interval bug was fixed.
-
-**Remaining, where it bears on a conclusion:**
-1. **B1, the unit-count excess, is still unexplained.** The units table has no quality field, and there are 195 inhibition-session neurons under 0.5 spikes/s. It decides:
-   - the fig3d count;
-   - the fig3e-alm-increase-decrease counts;
-   - the rate level in fig3e-alm-mean-rate-unchanged;
-   - the fig4 count.
-2. **The fig3d latency is unstable (B6).** The bootstrap s.d. is 11.5 to 14.7 ms, against 3.8 in the paper. Without the five clock-check sessions the bin-start mean is 9.89 ms, inside tolerance (cell 86). So fig3d's not reproduced holds on the latency only with those sessions included, and on the count, which depends on B1. The time of photostimulus onset still cannot be checked, because the files hold no laser trace.
-3. **Two record fixes are needed:** set the cd-captures-selectivity outcome to partially reproduced (1a) and mark fig3e-alm-mean-rate-unchanged as assumed (1b).
-4. **fig4e:** only part of the per-neuron loss of significance is due to the effect itself. 86–88% of neurons lose significance, but 65–75% would lose it from trial count alone (cell 69). The low photo-activation trial count also holds down the "gain" count. So the outcome rests mainly on the population difference interval, which is solid.
-5. **Not addressed, outcomes unaffected:** B8 (the bootstrap is conservative, which favours the absence claims; fig1g-dentate has p = 0.108, and its ipsi trials give 0.041) and B11 (recording sessions instead of the paper's behaviour sessions; stated).
+What remains that bears on a conclusion:
+- **6 (unit counts):** the lab's compiled files hold the deposited units (1084 and 682 pyramidal), not the paper's 912 and 454. So the count failures in fig3d, fig3e-increase-decrease and fig4 are judged on a population the paper did not use. This is disclosed and cannot be fixed from the deposits.
+- **9 (clock check in the inhibition sessions):** it is now run there (cell 11), but only at 200 ms resolution. That cannot rule out a 10 to 30 ms offset between spikes and trial events, which is the size of fig3d's latency gap.
+  - The record's sentence about it is worded correctly ("larger than its 200 ms windows").
+  - fig3d's outcome does not depend on it, because the count fails as well.
+- **fig4g at the start label:** the 3.30 ms value at the tolerance bound (section 2) needs more decimal places. It would decide whether the latency `methods_unavailable` finding stands.

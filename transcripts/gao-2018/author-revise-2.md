@@ -1,54 +1,41 @@
-# gao-2018 · author-revise-2 · run 42869430270
+# gao-2018 · author-revise-2 · run 43609241370
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-date -u; cat transcripts/gao-2018/verifier-2-report.md; ls entries/gao-2018 entries/gao-2018/*; ls questions | grep gao
+date -u; cat transcripts/gao-2018/verifier-2-report.md; ls entries/gao-2018 questions transcripts/gao-2018 paper | head -50
 ```
 
 ```
-Tue Nov 10 17:59:34 UTC 2026
-**Verifier report, round 2: gao-2018-01**
+Sat Nov 14 15:19:19 UTC 2026
+**Round 2 verification: Gao et al. 2018 (doi:10.1038/s41586-018-0633-x), attempt gao-2018-02**
 
-I checked the outcomes against the claims file (45 claims) and the attempt record (45 outcomes). The record counts 11 reproduced, 5 partially reproduced, 3 not reproduced and 26 blocked. The notebook Summary (cell 87) and the README count 10, 6, 3 and 26. The whole difference is `cd-captures-selectivity`, covered in 1a.
+Cell numbers below are 0-based indices in the re-executed notebook.
 
-### 1. Outcomes and assumptions
+Counts, taken from the claims file and the attempt record:
+- The claims file has 46 claims, and the attempt record has 46 outcomes.
+- 24 are blocked, 10 reproduced, 9 partially reproduced and 3 not reproduced.
+- The README's groupings agree with this: 5 behavior claims reproduced, and 22 + 2 blocked.
 
-I agree with 44 of the 45 outcomes as recorded: all 26 blocked ones and every tested outcome except the one in 1a. On the disputed ones:
+**1. Outcomes and assumptions**
 
-- **fig3d** (not reproduced): agree.
-- **fig3e-alm-increase-decrease** (partially reproduced): agree.
-- **fig2cd** (partially reproduced): agree. The CN half is missing, so it cannot be fully reproduced in any case.
-- **fig3e-alm-mean-rate-unchanged** (partially reproduced): I now accept this. The claim's two parts are the absence test and the rate level; the absence test passes under the unpaired test and the rate level fails under every reading. But see 1b.
-- **fig4-fastigial-activation-alm-latency** (partially reproduced): I now accept this. The latency is in tolerance by bin start and by bin centre (cell 57); the count fails under every reading.
-- **fig3f** (reproduced): agree. Judging by most of 20 draws is a stated deviation.
-- **fig4e** (reproduced): agree, with the power caveat in section 3.
+I agree with 45 of the 46 outcomes. I disagree with one:
 
-**a. `cd-captures-selectivity` has the wrong outcome in the record.** The `outcomes` entry says `outcome: reproduced`. Its own verification response says "Changed from reproduced to partially_reproduced". Cell 81, the Summary and the README all say partially reproduced. The numbers support partially reproduced (cell 80):
-- Under the chosen reading (independent trials, trial-type means, squared ratio) the selectivity is 62.1%, inside tolerance.
-- The variance is 34.2%, outside 22.8 to 31.2%.
-[... 69 more lines not kept]
-```
+- **fig3f-alm-selectivity-abolished-by-cn-inhibition:** I would record not_reproduced; the record has partially_reproduced.
+  - The criterion's only test is that photo-inhibition selectivity cannot be told from zero. It fails under every reading: [0.19, 0.60] and [0.02, 0.53] in cell 74, and both 5-screening-trial variants.
+  - The author's response calls a 73% to 82% drop "present but weaker". That is a judgement about the protocol's categories, and the record states the disagreement fairly.
 
-**Agent calls Bash**
+The six changes made since round 1 now match my round-1 outcomes. They are fig1g-dentate, fig2-preparatory, fig3d, fig3e-increase-decrease, cd-captures-selectivity, and fig3f, which is the one still recorded as a disagreement.
 
-```bash
-grep -n "" docs/protocol.md | sed -n '1,400p' | grep -n -i -E "step 6|Hand over|proposed|round 2|verifications" | head -40
-```
-
-```
-190:190:not say what the paper says (author, step 1.6, and "Hand over for
-205:205:(step 6).
-292:292:     (step 6; see also chance levels, under "Record the attempt").
-342:342:     claims file (reader, step 6), and a later run, `author-answers`,
+[... 104 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n -E "^#|^[0-9]+\. " docs/protocol.md | head -80
+grep -n "^#" docs/protocol.md | head -80; wc -l docs/protocol.md
 ```
 
 ```
@@ -62,112 +49,168 @@ grep -n -E "^#|^[0-9]+\. " docs/protocol.md | head -80
 186:### 6. Answer questions
 199:## Author
 215:### 1. Establish what can be tested
-219:1. List the dataset's files and read its metadata from the archive. Open a
-221:2. Work out which of the subjects, sessions, conditions and measured
-228:3. Choose the version to pin. Pin the version the paper cites, as the claims
-233:4. Decide what comes from outside the dataset. Data from elsewhere may be
-280:5. Decide now which claims are blocked, and why; a block that depends on a
-306:6. Take from the paper what the claims file does not say. When a claim needs
 345:### 2. Check the data against its description
 360:### 3. Write the entry
-402:1. **Header.** The paper, the dataset and version, the text the claims file
-404:2. **Data check.** A cell tagged `sanity` that prints what was loaded: counts
-[... 19 more lines not kept]
+431:### 4. Lock, check and run
+451:### 5. Record the attempt
+524:### 6. Hand over for verification
+562:## Repeat attempts
+604:## Local and remote datasets
+627:## Verifier
+631:### Round 1: without the author's conclusions
+656:### Round 2: with the author's conclusions
+[... 2 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 300,345p docs/protocol.md; sed -n 440,540p docs/protocol.md; sed -n 634,670p docs/protocol.md
+sed -n 199,215p docs/protocol.md; sed -n 431,676p docs/protocol.md
 ```
 
-```
-public but slow to fetch, use this only when the notebook itself shows
-     the fetch does not fit the limit; otherwise test the claim.
-   - `other`: say what, for example too few units under the claim's own rule.
+````
+## Author
 
-   A claim that depends on a blocked claim is blocked for the same reason.
+The workflow puts the paper under `paper/`, as for the reader. Read it to
+understand the claims, their data and their figures. The claims file still
+decides what is tested: do not change a claim's statement, expected values or
+criterion. A method detail the claims file lacks is taken from the paper
+(step 6).
 
-6. Take from the paper what the claims file does not say. When a claim needs
-   a method detail the claims file does not give (which trials, which subset,
-   a window, a threshold, what a measure is compared with), take it from the
-   paper: the main text, the Methods, the legends, the supplement or the code
-   it links. Search all of them, and where they disagree, follow the order of
-   reader, step 2. Record each detail taken as a deviation that quotes or
-   cites the passage, and cite it too in the notebook or the helper, so that
-   the verifier can check it. A detail taken this way never changes the
-   claim's statement, expected values or criterion.
-   - When the paper allows more than one reading of a detail that could
-     change the outcome, run every reading, as for the readings a criterion
-     names (reader, step 3). The outcome is the one they all give.
-   - When the readings give different outcomes, or the paper does not settle
-     the detail, you may adopt the choice best supported by the paper, the
-[... 148 more lines not kept]
-```
+**Time.** An author run is stopped five hours after it starts, and whatever
+is not recorded by then is lost. The prompt says when the run started and the
+time by which to finish. Check the clock (`date -u`) between steps. When that
+time comes, stop analysing and finish: record each claim not yet tested as
+blocked, `too_large` where the computation is what stopped it, saying how far
+it got, then write the attempt record and run the entry's checks. A record
+with some claims blocked for time is worth more than a run that is cut off.
+
+### 1. Establish what can be tested
+### 4. Lock, check and run
+
+```bash
+[... 243 more lines not kept]
+````
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep gao; wc -l attempts/gao-2018-01.yaml; grep -n -A40 "claim: cd-captures-selectivity" attempts/gao-2018-01.yaml | head -120
+ls attempts | grep gao; wc -l attempts/gao-2018-02.yaml entries/gao-2018/*; grep -n "verifications" -A3 attempts/gao-2018-02.yaml | head; ls executed/gao-2018 2>/dev/null
 ```
 
 ```
-gao-2018-01.yaml
+gao-2018-02.yaml
 gao-2025-01.yaml
 gao-2025-02.yaml
 gao-2025-03.yaml
 gao-2026-01.yaml
-972 attempts/gao-2018-01.yaml
-528:- claim: cd-captures-selectivity
-529-  outcome: reproduced
-530-  notebook: reproduce_gao_2018.ipynb
-531-  output: claim:cd-captures-selectivity
-532-  measured:
-533-  - 62.1
-534-  - 34.2
-535-  assumed: true
-536-  notes: 22 sessions. With independent trials and trial-type mean activity, the reading chosen here,
-537-    reading (b) gives 62.1 +/- 4.7% of the selectivity, inside 64.1 +/- 3.4, and 34.2 +/- 4.7% of the
-538-    variance, outside 27.0 +/- 4.2; reading (a) 77.4% and 55.7%. Single-trial activity gives 24.0 +/-
-539-    2.9% of the variance under (b), inside tolerance, so the variance part holds only under that variant.
-540-    With all correct control trials (cd and measure on the same trials) 73.1% (b) or 84.9% (a) of the
-541-    selectivity. One of the eight combinations meets the criterion.
-[... 54 more lines not kept]
+  1085 attempts/gao-2018-02.yaml
+    48 entries/gao-2018/README.md
+    25 entries/gao-2018/entry.yaml
+   665 entries/gao-2018/gao2018.py
+   769 entries/gao-2018/reproduce_gao_2018.ipynb
+    10 entries/gao-2018/requirements.in
+  1836 entries/gao-2018/requirements.lock.txt
+  4438 total
+662:verifications:
+663-- date: '2026-11-14'
+664-  kind: agent
+665-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+reproduce_gao_2018.ipynb
+result.json
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "attempts/gao-2018-02.yaml"
+}
+```
+
+```
+1	schema_version: 3
+2	id: gao-2018-02
+3	datasets:
+4	- archive: dandi
+5	  id: "000007"
+6	  version: 0.220126.1903
+7	  doi: 10.48324/dandi.000007/0.220126.1903
+8	  relation: primary
+9	- archive: crcns
+10	  id: alm-4
+11	  version: unversioned
+12	  doi: 10.6080/K0NS0S26
+13	  relation: primary
+14	paper: doi:10.1038/s41586-018-0633-x
+15	date: 2026-11-14
+16	entry: gao-2018
+17	provenance:
+18	  kind: agent
+19	  accountable:
+20	    name: CatalystNeuro
+[... 1066 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n -E "^[a-z_]+:|^- round|^  - round|^  round|reviewed" attempts/gao-2018-01.yaml | head -40; sed -n '/^verifications:/,/claims:/p' attempts/gao-2018-01.yaml | head -40
+grep -n "proposed\|agrees\|verified outcome\|latest" tools/entry.py | head -60; grep -n "fig3f" -A40 claims/gao-2018.yaml 2>/dev/null | head -60; ls claims | grep gao
 ```
 
 ```
-1:schema_version: 3
-2:id: gao-2018-01
-3:datasets:
-9:paper: doi:10.1038/s41586-018-0633-x
-10:date: '2026-11-10'
-11:entry: gao-2018
-12:provenance:
-23:outcomes:
-590:findings:
-659:verifications:
-663:  reviewed: The handover of the first run as of commit f96303a2a0 (the answer and author-answers runs
-verifications:
-- date: '2026-11-10'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The handover of the first run as of commit f96303a2a0 (the answer and author-answers runs
-    changed nothing), that is the executed notebook with the conclusions and summary removed, the helper
-    module and the claims file, with the paper under paper/.
-  results:
-  - claim: fig1d-fastigial-lesion-contra-choice
+275:        # The entry streams the versions of its latest attempt; earlier attempts keep the versions they used.
+347:        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
+352:                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
+356:            # and when it is tested the archive is an input. Only the latest attempt is held to this: the
+372:                                    f"verification agreed with {verified!r}; record the change under `proposed`, "
+782:- id: fig3f-alm-selectivity-abolished-by-cn-inhibition
+783-  statement: CN photo-inhibition abolishes ALM trial-type selectivity.
+784-  source: Main text, paragraph 14; Figure 3f
+785-  quote: ALM trial-type selectivity was abolished by CN photo-inhibition ( Fig 3f )
+786-  datasets:
+787-  - "000007"
+788-  - crcns-alm-4
+789-  criterion: Population selectivity as E3 (preferred type from 10 trials) over selective ALM
+790-    neurons tested on > 3 trials in all conditions (the selection of the Extended Data Fig. 5b
+791-    and 9c legends; the Fig. 3f count is not in the text read), control against CN
+792-    photo-inhibition trials, all trials grouped by instructed type. Window readings as in
+793-    fig3c-cn-selectivity-abolished. Reproduced when under one reading the control selectivity is
+794-    above zero (bootstrap 95% interval over neurons) and the photo-inhibition selectivity is not
+795-    distinguishable from zero. The neuron count is reported.
+796-- id: fig4bc-fastigial-targets-alm-thalamus
+[... 29 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 335,385p tools/entry.py
+```
+
+```
+told = not version or int(version[1]) >= 15
+        for n, f in enumerate(attempt.get("findings") or [], 1):
+            if told and f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
+            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
+                                                                   "paper_inconsistency") else "data")
+            if told and about == "data" and len(used) > 1 and not f.get("datasets"):
+                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
+                                    f"(`datasets:`, from {', '.join(used)})")
+            for d in f.get("datasets") or []:
+                if str(d) not in used:
+                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
+        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
+        # does not bind: the revision after it may change outcomes, and round 2 reviews them.
+        agreed = {}
+        for rnd in (attempt.get("verifications") or [])[1:]:
+            for r in rnd["results"]:
+                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
+        kinds = lookup(kinds_by_target, attempt) or {}
+        for outcome in attempt.get("outcomes", []):
 [... 31 more lines not kept]
 ```
-
-**Agent**
-
-Round 2 needs two record fixes (cd-captures-selectivity outcome, an `assumed` flag), several text corrections, two added outputs and one reader question. Looking at the notebook now.
 
 **Agent calls Bash**
 
@@ -175,29 +218,64 @@ Round 2 needs two record fixes (cd-captures-selectivity outcome, an `assumed` fl
 cd entries/gao-2018; python -c "
 import json;nb=json.load(open('reproduce_gao_2018.ipynb'))
 for i,c in enumerate(nb['cells']):
-  s=''.join(c['source']); print(i,c['cell_type'],c['metadata'].get('tags'),repr(s[:110]))
-"; ls ../../executed/gao-2018 2>/dev/null
+    s=''.join(c['source']); print('=====',i,c['cell_type']); print(s[:600])
+"; cat entry.yaml README.md
 ```
 
 ```
-Exit code 2
-0 markdown None '# Reproducing Gao et al. (2018), "A cortico-cerebellar loop for motor planning", from dandiset 000007\n\n**Paper'
-1 code None 'import os\nos.environ.setdefault("OMP_NUM_THREADS", "1")\nimport time\nimport resource\nimport warnings\nimport num'
-2 code None 'S = g.load_all()\nP = g.prepare(S)\nprint(f"loaded {len(S)} sessions in {time.time() - T0:.0f} s; peak memory "\n'
-3 markdown None '## Data check\n\nWhat was loaded, by subject, session and photostimulation code; the units, every column of the '
-4 code ['sanity'] 'rows = []\nfor s, p in zip(S, P):\n    t = g.add_trial_fields(s.trials)\n    w = g.spike_width_ms(s.waveforms, s.'
-5 code ['sanity'] "# Units: widths from the mean waveforms against the files' cell_type column; sampling rate.\nW = []\nfor s in S:"
-6 code ['sanity'] '# Every column of the units table and every top-level group of the files. There is no quality or\n# isolation f'
-7 code ['sanity'] '# Event times. The column descriptions say pole_in_time, pole_out_time and cue_time are relative to the\n# tria'
-8 code ['sanity'] '# The photostimulation codes. For each code, the percentage of putative pyramidal neurons whose spike\n# count '
-9 code ['sanity'] '# Codes 5 and 6 over the delay: mean absolute rate change (photo-inhibition minus control, spikes/s)\n# over th'
-10 code ['sanity'] '# Behavior by code (trials with a lick, no lick early): fraction correct per group and code.\nB = T[(T.lick_ear'
-11 code ['sanity'] '# Clock check, per session: the fraction of neurons changing their rate (p < 0.01) in the 400 ms after the\n# o'
-12 code ['sanity'] '# Hemispheres: the files against Supplemental Table 1 (recording side from rec_coordinate_ml, negative =\n# lef'
-13 markdown None '## Behavior during the recording sessions\n\nPerformance (B1) is the fraction correct among trials with a lick, '
-14 code None 'def behavior_trials(groups, codes, manip=None):\n    """Trials with a lick, no lick early, control or one of `c'
-15 markdown Non
-[... 60 more lines not kept]
+<persisted-output>
+Output too large (51.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/704050c1-9b18-4a25-a2ec-653980589741/tool-results/bq6qbgmam.txt
+
+Preview (first 2KB):
+===== 0 markdown
+# Reproducing Gao et al. (2018) from DANDI:000007 and CRCNS:alm-4
+
+**Paper.** Gao Z, Davis C, Thomas AM, Economo MN, Abrego AM, Svoboda K, De Zeeuw CI, Li N (2018).
+A cortico-cerebellar loop for motor planning. *Nature* 563, 113-116.
+[doi:10.1038/s41586-018-0633-x](https://doi.org/10.1038/s41586-018-0633-x). The claims file
+(`claims/gao-2018.yaml`) was written from the version of record (PMC6212318) with its Methods,
+Extended Data legends and Supplementary Information; the legends of the main Figures 1 to 4 were
+not in the text read.
+
+**Datasets.**
+- [DANDI:000007](https://dandiarchive.org/dan
+===== 1 code
+import time
+import resource
+import warnings
+[... 37 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/704050c1-9b18-4a25-a2ec-653980589741/tool-results/bq6qbgmam.txt"
+}
+```
+
+```
+1	===== 0 markdown
+2	# Reproducing Gao et al. (2018) from DANDI:000007 and CRCNS:alm-4
+3	
+4	**Paper.** Gao Z, Davis C, Thomas AM, Economo MN, Abrego AM, Svoboda K, De Zeeuw CI, Li N (2018).
+5	A cortico-cerebellar loop for motor planning. *Nature* 563, 113-116.
+6	[doi:10.1038/s41586-018-0633-x](https://doi.org/10.1038/s41586-018-0633-x). The claims file
+7	(`claims/gao-2018.yaml`) was written from the version of record (PMC6212318) with its Methods,
+8	Extended Data legends and Supplementary Information; the legends of the main Figures 1 to 4 were
+9	not in the text read.
+10	
+11	**Datasets.**
+12	- [DANDI:000007](https://dandiarchive.org/dan
+13	===== 1 code
+14	import time
+15	import resource
+16	import warnings
+17	
+18	import matplotlib.pyplot as plt
+19	import numpy as np
+20	import pandas as pd
+[... 911 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -205,706 +283,114 @@ Exit code 2
 ```bash
 cd entries/gao-2018; python -c "
 import json;nb=json.load(open('reproduce_gao_2018.ipynb'))
-for i in [5,6,9,38,39,47,48,66,67]:
-  c=nb['cells'][i]; print('=====',i); print(''.join(c['source']))
-  for o in c.get('outputs',[]):
-    print('--out--'); print(''.join(o.get('text',''))[:3000])
-"; ls ../../executed/ 2>/dev/null | head
+for i in [5,7,8,52,57,59,60,61,93]:
+    c=nb['cells'][i]; print('=====',i); print(''.join(c['source']))
+"; grep -n "def compare_deposits" -A60 gao2018.py
 ```
 
 ```
+/bin/bash: line 1: cd: entries/gao-2018: No such file or directory
 ===== 5
-# Units: widths from the mean waveforms against the files' cell_type column; sampling rate.
-W = []
-for s in S:
-    w = g.spike_width_ms(s.waveforms, s.wf_rate)
-    W.append(pd.DataFrame(dict(subject=s.subject, width=w, cell_type=s.cell_type, wf_len=s.waveforms.shape[1],
-                               rate=s.wf_rate)))
-W = pd.concat(W)
-W["by_width"] = np.where(W.width > g.PYR_MIN_MS, "pyramidal (>0.45 ms)",
-                         np.where(W.width < g.FS_MAX_MS, "FS (<0.35 ms)", "intermediate"))
-print(pd.crosstab(W.cell_type, W.by_width, margins=True))
-print("waveform sampling rate (Hz):", W.rate.unique(), "; samples per waveform:", sorted(W.wf_len.unique()),
-      "; width range", W.width.min(), "to", W.width.max(), "ms, in steps of", 1000 / W.rate.iloc[0], "ms")
-# spike times: sorted, within the session, and units with few spikes
-nsp = np.array([len(x) for s in S for x in s.spikes])
-srt = all(np.all(np.diff(x) >= 0) for s in S for x in s.spikes)
-print("spikes per unit: min", nsp.min(), "median", int(np.median(nsp)), "max", nsp.max(), "; all sorted:", srt)
-===== 6
-# Every column of the units table and every top-level group of the files. There is no quality or
-# isolation field to explain the unit counts, and no acquisition or processing data (no lick or video
-[... 174 more lines not kept]
+cmp_ = G.compare_deposits(sessions, dandi, crcns)
+print(cmp_.to_string(index=False))
+print("\nAll units have identical spike times in both deposits:",
+      bool((cmp_.units_same_spikes == cmp_.units_crcns).all() and (cmp_.units_dandi == cmp_.units_crcns).all()))
+print("Units whose cell type differs (DANDI 'unknown' where CRCNS has none counts as same):",
+      int((cmp_.units_crcns - cmp_.cell_type_same).sum()))
+print("DANDI trials = CRCNS good trials with a photostimulation code, except in sessions:")
+print(cmp_[cmp_.eligible_not_in_dandi > 0][["session", "good_with_code", "dandi_trials", "eligible_not_in_dandi"]].to_string(index=False))
+print("DANDI trial codes and outcomes equal CRCNS for every matched trial:",
+      bool(cmp_.codes_same.all() and cmp_.outcomes_same.all()))
+ex = dandi["BAYLORCD8_20171018"]
+print("\nDANDI trial column descriptions:", {k: v for k, v in ex["trial_columns"].items() if k in ("cue_time", "pole_in_time")})
+print("DANDI cue_time minus start_time, first trials (s):", (ex["trials"].cue_time - ex["trials"].start_time).head(3).round(3).tolist())
+two = [s for s in sessions if s.trials.cue_col2.notna().any()]
+d2 = np.concatenate([(s.trials.cue_col2 - s.trials.cue)[s.trials.good].to_numpy() for s in two])
+print(f"CRCNS CueTime has two columns in {len(two)} sessions; on good trials the second minus the first: "
+      f"median {np.nanmedian(d2):.3f} s, nonzero in {int(np.nansum(np.abs(d2) > 1e-6))} of {int(np.isfinite(d2).sum())} trials "
+      "(the scripts use the first column)")
+[... 272 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls executed/gao-2018 2>&1; sed -n 360,440p docs/protocol.md | grep -n -i -E "executed|subset|time" ; grep -n -i "subset" -A12 docs/protocol.md | head -40
+cd entries/gao-2018; grep -n "def load_dandi" -A60 gao2018.py | grep -n "location\|electrode\|stim\|ogen\|return\|\[\"" | head -40; grep -n "cn_side\|alm_ml" gao2018.py | head
 ```
 
 ```
-ls: cannot access 'executed/gao-2018': No such file or directory
-26:  file's contents at a time; and run in parallel only as many as fit. A run
-28:  2026-11-06 an author run was killed nine times this way, each time on its
-31:- **Develop on a subset.** Build and debug each analysis on one or two
-33:  works; do not re-run whole notebooks to test a change. Time the subset and
-36:  notebook limit, over the time left (see "Time" above), or over 12 GB of
-77:`python` in entry.yaml (the registry's current one for a new entry). Commit notebooks without outputs. Read the executed copy in
-78:`executed/<name>/` and confirm the conclusions still match the numbers: counts
-115:     form the denominator, which subset is meant), list in the criterion the
-116-     readings the paper's text plausibly allows, before the analysis. The
-117-     claim is reproduced if the result matches under any of them. The
-118-     notebook shows every reading, the notes say which ones match, and the
-119-     ambiguity is recorded as a deviation.
-120-   - Methods come from the paper, never from the author. Every part of a
-121-     criterion's method (the selection, the measure, the test, windows,
-122-     bins, thresholds, what a measure is compared with) is taken from the
-123-     Methods, the figure legends, the supplement, or the code the paper
-124-     links, and the criterion says which. Search all of them before
-125-     treating a detail as open.
-126-   - A detail none of them fixes is recorded as a deviation that says so.
-[... 28 more lines not kept]
+5:127-    assets = [a for a in r["results"] if a["path"].endswith(".nwb")]
+8:130-    return {s["key"]: s for s in sessions}
+13:135-        return {k: _s2d(getattr(o, k)) for k in o._fieldnames}
+14:136-    return o
+41:163-    return np.array(rows), trial_ids, tt.ndim
+49:171-    cue = np.asarray(props["CueTime"], float)
+57:179-        pole_in=np.asarray(props["PoleInTime"], float), pole_out=np.asarray(props["PoleOutTime"], float),
+60:182-        good=np.asarray(props["GoodTrials"]) == 1,
+61:183-        ptype=np.asarray(props["PhotostimulationType"], float),
+276:        self.cn_side, self.cn = ps.split()[0], ps.split()[1]
+277:        self.alm_ml = float(meta["extracellular"]["recordingCoordinates"][1])
+278:        self.alm_side = "left" if self.alm_ml < 0 else "right"
+334:            cn_side = "right" if s.alm_side == "left" else "left"
+336:            cn_side = s.cn_side
+337:        contra_dir = "L" if cn_side == "right" else "R"
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat entries/gao-2018/entry.yaml; grep -rn -i "min\b\|minutes\|ran in" entries/gao-2018/README.md | head; grep -n -i "time\|minute" transcripts/gao-2018/*.md 2>/dev/null | grep -i "ran in\|run took\|minutes" | head; ls transcripts/gao-2018
+cd entries/gao-2018; sed -n 60,130p gao2018.py
 ```
 
 ```
-schema_version: 1
-name: gao-2018
-type: reproduction
-title: A cortico-cerebellar loop for motor planning (Gao et al. 2018)
-description: Tests the findings of Gao, Davis, Thomas, Economo, Abrego, Svoboda, De Zeeuw and Li (2018)
-  that can be tested on dandiset 000007, which holds the ALM recordings of 13 mice during CN
-  photo-activation or photo-inhibition. It tests ALM selectivity, the effects of CN photostimulation
-  on ALM neurons and on the coding direction, and the behavior of the recording sessions. The
-  lesion, CN recording, licking, VGAT-ChR2 and anatomy data are not in the dandiset.
-license: Apache-2.0
-python: "3.13"
-notebooks:
-- path: reproduce_gao_2018.ipynb
-  title: Reproducing Gao et al. (2018) from dandiset 000007
-  runtime_minutes: 8
-helpers:
-- gao2018.py
-related:
-- id: dandi:000007/0.220126.1903
-  relation: uses_data
-[... 24 more lines not kept]
-```
+import requests
+import scipy.io as sio
+from scipy import stats
 
-**Agent calls Bash**
-
-```bash
-cd  sed -n 590,660p attempts/gao-2018-01.yaml
-```
-
-```
-findings:
-- kind: data_missing
-  statement: The dandiset holds only the ALM recordings (54 sessions, 13 mice). The CN recordings (878
-    units in 18 mice and 60 units in 2 L7-cre x Ai32 mice), lick times, the behavior-only sessions (lesions,
-    1.3 s and response epoch photo-activation, 0.5 s and response epoch photo-inhibition), the VGAT-ChR2-EYFP
-    experiments and the anatomy are not in it; 26 of the 45 claims cannot be tested.
-- kind: metadata_insufficient
-  statement: photo_stim_id has no description, and the files hold no laser trace. The codes are 1 and
-    2 in fastigial, 3 and 4 in dentate and 5 and 6 in L7-cre x Ai32 sessions; from the ALM response,
-    1 and 3 start at sample onset and 2, 4, 5 and 6 at delay onset. Codes 5 and 6 both last through the
-    delay; the ALM change to code 5 fades over the delay (mean absolute change 3.1 to 2.1 spikes/s) and
-    to code 6 does not (2.8 to 2.9), as two powers would give, but which is 1.5 mW and which 4.5 mW cannot
-    be told, nor the photo-activation power. The ALM change to CN photo-inhibition starts about 30 ms
-    after pole_out_time under both codes, so when the photostimulus starts relative to pole_out_time cannot
-    be checked.
-- kind: metadata_error
-  statement: The descriptions of pole_in_time, pole_out_time and cue_time say they are relative to the
-    trial start; the values are on the session clock (pole_in_time - start_time is 0.57 s in most trials).
-- kind: metadata_error
-  statement: Hemispheres disagree with Supplemental Table 1. The files place the manipulated CN of CD12
+DANDISET_ID = "000007"
+DANDISET_VERSION = "0.220126.1903"
+CRCNS_ID = "alm-4"
+CRCNS_DOI = "10.6080/K0NS0S26"
+CRCNS_BASE = "https://crcnsarchive.s3-us-west-2.amazonaws.com/alm-4/live/"
+# MD5 sums from alm-4/live/checksums.md5, for the files read
+CRCNS_FILES = {
+    "photoactivation": ("ALM_recording_DCN_photoactivation/datafiles.tar.gz",
+                        "12e9d7af630523ed2511826eeacf6b48"),
+    "photoinhibition": ("ALM_recording_DCN_photoinhibition/datafiles.tar.gz",
+                        "5123dc96df58457f853e2deb5ce479c7"),
+}
+CRCNS_SCRIPTS = {
+    "photoactivation": ("ALM_recording_DCN_photoactivation/analyses_scripts.zip",
+                        "601f4b52198614dbd4761a64d2658698"),
+    "photoinhibition": ("ALM_recording_DCN_photoinhibition/analyses_scripts.zip",
 [... 51 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/gao-2018; grep -n "class \|def \|wf_rate\|obs_interval\|n_unobserved\|electrode\|groups\|units_columns" gao2018.py | head -80
-```
-
-```
-37:- Neural analyses also leave out trials outside the units' observation intervals (`obs_intervals`
-69:class Session:
-75:    rec_ml: str          # recording coordinate, mediolateral, from the electrode group
-80:    wf_rate: float = 20000.0
-81:    obs_intervals: list = field(default_factory=list, repr=False)   # per unit, [n, 2] array (s)
-82:    units_columns: list = field(default_factory=list)
-83:    groups: dict = field(default_factory=dict)   # top-level HDF5 groups and their members
-86:    def n_units(self):
-90:def asset_list():
-97:def _read(asset) -> Session:
-112:        oi = f["units/obs_intervals"][:]
-113:        obs = np.split(oi, f["units/obs_intervals_index"][:][:-1])
-115:        groups = {k: sorted(f[k].keys()) for k in f.keys() if isinstance(f[k], h5py.Group)}
-118:                groups[k] = sorted(f[k].keys())
-121:        eg = list(nwb.electrode_groups.values())[0]
-126:                    spikes=spikes, waveforms=wf, cell_type=ct, wf_rate=rate, obs_intervals=obs,
-127:                    units_columns=cols, groups=groups)
-133:def load_all(max_workers: int = 6) -> list[Session]:
-141:def add_trial_fields(t: pd.DataFrame) -> pd.DataFrame:
-161:def spike_width_ms(wf: np.ndarray, rate: float) -> np.ndarray:
-[... 22 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; sed -n 60,135p gao2018.py; sed -n 320,336p gao2018.py
-```
-
-```
-EPOCH_S = 1.3                    # sample and delay epoch length (Methods, Behavior)
-RESPONSE_WINDOWS = (1.3, 1.5)    # E2 readings (a) and (b)
-PYR_MIN_MS, FS_MAX_MS = 0.45, 0.35   # E1
-P_SELECT = 0.05                  # E2
-P_PHOTO = 0.01                   # E4, E5
-PREF_TRIALS_ALM = 10             # E3
-
-
-@dataclass
-class Session:
-    path: str
-    subject: str
-    genotype: str
-    site: str            # ogen site name (Fastigial / Dentate)
-    site_hemisphere: str
-    rec_ml: str          # recording coordinate, mediolateral, from the electrode group
-    trials: pd.DataFrame
-    spikes: list = field(repr=False)     # one array of spike times (s) per unit
-    waveforms: np.ndarray = field(repr=False)
-    cell_type: np.ndarray = field(repr=False)
-[... 73 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  ls paper; grep -rn -i "25 kHz\|kHz\|32-channel\|64-channel\|qualitatively similar" paper/* | head
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -o -i ".\{300\}25 kHz.\{200\}" paper/*.txt; echo; grep -o -i ".\{300\}qualitatively similar.\{150\}" paper/*.txt
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -o -i ".\{400\}kHz.\{200\}" paper/*.txt | head -5
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; ls ../../.venv* ../../executed 2>/dev/null | head; which python; time python -c "
-import gao2018 as g, h5py, remfile
-a=g.asset_list(); print(len(a))
-for asset in [a[0], a[-1]]:
-  f=h5py.File(remfile.File(asset.get_content_url(follow_redirects=1, strip_query=True)),'r')
-  e=f['general/extracellular_ephys']; print(asset.path, list(e.keys()))
-  print(len(e['electrodes/id']), list(e['electrodes'].keys()))
-  for k in e.keys():
-    if k!='electrodes': print(k, dict(e[k].attrs), )
-  print(list(f['general/devices'].keys()) if 'general/devices' in f else None)
-  for k in f['general/devices']: print(dict(f['general/devices'][k].attrs))
-"
-```
-
-```
-Exit code 1
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
-Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import gao2018 as g, h5py, remfile
-  File "entries/gao-2018/gao2018.py", line 51, in <module>
-    import h5py
-ModuleNotFoundError: No module named 'h5py'
-
-real	0m0.090s
-user	0m0.045s
-sys	0m0.001s
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py --help 2>&1 | head -30; ls -a | head -40
-```
-
-```
-usage: entry.py [-h] [--output-dir OUTPUT_DIR] [--timeout TIMEOUT]
-                [--max-minutes MAX_MINUTES] [--python PYTHON]
-                [--before BEFORE]
-                {lock,check,run,all,handover,upgrade-python} entry [entry ...]
-
-Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py check entries/*/       # the same for every entry, in one process
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-[... 50 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  which uv; grep -n "venv\|uv " tools/entry.py | head -20
-```
-
-```
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/uv
-474:    venv = (output_dir / ".venv").resolve()
-475:    python = venv / "bin" / "python"
-479:    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", python_of(entry_dir), str(venv)],
-482:                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
-496:            env={**os.environ, "JUPYTER_PATH": str(venv / "share" / "jupyter")})
-```
-
-**Agent calls Bash**
-
-```bash
-cd  uv venv --quiet --python 3.13 $TMPDIR/v && uv pip install --quiet --python $TMPDIR/v/bin/python -r entries/gao-2018/requirements.lock.txt 2>&1 | tail -3; cd entries/gao-2018; time $TMPDIR/v/bin/python -c "
-import gao2018 as g, h5py, remfile
-a=g.asset_list(); print(len(a))
-for asset in [a[0], a[-1]]:
-  f=h5py.File(remfile.File(asset.get_content_url(follow_redirects=1, strip_query=True)),'r')
-  e=f['general/extracellular_ephys']; print(asset.path, list(e.keys()))
-  print(len(e['electrodes/id']), list(e['electrodes'].keys()))
-  for k in e.keys():
-    if k!='electrodes': print(k, dict(e[k].attrs) )
-  if 'general/devices' in f:
-    for k in f['general/devices']: print(k, dict(f['general/devices'][k].attrs))
-"
-```
-
-```
-54
-sub-BAYLORCD12/sub-BAYLORCD12_ses-20180125T191601.nwb ['Cambridge NeuroTech 64ch H2 probe_g1', 'electrodes']
-64 ['filtering', 'group', 'group_name', 'id', 'imp', 'location', 'x', 'y', 'z']
-Cambridge NeuroTech 64ch H2 probe_g1 {'description': 'N/A', 'location': '{"probe_type": "Cambridge NeuroTech 64ch H2 probe", "rec_coordinate_ap": "2.5", "rec_coordinate_ml": "-1.5", "rec_coordinate_dv": "None", "ground_coordinate_ap": "-3.0", "ground_coordinate_ml": "-1.0", "ground_coordinate_dv": "1.0", "rec_marker": "stereotaxic", "spike_sorting_method": "manual", "ad_unit": "14 bits", "coordinate_ref": "lambda", "penetration_num": "1"}', 'namespace': 'core', 'neurodata_type': 'ElectrodeGroup', 'object_id': 'e500c7ef-2f1b-4a2c-8723-ebfc39e25f10'}
-Cambridge NeuroTech 64ch H2 probe {'namespace': 'core', 'neurodata_type': 'Device', 'object_id': '9dbc8ac3-8aa6-45d5-9acb-faaac41648af'}
-fiber {'namespace': 'core', 'neurodata_type': 'Device', 'object_id': '281399cb-fbbd-4eba-b6d5-a056f6a244d7'}
-sub-anm00314760/sub-anm00314760_ses-20151022T163913.nwb ['NN 32ch A4x8-5mm-100-200-177_g1', 'electrodes']
-64 ['filtering', 'group', 'group_name', 'id', 'imp', 'location', 'x', 'y', 'z']
-NN 32ch A4x8-5mm-100-200-177_g1 {'description': 'N/A', 'location': '{"probe_type": "NN 32ch A4x8-5mm-100-200-177", "rec_coordinate_ap": "2.5", "rec_coordinate_ml": "-1.5", "rec_coordinate_dv": "None", "ground_coordinate_ap": "-3.0", "ground_coordinate_ml": "-1.0", "ground_coordinate_dv": "1.0", "rec_marker": "stereotaxic", "spike_sorting_method": "manual", "ad_unit": "14 bits", "coordinate_ref": "lambda", "penetration_num": "3"}', 'namespace': 'core', 'neurodata_type': 'ElectrodeGroup', 'object_id': 'dfd5a327-8c0e-4868-9e2f-95c45f46e355'}
-NN 32ch A4x8-5mm-100-200-177 {'namespace': 'core', 'neurodata_type': 'Device', 'object_id': '92b81b4f-76fe-4e3e-8c39-b1e8dd20a533'}
-fiber {'namespace': 'core', 'neurodata_type': 'Device', 'object_id': '00ae3cb1-ddb4-4856-ad39-59d467302695'}
-
-real	0m6.318s
-user	0m4.299s
-sys	0m
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; python - <<'EOF'
-p='gao2018.py'; s=open(p).read()
-s=s.replace("""    rec_ml: str          # recording coordinate, mediolateral, from the electrode group
-""","""    rec_ml: str          # recording coordinate, mediolateral, from the electrode group
-    probe: str           # probe_type, from the electrode group
-""",1)
-s=s.replace("""rec_ml=eloc.get("rec_coordinate_ml"), trials=""","""rec_ml=eloc.get("rec_coordinate_ml"), probe=eloc.get("probe_type"), trials=""",1)
-open(p,'w').write(s)
-EOF
-grep -n "probe" gao2018.py
-```
-
-```
-76:    probe: str           # probe_type, from the electrode group
-126:                    rec_ml=eloc.get("rec_coordinate_ml"), probe=eloc.get("probe_type"), trials=trials.drop(columns=["session_directory"]),
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; python - <<'EOF'
-import json
-p='reproduce_gao_2018.ipynb'; nb=json.load(open(p))
-def src(i): return ''.join(nb['cells'][i]['source'])
-def put(i,s):
-    lines=s.split('\n'); nb['cells'][i]['source']=[l+'\n' for l in lines[:-1]]+[lines[-1]]
-s=src(5)
-old='''# spike times: sorted'''
-assert old in s
-s=s.replace(old,'''# The Methods give 25 kHz for the 32-channel NeuroNexus recordings ("demultiplexed (sampling at 25,000 Hz)");
-# the stated waveform sampling rate per probe type, from the electrode group:
-print(pd.DataFrame([dict(probe=s.probe, rate_Hz=s.wf_rate) for s in S]).value_counts().rename("sessions").to_string())
-# spike times: sorted''')
-put(5,s)
-s=src(6)
-old='''# The files hold more putative'''
-assert old in s
-s=s.replace(old,'''for p in P:
-    if p.n_unobserved:
-        s_ = S[p.idx]
-        ends = [iv[:, 1].max() for iv in s_.obs_intervals]
-        out = ~g.observed(s_)
-        print(f"  {p.path.split('/')[1][:-4]}: obs_intervals end at {min(ends):.0f} to {max(ends):.0f} s; trials "
-              f"outside them (all trials) {int(out.sum())} of {len(s_.trials)}, the last {int(out[::-1].cumprod().sum())} "
-              f"in a row, from {s_.trials.start_time[out].min():.0f} to {s_.trials.stop_time.max():.0f} s; "
-              f"spikes after the end: {sum(int((x > max(ends)).sum()) for x in s_.spikes)}")
-# The files hold more putative''')
-put(6,s)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-git diff --stat .; grep -n "idx" gao2018.py | head -5
-```
-
-```
-entries/gao-2018/gao2018.py               |  3 ++-
- entries/gao-2018/reproduce_gao_2018.ipynb | 15 ++++++++++++++-
- 2 files changed, 16 insertions(+), 2 deletions(-)
-108:        idx = f["units/spike_times_index"][:]
-109:        spikes = np.split(st, idx[:-1])
-300:    idx: int
-401:    idx = rng.integers(0, len(x), (n_boot, len(x)))
-402:    bm = np.array([x[i].mean(0) for i in idx])
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; git diff reproduce_gao_2018.ipynb | tail -5; $TMPDIR/v/bin/python -c "
-import gao2018 as g, numpy as np
-a=[x for x in g.asset_list() if 'BAYLORCD8' in x.path and '20171020' in x.path][0]
-s_=g._read(a); print(s_.probe, s_.wf_rate)
-ends = [iv[:, 1].max() for iv in s_.obs_intervals]
-out = ~g.observed(s_)
-print(f'obs_intervals end at {min(ends):.0f} to {max(ends):.0f} s; trials outside them (all trials) {int(out.sum())} of {len(s_.trials)}, the last {int(out[::-1].cumprod().sum())} in a row, from {s_.trials.start_time[out].min():.0f} to {s_.trials.stop_time.max():.0f} s; spikes after the end: {sum(int((x > max(ends)).sum()) for x in s_.spikes)}')
-"
-```
-
-```
-+    "print(\"putative pyramidal neurons per session and group: see the first table (pyr_width); the paper gives no per-session counts\")\n",
-+    ""
-    ]
-   },
-   {
-Cambridge NeuroTech 64ch H2 probe 20000.0
-obs_intervals end at 7222 to 7222 s; trials outside them (all trials) 127 of 462, the last 127 in a row, from 7223 to 8481 s; spikes after the end: 0
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; python - <<'EOF'
-import json
-p='reproduce_gao_2018.ipynb'; nb=json.load(open(p))
-for c in nb['cells']:
-    if c['source'] and c['source'][-1]=='': c['source']=c['source'][:-1]
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-git diff reproduce_gao_2018.ipynb | grep '^[-+]' | head -40
-```
-
-```
---- a/entries/gao-2018/reproduce_gao_2018.ipynb
-+++ b/entries/gao-2018/reproduce_gao_2018.ipynb
-+    "# The Methods give 25 kHz for the 32-channel NeuroNexus recordings (\"demultiplexed (sampling at 25,000 Hz)\");\n",
-+    "# the stated waveform sampling rate per probe type, from the electrode group:\n",
-+    "print(pd.DataFrame([dict(probe=s.probe, rate_Hz=s.wf_rate) for s in S]).value_counts().rename(\"sessions\").to_string())\n",
-+    "for p in P:\n",
-+    "    if p.n_unobserved:\n",
-+    "        s_ = S[p.idx]\n",
-+    "        ends = [iv[:, 1].max() for iv in s_.obs_intervals]\n",
-+    "        out = ~g.observed(s_)\n",
-+    "        print(f\"  {p.path.split('/')[1][:-4]}: obs_intervals end at {min(ends):.0f} to {max(ends):.0f} s; trials \"\n",
-+    "              f\"outside them (all trials) {int(out.sum())} of {len(s_.trials)}, the last {int(out[::-1].cumprod().sum())} \"\n",
-+    "              f\"in a row, from {s_.trials.start_time[out].min():.0f} to {s_.trials.stop_time.max():.0f} s; \"\n",
-+    "              f\"spikes after the end: {sum(int((x > max(ends)).sum()) for x in s_.spikes)}\")\n",
-```
-
-**Agent calls Bash**
-
-```bash
-cd  for c in fig3e-alm-mean-rate-unchanged fig2cd-selectivity-emerges-gradually fig4g-dentate-effect-recovers fig4e-fastigial-activation-abolishes-alm-selectivity fig1g-dentate-activation-little-effect fig3d-alm-altered-by-cn-inhibition; do awk -v c="$c" '/^- claim: /{p=($3==c)} /^verifications:/{p=0} p' attempts/gao-2018-01.yaml; done
-```
-
-```
-- claim: fig3e-alm-mean-rate-unchanged
-  outcome: partially_reproduced
-  notebook: reproduce_gao_2018.ipynb
-  output: claim:fig3e-alm-mean-rate-unchanged
-  measured:
-  - 3.379
-  - 3.767
-  notes: 'All 676 neurons, all trials, delay epoch: 3.379 spikes/s control, 3.767 photo-inhibition (change
-    +0.387); unpaired t-test p = 0.214, paired p = 0.022. Modulated neurons: 4.652 and 5.780 (unpaired
-    p = 0.069, paired p = 0.007). Correct trials give the same pattern (3.366 and 3.728; unpaired p = 0.246,
-    paired p = 0.029). The rates are about 19% below the paper''s with all neurons, and both rates of the
-    modulated neurons are above their tolerances, so the criterion''s tolerance is not met under
-    any reading; the absence of a change holds by the unpaired test and not by the paired one. The
-    dataset holds more slow neurons than the paper''s count allows (the 454 fastest have a mean delay
-    rate of 4.89 spikes/s, against 3.36 for all 676), so the rate level depends on a neuron selection the
-    paper does not describe. Without the five sessions of the clock check, 3.310 and 3.716 (unpaired p
-    = 0.227, paired p = 0.031).'
-  deviations:
-  - The photostimulation codes are not described in the files; codes 1 and 3 are read as early sample
-    and 2 and 4 as early delay photo-activation, 5 and 6 as delay photo-inhibition, from the onset of
-[... 135 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -rn "2.8 to 2.9\|7221\|25 kHz\|qualitatively similar\|19% below\|mix of lick directions" entries/gao-2018/README.md entries/gao-2018/*.ipynb entries/gao-2018/*.py attempts/gao-2018-01.yaml | cut -c1-200
-```
-
-```
-entries/gao-2018/reproduce_gao_2018.ipynb:163:    "# The Methods give 25 kHz for the 32-channel NeuroNexus recordings (\"demultiplexed (sampling at 25,000 Hz)\");\n",
-entries/gao-2018/reproduce_gao_2018.ipynb:872:    "qualitatively similar results); every combination is run. Trials: correct control trials (Fig. 2a shows\n",
-entries/gao-2018/reproduce_gao_2018.ipynb:994:    "**Result: partially reproduced.** On ALM, every reading has population selectivity above zero during the sample epoch (16 to 22 windows with the inte
-entries/gao-2018/reproduce_gao_2018.ipynb:1201:    "**Result: partially reproduced.** The mean delay rate over all 676 neurons changes little (3.379 to 3.767 spikes/s, +0.387), and the unpaired t-test
-entries/gao-2018/reproduce_gao_2018.ipynb:1556:    "    so that a change in the mix of lick directions cannot make a neuron significant (chance about 1%).\"\"\"\n",
-entries/gao-2018/reproduce_gao_2018.ipynb:1667:    "**Result: not reproduced.** Dentate photo-activation modulates 165 of 525 neurons (0.314), inside the count tolerance but just below the fraction's 
-entries/gao-2018/gao2018.py:38:  of the units table). Only BAYLORCD8 20171020 has any: its spikes end at 7221 s and its last 127
-attempts/gao-2018-01.yaml:219:    the epoch gave qualitatively similar results (Methods, "Selecting preferred trial type using either
-attempts/gao-2018-01.yaml:220:    sample, delay, or response epoch data yielded qualitatively similar preparatory activity"), so the
-attempts/gao-2018-01.yaml:310:    paired p = 0.029). The rates are about 19% below the paper''s with all neurons, and both rates of the
-attempts/gao-2018-01.yaml:601:    to code 6 does not (2.8 to 2.9), as two powers would give, but which is 1.5 mW and which 4.5 mW cannot
-attempts/gao-2018-01.yaml:630:    at 25 kHz.
-attempts/gao-2018-01.yaml:638:    intervals end at 7221 s, and the last 127 of 462 trials, to 8481 s, hold no spike of any unit. The
-attempts/gao-2018-01.yaml:799:      the paper''s "qualitati
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 865,880p entries/gao-2018/reproduce_gao_2018.ipynb; sed -n 34,42p entries/gao-2018/gao2018.py; grep -n "" entries/gao-2018/README.md | sed -n 1,200p | grep -n -i "summary\|fig3e\|fig2cd\|fig4g\|cd-captures\|code 6\|power" | head -30
-```
-
-```
-"> population averages, starting during the sample epoch and peaking in the response epoch.\n",
-    "\n",
-    "Criterion: population selectivity as E3 in 200 ms windows over the selective neurons; in a region,\n",
-    "reproduced when the bootstrap 95% interval over neurons excludes zero in at least one window of the\n",
-    "sample epoch, the mean over the delay exceeds the mean over the sample, and the maximum lies in the\n",
-    "response epoch. Only ALM is in the dataset. E3 leaves open whether the 10 preference trials are 10 of\n",
-    "each type or 10 in all, and which epoch fixes the preference (the paper says the epoch gave\n",
-    "qualitatively similar results); every combination is run. Trials: correct control trials (Fig. 2a shows\n",
-    "correct trials; Fig. 2c is not a photostimulation analysis). Time is from the go cue: sample -2.6 to\n",
-    "-1.3 s, delay -1.3 to 0 s, response 0 to 1.3 s. The response epoch's end for the maximum is 1.3 s\n",
-    "(E2 reading (a)); the window centres run to 1.2 s so that no window passes 1.3 s. Neurons are selected (E2) on\n",
-    "the same correct control trials; a variant selects them on one half of the trials and measures the\n",
-    "selectivity on the other half."
-   ]
-  },
-  {
-  Behavioral data analysis). The paper does not say so for the neural analyses; it is a
-  standard choice in this task (an early lick restarts the epoch, so its timing differs), and
-  the notebook reports how many trials it drops.
-- Neural analyses also leave out trials outside the units' observation intervals (`obs_intervals`
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat entries/gao-2018/README.md
-```
-
-```
-# Gao et al. (2018) from dandiset 000007
-
-Tests the findings of [Gao et al. (2018)](https://doi.org/10.1038/s41586-018-0633-x), "A
-cortico-cerebellar loop for motor planning", that can be tested on
-[DANDI:000007](https://dandiarchive.org/dandiset/000007/0.220126.1903), which holds the ALM
-recordings of 13 mice during cerebellar nucleus photo-activation or photo-inhibition. The lesion,
-CN recording, licking, VGAT-ChR2 and anatomy data are not in it.
-
-| Claim | Outcome |
-|---|---|
-| Fastigial photo-activation in the early sample epoch leaves choice unaffected | Reproduced |
-| Fastigial photo-activation in the early delay epoch causes errors | Reproduced |
-| Delay photo-activation biases choice either way, depending on the mouse | Reproduced |
-| Dentate photo-activation has little effect on choice | Reproduced |
-| Delay photo-inhibition biases choice either way, depending on the mouse | Partially reproduced |
-| Most ALM pyramidal neurons are selective for trial type | Reproduced |
-| ALM selectivity emerges gradually and peaks in the response epoch | Partially reproduced |
-| CN photo-inhibition rapidly alters many ALM neurons | Not reproduced |
-| The mean ALM rate is nearly unchanged by CN photo-inhibition | Partially reproduced |
-| Modulated ALM neurons increase or decrease | Partially reproduced |
-[... 17 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; python - <<'EOF'
-import json
-nb=json.load(open('reproduce_gao_2018.ipynb'))
-for i in [37,40,44,45,46,49,53,70,81,85,87]:
-  print('=====',i); print(''.join(nb['cells'][i]['source'])[:4000])
-EOF
-```
-
-```
-===== 37
-The ALM fractions of fig2-preparatory-more-in-alm (expected 0.59) and fig2-peri-movement-equal (expected
-0.67) are in the table above (`preparatory_*`, `peri_movement_*`). Both claims compare ALM with the CN,
-whose recordings are not in the dataset, so they are blocked; the ALM numbers do not decide them.
-
-### fig2cd-selectivity-emerges-gradually
-
-> Selectivity for "lick left" and "lick right" trials emerges gradually in both the ALM and the CN
-> population averages, starting during the sample epoch and peaking in the response epoch.
-
-Criterion: population selectivity as E3 in 200 ms windows over the selective neurons; in a region,
-reproduced when the bootstrap 95% interval over neurons excludes zero in at least one window of the
-sample epoch, the mean over the delay exceeds the mean over the sample, and the maximum lies in the
-response epoch. Only ALM is in the dataset. E3 leaves open whether the 10 preference trials are 10 of
-each type or 10 in all, and which epoch fixes the preference (the paper says the epoch gave
-qualitatively similar results); every combination is run. Trials: correct control trials (Fig. 2a shows
-correct trials; Fig. 2c is not a photostimulation analysis). Time is from the go cue: sample -2.6 to
--1.3 s, delay -1.3 to 0 s, response 0 to 1.3 s. The response epoch's end for the maximum is 1.3 s
-(E2 reading (a)); the window centres run to 1.2 s so that no window passes 1.3 s. Neurons are selected (E2) on
-the same correct control trials; a variant selects them on one half of the trials and measures the
-[... 153 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; python - <<'EOF'
-import json
-p='reproduce_gao_2018.ipynb'; nb=json.load(open(p))
-def rep(i, old, new):
-    s=''.join(nb['cells'][i]['source']); assert old in s, (i, old); s=s.replace(old,new)
-    lines=s.split('\n'); src=[l+'\n' for l in lines[:-1]]+([lines[-1]] if lines[-1] else [])
-    nb['cells'][i]['source']=src
-rep(37, "(the paper says the epoch gave\nqualitatively similar results)", "(the paper says the epoch gave\n\"qualitatively similar preparatory activity\")")
-rep(39, "The paper says the epoch gave qualitatively similar results, so the peak's place holds under one of the three epochs only.",
- "The paper says the epoch gave \"qualitatively similar preparatory activity\", and here too the preparatory part (sample-epoch windows above 0, delay mean above sample mean) is similar under every epoch; that sentence does not cover the peak's place, which holds under one of the three epochs only.")
-rep(48, "The rates are about 19% below the paper's 4.15 and 4.39 spikes/s, outside tolerance under every reading;",
- "The control rate is about 19% below the paper's 4.15 spikes/s and the photo-inhibition rate about 14% below its 4.39, both outside tolerance under every reading;")
-rep(48, "so the rate level depends on a neuron selection the paper does not describe.",
- "so the rate level depends on a neuron selection the paper does not describe. Assumed: the absence test is the unpaired test, as the paired and unpaired tests disagree and the paper's p = 0.58 for a 0.24 spikes/s change fits an unpaired test over neurons; the outcome rests on that choice.")
-rep(67, "above the pre-onset 2.12% in 4 of 15 bins: much of the late dentate effect follows the mix of lick directions.",
- "above the pre-onset 2.12% in 4 of 15 bins but above chance (1%) in 15 of 15: compared with the pre-onset level, much of the late dentate effect follows the mix of lick directions, while every bin stays above chance.")
-rep(70, "loses significance in 93 of 124 (0.750) such neurons.",
- "loses significance in 93 of 124 (0.750) such neurons (78 of 120, 0.650, in the last 500 ms), against 107 of 124 (0.86) and 105 of 120 (0.88) with photo-activation, and the small photo-activation trial count also holds down the count that gains significance. So only part of the per-neuron loss is the effect itself, and the outcome rests mainly on the population difference and its interval.")
-rep(87, "| fig3e-alm-mean-rate-unchanged | partially reproduced |", "| fig3e-alm-mean-rate-unchanged | partially reproduced (assumed: unpaired test) |")
-rep(87, "| cd-captures-selectivity | partially reproduced (selectivity, not variance) |", "| cd-captures-selectivity | partially reproduced (selectivity, not variance; assumed: independent trials, trial-type means) |")
-rep(87, "and so\nare the last 120 trials of BAYLORCD8 20171020,", "and so\nare 120 trials (without an early lick) of the last 127 of BAYLORCD8 20171020,")
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-git diff --stat .
-```
-
-```
-entries/gao-2018/gao2018.py               |  3 ++-
- entries/gao-2018/reproduce_gao_2018.ipynb | 28 ++++++++++++++++++++--------
- 2 files changed, 22 insertions(+), 9 deletions(-)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/gao-2018; sed -i 's/obs_intervals end at {min(ends):.0f} to {max(ends):.0f} s/obs_intervals end at {min(ends):.1f} to {max(ends):.1f} s/; s/from {s_.trials.start_time\[out\].min():.0f} to {s_.trials.stop_time.max():.0f} s/from {s_.trials.start_time[out].min():.1f} to {s_.trials.stop_time.max():.1f} s/' reproduce_gao_2018.ipynb; grep -n "ends):.1f\|max():.1f" reproduce_gao_2018.ipynb; grep -n -B2 "assumed: true" ../../attempts/gao-2018-01.yaml | grep claim; date -u
-```
-
-```
-197:    "        print(f\"  {p.path.split('/')[1][:-4]}: obs_intervals end at {min(ends):.1f} to {max(ends):.1f} s; trials \"\n",
-199:    "              f\"in a row, from {s_.trials.start_time[out].min():.1f} to {s_.trials.stop_time.max():.1f} s; \"\n",
-Tue Nov 10 18:02:06 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "assumed:" attempts/gao-2018-01.yaml; awk '/^- claim: /{c=$3} /^  assumed:/{print c}' attempts/gao-2018-01.yaml
-```
-
-```
-535:  assumed: true
-cd-captures-selectivity
-```
-
-**Agent**
-
-Text edits are in. Running the entry now (about 8 minutes).
-
-**Agent calls Bash**
-
-```bash
-cd  time python tools/entry.py all entries/gao-2018 2>&1 | tail -15
-```
-
-```
-Installed kernelspec registry-gao-2018 in executed/gao-2018/.venv/share/jupyter/kernels/registry-gao-2018
-0 error(s)
-pass  reproduce_gao_2018.ipynb  (443 s)
-
-real	7m33.288s
-user	6m58.094s
-sys	0m4.153s
-```
-
-**Agent calls Bash**
-
-```bash
-cd  ls executed/gao-2018; python -c "
+cd  python -c "
 import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
-for i in [5,6,9,47,63,66,69,80,86,88]:
-  c=nb['cells'][i]; print('=====',i)
-  for o in c.get('outputs',[]):
-    t=o.get('text') or o.get('data',{}).get('text/plain','')
-    print(''.join(t)[:3500])
+for i in [5,9,52,57]:
+    c=nb['cells'][i]
+    print('=====',i)
+    for o in c.get('outputs',[]):
+        print(''.join(o.get('text',''))[:6000])
 "
 ```
 
 ```
-reproduce_gao_2018.ipynb
-result.json
 ===== 5
-by_width   FS (<0.35 ms)  intermediate  pyramidal (>0.45 ms)   All
-cell_type                                                         
-FS                    94             8                     0   102
-pyramidal             33            27                  1758  1818
-unknown                3             0                     0     3
-All                  130            35                  1758  1923
-waveform sampling rate (Hz): [20000.] ; samples per waveform: [np.int64(30), np.int64(37), np.int64(38)] ; width range 0.15 to 0.9 ms, in steps of 0.05 ms
-probe                              rate_Hz
-NN 32ch A4x8-5mm-100-200-177       20000.0    34
-Cambridge NeuroTech 64ch H2 probe  20000.0    20
+            session      group  crcns_trials  good_with_code  dandi_trials  matched  max_start_diff_s  eligible_not_in_dandi  dandi_not_eligible  codes_same  outcomes_same  max_cue_diff_s  units_crcns  units_dandi  units_same_spikes  cell_type_same
+ ANM314746_20151020  fastigial           303             276           276      276             0.005                      0                   0        True           True          0.0051           23           23                 23              23
+ ANM314746_20151021  fastigial           264             246           246      246             0.005                      0                   0        True           True          0.0050           19           19                 19              18
+ ANM314746_20151022  fastigial           310             284           258      258             0.005                     26                   0        True           True          0.0050           21           21                 21              21
+ ANM314756_20151020    dentate           243             211           211      211             0.005                      0                   0        True           True          0.0050           20           20                 20              19
+ ANM314756_20151023    dentate           268             246           246      246             0.005                      0                   0        True           True          0.0051            6            6                  6               6
+ ANM314757_20151020  fastigial           275             246           246      246             0.005                      0                   0        True           True          0.0052           13           13                 13              13
+ ANM314757_20151021  fastigial           321             302            34       34             0.005                    268                   0        True           True          0.0048           25           25                 25              24
 
-spikes per unit: min 81 median 5672 max 232021 ; all sorted: True
-
-===== 6
-units table columns: [('cell_type', 'sampling_rate', 'spike_times', 'obs_intervals', 'electrodes', 'electrode_group', 'waveform_mean', 'waveform_sd')]
-  group 'acquisition': members []
-  group 'analysis': members []
-[... 154 more lines not kept]
+[... 137 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -912,747 +398,1102 @@ units table columns: [('cell_type', 'sampling_rate', 'spike_times', 'obs_interva
 ```bash
 cd  python -c "
 import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
-t=''.join(''.join(o.get('text','')) for o in nb['cells'][66]['outputs']); print(t[-500:])
-t=''.join(''.join(o.get('text','')) for o in nb['cells'][86]['outputs']); print(len(t))
-"; git status --short
+for i in [3,7]:
+    c=nb['cells'][i]
+    print('=====',i)
+    for o in c.get('outputs',[]):
+        print(''.join(o.get('text',''))[-3500:])
+print(''.join(nb['cells'][3]['source']))
+"
 ```
 
 ```
-2.20                  1.745           13    0.0248  2.881344e-03  3.752183e-02           0.135195              0.0557                  True
-first qualifying bin: not above chance False ; not above pre-onset False ; lower than fastigial True | all bins not above (a): False (b): False ; all lower than fastigial: True
-dentate, variant within trial type (correct trials): pre-onset fraction 0.0212; qualifying bins 0.0210 to 0.0476; bins above (a) 15, (b) 4, last pre-onset bin 1 of 15
+===== 3
+Sessions and units by group and mouse:
+                       sessions  units  pyramidal  FS  unclassified         cn cn_side  alm_ml
+group      mouse                                                                              
+dentate    ANM314756          2     26         25   0             1    Dentate   right    -1.5
+           BAYLORNL12         5    244        224  13             7    Dentate   right    -1.5
+           BAYLORNL14         6    308        281  20             7    Dentate   right    -1.5
+fastigial  ANM314746          3     63         59   3             1  Fastigial   right    -1.5
+           ANM314757          2     38         34   3             1  Fastigial    left     1.5
+           ANM314758          4     62         58   1             3  Fastigial   right    -1.5
+           ANM314760          3     72         64   8             0  Fastigial   right    -1.5
+           BAYLORCD6          4    196        183   8             5  Fastigial   right    -1.5
+           BAYLORNL15         5    177        156  17             4  Fastigial   right    -1.5
+inhibition BAYLORCD12         5    160        147   6             7  Fastigial    left    -1.5
+           BAYLORCD13         5    100         95   4             1  Fastigial    left    -1.5
+           BAYLORCD14         5    195        177   9             9  Fastigial    left    -1.5
+           BAYLORCD8          5    282        263  10             9  Fastigial   right    -1.5
 
-2642
- M entries/gao-2018/gao2018.py
- M entries/gao-2018/reproduce_gao_2018.ipynb
- M tools/build_reuse_targets.py
- M tools/build_site.py
- M tools/entry.py
- M tools/notify.py
- M tools/papers_manifest.py
- M tools/runner/chain.sh
- M tools/runner/describe.py
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  ls questions | head; cat questions/gao-2025.yaml | head -40; grep -n -i "qualitatively" claims/gao-2018.yaml
-```
-
-```
-README.md
-ashworth-2025.yaml
-athalye-2023.yaml
-bech-2026.yaml
-bellvila-2026.yaml
-bennett-2024.yaml
-berg-2020.yaml
-boran-2022.yaml
-bouchard-2013.yaml
-buccino-2024.yaml
-cat: questions/gao-2025.yaml: No such file or directory
-72:#     preference, are open; the paper says the epoch choice gave qualitatively similar results.
+Totals by group:
+            units  pyramidal  FS  unclassified
+[... 79 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat questions/README.md; ls questions | grep -i gao; head -30 questions/berg-2020.yaml; sed -n 60,80p claims/gao-2018.yaml
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+def src(i): return ''.join(nb['cells'][i]['source'])
+def setsrc(i,s): nb['cells'][i]['source']=s.splitlines(keepends=True)
+s5=src(5)
+s5 += '''
+print("\\nTrials eligible in CRCNS (good, with a code) but missing from DANDI, by CRCNS trial number (1-based):")
+for s in sessions:
+    elig = (s.trials.good & s.trials.ptype.notna()).to_numpy()
+    miss = np.flatnonzero(elig & ~s.trials.in_dandi.to_numpy()) + 1
+    if len(miss):
+        span = elig[miss.min() - 1:miss.max()]
+        print(f"  {s.key}: {len(miss)} trials, numbers {miss.min()} to {miss.max()}; every eligible trial in that range missing: "
+              f"{bool(span.sum() == len(miss))}; last trial held by DANDI {np.flatnonzero(s.trials.in_dandi.to_numpy()).max() + 1}; "
+              f"trials in the CRCNS table {len(s.trials)}")
+print("\\nPhotostimulation site and recording location in DANDI (general/optogenetics and electrode group locations), "
+      "one session per photo-inhibition mouse, with the CRCNS values:")
+for m in ["BAYLORCD8", "BAYLORCD12", "BAYLORCD13", "BAYLORCD14"]:
+    s = next(s for s in sessions if s.mouse == m)
+    print(f"  {s.key}: DANDI optogenetics {dandi[s.key]['ogen']}; DANDI electrode groups {dandi[s.key]['egroups']}; "
+          f"CRCNS CN side {s.cn_side}, CRCNS ALM ML {s.alm_ml}")'''
+setsrc(5,s5)
+s7=src(7)
+s7 += '''
+w20 = wd.tp / 20000 * 1000
+odd = wd[(wd.label == "pyramidal") & (wd.year != "2015") & (w20 <= 0.45 + 1e-9)]
+print("2017 and 2018 units labelled pyramidal with width <= 0.45 ms at 20 kHz, by width (ms):",
+      (odd.tp / 20000 * 1000).round(3).value_counts().sort_index().to_dict())'''
+setsrc(7,s7)
+s57=src(57)
+s57 += '''
+r_ = latd[(latd.group == "dentate") & (latd.trials == "all") & (latd.window == "stim") & (latd.label == "start")].iloc[0]
+print(f"\\nStimulation window, all trials, bins labelled by start: latency {r_.boot_mean_ms:.4f} +- {r_.boot_sd_ms:.4f} ms; "
+      f"within 8.3 +- 5.0 (3.3 to 13.3): {bool(3.3 <= r_.boot_mean_ms <= 13.3)}")'''
+setsrc(57,s57)
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+EOF
+git -C  diff --stat 2>/dev/null | tail -3; head -c 300 reproduce_gao_2018.ipynb; tail -c 300 reproduce_gao_2018.ipynb
 ```
 
 ```
-# Questions
-
-`<dandiset>.yaml` holds an attempt's questions to a reader: places where the author or a verifier
-believes the claims file misreads the paper (docs/protocol.md, "Author", step 1.6, and "Hand over for
-verification"), and the reader's answers ("Reader", step 6), which say whether the claims file was
-amended and why. Each question has `claim`, `question`, `passage`, `why` (how the misreading could
-change the outcome), and, once answered, `answer` and `answered` (a date). Method details the claims
-file lacks are not asked here: the author takes them from the paper, and a detail the paper does not
-settle is a question for the paper's authors, recorded in the claim's notes and as a
-`methods_unavailable` finding in the attempt. Files from before protocol `pilot-11` also hold
-questions about method details, asked under the earlier rule.
-gao-2025
-# Questions from attempt berg-2020-01 (author, 2026-10-23) about the claims file
-# claims/000023/10.1101-2020.03.31.018820.yaml. Each is asked under docs/protocol.md, Author, step 1.6;
-# the attempt runs every reading it can see, or blocks the claim as methods_underspecified until the
-# question is answered.
-dandiset: "000023"
-paper: doi:10.1101/2020.03.31.018820
-questions:
-- claim: features-and-labels-link
-[... 43 more lines not kept]
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "71735729",
+   "metadata": {},
+   "source": "# Reproducing Gao et al. (2018) from DANDI:000007 and CRCNS:alm-4\n\n**Paper.** Gao Z, Davis C, Thomas AM, Economo MN, Abrego AM, Svoboda K, De Zeeuw CI, Li N (2018).\nA cortico-cerebellar loop for mootal runtime {(time.time() - started) / 60:.1f} min, peak memory {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.1f} GB\")"
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat questions/gao-2025.yaml | head -30; head -12 claims/gao-2018.yaml
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+for c in nb['cells']:
+    if isinstance(c['source'],list): c['source']=''.join(c['source'])
+s=json.dumps(nb,indent=1,ensure_ascii=False)+'\n'
+open(p,'w').write(s)
+EOF
+python -c "import json;json.load(open('reproduce_gao_2018.ipynb'))" && date -u
 ```
 
 ```
-cat: questions/gao-2025.yaml: No such file or directory
-# Claims for Gao, Davis, Thomas, Economo, Abrego, Svoboda, De Zeeuw and Li (2018), "A
-# cortico-cerebellar loop for motor planning", Nature 563, 113-116, doi:10.1038/s41586-018-0633-x,
-# tested on DANDI:000007 (same title on the archive; its description reads "Extracellular recording
-# in ALM").
-# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
-# protocol as stated in docs/protocol.md (version pilot-14).
-#
-# Text read: the NIH author manuscript (PMC6212318, NIHMS1504009) as served by Europe PMC, stored
-# under paper/: main text, Methods, the legends of Figs. 1 to 4 and Extended Data Figs. 1 to 10;
-# supplement 1 (Supplementary Information, 5 pages: Extended Data Fig. 10 discussion, cerebellar
-# circuitry discussion, Supplemental Table 1 listing mice and hemispheres) and supplement 2 (the
-# Nature reporting summary). There is no PDF of the main paper, so values and significance marks
+Sat Nov 14 15:20:48 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la questions | grep -i "gao\|000007"; ls questions | sed -n 1,200p | tr '\n' ' '
+cd  time python tools/entry.py all entries/gao-2018 2>&1 | tail -30
 ```
 
 ```
-drwxr-xr-x  2 runner runner  4096 Nov 10 17:54 gao-2025
-README.md ashworth-2025.yaml athalye-2023.yaml bech-2026.yaml bellvila-2026.yaml bennett-2024.yaml berg-2020.yaml boran-2022.yaml bouchard-2013.yaml buccino-2024.yaml chantranupong-2023.yaml chartrand-2023.yaml chaunsali-2025.yaml chen-2017.yaml churchland-2010 claar-2023.yaml daume-2024-phase.yaml daume-2024.yaml deweese-2004.yaml dias-2025.yaml didion-gency-2024.yaml dimakopoulos-2022.yaml doherty-2025.yaml duszkiewicz-2024.yaml economo-2018.yaml fan-2024.yaml farrell-2020.yaml fedele-2020.yaml fujimoto-2026 fujisawa-2008 funamizu-2016.yaml gao-2025 gillespie-2021.yaml gillon-2023 girardeau-2017 gu-2011.yaml guan-2022-finger.yaml guo-2017.yaml hart-2023.yaml hart-2024.yaml hickman-2026.yaml hires-2015.yaml ibl-2021.yaml iram-2024.yaml ishii-2025.yaml ito-2009.yaml ito-2015.yaml jackson-2019.yaml johnson-2018.yaml johnson-2019.yaml kalugin-2026.yaml kauvar-2025 kim-2023 kim-2024.yaml kim-2026.yaml knierim-2000.yaml kohus-2016.yaml krishnan-2022.yaml kutschireiter-2023.yaml laquitaine-2024.yaml le-merre-2026.yaml lee-2025.yaml lefebvre-2008.yaml lemessurier-2019.yaml li-2015 li-2016 li-2022.yaml liu-2026 luo-2024.yaml makin-2018.yaml mantas-2024.yaml martel-2025.yaml mayner-2022.yaml microns-2025.yaml mintal-2024.yaml moaddab-2021-ventral.yaml moaddab-2021.yaml mountoufaris-2024.yaml nagelhus-2023.yaml nair-2018.yaml nakamuta-2025.yaml namima-2025.yaml natraj-2025.yaml neupane-2024.yaml ocagli-2024.yaml pakhomov-2023 park-2025.yaml peterson-2021.yaml plitt-2023.yaml prince-2025.yaml qi-2026.yaml raicevic-2023.yaml rajebhosale-2025.yaml ray-2022.yaml rodgers-2014.yaml rodgers-2022.yaml sargolini-2006.yaml scala-2021 schuck-2016.yaml semenov-2025 semenov-2026 senzai-2019.yaml shi-2013.yaml silkuniene-2025 sit-2023.yaml sosa-2025.yaml su-2026 talbot-2018.yaml tarduno-2024.yaml tingley-2021.yaml varela-2020.yaml wang-2024.yaml watson-2016 watters-2026.yaml welch-2025.yaml xiao-2026.yaml yemini-2021 yu-2016 yu-2017.
+Installed kernelspec registry-gao-2018 in executed/gao-2018/.venv/share/jupyter/kernels/registry-gao-2018
+0 error(s)
+pass  reproduce_gao_2018.ipynb  (1363 s)
+
+real	22m57.617s
+user	10m45.593s
+sys	0m55.361s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "
+import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
+for i in [5,7,57]:
+    c=nb['cells'][i]
+    print('=====',i)
+    for o in c.get('outputs',[]):
+        t=''.join(o.get('text',''))
+        print(t[t.find('Trials eligible') if i==5 else (t.find('2017 and 2018') if i==7 else t.find('Stimulation window')):])
+"; date -u
+```
+
+```
+===== 5
+Trials eligible in CRCNS (good, with a code) but missing from DANDI, by CRCNS trial number (1-based):
+  ANM314746_20151022: 26 trials, numbers 279 to 304; every eligible trial in that range missing: True; last trial held by DANDI 278; trials in the CRCNS table 310
+  ANM314757_20151021: 268 trials, numbers 48 to 315; every eligible trial in that range missing: True; last trial held by DANDI 47; trials in the CRCNS table 321
+
+Photostimulation site and recording location in DANDI (general/optogenetics and electrode group locations), one session per photo-inhibition mouse, with the CRCNS values:
+  BAYLORCD8_20171016: DANDI optogenetics {'Fastigial': {'brain_location': 'Fastigial', 'hemisphere': 'right', 'coordinate_ref': 'lambda', 'photo_stim_coordinate_ap': '-2.5', 'photo_stim_coordinate_ml': '0.8', 'photo_stim_coordinate_dv': '2.4'}}; DANDI electrode groups {'Cambridge NeuroTech 64ch H2 probe_g1': {'probe_type': 'Cambridge NeuroTech 64ch H2 probe', 'rec_coordinate_ap': '2.5', 'rec_coordinate_ml': '-1.5', 'rec_coordinate_dv': 'None', 'ground_coordinate_ap': '-3.0', 'ground_coordinate_ml': '-1.0', 'ground_coordinate_dv': '1.0', 'rec_marker': 'stereotaxic', 'spike_sorting_method': 'manual', 'ad_unit': '14 bits', 'coordinate_ref': 'lambda', 'penetration_num': '1'}}; CRCNS CN side right, CRCNS ALM ML -1.5
+  BAYLORCD12_20180125: DANDI optogenetics {'Fastigial': {'brain_location': 'Fastigial', 'hemisphere': 'left', 'coordinate_ref': 'lambda', 'photo_stim_coordinate_ap': '-2.5', 'photo_stim_coordinate_ml': '-0.8', 'photo_stim_coordinate_dv': '2.4'}}; DANDI electrode groups {'Cambridge NeuroTech 64ch H2 probe_g1': {'probe_type': 'Cambridge NeuroTech 64ch H2 probe', 'rec_coordinate_ap': '2.5', 'rec_coordinate_ml': '-1.5', 'rec_coordinate_dv': 'None', 'ground_coordinate_ap': '-3.0', 'ground_coordinate_ml': '-1.0', 'ground_coordinate_dv': '1.0', 'rec_marker': 'stereotaxic', 'spike_sorting_method': 'manual', 'ad_unit': '14 bits', 'coordinate_ref': 'lambda', 'penetration_nu
+[... 12 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "id: fig4g" -A22 claims/gao-2018.yaml; grep -n "E5" -A8 claims/gao-2018.yaml | head -30
+```
+
+```
+887:- id: fig4g-dentate-effect-recovers
+888-  statement: Dentate photo-activation also changes ALM responses (latency 8.3 plus or minus 5.0
+889-    ms), but ALM activity recovers quickly after it.
+890-  source: Main text, paragraph 16; Figure 4g; Extended Data Figure 9a
+891-  quote: Dentate photo-activation also induced ALM response changes ( Fig 4g ; latency, 8.3 ± 5.0
+892-    ms). Importantly, activity quickly recovered after dentate photo-activation
+893-  expected:
+894-  - quantity: latency of the ALM response to dentate photo-activation
+895-    value: 8.3
+896-    tolerance: 5.0
+897-    unit: ms
+898-  - quantity: ALM neurons significantly modulated by dentate photo-activation
+899-    value: 163
+900-    tolerance: 16.3
+901-  depends_on:
+902-  - fig4f-fastigial-effect-persists
+903-  datasets:
+904-  - "000007"
+905-  - crcns-alm-4
+906-  criterion: As fig4-fastigial-activation-alm-latency and fig4f-fastigial-effect-persists on the
+[... 33 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -rn "proposed" schema* docs/*.md tools/*.py 2>/dev/null | grep -v "^docs/protocol.md" | head -20; grep -ln "proposed:" attempts/*.yaml | head -3
+```
+
+```
+schemas/attempt.schema.json:303:          "proposed": {
+schemas/claims.schema.json:3:  "title": "Claims proposed for one target (a dataset and one of its papers)",
+docs/design.md:195:claims/<dandiset>/<doi-slug>.yaml the claims proposed for one target
+docs/design.md:260:Each has a proposed default, used until decided otherwise.
+tools/agent_run.py:6:    python tools/agent_run.py proposals ROLE PAPER        # "true" if the attempt has proposed changes
+tools/agent_run.py:16:author-revise-3, the third round that settles changes proposed after the second. A repeat attempt
+tools/agent_run.py:319:    """The claims of the paper's latest attempt that carry a proposed change of outcome."""
+tools/agent_run.py:321:    return [o["claim"] for o in (found[0]["outcomes"] if found else []) if o.get("proposed")]
+tools/build_site.py:332:                "proposed": o.get("proposed"),
+tools/build_site.py:1781:    if o.get("proposed"):
+tools/build_site.py:1782:        tags += (f'<span class="tag">change to {e(OUTCOMES[o["proposed"]["outcome"]][0].lower())} '
+tools/build_site.py:1783:                 f'proposed</span>')
+tools/build_site.py:1785:    if o.get("proposed"):
+tools/build_site.py:1787:                 f'{e(OUTCOMES[o["proposed"]["outcome"]][0].lower())}. {e(squash(o["proposed"]["reason"]))}</p>')
+tools/build_site.py:2305:     "it agrees with each outcome. The author revises once more. Any change of outcome proposed after this goes to a "
+tools/entry.py:372:                                    f"verification agreed with {verified!r}; record the change under `proposed`, "
+tools/replicates.py:10:revision committed, and its third when the second left proposed changes (as chain.sh decides). One still going is
+tools/replicates.py:55:    return "author-revise-3" in done or not any(o.get("proposed") for o in rec["outcomes"])
+attempts/gonzalez-cabrera-2026-01.yaml
+attempts/li-2015-01.yaml
 [... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  head -40 questions/economo-2018.yaml; grep -n "questions" tools/entry.py | head; ls schemas 2>/dev/null || find . -name "*question*schema*" -not -path ./node_modules 2>/dev/null | head
+cd  sed -n 295,330p schemas/attempt.schema.json; grep -n "proposed:" -A6 attempts/li-2015-01.yaml | head -12; grep -n "^verifications" -A4 attempts/li-2015-01.yaml; grep -n "^- date\|reviewed:" attempts/li-2015-01.yaml | head
 ```
 
 ```
-# Questions from attempt economo-2018-02 (author, 2026-10-20) about
-# claims/000006/10.1038-s41586-018-0642-9.yaml. Each claim was run under every reading named here;
-# the attempt record says which ones decide the outcome.
-dandiset: "000006"
-paper: doi:10.1038/s41586-018-0642-9
-questions:
-- claim: pt-tagged-units
-  attempt: economo-2018-02
-  asked: 2026-10-20
-  question: The criterion says the reading of the unit selection that reproduces the 61 and 69 units is
-    the one the other electrophysiology claims use. On the dandiset neither does (the code's rule keeps
-    44 PTupper and 56 PTlower units, the Methods' session rule 42 and 63), because 11 of the paper's
-    sessions are not in it. Which selection should the other claims use when neither reading matches?
-  passage: Methods, Electrophysiology data analysis ("Units recorded during behavioural sessions in which
-    performance was not greater than 65% ... 13 units were rejected; 130 were kept"); the claims file's
-    opening comment, Unit inclusion.
-  why: pt-spike-rates-similar, pt-variance-explained and pt-single-neuron-early-selectivity give
-    different outcomes under the two selections, and are blocked until it is fixed. On the paper's
-    processed data the code's rule gives 61 and 69.
-  answered: 2026-10-20
-[... 24 more lines not kept]
+"type": "string",
+              "minLength": 1
+            }
+          },
+          "assumed": {
+            "description": "True when the outcome rests on an assumption about a method the paper leaves open: a choice the paper best supports, stated in a deviation that says what was assumed and why (docs/protocol.md, Author, step 1.6).",
+            "type": "boolean"
+          },
+          "proposed": {
+            "description": "A change of outcome found after the last verification round, held until a further round agrees with it.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "outcome",
+              "reason"
+            ],
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "reproduced",
+[... 34 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -rn "questions" tools/*.py | grep -v "^tools/build_site" | head -10; grep -n "dandiset\|^paper" claims/gao-2018.yaml | head -3
+cd  python -c "
+import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
+for i in [34,59]:
+    for o in nb['cells'][i].get('outputs',[]):
+        print(''.join(o.get('text','')))
+"
 ```
 
 ```
-tools/agent_run.py:161:               "questions": paper_records.questions_file(key).relative_to(ROOT).as_posix(),
-tools/datasets.py:9:files in the repository (claims/, questions/, transcripts/, attempt branches, the paper store) are
-tools/migrate_paper_first.py:20:| questions/<folder>.yaml | questions/<key>.yaml | questions/<key>/<folder>.yaml |
-tools/migrate_paper_first.py:47:TEXT_DIRS = ("attempts", "entries", "summaries", "docs/pilot-notes", "claims", "questions")
-tools/migrate_paper_first.py:151:    folder_paper = {}   # record folder -> the paper its claims, questions and transcripts belong to
-tools/migrate_paper_first.py:163:        q = ROOT / "questions" / f"{folder}.yaml"
-tools/migrate_paper_first.py:165:            moves.append((f"questions/{folder}.yaml",
-tools/migrate_paper_first.py:166:                          f"questions/{keys[doi]}/{folder}.yaml" if doi in several else f"questions/{keys[doi]}.yaml"))
-tools/migrate_paper_first.py:269:    git("add", "-A", *[d for d in ("attempts", "entries", "claims", "questions", "transcripts", "summaries", "docs",
-tools/paper_records.py:14:    questions/<key>.yaml                   the author's questions on them
-39:#    dandiset description names ALM recordings only; the CN claims are kept, as the paper's
-98:paper: doi:10.1038/s41586-018-0633-x
-687:    higher than the dentate overlap in sections from the same brains. The dandiset is described
+fastigial photo-activation, code 2 (fastigial delay): early-lick rate control 0.083 (n=4331), stim 0.130 (n=609), change +0.046, two-sided p = 0.333, 6 mice, 21 sessions
+
+   ANM314746: control 0.059, stim 0.080 (n=87), two-sided p = 0.5000
+
+   ANM314757: control 0.221, stim 0.197 (n=61), two-sided p = 0.6686
+
+   ANM314758: control 0.090, stim 0.084 (n=107), two-sided p = 0.8070
+
+   ANM314760: control 0.048, stim 0.113 (n=80), two-sided p = 0.0708
+
+   BAYLORCD6: control 0.081, stim 0.324 (n=111), two-sided p = 0.0000
+
+   BAYLORNL15: control 0.061, stim 0.037 (n=163), two-sided p = 0.2020
+
+   without MISMATCH: control 0.076, stim 0.128, two-sided p = 0.322
+
+fastigial photo-activation, code 1 (fastigial sample): early-lick rate control 0.083 (n=4331), stim 0.104 (n=652), change +0.021, two-sided p = 0.672, 6 mice, 21 sessions
+
+   ANM314746: control 0.059, stim 0.095 (n=95), two-sided p = 0.3150
+
+[... 54 more lines not kept]
 ```
 
-**Agent calls Write**
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+c=nb['cells'][59]; s=c['source']
+old='''          f"{np.nanmax(np.abs(lab_p - persist[grp])):.1e}; NaN in the lab's rows: {int(np.isnan(lab_p).sum())}")
+'''
+new='''          f"{np.nanmax(np.abs(lab_p - persist[grp])):.1e}; NaN in the lab's rows: {int(np.isnan(lab_p).sum())} "
+          f"(not compared; the values here at those entries: {pd.Series(persist[grp][np.isnan(lab_p)]).round(6).value_counts().to_dict()})")
+'''
+assert old in s
+c['source']=s.replace(old,new)
+open(p,'w').write(json.dumps(nb,indent=1,ensure_ascii=False)+'\n')
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python -c "
+import json;nb=json.load(open('reproduce_gao_2018.ipynb'))
+for i in [10,18,33,35,55,78]:
+    print('=====',i); print(nb['cells'][i]['source'])
+"
+```
+
+```
+===== 10
+Laser traces: in the 2017 and 2018 sessions (stored one row per trial) the light starts within
+2 ms of the epoch the code names, lasts 0.455 s for photo-activation (10 pulses at 20 Hz) and
+0.494 s or 1.295 s for codes 5 and 6, as the descriptor and Methods say, and no control trial is
+lit. The 2015 sessions store the series as one long series with a trial number per sample; their
+light lasts 0.500 s from the named epoch, except in the sessions listed as `MISMATCH` above. In
+ANM314746_20151020 codes 1 and 2 (described as 500 ms) have 1.3 s of light; in
+ANM314756_20151020 the light lasts a median 0.83 and 0.78 s; ANM314757_20151021 shows almost no
+light (peak 0.17 mW) and its onsets do not match the trials; in BAYLORNL14_20170603 only 54% of
+code 3 and 39% of code 4 trials are lit at the named epoch, the others at the other epoch (onset
+IQR about 1300 ms). The main analyses keep these sessions, since the codes are what the lab's
+scripts use and its coding-direction compile includes three of them; every claim that uses codes
+1 to 4 also shows its result without them. The power values are those of the `laser_power`
+channel, which the files say is in mW.
+===== 18
+### fig1g-fastigial-activation-delay-errors
+
+> Fastigial photo-activation during the early delay epoch lowers behavioral performance, even
+> though the photostimulus ends 800 ms before the movement.
+
+[... 46 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+C=nb['cells']
+def rep(i, old, new):
+    assert old in C[i]['source'], (i, old)
+    C[i]['source'] = C[i]['source'].replace(old, new)
+rep(18, """bootstrap p < 0.05. The light ends 0.455 s after delay onset, 0.845 s before the go cue (laser
+traces above).""", """bootstrap p < 0.05. By the laser traces above the light lasts 0.455 s from delay onset in the
+2017 sessions, ending 0.845 s before the go cue, and 0.500 s in the 2015 sessions, ending 0.8 s
+before it, except in ANM314746_20151020, where it lasts 1.3 s, up to the go cue (one of the
+sessions in MISMATCH).""")
+rep(35, """**Result: both claims stay blocked (data_missing).** Where it can be tested, the early-lick part
+holds: the fraction""", """**Result: both claims stay blocked (data_missing).** Where it can be tested, the early-lick part
+holds pooled over mice, not in every mouse: the fraction""")
+rep(35, """(0.083 to 0.209, p = 0.008) and less under code 6 (0.090 to 0.011, p < 0.0001). The lick-bout parts""",
+"""(0.083 to 0.209, p = 0.008) and less under code 6 (0.090 to 0.011, p < 0.0001); in these mice
+photostimulation does change early licking. The lick-bout parts""")
+rep(60, """different mix of licks after photo-activation does not explain it. The p-values equal the lab's
+compiled ones to within 3e-13.""", """different mix of licks after photo-activation does not explain it. These 400 ms-bin p-values equal
+the lab's compiled ones (p_stim2_FN, p_stim2_DN) to within 3e-13 wherever the lab's file has a value;
+its NaN entries (printed) were not compared.""")
+json.dump
+open(p,'w').write(json.dumps(nb,indent=1,ensure_ascii=False)+'\n')
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+C=nb['cells']
+def rep(i, old, new):
+    assert old in C[i]['source'], (i, old)
+    C[i]['source'] = C[i]['source'].replace(old, new)
+rep(61, """**Result: partially reproduced.** Latency 8.30 +- 3.07 ms (bins labelled by centre; 3.30 by start)
+and 172 modulated neurons are within tolerance (stimulation window, all trials).""",
+"""**Result: partially reproduced.** With the stimulation window and all trials, 172 modulated neurons
+and the latency are within tolerance: 3.3022 +- 3.07 ms with bins labelled by their start, the label
+used for fig4-fastigial-activation-alm-latency, just inside 3.3 to 13.3 (printed), and 8.30 ms by
+centre. The start label thus matches both the fastigial and the dentate latency, the dentate one at
+the lower bound.""")
+rep(75, """73% to 82%, not abolished.""", """73% to 82%, not abolished. The verified outcome is kept; a change to not reproduced is proposed in
+the attempt record, as the criterion's only test, that photo-inhibition selectivity cannot be told
+from zero, fails in both windows and with both screening counts (printed above).""")
+open(p,'w').write(json.dumps(nb,indent=1,ensure_ascii=False)+'\n')
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+C=nb['cells']
+def rep(i, old, new):
+    assert old in C[i]['source'], (i, old)
+    C[i]['source'] = C[i]['source'].replace(old, new)
+rep(93, "| fig3f-alm-selectivity-abolished-by-cn-inhibition | partially reproduced | 1.46 to 0.39 spikes/s, interval excludes zero |",
+"| fig3f-alm-selectivity-abolished-by-cn-inhibition | partially reproduced (not reproduced proposed) | 1.46 to 0.39 spikes/s, interval excludes zero |")
+rep(93, "| fig4g-dentate-effect-recovers | partially reproduced | latency and count match one reading; late fraction still above baseline |",
+"| fig4g-dentate-effect-recovers | partially reproduced | latency 3.30 ms by bin start (8.30 by centre) and 172 modulated match; late fraction still above baseline |")
+rep(93, "| fig1i-fastigial-activation-licking-unaffected | blocked | early licks 0.083 to 0.130, p = 0.33; bout measures need lick times |",
+"| fig1i-fastigial-activation-licking-unaffected | blocked | early licks pooled 0.083 to 0.130, p = 0.33 (BAYLORCD6 rises); bout measures need lick times |")
+rep(93, "| fig1l-inhibition-execution-unaffected | blocked | early licks p = 0.13 and 0.22; bout measures need lick times |",
+"| fig1l-inhibition-execution-unaffected | blocked | early licks pooled p = 0.13 and 0.22 (BAYLORCD8 differs); bout measures need lick times |")
+rep(93, """which keeps 20 of 34 sessions (the lab's compile 23, the paper 28 of 39). The per-neuron
+photostimulation p-values here equal those in the lab's compile.""",
+"""which keeps 20 of 34 sessions (the lab's compile 23, the paper 28 of 39). The per-neuron
+photo-activation p-values of the 400 ms bins (fig4f) equal those in the lab's FR compile wherever
+it has a value; the window p-values of the modulation test and the photo-inhibition p-values were
+not compared with the lab's files.""")
+rep(93, """three photo-inhibition mice CD12, CD13 and CD14 both deposits place the fastigial fiber on the
+same side as the recorded ALM""", """three photo-inhibition mice CD12, CD13 and CD14 both deposits place the fastigial fiber on the
+same side as the recorded ALM (both printed in the data check)""")
+open(p,'w').write(json.dumps(nb,indent=1,ensure_ascii=False)+'\n')
+EOF
+grep -n "fiber\|0.455\|holds" entries/gao-2018/README.md
+```
+
+```
+14:| Licking unaffected by fastigial photo-activation or photo-inhibition (two claims) | Blocked: no lick times (the early-lick part, tested, holds) |
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python - <<'EOF'
+p='README.md'; s=open(p).read()
+s=s.replace("Blocked: no lick times (the early-lick part, tested, holds) |","Blocked: no lick times (the early-lick part, tested, holds pooled over mice but not in every mouse) |")
+s=s.replace("| CN photo-inhibition abolishes ALM selectivity | Partially reproduced |","| CN photo-inhibition abolishes ALM selectivity | Partially reproduced (a change to not reproduced is proposed) |")
+open(p,'w').write(s)
+EOF
+grep -n "abolishes ALM sel\|early-lick" README.md; date -u
+```
+
+```
+14:| Licking unaffected by fastigial photo-activation or photo-inhibition (two claims) | Blocked: no lick times (the early-lick part, tested, holds pooled over mice but not in every mouse) |
+22:| CN photo-inhibition abolishes ALM selectivity | Partially reproduced (a change to not reproduced is proposed) |
+24:| Fastigial photo-activation abolishes ALM selectivity | Reproduced |
+Sat Nov 14 15:44:57 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py all entries/gao-2018 2>&1 | tail -5; python -c "
+import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
+for o in nb['cells'][59].get('outputs',[]):
+    t=''.join(o.get('text',''))
+    print('\n'.join(l for l in t.splitlines() if 'compiled p-values' in l))
+"; date -u
+```
+
+```
+Installed kernelspec registry-gao-2018 in executed/gao-2018/.venv/share/jupyter/kernels/registry-gao-2018
+0 error(s)
+pass  reproduce_gao_2018.ipynb  (1436 s)
+fastigial: largest difference from the lab's compiled p-values over 445 neurons x 101 bins: 2.6e-13; NaN in the lab's rows: 381 (not compared; the values here at those entries: {1.0: 381})
+dentate: largest difference from the lab's compiled p-values over 517 neurons x 101 bins: 2.7e-13; NaN in the lab's rows: 704 (not compared; the values here at those entries: {1.0: 704})
+Sat Nov 14 16:09:06 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+C=nb['cells']
+old="""the lab's compiled ones (p_stim2_FN, p_stim2_DN) to within 3e-13 wherever the lab's file has a value;
+its NaN entries (printed) were not compared."""
+new="""the lab's compiled ones (p_stim2_FN, p_stim2_DN) to within 3e-13 wherever the lab's file has a value.
+Its 381 and 704 NaN entries are 1.0 here (the bins where neither set of trials varies, which this
+notebook scores 1.0 and MATLAB's t-test leaves undefined), so neither counts them significant."""
+assert old in C[60]['source']; C[60]['source']=C[60]['source'].replace(old,new)
+open(p,'w').write(json.dumps(nb,indent=1,ensure_ascii=False)+'\n')
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/gao-2018; python - <<'EOF'
+import json
+p='reproduce_gao_2018.ipynb'
+nb=json.load(open(p))
+C=nb['cells']
+old="""Its 381 and 704 NaN entries are 1.0 here (the bins where neither set of trials varies, which this
+notebook scores 1.0 and MATLAB's t-test leaves undefined), so neither counts them significant."""
+new="""Its 381 and 704 NaN entries are 1.0 here, so neither counts them significant; this notebook scores
+1.0 where neither set of trials varies, where MATLAB's t-test gives NaN."""
+assert old in C[60]['source']; C[60]['source']=C[60]['source'].replace(old,new)
+open(p,'w').write(json.dumps(nb,indent=1,ensure_ascii=False)+'\n')
+EOF
+cd  python -c "
+import json;a=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
+for i in [16,19,28,54,74,77,85,88,91]:
+    print('==',i)
+    for o in a['cells'][i].get('outputs',[]):
+        print(''.join(o.get('text',''))[:1500])
+" | head -150
+```
+
+```
+== 16
+contra {'ctrl': 0.8565, 'stim': 0.8256, 'change': -0.0309, 'p': 0.3638, 'p_drop': 0.3638, 'n_ctrl': 2070, 'n_stim': 281, 'n_mice': 6, 'n_sessions': 20}
+
+ipsi {'ctrl': 0.8866, 'stim': 0.8988, 'change': 0.0122, 'p': 0.365, 'p_drop': 0.635, 'n_ctrl': 1808, 'n_stim': 257, 'n_mice': 6, 'n_sessions': 21}
+
+pooled {'ctrl': 0.8696, 'stim': 0.8606, 'change': -0.009, 'p': 0.4164, 'p_drop': 0.4164, 'n_ctrl': 3897, 'n_stim': 538, 'n_mice': 6, 'n_sessions': 21}
+
+Per mouse (pooled types), control and sample photo-activation:
+  ANM314746: control 0.911 (n=587), stim 0.942 (n=86)
+  ANM314757: control 0.862 (n=327), stim 0.796 (n=54)
+
+  ANM314758: control 0.912 (n=704), stim 0.930 (n=114)
+  ANM314760: control 0.875 (n=534), stim 0.877 (n=81)
+  BAYLORCD6: control 0.745 (n=666), stim 0.803 (n=71)
+  BAYLORNL15: control 0.896 (n=1079), stim 0.795 (n=132)
+
+Without the sessions in MISMATCH:
+
+  contra {'ctrl': 0.8553, 'stim': 0.8082, 'change': -0.0472, 'p': 0.2914, 'p_drop': 0.2914, 'n_ctrl': 1887, 'n_stim': 245, 'n_mice': 6, 'n_sessions': 18}
+
+[... 131 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i "problem\|affect" transcripts/gao-2018/verifier-1-report.md | head -60
+```
+
+```
+12:| fig1i-fastigial-activation-licking-unaffected | blocked (data_missing), but part was testable | Bout measures need lick times and response-epoch stimulation. The early-lick part could have been tested from the per-trial LickEarly flag (problem 8). |
+13:| fig1g-dentate-activation-little-effect | partially_reproduced | Cell 22: no drop at p < 0.05 (p = 0.107, change −0.039). This is an absence claim tested in 3 of 8 mice, with reading (a) only, using a test that is conservative (problem 7). |
+19:| fig1l-inhibition-execution-unaffected | blocked (data_missing), but part was testable | The early-lick rate under codes 5 and 6 (4 of 7 mice) was available from the LickEarly flag. |
+41:| fig4e-fastigial-activation-abolishes-alm-selectivity | reproduced | Cell 55: n = 328, matching the paper. The difference interval excludes 0; 89 to 90% of control-selective neurons lose significance and 6 to 9 gain it. The per-neuron part is unverified (problem 3). |
+42:| fig4f-fastigial-effect-persists | reproduced | Cell 43: 13.4% of neurons are significant at ≥1 s after offset, against 1% (p = 3e-47) and against 0.9% before onset (p = 2e-13). See problem 4. |
+45:| fig4i-fastigial-collapses-cd | partially_reproduced | Cell 61: the fastigial collapse holds under reading (b) (difference [5.84, 20.91]) but not under (a) (stimulation interval [0.26, 14.46]). The dentate difference excludes 0 in both windows ([0.15, 4.18] and [0.75, 4.65]), so the "dentate unaffected" condition fails. |
+46:| cd-captures-selectivity | partially_reproduced | Cell 63: under reading (b) on held-out trials, selectivity is 66.3%, within 64.1 ± 3.4. Variance is 35.9 to 38.7% under (b) and 56 to 59% under (a), against 27.0 ± 4.2. It matches only under the notebook's own single-trial variant (problem 2). |
+49:| ed10d-fastigial-endpoints-no-prediction | not_reproduced | Cell 65: the slope on stimulation trials is still significant (0.54 [0.19, 0.90] per s.d., p = 0.0028, 181 trials). P(lick right) by quartile is 0.
+[... 12 more lines not kept]
+```
+
+**Agent calls Edit**
 
 ```json
 {
- "file_path": "questions/gao-2018.yaml",
- "content": "# Questions from attempt gao-2018-01 (author, 2026-11-10) about claims/gao-2018.yaml, asked under\n# docs/protocol.md, Author, step 1.6, and \"Hand over for verification\". The claim is tested as the\n# claims file has it.\npaper: doi:10.1038/s41586-018-0633-x\nquestions:\n- claim: fig2cd-selectivity-emerges-gradually\n  attempt: gao-2018-01\n  asked: 2026-11-10\n  question: The claims file's E3 says \"the paper says the epoch choice gave qualitatively similar\n    results\". The Methods sentence is about preparatory activity only (\"yielded qualitatively similar\n    preparatory activity\"). Should E3 say \"qualitatively similar preparatory activity\", so that it\n    makes no statement about the position of the response-epoch peak? The verifier of round 2\n    reported this as a misreading.\n  passage: Methods, Electrophysiology data analysis (\"Selecting preferred trial type using either\n    sample, delay, or response epoch data yielded qualitatively similar preparatory activity.\")\n  why: On these data the preparatory part of Fig. 2c (sample-epoch selectivity above zero, delay mean\n    above sample mean) is similar under every epoch, while the peak lies in the response epoch only\n    when the response epoch fixes the preference. Read as \"similar results\", E3 suggests the peak\n    should hold under every epoch, which the attempt's text first took as a conflict with the paper.\n    The outcome (partially reproduced) does not change under either wording, as it rests on the peak\n    holding under one of the three epochs.\n"
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    Early delay photo-activation (code 2, light for 0.455 s from delay onset, ending 0.845 s before\n    the go cue by the laser traces) lowers",
+ "new_string": "    Early delay photo-activation (code 2; by the laser traces, light for 0.455 s from delay onset in\n    the 2017 sessions, ending 0.845 s before the go cue, and 0.500 s in the 2015 sessions, ending\n    0.8 s before it, except 1.3 s, up to the go cue, in ANM314746_20151020) lowers"
 }
 ```
 
 ```
-File created successfully at: questions/gao-2018.yaml (file state is current in your context — no need to Read it back)
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
-**Agent calls Bash**
+**Agent calls Edit**
 
-```bash
-cd  python - <<'EOF'
-p='attempts/gao-2018-01.yaml'; s=open(p).read()
-def rep(old,new,count=1):
-    global s
-    assert s.count(old)==count, (s.count(old), old[:80]); s=s.replace(old,new)
-rep("""- claim: cd-captures-selectivity
-  outcome: reproduced""","""- claim: cd-captures-selectivity
-  outcome: partially_reproduced""")
-# fig3e
-rep("""  - 3.379
-  - 3.767
-  notes: 'All 676""","""  - 3.379
-  - 3.767
-  assumed: true
-  notes: 'All 676""")
-rep("""The rates are about 19% below the paper''s with all neurons, and both""",
-"""With all neurons the control rate is about 19% below the paper''s 4.15 and the photo-inhibition
-    rate about 14% below its 4.39, and both""")
-rep("""    = 0.227, paired p = 0.031).'
-  deviations:""","""    = 0.227, paired p = 0.031). The absence holds under the unpaired test, the one assumed (see deviations).'
-  deviations:""")
-open(p,'w').write(s)
-EOF
-awk '/^- claim: fig3e-alm-mean-rate-unchanged/{p=1} /^- claim: fig3e-alm-increase/{p=0} p' attempts/gao-2018-01.yaml | tail -12
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    flag and holds; the fraction of trials with an early lick is 0.083 in control and 0.130 with\n    early delay photo-activation (two-sided bootstrap p = 0.33, 6 mice, 21 sessions; 0.322 without\n    the MISMATCH sessions). Per mouse only BAYLORCD6 differs (0.081 to 0.324, p < 0.0001; also 0.304\n    with sample photo-activation).",
+ "new_string": "    flag and holds pooled over mice, not in every mouse; the fraction of trials with an early lick\n    is 0.083 in control and 0.130 with early delay photo-activation (two-sided bootstrap p = 0.33, 6\n    mice, 21 sessions; 0.322 without the MISMATCH sessions). Per mouse BAYLORCD6 licks early more\n    (0.081 to 0.324, p < 0.0001; also 0.304 with sample photo-activation)."
+}
 ```
 
 ```
-rate of 4.89 spikes/s, against 3.36 for all 676), so the rate level depends on a neuron selection the
-    paper does not describe. Without the five sessions of the clock check, 3.310 and 3.716 (unpaired p
-    = 0.227, paired p = 0.031). The absence holds under the unpaired test, the one assumed (see deviations).'
-  deviations:
-  - The photostimulation codes are not described in the files; codes 1 and 3 are read as early sample
-    and 2 and 4 as early delay photo-activation, 5 and 6 as delay photo-inhibition, from the onset of
-    the ALM response and the sessions' ogen sites (data check).
-  - Putative pyramidal neurons by the width of the files' mean waveforms (E1), which gives more neurons
-    than the paper reports; the units table has no quality field to tell which the paper left out.
-  - Lick early trials are left out of the neural analyses (the Methods say so for performance only); a
-    standard choice. So are trials outside the units' observation intervals (120 trials of BAYLORCD8
-    20171020, which hold no spikes).
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
-**Agent calls Bash**
+**Agent calls Edit**
 
-```bash
-cd  grep -o ".\{200\}0\.58.\{100\}" paper/*.txt | head -3
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    LickEarly flag in the 4 recorded mice (the criterion names 7 behavior mice) and holds; 0.109 in",
+ "new_string": "    LickEarly flag in the 4 recorded mice (the criterion names 7 behavior mice) and holds pooled over\n    mice, not in every mouse; 0.109 in"
+}
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
 
 **Agent**
 
-Now the deviation for the fig3e assumption and the other note and finding fixes.
+Now fig3f (proposed), fig4, fig4f and fig4g.
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    [0.17, 0.57] and 0.32 [0.06, 0.56].\n  deviations:",
+ "new_string": "    [0.17, 0.57] and 0.32 [0.06, 0.56].\n  proposed:\n    outcome: not_reproduced\n    reason: >-\n      The criterion's only test of the claim is that photo-inhibition selectivity cannot be told\n      from zero, and it fails under every reading the notebook runs (cell 74); whole delay 0.39\n      [0.19, 0.60], last 500 ms 0.27 [0.02, 0.53], and with 5 screening trials 0.37 [0.17, 0.57] and\n      0.32 [0.06, 0.56]. The criterion has no partial condition, and the control part only sets the\n      precondition, so the 73% to 82% reduction does not make the claim hold in part. Both\n      verification rounds gave not_reproduced for this reason.\n  deviations:"
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    same 6 mice; the count does not reproduce. The fraction of tested neurons (0.40 to 0.42) is\n    close to 227 of the paper's unknown denominator. By mouse 11 to 66 modulated neurons. The tested\n    set is the lab's (its compiled FR file has p-values for the same 445 pyramidal neurons, equal to\n    those here to 3e-13). Without",
+ "new_string": "    same 6 mice; the count does not reproduce. By mouse 11 to 66 modulated neurons. The tested set\n    is the lab's (its compiled FR file has p-values for the same 445 pyramidal neurons; its 400 ms-bin\n    p-values equal those here to 3e-13 where it has a value, and its NaN entries are 1.0 here; the\n    window p-values were not compared). Without"
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    and above before onset (p = 3e-10 and 0.0016). Without the MISMATCH sessions 0.1457. The per-bin\n    p-values equal those in the lab's compiled FR file (p_stim2_FN) to 3e-13.",
+ "new_string": "    and above before onset (p = 3e-10 and 0.0016). Without the MISMATCH sessions 0.1457. The per-bin\n    p-values equal those in the lab's compiled FR file (p_stim2_FN) to 3e-13 wherever it has a\n    value; its 381 NaN entries are 1.0 here, so neither counts them significant."
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "  measured:\n  - 8.3\n  - 172\n  notes: >-\n    Stimulation window, all trials, bins labelled by centre: latency 8.3 +- 3.1 ms and 172 modulated\n    neurons of 517, both within tolerance (by start 3.3 ms, just below 3.3 to 13.3; whole-delay window\n    146 neurons).",
+ "new_string": "  measured:\n  - 3.30\n  - 172\n  notes: >-\n    Stimulation window, all trials, bins labelled by start as in fig4-fastigial-activation-alm-latency:\n    latency 3.3022 +- 3.07 ms, just inside 3.3 to 13.3, and 172 modulated neurons of 517, both within\n    tolerance (by centre 8.30 ms, also within; whole-delay window 146 neurons)."
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    The latency match rests on labelling bins by their centre (assumed); no single labelling\n    matches both the fastigial and the dentate latency.",
+ "new_string": "    The latency match rests on labelling each 10 ms bin by its start (assumed), the label used for\n    the fastigial latency; the paper does not say how a bin is placed in time. The start label\n    matches both latencies, the dentate one at the lower bound; the centre label also matches the\n    dentate latency (8.30 ms), not the fastigial one."
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "latency 8.62 ms by centre" attempts/gao-2018-02.yaml
+```
+
+```
+457:    (p = 6e-9 against 1%, 0.0007 against before onset), latency 8.62 ms by centre with 166 modulated
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "latency 8.62 ms by centre with 166 modulated",
+ "new_string": "latency 3.62 ms by start (8.62 by centre) with 166 modulated"
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    photostimulation code; ANM314746 2015-10-22 has 258 of 284 (the last 26 missing) and ANM314757\n    2015-10-21 has 34 of 302 (trials 48 to 315 missing).",
+ "new_string": "    photostimulation code; ANM314746 2015-10-22 has 258 of 284 (trials 279 to 304, the last 26 such\n    trials, missing) and ANM314757 2015-10-21 has 34 of 302 (trials 48 to 315 missing); in both,\n    DANDI holds no trial after the first missing one."
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    For the photo-inhibition mice BAYLORCD12, BAYLORCD13 and BAYLORCD14 both datasets give the\n    photostimulation site as the left fastigial nucleus and the ALM recording at ML -1.5 mm (left),\n    on the same side,",
+ "new_string": "    For the photo-inhibition mice BAYLORCD12, BAYLORCD13 and BAYLORCD14 both datasets give the\n    photostimulation site as the left fastigial nucleus and the ALM recording at ML -1.5 mm (left),\n    on the same side (DANDI: optogenetics hemisphere left, ML -0.8 mm; electrode group ML -1.5 mm;\n    for BAYLORCD8 right and -1.5 mm),"
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/gao-2018-02.yaml",
+ "old_string": "    For the response latencies (4.5, 8.3 and 7.1 ms), how is a 10 ms bin placed in time (start,\n    centre or end) and which window decides that a neuron is significantly modulated? Labelling by\n    start gives 3.6 ms for fastigial and 3.3 ms for dentate photo-activation, by centre 8.6 and 8.3\n    ms, so no single choice here matches both reported values; for CN photo-inhibition every choice\n    gives 15 ms or more.",
+ "new_string": "    For the response latencies (4.5, 8.3 and 7.1 ms), how is a 10 ms bin placed in time (start,\n    centre or end) and which window decides that a neuron is significantly modulated? Labelling by\n    start gives 3.64 ms for fastigial and 3.30 ms for dentate photo-activation, by centre 8.64 and\n    8.30 ms. Only the start label matches both reported values, the dentate one at the lower bound\n    of 8.3 +- 5.0; for CN photo-inhibition every choice gives 15 ms or more against 7.1."
+}
+```
+
+```
+The file attempts/gao-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
 
 **Agent calls Bash**
 
 ```bash
 cd  python - <<'EOF'
-p='attempts/gao-2018-01.yaml'; s=open(p).read()
-def rep(old,new,count=1):
-    global s
-    assert s.count(old)==count, (s.count(old), old[:80]); s=s.replace(old,new)
-i=s.index("- claim: fig3e-alm-mean-rate-unchanged"); j=s.index("- claim: ", i+10)
-block=s[i:j]
-add="""  - 'Assumed: the absence test is the unpaired two-tailed t-test over neurons. The paper says only "two-tailed
-    t-test" (main text, "control: 4.15 spikes/s; photo-inhibition: 4.39 spikes/s; p=0.58, two-tailed
-    t-test"), and p = 0.58 for a 0.24 spikes/s change fits an unpaired test. Here the two disagree (unpaired
-    p = 0.214, paired p = 0.022), and the criterion asks that the outcome be marked as resting on the reading
-    when they do.'
-"""
-block=block.rstrip('\n')+'\n'+add
-s=s[:i]+block+s[j:]
-# fig2cd
-rep("""spikes/s); with the sample or delay epoch it is before the go cue (-0.60 to -0.05 s). The paper says
-    the epoch gave qualitatively similar results (Methods, "Selecting preferred trial type using either
-    sample, delay, or response epoch data yielded qualitatively similar preparatory activity"), so the
-    peak's place holds under one of the three epochs only.""",
-"""spikes/s); with the sample or delay epoch it is before the go cue (-0.60 to -0.05 s). The paper says
-    the epoch gave similar preparatory activity (Methods, "Selecting preferred trial type using either
-    sample, delay, or response epoch data yielded qualitatively similar preparatory activity"), which
-    holds here, as the sample and delay parts are similar under every epoch; that sentence does not cover
-    the peak's place, which holds under one of the three epochs only.""")
-# fig4g
-rep("""    above the pre-onset 2.12% in 4 of 15 bins, so much of the late dentate effect follows the mix of lick
-    directions.""","""    above the pre-onset 2.12% in 4 of 15 bins but above chance (1%) in all 15, so measured against the
-    pre-onset level much of the late dentate effect follows the mix of lick directions, while every bin
-    stays above chance.""")
-# fig4e
-rep("""    control-selective neurons, so much of the per-neuron loss is a loss of power; the population difference
-    is not.'""","""    control-selective neurons, against 0.863 and 0.875 with photo-activation, so only part of the per-neuron
-    loss is the effect itself; the small photo-activation trial count also holds down the count that gains
-    significance. The outcome rests mainly on the population difference and its interval, which excludes
-    zero in every row.'""")
-# fig3d
-rep("""    ones that find the change near 25 ms. Many neurons are altered; neither the count nor the latency
-    matches.'""","""    ones that find the change near 25 ms. Many neurons are altered; neither the count nor the latency
-    matches. The latency fails only with those five sessions included, and the count depends on the unit
-    selection the files do not explain (selection_undocumented finding).'""")
-# fig1g dentate
-rep("""    Without anm00314756 20151023 (clock check) the change is -0.037, p = 0.157.""",
-"""    Without anm00314756 20151023 (clock check) the change is -0.037, p = 0.157. The hierarchical bootstrap
-    is conservative, which favours a claim of absence such as this one.""")
-# findings
-rep("""the ALM change to code 5 fades over the delay (mean absolute change 3.1 to 2.1 spikes/s) and
-    to code 6 does not (2.8 to 2.9), as""","""the ALM change to code 5 fades over the delay (mean absolute change 3.1 to 3.2 spikes/s early in
-    the delay, 2.1 at its end) and to code 6 does not (2.95 to 3.00 early, 2.93 at its end), as""")
-rep("""at a stated 20 kHz in every file, including the 32-channel recordings the Methods say were sampled
-    at 25 kHz.""","""at a stated 20 kHz in every file, including the 34 sessions recorded with the 32-channel NeuroNexus
-    probe, which the Methods say were sampled at 25 kHz (the other 20 used the 64-channel probe).""")
-rep("""intervals end at 7221 s, and the last 127 of 462 trials, to 8481 s, hold""","""intervals end at 7221.8 s, and the last 127 of 462 trials, from 7223.1 to 8481.4 s, hold""")
-rep("""(sample or delay epoch), although the paper says the epoch gave similar results.""",
-"""(sample or delay epoch); the paper says only that the epoch gave "qualitatively similar preparatory
-    activity", which holds here.""")
+p='attempts/gao-2018-02.yaml'; s=open(p).read()
+reps=[
+("variation (z-test p = 0.28","variation (z-test p = 0.28"),
+("the synthetic null" ,"the synthetic null"),
+("""      the same 6 mice. Problem 7, hier_boot gave""","""      the same 6 mice. Problem 7 (does not affect a conclusion), hier_boot gave"""),
+("""Problem 10, selectivity_tests runs the t-test""","""Problem 10 (does not affect a conclusion), selectivity_tests runs the t-test"""),
+("""Problem 11, the waveforms""","""Problem 11 (does not affect a conclusion), the waveforms"""),
+("""      than the paper (486 tested, 682 pyramidal), so the fraction fallback does not apply. Problem
+      6, the unit counts""","""      than the paper (486 tested, 682 pyramidal), so the fraction fallback does not apply. Problem
+      6 (affects a conclusion), the unit counts"""),
+("""to reconcile. Problem 9, the clock check""","""to reconcile. Problem 9 (does not affect a conclusion), the clock check"""),
+("""22.7, although all 6 mice are present. Problem 5, a bin""","""22.7, although all 6 mice are present. Problem 5 (does not affect a conclusion), a bin"""),
+("""up to 10 ms later; on a synthetic effect starting at 5 ms it returned 0 ms. Problem 1, the""","""up to 10 ms later; on a synthetic effect starting at 5 ms it returned 0 ms. Problem 1 (affects a
+      conclusion), the"""),
+("""against 0.9% before onset (p = 2e-13). Problem 4, every bin""","""against 0.9% before onset (p = 2e-13). Problem 4 (does not affect a conclusion under the
+      criterion), every bin"""),
+("""2018 sessions, except 14 pyramidal units at 0.40 to 0.45 ms).""","""2018 sessions, except 14 pyramidal units at 0.45 ms, just below the > 0.45 ms rule)."""),
+("""    where the claims file misreads the paper, so no question was added for a reader. Report in
+    transcripts/gao-2018/verifier-1-report.md.""","""    where the claims file misreads the paper, so no question was added for a reader. Report in
+    transcripts/gao-2018/verifier-1-report.md. The cell numbers in the reasons below are those of
+    the round-1 notebook, not of the current one."""),
+]
+for a,b in reps:
+    assert s.count(a)==1,(a,s.count(a))
+    s=s.replace(a,b)
 open(p,'w').write(s)
 EOF
-sed -i 's/its spikes end at 7221 s and its last 127/its observation intervals end at 7221.8 s and its last 127/' entries/gao-2018/gao2018.py; sed -n 36,40p entries/gao-2018/gao2018.py
+grep -n "Problem" attempts/gao-2018-02.yaml
 ```
 
 ```
 Traceback (most recent call last):
-  File "<stdin>", line 37, in <module>
-  File "<stdin>", line 4, in rep
-AssertionError: (0, '    ones that find the change near 25 ms. Many neurons are altered; neither the ')
-  the notebook reports how many trials it drops.
-- Neural analyses also leave out trials outside the units' observation intervals (`obs_intervals`
-  of the units table). Only BAYLORCD8 20171020 has any: its observation intervals end at 7221.8 s and its last 127
-  trials, to 8481 s, hold no spike of any unit.
-- Time courses use trials whose sample and delay epochs last 1.3 s (within 10 ms), aligned to
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "neither the count nor the latency" -A1 attempts/gao-2018-01.yaml
-```
-
-```
-284:    ones that find the change near 25 ms. Many neurons are altered; neither the count nor the latency
-285-    matches.
+  File "<stdin>", line 24, in <module>
+AssertionError: ('the synthetic null', 0)
+719:      the recording sessions of the same 6 mice. Problem 7, hier_boot gave 0 false positives on a
+832:      judged because the data hold 34 of 39 sessions. Problem 10, selectivity_tests runs the t-test
+833:      on rate; the paper says spike counts. Problem 11, the waveforms are never checked against the
+936:      than the paper (486 tested, 682 pyramidal), so the fraction fallback does not apply. Problem
+938:      to reconcile. Problem 9, the clock check leaves out the inhibition sessions.
+993:      22.7, although all 6 mice are present. Problem 5, a bin labelled by its start includes spikes
+994:      up to 10 ms later; on a synthetic effect starting at 5 ms it returned 0 ms. Problem 1, the
+1019:      against 0.9% before onset (p = 2e-13). Problem 4, every bin >= 1 s after offset lies in the
+1032:      although it is lower than fastigial (p = 1e-6). Problem 4 applies to the dentate residual too.
+1051:      windows, so the dentate unaffected condition fails. Problem 1, dropping ANM314746_20151020
+1090:      0.0028, 181 trials). P(lick right) by quartile is 0.43, 0.49, 0.47, 0.73. Problem 1 may bear
 ```
 
 **Agent calls Bash**
 
 ```bash
 cd  python - <<'EOF'
-p='attempts/gao-2018-01.yaml'; s=open(p).read()
-def rep(old,new,count=1):
-    global s
-    assert s.count(old)==count, (s.count(old), old[:80]); s=s.replace(old,new)
-i=s.index("- claim: fig3e-alm-mean-rate-unchanged"); j=s.index("- claim: ", i+10)
-block=s[i:j]
-add="""  - 'Assumed: the absence test is the unpaired two-tailed t-test over neurons. The paper says only "two-tailed
-    t-test" (main text, "control: 4.15 spikes/s; photo-inhibition: 4.39 spikes/s; p=0.58, two-tailed
-    t-test"), and p = 0.58 for a 0.24 spikes/s change fits an unpaired test. Here the two disagree (unpaired
-    p = 0.214, paired p = 0.022), and the criterion asks that the outcome be marked as resting on the reading
-    when they do.'
-"""
-block=block.rstrip('\n')+'\n'+add
-s=s[:i]+block+s[j:]
-rep("""spikes/s); with the sample or delay epoch it is before the go cue (-0.60 to -0.05 s). The paper says
-    the epoch gave qualitatively similar results (Methods, "Selecting preferred trial type using either
-    sample, delay, or response epoch data yielded qualitatively similar preparatory activity"), so the
-    peak's place holds under one of the three epochs only.""",
-"""spikes/s); with the sample or delay epoch it is before the go cue (-0.60 to -0.05 s). The paper says
-    the epoch gave similar preparatory activity (Methods, "Selecting preferred trial type using either
-    sample, delay, or response epoch data yielded qualitatively similar preparatory activity"), which
-    holds here, as the sample and delay parts are similar under every epoch; that sentence does not cover
-    the peak's place, which holds under one of the three epochs only.""")
-rep("""    above the pre-onset 2.12% in 4 of 15 bins, so much of the late dentate effect follows the mix of lick
-    directions.""","""    above the pre-onset 2.12% in 4 of 15 bins but above chance (1%) in all 15, so measured against the
-    pre-onset level much of the late dentate effect follows the mix of lick directions, while every bin
-    stays above chance.""")
-rep("""    control-selective neurons, so much of the per-neuron loss is a loss of power; the population difference
-    is not.'""","""    control-selective neurons, against 0.863 and 0.875 with photo-activation, so only part of the per-neuron
-    loss is the effect itself; the small photo-activation trial count also holds down the count that gains
-    significance. The outcome rests mainly on the population difference and its interval, which excludes
-    zero in every row.'""")
-rep("""    ones that find the change near 25 ms. Many neurons are altered; neither the count nor the latency
-    matches.
-""","""    ones that find the change near 25 ms. Many neurons are altered; neither the count nor the latency
-    matches. The latency fails only with those five sessions included, and the count depends on the unit
-    selection the files do not explain (selection_undocumented finding).
-""")
-rep("""    Without anm00314756 20151023 (clock check) the change is -0.037, p = 0.157.""",
-"""    Without anm00314756 20151023 (clock check) the change is -0.037, p = 0.157. The hierarchical bootstrap
-    is conservative, which favours a claim of absence such as this one.""")
-rep("""the ALM change to code 5 fades over the delay (mean absolute change 3.1 to 2.1 spikes/s) and
-    to code 6 does not (2.8 to 2.9), as""","""the ALM change to code 5 fades over the delay (mean absolute change 3.1 to 3.2 spikes/s early in
-    the delay, 2.1 at its end) and to code 6 does not (2.95 to 3.00 early, 2.93 at its end), as""")
-rep("""at a stated 20 kHz in every file, including the 32-channel recordings the Methods say were sampled
-    at 25 kHz.""","""at a stated 20 kHz in every file, including the 34 sessions recorded with the 32-channel NeuroNexus
-    probe, which the Methods say were sampled at 25 kHz (the other 20 used the 64-channel probe).""")
-rep("""intervals end at 7221 s, and the last 127 of 462 trials, to 8481 s, hold""","""intervals end at 7221.8 s, and the last 127 of 462 trials, from 7223.1 to 8481.4 s, hold""")
-rep("""(sample or delay epoch), although the paper says the epoch gave similar results.""",
-"""(sample or delay epoch); the paper says only that the epoch gave "qualitatively similar preparatory
-    activity", which holds here.""")
+p='attempts/gao-2018-02.yaml'; s=open(p).read()
+reps=[
+("""same 6 mice. Problem 7, hier_boot gave 0 false positives on a""","""same 6 mice. Problem 7 (does not affect a conclusion), hier_boot gave 0 false positives on a"""),
+("""Problem 10, selectivity_tests runs the t-test""","""Problem 10 (does not affect a conclusion), selectivity_tests runs the t-test"""),
+("""Problem 11, the waveforms""","""Problem 11 (does not affect a conclusion), the waveforms"""),
+("""so the fraction fallback does not apply. Problem
+      6, the unit counts""","""so the fraction fallback does not apply. Problem
+      6 (affects a conclusion), the unit counts"""),
+("""to reconcile. Problem 9, the clock check""","""to reconcile. Problem 9 (does not affect a conclusion), the clock check"""),
+("""all 6 mice are present. Problem 5, a bin""","""all 6 mice are present. Problem 5 (does not affect a conclusion), a bin"""),
+("""it returned 0 ms. Problem 1, the""","""it returned 0 ms. Problem 1 (affects a
+      conclusion), the"""),
+("""(p = 2e-13). Problem 4, every bin""","""(p = 2e-13). Problem 4 (does not affect a conclusion under the
+      criterion), every bin"""),
+("""except 14 pyramidal units at 0.40 to 0.45 ms).""","""except 14 pyramidal units at 0.45 ms, just below the > 0.45 ms rule)."""),
+("""    transcripts/gao-2018/verifier-1-report.md.
+  results:""","""    transcripts/gao-2018/verifier-1-report.md. The cell numbers in the reasons below are those of
+    the round-1 notebook, not of the current one.
+  results:"""),
+]
+for a,b in reps:
+    assert s.count(a)==1,(a,s.count(a))
+    s=s.replace(a,b)
 open(p,'w').write(s)
 EOF
-python - <<'EOF'
-p='entries/gao-2018/gao2018.py'; s=open(p).read()
-s=s.replace("""  of the units table). Only BAYLORCD8 20171020 has any: its observation intervals end at 7221.8 s and its last 127
-  trials, to 8481 s, hold no spike of any unit.""","""  of the units table). Only BAYLORCD8 20171020 has any: its observation intervals end at
-  7221.8 s and its last 127 trials, to 8481.4 s, hold no spike of any unit.""")
-open(p,'w').write(s)
-EOF
-grep -n "7221" entries/gao-2018/gao2018.py
+python -c "import yaml;yaml.safe_load(open('attempts/gao-2018-02.yaml'))" && echo ok; date -u
 ```
 
 ```
-39:  7221.8 s and its last 127 trials, to 8481.4 s, hold no spike of any unit.
+ok
+Sat Nov 14 16:10:26 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -i 's/    Without anm00314756 20151023 (clock check) the change is -0.037, p = 0.157. The hierarchical bootstrap\n//' attempts/gao-2018-01.yaml; python - <<'EOF'
-p='attempts/gao-2018-01.yaml'; s=open(p).read()
-old="""p = 0.157. The hierarchical bootstrap
-    is conservative, which favours a claim of absence such as this one."""
-assert old in s
-s=s.replace(old,"""p = 0.157. The verifier notes that the
-    hierarchical bootstrap is conservative, which favours a claim of absence such as this one.""")
-open(p,'w').write(s)
-EOF
-grep -n "agrees\|latest verification\|verified outcome" tools/entry.py | head -20
+cd  sed -i 's/except 14 pyramidal units at 0.45 ms, just below the > 0.45 ms rule)/except 14 pyramidal units at exactly 0.45 ms, not above the > 0.45 ms rule)/' attempts/gao-2018-02.yaml; grep -n "0.40 to 0.45\|exactly 0.45" attempts/gao-2018-02.yaml entries/gao-2018/*.md; ls attempts/ | head -0; grep -n "verifier-2\|round 2\|Round 2" attempts/li-2015-01.yaml | head -5; sed -n 682,700p attempts/li-2015-01.yaml
 ```
 
 ```
-323:                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 300,350p tools/entry.py; grep -n "verifications" -A60 schemas/attempt.schema.json | grep -n '"[a-z_]*":' | head -30
-```
-
-```
-if not attempt.get("inputs") or not kinds & {"metadata_insufficient", "identifier_missing"}:
-                report.error(where, "claims take names for the dataset's codes from elsewhere (`with_labels`), so "
-                                    "list the source under `inputs` and record the missing names as a finding "
-                                    "(metadata_insufficient or identifier_missing)")
-        if known is None:
-            report.error(where, "no claims file for this paper")
-            continue
-        recorded = [o.get("claim") for o in attempt.get("outcomes", [])]
-        # Claims read again since the attempt (a dataset added to its paper opens it again, and the checked claims
-        # reach main ahead of the repeat attempt: the checkpoint in docs/pipeline.md) are the next attempt's to test.
-        # Without this, main fails its own check from the checkpoint until that attempt merges, as it did for
-        # kim-2022 on 2026-11-10, and every other attempt's pull request fails with it.
-        reread = str(attempt.get("date") or "") < (lookup(claims_checked, attempt) or "")
-        for claim in sorted(known - set(recorded)):
-            if not reread:
-                report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
-        for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
-            report.error(where, f"claim {claim!r} has more than one outcome")
-        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
-        # does not bind: the revision after it may change outcomes, and round 2 reviews them.
-[... 61 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import yaml;a=yaml.safe_load(open('attempts/gao-2018-01.yaml'))
-for o in a['outcomes']: print(o['claim'], o['outcome'], o.get('blocked_by',''), o.get('assumed',''))
-print(a['verifications'][0].keys())
-"
-```
-
-```
-fig1d-fastigial-lesion-contra-choice blocked data_missing 
-fig1e-fastigial-lesion-slow-initiation blocked data_missing 
-fig1d-dentate-lesion-no-effect blocked data_missing 
-fig1g-fastigial-activation-early-sample-no-effect reproduced  
-fig1g-fastigial-activation-delay-errors reproduced  
-fig1h-fastigial-activation-delay-bias reproduced  
-fig1h-fastigial-activation-response-contra-bias blocked data_missing 
-fig1i-fastigial-activation-licking-unaffected blocked data_missing 
-fig1g-dentate-activation-little-effect reproduced  
-fig1j-photoinhibition-silences-fastigial blocked data_missing 
-fig1k-inhibition-early-sample-no-effect blocked data_missing 
-fig1k-inhibition-late-sample-delay-errors blocked data_missing 
-fig1k-inhibition-delay-bias partially_reproduced  
-fig1k-inhibition-response-ipsi-bias blocked data_missing 
-fig1l-inhibition-execution-unaffected blocked data_missing 
-ed10-vgat-fastigial-perturbation-performance blocked data_missing 
-fig2-alm-selective-fraction reproduced  
-fig2-cn-selective-fraction blocked data_missing 
-fig2-preparatory-more-in-alm blocked data_missing 
-fig2-peri-movement-equal blocked data_missing 
-[... 26 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 659,662p attempts/gao-2018-01.yaml; tail -5 attempts/gao-2018-01.yaml; head -30 transcripts/gao-2018/verifier-2.md | cut -c1-300
-```
-
-````
-activity", which holds here. For Fig. 3f the
-    random draw of the preference trials matters as much as the trial count; in the last 500 ms of the
-    delay, 15 of 20 draws (5 of each type) and 13 of 20 (10 of each type) bring ALM selectivity under CN
-    photo-inhibition to zero.
-  - claim: ed10ef-alm-drives-licking-after-fastigial
+attempts/gao-2018-02.yaml:840:      2018 sessions, except 14 pyramidal units at exactly 0.45 ms, not above the > 0.45 ms rule).
+684:    transcripts/000010/verifier-2-report.md.
+812:    response: 'Outcome kept as partially_reproduced, as round 2 may not change it, and a change to
+  reviewed: The full executed notebook of the author-revise-1 run (commit 583cce95), the helper module,
+    the entry README, the claims file, the attempt record and the round-1 report. Report in
+    transcripts/000010/verifier-2-report.md.
+  results:
+  - claim: behaviour-performance
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig1d-delay-inhibition-ipsi-bias
     agrees: true
     outcome: blocked
-    reason: VGAT behaviour data are not in the archive.
-    response: No change of outcome.
-# gao-2018 · verifier-2 · run 42866458824
-
-Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `Tas
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: fig1d-sample-inhibition-smaller
+    agrees: true
+[... 2 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
-```
-
-```
-[... 19 more lines not kept]
-````
-
-**Agent calls Bash**
-
-```bash
-cd  cat > $TMPDIR/r2.py <<'EOF'
-import yaml
-a = yaml.safe_load(open('attempts/gao-2018-01.yaml'))
-AG = "Agrees with the outcome as recorded (section 1, one of the 44 outcomes it agrees with)."
-BL = "Agrees with the outcome as recorded, as with all 26 blocked ones (section 1)."
-NC = "No change of outcome."
-B1 = (" Remaining (B1): the unit-count excess is still unexplained; the units table has no quality field, and"
-      " there are 195 inhibition-session neurons under 0.5 spikes/s.")
-B1R = (" B1 cannot be resolved from the files: the units table has no quality or isolation field (data check),"
-       " so the count stays judged on all putative pyramidal neurons; this is recorded as a selection_undocumented finding.")
-special = {
- "fig1g-dentate-activation-little-effect": (True, None,
-   AG + " Not addressed, outcome unaffected (B8): the bootstrap is conservative, which favours the absence claims;"
-   " fig1g-dentate has p = 0.108, and its ipsi trials give 0.041. B11: recording sessions instead of the paper's"
-   " behaviour sessions; stated.",
-   "No change of outcome. The notes now say, as the verifier's view, that the hierarchical bootstrap is"
-   " conservative and favours a claim of absence; the ipsi p = 0.041 was already in them. The bootstrap is"
-   " kept, as it is the paper's (Methods)."),
- "fig2cd-selectivity-emerges-gradually": (True, None,
-   "Agree. The CN half is missing, so it cannot be fully reproduced in any case. Cell 39 and the fig2cd notes"
-   " overstate the paper: its sentence is about preparatory activity (\"yielded qualitatively similar preparatory"
-   " activity\"); on these data the preparatory part is similar under every epoch (cell 38), and the peak's position"
-   " is outside what that sentence covers, so there is no conflict with the paper. The claims file's E3 paraphrase"
-   " (\"the paper says the epoch choice gave qualitatively similar results\") drops \"preparatory activity\";"
-   " reported as a misreading. The outcome does not change.",
-   "No change of outcome. Cell 39, the criterion text above cell 38, the notes and the methods_unavailable finding"
-   " on E3 now quote \"qualitatively similar preparatory activity\", say that the preparatory part is similar under"
-   " every epoch here, and that the sentence does not cover the peak's place. The E3 paraphrase is asked in"
-   " questions/gao-2018.yaml; the claim is unchanged."),
- "fig3d-alm-altered-by-cn-inhibition": (True, None,
-   "Agree. The fig3d latency is unstable (B6): the bootstrap s.d. is 11.5 to 14.7 ms, against 3.8 in the paper;"
-   " without the five clock-check sessions the bin-start mean is 9.89 ms, inside tolerance (cell 86). So the"
-   " not reproduced holds on the latency only with those sessions included, and on the count, which depends on"
-   " B1. The time of photostimulus onset still cannot be checked, because the files hold no laser trace." + B1,
-   "No change of outcome. The notes now say that the latency fails only with the five sessions included and that"
-   " the count depends on the unexplained unit selection." + B1R + " The photostimulus onset cannot be checked"
-   " without a laser trace (metadata_insufficient finding)."),
- "fig3e-alm-mean-rate-unchanged": (True, None,
-   "I now accept this: the absence test passes under the unpaired test and the rate level fails under every"
-   " reading. But the record is missing assumed: true; the criterion asks that the outcome be marked as resting"
-   " on the reading when paired and unpaired disagree, and they do (unpaired p = 0.214, paired p = 0.022, cell 47)."
-   " The case for the unpaired test is reasonable (p = 0.58 for a 0.24 spikes/s change fits an unpaired test)."
-   " Cell 48 and the notes say both rates are about 19% below the paper's; only the control rate is (3.379 against"
-   " 4.15), the photo-inhibition rate is about 14% below (3.767 against 4.39)." + B1,
-   "No change of outcome. The outcome is now marked assumed: true, with a deviation that states the unpaired test"
-   " as the assumption and why; cell 48 says so too, and the summary table marks it. Cell 48 and the notes now give"
-   " 19% for the control rate and 14% for the photo-inhibition rate." + B1R),
- "fig3e-alm-increase-decrease": (True, None, "Agree." + B1, "No change of outcome." + B1R),
- "fig3f-alm-selectivity-abolished-by-cn-inhibition": (True, None,
-   "Agree. Judging by most of 20 draws is a stated deviation. B2 resolved: fig3f is now judged over 20 draws"
-   " (15 and 13 of 20 pass in the last 500 ms).", NC),
- "fig4-fastigial-activation-alm-latency": (True, None,
-   "I now accept this. The latency is in tolerance by bin start and by bin centre (cell 57); the count fails under"
-   " every reading." + B1, "No change of outcome." + B1R),
- "fig4e-fastigial-activation-abolishes-alm-selectivity": (True, None,
-   "Agree, with the power caveat: only part of the per-neuron loss of significance is due to the effect itself."
-   " 86-88% of neurons lose significance, but 65-75% would lose it from trial count alone (cell 69). The low"
-   " photo-activation trial count also holds down the gain count. So the outcome rests mainly on the population"
-   " difference interval, which is solid.",
-   "No change of outcome. Cell 70 and the notes now give both power-control fractions against the photo-activation"
-   " ones, say that the trial count also holds down the gain count, and that the outcome rests mainly on the"
-   " population difference and its interval."),
- "fig4g-dentate-effect-recovers": (True, None,
-   AG + " Cell 67 and the fig4g notes (\"much of the late dentate effect follows the mix of lick directions\")"
-   " leave out that all 15 bins of that variant still exceed the 1% chance level (cell 66 supports the comparison"
-   " with the pre-onset level, 4 of 15 bins above it); a minor omission that does not decide the outcome.",
-   "No change of outcome. Cell 67 and the notes now say that the within-trial-type variant is above chance in all"
-   " 15 bins, so the lick-direction mix accounts for much of the effect only against the pre-onset level."),
- "cd-captures-selectivity": (False, "partially_reproduced",
-   "The outcomes entry says outcome reproduced; its own verification response says \"Changed from reproduced to"
-   " partially_reproduced\", and cell 81, the Summary and the README all say partially reproduced. The numbers"
-   " support partially reproduced (cell 80): under the chosen reading (independent trials, trial-type means,"
-   " squared ratio) the selectivity is 62.1%, inside tolerance; the variance is 34.2%, outside 22.8 to 31.2%."
-   " The assumed: true flag and its stated assumption are correct and reasonable.",
-   "Corrected the record to partially_reproduced, the outcome the round-1 revision chose and the notebook,"
-   " summary and README already gave; the record had not been updated. The verifier agrees with it, so this"
-   " is a correction of the record, not a change of outcome. The summary table now marks it assumed."),
+cd  python - <<'EOF'
+import yaml, textwrap
+p='attempts/gao-2018-02.yaml'
+rec=yaml.safe_load(open(p))
+spec = {
+"fig1g-fastigial-activation-delay-errors": (
+ "Agrees. The notes and cell 18 say \"light for 0.455 s from delay onset, ending 0.845 s before the go cue\", but cell 9 shows 0.500 s in the 2015 sessions and 1.300 s in ANM314746_20151020; 0.455 s holds only for the 2017 sessions.",
+ "Outcome kept. The notes and the criterion cell now give the light duration by session from the laser table: 0.455 s in the 2017 sessions (ending 0.845 s before the go cue), 0.500 s in the 2015 sessions (0.8 s before), and 1.3 s, up to the go cue, in ANM314746_20151020, a MISMATCH session; the result without the MISMATCH sessions is unchanged (0.871 to 0.619, p = 0.0004)."),
+"fig1i-fastigial-activation-licking-unaffected": (
+ "Agrees. \"The early-lick part holds\" is true pooled over mice, but cell 34 shows BAYLORCD6 rising from 0.081 to 0.324 (p < 0.0001); \"holds\" should be qualified as pooled. It does not change the blocked outcome.",
+ "Outcome kept. The notes, the result cell, the summary and the README now say the early-lick part holds pooled over mice, not in every mouse, and name BAYLORCD6."),
+"fig1l-inhibition-execution-unaffected": (
+ "Agrees. \"The early-lick part holds\" is true pooled over mice, but BAYLORCD8 differs under both codes (cell 34); \"holds\" should be qualified as pooled. It does not change the blocked outcome. The \"per mouse (n = 6)\" wording of the early-lick criteria is not a misreading, as the Extended Data Fig. 1f and 2i legends (\"Lines, individual mice\") support a test pooled over mice.",
+ "Outcome kept. The notes, the result cell, the summary and the README now qualify the early-lick part as holding pooled over mice, and name BAYLORCD8."),
+"fig2-alm-selective-fraction": (
+ "Agrees. The record says 14 pyramidal units are \"at 0.40 to 0.45 ms\", but cell 7 prints only a 0.35 to 0.45 ms bin.",
+ "Outcome kept. Cell 7 now prints the widths of these units at 20 kHz; all 14 are at exactly 0.45 ms, and the round-1 response says so."),
+"fig3d-alm-altered-by-cn-inhibition": (
+ "Agrees. Round-1 problem 6 remains; the lab's compiled files hold the deposited units, not the paper's 454 pyramidal neurons, so the count is judged on a population the paper did not use; this is disclosed and cannot be fixed from the deposits. Problem 9 remains in part; the clock check in the inhibition sessions has 200 ms resolution and cannot rule out a 10 to 30 ms offset, the size of the latency gap. The record's sentence is worded correctly and the outcome does not depend on it, because the count fails as well.",
+ "Outcome kept. No finer clock check is possible from these files, as no event other than the trial events and the laser traces is deposited; the notes keep the 200 ms limit."),
+"fig3e-alm-increase-decrease": (
+ "Agrees. Round-1 problem 6 remains (the count is judged on the deposited population, which the paper did not use); disclosed and not fixable from the deposits.",
+ "Outcome kept."),
+"fig3f-alm-selectivity-abolished-by-cn-inhibition": (
+ "Disagrees; would record not_reproduced. The criterion's only test is that photo-inhibition selectivity cannot be told from zero. It fails under every reading, [0.19, 0.60] and [0.02, 0.53] in cell 74, and both 5-screening-trial variants. The author's response calls a 73% to 82% drop \"present but weaker\"; that is a judgement about the protocol's categories, and the record states the disagreement fairly.",
+ "The verified outcome is kept, as round 2 may not change it, and a change to not_reproduced is proposed under proposed: the criterion has no partial condition, and the analysis behind it is the one in cell 74. The result cell, the summary and the README say a change is proposed."),
+"fig4-fastigial-activation-alm-latency": (
+ "Agrees. The assumption (10 ms bins labelled by their start) is stated and is the most lenient label; it is acceptable because the outcome is only partial and the count fails anyway. The notes' sentence \"The fraction of tested neurons (0.40 to 0.42) is close to 227 of the paper's unknown denominator\" cannot be supported by anything printed, because the denominator is unknown. Round-1 problem 6 remains (count judged on the deposited population).",
+ "Outcome kept. The sentence about the fraction was removed, and the note on the lab's p-values now says that only the 400 ms-bin p-values were compared."),
+"fig4f-fastigial-effect-persists": (
+ "Agrees. The summary's \"the per-neuron photostimulation p-values here equal those in the lab's compile\" goes beyond what was compared; only the 400 ms-bin photo-activation p-values were compared (cell 59), the 381 and 704 NaN entries in the lab's file were skipped by nanmax, and no E4 whole-window or photo-inhibition p-values were compared.",
+ "Outcome kept. The summary now says only the 400 ms-bin photo-activation p-values were compared and that the window and photo-inhibition p-values were not. Cell 59 now prints the values here at the lab's NaN entries; all 381 and 704 are 1.0, so neither counts them significant. The notes and the result cell say so."),
+"fig4g-dentate-effect-recovers": (
+ "Agrees. Bins labelled by centre is stated and reasonable, the opposite label from fig4, which the record admits; the outcome is partial whatever the label, because the recovery part fails. But \"by start 3.3 ms, just below 3.3 to 13.3\" is not shown by cell 52, which prints 3.30, exactly the bottom of 8.3 +- 5.0; if it is within, the start label matches both the fastigial and the dentate latency and the methods_unavailable finding is wrong. The value needs more decimal places.",
+ "Outcome kept. Cell 57 now prints the start-label latency to four places, 3.3022 ms, within 3.3 to 13.3. The assumption is now the start label, the same as for fig4, and measured gives 3.30 (8.30 by centre, also within). The latency finding now says the start label matches both photo-activation latencies, the dentate one at the bound, and that no label matches the CN photo-inhibition latency."),
+"cd-captures-selectivity": (
+ "Agrees. The assumption that selectivity is measured on held-out trials is stated and reasonable, since E6 projects independent trials; it is the only reading under which the selectivity part passes.",
+ "Outcome kept."),
 }
-results = []
-for o in a["outcomes"]:
-    c = o["claim"]
-    if c in special:
-        ag, out, reason, resp = special[c]
-        out = out or o["outcome"]
-    else:
-        ag, out = True, o["outcome"]
-        reason = BL if o["outcome"] == "blocked" else AG
-        resp = NC
-    results.append(dict(claim=c, agrees=ag, outcome=out, reason=reason, response=resp))
-rnd = dict(date="2026-11-10", kind="agent",
-  by="Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
-  reviewed=("The full executed notebook of the author-revise-1 run (commit 106c4290e5), with its conclusions"
-            " and summary, the helper module, the claims file, the attempt record and the README, with the paper"
-            " under paper/. Report, transcripts/gao-2018/verifier-2-report.md. Besides the per-claim points, it"
-            " found two findings without printed output behind them (the BAYLORCD8 20171020 end of recording and"
-            " the 25 kHz sampling of the 32-channel recordings) and loose numbers in the photo_stim_id finding;"
-            " the data check now prints the obs_intervals end and the trials after it (cell 6) and the stated"
-            " sampling rate per probe type (cell 5, 34 sessions with the 32-channel probe at 20 kHz), and the"
-            " findings give the printed numbers."),
-  results=results)
-print(yaml.safe_dump([rnd], sort_keys=False, width=110, allow_unicode=True), end="")
+blocked_default = ("Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs do not support.", "No change.")
+results=[]
+for o in rec['outcomes']:
+    c=o['claim']
+    r,resp = spec.get(c, ("Agrees with the stated outcome; the verifier found nothing in its conclusions that the outputs do not support.", "No change."))
+    results.append(dict(claim=c, agrees=(c!="fig3f-alm-selectivity-abolished-by-cn-inhibition"),
+        outcome=("not_reproduced" if c=="fig3f-alm-selectivity-abolished-by-cn-inhibition" else o['outcome']),
+        reason=r, response=resp))
+def fold(txt, ind):
+    return ">-\n" + textwrap.fill(txt, width=100, initial_indent=" "*ind, subsequent_indent=" "*ind, break_on_hyphens=False, break_long_words=False)
+out=["- date: '2026-11-14'","  kind: agent","  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+"  reviewed: "+fold("Round 2. The full executed notebook of the author-revise-1 run with its Result cells and summary, the helper module, the entry README, the claims file, the attempt record and the round-1 report. The verifier agreed with 45 of the 46 outcomes and disagreed with fig3f-alm-selectivity-abolished-by-cn-inhibition. It found no place where the claims file misreads the paper, so no question was added for a reader. It also listed sentences the printed outputs did not support: the DANDI fiber side, which compare_deposits did not print (cell 5 now prints both deposits' sites), and the trial ranges missing from DANDI (cell 5 now prints them; the finding now gives trials 279 to 304 for ANM314746 2015-10-22). Report in transcripts/gao-2018/verifier-2-report.md.",4),
+"  results:"]
+for r in results:
+    out.append(f"  - claim: {r['claim']}")
+    out.append(f"    agrees: {'true' if r['agrees'] else 'false'}")
+    out.append(f"    outcome: {r['outcome']}")
+    out.append("    reason: "+fold(r['reason'],6))
+    out.append("    response: "+fold(r['response'],6))
+s=open(p).read().rstrip('\n')+'\n'+'\n'.join(out)+'\n'
+open(p,'w').write(s)
+d=yaml.safe_load(open(p)); print(len(d['verifications']), len(d['verifications'][1]['results']))
 EOF
-python $TMPDIR/r2.py > $TMPDIR/r2.yaml && head -20 $TMPDIR/r2.yaml && cat $TMPDIR/r2.yaml >> attempts/gao-2018-01.yaml && python -c "import yaml;a=yaml.safe_load(open('attempts/gao-2018-01.yaml'));print(len(a['verifications']), len(a['verifications'][1]['results']))"
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+2 46
+```
 
 **Agent calls Bash**
 
 ```bash
-cd  git diff -U0 attempts entries questions | grep '^+' | grep -n -i "—\|rather" ; cat questions/gao-2018.yaml | grep -n -i "—\|rather"; python tools/entry.py check entries/gao-2018 2>&1 | tail -8
+cd  python - <<'EOF'
+p='attempts/gao-2018-02.yaml'; s=open(p).read()
+i=s.index("Outcome kept. No finer clock check is possible")
+j=s.index("    ", s.index("200 ms limit.", i))
+print(repr(s[i:j+10]))
+EOF
+```
+
+```
+'Outcome kept. No finer clock check is possible from these files, as no event other than the\n      trial events and the laser traces is deposited; the notes keep the 200 ms limit.\n  - claim: fig3e-alm-mean-rate-unchanged\n    agrees'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+p='attempts/gao-2018-02.yaml'; s=open(p).read()
+old='Outcome kept. No finer clock check is possible from these files, as no event other than the\n      trial events and the laser traces is deposited; the notes keep the 200 ms limit.'
+new='Outcome kept, as it does not depend on the clock check; the notes keep its 200 ms limit. No\n      finer check was added.'
+assert old in s; s=s.replace(old,new); open(p,'w').write(s)
+EOF
+grep -n " — \|rather" attempts/gao-2018-02.yaml entries/gao-2018/README.md | head; python tools/entry.py check entries/gao-2018 2>&1 | tail -5; date -u
 ```
 
 ```
 0 error(s)
+Sat Nov 14 16:11:17 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  git diff -U0 attempts/gao-2018-01.yaml | grep '^+' | grep -v "^+++" | grep -E "^\+ {4,}[^'\"-].*: " | grep -v "^+ *[a-z_]*: " | head; grep -E "^ {4,}.*: " questions/gao-2018.yaml
+cd  grep -n -o ".\{80\}no single.\{60\}\|.\{60\}0.40 to 0.45.\{40\}\|.\{60\}unknown denominator.\{20\}" entries/gao-2018/reproduce_gao_2018.ipynb entries/gao-2018/gao2018.py attempts/gao-2018-02.yaml | head
 ```
 
 ```
-+    t-test" (main text, "control: 4.15 spikes/s; photo-inhibition: 4.39 spikes/s; p=0.58, two-tailed
-+      outcome unaffected (B8): the bootstrap is conservative, which favours the absence claims; fig1g-dentate has
-+      p = 0.108, and its ipsi trials give 0.041. B11: recording sessions instead of the paper''s behaviour sessions;
-+      notes overstate the paper: its sentence is about preparatory activity ("yielded qualitatively similar preparatory
-+      (B1): the unit-count excess is still unexplained; the units table has no quality field, and there are 195
-+      and that the count depends on the unexplained unit selection. B1 cannot be resolved from the files: the units
-+      reading. But the record is missing assumed: true; the criterion asks that the outcome be marked as resting
-+      4.15), the photo-inhibition rate is about 14% below (3.767 against 4.39). Remaining (B1): the unit-count excess
-+      fails under every reading. Remaining (B1): the unit-count excess is still unexplained; the units table has
-+      support partially reproduced (cell 80): under the chosen reading (independent trials, trial-type means, squared
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; python tools/entry.py all entries/gao-2018 2>&1 | tail -4; python -c "
-import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
-for i in [5,6]:
-  print(''.join(''.join(o.get('text','')) for o in nb['cells'][i]['outputs'])[-700:])
-print(''.join(''.join(o.get('text','')) for o in nb['cells'][88]['outputs']))
-"
-```
-
-```
-Tue Nov 10 18:12:22 UTC 2026
-Installed kernelspec registry-gao-2018 in executed/gao-2018/.venv/share/jupyter/kernels/registry-gao-2018
-0 error(s)
-pass  reproduce_gao_2018.ipynb  (446 s)
-ll
-cell_type                                                         
-FS                    94             8                     0   102
-pyramidal             33            27                  1758  1818
-unknown                3             0                     0     3
-All                  130            35                  1758  1923
-waveform sampling rate (Hz): [20000.] ; samples per waveform: [np.int64(30), np.int64(37), np.int64(38)] ; width range 0.15 to 0.9 ms, in steps of 0.05 ms
-probe                              rate_Hz
-NN 32ch A4x8-5mm-100-200-177       20000.0    34
-Cambridge NeuroTech 64ch H2 probe  20000.0    20
-spikes per unit: min 81 median 5672 max 232021 ; all sorted: True
-
-20T124659: obs_intervals end at 7221.8 to 7221.8 s; trials outside them (all trials) 127 of 462, the last 127 in a row, from 7223.1 to 8481.4 s; spikes after the end: 0
-fastigial: 557 neurons (paper 446); below 0.5 spikes/s 153, below 1 233; mean rate all 3.20, of the 446 fastest 3.97 (slowest kept 0.31)
-dentate: 525 neurons (paper 466); below 0.5 spikes/s 184, below 1 255; mean rate all 3.38, of the 466 fastest 3.81 (slowest kept 0.08)
-inhibition: 676 neurons (paper 454); below 0.5 spikes/s 195, below 1 281; mean rate all 3.36, of the 454 fastest 4.89 (slowest kept 0.64)
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
-for i in [47,69,80]:
-  t=''.join(''.join(o.get('text','')) for o in nb['cells'][i]['outputs']); print(t[:420])
-"; python tools/entry.py handover entries/gao-2018 2>&1 | tail -2; git status --short | grep -v "^??"
-```
-
-```
-trials    neurons    n  control  photo_inhibition  change  p_paired  p_unpaired  within_tol
-0      all        all  676    3.379             3.767   0.387  0.021943    0.213597       False
-1      all  modulated  270    4.652             5.780   1.128  0.006566    0.069092       False
-2  correct        all  676    3.366             3.728   0.362  0.029357    0.245632       False
-3  correct  modulated  223    4.864 
-         pref           window  selective  neurons  control  photo   diff           diff_ci  control_selective  lose  lose_fraction  gain  reproduced
-0   5 of each  delay_after_act        367      208    1.627  0.431 -1.196  (-1.745, -0.716)                124   107          0.863     6        True
-1   5 of each    delay_last500        367      208    1.649  0.597 -1.052   (-1.63, -0.483)                120   105    
-        trials          activity       reading  sessions  selectivity_pct  sel_sem  variance_pct  var_sem  within
-0          all  trial-type means  a, RMS ratio        22             84.9      2.2          57.2      3.7   False
-1          all  trial-type means    b, squared        22             73.1      3.4          35.7      4.7   False
-2          all     single trials  a, RMS ratio        22             84.9     
-wrote executed/gao-2018/handover
- M attempts/gao-2018-01.yaml
- M entries/gao-2018/gao2018.py
- M entries/gao-2018/reproduce_gao_2018.ipynb
- M tools/build_reuse_targets.py
- M tools/build_site.py
- M tools/entry.py
- M tools/notify.py
-[... 3 more lines not kept]
+(Bash completed with no output)
 ```
 
 **Agent**
 
-I've worked through every point in the round-2 report. The entry re-ran cleanly with `python tools/entry.py all entries/gao-2018` (0 errors, notebook ran in 7.3 min), every number is the same as before, and the conclusions match them. Nothing is committed.
+Now the final run with all text edits in place.
 
-**Outcomes:** none changed and none proposed. The verifier agreed with 44 of 45 outcomes.
-- **`cd-captures-selectivity`:** the attempt record still said `reproduced`, though the round-1 revision had changed it to `partially_reproduced` and the notebook, summary and README already said so. I set the record to `partially_reproduced`, which is the outcome the verifier gives. This fixes the record and is not an outcome change.
-- **Totals in the record now:** 10 reproduced, 6 partially reproduced, 3 not reproduced, 26 blocked, which match the notebook and README.
+**Agent calls Bash**
 
-**Corrections:**
-- **`fig3e-alm-mean-rate-unchanged`:** it is now marked `assumed: true`. A new deviation says the absence test is the unpaired t-test, because the paired and unpaired tests disagree (p = 0.214 against 0.022) and the paper's p = 0.58 fits an unpaired test. The summary table marks it. The text now says the control rate is 19% below the paper and the photo-inhibition rate 14% below, where it had said 19% for both.
-- **`fig2cd`:** the notebook cells, notes and the related finding now quote the paper's actual words, "qualitatively similar preparatory activity", and say that the preparatory part is similar under every epoch here. They no longer claim a conflict with the paper about where the peak lies.
-- **`fig4g`:** the text now adds that the within-trial-type variant stays above the 1% chance level in all 15 bins.
-- **`fig4e`:** the text now sets the trial-count control (65–75% would lose significance anyway) against the observed 86–88%. It also says the outcome rests mainly on the population difference and its interval.
-- **`fig3d`:** the notes now say the latency fails only when the five clock-check sessions are included, and that the count depends on the unexplained unit selection.
-- **`fig1g-dentate`:** the notes now carry the verifier's remark that the bootstrap is conservative, which favours a claim of absence.
-- **Findings:** the `photo_stim_id` finding now gives the printed numbers (code 6 is 2.95 to 3.00 early in the delay and 2.93 at its end). The recording-end figures are corrected to 7221.8 s and 7223.1 to 8481.4 s.
+```bash
+cd  python tools/entry.py all entries/gao-2018 2>&1 | tail -5; date -u
+```
 
-**Outputs added:**
-- The data check (cell 5) now prints the stated sampling rate per probe type: all 34 sessions recorded with the 32-channel probe say 20 kHz, though the Methods say 25 kHz. To get this, the helper now reads each file's `probe_type`.
-- Cell 6 now prints where the BAYLORCD8 20171020 recording ends, the 127 of 462 trials after that, and that no spikes fall after it.
+```
+Installed kernelspec registry-gao-2018 in executed/gao-2018/.venv/share/jupyter/kernels/registry-gao-2018
+0 error(s)
+pass  reproduce_gao_2018.ipynb  (1380 s)
+Sat Nov 14 16:34:34 UTC 2026
+```
 
-**Recorded:**
-- **Reader question:** the new `questions/gao-2018.yaml` asks whether the claims file's E3 paraphrase drops "preparatory activity". The claim itself is unchanged.
-- **Round 2:** it is in the attempt record under `verifications`, with all 45 claims. Each has the verifier's reason in its words and my response.
+**Agent calls Bash**
 
-**Not done:** B1, the excess unit count, cannot be resolved because the units table has no quality field. The photostimulus onset cannot be checked because the files hold no laser trace. The verifier listed B8 (the conservative bootstrap) and B11 (recording sessions in place of the paper's behaviour sessions) as not affecting any outcome. I left B8's bootstrap as it is, since it is the paper's method, and B11 was already stated.
+```bash
+cd  python -c "
+import json;nb=json.load(open('executed/gao-2018/reproduce_gao_2018.ipynb'))
+want={7:'2017 and 2018',57:'Stimulation window',59:'compiled p-values',74:'inhibition',54:'Without the sessions'}
+for i,k in want.items():
+    for o in nb['cells'][i].get('outputs',[]):
+        t=''.join(o.get('text',''))
+        for l in t.splitlines():
+            if k in l: print(i,l[:220])
+"; python tools/entry.py check entries/gao-2018 2>&1 | tail -2; ls tools/*.py | head -20
+```
+
+```
+7 2017 and 2018 units labelled pyramidal with width <= 0.45 ms at 20 kHz, by width (ms): {0.45: 14}
+57 Stimulation window, all trials, bins labelled by start: latency 3.3022 +- 3.0671 ms; within 8.3 +- 5.0 (3.3 to 13.3): True
+59 fastigial: largest difference from the lab's compiled p-values over 445 neurons x 101 bins: 2.6e-13; NaN in the lab's rows: 381 (not compared; the values here at those entries: {1.0: 381})
+59 dentate: largest difference from the lab's compiled p-values over 517 neurons x 101 bins: 2.7e-13; NaN in the lab's rows: 704 (not compared; the values here at those entries: {1.0: 704})
+74 inhibition      10          whole delay      336     1.46        1.14        1.82  0.39     0.19     0.60  1.07     0.75     1.40
+74 inhibition      10 last 500 ms of delay      336     1.52        1.12        1.96  0.27     0.02     0.53  1.25     0.84     1.66
+74 inhibition       5          whole delay      336     1.20        0.86        1.56  0.37     0.17     0.57  0.84     0.51     1.18
+74 inhibition       5 last 500 ms of delay      336     1.31        0.90        1.76  0.32     0.06     0.56  0.99     0.59     1.42
+54 Without the sessions in MISMATCH (stimulation window, all trials): tested 401, modulated 166; latency by bin start 4.22 +- 2.80 ms, by centre 9.22
+0 error(s)
+tools/agent_run.py
+tools/authors.py
+tools/backfill_summaries.py
+tools/build_dryad_targets.py
+tools/build_figshare_targets.py
+tools/build_openneuro_targets.py
+tools/build_reuse_targets.py
+tools/build_site.py
+tools/build_targets.py
+tools/changed_entries.py
+[... 10 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "
+import json,yaml,jsonschema
+s=json.load(open('schemas/attempt.schema.json')); d=yaml.safe_load(open('attempts/gao-2018-02.yaml'))
+jsonschema.validate(json.loads(json.dumps(d,default=str)),s); print('schema ok')
+"
+```
+
+```
+schema ok
+```
+
+**Agent**
+
+No outcome changed in this round. I proposed one change for round 3, fixed or printed every point the round-2 report raised, and re-ran the entry. The final `python tools/entry.py all entries/gao-2018` passed with 0 errors, the record matches the schema, and the main results printed the same numbers as before.
+
+**Outcomes**
+- **fig3f** (CN inhibition abolishes ALM selectivity): kept as partially reproduced, with a proposal to change it to not reproduced. The verifier is right that the criterion's only test fails in every reading: the photo-inhibition selectivity intervals are [0.19, 0.60] and [0.02, 0.53] (cell 74), and both 5-trial variants also exclude zero. The notebook result cell, summary and README now say the change is proposed. Round 3 will review it.
+- **fig4g** (dentate effect recovers): still partially reproduced, but the latency reading changed. Printed to four places, the start-label latency is 3.3022 ms, just inside 3.3 to 13.3. That makes the record's "just below" wrong. fig4g now uses the start label, as fig4 does, and `measured` is 3.30 (8.30 by centre, also within). I rewrote the latency `methods_unavailable` finding: only the start label matches both photo-activation latencies (the dentate one at the bound), and no label matches the CN photo-inhibition latency.
+
+**Outputs added to the notebook**
+- **Cell 5, missing DANDI trials:** trials 279 to 304 in ANM314746_20151022 and 48 to 315 in ANM314757_20151021. In both, DANDI holds nothing after the first missing trial.
+- **Cell 5, fiber side:** the DANDI fiber side and recording site are now printed. They confirm the same-side placement for CD12, CD13 and CD14.
+- **Cell 7, spike widths:** all 14 borderline pyramidal units are at exactly 0.45 ms.
+- **Cell 57:** the dentate start-label latency to four places.
+- **Cell 59, lab p-values:** at the lab's 381 and 704 NaN entries, the value here is 1.0 every time, so neither file counts them as significant.
+
+**Text corrections**
+- **Light duration:** the fig1g delay-errors light duration is now given by session (0.455 s in 2017, 0.500 s in 2015, 1.3 s in ANM314746_20151020).
+- **fig4 fraction:** removed the unsupported sentence comparing the tested fraction with the paper's unknown denominator.
+- **p-value claim:** the summary now says only the 400 ms-bin photo-activation p-values were compared with the lab's file, not the window or photo-inhibition ones.
+- **Early licks:** "the early-lick part holds" is now qualified as pooled over mice, naming BAYLORCD6 and BAYLORCD8.
+- **Small fixes:** the missing-trial description, the spike-width wording in the round-1 response, and the DANDI site details in the fiber-side finding.
+- **Round-1 record:** I restored the verifier's "affects / does not affect a conclusion" labels on the problems quoted in round-1 reasons, and noted that the cell numbers there refer to the round-1 notebook.
+
+I recorded round 2 under `verifications`: 45 claims agreed, and fig3f disagreed with outcome not_reproduced. Each entry has the verifier's reason in its own words and my response.
+
+**Not done**
+- **Clock check:** I added no finer clock check for the photo-inhibition sessions. The existing check only resolves 200 ms and cannot rule out the 10 to 30 ms offset the verifier mentioned. fig3d does not depend on it because its count fails anyway, and the record states the limit.
+- **Unit counts:** the gap between the deposited units and the paper's counts (round-1 problem 6) cannot be closed from the deposits. It remains disclosed.
+- **Reader question:** the verifier found no place where the claims file misreads the paper, so I added none to `questions/gao-2018.yaml`.
+- **Commit:** nothing was committed or pushed.
 
 ## End of run
 
-57 turns, 21 minutes, $2.13 at API prices, result: success.
+56 turns, 76 minutes, $2.85 at API prices, result: success.

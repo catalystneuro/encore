@@ -505,7 +505,10 @@ jobs:
             "$RUNNER_TEMP/archive_transcripts.sh" "$FOLDER"
           fi
           if [ -s out/changes.patch ]; then
-            allowed="^(attempts/$FOLDER-[0-9]{2}\.yaml$|claims/$FOLDER\.yaml$|entries/$FOLDER/|questions/$FOLDER\.yaml$|README\.md$)"
+            # questions/$FOLDER/<dataset>.yaml: a repeat author's run removes the questions an earlier author asked,
+            # filed by dataset before records were by paper (tools/blind.sh); refusing that stopped pakhomov-2023 and
+            # silkuniene-2025 (issues 658, 664).
+            allowed="^(attempts/$FOLDER-[0-9]{2}\.yaml$|claims/$FOLDER\.yaml$|entries/$FOLDER/|questions/$FOLDER\.yaml$|questions/$FOLDER/[^/]+\.yaml$|README\.md$)"
             [ "$ROLE" != recorder ] || allowed="^(docs/pilot-notes|summaries)/$FOLDER-[0-9]{2}\.md$"
             stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
             [ -z "$stray" ] || { echo "::error::Changes outside paper $FOLDER: $stray"; exit 1; }
