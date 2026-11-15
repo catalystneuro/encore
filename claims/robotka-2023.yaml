@@ -1,0 +1,906 @@
+# Claims for Robotka, Thomas, Yu, Wood, Elie, Gahr & Theunissen (2023), Cell Reports 42, 112034,
+# "Sparse ensemble neural code for a complete vocal repertoire", tested on CRCNS aa-5.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-11,
+# protocol pilot-14 as stated in docs/protocol.md (Reader). The criteria were written from the
+# paper and its code alone; no data of the dataset were seen.
+#
+# Text read: the version of record (paper/10.1016-j.celrep.2023.112034.txt, extracted from the
+# publisher PDF), with its STAR Methods and the Supplemental information (SI Figures 1 to 11 and
+# their legends, which the PDF carries at its end). Table 1 was read from the text. Figures were
+# not opened; no claim needed a value only printed in a figure.
+#
+# Code read: github.com/ftheunissen/Ensemble-Code-Cell-Reports-2022 at commit
+# f2d237639217425e7fc81d694708f19428a3b026 (v1.0 in the key resources table, zenodo 7378502). It
+# holds Jupyter notebooks with their printed outputs and decoders.py. GenerateReport.ipynb makes
+# the per-unit summary (auditory test, per-call-type z, selectivity index); GenerateDataBase.ipynb
+# makes the per-trial table (response strength z, the PCA of trial-averaged KDE responses and the
+# five PC weights per trial); decodingCallTypesNaiveBayes.ipynb and DataBaseMerge.ipynb run the
+# single-unit decoder; decodingCallTypesNaiveBayesPart2.ipynb and decoders.py run the ensemble
+# decoders; plotConfusions.ipynb makes Figure 4; GenerateMLFilters.ipynb makes the MRFs, the LDA,
+# the volume, the neural noise and the Figure 5 regressions (its printed outputs reproduce the
+# paper's F(1,79) = 8.975, 6.73, 8.75 and F(4,76) = 5.832); EPHYS4-Population_Clustering.ipynb
+# and Supplementary Calculations.ipynb make the Figure 6 clusterings. The acoustic clustering reads
+# a vocalization parameter table (vocParamTable.h5) and a stimulus segment table that are not in
+# the repository.
+#
+# Data the paper used (STAR Methods, Animals; Playback experiment and stimuli; Electrophysiology).
+# Awake data (this dataset, CRCNS aa-5, doi 10.6080/K0TT4P5Q). Four freely behaving adult zebra
+# finches, two pair-bonded couples, ZF4F, ZF5M, ZF6M and ZF7F, each implanted in the left
+# hemisphere with a 16-electrode array on a microdrive, recorded 4 to 8 h a day for 28 to 31 days
+# while the electrodes were lowered by 0.5 to 1 turn a day (a recording site is bird, depth in
+# turns, date and time). Stimuli were 110 distinct vocalizations of 10 call types (Be 12, LT 13,
+# Th 5, Di 5, Ag 9, Wh 13, Ne 15, Te 15, DC 14, So 9), each played 10 times per site in pseudo
+# random order with 3 to 6 s intervals. Spikes were sorted with a hierarchical, drift-tracking
+# sorter; units with spike SNR above 5 are the paper's units; 730 sorted units, of which 292
+# auditory. Measured variables per trial are spike times from 500 ms before to 4.5 s after
+# stimulus onset (the dataset's description), with the stimulus waveform and call-type label.
+# Units were assigned to CLM, CMM, Field L, NCM or the L/NCM border from histology and depth
+# (SI Figure 5). Anesthetized data (CRCNS aa-4, doi 10.6080/K00C4T06, Elie and Theunissen 2015,
+# 2019): six urethane-anesthetized birds, four (BlaBro09xxF, GreBlu9508M, WhiWhi4522M,
+# YelBlu6903F) used for decoding, 123 stimuli of 9 call types (no Wh). The claims on it are
+# `elsewhere`. The acoustic clustering uses the Theunissen lab vocalization database (3405 bouts
+# from 45 birds, 7920 to 8136 calls, Elie and Theunissen 2016); the paper gives no deposit for it.
+#
+# Common method, used by several criteria (C1 to C12). Where the Methods leave a choice open and
+# the code settles it, the code is followed and named; where they disagree, the Methods come first
+# and the code's choice is a variant.
+# C1 Units. A unit is a spike-sorted cluster with SNR above 5 (Results, Auditory units, paragraph
+#   1; Methods, Electrophysiology and spike sorting). It is auditory when a two-tailed one-sample
+#   t-test on its spike-count difference d (spikes in 0 to 500 ms after onset minus spikes in the
+#   500 ms before) over all trials of all stimuli gives p < 0.01 (SI Figure 2A legend). The code
+#   (GenerateReport.ipynb calc_zscore_all) computes t as mean(d)/sd(d) times sqrt(n) with n degrees
+#   of freedom; a standard one-sample t-test (n - 1 df) is the Methods reading and the code's is a
+#   variant.
+# C2 Response strength Z per trial. The Methods text reads as d z-scored with the mean and SD of d
+#   over all trials and stimuli of the unit (reading a). The code (GenerateDataBase.ipynb) divides d
+#   by its SD over all trials (numpy std, ddof 0) without subtracting the mean (reading b), which
+#   keeps Z relative to background as the Results describe. The decoder results do not depend on
+#   the reading (a Gaussian naive Bayes is unchanged by a shift of one feature). Only vocalization
+#   stimuli are used.
+# C3 Per-call-type Z and the selectivity index SI (Figure 3C, 3D). SI = (1 - mean(zCT)^2 /
+#   mean(zCT^2)) / (1 - 1/n) over the n = 10 call types (Methods, Response strength). zCT is read
+#   as (a) the mean of the trial Z of C2 over all trials of the call type (Methods), or (b) the
+#   code's zCT, mean(d)/sd(d, ddof 1) over the trials of the call type (GenerateReport.ipynb
+#   calc_zscore_category), which is what summarySel.pkl and the Figure 5F regressor use. Reading (a)
+#   is computed on the Z of C2 reading (b): with C2 reading (a) the mean of zCT over call types is
+#   near zero and SI is near 1/(1 - 1/n) = 1.11 for every unit, outside the 0 to 1 range the
+#   Figure 5F legend gives for SI.
+# C4 Time-varying response T (Methods, PC analysis; GenerateDataBase.ipynb). For each unit and
+#   stimulus with at least 5 trials, the trial-averaged response is a Gaussian KDE of the spike
+#   times with a 30 ms kernel, sampled at 1 ms over the first 1000 samples of the stored KDE (the
+#   code's time base, which starts before stimulus onset; the stored tKDE fixes it). A PCA (sklearn)
+#   over all these responses of all auditory units gives the PCs; each trial's T1 to T5 are the
+#   projection of its spike train (1000 per spike at the sample of the spike) minus the PCA mean
+#   onto the first five PCs. The PCA is fitted separately for each dataset.
+# C5 Decoder (Methods, Naive Bayesian decoder). sklearn GaussianNB with uniform priors (code), on
+#   Z (code Z) or on Z with T1 to T5 per unit (code Z+T). Units used are those with responses to all
+#   110 stimuli and at least 2 trials of each (Methods; the code keeps units with 110 distinct
+#   stimuli). Cross-validation is open. Reading (a), the Methods: for each call type the trials of
+#   one exemplar stimulus are held out and tested, the decoder trained on the rest. Reading (b), the
+#   code (decoders.naiveBayes): one randomly chosen trial of every stimulus is held out and tested,
+#   the decoder trained on the remaining trials of all stimuli, and this is repeated (nperm = 100
+#   repetitions by default in decoders.py, used for the ensembles; one repetition in the
+#   single-unit notebook). For ensembles, training rows join the i-th trial of each unit to the
+#   same stimulus, with random redraws for units with fewer trials (code). The confusion matrix sums
+#   the posterior probabilities of the test trials by true call type. PCC is (a) the mean of the
+#   diagonal of the row-normalized matrix (Methods, Figure 4 legend) or (b) the trace of the summed
+#   matrix over the number of test trials (code). Chance is 10% (9 call types, 11.1%, without Wh).
+# C6 The 100 good units. Units with 110 stimuli whose single-unit PCC Z+T is above 12% (Results,
+#   Decoding call types, paragraph 2; Methods, Naive Bayesian decoder, paragraph 6; code
+#   decodingCallTypesNaiveBayesPart2.ipynb, pcc > 12).
+# C7 Ensembles. Ensembles are drawn from the 100 good units across birds and areas: all
+#   combinations of 1 and 2 units, 10,000 random draws for larger sizes (sizes 1, 2, 3, 4, 5, 10,
+#   15, 20 in the code), for the Figure 4B curve. For Figure 5, 1800 random 20-unit ensembles, each
+#   with 100 held-out repetitions (Methods). The paper's 1746 ensembles are those of the 1800 with
+#   PCC above 30% (GenerateMLFilters.ipynb, indGood = pcc > 30, printed sum 1746); the Methods do
+#   not state this filter. Readings, (a) the code's filter and (b) all 1800 ensembles.
+# C8 Ensemble-corrected statistics (Methods, Statistical analysis). With ns units sampled and
+#   ensembles of ne, neff = ns - ne + 1 (81 for ns = 100, ne = 20). Corrected variance s_c^2 =
+#   ns/(ns - ne) times the sample variance over ensembles; SEM = s_c/sqrt(neff). Two-sample t-tests
+#   use these SEMs with 2 neff - 2 df (t(160)); paired tests across ensembles use neff - 1 df
+#   (t(80)). Regression F = (neff/n)((SST - SSE)/(k - 1))/(SSE/(n - k)), with n ensembles, k model
+#   parameters including the intercept, and df (k - 1, neff - k) (F(1,79), F(4,76)). R2adj = 1 -
+#   (SSE/(n - k))/(SST/(n - 1)). The code (GenerateMLFilters.ipynb) implements these formulas.
+# C9 MPS and MRFs (Methods, Modulation receptive fields; GenerateMLFilters.ipynb). Stimulus MPS by
+#   soundsig BioSound (spectroCalc at 1 kHz sample rate, 50 Hz frequency spacing, 0 to 10 kHz;
+#   mpsCalc with a 100 ms window, Norm = True). The window of sound is the first 500 ms of the
+#   stimulus in the Methods; the code takes 500 ms before to 500 ms after onset (variant). Each MRF
+#   component of a unit is the sum over stimuli of (MPS minus the mean MPS over stimuli) weighted by
+#   the unit's trial-averaged Z (MRF-Z) or trial-averaged Tk (MRF-Tk), six components per unit. The
+#   code keeps temporal modulations from -50 to 50 Hz and spectral modulations from 0 to 4 cyc/kHz.
+# C10 LDA space and volume. Between covariance of the call-type mean MPS, within covariance the
+#   mean over call types of the covariance of single MPS about their call-type mean; the LDA axes
+#   are the eigenvectors of pinv(within) times between (code, rcond 1e-4). The Methods name the
+#   first three discriminant dimensions, read as the three of largest eigenvalue. The code calls
+#   numpy eigh and takes its first three columns, which eigh orders by ascending eigenvalue; this
+#   is a variant to be run as written. Each MRF component is projected on the three axes and divided
+#   by 110 times the SD of its response variable over all trials (code). The volume of an ensemble
+#   is the determinant of the 3x3 covariance of its 120 projected vectors (Methods); the
+#   regressions use its natural log (code).
+# C11 Ensemble regressors. Mean over the 20 units of SI (C3), of Entropy Selectivity (ES), and of
+#   neural noise. ES = 1 - H/log2(10) with H the entropy of the diagonal of the unit's single-unit
+#   Z+T confusion matrix; the code normalizes the diagonal to sum 1 before the entropy (reading a),
+#   the Methods formula uses the diagonal PCC values directly (reading b). Neural noise per unit is
+#   the variance of trial Z within each call type, averaged over the 10 call types (Results; code,
+#   numpy std ddof 0 squared); the Figure 5 legend says standard deviation (variant).
+# C12 Neural clustering (Methods, Hierarchical clustering of neural ensemble activity;
+#   EPHYS4-Population_Clustering.ipynb). For an ensemble, a stimulus by (units x 6) matrix of
+#   trial-averaged Z and T1 to T5. The code embeds it with UMAP (default parameters, 2 dimensions)
+#   and builds a Ward linkage; the Methods name hierarchical agglomerative clustering only. Readings,
+#   (a) UMAP then Ward (code), (b) Ward on the averaged responses. The tree is cut at 499 evenly
+#   spaced distance thresholds between its smallest and largest linkage distance (code) and the cut
+#   with maximal ARI against the labels is kept, giving ARIcall or ARIacoustic and the optimal
+#   number of clusters. ARIacoustic is computed on the stimuli that have an acoustic label.
+# Readings. Where a criterion says "under one reading", the readings meant are those of a reported
+# number (which units or ensembles form a count or a mean, the top 10% or 5%, the C7 filter, the
+# Results' variance or the legend's SD in C11). Readings of a method (C1, C2, C3, C5 cross
+# validation and PCC, C9 sound window, C10 axes, C11 ES) follow docs/protocol.md: the Methods
+# reading is the main one and the code's a variant, except where the Methods leave the choice open
+# and the code settles it (C12 UMAP), where the code's is the main one. When the method readings
+# give different outcomes, the author adopts the reading the paper best supports, as an assumption,
+# and shows the others.
+# Random draws (ensembles, held-out trials, UMAP) use any seed; a seed is a standard choice that
+# should not change an outcome judged on averages over many ensembles.
+schema_version: 2
+paper: doi:10.1016/j.celrep.2023.112034
+claims:
+- id: stimulus-set-link
+  kind: link
+  statement: The dataset holds the awake playback experiment the paper describes, four birds
+    (ZF4F, ZF5M, ZF6M, ZF7F) and 110 distinct stimuli labelled with the 10 call types in the
+    paper's numbers.
+  source: STAR Methods, Playback experiment and stimuli, paragraph 3; Animals, paragraph 2
+  quote: For the awake dataset we used 110 distinct stimuli sampling 10 call-types
+  expected:
+  - quantity: distinct stimuli
+    value: 110
+    tolerance: 0
+  - quantity: birds
+    value: 4
+    tolerance: 0
+  criterion: Count the distinct stimulus files and their call-type labels over all units, and the
+    birds. Reproduced when there are 4 birds and the stimulus counts per call type are Be 12, LT 13,
+    Th 5, Di 5, Ag 9, Wh 13, Ne 15, Te 15, DC 14 and So 9 (110 in all); partially reproduced when
+    the total is 110 but up to two call-type counts differ by one (a label variant such as Tu for
+    Th); not reproduced otherwise.
+- id: auditory-units
+  statement: Of 730 spike-sorted units in the awake dataset, 292 (40.1%) were auditory.
+  source: STAR Methods, Electrophysiology and spike sorting, last paragraph; SI Figure 2A legend
+  quote: In the awake dataset, we recorded the activity of 730 spike-sorted units of which 292 were
+    classified as auditory (40.1%).
+  expected:
+  - quantity: spike-sorted units (SNR above 5)
+    value: 730
+    tolerance: 73
+  - quantity: auditory units
+    value: 292
+    tolerance: 29.2
+  - quantity: auditory fraction
+    value: 40.1
+    tolerance: 4.01
+    unit: percent
+  criterion: Units and the auditory test as in C1. The dataset may hold only part of the sorted
+    units (the descriptor says pickle files are for units); the readings of the denominator are
+    (a) all units the dataset holds with SNR above 5, (b) all units the dataset holds. Reproduced
+    when the auditory count is within tolerance and, under one reading, the total and the fraction
+    are; partially reproduced when only the auditory count is.
+- id: inhibited-units
+  statement: In the awake dataset 46 of the 292 auditory units (15.7%) were inhibited by sound.
+  source: SI Figure 2A legend
+  quote: In the awake dataset (4 birds), 292 units had z scores that were significantly different
+    from zero and 46/292 (15.7 %) that were inhibited by sounds.
+  depends_on:
+  - auditory-units
+  expected:
+  - quantity: inhibited auditory units
+    value: 46
+    tolerance: 4.6
+  - quantity: inhibited fraction of auditory units
+    value: 15.7
+    tolerance: 1.57
+    unit: percent
+  criterion: Auditory units as in C1; a unit is inhibited when its mean spike-count difference d
+    over all trials is negative (code, zAud < 0). Reproduced when both values are within tolerance.
+- id: fig3c-peak-call-types
+  statement: Across the 292 auditory units, distress calls had the highest average response
+    strength followed by song; 51 units had their peak response to distress calls and 61 to song;
+    the preference is biased toward the longer calls (Ag, Be, So, Di).
+  source: Figure 3C legend; Results, Auditory units have heterogeneous and selective responses,
+    paragraph 2
+  quote: distress calls (Di) had the highest average response strength followed by song (So), etc.
+    ... 51 units had the peak responses for distress call, 61 for song, etc.
+  depends_on:
+  - auditory-units
+  expected:
+  - quantity: units with peak Z for Di
+    value: 51
+    tolerance: 5.1
+  - quantity: units with peak Z for So
+    value: 61
+    tolerance: 6.1
+  criterion: Per-call-type Z of each auditory unit under the two readings of C3 (zCT). The call
+    types are ranked by their mean zCT over units. Reproduced when, under one reading, Di ranks
+    first and So second, both peak counts are within tolerance, and Ag, Be, So and Di are four of
+    the five call types with the most peak units; partially reproduced when Di and So are the two
+    highest ranked but a count is outside tolerance. The paper gives no rule for "a bias toward the
+    longer calls"; four of the top five is a reading, and the peak count of every call type is
+    reported.
+- id: fig4a-unit-z-vs-zt
+  statement: For single units decoded independently, adding the temporal pattern (Z + T) to the
+    response strength (Z) raises the mean PCC from 10.78% to 12.3% (a 14% increase), over 191 units
+    with data for all 110 calls.
+  source: Results, Decoding call types from ensemble responses, paragraph 1; Figure 4A
+  quote: 'mean percentage of correct classification [PCC] ... PCCZ = 10.78%; PCCZ+T = 12.3%; 14%
+    increase; t(190) = 10.06'
+  statistics:
+  - test: t-test (paired across units, as the 190 df imply)
+    statistic: t(190) = 10.06
+    p: 0.00001
+    p_relation: <
+    n: 191 units with data for all 110 calls
+  depends_on:
+  - auditory-units
+  expected:
+  - quantity: units decoded
+    value: 191
+    tolerance: 19.1
+  - quantity: mean single-unit PCC with Z
+    value: 10.78
+    tolerance: 1.078
+    unit: percent
+  - quantity: mean single-unit PCC with Z+T
+    value: 12.3
+    tolerance: 1.23
+    unit: percent
+  criterion: Decoder and units as in C5, each auditory unit decoded alone with Z and with Z+T,
+    under the readings of C5 for cross-validation and PCC (reading b run with one repetition, as
+    the single-unit notebook, and with 100). Reproduced when, under one reading, both means are
+    within tolerance, Z+T exceeds Z, and a paired t-test across units gives p < 1e-5; partially
+    reproduced when Z+T is significantly higher but a mean is outside tolerance.
+- id: good-units-100
+  statement: Exactly 100 units had a single-unit PCC Z+T above 12%, and they came from all four
+    birds (ZF4F 43, ZF5M 19, ZF6M 16, ZF7F 22).
+  source: Results, Decoding call types from ensemble responses, paragraph 2; STAR Methods, Naive
+    Bayesian decoder, paragraph 6
+  quote: The number of units that satisfied that requirement is exactly n = 100.
+  depends_on:
+  - fig4a-unit-z-vs-zt
+  expected:
+  - quantity: units with single-unit PCC Z+T above 12%
+    value: 100
+    tolerance: 10
+  - quantity: good units in ZF4F
+    value: 43
+    tolerance: 4.3
+  - quantity: good units in ZF5M
+    value: 19
+    tolerance: 1.9
+  - quantity: good units in ZF6M
+    value: 16
+    tolerance: 1.6
+  - quantity: good units in ZF7F
+    value: 22
+    tolerance: 2.2
+  criterion: C6, under the readings of C5. Because each held-out draw is random, a unit near 12%
+    can fall either side. The paper does not say how this is handled; the code selects on one run
+    of the single-unit decoder (one repetition). The count is taken from one run, as the code, and
+    the range of the count over 10 runs with other seeds is reported. Reproduced when the total is within tolerance and every bird contributes units; the per-bird
+    counts are reported and judged within tolerance as a second part (partially reproduced when the
+    total holds and two or more birds are outside tolerance).
+- id: fig4b-ensemble-20
+  statement: Ensemble decoding performance rises with ensemble size, reaching an average PCC Z+T
+    of 42% for 20 units, above the 29.6% obtained from response strength alone (Z), a 43% increase.
+  source: Results, Decoding call types from ensemble responses, paragraph 2; Figure 4B
+  quote: as the ensemble size grew, the neuronal decoding performance using both the strength and
+    the temporal patterns of the response (Z + T) increases, reaching average levels of 42% for 20
+    neurons ... (mean PCCZ = 29.6%; mean PCCZ+T = 42.3%; 43% increase; t(160) = 8.83
+  statistics:
+  - about: PCC Z+T against PCC Z for ensembles of 20 units
+    test: t-test with ensemble-corrected standard errors and df
+    statistic: t(160) = 8.83
+    p: 0.00001
+    p_relation: <
+    n: 10,000 ensembles of 20 units sampled from 100 units
+  depends_on:
+  - good-units-100
+  expected:
+  - quantity: mean PCC Z+T, ensembles of 20
+    value: 42.3
+    tolerance: 4.23
+    unit: percent
+  - quantity: mean PCC Z, ensembles of 20
+    value: 29.6
+    tolerance: 2.96
+    unit: percent
+  criterion: Ensembles as in C7 (Figure 4B sampling) from the good units, decoded as in C5 under
+    its readings, with Z and with Z+T. Reproduced when, under one reading, both means are within
+    tolerance, mean PCC Z+T increases with each step of ensemble size from 1 to 20, and the C8
+    two-sample t-test (df 160) of Z+T against Z gives p < 1e-5; partially reproduced when the
+    increase and the test hold but a mean is outside tolerance.
+- id: fig4b-top-ensembles
+  statement: The top 10% of ensembles of 20 units reach an average PCC Z+T of about 50%, and the
+    best ensembles approach the 65% achieved by acoustic classifiers.
+  source: Results, Decoding call types from ensemble responses, paragraph 2; Figure 4B legend
+  quote: The top 10% of the neuronal ensembles of size 20 reach an average PCCZ+T of �50% (Figure
+    4B) and the best ensembles (e.g., Figure 5A) reach values close to the optimal performance of
+    65%
+  depends_on:
+  - fig4b-ensemble-20
+  expected:
+  - quantity: mean PCC Z+T of the top ensembles of 20
+    value: 50
+    tolerance: 5
+    unit: percent
+  criterion: The Results and Figure 4 legend say top 10%; the Methods say top 5%, re-estimated with
+    a second random held-out draw to remove the selection bias. Readings, (a) top 10% and (b) top
+    5%, each re-estimated by a second held-out draw as the Methods describe, among the Figure 4B
+    ensembles of 20. Reproduced when, under one reading, the mean is within tolerance and the best
+    ensemble's PCC Z+T is at least 55% (close to 65%, read as within 10 points); partially
+    reproduced when only the mean holds.
+- id: fig4b-confusions
+  statement: Most ensemble misclassifications are systematic, Ne confused with Te, LT with Be, Th
+    (Tu) with Te, and Di with Ag.
+  source: Results, Decoding call types from ensemble responses, paragraph 3; Figure 4B
+  quote: 'most misclassifications originated from the same systematic errors: the soft Ne call is
+    often confused with the soft contact Te call; the juvenile LT call with the Be call; the alarm
+    Tu call with the Te call; and the Di call with the Ag call.'
+  depends_on:
+  - fig4b-ensemble-20
+  criterion: The average row-normalized confusion matrix of the ensembles of 20 (C5, C7). For each
+    named pair (true Ne predicted Te, LT as Be, Th as Te, Di as Ag) the off-diagonal entry is
+    compared with the other off-diagonal entries of its row. Reproduced when all four are the
+    largest or second largest off-diagonal entry of their row; partially reproduced for two or
+    three of them; not reproduced for fewer. The paper gives no rule for "most misclassifications";
+    the two largest entries of a row is a reading.
+- id: figs4-per-bird-and-sex
+  statement: Decoding performance and its systematic errors are similar in every bird decoded
+    alone, and PCC does not differ significantly between female and male birds (difference 8.3%).
+  source: SI Figure 4 legend; Results, Decoding call types from ensemble responses, paragraph 4
+  quote: 'We did not measure any significant differences in PCC between sexes (Awake: Diff PCC
+    Female - Male = 8.3%, t(2)= 0.6757 p= 0.5689'
+  statistics:
+  - about: female against male PCC, awake
+    test: t-test
+    statistic: t(2) = 0.6757
+    p: 0.5689
+    n: 2 female and 2 male birds
+  depends_on:
+  - good-units-100
+  expected:
+  - quantity: female minus male PCC, awake
+    value: 8.3
+    tolerance: 0.83
+    unit: percent
+  criterion: Ensembles drawn within one bird at a time from its good units (C6), decoded as in C5,
+    at size 15 for the confusion matrices (SI Figure 4A). A claim of absence for sex, judged on the
+    paper's test at ensembles of 15 units. The legend gives only t(2); the code
+    (plotConfusionsBird.ipynb, numUnits[6] = 15) settles it. Per bird, the mean PCC and the
+    ensemble-corrected SD (SD over ensembles times sqrt(ns/(ns - 15))); per sex, the mean of its
+    two birds weighted by neff = ns - 15 + 1 and their variances pooled with weights neff - 1; t =
+    (female mean minus male mean) / (sqrt of the mean of the two sexes' variances times sqrt(1/2 +
+    1/2)), two-tailed with 2 df.
+    Reproduced when p >= 0.05, with the difference reported. The
+    per-bird similarity is reported (each bird's PCC curve and whether the four Figure 4B error
+    pairs are among the two largest off-diagonal entries in each bird).
+- id: figs6-primary-vs-secondary
+  statement: In the awake data, ensemble decoding as a function of size is very similar in primary
+    (Field L/CLM, 56 units) and secondary (NCM/CMM, 38 units) auditory pallium; at 20 units the
+    difference is small but significant at the 5% level, while response rate and coding efficiency
+    do not differ.
+  source: SI Figure 6 legend; Results, Decoding call types from ensemble responses, paragraph 4
+  quote: For ensembles of size 20, the measured differences were small and statistically
+    significant at the 5% level in the awake dataset (d= 0.72, t(54)= 2.55, p= 0.013)
+  statistics:
+  - about: PCC at 20 units, primary against secondary
+    test: t-test, ensemble corrected
+    statistic: d = 0.72, t(54) = 2.55
+    p: 0.013
+  - about: summed response rate at 20 units, primary against secondary
+    test: t-test, ensemble corrected
+    statistic: d = -0.006, t(54) = -0.026
+    p: 0.98
+  - about: PCC per unit rate (efficiency), primary against secondary
+    test: t-test, ensemble corrected
+    statistic: d = 0.51, t(54) = 1.81
+    p: 0.076
+  depends_on:
+  - good-units-100
+  expected:
+  - quantity: good units in the primary auditory pallium
+    value: 56
+    tolerance: 5.6
+  - quantity: good units in the secondary auditory pallium
+    value: 38
+    tolerance: 3.8
+  - quantity: effect size d, PCC at 20 units
+    value: 0.72
+    tolerance: 0.072
+  criterion: Areas from the unit assignment of SI Figure 5 (border L/NCM units excluded). Ensembles
+    drawn within each area from its good units, decoded as in C5. The ensemble rate is the sum over
+    its units of each unit's mean spike-count difference d over all trials (SI Figure 6 legend,
+    "averaged across call-types and summed"; code plotConfusionsArea.ipynb, column R). Efficiency
+    is PCC divided by the ensemble rate. The legend says the average rate of the units, the code
+    divides by the summed rate; the two differ by the constant 20 and give the same test. Tests as
+    C8 with neff = 37 and 19 (df 54). Reproduced when the PCC test gives p < 0.05 and the rate and efficiency tests give
+    p >= 0.05 (the absence claims, judged on the same test), with d reported; partially reproduced
+    when the rate and efficiency absences hold but the PCC difference is not significant. If the
+    dataset does not hold the area of each unit, the claim cannot be tested.
+- id: fig5e-volume
+  statement: Across random ensembles of 20 units, PCC increases with the volume the ensemble's MRF
+    components span in the 3D LDA space of call types (R2adj = 0.1).
+  source: Results, Modulation receptive fields of single neurons and ensemble decoding performance,
+    paragraph 4; Figure 5E legend
+  quote: Supporting this hypothesis, we find that, as the volume span increases the PCC increases
+    (Figure 5E, R2 adj = 0.1, p = 0.0036
+  statistics:
+  - test: F-test of a bivariate regression, ensemble corrected
+    statistic: F(1,79) = 8.975
+    p: 0.0036
+    n: 1,746 ensembles of 20 units sampled from 100 units
+  depends_on:
+  - good-units-100
+  expected:
+  - quantity: R2adj, PCC on volume
+    value: 0.1
+    tolerance: 0.01
+  - quantity: ensembles in the regression
+    value: 1746
+    tolerance: 174.6
+  criterion: Ensembles of 20 as in C7 (Figure 5 sampling) with PCC Z+T from C5 under its readings;
+    volume as C9 and C10 with all six MRF components of the 20 units; regression of PCC on log
+    volume (code), F and R2adj as C8. Readings of C7 (a, b), C9 (sound window) and C10 (LDA axes)
+    are each run. Reproduced when, under one reading, the slope is positive, R2adj is within
+    tolerance and the corrected F-test gives p < 0.05; partially reproduced when the slope is
+    positive and significant but R2adj is outside tolerance.
+- id: fig5f-si-unrelated
+  statement: The average Z-based selectivity index of the units in an ensemble is not related to
+    the ensemble's decoding performance.
+  source: Results, Modulation receptive fields of single neurons and ensemble decoding performance,
+    paragraph 5; Figure 5F
+  quote: Surprisingly, the average Z-based selectivity index (average across the 20 units in each
+    ensemble) is not related to the ensemble decoder performance (Figure 5F)
+  depends_on:
+  - fig5e-volume
+  criterion: A claim of absence, judged on the paper's test, the ensemble-corrected F-test (C8) of
+    the bivariate regression of PCC on the ensemble mean SI (C3, C11) over the Figure 5 ensembles
+    (C7). Reproduced when p >= 0.05; not reproduced when p < 0.05. R2adj and the slope are reported
+    (the code printed R2adj = -0.0006, p = 0.99). The SI is C3 reading (a), the Methods
+    definition; the code's (b), which made Figure 5F, is shown as a variant.
+- id: fig5g-entropy-selectivity
+  statement: The ensemble average Entropy Selectivity of its units is negatively correlated with
+    ensemble decoding performance.
+  source: Results, Modulation receptive fields of single neurons and ensemble decoding performance,
+    paragraph 5; Figure 5G legend
+  quote: whereas the unit average entropy selectivity is negatively correlated (Figure 5G)
+  statistics:
+  - test: F-test of a bivariate regression, ensemble corrected
+    statistic: F(1,79) = 6.73
+    p: 0.011
+    n: 1,746 ensembles of 20 units
+  depends_on:
+  - fig5e-volume
+  criterion: Regression of PCC on the ensemble mean ES (C11, both readings) over the Figure 5
+    ensembles (C7), F as C8. Reproduced when, under one reading, the slope is negative and p <
+    0.05; the code printed R2adj = 0.076.
+- id: fig5h-neural-noise
+  statement: As neural variability within call types (neural noise plus lack of invariance)
+    increases, ensemble decoding performance decreases (R2adj = 0.1).
+  source: Results, Modulation receptive fields of single neurons and ensemble decoding performance,
+    paragraph 6; Figure 5H legend
+  quote: As shown in Figure 5H, as neural variability (neural noise + lack of invariance within call
+    type) increases, the decoder performance decreases (R2 adj = 0.1, p = 0.004)
+  statistics:
+  - test: F-test of a bivariate regression, ensemble corrected
+    statistic: F(1,79) = 8.75
+    p: 0.004
+    n: 1,746 ensembles of 20 units
+  depends_on:
+  - fig5e-volume
+  expected:
+  - quantity: R2adj, PCC on neural noise
+    value: 0.1
+    tolerance: 0.01
+  criterion: Regression of PCC on the ensemble mean neural noise (C11, variance and SD readings)
+    over the Figure 5 ensembles (C7), F and R2adj as C8. Reproduced when, under one reading, the
+    slope is negative, R2adj is within tolerance and p < 0.05; partially reproduced when the slope
+    is negative and significant but R2adj is outside tolerance.
+- id: fig5-multiple-regression
+  statement: A linear model of PCC on volume spanned, neural variability and the two selectivity
+    measures together explains R2adj = 0.22 of the variance of ensemble decoding performance.
+  source: Results, Modulation receptive fields of single neurons and ensemble decoding performance,
+    paragraph 7
+  quote: When all four regressors are taken into account (i.e., volume spanned, neural variability,
+    and the two measures of selectivity) in a linear model to predict PCC, one obtains a
+    coefficient of determination (R2 adj) of 0.22 (F(4,76) = 5.832, p = 0.00038)
+  statistics:
+  - test: F-test of a multiple linear regression, ensemble corrected
+    statistic: F(4,76) = 5.832
+    p: 0.00038
+    n: 1,746 ensembles of 20 units
+  depends_on:
+  - fig5e-volume
+  expected:
+  - quantity: R2adj, PCC on the four regressors
+    value: 0.22
+    tolerance: 0.022
+  criterion: Ordinary least squares of PCC on neural noise, log volume, mean ES and mean SI (the
+    code's regressors, GenerateMLFilters.ipynb) over the Figure 5 ensembles (C7); R2adj and F as C8
+    with k = 5. Reproduced when, under one reading, R2adj is within tolerance and p < 0.05;
+    partially reproduced when p < 0.05 and R2adj is outside tolerance.
+- id: pcs-variance
+  statement: The first five principal components of the time-varying responses explain about 90%
+    of their variance.
+  source: STAR Methods, PC analysis; SI Figure 7A legend
+  quote: The first 5 PCs explained �90% of the variance as shown in SI Figure S7.
+  depends_on:
+  - auditory-units
+  expected:
+  - quantity: variance explained by the first 5 PCs, awake
+    value: 90
+    tolerance: 9
+    unit: percent
+  criterion: PCA as C4 over the auditory units of the awake dataset. Reproduced when the cumulative
+    explained variance ratio of the first five PCs is within tolerance (the code printed 0.922).
+- id: table1-snr
+  statement: The awake units have a mean spike SNR of 7.42 (SD 2.52; quartiles 5.51, 6.50, 9.03).
+  source: Table 1, awake behaving dataset
+  inferred: The values are in Table 1 only; no sentence states them. Read from the table's SNR
+    column for the awake behaving dataset.
+  expected:
+  - quantity: mean SNR
+    value: 7.42
+    tolerance: 0.742
+  - quantity: median SNR
+    value: 6.5
+    tolerance: 0.65
+  criterion: SNR is the stored unit SNR (peak-to-trough of the mean snippet over the mean snippet
+    rms, Methods, Electrophysiology and spike sorting). Table 1 does not say over which units; the
+    readings are (a) the 292 auditory units and (b) all units with SNR above 5. Reproduced when,
+    under one reading, mean and median are within tolerance. The refractory-period indices Qisi and
+    Qacc need the full spike trains, which the dataset does not hold (spikes are kept only around
+    stimuli), and are not claimed.
+- id: figs5-region-anova
+  statement: Of the 100 good units, 16 were in CLM, 25 in CMM, 40 in Field L, 13 in NCM and 6 at
+    the L/NCM border; region has only small effects on decoder performance, mean rate and Entropy
+    Selectivity, and none on SI; after Bonferroni correction only Entropy Selectivity differs.
+  source: SI Figure 5 legend
+  quote: An ANOVA with anatomical region as the predictor suggested small differences across
+    regions in decoder performance (Radj2= 0.059, F(4,95) = 2.558, p=0.0436), mean rate across
+    regions (Radj2 = 0.084, F(4,95) = 2.7, p = 0.0351) and in Entropy Selectivity (Radj2 = 0.09, F(4,
+    95) = 3.54, p= 0.00965) but not SI
+  statistics:
+  - about: decoder performance by region
+    test: one-way ANOVA
+    statistic: F(4,95) = 2.558
+    p: 0.0436
+  - about: mean rate by region
+    test: one-way ANOVA
+    statistic: F(4,95) = 2.7
+    p: 0.0351
+  - about: Entropy Selectivity by region
+    test: one-way ANOVA
+    statistic: F(4,95) = 3.54
+    p: 0.00965
+    corrected: Bonferroni over four tests
+  - about: SI by region
+    test: one-way ANOVA
+    statistic: F(4,95) = 1.9
+    p: 0.102
+  depends_on:
+  - good-units-100
+  expected:
+  - quantity: good units in Field L
+    value: 40
+    tolerance: 4
+  - quantity: good units in CMM
+    value: 25
+    tolerance: 2.5
+  - quantity: good units in CLM
+    value: 16
+    tolerance: 1.6
+  - quantity: good units in NCM
+    value: 13
+    tolerance: 1.3
+  criterion: Regions as assigned by the paper (the dataset's unit metadata, if it has them). One-way
+    ANOVA with five regions over the 100 good units, of single-unit PCC Z+T, mean rate, ES and SI
+    (C3, C11). Reproduced when the counts are within tolerance and only ES has p < 0.0125 (0.05 over
+    four tests) while SI has p >= 0.05; partially reproduced when the ES result holds and the
+    counts do not. Not testable when the dataset holds no region per unit.
+- id: fig6a-acoustic-clusters
+  statement: Hierarchical clustering of the acoustic features of the vocalization database (without
+    song) matches the ethogram-based call types with a best ARI of 0.7 at six clusters, and 0.49
+    at nine clusters.
+  source: Results, Neural categories for ethogram-based call types versus acoustical clusters,
+    paragraph 2; Figure 6A
+  quote: The best adjusted Rand index (ARI), that quantifies the correlation between the labels
+    given by the cut of the hierarchical tree and the ethogram-based call types is 0.7, with the
+    optimal cut generating six clusters, and 0.49 with the tree cut generating nine clusters.
+  data: with_inputs
+  expected:
+  - quantity: best ARI, acoustic clusters against call types
+    value: 0.7
+    tolerance: 0.07
+  - quantity: clusters at the best cut
+    value: 6
+    tolerance: 0
+  - quantity: ARI at the 9-cluster cut
+    value: 0.49
+    tolerance: 0.049
+  criterion: Uses the lab's vocalization database (4,987 calls of 9 call types without song in
+    Figure 6A; Elie and Theunissen 2016), which the dataset does not hold and the paper gives no
+    deposit for. The 20 acoustic features of Methods, Acoustic feature space, z-scored, embedded by
+    UMAP in 20 dimensions, Ward linkage (code), ARI at every cut. Reproduced when both ARIs are within
+    tolerance and the best cut has six clusters. Blocked when the database cannot be obtained.
+- id: acoustic-labels-decoding
+  statement: Ensembles of 20 units classify vocalizations by acoustic cluster labels with PCC Z+T
+    of only 38.0%, below the 42.3% for ethogram-based call types.
+  source: Results, Neural categories for ethogram-based call types versus acoustical clusters,
+    paragraph 3
+  quote: The neuronal decoding performance (PCCZ+T) reaches only 38.0% for acoustic clusters, below
+    the 42.3% performance previously found for call types (t(160) = 2.71, p = 0.0074).
+  statistics:
+  - test: t-test, ensemble corrected
+    statistic: t(160) = 2.71
+    p: 0.0074
+    n: 1,746 ensembles of 20 units sampled from the same 100 units
+  data: with_inputs
+  depends_on:
+  - fig6a-acoustic-clusters
+  - fig4b-ensemble-20
+  expected:
+  - quantity: mean PCC Z+T with acoustic labels, ensembles of 20
+    value: 38.0
+    tolerance: 3.8
+    unit: percent
+  criterion: Each stimulus labelled by its acoustic cluster (the 9-cluster cut of
+    fig6a-acoustic-clusters, songs as a 10th label); decoder and ensembles as C5 and C7 under their
+    readings. The Results say 1,746 ensembles; the code (plotConfusions.ipynb) compares 10,000
+    ensembles of the Figure 4B sampling with acoustic labels (mean 38.07) against the 10,000 with
+    call types (42.28). Both ensemble sets are readings. Reproduced when, under one reading, the mean is within tolerance and below the
+    call-type PCC of the same ensembles with p < 0.05 by the C8 t-test (df 160).
+- id: fig6c-number-of-clusters
+  statement: The optimal number of neural clusters varies from 1 to 30 across ensembles, but its
+    mean and median are close to the number of call types whether call types (mean 10.83, median
+    9) or acoustic labels (mean 10.03, median 9) are the reference, with no significant difference
+    between the two.
+  source: Results, Neural categories for ethogram-based call types versus acoustical clusters,
+    paragraph 4; Figure 6C bottom
+  quote: (range 1-30 clusters), both the median and the average number of clusters are very close
+    to the number of ethogram-based call types irrespective if the acoustic labels or the call types
+    are used as labels (call types, mean = 10.83, median = 9; acoustic labels, mean = 10.03, median =
+    9; paired t test on log transformed data t(80) = �0.808, p = 0.21)
+  statistics:
+  - test: paired t-test on log-transformed cluster numbers, ensemble corrected
+    statistic: t(80) = -0.808
+    p: 0.21
+    n: random ensembles of 20 units (10,000 in the Figure 6C legend)
+  data: with_inputs
+  depends_on:
+  - fig6a-acoustic-clusters
+  expected:
+  - quantity: mean optimal clusters, call-type labels
+    value: 10.83
+    tolerance: 1.083
+  - quantity: median optimal clusters, call-type labels
+    value: 9
+    tolerance: 0.9
+  - quantity: mean optimal clusters, acoustic labels
+    value: 10.03
+    tolerance: 1.003
+  - quantity: median optimal clusters, acoustic labels
+    value: 9
+    tolerance: 0.9
+  criterion: Neural clustering as C12 under its readings, on random ensembles of 20 good units (C7;
+    the legend's 10,000 ensembles, or the 1,746 of Figure 5 as a variant). The call-type values use
+    the dataset alone and are judged on their own. The absence is judged on the paper's test, a
+    paired t-test on log cluster numbers with df 80 (C8); p = 0.21 at t = -0.808 with 80 df is a
+    one-sided value, so the test is one-sided as printed and the two-sided p is shown. Reproduced
+    when, under one reading, the four values are within tolerance and p >= 0.05; partially
+    reproduced when only the call-type values and the absence hold.
+- id: fig6c-ari-call-over-acoustic
+  statement: In the large majority of sampled ensembles the neural clustering matches the call-type
+    labels better than the acoustic labels.
+  source: Results, Neural categories for ethogram-based call types versus acoustical clusters,
+    paragraph 4; Figures 6B and 6C top
+  quote: in the large majority of all sampled ensembles, there is a better match between the neural
+    clustering with the call type labels than with the acoustic labels (Figures 6B and 6C, top,
+    paired t test t(80) = 5.144
+  statistics:
+  - test: paired t-test, ensemble corrected
+    statistic: t(80) = 5.144
+    p: 0.00001
+    p_relation: <
+  data: with_inputs
+  depends_on:
+  - fig6a-acoustic-clusters
+  criterion: ARIcall and ARIacoustic per ensemble as C12 under its readings. Reproduced when, under
+    one reading, ARIcall exceeds ARIacoustic in at least 75% of the ensembles (the paper's "large
+    majority"; 75% is a reading, not from the paper) and the C8 paired t-test (df 80) gives p <
+    1e-5; partially reproduced when the test holds and the share is above 50% and below 75%.
+- id: figs10-ensemble-size
+  statement: The advantage of call-type labels over acoustic labels in matching neural clusters
+    grows with ensemble size.
+  source: SI Figure 10 legend; Results, Neural categories, paragraph 4
+  quote: The differences in ARI is positive and increases with ensemble size, indicating an
+    increased greater match of neural clusters with call-types as compared to acoustic labels.
+  data: with_inputs
+  depends_on:
+  - fig6c-ari-call-over-acoustic
+  criterion: Mean ARIcall minus ARIacoustic (C12) for ensembles of 1, 2, 3, 4, 5, 10 and 20 good
+    units (the code's sizes). Reproduced when the mean difference is positive at every size from 2
+    up and its Spearman correlation with size is positive (p < 0.05 over the sizes, or a
+    monotone rise); partially reproduced when it is positive at 20 units but does not rise. The
+    paper reports no test for the rise; the Spearman test and the monotone rule are readings.
+- id: anesth-auditory-units
+  statement: In the anesthetized dataset 607 of 1207 spike-sorted units (50%) were auditory, and
+    13 of 609 auditory units (2.1%) were inhibited by sound.
+  source: STAR Methods, Electrophysiology and spike sorting, last paragraph; SI Figure 2A legend
+  quote: In the anesthetized dataset 607 out of a total of 1207 spike-sorted units (50%) were
+    classified as auditory using the same criterion
+  data: elsewhere
+  where: CRCNS aa-4, doi 10.6080/K00C4T06
+  expected:
+  - quantity: auditory units, anesthetized
+    value: 607
+    tolerance: 60.7
+  - quantity: inhibited auditory units, anesthetized
+    value: 13
+    tolerance: 1.3
+  criterion: C1 on the anesthetized units. The paper prints 607 in the Methods and 609 in SI Figure
+    2; either count within tolerance holds. Reproduced when both values are within tolerance.
+- id: anesth-decoding-better
+  statement: Ensemble decoding is slightly better in the anesthetized dataset, which has a higher
+    response SNR, with systematic errors that overlap those of the awake data.
+  source: Results, Decoding call types from ensemble responses, paragraph 2; SI Figures 4 and 8
+  quote: The average decoding performance in the anesthetized dataset is slightly better (Figure
+    S8).
+  data: elsewhere
+  where: CRCNS aa-4, doi 10.6080/K00C4T06
+  depends_on:
+  - fig4b-ensemble-20
+  criterion: Anesthetized good units are those with 100 or more common stimuli of 9 call types and
+    single-unit PCC above 13% (n = 375, Methods). Mean PCC Z+T of ensembles of 20 (C5, C7) in both
+    datasets on the 9 call types without Wh (SI Figure 4C, D). Reproduced when the anesthetized
+    mean exceeds the awake mean on 9 call types and at least two of the four error pairs of
+    fig4b-confusions are among the two largest off-diagonal entries of their rows in both.
+- id: anesth-regressions
+  statement: In the anesthetized dataset, volume spanned explains R2adj = 0.48 of decoder
+    performance, neural variability 0.38, and both with the two selectivity measures 0.55.
+  source: Results, Modulation receptive fields of single neurons and ensemble decoding performance,
+    paragraph 7; SI Figure 8E to 8H
+  quote: In the anesthetized dataset, the effect size (i.e., explained variance of PCC of call type)
+    for the volume spanned by the MRF vectors is R2 adj = 0.48 (F(1,343) = 314.8, p < 10
+  statistics:
+  - about: PCC on volume
+    test: F-test, ensemble corrected
+    statistic: F(1,343) = 314.8
+    p: 0.00001
+    p_relation: <
+  - about: PCC on neural variability
+    test: F-test, ensemble corrected
+    statistic: F(1,343) = 209.5
+    p: 0.00001
+    p_relation: <
+  - about: PCC on all regressors
+    test: F-test, ensemble corrected
+    statistic: F(2,341) = 215.0
+    p: 0.00001
+    p_relation: <
+  data: elsewhere
+  where: CRCNS aa-4, doi 10.6080/K00C4T06
+  expected:
+  - quantity: R2adj, volume, anesthetized
+    value: 0.48
+    tolerance: 0.048
+  - quantity: R2adj, neural variability, anesthetized
+    value: 0.38
+    tolerance: 0.038
+  - quantity: R2adj, all regressors, anesthetized
+    value: 0.55
+    tolerance: 0.055
+  criterion: As fig5e-volume, fig5h-neural-noise and fig5-multiple-regression on the anesthetized
+    1348 (Methods) or 1358 (SI Figure 8 legend) ensembles of 20 from 375 units. The combined model's
+    printed F(2,341) does not match four regressors; the R2adj is judged. Reproduced when the
+    three values are within tolerance with positive volume and negative noise slopes.
+- id: figs9-per-region-regressions
+  statement: Analysed separately for primary and secondary auditory pallium, the relation of
+    decoder performance with volume spanned (positive) and neural variability (negative) appears in
+    both datasets but is significant only in the anesthetized one; there the four regressors
+    explain R2adj = 0.752 in primary and 0.633 in secondary pallium.
+  source: SI Figure 9 legend; Results, Modulation receptive fields of single neurons and ensemble
+    decoding performance, paragraph 7
+  quote: The relationship between decoder performance and volume spanned was observed in both the
+    primary and secondary auditory pallium and in both the awake and anesthetized sets but was
+    statistically significant only in the anesthetized dataset
+  statistics:
+  - about: four regressors, primary auditory pallium
+    test: F-test, ensemble corrected
+    statistic: F(4, 125) = 98.694
+    p: 0.00001
+    p_relation: <
+  - about: four regressors, secondary auditory pallium
+    test: F-test, ensemble corrected
+    statistic: F(4,170) = 98.696
+    p: 0.00001
+    p_relation: <
+  depends_on:
+  - figs6-primary-vs-secondary
+  expected:
+  - quantity: R2adj, four regressors, primary pallium
+    value: 0.752
+    tolerance: 0.0752
+  - quantity: R2adj, four regressors, secondary pallium
+    value: 0.633
+    tolerance: 0.0633
+  criterion: The awake part uses this dataset; the R2adj values are read as anesthetized (the S9
+    legend's significant results; the Results do not name the dataset and the printed df match
+    neither dataset's neff). Awake part, Figure 5 regressions (C7 to C11) within each area's good
+    units; reproduced when volume slopes are positive and noise slopes negative in both areas and
+    the corrected F-tests give p >= 0.05 (no significance, as the legend says). The R2adj values are
+    tested on CRCNS aa-4 when available, within tolerance; on the awake data they are reported only.
+- id: anesth-primary-secondary-rate
+  statement: In the anesthetized dataset, ensemble decoding at 20 units does not differ between
+    primary (209 units) and secondary (166 units) auditory pallium, the response rate is higher in
+    the primary pallium, and decoding per spike (PCC over rate) is higher in the secondary pallium.
+  source: Results, Decoding call types from ensemble responses, paragraph 4; SI Figure 6 legend
+  quote: because the firing rate is significantly lower in the secondary auditory pallium compared to
+    the primary auditory pallium in the anesthetized dataset
+  statistics:
+  - about: PCC at 20 units, primary against secondary
+    test: t-test, ensemble corrected
+    statistic: d = 0.186, t(303) = 1.6
+    p: 0.11
+  - about: summed response rate at 20 units, primary against secondary
+    test: t-test, ensemble corrected
+    statistic: d = 0.64, t(303) = 5.53
+    p: 0.00001
+    p_relation: <
+  - about: PCC per unit rate (efficiency), primary against secondary
+    test: t-test, ensemble corrected
+    statistic: d = -0.638, t(303) = -5.514
+    p: 0.00001
+    p_relation: <
+  data: elsewhere
+  where: CRCNS aa-4, doi 10.6080/K00C4T06
+  depends_on:
+  - anesth-decoding-better
+  expected:
+  - quantity: anesthetized good units in the primary auditory pallium
+    value: 209
+    tolerance: 20.9
+  - quantity: anesthetized good units in the secondary auditory pallium
+    value: 166
+    tolerance: 16.6
+  - quantity: effect size d, rate at 20 units
+    value: 0.64
+    tolerance: 0.064
+  - quantity: effect size d, efficiency at 20 units
+    value: -0.638
+    tolerance: 0.0638
+  criterion: As figs6-primary-vs-secondary (rate, efficiency and tests) on the 375 anesthetized good
+    units (anesth-decoding-better) split by area. The PCC absence is judged on the paper's test,
+    reproduced when p >= 0.05. Reproduced when the PCC test gives p >= 0.05, the rate is higher in
+    primary and the efficiency higher in secondary pallium, each with p < 0.05; partially
+    reproduced when the rate and efficiency results hold and the PCC test gives p < 0.05. The
+    printed df 303 do not match neff = 190 and 147 (df 335) for 209 and 166 units; the p-values
+    are judged under both df.
+checks:
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, readings. Many criteria said "reproduced when, under one reading", which accepts a match under any reading. The protocol allows that only for readings of a reported number; where the Methods and the code differ, the Methods reading is the main one and the code's a variant. Added a Readings paragraph after C12 that says which readings are which.
+  - Header, C3. Reading (a) now uses the Z of C2 reading (b). With C2 reading (a), the mean-subtracted Z, SI is near 1.11 for every unit, outside the 0 to 1 range in the Figure 5F legend.
+  - fig5f-si-unrelated. The criterion made the code's SI (C3 b) the paper's test. Under the Methods-first rule, the Methods SI (C3 a) is now the judged test and the code's SI is a variant.
+  - good-units-100. "The count is taken as the mean over 10 runs" is not from the paper or the code. Now the count comes from one run, as in the code (one repetition), and the range over 10 seeds is reported.
+  - figs4-per-bird-and-sex. The criterion called the test a t-test on the four birds' mean PCC, which is not the paper's. plotConfusionsBird.ipynb at the pinned commit gives the size (15) and the test (sex means weighted by neff, pooled corrected SD over ensembles, n = 2 per sex, 2 df; it prints t(2) = 0.6757, p = 0.5689). The criterion now uses that test.
+  - figs6-primary-vs-secondary. The rate and efficiency measures were not defined. Added the definitions from the SI Figure 6 legend and plotConfusionsArea.ipynb (summed per-unit mean spike-count difference; PCC over rate). The legend's average and the code's sum differ by a constant factor and give the same test.
+  - acoustic-labels-decoding. The Results say 1,746 ensembles, but plotConfusions.ipynb compares 10,000 Figure 4B ensembles (38.07 against 42.28). Both are now readings.
+  - fig3c-peak-call-types, fig4b-confusions, fig6c-ari-call-over-acoustic, figs10-ensemble-size. Said that the rules for "bias toward the longer calls" (four of the top five), "most misclassifications" (two largest of a row), "large majority" (75%) and the rise with size (Spearman, monotone) are readings and not from the paper. The 75% rule in fig6c-ari-call-over-acoustic was also stated two ways and is now stated once.
+  - Added anesth-primary-secondary-rate (elsewhere, CRCNS aa-4). The Results (paragraph 4) and the Discussion state the anesthetized finding that rate is lower and per-spike decoding higher in the secondary pallium, and it had no claim. Its values come from the SI Figure 6 legend.
+  - Checked, unchanged. Every quote, p-value, count and F/t statistic against the text. Against the code at f2d2376, the header's statements on decoders.naiveBayes (one random trial per stimulus held out, uniform priors, nperm 100), the pcc > 30 filter giving 1746, numpy eigh for the LDA, log volume, Ward linkage on UMAP, and the per-unit Z as d/sd without mean subtraction. The 42.3% and 29.6% are means over the 10,000 Figure 4B ensembles (plotConfusions.ipynb), as fig4b-ensemble-20 reads them.
+  - Open. fig6a-acoustic-clusters is data with_inputs but uses no data from the dataset; it runs entirely on the lab vocalization database, for which the paper gives no deposit. Under the protocol it is elsewhere if the database is public and data dataset, blocked data_missing, if not. Whether it is public was not settled here.
+  - Open. Several printed df match no neff the paper's unit counts give (anesthetized F(1,343), F(2,341), t(303); SI Figure 9 F(4,125), F(4,170)); the claims judge the effect sizes and note this.
+  - Open. R2adj = 0.1 (fig5e-volume, fig5h-neural-noise) is printed to one digit; the 10% tolerance (0.01) is the protocol default, though the printed value may stand for a wider range.

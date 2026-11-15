@@ -177,7 +177,17 @@ def branches(apply: bool, only: list[str] | None = None) -> int:
             if TRY:
                 print(": converts and merges (not pushed)"); continue
             if target != name and git("ls-remote", "--heads", "origin", f"attempt/{target}").strip():
-                print(f": attempt/{target} exists already; left as it was"); bad += 1; continue
+                # Another of the paper's datasets' branches is already there (a paper tested per dataset before the
+                # cutover): the two hold different files of the paper's, so they are merged.
+                git("fetch", "-q", "origin", f"attempt/{target}", cwd=tmp)
+                both = subprocess.run(["git", *COMMIT, "merge", "-q", "--no-edit", "-m",
+                                       f"Merge attempt/{name} into attempt/{target}", "FETCH_HEAD"], cwd=tmp,
+                                      capture_output=True, text=True)
+                if both.returncode:
+                    conflicts = git("diff", "--name-only", "--diff-filter=U", cwd=tmp).split()
+                    git("merge", "--abort", cwd=tmp, check=False)
+                    print(f": attempt/{target} exists, and does not merge with this one ({', '.join(conflicts[:5])}); "
+                          "left as it was"); bad += 1; continue
             git("push", "-q", "origin", f"HEAD:refs/heads/attempt/{target}", cwd=tmp)
             if target != name:
                 git("push", "-q", "origin", "--delete", f"attempt/{name}")

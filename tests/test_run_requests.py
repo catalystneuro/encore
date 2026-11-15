@@ -40,6 +40,15 @@ def test_a_request_gives_a_folder_and_a_version():
     assert rr.request(body(dataset="CRCNS:ret-1"))[0] == "crcns-ret-1"
 
 
+def test_a_request_is_settled_by_an_attempt_on_its_dataset_made_since():
+    # Issue 560: wirth-2017 is the paper of CRCNS:hc-21 and hc-12; a chain from hc-21 merged it, and the request for
+    # hc-12 stayed open. The sweep closes a request whose dataset an attempt on main has tested since it was made.
+    request = {"body": body(dataset="CRCNS:hc-12", version="latest published"), "createdAt": "2026-11-06T12:00:00Z"}
+    assert rr.settled(request) == "wirth-2017-01"
+    assert rr.settled(dict(request, createdAt="2099-01-01T00:00:00Z")) is None      # nothing since
+    assert rr.settled({"body": body(dataset="not a dataset"), "createdAt": "2026-11-06T00:00:00Z"}) is None
+
+
 def test_a_request_that_could_reach_the_shell_is_refused():
     for bad in ("000147; rm -rf ~", "$(curl x)", "000147 draft", ""):
         assert rr.request(body(dataset=bad))[2], bad
