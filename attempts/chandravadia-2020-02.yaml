@@ -78,8 +78,7 @@ outcomes:
   output: claim:task-structure
   notes: All 87 sessions have 100 recognition trials with 50 of each label and 5 categories. 79 have
     100 encoding trials of 100 distinct images; sessions 18, 20, 21, 23, 26, 27 and 44 have 50 and
-    session 123 has 97. The stored image series has one image per trial in every file. The paper's
-    code handles 150 and 197 trial sessions, so these sessions are known to it.
+    session 123 has 97. The stored image series has one image per trial in every file.
 - claim: new-old-label-coding
   outcome: not_reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -296,16 +295,19 @@ outcomes:
   notes: No session has the id 144 in the dandiset, Online-only Table 1, Faraut et al. Table 1 or the
     paper's OSF deposit (NWBData.zip holds the dandiset's 87 sessions). The scripts Figure 3 shows,
     export.py and import.py of the paper's code at commit 1d95162, name session 144 as TWH103_111918;
-    the dandiset holds one TWH103 session, 2009 (2018-11-01). It has two units on channel 140, both in
-    the right hippocampus. Unit 2, the third of the three units that pass the code's vs_test and so the
+    the dandiset holds one TWH103 session, 2009 (2018-11-01), whose first trial, stored as a Unix
+    timestamp, is on 2018-11-19, the date 111918 of the file name. It has two units on channel 140, both
+    in the right hippocampus. Unit 2, the third of the three units that pass the code's vs_test and so the
     vs_neurons[2] that import.py plots, has ANOVA p = 1.3e-09 (Methods' window; 5.0e-08 code's window)
     and fires most to phones (9.10 Hz against at most 2.70 Hz). Under the other reading of cell 3, unit
-    1 on channel 140 is selective (p = 0.027) but fires most to small animals (1.40 Hz).
+    1 on channel 140 is selective (p = 0.027) but fires most to small animals (1.40 Hz). Whether the claims
+    file's reading of the cell number as an electrode row is the paper's is asked of a reader in
+    questions/chandravadia-2020.yaml.
   deviations:
   - Assumption. Session 144 is taken to be session 2009, because the paper's Figure 3 scripts name it
     as a session of TWH103 recorded in November 2018 (python/export/demo/export.py sets NOID = 144 and
     writes TWH103_111918.nwb; import.py reads TWH103_111918.nwb under the comment NOID:144), and session 2009 is the dandiset's only
-    TWH103 session, dated 2018-11-01, with a channel 140 in the right hippocampus, as the neuron's ID
+    TWH103 session, dated 2018-11-01, its first trial on 2018-11-19 by its Unix timestamps, with a channel 140 in the right hippocampus, as the neuron's ID
     says. The paper gives no mapping from 144 to the dandiset's ids.
   - Assumption. Cell 3 is taken to be unit 2, the third unit of the file that passes the code's vs_test
     (0.2 to 1.7 s, p <= 0.05), which import.py plots as vs_neurons[2]; the other unit on channel 140 is
@@ -352,9 +354,11 @@ findings:
 - kind: other
   about: data
   statement: Identical spike trains are deposited in two files for sessions 38 and 39 (11 units), 43
-    and 44 (all 23) and 54 and 55 (all 32). The trials of each pair fall in different parts of one
-    timeline, so these are the same neurons recorded across two sessions of one recording. Nothing in
-    the files says so, and the unit count of 1864 counts them twice (1798 once).
+    and 44 (all 23) and 54 and 55 (all 32). For 38 and 39 and for 43 and 44 the trials of the two
+    files fall in different parts of one timeline, so these are the same neurons recorded in two
+    sessions of one recording. Sessions 54 and 55 also hold the same 100 learning trials (same onsets),
+    with different recognition trials. Nothing in the files says so, and the unit count of 1864 counts
+    these units twice (1798 once).
 - kind: format_error
   statement: Two units of session 58 (units 35 and 37) store every spike time twice, and 13 units in
     sessions 21, 58, 68, 70, 73, 77 and 128 have spike times out of order.
@@ -365,7 +369,7 @@ findings:
   statement: Figure 3 names its example neuron 144-140-3-RH, but no session has the id 144 in the
     dandiset, the paper's OSF deposit or Online-only Table 1. The paper's Figure 3 scripts (export.py
     and import.py at commit 1d95162) name session 144 as TWH103_111918, which matches the dandiset's
-    session 2009 (TWH103, 2018-11-01) and its unit 2 on channel 140; the paper does not give this
+    session 2009 (TWH103, first trial on 2018-11-19) and its unit 2 on channel 140; the paper does not give this
     mapping.
 - kind: code_mismatch
   statement: The paper's MS and dual counts (146 and 26) and its per-site percentages follow its code,
@@ -595,3 +599,190 @@ verifications:
       channel 140 prefers small animals. The notebook prints the scripts' lines, the category names by
       session and both units. The session 144 part of the data_missing finding is replaced by a
       paper_inconsistency finding.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revision after round 1, the helper module recogmem.py,
+    the claims file and the attempt record, with the paper's full text.
+  results:
+  - claim: counts-neurons-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Problem
+      4 of round 1 (other published version) is resolved; cell 3 shows identical assets in 0.220126.1851. Separately,
+      the finding that the trials of each pair of files sharing spike trains "fall in different parts of one timeline"
+      is not supported by cell 10 for sessions 54 and 55; both start at 1611 s and their onset difference has
+      a minimum of 0.000 s, so they share trial onsets (most likely a shared learning block). It does hold for
+      38/39 and 43/44.
+    response: No change of outcome. Cell 10 now prints, for each pair, how many trials of the second file have
+      an onset that is also an onset of the first, by phase. It is 0 for 39 and for 44, and 100 of 200 for 55,
+      all of them learning trials. The finding now says that sessions 54 and 55 hold the same 100 learning trials,
+      and the summary's bullet no longer says the pairs are one continuous recording.
+  - claim: counts-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. The verifier
+      spot-checked the parsed Online-only Table 1 rows in cell 5 against the paper text (H33, H48, C24, T103)
+      and they agree.
+    response: No change.
+  - claim: table1-demographics
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: task-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. The per-file
+      table is printed in full (cells 3 and 4). The record's note "The paper's code handles 150 and 197 trial
+      sessions" is not shown by any notebook output.
+    response: No change of outcome. The sentence is removed from the notes.
+  - claim: new-old-label-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Cell 25
+      says "The column's description in the files states the same reversed coding as the paper." The description
+      cell 24 prints says "0 == Old", the coding the paper states. That coding is the reverse of the data, but
+      the description itself is not "reversed". The wording is confusing; the fact is right.
+    response: No change of outcome. Cell 25 now says that the column's description states the paper's coding (0
+      old), which the data reverse.
+  - claim: ttl-codes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Problem
+      7 of round 1 (smaller experiment id is the learning block) is confirmed for 87/87 files in cell 30. The
+      arithmetic of 14 extra event codes and 28 out-of-order trials in 7 files checks out.
+    response: No change.
+  - claim: experiment-ids
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Problem
+      7 of round 1 is confirmed for 87/87 files in cell 30.
+    response: No change.
+  - claim: session-dates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Problem
+      5 of round 1 (Unix timestamps reveal the day) is in the notes and findings. The count of 23 days of the
+      month checks out.
+    response: No change.
+  - claim: units-table
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: electrodes-table
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. imp is float64
+      and NaN in every file (cell 39).
+    response: No change.
+  - claim: isi-criterion
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig5a-mtl-locations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. The 1092/772
+      split checks out.
+    response: No change.
+  - claim: fig5c-auc-all
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig5c-auc-sites
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig5b-roc-asymmetric
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig5d-confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Problem
+      3 of round 1 (dynamic split) is resolved; the docstring now says response 5 is in neither group, and the
+      MATLAB split is added as a variant (cell 59, p = 1.2e-13). The p-value ranges check out.
+    response: No change.
+  - claim: vs-cells-proportion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Problem
+      6 of round 1 (vs_p) is fixed, and the counts are unchanged (cell 62). The code's choices give the paper's
+      number exactly for VS (343).
+    response: No change.
+  - claim: ms-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The MS and dual outcomes stay not_reproduced because the criterion makes the Methods' reading
+      the main one; the verifier accepts the author's response to problem 1. The README and the Summary (cell
+      92) say the code's choices "give the paper's numbers", and cell 68 says "The paper's numbers follow its
+      code, not its Methods text." This holds exactly for VS (343), dual (26) and the Fig. 5f percentages. For
+      MS the code's choices give 151 against 146 (cell 67), which is within tolerance but not equal; "within tolerance
+      of" would be accurate.
+    response: No change of outcome. Cell 68 now says the paper's number is within tolerance of the code's choices;
+      the Summary and the README say the code's choices give the paper's VS and dual counts exactly and an MS
+      count within tolerance (151 against 146).
+  - claim: dual-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, for the reason given under ms-cells-proportion. The code's choices give the paper's dual count
+      exactly (26).
+    response: No change of outcome; the wording changes under ms-cells-proportion also apply here.
+  - claim: fig5f-site-proportions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. Problem
+      2 of round 1 (what fig5f's sentence compares) is referred to a reader question and stated in the notes.
+      The verifier could not check that the questions file exists.
+    response: No change. The question is in questions/chandravadia-2020.yaml, asked 2026-11-15.
+  - claim: twh-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: previous-release-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. The parsed
+      patient tables are printed (cell 5).
+    response: No change.
+  - claim: previous-release-additions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The outcome is unchanged from round 1 and matches the verifier's round-1 outcome. The arithmetic
+      1539 = 1864 - 325 checks out.
+    response: No change.
+  - claim: fig4-example-vs-neuron
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome is unchanged from round 1. The claims file misreads the paper in one place. Its
+      fig4 criterion (which fig3 inherits) takes "cell number" in the neuron ID as the electrode row. The paper
+      says only "session ID - channel number - cell number - brain area". This does not change fig4, because session
+      132 has one unit on channel 177. For fig3 the reading cannot apply, since session 2009 has only two electrodes,
+      and the record notes that.
+    response: No change of outcome. The reading of the cell number is added as a question for a reader in questions/chandravadia-2020.yaml;
+      the claim is tested as the file has it.
+  - claim: fig3-example-vs-neuron
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with reproduced, assumed, which was blocked in round 1. It rests on two assumptions, and the
+      record''s deviations state both. Session 144 is session 2009 is reasonable; cell 90 prints export.py''s
+      NOID = 144 beside ''TWH103_111918.nwb'', and import.py''s #NOID:144, and session 2009 is the dandiset''s
+      only TWH103 session, dated 2018-11. Session 2009''s trial times are Unix timestamps, but the notebook does
+      not print its first trial''s date; if that date were 2018-11-19, it would match the 111918 in the file name
+      and settle the link from the data. The README states only this first assumption. Cell 3 is unit 2 is reasonable;
+      unit 2 is vs_neurons[2] in import.py, the code''s own selection, and that rule does not depend on which
+      category the unit prefers. The other unit on channel 140 prefers small animals, and the record and cell
+      91 show it.'
+    response: No change of outcome. Cell 90 now prints the first trial onset of session 2009 from its Unix timestamps,
+      2018-11-19 12:35 UTC (07:35 Toronto time), the date 111918 of the file name. Cell 91, the Summary, the README,
+      the claim's notes and deviation, and the paper_inconsistency finding say so. The README now states both
+      assumptions. The verifier's point on
+      the cell-number reading is asked of a reader (see fig4-example-vs-neuron).
