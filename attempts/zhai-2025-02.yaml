@@ -157,8 +157,8 @@ outcomes:
   notes: Without 2019-04-11 cell 1, whose first site pair the dandiset does not hold (its description, item 3), the SCH
     23390 median is 0.384 (8 cells) against 0.476 on-state (10 cells), P = 0.027, and 0.034 pairing every proximal with
     every distal site, the SCH median lower. With that cell, P = 0.066 (median 0.419, 9 cells) and 0.079. From its second
-    pair alone the cell's index is 0.584, against the paper's 0.228; the other eight SCH cells are within 10% of the
-    paper's rows. On the paper's own table the exact test gives P = 0.0133, the paper's value, and 0.027 without that
+    pair alone the cell's index is 0.584, against the paper's 0.228; of the other eight SCH cells, seven are within 10% of
+    the paper's rows and 2019-05-03 cell 3 differs by 10.9% (0.289 against 0.261). On the paper's own table the exact test gives P = 0.0133, the paper's value, and 0.027 without that
     row. No cell has an index in both conditions; the on-state cells are from 2017 and the SCH cells from 2019.
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig1i-dspn-dendritic-sch-lower
@@ -183,8 +183,9 @@ outcomes:
   output: claim:fig1-dspn-lesion-dendritic-unchanged
 - claim: fig2h-dspn-sr-amplitude-on-larger
   outcome: reproduced
-  notes: 'At 5 SD the per-cell mean amplitude is a median 15.6 pA on-state (8 cells, 4 mice) against 10.1 pA off-state
-    (10 cells, 3 subjects), P = 0.0031 (paper P = 0.0003); the per-cell median gives 12.5 against 8.4 pA, P = 0.0044.
+  notes: 'At 5 SD the per-cell median amplitude, the adopted reading, is a median 12.5 pA on-state (8 cells, 4 mice)
+    against 8.4 pA off-state (10 cells, 3 subjects), P = 0.0044 (paper P = 0.0003); the per-cell mean gives 15.6 against
+    10.1 pA, P = 0.0031.
     Of the six readings (3, 4 and 5 SD; mean or median) five give P < 0.05 with the on-state larger; 3 SD with the median
     gives P = 0.068. Open for the paper''s authors: the TaroTools settings (filtering, how the noise SD was measured,
     baseline and event separation) and whether events were removed at visual verification; the detector here finds a
@@ -287,8 +288,9 @@ outcomes:
   output: claim:fig3-ispn-lesion-dendritic-up
 - claim: fig4g-ispn-sr-amplitude-on-smaller
   outcome: reproduced
-  notes: 'At 5 SD the per-cell mean amplitude is a median 8.2 pA on-state (8 cells) against 11.2 pA off-state (7 cells),
-    P = 0.0093 (paper P = 0.0003); all six readings give P < 0.05 with the on-state smaller (0.0059 to 0.040). Open for
+  notes: 'At 5 SD the per-cell median amplitude, the adopted reading, is a median 7.0 pA on-state (8 cells) against
+    9.7 pA off-state (7 cells), P = 0.014 (paper P = 0.0003); the per-cell mean gives 8.2 against 11.2 pA, P = 0.0093;
+    all six readings give P < 0.05 with the on-state smaller (0.0059 to 0.040). Open for
     the paper''s authors: the TaroTools settings (filtering, how the noise SD was measured, baseline and event separation)
     and whether events were removed at visual verification; the detector here finds a median 1.33 times the paper''s
     events at 5 SD. On the paper''s own per-cell amplitudes the test gives P = 0.0003 with the on-state smaller.'
@@ -299,6 +301,8 @@ outcomes:
     before the flash, and events whose threshold crossing falls 40 to 400 ms after the flash at more than 5 SD (Methods,
     Data acquisition and statistical analysis); the smoothing, noise window, local baseline and 3 ms event separation
     are assumptions, as the paper used TaroTools with visual verification and gives no parameters.
+  - 'The reading the paper best supports is adopted: 5 SD (Methods) and the per-cell median, which the paper''s table
+    holds; the per-cell mean is shown too and gives the same outcome.'
   assumed: true
 - claim: fig4h-ispn-sr-frequency-unchanged
   outcome: reproduced
@@ -635,7 +639,7 @@ verifications:
       10 against 9 cells a shift in one or two values can move P from 0.013 to 0.066, and the notebook does not show
       whether the outcome comes from this gap or from the method.'
     response: 'Added the outputs the verifier asked for: the paper''s own table gives exact P = 0.0133; the per-cell
-      comparison flags 2019-04-11 cell 1 (0.584 here against the paper''s 0.228, the other eight cells within 10%); without
+      comparison flags 2019-04-11 cell 1 (0.584 here against the paper''s 0.228, seven of the other eight cells within 10%); without
       that cell the dandiset gives P = 0.027 (0.034 with every pairing). The failure comes from the data gap, so the
       outcome is changed to reproduced, resting on the assumption that the incomplete cell is left out, and the gap is
       recorded as a data_missing finding.'
@@ -830,4 +834,279 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: Both measures, all three comparisons in the stated direction (P <= 0.0006 and P = 0.63 / 0.47).
+    response: No change.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusion cells and summary, the helper module,
+    the claims file, the attempt record and the entry README, with the paper's full text.
+  results:
+  - claim: link-somatic-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome. The round-1 item it could not check is settled: the condition column agrees
+      with the session names and subject folders (cell 13).'
+    response: No change.
+  - claim: link-dendritic-cells
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: link-sr-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Stated and reasonable. The paper gives no TaroTools settings. Each outcome now also holds on the paper''s own
+      per-cell values, run next to the detector results. Round-1 point 5 is handled: cell 24 shows the result under both
+      the mean and the median amplitude, and a question asks a reader whether the criterion should compare the median; the
+      claims file''s misreading is reported, not corrected.'
+    response: No change.
+  - claim: link-grab-rois
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point 6 resolved: the TTX-only and quinpirole Fmin rules are added,
+      each matched many-to-one and one-to-one; the Methods'' rule matches best, and the outcome is not reproduced under
+      every reading. Cell 27 lists the missing background images as a possible cause of the gaps, then says in the same
+      parenthesis that they cancel in the normalised area; if they cancel, they cannot explain the gaps. The sentence is
+      self-contradictory but does not affect the outcome.'
+    response: 'Cell 27 corrected: the gaps may come from the lack of an identifier, the 50 um circle against Prairie View''s
+      region and the one region whose Fmax comes from the other region of its slice; a constant background cancels in the
+      normalised area, so the missing background images do not explain them. Outcome unchanged.'
+  - claim: link-aim-mice
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point 9 resolved: sessions are now merged on figure, mouse and session,
+      and no mouse number repeats across the two figures.'
+    response: No change.
+  - claim: fig1f-dspn-rheobase-on-lower
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig1e-dspn-fi-on-higher
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point resolved: the last-sweep variant is run for every somatic claim,
+      with the same outcomes.'
+    response: No change.
+  - claim: fig1f-dspn-sch-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point resolved: the last-sweep variant is run for every somatic claim,
+      with the same outcomes.'
+    response: No change.
+  - claim: fig1i-dspn-dendritic-on-higher
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig1i-dspn-dendritic-sch-lower
+    agrees: true
+    outcome: reproduced
+    reason: 'Stated and reasonable. The dandiset description says the first site pair of this cell is not deposited. The
+      left-out paper value (0.228) is the lowest in the SCH group, so removing it works against reproduction. The paper''s
+      own table without that row gives U = 65, P = 0.027, the same as the dandiset without the cell (cell 64). The outcome
+      now rests on 8 SCH cells where the paper used 9; with the cell, P = 0.066; both facts are stated. The sentence ''the
+      other eight SCH cells are within 10% of the paper''s rows'' (cell 65, the notes and the round-1 response) is wrong:
+      2019-05-03 cell 3 is at 0.289 against the paper''s 0.261, a difference of 10.7%, so it is 7 of the other 8. This does
+      not change the outcome.'
+    response: Corrected to seven of the other eight in cell 65, the notes and the round-1 response, naming 2019-05-03 cell
+      3 (10.9% on the unrounded values). Cell 64 now prints each cell's relative difference from the paper's row and the count (7 of 8). Outcome
+      unchanged.
+  - claim: fig1-dspn-lesion-and-off-somatic
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig1-dspn-lesion-dendritic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2h-dspn-sr-amplitude-on-larger
+    agrees: true
+    outcome: reproduced
+    reason: Stated and reasonable. The paper gives no TaroTools settings. Each outcome now also holds on the paper's own
+      per-cell values, run next to the detector results (cell 81, P = 0.0003). The deviation says the adopted reading is
+      5 SD and the per-cell median, but the notes and cell 82 lead with the per-cell mean (P = 0.0031) and give the median
+      second (P = 0.0044). Both are below 0.05, so the outcome stands, but the adopted reading and the headline number disagree.
+    response: The notes and cell 82 now lead with the per-cell median (P = 0.0044) and give the mean second (P = 0.0031).
+      The same order and the same deviation are applied to fig4g-ispn-sr-amplitude-on-smaller, whose notes also led with
+      the mean. Outcome unchanged.
+  - claim: fig2i-dspn-sr-frequency-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Stated and reasonable. The paper gives no TaroTools settings. Each outcome now also holds on the paper's own
+      per-cell values, run next to the detector results (cell 84, P = 0.130).
+    response: No change.
+  - claim: fig2bc-dspn-spines
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The blocks now use the reason methods_underspecified, the 76 two-photon files
+      are counted, and a finding asks the authors about the manual correction. Round-1 point resolved.
+    response: No change.
+  - claim: fig3d-ispn-rheobase-on-higher
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3c-ispn-fi-on-lower
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point resolved: the last-sweep variant is run for every somatic claim,
+      with the same outcomes.'
+    response: No change.
+  - claim: fig3d-ispn-sul-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point resolved: the last-sweep variant is run for every somatic claim,
+      with the same outcomes.'
+    response: No change.
+  - claim: fig3f-ispn-dendritic-on-lower
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3f-ispn-dendritic-sul-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3-ispn-lesion-and-off-somatic
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3-ispn-lesion-dendritic-up
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4g-ispn-sr-amplitude-on-smaller
+    agrees: true
+    outcome: reproduced
+    reason: Stated and reasonable. The paper gives no TaroTools settings. Each outcome now also holds on the paper's own
+      per-cell values, run next to the detector results (cell 87, P = 0.0003).
+    response: For consistency with fig2h, the notes and cell 88 now lead with the per-cell median, the adopted reading (P
+      = 0.014), and give the mean second (P = 0.0093), and the deviation on the adopted reading is added. Outcome unchanged.
+  - claim: fig4h-ispn-sr-frequency-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Stated and reasonable. The paper gives no TaroTools settings. Each outcome now also holds on the paper's own
+      per-cell values, run next to the detector results (cell 90, P = 0.23).
+    response: No change.
+  - claim: fig4bc-ispn-spines
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The blocks now use the reason methods_underspecified, the 76 two-photon files
+      are counted, and a finding asks the authors about the manual correction. Round-1 point resolved.
+    response: No change.
+  - claim: fig4k-confocal-spines
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome. Round-1 point 1 resolved: cell 14 counts 16 Z-stacks naming Figure 4, J and
+      K, and the Figure 4I overview, and the blocked reason is corrected. The round-1 reason repeats the verifier''s count
+      of ''17 Adora2Cre M#### files''; cell 14 counts 16 confocal Z-stacks plus 1 overview, so that figure was off by one.'
+    response: No change. The round-1 reason is left as the verifier gave it; this round records its correction.
+  - claim: fig5f-ach-off-elevated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5f-ach-off-like-6ohda
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5f-ach-6ohda-elevated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5f-ach-d2-control
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5f-ach-da-suppresses
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6c-m1r-antag-somatic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point resolved: the last-sweep variant is run for every somatic claim,
+      with the same outcomes.'
+    response: No change.
+  - claim: fig6d-m1r-antag-dendritic-lower
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6f-m1r-antag-spines
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The blocks now use the reason methods_underspecified, the 76 two-photon files
+      are counted, and a finding asks the authors about the manual correction. Round-1 point resolved.
+    response: No change.
+  - claim: fig7c-cdgi-ko-somatic-oscillation
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point resolved: the last-sweep variant is run for every somatic claim,
+      with the same outcomes.'
+    response: No change.
+  - claim: fig7e-oxom-cdgi
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig7f-cdgi-ko-dendritic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig7h-cdgi-ko-spines
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The blocks now use the reason methods_underspecified, the 76 two-photon files
+      are counted, and a finding asks the authors about the manual correction. Round-1 point resolved.
+    response: No change.
+  - claim: fig8a-cdgi-rotations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig8bc-cdgi-aims
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The verifier's round-1 count of '39 tested, 6 blocked' was wrong; fig8bc was
+      blocked then too, so 38 claims are tested and 7 blocked.
+    response: No change.
+  - claim: fig9d-m1r-crispr-somatic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 point resolved: the last-sweep variant is run for every somatic claim,
+      with the same outcomes.'
+    response: No change.
+  - claim: fig9f-m1r-crispr-spines
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The blocks now use the reason methods_underspecified, the 76 two-photon files
+      are counted, and a finding asks the authors about the manual correction. Round-1 point resolved.
+    response: No change.
+  - claim: fig10a-m1r-rotations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig10b-m1r-aims
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. The round-1 item it could not check is settled: the lab''s own total column
+      gives F = 29.30, equal to the paper''s (cell 110).'
+    response: No change.
+  - claim: fig10ef-open-field
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
     response: No change.
