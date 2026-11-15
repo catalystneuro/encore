@@ -46,9 +46,13 @@
 # Every claim with values by layer is run under both.
 #
 # Shared method, from the Methods unless stated.
-# - Trials and positions. A trial runs from the end of the last nose poke (position 0) to the
-#   start of reward consumption (position 1). Whether error trials enter any analysis is not
-#   said (open; readings T-a correct trials only, T-b all trials).
+# - Trials and positions. A trial runs from the end of nose poking (position 0; Supplementary
+#   Figure 6 legend, "The onset of the maze trial is defined as the end of nose-poking") to the
+#   reward area (position 1; Results, Figure 1b). Where in the reward area position 1 is set is
+#   not said (open; readings E-a the arrival at the end of the goal arm, E-b the start of reward
+#   consumption), nor which poke ends nose poking when a rat pokes more than once (open; readings
+#   N-a the last poke before leaving the start box, N-b the first). Whether error trials enter
+#   any analysis is not said (open; readings T-a correct trials only, T-b all trials).
 # - Firing-rate differences (LEFT against RIGHT, or any two trial labels). Spikes are placed at
 #   the normalised position where they occur; the PSTH per condition is the sum of Gaussian
 #   kernels (bandwidth 0.05 normalised length) over the condition's spikes divided by its number
@@ -264,7 +268,10 @@ claims:
     above half its diagonal value, mean +/- s.d. over positions. Which trials is open; readings
     (a) left and right PSTHs concatenated in each vector, (b) all trials. The panel does not name
     its sessions; the Figure 2a sessions, with all sessions of each layer as a variant. The
-    tolerances are the stated s.d. Reproduced when both values are within tolerance under one
+    tolerances are the stated s.d. The legend's lengths in cm do not all agree with its
+    normalised values over 230 cm (0.18 is 41 cm, 0.27 is 62 cm and 0.13 is 30 cm, but 0.087 is
+    20 cm, not the printed 29 cm, which is 0.126); the normalised 0.087 is kept, and the layer
+    2/3 s.d. is also reported against 0.126. Reproduced when both values are within tolerance under one
     reading.
 - id: fig2d-layer-rates
   statement: Layer 5 neurons fire at higher mean rates than layer 2/3 neurons, over all neurons
@@ -430,8 +437,9 @@ claims:
     tolerance: 2.6
     unit: percent
   criterion: Per neuron, its rate during each trial's nose poke (Supplementary Figure 6A, the
-    duration of nose poking from the photoelectric sensor; from the start of the first poke to
-    the end of the last), left (one odor) against right (the other) trials, t-test at p < 0.05
+    duration of nose poking from the photoelectric sensor; when a trial holds several pokes, the
+    paper does not say how they are joined, readings (p) each poke's duration summed, (q) from
+    the start of the first poke to the end of the last), left (one odor) against right (the other) trials, t-test at p < 0.05
     (Supplementary Figure 6B). The odor is given by the side, as the pairing of odor and side is
     fixed within a rat. Open details and readings. Which neurons; (a) the Figure 2a layer 2/3
     session, as Supplementary Figure 6B ("same as Fig 2A left"); (b) all neurons, as the Results
@@ -749,10 +757,13 @@ claims:
   - crcns-pfc-2
   depends_on:
   - fig3-trajectory-by-class
-  criterion: A claim of absence with no test in the paper. Reading, a chi-square test of shank
-    against class (left, right, both, none) in each Figure 3 session, and, as a variant, in all
-    sessions. Reproduced when no Figure 3 session shows an association at p < 0.05; the effect
-    size (Cramer's V) is reported.
+  criterion: A claim of absence with no test in the paper. Reading, two chi-square tests in each
+    Figure 3 session (Figure 3c and Supplementary Figure 11B), and, as a variant, in all
+    sessions; (i) shank against class (left, right, both, none); (ii) shank against the tenth of
+    the maze holding the neuron's peak rate (as fig2-population-uniform), for the second part of
+    the statement (Discussion, "Neurons active at any given part of the maze were recorded with
+    equal probability at all probe shanks"). Reproduced when neither test shows an association
+    at p < 0.05 in any Figure 3 session; the effect size (Cramer's V) is reported.
 - id: fig4-position-dependence
   statement: Of 343 pairs with significant excitatory monosynaptic connections, 67 show
     identifiable position dependence of excess short-latency coincidences in the maze.
@@ -780,7 +791,8 @@ claims:
     and a part of the maze where the pointwise band is not broken (Methods, Controlling for
     power, requires a region with and a region without). Reproduced when the fraction is within
     tolerance under one combination; partially reproduced when it is outside tolerance but above
-    the 1% the test gives under its null (one-sided binomial test, p < 0.05).
+    the rate the test gives under its null, 1% under trial reading (b) and 2% under (a), where
+    each pair is tested twice (one-sided binomial test, p < 0.05).
 - id: fig5a-session-selective-connections
   statement: In the layer 2/3 session of Figure 3d, 15 of 36 excitatory connections are active
     selectively in maze segments of left or right trajectories.
@@ -833,8 +845,9 @@ claims:
     unit: normalised position
   criterion: Cells 156 (presynaptic, putative pyramidal) and 136 (putative interneuron) in the
     session of Figure 3d, left trials (Figure 4a legend), position of excess coincidences as in
-    the shared method at global P < 0.01, extent by the pointwise band. Reproduced when the only
-    significant region starts and ends within tolerance, and each cell's PSTH between 0.2 and 0.5
+    the shared method at global P < 0.01, extent by the pointwise band. Reproduced when the two
+    cells are on different shanks (Figure 4a, shanks 4 and 5), the only significant region
+    starts and ends within tolerance, and each cell's PSTH between 0.2 and 0.5
     varies by less than 50% of its maximum there (a standard choice for "steady"). Cell numbers
     are the paper's; whether the datasets use the same numbering is the author's to find; if the
     pair cannot be identified the claim is blocked (data_missing).
@@ -969,8 +982,10 @@ claims:
   criterion: A satellite is a putative interneuron with its convergent excitatory presynaptic
     putative pyramidal cells (Figure 7a). For each event, the number of coincident spikes within
     the window (2, 5, 10 and 20 ms, Figure 7a), and the spike transmission probability, the
-    fraction of events followed by a target spike 1 to 4 ms after the last presynaptic spike (the
-    lag of the Methods). Open details and readings. The minimum number of presynaptic cells in a
+    fraction of events followed by a target spike within a lag the Figure 7 legend and Results do
+    not give; reading, 1 to 4 ms after the last presynaptic spike, the lag the Methods use for
+    coincidences, with 1 to 4 ms after the first presynaptic spike as a variant. Open details and
+    readings. The minimum number of presynaptic cells in a
     satellite; S-a two, S-b three (the satellite count of 14 is the check). Whether k counts
     spikes or distinct presynaptic cells; both are run. Supralinear is (a) above k times the
     one-spike probability, the literal "sum of the effects"; (b) above 1 - (1 - p1)^k, the
@@ -979,3 +994,21 @@ claims:
     for 2 and for 3 coincident spikes in most satellites, with 20 ms windows it is not above the
     prediction by more than its s.d. over satellites, and the number of satellites is within
     tolerance of 14 (Figure 7b, n = 14); partially reproduced when the 5 ms part holds alone.
+checks:
+- date: 2026-11-15
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, Trials and positions. Position 0 was set at "the end of the last nose poke" and position 1 at "the start of reward consumption"; the paper gives the end of nose poking (Supplementary Figure 6 legend) and the reward area (Results, Figure 1b), and fixes neither the poke nor the end point. Both are now named open with readings (N-a, N-b; E-a, E-b).
+  - odor-nosepoke. The nose-poke period was fixed as the start of the first poke to the end of the last; Supplementary Figure 6A gives only the sensor's duration of nose poking. The joining of several pokes is now open with two readings.
+  - fig4-position-dependence. The partial criterion compared the fraction with a null rate of 1%; under trial reading (a) each pair is tested on left and right trials, so the null rate is about 2%. The null rate now follows the reading.
+  - no-spatial-clustering. The statement includes the Discussion's "neurons active at any given part of the maze were recorded with equal probability at all probe shanks", which the criterion did not test. Added a second test of shank against peak position, in the sessions of Figure 3c and Supplementary Figure 11B.
+  - fig7-supralinear. The 1 to 4 ms transmission lag was cited as "the lag of the Methods"; the Methods give it for coincident events in the position analysis, and Figure 7 gives no lag. Now a reading, with the lag after the first presynaptic spike as a variant.
+  - fig4-pair-156-136. The statement says the cells are on different shanks (Results; Figure 4a, shanks 4 and 5) and the criterion did not check it; added.
+  - population-vector-width. Supplementary Figure 2A prints 0.087 (29 cm), but 0.087 of 230 cm is 20 cm and 29 cm is 0.126. Kept 0.087 as printed and added the report against 0.126.
+  - Open. The PDF could not be rendered here (no PyMuPDF or poppler), so the readings of Figure 2d and 2e (which count belongs to which layer and class, the bar heights, which bars carry significance marks, layer 5 above layer 2/3 in 2d) and of Supplementary Figure 1 (rats E to H by layer) were not checked against the figures; they rest on the first reader.
+  - Open. The Supplementary Note gives putative interneurons as about 37% of the surveyed volume, which agrees with neither 12.5% of units nor 12.5/(32.5 + 12.5); the paper does not explain it, and it has no claim.
+  - Open. channel-region-link is a registry link check, written from the CRCNS description and not from the paper; the claims that need nose-poke sensor channels or the PFC and CA1 split in DANDI:000067 do not list it in depends_on. Whether they need it depends on the data, which this check does not open.
+  - Open. The Discussion's statement that position-dependent interactions "were present in all parts of the maze" has no claim of its own; it is a minor remark on the material of fig4-position-dependence.
+  - Checked, unchanged. Every quote, p-value and expected value against the text (62,408 pairs, 495 at 0.79%, 343 as 0.55% of 62,408, 67 of 343, 13,572 as 117 x 116, 39 of 117 as 33%, 48, 30, 73, 25, 45 of 142, 15 of 36, 12.7%, 10.7%, 32.2%, n = 14, 26%, 40%, 22%, 16%, 18%, 0.27 +/- 0.17, 2.82 +/- 0.51, 1 to 2%), and that the counting thresholds (P < 0.05 per cell, P < 0.01 for position dependence) are kept out of statistics.
