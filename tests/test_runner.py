@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -118,6 +119,92 @@ def _git(cwd, *args):
     import subprocess
     return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.org", *args], cwd=cwd, check=True,
                           capture_output=True, text=True).stdout
+
+
+def test_one_chain_at_a_time_holds_a_paper(tmp_path):
+    # Issue 749: two lanes took two datasets of one paper, and the second chain joined the first's attempt. A chain
+    # holds $STATE/chain-<paper>.lock while it runs; another chain on the paper is refused, a replicate has a lock
+    # of its own, and a lock whose process has died is taken over.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    funcs = chain[chain.index('held=""\nhold(){'):chain.index("trap 'release; notify' EXIT")]
+    def run(body):
+        return subprocess.run(["bash", "-c", f"set -uo pipefail\nSTATE={tmp_path}\n{funcs}\n{body}"],
+                              capture_output=True, text=True).stdout.split()
+    # Another process (a bash of its own, with its own $$) is refused while this one holds the paper; a replicate
+    # has a lock of its own; released, the lock is gone.
+    other = f'bash -c "STATE={tmp_path}; $(declare -f hold); hold wirth-2017 && echo second || echo refused-\\$holder"'
+    out = run(f"hold wirth-2017 && echo got-$$; {other}; hold wirth-2017/r1 && echo replicate; "
+              "release; ls $STATE | grep -c wirth-2017 || true")
+    assert out[0].startswith("got-") and out[1] == "refused-" + out[0][4:] and out[2] == "replicate", out
+    # A lock left by a process that has died is taken over.
+    (tmp_path / "chain-gao-2018.lock").mkdir()
+    (tmp_path / "chain-gao-2018.lock" / "pid").write_text("999999\n")
+    assert run("hold gao-2018 && echo took-over") == ["took-over"]
+    # Both places a chain learns its paper take the lock before touching anything of it.
+    body = chain[chain.index("set -uo pipefail"):]
+    assert 'if [ -n "$is_paper" ] && ! hold "$tag"; then' in body
+    switch = body.index('going on as $p"')
+    assert switch < body.index('if ! hold "$p"; then') < body.index('mv "$mark" "$STATE/attempt-$p"')
+    assert body.count("release; notify' EXIT") == 2
+
+
+def test_a_failure_of_githubs_artifact_service_is_github_failing():
+    # Issue 702: upload-artifact got a web page for JSON five times and failed the run; the chain then stopped for a
+    # person. GitHub failing is retried every 15 minutes (chain.sh, GITHUB_DOWN).
+    import re
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    down = re.search(r"^GITHUB_DOWN='(.*)'$", chain, re.M).group(1)
+    log = ("Attempt 4 of 5 failed with error: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON.\n"
+           "##[error]Failed to CreateArtifact: Failed to make request after 5 attempts: Unexpected token '<'")
+    assert subprocess.run(["grep", "-qE", down], input=log, text=True).returncode == 0
+    assert subprocess.run(["grep", "-qE", down], input="FAIL  reproduce.ipynb (3603 s)", text=True).returncode == 1
+
+
+def test_a_repeat_authors_commit_may_remove_the_questions_filed_by_dataset():
+    # Issues 658 and 664: blind.sh leaves out a repeat author's earlier questions, which before the cutover were
+    # questions/<paper>/<dataset>.yaml; the commit job refused their removal as a change outside the paper.
+    import re
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    allowed = re.search(r'allowed="(\^\(attempts.*?)"', workflow).group(1).replace("$FOLDER", "pakhomov-2023")
+    ok = lambda path: re.search(allowed, path) is not None
+    assert ok("questions/pakhomov-2023/000686.yaml") and ok("questions/pakhomov-2023.yaml")
+    assert not ok("questions/silkuniene-2025/001276.yaml") and not ok("questions/pakhomov-2023/a/b.yaml")
+    assert not ok("claims/silkuniene-2025.yaml")
+
+
+def test_a_run_flagged_on_the_unverified_account_is_queued_on_the_verified_one(tmp_path):
+    # RUNNER_FALLBACK=queue:<file>: the paper goes first in the verified lanes' queue file (once), the rest of its
+    # roles are marked for the verified account, and the chain ends QUEUED ON VERIFIED (exit 0), not STOPPED.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index('      if [[ "${RUNNER_FALLBACK:-verified}" == queue:* ]]'):
+                  chain.index('      if [ "${RUNNER_FALLBACK:-verified}" = none ]; then')]
+    (tmp_path / "resume-verified.txt").write_text("other-2020\njacobsen-2022\n")
+    (tmp_path / "flagged-jacobsen-2022").touch()
+    script = ("set -uo pipefail\nSTATE=%s; d=jacobsen-2022; role=claims; REPLICATE=''; why='FLAGGED on the unverified "
+              "account'\nRUNNER_FALLBACK=queue:resume-verified.txt\nlog(){ :; }\nf(){\n%s\nreturn 0; }\nf; echo rc=$? $queued_at"
+              % (tmp_path, block))
+    out = subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.split()
+    assert out == ["rc=3", "claims"]
+    assert (tmp_path / "resume-verified.txt").read_text() == "jacobsen-2022\nother-2020\n"
+    assert (tmp_path / "verified-jacobsen-2022").exists() and not (tmp_path / "flagged-jacobsen-2022").exists()
+    body = chain[chain.index("set -uo pipefail"):]
+    assert 'queued(){ end "$d QUEUED ON VERIFIED at $queued_at: $last_why"; exit 0; }' in body
+    assert body.count("3) queued;;") == 2   # every role, the recorder too
+
+
+def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
+    # chain.sh counted "0\n0" for a paper with no questions file, which is not 0: the answer and author-answers roles
+    # ran for nothing on every such paper, and the first replicates hung at the answer role (2026-11-14).
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index('if [ "${open_questions:-0}" != 0 ]')]
+    def count(on_branch):
+        script = f"set -uo pipefail\nd=x\non_branch(){{ {on_branch}; }}\npython(){{ {sys.executable} \"$@\"; }}\n{lines}\necho \"[$open_questions]\""
+        return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.strip()
+    assert count("return 1") == "[0]"
+    assert count("printf 'questions:\\n- {id: a}\\n- {id: b, answered: true}\\n'") == "[1]"
+    # A replicate's answer run goes to the papers workflow with its name, and commits to the replicate's branch.
+    papers = (REPO / ".github" / "workflows" / "papers.yml").read_text()
+    assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in papers and "format('-{0}', inputs.replicate)" in papers
 
 
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():

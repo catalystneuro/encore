@@ -47,6 +47,17 @@ def test_a_merge_closes_the_issue_and_a_failed_check_links_the_pull_request():
 
 
 
+def test_a_run_queued_on_the_verified_account_closes_the_issue():
+    # chain.sh with RUNNER_FALLBACK=queue:<file>: a run flagged on the unverified account hands the paper to the
+    # verified lanes, which needs no one, so its issue (issue 663, say) is closed with where the paper went.
+    status = ("jacobsen-2022 QUEUED ON VERIFIED at claims: FLAGGED on the unverified account: a request was "
+              "answered by claude-sonnet-5-5")
+    said = notify.closing_comment("jacobsen-2022", status)
+    assert said.startswith("The run of `claims` was flagged on the unverified account") and "Nothing is needed" in said
+    assert notify.closing_comment("jacobsen-2022", "jacobsen-2022 MERGED https://x/pull/1") == "Done: MERGED https://x/pull/1."
+    assert notify.closing_comment("jacobsen-2022", "jacobsen-2022 STOPPED at claims") is None
+
+
 def test_a_failed_run_says_which_step_failed_shows_its_log_and_what_to_do(monkeypatch):
     monkeypatch.setattr(notify, "branch_file", lambda folder, path: None)
     monkeypatch.setattr(notify, "failed_run", lambda run, lines=30: {

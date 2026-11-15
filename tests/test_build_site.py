@@ -537,6 +537,23 @@ def test_the_overview_shows_the_dashboard(built):
         assert (out / "assets" / "progress.js").is_file()
 
 
+def test_the_overviews_outcomes_give_each_ones_share_of_the_claims(built):
+    # Each outcome's count and its share, in whole percent that add up to 100; the compact legends have no shares.
+    data, out = built
+    page = (out / "index.html").read_text()
+    panel = page[page.index("claims that rest on the dataset alone"):page.index("</ul>", page.index("claims that rest"))]
+    found = re.findall(r"<strong>([0-9,]+)</strong> ([A-Za-z ]+) <span class=\"pct\">(<?[0-9]+)%</span>", panel)
+    assert [label for _, label, _ in found] == [v[0] for v in site.OUTCOMES.values()]
+    counts = [int(n.replace(",", "")) for n, _, _ in found]
+    if "<1" not in [p for *_, p in found]:
+        assert sum(int(p) for *_, p in found) == 100
+    assert all(abs(int(p) - 100 * n / sum(counts)) < 1 for (_, _, p), n in zip(found, counts) if p != "<1")
+    assert site.shares({"r": 2716, "p": 1044, "n": 1167, "b": 3096}) == {"r": "34", "p": "13", "n": "14", "b": "39"}
+    assert site.shares({"r": 1, "b": 400}) == {"r": "<1", "b": "100"} and site.shares({"r": 0}) == {"r": "0"}
+    assert 'class="pct"' not in site.legend({"reproduced": 3, "partially_reproduced": 0, "not_reproduced": 1,
+                                              "blocked": 0}, compact=True)
+
+
 def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
     data, out = built
     page = (out / "index.html").read_text()
