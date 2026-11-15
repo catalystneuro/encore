@@ -41,6 +41,7 @@ Where the parameters come from:
 from __future__ import annotations
 
 import re
+import time
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 
@@ -131,6 +132,7 @@ def load_session(path, url):
         el = f["general/extracellular_ephys/electrodes"]
         s["electrodes"] = _table(el, skip=("group",))
         s["electrodes_columns"] = [_s(c) for c in el.attrs["colnames"]]
+        s["imp_dtype"] = str(el["imp"].dtype) if "imp" in el else None
         u = f["units"]
         s["units_columns"] = [_s(c) for c in u.attrs["colnames"]]
         s["units_datasets"] = sorted(u.keys())
@@ -156,9 +158,21 @@ def load_session(path, url):
     return s
 
 
+def retry(fn, *args, tries=4, wait=10, **kwargs):
+    """Call fn, again after a pause when it raises (the archive and OSF sometimes answer 500 or
+    time out); the last failure is raised."""
+    for k in range(tries):
+        try:
+            return fn(*args, **kwargs)
+        except Exception:
+            if k == tries - 1:
+                raise
+            time.sleep(wait * (k + 1))
+
+
 def load_all(assets, workers=6):
     with ThreadPoolExecutor(workers) as ex:
-        sessions = list(ex.map(lambda a: load_session(a[0], a[1]), assets))
+        sessions = list(ex.map(lambda a: retry(load_session, a[0], a[1]), assets))
     return sorted(sessions, key=lambda s: s["session_id"])
 
 
@@ -171,7 +185,7 @@ def site(label):
 
 def pmc_table(pmc, label):
     """Rows of the table with this label in Europe PMC's full-text XML of an article."""
-    r = requests.get(f"https://www.ebi.ac.uk/europepmc/webservices/rest/{pmc}/fullTextXML", timeout=60)
+    r = retry(requests.get, f"https://www.ebi.ac.uk/europepmc/webservices/rest/{pmc}/fullTextXML", timeout=60)
     r.raise_for_status()
     root = ET.fromstring(r.content)
     for tw in root.iter("table-wrap"):
@@ -217,8 +231,23 @@ def recog_trials(s):
     return r
 
 
+def version_assets(version):
+    """(path, blob id, size) of every asset of a version of the dandiset, from the archive's API."""
+    url = f"https://api.dandiarchive.org/api/dandisets/{DANDISET_ID}/versions/{version}/assets/?page_size=200"
+    out = []
+    while url:
+        r = retry(requests.get, url, timeout=60)
+        r.raise_for_status()
+        d = r.json()
+        out += [(a["path"], a["blob"], a["size"]) for a in d["results"]]
+        url = d["next"]
+    return sorted(out)
+
+
 def check_responses_against_events(s):
-    """The responses the paper's code reads from the events (recognition experiment id, codes 30 to 36)."""
+    """The responses the paper's code reads from the events (recognition experiment id, codes 30 to 36).
+    The recognition id is taken as the larger of the file's two experiment ids; the notebook checks
+    that the learning trials carry the smaller id in every file (experiment-ids)."""
     ids = np.unique(s["expids"])
     recog_id = ids[1] if len(ids) > 1 else np.nan
     ev = s["events"][(s["expids"] == recog_id) & (s["events"] >= 30) & (s["events"] <= 36)] - 30
@@ -281,10 +310,11 @@ def accuracy_fixed_split(label, conf):
     return f(hi), f(lo)
 
 
-def accuracy_dynamic_split(label, conf):
+def accuracy_dynamic_split(label, conf, matlab=False):
     """helper.dynamic_split and its use in behavior_all.py, as the Python code has it.
-    Mode 1 is high = 1 or 6, low = 2, 3 or 4 (the Python code's low old responses are 4 only;
-    NO_dynamic_lowHighSplit.m has 4 or 5); mode 2 is high = 1, 2, 5, 6, low = 3 or 4."""
+    Mode 1 is high = 1 or 6, low = 2, 3 or 4: the Python code's low "old" responses are 4 only,
+    so response 5 is in neither group. With matlab=True, mode 1's low "old" responses are 4 or 5,
+    as in NO_dynamic_lowHighSplit.m. Mode 2 is high = 1, 2, 5, 6, low = 3 or 4 in both."""
     counts = np.array([np.sum(conf == k) for k in range(1, 7)])
     c1, c2, c3 = counts[0] + counts[5], counts[1] + counts[4], counts[2] + counts[3]
     split = np.array([c1 - (c2 + c3), (c1 + c2) - c3])
@@ -295,7 +325,7 @@ def accuracy_dynamic_split(label, conf):
         mode = 1
     old, new = label == 1, label == 0
     if mode == 1:
-        hi_old, lo_old = conf >= 6, conf == 4
+        hi_old, lo_old = conf >= 6, (conf == 4) | ((conf == 5) & matlab)
         hi_new, lo_new = conf <= 1, (conf == 2) | (conf == 3)
     else:
         hi_old, lo_old = conf >= 5, conf == 4
@@ -320,9 +350,15 @@ def window_rates(spikes, onsets, window):
 
 
 def vs_p(rates, categories):
+    """One-way ANOVA p across categories. When every group is constant the F statistic is
+    undefined: p is nan when all groups have the same value (no spikes, for example) and 0
+    when their values differ (zero variance within groups, a difference between them)."""
     groups = [rates[categories == c] for c in np.unique(categories)]
-    if len(groups) < 2 or all(np.all(g == g[0]) for g in groups if len(g)):
+    groups = [g for g in groups if len(g)]
+    if len(groups) < 2:
         return np.nan
+    if all(np.all(g == g[0]) for g in groups):
+        return np.nan if len({g[0] for g in groups}) == 1 else 0.0
     return stats.f_oneway(*groups).pvalue
 
 
@@ -359,7 +395,8 @@ def variant_from_images(s):
 
 def trial_event_order(s, learn_codes=(20, 21), recog_codes=tuple(range(31, 37))):
     """For each stimulus onset (1) in the events, whether the next four codes are offset (2),
-    question (3), a response of the phase's kind and end of trial (6). Returns (n onsets, n bad)."""
+    question (3), a response of the phase's kind and end of trial (6). Returns (n onsets, n bad).
+    The learning block is taken as the smaller experiment id (checked in the notebook, experiment-ids)."""
     ids = np.unique(s["expids"])
     n, bad = 0, 0
     for k, eid in enumerate(ids):

@@ -31,13 +31,15 @@ memory task.
 | Sessions of the earlier release (Faraut et al. 2018) are in the dandiset | Partially reproduced |
 | 23 sessions, 17 subjects and 288 neurons added to the earlier release | Partially reproduced |
 | Example VS neuron 132-177-4-RA prefers animals | Reproduced |
-| Example VS neuron 144-140-3-RH prefers phones | Blocked: data missing |
+| Example VS neuron 144-140-3-RH prefers phones | Reproduced (assumed: session 144 is session 2009) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
 
 The MS and dual counts are judged on the Methods' description (a 1 s window, all trials); the paper's
 code (a 1.5 s window, correct trials only) gives the paper's numbers, shown as a variant. The new/old
-labels in the files are the reverse of the stated coding. The attempt record, with the reasons and the
+labels in the files are the reverse of the stated coding. The Figure 3 neuron's session (144) is not
+under that id in the dandiset; the paper's Figure 3 scripts name it as the session of subject TWH103,
+session 2009 here, and the neuron is tested there as an assumption. The attempt record, with the reasons and the
 differences from the paper's method, is
 [`attempts/chandravadia-2020-02.yaml`](../../attempts/chandravadia-2020-02.yaml).
