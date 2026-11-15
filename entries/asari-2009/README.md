@@ -1,47 +1,42 @@
-# Asari & Zador (2009) from CRCNS ac-1
+# Asari and Zador (2009) from CRCNS ac-1
 
-Tests the findings of [Asari and Zador (2009)](https://doi.org/10.1152/jn.00577.2009) on
-[CRCNS ac-1](https://doi.org/10.6080/K0KW5CXR), which holds their whole-cell recordings in rat A1
-and cell-attached recordings in MGB with natural and synthetic sound sequences, the paper's
-analysis code, and Wehr's recordings of Machens et al. (2004). The voltage-clamp recordings of
-Figures 5 and 6 are not in the data set.
+Tests the findings of [Asari and Zador (2009)](https://doi.org/10.1152/jn.00577.2009) that can be
+tested on [CRCNS ac-1](https://doi.org/10.6080/K0KW5CXR), which holds the whole-cell current-clamp
+recordings of rat A1 neurons to sequences of natural and synthetic sounds, the cell-attached
+recordings of MGB units, and the recordings of Wehr reanalysed for the encoding models. The
+voltage-clamp recordings of Figures 5 and 6 are not in it.
 
 | Claim | Outcome |
 |---|---|
-| Recording counts (305 probes in 39 A1 cells, 93 in 14 MGB cells, 123 A1 cells in all) | Partially reproduced |
-| Low firing rates in A1, high in MGB | Partially reproduced |
-| Trial-to-trial reliability (0.31 over the population, 0.61 in the example cell) | Reproduced |
-| Example context effect lasting about 4 s, with a gap from 2 to 4 s | Reproduced (a selected candidate, not the paper's example cell) |
-| 204 of 305 probes context dependent, a quarter of the events after 1 s | Reproduced |
-| Two-exponential decay of the proportion of significant probes | Partially reproduced |
-| Normalized context-dependent power decays with a 1.04 s constant | Not reproduced |
+| Cell and probe counts (305 natural sound probes in 39 cells, 93 MGB probes in 14 cells) | Partially reproduced |
+| Low firing rates in A1, high evoked rates in MGB | Partially reproduced |
+| Trial-to-trial reliability, 0.31 over the population | Reproduced |
+| Example neuron with context effects for about 4 s, absent from 2 to 4 s | Reproduced |
+| 204 of 305 probes (66.9%) significant, a quarter of events after 1 s | Reproduced |
+| Proportion significant decays as two exponentials (0.20 and 0.90 s) | Partially reproduced |
+| Normalized context-dependent power decays with a constant of 1.04 s | Partially reproduced |
 | Noise and spontaneous autocorrelations decay within about 100 ms | Reproduced |
-| Upper bound on prediction without context is about half near onset | Not reproduced |
-| STRF models capture under 20% at any window length | Not reproduced (assumed cell selection and test) |
-| Figures 5 and 6: synaptic conductances | Blocked: data missing |
-| Figure 7 example (DMR frequency contexts) | Blocked: data missing |
-| Context effects by sound property, counts (Figure 8A) | Partially reproduced (assumed property sets) |
-| Exponential fits of the significance by property (Figure 8A) | Not reproduced (assumed property sets) |
-| Decay of the normalized power by property (Figure 8B) | Partially reproduced (assumed property sets) |
-| Relative effects by property (Figure 8C) | Not reproduced (assumed property sets) |
-| Natural and synthetic probes alike | Reproduced (assumed test and property sets) |
+| No model without context captures more than half the predictable power at 100 ms | Partially reproduced |
+| STRF and LN models stay below about 20% and do not improve with longer windows | Partially reproduced |
+| Context dependence of excitatory and inhibitory conductances (Figures 5 and 6) | Blocked: data missing |
+| Effects of amplitude, frequency, AM, FM and higher-order properties (Figure 8, five claims) | Blocked: metadata insufficient |
+| Example of frequency context (Figure 7) | Blocked: data missing |
 | Fast decay of context dependence in MGB (about 80 ms) | Reproduced |
-| MGB example, effect in the first 100-ms bin only | Reproduced |
-| Context dependence soon after silence onset, power fading within 1 s | Reproduced |
+| Example MGB unit with an effect in the first 100-ms bin only | Reproduced |
+| Significant effects soon after the onset of the silences | Reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The data set includes the paper's own analysis script, `CxtDep.m`; where the Methods leave a step
-open the analysis follows it. The attempt record, with the reasons and the differences from the
-paper's method, is [`attempts/asari-2009-01.yaml`](../../attempts/asari-2009-01.yaml).
+The data set includes the authors' MATLAB analysis code (`asari/Tools/CxtDep.m`), which settles how
+probes, contexts and the silence periods are formed; the helper ports it. The attempt record, with
+the reasons and the differences from the paper's method, is
+[`attempts/asari-2009-02.yaml`](../../attempts/asari-2009-02.yaml).
 
-- `reproduce_asari_2009.ipynb`: the analysis. It streams all 346 of Asari's recordings once
-  (2.8 GB) and takes about 29 minutes.
-- `strf_wehr.ipynb`: the STRF and LN models of Figure 4, fitted to Wehr's recordings of Machens et
-  al. (2004) in the same data set; it takes about 22 minutes.
-- `wehr_strf.py`: reading Wehr's trial files and stimuli, spectrograms, the lagged designs and
-  the ridge, lowess and performance computations.
-- `asari.py`: reading the zip files in place, forming the probe responses as `CxtDep.m` does, the
-  significance and fractional power measures, spike detection, PSTHs, the property sets of the
-  synthetic sounds and the exponential fits. Other notebooks on this data set can import it.
+- `reproduce_asari_2009.ipynb`: all claims except the encoding models. It takes about four
+  minutes, most of it streaming the files.
+- `strf_asari_2009.ipynb`: the STRF and LN models on the Wehr cells. It takes about 22 minutes.
+- `ctxdep.py`: loading the files, probe construction, the significance and fractional power
+  measures, spike extraction and curve fits. Other notebooks on this data set can import it.
+- `strf.py`: spectrograms, lagged designs, ridge regression with cross-validation, the static
+  nonlinearity and the performance measure of the paper.
