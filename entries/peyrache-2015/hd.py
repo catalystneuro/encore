@@ -95,6 +95,14 @@ def load_session(asset_id, path):
                      else np.full((n, 32), np.nan))
     eg = u["electrode_group"][:]
     s["electrode_group"] = np.array([f[r].name.split("/")[-1] for r in eg])
+    # location and description of each electrode group holding units, and
+    # the devices, so that the data check can show where units were recorded
+    s["group_info"] = {}
+    for r in set(eg):
+        g = f[r]
+        s["group_info"][g.name.split("/")[-1]] = (_txt(g.attrs.get("location", "")),
+                                                  _txt(g.attrs.get("description", "")))
+    s["devices"] = sorted(f["general/devices"].keys()) if "general/devices" in f else []
     s["epochs"] = []
     if "intervals/epochs" in f:
         ep = f["intervals/epochs"]
@@ -369,20 +377,33 @@ def gauss_smooth_counts(C, sd_s, dt=DEC_BIN):
     return gaussian_filter1d(C, sd_s / dt, axis=-1, mode="constant")
 
 
-def bayes_decode(C, tcs, dt):
+def bayes_decode(C, tcs, dt, refine=False):
     """Bayesian decoding (Zhang et al. 1998, basic method with a flat prior):
     C (cells x bins) smoothed counts in a window of dt seconds, tcs (cells x
     360) waking tuning curves in Hz. Returns the decoded angle (maximum of the
-    posterior) per bin. Processes bins in chunks to bound memory."""
+    posterior) per bin. Processes bins in chunks to bound memory.
+
+    With `refine`, also returns the maximum located below the 1 degree grid
+    by a parabola through the log posterior at the best bin and its two
+    neighbours (standard sub-bin interpolation), for the decoded speed of
+    fig2e at 10 ms steps, which the 1 degree grid quantises to 100 deg/s."""
     tcs = np.maximum(tcs, 1e-3)
     logt = np.log(tcs)  # cells x 360
     s = tcs.sum(0) * dt  # 360
     out = np.empty(C.shape[1])
+    fine = np.empty(C.shape[1]) if refine else None
     step = 20000
     for a in range(0, C.shape[1], step):
         ll = C[:, a:a + step].T @ logt - s  # bins x 360
-        out[a:a + step] = ANG[np.argmax(ll, axis=1)]
-    return out
+        im = np.argmax(ll, axis=1)
+        out[a:a + step] = ANG[im]
+        if refine:
+            r = np.arange(len(im))
+            l0, lm, lp = ll[r, im], ll[r, (im - 1) % NBINS], ll[r, (im + 1) % NBINS]
+            den = lm - 2 * l0 + lp
+            d = np.where(den < 0, 0.5 * (lm - lp) / np.where(den < 0, den, -1.0), 0.0)
+            fine[a:a + step] = (ANG[im] + np.clip(d, -0.5, 0.5) * 2 * np.pi / NBINS) % (2 * np.pi)
+    return (out, fine) if refine else out
 
 
 def circ_diff(a, b):
@@ -539,15 +560,21 @@ def expected_ccg(rho, lags, v):
     return r.mean(1)
 
 
-def fit_speed(rho, lags, ccg):
+def fit_speed(rho, lags, ccg, with_residual=False):
     """Mean angular speed (rad/s) minimising the squared difference between
-    the expected and observed CCG: coarse grid, then Nelder-Mead (Methods)."""
+    the expected and observed CCG: coarse grid, then Nelder-Mead (Methods).
+    With `with_residual`, also the residual sum of squares over the sum of
+    squares of the CCG about its mean (fit quality; 0 is a perfect fit)."""
     grid = np.radians(np.geomspace(5, 5000, 80))
     cost = [np.sum((expected_ccg(rho, lags, v) - ccg) ** 2) for v in grid]
     v0 = grid[int(np.argmin(cost))]
     res = optimize.minimize(lambda x: np.sum((expected_ccg(rho, lags, abs(x[0])) - ccg) ** 2),
                             [v0], method="Nelder-Mead", options=dict(xatol=1e-4, fatol=1e-10))
-    return abs(float(res.x[0]))
+    v = abs(float(res.x[0]))
+    if not with_residual:
+        return v
+    ss = np.sum((ccg - ccg.mean()) ** 2)
+    return v, float(res.fun / ss) if ss > 0 else np.nan
 
 
 # ---------------------------------------------------------------- per session
@@ -594,9 +621,14 @@ def analyze_session(s, parts=("cells", "pairs", "decode", "fast", "mono", "lfp")
         of = np.array([(a, b) for tg, a, b in s["epochs"] if "open_field" in tg])
         if len(of):
             s["states"]["wake"] = of
-    if s.get("hd") is None or "wake" not in s["states"]:
-        return out
     name = s["path"].split("_ses-")[1].split("_")[0]
+    if s.get("hd") is None or "wake" not in s["states"]:
+        # Connection detection needs no head direction (fig7, all ADn by all
+        # PoS pairs), so it runs here too.
+        if "mono" in parts:
+            out["mono"] = mono_session(s, name, list(np.where(s["region"] == ADN)[0]),
+                                       list(np.where(s["region"] == POS)[0]))
+        return out
     keep = np.where(np.isin(s["region"], [ADN, POS]))[0]
     t, a = wake_hd(s)
     rate = s["hd_rate"]
@@ -710,7 +742,8 @@ def analyze_session(s, parts=("cells", "pairs", "decode", "fast", "mono", "lfp")
                         Fk, Lk, nk, pos_ = FC[k]
                         cg = xc(Fk[pos_[ii]], Fk[pos_[jj]], ml, nk, Lk) / (X[ii].mean() * X[jj].mean())
                         lags = np.arange(-ml, ml + 1) * 0.01
-                        rec["v_" + k] = np.degrees(fit_speed(rho, lags, cg))
+                        v_, res_ = fit_speed(rho, lags, cg, with_residual=True)
+                        rec["v_" + k], rec["res_" + k] = np.degrees(v_), res_
                 out["pairs"].append(rec)
         del c10, corr_bins, Xw, Fw, FX, FF, FC
     # ---------------- decoding per structure
@@ -745,33 +778,40 @@ def analyze_session(s, parts=("cells", "pairs", "decode", "fast", "mono", "lfp")
                                             nspk=(len(sps[ux]), len(sps[uy]))))
     # ---------------- monosynaptic, ADn x PoS (whole recording)
     if "mono" in parts:
-        adn = [u for u in U if R[u]["region"] == "ADn"]
-        pos = [u for u in U if R[u]["region"] == "PoS"]
-        w = 0.0005
-        for ua in adn:
-            for up in pos:
-                c, lags = ccg_counts(s["spikes"][ua], s["spikes"][up], w, 0.06)
-                rec = dict(session=name, subject=s["subject"], adn=ua, pos=up)
-                for hol in (False, True):
-                    f, b = mono_test(c, w, hollow=hol)
-                    rec[f"a2p_{'h' if hol else 'c'}"] = f
-                    rec[f"p2a_{'h' if hol else 'c'}"] = b
-                # jittered baseline (m-d): expectation of the CCG with one train
-                # jittered uniformly by +-10 ms is the CCG convolved with a 20 ms box
-                nbox = int(round(0.01 / w))
-                base = np.convolve(c, np.ones(2 * nbox + 1) / (2 * nbox + 1), mode="same")
-                thr = stats.poisson.ppf(0.999, np.maximum(base, 1e-12))
-                sig = c > thr
-                pz = (lags >= 0.001 - 1e-9) & (lags <= 0.01 + 1e-9)
-                nz_ = (lags <= -0.001 + 1e-9) & (lags >= -0.01 - 1e-9)
-                run = lambda m_: bool(np.any(m_[:-1] & m_[1:]))
-                rec["a2p_j"] = run(np.where(pz, sig, False))
-                rec["p2a_j"] = run(np.where(nz_, sig, False))
-                out["mono"].append(rec)
+        out["mono"] = mono_session(s, name, [u for u in U if R[u]["region"] == "ADn"],
+                                   [u for u in U if R[u]["region"] == "PoS"])
     if "glm" in parts:
         out["glm"] = glm_session(s, cells)
     if "lfp" in parts and s.get("lfp_shape") is not None:
         out["lfp"] = lfp_session(s, cells)
+    return out
+
+
+def mono_session(s, name, adn, pos):
+    """Monosynaptic tests (mono_test) for every ADn by PoS pair of a session,
+    cross-correlograms over the whole recording, all states."""
+    out = []
+    w = 0.0005
+    for ua in adn:
+        for up in pos:
+            c, lags = ccg_counts(s["spikes"][ua], s["spikes"][up], w, 0.06)
+            rec = dict(session=name, subject=s["subject"], adn=int(ua), pos=int(up))
+            for hol in (False, True):
+                f, b = mono_test(c, w, hollow=hol)
+                rec[f"a2p_{'h' if hol else 'c'}"] = f
+                rec[f"p2a_{'h' if hol else 'c'}"] = b
+            # jittered baseline (m-d): expectation of the CCG with one train
+            # jittered uniformly by +-10 ms is the CCG convolved with a 20 ms box
+            nbox = int(round(0.01 / w))
+            base = np.convolve(c, np.ones(2 * nbox + 1) / (2 * nbox + 1), mode="same")
+            thr = stats.poisson.ppf(0.999, np.maximum(base, 1e-12))
+            sig = c > thr
+            pz = (lags >= 0.001 - 1e-9) & (lags <= 0.01 + 1e-9)
+            nz_ = (lags <= -0.001 + 1e-9) & (lags >= -0.01 - 1e-9)
+            run = lambda m_: bool(np.any(m_[:-1] & m_[1:]))
+            rec["a2p_j"] = run(np.where(pz, sig, False))
+            rec["p2a_j"] = run(np.where(nz_, sig, False))
+            out.append(rec)
     return out
 
 
@@ -790,19 +830,21 @@ def _tc_from_bins(C, thb, dtb):
     return np.array(out)
 
 
-def ole_fit(Rtr, thtr, Ftr=None):
+def ole_fit(Rtr, thtr, Ftr=None, diag="observed"):
     """Optimal linear estimator (Salinas and Abbott 1994): D = Q^-1 L with
     L = <r e^{i theta}> and Q = <r r^T> (cov) or, when F (the tuning curves
-    read at the head direction, smoothed as r) is given, the signal reading
-    Q = <F F^T> off the diagonal with the diagonal of <r r^T> (independent
-    neurons with the observed variances; assumption). Returns complex
-    weights."""
+    read at the head direction, smoothed as r) is given, a signal reading:
+    diag="observed", Q = <F F^T> off the diagonal with the diagonal of
+    <r r^T> (independent neurons with the observed variances; assumption);
+    diag="signal", Q = <F F^T> throughout (the plain reading of "tuning curve
+    covariances"). Returns complex weights."""
     n = Rtr.shape[1]
     L = Rtr.T @ np.exp(1j * thtr) / n
     Q = Rtr.T @ Rtr / n
     if Ftr is not None:
         Qs = Ftr.T @ Ftr / n
-        np.fill_diagonal(Qs, np.diag(Q))
+        if diag == "observed":
+            np.fill_diagonal(Qs, np.diag(Q))
         Q = Qs
     return np.linalg.solve(Q + 1e-9 * np.eye(len(Q)), L)
 
@@ -827,14 +869,21 @@ def decode_session(s, name, cells, tcs, t, a):
             C = bin_matrix([s["spikes"][u] for u in hu], iv, DEC_BIN)
             _, cen = bin_counts(np.zeros(0), iv, DEC_BIN)
             Cs = gauss_smooth_counts(C, DEC_SMOOTH[k])
-            ang = bayes_decode(Cs, TC, DEC_BIN)
+            ang, angf = bayes_decode(Cs, TC, DEC_BIN, refine=True)
             dec[k] = (ang, cen, C)
-            sp_a = np.abs(circ_diff(ang[1:], ang[:-1])) / DEC_BIN
+            # steps within one interval of the state only
+            ivid = np.searchsorted(iv[:, 0], cen, side="right") - 1
+            same = ivid[1:] == ivid[:-1]
+            sp_a = np.abs(circ_diff(ang[1:], ang[:-1]))[same] / DEC_BIN
+            sp_af = np.abs(circ_diff(angf[1:], angf[:-1]))[same] / DEC_BIN
             ksub = int(round(DEC_SMOOTH[k] / DEC_BIN))
-            sub = ang[::ksub]
-            sp_b = np.abs(circ_diff(sub[1:], sub[:-1])) / (ksub * DEC_BIN)
+            sub, subid = ang[::ksub], ivid[::ksub]
+            sp_b = np.abs(circ_diff(sub[1:], sub[:-1]))[subid[1:] == subid[:-1]] / (ksub * DEC_BIN)
             e[f"speed_a_{k}"] = float(np.degrees(np.median(sp_a)))
+            e[f"speed_af_{k}"] = float(np.degrees(np.median(sp_af)))
+            e[f"speed_afmean_{k}"] = float(np.degrees(np.mean(sp_af)))
             e[f"speed_b_{k}"] = float(np.degrees(np.median(sp_b)))
+            e[f"speed_bmean_{k}"] = float(np.degrees(np.mean(sp_b)))
             if k == "wake":
                 th = _hd_at(s, cen)
                 ok = np.isfinite(th)
@@ -855,26 +904,31 @@ def decode_session(s, name, cells, tcs, t, a):
                 da = np.abs(circ_diff(ah[1:], ah[:-1])) * s["hd_rate"]
                 gap = np.diff(t) < 1.5 / s["hd_rate"]
                 e["speed_a_actual"] = float(np.degrees(np.median(da[gap])))
+                e["speed_afmean_actual"] = float(np.degrees(np.mean(da[gap])))
                 kk = int(round(0.3 * s["hd_rate"]))
                 db = np.abs(circ_diff(ah[kk:], ah[:-kk])) / (t[kk:] - t[:-kk])
                 gb = (t[kk:] - t[:-kk]) < (kk + 0.5) / s["hd_rate"]
                 e["speed_b_actual"] = float(np.degrees(np.median(db[gb])))
+                e["speed_bmean_actual"] = float(np.degrees(np.mean(db[gb])))
                 # OLE and Bayes over windows, cross-validated
                 for wdw in OLE_WINDOWS:
                     Cw = gauss_smooth_counts(C, wdw)[:, idx]
                     Fw = gauss_smooth_counts(TC[:, np.minimum((np.nan_to_num(th) / (2 * np.pi) * NBINS).astype(int), NBINS - 1)] * DEC_BIN, wdw)[:, idx]
-                    eo, es, eb = [], [], []
+                    eo, es, es2, eb = [], [], [], []
                     for q in range(10):
                         tr, te = seg != q, seg == q
                         Dc = ole_fit(Cw[:, tr].T, th[idx][tr])
                         Ds = ole_fit(Cw[:, tr].T, th[idx][tr], Fw[:, tr].T)
+                        Ds2 = ole_fit(Cw[:, tr].T, th[idx][tr], Fw[:, tr].T, diag="signal")
                         thq = th[idx][te]
                         eo.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Dc), thq)))
                         es.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Ds), thq)))
+                        es2.append(np.abs(circ_diff(np.angle(Cw[:, te].T @ Ds2), thq)))
                         tcq = _tc_from_bins(C[:, idx[tr]], thb[tr], DEC_BIN)
                         eb.append(np.abs(circ_diff(bayes_decode(Cw[:, te], tcq, DEC_BIN), thq)))
                     e[f"ole_cov_{wdw}"] = float(np.degrees(np.median(np.concatenate(eo))))
                     e[f"ole_sig_{wdw}"] = float(np.degrees(np.median(np.concatenate(es))))
+                    e[f"ole_sig2_{wdw}"] = float(np.degrees(np.median(np.concatenate(es2))))
                     e[f"bayes_{wdw}"] = float(np.degrees(np.median(np.concatenate(eb))))
         e["coherence"] = coherence(s, TC, hu, dec) if "wake" in dec else {}
         ens.append(e)
@@ -901,8 +955,12 @@ def decode_session(s, name, cells, tcs, t, a):
 
 # ---------------------------------------------------------------- GLM (fig5d,e)
 
-GLM_WINDOWS = np.unique(np.r_[0.01, 0.02, np.geomspace(0.03, 0.3, 21), 0.5, 1.0])
-GLM_MAX_S = 2700.0  # at most 45 min of each state (time limit; deviation)
+# Readout windows (reading g-d): 10 to 1000 ms on a log scale, 7 windows, for
+# the best-window information of fig5d and fig5e-adn-predicts-pos. The dense
+# grid fig5e-readout-windows needs (20 per decade near 50 to 200 ms) is not
+# run, for time.
+GLM_WINDOWS = np.geomspace(0.01, 1.0, 7)
+GLM_MAX_S = 1200.0  # at most the first 20 min of each state (time limit; deviation)
 
 
 def _g(x):
@@ -910,7 +968,7 @@ def _g(x):
     return np.where(x < 0, np.exp(np.minimum(x, 0)), 1 + np.maximum(x, 0))
 
 
-def _glm_fit(X, y, w0=None, iters=25):
+def _glm_fit(X, y, w0=None, iters=15, tol=1e-5):
     """Poisson maximum likelihood with the link _g, by Newton's method. The
     log-likelihood is concave (g convex and log-concave), so its maximum is
     the one the Methods' derivative-free search finds."""
@@ -938,16 +996,20 @@ def _glm_fit(X, y, w0=None, iters=25):
                 break
             lam *= 0.5
         w = wn
-        if np.max(np.abs(lam * step)) < 1e-6:
+        if np.max(np.abs(lam * step)) < tol:
             break
     return w
 
 
-def glm_session(s, cells):
+def glm_session(s, cells, windows=None):
     """fig5d,e: for each HD target of one structure, the information (bits per
     spike, 10-fold cross-validated) of a GLM of the other structure's HD cell
     assembly (reading g-b, HD cells; g-c, HD targets), 10 ms bins, assembly
-    counts convolved with Gaussian readout windows of s.d. w (GLM_WINDOWS)."""
+    counts convolved with Gaussian readout windows of s.d. w (GLM_WINDOWS).
+    Each fold is fitted to convergence on its 9 training segments (started
+    from the fit to all segments, for speed; the likelihood is concave, so the
+    start does not change the maximum). HD cells under either reading."""
+    windows = GLM_WINDOWS if windows is None else windows
     out = []
     R = {c["unit"]: c for c in cells}
     hd_ = {reg: [c["unit"] for c in cells if c["region"] == reg and (c["hd_a"] or c["hd_b"])] for reg in ("ADn", "PoS")}
@@ -969,7 +1031,7 @@ def glm_session(s, cells):
             T = bin_matrix([s["spikes"][u] for u in hd_[treg]], iv, DEC_BIN)
             nb = A.shape[1]
             seg = (np.arange(nb) * 10) // nb
-            for wdw in GLM_WINDOWS:
+            for wdw in windows:
                 Aw = gaussian_filter1d(A, wdw / DEC_BIN, axis=1, mode="constant")
                 Aw = (Aw - Aw.mean(1, keepdims=True)) / np.maximum(Aw.std(1, keepdims=True), 1e-9)
                 X = np.c_[np.ones(nb), Aw.T]
@@ -977,11 +1039,14 @@ def glm_session(s, cells):
                     y = T[ti]
                     if y.sum() < 20:
                         continue
-                    wfull = _glm_fit(X, y)
+                    wfull = _glm_fit(X, y, iters=25)
                     L = 0.0
                     for q in range(10):
                         tr, te = seg != q, seg == q
-                        wq = _glm_fit(X[tr], y[tr], wfull, iters=6)
+                        # started from the full fit for speed, and iterated to
+                        # convergence: the likelihood is concave, so the result
+                        # is the maximum on the training segments alone
+                        wq = _glm_fit(X[tr], y[tr], wfull, iters=25)
                         f = _g(X[te] @ wq)
                         m0 = y[tr].mean()
                         L += (np.sum(y[te] * np.log2(np.maximum(f, 1e-12))) - np.sum(f) / np.log(2)
@@ -1067,8 +1132,11 @@ def coherence(s, TC, hu, dec, n_time=3000, n_ref=5000, seed=11):
     reference vectors (c-b) waking bins whose decoded HD is at that degree,
     whose actual HD is, or random waking bins; summary (c-d) mean or median.
     Windows: the decoder's own (c-c, 300 ms wake and REM, 50 ms SWS). Time
-    bins: n_time drawn at random per state (seeded; standard choice)."""
+    bins: n_time drawn at random per state (seeded; standard choice). Keys
+    with a reference ending in "_shuffled" are the negative control, with the
+    decoded angles permuted across time bins."""
     rng = np.random.default_rng(seed)
+    rng_shuf = np.random.default_rng(seed + 1)
     Hn = TC / TC.max(1, keepdims=True)  # cells x 360
     Qexp = TC.T @ Hn  # expected packet at each degree (360 x 360)
     def dist(P, Q, kind):
@@ -1111,6 +1179,14 @@ def coherence(s, TC, hu, dec, n_time=3000, n_ref=5000, seed=11):
             d = dist(P, Q, kind)
             coh = np.array([1 - np.searchsorted(D[x], v, side="left") / n_ref for x, v in zip(dd, d)])
             out[(k, ref, kind)] = (float(np.mean(coh)), float(np.median(coh)))
+        # Negative control: the same packets against the expected packet at
+        # decoded angles permuted across the drawn bins (own generator, so the
+        # readings above keep their draws).
+        dsh = rng_shuf.permutation(dd)
+        for (ref, kind), D in refs.items():
+            d = dist(P, Qexp[dsh], kind)
+            coh = np.array([1 - np.searchsorted(D[x], v, side="left") / n_ref for x, v in zip(dsh, d)])
+            out[(k, ref + "_shuffled", kind)] = (float(np.mean(coh)), float(np.median(coh)))
     return out
 
 
@@ -1134,6 +1210,18 @@ def session_summary(s):
              rec_end=float(max((b for _, a, b in s["sub_recordings"]), default=np.nan)))
     for k in STATES:
         d[k + "_s"] = total(state_iv(s, k)) if k in s["states"] else np.nan
+    pos_groups = sorted(set(s["electrode_group"][r == POS]))
+    d["pos_groups"] = ";".join(f"{g}: {s['group_info'].get(g, ('', ''))[1][:90]}" for g in pos_groups)
+    d["has_pos_probe"] = "postsubicular_probe" in s.get("devices", [])
+    # overlap of the scored wake interval with the open-field epochs
+    of = np.array([(a, b) for tg, a, b in s["epochs"] if "open_field" in tg])
+    if len(of) and "wake" in s["states"] and len(s["states"]["wake"]):
+        w = s["states"]["wake"]
+        ov = sum(max(0.0, min(b, y) - max(a, x)) for a, b in w for x, y in of)
+        d["wake_in_open_field"] = ov / total(w)
+        d["open_field_in_wake"] = ov / total(of)
+    else:
+        d["wake_in_open_field"] = d["open_field_in_wake"] = np.nan
     if "states" in s and len(s["states"]):
         # states inside the home-cage / open-field epochs
         hc = np.array([(a, b) for tg, a, b in s["epochs"] if ("sleep_pre" in tg or "sleep_post" in tg)])
@@ -1193,6 +1281,26 @@ def _work(x):
     o = analyze_session(s)
     o["meta"] = dict(path=x[0], subject=s["subject"], seconds=_t.time() - t0)
     return o
+
+
+def _work_glm(x):
+    import time as _t
+    t0 = _t.time()
+    s = load_session(x[1], x[0])
+    o = analyze_session(s, parts=("glm",))
+    o["meta"] = dict(path=x[0], subject=s["subject"], seconds=_t.time() - t0)
+    return o
+
+
+def run_glm(subjects, workers=4):
+    """The GLM of fig5d,e on every session of the given mice, `workers`
+    sessions at a time, largest files first."""
+    from concurrent.futures import ProcessPoolExecutor
+    A = sorted([a for a in list_assets() if a[0].split("/")[0].replace("sub-", "") in subjects],
+               key=lambda x: -x[2])
+    with ProcessPoolExecutor(workers) as ex:
+        out = list(ex.map(_work_glm, A))
+    return sorted(out, key=lambda o: o["meta"]["path"])
 
 
 def run_all(workers=4):
