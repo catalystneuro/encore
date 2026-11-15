@@ -1,7 +1,11 @@
-Both questions were right, and I changed the claims file for each. The quote check (`python tools/claims_check.py`) reports 0 problems. Nothing is committed.
+There is nothing to answer, so I changed nothing.
 
-1. **fig4b-spike-rate-difference: changed.** The paper says it analysed only bright folds ("We did not analyze dark corner-folds", Methods, Corners, paragraph 2). It also says Corners has "a matching set of dark and bright illusory corner-folds" (Results, paragraph 5). It states averaging of two midpoints only for Square and Star, and nowhere puts the S40 fold at the ROI centre. So I dropped both readings, and the criterion now takes the midpoint of the bright S40 fold alone. I made the same change in the opening comment, `fig4a-above-baseline` and `fig4b-pairwise-significance`. The expected values are unchanged.
+`questions/martinez-conde-2019.yaml` doesn't exist on this branch (`replicate/martinez-conde-2019/r3`) or on `main`. This run's author step left no questions.
 
-2. **table1-s40: changed.** For the same reason, readings (i) and (ii) are dropped, and the criterion now uses the ten blocks along the bright S40 fold only. The expected values are unchanged.
+The only version of the file in the git history is in merge 38a6c97. Its two questions were both answered on 2026-11-12:
+- `fig4b-spike-rate-difference`
+- `table1-s40`
 
-Both questions are marked `answered: 2026-11-12`.
+Nothing was left open there either.
+
+I didn't edit `claims/martinez-conde-2019.yaml`, so I didn't run `tools/claims_check.py`. If an author or verifier on this attempt meant to ask something, their questions file still needs to be written before this step can run.
