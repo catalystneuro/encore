@@ -30,17 +30,18 @@ outcomes:
     MGB gives 93 probes in 14 cells with at least 10 trials per context, under both readings. These four
     counts match the paper exactly. 132 A1 current-clamp cells meet the criterion (39 natural, 95 of 96
     synthetic, 2 in both), against 123; leaving out the 5 cells of "naturalistic" sounds and the 3 cells
-    of a natural probe after natural and pink noise contexts gives 124, and 132 cells have a probe that
-    enters a Table 1 column. With each probe tested on the variants of one property, the Table 1 column
-    totals for amplitude (95 probes) and frequency (110) equal the paper's, the DMR rows (8 and 20 probes
-    in 2 and 5 cells), the natural AM and FM entries (25 probes each, 24 cells) and the TORC cell counts
-    (9 and 9) match, and the TORC probes are 42 and 44 against 39 and 40. The data hold no modulated harmonic
-    tone probes for amplitude, frequency or FM and 14 for AM against 71, so the AM, FM and higher-order
-    totals are 39, 25 and 131 against 96, 82 and 137; the natural amplitude and frequency entries have
-    45 and 46 probes against 23 and 25. By the synthetic ensemble used there are 14 TORC cells (paper
-    14), 15 DMR (6), 26 MHT (39) and 26 MCN (27). The voltage-clamp counts (29 probes, 14 cells) cannot
-    be tested, as the data set holds no voltage-clamp recordings. 333 synthetic probes have at least 4
-    trials per context, with or without silence counted.
+    of a natural probe after natural and pink noise contexts gives 124, though both designs enter Table
+    1 columns here, and 132 cells have a probe that enters a Table 1 column. With each probe tested on
+    the variants of one property, the Table 1 column totals for amplitude (95 probes) and frequency (110)
+    equal the paper's, the DMR rows (8 and 20 probes in 2 and 5 cells), the natural AM and FM entries
+    (25 probes each, 24 cells) and the TORC cell counts (9 and 9) match, and the TORC probes are 42 and
+    44 against 39 and 40. The data hold no modulated harmonic tone probes for amplitude, frequency or
+    FM and 14 for AM against 71, so the AM and FM totals are 39 and 25 against 96 and 82; the higher-order
+    total is 131 against 137, short in the natural row (58 against 63) and the MCN row (73 against 74);
+    the natural amplitude and frequency entries have 45 and 46 probes against 23 and 25. By the synthetic
+    ensemble used there are 14 TORC cells (paper 14), 15 DMR (6), 26 MHT (39) and 26 MCN (27). The voltage-clamp
+    counts (29 probes, 14 cells) cannot be tested, as the data set holds no voltage-clamp recordings.
+    333 synthetic probes have at least 4 trials per context, with or without silence counted.
   deviations:
   - Probe sets follow the authors' CxtDep.m in the data set (asari/Tools), which the paper does not link.
     A probe is each fragment; its contexts are the fragments before it in the stimulus table and silence;
@@ -80,7 +81,14 @@ outcomes:
     four, the MGB spontaneous SD. The data set holds 133 A1 current-clamp cells with context files and
     14 MGB cells, not the paper's 194 and 16. The automatic threshold of GetSpikes.m (2/3 of the largest
     filtered value, median 3.78 mV over files against 0.41 and 0.81 mV for 20 and 40 SDs) gives the lowest
-    MGB rates of the three.
+    MGB rates of the three. Which MGB detector is right is not settled. Of the events found at 40 SDs
+    with the dead time, 36% (120927 of 339823) lie below the file's automatic threshold, the majority
+    in 8 of 21 files. They are stimulus locked (1545 in the 100 ms after stimulus onsets against 143 before;
+    more after than before in 16 of the 19 files with any), and their mean waveform is a peak of 0.9 to
+    5.1 mV followed by a trough, as for the events above it. In some files they form a cluster of their
+    own at 0.2 to 0.4 times the automatic threshold (31976 events in 20071009-ha1-003-004, 5826 in 20071010-ha2-002-002),
+    which could be a second unit. So the automatic threshold misses spike-like events, which supports
+    the lower thresholds, but whether they come from the recorded unit is not shown.
   deviations:
   - Assumption. The paper does not say how A1 spikes were detected, and GetSpikes.m sets them by hand
     for whole-cell data. Spikes are taken as excursions of the raw trace above its 10-ms median-clipped
@@ -185,11 +193,12 @@ outcomes:
   notes: The fitted size of Q(t) is 0.445 to 0.468 in the eight readings (silence counted or not, all
     or running probes, fit to 4 or 6 s), within tolerance. The time constant is 1.74 to 1.78 s with silence
     counted and 1.29 to 1.33 s without, outside tolerance in every reading. Q is 1.04 at onset and lies
-    between -0.06 and 1.04 over 0 to 6 s. It follows the paper's curve 0.49 exp(-t/1.04) up to 1 s (0.294
-    and 0.191 at 0.5 and 1 s, against 0.303 and 0.187) and stays higher later (0.053, 0.138 and 0.115
-    at 2, 3 and 4 s, against 0.072, 0.027 and 0.010); the fit's mean residual over 2 to 4 s is 0.031.
-    With the constant free, the fit gives 0.50, 0.57 s and a constant of 0.12. Measured gives silence
-    counted, all probes, fit to 4 s.
+    between -0.06 and 1.04 over 0 to 6 s. It is close to the paper's curve 0.49 exp(-t/1.04) at 0.5 and
+    1 s (0.294 and 0.191, against 0.303 and 0.187), but not at onset (1.039 against 0.49), and the fit's
+    RMS residual over 0 to 1 s is 0.108; it stays higher later (0.053, 0.138 and 0.115 at 2, 3 and 4 s,
+    against 0.072, 0.027 and 0.010); the fit's mean residual over 2 to 4 s is 0.031. With the constant
+    free, the fit gives 0.50, 0.57 s and a constant of 0.12. Measured gives silence counted, all probes,
+    fit to 4 s.
   deviations:
   - Each trial is centred over the probe period before the power terms are formed, as FracPow in CxtDep.m
     does (Methods, Analysis, "centered the subthreshold responses to have zero mean").
@@ -227,21 +236,36 @@ outcomes:
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig4-strf-performance-low
   measured: 0.207
-  notes: Wehr's data (crcns-ac1.zip, wehr/) hold 25 cells, 10 with a fixed set of natural sounds repeated
+  notes: 'Wehr''s data (crcns-ac1.zip, wehr/) hold 25 cells, 10 with a fixed set of natural sounds repeated
     over 6 to 25 trials and 15 with many sounds presented once or twice; 16 have a natural sound presented
     on at least two trials, which Eq. 52 needs, so the test is over 16 cells, not 20. With the 10-ms window
     and folds averaged as in the Methods, the mean validation (lower) performance of the STRF is 0.167
     at 180 ms and 0.207 at 4052 ms, and its largest value over the nine windows is 0.207, at most 0.22;
     with the 20-ms window it is 0.157 to 0.198. Pooled over folds it reaches 0.244 (10 ms) and 0.229 (20
     ms), above 0.22. The training (upper) estimate reaches 0.286. The LN validation mean is 0.05 to 0.14
-    averaged over folds, below the STRF's, and 0.18 to 0.24 pooled; its training estimate is 0.02 to 0.04
-    above the STRF's. The one-sided paired Wilcoxon test of validation performance at 4052 against 180
-    ms finds an improvement in every reading, for the STRF (13 to 16 of 16 cells improve, p 0.0005 or
-    less) and for LN (p 0.0065 or less); the Friedman test over the nine windows gives p 0.003 or less
-    for the STRF. So the performance is low, as stated, but the longer window improves it, which the criterion's
-    test counts against the claim. Most of the gain is reached by 0.5 to 0.9 s. Measured gives the largest
-    mean validation STRF performance over windows (10-ms window, folds averaged). The traces are sampled
-    at 4 kHz and were recorded with QX-314 in the pipette (file notes).
+    averaged over folds, below the STRF''s, and 0.18 to 0.24 pooled; its training estimate is 0.02 to
+    0.04 above the STRF''s. The one-sided paired Wilcoxon test of validation performance at 4052 against
+    180 ms finds an improvement in every reading, for the STRF (13 to 16 of 16 cells improve, p 0.0005
+    or less) and for LN (p 0.0065 or less). For LN with folds averaged the test reflects the 13 of 16
+    cells that improve, not the mean, which falls from 0.144 to 0.091 (10-ms window) and is erratic across
+    windows (0.144, 0.050, 0.092 at the first three); the Friedman test over the nine windows gives p
+    0.003 or less for the STRF. So the performance is low, as stated, but the longer window improves it,
+    which the criterion''s test counts against the claim. Most of the gain is reached by 0.5 to 0.9 s.
+    Measured gives the largest mean validation STRF performance over windows (10-ms window, folds averaged).
+    The traces are sampled at 4 kHz and were recorded with QX-314 in the pipette (file notes). Checks:
+    the sound level and the trial-mean response correlate most at 24 to 72 ms after the sound in all 16
+    cells, and more at 0 to 300 ms than at -300 to 0 ms in all 16, so stimulus and response share a clock.
+    No response bin falls after the end of its sound. The spectrogram has no dB floor, as in logspectrogram.m;
+    107192 of 15.9 million values (0.7%), in 10 cells, lie below -100 dB, down to -201 dB. The 180-ms
+    filter peaks at its last lag in 7 of 16 cells, whose 4052-ms filters peak at 212 to 2004 ms. Over
+    the 9 other cells the STRF still improves (7 of 9, p = 0.027) and so does LN (p = 0.014). Over the
+    10 repeated-set cells the STRF improves (7 of 10, p = 0.032) and LN does not (p = 0.097); over the
+    6 cells with two trials per stimulus both improve (6 of 6, p = 0.016). Over all 16 cells the improvement
+    holds with a floor at -100 dB (STRF p = 0.0008, LN p = 0.029) and with a floor 80 dB below each stimulus''s
+    peak (STRF p = 0.0046, LN p = 0.029). Over the 10 repeated-set cells with either floor neither model
+    improves significantly (STRF p = 0.053 and 0.16, LN p = 0.28 and 0.35). The outcome over the 16 cells
+    does not depend on the floor, but it does depend on which cells enter the test, and the paper does
+    not list its 20.'
   deviations:
   - Assumption, fixed by the criterion. "Did not improve significantly" is judged by a one-sided paired
     Wilcoxon test over cells at 0.05; the paper names no test.
@@ -256,7 +280,7 @@ outcomes:
   - Assumption. Lags before the sound onset see a zero (centred) spectrogram, so that every window length
     is fitted on the same response bins; STRFanalysis.m drops the first window of each stimulus instead.
   - The ridge value is chosen per fold on the validation fold (Methods), from 1e-10 to 1e2 times the largest
-    eigenvalue of the training X'X (standard choice); 45 and 116 of 2880 folds chose the low and high
+    eigenvalue of the training X'X (standard choice); 54 and 116 of 2880 folds chose the low and high
     ends of the grid. Folds are 10 contiguous blocks, sized as in STRFanalysis.m; the by-stimulus reading
     was not run.
   - The static nonlinearity is a robust local-linear lowess (5% span, five robust iterations; Methods)
@@ -264,6 +288,9 @@ outcomes:
   - Eq. 53 is averaged over folds as in the Methods and STRFanalysis.m; the ratio of the means over folds
     is shown as a variant, as single folds with almost no predictable power give unstable ratios (single-fold
     values from -0.01 to 1.43).
+  - The spectrogram has no dB floor, as in logspectrogram.m (20 log10(|S| + eps)). Floors at -100 dB and
+    at 80 dB below each stimulus's peak (a standard choice) are shown as variants; neither decides the
+    outcome.
 - claim: fig5-example-conductances
   outcome: blocked
   blocked_by: data_missing
@@ -374,17 +401,24 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig8c-relative-effects
-  notes: Relative to natural sounds (area under Q from 0 to 4 s, 0.734 s over 305 probes), the area is
+  notes: 'Relative to natural sounds (area under Q from 0 to 4 s, 0.734 s over 305 probes), the area is
     0.74 for amplitude (95% interval 0.65 to 0.86) and 0.67 for frequency (0.58 to 0.77), so neither interval
     includes 1 and neither point estimate reaches it. AM, FM and higher-order give 0.09 (0.06 to 0.13),
     0.20 (0.16 to 0.25) and 0.51 (0.44 to 0.61), all below 1 and below amplitude and frequency, though
     the higher-order interval overlaps the lower bound for frequency. The lower-order properties have
     larger effects than the higher-order ones, but not effects as large as those of natural sounds, so
-    neither the full nor the partial rule is met. Only the probe-resampling reading was run.
+    neither the full nor the partial rule is met. Under the other Figure 3B readings of the natural area
+    the result is the same. With silence not counted as a context, as for the synthetic sets, the natural
+    area is 0.597 s, and amplitude and frequency give 0.91 (0.79 to 1.11) and 0.82 (0.71 to 0.98): the
+    amplitude interval includes 1, the frequency interval does not, both point estimates are below 1,
+    and higher-order (0.63, 0.54 to 0.76) overlaps the frequency interval. Over the probes still running
+    they are 0.72 and 0.65 with silence counted and 0.88 (0.73 to 1.05) and 0.80 (0.66 to 0.95) without.
+    No reading meets the full or the partial rule. Only the probe-resampling reading was run.'
   deviations:
   - Intervals from 200 resamplings of 1000 probes drawn with replacement, separately for each property
     and for the natural sound probes (the probe reading of the criterion); the reading that resamples
-    trials within probes was not run.
+    trials within probes was not run. The natural area is computed under the four Figure 3B readings (silence
+    counted or not, all probes or the probes still running).
   - Probe sets as in fig8a-proportion-by-property.
 - claim: fig8-natural-synthetic-probes-alike
   outcome: reproduced
@@ -498,7 +532,8 @@ findings:
   about: paper
   statement: The paper reports 123 A1 current-clamp cells meeting its analysis criterion; the data set
     has 132 that meet it (39 natural sound cells and 95 synthetic ensemble cells, 2 in both), or 124 without
-    the two synthetic designs that have no column in Table 1. Which cells make up the 123 is not stated.
+    the files of naturalistic sounds and of a natural probe after natural and pink noise contexts, though
+    both designs enter Table 1 columns in this attempt's map. Which cells make up the 123 is not stated.
 - kind: methods_unavailable
   about: paper
   statement: Question for the authors. How were A1 spikes detected for the firing rates (0.47 and 0.57
@@ -722,3 +757,170 @@ verifications:
     response: Added the noise floor of the silence probes over the first 0.5 s (0.0054) and, from the
       shuffles, the fraction per probe with a significant point in the first 0.5 s, which gives 3.2 of
       38 cells expected by chance against 19 observed. Outcome unchanged.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusions and summary, the helpers
+    asari.py and wehr.py, the attempt record, the README and the claims file, with the paper's text (round
+    2).
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 11: 305/39 and 93/14 match; 132 (or 124) cells against 123 at tolerance 0. No assumption
+      flagged; the property map deviation is stated. In the record notes the higher-order shortfall (131
+      against 137) is put down to the missing tone probes, but cell 11 shows it comes from natural 58
+      vs 63 and MCN 73 vs 74. The finding (selection_undocumented) and the cell 11 label call 124 the
+      count "without the two synthetic designs that have no column in Table 1", which conflicts with the
+      notebook''s own mapping: fig8a counts the naturalistic files under amplitude and frequency, and
+      cell 11 prints 132 cells with a Table 1 probe.'
+    response: The record notes and the conclusion now say the higher-order shortfall is in the natural
+      (58 against 63) and MCN (73 against 74) rows. The cell 11 label, the conclusion, the notes and the
+      finding no longer say the two designs have no Table 1 column; they say both enter Table 1 columns
+      here. Outcome unchanged.
+  - claim: a1-mgb-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, conditionally. 0 of 6 readings pass in each area. The partial rule holds only at 20 and
+      40 robust SDs (8.60 to 12.91 Hz); the authors' automatic rule gives 4.97 to 4.99 Hz. The assumption
+      is stated and defensible, but only cell-level means are shown, so it cannot be judged which MGB
+      detector is right; no per-file amplitude distribution shows whether the events below the automatic
+      threshold are spikes.
+    response: Added, per MGB file, the peak heights of the 40 SD events relative to the automatic threshold
+      (table and histogram), the mean waveform of the events below and above it, and the counts of those
+      below in the 100 ms after and before stimulus onsets. 36% of the events lie below the automatic
+      threshold, the majority in 8 of 21 files; they are stimulus locked (1545 after against 143 before)
+      and spike shaped, and in some files form a separate low cluster that could be a second unit. The
+      conclusion and notes say this supports the lower thresholds without showing that the events come
+      from the recorded unit. Outcome unchanged, still resting on the assumption.
+  - claim: fig2-example-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Yes (0.310 +/- 0.092, n = 39).
+    response: No change.
+  - claim: fig2-example-long-context
+    agrees: true
+    outcome: reproduced
+    reason: Yes, under the amended criterion now in the claims file (2 to 3.6 s). The strict reading fails
+      by 30 ms, as reported.
+    response: No change.
+  - claim: fig3a-proportion-significant
+    agrees: true
+    outcome: reproduced
+    reason: Yes (186, 0.610, 0.252; cell 24 row 0).
+    response: No change.
+  - claim: fig3a-significance-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes (cell 28 rows 1, 3, 5, 7). Sizes >= 0 is stated, reasonable, and raised with the authors.
+    response: No change.
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Yes (tau1 1.29 to 1.78 s in all 8 readings). The sentence "Q itself follows the paper''s
+      curve up to 1 s" (cell 33 and the record notes) holds only at 0.5 s and 1 s: Q at onset is 1.039
+      against 0.49 on the paper''s curve (cell 31, Q_at_0), and the fit''s RMS residual over 0 to 1 s
+      is 0.108 (cell 32).'
+    response: 'Corrected in the conclusion and the notes: Q is close to the paper''s curve at 0.5 and
+      1 s, not at onset (1.039 against 0.49), and the RMS residual over 0 to 1 s is 0.108. Outcome unchanged.'
+  - claim: timescale-longer-than-membrane
+    agrees: true
+    outcome: reproduced
+    reason: Yes (cell 39).
+    response: No change.
+  - claim: fig4-predictability-upper-bound
+    agrees: true
+    outcome: not_reproduced
+    reason: Yes. No reading has tau1 within 1.04 +/- 0.104, including 1 - Q (1.29 to 1.78 s).
+    response: No change.
+  - claim: fig4-strf-performance-low
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Yes under the criterion''s Wilcoxon test (STRF p <= 0.0005 in all four readings); the test
+      is fixed by the criterion, and the other choices (17 bins, zero lags before onset, 16 cells) are
+      stated and reasonable. The sentence that the test finds a higher LN performance at 4052 ms (p <=
+      0.0065) needs qualifying: with folds averaged the LN mean falls from 0.144 to 0.091, the test reflects
+      13 of 16 cells improving, and the LN mean is erratic across windows. Open issues: in 8 of 16 cells
+      the STRF weight peaks at 176 ms, the last lag of the 180-ms model, and a filter cut off at the window
+      edge favours longer windows on its own; no check of stimulus-response alignment is shown for Wehr''s
+      data; wehr.spectrogram has no dB floor (zero samples give about -313 dB) and whether response bins
+      fall beyond the end of the sound is not printed; 6 of the 16 cells have only 2 trials per stimulus
+      and no test over the 10 repeated-set cells alone is shown.'
+    response: The LN sentence now says the test reflects the 13 of 16 cells that improve while the fold-averaged
+      mean falls from 0.144 to 0.091 and is erratic. Added a clock check (the sound level and the trial-mean
+      response correlate most at 24 to 72 ms after the sound in all 16 cells), the count of response bins
+      after the end of the sound (0), the spectrogram's range (0.7% of values below -100 dB, in 10 cells,
+      down to -201 dB; logspectrogram.m has no floor either), the peak lags of the 180-ms and 4052-ms
+      filters (the 180-ms filter peaks at its last lag in 7 of 16 cells, not 8), and the test over the
+      10 repeated-set cells, the 6 two-trial cells and the 9 cells whose filter peaks before the edge,
+      each with no floor and with floors at -100 dB and 80 dB below each peak. Over all 16 cells every
+      variant still finds an improvement; over the 10 repeated-set cells the STRF improves without a floor
+      (p = 0.032) and not with either floor, and LN does not improve. The outcome stays as the criterion's
+      test over the cells available gives it; the notes say it depends on which cells enter the test.
+  - claim: fig5-example-conductances
+    agrees: true
+    outcome: blocked
+    reason: Yes.
+    response: No change.
+  - claim: fig6-conductance-decay
+    agrees: true
+    outcome: blocked
+    reason: Yes.
+    response: No change.
+  - claim: fig7-example-frequency-context
+    agrees: true
+    outcome: blocked
+    reason: 'Yes. Cell 53: 0 files have the three bands. The Fig. 7 legend confirms 0.625-2.5, 2.5-10
+      and 10-40 kHz; its round-1 "testable" was wrong for the example.'
+    response: No change.
+  - claim: fig8a-proportion-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Yes (cell 56: order holds, no count within 10%). AM and FM cannot reach the paper''s counts
+      with 39 and 25 probes. The property map and once-per-probe rule are stated and reasonable.'
+    response: No change.
+  - claim: fig8b-decay-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes (cell 59). Rests on the fig8a sets; stated.
+    response: No change.
+  - claim: fig8a-significance-fits
+    agrees: true
+    outcome: not_reproduced
+    reason: Yes. The partial rule's order fails (frequency 0.147 > amplitude 0.123).
+    response: No change.
+  - claim: fig8c-relative-effects
+    agrees: false
+    reason: Not yet. The synthetic sets exclude silence as a context, but the natural baseline (0.734
+      s) counts it. The natural reading without silence is one of the Figure 3B readings the criterion
+      refers to, and it was not run. A rough extrapolation from the fits in cell 31 puts that area near
+      0.56 s, which would move amplitude to about 0.97 and frequency to about 0.87, so both intervals
+      might then include 1. The outcome may not change (higher-order could then overlap the frequency
+      bound), but this reading needs to be run.
+    response: Ran the natural area under all four Figure 3B readings. Without silence it is 0.597 s; amplitude
+      and frequency give 0.91 (0.79 to 1.11) and 0.82 (0.71 to 0.98), so the frequency interval stays
+      below 1 and both point estimates are below 1; over the probes still running they are 0.88 (0.73
+      to 1.05) and 0.80 (0.66 to 0.95). No reading meets the full or the partial rule, so the outcome
+      stays not reproduced and no change is proposed.
+  - claim: fig8-natural-synthetic-probes-alike
+    agrees: true
+    outcome: reproduced
+    reason: Yes (smallest corrected p 0.97). The test is stated and fixed by the criterion; the AM and
+      FM groups are small, so the test has low power.
+    response: No change.
+  - claim: fig9-mgb-fast-decay
+    agrees: true
+    outcome: reproduced
+    reason: Yes. tau1 is 0.057 to 0.083 s, and 0.057 to 0.084 s without the two cells that fail the clock
+      check (cell 47).
+    response: No change.
+  - claim: fig9-example-first-bin
+    agrees: true
+    outcome: reproduced
+    reason: Yes (cell 50).
+    response: No change.
+  - claim: figs1-silence-probe
+    agrees: true
+    outcome: reproduced
+    reason: Yes. 19 cells against 3.2 expected by chance (cell 43).
+    response: No change.

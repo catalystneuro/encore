@@ -1,26 +1,29 @@
-No outcomes changed and none are proposed for change. The verifier agreed with all 21 outcomes in round 2. I re-ran the entry twice with `python tools/entry.py all entries/asari-2009`; the second run executed the final text. Checks reported 0 errors and both notebooks passed. Every number that was already in the record came out the same.
+No outcome changed and none is proposed. Every point in the round-2 report is now either fixed or answered with a new output. The entry re-ran cleanly with `python tools/entry.py all entries/asari-2009` (38 min, 0 check errors), and the conclusions, notes and summary match the new numbers.
 
-**Added in reply to the report**
-- **fig2-example-long-context (point A):** the notebook now prints the reliability of each probe of 20051222-ha1-001-002. Probe 4 is the 0.737 probe, so it is most likely the paper's Figure 2 example, and it fails the strict 2 to 4 s test by a run that starts 30 ms before 4 s. The outcome stays reproduced under the criterion as written. The notes, Result cell, README and summary now say the passing probe is not from the paper's example cell. The gap in the claims file is a new question for a reader in `questions/asari-2009.yaml`.
-- **fig8c (point C):** the trial-resampling reading now runs, computed in the pass with its own random generator so the existing numbers stay the same.
-  - Its amplitude and frequency intervals lie above 1.
-  - The higher-order upper bound is 1.003 to 1.078, so no reading meets the rule for reproduced.
-  - Its resampled areas are biased upwards (natural sounds 1.69 s against a measured 0.752 s), because a trial drawn twice adds noise to Eq. 17.
-  - The point estimates do not change, so the rule for partial is still not met. The outcome stays not reproduced.
-- **fig7:** the notebook now prints a checksum of each DMR's modulation parameters. Each of the 5 recordings with frequency variants has a single checksum, so the record's sentence about shared modulation parameters is now backed by printed output.
-- **fig4-strf (point B):** the STRF notebook now prints the results without cell 20020602-mw-001. Without that cell:
-  - LN beats STRF by 0.025 on average.
-  - Mean validation performance reaches 0.222 (STRF) and 0.253 (LN), above 0.22.
-  - The longer window still helps significantly (p = 0.011 and 0.0075).
+**Text corrected**
+- **fig3b:** Q is close to the paper's curve only at 0.5 and 1 s. At onset it is 1.039 against 0.49, and the fit's RMS residual over 0 to 1 s is 0.108.
+- **STRF, LN:** the Wilcoxon result for LN reflects the 13 of 16 cells that improve. The fold-averaged mean falls from 0.144 to 0.091 and is erratic across windows.
+- **methods-recording-counts:** the higher-order shortfall (131 against 137) comes from the natural row (58 against 63) and the MCN row (73 against 74), not from the missing tone probes.
+- **The 124-cell count:** the cell 11 label, the conclusion, the notes and the `selection_undocumented` finding no longer say the two left-out designs have no Table 1 column. Both enter Table 1 columns under this attempt's map.
+- **Ridge grid:** 54 folds chose the low end of the grid, not 45. The re-run prints 54.
 
-  The notes now say the two statements rest on that cell. The outcome is the same.
+**Outputs added**
+- **fig8c:** the natural-sound area is now computed under all four Figure 3B readings. Without silence counted it is 0.597 s, giving 0.91 (0.79 to 1.11) for amplitude and 0.82 (0.71 to 0.98) for frequency. The frequency interval stays below 1, so no reading meets the full or the partial rule and the outcome stays not reproduced.
+- **fig4-strf-performance-low:**
+  - Stimulus and response share a clock: the sound level and the response correlate most at 24 to 72 ms after the sound in all 16 cells.
+  - No response bin falls after the end of its sound.
+  - 0.7% of spectrogram values lie below -100 dB (lowest -201 dB). The authors' `logspectrogram.m` has no floor either.
+  - The 180-ms filter peaks at its last lag in 7 of 16 cells, not 8 as the report says.
+  - The test is now also run over the 10 repeated-set cells, the 6 two-trial cells and the 9 cells whose filter peaks earlier. Each is run with no floor and with floors at -100 dB and at 80 dB below each stimulus's peak.
+  - Over all 16 cells every variant still finds an improvement, so the outcome holds.
+  - Over the 10 repeated-set cells, neither model improves significantly with either floor. The notes now say the outcome depends on which cells enter the test, and the paper does not list its 20.
+- **a1-mgb-firing-rates:** a per-file table and histogram of MGB event heights against the code's automatic threshold.
+  - 36% of the events found at 40 SDs lie below it, and they are the majority in 8 of 21 files.
+  - They look like spikes: they cluster after stimulus onsets (1,545 after against 143 before) and have spike-shaped waveforms. This supports the lower thresholds.
+  - Some files also have a separate low-amplitude cluster that could be a second unit, so the record says this does not prove which detector is right. The outcome still rests on the stated assumption.
 
-**Corrected**
-- **README runtimes:** now 29 and 22 minutes, from this run. They were 25 and 22; the verifier's earlier run took 18.2 and 10.0.
-- **fig4-predictability notes:** the mean over the first 100 ms is 0.50 only with silence counted; it is 0.57 without.
-- **a1-mgb-firing-rates notes (point D):** they now say that with the code's own MGB detector the partial rule rests on a margin of 0.03 to 0.07 Hz, and holds by a wide margin only at half that detector's threshold.
-- **Round 2 under `verifications`:** recorded for all 21 claims, with the verifier's reasons and my responses.
+**Record:** round 2 is added under `verifications`, with the verifier's reasons closely paraphrased and my replies under `response`. For fig8c it is recorded as `agrees: false` with no outcome, since the report asked for the missing reading without proposing a different outcome. `runtime_minutes` and the README now give the real run time (about 40 minutes).
 
 **Not done**
-- The fig8 choice of main reading is post hoc. I made no change, because the verifier noted that all three readings give the same outcomes, and the existing findings already cover the split by probe type.
-- Nothing is committed, as instructed.
+- No question added to `questions/asari-2009.yaml`, since the verifier found no misreading of the paper.
+- The fig8c reading that resamples trials within each probe is still not run. The report did not ask for it, and the notebook says so.

@@ -722,6 +722,16 @@ def analyse_mgb_file(path):
     w = int(0.1 * rec.sf)
     out["clock"] = (int(sum(np.searchsorted(sp, a + w) - np.searchsorted(sp, a) for a in on)),
                     int(sum(np.searchsorted(sp, a) - np.searchsorted(sp, a - w) for a in on)), len(on))
+    # are the events the automatic rule leaves out spikes? Peak heights of the 40 x SD events (with
+    # the dead time) relative to the automatic threshold, the mean waveform of those below and
+    # above it, and for those below, the counts in the 100 ms after and before stimulus onsets
+    sp40 = dead[40]
+    amp = f[sp40] / out["threshold"]["auto"]
+    lo = np.sort(sp40[amp < 1])
+    out["amp_check"] = dict(amp=amp.astype(np.float32), below=spike_stats(f, lo, rec.sf),
+                            above=spike_stats(f, sp40[amp >= 1], rec.sf),
+                            below_after=int(sum(np.searchsorted(lo, a + w) - np.searchsorted(lo, a) for a in on)),
+                            below_before=int(sum(np.searchsorted(lo, a) - np.searchsorted(lo, a - w) for a in on)))
     out["probes"] = []
     if not rec.table or rec.rep is None:
         return out

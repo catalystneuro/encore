@@ -36,7 +36,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/asari-2009-02.yaml`](../../attempts/asari-2009-02.yaml).
 
-- `reproduce_asari_2009.ipynb`: the analysis. It takes about 20 minutes, most of it the
+- `reproduce_asari_2009.ipynb`: the analysis. It takes about 40 minutes, most of it the
   Kruskal-Wallis tests with 1,000 shuffles per probe and the STRF fits, run in four worker
   processes.
 - `asari.py`: streaming the files from the crcnsarchive bucket, the probe sets of the authors'

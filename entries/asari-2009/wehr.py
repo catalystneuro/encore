@@ -18,6 +18,13 @@ not fix (assumptions):
 - the static nonlinearity is a robust local-linear lowess (5% span, five robust iterations,
   Methods) fitted on the training folds and interpolated onto the validation fold.
 
+The spectrogram has no dB floor, as in logspectrogram.m (20 log10(|S| + eps)), so stretches of
+digital silence inside a stimulus give values far below the rest. Two floors are run as variants
+(a check, not a reading of the paper): -100 dB, about 165 dB below the loudest values, which
+changes only stretches of near or full digital silence (the notebook prints how many values lie
+below it); and 80 dB below each stimulus's peak, a common dynamic range for STRF spectrograms
+(standard choice).
+
 Streams everything from the public bucket via asari.open_zip; nothing is written to disk.
 """
 import functools
@@ -71,11 +78,12 @@ def frequencies():
     return FMIN * 2 ** x
 
 
-def spectrogram(samples, sf, nbins, win_ms=10.0, nfreq=17):
+def spectrogram(samples, sf, nbins, win_ms=10.0, nfreq=17, floor=None):
     """Eq. 47: 20 log10 |STFT| with a Hann window of win_ms, evaluated at the logspectrogram.m
     frequencies (first nfreq of the 18), one column per 4-ms bin, column k centred on the
     centre of response bin k ((k + 0.5) * 4 ms). Samples outside the sound are zero.
-    Returns (nfreq, nbins) array in dB."""
+    floor: None (logspectrogram.m, no floor), a number (dB), or "peak-80" (80 dB below the
+    stimulus's largest value). Returns (nfreq, nbins) array in dB."""
     f = frequencies()[:nfreq]
     N = int(round(win_ms / 1000 * sf))
     w = np.hanning(N + 2)[1:-1]   # MATLAB hann(N) is symmetric with nonzero ends
@@ -87,7 +95,12 @@ def spectrogram(samples, sf, nbins, win_ms=10.0, nfreq=17):
     S = np.empty((nbins, len(f)), complex)
     for a in range(0, nbins, 2000):
         S[a:a + 2000] = pad[idx[a:a + 2000]] @ E
-    return 20 * np.log10(np.abs(S).T + np.finfo(float).eps)
+    S = 20 * np.log10(np.abs(S).T + np.finfo(float).eps)
+    if floor == "peak-80":
+        S = np.maximum(S, S.max() - 80.0)
+    elif floor is not None:
+        S = np.maximum(S, float(floor))
+    return S
 
 
 @functools.lru_cache(None)
@@ -121,7 +134,7 @@ def evoked(trace, sf, trig, smooth_ms=SMOOTH_MS):
     return trace[t0 - 1:t0 - 1 + n]
 
 
-def cell_data(cell, win_ms=10.0, nfreq=17, min_trials=2, smooth_ms=SMOOTH_MS):
+def cell_data(cell, win_ms=10.0, nfreq=17, min_trials=2, smooth_ms=SMOOTH_MS, floor=None):
     """For one cell (e.g. '20020508-mw-003') return a list of dicts, one per natural-sound
     stimulus with >= min_trials included trials (files noted 'Not included in the published
     results' are dropped), in order of first presentation:
@@ -150,8 +163,9 @@ def cell_data(cell, win_ms=10.0, nfreq=17, min_trials=2, smooth_ms=SMOOTH_MS):
         T = min(len(t) for t in g["trials"])
         R = np.array([t[:T] for t in g["trials"]])
         smp, ssf = stimulus_samples(g["stim_file"])
-        S = spectrogram(ramp(smp, g["ramp"], ssf), ssf, T, win_ms, nfreq)
-        out.append(dict(stim_file=g["stim_file"], description=g["description"], S=S, R=R))
+        S = spectrogram(ramp(smp, g["ramp"], ssf), ssf, T, win_ms, nfreq, floor)
+        out.append(dict(stim_file=g["stim_file"], description=g["description"], S=S, R=R,
+                        sound_bins=len(smp) / ssf / DT))
     return out
 
 
@@ -324,16 +338,48 @@ def usable_cells(min_trials=2):
     return out
 
 
+def envelope_xcorr(stims, max_lag=125, hp_bins=50):
+    """Clock check of stimulus and response: correlation between the sound level (mean dB over
+    frequencies) and the trial-mean response, both with a 200-ms running mean removed (hp_bins
+    4-ms bins) and z-scored per stimulus, at lags of -max_lag..max_lag bins (positive: response
+    after the sound), pooled over stimuli. Returns (lags in ms, correlations)."""
+    lags = np.arange(-max_lag, max_lag + 1)
+    c, n = np.zeros(len(lags)), 0
+    for s in stims:
+        e = s["S"].mean(0)
+        r = s["R"].mean(0)
+        e = e - ndimage.uniform_filter1d(e, hp_bins, mode="nearest")
+        r = r - ndimage.uniform_filter1d(r, hp_bins, mode="nearest")
+        e = (e - e.mean()) / e.std()
+        r = (r - r.mean()) / r.std()
+        T = len(e)
+        for i, k in enumerate(lags):
+            c[i] += (e[:T - k] * r[k:]).sum() if k >= 0 else (e[-k:] * r[:T + k]).sum()
+        n += T
+    return lags * DT * 1000, c / n
+
+
 def run_cell(args):
-    """All nine window models for one cell and one spectrogram window: rows of the lower and
-    upper performance of STRF and LN, averaged over folds (Methods) and pooled over folds."""
-    cell, win_ms = args
-    st = cell_data(cell, win_ms=win_ms)
+    """All nine window models for one cell, one spectrogram window and one dB floor (None, as
+    logspectrogram.m): rows of the lower and upper performance of STRF and LN, averaged over folds
+    (Methods) and pooled over folds, with the spectrogram's range and the clock check."""
+    cell, win_ms = args[:2]
+    floor = args[2] if len(args) > 2 else None
+    st = cell_data(cell, win_ms=win_ms, floor=floor)
     stimulus_samples.cache_clear()
     rows = []
     if not st:
         return rows
     ntr = [s["R"].shape[0] for s in st]
+    lags, xc = envelope_xcorr(st)
+    i = int(np.argmax(np.abs(xc)))
+    pos, neg = (lags >= 0) & (lags <= 300), (lags < 0) & (lags >= -300)
+    extra = dict(floor=str(floor), spec_min_db=float(min(s["S"].min() for s in st)),
+                 spec_below_m100=int(sum((s["S"] < -100).sum() for s in st)),
+                 spec_values=int(sum(s["S"].size for s in st)),
+                 bins_beyond_sound=int(sum(max(0, s["R"].shape[1] - int(np.ceil(s["sound_bins"]))) for s in st)),
+                 xcorr_peak_lag_ms=float(lags[i]), xcorr_peak=float(xc[i]),
+                 xcorr_max_0_300ms=float(np.abs(xc[pos]).max()), xcorr_max_m300_0ms=float(np.abs(xc[neg]).max()))
     for mi, cnt in enumerate(MODELS):
         r = strf_cv(st, cnt)
         F = r["filters"].mean(0).reshape(45, -1)
@@ -346,5 +392,5 @@ def run_cell(args):
                          ln_upper_pooled=r["ln_upper_pooled"], ln_lower_pooled=r["ln_lower_pooled"],
                          folds_ridge_at_low_edge=r["ridge_low_edge"], folds_ridge_at_high_edge=r["ridge_high_edge"],
                          fold_valid_min=float(r["strf_valid"].min()), fold_valid_max=float(r["strf_valid"].max()),
-                         peak_lag_ms=4 * lag_edges(cnt)[int(np.argmax(np.abs(F).max(1)))][0]))
+                         peak_lag_ms=4 * lag_edges(cnt)[int(np.argmax(np.abs(F).max(1)))][0], **extra))
     return rows
