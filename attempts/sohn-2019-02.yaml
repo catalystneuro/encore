@@ -1,0 +1,351 @@
+schema_version: 3
+id: sohn-2019-02
+datasets:
+- archive: dandi
+  id: '000130'
+  version: 0.241017.1448
+  doi: 10.48324/dandi.000130/0.241017.1448
+  relation: primary
+paper: doi:10.1016/j.neuron.2019.06.012
+date: '2026-11-15'
+entry: sohn-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43684558521
+outcomes:
+- claim: beh-slopes
+  outcome: not_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:beh-slopes
+  notes: With an intercept, 6 of 8 weighted slopes lie between 0 and 1 and 5 of 8 intervals exclude both 0 and 1.
+    The Eye Left Short (1.011, 95% CI 0.896 to 1.126) and Eye Right Short (1.110, 1.014 to 1.206) slopes are not
+    below 1. The four Hand slopes are 0.50 to 0.86 with intervals excluding 0 and 1, and the Eye Long slopes are
+    0.845 and 0.903. Through the origin (the Methods' equation tp = beta ts) 2 of 8 slopes are below 1. Both readings
+    give the same outcome.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used.
+  - The criterion does not say whether the regression has an intercept; the Methods (Analysis of behavior, Model
+    free analysis) write tp = beta ts + epsilon. Both readings were run and give the same outcome.
+  - Trials are the completed trials not flagged by the file's is_outlier column (claims file); the mixture model
+    is the file's, not refit here.
+- claim: beh-overlap-prior
+  outcome: not_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:beh-overlap-prior
+  notes: At ts = 800 ms the median of tp - 800 is +28.3 ms for Short (n 93) and +47.6 ms for Long (n 107); the Short
+    median is not negative, and the two-sided rank-sum test between priors gives p = 0.073. Per dataset only Hand
+    Left has a negative Short median (-61.6 ms), the Long median is the larger in 2 of 4, and only Hand Right differs
+    at p < 0.05 (p = 0.00099). The Eye Short medians are +79.1 and +40.9 ms.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used. The paper's p < 1e-43 pools 17 sessions.
+- claim: beh-sigmoid-increments
+  outcome: reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:beh-sigmoid-increments
+  notes: The middle increment of mean tp exceeds the extreme one in 7 of 8 prior, effector and direction conditions
+    (Hand Left Short is the exception, -10.7 ms); two-sided signed-rank p = 0.0156. The paper's p < 1e-11 pools
+    17 sessions of monkey H.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used.
+- claim: beh-long-more-bias
+  outcome: reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:beh-long-more-bias
+  notes: With the intercept regression of beh-slopes the Long slope is below the Short slope in all 4 datasets (Eye
+    Left 0.845 and 1.011, Eye Right 0.903 and 1.110, Hand Left 0.502 and 0.612, Hand Right 0.612 and 0.861). Through
+    the origin it is below in 3 of 4 (Eye Right 1.027 against 1.016), which would be partially reproduced. The outcome
+    rests on the intercept reading. Question for the paper's authors, does the weighted regression of tp on ts (Methods,
+    Model free analysis of behavior, tp = beta ts + epsilon) include an intercept? The two readings differ here
+    in one dataset.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used.
+  - Assumed that the regression of tp on ts has an intercept. The Methods write tp = beta ts + epsilon, without
+    one, but the Results read slopes below 1 as bias toward the mean of the prior (Results, Task and behavior, paragraph
+    3), which is what a slope with an intercept measures; a slope through the origin mostly measures the overall
+    ratio of tp to ts. Both readings are shown.
+  assumed: true
+- claim: beh-bayes-model
+  outcome: partially_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:beh-bayes-model
+  notes: The correlation of observed and predicted SD of tp over the 10 conditions is positive in all 4 datasets
+    (Eye Left 0.807, Eye Right 0.909, Hand Left 0.749, Hand Right 0.277 with p = 0.44). The bias R2 (1 - SS_res/SS_tot)
+    reaches 0.8 in 2 of 4 (Hand Left 0.978, Hand Right 0.865; Eye Left 0.670, Eye Right 0.122); the squared correlation
+    gives the same count. Fitted wm are 0.025, 0.013, 0.116 and 0.073 and wp 0.103, 0.106, 0.090 and 0.104. The
+    Eye biases span only 108 and 80 ms over the 10 conditions, against 265 and 166 ms for Hand. Table S3 was not
+    available for comparison.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used.
+  - The prior is continuous uniform over each range (claims file), where the Methods describe 5 discrete values;
+    production noise is wp times te and the offset b is added to te (Methods, Analysis of behavior with a Bayesian
+    model).
+  - Fit per effector and direction of one session, where the paper pools sessions per animal, effector and direction.
+  - R2 is read as 1 - SS_res/SS_tot of the observed biases around the predicted ones; the squared Pearson correlation
+    is shown as a second reading and gives the same outcome.
+- claim: glm-prior-ts
+  outcome: not_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:glm-prior-ts
+  measured:
+  - 79.2
+  - 45.8
+  notes: 38 of 48 units (79.2%, binomial 95% CI 65.0 to 89.5) are prior-dependent, against 65 +- 6.5%. Under reading
+    (a), Long-prior windows ending at the Long ts values (800 to 1200 ms), 22 of 48 (45.8%, 31.4 to 60.8) are ts-dependent;
+    under reading (b), the same 480 to 800 ms windows in both priors, 24 of 48 (50.0%), against 27 +- 2.7%. Both
+    fractions are higher than the paper's for monkey H under both readings. 19 units are both and 7 neither.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used. The paper's 65% and 27% are over 536 units of
+    monkey H; here 48 units.
+  - For ts dependence the criterion gives each prior that prior's 5 time indicators. Reading (a) places the Long-prior
+    windows before the Long ts values, following the Methods' sentence that two GLMs were used since values of ts
+    were different between the priors (Generalized linear model); reading (b) keeps the 480 to 800 ms windows. Both
+    run; both give the same outcome.
+  - BIC is -2 log-likelihood + k ln n of statsmodels' Poisson GLM, with the observations of all windows (3921 per
+    unit for the prior test).
+- claim: dfr-overlap-support
+  outcome: reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:dfr-overlap-support
+  notes: The RMS over units of the Long - Short rate difference at ts = 800, averaged over the 4 datasets, is largest
+    in the 480 to 640 ms bin (6.86 spikes/s), above the 95th percentile of the maximum over 200 shuffles of the
+    prior labels (3.15; largest shuffle 3.46). The bin after Set, 800 to 960 ms, is next (6.07). Per dataset the
+    largest bin is within 480 to 800 ms in 3 of 4; in Eye Left it is 800 to 960 ms (9.73). The datasets have 14
+    to 38 trials per prior at ts = 800.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used.
+- claim: pca-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:pca-dimensionality
+  notes: In the estimation epoch 2 components reach 75% of the variance in all 4 datasets (0.80 to 0.86 with 2,
+    0.87 to 0.91 with 3), so none is in 3 to 4. In the production epoch 2, 2, 4 and 5 components do (Eye Left, Eye
+    Right, Hand Left, Hand Right), so 1 of 4 is in 5 to 11. 1 of 8 values is in range. Without smoothing the counts
+    are 3 to 6 and 6 to 15, so they depend on the smoothing.
+  deviations:
+  - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
+    trials of the session have no task variables and are not used. 48 units, where the paper's datasets pool the
+    units of all sessions of an animal (536 for H).
+  - The Gaussian kernel is renormalised over the bins of each epoch so that no bin outside it enters (a standard
+    choice the Methods do not fix).
+- claim: encoding-r2
+  outcome: reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:encoding-r2
+  measured:
+  - 0.9957
+  - 0.9774
+  notes: Reading (a), Hand Left, gives R2 of Xu by te of 0.9957 for Short and 0.9774 for Long; reading (b), the
+    mean of the 4 datasets, 0.9587 and 0.9822. All are within tolerance. Per dataset R2 is 0.909 to 0.996. The comparison
+    with random axes is weak in the 2-component estimation space; random unit vectors give median R2 of 0.69 to
+    0.99, 1.2% to 44.2% of them reach the R2 of u, and a linear function of ts gives R2 of 0.898 to 0.990.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - te(t) uses the dataset's own fitted wm from beh-bayes-model, where the paper fits per animal, effector and direction
+    over sessions.
+- claim: encoding-bayes-beats-linear
+  outcome: partially_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:encoding-bayes-beats-linear
+  notes: The Bayesian fit has the lower RMSE in all 4 datasets for Short (differences -0.31, -0.22, -0.47 and -0.04
+    spikes/s for Eye Left, Eye Right, Hand Left, Hand Right) and in 3 of 4 for Long (-0.59, -0.20, +0.10, -0.22);
+    for Hand Left Long the linear fit is better (0.481 against 0.583). Weighted RMSE gives the same counts. Signed-rank
+    p over 4 datasets is 0.125 (Short) and 0.25 (Long).
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - RMSE is the unweighted root mean square residual of the weighted fits; the weighted RMSE is shown as a variant
+    and gives the same outcome.
+- claim: short-in-long-control
+  outcome: reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:short-in-long-control
+  notes: By the paper's test, the two-sided signed-rank test of the RMSE difference (Bayesian - linear) over the
+    4 datasets gives p = 0.25 with the axis built as u is (mean of difference vectors) and 0.125 with the single
+    difference X(800) - X(480); with 4 datasets the test cannot reach p < 0.05. The effect does not look absent.
+    The Bayesian model fits better in 3 of 4 datasets (-0.21, -0.12, +0.05, -0.11 spikes/s), of a size like the
+    Short prior's own differences (-0.04 to -0.47). The paper's ANOVA interaction was not run.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - The axis is built from the mean of difference vectors between 480 and 800 ms, as for u (Methods, Analysis of
+    neural projection, 'we applied the same projection analysis'); the single difference the criterion names is
+    shown and gives the same outcome.
+- claim: neural-long-more-bias
+  outcome: partially_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:neural-long-more-bias
+  notes: The weighted slope of Xu on ts is lower for Long in 3 of 4 datasets (Eye Left 0.229 and 0.124, Eye Right
+    0.191 and 0.117, Hand Left 0.077 and 0.027 spikes/s per ms, Short then Long); in Hand Right the Long slope is
+    slightly higher (0.0486 against 0.0470). With outlier trials included the count is the same; without smoothing
+    it is 4 of 4. Signed-rank p over 4 datasets is 0.25.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+- claim: speed-vs-projection
+  outcome: partially_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:speed-vs-projection
+  measured:
+  - -0.932
+  - -0.874
+  notes: Pooled over the 4 datasets (20 points per prior), Xu at Set correlates negatively with the speed of the
+    production trajectory, r = -0.932 (p = 2.3e-09) for Short and -0.874 (p = 4.8e-07) for Long, both stronger than
+    the paper's -0.74 and -0.51 and outside tolerance. Within datasets r is -0.92 to -0.995 (Short) and -0.67 to
+    -0.96 (Long). With speed divided by the mean tp (the Methods' wording) r is -0.916 and -0.925.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125. Xu scales differ between datasets and are pooled
+    as they are, as the criterion says.
+- claim: initial-speed-biased
+  outcome: not_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:initial-speed-biased
+  notes: The measured slope of initial speed (Set to Set + 400 ms) on ts is shallower than the unbiased profile's
+    in 7 of 8 dataset-priors (Eye Right Long is the exception, -0.0082 against -0.0065), but the two-sided signed-rank
+    test of the difference gives p = 0.055. No trial had tp below 400 ms. The paper's p < 1e-3 combines both animals.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - Initial speed is measured in the production PC space of the dataset (Set to the shortest tp), the space of speed-vs-projection;
+    the claims file names the step distance, not the space.
+- claim: speed-predicts-tp
+  outcome: partially_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:speed-predicts-tp
+  measured:
+  - -0.719
+  - -0.744
+  notes: Pooled over the 4 datasets, speed correlates negatively with mean tp, r = -0.719 (p = 0.00035) for Short
+    and -0.744 (p = 0.00017) for Long, both outside tolerance around -0.58 and -0.52. Within datasets r is -0.94
+    to -0.99 (Short) and -0.78 to -0.97 (Long). Trial by trial, single-trial speed (Set to Go) correlates with tp
+    at r = -0.15 to -0.71 in the 8 prior, effector and direction groups, with p < 0.05 in 7.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - The single-trial speed variant uses smoothed single-trial rates in the dataset's production PC space; the Neural
+    Latents Benchmark's own computation was not used.
+- claim: alt-speed-unmodulated
+  outcome: reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:alt-speed-unmodulated
+  notes: By the paper's test, the two-sided signed-rank tests of the 4 slopes against zero give p = 0.25 (Short)
+    and 0.125 (Long); with 4 datasets the test cannot reach p < 0.05. The effect sizes lean toward modulation. The
+    slope of step distance on time is positive in 7 of 8 dataset-priors, the step distance changes by -13% to +56%
+    over the support, and percentile bootstrap intervals over trials exclude zero in 6 of 8. These intervals sit
+    mostly above the point estimates, so they are biased upward. Attrition reduces the trials averaged about five-fold
+    across the support, which adds noise to the later steps; this may contribute to the positive slopes and was
+    not tested.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - Bootstrap of trials within each ts, 200 resamples (a standard choice).
+- claim: alt-transient-parallel
+  outcome: reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:alt-transient-parallel
+  notes: PCA on Set to Set + 200 ms keeps 1 to 4 components. The two-sided signed-rank tests of the 8 slopes against
+    zero give p = 0.195 for the shortest ts and 1.0 for the longest. For the longest ts the median change over 200
+    ms is 0.07 spikes/s against a median distance of 22.3. For the shortest ts the distance grows in 6 of 8 dataset-priors
+    (median change 14.5 against a median starting distance of 18.2), a divergence, not the convergence the transient
+    hypothesis predicts.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+- claim: alt-threshold-monotonic
+  outcome: not_reproduced
+  notebook: reproduce_sohn_2019.ipynb
+  output: claim:alt-threshold-monotonic
+  notes: With 60% of the variance (1 to 3 components) the median time of the minimum distance to the middle-ts trajectory
+    is 230 ms before Go; the minimum is in the last 40 ms in 4 of 32 curves and in the last 200 ms in 13. With 75%
+    (2 to 5 components) the median is 160 ms before Go (8 of 32 in the last 40 ms), which would be partially reproduced.
+    The minima spread from 760 ms before Go to Go.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - Times are bin ends of 20 ms bins aligned to Go; for Short trials the window starts before Set, as the Methods'
+    window Go - 800 ms to Go implies.
+- claim: gpfa-variance-inverted-u
+  outcome: not_reproduced
+  notebook: gpfa_sohn_2019.ipynb
+  output: claim:gpfa-variance-inverted-u
+  notes: Cross-validation chose 8 latent dimensions in all 4 datasets. The quadratic coefficient of variance on
+    ts is negative in 6 of 8 dataset-priors and the one-tailed signed-rank test gives p = 0.0547. The result sits
+    at the threshold; refits with three other seeds give p = 0.055, 0.039 and 0.055, and 4 latent dimensions p =
+    0.098, with 6 of 8 negative each time. The mean variance profile by ts rank (0.78, 0.91, 0.85, 0.51, 0.45) falls
+    toward the long end. Variances rest on 14 to 38 trials per ts.
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125. The paper used one high-yield session of 48 units
+    for H; this session has 48 selected units, but whether it is that session is not stated.
+  - GPFA is elephant 1.2.1's port of Yu et al. (2009), not the paper's MATLAB code; it fits on 20-bin segments with
+    random overlaps (elephant's default), seeded here.
+- claim: gpfa-mean-sigmoid
+  outcome: reproduced
+  notebook: gpfa_sohn_2019.ipynb
+  output: claim:gpfa-mean-sigmoid
+  notes: The middle increment of the mean GPFA projection exceeds the extreme one in 7 of 8 dataset-priors (two-sided
+    signed-rank p = 0.0156), and the slope of the mean projection on ts is higher for Short than for Long in all
+    4 datasets (one-tailed p = 0.0625, the paper's value).
+  deviations:
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
+    a signed-rank test over 4 values cannot fall below p = 0.125.
+- claim: rnn-curved-manifold
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim is about recurrent networks the authors trained; neither the networks nor their training code
+    are in the dandiset, and the paper says the code is available from the corresponding author on request (Data
+    and code availability). No other dandiset of this paper was found by searching the archive for Jazayeri, DMFC
+    and the task.
+- claim: rnn-perturbation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the trained recurrent networks, which are not public (see rnn-curved-manifold).
+- claim: monkey-g
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds one session of monkey H only; monkey G's 12 sessions are not in it, and no other dandiset
+    holding them was found by searching the archive.
+findings:
+- kind: data_missing
+  statement: The dandiset holds one of the paper's 29 sessions (2016-12-11, monkey H). The other 16 sessions of
+    monkey H, all 12 sessions of monkey G, and the trained recurrent networks are not in it, and no other dandiset
+    holds them. Results that pool sessions or animals can be tested only on one session, and the monkey G and network
+    findings not at all.
+- kind: data_missing
+  statement: The test file's 283 trials (about 20% of the session's 1443) hold only a go_time per 1.7 s segment,
+    for 40 of the 54 units. Their prior, ts, effector, direction and Ready and Set times are withheld for the Neural
+    Latents Benchmark, so they cannot be used for any of the paper's analyses. Their spikes are not repeated in
+    the train file.
+- kind: metadata_error
+  statement: The description of the trial column iti says it is 500 ms for Short-prior trials and 1220 ms for Long-prior
+    trials. The values are the reverse (1220 ms in all 577 Short trials, 500 ms in all 583 Long trials), as the
+    paper's Methods give.
+- kind: metadata_insufficient
+  statement: tp is longer than go_time - set_time in every analysed trial, by a median of 17.9 ms (0.1 to 200.6
+    ms), and set_time - ready_time differs from ts by up to 23.5 ms. The files do not say between which events tp
+    is measured or how the event times were registered.
+- kind: metadata_insufficient
+  statement: Units have no electrode or probe assignment (the unit table has no electrodes column and the 72 electrodes
+    have no positions), and no label says which units are single units and which multi-units, a distinction the
+    paper reports (196 single and 421 multi-units in monkey H).
+- kind: methods_unavailable
+  statement: The Methods give the behavioural regression as tp = beta ts + epsilon, without an intercept, while
+    the Results read slopes below 1 as bias toward the prior mean. Does the regression include an intercept? In
+    this session the two readings give different counts of datasets with a smaller Long-prior slope (4 of 4 with
+    an intercept, 3 of 4 without). The attempt assumes an intercept.

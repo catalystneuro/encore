@@ -1,446 +1,431 @@
-"""Loading and measures for the Ready-Set-Go data of dandiset 000130.
+"""Loading and measures for dandiset 000130 (Sohn, Narain, Meirhaeghe & Jazayeri 2019, Neuron 103:934).
 
-Sohn, Narain, Meirhaeghe & Jazayeri (2019), Neuron, doi:10.1016/j.neuron.2019.06.012.
+Dandiset 000130 holds one session (2016-12-11) of monkey H (Haydn) in the Ready-Set-Go task,
+prepared for the Neural Latents Benchmark (NLB): a "train" file with the trial table and the
+spikes of 54 units over the session, and a "test" file with 283 further trials whose task
+variables are withheld and whose spikes are given for 40 of the units only. Every analysis here
+uses the train file, streamed from the archive at the pinned version.
 
-The dandiset is the DMFC_RSG set of the Neural Latents Benchmark: one session of monkey H
-(Haydn, 2016-12-11). The train file holds the trial table with every task variable and the
-spike times of 54 units; the test file holds 283 further trials without task variables and
-only 40 of the units. Analyses use the train file. Files are streamed from the archive at the
-pinned version; nothing is written to disk.
+Where each parameter comes from (claims file claims/sohn-2019.yaml, its opening comment and the
+criteria, unless said otherwise):
 
-Where the parameters come from:
-
-- From the paper's STAR Methods: units kept with a mean rate of at least 1 spike/s and at least
-  5 trials per condition (`MIN_RATE`, `MIN_TRIALS`); 20 ms bins and a 40 ms Gaussian kernel for
-  population rates (`BIN_MS`, `SMOOTH_MS`, read here as the kernel's SD); attrition in the
-  estimation epoch; production rates up to the shortest tp of each ts; PCA keeping the
-  components that explain 75% of the variance (`VAR_KEPT`); the encoding axis from difference
-  vectors every 20 ms; the 80 ms GLM window before Set (`GLM_WINDOW_MS`) and BIC comparison;
-  the Bayesian observer with scalar measurement and production noise, a uniform prior, the
-  posterior mean, and an offset per prior; GPFA on single trials with cross-validation.
-- Common choices made here where the Methods leave it open (see the claims file): kernel width
-  read as SD; rates averaged per 20 ms bin and then smoothed; no normalisation of rates before
-  PCA (soft normalisation and z-scoring, `unit_scale`, are variants); difference vectors for the encoding axis averaged up to the middle of the support;
-  speed as the mean step between successive 20 ms states; the GPFA latent dimensionality chosen
-  from `GPFA_DIMS` by 3-fold cross-validation, and `GPFA_EM_ITERS` EM iterations.
-- The flag `is_outlier` in the trial table is the paper's mixture-model exclusion and is used as
-  given; `outlier_mixture` refits that model as a check.
+- Trials: completed trials (Set and Go present, tp > 0) not flagged `is_outlier`, the file's
+  mixture-model flag (claims file, method choices). The neural analyses use the same trials (a
+  standard choice: the Methods do not say whether the behavioural outliers are dropped from the
+  neural averages).
+- Units: mean rate over the file of at least 1 spike/s and at least 5 trials in each of the 40
+  conditions (Methods, "Analysis of single- and multi-unit activity").
+- Rates: spike counts in 20 ms bins, averaged over trials, in spikes/s, smoothed by a Gaussian of
+  SD 40 ms (Methods, "Principal component analysis": "bin size: 20 ms, Gaussian smoothing kernel
+  width: 40 ms"; the claims file reads the width as the SD). The kernel is renormalised over the
+  bins of each trajectory, so that no bin outside the epoch enters (a standard choice).
+- Estimation epoch: from Ready to the prior's longest ts, each bin averaging the trials whose Set
+  comes at or after the end of the bin (attrition; Methods, "Principal component analysis").
+  Production epoch: from Set to the shortest tp of that ts (same passage).
+- PCA: per effector and direction ("dataset") and epoch, on the trajectories of both priors
+  concatenated, mean-centred, not normalised; the fewest components reaching 75% of the variance.
+- Encoding axis u: the mean of X(ts_max - d) - X(ts_min + d) for d = 0, 20, 40 ms ... while
+  ts_min + d < ts_max - d, normalised (Methods, "Analysis of neural projection"). The state at
+  time t is the bin that ends at t.
+- Bayesian observer: continuous uniform prior on each range, measurement noise SD wm*ts, the
+  posterior mean as te, production noise SD wp*te, an offset b per prior; wm, wp, bShort, bLong
+  fit by maximum likelihood per dataset (Methods, "Analysis of behavior with a Bayesian model").
+  Integrals are taken on grids of 301 points over +-5 SD of tm and over the prior range (a
+  standard choice).
+- GPFA: elephant's implementation of Yu et al. (2009), 20 ms bins, the latent dimensionality
+  chosen from 4 and 8 by 3-fold cross-validated log-likelihood (claims file), orthonormalised
+  latents. Seeds are fixed per claim.
 """
 
 from __future__ import annotations
 
-import h5py
 import numpy as np
 import pandas as pd
-import remfile
-from dandi.dandiapi import DandiAPIClient
-from scipy import optimize, stats
-from scipy.ndimage import gaussian_filter1d
+import requests
 
-DANDISET_ID = "000130"
-DANDISET_VERSION = "0.241017.1448"
-TRAIN = "sub-Haydn/sub-Haydn_desc-train_ecephys.nwb"
-TEST = "sub-Haydn/sub-Haydn_desc-test_ecephys.nwb"
+DANDISET = "000130"
+VERSION = "0.241017.1448"
+TRAIN_PATH = "sub-Haydn/sub-Haydn_desc-train_ecephys.nwb"
+TEST_PATH = "sub-Haydn/sub-Haydn_desc-test_ecephys.nwb"
+API = "https://api.dandiarchive.org/api"
 
-MIN_RATE = 1.0         # spikes/s, Methods
-MIN_TRIALS = 5         # per condition, Methods
-BIN_MS = 20            # Methods
-SMOOTH_MS = 40         # Methods, "Gaussian smoothing kernel width", read as SD
-VAR_KEPT = 0.75        # Methods
-GLM_WINDOW_MS = 80     # Methods
-GPFA_DIMS = (4, 8)     # choice here; the Methods say only "with cross validation"
-GPFA_EM_ITERS = 100    # choice here, to keep the run short
+SHORT_TS = np.array([480, 560, 640, 720, 800])
+LONG_TS = np.array([800, 900, 1000, 1100, 1200])
+PRIOR_TS = {"Short": SHORT_TS, "Long": LONG_TS}
+BIN = 20  # ms
+SMOOTH_SD = 40  # ms
+VAR_THRESHOLD = 0.75
 
-SHORT_TS = (480, 560, 640, 720, 800)
-LONG_TS = (800, 900, 1000, 1100, 1200)
-DATASETS = [(True, 0.0), (True, 180.0), (False, 0.0), (False, 180.0)]
+# effector and direction: theta 0 is right and 180 is left (the file's description of `theta`)
+DATASETS = [("Eye", "Left"), ("Eye", "Right"), ("Hand", "Left"), ("Hand", "Right")]
 
 
-def dataset_name(is_eye: bool, theta: float) -> str:
-    return f"{'Eye' if is_eye else 'Hand'} {'Right' if theta == 0 else 'Left'}"
+# ---------------------------------------------------------------- loading
+
+def asset_url(path: str) -> str:
+    """S3 URL of an asset of the pinned version."""
+    r = requests.get(f"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/",
+                     params={"path": path}, timeout=60)
+    r.raise_for_status()
+    hits = [a for a in r.json()["results"] if a["path"] == path]
+    if len(hits) != 1:
+        raise RuntimeError(f"{path} not found once in {DANDISET}/{VERSION}")
+    meta = requests.get(f"{API}/assets/{hits[0]['asset_id']}/", timeout=60)
+    meta.raise_for_status()
+    s3 = [u for u in meta.json()["contentUrl"] if "s3" in u and "amazonaws" in u]
+    if not s3:
+        raise RuntimeError(f"no S3 URL for {path}")
+    return s3[0]
 
 
-def prior_ts(is_short: bool) -> tuple:
-    return SHORT_TS if is_short else LONG_TS
+def list_assets() -> pd.DataFrame:
+    r = requests.get(f"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/",
+                     params={"page_size": 100}, timeout=60)
+    r.raise_for_status()
+    return pd.DataFrame(r.json()["results"])[["path", "size", "asset_id"]]
 
 
-# --- loading -------------------------------------------------------------------------------
-
-def _str(value):
-    return value.decode() if isinstance(value, bytes) else value
-
-
-def asset_urls() -> dict:
-    with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
-        return {a.path: a.get_content_url(follow_redirects=1, strip_query=True)
-                for a in dandiset.get_assets()}
+def open_nwb(path: str):
+    """Stream an NWB file of the pinned version; returns (nwbfile, io)."""
+    import h5py
+    import pynwb
+    import remfile
+    h5 = h5py.File(remfile.File(asset_url(path)), "r")
+    io = pynwb.NWBHDF5IO(file=h5, load_namespaces=True)
+    return io.read(), io
 
 
-def read_file(url: str) -> dict:
-    """The trial table, units and descriptive metadata of one NWB file."""
-    with h5py.File(remfile.File(url), "r") as f:
-        t = f["intervals/trials"]
-        cols = [_str(c) for c in t.attrs["colnames"]]
-        trials = pd.DataFrame({c: (t[c][:].astype(str) if t[c].dtype == object else t[c][:]) for c in cols})
-        descriptions = {c: _str(t[c].attrs.get("description", "")) for c in cols}
-        u = f["units"]
-        index = u["spike_times_index"][:]
-        spikes = np.split(u["spike_times"][:], index[:-1])
-        oi_index = u["obs_intervals_index"][:]
-        obs = np.split(u["obs_intervals"][:], oi_index[:-1])
-        unit_ids, heldout = u["id"][:], u["heldout"][:]
-        electrodes = f["general/extracellular_ephys/electrodes"]
-        meta = {
-            "session_description": _str(f["session_description"][()]),
-            "session_start_time": _str(f["session_start_time"][()]),
-            "session_id": _str(f["general/session_id"][()]),
-            "subject_id": _str(f["general/subject/subject_id"][()]),
-            "species": _str(f["general/subject/species"][()]),
-            "age": _str(f["general/subject/age"][()]),
-            "related_publications": [_str(x) for x in f["general/related_publications"][:]],
-            "electrode_location": sorted({_str(x) for x in electrodes["location"][:]}),
-            "electrode_x_all_nan": bool(np.isnan(electrodes["x"][:]).all()),
-            "n_electrodes": len(electrodes["id"][:]),
-        }
-    return {"trials": trials, "descriptions": descriptions, "spikes": spikes, "unit_ids": unit_ids,
-            "heldout": heldout, "obs_intervals": obs, "meta": meta}
-
-
-def load() -> dict:
-    """Both files of the pinned version, as returned by `read_file`."""
-    urls = asset_urls()
-    return {"train": read_file(urls[TRAIN]), "test": read_file(urls[TEST]), "urls": urls}
-
-
-def completed(trials: pd.DataFrame) -> pd.DataFrame:
-    """Completed trials (with Set and Go) not flagged as outliers."""
-    ok = trials.set_time.notna() & trials.go_time.notna() & ~trials.is_outlier.astype(bool)
-    return trials[ok].copy()
-
-
-def select_units(session: dict, trials: pd.DataFrame) -> tuple[np.ndarray, pd.DataFrame]:
-    """Units kept by the Methods' rule, and a table of rates and trial counts."""
-    t0 = min(iv[0, 0] for iv in session["obs_intervals"])
-    t1 = max(iv[-1, 1] for iv in session["obs_intervals"])
-    observed = np.array([np.sum(iv[:, 1] - iv[:, 0]) for iv in session["obs_intervals"]])
-    rate = np.array([len(s) for s in session["spikes"]]) / observed
-    counts = trials.groupby(["is_short", "ts", "is_eye", "theta"]).size()
-    n_cond = len(counts)
-    min_trials = int(counts.min())
-    table = pd.DataFrame({"unit": session["unit_ids"], "heldout": session["heldout"], "rate": rate,
-                          "observed_s": observed})
-    keep = (rate >= MIN_RATE) & (min_trials >= MIN_TRIALS) & (n_cond == 40)
-    table["kept"] = keep
-    table.attrs.update(conditions=n_cond, min_trials=min_trials, span=(t0, t1))
-    return np.flatnonzero(keep), table
-
-
-# --- spike counts and rates ----------------------------------------------------------------
-
-def counts(spikes: list, units, align: np.ndarray, start_ms: float, stop_ms: float,
-           bin_ms: float = BIN_MS) -> np.ndarray:
-    """Spike counts, trials x bins x units, in bins from start to stop relative to `align` (s)."""
-    edges = np.arange(start_ms, stop_ms + 1e-9, bin_ms) / 1000.0
-    out = np.empty((len(align), len(edges) - 1, len(units)))
-    for j, u in enumerate(units):
-        s = spikes[u]
-        pos = np.searchsorted(s, align[:, None] + edges[None, :])
-        out[:, :, j] = np.diff(pos, axis=1)
+def load_session(path: str = TRAIN_PATH) -> dict:
+    """Trial table, spike times (s) of every unit, and the unit table of one file."""
+    nwb, io = open_nwb(path)
+    trials = nwb.trials.to_dataframe().reset_index()
+    u = nwb.units
+    spikes = [np.asarray(u["spike_times"][i]) for i in range(len(u))]
+    obs = [np.asarray(u["obs_intervals"][i]) for i in range(len(u))]
+    units = pd.DataFrame({"id": u.id[:], "heldout": u["heldout"][:]})
+    units["observed_s"] = [float(np.sum(o[:, 1] - o[:, 0])) for o in obs]
+    units["n_spikes"] = [len(s) for s in spikes]
+    units["rate"] = units.n_spikes / units.observed_s
+    out = dict(nwb=nwb, io=io, trials=trials, spikes=spikes, units=units, obs=obs)
     return out
 
 
-def smooth(rate: np.ndarray) -> np.ndarray:
-    """Gaussian smoothing along time (axis 0) with SD `SMOOTH_MS`."""
-    return gaussian_filter1d(rate, SMOOTH_MS / BIN_MS, axis=0, mode="nearest")
+def label_trials(trials: pd.DataFrame) -> pd.DataFrame:
+    t = trials.copy()
+    t["prior"] = np.where(t.is_short, "Short", "Long")
+    t["effector"] = np.where(t.is_eye, "Eye", "Hand")
+    t["direction"] = t.theta.map({0.0: "Right", 180.0: "Left"})
+    t["dataset"] = t.effector + " " + t.direction
+    return t
 
 
-def estimation_rates(spikes, units, trials: pd.DataFrame, t_max: float):
-    """Rates from Ready to `t_max` ms with attrition: each bin averages the trials whose Set
-    comes after the end of the bin. Returns rates (bins x units, spikes/s), bin end times (ms
-    after Ready) and the number of trials in each bin."""
-    c = counts(spikes, units, trials.ready_time.to_numpy(), 0, t_max)
-    elapsed = (trials.set_time - trials.ready_time).to_numpy() * 1000
-    return attrition_rates(c, elapsed)
+def good_trials(trials: pd.DataFrame) -> pd.DataFrame:
+    """Completed trials not flagged by the mixture model (claims file, method choices)."""
+    t = label_trials(trials)
+    ok = t.set_time.notna() & t.go_time.notna() & (t.tp > 0) & ~t.is_outlier
+    return t[ok].reset_index(drop=True)
 
 
-def attrition_rates(c: np.ndarray, elapsed: np.ndarray):
-    """`estimation_rates` from counts already taken (trials x bins x units from Ready)."""
-    ends = np.arange(1, c.shape[1] + 1) * BIN_MS
-    use = elapsed[:, None] >= ends[None, :] - 1e-6
-    n = use.sum(0)
-    mean = np.einsum("tb,tbu->bu", use, c) / np.maximum(n, 1)[:, None]
-    return smooth(mean * 1000 / BIN_MS), ends, n
+def select_units(sess: dict, good: pd.DataFrame, min_rate=1.0, min_trials=5) -> np.ndarray:
+    """Indices of units with mean rate >= 1 spike/s and >= 5 trials in each of the 40 conditions.
+
+    All units are observed over the whole file (their obs_intervals), so the trial count per
+    condition is the same for every unit."""
+    counts = good.groupby(["prior", "ts", "effector", "direction"]).size()
+    enough = len(counts) == 40 and counts.min() >= min_trials
+    keep = (sess["units"].rate.values >= min_rate) & enough
+    return np.flatnonzero(keep)
 
 
-def aligned_rates(spikes, units, align: np.ndarray, start_ms: float, stop_ms: float):
-    """Trial-averaged smoothed rates (bins x units, spikes/s) aligned to `align`."""
-    c = counts(spikes, units, align, start_ms, stop_ms)
-    return smooth(c.mean(0) * 1000 / BIN_MS)
+# ---------------------------------------------------------------- binning and rates
+
+def bin_counts(spikes: list, align: np.ndarray, start_ms: float, stop_ms: float,
+               bin_ms: float = BIN) -> np.ndarray:
+    """Spike counts, trials x bins x units, in bins [start, stop) relative to `align` (s)."""
+    edges_rel = np.arange(start_ms, stop_ms + bin_ms / 2, bin_ms) / 1000.0
+    nb = len(edges_rel) - 1
+    out = np.zeros((len(align), nb, len(spikes)), dtype=np.float32)
+    edges = align[:, None] + edges_rel[None, :]
+    for k, s in enumerate(spikes):
+        idx = np.searchsorted(s, edges)
+        out[:, :, k] = np.diff(idx, axis=1)
+    return out
 
 
-def production_rates(spikes, units, trials: pd.DataFrame, stop_ms: float | None = None):
-    """Rates from Set to the shortest tp of these trials (or to `stop_ms`)."""
-    if stop_ms is None:
-        stop_ms = np.floor(trials.tp.min() / BIN_MS) * BIN_MS
-    return aligned_rates(spikes, units, trials.set_time.to_numpy(), 0, stop_ms)
+def gauss_smooth(x: np.ndarray, sd_bins: float = SMOOTH_SD / BIN) -> np.ndarray:
+    """Gaussian smoothing along axis 0, renormalised at the edges (no bins outside x)."""
+    n = x.shape[0]
+    t = np.arange(n)
+    w = np.exp(-0.5 * ((t[:, None] - t[None, :]) / sd_bins) ** 2)
+    w /= w.sum(axis=1, keepdims=True)
+    return np.tensordot(w, x, axes=(1, 0))
 
 
-# --- population measures -------------------------------------------------------------------
+def estimation_rates(spikes, good_sub: pd.DataFrame, ts_max: float, smooth=True):
+    """Trial-averaged rates (spikes/s) from Ready to ts_max with attrition.
 
-class PCA:
-    """PCA on stacked rate matrices, keeping the components that reach `kept` of the variance,
-    and at least `min_n`."""
-
-    def __init__(self, matrices: list, kept: float = VAR_KEPT, min_n: int = 1):
-        data = np.vstack(matrices)
-        self.mean = data.mean(0)
-        _, s, vt = np.linalg.svd(data - self.mean, full_matrices=False)
-        self.explained = s ** 2 / np.sum(s ** 2)
-        self.n = max(int(np.searchsorted(np.cumsum(self.explained), kept - 1e-12) + 1), min_n)
-        self.components = vt[: self.n]
-
-    def __call__(self, x: np.ndarray) -> np.ndarray:
-        return (x - self.mean) @ self.components.T
+    Bin j covers [20j, 20j+20) ms after Ready and averages the trials with ts >= its end.
+    Returns (rates bins x units, bin end times in ms, trials per bin)."""
+    counts = bin_counts(spikes, good_sub.ready_time.values, 0, ts_max)
+    ends = np.arange(BIN, ts_max + 1, BIN)
+    valid = good_sub.ts.values[:, None] >= ends[None, :]
+    n = valid.sum(axis=0)
+    rates = (counts * valid[:, :, None]).sum(axis=0) / n[:, None] * (1000.0 / BIN)
+    if smooth:
+        rates = gauss_smooth(rates)
+    return rates, ends, n
 
 
-def unit_scale(matrices: list, how: str) -> np.ndarray:
-    """Divisor per unit for normalised rates, from the stacked matrices (bins x units):
-    `soft`, the range plus 5 spikes/s (soft normalisation, a common choice; the Methods do
-    not say whether rates were normalised), or `z`, the SD."""
-    data = np.vstack(matrices)
-    if how == "soft":
-        return np.ptp(data, axis=0) + 5.0
-    return np.maximum(data.std(0), 1e-9)
+def aligned_rates(spikes, align_s: np.ndarray, start_ms: float, stop_ms: float, smooth=True):
+    """Trial-averaged rates (spikes/s), bins x units, aligned to align_s, over [start, stop)."""
+    counts = bin_counts(spikes, align_s, start_ms, stop_ms)
+    rates = counts.mean(axis=0) * (1000.0 / BIN)
+    return gauss_smooth(rates) if smooth else rates
 
 
-def encoding_axis(states: np.ndarray, times: np.ndarray, t_min: float, t_max: float) -> np.ndarray:
-    """Unit vector from the mean of X(t_max - d) - X(t_min + d), d = 0, 20, 40 ... ms, while
-    t_min + d < t_max - d."""
-    vectors = []
-    d = 0.0
-    while t_min + d < t_max - d:
-        i, j = np.argmin(abs(times - (t_min + d))), np.argmin(abs(times - (t_max - d)))
-        vectors.append(states[j] - states[i])
-        d += BIN_MS
-    u = np.mean(vectors, axis=0)
-    return u / np.linalg.norm(u)
+def production_rates(spikes, good_sub: pd.DataFrame, prior: str, stop_ms=None, smooth=True):
+    """Per ts of the prior: rates from Set to the shortest tp of that ts (or to stop_ms, using
+    trials with tp >= stop_ms). Returns dict ts -> (bins x units)."""
+    out = {}
+    for ts in PRIOR_TS[prior]:
+        sub = good_sub[(good_sub.prior == prior) & (good_sub.ts == ts)]
+        if stop_ms is None:
+            stop = np.floor(sub.tp.min() / BIN) * BIN
+        else:
+            stop = stop_ms
+            sub = sub[sub.tp >= stop_ms]
+        out[ts] = aligned_rates(spikes, sub.set_time.values, 0, stop, smooth=smooth)
+    return out
 
 
-def step_speed(states: np.ndarray) -> float:
+# ---------------------------------------------------------------- PCA and geometry
+
+def pca_fit(X: np.ndarray, threshold: float = VAR_THRESHOLD):
+    """PCA of rows of X (mean-centred). Returns (mean, components k x units, k, explained ratio)."""
+    mu = X.mean(axis=0)
+    _, s, vt = np.linalg.svd(X - mu, full_matrices=False)
+    ev = s ** 2 / np.sum(s ** 2)
+    k = int(np.searchsorted(np.cumsum(ev), threshold - 1e-12) + 1)
+    return mu, vt[:k], k, ev
+
+
+def project(X, mu, comps):
+    return (X - mu) @ comps.T
+
+
+def encoding_axis(states: np.ndarray, ends: np.ndarray, ts_min: float, ts_max: float):
+    """Unit vector u: mean of X(ts_max - d) - X(ts_min + d), d = 0, 20, ... while
+    ts_min + d < ts_max - d (Methods, "Analysis of neural projection")."""
+    pos = {int(round(e)): i for i, e in enumerate(ends)}
+    diffs = []
+    d = 0
+    while ts_min + d < ts_max - d:
+        diffs.append(states[pos[int(ts_max - d)]] - states[pos[int(ts_min + d)]])
+        d += BIN
+    v = np.mean(diffs, axis=0)
+    return v / np.linalg.norm(v)
+
+
+def step_speed(traj: np.ndarray) -> float:
     """Mean Euclidean distance between successive states."""
-    return float(np.mean(np.linalg.norm(np.diff(states, axis=0), axis=1)))
+    return float(np.mean(np.linalg.norm(np.diff(traj, axis=0), axis=1)))
 
 
-def weighted_fit(x, y, w):
-    """Weighted least squares y = a + b x; returns a, b, weighted R2 and RMSE of the fit."""
-    x, y, w = map(np.asarray, (x, y, w))
-    design = np.column_stack([np.ones_like(x), x])
-    sw = np.sqrt(w)
-    coef, *_ = np.linalg.lstsq(design * sw[:, None], y * sw, rcond=None)
-    pred = design @ coef
-    ybar = np.sum(w * y) / np.sum(w)
-    r2 = 1 - np.sum(w * (y - pred) ** 2) / np.sum(w * (y - ybar) ** 2)
-    rmse = float(np.sqrt(np.mean((y - pred) ** 2)))
-    return coef[0], coef[1], float(r2), rmse
+# ---------------------------------------------------------------- Bayesian observer
+
+def _grid(lo, hi, n=301):
+    return np.linspace(lo, hi, n)
 
 
-def increments(means) -> tuple[float, float]:
-    """Mean increment at the extremes (first and last) and in the middle (second and third)
-    of five ordered values."""
-    d = np.diff(np.asarray(means, float))
-    return (d[0] + d[3]) / 2, (d[1] + d[2]) / 2
+def te_of_tm(tm: np.ndarray, prior: str, wm: float) -> np.ndarray:
+    """Posterior mean of ts given tm, continuous uniform prior over the prior's range."""
+    lo, hi = PRIOR_TS[prior][0], PRIOR_TS[prior][-1]
+    s = _grid(lo, hi)
+    sd = wm * s
+    lik = np.exp(-0.5 * ((tm[..., None] - s) / sd) ** 2) / sd
+    return (lik * s).sum(-1) / lik.sum(-1)
 
 
-# --- behaviour -----------------------------------------------------------------------------
-
-def weighted_slope(ts, tp):
-    """Regression of tp on ts with each trial weighted by 1 / variance of tp at its ts. Returns
-    slope, its standard error, and the 95% interval."""
-    df = pd.DataFrame({"ts": ts, "tp": tp})
-    var = df.groupby("ts").tp.transform("var")
-    w = 1 / var
-    x, y = df.ts.to_numpy(), df.tp.to_numpy()
-    design = np.column_stack([np.ones_like(x), x])
-    sw = np.sqrt(w.to_numpy())
-    coef, *_ = np.linalg.lstsq(design * sw[:, None], y * sw, rcond=None)
-    resid = (y - design @ coef) * sw
-    dof = len(y) - 2
-    sigma2 = np.sum(resid ** 2) / dof
-    cov = sigma2 * np.linalg.inv((design * sw[:, None]).T @ (design * sw[:, None]))
-    se = np.sqrt(cov[1, 1])
-    q = stats.t.ppf(0.975, dof)
-    return coef[1], se, (coef[1] - q * se, coef[1] + q * se)
+def _tm_nodes(ts, wm, n=301):
+    z = np.linspace(-5, 5, n)
+    w = np.exp(-0.5 * z ** 2)
+    w /= w.sum()
+    return ts + z * wm * ts, w
 
 
-def outlier_mixture(tp: np.ndarray, ts: float, iters: int = 200) -> np.ndarray:
-    """Posterior probability of the lapse component for each trial, under a mixture of a
-    Gaussian and a uniform distribution from 0 to 3 ts (Methods)."""
-    tp = np.asarray(tp, float)
-    mu, sd, p = np.median(tp), max(np.std(tp), 1.0), 0.05
-    lapse = 1 / (3 * ts)
-    for _ in range(iters):
-        g = (1 - p) * stats.norm.pdf(tp, mu, sd)
-        l = p * lapse * ((tp >= 0) & (tp <= 3 * ts))
-        r = l / np.maximum(g + l, 1e-300)
-        w = 1 - r
-        mu = np.sum(w * tp) / np.sum(w)
-        sd = max(np.sqrt(np.sum(w * (tp - mu) ** 2) / np.sum(w)), 1.0)
-        p = np.clip(r.mean(), 1e-6, 0.5)
-    return r
+def bayes_loglik(params, df: pd.DataFrame) -> float:
+    wm, wp, bS, bL = params
+    if wm <= 0.01 or wp <= 0.01 or wm > 1 or wp > 1:
+        return -np.inf
+    ll = 0.0
+    for (prior, ts), g in df.groupby(["prior", "ts"]):
+        tm, w = _tm_nodes(ts, wm)
+        te = te_of_tm(tm, prior, wm)
+        b = bS if prior == "Short" else bL
+        mu = te + b
+        sd = wp * te
+        tp = g.tp.values[:, None]
+        dens = (np.exp(-0.5 * ((tp - mu) / sd) ** 2) / (np.sqrt(2 * np.pi) * sd) * w).sum(1)
+        ll += np.sum(np.log(np.maximum(dens, 1e-300)))
+    return ll
 
 
-class BayesObserver:
-    """Bayesian observer of the Methods: tm ~ N(ts, wm ts), te = posterior mean under a uniform
-    prior on the range of ts, tp ~ N(te + b, wp te), with an offset b per prior."""
+def fit_bayes(df: pd.DataFrame) -> dict:
+    """ML fit of wm, wp, bShort, bLong on the trials of one dataset."""
+    from scipy.optimize import minimize
 
-    GRID = 400
+    def unpack(z):  # log noise weights, offsets in units of 100 ms, so the simplex steps match
+        return np.exp(z[0]), np.exp(z[1]), 100 * z[2], 100 * z[3]
 
-    def __init__(self, wm=0.1, wp=0.08, b_short=0.0, b_long=0.0):
-        self.wm, self.wp, self.b = wm, wp, {True: b_short, False: b_long}
-
-    @staticmethod
-    def estimator(tm: np.ndarray, lo: float, hi: float, wm: float) -> np.ndarray:
-        s = np.linspace(lo, hi, 201)
-        like = np.exp(-0.5 * ((tm[:, None] - s[None, :]) / (wm * s[None, :])) ** 2) / s[None, :]
-        return (like * s).sum(1) / np.maximum(like.sum(1), 1e-300)
-
-    def _grid(self, is_short: bool):
-        ts = prior_ts(is_short)
-        lo, hi = min(ts), max(ts)
-        tm = np.linspace(lo * (1 - 5 * self.wm), hi * (1 + 5 * self.wm), self.GRID)
-        return tm, self.estimator(tm, lo, hi, self.wm)
-
-    def _p_tm(self, tm, ts):
-        p = stats.norm.pdf(tm[None, :], ts[:, None], self.wm * ts[:, None])
-        return p / p.sum(1, keepdims=True)
-
-    def loglik(self, ts, tp, is_short: bool) -> float:
-        tm, te = self._grid(is_short)
-        p_tm = self._p_tm(tm, np.asarray(ts, float))
-        p_tp = stats.norm.pdf(np.asarray(tp, float)[:, None], te[None, :] + self.b[is_short],
-                              self.wp * te[None, :])
-        return float(np.sum(np.log(np.maximum((p_tm * p_tp).sum(1), 1e-300))))
-
-    def moments(self, ts, is_short: bool):
-        """Mean te, and mean and SD of tp, for each ts."""
-        tm, te = self._grid(is_short)
-        ts = np.asarray(ts, float)
-        p_tm = self._p_tm(tm, ts)
-        mean_te = p_tm @ te
-        mean_tp = mean_te + self.b[is_short]
-        second = p_tm @ (te ** 2 * (1 + self.wp ** 2))
-        sd_tp = np.sqrt(second - mean_te ** 2)
-        return mean_te, mean_tp, sd_tp
-
-    @classmethod
-    def fit(cls, trials: pd.DataFrame) -> "BayesObserver":
-        """Maximum likelihood fit of wm, wp, b_short and b_long to one dataset's trials."""
-        groups = {s: g for s, g in trials.groupby("is_short")}
-
-        def nll(theta):
-            m = cls(*theta)
-            if not (0.01 < m.wm < 0.5 and 0.01 < m.wp < 0.5):
-                return 1e12
-            return -sum(m.loglik(g.ts.to_numpy(), g.tp.to_numpy(), bool(s)) for s, g in groups.items())
-
-        # Nelder-Mead from three starting points, with an explicit first simplex (steps of 0.03
-        # for wm and wp, 20 ms for the offsets); the best fit is kept.
-        best = None
-        for wm0 in (0.05, 0.1, 0.2):
-            x0 = np.array([wm0, 0.08, 0.0, 0.0])
-            simplex = np.vstack([x0, x0 + np.diag([0.03, 0.03, 20.0, 20.0])])
-            res = optimize.minimize(nll, x0=x0, method="Nelder-Mead",
-                                    options={"initial_simplex": simplex, "xatol": 1e-3, "fatol": 1e-3,
-                                             "maxiter": 3000})
-            if best is None or res.fun < best.fun:
-                best = res
-        model = cls(*best.x)
-        model.converged, model.nll = bool(best.success), float(best.fun)
-        return model
+    best = None
+    for wm0 in (0.05, 0.1, 0.2):
+        z0 = np.array([np.log(wm0), np.log(0.1), 0.2, 0.0])
+        res = minimize(lambda z: -bayes_loglik(unpack(z), df), z0, method="Nelder-Mead",
+                       options=dict(xatol=1e-5, fatol=1e-4, maxiter=6000, maxfev=6000))
+        if best is None or res.fun < best.fun:
+            best = res
+    if not best.success or not np.isfinite(best.fun):
+        raise RuntimeError(f"Bayesian model fit failed: {best.message}")
+    wm, wp, bS, bL = unpack(best.x)
+    return dict(wm=wm, wp=wp, bShort=bS, bLong=bL, loglik=-best.fun)
 
 
-# --- GPFA ----------------------------------------------------------------------------------
+def bayes_predict(ts: float, prior: str, p: dict):
+    """Model mean and SD of tp, and mean te, for one ts."""
+    tm, w = _tm_nodes(ts, p["wm"])
+    te = te_of_tm(tm, prior, p["wm"])
+    b = p["bShort"] if prior == "Short" else p["bLong"]
+    m = np.sum(w * (te + b))
+    second = np.sum(w * ((p["wp"] * te) ** 2 + (te + b) ** 2))
+    return m, np.sqrt(second - m ** 2), np.sum(w * te)
 
-def estimation_spiketrains(spikes, units, trials: pd.DataFrame):
-    """Single-trial spike trains from Ready to Set, as neo objects for elephant's GPFA."""
+
+def te_mean(t: np.ndarray, prior: str, wm: float) -> np.ndarray:
+    """Mean Bayesian estimate for ts = t (no offset), integrating over tm."""
+    out = []
+    for x in np.atleast_1d(t):
+        tm, w = _tm_nodes(x, wm)
+        out.append(np.sum(w * te_of_tm(tm, prior, wm)))
+    return np.array(out)
+
+
+# ---------------------------------------------------------------- regression helpers
+
+def wls(y, x, w):
+    """Weighted least squares y = a + b x. Returns a, b, fitted, weighted R2."""
+    X = np.column_stack([np.ones_like(x), x])
+    W = np.asarray(w, float)
+    beta = np.linalg.solve(X.T @ (X * W[:, None]), X.T @ (W * y))
+    fit = X @ beta
+    ybar = np.sum(W * y) / np.sum(W)
+    r2 = 1 - np.sum(W * (y - fit) ** 2) / np.sum(W * (y - ybar) ** 2)
+    return beta[0], beta[1], fit, r2
+
+
+# ---------------------------------------------------------------- GPFA
+
+def gpfa_fit(spikes, good_sub: pd.DataFrame, x_dims=(4, 8), n_folds=3, seed=0):
+    """GPFA on single trials from Ready to Set (20 ms bins), units given by `spikes`.
+
+    The latent dimensionality is chosen from x_dims by n_folds-fold cross-validated
+    log-likelihood (no cross-validation when x_dims holds one value). Spike times are given in
+    ms so that ts / 20 ms is a whole number of bins. elephant fits on segments of 20 bins whose
+    overlaps it draws from numpy's global generator, so each fit seeds it (from `seed`); the
+    segment length is elephant's default, as in Yu et al.'s code. Returns (chosen dim, cv log-likelihoods, list of orthonormalised latent
+    trajectories, each bins x dims, with bin j ending at 20(j+1) ms after Ready)."""
+    import contextlib
+    import io
+    import logging
+    import warnings
     import neo
     import quantities as pq
-    out = []
-    for ready, set_ in zip(trials.ready_time.to_numpy(), trials.set_time.to_numpy()):
-        dur = set_ - ready
-        out.append([neo.SpikeTrain((s[(s >= ready) & (s < set_)] - ready) * pq.s,
-                                   t_start=0 * pq.s, t_stop=dur * pq.s) for s in (spikes[u] for u in units)])
+    from elephant import utils as elephant_utils
+    from elephant.gpfa import GPFA
+
+    def trains(sub):  # in ms, so that ts / 20 ms is an exact number of bins
+        out = []
+        for ready, ts in zip(sub.ready_time.values, sub.ts.values):
+            t1 = ready + ts / 1000.0
+            tr = []
+            for s in spikes:
+                i0, i1 = np.searchsorted(s, [ready, t1])
+                rel = np.minimum((s[i0:i1] - ready) * 1000.0, ts - 1e-6)
+                tr.append(neo.SpikeTrain(rel * pq.ms, t_start=0 * pq.ms, t_stop=float(ts) * pq.ms))
+            out.append(tr)
+        return out
+
+    data = trains(good_sub)
+    rng = np.random.default_rng(seed)
+    folds = np.array_split(rng.permutation(len(data)), n_folds)
+    cv = {}
+    # elephant prints its progress and warns about bin rounding; both are silenced
+    with contextlib.redirect_stdout(io.StringIO()), warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        elephant_utils.logger.setLevel(logging.ERROR)
+        for d in (x_dims if len(x_dims) > 1 else ()):
+            ll = 0.0
+            for k in range(n_folds):
+                test = set(folds[k].tolist())
+                train = [data[i] for i in range(len(data)) if i not in test]
+                held = [data[i] for i in sorted(test)]
+                g = GPFA(bin_size=BIN * pq.ms, x_dim=d, verbose=False)
+                np.random.seed(seed + 1 + k)  # elephant draws the segment overlaps from np.random
+                g.fit(train)
+                ll += g.score(held)
+            cv[d] = ll
+        best = max(cv, key=cv.get) if cv else x_dims[0]
+        g = GPFA(bin_size=BIN * pq.ms, x_dim=best, verbose=False)
+        np.random.seed(seed)
+        lat = g.fit_transform(data, returned_data=["latent_variable_orth"])
+    return best, cv, [np.asarray(x).T for x in lat]
+
+
+# ---------------------------------------------------------------- trial-averaged geometry
+
+def dataset_geometry(spikes, d: pd.DataFrame, wm: float, smooth=True) -> dict:
+    """Estimation and production trajectories, their PCA and the encoding-axis projections of
+    one dataset (effector and direction). `wm` is the dataset's fitted measurement noise, used
+    for te(t). Returns a dict with per-prior tables and the numbers of components."""
+    est, out = {}, {"prior": {}}
+    for prior in ("Short", "Long"):
+        dp = d[d.prior == prior]
+        est[prior] = estimation_rates(spikes, dp, PRIOR_TS[prior][-1], smooth=smooth)
+    Xe = np.vstack([est[p][0] for p in est])
+    mu, comps, k, ev = pca_fit(Xe)
+    prod = {}
+    for prior in ("Short", "Long"):
+        prod[prior] = production_rates(spikes, d, prior, smooth=smooth)
+    Xp = np.vstack([r for p in prod for r in prod[p].values()])
+    mup, cp, kp, evp = pca_fit(Xp)
+    out.update(k_est=k, k_prod=kp, ev_est=ev, ev_prod=evp, est_pca=(mu, comps),
+               prod_pca=(mup, cp), est=est, prod=prod)
+    for prior in ("Short", "Long"):
+        R, ends, n = est[prior]
+        X = project(R, mu, comps)
+        tsv = PRIOR_TS[prior]
+        u = encoding_axis(X, ends, tsv[0], tsv[-1])
+        sel = (ends >= tsv[0]) & (ends <= tsv[-1])
+        t = ends[sel].astype(float)
+        xu = X[sel] @ u
+        rows = []
+        for ts in tsv:
+            i = int(np.flatnonzero(ends == ts)[0])
+            traj = project(prod[prior][ts], mup, cp)
+            g = d[(d.prior == prior) & (d.ts == ts)]
+            rows.append(dict(ts=ts, xu_set=float(X[i] @ u), speed=step_speed(traj),
+                             duration_ms=len(traj) * BIN, mean_tp=g.tp.mean(), n_trials=len(g)))
+        out["prior"][prior] = dict(X=X, ends=ends, n=n, u=u, t=t, xu=xu, w=n[sel],
+                                   te=te_mean(t, prior, wm), per_ts=pd.DataFrame(rows))
     return out
 
 
-def _quiet_elephant():
-    """elephant logs each spike it moves across a bin edge; keep the notebook readable."""
-    import logging
-
-    import elephant.utils
-    logging.getLogger(elephant.utils.__file__).setLevel(logging.ERROR)
-
-
-def gpfa_folds(n: int, rng: np.random.Generator) -> np.ndarray:
-    """Fold (0, 1 or 2) of each of `n` trials for 3-fold cross-validation."""
-    return rng.permutation(n) % 3
-
-
-def gpfa_cv_score(spiketrains, folds: np.ndarray, dim: int) -> float:
-    """Summed test log-likelihood of GPFA with `dim` latents over the folds."""
-    import contextlib
-    import io
-    import warnings
-
-    import quantities as pq
-    from elephant.gpfa import GPFA
-
-    _quiet_elephant()
-    total = 0.0
-    with warnings.catch_warnings(), contextlib.redirect_stdout(io.StringIO()):
-        warnings.simplefilter("ignore")
-        for k in range(3):
-            train = [s for s, f in zip(spiketrains, folds) if f != k]
-            test = [s for s, f in zip(spiketrains, folds) if f == k]
-            m = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)
-            m.fit(train)
-            total += m.score(test)
-    return total
-
-
-def gpfa_model(spiketrains, dim: int):
-    """GPFA with `dim` latents fit on all trials. Its `fit_info["log_likelihoods"]` holds the
-    training log-likelihood every fifth EM iteration (elephant's default)."""
-    import contextlib
-    import io
-    import warnings
-
-    import quantities as pq
-    from elephant.gpfa import GPFA
-
-    _quiet_elephant()
-    with warnings.catch_warnings(), contextlib.redirect_stdout(io.StringIO()):
-        warnings.simplefilter("ignore")
-        model = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)
-        model.fit(spiketrains)
-    return model
-
-
-def fit_gpfa(spiketrains, rng: np.random.Generator):
-    """GPFA with the latent dimensionality from `GPFA_DIMS` chosen by 3-fold cross-validated
-    log-likelihood. Returns the model fit on all trials, the chosen dimensionality, the
-    cross-validated scores and the folds."""
-    folds = gpfa_folds(len(spiketrains), rng)
-    scores = {dim: gpfa_cv_score(spiketrains, folds, dim) for dim in GPFA_DIMS}
-    best = max(scores, key=scores.get)
-    return gpfa_model(spiketrains, best), best, scores, folds
-
-
-def gpfa_transform(model, spiketrains):
-    """Orthonormalised latent trajectories (latents x bins) of each trial, quietly."""
-    import warnings
-    _quiet_elephant()
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        return model.transform(spiketrains)
+def single_trial_speed(spikes, d: pd.DataFrame, prod_pca) -> np.ndarray:
+    """Speed of each trial from Set to Go: smoothed single-trial rates (20 ms bins, SD 40 ms)
+    projected into the dataset's production PC space, mean distance between successive bins."""
+    mu, comps = prod_pca
+    out = np.empty(len(d))
+    for i, (st, tp) in enumerate(zip(d.set_time.values, d.tp.values)):
+        stop = np.floor(tp / BIN) * BIN
+        c = bin_counts(spikes, np.array([st]), 0, stop)[0] * (1000.0 / BIN)
+        out[i] = step_speed(project(gauss_smooth(c), mu, comps))
+    return out

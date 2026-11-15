@@ -1,64 +1,55 @@
-I've finished steps 1 to 6 for dandiset 000130. `entry.py check` reports 0 errors, the notebook passes `entry.py all` from a clean environment in 397 s, and the verifier's package is built in `executed/000130-sohn-2019/handover/`. Nothing is committed.
+I've finished the blind repeat attempt on sohn-2019 (DANDI:000130, version 0.241017.1448) through handover. `entry.py check` reports 0 errors, both notebooks pass from a clean environment, and the verifier's package is built in `executed/sohn-2019/handover/`. I did not come across any earlier attempt's results.
 
-**Paper text:** I used the full text of the accepted author manuscript (PMC6805134). It is saved under `paper/`. The supplementary tables and figures were not available.
+## 1. Outcomes per claim
 
-**Version pinned:** 0.241017.1448. The paper cites no DANDI version. The two published versions hold the same two files and differ only in publication metadata, so I pinned the most recent; the notebook header says why.
+| claim | outcome | key numbers |
+|---|---|---|
+| beh-slopes | not reproduced | Eye Short slopes are 1.011 and 1.110; same outcome with or without an intercept |
+| beh-overlap-prior | not reproduced | at ts = 800 ms the Short median bias is +28.3 ms, Long +47.6 ms; p = 0.073 |
+| beh-sigmoid-increments | reproduced | 7 of 8, p = 0.0156 |
+| beh-long-more-bias | reproduced, resting on an assumption | 4 of 4 with an intercept, 3 of 4 without |
+| beh-bayes-model | partially reproduced | SD correlation positive in 4 of 4; bias R2 ≥ 0.8 in only 2 of 4 (the Eye datasets fail) |
+| glm-prior-ts | not reproduced | 79.2% prior-dependent, 45.8% ts-dependent (expected 65% and 27%) |
+| dfr-overlap-support | reproduced | peak in the 480–640 ms bin, 6.86 against a shuffle 95th percentile of 3.15 |
+| pca-dimensionality | not reproduced | 1 of 8 counts in range; 2 estimation components in every dataset |
+| encoding-r2 | reproduced | Hand Left 0.996 and 0.977 |
+| encoding-bayes-beats-linear | partially reproduced | Short 4 of 4, Long 3 of 4 |
+| short-in-long-control | reproduced (paper's test, p = 0.25) | but the Bayesian model fits better in 3 of 4 datasets |
+| neural-long-more-bias | partially reproduced | 3 of 4 |
+| speed-vs-projection | partially reproduced | r = −0.93 and −0.87, stronger than the paper's |
+| initial-speed-biased | not reproduced | 7 of 8 shallower, p = 0.055 |
+| speed-predicts-tp | partially reproduced | r = −0.72 and −0.74, stronger than the paper's |
+| alt-speed-unmodulated | reproduced (paper's test) | but slopes are positive in 7 of 8 |
+| alt-transient-parallel | reproduced | p = 0.195 and 1.0 |
+| alt-threshold-monotonic | not reproduced | median minimum 230 ms before Go |
+| gpfa-variance-inverted-u | not reproduced | 6 of 8 negative, p = 0.055; seed and dimension variants give 0.039 to 0.098 |
+| gpfa-mean-sigmoid | reproduced | |
+| rnn-curved-manifold, rnn-perturbation, monkey-g | blocked, data_missing | |
 
-### 1. Outcome per claim
+## 2. Dataset, assumptions, questions
 
-| Claim | Outcome |
-|---|---|
-| beh-slopes | Not reproduced: 6 of 8 slopes between 0 and 1; the two Eye Short slopes are 1.11 and 1.01 |
-| beh-overlap-prior | Not reproduced: both biases positive (+28 and +48 ms), p = 0.073 |
-| beh-sigmoid-increments | Reproduced: 7 of 8, p = 0.016 |
-| beh-long-more-bias | Reproduced: 4 of 4 |
-| beh-bayes-model | Partially reproduced: SD fits in 4 of 4, bias R2 ≥ 0.8 in only 2 of 4 |
-| glm-prior-ts | Not reproduced: 75.0% and 45.8%, against the paper's 65% and 27% |
-| dfr-overlap-support | Reproduced: largest at 480 to 640 ms after Ready |
-| pca-dimensionality | Not reproduced: 2 PCs reach 75% in the estimation epoch |
-| encoding-r2 | Reproduced: 0.998 and 0.996, but random axes beat it in 5 of 8 dataset-priors |
-| encoding-bayes-beats-linear | Partially reproduced: Long 4 of 4, Short 3 of 4 |
-| short-in-long-control | Reproduced by the paper's test, which cannot detect an effect with 4 datasets |
-| neural-long-more-bias | Reproduced: 4 of 4 |
-| speed-vs-projection | Partially reproduced: rho −0.94 and −0.88, stronger than reported |
-| initial-speed-biased | Reproduced: 7 of 8, p = 0.039 |
-| speed-predicts-tp | Partially reproduced: rho −0.73 and −0.74, stronger than reported |
-| alt-speed-unmodulated | Reproduced by the paper's test, but the speed rises in all 8 dataset-priors (bootstrap intervals exclude 0) |
-| alt-transient-parallel | Not reproduced: longest ts, p = 0.039 |
-| alt-threshold-monotonic | Not reproduced: median minimum 210 ms before Go; depends on how many PCs are kept |
-| gpfa-variance-inverted-u | Not reproduced: 5 of 8, p = 0.125 |
-| gpfa-mean-sigmoid | Reproduced: p = 0.0078 and 0.0625, the paper's exact values |
-| rnn-curved-manifold, rnn-perturbation | Blocked (`other`): these concern trained network models, not recorded data |
-| monkey-g | Blocked (`data_missing`) |
+What I found about the dataset:
+- **One session only.** It holds one of the paper's 29 sessions (monkey H, 2016-12-11).
+- **Test-file trials unusable.** The test file's 283 trials have no task variables (prior, ts, effector, direction), so about 20% of the session cannot be analysed. Their spikes are not repeated in the train file.
+- **`iti` description reversed.** It says 500 ms for Short and 1220 ms for Long; the values are the other way round, which matches the paper.
+- **`tp` measurement undocumented.** `tp` is longer than `go_time − set_time` by a median of 17.9 ms, and the files don't say how it is measured.
+- **Missing unit labels.** Units have no electrode assignment and no single-unit or multi-unit label.
+- **Clock check passes.** Spikes share the trial clock: target direction decodes at 0.76 accuracy at the true times and about 0.5 when the times are shifted.
 
-### 2. What was found about the dandiset
-- **One session only.** It is the Neural Latents Benchmark version of a single session of monkey H (2016-12-11), out of the paper's 29 sessions over two monkeys. No other dandiset on the archive holds these recordings.
-- **Likely the paper's GPFA session.** 48 of its 54 units pass the paper's 1 spike/s rule, which matches the paper's GPFA count for monkey H. The dandiset does not say this.
-- **Test trials unusable.** 283 trials are in the test file with no task variables and without 14 of the 54 units, so no analysis can use them.
-- **`iti` description reversed.** It says 500 ms after Short trials and 1220 after Long; the values (and the paper) are the other way round.
-- **`tp` does not match the event times.** It is a median 18 ms longer than `go_time − set_time` (up to 200 ms), and this is not documented.
-- **`is_outlier` not reproduced.** A refit of the paper's mixture model flags only 10 of the file's 46 outliers.
-- **Units under-described.** There is no single-unit or multi-unit label and no electrode assignment, and the electrode table has no positions.
-- **Code not public.** The paper's code is available only on request, and the linked benchmark code holds none of its analyses.
-- **Paper inconsistency.** The Results give the GPFA counts as 48 and 107 neurons; the Methods give 48 and 96.
+I made one assumption: the behavioural regression has an intercept. I recorded it as a question for the paper's authors (a `methods_unavailable` finding), because the Methods write `tp = β ts` without one. I asked readers no questions.
 
-### 3. Where the protocol was unclear, wrong or missing something
-1. **Claims of absence tested on a subset.** "Judged on the paper's test alone" breaks down when the dandiset holds 4 of the paper's 8 datasets. A signed-rank test over 4 can never give p < 0.05, so two absence claims come out "reproduced" automatically, one of them against clear evidence. I followed the rule and said so in each claim's notes and Result text.
-2. **No guidance on adapting the paper's statistics to a subset.** Where the paper's p = 0.008 means "all 8 datasets", I wrote criteria that count datasets (for example, 4 of 4).
-3. **The default 10% tolerance fits some measures badly.** For R2 near 1 it accepts anything above 0.894. For a proportion from 48 units, sampling error is larger than 10%. I kept the default and reported binomial intervals.
-4. **No blocking reason for model-only claims.** For the recurrent network claims I used `other`.
-5. **No place in the record for the code read.** When the linked code is unrelated to the paper's analyses, there is no field for it (`inputs` is for data). I recorded the repository and commit in the notebook header and added a `methods_unavailable` finding.
-6. **The suggested clock check confounds latency with offset.** Decoding peaks at +100 ms for every event, which reflects response latency. I reported the check as consistent with a shared clock, not as shown.
-7. **Fixed seeds do not make the GPFA fits deterministic.** Values move in the third significant digit between runs (probably multithreaded numerics); counts and p values were unchanged over four runs. I noted this.
-8. **Bug fixed after seeing outputs.** The Bayesian observer's optimiser left the offsets at 0 because its first step from a zero start is tiny. I fixed the optimiser after the first run without changing any criterion. The protocol does not say how to record such a fix; it is not in the attempt record.
-9. **Ambiguous test in the paper.** The paper's test for the threshold claim (one-tailed, p = 1.5e-4) cannot be read unambiguously. I fixed my own criterion before the analysis and recorded it as a deviation.
+## 3. Where the protocol was unclear
 
-### 4. Runtime and failures
-- **Runtime.** The notebook takes about 400 s, of which GPFA is about 360 s.
-- **Failures.** Europe PMC's full-text XML endpoint returned an HTTP 500, so I used the NCBI BioC API for the same manuscript. The first notebook run had the optimiser bug in point 8. Nothing else failed.
-- **Untracked files not created by me.** `git status` shows `.bashrc`, `.gitconfig`, `scripts` and similar at the repo root. They are character devices from the sandbox, not files, and should not be committed.
+1. **Absence claims that cannot fail.** The three absence claims are tested by a signed-rank test over 4 datasets, which cannot go below p = 0.125, so they are reproduced before any data are seen. I followed the criteria and reported effect sizes, which lean against absence.
+2. **A seed that changes the outcome.** The protocol treats a random seed as unable to change an outcome, but elephant's GPFA draws random trial segments, and the result crossed p = 0.05 between runs. I seeded every fit, showed three other seeds plus the 4-dimension fit, and kept the main fit's outcome.
+3. **How far to run standard choices.** Many small choices could matter for close calls: smoothing at epoch edges, where a time bin is placed, whether outlier trials enter the neural averages. Running every combination isn't practical, so I added one robustness table (outlier trials included; no smoothing).
+4. **Where third-party method code goes.** The protocol doesn't say whether software implementing the paper's method (elephant's GPFA) belongs under `inputs`. I recorded it as a deviation instead.
+5. **archives.md download step.** DANDI's signed download URL refuses HEAD requests (403), so the step in archives.md fails as written. I took the S3 URL from each asset's metadata.
 
-Files are in the repository root:
-- `claims/000130/10.1016-j.neuron.2019.06.012.yaml`
-- `attempts/000130-sohn-2019-01.yaml`
-- `entries/000130-sohn-2019/`
+## 4. Runtime and failures
+
+- **Runtime.** The main notebook takes about 1 minute; the GPFA notebook takes 15 to 18 minutes. Peak memory was 0.6 GB. Work ran from 06:15 to about 08:25 UTC.
+- **Fixed during development.** Early GPFA runs were not repeatable because elephant's random generator wasn't seeded; that is fixed, and the last three runs gave identical numbers. A smaller elephant time-bin rounding issue (spikes dropped at trial ends) is also fixed.
+- **Nothing failed in the final run.**
+
+Files are in `entries/sohn-2019/` and the record is `attempts/sohn-2019-02.yaml`.
