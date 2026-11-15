@@ -93,6 +93,7 @@ def load_session(path: str, url: str, images: bool = True) -> dict:
         s = {"path": path, "identifier": _text(f["identifier"][()]),
              "session_description": _text(f["session_description"][()]),
              "session_start_time": _text(f["session_start_time"][()]),
+             "timestamps_reference_time": _text(f["timestamps_reference_time"][()]),
              "institution": _text(f["general/institution"][()]) if "general/institution" in f else "",
              "data_collection": _text(f["general/data_collection"][()]) if "general/data_collection" in f else "",
              "devices": sorted(f["general/devices"].keys())}

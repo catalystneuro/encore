@@ -37,7 +37,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The MS and dual-cell counts follow the Methods (a 1 s window from 200 ms, all trials); the paper's code
-uses 0.2 to 1.7 s and correct trials only, and gives the paper's numbers. The attempt record, with the
+uses 0.2 to 1.7 s and correct trials only, and gives the paper's 146 MS cells and 25 dual cells
+(26 in the paper). The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/chandravadia-2020-02.yaml`](../../attempts/chandravadia-2020-02.yaml).
 

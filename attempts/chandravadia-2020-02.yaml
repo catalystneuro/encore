@@ -119,8 +119,8 @@ outcomes:
     isolation distance, the last under the name IsolationDist (its description is "IsolDist"). All 1864
     units link to exactly one electrode, the waveforms (256 samples, finite for every unit) are stated
     as sampled at 98.4 kHz, within tolerance of 100 kHz. SNR is not finite for 86 units (75 NaN, 11
-    infinite, all infinite ones in H28_48) and isolation distance is NaN for 493 units in 82 files, with
-    two values above 1e27.
+    infinite, all infinite ones in H28_48) and isolation distance is NaN for 493 units in 82 files; two
+    values are above 1e6, 2.9e27 (H21_38) and 8.1e32 (CS26_66).
   deviations:
   - The column the paper calls IsolDist is named IsolationDist in the files and was counted as present.
 - claim: electrodes-table
@@ -159,8 +159,8 @@ outcomes:
   - 0.753
   - 0.094
   notes: Mean AUC over the 87 sessions 0.7527, standard deviation 0.0938 (range 0.445 to 0.919; against
-    0.5, p = 2.2e-41). The ROC uses label 1 as old (claims file); the recognition data of no session are
-    duplicated.
+    0.5, p = 2.2e-41). The ROC uses label 1 as old (claims file). No two files hold the same recognition
+    onsets or the same sequence of recognition images and answers.
 - claim: fig5c-auc-sites
   outcome: reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -279,7 +279,7 @@ outcomes:
   - 325
   notes: 23 sessions of the dandiset (14 CS, 9 TWH) and 17 subjects (C53 to C62, the 8 T subjects) are
     not in the 2018 table, as the paper says, but these sessions hold 325 unit rows, above 288 ± 28.8.
-    The difference of the stated totals, 1863 - 1576 = 287, is the paper's number; it is not the units of
+    The difference of the stated totals, 1863 - 1576 = 287, is within 1 of the paper's 288; it is not the units of
     the new sessions, as the dandiset's older sessions hold 1539 unit rows, not 1576.
   deviations:
   - The earlier release's session list is taken from the table of Faraut et al. 2018, not from the
@@ -300,8 +300,10 @@ outcomes:
     session 144, so the data of the neuron the claim names are not in the dandiset. The only units on a channel 140 in the dandiset are units 1 and 2 of session 2009
     (T103, 3 units), in the right hippocampus; unit 2, the third unit of the session, is category
     selective (ANOVA p = 1.3e-09) with its highest rate for phones (9.1 Hz against 1.7 to 2.7 Hz). It fits
-    the figure's channel, area, cell number counted from 1 and preferred category, but not its session
-    id, so it is shown and does not decide the claim. Whether neuron 144-140-3-RH is this unit is a
+    the figure's channel, area and preferred category, but not its session id, so it is shown and does
+    not decide the claim. Its index fits the figure's cell number 3 only when counted from 1, while the
+    Figure 4 unit fits its cell number 4 only when counted from 0, so the cell number does not support
+    this candidate. Whether neuron 144-140-3-RH is this unit is a
     question for the paper's authors.
 findings:
 - kind: metadata_error
@@ -314,9 +316,9 @@ findings:
 - kind: data_missing
   statement: Eight sessions lack encoding trials. Seven Huntington sessions (18, 20, 21, 23, 26, 27 and
     44) hold 50 encoding trials and session 123 holds 97, against 100 in the paper. In the seven, 21 to
-    24 of the 50 images labelled old in the recognition block are not among the file's encoding images
-    (they are in the encoding blocks of other sessions of the same variant), so the encoding trials that
-    showed them are not in the file.
+    24 of the 50 images labelled old in the recognition block are not among the file's encoding images,
+    and in session 123 one is not; each is in the encoding blocks of other files of the same variant, so
+    the encoding trials that showed them are not in the file.
 - kind: other
   about: data
   statement: 66 spike trains are deposited in two files each, sessions 38 and 39 (11 units), 43 and 44
@@ -338,15 +340,16 @@ findings:
     session 68 (H44) is dated 2000-01-01, six years before any other session of the archive's files and
     out of order with the subjects recorded before and after it (2013 and 2014). In 38 files the trial,
     event and spike times are Unix seconds, while timestamps_reference_time is set to the session's
-    start date, so the stated reference does not apply to them.
+    start date (it equals session_start_time in all 87 files), so the stated reference does not apply
+    to them.
 - kind: data_missing
   statement: The electrode impedance (imp) is NaN for all 887 electrodes in all 87 files, and the MNI
     coordinates (x, y, z) are NaN for 99 electrodes in 8 files, although the paper says the electrodes
     table gives each electrode's coordinates and impedance.
 - kind: metadata_error
   statement: Spike sorting quality metrics are missing or invalid for many units. SNR is NaN for 75 units
-    and infinite for 11 (session 48), and the isolation distance is NaN for 493 of 1864 units in 82
-    files, with two values above 1e27. The isolation distance column is named IsolationDist, not IsolDist
+    and infinite for 11 (all in session 48), and the isolation distance is NaN for 493 of 1864 units in
+    82 files, with two values above 1e27 (2.9e27 in session 38, 8.1e32 in session 66). The isolation distance column is named IsolationDist, not IsolDist
     as in the paper.
 - kind: metadata_insufficient
   statement: Nine files hold event codes that Table 1 of the paper and the events description do not
@@ -574,3 +577,193 @@ verifications:
       tested.
     response: The outcome stays blocked; blocked_by is changed from other to data_missing, as the
       verifier gives it, since the data of the session the claim names are not in the dandiset.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full re-executed notebook after the round-1 revision, with its conclusions and summary,
+    the attempt record, the README, the helper module and the claims file, with the paper's full text
+    and its own round-1 report. It checked the round-1 problems against the new outputs and read
+    nomem.zroc_slope_regress.
+  results:
+  - claim: counts-neurons-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: counts-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: table1-demographics
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: task-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion. The summary says that 21 to 24 old images of
+      the sessions lacking encoding trials were never shown in the file's encoding block; that is true
+      of the seven sessions only, and session 123 is missing 1 image. The data_missing finding says the
+      missing old images are in the encoding blocks of other files of the same variant, while the
+      output shows only "in the encoding block of some file" and nothing checks the variant.
+    response: The notebook now prints, for each of the eight sessions, its variant, how many old images
+      are missing from its own encoding block, how many other files hold them and their variants (the
+      same variant in all eight). The summary, the new-old-label-coding conclusion and the data_missing
+      finding now give 21 to 24 for the seven and 1 for session 123.
+  - claim: new-old-label-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the criterion. The 50% threshold is stated as this attempt's
+      own, and the strict count of 78/87 decides the claim. The conclusion's statement that the missing
+      old images are "in the encoding blocks of other files of the same variant" is not supported, as
+      the output does not check the variant.
+    response: The variant check is added (see task-structure) and the conclusion cites it.
+  - claim: ttl-codes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: experiment-ids
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: session-dates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion. The finding says timestamps_reference_time is
+      set to the session's start date, but that attribute is never printed; the data check shows only
+      that 38 files use Unix time. The data check says trial and spike times share one clock in each
+      file, while the clock check says it cannot establish this for 5 files, and says the median
+      stimulus duration is 1 s in most files, while the output gives only the range (0.998 to 2.016
+      s). Its round-1 problem 2 is placed under this claim, where it does not belong, but its content is
+      right.
+    response: nomem.load_session now reads timestamps_reference_time and the notebook prints that it
+      equals session_start_time in all 87 files (and in the 38 with Unix times), with an example (CS37_96,
+      reference 2015-03-01, first trial at 2015-03-25 in Unix time). The data check now says the times
+      are consistent with one clock over all files and that the check cannot establish it for 5 small
+      files. It prints the number of files whose median stimulus duration is within 0.95 to 1.05 s (43 of
+      87) and above 1.5 s (44); "1 s in most files" was wrong and is replaced by these counts. The
+      comparisons of trial times (start_time against stim_on_time, and the trial times of the pairs of
+      files sharing spike trains) now use an absolute tolerance of 1 ms; with numpy's default relative
+      tolerance, Unix times of 1.5e9 s would match within 15000 s. Their results do not change.
+  - claim: units-table
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion. The conclusion, notes and finding say two
+      isolation distances are above 1e27; the outputs show 2 values above 1e6 and a maximum of 8.08e32,
+      and nothing shows that the second value is above 1e27. No output shows which files hold the 11
+      infinite SNR values (notes "all infinite ones in H28_48", finding "infinite for 11 (session 48)");
+      the output prints only "in 33 files" for all non-finite values.
+    response: The notebook now prints the files holding infinite values of each metric (all 11 infinite
+      SNR values are in H28_48) and each value above 1e6 with its file (isolation distance 2.9e27 in
+      H21_38 and 8.1e32 in CS26_66). The conclusion, notes and finding give these values.
+  - claim: electrodes-table
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the criterion. imp is float64 and all NaN, which resolves the
+      round-1 point.
+    response: No change.
+  - claim: isi-criterion
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: fig5a-mtl-locations
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: fig5c-auc-all
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the criterion. "Duplicated recognition data, none" is a
+      hard-coded string, the same pattern as round-1 problem 1. The check of the three pairs of files that
+      share spike trains supports it for those pairs ("same recognition trial times False"), but no check
+      across all sessions is printed.
+    response: The string is replaced by a check over every pair of the 87 files, which prints the pairs
+      with identical recognition onsets (within 1 ms) and the pairs with the same sequence of recognition
+      images and answers; there are none of either. The conclusion and notes state this.
+  - claim: fig5c-auc-sites
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: fig5b-roc-asymmetric
+    agrees: true
+    outcome: reproduced
+    reason: The only outcome marked assumed. Leaving out 5 sessions with fewer than 2 distinct false alarm
+      rates is stated and reasonable. The two variants (the slopes MATLAB's regress would return, p =
+      5.4e-10; the five slopes set to 1, p = 5.4e-09) do not change the outcome. nomem.zroc_slope_regress,
+      with pivoted QR and a rank tolerance, is a fair stand-in for regress.
+    response: No change.
+  - claim: fig5d-confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: The dynamic-split deviation (low-confidence hits counted as response 4 only) is stated. It was
+      not verified against helper.py; reading (a) alone decides the claim.
+    response: No change.
+  - claim: vs-cells-proportion
+    agrees: true
+    outcome: reproduced
+    reason: The 6 units whose rates are all equal are counted as not VS; 332 is well inside 343 ± 34.3, so
+      this does not matter. The per-unit p-values are now listed; comparing them unit by unit with the
+      paper's code output would need that output, which the verifier does not have.
+    response: No change.
+  - claim: ms-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the criterion. The README says the paper's code gives the
+      paper's numbers; this holds for MS (146).
+    response: No change.
+  - claim: dual-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches the printed outputs and the criterion. The README says the paper's code "gives the
+      paper's numbers"; for dual cells the code gives 25 against the paper's 26, within tolerance but not
+      equal. The summary states this correctly.
+    response: The README and the summary now say that the code's choices give the paper's 146 MS cells
+      and 25 dual cells against the paper's 26.
+  - claim: fig5f-site-proportions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: twh-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Matches the printed outputs and the criterion in the claims file.
+    response: No change.
+  - claim: previous-release-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion. The Faraut et al. 2018 table is printed per
+      row, with session 98 under H48, variant 2.
+    response: No change.
+  - claim: previous-release-additions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches the printed outputs and the criterion. The conclusion and notes say "1863 - 1576 =
+      287 is the paper's number"; the paper's number is 288, and the sentence should say "within 1 of".
+    response: Corrected in the conclusion and the notes.
+  - claim: fig4-example-vs-neuron
+    agrees: true
+    outcome: reproduced
+    reason: The claims file reads the figure's "cell number" 4 as "electrode row 4", a possible
+      misreading. Only one unit sits on channel 177 in session 132, so the outcome does not change.
+    response: No change of outcome or claim. The reading is added to questions/chandravadia-2020.yaml
+      as a question for a reader.
+  - claim: fig3-example-vs-neuron
+    agrees: true
+    outcome: blocked
+    reason: The data_missing block is agreed. The discussion reads cell number as a unit index counted
+      from 1, while for fig4 unit 4 matches only when counted from 0; counted from 1, cell 4 would be
+      unit index 3, which is not on channel 177. So the statement that the T103 candidate fits the
+      figure's cell number uses the opposite convention to the one that matched fig4. This does not
+      affect the blocked outcome, but that argument for the candidate is weaker than the text says.
+    response: The notebook's discussion and the notes no longer say the candidate fits the cell number;
+      they say its index fits only when counted from 1 while the Figure 4 unit fits only when counted
+      from 0, so the cell number does not support the candidate. The question on cell numbers in
+      questions/chandravadia-2020.yaml names this claim too.
