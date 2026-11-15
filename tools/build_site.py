@@ -1671,13 +1671,29 @@ def bar(counts: dict, label: str, css: str = "bar", href=None) -> str:
     return f'<div class="{css}" role="img" aria-label="{e(label)}">{"".join(segments)}</div>'
 
 
+def shares(counts: dict) -> dict:
+    """Each count's share of the total in whole percent, rounded so that the shares add up to 100 (the largest
+    remainders are rounded up). A count above zero that rounds to 0 is given as "<1"."""
+    total = sum(counts.values())
+    if not total:
+        return {k: "0" for k in counts}
+    exact = {k: 100 * n / total for k, n in counts.items()}
+    whole = {k: int(x) for k, x in exact.items()}
+    for k in sorted(exact, key=lambda k: whole[k] - exact[k])[:100 - sum(whole.values())]:
+        whole[k] += 1
+    return {k: "<1" if counts[k] and not whole[k] else str(whole[k]) for k in counts}
+
+
 def legend(counts: dict, compact: bool = False, href=None) -> str:
+    """The outcomes with their counts; the full legend (the Overview's) also gives each one's share of the claims."""
     items = []
+    share = shares(counts)
     for key, (label, css, icon) in OUTCOMES.items():
         n = counts[key]
         if compact and not n:
             continue
-        text = f'<strong>{n}</strong> {label.lower() if compact else label}'
+        text = (f'<strong>{n}</strong> {label.lower()}' if compact else
+                f'<strong>{n:,}</strong> {label} <span class="pct">{share[key]}%</span>')
         if href:
             text = f'<a href="{e(href(key))}">{text}</a>'
         items.append(f'<li><span class="swatch {css}" aria-hidden="true">{icon}</span>{text}</li>')

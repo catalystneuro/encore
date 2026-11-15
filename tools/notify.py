@@ -4,7 +4,8 @@ of its runner chain.
     python tools/notify.py FOLDER STATUS [--detail TEXT] [--run ID] [--mention USER] [--dry-run]
 
 STATUS is the last line tools/runner/chain.sh printed. "<folder> MERGED <pr>" and "<folder> CLAIMS
-MERGED" close the dataset's open issue, if it has one. Any other ending ("STOPPED ...", "CHECKS
+MERGED" close the dataset's open issue, if it has one, and so does "<folder> QUEUED ON VERIFIED at <role>: <why>":
+a run flagged on the unverified account, handed to the verified account's lanes, which needs no one. Any other ending ("STOPPED ...", "CHECKS
 FAILED <pr>") means the chain is waiting on a person: the dataset's issue is opened, or commented
 on when one is open already, with what stopped it, why (the failed checks or the failed step of the run,
 with the end of its log), what the person can do about it, the reader's report when the claims step is
@@ -279,6 +280,19 @@ def body(folder: str, status: str, detail: str, run: str, mention: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def closing_comment(folder: str, status: str) -> str | None:
+    """The comment that closes the issue, for an ending that needs no one; None for any other ending."""
+    what = status.removeprefix(folder).strip()
+    if re.match(r"(CLAIMS )?MERGED\b", what):
+        return f"Done: {what}."
+    queued = re.match(r"QUEUED ON VERIFIED at ([a-z0-9-]+): (.*)", what)
+    if queued:
+        return (f"The run of `{queued.group(1)}` was flagged on the unverified account ({queued.group(2)}). The paper "
+                f"is queued on the verified account, which resumes it from `{queued.group(1)}` and runs the rest of "
+                f"its roles there. Nothing is needed from you.")
+    return None
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("folder")
@@ -292,12 +306,12 @@ def main() -> int:
         raise SystemExit(f"error: the status does not start with {args.folder}: {args.status!r}")
     number = None if args.dry_run else open_issue(args.folder)
 
-    if re.match(rf"{re.escape(args.folder)} (CLAIMS )?MERGED\b", args.status):
+    comment = closing_comment(args.folder, args.status)
+    if comment:
         if args.dry_run:
-            print(f"would close the open issue {title(args.folder)!r}, if any")
+            print(f"would close the open issue {title(args.folder)!r}, if any, saying: {comment}")
         elif number:
-            gh("issue", "close", str(number), "--repo", REPO, "--comment",
-               f"Done: {args.status.removeprefix(args.folder).strip()}.")
+            gh("issue", "close", str(number), "--repo", REPO, "--comment", comment)
             print(f"closed #{number}")
         return 0
 
