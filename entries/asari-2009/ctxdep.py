@@ -30,6 +30,9 @@ Where each parameter comes from:
   1000-shuffle noise floor within the time limit; after a 10-ms median filter
   the trace changes little within 1 ms. The notebook compares the two
   resolutions on a subset of probes.
+- The sets of conditioning stimuli in which one property varies (Figure 8, Table 1) are named
+  in the files only for six recordings; `property_sets` rebuilds them from the stimulus
+  descriptions, names and parameters, an assumption stated in the notebook.
 - Ranks for the Kruskal-Wallis test use average ranks for ties (the code uses
   ordinal ranks); a standard choice that cannot change a result beyond ties.
 """
@@ -415,10 +418,157 @@ def fit_with_rule(t, y, kappa=None):
     return f1, f2
 
 
+# ----------------------------------------------------------------------------- stimulus properties (Fig. 8)
+TABLE1_KINDS = ("natural", "TORC", "DMR", "MHT", "MCN")   # probe rows of Table 1
+
+
+def _par(s, key):
+    v = getattr(getattr(s, "param", None), key, None)
+    if v is None:
+        return None
+    v = np.atleast_1d(v)
+    return tuple(float(x) for x in np.round(v.astype(float), 6)) if v.dtype != object else None
+
+
+def stim_kind(s) -> str:
+    """Probe type of one stimulus struct (the rows of Table 1), from its name and description."""
+    name, desc = str(getattr(s, "name", "")), _txt(getattr(s, "description", ""))
+    if name == "silence":
+        return "silence"
+    if "TORC" in desc:
+        return "TORC"
+    if "DMR" in desc:
+        return "DMR"
+    if "Modulated Harmonic Tone" in desc:
+        return "MHT"
+    if name.startswith("pink noise"):
+        return "MCN"
+    if name.startswith("naturalistic"):
+        return "naturalistic"
+    if name.startswith("natural sound"):
+        return "natural"
+    return "other"
+
+
+def property_sets(rec: Recording) -> list:
+    """Sets of conditioning stimuli in which one property varies (Fig. 8, Table 1).
+
+    The files do not name the sets except in the notes of the six recordings of a natural
+    probe after MHT variants; the sets are rebuilt from the stimulus descriptions, names and
+    parameters (an assumption, stated in the notebook). Each set is dict(prop, label,
+    members = 1-based stimulus indices, main = whether it enters the main reading):
+
+    - TORC and DMR ensembles whose descriptions say "amplitude variants" or "bandwidth
+      variants" (TORC), "DMR; amplitude variants" or "DMR1..4: bandwidth" (DMR): one set of
+      all their stimuli, amplitude or frequency (Table 1 legend: TORCs and DMRs for
+      amplitude and frequency). In designs with forward and time-reversed variants (names
+      "(forward)" and "(backward)"), each direction is a set; the forward one is the main.
+    - Natural sound at several attenuations ("attenuation" parameter) or band shifts ("df"
+      with "FF"), forward and backward: amplitude or frequency sets as above.
+    - Naturalistic sets (SoundTrans.m): the original and its "amplitude variant" (amplitude),
+      the original and its "frequency variant" 1 and 2 (frequency).
+    - MHT designs with a natural probe and the notes listing the sets: the sets of the notes.
+    - MHT 4 by 4 designs of AM rate range by FM rate range: an AM set for each FM range and an
+      FM set for each AM range; the main reading keeps the set through the first stimulus
+      (both ranges empty), so that each probe enters a property once, as Table 1 counts.
+    - MHT designs varying AM rate and depth only: one AM set.
+    - Pink noise (MCN): for each natural fragment k, the fragment and its pink noises
+      ("pink noise fragment k" or "k-j"): higher-order (Table 1 legend, "comparing natural
+      sounds and corresponding modulated colored noise"). A probe can meet several of these
+      sets; the notebook's main reading keeps the one that holds the probe itself.
+    """
+    st = rec.stimuli
+    n = len(st)
+    idx = range(1, n + 1)
+    names = [str(getattr(s, "name", "")) for s in st]
+    descs = [_txt(getattr(s, "description", "")) for s in st]
+    kinds = [stim_kind(s) for s in st]
+    out = []
+
+    def add(prop, label, members, main=True):
+        members = sorted(members)
+        if len(members) >= 2:
+            out.append(dict(prop=prop, label=label, members=members, main=main))
+
+    # sets written in the notes ("2-5,8: amplitude variants")
+    notes = "\n".join(rec.notes)
+    noted = re.findall(r"^\s*([\d,\- ]+):\s*(amplitude|frequency|amplitude-modulation|frequency-modulation) variants", notes, re.M)
+    if noted:
+        names_p = {"amplitude": "amplitude", "frequency": "frequency", "amplitude-modulation": "AM", "frequency-modulation": "FM"}
+        for spec, prop in noted:
+            mem = set()
+            for part in spec.replace(" ", "").split(","):
+                a, _, b = part.partition("-")
+                mem |= set(range(int(a), int(b or a) + 1))
+            add(names_p[prop], "notes", mem)
+        return out
+    for kind in ("TORC", "DMR"):
+        ii = [i for i in idx if kinds[i - 1] == kind]
+        if not ii:
+            continue
+        d = " ".join(descs[i - 1] for i in ii)
+        prop = "amplitude" if "amplitude variants" in d else "frequency" if ("bandwidth" in d or "frequency variants" in d) else None
+        if prop is None:
+            continue
+        fw = [i for i in ii if "(backward)" not in names[i - 1]]
+        bw = [i for i in ii if "(backward)" in names[i - 1]]
+        add(prop, f"{kind} forward", fw)
+        add(prop, f"{kind} backward", bw, main=False)
+    # one natural sound at several attenuations or band shifts
+    nat = [i for i in idx if kinds[i - 1] == "natural"]
+    if len(nat) > 2 and len({descs[i - 1] for i in nat}) == 1:
+        for direction in ("(forward)", "(backward)"):
+            ii = [i for i in nat if direction in names[i - 1]]
+            att = [i for i in ii if _par(st[i - 1], "attenuation") is not None]
+            shift = [i for i in ii if _par(st[i - 1], "df") is not None and _par(st[i - 1], "FF") is not None]
+            add("amplitude", f"natural {direction}", att, main=direction == "(forward)")
+            add("frequency", f"natural {direction}", shift, main=direction == "(forward)")
+    # naturalistic variants (SoundTrans.m)
+    orig = [i for i in idx if names[i - 1] == "natural sound fragment"]
+    if orig and any(kinds[i - 1] == "naturalistic" for i in idx):
+        add("amplitude", "naturalistic", orig + [i for i in idx if descs[i - 1] == "amplitude variant"])
+        add("frequency", "naturalistic", orig + [i for i in idx if descs[i - 1].startswith("frequency variant")])
+    # MHT designs
+    mht = [i for i in idx if kinds[i - 1] == "MHT"]
+    if mht:
+        am = {i: _par(st[i - 1], "AMrange") for i in mht}
+        fm = {i: _par(st[i - 1], "FMrange") for i in mht}
+        if all(v is not None for v in fm.values()) and len(set(fm.values())) > 1:
+            first = mht[0]
+            rng = lambda r: "-".join(f"{v:g}" for v in r) + " Hz" if r else "none"
+            for f in sorted(set(fm.values())):
+                add("AM", f"FM range {rng(f)}", [i for i in mht if fm[i] == f], main=f == fm[first])
+            for a in sorted(set(am.values())):
+                add("FM", f"AM range {rng(a)}", [i for i in mht if am[i] == a], main=a == am[first])
+        else:
+            add("AM", "AM rate and depth", mht)
+    # natural sounds and their pink noises (MCN)
+    for i in idx:
+        m = re.match(r"natural sound fragment (\d+)$", names[i - 1])
+        if m:
+            k = m.group(1)
+            pinks = [j for j in idx if re.match(rf"pink noise fragment {k}(-\d+)?$", names[j - 1])]
+            add("higher-order", f"natural {k} and its pink noise", [i] + pinks)
+    return out
+
+
 # ----------------------------------------------------------------------------- spikes
-def extract_spikes(raw: np.ndarray, threshold: float | None = None, remove_downward: bool = True) -> np.ndarray:
-    """Port of ExtractSpikes in GetSpikes.m (automatic mode). Returns spike sample indices."""
+def extract_spikes(raw: np.ndarray, threshold: float | None = None, remove_downward: bool = True,
+                   info: dict | None = None) -> np.ndarray:
+    """Port of ExtractSpikes in GetSpikes.m (automatic mode). Returns spike sample indices.
+
+    The automatic threshold is computed once over the whole trace passed in: ViewResp.m calls
+    GetSpikes(response, auto) with the whole recording, and GetSpikes.m (auto == 1) calls
+    ExtractSpikes(response, threshold, remove_downward_spikes) on all of it; only the manual
+    mode works in 10-s sweeps. When `info` is a dict, the threshold used and a robust SD of
+    the filtered trace (median absolute value / 0.6745) are written into it, with the heights,
+    in those SDs, of every local maximum above 10 SDs (at least 2 ms apart).
+    """
     f = signal.filtfilt(HP_NUM, [1.0], raw)
+    if info is not None:
+        sd = float(np.median(np.abs(f)) / 0.6745)
+        info["noise_sd"] = sd
+        info["peak_sd"] = (signal.find_peaks(f, height=10 * sd, distance=20)[1]["peak_heights"] / sd).astype(np.float32)
     if threshold is None:
         i = int(np.argmax(np.abs(f)))
         threshold = 2 / 3 * abs(f[i])
@@ -426,6 +576,8 @@ def extract_spikes(raw: np.ndarray, threshold: float | None = None, remove_downw
             mask = np.ones(len(f), bool)
             mask[max(0, i - 30): i + 31] = False
             threshold = np.abs(f[mask]).max() * 2 / 3
+    if info is not None:
+        info["threshold"] = float(threshold)
     above = f > threshold
     if not above.any():
         return np.array([], int)
@@ -573,3 +725,19 @@ def trial_correlations(X: np.ndarray) -> tuple:
 def first_cross(t: np.ndarray, y: np.ndarray, level: float) -> float:
     i = np.where(y < level)[0]
     return float(t[i[0]]) if len(i) else np.nan
+
+
+def stim_bands(s) -> list:
+    """Frequency band edges (Hz) of a stimulus: its `ff` parameter and, for TORC sequences,
+    the `ff` of each TORC in `torc_parameters`."""
+    out = []
+    ff = _par(s, "ff")
+    if ff:
+        out.append(ff)
+    tp = getattr(getattr(s, "param", None), "torc_parameters", None)
+    if tp is not None:
+        for q in np.atleast_1d(tp):
+            v = getattr(q, "ff", None)
+            if v is not None:
+                out.append(tuple(float(x) for x in np.atleast_1d(v)))
+    return out

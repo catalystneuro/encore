@@ -5,6 +5,7 @@ Paper: Asari and Zador (2009), Methods, "Neural encoding models" and "Model perf
 
 Where each parameter comes from:
 
+- Stimulus sampling rate: `param.sf` of each stimulus file (wehr/Stimuli), 97656 Hz where absent.
 - Spectrogram (Eq. 47): log-frequency bins at 3 per octave from 0.40 kHz (17 bins, to 20.3
   kHz; the paper says 0.40 to 22 kHz, 17 bins), dB of the power; each frequency centred over
   time, as in the authors' STRFanalysis.m (wehr/Tools in crcns-ac1.zip). The window h(t) is open:
@@ -16,8 +17,9 @@ Where each parameter comes from:
   names), each trial centred over time.
 - Ridge regression (Eq. 50) with 10-fold cross-validation, the ridge parameter chosen as the one
   with the best mean validation performance over folds (Methods; STRFanalysis.m). The grid of
-  ridge values (13 values, 1e-4 to 1e2 times the mean eigenvalue of S'S) is a standard choice
-  wide enough that the chosen value is reported with its position in the grid. Folds are
+  ridge values (17 values, 1e-4 to 1e4 times the mean eigenvalue of S'S) is a standard choice;
+  the chosen value is reported with its position in the grid, and the grid was widened from
+  1e2 after the first round found the top value chosen in 36 of 208 fits. Folds are
   contiguous blocks of the concatenated data (reading A) or whole stimuli (reading B).
 - Static nonlinearity (Eq. 51): robust lowess with a 5% span and 5 iterations on the training set,
   applied to the validation set by linear interpolation (Methods).
@@ -38,7 +40,7 @@ F_LO, NB_OCT, NF = 400.0, 3, 17
 COUNTS = [[45], [9, 36], [9, 8, 28], [9, 8, 7, 21], [9, 8, 7, 6, 15], [9, 8, 7, 6, 5, 10],
           [9, 8, 7, 6, 5, 4, 6], [9, 8, 7, 6, 5, 4, 3, 3], [9, 8, 7, 6, 5, 4, 3, 2, 1]]
 WIDTHS = [2 ** k for k in range(0, 9)]       # in 4-ms units: 4, 8, ..., 1024 ms
-RIDGE_SCALE = np.logspace(-4, 2, 13)
+RIDGE_SCALE = np.logspace(-4, 4, 17)
 
 
 def window_ms(counts) -> int:
@@ -194,7 +196,7 @@ def load_cell(cell: dict, stim_cache: dict, win_ms: float, min_trials: int = 2):
             sdesc = str(tr.param.description)
             trials.append((x[on:], dur))
         if stim_cache[key] is None:
-            stim_cache[key] = spectrogram(STIMULI[sdesc], 97656.0, win_ms)
+            stim_cache[key] = spectrogram(STIMULI[sdesc], STIM_SF.get(sdesc, 97656.0), win_ms)
         S = stim_cache[key]
         n = min([S.shape[0]] + [int(len(x) / sf / DT) for x, _ in trials])
         R = np.array([response_bins(x, sf, n) for x, _ in trials])
@@ -212,4 +214,9 @@ def load_stimuli():
         if n.startswith("wehr/Stimuli/") and n.endswith(".mat"):
             s = cd.loadmat_member("crcns-ac1.zip", n)["stimulus"]
             STIMULI[str(s.param.description)] = np.asarray(s.samples, float)
+            if getattr(s.param, "sf", None) is not None:
+                STIM_SF[str(s.param.description)] = float(s.param.sf)
     return STIMULI
+
+
+STIM_SF: dict = {}
