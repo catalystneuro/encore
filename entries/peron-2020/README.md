@@ -4,18 +4,18 @@ Tests the findings of [Peron et al. (2020)](https://doi.org/10.1038/s41586-020-2
 "Recurrent interactions in local cortical circuits", that can be tested on
 [CRCNS ssc-11](https://doi.org/10.6080/K0Z31WWG): volumetric calcium imaging of L2/3 of mouse
 barrel cortex in 16 mice before and after 24 targeted ablations of touch, whisking or silent
-neurons. The notebook streams the 16 archives (128 GB) from the public CRCNS bucket once, in
-about 17 minutes, and reduces them in memory. It then rebuilds the network model of the Methods
+neurons. The notebook streams the 16 archives (120.9 GB compressed) from the public CRCNS bucket once,
+in 11 to 18 minutes depending on the connection, and reduces them in memory. It then rebuilds the network model of the Methods
 (2,000 leaky integrate-and-fire neurons, helper `peron2020_model.py`) and simulates 30 networks
-per condition, in about 30 minutes.
+per condition, in about 21 minutes.
 
 | Claim | Outcome |
 |---|---|
 | Model: amplification grows with subnetwork connectivity | Reproduced (resting on assumptions) |
-| Model: ablation raises scores at equal connectivity | Not reproduced (resting on assumptions) |
+| Model: ablation raises scores at equal connectivity | Not reproduced (resting on assumptions); partially reproduced proposed for a third verification round |
 | Model: ablation lowers scores at increased connectivity | Partially reproduced (resting on assumptions) |
 | Model: all-or-none networks robust to ablation | Blocked: the Methods' input rule gives no positive strength here |
-| Model: larger ablations, larger declines | Partially reproduced (resting on assumptions) |
+| Model: larger ablations, larger declines | Partially reproduced (resting on assumptions); reproduced proposed for a third verification round |
 | Model: slow input also sensitive at increased connectivity | Partially reproduced (resting on assumptions) |
 | Model: decline follows response similarity | Not reproduced (resting on assumptions) |
 | Neurons per mouse, representation sizes | Reproduced |

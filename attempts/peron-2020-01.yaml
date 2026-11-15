@@ -42,11 +42,15 @@ outcomes:
   output: claim:model-amplification-increases
   measured: 7.74
   notes: Under calibration reading (a) the matched input strength is 218.0 at Pconn 0.2 and 28.2 at Pconn
-    0.4, so normalized amplification at 0.4 is 7.74; under reading (b) 150.0 and 15.0, amplification 10.00.
-    Reading (c), a fraction of 0.17 excitatory neurons above 0.1, cannot be met in this network (largest
-    fraction over all sweeps 0.119), so it sets no strength. The criterion's condition, a lower strength
-    at 0.4 than at 0.2, holds under both readings that can be set. Amplification is far larger than in
-    the paper's Fig. 1c. The outcome rests on the assumptions of the model (deviations).
+    0.4, so normalized amplification at 0.4 is 7.74, and the strength at 0.4 is below that at 0.2. Reading
+    (a) is weakly set at Pconn 0.2 (the fraction above 0.1 moves from 0.106 to 0.109 between strengths
+    200 and 225, two networks per strength), which bears on the size of the amplification, not its direction.
+    With the sweeps extended down to no input, reading (b) sets 75.0 at Pconn 0.2 and no strength at 0.4,
+    where the smallest KS distance is at no input (0.514; 0.522 at the next strength). Reading (c), a
+    fraction of 0.17 excitatory neurons above 0.1, cannot be met (largest fraction over all sweeps 0.119,
+    below the input-recipient share of 200 of 1,700). The criterion's condition holds under the one reading
+    that sets both strengths. Amplification is far larger than in the paper's Fig. 1c. The outcome rests
+    on the assumptions of the model (deviations).
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -59,12 +63,20 @@ outcomes:
   - Assumption. Inhibitory PSPs are -1 mV, from "All connections had the same strength, which was chosen
     so that the resulting post-synaptic potential (PSP) is 1 mV" (Methods).
   - Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims
-    file's readings from sweeps of two networks per strength; reading (a) is adopted where the readings
-    differ, as reading (b)'s KS minimum lies at the weakest strength of both touch-input sweeps (the distance
-    grows with strength) and reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only
-    the 200 input-recipient neurons pass 0.1).
-  - Assumption. "All neurons that met the 0.1 encoding score criteria" (Methods) is taken as all neurons
-    of the network, inhibitory ones included; excitatory neurons alone are shown as a variant.
+    file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading
+    (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its
+    smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input
+    (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons
+    score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as
+    almost only the 200 input-recipient neurons pass 0.1).
+  - Assumption, revised after verification round 2. "All neurons that met the 0.1 encoding score criteria"
+    (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the "distributions
+    of excitatory neuron encoding scores", ablate "The 20 excitatory neurons with the highest encoding
+    score", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre
+    mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's
+    Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058
+    and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are
+    shown as a variant; the outcomes verified in round 2 were set with all neurons counted.
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
@@ -74,14 +86,15 @@ outcomes:
   notebook: reproduce_peron_2020.ipynb
   output: claim:model-equal-connectivity-ablation-increases
   measured:
-  - 0.287
-  - 0.279
-  notes: At Pconn 0.2 under calibration (a), 30 networks, the spared neurons (all neurons above 0.1 before
-    or after, ablated ones left out) go from a grand median of 0.287 to 0.279 after the 20 strongest encoders
-    are ablated (signed-rank p = 6.3e-05, 4 of 30 networks increase), a decrease where the claim has an
-    increase, and 0.287 is outside 0.237 ± 0.024. Excitatory neurons alone increase, 0.546 to 0.562 (30
-    of 30, p = 1.9e-09), with both values far outside tolerance. Calibration (b) gives 0.195 to 0.193
-    (p = 0.047) and 0.415 to 0.470 (excitatory). No reading gives the paper's values.
+  - 0.546
+  - 0.562
+  notes: At Pconn 0.2 under calibration (a), 30 networks, the spared excitatory neurons (above 0.1 before
+    or after, ablated ones left out) go from a grand median of 0.546 to 0.562 after the 20 strongest encoders
+    are ablated (signed-rank p = 1.9e-09, 30 of 30 networks increase), the claimed increase at p < 0.001,
+    with both values far outside 0.237 ± 0.024 and 0.274 ± 0.027. All neurons (variant) go from 0.287
+    to 0.279 (p = 6.3e-05, 4 of 30 increase), a decrease. The verified outcome, not reproduced, was set
+    with all neurons counted; the population was revised after round 2, and the change of outcome is proposed.
+    Calibration (b) sets no strength at Pconn 0.4 and is not run.
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -94,27 +107,44 @@ outcomes:
   - Assumption. Inhibitory PSPs are -1 mV, from "All connections had the same strength, which was chosen
     so that the resulting post-synaptic potential (PSP) is 1 mV" (Methods).
   - Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims
-    file's readings from sweeps of two networks per strength; reading (a) is adopted where the readings
-    differ, as reading (b)'s KS minimum lies at the weakest strength of both touch-input sweeps (the distance
-    grows with strength) and reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only
-    the 200 input-recipient neurons pass 0.1).
-  - Assumption. "All neurons that met the 0.1 encoding score criteria" (Methods) is taken as all neurons
-    of the network, inhibitory ones included; excitatory neurons alone are shown as a variant.
+    file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading
+    (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its
+    smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input
+    (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons
+    score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as
+    almost only the 200 input-recipient neurons pass 0.1).
+  - Assumption, revised after verification round 2. "All neurons that met the 0.1 encoding score criteria"
+    (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the "distributions
+    of excitatory neuron encoding scores", ablate "The 20 excitatory neurons with the highest encoding
+    score", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre
+    mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's
+    Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058
+    and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are
+    shown as a variant; the outcomes verified in round 2 were set with all neurons counted.
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
+  proposed:
+    outcome: partially_reproduced
+    reason: The verifier (round 2) found the all-neuron count contestable, and the revision adopts excitatory
+      neurons, as the Methods calibrate and ablate excitatory neurons, the in vivo data are of excitatory
+      neurons, and the paper's Fig. 3b neuron counts are nearer the excitatory counts. With them the scores
+      rise in 30 of 30 networks (0.546 to 0.562, p = 1.9e-09), the effect the claim states, while both
+      grand medians are outside tolerance; the effect is present and the values are not, the rule the
+      record applies to the Pconn 0.4 claim (notebook, model-equal-connectivity cell).
 - claim: model-increased-connectivity-ablation-decreases
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_peron_2020.ipynb
   output: claim:model-increased-connectivity-ablation-decreases
   measured:
-  - 0.282
-  - 0.096
-  notes: 'At Pconn 0.4, ablation lowers the spared neurons'' scores under every reading, each at p < 0.001
-    over 30 networks: 0.282 to 0.096 (calibration (a), all neurons, p = 1.9e-08), 0.356 to 0.231 (excitatory,
-    p = 3.9e-07), 0.151 to 0.088 and 0.154 to 0.094 (calibration (b)). No reading gives both grand medians
-    within 0.243 ± 0.024 and 0.143 ± 0.014, so the effect is present and the values are not.'
+  - 0.356
+  - 0.231
+  notes: 'At Pconn 0.4 under calibration (a), ablation lowers the spared neurons'' scores in both populations
+    over 30 networks: 0.356 to 0.231 for excitatory neurons (p = 3.9e-07, 4 of 30 increase) and 0.282
+    to 0.096 for all neurons (variant, p = 1.9e-08). Neither gives both grand medians within 0.243 ± 0.024
+    and 0.143 ± 0.014, so the effect is present and the values are not. Calibration (b) sets no strength
+    at Pconn 0.4.'
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -127,12 +157,20 @@ outcomes:
   - Assumption. Inhibitory PSPs are -1 mV, from "All connections had the same strength, which was chosen
     so that the resulting post-synaptic potential (PSP) is 1 mV" (Methods).
   - Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims
-    file's readings from sweeps of two networks per strength; reading (a) is adopted where the readings
-    differ, as reading (b)'s KS minimum lies at the weakest strength of both touch-input sweeps (the distance
-    grows with strength) and reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only
-    the 200 input-recipient neurons pass 0.1).
-  - Assumption. "All neurons that met the 0.1 encoding score criteria" (Methods) is taken as all neurons
-    of the network, inhibitory ones included; excitatory neurons alone are shown as a variant.
+    file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading
+    (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its
+    smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input
+    (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons
+    score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as
+    almost only the 200 input-recipient neurons pass 0.1).
+  - Assumption, revised after verification round 2. "All neurons that met the 0.1 encoding score criteria"
+    (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the "distributions
+    of excitatory neuron encoding scores", ablate "The 20 excitatory neurons with the highest encoding
+    score", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre
+    mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's
+    Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058
+    and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are
+    shown as a variant; the outcomes verified in round 2 were set with all neurons counted.
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
@@ -140,11 +178,13 @@ outcomes:
   outcome: blocked
   blocked_by: methods_underspecified
   notes: Not run. The criterion sets the input at Pconn 0.44 to twice the strength extrapolated linearly
-    from the two matched strengths (Methods). The extrapolation gives -9.8 under calibration (a) and -12.0
-    under (b), and reading (c) sets none, so the Methods' rule gives no positive input here. The Methods
-    give neither the strength nor the length of the reset pulse to the inhibitory population, and the
-    pulse 300 ms after each onset falls on the next onset at the 300 ms interval of the claims file. Any
-    input and pulse chosen in their place would be arbitrary.
+    from the two matched strengths (Methods). The extrapolation gives -9.8 under calibration (a), and
+    readings (b) and (c) set no strength at Pconn 0.4, so the Methods' rule gives no positive input here.
+    The negative value follows from this attempt's calibration, whose amplification at Pconn 0.4 (7.7)
+    is far above the paper's Fig. 1c. The Methods give neither the matched strengths nor the strength
+    and length of the reset pulse to the inhibitory population, and the pulse 300 ms after each onset
+    falls on the next onset at the 300 ms interval of the claims file. Any input and pulse chosen in their
+    place would be arbitrary.
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -157,12 +197,20 @@ outcomes:
   - Assumption. Inhibitory PSPs are -1 mV, from "All connections had the same strength, which was chosen
     so that the resulting post-synaptic potential (PSP) is 1 mV" (Methods).
   - Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims
-    file's readings from sweeps of two networks per strength; reading (a) is adopted where the readings
-    differ, as reading (b)'s KS minimum lies at the weakest strength of both touch-input sweeps (the distance
-    grows with strength) and reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only
-    the 200 input-recipient neurons pass 0.1).
-  - Assumption. "All neurons that met the 0.1 encoding score criteria" (Methods) is taken as all neurons
-    of the network, inhibitory ones included; excitatory neurons alone are shown as a variant.
+    file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading
+    (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its
+    smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input
+    (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons
+    score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as
+    almost only the 200 input-recipient neurons pass 0.1).
+  - Assumption, revised after verification round 2. "All neurons that met the 0.1 encoding score criteria"
+    (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the "distributions
+    of excitatory neuron encoding scores", ablate "The 20 excitatory neurons with the highest encoding
+    score", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre
+    mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's
+    Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058
+    and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are
+    shown as a variant; the outcomes verified in round 2 were set with all neurons counted.
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
@@ -172,14 +220,15 @@ outcomes:
   notebook: reproduce_peron_2020.ipynb
   output: claim:model-more-ablation-larger-decline
   measured:
-  - -0.726
-  notes: Pconn 0.4, calibration (a), 30 networks per size. The median change of the spared neurons falls
-    with each larger ablation (0, -0.078, -0.124 and -0.185 for 0, 10, 20 and 50 ablated). The change
-    correlates with the net score ablated, R = -0.726 with the 0-ablation networks (p = 6.8e-21, n = 120)
-    and R = -0.558 without them (p = 1.1e-08, n = 90), both just outside -0.65 ± 0.065. Excitatory neurons
-    alone give -0.590 with the 0-ablation networks (within tolerance); calibration (b) gives -0.774 and
-    -0.678 (the second within tolerance). Under the readings adopted (calibration (a), all neurons) the
-    decline grows with size and R is outside the tolerance.
+  - -0.59
+  notes: Pconn 0.4, calibration (a), 30 networks per size. For the excitatory neurons the median change
+    falls with each larger ablation (0, -0.026, -0.123 and -0.209 for 0, 10, 20 and 50 ablated). The change
+    correlates with the net score ablated, R = -0.590 with the 0-ablation networks (p = 1.3e-12, n = 120),
+    within -0.65 ± 0.065, and R = -0.456 without them (p = 6.3e-06, n = 90). All neurons (variant) give
+    -0.726 and -0.558, both outside the tolerance. Calibration (b), which in the earlier revision gave
+    -0.774 and -0.678 at strengths at the bottom of its sweep, sets no strength at Pconn 0.4 once the
+    sweep reaches no input, and is not run. The verified outcome, partially reproduced, was set with all
+    neurons counted; the change of outcome is proposed.
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -192,31 +241,46 @@ outcomes:
   - Assumption. Inhibitory PSPs are -1 mV, from "All connections had the same strength, which was chosen
     so that the resulting post-synaptic potential (PSP) is 1 mV" (Methods).
   - Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims
-    file's readings from sweeps of two networks per strength; reading (a) is adopted where the readings
-    differ, as reading (b)'s KS minimum lies at the weakest strength of both touch-input sweeps (the distance
-    grows with strength) and reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only
-    the 200 input-recipient neurons pass 0.1).
-  - Assumption. "All neurons that met the 0.1 encoding score criteria" (Methods) is taken as all neurons
-    of the network, inhibitory ones included; excitatory neurons alone are shown as a variant.
+    file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading
+    (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its
+    smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input
+    (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons
+    score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as
+    almost only the 200 input-recipient neurons pass 0.1).
+  - Assumption, revised after verification round 2. "All neurons that met the 0.1 encoding score criteria"
+    (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the "distributions
+    of excitatory neuron encoding scores", ablate "The 20 excitatory neurons with the highest encoding
+    score", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre
+    mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's
+    Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058
+    and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are
+    shown as a variant; the outcomes verified in round 2 were set with all neurons counted.
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
+  proposed:
+    outcome: reproduced
+    reason: With the population revised to excitatory neurons (see model-equal-connectivity-ablation-increases),
+      the criterion is met under calibration (a), the only calibration that sets both strengths once the
+      sweeps reach no input; R = -0.590 with the 0-ablation networks (p = 1.3e-12), within -0.65 ± 0.065,
+      and the median change is more negative at each larger size (0, -0.026, -0.123, -0.209). The margin
+      is small (the bound is -0.585) (notebook, model-more-ablation-larger-decline cell).
 - claim: model-slow-input-sensitive
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_peron_2020.ipynb
   output: claim:model-slow-input-sensitive
   measured:
-  - 0.269
-  - 0.088
+  - 0.314
+  - 0.104
   notes: With the slow-input strength set anew under calibration (a) (reading (b) of the criterion; 6.6
-    at Pconn 0.4, 87.3 at 0.2), the score falls at Pconn 0.4 from 0.269 to 0.088 (all neurons, p = 3.7e-09,
-    1 of 30 networks increases) and does not change at Pconn 0.2 (0.424 to 0.424, p = 0.21), as the claim
-    says; the grand medians are outside 0.143 ± 0.014 and 0.104 ± 0.010. With the touch strength (reading
-    (a)) the score also falls at Pconn 0.2 (0.873 to 0.858, p = 1.9e-09). Under calibration (b) with the
-    strength set anew, the score at 0.4 falls from 0.110 to 0.102 (p = 2e-07; the post value is within
-    tolerance, the pre value is not) and does not change at 0.2 (p = 1). No reading gives both grand medians
-    within tolerance.
+    at Pconn 0.4, 87.3 at 0.2), the score of the excitatory neurons falls at Pconn 0.4 from 0.314 to 0.104
+    (p = 3.9e-07, 3 of 30 networks increase), the post value within 0.104 ± 0.010 and the pre value outside
+    0.143 ± 0.014, and rises at Pconn 0.2 (0.803 to 0.850, p = 1.9e-09), so it is not degraded there.
+    With the touch strength (reading (a)) it does not fall at Pconn 0.4 (0.952 to 0.947, p = 0.16). All
+    neurons (variant) give 0.269 to 0.088 at Pconn 0.4 and 0.424 to 0.424 at 0.2 (p = 0.21) with the strength
+    set anew. Calibration (b) sets no slow-input strength at Pconn 0.4 (smallest KS distance at no input).
+    No reading gives both grand medians within tolerance.
   deviations:
   - The slow-input strength set anew uses the same rules as the touch input (fraction 0.108 of excitatory
     neurons above 0.1, or the smallest KS distance to the in vivo Rtouch), as the criterion's reading
@@ -232,12 +296,20 @@ outcomes:
   - Assumption. Inhibitory PSPs are -1 mV, from "All connections had the same strength, which was chosen
     so that the resulting post-synaptic potential (PSP) is 1 mV" (Methods).
   - Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims
-    file's readings from sweeps of two networks per strength; reading (a) is adopted where the readings
-    differ, as reading (b)'s KS minimum lies at the weakest strength of both touch-input sweeps (the distance
-    grows with strength) and reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only
-    the 200 input-recipient neurons pass 0.1).
-  - Assumption. "All neurons that met the 0.1 encoding score criteria" (Methods) is taken as all neurons
-    of the network, inhibitory ones included; excitatory neurons alone are shown as a variant.
+    file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading
+    (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its
+    smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input
+    (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons
+    score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as
+    almost only the 200 input-recipient neurons pass 0.1).
+  - Assumption, revised after verification round 2. "All neurons that met the 0.1 encoding score criteria"
+    (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the "distributions
+    of excitatory neuron encoding scores", ablate "The 20 excitatory neurons with the highest encoding
+    score", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre
+    mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's
+    Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058
+    and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are
+    shown as a variant; the outcomes verified in round 2 were set with all neurons counted.
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
@@ -247,12 +319,13 @@ outcomes:
   notebook: reproduce_peron_2020.ipynb
   output: claim:model-response-similarity
   notes: Neurons above 0.25 before or after, a line per network through the change in score against the
-    similarity to the mean rate of the 20 ablated neurons. Under calibration (a), all neurons, the slopes
-    are positive at Pconn 0.4 (6 of 30 negative, sign test p = 0.0014) and mostly positive at Pconn 0.2
-    (8 of 30 negative, p = 0.016), where the claim has negative slopes at 0.4 and none at 0.2. Excitatory
-    neurons alone give negative slopes at 0.2 (30 of 30, p = 1.9e-09) and no dependence at 0.4 (11 of
-    30, p = 0.2), the reverse of the claim. Calibration (b) gives negative slopes at 0.2 (28 of 30) and
-    positive ones at 0.4 in the 8 networks with neurons above 0.25. The bin-mean fit leans the same way.
+    similarity to the mean rate of the 20 ablated neurons. Under calibration (a), excitatory neurons,
+    the slopes are negative at Pconn 0.2 (30 of 30, sign test p = 1.9e-09) and show no dependence at Pconn
+    0.4 (11 of 30 negative, p = 0.2), the reverse of the claim, which has negative slopes at 0.4 and none
+    at 0.2. All neurons (variant) give positive slopes at Pconn 0.4 (6 of 30 negative, p = 0.0014) and
+    mostly positive ones at 0.2 (8 of 30, p = 0.016). The bin-mean fit leans the same way. The excitatory
+    counts (4,058 at Pconn 0.4 and 4,327 at 0.2) are nearer the paper's 3,466 and 3,779 than those of
+    all neurons (7,078 and 7,815).
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -265,12 +338,20 @@ outcomes:
   - Assumption. Inhibitory PSPs are -1 mV, from "All connections had the same strength, which was chosen
     so that the resulting post-synaptic potential (PSP) is 1 mV" (Methods).
   - Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims
-    file's readings from sweeps of two networks per strength; reading (a) is adopted where the readings
-    differ, as reading (b)'s KS minimum lies at the weakest strength of both touch-input sweeps (the distance
-    grows with strength) and reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only
-    the 200 input-recipient neurons pass 0.1).
-  - Assumption. "All neurons that met the 0.1 encoding score criteria" (Methods) is taken as all neurons
-    of the network, inhibitory ones included; excitatory neurons alone are shown as a variant.
+    file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading
+    (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its
+    smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input
+    (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons
+    score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as
+    almost only the 200 input-recipient neurons pass 0.1).
+  - Assumption, revised after verification round 2. "All neurons that met the 0.1 encoding score criteria"
+    (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the "distributions
+    of excitatory neuron encoding scores", ablate "The 20 excitatory neurons with the highest encoding
+    score", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre
+    mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's
+    Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058
+    and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are
+    shown as a variant; the outcomes verified in round 2 were set with all neurons counted.
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
@@ -486,8 +567,8 @@ outcomes:
   - 16.25
   - 2.55
   notes: 16.25 ± 2.55 neurons ablated per mouse over 8 mice. Of the 130 ablated neurons, 118 have a pre-ablation
-    event rate below 0.025 Hz in these data (median 0.012 Hz, highest 0.079 Hz); the targeting rule was
-    applied by the authors on the data at hand on the day.
+    event rate below 0.025 Hz in these data (median 0.012 Hz, highest 0.079 Hz); the paper gives the 0.025
+    Hz rule for choosing targets, and 12 of the 130 are above it in these pre-ablation data.
 - claim: silent-ablation-no-effect-touch
   outcome: reproduced
   notebook: reproduce_peron_2020.ipynb
@@ -536,13 +617,14 @@ outcomes:
     = 0.180, and the whisking-neuron slopes are positive in 8 of 9, p = 0.039; the criterion asks for
     p < 0.05 and p >= 0.05 respectively. The bin means are above 0 at negative similarity (3 of 3 bins).
     The paper's numbers are those of the code, whose trial average keeps only the right-trial average
-    (it writes both averages into the same rows); with it, 8 of 9 touch slopes are negative (p = 0.039)
-    with 2,768 neurons in bins (code cylinder) and the whisking slopes give p = 0.508 with 1,085 neurons,
-    exactly the paper's values, with the point fit or the bin-mean fit. With both averages the code's
-    bin-mean fit gives 9 of 9 negative (p = 0.004) and whisking p = 0.180. Neurons in the analysis 2,845
-    and 1,174, within tolerance of 2,768 and 1,085. Trial averages of 75 frames, in all files of the 8
-    NYU mice (80 files), are cut to the first 70 frames, as the code's 70 rows; whether the paper's right-trial
-    average is a reading is asked of a reader.
+    (it writes both averages into the same rows); with it and the code's cylinder, the bin-mean fit gives
+    8 of 9 touch slopes negative (p = 0.039) with 2,768 neurons in bins and whisking slopes with p = 0.508
+    and 1,085 neurons, exactly the paper's values. The point fit with the same average and cylinder gives
+    the touch result (8 of 9, p = 0.039, 2,824 neurons) but 4 of 9 whisking slopes negative (p = 1.000).
+    With both averages the code's bin-mean fit gives 9 of 9 negative (p = 0.004) and whisking p = 0.180.
+    Neurons in the analysis 2,845 and 1,174, within tolerance of 2,768 and 1,085. Trial averages of 75
+    frames, in all files of the 8 NYU mice (80 files), are cut to the first 70 frames, as the code's 70
+    rows; whether the paper's right-trial average is a reading is asked of a reader.
   deviations:
   - The variants the criterion names (the code's trial average and its fit to bin means) are shown; the
     outcome follows the criterion's main method.
@@ -632,7 +714,8 @@ findings:
   statement: The session structs come in two MATLAB formats, 94 in version 5 and 107 in version 7.3 (HDF5),
     even within one mouse's directories, with no note of it; a reader needs both scipy.io and h5py. The
     archives are tar.gz files of 2.7 to 11.9 GB that cannot be read at an offset, so any use of one file
-    means streaming the whole archive; 77 GB of the 128 GB are ablation logs.
+    means streaming the whole archive; the 16 archives hold 120.9 GB compressed, and the JRC ablation
+    logs make up 77.1 GB of the 166.7 GB their members hold uncompressed.
 - kind: data_missing
   about: data
   statement: The six session files of an278939's session_neuropilone_postablate_silent_merged directory,
@@ -688,8 +771,9 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. Which proximity rule is meant, the Methods cylinder (|depth difference|
     < 30 um) or the code's signed rule? Extended Data Table 1 matches the code's rule in all 24 rows and
-    the Methods cylinder in 23 (an275801's touch ablation gives -0.071 against -0.065); this attempt adopted
-    the code's rule for the table.
+    the Methods cylinder in 23 (an275801's touch ablation gives -0.071 against -0.065); this attempt takes
+    the Methods cylinder as the main reading, as the claims file does, and shows the code's rule as a
+    variant.
 - kind: methods_unavailable
   statement: Question for the authors. How are touches merged into bursts at the 50 ms interval (the toolbox
     method getBurstTimes is not in the repository)? This attempt joined a touch to the previous one when
@@ -708,11 +792,13 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors, on the network model. The Methods do not give the PSP of the background
     Poisson input, the sign and size of inhibitory PSPs ("All connections had the same strength"), the
-    input strengths matched at Pconn 0.2 and 0.4, the slow-input strength, or the strength and length
-    of the reset pulse at Pconn 0.44. This attempt set the background PSPs (0.39 and 1.4 mV) to give the
-    stated tonic rates, took inhibitory PSPs as -1 mV and calibrated the input on this paper's touch data;
-    it then finds matched strengths of 218 and 28.2 (peak current, mV), whose linear extrapolation to
-    Pconn 0.44 is negative. What were the values used?
+    input strengths matched at Pconn 0.2 and 0.4, the slow-input strength, the strength and length of
+    the reset pulse at Pconn 0.44, or which neurons enter "all neurons that met the 0.1 encoding score
+    criteria" (excitatory neurons only, or inhibitory ones too). This attempt set the background PSPs
+    (0.39 and 1.4 mV) to give the stated tonic rates, took inhibitory PSPs as -1 mV, counted excitatory
+    neurons and calibrated the input on this paper's touch data; it then finds matched strengths of 218
+    and 28.2 (peak current, mV), whose linear extrapolation to Pconn 0.44 is negative. What were the values
+    used?
 verifications:
 - date: '2026-11-14'
   kind: agent
@@ -963,3 +1049,228 @@ verifications:
     response: Outcome changed to partially reproduced, as the claims file makes the code's cylinder a
       variant, not a reading; the assumption is dropped. The table's counts and proximity rule are asked
       of a reader.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revision after round 1, with its conclusions and
+    summary, the helper modules peron2020.py and peron2020_model.py, the claims file and this record,
+    with the paper. It took its counts from the record (31 claims, 18 reproduced, 6 partially reproduced,
+    5 not reproduced, 2 blocked). It agreed with 29 outcomes, disagreed with model-equal-connectivity-ablation-increases
+    and left model-more-ablation-larger-decline unsettled, found the counted population (inhibitory neurons
+    included) contestable and calibration (b) undetermined, and quoted sentences the outputs do not support.
+    It noted that the round-1 entries for the seven model claims (agrees true, outcome blocked) understate
+    its round-1 reason, that the block had no allowed reason; those entries are left as recorded. It could
+    not check the transcription of Extended Data Table 1, having no PDF renderer. In reply the counted
+    population was revised, the calibration sweeps were extended to no input, two changes of outcome are
+    proposed for a third round, and the quoted sentences were corrected. Report in transcripts/peron-2020/verifier-2-report.md.
+  results:
+  - claim: model-amplification-increases
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Every 0.4 sweep strength (15-50) is below every 0.2 strength (150-400), so the direction
+      does not depend on the calibration (cell 74). Reading (c) cannot be tested, as 0.17 is more than
+      the input-recipient share of 200/1,700 = 0.118, so the criterion's "under each reading" is met only
+      for (a) and (b). Reading (a) is weakly set at Pconn 0.2 (0.106 to 0.109 between 200 and 225, two
+      networks per point), which affects how large the amplification is, not its direction; reading (b)
+      is not determined, its KS minimum sitting at the bottom edge of the sweeps.
+    response: 'No change to the outcome. The sweeps now start at no input: reading (b) sets 75.0 at Pconn
+      0.2 and no strength at 0.4, where the smallest KS distance is at no input, so the claim holds under
+      (a), the one reading that sets both strengths. The weak setting of (a) at Pconn 0.2 is stated in
+      the result.'
+  - claim: model-equal-connectivity-ablation-increases
+    agrees: false
+    outcome: partially_reproduced
+    reason: Do not agree as it stands. The outcome depends on the attempt's own choice to count inhibitory
+      neurons (about 250 of the 415 neurons per network, cell 80). With excitatory neurons only, scores
+      rise in 30 of 30 networks (p = 1.9e-09), the claimed direction, with values outside tolerance; by
+      the record's own rule for the Pconn 0.4 claim, that is partially reproduced. The printed counts
+      argue against the all-neuron reading. The paper reports 3,466 and 3,779 neurons above 0.25; all
+      neurons give 7,078 and 7,815, about twice that, and excitatory neurons 4,058 and 4,327 (cell 91).
+    response: 'The assumption is revised: excitatory neurons are the counted population (main) and all
+      neurons a variant, as the Methods calibrate and ablate excitatory neurons, the in vivo data are
+      of excitatory neurons and the paper''s counts are nearer the excitatory ones. The verified outcome
+      is kept, and partially reproduced is proposed under `proposed` for a third round (0.546 to 0.562,
+      p = 1.9e-09, values outside tolerance).'
+  - claim: model-increased-connectivity-ablation-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree. The decline holds under every reading (cell 80) and no reading gives values within
+      tolerance.
+    response: No change to the outcome. The notes now lead with the excitatory neurons (0.356 to 0.231,
+      p = 3.9e-07).
+  - claim: model-all-or-none-robust
+    agrees: true
+    outcome: blocked
+    reason: Agree, with a note. The extrapolation gives -9.8 and -12.0 (cell 74). The negative value comes
+      from this attempt's calibration, an amplification of 7.7 to 10, which is far above the paper's Fig.
+      1c. The Methods also omit the matched strengths and the reset pulse, so the reason given is fair.
+    response: No change to the outcome. The notes and the result now say that the negative value follows
+      from this attempt's calibration and that the Methods omit the matched strengths; with reading (b)
+      no longer setting a strength at Pconn 0.4, only (a)'s -9.8 remains.
+  - claim: model-more-ablation-larger-decline
+    agrees: false
+    reason: Not settled. The criterion is met under two readings (cell 85). Calibration (b), a claims-file
+      reading, with all neurons and the 0-ablation networks left out gives R = -0.678 (p = 2e-13), with
+      the decline growing at each size. Calibration (a) with excitatory neurons and the 0-ablation networks
+      included gives -0.590. The record sets (b) aside because its KS minimum is the weakest strength
+      tried; that is a reason to extend the sweep, not to drop the reading.
+    response: The sweeps were extended down to no input. At Pconn 0.4 the smallest KS distance is then
+      at no input (0.514 touch, 0.510 slow), so reading (b) sets no strength there and is not run; 0.66
+      to 0.75 of the model's excitatory neurons score exactly 0 at every strength, which keeps the distance
+      near 0.5. With the population revised to excitatory neurons, calibration (a) meets the criterion
+      (R = -0.590, p = 1.3e-12, a larger decline at each size). The verified outcome is kept, and reproduced
+      is proposed for a third round.
+  - claim: model-slow-input-sensitive
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree. No reading gives both grand medians within tolerance; the closest is (b) set anew at
+      0.110 to 0.102 (cell 88).
+    response: No change to the outcome. With excitatory neurons and the strength set anew, 0.314 to 0.104
+      at Pconn 0.4 (post value within tolerance, pre value not) and a rise at 0.2; calibration (b) now
+      sets no slow-input strength at Pconn 0.4, so its 0.110 to 0.102 is no longer run.
+  - claim: model-response-similarity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. It fails under every reading and population (cell 91).
+    response: No change to the outcome; the notes now lead with the excitatory neurons.
+  - claim: neurons-per-mouse
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: representation-sizes
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: touch-ablation-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; now partially reproduced, which matches my round-1 outcome. Cell 19, rank rule 79.3
+      ± 27.1. Cell 18 (markdown) still reads "(1 when none exceeds it)" for the percentile; cell 19 gives
+      0.01 for a score above all 100 neurons, and only the docstring in cell 19 was changed.
+    response: 'Cell 18 now describes both rules: the criterion''s rank and the code''s rule, which gives
+      1/N when no included neuron exceeds the ablated one or its score is NaN. No change to the outcome.'
+  - claim: touch-ablation-reduces-touch
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers. Cell
+      38, "about half the paper's", holds only for the touch ablations; for whisking ablations it is 0.008
+      / 0.009 against 0.081 / 0.069 (cell 37), about a tenth.
+    response: 'Cell 38 now gives both: about half for the touch ablations and about a tenth for the whisking
+      ablations. No change to the outcome.'
+  - claim: touch-ablation-touch-count
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: touch-ablation-whisking-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: ablation-size-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: distance-dependence-touch
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: distance-dependence-whisking-absent
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: behaviour-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: whisking-ablation-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; now partially reproduced, which matches my round-1 outcome. 4.43% of the touch neurons
+      per barrel column, and percentiles of 75.4 and 75.8.
+    response: No change.
+  - claim: whisking-ablation-no-effect-touch
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: whisking-ablation-no-effect-whisking
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: silent-ablation-size
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+      Cell 20, "applied by the authors at targeting time, on other data": no output supports "other data".'
+    response: Cell 20 and the notes now say only that the paper gives the 0.025 Hz rule for choosing targets
+      and that 12 of the 130 ablated neurons are above it in these pre-ablation data. No change to the
+      outcome.
+  - claim: silent-ablation-no-effect-touch
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: silent-ablation-no-effect-whisking
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: ablation-type-specificity
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: response-similarity-touch-ablation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers. The
+      record's "exactly the paper's values, with the point fit or the bin-mean fit" holds only for the
+      bin-mean fit; in cell 54, with the right-trial average and the code's cylinder, the point fit gives
+      4 of 9 whisking slopes negative with p = 1.000, and 2,824 touch neurons, not 2,768.
+    response: The notes now say the paper's values come from the bin-mean fit, and give the point fit's
+      4 of 9 (p = 1.000) and 2,824 neurons. No change to the outcome.
+  - claim: response-similarity-example
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: response-similarity-whisking-ablation
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: ablation-no-off-target-event-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: ablation-success-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: glial-reaction-local
+    agrees: true
+    outcome: blocked
+    reason: Agree. The other 21 are unchanged from round 1 and still agree with the printed numbers.
+    response: No change.
+  - claim: per-mouse-table
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree; now partially reproduced, which matches my round-1 outcome. Cell 69, 23 of 24 rows
+      match under the Methods cylinder. The summary's "outcomes are the same under both [cylinders]" is
+      false for this claim (23 of 24 rows under one rule, 24 of 24 under the other), and "per-ablation
+      score changes equal Extended Data Table 1" is too strong, as several rows differ by 0.001-0.002.
+      The record's proximity finding, "this attempt adopted the code's rule for the table", contradicts
+      this outcome and cell 70.
+    response: The summary now names per-mouse-table as the exception and says the changes match within
+      0.005 in 23 of 24 rows (several differ by 0.001 to 0.002); the finding now says the Methods cylinder
+      is the main reading and the code's rule a variant. No change to the outcome.
