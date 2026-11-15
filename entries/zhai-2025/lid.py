@@ -205,17 +205,19 @@ def load_patch_file(asset):
     return pd.DataFrame(som), pd.DataFrame(den)
 
 
-def cell_fi(somatic):
+def cell_fi(somatic, keep="first"):
     """Per cell and condition: spikes per step, rheobase and the 20-300 pA sum.
 
-    A step recorded twice keeps its first sweep; the count of such repeats is kept.
+    A step recorded twice keeps its first sweep (keep="first", an assumption: the
+    paper's script does not say) or its last (keep="last", a variant); the count
+    of such repeats is kept.
     The rheobase is the smallest positive step with a spike [code-somatic].
     """
     out = []
     keys = ["path", "subject", "date", "cell_type", "file_state", "cell", "condition", "drug"]
     for k, g in somatic.groupby(keys, sort=False):
         g = g.sort_values("sweep_start")
-        first = g.drop_duplicates("current_pA", keep="first").set_index("current_pA")
+        first = g.drop_duplicates("current_pA", keep=keep).set_index("current_pA")
         spikes = first.n_spikes
         pos = spikes[(spikes.index > 0) & (spikes > 0)]
         rec = dict(zip(keys, k))
@@ -516,3 +518,13 @@ def paper_tables():
             key = name.split("/")[-1].replace(" datasets.xlsx", "")
             out[key] = pd.read_excel(io.BytesIO(z.read(name)), sheet_name=None)
     return out
+
+
+# ---------------------------------------------------------------- file descriptions
+
+def session_description(asset_id):
+    """The session description of one file, read from its header only."""
+    f = open_asset(asset_id)
+    d = f["session_description"][()]
+    f.close()
+    return d.decode() if isinstance(d, bytes) else d
