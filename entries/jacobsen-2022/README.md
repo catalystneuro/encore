@@ -26,6 +26,6 @@ analysis, with details from the code that paper links. The attempt record, with 
 differences from the paper's method, is
 [`attempts/jacobsen-2022-01.yaml`](../../attempts/jacobsen-2022-01.yaml).
 
-- `reproduce_jacobsen_2022.ipynb`: the analysis. It takes under two minutes, most of it the shuffles.
+- `reproduce_jacobsen_2022.ipynb`: the analysis. It takes about four minutes, most of it the shuffles.
 - `mec_units.py`: loading the files, latency and fidelity, and the spatial scores and shuffles used to
   classify cells. Other notebooks on this dandiset can import it.

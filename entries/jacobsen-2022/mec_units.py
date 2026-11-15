@@ -22,7 +22,9 @@ Where the parameters come from:
   longer than `MAX_PULSE_S` are left out (a check of the data, not a method of the paper).
 - Open-field firing rate: spikes in the open field over its duration (claims file, opening
   comment). The open field is not an epoch in the files; it is taken as the span of the position
-  series, 0 s to its last sample.
+  series, 0 s to its last sample, an assumption (it is the open-field recording the files hold; the
+  STAR Methods give its length only as "approximately 30 min"). `open_field(max_s=1800)` gives the
+  other reading, the first 30 min, which the notebook runs for every session.
 - Cell classification follows Rowland et al. (2018), eLife 7, e36664, which the STAR Methods
   cite for all analysis ("All data were analyzed with custom Python code ... as reported in
   Rowland et al. (2018)"). From its Materials and methods: the gridness score from expanding
@@ -34,6 +36,8 @@ Where the parameters come from:
   correlation above 0.6; the border score of Solstad et al. (2008), fields being neighbouring bins
   above 20% of the peak rate covering at least 200 cm2; a class is assigned when the score exceeds
   the 95th percentile of 200 shuffles of the spike train along the path, with wrap-around.
+  Rowland et al. call the mean vector length the "head-direction score"; the paper's Figure S4 gives
+  the two different values, so the notebook shows other readings of the tuning curve.
 - Details Rowland et al. (2018) do not state in the text are taken from the analysis code it links,
   https://github.com/davidcrowland/archdata at commit 945226315bafe6ce68fcbd4c75a589fba0a8eca1
   (analysis_helpers/tracking.py, spatial_maps.py, and the parameter file
@@ -42,10 +46,17 @@ Where the parameters come from:
   5 cm/s for rate maps, rate maps smoothed with a Gaussian of sigma 2 bins (spikes and time, zeros
   outside), head-direction tuning in 180 bins of 2 degrees, smoothed circularly with sigma 2 bins.
   The code's parameter file gives 2 cm bins; the text's 2.5 cm is used, the text coming first.
-- The shuffle interval: the text says "a random interval between +/- 20 s". Two readings are run:
+- The shuffle interval: the text says the spike train "was time-shifted along the animal's path by
+  a random interval between ± 20 s, with the end of the session wrapped to the beginning"
+  (Materials and methods, classification into functional classes); the archdata code has no spatial
+  shuffle. Two readings are run:
   `literal`, uniform in [-20, 20] s, and `standard`, uniform in [20 s, duration - 20 s], the
   shuffle of the papers Rowland et al. cite for the scores (Langston et al. 2010; Solstad et al.
-  2008). The notebook shows both.
+  2008). The notebook shows both; `standard` is adopted as an assumption, as a shift of under 20 s
+  leaves the spike train close to the observed one.
+- The border score takes the walls as the edges of the tracked extent and leaves unvisited bins out;
+  a cell firing uniformly over the box scores above zero (about 0.5 on synthetic data), a baseline
+  the shuffle thresholds take in.
 - `MIN_OVERLAP_BINS` for the autocorrelogram (lags with fewer than 20 overlapping bins are left
   out) is a standard choice; it touches only the edges, beyond the 90 cm the gridness score uses.
 """
@@ -200,16 +211,20 @@ def responsive(lf: dict, lat_range=(2.0, 4.0), min_fidelity: float = 11.64) -> b
 
 # ---------------------------------------------------------------- open field
 
-def open_field(session: dict) -> dict:
-    """Smoothed positions and speed as in the archdata code (tracking.py), on the open-field span."""
-    xy = session["pos"]
+def open_field(session: dict, max_s: float | None = None) -> dict:
+    """Smoothed positions and speed as in the archdata code (tracking.py), on the open-field span.
+    `max_s` keeps only the first `max_s` seconds of the position series (the reading of the open
+    field as the Methods' "approximately 30 min"); None keeps the whole series (the assumption)."""
+    xy, hd, t = session["pos"], session["hd"], session["t_pos"]
+    if max_s is not None:
+        n = int(round(max_s * session["pos_rate"]))
+        xy, hd, t = xy[:n], hd[:n], t[:n]
     xs = ndimage.gaussian_filter1d(xy[:, 0], POS_SIGMA_SAMPLES, mode="nearest")
     ys = ndimage.gaussian_filter1d(xy[:, 1], POS_SIGMA_SAMPLES, mode="nearest")
     dt = 1.0 / session["pos_rate"]
     speed = np.hstack([0, np.hypot(np.diff(xs), np.diff(ys)) / dt])
     speed = ndimage.gaussian_filter1d(speed, SPEED_SIGMA_SAMPLES)
-    t = session["t_pos"]
-    return {"t": t, "x": xs, "y": ys, "hd": session["hd"] % (2 * np.pi), "speed": speed,
+    return {"t": t, "x": xs, "y": ys, "hd": hd % (2 * np.pi), "speed": speed,
             "t_end": t[-1] + dt, "duration": len(t) * dt}
 
 
@@ -314,22 +329,24 @@ def gridness(rm: np.ndarray) -> float:
     return best if np.isfinite(best) else np.nan
 
 
-def hd_tuning(samples: np.ndarray, of: dict, sel: np.ndarray | None = None, smooth: bool = True):
+def hd_tuning(samples: np.ndarray, of: dict, sel: np.ndarray | None = None, smooth: bool = True,
+              n_bins: int = HD_BINS, sigma: float = HD_SIGMA_BINS):
     """Head-direction tuning (Hz) in 180 bins, smoothed circularly with sigma 2 bins (archdata
-    hd_tuning_curve; it applies no speed filter). `sel` restricts tracking samples (for halves)."""
+    hd_tuning_curve; it applies no speed filter). `sel` restricts tracking samples (for halves).
+    `n_bins` and `sigma` are changed only to show other readings of the tuning curve."""
     hd = of["hd"]
     if sel is None:
         sel = np.ones(len(hd), bool)
-    edges = np.linspace(0, 2 * np.pi, HD_BINS + 1)
+    edges = np.linspace(0, 2 * np.pi, n_bins + 1)
     occ, _ = np.histogram(hd[sel], bins=edges)
     s = samples[sel[samples]]
     cnt, _ = np.histogram(hd[s], bins=edges)
     with np.errstate(invalid="ignore", divide="ignore"):
         tc = cnt / (occ / POS_RATE_HZ)
     tc[occ == 0] = 0.0
-    if smooth:
-        tc = ndimage.gaussian_filter1d(np.tile(tc, 3), HD_SIGMA_BINS, mode="nearest")[HD_BINS:2 * HD_BINS]
-    centers = edges[:-1] + np.pi / HD_BINS
+    if smooth and sigma > 0:
+        tc = ndimage.gaussian_filter1d(np.tile(tc, 3), sigma, mode="nearest")[n_bins:2 * n_bins]
+    centers = edges[:-1] + np.pi / n_bins
     return centers, tc
 
 
