@@ -1,28 +1,29 @@
-I've worked through every point in the round-1 report and re-run the entry with `python tools/entry.py all entries/asari-2009`. Both notebooks pass (24.7 and 21.6 min) and `entry.py check` reports 0 errors. All conclusions match the final run's numbers. Round 1 is recorded under `verifications`, nothing is committed, and no outcome is under `proposed` because this is the round-1 revision.
+I've made round 1's changes and re-run the entry with `python tools/entry.py all entries/asari-2009`. It passed in about 20 minutes, and the checks report 0 errors. A second run gave the same numbers, and the conclusions in the notebook, README and record match them. Nothing is committed.
 
-**Outcome changes**
-- **fig2-example-long-context**: partially reproduced → reproduced. Probe 4 of 20060105-ha1-001-002 meets the criterion's rule. It was picked from 20 candidates and its late period lasts only 60 ms; the notes say both.
-- **fig3b-fractional-power-decay** and **fig4-predictability-upper-bound**: partially reproduced → not reproduced. The time constant is outside tolerance under every reading, and the criteria have no rule for partial.
-- **fig8c-relative-effects**: partially reproduced → not reproduced. I ran the natural-sound reference without silence, as the verifier asked, and fixed the partial check, which had left out the requirement that amplitude and frequency reach 1. In every reading the amplitude and frequency ratios are below 1.
-- **fig4-strf-performance-low**: blocked → not reproduced, now tested in a new notebook `strf_wehr.ipynb` with helper `wehr_strf.py`. It uses the 16 of Wehr's 25 cells that have repeated sounds; the paper used 20 and doesn't list them.
-  - Performance is low: at most 0.21 in the main reading.
-  - Lengthening the window from 180 ms to 4 s gives a small but significant gain (STRF p = 0.011, LN p = 0.042).
-  - With whole stimuli as folds the gain is not significant, but LN reaches 0.241, above the 0.22 bound.
-  - So no reading meets the criterion. The outcome rests on the cell selection and the claims file's test.
-- **Kept, with the verifier's disagreement recorded**: fig7 stays blocked as `data_missing`. A fuller search prints every DMR, TORC and SoundTrans stimulus, and no recording has the three single bands. The weaker check is now run: 3 of 10 tests have a significant period ending at or after 3.6 s.
+**What changed in the outcomes.** The verifier's main point was that seven claims I had blocked for lack of time could be tested. I tested six of them, and the seventh is now blocked for a different reason:
+- **fig4-strf-performance-low: not reproduced** (rests on the criterion's test). A new helper, `wehr.py`, runs Wehr's recordings through the paper's method. Only 16 of Wehr's 25 cells have natural sounds played on two or more trials, which the performance measure needs, so the test is over 16 cells, not 20. Validation performance stays at most 0.22 (0.167 at 180 ms, 0.207 at 4052 ms). But the criterion's Wilcoxon test finds that the longer window improves the model in every reading (p ≤ 0.0005), which counts against the claim.
+- **fig7-example-frequency-context: blocked, data missing.** I listed the frequency bands of every DMR and TORC stimulus. No file has the example's three bands, and the criterion says the claim cannot be tested without a matching cell.
+- **fig8a-proportion-by-property: partially reproduced** (rests on an assumption). Each synthetic probe is tested only against variants of one property, read from the stimulus parameters. The amplitude and frequency totals equal the paper's (95 and 110 probes), but the significant counts are all low (57, 63, 18, 10 and 45 against 77, 73, 62, 47 and 59). The proportions keep the paper's order, which is the partial rule.
+- **fig8b-decay-by-property: partially reproduced.** Amplitude and frequency decay slowly and AM, FM and higher-order decay fast, but no time constant is within tolerance.
+- **fig8a-significance-fits: not reproduced.** 3 of the 10 values are within tolerance, and the sizes are not in the paper's order.
+- **fig8c-relative-effects: not reproduced.** Amplitude and frequency give 0.74 and 0.67 of the natural-sound effect, and neither 95% interval includes 1.
+- **fig8-natural-synthetic-probes-alike: reproduced** (rests on the criterion's Fisher test). No property differs between natural and synthetic probes.
 
-**Corrections**
-- **Figure 8 property sets** (the verifier's main point): the AM and FM sets were wrong. Each set is now counted as its own test for AM and FM, AM-mean variants are treated as AM (as the recordings' own notes do), and SoundTrans frequency shifts are now detected. This reproduces all five Table 1 totals exactly (95, 110, 96, 82, 137). The two other readings are shown alongside. Outcomes for fig8a, fig8a-significance-fits, fig8b and the natural-versus-synthetic test are unchanged.
-- **Firing rates**: added the baseline and probe-period windows and a second MGB detector threshold, 32 readings in all. None has all four means in tolerance, and the rule for partial now holds in 28 of 32.
-- **Smaller points**:
-  - The notebook lists the 96 synthetic-sound cells behind 133 versus 123, but that doesn't identify which cells the paper counted.
-  - Every significant period is now printed for the fig2 candidates.
-  - Fits stuck at the 100 s bound are flagged.
-  - The running average now ignores bins where no probe is running.
-  - Each property set's trials are cut using only that set's contexts.
-  - The 51-point run rule and the 200 shuffles for the without-silence variant are now stated.
-- The record's findings, the README and the summary tables are updated.
+The other twelve outcomes are unchanged.
 
-**Not done**
-- The trial-resampling reading of fig8c: the per-file pass doesn't keep single trials.
-- No reader questions: the verifier didn't report anywhere the claims file misreads the paper.
+**Added or corrected at the verifier's request:**
+- **Counts:** Table 1 by row and column next to the paper's numbers, cells per synthetic ensemble, and the `probes_m4_nosil` count that was computed but never printed.
+- **Firing rates:**
+  - A1 rates are now over all 133 current-clamp cells, not just the 39 natural-sound cells.
+  - Each spike detector now has a check: spikes per file, the share of intervals under 1.5 ms, and the mean waveform.
+  - The 20-SD MGB threshold splits spikes (a median of 23% of intervals are under 1.5 ms). With a 1.5-ms dead time after each spike, the MGB evoked means are still 9.62 and 8.60 Hz, so the partial outcome stands. With the code's own automatic threshold it is still 4.97 to 4.99 Hz, just under the 5 Hz rule.
+- **Figure 3A:** the record now says that the count and the paper's chance level are matched under different readings. I also report how often tied values occur (a median of 31% of a probe's time points).
+- **Figure 3B:** the long time constant comes from the tail. Q tracks the paper's curve up to 1 s, then sits at about 0.12 at 3 to 4 s against the curve's 0.01 to 0.03.
+- **Figure 4:** I ran the 1 − Q reading (time constant 1.29 to 1.78 s, still outside tolerance), and the notebook now flags the fits that stop at the 100 s bound.
+- **Supplemental Figure S1:** shuffling gives 3.2 cells by chance against the 19 observed.
+- **Figure 9:** without the two cells that failed the clock check, the result is the same.
+- **Record:** new findings (missing harmonic-tone probes, the missing Figure 7 cell, the unlisted 20 STRF cells), a question for the authors about the STRF test, and the round-1 `verifications` block. README, `entry.yaml` and the notebook summary are updated.
+
+**Not done:**
+- Two of the criteria's alternative readings were not run: resampling trials within probes for the fig8c intervals, and grouping folds by stimulus for the STRF fits.
+- I added no questions to `questions/asari-2009.yaml`, because the verifier reported no misreading of the claims file.
