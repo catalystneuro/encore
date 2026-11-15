@@ -134,11 +134,11 @@ def protocol_version() -> str:
     return text.split("Version: `", 1)[1].split("`", 1)[0]
 
 
-def fill(role: str, target_name: str, model: str, version: str | None = None) -> str:
+def fill(role: str, target_name: str, model: str, version: str | None = None, replicate: bool = False) -> str:
     """The prompt for a role. An author's ends with its time: the run is stopped at AGENT_TIME_LIMIT_MIN minutes
     (300, the workflow's limit), and the author is told to finish by AGENT_TIME_BUDGET_MIN (255), leaving time to
     write the record and run the entry's checks (docs/protocol.md, "Author", "Time")."""
-    prompt = _fill(role, target_name, model, version)
+    prompt = _fill(role, target_name, model, version, replicate)
     if role.startswith("author") or role == "reconcile":
         limit = int(os.environ.get("AGENT_TIME_LIMIT_MIN", "300"))
         budget = int(os.environ.get("AGENT_TIME_BUDGET_MIN", "255"))
@@ -152,7 +152,7 @@ def fill(role: str, target_name: str, model: str, version: str | None = None) ->
     return prompt
 
 
-def _fill(role: str, target_name: str, model: str, version: str | None = None) -> str:
+def _fill(role: str, target_name: str, model: str, version: str | None = None, replicate: bool = False) -> str:
     if role == "paper-match":
         return paper_match_prompt(datasets.folder(datasets.parse(target_name)), model)
     key = paper_records.resolve(target_name)
@@ -187,7 +187,11 @@ def _fill(role: str, target_name: str, model: str, version: str | None = None) -
         earlier_keys = set(paper_records.record_dataset_keys(record))
         now_keys = {d["key"] for d in paper_records.datasets_of(key, available_only=True)}
         earlier_version = (paper_records.record_datasets(record) or [{}])[0].get("version")
-        if record.get("deprecated"):
+        if replicate:
+            # A replicate (docs/replicates.md): the same claims and data again, to measure how much attempts agree.
+            why = ("The paper is tested again from the same claims and the same data, independently of the earlier "
+                   "attempts, to measure how much separate attempts agree.")
+        elif record.get("deprecated"):
             why = ("An earlier attempt was withdrawn, and a reader has since written the claims file again from "
                    "the full text.")
         elif now_keys - earlier_keys:
@@ -325,9 +329,10 @@ def main() -> int:
     parser.add_argument("dest", nargs="?", type=Path)
     parser.add_argument("--model", default="claude-opus-5-5")
     parser.add_argument("--version", help="the dataset version the author should use, e.g. draft")
+    parser.add_argument("--replicate", action="store_true", help="the run is a replicate's (docs/replicates.md)")
     args = parser.parse_args()
     if args.command == "prompt":
-        sys.stdout.write(fill(args.role, args.target, args.model, args.version))
+        sys.stdout.write(fill(args.role, args.target, args.model, args.version, args.replicate))
         return 0
     try:
         args.key = paper_records.resolve(args.target)
