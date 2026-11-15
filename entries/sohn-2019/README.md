@@ -16,7 +16,7 @@ minutes). Loading and measures are in `rsg.py`.
 | Behavioural slopes between 0 and 1 | Not reproduced (2 of 8 slopes below 1 through the origin) |
 | Opposite biases at the overlapping 800 ms | Not reproduced |
 | Smaller tp increments at the extremes of the prior | Reproduced |
-| Smaller slopes for the Long prior | Partially reproduced (3 of 4) |
+| Smaller slopes for the Long prior | Partially reproduced (3 of 4 through the origin, an assumption; 4 of 4 with an intercept) |
 | Bayesian observer fits bias and variance | Partially reproduced |
 | GLM: 65% prior-dependent, 27% ts-dependent units | Not reproduced (79% and 46%) |
 | Largest prior effect at 800 ms during the support of the prior | Reproduced |
@@ -28,7 +28,7 @@ minutes). Loading and measures are in `rsg.py`.
 | Projection at Set predicts speed | Partially reproduced (stronger correlations) |
 | Initial speed biased toward the middle | Not reproduced (p = 0.055) |
 | Speed predicts mean tp | Partially reproduced (stronger correlations) |
-| Speed unmodulated during the support | Reproduced (by the paper's test; slopes positive only with attrition) |
+| Speed unmodulated during the support | Reproduced (by the paper's test; slopes positive in 7 of 8, consistent with attrition) |
 | Post-Set trajectories parallel | Reproduced |
 | Distances fall steadily to Go | Not reproduced |
 | Inverted-U variance of GPFA projections | Not reproduced (p = 0.055) |
@@ -40,12 +40,18 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 the differences from the paper's method.
 
 With one session, the population tests run over 4 effector and direction datasets in place of the
-paper's 8, so no signed-rank test over datasets can fall below p = 0.125, and the three claims of
-absence are reproduced by tests that cannot find an effect. In this session the eye responses are
+paper's 8. A two-sided signed-rank test over the 4 datasets cannot fall below p = 0.125, so two claims
+of absence, short-in-long-control and alt-speed-unmodulated, are reproduced by tests that cannot find
+an effect. The third, alt-transient-parallel, tests 8 dataset-priors and could have failed. In this session the eye responses are
 nearly unbiased (slopes with an intercept 0.85 to 1.11), which drives several of the behavioural
-outcomes. The behavioural regression has no intercept, as the paper's Methods and Table S1 write it.
+outcomes. The behavioural regression has no intercept, as the paper's Methods and Table S1 write it; this is an
+assumption, and with an intercept beh-long-more-bias would be reproduced. Variants that are not the
+claims file's method move outcomes both ways: without smoothing pca-dimensionality and
+neural-long-more-bias would do better and encoding-r2, speed-vs-projection and speed-predicts-tp worse,
+and with the outlier trials included speed-predicts-tp would be not reproduced.
 
-Four questions to a reader are open in `questions/sohn-2019.yaml`: whether the smoothing kernel's
+Five questions to a reader are open in `questions/sohn-2019.yaml`: whether the regression of
+beh-long-more-bias has an intercept, whether the smoothing kernel's
 "width: 40 ms" is its SD (narrower kernels would make encoding-bayes-beats-linear not reproduced), how
 the paper's PCA population of 536 pooled units bears on pca-dimensionality, whether the GPFA projections
 are z-scored per prior or over all trials (no outcome changes), and whether beh-bayes-model should use

@@ -63,18 +63,24 @@ outcomes:
     trials of the session have no task variables and are not used.
 - claim: beh-long-more-bias
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_sohn_2019.ipynb
   output: claim:beh-long-more-bias
   notes: Through the origin, the regression of the Methods and Table S1, the Long slope is below the Short slope
     in 3 of 4 datasets (Eye Left 0.996 and 1.072, Hand Left 0.923 and 1.013, Hand Right 1.032 and 1.057, Long then
     Short); in Eye Right it is above (1.027 against 1.016). With an intercept it is below in all 4 (Eye Left 0.845
     and 1.011, Eye Right 0.903 and 1.110, Hand Left 0.502 and 0.612, Hand Right 0.612 and 0.861), which would be
-    reproduced. With go_time - set_time in place of tp the counts are the same, 3 of 4 and 4 of 4.
+    reproduced. With go_time - set_time in place of tp the counts are the same, 3 of 4 and 4 of 4. Through the origin
+    the slope absorbs a constant offset; the intercepts of the regression with one are -60 to +435 ms, and the slopes
+    through the origin are within 0.010 of mean tp / mean ts in every condition. The outcome rests on the reading
+    without an intercept, which is asked of a reader.
   deviations:
   - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
     trials of the session have no task variables and are not used.
-  - The regression has no intercept, as the Methods (Model free analysis of behavior) and the Table S1 legend write
-    it, tp = beta ts + epsilon; the regression with an intercept is shown as a variant and gives 4 of 4.
+  - Assumed. The criterion does not say whether the regression has an intercept, and the two readings give different
+    outcomes. The regression has no intercept, as the Methods (Model free analysis of behavior) and the Table S1
+    legend write it, tp = beta ts + epsilon; the regression with an intercept, the usual way to measure a bias toward
+    the mean, is shown as a variant and gives 4 of 4.
 - claim: beh-bayes-model
   outcome: partially_reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -165,9 +171,10 @@ outcomes:
     with random axes is weak in the 2-component estimation space; random unit vectors give median R2 of 0.69 to
     0.99, 1.2% to 44.2% of them reach the R2 of u, and a linear function of ts gives R2 of 0.898 to 0.990. With
     narrower kernels (SD 20 and 17 ms) Hand Left gives 0.982 and 0.916, and 0.994 and 0.937, still within tolerance.
+    Without smoothing Hand Left gives 0.909 and 0.581 and the 4-dataset mean 0.847 and 0.813, which would be partially
+    reproduced; the claims file fixes the smoothing.
   deviations:
-  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals).
   - te(t) uses the dataset's own fitted wm from beh-bayes-model, where the paper fits per animal, effector and direction
     over sessions.
 - claim: encoding-bayes-beats-linear
@@ -228,10 +235,11 @@ outcomes:
     to -0.956 (Long). Dividing the mean step by the mean Set to Go duration (the Methods' wording) gives -0.922
     and -0.924, and dividing the path length by it -0.933 and -0.875. With windows ending at the shortest go_time
     - set_time, so that none runs past Go, r is -0.921 and -0.838; with a kernel SD of 20 ms -0.663 and -0.618,
-    and with SD 17 ms -0.554 and -0.465 (Long within tolerance), all partially reproduced.
+    and with SD 17 ms -0.554 and -0.465 (Long within tolerance), all partially reproduced. With the outlier-flagged
+    trials included r is -0.922 and -0.673 (p = 0.0011), also partial. Without smoothing r is +0.255 (p = 0.28) and
+    -0.036 (p = 0.88), which would be not reproduced; the claims file fixes the smoothing.
   deviations:
-  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125. Xu scales differ between datasets and are pooled
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals). Xu scales differ between datasets and are pooled
     as they are, as the criterion says.
   - Production windows end at the shortest tp of each condition, as the claims file says; tp exceeds go_time - set_time,
     so 36 of 40 windows run past the earliest Go of their condition, by up to 121.5 ms (median 11.5). Windows ending
@@ -245,7 +253,7 @@ outcomes:
     test of the difference gives p = 0.055. No trial had tp below 400 ms. The paper's p < 1e-3 combines both animals.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125.
+    the signed-rank test here runs over the 8 dataset-priors and can reach p = 0.0078.
   - Initial speed is measured in the production PC space of the dataset (Set to the shortest tp), the space of speed-vs-projection;
     the claims file names the step distance, not the space.
 - claim: speed-predicts-tp
@@ -262,10 +270,11 @@ outcomes:
     reproduced. With windows ending before Go r is -0.693 and -0.693; with a kernel SD of 20 ms -0.840 and -0.789,
     and with SD 17 ms -0.796 and -0.691. Trial by trial, single-trial speed (Set to Go) correlates with tp at r
     = -0.15 to -0.71 in the 8 prior, effector and direction groups, with p < 0.05 in 7, whether each window ends
-    at the trial's tp or at its Go.
+    at the trial's tp or at its Go. Two variants that are not the claims file's method would give not reproduced, with
+    the outlier-flagged trials included (r = -0.727, and -0.439 with p = 0.053 for Long) and without smoothing (-0.103,
+    p = 0.66, and -0.310, p = 0.18).
   deviations:
-  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals).
   - The single-trial speed variant uses smoothed single-trial rates in the dataset's production PC space; the Neural
     Latents Benchmark's own computation was not used.
   - Production windows end at the shortest tp of each condition, as the claims file says; tp exceeds go_time - set_time,
@@ -280,9 +289,10 @@ outcomes:
     the slope of step distance on time is positive in 7 of 8 dataset-priors (changes of -13% to +56% over the support),
     but later bins average fewer trials, which adds noise to their steps. From the longest-ts trials alone, so that
     every bin averages the same 18 to 31 trials, the slopes are negative in 7 of 8 (changes of -42% to +11%; p =
-    0.625 and 0.125). The percentile bootstrap intervals over trials exclude zero in 6 of 8, but only 3.5% to 27.0%
+    0.625 and 0.125), consistent with attrition, though this control also uses fewer trials and only the longest-ts
+    ones. The percentile bootstrap intervals over trials exclude zero in 6 of 8, but only 3.5% to 27.0%
     (median 6.2%) of the bootstrap slopes fall below the point estimate, so they are biased upward; the basic bootstrap
-    intervals exclude zero in 1 of 8.
+    intervals exclude zero in 1 of 8; neither interval removes the attrition bias of the point estimate.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
@@ -299,7 +309,7 @@ outcomes:
     hypothesis predicts.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125.
+    the signed-rank test here runs over the 8 dataset-priors and can reach p = 0.0078.
 - claim: alt-threshold-monotonic
   outcome: not_reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -311,8 +321,7 @@ outcomes:
     Go. With 75% (2 to 5 components) the median is 160 ms before Go (8 of 32 in the last 40 ms), which would be
     partially reproduced. The minima spread from 740 or 760 ms before Go to Go.
   deviations:
-  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125.
+  - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals).
   - Times are bin ends of 20 ms bins aligned to Go; for Short trials the window starts before Set, as the Methods'
     window Go - 800 ms to Go implies.
 - claim: gpfa-variance-inverted-u
@@ -328,8 +337,9 @@ outcomes:
     on 14 to 38 trials per ts.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125. The paper used one high-yield session of 48 units
-    for H; this session has 48 selected units, but whether it is that session is not stated.
+    the signed-rank test here runs over the 8 dataset-priors and can reach p = 0.0078.
+  - The paper ran GPFA on "high-yield sessions (N=48 for monkey H)" without saying how many sessions; this session
+    has 48 selected units, but whether it is among them is not stated.
   - GPFA is elephant 1.2.1's port of Yu et al. (2009), not the paper's MATLAB code; it fits on 20-bin segments with
     random overlaps (elephant's default), seeded here.
 - claim: gpfa-mean-sigmoid
@@ -341,7 +351,8 @@ outcomes:
     4 datasets (one-tailed p = 0.0625, the paper's value).
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
-    a signed-rank test over 4 values cannot fall below p = 0.125.
+    the signed-rank test of the increments runs over the 8 dataset-priors and can reach p = 0.0078, and the one-tailed
+    test of the slopes over the 4 datasets cannot fall below p = 0.0625.
 - claim: rnn-curved-manifold
   outcome: blocked
   blocked_by: data_missing
@@ -382,6 +393,11 @@ findings:
   statement: Units have no electrode or probe assignment (the unit table has no electrodes column and the 72 electrodes
     have no positions), and no label says which units are single units and which multi-units, a distinction the
     paper reports (196 single and 421 multi-units in monkey H).
+- kind: methods_unavailable
+  statement: Question for the authors. The Methods write the weighted regression of tp on ts as tp = beta ts + epsilon.
+    Did the regressions of Figure 1E, Figure 2H and Table S1 have no intercept, as written, or an intercept? In this
+    session the Long slope is below the Short slope in 3 of 4 effector and direction datasets through the origin and
+    in 4 of 4 with an intercept.
 verifications:
 - date: '2026-11-15'
   kind: agent
@@ -566,4 +582,157 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The API lists 1 subject (Haydn) and 2 assets. Nothing on monkey G can be tested.
+    response: No change.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebooks with their conclusions and summaries, the README, the attempt record, the helper
+    module, the claims file, the questions file and the verifier's round-1 report, with the paper's full text and supplement.
+  results:
+  - claim: beh-slopes
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading gives 8 of 8 (cell 13).
+    response: No change.
+  - claim: beh-overlap-prior
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: beh-sigmoid-increments
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: beh-long-more-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees under the stated reading, but the outcome depends on it. The criterion says only "weighted linear regression";
+      through the origin, as the Methods and the Table S1 legend write it, 3 of 4 (partial); with an intercept every
+      variant gives 4 of 4 (cell 23). Through the origin the slope absorbs the constant offset that the paper's own
+      Bayesian model fits as b (up to 50 and -81 ms, cell 26), so it is mostly mean tp/ts, and the deciding difference
+      is Eye Right, 1.027 against 1.016. The intercept reading is at least as plausible. The record should restore
+      assumed true and add this question for a reader.
+    response: Outcome kept and marked assumed, with the assumption stated as a deviation. Cell 23 now prints the intercepts
+      of the regression with one (-60 to +435 ms) and mean tp / mean ts, which the slopes through the origin follow
+      within 0.010. Added the question to a reader in questions/sohn-2019.yaml and a methods_unavailable finding asking
+      the authors whether the regression had an intercept. The README and summary say the outcome would be reproduced
+      with an intercept.
+  - claim: beh-bayes-model
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The new cell 27 shows the outcome does not depend on wm. Round-1 problem 3 resolved; its claim that
+      a low wm drives the poor Eye R2 was wrong, as R2 stays at or below 0.146 over the whole profile.
+    response: No change.
+  - claim: glm-prior-ts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Round-1 problem 10 (tolerance) is stated.
+    response: No change.
+  - claim: dfr-overlap-support
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: pca-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees by the criterion. The population question remains open, since the paper's PCA uses a 536-unit pooled
+      population and this session has 48 units; it is open as a question and cannot be tested. The unsmoothed variant
+      (5 of 8) is cited here, where it favours the claim, but not where it reverses other outcomes.
+    response: No change of outcome. The summary and README now report the unsmoothed and outlier variants in both directions.
+  - claim: encoding-r2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees by the criterion, which cannot tell u from a random axis (cell 43). Without smoothing (cell 56) Hand
+      Left Long is 0.581 and the 4-dataset mean 0.847 and 0.813, which the conclusion does not mention.
+    response: The conclusion, notes and summary now give the unsmoothed values (Hand Left 0.909 and 0.581, mean 0.847
+      and 0.813), which would be partially reproduced; the outcome follows the claims file's smoothing.
+  - claim: encoding-bayes-beats-linear
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees under the claims file's SD of 40 ms. It becomes not reproduced at SD 20 or 17 ms (cell 56), so the
+      outcome depends on the reader's answer to the open kernel-width question.
+    response: No change. The kernel width is a question to a reader, and the notes, README and summary already say the
+      narrower kernels would make the claim not reproduced; the claims file fixes SD 40 ms.
+  - claim: short-in-long-control
+    agrees: true
+    outcome: reproduced
+    reason: Agrees by the criterion, which cannot fail. Round-1 problem 6 (ANOVA) resolved, interaction F(1,3) = 1.70,
+      p = 0.284.
+    response: No change.
+  - claim: neural-long-more-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The unsmoothed variant (4 of 4) is cited where it favours the claim.
+    response: No change of outcome; the variants are now reported in both directions in the summary and README.
+  - claim: speed-vs-projection
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Without smoothing (cell 56) r is +0.255 and -0.036, which cell 60 does not mention. Its tolerance
+      comes from the paper's pooled population (round-1 problem 1, which the round-1 record attached only to pca-dimensionality).
+    response: The conclusion and notes now give the unsmoothed variant (+0.255, p = 0.28, and -0.036, p = 0.88; not
+      reproduced) and the outlier variant (-0.922 and -0.673, partial). The robustness table now prints p for each
+      correlation. The question on the pooled population already names the tolerances of this claim.
+  - claim: initial-speed-biased
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (p = 0.0547). The record's deviation that a signed-rank test over 4 values cannot fall below p = 0.125
+      misstates the test that decided the outcome, which runs over 8 values.
+    response: The deviation now says the test runs over the 8 dataset-priors and can reach p = 0.0078.
+  - claim: speed-predicts-tp
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Without smoothing r is -0.103 and -0.310, and with outlier trials included Long is r = -0.439, p
+      about 0.053 (n = 20), so that variant would be not reproduced; cell 66 does not mention either. The record's p
+      >= 0.125 sentence does not apply to a Pearson correlation.
+    response: The robustness table now prints p (outlier variant Long -0.439, p = 0.053), and the conclusion and notes
+      say both variants would give not reproduced. Removed the signed-rank sentence from this claim's deviation.
+  - claim: alt-speed-unmodulated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees by the criterion, which cannot fail. "This follows from attrition" overstates cell 69, whose control
+      changes more than attrition (18 to 31 trials, only the longest-ts trials); "consistent with attrition" is what
+      the numbers support. The basic bootstrap does not correct for attrition, since the point estimate carries the
+      attrition bias.
+    response: The conclusion, notes and README now say consistent with attrition, note that the control uses fewer trials
+      and only the longest-ts ones, and say that neither bootstrap interval removes the attrition bias of the point
+      estimate.
+  - claim: alt-transient-parallel
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The README says all three claims of absence cannot fail, but this one tests 8 dataset-priors (cell
+      72), could reach p = 0.0078 and could have failed.
+    response: The README, summary and deviation now say this test runs over 8 dataset-priors and could have failed.
+  - claim: alt-threshold-monotonic
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The record's signed-rank sentence does not apply, as the test is the median time of the minimum.
+    response: Removed the signed-rank sentence from this claim's deviation.
+  - claim: gpfa-variance-inverted-u
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, borderline (0.039 to 0.098 across variants). The paper says "high-yield sessions (N=48 for monkey
+      H)", not one session, and the test runs over 8 values.
+    response: The deviation and the GPFA summary now quote the paper's wording without saying it was one session, and
+      the deviation says the test runs over 8 dataset-priors.
+  - claim: gpfa-mean-sigmoid
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The test runs over 8 values, not 4.
+    response: The deviation now says the increment test runs over 8 dataset-priors and the slope test over the 4 datasets.
+  - claim: rnn-curved-manifold
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing).
+    response: No change.
+  - claim: rnn-perturbation
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing).
+    response: No change.
+  - claim: monkey-g
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing).
     response: No change.
