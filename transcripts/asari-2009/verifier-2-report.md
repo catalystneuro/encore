@@ -1,90 +1,79 @@
-**Round-2 verification: asari-2009-01 (doi:10.1152/jn.00577.2009, CRCNS ac-1)**
+**1. Outcomes**
 
-Counts are taken from the source files: the claims file (`asari-2009.yaml`) has 21 claims, and the attempt record (`asari-2009-01.yaml`) has 21 outcomes, one per claim. Cell numbers refer to the re-executed `reproduce_asari_2009.ipynb`, or to `strf_wehr.ipynb` where marked "strf". Cell numbers have shifted since round 1.
+The claims file has 21 claims and the attempt record gives 21 outcomes: 8 reproduced, 5 partially reproduced, 5 not reproduced, 3 blocked.
 
-### 1. Outcomes
-
-| Claim | Record | Agree? | Note |
+| Claim | Outcome | Agree? | Assumption stated and reasonable? |
 |---|---|---|---|
-| methods-recording-counts | partially_reproduced | yes | Cell 13. |
-| a1-mgb-firing-rates | partially_reproduced | yes | Cell 16: 0 of 32 readings have all four means in tolerance, and the partial rule holds in 28 of 32. With the code's own MGB detector the margin over 5 Hz is still only 0.03–0.07 Hz. The rule is comfortably met only at half that detector's threshold (7.1 Hz), which is an ad hoc choice. |
-| fig2-example-reliability | reproduced | yes | Cell 19. |
-| fig2-example-long-context | reproduced | yes, with a caveat | See point A below. |
-| fig3a-proportion-significant | reproduced | yes | Cell 25, with_silence/all reading. |
-| fig3a-significance-decay | partially_reproduced | yes | Cell 31. |
-| fig3b-fractional-power-decay | not_reproduced | yes | Cell 34: τ is 1.29–1.78 s in all 8 readings. |
-| timescale-longer-than-membrane | reproduced | yes | Cell 38. |
-| fig4-predictability-upper-bound | not_reproduced | yes | Cell 41: no τ within 1.04 ± 0.10 s. |
-| fig4-strf-performance-low | not_reproduced | yes | strf cell 7: no reading meets both parts. The two assumptions (16 cells, Wilcoxon test) are stated and reasonable. See point B. |
-| fig5-example-conductances | blocked (data_missing) | yes | |
-| fig6-conductance-decay | blocked (data_missing) | yes | |
-| fig7-example-frequency-context | blocked (data_missing) | **now yes** | Cell 70: the DMR frequency variants are 2-octave bands at 0.25–1 up to 8–32 kHz. None is 0.625–2.5, 2.5–10 or 10–40 kHz, and the 4-band group has no natural probe. I withdraw my round-1 reason ("search incomplete"). |
-| fig8a-proportion-by-property | partially_reproduced | yes | Cell 46: the order holds and every count is out of tolerance, under all three readings. |
-| fig8a-significance-fits | not_reproduced | yes | Cell 49. |
-| fig8b-decay-by-property | partially_reproduced | yes | Cell 52: the partial pattern holds under every reading. FM is 0.278 s in the main reading, close to the 0.3 s line. |
-| fig8c-relative-effects | not_reproduced | yes | Cell 55: the frequency interval excludes 1 under every reading, the highest bound being 0.938. |
-| fig8-natural-synthetic-probes-alike | reproduced | yes, weak | Cell 58: FM has no synthetic probes and AM has 14 from 2 cells. |
-| fig9-mgb-fast-decay | reproduced | yes | Cell 61. |
-| fig9-example-first-bin | reproduced | yes | Cell 64. |
-| figs1-silence-probe | reproduced | yes | Cell 67. |
+| methods-recording-counts | partially_reproduced | Yes. Cell 11: 305/39 and 93/14 match; 132 (or 124) cells against 123 at tolerance 0. | No assumption flagged. Property map deviation is stated. |
+| a1-mgb-firing-rates | partially_reproduced | Yes, conditionally. 0 of 6 readings pass in each area. The partial rule holds only at 20 and 40 robust SDs (8.60 to 12.91 Hz). The authors' automatic rule gives 4.97 to 4.99 Hz. | Stated. Defensible, but only cell-level means are shown, so it cannot be judged which MGB detector is right. |
+| fig2-example-reliability | reproduced | Yes (0.310 ± 0.092, n = 39). | n/a |
+| fig2-example-long-context | reproduced | Yes, under the amended criterion now in the claims file (2 to 3.6 s). The strict reading fails by 30 ms, as reported. | n/a |
+| fig3a-proportion-significant | reproduced | Yes (186, 0.610, 0.252; cell 24 row 0). | n/a |
+| fig3a-significance-decay | partially_reproduced | Yes (cell 28 rows 1, 3, 5, 7). | Sizes ≥ 0 is stated, reasonable, and raised with the authors. |
+| fig3b-fractional-power-decay | not_reproduced | Yes (τ1 1.29 to 1.78 s in all 8 readings). | n/a |
+| timescale-longer-than-membrane | reproduced | Yes (cell 39). | n/a |
+| fig4-predictability-upper-bound | not_reproduced | Yes. No reading has τ1 within 1.04 ± 0.104, including 1 − Q (1.29 to 1.78 s). | n/a |
+| fig4-strf-performance-low | not_reproduced | Yes under the criterion's Wilcoxon test (STRF p ≤ 0.0005 in all four readings). See open issue (b) in section 3. | Stated; the test is fixed by the criterion. Other choices (17 bins, zero lags before onset, 16 cells) are stated and reasonable. |
+| fig5-example-conductances | blocked (data_missing) | Yes | n/a |
+| fig6-conductance-decay | blocked (data_missing) | Yes | n/a |
+| fig7-example-frequency-context | blocked (data_missing) | Yes. Cell 53: 0 files have the three bands. Paper text (Fig. 7 legend) confirms 0.625–2.5, 2.5–10 and 10–40 kHz. My round-1 "testable" was wrong for the example. | n/a |
+| fig8a-proportion-by-property | partially_reproduced | Yes (cell 56: order holds, no count within 10%). AM and FM cannot reach the paper's counts with 39 and 25 probes. | Property map and once-per-probe rule are stated and reasonable. |
+| fig8b-decay-by-property | partially_reproduced | Yes (cell 59). | Rests on the fig8a sets; stated. |
+| fig8a-significance-fits | not_reproduced | Yes. The partial rule's order fails (frequency 0.147 > amplitude 0.123). | n/a |
+| fig8c-relative-effects | not_reproduced | Not yet. One reading the criterion points to was not run. See open issue (a) in section 3. | n/a |
+| fig8-natural-synthetic-probes-alike | reproduced | Yes (smallest corrected p 0.97). | Stated and fixed by the criterion. The AM and FM groups are small, so the test has low power. |
+| fig9-mgb-fast-decay | reproduced | Yes. τ1 is 0.057 to 0.083 s, and 0.057 to 0.084 s without the two cells that fail the clock check (cell 47). | n/a |
+| fig9-example-first-bin | reproduced | Yes (cell 50). | n/a |
+| figs1-silence-probe | reproduced | Yes. 19 cells against 3.2 expected by chance (cell 43). | n/a |
 
-**Assumptions.** Six outcomes are marked `assumed: true`: fig4-strf and the five fig8 claims. Each assumption is stated in the record.
+The claims file reads the paper correctly as far as I found.
 
-- The rebuilt property sets are reasonable. Cell 44 prints them for each recording, and they follow the stimulus parameters and the notes.
-- The choice of main reading is post hoc. It was picked because it reproduces Table 1's five totals. Its probe-type and cell split does not match Table 1:
-  - AM, natural probes: 82 tests in 24 cells here, against 25 in 25.
-  - AM, MHT probes: 14 tests in 2 cells here, against 71 in 27.
-  - It gets there by counting each natural probe of the 17-stimulus grid recordings up to four times.
-- This does not change any outcome, because all three readings give the same outcome for every fig8 claim.
+**2. Text against outputs**
 
-### 2. Sentences the printed numbers do not support
+Almost every number in the conclusions, Summary, README and record notes matches the printed output. These sentences are not fully supported:
 
-- **README:** the runtimes are wrong.
-  - "about 25 minutes": cell 73 prints 18.2 min.
-  - "about 22 minutes": strf cell 11 prints 10.0 min.
-- **Record, fig4-predictability notes:** "The mean of the smoothed ratio over the first 100 ms is 0.50." That is true only with silence counted. Without silence it is 0.571 (cell 41). Cell 42 states the qualifier; the record leaves it out.
-- **Record, fig7 notes, and cell 69:** "they share their modulation parameters." Cell 70 prints only name, description, `ff`, `df` and attenuation, so no printed output shows the modulation parameters.
-- **strf cell 9 and record, fig4-strf notes:** two statements depend on one cell, 20020602-mw-001, though the numbers are correct as computed:
-  - "LN … not better than the STRF on average (mean gain −0.010)"
-  - "at most 0.22 at every window"
+- **Cell 33, and the fig3b record notes:** "Q itself follows the paper's curve up to 1 s".
+  - This holds only at 0.5 s and 1 s.
+  - Q at onset is 1.039, against 0.49 on the paper's curve (cell 31, `Q_at_0`).
+  - The fit's RMS residual over 0 to 1 s is 0.108 (cell 32).
+- **Cell 37, and the STRF record notes:** "The one-sided Wilcoxon test finds a higher validation performance at 4052 ms than at 180 ms ... for LN (p <= 0.0065)".
+  - For LN with folds averaged, the mean falls from 0.144 to 0.091 (10 ms) (cell 36).
+  - The test reflects 13 of 16 cells improving, not the mean.
+  - The LN fold mean is erratic across windows (0.144, 0.050, 0.092, ...).
+- **Record notes, methods-recording-counts:** "...14 for AM against 71, so the AM, FM and higher-order totals are 39, 25 and 131 against 96, 82 and 137". The higher-order shortfall does not come from the missing tone probes. Cell 11 shows it comes from natural 58 vs 63 and MCN 73 vs 74.
+- **Finding (selection_undocumented), and the cell 11 print label:** "124 without the two synthetic designs that have no column in Table 1". This conflicts with the notebook's own mapping:
+  - fig8a counts the naturalistic files under amplitude and frequency (cell 56).
+  - Cell 11 prints "cells with a Table 1 probe ... 132".
 
-  That cell has LN validation performance of −0.574 at 180 ms and −0.713 at 4052 ms, with its ridge parameter at the end of the grid (strf cells 6 and 8). From the per-cell values in strf cell 8, without that cell:
+The record states my round-1 reasons accurately and in my own words for all 21 claims.
 
-  | | 180 ms | 4052 ms |
-  |---|---|---|
-  | STRF | 0.190 | 0.222 |
-  | LN | 0.214 | 0.250 |
+**3. Round-1 points**
 
-  So LN is better by about 0.025–0.03, and both models exceed 0.22 at 4052 ms. The outcome stays not_reproduced either way, but the notes should say that these two statements rest on that cell.
-- **Everything else matches.** I checked every other "**Result:**" cell (14, 17, 20, 23, 29, 32, 36, 39, 42, 47, 50, 53, 56, 59, 62, 65, 68, 71, strf 9), the Summary sections (cell 72, strf cell 10), the README table and every other note in the record against the printed outputs.
-- **My round-1 reasons:** the record's `verifications` entries state them in my own words, fairly. It drops my estimate for fig8c (ratios of about 0.97 and 0.89 with the without-silence reference), which no longer matters now that the reading has been run.
+Resolved:
 
-### 3. Round-1 points
+- Point 1: the seven claims blocked for "time" are now tested, or blocked with a data reason.
+- Point 3: Table 1 rows, cells per ensemble, and `probes_m4_nosil` (333) are now printed.
+- Point 4: the record now says the count and the chance level are matched by different readings.
+- Point 5: the 1 − Q reading was run, and the bound fits and the 176 points above 1.2 are flagged.
+- Point 6: no change was needed.
+- Point 7: the chance level for the silence probes was added (3.2 cells).
+- Point 8: the fig9 run without the two cells was added.
+- Section C items: Q at 2 to 4 s and a fit with κ free, the tie frequency (31%), the synthetic property map, and Wehr's recording type (QX-314).
 
-**Resolved:**
-- **1.** STRF is now tested.
-- **2.** The MHT sets are printed and match the metadata. MHT-probe tests exist in only 2 recordings, so the remaining gap is in the data, not the parser.
-- **3, 4.** The without-silence reference is run and the partial-rule check is corrected.
-- **5.** The fig7 search is complete.
-- **6.** The window readings and a second MGB detector are run.
-- **7.** The cells are listed. The 10 extra cells cannot be named from the data.
-- **8.** All significant periods are printed.
-- **9.** Fits stuck at the bound are flagged.
-- **10.** NaN is returned where no probe runs, and bin 60 is dropped.
-- **12.** The 200 shuffles are now stated in cell 24.
-- **13.** `asari.py:837` now cuts each set to its own contexts.
-- **11.** No change was needed.
+Partly resolved:
 
-**Remaining points that bear on a conclusion:**
+- Point 2: A1 rates over all 133 cells, short-interval fractions and mean waveforms were added. The partial outcome still depends on choosing robust-SD thresholds over the authors' automatic rule (4.97 to 4.99 Hz). That choice is stated, but no per-file amplitude distribution shows whether the events below the automatic threshold are spikes.
 
-- **A. fig2-example-long-context.**
-  - The Figure 2B legend says the red trace is "the one shown in A", so the long-context probe is the 0.74-reliability probe of the 0.61-reliability cell.
-  - Only 20051222-ha1-001-002 matches those values (cell 19).
-  - The passing probe comes from 20060105-ha1-001-002. That cell's mean reliability is 0.309, so it cannot be the paper's example.
-  - In the identified cell, probe 4 shows the paper's pattern: significant to 1.60 s, nothing until 3.97 s, then significant again. It misses the strict 2–4 s rule only because a run starts 30 ms before 4 s.
-  - Which probe of that cell has reliability 0.737 is not printed.
-  - The claims file's criterion does not use this link between 2A and 2B. That is a gap in the claims file, which I report and do not correct.
-  - Reproduced is defensible under the criterion as written, but the record should say that the passing probe is not from the paper's example cell.
-- **B. fig4-strf.** The two statements in section 2 depend on one cell with negative performance. This does not change the outcome.
-- **C. fig8c.** The trial-resampling reading is still not run. It is unlikely to change the outcome: the frequency point estimate is 0.80, and its probe-resampled upper bound is at most 0.938.
-- **D. a1-mgb-firing-rates.** With the code's own detector, the partial outcome still rests on a margin of 0.03–0.07 Hz above 5 Hz.
+Remaining issues that bear on a conclusion:
+
+- **(a) fig8c.**
+  - The synthetic sets exclude silence as a context, but the natural baseline (0.734 s) counts it.
+  - The natural reading without silence is one of the Figure 3B readings the criterion refers to, and it was not run.
+  - My rough extrapolation from the fits in cell 31 (α ≈ 0.45, τ ≈ 1.3 s) puts that area near 0.56 s. That would move amplitude to about 0.97 and frequency to about 0.87, and both intervals might then include 1.
+  - The outcome may not change (higher-order could then overlap the frequency bound), but this reading needs to be run.
+- **(b) fig4-strf-performance-low.**
+  - In 8 of 16 cells the STRF weight peaks at 176 ms, the last lag of the 180-ms model (cell 36). A filter cut off at the window edge favours longer windows on its own, and that is the comparison that decides the outcome.
+  - No check of stimulus-response alignment is shown for Wehr's data.
+  - `wehr.spectrogram` has no dB floor: zero samples give about −313 dB. Whether any response bins fall beyond the end of the sound is not printed.
+  - 6 of the 16 cells have only 2 trials per stimulus. No test over the 10 repeated-set cells alone is shown.
+- **(c) a1-mgb-firing-rates:** as under point 2 above.
