@@ -10,10 +10,12 @@ Tests the claims in `claims/watson-2016.yaml` for Watson, Levenstein, Greene, Ge
 
 `watson.py` holds the loaders, the derivation of the paper's state intervals from the DANDI states, the UP/DOWN and
 spindle detection used on DANDI, and the shared measures (per-second grids, time-normalized correlations, slopes,
-sextiles). `reproduce_watson_2016.ipynb` has one section per claim; each prints the result on both datasets.
+sextiles, ISI counts from spike times). `reproduce_watson_2016.ipynb` has one section per claim; each prints the result on
+both datasets. Outcomes are judged on CRCNS:fcx-1, which holds the paper's whole data set with the lab's own intervals and
+detections; the DANDI result is stated beside it.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences
 from the paper's method.
 
-The notebook streams about 90 GB from CRCNS and reads one or two LFP channels of each DANDI file; it takes about 30
+The notebook streams about 90 GB from CRCNS and reads one or two LFP channels of each DANDI file; it takes about 20
 minutes on 4 CPUs and peaks near 10 GB of memory.

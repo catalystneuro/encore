@@ -40,10 +40,12 @@ BANDS = {"delta": (0.5, 4.0), "delta14": (1.0, 4.0), "theta": (5.0, 10.0), "broa
 # 1 s (Brain state scoring); a 10 s window's band power is taken as the mean of the 2 s windows
 # inside it (a Welch estimate), which keeps the 1 s step and gives 0.5 Hz resolution for delta.
 LONG_WIN, LONG_HOP = 2500, 1250
-# Short windows for within-UP-state power: 200 ms every 100 ms, sigma 10-25 Hz and gamma 40-100 Hz
-# at 5 Hz resolution. [assumed] The paper does not give the UP-state spectrogram's window.
+# Short windows for within-UP-state power: 200 ms every 100 ms, sigma 9-25 Hz and gamma 40-100 Hz
+# ([paper] Results and Fig. 1B legend). At the 5 Hz resolution of a 200 ms window the sigma band
+# holds the 10, 15, 20 and 25 Hz bins, the same as 10-25 Hz. [assumed] The paper does not give the
+# UP-state spectrogram's window.
 SHORT_WIN, SHORT_HOP = 250, 125
-SHORT_BANDS = {"sigma": (10.0, 25.0), "gamma": (40.0, 100.0)}
+SHORT_BANDS = {"sigma": (9.0, 25.0), "gamma": (40.0, 100.0)}
 
 
 # ----------------------------------------------------------------------------------------------
@@ -382,6 +384,14 @@ def load_dandi(path, asset_id, lfp=True):
     out["states_raw"] = (lab, s["start_time"][:], s["stop_time"][:])
     e = f["general/extracellular_ephys/electrodes"]
     out["electrode_location"] = np.array([x.decode() for x in e["location"][:]])
+    # acquisition series (name, shape, rate), to see whether a wideband signal for EMG is held
+    acq = []
+    for k in f.get("acquisition", {}):
+        g = f["acquisition"][k]
+        if isinstance(g, h5py.Group) and "data" in g:
+            rate = float(g["starting_time"].attrs["rate"]) if "starting_time" in g else np.nan
+            acq.append((k, tuple(g["data"].shape), rate))
+    out["acquisition"] = acq
     have_lfp = "LFP" in f["processing/ecephys"]
     out["have_lfp"] = have_lfp
     if lfp and have_lfp:
@@ -389,6 +399,7 @@ def load_dandi(path, asset_id, lfp=True):
         n, nch = d.shape
         out["lfp_shape"] = d.shape
         out["lfp_rate"] = float(f["processing/ecephys/LFP/lfp/starting_time"].attrs["rate"])
+        out["lfp_starting_time"] = float(f["processing/ecephys/LFP/lfp/starting_time"][()])
         conv = float(d.attrs["conversion"])
         cols = {k: (np.where(e[k][:])[0] if k in e else []) for k in ["spindle_reference", "up_reference", "theta_reference"]}
         # electrodes of the LFP series, in row order of the electrodes table
@@ -401,8 +412,11 @@ def load_dandi(path, asset_id, lfp=True):
         for i in range(0, len(x), int(FS_LFP * 300)):
             acc.add(x[i:i + int(FS_LFP * 300)][:, None])
         tl, L, ts, S = acc.result()
-        out["bands_t"], out["bands"] = tl, {k: L[:, 0, i] for i, k in enumerate(BANDS)}
-        out["short_t"], out["short"] = ts, {k: S[:, 0, i] for i, k in enumerate(SHORT_BANDS)}
+        # window times on the session clock: the LFP series' starting_time is added (printed in the
+        # data check)
+        t0 = out["lfp_starting_time"]
+        out["bands_t"], out["bands"] = tl + t0, {k: L[:, 0, i] for i, k in enumerate(BANDS)}
+        out["short_t"], out["short"] = ts + t0, {k: S[:, 0, i] for i, k in enumerate(SHORT_BANDS)}
         th = descriptions_theta(f)
         out["bands_theta_chan"] = None
         if th is not None and th != g:
@@ -687,9 +701,16 @@ def reduce_dandi(d):
     d["ints"] = derive_states(lab, s0, s1)
     if "lfp_good_uV" in d:
         x = d.pop("lfp_good_uV").astype(np.float64)
-        pk = d["ints"]["SWSPacket"]
-        d["spindles"] = detect_spindles(x, pk)
-        d["up"], d["dn"] = detect_updown(d["spikes"], x, pk)
+        # detection runs on the LFP's own sample clock; times are moved to the session clock by
+        # the series' starting_time
+        t0 = d.get("lfp_starting_time", 0.0)
+        pk = np.asarray(d["ints"]["SWSPacket"], float).reshape(-1, 2) - t0
+        sp = detect_spindles(x, pk)
+        for k in ("start", "peak", "stop"):
+            sp[k] = sp[k] + t0
+        d["spindles"] = sp
+        up, dn = detect_updown([s - t0 for s in d["spikes"]], x, pk)
+        d["up"], d["dn"] = up + t0, dn + t0
         d["lfp_seconds"] = len(x) / FS_LFP
     return d
 
@@ -732,19 +753,17 @@ def prepare(sess):
     T = int(np.ceil(tmax)) + 2
     nc = len(spk)
     cnt = np.zeros((nc, T), np.int32)
-    bshort = np.zeros((nc, T), np.int32)
-    bisi = np.zeros((nc, T), np.int32)
+    sorted_spk, short_cs = [], []
     for i, s in enumerate(spk):
         s = np.sort(s)
         k = np.minimum(s.astype(int), T - 1)
         np.add.at(cnt[i], k, 1)
-        if len(s) > 1:
-            isi = np.diff(s)
-            kk = k[1:]
-            same = kk == k[:-1]  # ISIs within one second, so no ISI spans two state intervals
-            np.add.at(bisi[i], kk[same], 1)
-            np.add.at(bshort[i], kk[same & (isi <= BURST_ISI)], 1)
-    G = {"T": T, "cnt": cnt, "bshort": bshort, "bisi": bisi}
+        # ISIs are counted from the spike times (isi_counts), not on the 1 s grid, so an ISI that
+        # crosses a second boundary inside a state interval is kept.
+        sorted_spk.append(s)
+        short_cs.append(np.r_[0, np.cumsum(np.diff(s) <= BURST_ISI)].astype(np.int32))
+    sess["sorted_spikes"], sess["short_cs"] = sorted_spk, short_cs
+    G = {"T": T, "cnt": cnt}
     # band powers: long window k spans [k, k+2) s; assign to second k+1 (its centre)
     if "bands" in sess and sess.get("bands") is not None and len(sess.get("bands_t", [])):
         tl = sess["bands_t"]
@@ -806,6 +825,14 @@ def prepare(sess):
         m = sess["motion"][:T]
         a[:len(m)] = m
         G["motion"] = a
+    # EMG (CRCNS _EMGCorr, time and value every 0.5 s): mean per grid second
+    if "emg" in sess and np.size(sess["emg"]):
+        e = np.asarray(sess["emg"], float).reshape(-1, 2)
+        k = np.minimum(e[:, 0].astype(int), T - 1)
+        sm, nn = np.zeros(T), np.zeros(T)
+        np.add.at(sm, k, e[:, 1])
+        np.add.at(nn, k, 1)
+        G["emg"] = np.where(nn > 0, sm / np.maximum(nn, 1), np.nan)
     sess["G"] = G
     sess["E"] = np.where(sess["ctype"] == "E")[0]
     sess["I"] = np.where(sess["ctype"] == "I")[0]
@@ -813,9 +840,66 @@ def prepare(sess):
 
 
 def secs(pieces):
-    """Grid seconds covered by intervals at 1 s resolution: [ceil(a), floor(b))."""
-    out = [np.arange(int(np.ceil(a)), int(np.floor(b))) for a, b in np.asarray(pieces).reshape(-1, 2)]
+    """Grid seconds whose centre lies in an interval: k with a <= k + 0.5 < b. For whole-second
+    bounds this is [a, b). Each second of a split interval goes to exactly one part, so a part
+    shorter than 2 s keeps the seconds centred in it (round 1 dropped every second not wholly
+    inside a part, which left most 1-2 s bins of reading c empty)."""
+    out = [np.arange(int(np.ceil(a - 0.5)), int(np.ceil(b - 0.5))) for a, b in np.asarray(pieces).reshape(-1, 2)]
     return np.concatenate(out) if out else np.zeros(0, int)
+
+
+def isi_counts(sess, cells, pieces, per_piece=False):
+    """Per cell, the number of ISIs with both spikes inside one interval of `pieces`, and how many
+    of them are <= 15 ms ([paper] Supplemental Experimental Procedures, Spiking metrics; [claim]
+    burst-index-by-state, ISIs spanning two intervals of a state are dropped). From spike times.
+    With per_piece, arrays of cells x pieces; otherwise summed over pieces."""
+    P = np.asarray(pieces, float).reshape(-1, 2)
+    nn, ns = np.zeros((len(cells), len(P))), np.zeros((len(cells), len(P)))
+    for j, i in enumerate(cells):
+        if len(P) == 0:
+            break
+        t, cs = sess["sorted_spikes"][i], sess["short_cs"][i]
+        j0 = np.searchsorted(t, P[:, 0], "left")
+        j1 = np.searchsorted(t, P[:, 1], "left")
+        m = np.maximum(j1 - j0 - 1, 0)
+        nn[j] = m
+        j0 = np.minimum(j0, len(cs) - 1)  # a piece after the last spike holds no ISI (m = 0)
+        ns[j] = np.where(m > 0, cs[np.maximum(j1 - 1, j0)] - cs[j0], 0)
+    return (nn, ns) if per_piece else (nn.sum(1), ns.sum(1))
+
+
+def exact_rates(sess, pieces, cells):
+    """Per cell, spikes inside `pieces` over their summed duration, from spike times (no grid)."""
+    P = np.asarray(pieces, float).reshape(-1, 2)
+    dur = (P[:, 1] - P[:, 0]).sum() if len(P) else 0.0
+    if dur <= 0:
+        return np.full(len(cells), np.nan)
+    out = np.zeros(len(cells))
+    for j, i in enumerate(cells):
+        t = sess["sorted_spikes"][i]
+        out[j] = (np.searchsorted(t, P[:, 1]) - np.searchsorted(t, P[:, 0])).sum() / dur
+    return out
+
+
+def subtract(ints, cut):
+    """Intervals `ints` with the intervals `cut` removed."""
+    out = []
+    cut = np.asarray(cut, float).reshape(-1, 2)
+    for a, b in np.asarray(ints, float).reshape(-1, 2):
+        pieces = [(a, b)]
+        for c0, c1 in cut:
+            nxt = []
+            for x0, x1 in pieces:
+                if c1 <= x0 or c0 >= x1:
+                    nxt.append((x0, x1))
+                    continue
+                if c0 > x0:
+                    nxt.append((x0, c0))
+                if c1 < x1:
+                    nxt.append((c1, x1))
+            pieces = nxt
+        out += pieces
+    return np.array(out, float).reshape(-1, 2)
 
 
 def cell_rates(sess, pieces, cells=None):
@@ -997,12 +1081,16 @@ def wake_rate(sess, cells):
     return cell_rates(sess, sess["ints"]["Wake"], cells)[0]
 
 
-def sextiles(sessions, reading="a"):
+def sextiles(sessions, reading="a", exclude=None, key="sextile"):
     """Assign each pE cell of the whole dataset to a sextile of WAKE rate (0 lowest, 5 highest),
-    [claim] M2; reading 'b' uses the WAKE of each cycle (mean over cycles)."""
+    [claim] M2; reading 'b' uses the WAKE of each cycle (mean over cycles). `exclude(sess)` gives
+    intervals left out of the WAKE the cells are ranked on (a held-out variant, so that the windows
+    a test compares are not the ones the cells were ranked on); the result is stored under `key`."""
     allr = []
     for si, s in enumerate(sessions):
-        if reading == "a":
+        if exclude is not None:
+            r = cell_rates(s, subtract(s["ints"]["Wake"], exclude(s)), s["E"])[0]
+        elif reading == "a":
             r = wake_rate(s, s["E"])
         else:
             r = np.nanmean([cell_rates(s, [c["wake"]], s["E"])[0] for c in s["cycles"]], 0) if s["cycles"] else np.full(len(s["E"]), np.nan)
@@ -1019,8 +1107,9 @@ def sextiles(sessions, reading="a"):
         out.append(ranks[i:i + len(r)])
         i += len(r)
     for s, sx, r in zip(sessions, out, allr):
-        s["sextile"] = sx
-        s["wake_rate_E"] = r
+        s[key] = sx
+        if key == "sextile":
+            s["wake_rate_E"] = r
     return out
 
 
