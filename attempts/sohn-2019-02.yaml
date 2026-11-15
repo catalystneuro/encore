@@ -25,16 +25,19 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_sohn_2019.ipynb
   output: claim:beh-slopes
-  notes: With an intercept, 6 of 8 weighted slopes lie between 0 and 1 and 5 of 8 intervals exclude both 0 and 1.
-    The Eye Left Short (1.011, 95% CI 0.896 to 1.126) and Eye Right Short (1.110, 1.014 to 1.206) slopes are not
-    below 1. The four Hand slopes are 0.50 to 0.86 with intervals excluding 0 and 1, and the Eye Long slopes are
-    0.845 and 0.903. Through the origin (the Methods' equation tp = beta ts) 2 of 8 slopes are below 1. Both readings
-    give the same outcome.
+  notes: Through the origin (the regression the Methods and the Table S1 legend write, tp = beta ts + epsilon) 2
+    of 8 weighted slopes lie between 0 and 1 (Eye Left Long 0.996, Hand Left Long 0.923) and 1 of 8 intervals excludes
+    both 0 and 1; the other six slopes are 1.013 to 1.072. With an intercept 6 of 8 lie between 0 and 1; Eye Left
+    Short (1.011, 95% CI 0.896 to 1.126) and Eye Right Short (1.110, 1.014 to 1.206) do not. With go_time - set_time
+    in place of tp, 4 of 8 (through the origin) and 7 of 8 (with an intercept) lie between 0 and 1. No reading gives
+    all 8 below 1.
   deviations:
   - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
     trials of the session have no task variables and are not used.
-  - The criterion does not say whether the regression has an intercept; the Methods (Analysis of behavior, Model
-    free analysis) write tp = beta ts + epsilon. Both readings were run and give the same outcome.
+  - The criterion does not say whether the regression has an intercept. Taken from the paper, the Methods (Analysis
+    of behavior, Model free analysis) and the Table S1 legend both write tp = beta ts + epsilon, so the main reading
+    has no intercept. The regression with an intercept, and both with go_time - set_time in place of tp, are shown;
+    all give the same outcome.
   - Trials are the completed trials not flagged by the file's is_outlier column (claims file); the mixture model
     is the file's, not refit here.
 - claim: beh-overlap-prior
@@ -59,23 +62,19 @@ outcomes:
   - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
     trials of the session have no task variables and are not used.
 - claim: beh-long-more-bias
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_sohn_2019.ipynb
   output: claim:beh-long-more-bias
-  notes: With the intercept regression of beh-slopes the Long slope is below the Short slope in all 4 datasets (Eye
-    Left 0.845 and 1.011, Eye Right 0.903 and 1.110, Hand Left 0.502 and 0.612, Hand Right 0.612 and 0.861). Through
-    the origin it is below in 3 of 4 (Eye Right 1.027 against 1.016), which would be partially reproduced. The outcome
-    rests on the intercept reading. Question for the paper's authors, does the weighted regression of tp on ts (Methods,
-    Model free analysis of behavior, tp = beta ts + epsilon) include an intercept? The two readings differ here
-    in one dataset.
+  notes: Through the origin, the regression of the Methods and Table S1, the Long slope is below the Short slope
+    in 3 of 4 datasets (Eye Left 0.996 and 1.072, Hand Left 0.923 and 1.013, Hand Right 1.032 and 1.057, Long then
+    Short); in Eye Right it is above (1.027 against 1.016). With an intercept it is below in all 4 (Eye Left 0.845
+    and 1.011, Eye Right 0.903 and 1.110, Hand Left 0.502 and 0.612, Hand Right 0.612 and 0.861), which would be
+    reproduced. With go_time - set_time in place of tp the counts are the same, 3 of 4 and 4 of 4.
   deviations:
   - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
     trials of the session have no task variables and are not used.
-  - Assumed that the regression of tp on ts has an intercept. The Methods write tp = beta ts + epsilon, without
-    one, but the Results read slopes below 1 as bias toward the mean of the prior (Results, Task and behavior, paragraph
-    3), which is what a slope with an intercept measures; a slope through the origin mostly measures the overall
-    ratio of tp to ts. Both readings are shown.
-  assumed: true
+  - The regression has no intercept, as the Methods (Model free analysis of behavior) and the Table S1 legend write
+    it, tp = beta ts + epsilon; the regression with an intercept is shown as a variant and gives 4 of 4.
 - claim: beh-bayes-model
   outcome: partially_reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -83,9 +82,14 @@ outcomes:
   notes: The correlation of observed and predicted SD of tp over the 10 conditions is positive in all 4 datasets
     (Eye Left 0.807, Eye Right 0.909, Hand Left 0.749, Hand Right 0.277 with p = 0.44). The bias R2 (1 - SS_res/SS_tot)
     reaches 0.8 in 2 of 4 (Hand Left 0.978, Hand Right 0.865; Eye Left 0.670, Eye Right 0.122); the squared correlation
-    gives the same count. Fitted wm are 0.025, 0.013, 0.116 and 0.073 and wp 0.103, 0.106, 0.090 and 0.104. The
-    Eye biases span only 108 and 80 ms over the 10 conditions, against 265 and 166 ms for Hand. Table S3 was not
-    available for comparison.
+    gives the same count. Fitted wm are 0.025, 0.013, 0.116 and 0.073 (Eye Left, Eye Right, Hand Left, Hand Right),
+    1.1 and 1.5 SD below and 1.3 and 0.4 SD above the session means of Table S3 (0.043, 0.027, 0.085, 0.062); fitted
+    wp 0.103, 0.106, 0.090 and 0.104 are 0.2 to 1.0 SD above Table S3. The fits are interior; relaxing the lower
+    bound on the noise weights from 0.01 to 1e-4 does not move them. With wm held at Table S3 means the bias R2
+    is 0.581, 0.126, 0.929 and 0.830, again 2 of 4. For Eye Right the profile log-likelihood is within 0.46 of its
+    best for wm 0.003 to 0.02, and the bias R2 is at most 0.146 over the profile. The Eye biases span only 108 and
+    80 ms over the 10 conditions, against 265 and 166 ms for Hand. Whether the criterion should compare the fit
+    with Table S3, which it calls unavailable, is asked of a reader.
   deviations:
   - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
     trials of the session have no task variables and are not used.
@@ -105,7 +109,9 @@ outcomes:
   notes: 38 of 48 units (79.2%, binomial 95% CI 65.0 to 89.5) are prior-dependent, against 65 +- 6.5%. Under reading
     (a), Long-prior windows ending at the Long ts values (800 to 1200 ms), 22 of 48 (45.8%, 31.4 to 60.8) are ts-dependent;
     under reading (b), the same 480 to 800 ms windows in both priors, 24 of 48 (50.0%), against 27 +- 2.7%. Both
-    fractions are higher than the paper's for monkey H under both readings. 19 units are both and 7 neither.
+    fractions are higher than the paper's for monkey H under both readings. 19 units are both and 7 neither. The
+    tolerances are narrower than the binomial interval of a fraction of 48 units; the prior fraction's interval
+    reaches 65, while both ts fractions' intervals (31.4 to 60.8 and 35.2 to 64.8) exclude 27.
   deviations:
   - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
     trials of the session have no task variables and are not used. The paper's 65% and 27% are over 536 units of
@@ -134,14 +140,19 @@ outcomes:
   output: claim:pca-dimensionality
   notes: In the estimation epoch 2 components reach 75% of the variance in all 4 datasets (0.80 to 0.86 with 2,
     0.87 to 0.91 with 3), so none is in 3 to 4. In the production epoch 2, 2, 4 and 5 components do (Eye Left, Eye
-    Right, Hand Left, Hand Right), so 1 of 4 is in 5 to 11. 1 of 8 values is in range. Without smoothing the counts
-    are 3 to 6 and 6 to 15, so they depend on the smoothing.
+    Right, Hand Left, Hand Right), so 1 of 4 is in 5 to 11. 1 of 8 values is in range. The counts depend on the
+    smoothing. With a kernel SD of 20 ms 2 of 8 are in range, and with SD 17 ms (a full width at half maximum of
+    40 ms) 3 of 8, both not reproduced; without smoothing (3 to 6 and 6 to 15 components) 5 of 8, which would be
+    partially reproduced. Two questions are open to a reader, whether the Methods' kernel width of 40 ms is its
+    SD, and how the paper's PCA population of 536 units pooled over 17 sessions bears on the ranges, where this
+    session has 48 units.
   deviations:
   - One session of monkey H (2016-12-11), where the paper pools 17 sessions of H and 12 of G; the 283 test-file
     trials of the session have no task variables and are not used. 48 units, where the paper's datasets pool the
     units of all sessions of an animal (536 for H).
   - The Gaussian kernel is renormalised over the bins of each epoch so that no bin outside it enters (a standard
-    choice the Methods do not fix).
+    choice the Methods do not fix). The kernel SD of 40 ms is the claims file's; SD 20 ms and 17 ms are shown as
+    other readings of the Methods' kernel width of 40 ms.
 - claim: encoding-r2
   outcome: reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -152,7 +163,8 @@ outcomes:
   notes: Reading (a), Hand Left, gives R2 of Xu by te of 0.9957 for Short and 0.9774 for Long; reading (b), the
     mean of the 4 datasets, 0.9587 and 0.9822. All are within tolerance. Per dataset R2 is 0.909 to 0.996. The comparison
     with random axes is weak in the 2-component estimation space; random unit vectors give median R2 of 0.69 to
-    0.99, 1.2% to 44.2% of them reach the R2 of u, and a linear function of ts gives R2 of 0.898 to 0.990.
+    0.99, 1.2% to 44.2% of them reach the R2 of u, and a linear function of ts gives R2 of 0.898 to 0.990. With
+    narrower kernels (SD 20 and 17 ms) Hand Left gives 0.982 and 0.916, and 0.994 and 0.937, still within tolerance.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
@@ -165,7 +177,10 @@ outcomes:
   notes: The Bayesian fit has the lower RMSE in all 4 datasets for Short (differences -0.31, -0.22, -0.47 and -0.04
     spikes/s for Eye Left, Eye Right, Hand Left, Hand Right) and in 3 of 4 for Long (-0.59, -0.20, +0.10, -0.22);
     for Hand Left Long the linear fit is better (0.481 against 0.583). Weighted RMSE gives the same counts. Signed-rank
-    p over 4 datasets is 0.125 (Short) and 0.25 (Long).
+    p over 4 datasets is 0.125 (Short) and 0.25 (Long). With narrower kernels (SD 20 and 17 ms, other readings of
+    the Methods' kernel width, asked of a reader) the Bayesian fit is better in 3 of 4 datasets for each prior (Hand
+    Right Short +0.055 and +0.064, Hand Left Long +0.113 and +0.082), which would be not reproduced; the outcome
+    follows the claims file's SD of 40 ms.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
@@ -177,9 +192,11 @@ outcomes:
   output: claim:short-in-long-control
   notes: By the paper's test, the two-sided signed-rank test of the RMSE difference (Bayesian - linear) over the
     4 datasets gives p = 0.25 with the axis built as u is (mean of difference vectors) and 0.125 with the single
-    difference X(800) - X(480); with 4 datasets the test cannot reach p < 0.05. The effect does not look absent.
-    The Bayesian model fits better in 3 of 4 datasets (-0.21, -0.12, +0.05, -0.11 spikes/s), of a size like the
-    Short prior's own differences (-0.04 to -0.47). The paper's ANOVA interaction was not run.
+    difference X(800) - X(480); with 4 datasets the test cannot reach p < 0.05, so the criterion cannot fail. The
+    effect does not look absent. The Bayesian model fits better in 3 of 4 datasets (-0.21, -0.12, +0.05, -0.11 spikes/s),
+    of a size like the Short prior's own differences (-0.04 to -0.47). The paper's two-way repeated-measures ANOVA
+    (Short or Short In Long, by model) gives an interaction of F(1,3) = 1.70, p = 0.284 (single-difference axis
+    F(1,3) = 2.32, p = 0.225), against the paper's F(1,7) = 161.43, p < 1e-5.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
@@ -193,7 +210,8 @@ outcomes:
   notes: The weighted slope of Xu on ts is lower for Long in 3 of 4 datasets (Eye Left 0.229 and 0.124, Eye Right
     0.191 and 0.117, Hand Left 0.077 and 0.027 spikes/s per ms, Short then Long); in Hand Right the Long slope is
     slightly higher (0.0486 against 0.0470). With outlier trials included the count is the same; without smoothing
-    it is 4 of 4. Signed-rank p over 4 datasets is 0.25.
+    it is 4 of 4. Signed-rank p over 4 datasets is 0.25. With narrower kernels (SD 20 and 17 ms) the count is also
+    3 of 4.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
@@ -206,12 +224,18 @@ outcomes:
   - -0.874
   notes: Pooled over the 4 datasets (20 points per prior), Xu at Set correlates negatively with the speed of the
     production trajectory, r = -0.932 (p = 2.3e-09) for Short and -0.874 (p = 4.8e-07) for Long, both stronger than
-    the paper's -0.74 and -0.51 and outside tolerance. Within datasets r is -0.92 to -0.995 (Short) and -0.67 to
-    -0.96 (Long). With speed divided by the mean tp (the Methods' wording) r is -0.916 and -0.925.
+    the paper's -0.74 and -0.51 and outside tolerance. Within datasets r is -0.919 to -0.995 (Short) and -0.669
+    to -0.956 (Long). Dividing the mean step by the mean Set to Go duration (the Methods' wording) gives -0.922
+    and -0.924, and dividing the path length by it -0.933 and -0.875. With windows ending at the shortest go_time
+    - set_time, so that none runs past Go, r is -0.921 and -0.838; with a kernel SD of 20 ms -0.663 and -0.618,
+    and with SD 17 ms -0.554 and -0.465 (Long within tolerance), all partially reproduced.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125. Xu scales differ between datasets and are pooled
     as they are, as the criterion says.
+  - Production windows end at the shortest tp of each condition, as the claims file says; tp exceeds go_time - set_time,
+    so 36 of 40 windows run past the earliest Go of their condition, by up to 121.5 ms (median 11.5). Windows ending
+    at the shortest go_time - set_time are shown and give the same outcome.
 - claim: initial-speed-biased
   outcome: not_reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -233,28 +257,37 @@ outcomes:
   - -0.744
   notes: Pooled over the 4 datasets, speed correlates negatively with mean tp, r = -0.719 (p = 0.00035) for Short
     and -0.744 (p = 0.00017) for Long, both outside tolerance around -0.58 and -0.52. Within datasets r is -0.94
-    to -0.99 (Short) and -0.78 to -0.97 (Long). Trial by trial, single-trial speed (Set to Go) correlates with tp
-    at r = -0.15 to -0.71 in the 8 prior, effector and direction groups, with p < 0.05 in 7.
+    to -0.99 (Short) and -0.78 to -0.97 (Long). Dividing the mean step by the mean Set to Go duration gives -0.853
+    and -0.855; dividing the path length by it gives -0.613 and -0.752, the first within tolerance, also partially
+    reproduced. With windows ending before Go r is -0.693 and -0.693; with a kernel SD of 20 ms -0.840 and -0.789,
+    and with SD 17 ms -0.796 and -0.691. Trial by trial, single-trial speed (Set to Go) correlates with tp at r
+    = -0.15 to -0.71 in the 8 prior, effector and direction groups, with p < 0.05 in 7, whether each window ends
+    at the trial's tp or at its Go.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
   - The single-trial speed variant uses smoothed single-trial rates in the dataset's production PC space; the Neural
     Latents Benchmark's own computation was not used.
+  - Production windows end at the shortest tp of each condition, as the claims file says; tp exceeds go_time - set_time,
+    so 36 of 40 windows run past the earliest Go of their condition, by up to 121.5 ms (median 11.5). Windows ending
+    at the shortest go_time - set_time are shown and give the same outcome.
 - claim: alt-speed-unmodulated
   outcome: reproduced
   notebook: reproduce_sohn_2019.ipynb
   output: claim:alt-speed-unmodulated
   notes: By the paper's test, the two-sided signed-rank tests of the 4 slopes against zero give p = 0.25 (Short)
-    and 0.125 (Long); with 4 datasets the test cannot reach p < 0.05. The effect sizes lean toward modulation. The
-    slope of step distance on time is positive in 7 of 8 dataset-priors, the step distance changes by -13% to +56%
-    over the support, and percentile bootstrap intervals over trials exclude zero in 6 of 8. These intervals sit
-    mostly above the point estimates, so they are biased upward. Attrition reduces the trials averaged about five-fold
-    across the support, which adds noise to the later steps; this may contribute to the positive slopes and was
-    not tested.
+    and 0.125 (Long); with 4 datasets the test cannot reach p < 0.05, so the criterion cannot fail. With attrition
+    the slope of step distance on time is positive in 7 of 8 dataset-priors (changes of -13% to +56% over the support),
+    but later bins average fewer trials, which adds noise to their steps. From the longest-ts trials alone, so that
+    every bin averages the same 18 to 31 trials, the slopes are negative in 7 of 8 (changes of -42% to +11%; p =
+    0.625 and 0.125). The percentile bootstrap intervals over trials exclude zero in 6 of 8, but only 3.5% to 27.0%
+    (median 6.2%) of the bootstrap slopes fall below the point estimate, so they are biased upward; the basic bootstrap
+    intervals exclude zero in 1 of 8.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
-  - Bootstrap of trials within each ts, 200 resamples (a standard choice).
+  - Bootstrap of trials within each ts, 200 resamples (a standard choice); percentile and basic intervals are both
+    shown. The slopes from the longest-ts trials alone are shown as a variant without attrition.
 - claim: alt-transient-parallel
   outcome: reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -272,9 +305,11 @@ outcomes:
   notebook: reproduce_sohn_2019.ipynb
   output: claim:alt-threshold-monotonic
   notes: With 60% of the variance (1 to 3 components) the median time of the minimum distance to the middle-ts trajectory
-    is 230 ms before Go; the minimum is in the last 40 ms in 4 of 32 curves and in the last 200 ms in 13. With 75%
-    (2 to 5 components) the median is 160 ms before Go (8 of 32 in the last 40 ms), which would be partially reproduced.
-    The minima spread from 760 ms before Go to Go.
+    is 230 ms before Go; the minimum is in the last 40 ms in 4 of 32 curves and in the last 200 ms in 13. The two
+    Eye datasets keep one component, where the distance is an absolute difference, and 12 of their 16 minima fall
+    where that difference changes sign, a crossing. Keeping at least 2 components at 60%, the median is 260 ms before
+    Go. With 75% (2 to 5 components) the median is 160 ms before Go (8 of 32 in the last 40 ms), which would be
+    partially reproduced. The minima spread from 740 or 760 ms before Go to Go.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125.
@@ -287,8 +322,10 @@ outcomes:
   notes: Cross-validation chose 8 latent dimensions in all 4 datasets. The quadratic coefficient of variance on
     ts is negative in 6 of 8 dataset-priors and the one-tailed signed-rank test gives p = 0.0547. The result sits
     at the threshold; refits with three other seeds give p = 0.055, 0.039 and 0.055, and 4 latent dimensions p =
-    0.098, with 6 of 8 negative each time. The mean variance profile by ts rank (0.78, 0.91, 0.85, 0.51, 0.45) falls
-    toward the long end. Variances rest on 14 to 38 trials per ts.
+    0.098, with 6 of 8 negative each time. With Xu z-scored over all trials of the dataset (the Figure 6C legend's
+    wording, asked of a reader) p is 0.074 for the main fit and 0.039 to 0.074 for the variants, 6 of 8 negative.
+    The mean variance profile by ts rank (0.78, 0.91, 0.85, 0.51, 0.45) falls toward the long end. Variances rest
+    on 14 to 38 trials per ts.
   deviations:
   - Population tests run over the 4 effector and direction datasets of one session, where the paper has 8 (two animals);
     a signed-rank test over 4 values cannot fall below p = 0.125. The paper used one high-yield session of 48 units
@@ -339,13 +376,194 @@ findings:
 - kind: metadata_insufficient
   statement: tp is longer than go_time - set_time in every analysed trial, by a median of 17.9 ms (0.1 to 200.6
     ms), and set_time - ready_time differs from ts by up to 23.5 ms. The files do not say between which events tp
-    is measured or how the event times were registered.
+    is measured or how the event times were registered. Windows of neural data that end at the shortest tp of a
+    condition run past the earliest Go in 36 of 40 conditions, by up to 121.5 ms.
 - kind: metadata_insufficient
   statement: Units have no electrode or probe assignment (the unit table has no electrodes column and the 72 electrodes
     have no positions), and no label says which units are single units and which multi-units, a distinction the
     paper reports (196 single and 421 multi-units in monkey H).
-- kind: methods_unavailable
-  statement: The Methods give the behavioural regression as tp = beta ts + epsilon, without an intercept, while
-    the Results read slopes below 1 as bias toward the prior mean. Does the regression include an intercept? In
-    this session the two readings give different counts of datasets with a smaller Long-prior slope (4 of 4 with
-    an intercept, 3 of 4 without). The attempt assumes an intercept.
+verifications:
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebooks with the conclusion cells and the summary removed (two conclusion sentences,
+    in the beh-slopes and beh-bayes-model cells, were left in by mistake), the helper module and the claims file,
+    with the paper's full text and supplement. The verifier tested wls, encoding_axis, pca_fit, bin_counts, the
+    attrition in estimation_rates, the GLM's BIC parameter counts and fit_bayes on synthetic inputs. It could not
+    run gpfa_fit.
+  results:
+  - claim: beh-slopes
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Main reading (with intercept), cell 13: 6 of 8 slopes lie in (0,1). Eye Left Short is 1.011 and Eye
+      Right Short is 1.110. Through the origin, 2 of 8 do. Problem 3: Table S1 gives the regression as tp = beta
+      ts + epsilon, which the notebook ran anyway.'
+    response: Outcome kept. The main reading is now the regression through the origin, as the Methods and the Table
+      S1 legend write it (2 of 8); the intercept reading and both readings with go_time - set_time in place of tp
+      are shown, and none has all 8 slopes below 1. Split the conclusion into its own cell (problem 11).
+  - claim: beh-overlap-prior
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 16: the Short median tp-800 is +28.3 ms, positive when the criterion needs it negative. Pooled
+      rank-sum p = 0.073.'
+    response: No change.
+  - claim: beh-sigmoid-increments
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 18: the middle increment exceeds the extreme one in 7 of 8 conditions; two-sided signed-rank p
+      = 0.0156.'
+    response: No change.
+  - claim: beh-long-more-bias
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: Long slope below Short in 4 of 4 with intercept. Through the origin (the Methods'' and Table
+      S1''s equation) it is 3 of 4, which would be partial.'
+    response: Outcome changed to partially_reproduced. The intercept was an assumption against the paper's own equation,
+      which the Methods and the Table S1 legend both give as tp = beta ts + epsilon; following the paper, the slopes
+      are taken through the origin, which gives 3 of 4 (Eye Right 1.027 against 1.016). The intercept reading (4
+      of 4) is shown as a variant, the outcome is no longer marked assumed, and the methods_unavailable finding
+      that asked about the intercept is removed.
+  - claim: beh-bayes-model
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 22: SD correlation is positive in 4 of 4, but bias R2 >= 0.8 holds in only 2 of 4 (Eye Left 0.670,
+      Eye Right 0.122). Problem 3: the fitted wm against Table S3 is never compared; Eye Right sits near the fit''s
+      lower bound of 0.01, and that low wm drives the poor Eye bias R2.'
+    response: Outcome kept. Added a cell comparing wm and wp with Table S3 (z of -1.1 to 1.3 for wm, 0.2 to 1.0
+      for wp), a refit with the lower bound relaxed to 1e-4 (no change, the fits are interior), a refit with wm
+      held at Table S3 means (bias R2 0.581, 0.126, 0.929, 0.830, again 2 of 4) and a profile over wm for Eye Right
+      (bias R2 at most 0.146 at any wm), so the low wm does not decide the outcome. Asked a reader whether the criterion
+      should use Table S3.
+  - claim: glm-prior-ts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 26: prior-dependent 79.2% (tolerance 58.5 to 71.5); ts-dependent 45.8% under reading (a) and 50.0%
+      under (b) (tolerance 24.3 to 29.7). Problem 10: the 6.5-point tolerance is narrower than the binomial interval
+      with 48 units; the prior fraction''s CI (65.0 to 89.5) touches 65, the ts fraction''s CI (31.4 to 60.8) excludes
+      27.'
+    response: Outcome kept; the criterion fixes the tolerance. The conclusion and notes now state that the prior
+      fraction's interval reaches 65 and both ts intervals exclude 27.
+  - claim: dfr-overlap-support
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28: the largest RMS difference, 6.86 spikes/s, is in the 480-640 ms bin, above the shuffle 95th
+      percentile of 3.15.'
+    response: No change.
+  - claim: pca-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 32: estimation k = 2,2,2,2 and production k = 2,2,4,5, so 1 of 8 values is in range. Problem 1:
+      the paper''s PCA uses firing rate matrices of all neurons, 536 units of H pooled across 17 sessions, here
+      48 units from one session. Problem 2: kernel width 40 ms is read as an SD; a narrower kernel is a valid reading
+      and was not run; unsmoothed, 5 of 8 are in range, which would make it partial.'
+    response: Outcome kept. Added SD 20 ms and SD 17 ms kernels as variants (robustness cell) and a question to
+      a reader on the kernel width; the outcome follows the claims file's SD of 40 ms. The narrower kernels give
+      2 of 8 and 3 of 8, still not reproduced. Added a question to a reader on the pooled population of the paper's
+      PCA.
+  - claim: encoding-r2
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34: Hand Left gives 0.9957 and 0.9774; the 4-dataset mean gives 0.9587 and 0.9822. Both readings
+      are within tolerance. Random axes in the 2-PC space reach median R2 0.69-0.97, so the paper''s claim that
+      the match is specific to u (Figure S5) does not hold here.'
+    response: Outcome kept. The narrower kernels give Hand Left 0.982 and 0.916, and 0.994 and 0.937, within tolerance;
+      the weak reference against random axes was already in the notes.
+  - claim: encoding-bayes-beats-linear
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 37: Bayesian RMSE is lower in 4 of 4 for Short and 3 of 4 for Long (Hand Left Long +0.101).'
+    response: Outcome kept. With the narrower kernels the count is 3 of 4 for each prior, which would be not reproduced;
+      this is stated in the notes and in the question on the kernel width.
+  - claim: short-in-long-control
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced by criterion, uninformative. Cell 39: p = 0.25 and 0.125. With 4 datasets a two-sided signed-rank
+      test cannot go below 0.125. The Bayesian model is better in 3 of 4, the same direction as the Short prior.
+      Problem 6: the paper''s ANOVA interaction is not tested.'
+    response: 'Outcome kept, by the criterion. Added the paper''s two-way repeated-measures ANOVA: interaction F(1,3)
+      = 1.70, p = 0.284, against the paper''s F(1,7) = 161.43; the notes say the criterion cannot fail with 4 datasets.'
+  - claim: neural-long-more-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 41: Long slope below Short in 3 of 4. Hand Right is 0.0486 against 0.0470.'
+    response: No change; the narrower kernels also give 3 of 4.
+  - claim: speed-vs-projection
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 46: r = -0.932 and -0.874, both p < 1e-6 but outside tolerance (-0.74+-0.074, -0.51+-0.051). Problem
+      7: production windows end at the shortest tp, which exceeds go_time - set_time by up to 200.6 ms, so a window
+      can run past Go. Problem 9: the speed_per_s variant divides by the number of bins and again by mean tp, doing
+      it twice.'
+    response: Outcome kept. Printed each window against the shortest go_time - set_time of its condition (36 of
+      40 run past Go, by up to 121.5 ms) and added windows ending before Go as a variant (r = -0.921 and -0.838).
+      The speed variant now shows both the Methods' literal wording (mean step over the mean Set to Go duration)
+      and the path length over that duration. The kernel variants give -0.663 and -0.618, and -0.554 and -0.465,
+      all partially reproduced.
+  - claim: initial-speed-biased
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 48: measured slope is shallower in 7 of 8, but the signed-rank p = 0.0547 is not below 0.05.'
+    response: No change.
+  - claim: speed-predicts-tp
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 50: r = -0.719 (p = 3.5e-4) and -0.744 (p = 1.7e-4), both outside tolerance. Problems 7 and 9
+      apply as for speed-vs-projection.'
+    response: Outcome kept. Windows ending before Go give -0.693 and -0.693, and single-trial windows ending at
+      each trial's Go give the same counts; the corrected speed variant (path length over duration) gives -0.613
+      and -0.752, also partial.
+  - claim: alt-speed-unmodulated
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced by criterion, uninformative. Cell 53: p = 0.25 and 0.125, which the criterion admits cannot
+      fail. The effect size points the other way: slopes are positive in 7 of 8 and partly an attrition artefact.
+      Problem 5: fewer trials are averaged later in the support, which inflates the step distance; bootstrap resampling
+      inflates it further, so the intervals are biased upward and do not measure an effect size.'
+    response: 'Outcome kept, by the criterion. Added the slopes from the longest-ts trials alone, so every bin averages
+      the same trials: negative in 7 of 8, so the positive slopes come from attrition. Added the share of bootstrap
+      slopes below the point estimate (median 6.2%) and basic bootstrap intervals, which exclude zero in 1 of 8.'
+  - claim: alt-transient-parallel
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 55: p = 0.195 for the shortest ts and 1.0 for the longest. Shortest-ts distances do change, by
+      a median of 14.5 against a median distance of 18.2 over 200 ms, with mixed sign.'
+    response: No change.
+  - claim: alt-threshold-monotonic
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 57: at the criterion''s 60% variance the median time of the minimum is -230 ms, outside the last
+      200 ms. At 75% it is -160 ms, which would be partial. Problem 8: at 60% the Eye datasets keep 1 PC, where
+      distance is |difference|, so minima can be zero crossings and not convergence.'
+    response: Outcome kept. The notebook now counts minima at a sign change of a one-component difference (12 of
+      16 Eye curves) and adds a variant keeping at least 2 components at 60% (median 260 ms before Go).
+  - claim: gpfa-variance-inverted-u
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced (borderline). GPFA cell 6: 6 of 8 coefficients negative, one-tailed p = 0.0547; seed
+      variants give 0.039 to 0.055, 4 latent dimensions 0.098. Problem 4: the Figure 6C legend says "We z-scored
+      Xu of all trials"; the claims file z-scores within each prior, which changes the relative scale of the 8 coefficients,
+      and the other reading was not run.'
+    response: 'Outcome kept. Ran Xu z-scored over all trials of the dataset: p = 0.074 for the main fit and 0.039
+      to 0.074 for the variants, 6 of 8 negative. Asked a reader which z-scoring the legend means.'
+  - claim: gpfa-mean-sigmoid
+    agrees: true
+    outcome: reproduced
+    reason: 'GPFA cell 11: middle increment exceeds extreme in 7 of 8, p = 0.0156; Short slope above Long in 4 of
+      4 (p = 0.0625, the paper''s value).'
+    response: No change.
+  - claim: rnn-curved-manifold
+    agrees: true
+    outcome: blocked
+    reason: The archive holds two NWB files of one subject and no network models. The paper gives code on request
+      only.
+    response: No change.
+  - claim: rnn-perturbation
+    agrees: true
+    outcome: blocked
+    reason: Same reason.
+    response: No change.
+  - claim: monkey-g
+    agrees: true
+    outcome: blocked
+    reason: The API lists 1 subject (Haydn) and 2 assets. Nothing on monkey G can be tested.
+    response: No change.

@@ -1,0 +1,84 @@
+dandiset: "000130"
+paper: doi:10.1016/j.neuron.2019.06.012
+questions:
+- claim: pca-dimensionality
+  asked: 2026-11-15
+  question: >-
+    The claims file reads the Methods' "Gaussian smoothing kernel width: 40 ms" as a Gaussian of SD
+    40 ms, and fixes this for every trajectory claim. The same Methods write "a Gaussian kernel with a
+    standard deviation of 25 ms" where they mean an SD, so "width" may be another measure, such as
+    twice the SD (SD 20 ms) or the full width at half maximum (SD 17 ms). Should the claims file keep
+    SD 40 ms, name a narrower kernel, or leave the kernel open with the readings run as variants? The
+    same choice bears on encoding-r2, encoding-bayes-beats-linear, neural-long-more-bias,
+    speed-vs-projection and speed-predicts-tp.
+  passage: >-
+    we applied principal component analysis (PCA) to condition-specific, trial-averaged firing rates
+    (bin size: 20 ms, Gaussian smoothing kernel width: 40 ms) (STAR Methods, Principal component
+    analysis). To plot response profile of individual neurons (Figure 3A, B, C), we smoothed averaged
+    spike counts in 1-ms bins using a Gaussian kernel with a standard deviation of 25 ms (STAR
+    Methods, Analysis of single- and multi-unit activity).
+  why: >-
+    With SD 40 ms, 1 of the 8 component counts is in range (not reproduced); with SD 20 ms 2 of 8,
+    with SD 17 ms 3 of 8, still not reproduced, and without smoothing 5 of 8, which would be partially
+    reproduced. For encoding-bayes-beats-linear the Bayesian fit is better in 4 of 4 datasets for
+    Short and 3 of 4 for Long with SD 40 ms (partially reproduced) and in 3 of 4 for each prior with
+    either narrower kernel (not reproduced). The other trajectory claims keep their outcomes. Raised
+    by the round-1 verifier.
+- claim: pca-dimensionality
+  asked: 2026-11-15
+  question: >-
+    The claims file applies the paper's ranges of 3 to 4 and 5 to 10 components to "datasets as in the
+    paper". The paper's PCA uses "firing rate matrices of all neurons", which for monkey H are the 536
+    units selected over 17 sessions, pooled. This dataset holds one session with 48 selected units.
+    Should the criterion say that the paper's ranges come from a population pooled over sessions, and
+    is a count from one session's 48 units comparable with them, or should the claim be blocked here
+    for lack of the other sessions?
+  passage: >-
+    We first constructed firing rate matrices of all neurons and time points [time points x neurons].
+    This yielded 16 matrices (2 priors x 2 effectors x 2 directions x 2 epochs) (STAR Methods,
+    Principal component analysis). The remaining units included in subsequent analyses were 536 and
+    636 in H and G, respectively (STAR Methods, Analysis of single- and multi-unit activity).
+  why: >-
+    The number of components that reach 75% of the variance depends on the number of units and on how
+    much of the variance is private noise. Here 2 components reach 75% in the estimation epoch in all
+    4 datasets and 2 to 5 in the production epoch, so 1 of 8 counts is in range and the claim is not
+    reproduced. If the ranges hold only for a pooled population of several hundred units, the claim
+    cannot be tested on one session and would be blocked as dataset_missing. The tolerances of the
+    correlations in speed-vs-projection and speed-predicts-tp come from the same pooled datasets.
+    Raised by the round-1 verifier.
+- claim: gpfa-variance-inverted-u
+  asked: 2026-11-15
+  question: >-
+    The criterion z-scores Xu "over the prior's trials". The Figure 6C legend says "We z-scored Xu of
+    all trials before computing the variance for each ts". Does "all trials" mean the trials of one
+    prior, as the criterion has it, or all trials of the dataset, both priors together?
+  passage: >-
+    Variance of projected neural states (Xu) across ts. We z-scored Xu of all trials before computing
+    the variance for each ts (thin lines: individual conditions; thick line: averages across
+    conditions; shaded area: s.e.m. across conditions) (Figure 6C legend).
+  why: >-
+    The z-scoring sets the relative scale of the 8 quadratic coefficients that enter the signed-rank
+    test. Over the prior's trials the test gives p = 0.055 (not reproduced); over both priors of the
+    dataset p = 0.074, with 6 of 8 coefficients negative in both, so in this attempt the outcome does
+    not change. Seed and dimensionality variants give 0.039 to 0.098 under either reading, so the
+    reading matters at the threshold. Raised by the round-1 verifier.
+- claim: beh-bayes-model
+  asked: 2026-11-15
+  question: >-
+    The criterion says "Table S3 was not available for comparison". The supplement holds Table S3,
+    which gives wm and wp per animal, effector and direction as mean and SD over sessions fit one by
+    one (monkey H, wm 0.085, 0.062, 0.043 and 0.027 for Hand Left, Hand Right, Eye Left and Eye
+    Right). Should the criterion compare the fitted wm and wp with Table S3, and if so with what
+    tolerance?
+  passage: >-
+    Accordingly, fits of the model to behavior captured the bias and variance (Figure 2C,D) for both
+    animals and across all experimental conditions (Figure S1, Table S3) (Results, Task and behavior).
+    We fit the model to each session separately and computed mean +- standard deviation of each
+    parameter across sessions (Table S3 legend).
+  why: >-
+    The fitted wm of this session are 0.025, 0.013, 0.116 and 0.073 (Eye Left, Eye Right, Hand Left,
+    Hand Right), 1.1 and 1.5 SD below Table S3's means for Eye and 1.3 and 0.4 SD above for Hand; the
+    fitted wp (0.090 to 0.106) are 0.2 to 1.0 SD above. A criterion requiring each parameter within
+    2 SD of Table S3 would hold here; one requiring 1 SD would not. With wm held at Table S3's means
+    the bias R2 reaches 0.8 in 2 of 4 datasets, as with the fitted wm, so the outcome of the present
+    criterion does not change. Raised by the round-1 verifier.

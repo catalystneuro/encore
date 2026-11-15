@@ -17,11 +17,16 @@ criteria, unless said otherwise):
   conditions (Methods, "Analysis of single- and multi-unit activity").
 - Rates: spike counts in 20 ms bins, averaged over trials, in spikes/s, smoothed by a Gaussian of
   SD 40 ms (Methods, "Principal component analysis": "bin size: 20 ms, Gaussian smoothing kernel
-  width: 40 ms"; the claims file reads the width as the SD). The kernel is renormalised over the
-  bins of each trajectory, so that no bin outside the epoch enters (a standard choice).
+  width: 40 ms"; the claims file reads the width as the SD). The same Methods write "standard
+  deviation of 25 ms" where they mean an SD, so a narrower kernel is another reading: SD 20 ms
+  (half the width) and SD 17 ms (a full width at half maximum of 40 ms) are run as variants
+  (`sd`), and a question is open to a reader. The kernel is renormalised over the bins of each
+  trajectory, so that no bin outside the epoch enters (a standard choice).
 - Estimation epoch: from Ready to the prior's longest ts, each bin averaging the trials whose Set
   comes at or after the end of the bin (attrition; Methods, "Principal component analysis").
-  Production epoch: from Set to the shortest tp of that ts (same passage).
+  Production epoch: from Set to the shortest tp of that ts (same passage). The `tp` column exceeds
+  go_time - set_time by up to 200 ms, so such a window can run past Go on the spikes' clock;
+  windows ending at the shortest go_time - set_time (`end="go"`) are run as a variant.
 - PCA: per effector and direction ("dataset") and epoch, on the trajectories of both priors
   concatenated, mean-centred, not normalised; the fewest components reaching 75% of the variance.
 - Encoding axis u: the mean of X(ts_max - d) - X(ts_min + d) for d = 0, 20, 40 ms ... while
@@ -30,6 +35,8 @@ criteria, unless said otherwise):
 - Bayesian observer: continuous uniform prior on each range, measurement noise SD wm*ts, the
   posterior mean as te, production noise SD wp*te, an offset b per prior; wm, wp, bShort, bLong
   fit by maximum likelihood per dataset (Methods, "Analysis of behavior with a Bayesian model").
+  The noise weights are bounded to (0.01, 1] (a standard choice; the fits are interior and do
+  not move when the lower bound is relaxed to 1e-4).
   Integrals are taken on grids of 301 points over +-5 SD of tm and over the prior range (a
   standard choice).
 - GPFA: elephant's implementation of Yu et al. (2009), 20 ms bins, the latent dimensionality
@@ -161,7 +168,7 @@ def gauss_smooth(x: np.ndarray, sd_bins: float = SMOOTH_SD / BIN) -> np.ndarray:
     return np.tensordot(w, x, axes=(1, 0))
 
 
-def estimation_rates(spikes, good_sub: pd.DataFrame, ts_max: float, smooth=True):
+def estimation_rates(spikes, good_sub: pd.DataFrame, ts_max: float, smooth=True, sd=SMOOTH_SD):
     """Trial-averaged rates (spikes/s) from Ready to ts_max with attrition.
 
     Bin j covers [20j, 20j+20) ms after Ready and averages the trials with ts >= its end.
@@ -172,40 +179,52 @@ def estimation_rates(spikes, good_sub: pd.DataFrame, ts_max: float, smooth=True)
     n = valid.sum(axis=0)
     rates = (counts * valid[:, :, None]).sum(axis=0) / n[:, None] * (1000.0 / BIN)
     if smooth:
-        rates = gauss_smooth(rates)
+        rates = gauss_smooth(rates, sd / BIN)
     return rates, ends, n
 
 
-def aligned_rates(spikes, align_s: np.ndarray, start_ms: float, stop_ms: float, smooth=True):
+def aligned_rates(spikes, align_s: np.ndarray, start_ms: float, stop_ms: float, smooth=True,
+                  sd=SMOOTH_SD):
     """Trial-averaged rates (spikes/s), bins x units, aligned to align_s, over [start, stop)."""
     counts = bin_counts(spikes, align_s, start_ms, stop_ms)
     rates = counts.mean(axis=0) * (1000.0 / BIN)
-    return gauss_smooth(rates) if smooth else rates
+    return gauss_smooth(rates, sd / BIN) if smooth else rates
 
 
-def production_rates(spikes, good_sub: pd.DataFrame, prior: str, stop_ms=None, smooth=True):
-    """Per ts of the prior: rates from Set to the shortest tp of that ts (or to stop_ms, using
-    trials with tp >= stop_ms). Returns dict ts -> (bins x units)."""
+def produced_ms(d: pd.DataFrame, end: str = "tp") -> np.ndarray:
+    """Produced interval per trial (ms): the `tp` column, or go_time - set_time ("go"), the
+    interval on the clock of the spikes. tp exceeds go_time - set_time by up to 200 ms."""
+    if end == "tp":
+        return d.tp.values
+    return (d.go_time.values - d.set_time.values) * 1000.0
+
+
+def production_rates(spikes, good_sub: pd.DataFrame, prior: str, stop_ms=None, smooth=True,
+                     sd=SMOOTH_SD, end="tp"):
+    """Per ts of the prior: rates from Set to the shortest produced interval of that ts (the
+    `tp` column, or go_time - set_time with end="go"), or to stop_ms, using trials with
+    tp >= stop_ms. Returns dict ts -> (bins x units)."""
     out = {}
     for ts in PRIOR_TS[prior]:
         sub = good_sub[(good_sub.prior == prior) & (good_sub.ts == ts)]
         if stop_ms is None:
-            stop = np.floor(sub.tp.min() / BIN) * BIN
+            stop = np.floor(produced_ms(sub, end).min() / BIN) * BIN
         else:
             stop = stop_ms
             sub = sub[sub.tp >= stop_ms]
-        out[ts] = aligned_rates(spikes, sub.set_time.values, 0, stop, smooth=smooth)
+        out[ts] = aligned_rates(spikes, sub.set_time.values, 0, stop, smooth=smooth, sd=sd)
     return out
 
 
 # ---------------------------------------------------------------- PCA and geometry
 
-def pca_fit(X: np.ndarray, threshold: float = VAR_THRESHOLD):
-    """PCA of rows of X (mean-centred). Returns (mean, components k x units, k, explained ratio)."""
+def pca_fit(X: np.ndarray, threshold: float = VAR_THRESHOLD, min_k: int = 1):
+    """PCA of rows of X (mean-centred), keeping the fewest components (at least min_k) that
+    reach `threshold`. Returns (mean, components k x units, k, explained ratio)."""
     mu = X.mean(axis=0)
     _, s, vt = np.linalg.svd(X - mu, full_matrices=False)
     ev = s ** 2 / np.sum(s ** 2)
-    k = int(np.searchsorted(np.cumsum(ev), threshold - 1e-12) + 1)
+    k = max(min_k, int(np.searchsorted(np.cumsum(ev), threshold - 1e-12) + 1))
     return mu, vt[:k], k, ev
 
 
@@ -253,9 +272,11 @@ def _tm_nodes(ts, wm, n=301):
     return ts + z * wm * ts, w
 
 
-def bayes_loglik(params, df: pd.DataFrame) -> float:
+def bayes_loglik(params, df: pd.DataFrame, w_min: float = 0.01) -> float:
+    """Log-likelihood of the trials of one dataset. Noise weights are bounded to (w_min, 1]
+    (a standard choice; fit_bayes shows the fits are interior)."""
     wm, wp, bS, bL = params
-    if wm <= 0.01 or wp <= 0.01 or wm > 1 or wp > 1:
+    if wm <= w_min or wp <= w_min or wm > 1 or wp > 1:
         return -np.inf
     ll = 0.0
     for (prior, ts), g in df.groupby(["prior", "ts"]):
@@ -270,17 +291,20 @@ def bayes_loglik(params, df: pd.DataFrame) -> float:
     return ll
 
 
-def fit_bayes(df: pd.DataFrame) -> dict:
-    """ML fit of wm, wp, bShort, bLong on the trials of one dataset."""
+def fit_bayes(df: pd.DataFrame, w_min: float = 0.01, wm_fixed: float | None = None) -> dict:
+    """ML fit of wm, wp, bShort, bLong on the trials of one dataset; with wm_fixed, wm is held
+    at that value and the other three are fit."""
     from scipy.optimize import minimize
 
     def unpack(z):  # log noise weights, offsets in units of 100 ms, so the simplex steps match
+        if wm_fixed is not None:
+            return wm_fixed, np.exp(z[0]), 100 * z[1], 100 * z[2]
         return np.exp(z[0]), np.exp(z[1]), 100 * z[2], 100 * z[3]
 
     best = None
-    for wm0 in (0.05, 0.1, 0.2):
-        z0 = np.array([np.log(wm0), np.log(0.1), 0.2, 0.0])
-        res = minimize(lambda z: -bayes_loglik(unpack(z), df), z0, method="Nelder-Mead",
+    for wm0 in ((0.05, 0.1, 0.2) if wm_fixed is None else (None,)):
+        z0 = np.array([np.log(0.1), 0.2, 0.0] if wm0 is None else [np.log(wm0), np.log(0.1), 0.2, 0.0])
+        res = minimize(lambda z: -bayes_loglik(unpack(z), df, w_min), z0, method="Nelder-Mead",
                        options=dict(xatol=1e-5, fatol=1e-4, maxiter=6000, maxfev=6000))
         if best is None or res.fun < best.fun:
             best = res
@@ -382,19 +406,21 @@ def gpfa_fit(spikes, good_sub: pd.DataFrame, x_dims=(4, 8), n_folds=3, seed=0):
 
 # ---------------------------------------------------------------- trial-averaged geometry
 
-def dataset_geometry(spikes, d: pd.DataFrame, wm: float, smooth=True) -> dict:
+def dataset_geometry(spikes, d: pd.DataFrame, wm: float, smooth=True, sd=SMOOTH_SD,
+                     end="tp") -> dict:
     """Estimation and production trajectories, their PCA and the encoding-axis projections of
     one dataset (effector and direction). `wm` is the dataset's fitted measurement noise, used
-    for te(t). Returns a dict with per-prior tables and the numbers of components."""
+    for te(t); `sd` the smoothing SD (ms); `end` how the production window ends (production_rates).
+    Returns a dict with per-prior tables and the numbers of components."""
     est, out = {}, {"prior": {}}
     for prior in ("Short", "Long"):
         dp = d[d.prior == prior]
-        est[prior] = estimation_rates(spikes, dp, PRIOR_TS[prior][-1], smooth=smooth)
+        est[prior] = estimation_rates(spikes, dp, PRIOR_TS[prior][-1], smooth=smooth, sd=sd)
     Xe = np.vstack([est[p][0] for p in est])
     mu, comps, k, ev = pca_fit(Xe)
     prod = {}
     for prior in ("Short", "Long"):
-        prod[prior] = production_rates(spikes, d, prior, smooth=smooth)
+        prod[prior] = production_rates(spikes, d, prior, smooth=smooth, sd=sd, end=end)
     Xp = np.vstack([r for p in prod for r in prod[p].values()])
     mup, cp, kp, evp = pca_fit(Xp)
     out.update(k_est=k, k_prod=kp, ev_est=ev, ev_prod=evp, est_pca=(mu, comps),
@@ -413,18 +439,22 @@ def dataset_geometry(spikes, d: pd.DataFrame, wm: float, smooth=True) -> dict:
             traj = project(prod[prior][ts], mup, cp)
             g = d[(d.prior == prior) & (d.ts == ts)]
             rows.append(dict(ts=ts, xu_set=float(X[i] @ u), speed=step_speed(traj),
-                             duration_ms=len(traj) * BIN, mean_tp=g.tp.mean(), n_trials=len(g)))
+                             path=step_speed(traj) * (len(traj) - 1),
+                             duration_ms=len(traj) * BIN, mean_tp=g.tp.mean(),
+                             mean_go_set_ms=produced_ms(g, "go").mean(),
+                             min_go_set_ms=produced_ms(g, "go").min(), n_trials=len(g)))
         out["prior"][prior] = dict(X=X, ends=ends, n=n, u=u, t=t, xu=xu, w=n[sel],
                                    te=te_mean(t, prior, wm), per_ts=pd.DataFrame(rows))
     return out
 
 
-def single_trial_speed(spikes, d: pd.DataFrame, prod_pca) -> np.ndarray:
+def single_trial_speed(spikes, d: pd.DataFrame, prod_pca, end="tp") -> np.ndarray:
     """Speed of each trial from Set to Go: smoothed single-trial rates (20 ms bins, SD 40 ms)
-    projected into the dataset's production PC space, mean distance between successive bins."""
+    projected into the dataset's production PC space, mean distance between successive bins.
+    The trial's window ends at its `tp`, or at go_time - set_time with end="go"."""
     mu, comps = prod_pca
     out = np.empty(len(d))
-    for i, (st, tp) in enumerate(zip(d.set_time.values, d.tp.values)):
+    for i, (st, tp) in enumerate(zip(d.set_time.values, produced_ms(d, end))):
         stop = np.floor(tp / BIN) * BIN
         c = bin_counts(spikes, np.array([st]), 0, stop)[0] * (1000.0 / BIN)
         out[i] = step_speed(project(gauss_smooth(c), mu, comps))

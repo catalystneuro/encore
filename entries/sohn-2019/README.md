@@ -13,10 +13,10 @@ minutes). Loading and measures are in `rsg.py`.
 
 | Claim | Outcome |
 |---|---|
-| Behavioural slopes between 0 and 1 | Not reproduced (Eye Short slopes at or above 1) |
+| Behavioural slopes between 0 and 1 | Not reproduced (2 of 8 slopes below 1 through the origin) |
 | Opposite biases at the overlapping 800 ms | Not reproduced |
 | Smaller tp increments at the extremes of the prior | Reproduced |
-| Smaller slopes for the Long prior | Reproduced, resting on an assumption |
+| Smaller slopes for the Long prior | Partially reproduced (3 of 4) |
 | Bayesian observer fits bias and variance | Partially reproduced |
 | GLM: 65% prior-dependent, 27% ts-dependent units | Not reproduced (79% and 46%) |
 | Largest prior effect at 800 ms during the support of the prior | Reproduced |
@@ -28,7 +28,7 @@ minutes). Loading and measures are in `rsg.py`.
 | Projection at Set predicts speed | Partially reproduced (stronger correlations) |
 | Initial speed biased toward the middle | Not reproduced (p = 0.055) |
 | Speed predicts mean tp | Partially reproduced (stronger correlations) |
-| Speed unmodulated during the support | Reproduced (by the paper's test) |
+| Speed unmodulated during the support | Reproduced (by the paper's test; slopes positive only with attrition) |
 | Post-Set trajectories parallel | Reproduced |
 | Distances fall steadily to Go | Not reproduced |
 | Inverted-U variance of GPFA projections | Not reproduced (p = 0.055) |
@@ -42,9 +42,17 @@ the differences from the paper's method.
 With one session, the population tests run over 4 effector and direction datasets in place of the
 paper's 8, so no signed-rank test over datasets can fall below p = 0.125, and the three claims of
 absence are reproduced by tests that cannot find an effect. In this session the eye responses are
-nearly unbiased (slopes 0.85 to 1.11), which drives several of the behavioural outcomes.
+nearly unbiased (slopes with an intercept 0.85 to 1.11), which drives several of the behavioural
+outcomes. The behavioural regression has no intercept, as the paper's Methods and Table S1 write it.
+
+Four questions to a reader are open in `questions/sohn-2019.yaml`: whether the smoothing kernel's
+"width: 40 ms" is its SD (narrower kernels would make encoding-bayes-beats-linear not reproduced), how
+the paper's PCA population of 536 pooled units bears on pca-dimensionality, whether the GPFA projections
+are z-scored per prior or over all trials (no outcome changes), and whether beh-bayes-model should use
+Table S3, which the claims file took to be unavailable.
 
 Found about the dataset: the test file withholds the task variables of 283 of the session's 1443
 trials; the `iti` description reverses the two priors; `tp` exceeds `go_time - set_time` by a median
-of 17.9 ms without a description of how it is measured; units have no electrode assignment and no
+of 17.9 ms without a description of how it is measured, so production windows ending at the shortest
+`tp` run past Go in 36 of 40 conditions; units have no electrode assignment and no
 single or multi-unit label.
