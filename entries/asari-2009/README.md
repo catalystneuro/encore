@@ -20,7 +20,7 @@ the STRF models, which `strf_wehr.ipynb` tests.
 | Upper bound on model performance (Figure 4) | Not reproduced |
 | STRF model performance (Figure 4) | Not reproduced (assumptions) |
 | Voltage-clamp conductances (Figures 5 and 6) | Blocked: data missing |
-| Proportion significant by sound property (Figure 8A) | Partially reproduced (assumption); not reproduced under the Table 1 reading, a change proposed for a third verification round |
+| Proportion significant by sound property (Figure 8A) | Not reproduced (assumption) |
 | Decay of normalized power by property (Figure 8B) | Partially reproduced (assumption) |
 | Exponential fits of the significance curves by property (Figure 8A) | Not reproduced |
 | Relative size of the effects by property (Figure 8C) | Partially reproduced (assumption) |
