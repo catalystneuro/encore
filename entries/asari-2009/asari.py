@@ -119,6 +119,13 @@ class Archive:
         raise KeyError(path)
 
 
+def recording_type(archive: Archive, member: str) -> str:
+    """param.recording.type of one recording and the unit of its trace (mV in current clamp)."""
+    m = sio.loadmat(io.BytesIO(archive.read(member)), squeeze_me=True, struct_as_record=False,
+                    variable_names=["param", "response"])
+    return f'{m["param"].recording.type}, {m["response"].unit}'
+
+
 def summary(archive: Archive) -> list[dict]:
     """One row per (experiment, cell, file) of asari/Summary.mat."""
     m = archive.loadmat("asari/Summary.mat")
@@ -643,7 +650,7 @@ def analyze_cc_cell(archive: Archive, member: str, seed: int, include_silence=Tr
                 n_sequences=len(sequences(rec)), recording_type=rec["recording_type"],
                 stimuli=[(s["name"], s["description"], s["duration_ms"]) for s in rec["stimuli"]],
                 trace_min=float(rec["trace"].min()), trace_max=float(rec["trace"].max()),
-                n_samples=len(rec["trace"]), unit=rec["unit"], rates=a1_rates,
+                n_samples=len(rec["trace"]), unit=rec["unit"], rates=a1_rates, scale=rec["scale"],
                 checks=recording_checks(rec))
     if extras:
         segs = spont_segments(rec)
@@ -752,7 +759,7 @@ def analyze_mgb_file(archive: Archive, member: str, detector: str = "getspikes")
     info = dict(member=member, rep=rec["rep"], recording_type=rec["recording_type"],
                 checks=recording_checks(rec, spikes), n_spikes=len(spikes), threshold=float(thr), rates=firing_rates(rec, spikes),
                 duration_s=len(rec["trace"]) / sf, trace_min=float(rec["trace"].min()),
-                trace_max=float(rec["trace"].max()), unit=rec["unit"])
+                trace_max=float(rec["trace"].max()), unit=rec["unit"], scale=rec["scale"])
     return info, out
 
 
@@ -880,7 +887,7 @@ def analyze_synthetic_file(archive: Archive, member: str, seed: int, n_shuffle=N
     info = dict(member=member, rep=rec["rep"], trigger_type=trig_type, n_fragments=len(rec["stimuli"]),
                 recording_type=rec["recording_type"], n_sequences=len(sequences(rec)),
                 kinds=[fragment_kind(s, trig_type) for s in rec["stimuli"]], rates=a1_rates,
-                n_eligible_any=n_eligible_any,
+                n_eligible_any=n_eligible_any, scale=rec["scale"],
                 bands=[fragment_params(s).get("ff") for s in rec["stimuli"]],
                 descriptions=[s["description"] for s in rec["stimuli"]],
                 checks=recording_checks(rec))
