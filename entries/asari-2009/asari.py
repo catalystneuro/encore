@@ -392,17 +392,20 @@ def frac_power(X: np.ndarray, labels: np.ndarray):
 
 def trial_correlations(X: np.ndarray, labels: np.ndarray) -> dict:
     """Trial-to-trial reliability within each context: mean Pearson r over pairs of trials, and
-    mean r of each trial with the mean of the others; averaged over contexts."""
-    pairs, loo = [], []
+    mean r of each trial with the mean of the others; averaged over contexts. `pairs_sd` is the SD
+    of the pairwise r pooled over contexts, compared with the spread the Figure 2A legend gives for
+    the example probe ("0.74 +- 0.08")."""
+    pairs, loo, all_pairs = [], [], []
     for g in np.unique(labels):
         Y = X[labels == g]
         C = np.corrcoef(Y)
         iu = np.triu_indices(len(Y), 1)
         pairs.append(np.nanmean(C[iu]))
+        all_pairs.extend(C[iu])
         s = Y.sum(0)
         k = len(Y)
         loo.append(np.nanmean([np.corrcoef(Y[i], (s - Y[i]) / (k - 1))[0, 1] for i in range(k)]))
-    return dict(pairs=float(np.mean(pairs)), loo=float(np.mean(loo)))
+    return dict(pairs=float(np.mean(pairs)), loo=float(np.mean(loo)), pairs_sd=float(np.nanstd(all_pairs, ddof=1)))
 
 
 def running_mean_0_2t(x: np.ndarray) -> np.ndarray:

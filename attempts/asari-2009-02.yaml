@@ -105,16 +105,24 @@ outcomes:
     power measures.'
 - claim: fig2-example-long-context
   outcome: reproduced
+  assumed: true
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig2-example-long-context
-  notes: 'Matched example: 20051222-ha1-001 probe 4 (contexts silence, fragments 2 and 3, six trials each),
-    the cell and probe whose reliability matches Figure 2 (fig2-example-reliability). Significant periods
-    run up to 1.60 s, none from 1.60 to 3.97 s, then from 3.97 to 4.60 s. The period starting at 3.970
-    s overlaps the 2 to 4 s window by 30 ms; it is counted as the paper''s divergence "after about 4 s"
-    (within 10% of 4 s), a reading of the criterion''s "none between 2 and 4 s". Read strictly, the matched
-    probe fails by those 30 ms. Two other probes of this design meet the strict pattern (20060105-ha1-001
-    probe 4, 20060225-ha1-001 probe 5). 15 of 305 natural-sound probes have a significant period later
-    than 4 s.'
+  notes: 'Tested on the claim as amended after a reader''s answer (questions/asari-2009.yaml, answered
+    2026-11-15). The answer changed two things. The example is now the probe of the cell that matches
+    the Figure 2 reliabilities within 10% (no longer any of the candidates), and the windows carry the
+    10% tolerance (significant before 2 s, none between 2.2 and 3.6 s, one starting after 3.6 s). Of 40
+    probes in seven-fragment cells heard after silence and two fragments with six or more trials, one
+    matches: 20051222-ha1-001 probe 4 (contexts silence, fragments 2 and 3, six trials each), cell 0.611
+    +/- 0.081 over its seven probes (0.61 +/- 0.07), probe 0.737 +/- 0.075 (0.74 +/- 0.08). Its significant
+    periods run to 1.60 s, none falls between 1.60 and 3.97 s, and they resume from 3.97 to 4.60 s, so
+    the amended pattern holds. Before the answer the outcome was also reproduced, on the same probe, but
+    only by reading the run that starts at 3.970 s as the divergence after about 4 s; under the strict
+    2 to 4 s window it overlaps by 30 ms. The amended windows now settle this without that reading. No
+    probe matches in the leave-one-out reading (cell 0.732) or when the cell SD must also be within 10%
+    of 0.07 (0.081); the claim would not be testable under those readings. For reference, 3 of the 40
+    probes meet the amended windows and 2 the strict ones; 15 of 305 natural-sound probes have a significant
+    period later than 4 s.'
   deviations:
   - 'Details the Methods leave open are taken from the authors'' scripts shipped in the data set (asari/Tools/CxtDep.m,
     ViewResp.m, GetEvoked.m), which the paper does not link: probes are the fragments'' stated durations,
@@ -122,8 +130,13 @@ outcomes:
     are pooled and every context is cut to the smallest trial count, the Kruskal-Wallis test uses ordinal
     ranks without a tie correction, and each trial is centred on its mean over the probe window for the
     power measures.'
-  - The example cell is not identified in the paper; it is matched by its reliability (0.611 and 0.737
-    against 0.61 and 0.74), its seven fragments and six repeats.
+  - 'Assumed: the match is made on the two mean correlations (cell over its fragments, and probe), the
+    values the criterion means by "the closest to both", in the pairwise reading, which is the one that
+    reproduces the population value of fig2-example-reliability (0.310 against 0.31; leave-one-out gives
+    0.437). The SDs are reported but not matched: an SD over seven fragments is too uncertain to be held
+    to 10%, and the cell SD (0.081 against 0.07) is the only value that misses.'
+  - The probe's SD (0.075) is the SD of the pairwise trial correlations pooled over its three contexts;
+    the paper does not say over what the 0.08 is taken (Figure 2A legend).
 - claim: fig3a-proportion-significant
   outcome: partially_reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -559,6 +572,11 @@ findings:
     authors'' CxtDep.m, shipped with the data, includes the preceding intersequence silence as a context;
     the Figure 3B fit is reproduced with it (1.01 to 1.05 s) and not without it (0.55 s). Question for
     the authors: was silence a context in Figures 3 and 4, as the script does?'
+- kind: methods_unavailable
+  statement: 'The paper does not name the recording of Figure 2. The data set has one probe whose reliabilities
+    match the legend (20051222-ha1-001-002, probe 4, 0.611 +/- 0.081 and 0.737), matched on the mean
+    correlations; its cell SD is 0.081 against 0.07. Question for the authors: is this the Figure 2 example,
+    and is the correlation the mean over pairs of trials?'
 - kind: paper_inconsistency
   statement: The Results give 73/110 frequency probes as 64.6%; 73/110 is 66.4%, and 64.6% is the AM figure
     (62/96).
