@@ -1,0 +1,313 @@
+schema_version: 3
+id: jacobsen-2022-01
+datasets:
+- archive: dandi
+  id: "000230"
+  version: 0.220506.1516
+  doi: 10.48324/dandi.000230/0.220506.1516
+  relation: primary
+paper: doi:10.1016/j.crmeth.2022.100221
+date: 2026-11-15
+entry: jacobsen-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43670641390
+inputs:
+- what: Definitions of the gridness score, mean vector length (head-direction score), border score, the
+    head-direction stability criterion and the shuffle used to classify cells, from the Materials and
+    methods of Rowland et al. (2018), which the STAR Methods cite for all analysis of the
+    electrophysiology. Methods only, no data.
+  source: doi:10.7554/eLife.36664
+- what: Analysis details Rowland et al. (2018) leave out of their text (position and speed smoothing,
+    5 cm/s speed cutoff, rate map smoothing of 2 bins, head-direction tuning in 180 bins smoothed with
+    2 bins), from the analysis code that paper links, files analysis_helpers/tracking.py,
+    analysis_helpers/spatial_maps.py and analysis_helpers/parameters/params_ragnihiij. Parameters only,
+    no data.
+  source: https://github.com/davidcrowland/archdata at commit 945226315bafe6ce68fcbd4c75a589fba0a8eca1
+outcomes:
+- claim: fig5c-functional-cell-types
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:fig5c-functional-cell-types
+  notes: Under the standard shuffle the 12 units include 2 grid cells (T1 C89 and T1 C50 of 58313, day
+    19, gridness 0.854 and 0.996), 2 head direction cells (T4 C16, day 17, mean vector length 0.912 and
+    half-session stability 0.97; and the 70375 unit of day 15 session 2, 0.123 and 0.675) and 1 border
+    cell (T4 C50, day 18, border score 0.656 against a shuffle threshold of 0.555). Under the literal
+    shuffle T4 C50 falls short (0.656 against 0.663), giving 2 grid, 1 head direction and 0 border
+    cells, so the outcome rests on the shuffle reading. Under the standard shuffle each unit the figures
+    name is classed as the paper names it. The part of the statement about the network as a whole
+    cannot be tested, as the dandiset holds only the 12 curated units shown in the figures.
+  deviations:
+  - Rowland et al. (2018), Methods, Shuffling, shift spikes "by a random interval between ± 20 s, with
+    the end of the session wrapped to the beginning". Read literally (uniform within 20 s) and as the
+    standard shuffle of the papers Rowland et al. cite for the scores (Langston et al. 2010; Solstad et
+    al. 2008, a shift of at least 20 s). The readings differ for the border cell; the standard shuffle
+    is adopted as an assumption, since a shift of under 20 s leaves the spike train nearly in place and
+    gives a null distribution close to the observed map.
+  - Rate map bin of 2.5 cm from Rowland et al. (2018), Methods, gridness score ("steps of 1 bin (2.5
+    cm)"); the linked code's parameter file gives 2 cm. The text was followed.
+  - Smoothing, speed cutoff and tuning bins from the archdata code (see inputs), as neither paper's
+    text gives them.
+  - The open field is taken as the span of the position series, as the files have no open-field epoch.
+- claim: fig5c-responsive-grid-cell
+  outcome: reproduced
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:fig5c-responsive-grid-cell
+  notes: Under reading (a), TTL onset, 9 unit-sessions are responsive (latency 1.8 to 4.4 ms, fidelity
+    at least 11.64%), among them the grid cell T1 C89 (day 19) at 2.75 ms and 40.73%, with no spike in
+    the 10 ms before any pulse. Under reading (b), TTL offset, latencies are about 1.06 ms shorter and
+    T1 C89 (1.70 ms) is not responsive; 3 unit-sessions are, none a grid cell. T1 C89 is a grid cell
+    under both shuffle readings.
+  deviations:
+  - The first TTL event of each laser epoch starts at the epoch start and lasts 0.6 to 1.9 s; it is not
+    a pulse onset and is left out, leaving 275 pulses in a 120 s epoch.
+- claim: fig5c-example-cells
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:fig5c-example-cells
+  measured:
+  - 1.098
+  - 2.752
+  - 40.727
+  - 12.670
+  - 3.895
+  - 35.636
+  - 0.303
+  - 2.646
+  - 11.636
+  notes: The files keep the tetrode and cluster labels, and each day of 58313 has one session, so the
+    units are found by label. Under reading (a) all nine values are within tolerance with T1 C57 from
+    the second laser epoch of day 17 and T1 C52 from the first. Pooling both epochs, T1 C57 still matches
+    (4.237 ms, 32.545%) but T1 C52's latency (2.358 ms) falls 0.03 ms below its tolerance. Under reading
+    (b) no unit has all three values within tolerance.
+  deviations:
+  - The day-17 file holds two laser epochs with no power label, and the paper does not say which
+    Figure 5C uses. Each epoch and both together were run; the outcome takes the epoch per cell, an
+    assumption. This is asked of the paper's authors (findings).
+- claim: figs3-stable-input-cell
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:figs3-stable-input-cell
+  measured:
+  - 0.885
+  - 0.899
+  - 0.279
+  - 1.613
+  - 0.950
+  - 1.841
+  - 2.834
+  - 3.050
+  - 2.769
+  - 2.771
+  - 2.578
+  - 2.497
+  - 27.64
+  - 46.49
+  - 68.71
+  - 64.36
+  - 76.73
+  - 81.82
+  notes: Each 70375 file holds one unit on tetrode 3 with a different cluster id per session (C43, C20,
+    C17, C24, C9, C31); their mean waveforms correlate 0.918 to 0.998, against -0.413 to 0.965 with the
+    units of 58313. Under reading (a) the unit is responsive in all six sessions, latencies 2.50 to
+    3.05 ms, and 17 of 18 values are within tolerance; the open-field rate of day 14 session 2 is 0.899
+    Hz against 1.06 ± 0.106. That file holds 2722 s of open field and 413 pulses; over its first 1800 s
+    the rate is 1.064 Hz and over its first 275 pulses latency and fidelity are 2.95 ms and 48.00%,
+    the paper's values. That variant is not the claims file's reading and does not decide. Under
+    reading (b) latencies are 1.44 to 1.99 ms and 11 of 18 values are within tolerance.
+  deviations:
+  - No cluster label is shared across sessions; the unit is taken as the same cell from its waveform
+    (one channel per unit in the files), as the criterion's assumption allows. Each file holds only that
+    unit, so no other candidate exists.
+- claim: figs4-nonresponsive-cells
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:figs4-nonresponsive-cells
+  measured:
+  - 0.880
+  - 0.912
+  - 10.62
+  - 1.047
+  - 1.692
+  - 0.776
+  notes: None of T4 C16, T4 C50 and T1 C50 is responsive under either reading or any epoch (fidelity
+    0.00 to 1.82%), and their open-field rates match. For T4 C16 the mean vector length of the smoothed
+    tuning map is 0.912 (0.90 expected). The head direction score of 0.81 is matched only by the vector
+    length of the head directions at spikes (0.880, given as measured), which Rowland et al. (2018) do not
+    define; the peak rate of the tuning curve is 10.62 Hz with the archdata parameters and 10.77 to
+    13.92 Hz under the other readings shown, against 9.02 ± 0.90 Hz. Two of six values miss under the
+    cited method.
+  deviations:
+  - Rowland et al. (2018) define one quantity, "Mean vector length (head-direction score)"; the paper
+    reports a head direction score and a mean vector length with different values. The mean vector
+    length is taken as that of the tuning map (Rowland et al.; archdata tuning curve), and the head
+    direction score is left open, with every reading shown. Asked of the paper's authors (findings).
+- claim: responsive-cells-at-19-days
+  outcome: reproduced
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:responsive-cells-at-19-days
+  notes: The one session at 19 days or more (58313, day 19) holds T1 C89, responsive under reading (a)
+    (2.75 ms, 40.73%, within 2 to 4 ms) and a grid cell under both shuffle readings. Under reading (b)
+    its latency is 1.70 ms and no unit of that session qualifies.
+- claim: mec-inputs-from-two-weeks
+  outcome: reproduced
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:mec-inputs-from-two-weeks
+  measured: 14
+  notes: Under reading (a) the earliest session with a responsive unit is on day 14 (70375, both
+    sessions, 2.83 ms and 27.64%, 3.05 ms and 46.49%), within 12.6 to 15.4 days. Under reading (b),
+    with the 2 to 4 ms window, it is day 17. The dandiset holds no session before day 14, so it cannot
+    show that responsive cells were absent earlier; the result is consistent with the statement.
+- claim: fig2a-four-or-fewer-starters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the histology of the 31 single-cell animals. The dandiset holds only nine optrode
+    sessions of two mice; the paper's Data and code availability section deposits only the
+    electrophysiology and names no other archive. The counts printed in Table S1 are the paper, not
+    data.
+- claim: fig2a-starter-count-distribution
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: fig2a-single-starter-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: no-starter-cells-in-mec
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: fig2b-rabies-cells-increase-with-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology counts not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: fig2b-conclusive-more-than-control
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology counts not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: figs2a-spread-increases-with-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: figs2a-conclusive-spread-more-than-control
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: figs2b-mec-inputs-increase-with-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: controls-no-mec-spread
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of the control animals not in the dandiset nor deposited elsewhere.
+- claim: figs1a-no-expression-without-tva
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of mouse 72359 not in the dandiset nor deposited elsewhere.
+- claim: figs1b-sparse-cre
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of mice 58482 and 58483 not in the dandiset nor deposited elsewhere.
+- claim: fig3-inputs-reflect-starter-identity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animals 59457 and 60219 not in the dandiset nor deposited elsewhere.
+- claim: fig4a-distant-granule-input
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animal 60047 not in the dandiset nor deposited elsewhere.
+- claim: fig4b-granule-inputs-dominate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animal 60652 not in the dandiset nor deposited elsewhere.
+- claim: fig4-subgranular-inputs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animals 60047 and 60652 not in the dandiset nor deposited elsewhere.
+- claim: fig4c-dg-starter-local-and-mec-inputs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animal 60259 not in the dandiset nor deposited elsewhere.
+- claim: cytotoxicity-after-30-days
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of mouse 60388 and the single-cell animals not in the dandiset nor deposited
+    elsewhere.
+- claim: population-targeting-mec-labelling
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the histology of mice 58313, 58253, 58695 and 70375. The dandiset holds recordings of
+    58313 and 70375 but no histology; nothing is deposited elsewhere.
+- claim: fig6b-imaged-input-cells
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two-photon imaging of mouse 58253 is not in the dandiset, and the paper names no deposit
+    for it.
+- claim: fig7b-dual-labelled-input-cell
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The miniscope imaging of mouse 60388 is not in the dandiset, and the paper names no deposit
+    for it.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the optrode recordings of two mice (58313, 70375), and of these only
+    the 12 curated units shown in Figures 5C, S3 and S4 (the files say "Only a curated subset of tasks
+    and/or units are exported"). The histology of the single-cell tracing (Figures 2 to 4, S1, S2,
+    Tables S1, S2) and the two-photon imaging (Figures 6 and 7) are not in it, and the paper names no
+    other deposit, so 21 of the paper's 28 claims cannot be tested.
+- kind: metadata_insufficient
+  statement: The open field part of each session is not an epoch; the epochs table holds only the
+    PhotoStim epochs. Its span can only be inferred from the position series.
+- kind: metadata_insufficient
+  statement: The two laser epochs of the day-17 session of mouse 58313 carry "N/A" for the power label
+    that the dandiset description says sessions carry; the other eight files carry "10Hz20mW". Which
+    epoch Figure 5C uses cannot be told from the files.
+- kind: format_error
+  statement: The first laser TTL event of every PhotoStim epoch has its onset at exactly the epoch start
+    time and lasts 0.6 to 1.9 s, where every other event lasts 1.0 to 1.1 ms.
+- kind: other
+  statement: The STAR Methods describe 1 ms light pulses "at 10 Hz continuously"; the TTL events show
+    trains of 6 pulses at 10 Hz every 2.6 s (275 pulses in a 120 s epoch).
+- kind: format_error
+  statement: The LFP timestamps run backwards 2 to 4 times within each file and end at 120 to 180 s,
+    although each LFP series has 510,250 to 815,750 samples 4 ms apart (over 2000 s).
+- kind: metadata_error
+  statement: Units waveform_mean is labelled volts but its values have a peak-to-trough of 31 to 41 for
+    the 70375 unit, which cannot be volts; the scale is not stated.
+- kind: selection_undocumented
+  statement: For day 14 session 2 of mouse 70375 the file holds 2722 s of open field and 413 pulses. The
+    paper's printed rate, latency and fidelity for that session (1.06 Hz, 2.95 ms, 48.00%) are what the
+    first 1800 s and the first 275 pulses give (1.064 Hz, 2.95 ms, 48.00%); over the whole file the
+    values are 0.899 Hz, 3.05 ms and 46.49%. The paper does not say part of the session was left out.
+- kind: other
+  statement: The positions of the day-17 session of mouse 58313 span 76 x 75 cm, where the other eight
+    sessions span about 94 x 95 cm, consistent with the 1 x 1 m open field of the Methods. The files do
+    not say whether a different box was used.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Figure S4 gives T4 C16 a head direction score of 0.81
+    and a mean vector length of 0.90, but Rowland et al. (2018), which the STAR Methods cite for both,
+    define one quantity, "Mean vector length (head-direction score)". How is the head direction score
+    computed, and what binning and smoothing give the tuning curve's peak rate of 9.02 Hz? Here the
+    tuning-map mean vector length is 0.912, and the peak rate 10.62 to 13.92 Hz under the readings run.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The day-17 session of mouse 58313 has two laser epochs.
+    Which epoch, at which power, gives the latency and fidelity of T1 C57 and T1 C52 in Figure 5C? Here
+    T1 C57 matches the second epoch (3.90 ms, 35.64%) and T1 C52 the first (2.65 ms, 11.64%).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Rowland et al. (2018), cited for the cell classification,
+    shift spike trains "by a random interval between ± 20 s". Was the shift within 20 s, or at least 20 s
+    as in the papers they cite? The border cell T4 C50 passes the second (0.656 against 0.555) and not
+    the first (0.656 against 0.663).
