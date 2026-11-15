@@ -61,8 +61,11 @@ outcomes:
     and 0.677), both within tolerance; over all recordings the spontaneous mean falls to 0.363 Hz
     (evoked 0.533). The 10-mV and 20-mV detectors give evoked means of 0.586 and 0.447 Hz over all
     recordings. MGB over 14 cells and all recordings gives 0.618 Hz spontaneous over all silences,
-    0.817 Hz in the second before each stimulus, and 5.07 Hz evoked (SD 11.46); the tuning-curve
-    recordings alone give 0.868 and 11.66 Hz, and the sequence recordings alone 0.551 and 4.99 Hz.
+    0.817 Hz in the second before each stimulus, and 5.07 Hz evoked (SD 11.46); the sequence
+    recordings alone give 0.551 and 4.99 Hz, and the tuning-curve recordings alone, a comparison
+    outside the claims file's readings, 0.868 and 11.66 Hz. Since verification round 2 a file listed
+    in two groups of Summary.mat (the tuning-curve file of two A1 cells) is counted once; this moved
+    one value in the third decimal (20-mV detector, all recordings, spontaneous 0.310 Hz).
     The A1 means are below 1 Hz and the MGB evoked mean is above 5 Hz under the all-recordings
     reading, the claim's rule for partial. The MGB evoked rate is dominated by a few cells (one at
     43.1 Hz, most below 2 Hz on the sequence recordings). The automatic threshold is set once per
@@ -83,6 +86,7 @@ outcomes:
   - The 0.5 s after each test current pulse is left out of the silences.
 - claim: fig2-example-reliability
   outcome: reproduced
+  assumed: true
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig2-example-reliability
   measured: 0.310
@@ -94,7 +98,15 @@ outcomes:
     values are consistent with that cell. Measured gives the population value only. After the
     reader's answer on fig2-example-long-context the shown probe is identified as probe 4 of that
     recording (0.737 over its three contexts, 0.611 +/- 0.081 for the cell over its seven
-    fragments); this claim's criterion and outcome are unchanged.
+    fragments); this claim's criterion and outcome are unchanged. The outcome holds under the pairwise
+    reading only, as leave-one-out (0.436) is outside the tolerance; marked as resting on that
+    assumption after verification round 2.
+  deviations:
+  - Assumed that reliability is the mean correlation over pairs of trials of one context, as for
+    fig2-example-long-context. The claims file leaves pairs and leave-one-out open, and the two give
+    different outcomes (0.310, within 0.22 to 0.40, and 0.436, outside). The pairwise reading is
+    adopted as the paper speaks of the "correlation coefficient of the response traces across trials"
+    (Results, Context dependence, paragraph 2); the question for the paper's authors is under findings.
 - claim: fig2-example-long-context
   outcome: reproduced
   assumed: true
@@ -174,8 +186,8 @@ outcomes:
   measured:
   - 0.470
   - 1.732
-  notes: Changed from partially_reproduced after verification round 1, as the criterion has no rule
-    for partial and the decay constant is outside tolerance in every listed reading. Q(t) falls
+  notes: Changed from partially_reproduced after verification round 1, as the decay constant, the
+    quantity the claim is about, is outside tolerance in every listed reading. Q(t) falls
     from 0.76 over the first 50 ms to 0.19 at 1 s and 0.13 at 3 s. Over the readings the claims
     file lists (silence counted or not, the probes running at t or all probes with ended ones as
     zero, 0 to 4 or 6 s), the fitted size is 0.448 to 0.470, within tolerance, and the constant
@@ -206,8 +218,8 @@ outcomes:
   measured:
   - 0.430
   - 2.317
-  notes: Changed from partially_reproduced after verification round 1, as the criterion has no rule
-    for partial and the time constant is outside tolerance in every listed reading. Measured
+  notes: Changed from partially_reproduced after verification round 1, as the time constant, the
+    quantity the claim is about, is outside tolerance in every listed reading. Measured
     values are the main reading (smoothed denominator, silence counted, running probes, 0 to 4 s).
     The bound near onset is within tolerance in several readings, 1 + alpha1 from 0.459 to 0.534
     (for example 0.498 with the unsmoothed denominator and silence counted), and the mean of Eq. 43
@@ -445,6 +457,7 @@ outcomes:
     paper's, which names none.
 - claim: fig9-mgb-fast-decay
   outcome: reproduced
+  assumed: true
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig9-mgb-fast-decay
   measured:
@@ -454,17 +467,26 @@ outcomes:
   notes: The mean SD of the PSTHs over 93 probes in 14 cells is 6.45 spikes/s in the first bin and
     2.04 in the second. With silence counted and the running probes, tau1 is 0.058 s with bins at
     their start or centre, and the mean after 0.5 s is 0.99 times the fitted constant; over all
-    probes with bins at their start, tau1 is 0.080 s. The sizes are smaller than the paper's,
-    alpha1 5.2 to 12.4 spikes/s against 15.0 and kappa 0.81 to 1.21 against 2.0. Without silence
-    the first bin is 2.50 spikes/s, tau1 is 0.075 s over the running probes, and the fit over all
-    probes does not converge to a decay (tau1 at its 100 s bound); apart from that fit, tau1 is at
-    most 0.080 s. With spikes at half the detection threshold, tau1 is 0.064 s (running probes) and
-    0.081 s (all), alpha1 7.0 to 15.4 spikes/s with silence counted. The plateau test compares the
-    late mean with the fitted kappa, which the fit draws towards it; against the paper's kappa of
-    2.0 the mean after 0.5 s is 0.39 to 0.60 of it.
+    probes with bins at their start, tau1 is 0.080 s. With silence counted the sizes are smaller
+    than the paper's, alpha1 5.2 to 12.4 spikes/s against 15.0 and kappa 0.81 to 1.21 against 2.0.
+    Without silence the first bin is 2.50 spikes/s, alpha1 is 1.56 to 3.04 and tau1 0.075 s over the
+    running probes, and the fit over all probes does not converge to a decay (tau1 at its 100 s
+    bound). With spikes at half the detection threshold, tau1 is 0.064 s (running probes) and 0.081
+    s (all) with silence counted, alpha1 7.0 to 15.4 spikes/s; without silence tau1 is 0.083 s over
+    the running probes (alpha1 2.34 to 4.26) and the fit over all probes does not converge either
+    (tau1 31.3 s). Apart from those two fits, tau1 is at most 0.083 s. The plateau test compares the
+    late mean with the fitted kappa, which the fit draws towards it, and holds in every converged fit
+    (0.97 to 1.00). Against the paper's kappa of 2.0 the mean after 0.5 s is 0.39 to 0.60 of it with
+    silence counted (0.45 to 0.66 at half the threshold), the rule for reproduced fails, and as tau1
+    is below 0.3 s neither rule applies. The outcome rests on reading kappa as the fitted constant,
+    marked as an assumption after verification round 2.
   deviations:
   - Spikes from the automatic detector of GetSpikes.m, as for a1-mgb-firing-rates; spikes at half
     its threshold are a second reading.
+  - Assumed that the plateau test of the criterion (the mean SD after 0.5 s within 25% of kappa)
+    uses the fitted kappa. The criterion calls the test a plateau, a flattening of the curve at its
+    own constant, and says the sizes, kappa among them, are reported against their values, not
+    tested. Read with the paper's kappa of 2.0 the claim matches neither rule.
 - claim: fig9-example-first-bin
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -485,8 +507,17 @@ outcomes:
     natural probe, and one recording has a natural probe after DMR amplitude variants in 2.5-10 kHz
     only. The DMR frequency variants that precede a natural sound probe (5 recordings) span 0.25-1
     to 8-32 kHz in two-octave bands. In these five, with the forward variants as contexts, the probe
-    is significant in 4, last at 1.25 to 3.67 s; this nearest design does not decide the claim. The
-    recording of Figure 7 is not in the data set, or not with the bands the legend gives.
+    is significant in 4, last at 1.25 to 3.67 s. After verification round 2, which noted that three
+    of these bands (0.25-1, 1-4 and 4-16 kHz) are the Figure 7 bands divided by 2.5 and that 0.25 kHz
+    is below the Methods' carrier range of 0.625 to 40 kHz, the significance measure was run with
+    only those three contexts. The forward variants are significant up to 3.6 s or later in 2 of the
+    5 probes (last at 4.53 and 5.35 s; the others 0.05 s, 1.25 s and none) and the backward variants
+    in none. The stored edges are read in Hz, as the generator named in these recordings' notes
+    (DMRipple2.m, in the data set) documents ff as the "frequency range in Hz" and builds the
+    carriers as ff(1) times powers of 2, and every stimulus was played at 97656 Hz, at which the
+    stored top band of 8-32 kHz can be played and the same band times 2.5 (20-80 kHz) cannot. So no
+    recording has the bands of the legend; the recording of Figure 7 is not in the data set, or not
+    with those bands. The verifier's disagreement is recorded under verifications.
 - claim: figs1-silence-probe
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -528,7 +559,9 @@ findings:
   about: data
   statement: No recording has the design of Figure 7 (a natural sound probe after DMR contexts in
     0.625-2.5, 2.5-10 and 10-40 kHz). The DMR frequency variants in the data set use the bands 0.25-1
-    to 8-32 kHz.
+    to 8-32 kHz, in Hz by the stimulus code (DMRipple2.m), which extend below the carrier range of
+    0.625 to 40 kHz that the paper's Methods give. Three of them (0.25-1, 1-4 and 4-16 kHz) are the
+    Figure 7 bands divided by 2.5.
 - kind: other
   about: data
   statement: Summary.mat lists two cells (20060314-ha1-001 and 20060320-ha3-003), with the same
@@ -616,19 +649,24 @@ verifications:
     agrees: true
     outcome: partially_reproduced
     reason: A1 at the 15 mV threshold on sequence files is within tolerance (spont 0.488, evoked
-      0.541). No MGB reading has both means in tolerance, which meets the partial rule. Separately,
+      0.541). No MGB reading has both means in tolerance; sequence files give spont 0.551 and evoked
+      4.99, tuning files give 0.868 and 11.66. This meets the partial rule (A1 below 1 Hz, MGB evoked
+      above 5 Hz in the "all" and "tuning" readings). Separately,
       the automatic threshold is two thirds of the largest filtered deflection over the whole file;
       whether GetSpikes.m applies it per file or per sweep was never checked. Nine of 14 cells have
       evoked rates under 1.5 Hz, the sequence-file mean is 5.0 Hz against 11.4, and the fig9 SD
       magnitudes are about 2 to 3 times low, all of which fits missed spikes. No thresholds or spike
-      count checks are printed.
+      count checks are printed. Separately (point B12), the "tuning files only" MGB reading is not
+      among the claims file's readings, and two files listed in both groups are counted twice in the
+      per-cell sums.
     response: ViewResp.m passes the whole recording to GetSpikes.m, whose automatic mode computes
       one threshold over all of it, so the port is per file; the helper's docstring quotes this.
       A new cell prints, for every MGB file, the threshold (76 to 235 robust SDs of the filtered
       trace), the heights of the local maxima and the spike counts; in some files many large
       deflections lie between half the threshold and the threshold. A second detector at half the
       threshold is run as a reading for the rates and for fig9; it gives 7.15 Hz evoked, still
-      outside tolerance. Outcome unchanged.
+      outside tolerance. Outcome unchanged. Point B12 was not answered in this revision; it is
+      answered in the round-2 revision.
   - claim: fig2-example-reliability
     agrees: true
     outcome: reproduced
@@ -794,4 +832,182 @@ verifications:
     outcome: reproduced
     reason: 22 silence probes in 19 cells have significance starting within 0.5 s, and Eq. 17 power
       falls below 10% of its onset value by 0.542 s, well inside 1.1 s.
+    response: No change.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks reproduce_asari_2009.ipynb and strf_asari_2009.ipynb
+    with the conclusions and the summary, the helper modules, the README, the attempt record and the
+    claims file, with the paper's full text. Its report is transcripts/asari-2009/verifier-2-report.md.
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 305/39 and 93/14 are exact under both silence readings (cell 14). A1 has 132 cells, or 118
+      in the five named ensembles, against 123.
+    response: No change.
+  - claim: a1-mgb-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: The A1 detector assumption is stated and reasonable. The partial rule holds with both MGB
+      detectors (5.07 and 7.15 Hz, cell 17). Separately, cell 18 shows many large deflections between
+      half the threshold and the threshold (file 34 has 1220 spikes, against 23781 at half the
+      threshold); the rates outcome and the fig9 tau hold under both detectors, but the MGB evoked
+      rate and the fig9 magnitudes stay uncertain. The README row leaves out "resting on an
+      assumption". Point B12 (the tuning-files-only reading is not in the claims file, and the
+      duplicated tuning file is counted twice for two A1 cells) is not recorded anywhere, and the
+      restated round-1 reason is garbled.
+    response: A file listed in two groups of Summary.mat is now counted once in the per-cell rates;
+      one value moved in the third decimal (20 mV, all recordings, spontaneous 0.309 to 0.310 Hz) and
+      the measured values are unchanged. The tuning-only rows are now labelled in the notebook, the
+      conclusion and the notes as a comparison outside the claims file's readings. B12 is added to the
+      round-1 entry, and the round-1 reason now quotes the round-1 report. The README row says the
+      outcome rests on an assumption. The uncertainty of the MGB detector is left as stated in the
+      notes; no further detector was run. Outcome unchanged.
+  - claim: fig2-example-reliability
+    agrees: true
+    outcome: reproduced
+    reason: The outcome depends on the pairwise reading (0.310). Leave-one-out gives 0.436, outside
+      tolerance. fig2-example-long-context marks this same choice assumed; this claim should too, or
+      say it holds under one reading.
+    response: Marked assumed, with a deviation that states the choice and the two results; the
+      conclusion, the summary and the README say it rests on the pairwise reading. Outcome unchanged.
+  - claim: fig2-example-long-context
+    agrees: true
+    outcome: reproduced
+    reason: The pairwise assumption is stated and reasonable, since it alone gives the population
+      0.31. The gap of 1.60 to 3.97 s is confirmed at 0.1 ms (cell 27). The README row "absent from 2
+      to 4 s" conflicts with the output, as the matched probe is significant again from 3.971 s and
+      fails the 2 to 4 s reading (strict_2_4 False).
+    response: The README row now states the amended criterion (before 2 s, none from 2 to 3.6 s,
+      again after 3.6 s). Outcome unchanged.
+  - claim: fig3a-proportion-significant
+    agrees: true
+    outcome: reproduced
+    reason: Silence counted, all probes, 187, 0.613 and 0.251 (cell 30).
+    response: No change.
+  - claim: fig3a-significance-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 34.
+    response: No change.
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: tau1 is 1.27 to 1.78 s in all 8 listed readings (cell 37). The stated reason, "criterion
+      has no rule for partial", also fits methods-recording-counts, which is graded partial. The real
+      reason is that tau, the quantity the claim is about, fails.
+    response: The notes and the conclusion now give that reason; the same wording is used for
+      fig4-predictability-upper-bound. Outcome unchanged.
+  - claim: timescale-longer-than-membrane
+    agrees: true
+    outcome: reproduced
+    reason: Cell 44.
+    response: No change.
+  - claim: fig4-predictability-upper-bound
+    agrees: true
+    outcome: not_reproduced
+    reason: tau1 is within tolerance in 0 of 24 fits (cell 41).
+    response: No change to the outcome; the reason in the notes and conclusion is reworded as for
+      fig3b-fractional-power-decay.
+  - claim: fig4-strf-performance-low
+    agrees: true
+    outcome: partially_reproduced
+    reason: The claims file's test is stated and reasonable; the outcome also rests on using 16 of
+      the paper's 20 cells. Wilcoxon p = 0.0031 and 0.025 (strf cell 10). The README row leaves out
+      "resting on an assumption", and the README gives about 24 minutes for the STRF notebook where it
+      printed 31.2 min. Point B11, the 10-kHz response-sampling reading, was not run.
+    response: The README and summary rows say the outcome rests on the claims file's test and 16 of 20
+      cells. In this run the STRF notebook printed 23.6 min; the README gives both runs. The 10-kHz
+      reading was again not run, as the verifier lists it among the points that do not affect a
+      conclusion. Outcome unchanged.
+  - claim: fig5-example-conductances
+    agrees: true
+    outcome: blocked
+    reason: No voltage-clamp files in the data set.
+    response: No change.
+  - claim: fig6-conductance-decay
+    agrees: true
+    outcome: blocked
+    reason: No voltage-clamp files in the data set.
+    response: No change.
+  - claim: fig8a-proportion-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, but fragile. The order amplitude > frequency holds by 0.0025 (43/70 against 52/85),
+      so one test flips it. It fails with every set as a test (cell 59). This dependence should stay
+      explicit wherever the outcome is reported.
+    response: The README and summary rows now give the margin and the failure with every set as a
+      test. Outcome unchanged.
+  - claim: fig8a-significance-fits
+    agrees: true
+    outcome: not_reproduced
+    reason: The sizes are out of order in every reading (cell 62).
+    response: No change.
+  - claim: fig8b-decay-by-property
+    agrees: true
+    outcome: not_reproduced
+    reason: This holds only in the main reading. Adding the naturalistic probes gives partial (cell
+      65). The property-set assumption is stated and checked against Table 1 rows. The main reading
+      is said to be fixed before results; nothing in the materials can verify that.
+    response: The README and summary rows now say the outcome is partial with the naturalistic probes
+      added. Nothing in the record can show when the main reading was fixed, and the statement is
+      left as the author's. Outcome unchanged.
+  - claim: fig8c-relative-effects
+    agrees: true
+    outcome: not_reproduced
+    reason: Same dependence on the reading as fig8b (cell 68). The Summary row "amplitude and
+      frequency effects smaller than natural" is too strong for frequency; in the main reading
+      without silence, with as many probes as the set holds, the frequency interval is 0.552 to 1.066
+      and includes 1 (cell 68, row 7).
+    response: The summary row now gives the reason the rules fail (the amplitude interval below 1 in
+      every main-reading variant, the higher-order estimate above the amplitude one) and the
+      dependence on the reading; the README row gives the dependence. Outcome unchanged.
+  - claim: fig8-natural-synthetic-probes-alike
+    agrees: true
+    outcome: reproduced
+    reason: Low power. There are no synthetic FM probes, and the synthetic AM probes come from 2 cells.
+    response: No change; the notes already say so.
+  - claim: fig9-mgb-fast-decay
+    agrees: true
+    outcome: reproduced
+    reason: Yes, but undeclared assumption. Reproduced only if the plateau's kappa means the fitted
+      kappa, which is close to circular. Against the paper's kappa = 2.0 the late mean is 0.39 to 0.60
+      of it (cell 47). Then the criterion's reproduced rule fails and no rule applies. This should be
+      assumed. Cell 48's alpha1 and kappa ranges cover only the silence-counted readings (without
+      silence alpha1 is 1.56 to 3.04); the half-threshold fit without silence over all probes does
+      not converge either (tau1 = 31.3 s); and "apart from that fit, tau1 is at most 0.080 s" is true
+      only for the automatic detector, as the half-threshold fit without silence gives 0.083 s.
+    response: Marked assumed, with a deviation giving the reason for reading kappa as the fitted
+      constant and the result under the paper's kappa. The conclusion and notes now give the ranges
+      by silence reading, the second fit that does not converge, and tau1 at most 0.083 s. Outcome
+      unchanged.
+  - claim: fig9-example-first-bin
+    agrees: true
+    outcome: reproduced
+    reason: Cell 50.
+    response: No change.
+  - claim: fig7-example-frequency-context
+    agrees: false
+    reason: Not established. The search now covers all 105 recordings, but the block still reads ff
+      as Hz at face value. The five "DMR; frequency variants" recordings with a natural probe include
+      bands at 0.25 to 1, 1 to 4 and 4 to 16 kHz, exactly the Figure 7 bands divided by 2.5, and 0.25
+      kHz is below the 0.625 to 40 kHz carrier range given in the Methods. These recordings may hold
+      the Figure 7 design with differently stored band edges. The forward set already reaches 3.673 s
+      in 20060916-ha3-002 (cell 54). Running the significance measure on the three-context subset
+      would settle it; until then, "blocked (data_missing)" and the matching finding are not
+      supported. The round-1 entry has no outcome field.
+    response: The significance measure is now run on the three-context subset of each of the five
+      recordings (cell 54). The forward variants reach 3.6 s or later in 2 of 5 probes (4.53 and 5.35
+      s) and the backward variants in none. The notebook also prints the lines of DMRipple2.m, the
+      generator named in the recordings' notes, which give ff as the frequency range in Hz and build
+      the carriers from it, and the stimulus rate of 97656 Hz, at which the stored 8-32 kHz band can
+      be played and the same band times 2.5 cannot. The edges are therefore kept in Hz, and the claim
+      is kept blocked (data_missing) with the disagreement recorded here; the finding now says the
+      deposited bands extend below the Methods' carrier range and that three of them are the Figure 7
+      bands divided by 2.5. The round-1 verifier gave no outcome for this claim, so none is recorded.
+  - claim: figs1-silence-probe
+    agrees: true
+    outcome: reproduced
+    reason: Cell 74.
     response: No change.

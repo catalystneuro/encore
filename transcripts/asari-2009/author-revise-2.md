@@ -1,52 +1,57 @@
-# asari-2009 · author-revise-2 · run 43531191857
+# asari-2009 · author-revise-2 · run 43737263281
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-date -u; cat transcripts/asari-2009/verifier-2-report.md; ls entries/asari-2009 questions/ paper/ 2>&1 | head -50
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-grep -n "^#" docs/protocol.md | head -60; ls questions/asari-2009.yaml 2>&1; cat questions/README.md | head -60
+date -u; ls; ls entries/asari-2009 transcripts/asari-2009 questions 2>/dev/null | head -50; cat transcripts/asari-2009/verifier-2-report.md
 ```
 
 ```
-1:# Protocol for an attempt
-43:## Reader
-45:### 1. Get the paper
-59:### 2. Read the paper's code
-69:### 3. Write the claims file
-165:### 4. Data from outside the paper's own recordings
-173:### 5. Check
-186:### 6. Answer questions
-199:## Author
-215:### 1. Establish what can be tested
-345:### 2. Check the data against its description
-360:### 3. Write the entry
-431:### 4. Lock, check and run
-451:### 5. Record the attempt
-524:### 6. Hand over for verification
-562:## Repeat attempts
-604:## Local and remote datasets
-627:## Verifier
-631:### Round 1: without the author's conclusions
-656:### Round 2: with the author's conclusions
-[... 13 more lines not kept]
+Sun Nov 15 16:48:50 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+executed
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+[... 135 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 199,215p docs/protocol.md; sed -n 451,562p docs/protocol.md; ls questions/ | tail -40 | head -5; cat questions/deweese-2004.yaml | head -30
+sed -n '/## 6\|step 6\|Hand over/,+60p' docs/protocol.md | head -150; wc -l docs/protocol.md
 ```
 
 ```
+### 6. Answer questions
+
+A reader is asked only when the author or a verifier believes the claims file
+misreads the paper: a wrong expected value, the wrong panel, a claim that does
+not say what the paper says (author, step 1.6, and "Hand over for
+verification"). A method detail the claims file lacks is not asked: the author
+takes it from the paper. The reader, who has not seen the data, checks each
+question against the paper and decides whether the claims file is to change.
+Where it is, the reader amends the claim, and the question's `answer` says
+what changed and why, citing the passage; where it is not, the answer says why
+the claim stands. The reader marks each question answered in
+`questions/<paper>.yaml`.
+
 ## Author
 
 The workflow puts the paper under `paper/`, as for the reader. Read it to
@@ -54,63 +59,110 @@ understand the claims, their data and their figures. The claims file still
 decides what is tested: do not change a claim's statement, expected values or
 criterion. A method detail the claims file lacks is taken from the paper
 (step 6).
-
-**Time.** An author run is stopped five hours after it starts, and whatever
-is not recorded by then is lost. The prompt says when the run started and the
-time by which to finish. Check the clock (`date -u`) between steps. When that
-time comes, stop analysing and finish: record each claim not yet tested as
-blocked, `too_large` where the computation is what stopped it, saying how far
-it got, then write the attempt record and run the entry's checks. A record
-with some claims blocked for time is worth more than a run that is cut off.
-
-### 1. Establish what can be tested
-### 5. Record the attempt
-
-Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
-[... 144 more lines not kept]
+[... 131 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-wc -l attempts/asari-2009-01.yaml entries/asari-2009/*; git diff --stat; cat entries/asari-2009/entry.yaml; cat entries/asari-2009/README.md
+grep -n "Hand over for verification" docs/protocol.md; awk '/^### .*Hand over for verification/,/^### [0-9]+\. [^H]/' docs/protocol.md
 ```
 
 ```
-730 attempts/asari-2009-01.yaml
-    47 entries/asari-2009/README.md
-   847 entries/asari-2009/asari.py
-    27 entries/asari-2009/entry.yaml
-  1666 entries/asari-2009/reproduce_asari_2009.ipynb
-     7 entries/asari-2009/requirements.in
-  1584 entries/asari-2009/requirements.lock.txt
-   207 entries/asari-2009/strf_wehr.ipynb
-   269 entries/asari-2009/wehr_strf.py
-  5384 total
- tools/build_site.py       | 251 +++++++++++++++++++++++++++++++++++++---------
- tools/entry.py            |   6 ++
- tools/site_assets/app.css |  89 +++++++++++++---
- tools/site_assets/list.js |  11 +-
- 4 files changed, 295 insertions(+), 62 deletions(-)
+493:  verification round, with its `reason` (see "Hand over for verification").
+524:### 6. Hand over for verification
+### 6. Hand over for verification
+
+Do not verify your own attempt. Give the verifier:
+
+- the executed notebook with the conclusion cells and the summary removed;
+- the helper module;
+- the claims file.
+
+`python tools/entry.py handover entries/<name>` builds these in
+`executed/<name>/handover/` from the executed copy. The verifier also gets the
+paper, under `paper/`, but checks the analysis against the claims file, and a
+method detail the author took from the paper against the passage the author
+cites. A place where the claims file misreads the paper is reported; the
+revision adds it to `questions/<paper>.yaml` as a question for a reader, as in
+step 1.6, and does not change the claim. A reader answers it after the
+attempt, in an `answer` run started by hand; the claim's outcome stays as
+tested on the claims file, and a later attempt takes up any change.
+
+[... 136 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts | grep asari; ls attempts/asari* 2>/dev/null; cat entries/asari-2009/entry.yaml entries/asari-2009/README.md; cat questions/asari-2009.yaml
+```
+
+```
+asari-2009-02.yaml
+attempts/asari-2009-02.yaml
 schema_version: 1
 name: asari-2009
 type: reproduction
-title: Long-lasting context dependence in rat auditory cortex (Asari & Zador 2009)
-description: Tests the findings of Asari and Zador (2009) on CRCNS ac-1, which holds their in vivo
-[... 69 more lines not kept]
+title: Long-lasting context dependence in rat auditory cortex (Asari and Zador 2009)
+description: Tests the findings of Asari and Zador (2009) on CRCNS ac-1, which holds the whole-cell
+  current-clamp recordings of A1 neurons to sequences of natural and synthetic sounds, the
+  cell-attached recordings of MGB units, and the earlier recordings of Wehr. It covers the cell and
+  probe counts, firing rates, trial reliability, the significance and fractional power measures of
+  context dependence and their time constants (Fig. 2 to 4), the timescale of membrane noise, the
+  silence probes, the effects of single stimulus properties (Fig. 8), the fast decay in the
+  thalamus (Fig. 9), and the STRF and LN model performance on the Wehr cells (Fig. 4).
+license: Apache-2.0
+python: "3.13"
+notebooks:
+- path: reproduce_asari_2009.ipynb
+  title: Reproducing Asari and Zador (2009) from CRCNS ac-1
+  runtime_minutes: 5
+- path: strf_asari_2009.ipynb
+[... 89 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls claims | grep asari; wc -l attempts/asari-2009-02.yaml; cat attempts/asari-2009-02.yaml
+```
+
+```
+<persisted-output>
+Output too large (50.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/9c6102a6-3ef7-4b92-8daa-411bad2a237d/tool-results/bcp5m1lj2.txt
+
+Preview (first 2KB):
+asari-2009.yaml
+797 attempts/asari-2009-02.yaml
+schema_version: 3
+id: asari-2009-02
+datasets:
+- archive: crcns
+  id: ac-1
+  version: unversioned
+  doi: 10.6080/K0KW5CXR
+  relation: primary
+paper: doi:10.1152/jn.00577.2009
+date: 2026-11-15
+entry: asari-2009
+provenance:
+  kind: agent
+  accountable:
+[... 29 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "attempts/asari-2009-01.yaml"
+ "file_path": "attempts/asari-2009-02.yaml"
 }
 ```
 
 ```
 1	schema_version: 3
-2	id: asari-2009-01
+2	id: asari-2009-02
 3	datasets:
 4	- archive: crcns
 5	  id: ac-1
@@ -118,7 +170,7 @@ description: Tests the findings of Asari and Zador (2009) on CRCNS ac-1, which h
 7	  doi: 10.6080/K0KW5CXR
 8	  relation: primary
 9	paper: doi:10.1152/jn.00577.2009
-10	date: '2026-11-13'
+10	date: 2026-11-15
 11	entry: asari-2009
 12	provenance:
 13	  kind: agent
@@ -129,348 +181,256 @@ description: Tests the findings of Asari and Zador (2009) on CRCNS ac-1, which h
 18	    model: claude-opus-5-5
 19	    protocol: pilot-15
 20	  runner:
-[... 711 more lines not kept]
+[... 778 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls claims/ 2>/dev/null | grep asari; f=$(ls claims/asari-2009* papers/*/asari* 2>/dev/null | head -1); echo $f; grep -n "fig2-example-long-context" -A40 $f | head -60
+cd claims; python -c "
+import yaml;d=yaml.safe_load(open('asari-2009.yaml'))
+print(d.keys())
+for c in d['claims']:
+  if c['id'] in ('fig7-example-frequency-context','fig9-mgb-fast-decay','fig2-example-reliability'): print(yaml.safe_dump(c,width=120))
+"; ls ../paper
 ```
 
 ```
-asari-2009.yaml
-claims/asari-2009.yaml
-166:- id: fig2-example-long-context
-167-  statement: In an example A1 neuron, changing the conditioning stimulus changed the response to
-168-    the probe for about 4 s; responses did not differ between 2 and 4 s after probe onset and
-169-    diverged again after about 4 s.
-170-  source: Figure 2B and 2D; Results, Context dependence, paragraph 3
-171-  quote: Interestingly, context-induced differences could sometimes be intermittent; the three
-172-    average response traces showed no difference in the interval 2 to 4 s after the onset of the
-173-    probe, but diverged again after about 4 s
-174-  statistics:
-175-  - test: Kruskal-Wallis test at each time point, P < 0.01 for at least 5 ms
-176-    p: 0.01
-177-    p_relation: "<"
-178-    n: one cell, one probe in three contexts (6 repeats shown for one context in Figure 2A)
-179-  criterion: The significance measure of the Methods (Kruskal-Wallis across the three contexts at
-180-    each time point, significant where P < 0.01 holds for at least 50 consecutive 0.1-ms points).
-181-    The cell and probe are not identified; the author looks for a current-clamp cell with seven
-182-    natural sound fragments and a probe tested after silence and two other fragments, with six
-183-    repeats in at least one context (the paper gives the repeats of the other two contexts only
-[... 39 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n -i "FIG. 2\|shown in A\|0\.61\|0\.74" paper/10.1152-jn.00577.2009.txt | head -20
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-sed -n 1204,1260p paper/10.1152-jn.00577.2009.txt
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd entries/asari-2009; python - <<'EOF'
-import json
-for nb in ['reproduce_asari_2009.ipynb','strf_wehr.ipynb']:
-    d=json.load(open(nb))
-    print('=====',nb)
-    for i,c in enumerate(d['cells']):
-        src=''.join(c['source'])
-        print(i,c['cell_type'],c.get('metadata',{}).get('tags',''),repr(src[:150]))
-EOF
-```
-
-```
-===== reproduce_asari_2009.ipynb
-0 markdown  '# Reproducing Asari & Zador (2009) from CRCNS ac-1\n\n**Paper.** Asari H, Zador AM (2009). Long-lasting context dependence constrains neural encoding\nmo'
-1 code  'import os\nimport time\nimport zlib\nimport resource\nimport warnings\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport numpy as np\nimport pandas '
-2 markdown  '## The files'
-3 code  'md5 = asari.checksums()\nprint("MD5 sums published in ac-1/checksums.md5 (data set doi:%s, version unversioned):" % asari.DOI)\nfor k, v in md5.items():'
-4 code  'rows = pd.DataFrame(asari.summary())\nidx = asari.member_index()\nrows["in_zip"] = rows.file.isin(idx.keys())\nprint("asari/Summary.mat: experiment group'
-5 markdown  '## One pass over the recordings\n\nEvery recording is streamed once. For the A1 recordings of the natural sound group (Summary.mat\ngroup 0) the pass for'
-6 code  'todo = rows[rows.in_zip].drop_duplicates("file")\nif SUBSET:\n    todo = todo.groupby("group").head(SUBSET)\n\ndef process(row):\n    m = asari.load_record'
-7 code  'files = pd.DataFrame([{**r["info"], "file": r["file"], "cell": r["cell"], "group": r["group"],\n                       "probes_with_silence": r["info"]'
-8 markdown  '## Data check'
-9 code ['sanity'] 'print("Recordings by Summary.mat group, recording type, unit and sampling rate:")\nprint(files.groupby(["group", "recording_type", "unit", "sf"]).agg(c'
-10 markdown  'The stimulus triggers and the traces are in the same file and share its sample clock. As a check\nthat the trigger times mark the sound onsets, the cel'
-11 code ['sanity'] 'def onset_table(group, label):\n    out = []\n    for r in results:\n        if r["group"] != group or "onset" not in r or r["file_description"] == "tuni'
-12 markdown  '## methods-recording-counts\n\n> Of 194 A1 cells recorded in current clamp, 123 met the analysis criterion (39 tested with natural\n> sounds, 14 with TOR'
-13 code ['claim:methods-recording-counts'] 'def counts(sel, min_rep):
-[... 73 more lines not kept]
+dict_keys(['schema_version', 'paper', 'claims', 'checks'])
+criterion: Tolerances are the stated SDs, as the paper gives them as the spread of the values (protocol, expected). The correlation
+  is between response traces (median-filtered, zero-mean membrane potential) of trials within one context, over a probe. The
+  paper does not say whether the coefficient is the mean over all pairs of trials or the correlation of each trial with the
+  mean of the others, nor what the population mean is taken over (cells, or probes); each reading is run. The example cell
+  is not identified; the author looks for a current-clamp cell tested with seven natural sound fragments over six repeats,
+  and the example values are not tested when no cell can be matched. The population value decides the claim.
+expected:
+- quantity: population mean trial-to-trial correlation coefficient
+  tolerance: 0.09
+  value: 0.31
+- quantity: example cell, correlation over its seven natural sound fragments
+  tolerance: 0.07
+  value: 0.61
+- quantity: example cell, correlation for the shown probe
+  tolerance: 0.08
+  value: 0.74
+id: fig2-example-reliability
+quote: the correlation coefficient of the response traces across trials in a given context was 0.61 ... 0.07 (mean ... SD)
+  for the seven natural sound fragments tested in this cell. The reliability varied within a given neuron as a function of
+[... 51 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import json
-d=json.load(open('reproduce_asari_2009.ipynb'))
-for i in (19,22,23,69,70,71):
-    c=d['cells'][i]
-    print('#####',i); print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-        print('---OUT---'); print(''.join(o.get('text',''))[:3000])
-EOF
+cd ../paper; grep -n -i "dmr\|ripple\|0\.625\|40 kHz\|kHz" 10.1152-jn.00577.2009.txt | head -60; grep -n -i "dmr\|ff\b\|ripple" ac-1.data-description.txt | head -30
 ```
 
 ```
-##### 19
-rel = pd.DataFrame([{"cell": p["cell"], "file": p["file"].split("/")[-1], "probe": p["probe"], "pairs": p["rel_pairs"],
-                     "loo": p["rel_loo"]} for p in nat])
-for reading in ("pairs", "loo"):
-    per_cell = rel.groupby("cell")[reading].mean()
-    print(f"{reading:5s}: over {len(rel)} probes {rel[reading].mean():.3f} +/- {rel[reading].std():.3f};"
-          f" over {len(per_cell)} cells {per_cell.mean():.3f} +/- {per_cell.std():.3f}"
-          f"  (paper 0.31 +/- 0.09; within 0.22 to 0.40: probes {abs(rel[reading].mean() - 0.31) <= 0.09}, cells {abs(per_cell.mean() - 0.31) <= 0.09})")
-print("\nPer cell (pairs reading):", rel.groupby('cell').pairs.mean().describe().round(3).to_dict())
-# Candidate example cells: seven natural sound fragments, six effective repeats
-cand = files[(files.group == 0) & (files.n_stimuli == 7) & (files.rep == 6)].file
-ex = rel[rel.file.isin([f.split("/")[-1] for f in cand])]
-print("\nFiles with seven natural sound fragments and six effective repeats:", len(cand))
-print(ex.groupby("file").agg(n=("probe", "size"), pairs_mean=("pairs", "mean"), pairs_sd=("pairs", "std"), pairs_max=("pairs", "max"),
-                            loo_mean=("loo", "mean"), loo_sd=("loo", "std"), loo_max=("loo", "max")).round(3).to_string())
-##### 22
-rows_ex = []
-for p in nat:
-    f = files.set_index("file").loc[p["file"]]
-    if f.n_stimuli != 7 or len(p["contexts"]) != 3 or asari.BLANK not in p["contexts"]:
-[... 64 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls ../../executed/asari-2009/ 2>&1; grep -n '"stimuli"\|def stimulus_table\|def stim\|param\b\|\.param\|"ff"\|"df"' asari.py | head -40
-```
-
-```
-reproduce_asari_2009.ipynb
-result.json
-strf_wehr.ipynb
-10:the "Effective repeats" in `param.notes`. The zips are stored without compression; members are
-19:  the recording offset in `param.recording.offset` subtracted first).
-140:def notes_text(param):
-141:    return "\n".join(str(s).rstrip() for s in np.atleast_1d(getattr(param, "notes", [])))
-144:def parse_notes(param):
-145:    """Sequences (lists of 1-based fragment indices) and effective repeats, from param.notes."""
-146:    text = notes_text(param)
-158:        d = str(getattr(t.param, "description", ""))
-160:        out.append({"type": str(t.type), "time": int(t.time), "duration_ms": float(t.param.duration),
-215:def fragment_samples(param, sf=SF):
-217:    return [int(round(float(s.param.duration) / 1000 * sf)) for s in np.atleast_1d(param.stimulus)]
-233:def probe_trials(x, param, trigs, spikes=None, sf=SF, include_blank=True, blank_as_context=True,
-243:    seqs, rep = parse_notes(param)
-244:    dur = fragment_samples(param, sf)
-303:def probe_windows(param, trigs, n_samples, sf=SF):
-306:    seqs, rep = parse_notes(param)
-307:    dur = fragment_samples(param, sf)
+137:potential at 10 kHz using an amplifier Axopatch 200B (Molecular
+158:cells with ensembles of temporally orthogonal ripple combinations, 6
+159:cells with ensembles of dynamic moving ripples, 39 cells with ensembles of modulated harmonic tones, and 27 cells with ensembles of
+197:DMR
+215:synthetic sounds (TORC, DMR, MHT, and MCN) were used to examine the effects caused by the changes in each of the following sound properties among
+218:modulated colored noise. VC, voltage-clamp; CC, current-clamp; TORC, temporally orthogonal ripple combination; DMR, dynamic moving ripple; MHT,
+259:All stimuli were delivered at 97.656 or 200 kHz using a TDT
+265:kHz to within SD of 3.7 dB. Sound levels were measured with a type
+272:sound fragments were taken from commercially available audio compact discs, originally sampled at 44.1 kHz and resampled at 97.656 or
+273:200 kHz for stimulus presentation: The Diversity of Animal Sounds
+306:almost all frequencies from 0 to 22 kHz and ranged from narrow- to
+318:properties (Figs. 7 and 8): intensity (amplitude), frequency, amplitude-modulation (AM), frequency-modulation (FM), and higherorder spectrotemporal acoustic features. We used temporally orthogonal ripple combinations (TORCs; for details, see, e.g., Klein et al.
+319:2000) and dynamic moving ripples (DMRs; for details, see, e.g.,
+329:sampled at 97.656 or 200 kHz and lasted for 4.0–5.5 s (Fig. 1B and
+339:Temporally orthogonal ripple combinations (TORCs). The following equation was used to generate ripples and their combinations
+354:and spectral ripple modulations, respectively, xi �log2 [ fi/f0] in
+358:TORCs were first generated, each consisting of six ripples with
+367:frequencies over a bandwidth of 5 octaves (0.88–28.16 kHz in
+373:octaves (0.625–40 kHz in steps of 1/128 octaves, random phase at
+375:bandwidth (e.g., 0.625–10 kHz, 2.5–40 kHz, and so on). We then
 [... 16 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 690,847p asari.py
+cd ../paper; sed -n 360,395p 10.1152-jn.00577.2009.txt; sed -n 1570,1600p 10.1152-jn.00577.2009.txt; sed -n 1770,1800p 10.1152-jn.00577.2009.txt
 ```
 
 ```
-def _num(v):
-    a = np.atleast_1d(v).astype(float)
-    return tuple(np.round(a, 6)) if a.size else ()
-
-
-STIM_FIELDS = ("ff", "df", "attenuation", "f0", "AMmean", "AMstd", "AMrange", "FMrange", "FMstd")
-
-
-def stimulus_table(param):
-    """Per stimulus (1-based): name, description and the parameters that define the property
-    sets (DMR and TORC bands 'ff', SoundTrans shift 'df' and 'attenuation', MHT parameters)."""
-    rows = []
-    for k, s in enumerate(np.atleast_1d(getattr(param, "stimulus", [])), 1):
-        d = {"stim": k, "name": " ".join(str(s.name).split()), "description": " ".join(str(s.description).split())}
-        for f in STIM_FIELDS:
-            v = getattr(s.param, f, None)
-            if v is not None and np.size(v):
-                d[f] = tuple(float(np.round(a, 3)) for a in np.atleast_1d(v))
-        rows.append(d)
-    return rows
-[... 138 more lines not kept]
+a fixed (k �1) spectral modulation: ���1.5, �0.9, �0.3, 0, 0.6,
+1.2, and 1.8 cycles/octave, respectively. All TORCs had rise and fall
+times of 5 ms, modulation depth of �30 dB (with ajk �30/6), and
+lasted for 250 ms. Such short TORC envelopes were then randomly
+adjoined to generate a “default envelope” that lasted for 4–5.5 s.
+To examine the effects of the changes in sound intensities in
+conditioning stimuli, we applied the default envelope to the carrier
+frequencies over a bandwidth of 5 octaves (0.88–28.16 kHz in
+steps of 1/128 octaves), scaled the peak amplitude to the speaker
+driver range, and then varied the amplitudes over the maximum
+range of 40-dB attenuation. To examine the effects of frequency
+changes, we generated a default envelope over the bandwidth of 2
+or 4 octaves and chose carrier sinusoidals within the range of 6
+octaves (0.625–40 kHz in steps of 1/128 octaves, random phase at
+time 0) so that the signals had the same envelope with shifted
+bandwidth (e.g., 0.625–10 kHz, 2.5–40 kHz, and so on). We then
+normalized the peak amplitude of sound fragments with respect to
+their total signal powers (��y(t) �2dt) and uniformly scaled to fit
+them all within the speaker driver range.
+Dynamic moving ripples (DMRs). To generate the DMR envelopes
+[... 77 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 1,60p asari.py; grep -n "^def \|^[A-Z_]* = " asari.py | head -80
-```
-
-```
-"""Loading and context-dependence measures for CRCNS ac-1 (Asari's recordings).
-
-Asari & Zador (2009), J Neurophysiol 102:2638-2656, doi:10.1152/jn.00577.2009.
-
-The data set is three zip files in the public CRCNS bucket. `crcns-ac1.zip` holds the
-documentation, the stimuli, the analysis code of the paper (asari/Tools) and Wehr's data;
-`crcns-ac1-asari-results-1.zip` and `-2.zip` hold Asari's recordings, one MATLAB file per
-recording, with the membrane potential (whole cell) or the raw cell-attached voltage at 10 kHz
-(`response`), the stimulus triggers (`triggers`) and the metadata, with the stimulus sequences and
-the "Effective repeats" in `param.notes`. The zips are stored without compression; members are
-read in place over range requests and nothing is written to disk.
-
-Where the parameters come from (paper = Methods of Asari & Zador 2009; code = the paper's
-analysis script asari/Tools/CxtDep.m in crcns-ac1.zip, "Basic analysis script for Asari and
-Zador", with GetEvoked.m, ViewResp.m and GetSpikes.m):
-
-- Spike clipping by a 10-ms median filter and centring (paper, Analysis, paragraph 2). The
-  filter is applied as GetEvoked.m does it (mean removed, MATLAB medfilt1 window of 100 samples,
-  the recording offset in `param.recording.offset` subtracted first).
-- The probe responses: each sequence presentation is cut at its trigger for the stimulus
-[... 102 more lines not kept]
-```
-
-**Agent**
-
-Let me inspect one DMR recording's stimulus parameters directly.
-
-**Agent calls Bash**
-
-```bash
-sed -n 78,140p asari.py; python - <<'EOF'
+cd ..; python - <<'E'
 import json
-d=json.load(open('../../executed/asari-2009/reproduce_asari_2009.ipynb'))
-c=d['cells'][70]
-for o in c.get('outputs',[]): print(''.join(o.get('text',''))[:6000])
-EOF
+nb=json.load(open('entries/asari-2009/reproduce_asari_2009.ipynb'))
+for i,c in enumerate(nb['cells']):
+    s=''.join(c['source'])
+    print(f"--- {i} {c['cell_type']} {c.get('id','')} :: {s[:150]!r}")
+E
+python tools/entry.py --help 2>&1 | head -30
 ```
 
 ```
-def open_zip(name):
-    import zipfile
-    return zipfile.ZipFile(fsspec.open(BUCKET + name, block_size=2**20).open())
-
-
-def read_text(name):
-    with fsspec.open(BUCKET + name, "rb") as f:
-        return f.read().decode("latin1")
-
-
-def checksums():
-    """MD5 sums the data set publishes in checksums.md5."""
-    out = {}
-    for line in read_text("checksums.md5").splitlines():
-        if line.strip():
-            md5, fname = line.split()
-            out[fname] = md5
-    return out
-
-
-[... 172 more lines not kept]
+--- 0 markdown 2b5a2aa8 :: '# Reproducing Asari and Zador (2009) on CRCNS ac-1\n\nPaper: H. Asari and A. M. Zador (2009), "Long-Lasting Context Dependence Constrains Neural Encodin'
+--- 1 code 447bfafc :: 'import os, time, zlib, resource, collections\nos.environ.setdefault("OMP_NUM_THREADS", "1")\nos.environ.setdefault("OPENBLAS_NUM_THREADS", "1")\nfrom con'
+--- 2 markdown 1f528c86 :: '## Data: listing, checksums, and one pass over the recordings'
+--- 3 code 66c4c595 :: 'listing = cd.bucket_listing()\nmd5 = cd.checksums()\nprint("bucket listing of ac-1/:")\nfor k, s in listing:\n    print(f"  {k:45s} {int(s):>12d} bytes")\n'
+--- 4 code 60d4b671 :: 'NAT, MGB, SYN, MISC = S[0], S[1], S[2], S[3]\nassert "natural sound" in NAT["description"] and "Thalamic" in MGB["description"]\nassert "synthetic" in S'
+--- 5 markdown 78d6d5ab :: '## Data check'
+--- 6 code b5a0085f :: 'F = pd.DataFrame([{k: v for k, v in o.items() if k in ("group", "cell", "path", "desc", "type", "sf", "unit", "dur", "rep",\n                          '
+--- 7 markdown 5fa70d68 :: 'Clock check. The trigger times must share the clock of the traces. For each sequence, the\nacross-trial predictable power (Eq. 52) of the membrane pote'
+--- 8 code b4c90831 :: 'ck = pd.DataFrame([dict(group=o["group"], path=o["path"], post=o["clock"]["post"], pre=o["clock"]["pre"])\n                   for o in A1 + MG if "cloc'
+--- 9 markdown d815ff4b :: "Duplicates. Recordings deposited twice would have identical traces. Each file's trace extremes and\nmedian, and its length, are compared across distinc"
+--- 10 code c5281a83 :: 'multi = F.groupby("path").group.agg(list)\nmulti = multi[multi.apply(len) > 1]\nprint("files listed in more than one experiment group of Summary.mat:")\n'
+--- 11 markdown afede4cf :: 'Time resolution. The analysis runs at 1 kHz (helper docstring). On the probes of one recording the\nKruskal-Wallis significance is recomputed at the pa'
+--- 12 code 51e92c7b :: 'def kw_fullres(trace10, starts, length, rep
+[... 95 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
+ls executed/asari-2009; python - <<'E'
 import json
-d=json.load(open('../../executed/asari-2009/reproduce_asari_2009.ipynb'))
-t=''.join(''.join(o.get('text','')) for o in d['cells'][70]['outputs'])
-i=t.find("['dmr']")
-print(t[i-200:i+9000])
-EOF
+nb=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
+for i in (47,48,53,54,55):
+    c=nb['cells'][i]
+    print(f"=== {i}\n"+''.join(c['source']))
+    for o in c.get('outputs',[]):
+        print('>>>', ''.join(o.get('text','')) if 'text' in o else list(o.get('data',{}).keys()))
+E
 ```
 
 ```
-2 TORC sequence; amplitude variants    (0.316,)
-    3 Synthetic stimulus 3 TORC sequence; amplitude variants      (0.1,)
-    4 Synthetic stimulus 4 TORC sequence; amplitude variants    (0.032,)
-
-=== ['dmr'] 5 recordings: 20060320-ha1-001-002.mat, 20060320-ha3-001-002.mat, 20060320-ha3-003-002.mat, 20060321-ha1-001-002.mat, 20060321-ha1-002-002.mat
- stim                 name                                                                          description                                ff
-    1 Synthetic stimulus 1             DMR1: bandwidth 625-10000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz                  (625.0, 10000.0)
-    2 Synthetic stimulus 2            DMR2: bandwidth 1250-20000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz                 (1250.0, 20000.0)
-    3 Synthetic stimulus 3            DMR3: bandwidth 2500-40000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz                 (2500.0, 40000.0)
-    4 Synthetic stimulus 4 DMR4: bandwidth 625-2500, 10000-40000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz (625.0, 2500.0, 10000.0, 40000.0)
-
-=== ['dmr'] 2 recordings: 20060321-ha1-001-003.mat, 20060321-ha2-002-002.mat
- stim                 name             description               ff attenuation
-    1 Synthetic stimulus 1 DMR; amplitude variants (880.0, 28160.0)      (1.0,)
-    2 Synthetic stimulus 2 DMR; amplitude variants (880.0, 28160.0)    (0.316,)
-    3 Synthetic stimulus 3 DMR; amplitude variants (880.0, 28160.0)      (0.1,)
-    4 Synthetic stimulus 4 DMR; amplitude variants (880.0, 28160.0)    (0.032,)
-
-=== ['naturalistic'] 2 recordings: 20060904-ha1-001-002.mat, 20060909-ha1-001-002.mat
- stim                     name                                                                     description attenuation
-[... 65 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-d=json.load(open('../../executed/asari-2009/reproduce_asari_2009.ipynb'))
-t=''.join(''.join(o.get('text','')) for o in d['cells'][70]['outputs'])
-import re
-for m in re.finditer(r"=== \['dmr'\].*?(?=\n\n)", t, re.S): print(m.group(0)[:3000]); print()
-EOF
-```
-
-```
-=== ['dmr'] 5 recordings: 20060320-ha1-001-002.mat, 20060320-ha3-001-002.mat, 20060320-ha3-003-002.mat, 20060321-ha1-001-002.mat, 20060321-ha1-002-002.mat
- stim                 name                                                                          description                                ff
-    1 Synthetic stimulus 1             DMR1: bandwidth 625-10000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz                  (625.0, 10000.0)
-    2 Synthetic stimulus 2            DMR2: bandwidth 1250-20000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz                 (1250.0, 20000.0)
-    3 Synthetic stimulus 3            DMR3: bandwidth 2500-40000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz                 (2500.0, 40000.0)
-    4 Synthetic stimulus 4 DMR4: bandwidth 625-2500, 10000-40000 Hz, specmod 0 to 1.5 c/o, tempmod -25 to 25 Hz (625.0, 2500.0, 10000.0, 40000.0)
-
-=== ['dmr'] 2 recordings: 20060321-ha1-001-003.mat, 20060321-ha2-002-002.mat
- stim                 name             description               ff attenuation
-    1 Synthetic stimulus 1 DMR; amplitude variants (880.0, 28160.0)      (1.0,)
-    2 Synthetic stimulus 2 DMR; amplitude variants (880.0, 28160.0)    (0.316,)
-    3 Synthetic stimulus 3 DMR; amplitude variants (880.0, 28160.0)      (0.1,)
-    4 Synthetic stimulus 4 DMR; amplitude variants (880.0, 28160.0)    (0.032,)
-
-=== ['dmr'] 2 recordings: 20060915-ha1-001-002.mat, 20060916-ha1-001-002.mat
- stim                       name                                                                     description                ff attenuation
-    1      natural sound (probe) neotropical-mammals-2 Track 06 (Buffy-headed marmoset) From 41.275 to 46.75 sec               NaN         NaN
-    2  synthetic sound (forward)                                                         DMR; amplitude variants (3000.0, 12000.0)    (3.162,)
-    3  synthetic sound (forward)                                                         DMR; amplitude variants (3000.0, 12000.0)
-[... 118 more lines not kept]
+reproduce_asari_2009.ipynb
+result.json
+strf_asari_2009.ipynb
+=== 47
+MP = {inc: [p for o in MG for p in o.get("probes", []) if p["silence"] == inc and p["rep"] >= 10] for inc in (True, False)}
+for inc in (True, False):
+    print(f"silence counted={inc}: {len(MP[inc])} probes in {len({p['cell'] for p in MP[inc]})} cells")
+rows = []
+SDC = {}
+for det, key in (("GetSpikes auto", "sd"), ("half threshold", "sd5")):
+    for inc in (True, False):
+        Sd = cd.stack_curves([p[key] for p in MP[inc]], 61)
+        for denom in ("running", "all"):
+            y = np.nanmean(Sd, 0) if denom == "running" else np.nan_to_num(Sd).sum(0) / len(MP[inc])
+            SDC[(det, inc, denom)] = y
+            for pos in ("start", "centre"):
+                tb = np.arange(61) * 0.1 + (0.05 if pos == "centre" else 0.0)
+                f = cd.fit_exp(tb, y, 1, kappa=None)
+                late = float(np.nanmean(y[tb > 0.5]))
+                rows.append(dict(detector=det, silence=inc, denom=denom, bin_time=pos, alpha1=f["alpha"][0], tau1=f["tau"][0], kappa=f["kappa"],
+[... 117 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && timeout 600 python - <<'EOF'
-import sys; sys.path.insert(0,'entries/asari-2009')
-import asari, numpy as np
-idx=asari.member_index()
-k=[k for k in idx if '20060916-ha3-002-002' in k][0]; print(k)
-m=asari.load_recording(k, variables=['param'])
-p=m['param']
-for s in np.atleast_1d(p.stimulus)[:3]:
-    print(s.name, s._fieldnames, s.param._fieldnames)
-    for f in s.param._fieldnames:
-        v=getattr(s.param,f); print('  ',f, v if np.size(v)<20 else (type(v), np.shape(v)))
-EOF
+cd entries/asari-2009; wc -l ctxdep.py strf.py; grep -n "ff\b\|\"ff\"\|'ff'\|def \|waveform\|Stimuli\|stim_file\|\.sf" ctxdep.py | head -120
+```
+
+```
+743 ctxdep.py
+  222 strf.py
+  965 total
+73:def open_zip(name: str) -> zipfile.ZipFile:
+77:def checksums() -> dict:
+82:def bucket_listing() -> list:
+89:def member_index() -> dict:
+99:def loadmat_member(zn: str, member: str) -> dict:
+103:def _txt(x) -> str:
+109:def summary(who: str = "asari") -> list:
+143:def _medfilt_decimated(x: np.ndarray) -> np.ndarray:
+154:def load_recording(path: str, keep_raw: bool = False, filtered: bool = True) -> Recording:
+162:        trig.append((str(t.type), int(t.time), int(round(float(dur) / 1000 * r.sf)) if np.size(dur) == 1 else 0,
+170:    durs = np.array([int(round(float(s.param.duration) / 1000 * r.sf)) for s in stim]) if stim else np.array([], int)
+172:                    sf=int(r.sf), unit=str(r.unit), n_samples=len(x), triggers=trig, notes=notes, stimuli=stim,
+184:def sequence_segments(rec: Recording):
+187:    Returns a list of presentations in time order: dict(seq=tuple of fragments, on, off,
+196:        off = min(on + dur, rec.n_samples)
+200:        out.append(dict(type=typ, desc=desc, seq=seq, on=on, off=off, pre=(prev_end, on), post=(off, nxt)))
+201:        prev_end = off
+[... 33 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,72p ctxdep.py; sed -n 425,555p ctxdep.py
+```
+
+```
+"""Loading and context-dependence measures for CRCNS ac-1 (Asari and Zador 2009).
+
+The data set is read from the public S3 bucket of CRCNS by range requests into
+its zip files (docs/archives.md, "CRCNS"); nothing is written to disk.
+
+Where each parameter comes from:
+
+- Probe and context construction, the "silence" context (last 4 s of the
+  intersequence interval) and the "silence probe" (first 2.5 s after a
+  sequence), the rule that a probe needs at least two distinct contexts, the
+  truncation of every context to the smallest number of trials, the
+  Kruskal-Wallis significance with P < 0.01 for at least 5 ms, the noise
+  floor from 1000 trial shuffles, the fractional power estimates (Eqs. 17 to
+  19, each trial centred over the probe period) and the PSTH of the MGB units
+  (100-ms bins from probe onset, SD over contexts with n - 1) are ported from
+  the authors' analysis code deposited in the data set
+  (asari/Tools/CxtDep.m, GetEvoked.m, ViewResp.m in crcns-ac1.zip), and agree
+  with the paper's Methods (Analysis; Eqs. 10, 17 to 19, 42).
+- The 10-ms median filter that clips spikes: Methods, Analysis, paragraph 2,
+  and CxtDep.m (param.smooth = 10).
+[... 183 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; date -u; timeout 600 python - <<'E'
+import ctxdep as cd, numpy as np
+idx=cd.member_index()
+paths=[k for k in idx if '20060916-ha3-002-002' in k]
+print(paths)
+rec=cd.load_recording(paths[0])
+print(rec.notes)
+for i,s in enumerate(rec.stimuli,1):
+    p=s.param
+    print(i, s.name, '|', cd._txt(s.description), '|', {f:(getattr(p,f) if np.size(getattr(p,f))<8 else ('arr',np.shape(getattr(p,f)))) for f in p._fieldnames})
+print([f for f in rec.stimuli[0]._fieldnames])
+E
 ```
 
 ```
 Exit code 1
+/bin/bash: line 1: cd: entries/asari-2009: No such file or directory
+Sun Nov 15 16:49:32 UTC 2026
 Traceback (most recent call last):
-  File "<stdin>", line 2, in <module>
-  File "entries/asari-2009/asari.py", line 51, in <module>
+  File "<stdin>", line 1, in <module>
+  File "entries/asari-2009/ctxdep.py", line 47, in <module>
     import fsspec
 ModuleNotFoundError: No module named 'fsspec'
 ```
@@ -478,1419 +438,1481 @@ ModuleNotFoundError: No module named 'fsspec'
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 431,450p docs/protocol.md; ls -a entries/asari-2009 executed/asari-2009; grep -n "venv\|def cmd_\|uv " tools/entry.py | head -30
-```
-
-````
-### 4. Lock, check and run
-
-```bash
-python tools/entry.py lock entries/<name>
-python tools/entry.py all  entries/<name>    # check, then run from a clean environment
-```
-
-`lock` pins every package, with its hashes, for the entry's Python version, and records that version as
-`python` in entry.yaml (the registry's current one for a new entry). Commit notebooks without outputs. Read the executed copy in
-`executed/<name>/` and confirm the conclusions still match the numbers: counts
-near a threshold can move when a random split changes.
-
-`run` keeps a stamp of what it ran from beside the executed copies in
-`executed/<name>/`. When nothing it reads has changed since (the entry's files,
-which name its Python and its datasets' versions), `run` and `all` reuse those
-copies, say so, and execute nothing; `--fresh` executes all the same. A run of
-yours starts with the executed copies of the entry as it is, when a run of it
-was kept, so a session that changes nothing in the entry need not run it
-again. Any edit to the entry makes the next `run` a real one.
-
-[... 29 more lines not kept]
-````
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && timeout 600 executed/asari-2009/.venv/bin/python - <<'EOF'
-import sys; sys.path.insert(0,'entries/asari-2009')
-import asari, numpy as np
-idx=asari.member_index()
-for key in ['20060916-ha3-002-002','20060320-ha1-001-002']:
-    k=[k for k in idx if key in k][0]; print(k)
-    m=asari.load_recording(k, variables=['param'])
-    p=m['param']
-    for s in np.atleast_1d(p.stimulus)[:4]:
-        print(s.name, s.param._fieldnames)
-        for f in s.param._fieldnames:
-            v=getattr(s.param,f); print('  ',f, v if np.size(v)<20 else (type(v), np.shape(v)))
-EOF
+cd  grep -n "venv\|uv " tools/entry.py | head -20; ls -a ~/.cache 2>/dev/null | head; ls -d .venv* /tmp/*venv* $TMPDIR/* 2>/dev/null | head
 ```
 
 ```
-Results/20060916-ha3-002/20060916-ha3-002-002.mat
-natural sound (probe) ['ramp', 'duration', 'sf']
-   ramp 5
-   duration 5475.0143360367
-   sf 97656
-naturalistic sound (forward) ['ramp', 'sf', 'tempmod', 'specmod', 'SFtemp', 'SFspec', 'envphase', 'sinphase', 'dx', 'ff', 'duration']
-   ramp 5
-   sf 97656
-   tempmod [-19.97776605  19.77164505   8.39023339   0.45859312  -8.68251408
- -19.40087548   4.91543282 -18.96162385 -15.2948873   -4.64111758
-  14.29880861   8.09673467 -18.85840926  19.2778051    0.73851169
-  19.83672424]
-   specmod (<class 'numpy.ndarray'>, (31,))
-   SFtemp 3
-   SFspec 6
-   envphase 3.4483112998305607
-   sinphase (<class 'numpy.ndarray'>, (129,))
-   dx 0.015625
-   ff [ 250 1000]
-   duration 5000
-[... 80 more lines not kept]
+519:        if any(part in ("__pycache__", ".ipynb_checkpoints", ".venv") or part.endswith(".pyc") for part in rel.parts):
+555:    venv = (output_dir / ".venv").resolve()
+556:    python = venv / "bin" / "python"
+560:    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", python_of(entry_dir), str(venv)],
+563:                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
+577:            env={**os.environ, "JUPYTER_PATH": str(venv / "share" / "jupyter")})
+/tmp/claude-1001/-home-runner-work--temp
+/tmp/claude-1001/-home-runner-work-encore-encore
+/tmp/claude-1001/bash-edit-diff
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n "id: fig8c-relative-effects" -A35 claims/asari-2009.yaml
+cd  ls -a executed/asari-2009/; sed -n 545,575p tools/entry.py
 ```
 
 ```
-581:- id: fig8c-relative-effects
-582-  statement: Changes in amplitude and frequency of the conditioning stimuli produced context
-583-    effects as large and long-lasting as natural sound contexts, while AM, FM and higher-order
-584-    changes produced substantially smaller and shorter effects; A1 is more sensitive to
-585-    lower-order than to higher-order properties.
-586-  source: Figure 8C; Results, Relation to stimulus properties, paragraphs 2 to 4
-587-  quote: The effects were as large and long-lasting as those induced when natural sounds were
-588-    used as conditioning stimuli (Fig. 8, B and C) ... but the effects were substantially smaller
-589-    and shorter than the effects induced by the changes in natural sound contexts (Fig. 8C)
-590-  depends_on:
-591-  - fig8b-decay-by-property
-592-  - fig3b-fractional-power-decay
-593-  criterion: Per the Methods (Eq. 21 and the paragraph after it), the area under Q(t) from 0 to 4
-594-    s for each property, divided by the area for natural sounds (Figure 3B), with 95% confidence
-595-    intervals from 200 resamplings of 1000 samples. The paper does not say what a sample is;
-596-    readings are probes drawn with replacement, and trials drawn with replacement within each
-597-    probe and context. Reproduced when, under one reading, the intervals for amplitude and
-598-    frequency include 1 (or lie above it) and those for AM, FM and higher-order lie below 1 and
-599-    below the lower bounds of amplitude and frequency; partially reproduced when the point
-600-    estimates fall in that pattern but some intervals do not.
+.
+..
+.clean-run.json
+.venv
+reproduce_asari_2009.ipynb
+result.json
+strf_asari_2009.ipynb
+    stamp = None if fresh else reusable(entry_dir, output_dir, max_minutes)
+    if stamp:
+        when = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(stamp["finished"]))
+        for r in stamp["results"]:
+            print(f"pass  {r['notebook']}  ({r['seconds']} s, reused)")
+        print(f"reused the executed copies of {when}: nothing the run reads has changed since (hash "
+              f"{stamp['hash'][:12]}). Nothing was executed and no environment was built; --fresh runs it again.")
+        return 0
+    (output_dir / STAMP).unlink(missing_ok=True)   # whatever is there is no longer what a run left
+    output_dir.mkdir(parents=True, exist_ok=True)
+    venv = (output_dir / ".venv").resolve()
+    python = venv / "bin" / "python"
+    # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
+[... 18 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; PY=executed/asari-2009/.venv/bin/python; timeout 900 $PY - <<'E'
+import ctxdep as cd, numpy as np
+idx=cd.member_index()
+paths=[k for k in idx if '20060916-ha3-002-002' in k]
+print(paths)
+rec=cd.load_recording(paths[0])
+print(rec.notes)
+for i,s in enumerate(rec.stimuli,1):
+    p=s.param
+    print(i, s.name, '|', cd._txt(s.description), '|', {f:(getattr(p,f) if np.size(getattr(p,f))<8 else ('arr',np.shape(getattr(p,f)))) for f in p._fieldnames})
+print([f for f in rec.stimuli[0]._fieldnames])
+E
+```
+
+```
+['Results/20060916-ha3-002/20060916-ha3-002-002.mat']
+['Stimulus sequences are given as follows.', 'Seq.1:  6  1  8  1', 'Seq.2:  10   1   7   1', 'Seq.3:  5   1  12   1', 'Seq.4:  13   1   9   1', 'Seq.5:  11   1   3   1', 'Seq.6:  1  4  1  2  1', '', 'Effective repeats:  4', '', 'See also SoundTrans.m, DMRipple2.m, and MHTones.m.', '', 'Forgot to save the state of RANDN function.']
+1 natural sound (probe) | neotropical-mammals-2 Track 06 (Buffy-headed marmoset) From 41.275 to 46.75 sec | {'ramp': 5, 'duration': 5475.0143360367, 'sf': 97656}
+2 naturalistic sound (forward) | DMR; frequency variants | {'ramp': 5, 'sf': 97656, 'tempmod': ('arr', (16,)), 'specmod': ('arr', (31,)), 'SFtemp': 3, 'SFspec': 6, 'envphase': 3.4483112998305607, 'sinphase': ('arr', (129,)), 'dx': 0.015625, 'ff': array([ 250, 1000], dtype=uint16), 'duration': 5000}
+3 naturalistic sound (forward) | DMR; frequency variants | {'ramp': 5, 'sf': 97656, 'tempmod': ('arr', (16,)), 'specmod': ('arr', (31,)), 'SFtemp': 3, 'SFspec': 6, 'envphase': 3.4483112998305607, 'sinphase': ('arr', (129,)), 'dx': 0.015625, 'ff': array([ 500, 2000], dtype=uint16), 'duration': 5000}
+4 naturalistic sound (forward) | DMR; frequency variants | {'ramp': 5, 'sf': 97656, 'tempmod': ('arr', (16,)), 'specmod': ('arr', (31,)), 'SFtemp': 3, 'SFspec': 6, 'envphase': 3.4483112998305607, 'sinphase': ('arr', (129,)), 'dx': 0.015625, 'ff': array([1000, 4000], dtype=uint16), 'duration': 5000}
+5 naturalistic sound (forward) | DMR; frequency variants | {'ramp': 5, 'sf': 97656, 'tempmod': ('arr', (16,)), 'specmod': ('arr', (31,)), 'SFtemp': 3, 'SFspec': 6, 'envphase': 3.4483112998305607, 'sinphase': ('arr', (129,)), 'dx': 0.015625, 'ff': array([2000, 8000], dtype=uint16), 'duration': 5000}
+6 naturalistic sound (forward) | DMR; frequency variants | {'ramp': 5, 'sf': 97656, 'tempmod': ('arr', (16,)), 'specmod': ('arr', (31,)), 'SFtemp': 3, 'SFspec': 6, 'envphase': 3.4483112998305607, 'sinphase': ('arr', (129,)), 'dx': 0.015625, 'ff': arra
+[... 8 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; PY=executed/asari-2009/.venv/bin/python; timeout 900 $PY - <<'E'
+import ctxdep as cd, numpy as np, collections
+idx=cd.member_index()
+rec=cd.load_recording('Results/20060916-ha3-002/20060916-ha3-002-002.mat')
+for s in rec.stimuli[:3]: print(repr(s.file))
+ks=list(idx)
+print(len(ks)); print(collections.Counter(k.split('/')[0] for k in ks))
+print([k for k in ks if 'DMR' in k or 'ipple' in k or k.lower().endswith(('.wav','.f32'))][:30])
+print([k for k in ks if not k.startswith('Results/')][:80])
+E
+```
+
+```
+'class6/6l.mat'
+array([], dtype=float64)
+array([], dtype=float64)
+346
+Counter({'Results': 346})
+[]
+[]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; sed -n 73,102p ctxdep.py; PY=executed/asari-2009/.venv/bin/python; timeout 900 $PY - <<'E'
+import ctxdep as cd
+for z in cd.ZIPS:
+    n=cd.open_zip(z).namelist()
+    print(z,len(n))
+    print([x for x in n if 'DMR' in x or 'ipple' in x or 'Stim' in x or x.endswith('.m')][:80])
+E
+```
+
+```
+def open_zip(name: str) -> zipfile.ZipFile:
+    return zipfile.ZipFile(fsspec.open(BASE + name, block_size=2**22).open())
+
+
+def checksums() -> dict:
+    with fsspec.open(BASE + "checksums.md5", "rt") as f:
+        return {ln.split()[1]: ln.split()[0] for ln in f if ln.strip()}
+
+
+def bucket_listing() -> list:
+    import urllib.request
+    xml = urllib.request.urlopen(BASE.replace("ac-1/", "") + "?list-type=2&prefix=ac-1/").read().decode()
+    return re.findall(r"<Key>(.*?)</Key>.*?<Size>(\d+)</Size>", xml)
+
+
+@functools.lru_cache(maxsize=None)
+def member_index() -> dict:
+    """Map 'Results/<cell>/<file>.mat' (as Summary.mat names files) to (zip, member)."""
+    idx = {}
+    for zn in ZIPS[1:]:
 [... 16 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/asari-2009; python - <<'EOF'
-import json
-d=json.load(open('reproduce_asari_2009.ipynb'))
-for i in (6,34,55):
-    print('#####',i); print(''.join(d['cells'][i]['source']))
-e=json.load(open('../../executed/asari-2009/reproduce_asari_2009.ipynb'))
-for i in (55,73):
-    print('#####OUT',i); print(''.join(''.join(o.get('text','')) for o in e['cells'][i]['outputs'])[:5000])
-EOF
-sed -n 380,425p asari.py; sed -n 584,690p asari.py
+cd entries/asari-2009; PY=executed/asari-2009/.venv/bin/python; timeout 900 $PY - <<'E'
+import ctxdep as cd
+z=cd.open_zip('crcns-ac1.zip')
+n=z.namelist()
+ms=[x for x in n if x.endswith('.m')]
+print(ms)
+for x in ms:
+    if 'ipple' in x or 'DMR' in x or 'TORC' in x or 'Trans' in x:
+        print('=====',x); print(z.read(x).decode('latin1')[:6000])
+E
 ```
 
 ```
-##### 6
-todo = rows[rows.in_zip].drop_duplicates("file")
-if SUBSET:
-    todo = todo.groupby("group").head(SUBSET)
+['asari/Contents.m', 'asari/Tools/ViewResp.m', 'asari/Tools/ViewCxtDep.m', 'asari/Tools/SoundTrans.m', 'asari/Tools/TuningCurve.m', 'asari/Tools/PinkNoise.m', 'asari/Tools/MovingRipple4.m', 'asari/Tools/MHTones.m', 'asari/Tools/MakeWhiteNoise.m', 'asari/Tools/MakeTone.m', 'asari/Tools/MakeRandomChords.m', 'asari/Tools/MakeRamp.m', 'asari/Tools/logspectrogram.m', 'asari/Tools/GetSpikes.m', 'asari/Tools/GetEvoked.m', 'asari/Tools/GetData.m', 'asari/Tools/DMRipple2.m', 'asari/Tools/CxtDep.m', 'wehr/Contents.m', 'wehr/Tools/ViewSTRF.m', 'wehr/Tools/ViewResponse.m', 'wehr/Tools/STRFanalysis.m', 'wehr/Tools/ridgesvd1.m', 'wehr/Tools/MakeWhiteNoise.m', 'wehr/Tools/MakeTuningCurve.m', 'wehr/Tools/MakeTone.m', 'wehr/Tools/MakeRamp.m', 'wehr/Tools/logspectrogram.m', 'wehr/Tools/GetSpikes.m', 'wehr/Tools/GetEvoked.m', 'wehr/Tools/GetDataInfo.m']
+===== asari/Tools/SoundTrans.m
+function X = SoundTrans(y,param)
 
-def process(row):
-    m = asari.load_recording(row.file)
-    kind = str(m["param"].recording.type)
-    context = row.description != "tuning curve"
-    if kind == "Cell-attached":
-        out = asari.mgb_file_pass(m, do_context=(row.group == 1 and context))
-    else:
-        rng = np.random.default_rng(zlib.crc32(row.file.encode()))
-        out = asari.a1_file_pass(m, do_context=(row.group == 0 and context), rng=rng)
-        info = out["info"]
-        if row.group == 2 and context and (info["rep"] or 0) >= 4:
-            out["synthetic"] = asari.synthetic_file_pass(m, rng=rng)
-        if row.group == 2 and context:
-            trig = asari.sequence_triggers(m["triggers"])
-            out["stimuli"] = asari.stimulus_table(m["param"])
-[... 294 more lines not kept]
+%SOUNDTRANS trnasforms sound signals according to give parameters
+%
+%   X=SoundTrans(Y,PARAM);
+%     transforms signal Y in PARAM.SF Hz based on the parameters PARAM:
+%       1. shifts spectrum of Y by PARAM.DF Hz.
+%       2. apply PARAM.RAMP-msec-ramp at the beggining and the end of Y.
+%       3. scale Y by PARAM.ATTENUATION
+%       4. scramble sequences of syllables as specified by PARAM.SYLLABLES.
+%
+%
+%   ----- INPUT -----
+%     Y       : original signal (column vector)
+%     PARAM   : structure to specify parameters
+%       .sf         : sampling frequency (default: 8000 Hz)
+%       .df         : frequency shift size in Hz (default: 0 Hz)
+%       .ff         : a vector whose 1st and 2nd elements specify the
+[... 529 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-free -g; nproc; python - <<'EOF'
+cd entries/asari-2009; sed -n 205,335p ctxdep.py; python3 - <<'E'
 import json
-d=json.load(open('strf_wehr.ipynb'))
-e=json.load(open('../../executed/asari-2009/strf_wehr.ipynb'))
-for i in (6,7,8,9):
-    print('#####',i); print(''.join(d['cells'][i]['source']))
-    print('---OUT'); print(''.join(''.join(o.get('text','')) for o in e['cells'][i].get('outputs',[]))[:4000])
-EOF
+nb=json.load(open('reproduce_asari_2009.ipynb'))
+for i in (1,3):
+    print(f"=== {i}\n"+''.join(nb['cells'][i]['source']))
+E
 ```
 
 ```
-total        used        free      shared  buff/cache   available
-Mem:              15           1          12           0           2          14
-Swap:              2           0           2
-4
-##### 6
-READ = [("hann 10 ms", 10, ("contiguous", "stimulus")), ("hann 20 ms", 20, ("contiguous",))]
-def run(c):
-    out = []
-    for name, win, schemes in READ:
-        specs, n_pads = W.cell_specs(data[c], win)
-        for r in W.fit_cell(data[c], specs, n_pads, schemes=schemes):
-            out.append({"cell": c, "window_fn": name, **r})
-    return out
-t0 = time.time()
-with ThreadPoolExecutor(3) as ex:
-    res = pd.DataFrame([r for o in ex.map(run, use) for r in o])
-print(f"Models fitted in {(time.time() - t0) / 60:.1f} min; peak memory {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.1f} GB")
-print("Fits whose best ridge value is at an end of the grid:", int((~res.ridge_interior).sum()), "of", len(res),
-      "; by cell:", res[~res.ridge_interior].groupby("cell").size().to_dict())
----OUT
-[... 106 more lines not kept]
+@dataclass
+class Probe:
+    cell: str
+    path: str
+    probe: int            # fragment index (1-based), or 0 for the silence probe
+    contexts: list        # context fragment per group (0 = silence)
+    traces: list          # per context: (n_trials, T) arrays at 1 kHz (median filtered)
+    n_trials: list        # trials available per context before truncation
+    duration: float       # s
+    spikes: list | None = None   # per context: list of spike-time arrays (s, from probe onset)
+    kind: str = ""
+
+    @property
+    def rep(self) -> int:
+        return min(self.n_trials)
+
+
+def build_probes(rec: Recording, include_silence_context: bool = True, include_silence_probe: bool = False,
+                 spikes: np.ndarray | None = None) -> list:
+    """Port of CxtDep.m: all probes with at least two distinct contexts.
+[... 145 more lines not kept]
 ```
 
-**Agent calls Edit**
+**Agent calls Bash**
 
-```json
-{
- "replace_all": false,
- "file_path": "entries/asari-2009/asari.py",
- "old_string": "    inv = (n * mt.mean(0) ** 2 - (mt ** 2).mean(0)) / (n - 1)\n    return pred, inv\n",
- "new_string": "    inv = (n * mt.mean(0) ** 2 - (mt ** 2).mean(0)) / (n - 1)\n    return pred, inv\n\n\nBOOT_N = 200          # paper (Eq. 21): 200 resamplings\nBOOT_BIN = 200        # 20-ms bins for the resampled curves (a standard choice, to keep them in memory)\nBOOT_T = 40000        # the first 4 s, the range of the areas of Figure 8C\n\n\ndef frac_power_trial_boot(data, rng, n_boot=BOOT_N, chunk=25):\n    \"\"\"Trial reading of a resampled 'sample' (Eq. 21): trials drawn with replacement within each\n    context, Eqs. 17 and 18 recomputed as frac_power does for each draw, kept over the first 4 s\n    in 20-ms bins. Returns pred and inv (n_boot x 200, float32) and the number of whole bins the\n    probe covers.\"\"\"\n    n, rep, T = data.shape\n    d = data.astype(np.float32)\n    d = d - d.mean(axis=2, keepdims=True)\n    nb = min(T, BOOT_T) // BOOT_BIN\n    d = d[:, :, :nb * BOOT_BIN]\n    d2 = d ** 2\n    out_p = np.zeros((n_boot, BOOT_T // BOOT_BIN), np.float32)\n    out_i = np.zeros_like(out_p)\n    for b0 in range(0, n_boot, chunk):\n        B = min(chunk, n_boot - b0)\n        w = rng.multinomial(rep, np.full(rep, 1 / rep), size=(B, n)).astype(np.float32) / rep\n        mt = np.stack([w[:, c] @ d[c] for c in range(n)], 1)         # B x n x L, context means\n        tot = np.stack([w[:, c] @ d2[c] for c in range(n)], 1)\n        pred = ((rep * mt ** 2 - tot) / (rep - 1)).mean(1)\n        inv = (n * mt.mean(1) ** 2 - (mt ** 2).mean(1)) / (n - 1)\n        out_p[b0:b0 + B, :nb] = pred.reshape(B, nb, BOOT_BIN).mean(2)\n        out_i[b0:b0 + B, :nb] = inv.reshape(B, nb, BOOT_BIN).mean(2)\n    return out_p, out_i, nb\n"
+```bash
+cd entries/asari-2009; python3 - <<'E'
+import json
+nb=json.load(open('reproduce_asari_2009.ipynb'))
+print(''.join(nb['cells'][4]['source']))
+E
+```
+
+```
+NAT, MGB, SYN, MISC = S[0], S[1], S[2], S[3]
+assert "natural sound" in NAT["description"] and "Thalamic" in MGB["description"]
+assert "synthetic" in SYN["description"]
+
+
+def fig8_tests(rec):
+    """Significance (contexts of one property set only) and fractional power of every probe
+    with at least two contexts of a set, each with at least 4 trials (Fig. 8)."""
+    kinds = [cd.stim_kind(s) for s in rec.stimuli]
+    sets = cd.property_sets(rec)
+    tests = []
+    for p in (cd.build_probes(rec, include_silence_context=False) if sets else []):
+        for k, S in enumerate(sets):
+            ctx = [c for c, X in zip(p.contexts, p.traces) if c in S["members"] and X.shape[0] >= 4]
+            if len(ctx) < 2:
+                continue
+            r = cd.kw_significance(p, contexts_subset=ctx, rng=seed(rec.path, p.probe, "fig8", k))
+            fp = cd.frac_power(p, contexts_subset=ctx)
+            tests.append(dict(cell=p.cell, path=rec.path, probe=p.probe, kind=kinds[p.probe - 1], prop=S["prop"], label=S["label"],
+                              members=tuple(S["members"]), main=S["main"], own=p.probe in S["members"], ctx=tuple(ctx), rep=r["rep"],
+[... 73 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; PY=executed/asari-2009/.venv/bin/python; time timeout 900 $PY - <<'E'
+import ctxdep as cd, numpy as np, zlib, re
+def seed(*parts): return np.random.default_rng([zlib.crc32("/".join(map(str, parts)).encode())])
+src = cd.open_zip("crcns-ac1.zip").read("asari/Tools/DMRipple2.m").decode("latin1")
+print([l.strip() for l in src.splitlines() if re.search(r"\.ff |f = ff\(1\)|ysin = ", l)])
+paths = ["20060916-ha3-002","20060916-ha3-003","20060916-ha4-001","20060916-ha5-002","20060917-ha1-002"]
+sub = [(250.,1000.),(1000.,4000.),(4000.,16000.)]
+for c in paths:
+    path=f"Results/{c}/{c}-002.mat"
+    rec=cd.load_recording(path)
+    st=rec.stimuli
+    for p in cd.build_probes(rec, include_silence_context=False):
+        if cd.stim_kind(st[p.probe-1])!="natural": continue
+        for d in ("forward","backward"):
+            ctx=[c_ for c_,X in zip(p.contexts,p.traces) if c_>0 and "DMR; frequency" in cd._txt(st[c_-1].description) and f"({d})" in str(st[c_-1].name) and cd._par(st[c_-1],"ff") in sub and X.shape[0]>=4]
+            bands=[cd._par(st[c_-1],"ff") for c_ in ctx]
+            if len(ctx)<2: print(c,p.probe,d,"contexts",ctx); continue
+            r=cd.kw_significance(p,contexts_subset=ctx,rng=seed(path,p.probe,"fig7",d))
+            s=r["sig"]
+            print(c,p.probe,d,ctx,bands,r["rep"],round(p.duration,2), s.any(), (np.where(s)[0].max()/cd.FS if s.any() else None))
+E
+```
+
+```
+['%           .ff      : frequency range in Hz', 'f = ff(1)*2.^x;', 'ysin = sin(2*pi*f*t+repmat(sinphase,1,length(t))); % original sinusoidals', 'param.ff = ff;']
+20060916-ha3-002 1 forward [2, 4, 6] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 4 5.48 True 0.05
+20060916-ha3-002 1 backward [8, 10, 12] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 4 5.48 False None
+20060916-ha3-003 1 forward [2, 4, 6] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 4 5.7 False None
+20060916-ha3-003 1 backward [8, 10, 12] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 4 5.7 False None
+20060916-ha4-001 1 forward [2, 4, 6] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 6 5.08 True 4.532
+20060916-ha4-001 1 backward [8, 10, 12] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 6 5.08 True 0.18
+20060916-ha5-002 1 forward [2, 4, 6] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 6 5.8 True 5.354
+20060916-ha5-002 1 backward [8, 10, 12] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 6 5.8 True 2.777
+20060917-ha1-002 1 forward [2, 4, 6] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 6 5.08 True 1.253
+20060917-ha1-002 1 backward [8, 10, 12] [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)] 6 5.08 True 0.109
+
+real	0m9.947s
+user	0m10.166s
+sys	0m0.585s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls transcripts/asari-2009/; grep -n -i "fig7\|B12\|B11\|tuning files" transcripts/asari-2009/verifier-1-report.md | head -30
+```
+
+```
+answer-report.md
+answer.md
+author-answers-report.md
+author-answers.md
+author-report.md
+author-revise-1-report.md
+author-revise-1.md
+author-revise-2-report.md
+author-revise-2.md
+author.md
+claims-check-report.md
+claims-check.md
+claims-report.md
+claims.md
+recorder-report.md
+recorder.md
+verifier-1-report.md
+verifier-1.md
+verifier-2-report.md
+verifier-2.md
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls schemas; python3 - <<'E'
+import json,glob
+for f in glob.glob('schemas/*attempt*'):
+    s=json.load(open(f)) if f.endswith('json') else None
+    print(f)
+E
+grep -n -A40 '"verifications"' schemas/attempt*.json | grep -n -i "outcome\|required\|agrees\|proposed\|response\|reason" | head -40
+```
+
+```
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+paper-match.schema.json
+schemas/attempt.schema.json
+6:391-        "required": [
+32:417-              "required": [
+34:419-                "agrees"
+40:425-                "agrees": {
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 380,470p schemas/attempt.schema.json; grep -n -B2 -A30 '"proposed"' schemas/attempt.schema.json | head -60
+```
+
+```
 }
-```
-
-```
-The file entries/asari-2009/asari.py has been updated successfully.
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import re
-s=open('asari.py').read()
-s=s.replace('''def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE):
-    """One whole-cell recording: firing rates, and when do_context, the per-probe measures."""''','''def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE, boot_rng=None):
-    """One whole-cell recording: firing rates, and when do_context, the per-probe measures.
-    With boot_rng, the trial-resampled fractional powers of each probe (frac_power_trial_boot)."""''')
-s=s.replace('''            p2, i2 = frac_power(d[keep])
-            nosil = {"signif": s2, "noise": n2.astype(np.float32), "pred": p2.astype(np.float32),
-                     "inv": i2.astype(np.float32)}''','''            p2, i2 = frac_power(d[keep])
-            nosil = {"signif": s2, "noise": n2.astype(np.float32), "pred": p2.astype(np.float32),
-                     "inv": i2.astype(np.float32)}
-            if boot_rng is not None:
-                nosil["boot"] = frac_power_trial_boot(d[keep], boot_rng)''')
-s=s.replace('''                       "rel_pairs_ctx": [float(v) for v in pairs], "noise_ac": ac})
-    out["probes"] = probes''','''                       "rel_pairs_ctx": [float(v) for v in pairs], "noise_ac": ac,
-                       "boot": frac_power_trial_boot(d, boot_rng) if boot_rng is not None else None})
-    out["probes"] = probes''')
-s=s.replace('''def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE):''','''def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE, boot_rng=None):''')
-s=s.replace('''    (at least two of its contexts in the set) gives one entry; `largest` marks, per probe and
-    property, the set with the most contexts (the first when tied)."""''','''    (at least two of its contexts in the set) gives one entry; `largest` marks, per probe and
-    property, the set with the most contexts (the first when tied). With boot_rng, the
-    trial-resampled fractional powers of each entry (frac_power_trial_boot)."""''')
-s=s.replace('''                            "inv": inv.astype(np.float32)})
-    return out''','''                            "inv": inv.astype(np.float32),
-                            "boot": frac_power_trial_boot(d, boot_rng) if boot_rng is not None else None})
-    return out''')
-open('asari.py','w').write(s)
-EOF
-grep -n "boot" asari.py
-```
-
-```
-401:def frac_power_trial_boot(data, rng, n_boot=BOOT_N, chunk=25):
-404:    in 20-ms bins. Returns pred and inv (n_boot x 200, float32) and the number of whole bins the
-412:    out_p = np.zeros((n_boot, BOOT_T // BOOT_BIN), np.float32)
-414:    for b0 in range(0, n_boot, chunk):
-415:        B = min(chunk, n_boot - b0)
-614:def a1_file_pass(m, do_context, rng=None, n_shuffle=N_SHUFFLE, boot_rng=None):
-616:    With boot_rng, the trial-resampled fractional powers of each probe (frac_power_trial_boot)."""
-659:            if boot_rng is not None:
-660:                nosil["boot"] = frac_power_trial_boot(d[keep], boot_rng)
-669:                       "boot": frac_power_trial_boot(d, boot_rng) if boot_rng is not None else None})
-845:def synthetic_file_pass(m, rng=None, n_shuffle=N_SHUFFLE, boot_rng=None):
-850:    property, the set with the most contexts (the first when tied). With boot_rng, the
-851:    trial-resampled fractional powers of each entry (frac_power_trial_boot)."""
-882:                            "boot": frac_power_trial_boot(d, boot_rng) if boot_rng is not None else None})
+            }
+          }
+        ]
+      }
+    },
+    "verifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "kind",
+          "by",
+          "results"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+[... 104 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-s=open('asari.py').read()
-old='''        for f in STIM_FIELDS:
-            v = getattr(s.param, f, None)
-            if v is not None and np.size(v):
-                d[f] = tuple(float(np.round(a, 3)) for a in np.atleast_1d(v))
-        rows.append(d)'''
-new='''        for f in STIM_FIELDS:
-            v = getattr(s.param, f, None)
-            if v is not None and np.size(v):
-                d[f] = tuple(float(np.round(a, 3)) for a in np.atleast_1d(v))
-        if hasattr(s.param, "tempmod"):
-            # DMR modulation parameters (DMRipple2.m): one CRC-32 over them, equal when two DMRs share them
-            raw = b"".join(np.atleast_1d(getattr(s.param, f, [])).astype(np.float64).tobytes() for f in DMR_MOD_FIELDS)
-            d["modulation"] = "%08x" % zlib.crc32(raw)
-        rows.append(d)'''
-assert old in s
-s=s.replace(old,new)
-s=s.replace('''STIM_FIELDS = ("ff", "df", "attenuation", "f0", "AMmean", "AMstd", "AMrange", "FMrange", "FMstd")''','''STIM_FIELDS = ("ff", "df", "attenuation", "f0", "AMmean", "AMstd", "AMrange", "FMrange", "FMstd")
-DMR_MOD_FIELDS = ("tempmod", "specmod", "SFtemp", "SFspec", "envphase", "sinphase", "dx")''')
-s=s.replace("import re\n","import re\nimport zlib\n",1)
-open('asari.py','w').write(s)
-EOF
-sed -n 45,56p asari.py
-```
-
-```
-from __future__ import annotations
-
-import io
-import re
-import zlib
-from functools import lru_cache
-
-import fsspec
-import numpy as np
-import scipy.io as sio
-from scipy import ndimage, optimize, signal, stats
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's|    sets (DMR and TORC bands .ff., SoundTrans shift .df. and .attenuation., MHT parameters)."""|    sets (DMR and TORC bands '"'"'ff'"'"', SoundTrans shift '"'"'df'"'"' and '"'"'attenuation'"'"', MHT parameters), and for\n    DMRs a checksum of their modulation parameters."""|' asari.py; sed -n 722,740p asari.py; python - <<'EOF'
+cd  python3 - <<'E'
 import json
-d=json.load(open('reproduce_asari_2009.ipynb'))
-for i in (1,56,72):
-    print('#####',i); print(''.join(d['cells'][i]['source']))
-EOF
+nb=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
+for i in (17,19,24,28,39):
+    c=nb['cells'][i]
+    print(f"=== {i}\n"+''.join(c['source']))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print('>>>', ''.join(o['text'])[:5000])
+E
 ```
 
 ```
-PROPERTIES = ("amplitude", "frequency", "AM", "FM", "higher-order")
-
-
-def _num(v):
-    a = np.atleast_1d(v).astype(float)
-    return tuple(np.round(a, 6)) if a.size else ()
-
-
-STIM_FIELDS = ("ff", "df", "attenuation", "f0", "AMmean", "AMstd", "AMrange", "FMrange", "FMstd")
-DMR_MOD_FIELDS = ("tempmod", "specmod", "SFtemp", "SFspec", "envphase", "sinphase", "dx")
-
-
-def stimulus_table(param):
-    """Per stimulus (1-based): name, description and the parameters that define the property
-    sets (DMR and TORC bands 'ff', SoundTrans shift 'df' and 'attenuation', MHT parameters), and for
-    DMRs a checksum of their modulation parameters."""
+=== 17
+def cell_rates(objs, key=None, files="all"):
     rows = []
-    for k, s in enumerate(np.atleast_1d(getattr(param, "stimulus", [])), 1):
-        d = {"stim": k, "name": " ".join(str(s.name).split()), "description": " ".join(str(s.description).split())}
-##### 1
-[... 69 more lines not kept]
-```
+    for o in objs:
+        if files == "seq" and o["desc"] == "tuning curve":
+            continue
+        if files == "tuning" and o["desc"] != "tuning curve":
+            continue
+        r = o["rates"][key] if key is not None else o["rates"]
+        rows.append(dict(cell=o["cell"], **r))
+    d = pd.DataFrame(rows).groupby("cell").sum()
+    return pd.DataFrame(dict(spont=d.n_sp / d.t_sp, pre=d.n_pre / d.t_pre, evoked=d.n_ev / d.t_ev))
 
-**Agent**
 
-Now the notebook code changes.
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-fn='reproduce_asari_2009.ipynb'
-d=json.load(open(fn))
-C=d['cells']
-def get(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.splitlines(keepends=True)
-
-s=get(6)
-old='''        rng = np.random.default_rng(zlib.crc32(row.file.encode()))
-        out = asari.a1_file_pass(m, do_context=(row.group == 0 and context), rng=rng)'''
-new='''        rng = np.random.default_rng(zlib.crc32(row.file.encode()))
-        boot_rng = np.random.default_rng([zlib.crc32(row.file.encode()), 1])   # trial resampling of Figure 8C, apart from rng
-        out = asari.a1_file_pass(m, do_context=(row.group == 0 and context), rng=rng, boot_rng=boot_rng)'''
-assert old in s; s=s.replace(old,new)
-old='''            out["synthetic"] = asari.synthetic_file_pass(m, rng=rng)'''
-assert old in s; s=s.replace(old,'''            out["synthetic"] = asari.synthetic_file_pass(m, rng=rng, boot_rng=boot_rng)''')
-put(6,s)
-
-s=get(22)
-s+='''
-ex_cell = rel[rel.file == "20051222-ha1-001-002.mat"]
-print("\\nReliability (pairs of trials) of each probe of 20051222-ha1-001-002, the cell whose reliability matches Figure 2A:")
-print(ex_cell[["probe", "pairs"]].round(3).to_string(index=False))
-'''
-put(22,s)
-
-s=get(70)
-old='''    cols = [c for c in ["stim", "name", "description", "ff", "df", "attenuation"] if c in tabs]'''
-assert old in s
-s=s.replace(old,'''    cols = [c for c in ["stim", "name", "description", "ff", "df", "attenuation", "modulation"] if c in tabs]''')
-s=s.replace('''print("Stimuli of every DMR, TORC and SoundTrans recording in group 2 (bands 'ff' in Hz; DMRipple2.m reads a 4-element ff as two bands; "
-      "'df' is the SoundTrans frequency shift), grouped by identical stimulus lists:")''','''print("Stimuli of every DMR, TORC and SoundTrans recording in group 2 (bands 'ff' in Hz; DMRipple2.m reads a 4-element ff as two bands; "
-      "'df' is the SoundTrans frequency shift; 'modulation' a CRC-32 of a DMR's modulation parameters " + ", ".join(asari.DMR_MOD_FIELDS) + "), "
-      "grouped by identical stimulus lists:")''')
-old='''print(f"\\nRecordings with three conditioning stimuli'''
-assert old in s
-s=s.replace(old,'''print("\\nDMR frequency variants: per recording, the distinct bands and the distinct modulation checksums among them:")
-for r in results:
-    for st in [pd.DataFrame(r["stimuli"])] if r.get("stimuli") is not None and "dmr" in r["info"]["trigger_types"] else []:
-        fv = st[st.description.str.contains("frequency variants")]
-        if len(fv):
-            print(f"  {r['file'].split('/')[-1]}: {len(fv)} stimuli, {fv.ff.nunique()} bands, {fv.modulation.nunique()} modulation checksum(s) {sorted(fv.modulation.unique())}")
-'''+old)
-put(70,s)
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-EOF
-git diff --stat .
-```
-
-```
-entries/asari-2009/asari.py                   | 57 +++++++++++++++++++++++----
- entries/asari-2009/reproduce_asari_2009.ipynb | 21 +++++++---
- 2 files changed, 66 insertions(+), 12 deletions(-)
+out = []
+for h in (10, 15, 20):
+    for files in ("all", "seq"):
+        r = cell_rates(A1, h, files)
+        out.append(dict(region="A1", detector=f"{h} mV", files=files, cells=len(r), spont_mean=r.spont.mean(), spont_sd=r.spont.std(),
+                        pre_mean=r.pre.mean(), pre_sd=r.pre.std(), evoked_mean=r.evoked.mean(), evoked_sd=r.evoked.std()))
+[... 91 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import json
-fn='reproduce_asari_2009.ipynb'
-d=json.load(open(fn))
-C=d['cells']
-s=''.join(C[55]['source'])
-old='''rows8c = []
-for reading in SYr:
-    for ref, (a0, bt0, _) in nat_ref.items():
-        for prop in asari.PROPERTIES:
-            area, bt, n = prop_boot[(reading, prop)]
-            ratio = bt / bt0
-            rows8c.append({"reading": reading, "natural_reference": ref, "property": prop, "probes": n, "area_0_4s": area, "ratio": area / a0,
-                           "ci_low": np.percentile(ratio, 2.5), "ci_high": np.percentile(ratio, 97.5)})
-r8c_all = pd.DataFrame(rows8c)'''
-new='''# Trial reading: trials drawn with replacement within each probe and context (asari.frac_power_trial_boot, in the pass),
-# 200 resamplings, the curves in 20-ms bins over the first 4 s; the area of each draw is formed as q_area forms it.
-BB = asari.BOOT_BIN
-def trial_areas(boots):
-    P = np.stack([b[0] for b in boots]).astype(float); I = np.stack([b[1] for b in boots]).astype(float)
-    M = np.zeros((len(boots), P.shape[2]))
-    for j, b in enumerate(boots):
-        M[j, :b[2]] = 1
-    c = np.maximum(M.sum(0), 1)
-    pred, inv = P.sum(0) / c, I.sum(0) / c                                    # draws x bins, probes running
-    den = np.array([asari.running_mean_0_2t(v) for v in pred])
-    return ((pred - inv) / den).sum(1) * BB / SF
-def nat_boots(ref):
-    if ref == "with_silence":
-        return [p["boot"] for p in nat]
-    return [p["boot"] if p["nosil"] == "same" else p["nosil"]["boot"] for p in nat if p["nosil"] is not None]
-nat_trial = {ref: trial_areas(nat_boots(ref)) for ref in nat_ref}
-for ref, bt in nat_trial.items():
-    print(f"Natural sounds, {ref}, trial reading: resampled area 0-4 s median {np.median(bt):.3f} s, 95% interval {np.percentile(bt, 2.5):.3f} to {np.percentile(bt, 97.5):.3f}")
-prop_trial = {(reading, prop): trial_areas([s["boot"] for s in S_r if s["property"] == prop]) for reading, S_r in SYr.items() for prop in asari.PROPERTIES}
-
-rows8c = []
-for sample in ("probes", "trials"):
-    for reading in SYr:
-        for ref, (a0, bt0, _) in nat_ref.items():
-            for prop in asari.PROPERTIES:
-                area, bt, n = prop_boot[(reading, prop)]
-                ratio = bt / bt0 if sample == "probes" else prop_trial[(reading, prop)] / nat_trial[ref]
-                rows8c.append({"sample": sample, "reading": reading, "natural_reference": ref, "property": prop, "probes": n, "area_0_4s": area,
-                               "ratio": area / a0, "resampled_median": np.median(ratio),
-                               "ci_low": np.percentile(ratio, 2.5), "ci_high": np.percentile(ratio, 97.5)})
-r8c_all = pd.DataFrame(rows8c)'''
-assert old in s; s=s.replace(old,new)
-old='''for (reading, ref), g in r8c_all.groupby(["reading", "natural_reference"], sort=False):'''
-assert old in s
-s=s.replace(old,'''for (sample, reading, ref), g in r8c_all.groupby(["sample", "reading", "natural_reference"], sort=False):''')
-old='''    print(f"{reading}, natural reference {ref}: amplitude'''
-assert old in s
-s=s.replace(old,'''    print(f"{sample} resampled, {reading}, natural reference {ref}: amplitude''')
-old='''r8c = r8c_all[(r8c_all.reading == MAIN) & (r8c_all.natural_reference == "with_silence")].set_index("property")'''
-assert old in s
-s=s.replace(old,'''r8c = r8c_all[(r8c_all.sample == "probes") & (r8c_all.reading == MAIN) & (r8c_all.natural_reference == "with_silence")].set_index("property")''')
-C[55]['source']=s.splitlines(keepends=True)
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-EOF
-grep -n "r8c\b\|r8c\[" -r reproduce_asari_2009.ipynb | head; grep -n "r8c_all" reproduce_asari_2009.ipynb | head
-```
-
-```
-1323:    "r8c = r8c_all[(r8c_all.sample == \"probes\") & (r8c_all.reading == MAIN) & (r8c_all.natural_reference == \"with_silence\")].set_index(\"property\")"
-1310:    "r8c_all = pd.DataFrame(rows8c)\n",
-1311:    "print(r8c_all.round(3).to_string(index=False))\n",
-1313:    "for (sample, reading, ref), g in r8c_all.groupby([\"sample\", \"reading\", \"natural_reference\"], sort=False):\n",
-1323:    "r8c = r8c_all[(r8c_all.sample == \"probes\") & (r8c_all.reading == MAIN) & (r8c_all.natural_reference == \"with_silence\")].set_index(\"property\")"
-```
-
-**Agent calls Bash**
-
-```bash
-ls ../../executed/asari-2009/.venv/bin | grep -i -E "jupyter|papermill|nbconvert" | head; grep -n "SUBSET\|subset" ../../tools/entry.py ../../docs/protocol.md | head
-```
-
-```
-jupyter
-jupyter-dejavu
-jupyter-execute
-jupyter-kernel
-jupyter-kernelspec
-jupyter-migrate
-jupyter-nbconvert
-jupyter-run
-jupyter-troubleshoot
-jupyter-trust
-../../docs/protocol.md:115:     form the denominator, which subset is meant), list in the criterion the
-../../docs/protocol.md:307:   a method detail the claims file does not give (which trials, which subset,
-../../docs/protocol.md:393:- **Develop on a subset.** Build and debug each analysis on one or two
-../../docs/protocol.md:395:  works; do not re-run whole notebooks to test a change. Time the subset and
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && timeout 1200 executed/asari-2009/.venv/bin/python - <<'EOF'
-import sys, time, zlib; sys.path.insert(0,'entries/asari-2009')
-import asari, numpy as np
-rows=[r for r in asari.summary()]
-idx=asari.member_index()
-nat=[r for r in rows if r['group']==0 and r['description']!='tuning curve' and r['file'] in idx][:1]
-syn=[r for r in rows if r['file'] in idx and '20060916-ha3-002-002' in r['file']][:1]
-for r in nat+syn:
-    m=asari.load_recording(r['file'])
-    rng=np.random.default_rng(zlib.crc32(r['file'].encode())); br=np.random.default_rng([zlib.crc32(r['file'].encode()),1])
-    t=time.time(); o=asari.a1_file_pass(m, do_context=r['group']==0, rng=rng, boot_rng=br); t1=time.time()-t
-    print(r['file'], 'a1 pass', round(t1,1),'s', len(o.get('probes',[])))
-    if r['group']==0:
-        p=o['probes'][0]; b=p['boot']; print(b[0].shape, b[2], p['pred'][:200*b[2]].reshape(b[2],200).mean(1)[:5], b[0].mean(0)[:5], p['inv'][:4000].reshape(20,200).mean(1)[:3], b[1].mean(0)[:3])
-        t=time.time(); o2=asari.a1_file_pass(m, do_context=True, rng=np.random.default_rng(zlib.crc32(r['file'].encode()))); print('without boot', round(time.time()-t,1))
-        print('signif identical:', all((a['signif']==c['signif']).all() for a,c in zip(o['probes'],o2['probes'])))
-    else:
-        t=time.time(); sy=asari.synthetic_file_pass(m, rng=rng, boot_rng=br); print('synth pass', round(time.time()-t,1), len(sy))
-        print(asari.stimulus_table(m['param'])[1])
-EOF
-```
-
-```
-Results/20051101-ha1-005/20051101-ha1-005-003.mat a1 pass 9.8 s 5
-(200, 200) 200 [ 0.70322394 15.83616    14.55398     6.055474    2.0867872 ] [ 1.533543 17.215631 14.963369  6.558119  2.805071] [-0.168391 10.470548 11.816412] [-0.17361803 10.616417   11.883127  ]
-without boot 7.7
-signif identical: True
-Results/20060916-ha3-002/20060916-ha3-002-002.mat a1 pass 0.3 s 0
-synth pass 3.7 2
-{'stim': 2, 'name': 'naturalistic sound (forward)', 'description': 'DMR; frequency variants', 'ff': (250.0, 1000.0), 'modulation': 'edd89b21'}
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/asari-2009 && python - <<'EOF'
-import json
-fn='strf_wehr.ipynb'
-d=json.load(open(fn))
-C=d['cells']
-s=''.join(C[8]['source'])
-s+='''
-odd = "20020602-mw-001"
-rest = res[res.cell != odd]
-print(f"\\nWithout {odd} (LN validation performance -0.574 at 180 ms and -0.713 at 4052 ms), {rest.cell.nunique()} cells:")
-mr = rest.groupby(["window_fn", "folds", "window_ms"])[["strf_lower", "ln_lower"]].mean()
-print(mr.round(3).unstack("window_ms").to_string())
-for (wf, fo), g in rest.groupby(["window_fn", "folds"]):
-    a, b = g[g.window_ms == 180].set_index("cell"), g[g.window_ms == 4052].set_index("cell")
-    mm = mr.loc[(wf, fo)]
-    print(f"  {wf}, {fo} folds: largest mean validation performance {float(mm.max().max()):.3f}; mean LN gain over STRF {float((mm.ln_lower - mm.strf_lower).mean()):.3f}; "
-          f"Wilcoxon 4052 > 180 ms p = {stats.wilcoxon(b.strf_lower, a.strf_lower, alternative='greater').pvalue:.4f} (STRF), "
-          f"{stats.wilcoxon(b.ln_lower, a.ln_lower, alternative='greater').pvalue:.4f} (LN)")
-'''
-C[8]['source']=s.splitlines(keepends=True)
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-EOF
-git diff --stat .
-```
-
-```
-entries/asari-2009/asari.py                   | 57 +++++++++++++++++++++---
- entries/asari-2009/reproduce_asari_2009.ipynb | 64 ++++++++++++++++++++-------
- entries/asari-2009/strf_wehr.ipynb            | 20 ++++++++-
- 3 files changed, 118 insertions(+), 23 deletions(-)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && executed/asari-2009/.venv/bin/python - <<'EOF'
-import json, numpy as np, pandas as pd
-from scipy import stats
-rng=np.random.default_rng(0)
-rows=[]
-for wf,fos in [("hann 10 ms",("contiguous","stimulus")),("hann 20 ms",("contiguous",))]:
-    for fo in fos:
-        for c in ["20020602-mw-001"]+[f"c{i}" for i in range(15)]:
-            for w in (180,324,4052):
-                rows.append(dict(cell=c,window_fn=wf,folds=fo,window_ms=w,strf_lower=rng.random(),strf_upper=rng.random(),ln_lower=rng.random(),ln_upper=rng.random()))
-res=pd.DataFrame(rows); cols=["strf_lower", "strf_upper", "ln_lower", "ln_upper"]
-d=json.load(open('entries/asari-2009/strf_wehr.ipynb'))
-exec(''.join(d['cells'][8]['source']))
-EOF
-```
-
-```
-Main reading, per cell (validation performance at 180 and 4052 ms, STRF and LN):
-window_ms        180 ms STRF  4052 ms STRF  180 ms LN  4052 ms LN
-cell                                                             
-20020602-mw-001        0.637         0.544      0.041       0.816
-c0                     0.857         0.028      0.730       0.671
-c1                     0.615         0.135      0.997       0.525
-c10                    0.810         0.553      0.288       0.848
-c11                    0.407         0.079      0.043       0.274
-c12                    0.944         0.776      0.865       0.270
-c13                    0.881         0.668      0.344       0.926
-c14                    0.861         0.561      0.141       0.194
-c2                     0.486         0.392      0.934       0.227
-c3                     0.084         0.450      0.787       0.231
-c4                     0.405         0.365      0.091       0.629
-c5                     0.440         0.758      0.500       0.529
-c6                     0.415         0.015      0.711       0.981
-c7                     0.149         0.266      0.890       0.443
-c8                     0.041         0.929      0.614       0.841
-c9                     0.344         0.125      0.966       0.586
-Range of every plotted or tabled performance: 0.0 to 1.0
-[... 12 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && executed/asari-2009/.venv/bin/python - <<'EOF'
-import sys; sys.path.insert(0,'entries/asari-2009')
-import asari, numpy as np
-SF=asari.SF
-src=open('entries/asari-2009/reproduce_asari_2009.ipynb').read()
-import json
-s=''.join(json.load(open('entries/asari-2009/reproduce_asari_2009.ipynb'))['cells'][55]['source'])
-code=s[s.index('BB = asari.BOOT_BIN'):s.index('def nat_boots')]
-exec(code)
-rng=np.random.default_rng(0)
-boots=[(rng.random((200,200)).astype(np.float32)+1, rng.random((200,200)).astype(np.float32)*0.5, nb) for nb in (200,150,99)]
-a=trial_areas(boots); print(a.shape, a[:3])
-EOF
-```
-
-```
-(200,) [3.87877819 3.80137173 3.8464298 ]
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; cd  && python tools/entry.py all entries/asari-2009 > $TMPDIR/run.log 2>&1; echo exit $?; date -u; tail -30 $TMPDIR/run.log
-```
-
-```
-Sat Nov 14 00:08:01 UTC 2026
-exit 0
-Sat Nov 14 00:58:43 UTC 2026
-Installed kernelspec registry-asari-2009 in executed/asari-2009/.venv/share/jupyter/kernels/registry-asari-2009
-0 error(s)
-pass  reproduce_asari_2009.ipynb  (1719 s)
-pass  strf_wehr.ipynb  (1311 s)
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-e=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
-def out(i): return ''.join(''.join(o.get('text','')) for o in e['cells'][i].get('outputs',[]))
-for i in (6,22,55,73): print('#####',i); print(out(i)[-6000:])
-t=out(70); i=t.find('DMR frequency variants: per'); print(t[i:i+1500])
-s=json.load(open('executed/asari-2009/strf_wehr.ipynb'))
-for i in (6,8,11): print('#####S',i); print(''.join(''.join(o.get('text','')) for o in s['cells'][i].get('outputs',[]))[-3000:])
-EOF
-```
-
-```
-##### 6
-346 files streamed and reduced in 27.6 min; peak memory 4.0 GB
-
-##### 22
-20 candidate probes
-                    file  probe        contexts                               trials   T_s  n_runs  before_2s  between_2_4s  after_4s  pattern
-20051222-ha1-001-002.mat      4 [2, 3, silence] {'2': 6.0, '3': 6.0, 'silence': 6.0} 5.804      15       True          True      True    False
-20051222-ha1-001-002.mat      5 [1, 3, silence] {'1': 6.0, '3': 6.0, 'silence': 6.0} 5.710      14       True          True      True    False
-20051222-ha1-001-002.mat      6 [1, 2, silence] {'1': 6.0, '2': 6.0, 'silence': 6.0} 5.889      15       True          True      True    False
-20051222-ha1-001-002.mat      7 [1, 2, silence] {'1': 6.0, '2': 6.0, 'silence': 6.0} 6.060      12       True          True     False    False
-20051226-ha1-001-002.mat      4 [2, 3, silence] {'2': 6.0, '3': 6.0, 'silence': 6.0} 5.804       0      False         False     False    False
-20051226-ha1-001-002.mat      5 [1, 3, silence] {'1': 6.0, '3': 6.0, 'silence': 6.0} 5.710       0      False         False     False    False
-20051226-ha1-001-002.mat      6 [1, 2, silence] {'1': 6.0, '2': 6.0, 'silence': 6.0} 5.889       0      False         False     False    False
-20051226-ha1-001-002.mat      7 [1, 2, silence] {'1': 6.0, '2': 6.0, 'silence': 6.0} 6.060       1       True         False     False    False
-20051226-ha1-002-002.mat      4 [2, 3, silence] {'2': 6.0, '3': 6.0, 'silence': 6.0} 5.804       1       True         False     False    False
-20051226-ha1-002-002.mat      5 [1, 3, silence] {'1': 6.0, '3': 6.0, 'silence': 6.0} 5.710       0      False         False     False    False
-20051226-ha1-002-002.mat      6 [1, 2, silence] {'1': 6.0, '2': 6.0, 'silence': 6.0} 5.889       0      False         False     False    False
-20051226-ha1-002-002.mat      7 [1, 2, silence] {'1': 6.0, '2': 6.0, 'silence': 6.0} 6.060       0      False         False     False    False
-20060105-ha1-001-002.mat      4 [2, 3, s
-[... 117 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-e=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
-t=''.join(''.join(o.get('text','')) for o in e['cells'][55].get('outputs',[]))
-print(t[:9000])
-EOF
-```
-
-```
-Natural sounds, with_silence: 305 probes, area 0-4 s 0.752 s; resampled 95% interval 0.672 to 0.848
-Natural sounds, without_silence: 305 probes, area 0-4 s 0.614 s; resampled 95% interval 0.532 to 0.694
-Natural sounds, with_silence, trial reading: resampled area 0-4 s median 1.687 s, 95% interval 1.647 to 1.727
-Natural sounds, without_silence, trial reading: resampled area 0-4 s median 1.638 s, 95% interval 1.583 to 1.706
-sample                 reading natural_reference     property  probes  area_0_4s  ratio  resampled_median  ci_low  ci_high
-probes             largest set      with_silence    amplitude      95      0.543  0.723             0.720   0.618    0.825
-probes             largest set      with_silence    frequency     110      0.489  0.650             0.643   0.558    0.749
-probes             largest set      with_silence           AM      39      0.067  0.089             0.090   0.057    0.126
-probes             largest set      with_silence           FM      25      0.145  0.193             0.193   0.154    0.231
-probes             largest set      with_silence higher-order     137      0.385  0.512             0.508   0.433    0.596
-probes             largest set   without_silence    amplitude      95      0.543  0.885             0.888   0.759    1.079
-probes             largest set   without_silence    frequency     110      0.489  0.796             0.800   0.678    0.938
-probes             largest set   without_silence           AM      39      0.067  0.109             0.111   0.071    0.159
-probes             largest set   without_silence           FM      25      0.145  0.236             0.237   0.179    0.292
-probes             largest set   without_silence higher-order     137      0.385  0.627             0.630   0.531    0.747
-probes               every set      with_silence    amplitude     104      0.501  0.667             0.655   0.563    0.791
-probes               every set      with_silence    frequency     120      0.476  0.633           
-[... 52 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-git status --short | head; git diff --stat executed/ | tail -3
-```
-
-```
-M entries/asari-2009/asari.py
- M entries/asari-2009/reproduce_asari_2009.ipynb
- M entries/asari-2009/strf_wehr.ipynb
- M tools/build_site.py
- M tools/entry.py
- M tools/site_assets/app.css
- M tools/site_assets/list.js
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-e=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
-def out(i): return ''.join(''.join(o.get('text','')) for o in e['cells'][i].get('outputs',[]))
-for i in (13,16,19,25,31,34,38,41,46,49,52,58,61,64,67):
-    print('#####',i); print(out(i)[:1800])
-EOF
-```
-
-```
-##### 13
-A1 natural sound group (Summary.mat group 0): {'with_silence': {'cells': 39, 'probes': 305}, 'without_silence': {'cells': 39, 'probes': 305}}
-MGB (group 1): {'with_silence': {'cells': 14, 'probes': 93}, 'without_silence': {'cells': 14, 'probes': 93}}
-All A1 whole-cell recordings with sequences: {'with_silence': {'cells': 133, 'probes': 644}, 'without_silence': {'cells': 133, 'probes': 644}}
-
-A1 whole-cell cells in the data set, any recording: 145 ; MGB cells: 14
-Probes formed in this notebook from the natural sound group, silence probes excluded: 305 in 39 cells
-
-Synthetic group (group 2), cells meeting the rule, by ensemble (paper: TORC 14, DMR 6, MHT 39, MCN 27):
-                                    cells  files  probes
-ensemble                                                
-DMR                                    15     17      38
-MCN                                    27     29     137
-MHT                                    26     27      39
-TORC                                   14     18      86
-naturalistic (SoundTrans variants)     14     14      39
-Cells of group 2 meeting the rule: 96 ; group 0 and group 2 together: 133 (paper: 123)
-Cells in both group 0 and group 2: ['20060314-ha1-001', '20060320-ha3-003']
-
-Group 2 cells meeting the rule, by ensemble: all, and those with at least one probe tested with a set of stimuli that differ in one property (Figure 8):
-[... 232 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/asari-2009 && python - <<'EOF'
-import json
-d=json.load(open('reproduce_asari_2009.ipynb'))
-print(''.join(d['cells'][42]['source']))
-s=json.load(open('strf_wehr.ipynb'))
-print(''.join(s['cells'][10]['source']))
-EOF
-```
-
-```
-**Result: not reproduced.** Near probe onset the upper bound is about half: 1 + alpha1 is 0.50 to 0.54 with the unsmoothed ratio (paper 0.51) and 0.43 to 0.49 with the smoothed denominator, and the mean over the first 100 ms is 0.50 (smoothed, silence counted) or 0.39 (unsmoothed). Two fits to 6 s over all probes (smoothed) ran to the 100 s bound of the time constant and are not counted; the smoothed ratio exceeds 1 in some bins (maximum 1.67 and 1.83 over all probes, 2.16 and 2.61 over the probes running). The approach to one is slower than in the paper: the time constant is 1.46 to 1.92 s (unsmoothed) and 1.66 to 2.81 s (smoothed, fits not at the bound) against 1.04 s, outside tolerance under every reading, so the criterion's joint test fails; it gives no rule for partial.
-## Summary
-
-| Claim | Outcome |
-|---|---|
-| fig4-strf-performance-low | not reproduced (assumed cell selection and test) |
-
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
-
-**How the analysis differs from the paper's.** The paper's 20 cells are not listed; the 16 cells
-with repeated natural sounds are used, with those sounds only. The spectrogram floor, the ridge
-grid, the lowess evaluated on 60 points, and the test of "did not improve significantly" (the claims
-file's one-sided Wilcoxon test) are choices the paper does not fix. The 10-kHz response reading of
-the claims file does not apply: the responses are sampled at 4 kHz, and 4-ms bins are used.
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/asari-2009 && python - <<'EOF'
-import json
-fn='reproduce_asari_2009.ipynb'
-d=json.load(open(fn)); C=d['cells']
-def rep(i, old, new):
-    s=''.join(C[i]['source']); assert old in s, (i, old); C[i]['source']=s.replace(old,new).splitlines(keepends=True)
-
-rep(23, "so that probe fails the strict test. 17 of 305", "so that probe fails the strict test. Probe 4 is also the probe of that cell whose reliability is 0.737, the 0.74 of Figure 2A, and the Figure 2B legend says the red trace is the context shown in A; so 20051222-ha1-001-002 probe 4 is most likely the paper's example, and the passing probe comes from a cell with mean reliability 0.309, which cannot be it. The claims file's matching rule does not use this link between Figure 2A and 2B and accepts any of the 20 candidates; the outcome follows the criterion as written, and the link is raised as a question for a reader. 17 of 305")
-rep(42, "the mean over the first 100 ms is 0.50 (smoothed, silence counted) or 0.39 (unsmoothed)", "the mean over the first 100 ms is 0.50 (smoothed, silence counted; 0.57 without silence) or 0.39 (unsmoothed; 0.44 without silence)")
-rep(56, "The trial resampling reading was not run. The outcome rests", "In the trial reading (trials drawn with replacement within each probe and context, 20-ms bins) the intervals of amplitude and frequency lie above 1 under every reading of the sets and both references (lowest bound 1.027), and those of AM and FM lie below 1 and below them, but the upper bound for higher-order is 1.003 to 1.078, so the rule for reproduced is not met under any reading either (closest: every set, silence counted, higher-order 0.909 to 1.003). The trial-resampled areas are not centred on the measured ones: for natural sounds the median is 1.69 s against 0.752 s. Drawing a trial twice adds its noise to the predictable power of Eq. 17, which assumes distinct trials, and this pulls every ratio towards 1. The point estimates are the same in both readings, so the rule for partial is not met. The outcome rests")
-rep(69, "The DMR frequency variants\nare one DMR shifted in frequency (they share their modulation parameters), and the shift is\nrecorded in their bands.", "Each DMR also gets a CRC-32\nchecksum of its modulation parameters (`tempmod`, `specmod`, `SFtemp`, `SFspec`, `envphase`, `sinphase`,\n`dx`), so that the DMRs that share them can be seen: the frequency variants of a recording are one\nDMR in different bands only if they share the checksum.")
-rep(71, "The DMR frequency variants in it are six 2-octave bands", "The DMR frequency variants in it are one DMR (one modulation checksum in each of the 5 recordings) in six 2-octave bands")
-rep(72, "The trial\nresampling reading of Figure 8C was not run.", "The trial\nresampling reading of Figure 8C is run in 20-ms bins; its resampled areas are biased upwards.")
-rep(72, "| fig2-example-long-context | reproduced (a selected candidate) |", "| fig2-example-long-context | reproduced (a selected candidate, not the paper's example cell) |")
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-
-fn='strf_wehr.ipynb'
-d=json.load(open(fn)); C=d['cells']
-rep(9, "So no reading meets both parts of the criterion. The LN model is not better than the STRF on average (mean gain -0.010 in the main reading). One cell (20020602-mw-001) has no predictive linear component (performance near 0, best ridge at the end of the grid in 22 of its 27 fits).", "So no reading meets both parts of the criterion. The LN model is not better than the STRF on average (mean gain -0.010 in the main reading). One cell (20020602-mw-001) has no predictive linear component (STRF performance near 0, LN -0.574 at 180 ms and -0.713 at 4052 ms, best ridge at the end of the grid in 22 of its 27 fits), and two of these statements rest on it. Without it (15 cells, main reading) the LN model is better than the STRF by 0.025 on average, and the mean validation performance reaches 0.222 (STRF) and 0.253 (LN), above 0.22; the longer window still helps significantly (p = 0.011 for STRF and 0.0075 for LN), so the outcome is the same.")
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-EOF
-sed -i 's/takes about 25 minutes/takes about 29 minutes/; s/it takes about 22 minutes/it takes about 22 minutes/; s/| Example context effect lasting about 4 s, with a gap from 2 to 4 s | Reproduced (a selected candidate) |/| Example context effect lasting about 4 s, with a gap from 2 to 4 s | Reproduced (a selected candidate, not the paper'"'"'s example cell) |/' README.md
-sed -i 's/runtime_minutes: 25/runtime_minutes: 29/' entry.yaml
-grep -n "minutes\|selected" README.md entry.yaml
-```
-
-```
-/bin/bash: line 1: cd: entries/asari-2009: No such file or directory
-README.md:14:| Example context effect lasting about 4 s, with a gap from 2 to 4 s | Reproduced (a selected candidate, not the paper's example cell) |
-README.md:40:  (2.8 GB) and takes about 29 minutes.
-README.md:42:  al. (2004) in the same data set; it takes about 22 minutes.
-entry.yaml:16:  runtime_minutes: 29
-entry.yaml:19:  runtime_minutes: 22
-```
-
-**Agent calls Bash**
-
-```bash
-pwd; python - <<'EOF'
-import json
-fn='reproduce_asari_2009.ipynb'
-d=json.load(open(fn)); C=d['cells']
-def rep(i, old, new):
-    s=''.join(C[i]['source']); assert old in s, (i, old); C[i]['source']=s.replace(old,new).splitlines(keepends=True)
-
-rep(23, "so that probe fails the strict test. 17 of 305", "so that probe fails the strict test. Probe 4 is also the probe of that cell whose reliability is 0.737, the 0.74 of Figure 2A, and the Figure 2B legend says the red trace is the context shown in A; so 20051222-ha1-001-002 probe 4 is most likely the paper's example, and the passing probe comes from a cell with mean reliability 0.309, which cannot be it. The claims file's matching rule does not use this link between Figure 2A and 2B and accepts any of the 20 candidates; the outcome follows the criterion as written, and the link is raised as a question for a reader. 17 of 305")
-rep(42, "the mean over the first 100 ms is 0.50 (smoothed, silence counted) or 0.39 (unsmoothed)", "the mean over the first 100 ms is 0.50 (smoothed, silence counted; 0.57 without silence) or 0.39 (unsmoothed; 0.44 without silence)")
-rep(56, "The trial resampling reading was not run. The outcome rests", "In the trial reading (trials drawn with replacement within each probe and context, 20-ms bins) the intervals of amplitude and frequency lie above 1 under every reading of the sets and both references (lowest bound 1.027), and those of AM and FM lie below 1 and below them, but the upper bound for higher-order is 1.003 to 1.078, so the rule for reproduced is not met under any reading either (closest: every set, silence counted, higher-order 0.909 to 1.003). The trial-resampled areas are not centred on the measured ones: for natural sounds the median is 1.69 s against 0.752 s. Drawing a trial twice adds its noise to the predictable power of Eq. 17, which assumes distinct trials, and this pulls every ratio towards 1. The point estimates are the same in both readings, so the rule for partial is not met. The outcome rests")
-rep(69, "The DMR frequency variants\nare one DMR shifted in frequency (they share their modulation parameters), and the shift is\nrecorded in their bands.", "Each DMR also gets a CRC-32\nchecksum of its modulation parameters (`tempmod`, `specmod`, `SFtemp`, `SFspec`, `envphase`, `sinphase`,\n`dx`), so that the DMRs that share them can be seen: the frequency variants of a recording are one\nDMR in different bands only if they share the checksum.")
-rep(71, "The DMR frequency variants in it are six 2-octave bands", "The DMR frequency variants in it are one DMR (one modulation checksum in each of the 5 recordings) in six 2-octave bands")
-rep(72, "The trial\nresampling reading of Figure 8C was not run.", "The trial\nresampling reading of Figure 8C is run in 20-ms bins; its resampled areas are biased upwards.")
-rep(72, "| fig2-example-long-context | reproduced (a selected candidate) |", "| fig2-example-long-context | reproduced (a selected candidate, not the paper's example cell) |")
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-
-fn='strf_wehr.ipynb'
-d=json.load(open(fn)); C=d['cells']
-rep(9, "So no reading meets both parts of the criterion. The LN model is not better than the STRF on average (mean gain -0.010 in the main reading). One cell (20020602-mw-001) has no predictive linear component (performance near 0, best ridge at the end of the grid in 22 of its 27 fits).", "So no reading meets both parts of the criterion. The LN model is not better than the STRF on average (mean gain -0.010 in the main reading). One cell (20020602-mw-001) has no predictive linear component (STRF performance near 0, LN -0.574 at 180 ms and -0.713 at 4052 ms, best ridge at the end of the grid in 22 of its 27 fits), and two of these statements rest on it. Without it (15 cells, main reading) the LN model is better than the STRF by 0.025 on average, and the mean validation performance reaches 0.222 (STRF) and 0.253 (LN), above 0.22; the longer window still helps significantly (p = 0.011 for STRF and 0.0075 for LN), so the outcome is the same.")
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-EOF
-git diff --stat .
-```
-
-```
-entries/asari-2009
- entries/asari-2009/README.md                  |  4 +-
- entries/asari-2009/asari.py                   | 57 +++++++++++++++---
- entries/asari-2009/entry.yaml                 |  2 +-
- entries/asari-2009/reproduce_asari_2009.ipynb | 83 +++++++++++++++++++--------
- entries/asari-2009/strf_wehr.ipynb            | 24 +++++++-
- 5 files changed, 134 insertions(+), 36 deletions(-)
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-fn='reproduce_asari_2009.ipynb'
-d=json.load(open(fn)); C=d['cells']
-s=''.join(C[56]['source'])
-old="(lowest bound 1.027), and those of AM and FM lie below 1 and below them, but the upper bound for higher-order is 1.003 to 1.078, so"
-assert old in s
-s=s.replace(old,"(lowest bound 1.027), and those of AM and FM lie below 1 and below them except AM with the largest set and silence left out (0.829 to 1.010), but the upper bound for higher-order is 1.003 to 1.078, so")
-C[56]['source']=s.splitlines(keepends=True)
-json.dump(d,open(fn,'w'),indent=1,ensure_ascii=False); open(fn,'a').write('\n')
-EOF
-date -u
-```
-
-```
-Sat Nov 14 01:00:03 UTC 2026
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "questions/asari-2009.yaml",
- "content": "questions:\n- claim: fig2-example-long-context\n  question: The criterion says the example cell and probe are not identified and accepts any\n    current-clamp cell with seven natural sound fragments and a probe tested after silence and\n    two other fragments. Does the Figure 2 legend identify them? Figure 2A gives the cell's\n    reliability (0.61 +/- 0.07 over its stimuli) and the probe's (0.74 +/- 0.08), and Figure 2B\n    says its red trace is \"the one shown in A\". In the data set only 20051222-ha1-001-002 has\n    those values (0.611 +/- 0.081, and 0.737 for probe 4), so its probe 4 would be the example.\n    Should the criterion test that probe?\n  passage: Figure 2 legend, \"The neuron showed high trial-to-trial reliability (correlation\n    coefficients across trials to this particular probe stimulus, 0.74 +- 0.08; and across trials\n    across all natural sound stimuli examined in this cell, 0.61 +- 0.07; mean +- SD). B: the mean\n    responses to the probe stimulus in 3 different contexts: red line for the one shown in A and\n    blue and green lines for the one in response to the same probe stimulus but preceded by\n    \"silence\" and another conditioning stimulus, respectively.\"\n  why: Under the criterion as written the claim is reproduced by probe 4 of 20060105-ha1-001-002,\n    one of 20 candidates, from a cell whose mean reliability is 0.309, so it cannot be the paper's\n    example. Probe 4 of 20051222-ha1-001-002 is significant up to 1.60 s, not from 1.60 to 3.97 s,\n    and again from 3.97 to 4.60 s; its run at 3.97 s starts 30 ms inside the 2 to 4 s window, so\n    it fails the strict test. Read as identifying that probe, the outcome would turn on how the\n    criterion treats a run that starts 30 ms before 4 s.\n"
-}
-```
-
-```
-File created successfully at: questions/asari-2009.yaml (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-import json
-e=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
-t=''.join(''.join(o.get('text','')) for o in e['cells'][16].get('outputs',[]))
-print('\n'.join(l for l in t.splitlines() if 'MGB' in l or 'partial' in l.lower() or 'rule' in l.lower()))
-EOF
-```
-
-```
-MGB     code          all      silence          stim           14            14       0.618     1.134        5.072     11.455          0.664     False      False
- MGB     code          all      silence         probe           14            14       0.618     1.134        5.031     11.554          0.615     False      False
- MGB     code          all     baseline          stim           14            14       0.817     1.106        5.072     11.455          0.664      True      False
- MGB     code          all     baseline         probe           14            14       0.817     1.106        5.031     11.554          0.615      True      False
- MGB     code context only      silence          stim           14            14       0.551     1.236        4.992     11.452          0.609     False      False
- MGB     code context only      silence         probe           14            14       0.551     1.236        5.031     11.554          0.615     False      False
- MGB     code context only     baseline          stim           14            14       0.719     1.211        4.992     11.452          0.609      True      False
- MGB     code context only     baseline         probe           14            14       0.719     1.211        5.031     11.554          0.615      True      False
- MGB     half          all      silence          stim           14            14       0.822     1.217        7.147     12.261          1.645      True      False
- MGB     half          all      silence         probe           14            14       0.822     1.217        7.127     12.350          1.636      True      False
- MGB     half          all     baseline          stim           14            14       1.044     1.231        7.147     12.261          1.645     False      False
- MGB     half          all     baseline         probe           14            14       1.044     1.231        7.127     12.350          1.636     False      False
- MGB     half context only      silence      
-[... 7 more lines not kept]
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/asari-2009-01.yaml",
- "old_string": "    rule for partial, holds in 28 of the 32 readings. The data set has 145 A1 and 14 MGB cells, not 194 and 16.",
- "new_string": "    rule for partial, holds in 28 of the 32 readings. With the code's own MGB detector it rests on a margin of 0.03 to 0.07 Hz over\n    5 Hz (6 of its 8 readings; the other 2 give 4.99 Hz); it is met by a wide margin only with half that detector's threshold, a choice\n    made here. The data set has 145 A1 and 14 MGB cells, not 194 and 16."
-}
-```
-
-```
-The file attempts/asari-2009-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/asari-2009-01.yaml",
- "old_string": "    to 4.01 s starts inside the 2 to 4 s window, so it fails the strict test. The notebook lists every significant period of each candidate.\n    17 of 305 natural sound probes have a significant period later than 4 s.'",
- "new_string": "    to 4.01 s starts inside the 2 to 4 s window, so it fails the strict test. Probe 4 is the probe of that cell with reliability 0.737\n    (the 0.74 of Figure 2A), and the Figure 2B legend says its red trace is the context shown in A, so that probe is most likely the\n    paper''s example. The passing probe is from a cell with mean reliability 0.309, which is not the paper''s example cell. The criterion\n    does not use this link and accepts any of the 20 candidates, so the outcome follows it as written; the link is a question for a\n    reader (questions/asari-2009.yaml). The notebook lists every significant period of each candidate and the reliability of each probe\n    of 20051222-ha1-001-002. 17 of 305 natural sound probes have a significant period later than 4 s.'"
-}
-```
-
-```
-The file attempts/asari-2009-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/asari-2009-01.yaml",
- "old_string": "    time constants of 1.46 to 1.92 s. The mean of the smoothed ratio over the first 100 ms is 0.50. The bound",
- "new_string": "    time constants of 1.46 to 1.92 s. The mean of the smoothed ratio over the first 100 ms is 0.50 with silence counted and 0.57 without\n    (unsmoothed 0.39 and 0.44). The bound"
-}
-```
-
-```
-The file attempts/asari-2009-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/asari-2009-01.yaml",
- "old_string": "    stimuli. The LN model is not better than the STRF on average (mean gain -0.010). In one cell (20020602-mw-001) no model predicts\n    (performance near 0, best ridge at the end of the grid in 22 of its 27 fits).'",
- "new_string": "    stimuli. The LN model is not better than the STRF on average (mean gain -0.010). In one cell (20020602-mw-001) no model predicts\n    (STRF performance near 0, LN -0.574 at 180 ms and -0.713 at 4052 ms, best ridge at the end of the grid in 22 of its 27 fits). Two\n    of these statements rest on that cell, the LN model not being better and the performance being at most 0.22 at every window. Without\n    it (15 cells, main reading) the LN model is better by 0.025 on average and the mean validation performance reaches 0.222 for STRF\n    and 0.253 for LN, above 0.22; the longer window still helps significantly (p = 0.011 for STRF, 0.0075 for LN), so the outcome is\n    the same.'"
-}
-```
-
-```
-The file attempts/asari-2009-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/asari-2009-01.yaml",
- "old_string": "    prints the names, descriptions, bands (''ff''), SoundTrans shifts (''df'') and attenuations of every DMR, TORC and SoundTrans recording.\n    The DMR frequency variants are one DMR shifted in frequency (they share their modulation parameters, and each shift is recorded\n    in its band): six 2-octave bands",
- "new_string": "    prints the names, descriptions, bands (''ff''), SoundTrans shifts (''df'') and attenuations of every DMR, TORC and SoundTrans recording,\n    and for each DMR a checksum of its modulation parameters (tempmod, specmod, SFtemp, SFspec, envphase, sinphase, dx). The DMR frequency\n    variants are one DMR in different bands (one modulation checksum among the 12 stimuli of each of the 5 recordings): six 2-octave bands"
-}
-```
-
-```
-The file attempts/asari-2009-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Now fig8c notes and deviation.
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/asari-2009-01.yaml",
- "old_string": "    that higher-order changes give smaller effects holds; the part that amplitude and frequency changes give effects as large as natural\n    sounds does not.'",
- "new_string": "    that higher-order changes give smaller effects holds; the part that amplitude and frequency changes give effects as large as natural\n    sounds does not. In the trial reading (trials drawn with replacement within each probe and context) the amplitude and frequency\n    intervals lie above 1 under all six readings (lowest bound 1.027), and the AM and FM intervals lie below them and below 1 except\n    AM with the largest set and silence left out (0.829 to 1.010), but the higher-order upper bound is 1.003 to 1.078, so the rule for\n    reproduced is not met under any trial reading either (closest, every set with silence counted, higher-order 0.909 to 1.003). The\n    trial-resampled areas are not centred on the measured ones (natural sounds, median 1.69 s against 0.752 s): a trial drawn twice\n    adds its noise to the predictable power of Eq. 17, which assumes distinct trials, and this pulls every ratio towards 1. The point\n    estimates do not depend on the resampling, so the rule for partial is not met.'"
-}
-```
-
-```
-The file attempts/asari-2009-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "attempts/asari-2009-01.yaml",
- "old_string": "  - Only the probe reading of a resampled 'sample' is run; resampling trials within probes needs the single trials, which the pass does\n    not keep. The interval of each ratio resamples the property and the natural sounds independently.",
- "new_string": "  - Both readings of a resampled 'sample' the criterion names are run, probes and trials within each probe and context. The trial reading\n    is computed in the pass (asari.frac_power_trial_boot, with its own random generator) and keeps the resampled curves over the first\n    4 s in 20-ms bins (a standard choice, to hold them in memory). The interval of each ratio resamples the property and the natural\n    sounds independently."
-}
-```
-
-```
-The file attempts/asari-2009-01.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+cd  python3 -c "
+import yaml;d=yaml.safe_load(open('claims/asari-2009.yaml'))
+for c in d['claims']:
+  if c['id'] in ('a1-mgb-firing-rates','fig8c-relative-effects','fig3b-fractional-power-decay'): print(c['id'],'::',c['criterion'],'\n')
+"
 ```
 
-**Agent calls Bash**
-
-```bash
-cat >> attempts/asari-2009-01.yaml <<'EOF'
-- date: '2026-11-14'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The full re-executed notebooks reproduce_asari_2009.ipynb and strf_wehr.ipynb with their conclusions and summaries, the
-    helper modules asari.py and wehr_strf.py, the README, the claims file and the attempt record, with the paper's full text. The
-    verifier checked every outcome, every Result cell, the Summary sections and the record's notes against the printed outputs.
-  results:
-  - claim: methods-recording-counts
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 13.
-    response: No change.
-  - claim: a1-mgb-firing-rates
-    agrees: true
-    outcome: partially_reproduced
-    reason: 'Cell 16: 0 of 32 readings have all four means in tolerance, and the partial rule holds in 28 of 32. With the code''s own
-      MGB detector the margin over 5 Hz is still only 0.03-0.07 Hz. The rule is comfortably met only at half that detector''s threshold
-      (7.1 Hz), which is an ad hoc choice.'
-    response: No change of outcome. The notes now say that with the code's own detector the partial rule rests on a margin of 0.03
-      to 0.07 Hz (and 2 of its 8 readings give 4.99 Hz), and that it is met by a wide margin only with half its threshold, a choice
-      made here.
-  - claim: fig2-example-reliability
-    agrees: true
-    outcome: reproduced
-    reason: Cell 19.
-    response: No change.
-  - claim: fig2-example-long-context
-    agrees: true
-    outcome: reproduced
-    reason: 'Yes, with a caveat. The Figure 2B legend says the red trace is "the one shown in A", so the long-context probe is the 0.74-reliability
-      probe of the 0.61-reliability cell; only 20051222-ha1-001-002 matches those values. The passing probe comes from 20060105-ha1-001-002,
-      whose mean reliability is 0.309, so it cannot be the paper''s example. In the identified cell, probe 4 shows the paper''s pattern
-      and misses the strict 2-4 s rule only because a run starts 30 ms before 4 s. Which probe of that cell has reliability 0.737 is
-      not printed. The claims file''s criterion does not use this link between 2A and 2B, a gap in the claims file. Reproduced is defensible
-      under the criterion as written, but the record should say that the passing probe is not from the paper''s example cell.'
-    response: Kept reproduced, as the criterion is written. The notebook now prints the reliability of each probe of 20051222-ha1-001-002
-      (probe 4 is the 0.737 probe), and the notes, the Result cell, the README and the summary say that the passing probe is not from
-      the paper's example cell. The link between Figures 2A and 2B is added to questions/asari-2009.yaml as a question for a reader.
-  - claim: fig3a-proportion-significant
-    agrees: true
-    outcome: reproduced
-    reason: Cell 25, with_silence/all reading.
-    response: No change.
-  - claim: fig3a-significance-decay
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 31.
-    response: No change.
-  - claim: fig3b-fractional-power-decay
-    agrees: true
-    outcome: not_reproduced
-    reason: 'Cell 34: tau is 1.29-1.78 s in all 8 readings.'
-    response: No change.
-  - claim: timescale-longer-than-membrane
-    agrees: true
-    outcome: reproduced
-    reason: Cell 38.
-    response: No change.
-  - claim: fig4-predictability-upper-bound
-    agrees: true
-    outcome: not_reproduced
-    reason: 'Cell 41: no tau within 1.04 +/- 0.10 s. The record''s "The mean of the smoothed ratio over the first 100 ms is 0.50" is
-      true only with silence counted; without silence it is 0.571 (cell 41). Cell 42 states the qualifier; the record leaves it out.'
-    response: No change of outcome. The record now gives 0.50 with silence counted and 0.57 without (unsmoothed 0.39 and 0.44), and
-      cell 42 gives both.
-  - claim: fig4-strf-performance-low
-    agrees: true
-    outcome: not_reproduced
-    reason: 'strf cell 7: no reading meets both parts. The two assumptions (16 cells, Wilcoxon test) are stated and reasonable. Two statements,
-      "LN ... not better than the STRF on average (mean gain -0.010)" and "at most 0.22 at every window", depend on one cell, 20020602-mw-001,
-      with LN validation performance of -0.574 at 180 ms and -0.713 at 4052 ms and its ridge parameter at the end of the grid. Without
-      it LN is better by about 0.025-0.03, and both models exceed 0.22 at 4052 ms. The outcome stays not_reproduced either way, but
-      the notes should say that these two statements rest on that cell.'
-    response: No change of outcome. strf cell 8 now prints the means and tests without 20020602-mw-001 (15 cells), and the Result cell
-      and the notes say the two statements rest on it; without it the LN gain is 0.025, the mean validation performance reaches 0.222
-      (STRF) and 0.253 (LN), and the longer window still helps significantly (p = 0.011 and 0.0075).
-  - claim: fig5-example-conductances
-    agrees: true
-    outcome: blocked
-    reason: Agrees (data_missing).
-    response: No change.
-  - claim: fig6-conductance-decay
-    agrees: true
-    outcome: blocked
-    reason: Agrees (data_missing).
-    response: No change.
-  - claim: fig7-example-frequency-context
-    agrees: true
-    outcome: blocked
-    reason: 'Now yes. Cell 70: the DMR frequency variants are 2-octave bands at 0.25-1 up to 8-32 kHz. None is 0.625-2.5, 2.5-10 or
-      10-40 kHz, and the 4-band group has no natural probe. I withdraw my round-1 reason ("search incomplete"). But "they share their
-      modulation parameters" (record and cell 69) is not supported: cell 70 prints only name, description, ff, df and attenuation.'
-    response: No change of outcome. The stimulus table now holds a checksum of each DMR's modulation parameters (tempmod, specmod,
-      SFtemp, SFspec, envphase, sinphase, dx), cell 70 prints it, and each of the 5 recordings with DMR frequency variants has one
-      checksum among its 12 variants; cell 69 and the notes now cite that output.
-  - claim: fig8a-proportion-by-property
-    agrees: true
-    outcome: partially_reproduced
-    reason: 'Cell 46: the order holds and every count is out of tolerance, under all three readings. The rebuilt property sets are reasonable.
-      The choice of main reading is post hoc: it reproduces Table 1''s five totals, but its probe-type and cell split does not (AM natural
-      probes 82 tests in 24 cells against 25 in 25; AM MHT probes 14 in 2 cells against 71 in 27), by counting each natural probe of
-      the 17-stimulus grid recordings up to four times. This does not change any outcome, as all three readings give the same outcome
-      for every fig8 claim.'
-    response: No change; the notes and the metadata_insufficient and methods_unavailable findings already give the split by probe
-      type and the question for the authors.
-  - claim: fig8a-significance-fits
-    agrees: true
-    outcome: not_reproduced
-    reason: Cell 49.
-    response: No change.
-  - claim: fig8b-decay-by-property
-    agrees: true
-    outcome: partially_reproduced
-    reason: 'Cell 52: the partial pattern holds under every reading. FM is 0.278 s in the main reading, close to the 0.3 s line.'
-    response: No change.
-  - claim: fig8c-relative-effects
-    agrees: true
-    outcome: not_reproduced
-    reason: 'Cell 55: the frequency interval excludes 1 under every reading, the highest bound being 0.938. The trial-resampling reading
-      is still not run. It is unlikely to change the outcome: the frequency point estimate is 0.80, and its probe-resampled upper bound
-      is at most 0.938.'
-    response: Ran the trial reading (trials drawn with replacement within each probe and context, computed in the pass, 20-ms bins).
-      Its amplitude and frequency intervals lie above 1, but the higher-order upper bound is 1.003 to 1.078, so the rule for reproduced
-      is not met under any reading; its resampled areas are biased upwards (natural sounds 1.69 s against 0.752 s), and the point estimates,
-      which decide the rule for partial, are unchanged. No change of outcome.
-  - claim: fig8-natural-synthetic-probes-alike
-    agrees: true
-    outcome: reproduced
-    reason: 'Yes, weak. Cell 58: FM has no synthetic probes and AM has 14 from 2 cells.'
-    response: No change; the notes already say the test has little power for AM and none for FM.
-  - claim: fig9-mgb-fast-decay
-    agrees: true
-    outcome: reproduced
-    reason: Cell 61.
-    response: No change.
-  - claim: fig9-example-first-bin
-    agrees: true
-    outcome: reproduced
-    reason: Cell 64.
-    response: No change.
-  - claim: figs1-silence-probe
-    agrees: true
-    outcome: reproduced
-    reason: Cell 67.
-    response: No change.
-EOF
-python -c "import yaml;d=yaml.safe_load(open('attempts/asari-2009-01.yaml'));print(len(d['verifications']), [len(v['results']) for v in d['verifications']])"
-```
-
-```
-2 [21, 21]
-```
-
-**Agent calls Bash**
-
-```bash
-python tools/entry.py check entries/asari-2009 2>&1 | tail -15; python tools/entry.py --help 2>&1 | head -20
-```
-
 ```
-0 error(s)
-usage: entry.py [-h] [--output-dir OUTPUT_DIR] [--timeout TIMEOUT]
-                [--max-minutes MAX_MINUTES] [--fresh] [--python PYTHON]
-                [--before BEFORE]
-                {lock,check,run,all,handover,upgrade-python,hash}
-                entry [entry ...]
-
-Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py check entries/*/       # the same for every entry, in one process
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+a1-mgb-firing-rates :: Tolerances are 10% of each mean; the printed SDs (0.61, 0.77, 1.25, 16.9 Hz) are the spread over cells, not an uncertainty of the mean, and are reported for comparison (within 10% of each). Spikes in MGB are extracted by a high-pass filter and a threshold with spike times at the peaks (Methods, Analysis, paragraph 3). The paper fixes neither the filter cutoff, the threshold, nor how A1 spikes were detected, nor the windows for "spontaneous" (readings are the intersequence silence, about 6 s, or a pre-stimulus baseline) and "evoked" (readings are all sound periods, or the probe periods analysed). The author runs a standard detector on each reading of the windows; reproduced when the four means are within tolerance under one reading, partially reproduced when the A1 means are below 1 Hz and the MGB evoked mean above 5 Hz but some means fall outside tolerance. 
 
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
+fig3b-fractional-power-decay :: Q(t) of Eq. 20 from the 305 natural sound probes, numerator Eq. 19 and denominator Eq. 17 averaged over probes at each time point, the denominator smoothed by a running mean over [0, 2t] before the division; one exponential with constant 0 fitted (Figure 3B legend). The same open details as fig3a-proportion-significant (silence as a context; which probes enter the average at time t) and the fit range (0 to 4 s, 0 to 6 s) are run as readings. The printed values in the legend are garbled in the text extraction and read as alpha1 = 0.49, tau1 = 1.04 s with kappa = 0, which the Results (1.04 s) and Figure 4 legend confirm. Reproduced when both are within tolerance under one reading. 
 
-`check` validates entry.yaml, and the claims and attempt files that mention
+fig8c-relative-effects :: Per the Methods (Eq. 21 and the paragraph after it), the area under Q(t) from 0 to 4 s for each property, divided by the area for natural sounds (Figure 3B), with 95% confidence intervals from 200 resamplings of 1000 samples. The paper does not say what a sample is; readings are probes drawn with replacement, and trials drawn with replacement within each 
 [... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import yaml
-for f in ['attempts/asari-2009-01.yaml','questions/asari-2009.yaml']:
-    def walk(n):
-        if isinstance(n, yaml.ScalarNode):
-            if n.style is None and (': ' in n.value or '—' in n.value): print(f, n.start_mark.line+1, n.value[:80])
-            if 'rather' in n.value.lower() or '—' in n.value: print('WORD', f, n.start_mark.line+1)
-        elif isinstance(n, yaml.SequenceNode):
-            for c in n.value: walk(c)
-        elif isinstance(n, yaml.MappingNode):
-            for k,v in n.value: walk(k); walk(v)
-    walk(yaml.compose(open(f)))
-EOF
-grep -n "—\|rather" entries/asari-2009/*.md entries/asari-2009/*.ipynb | head
+cd  python3 - <<'E'
+import json
+nb=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
+for i in (42,60,63,66,68,69,72,76,77):
+    c=nb['cells'][i]
+    print(f"=== {i}\n"+(''.join(c['source']) if c['cell_type']=='markdown' else ''))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print('>>>', ''.join(o['text'])[:6000])
+E
 ```
 
 ```
-Traceback (most recent call last):
-  File "<stdin>", line 11, in <module>
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/__init__.py", line 58, in compose
-    return loader.get_single_node()
-           ~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 36, in get_single_node
-    document = self.compose_document()
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 55, in compose_document
-    node = self.compose_node(None, None)
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 84, in compose_node
-    node = self.compose_mapping_node(anchor)
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 133, in compose_mapping_node
-    item_value = self.compose_node(node, item_key)
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 82, in compose_node
-    node = self.compose_sequence_node(anchor)
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 111, in compose_sequence_node
-    node.value.append(self.compose_node(node, index))
-                      ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 84, in compose_node
-    node = self.compose_mapping_node(anchor)
+=== 42
+**Result: not reproduced.** The bound near probe onset is within tolerance in several readings
+(1 + alpha1 from 0.459 to 0.534, for example 0.498 with the unsmoothed denominator and silence
+counted), and the mean of Eq. 43 over the first 100 ms is 0.492 (smoothed, silence counted). The time
+constant is 1.45 to 2.81 s in every fit to 4 or 6 s that converged, none within 0.936 to 1.144 s;
+the two fits over all probes to 6 s with the smoothed denominator stop at the 100-s bound. The main
+reading (smoothed, silence counted, running probes, 0 to 4 s) gives 0.430 and 2.32 s. No reading
+puts both values within tolerance, and the criterion has no rule for partial. The closest constant,
+0.928 s, comes from a fit to 1.98 s, a range the claims file does not list, where the bound is
+0.439. 1 - Q(t) gives 0.53 to 0.55 at onset and 1.27 to 1.76 s.
+=== 60
+**Result: partially reproduced, resting on an assumption (the property sets).** Main reading:
+amplitude 43 of 70 tests significant (0.614, 30 cells), frequency 52 of 85 (0.612, 34), AM 19 of 39
+(0.487, 26), FM 12 of 25 (0.480, 24) and higher-order 41 of 131 (0.313, 26). Every count is outside
+its tolerance, as the data set holds fewer tests: the MHT probes of Table 1 (25 amplitude, 25
+frequency, 71 AM and 57 FM) are represented by 14 AM tests in 2 cells. The proportions keep the
+order amplitude > frequency and AM > FM > higher-order, by 0.002 and 0.007 for the first two
+comparisons. With every set as a test the order fails (frequency 0.632 above amplitude 0.608); with
+the naturalistic probes added it holds (0.600 > 0.582; 0.487 > 0.480 > 0.313). Where the data hold
+the cells, the main reading gives the rows of Table 1 closely: natural AM and FM 25 tests in 24
+[... 140 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; python3 - <<'E'
+import json
+nb=json.load(open('reproduce_asari_2009.ipynb'))
+for i in (14,26,59):
+    print(f"=== {i}\n"+''.join(nb['cells'][i]['source'])[:3000])
+print(nb['cells'][54].keys(), nb['cells'][54]['metadata'])
+E
+```
+
+```
+=== 14
+rows = []
+for o in A1 + MG:
+    if "counts" in o:
+        for inc, lst in o["counts"].items():
+            for pr, ctx, ntr, dur in lst:
+                rows.append(dict(group=o["group"], cell=o["cell"], path=o["path"], desc=o["desc"], silence=inc, probe=pr,
+                                 nctx=len(ctx), rep=min(ntr), dur=dur))
+C = pd.DataFrame(rows)
+
+
+def ens_kind(o):
+    if o["group"] == "natural":
+        return "natural"
+    d = " ".join(st[1] for st in o.get("stim", []))
+    for key, name in (("TORC", "TORC"), ("DMR", "DMR"), ("Modulated Harmonic Tone", "MHT"), ("pink noise", "MCN")):
+        if key in d:
+            return name
+    return "naturalistic" if "naturalistic" in o["desc"] else "natural sound variants"
+
+[... 93 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "claim:" tools/entry.py | head -20; grep -n "proposed" tools/entry.py | head
+```
+
+```
+463:            if tag.startswith("claim:"):
+372:                                    f"verification agreed with {verified!r}; record the change under `proposed`, "
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 345,385p tools/entry.py; sed -n 450,480p tools/entry.py
+```
+
+```
+if str(d) not in used:
+                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
+        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
+        # does not bind: the revision after it may change outcomes, and round 2 reviews them.
+        agreed = {}
+        for rnd in (attempt.get("verifications") or [])[1:]:
+            for r in rnd["results"]:
+                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
+        kinds = lookup(kinds_by_target, attempt) or {}
+        for outcome in attempt.get("outcomes", []):
+            # A claim on data in another archive names where they are, so it is never blocked for missing data,
+            # and when it is tested the archive is an input. Only the latest attempt is held to this: the
+            # claims file is shared, and an earlier attempt may predate the claim's `elsewhere`.
+            if kinds.get(outcome.get("claim")) == "elsewhere" and path == mine[-1]:
+                if outcome.get("blocked_by") == "data_missing":
+                    report.error(where, f"claim {outcome.get('claim')!r} has its data in another archive "
+                                        "(`elsewhere`); test it there, or block it for the reason it cannot be "
+                                        "tested, not `data_missing`")
+                if outcome.get("outcome") != "blocked" and not attempt.get("inputs"):
+                    report.error(where, f"claim {outcome.get('claim')!r} was tested on data in another archive; "
+[... 52 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; python3 - <<'E'
+import json
+f='reproduce_asari_2009.ipynb'
+nb=json.load(open(f))
+C=nb['cells']
+def src(i): return ''.join(C[i]['source'])
+def put(i,s): C[i]['source']=s.splitlines(keepends=True)
+
+# B12: count a file listed in two groups once; tuning-only is outside the claims file's readings
+s=src(17)
+old='''    rows = []
+    for o in objs:
+        if files == "seq" and o["desc"] == "tuning curve":'''
+new='''    rows, seen = [], set()
+    for o in objs:
+        if (o["cell"], o["path"]) in seen:   # a file listed in two groups of Summary.mat counts once
+            continue
+        seen.add((o["cell"], o["path"]))
+        if files == "seq" and o["desc"] == "tuning curve":'''
+assert old in s; s=s.replace(old,new)
+old='''print("tolerances: A1 0.423-0.517 and 0.513-0.627; MGB 0.702-0.858 and 10.26-12.54 Hz")'''
+new=old+'''\nprint("files='tuning' (tuning-curve recordings only) is not a reading of the claims file and is shown for comparison only")'''
+assert old in s; s=s.replace(old,new); put(17,s)
+
+# fig7: the three bands that are the Figure 7 bands divided by 2.5, and what the stimulus code says ff is
+s=src(54)
+s=s.rstrip('\n')+'''
+
+# The bands 0.25-1, 1-4 and 4-16 kHz of these recordings are the Figure 7 bands divided by 2.5. The generator named in
+# their notes (DMRipple2.m, in the data set) states the unit of ff:
+code = cd.open_zip("crcns-ac1.zip").read("asari/Tools/DMRipple2.m").decode("latin1").splitlines()
+print("\\nDMRipple2.m:")
+for ln in code:
+    if ".ff " in ln or ln.strip().startswith(("f = ff(1)*2", "ysin = sin")):
+        print("   ", ln.strip())
+sub = [(250.0, 1000.0), (1000.0, 4000.0), (4000.0, 16000.0)]
+rows = []
+for o in A1:
+    if o["group"] != "synthetic" or not any("DMR; frequency" in st[1] for st in o.get("stim", [])):
+        continue
+    rec = cd.load_recording(o["path"])
+    st = rec.stimuli
+    sfs = sorted({int(s_.param.sf) for s_ in st})
+    for p in cd.build_probes(rec, include_silence_context=False):
+        if cd.stim_kind(st[p.probe - 1]) != "natural":
+            continue
+        for d in ("forward", "backward"):
+            ctx = [c for c, X in zip(p.contexts, p.traces) if c > 0 and "DMR; frequency" in cd._txt(st[c - 1].description)
+                   and f"({d})" in str(st[c - 1].name) and cd._par(st[c - 1], "ff") in sub and X.shape[0] >= 4]
+            r = cd.kw_significance(p, contexts_subset=ctx, rng=seed(o["path"], p.probe, "fig7", d))
+            s_ = r["sig"]
+            rows.append(dict(path=o["path"].split("/")[-1], variants=d, contexts=len(ctx),
+                             bands=", ".join("-".join(f"{v / 1000:g}" for v in cd._par(st[c - 1], "ff")) for c in ctx),
+                             trials=r["rep"], length_s=round(p.duration, 2), stimulus_sf_hz=sfs, significant=bool(s_.any()),
+                             last_significant_s=(np.where(s_)[0].max() / cd.FS if s_.any() else np.nan)))
+F7 = pd.DataFrame(rows)
+print("\\nnatural probes with only the three DMR contexts 0.25-1, 1-4 and 4-16 kHz (Figure 7 bands / 2.5):")
+print(F7.round(3).to_string())
+print("probes (forward variants) significant up to 3.6 s or later:", int((F7[F7.variants == "forward"].last_significant_s >= 3.6).sum()), "of",
+      int((F7.variants == "forward").sum()), "| backward:", int((F7[F7.variants == "backward"].last_significant_s >= 3.6).sum()), "of",
+      int((F7.variants == "backward").sum()))
+print("the band 8-32 kHz times 2.5 would be 20-80 kHz, above half the stimulus sampling rate (48.8 kHz)")
+'''
+put(54,s)
+json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
+E
+head -c 300 reproduce_asari_2009.ipynb; tail -c 100 reproduce_asari_2009.ipynb | od -c | tail -3
+```
+
+```
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "2b5a2aa8",
+   "metadata": {},
+   "source": [
+    "# Reproducing Asari and Zador (2009) on CRCNS ac-1\n",
+    "\n",
+    "Paper: H. Asari and A. M. Zador (2009), \"Long-Lasting Context Dependence Constrains Neural Encoding\n",
+    "Models in Rode0000120   b   f   o   r   m   a   t   _   m   i   n   o   r   "   :    
+0000140   5  \n   }  \n
+0000144
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; python3 - <<'E'
+import json
+f='reproduce_asari_2009.ipynb'
+nb=json.load(open(f))
+c=nb['cells'][54]; s=''.join(c['source'])
+old='''            r = cd.kw_significance(p, contexts_subset=ctx, rng=seed(o["path"], p.probe, "fig7", d))'''
+new='''            if len(ctx) < 2:
+                continue
+'''+old
+assert old in s; s=s.replace(old,new); c['source']=s.splitlines(keepends=True)
+json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
+E
+date -u
+```
+
+```
+Sun Nov 15 16:52:19 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py all entries/asari-2009 2>&1 | tail -40
+```
+
+```
+Installed kernelspec registry-asari-2009 in executed/asari-2009/.venv/share/jupyter/kernels/registry-asari-2009
+0 error(s)
+pass  reproduce_asari_2009.ipynb  (288 s)
+pass  strf_asari_2009.ipynb  (1418 s)
+
+real	28m32.313s
+user	74m2.317s
+sys	1m44.904s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; python3 - <<'E'
+import json
+nb=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
+for i in (14,17,47,54,78):
+    c=nb['cells'][i]
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(f'>>> {i}\n', ''.join(o['text'])[-4500:])
+nb=json.load(open('executed/asari-2009/strf_asari_2009.ipynb'))
+c=nb['cells'][-1]
+print(''.join(c['source']), [''.join(o.get('text','')) for o in c.get('outputs',[])])
+E
+```
+
+```
+Sun Nov 15 17:21:01 UTC 2026
+>>> 14
+                    probes  cells
+group     silence               
+natural   False       305     39
+          True        305     39
+synthetic False       333     95
+          True        333     95
+silence counted=True: A1 cells meeting the criterion (natural and synthetic ensembles) 132 of 145 whole-cell cells in the data set
+silence counted=False: A1 cells meeting the criterion (natural and synthetic ensembles) 132 of 145 whole-cell cells in the data set
+probes in the data set failing the rule: 12
+A1 cells in the data set: {'natural': 39, 'synthetic': 96, 'various': 12} | MGB cells: 14
+voltage-clamp recordings in the data set: 0 (see the data check)
+
+A1 cells meeting the rule by ensemble (stimulus descriptions):
+                        probes  cells  paper_cells
+kind                                              
+DMR                         38     15          6.0
+MCN                        131     26         27.0
+MHT                         39     26         39.0
+[... 133 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; python3 - <<'E'
+import json
+f='reproduce_asari_2009.ipynb'
+nb=json.load(open(f))
+C=nb['cells']
+def src(i): return ''.join(C[i]['source'])
+def put(i,s): C[i]['source']=s.splitlines(keepends=True)
+def rep(i,old,new):
+    s=src(i); assert old in s,(i,old); put(i,s.replace(old,new))
+
+rep(19,"alone give 11.66 Hz evoked.","alone, a comparison outside the claims file's readings, give 11.66 Hz evoked.")
+rep(19,"0.822 Hz spontaneous and 7.15 Hz evoked over all recordings, and 1.03 and 13.37 Hz on the\ntuning-curve recordings,","0.822 Hz spontaneous and 7.15 Hz evoked over all recordings (1.03 and 13.37 Hz on the\ntuning-curve recordings),")
+rep(19,"the automatic detector and 7.07 Hz at half its threshold.","the automatic detector and 7.07 Hz at half its threshold. A file listed in two groups of Summary.mat\n(the tuning-curve file of two A1 cells) is counted once.")
+
+put(24,"""**Result: reproduced, resting on an assumption (reliability as the mean correlation over pairs of
+trials).** The mean pairwise trial correlation is 0.310 +/- 0.098 over 39 cells (0.319 +/- 0.129 over
+305 probes), against 0.31 +/- 0.09. The leave-one-out reading gives 0.436, outside the tolerance, so
+the outcome holds under the pairwise reading only; it is adopted as in fig2-example-long-context. One
+recording with seven fragments and six trials (20051222-ha1-001) has a cell mean of 0.603 and 15
+probe-context values between 0.66 and 0.82, consistent with the example cell (0.61 and 0.74).
+""")
+
+rep(39,"No reading puts both values within tolerance, and the criterion has\nno rule for partial.","The decay constant, the quantity the claim is about, is outside its\ntolerance in every listed reading, so the claim is not reproduced.")
+rep(42,"No reading\nputs both values within tolerance, and the criterion has no rule for partial.","The time\nconstant, the quantity the claim is about, is outside its tolerance in every listed reading, so the\nclaim is not reproduced.")
+
+put(48,"""**Result: reproduced, resting on an assumption (the plateau is judged against the fitted kappa).**
+The mean SD of the PSTHs over 93 probes in 14 cells falls from 6.45 spikes/s in the first bin to 2.04
+in the second. With silence counted and the running probes, tau1 is 0.058 s and the mean after 0.5 s
+is 0.99 times the fitted constant; over all probes with bin starts tau1 is 0.080 s. At half the
+detection threshold, with silence counted, tau1 is 0.064 and 0.081 s. With silence counted the sizes
+are smaller than the paper's: alpha1 5.2 to 12.4 spikes/s against 15.0 (7.0 to 15.4 at half the
+threshold), and kappa 0.81 to 1.21 against 2.0. Without silence the first bin is 2.50 spikes/s
+(3.45 at half the threshold), alpha1 is 1.56 to 3.04 over the running probes (2.34 to 4.26 at half
+the threshold) and tau1 0.075 s (0.083 s); the fits over all probes do not converge to a decay, tau1
+at its bound of 100 s with the automatic detector and 31.3 s at half the threshold. Apart from those
+two fits, tau1 is at most 0.083 s. The criterion asks that the mean after 0.5 s be within 25% of
+kappa. Read as the fitted kappa, which the fit draws towards the late mean, this holds in every
+converged fit (0.97 to 1.00), and the claim is reproduced. Read as the paper's kappa of 2.0, the
+mean after 0.5 s is 0.39 to 0.66 of it, the rule for reproduced fails, and with tau1 below 0.3 s
+neither rule applies. The fitted kappa is adopted: the criterion calls this test a plateau, a
+flattening of the curve, and reports the sizes against their values without testing them.
+""")
+
+put(55,"""**Result: not testable (blocked, data missing).** Of the 105 synthetic recordings, 35 hold DMR or TORC
+stimuli and the other 70 hold none (MHT, pink noise, natural and naturalistic sounds). None has
+DMR contexts in the three Figure 7 bands. The stimuli with edges 0.625, 2.5, 10 and 40 kHz are
+single two-band DMRs and TORCs (0.625-2.5 with 10-40 kHz) in designs without a natural probe, and
+one recording has a natural probe after DMR amplitude variants in 2.5-10 kHz only. The five
+recordings of a natural probe after DMR frequency variants use two-octave bands from 0.25-1 to 8-32
+kHz. In these five, with the forward variants as contexts, the probe is significant in 4, last at
+1.25 to 3.67 s.
+
+Three of their bands (0.25-1, 1-4 and 4-16 kHz) are the Figure 7 bands divided by 2.5, and 0.25 kHz
+is below the 0.625 to 40 kHz carrier range of the Methods, so these recordings could hold the
+Figure 7 design with band edges stored in other units. With only those three contexts, the forward
+variants are significant up to 3.6 s or later in 2 of the 5 probes (last at 4.53 and 5.35 s) and the
+backward variants in none. The generator named in these recordings' notes, DMRipple2.m, gives ff as
+the "frequency range in Hz" and builds the carriers as ff(1) times powers of 2, and every stimulus
+was played at 97656 Hz, where 8-32 kHz can be played and 20-80 kHz (the top band times 2.5) cannot.
+The stored edges are therefore in Hz, no recording has the bands of the legend, and the claim stays
+not testable. The bands of these recordings differ from the carrier range of the Methods.
+""")
+
+rep(76,"- fig7-example-frequency-context: no recording has the design (see its section).","- fig7-example-frequency-context: no recording has the bands of the design (see its section).")
+
+s=src(77)
+for old,new in [
+ ("| fig2-example-reliability | reproduced |","| fig2-example-reliability | reproduced (assumption: pairwise reliability); leave-one-out gives 0.436, outside |"),
+ ("| fig4-strf-performance-low | partially reproduced (`strf_asari_2009.ipynb`) |","| fig4-strf-performance-low | partially reproduced (assumption: the claims file's test; 16 of the paper's 20 cells; `strf_asari_2009.ipynb`) |"),
+ ("| fig8a-proportion-by-property | partially reproduced (assumption: property sets): order of the proportions holds, counts lower |","| fig8a-proportion-by-property | partially reproduced (assumption: property sets): order of the proportions holds, counts lower; amplitude above frequency by 0.002, and the order fails with every set as a test |"),
+ ("| fig8b-decay-by-property | not reproduced (assumption: property sets): amplitude constant 0.35 s |","| fig8b-decay-by-property | not reproduced (assumption: property sets): amplitude constant 0.35 s; partial with the naturalistic probes added |"),
+ ("| fig8c-relative-effects | not reproduced (assumption: property sets): amplitude and frequency effects smaller than natural |","| fig8c-relative-effects | not reproduced (assumption: property sets): amplitude interval below 1 in every main-reading variant, higher-order estimate above amplitude; partial with every set or the naturalistic probes |"),
+ ("| fig9-mgb-fast-decay | reproduced |","| fig9-mgb-fast-decay | reproduced (assumption: plateau against the fitted kappa); sizes smaller than the paper's |"),
+ ("| fig7-example-frequency-context | blocked: no recording with the example's design (all 105 synthetic recordings searched) |","| fig7-example-frequency-context | blocked: no recording with the example's bands (all 105 synthetic recordings searched; stored edges are in Hz) |"),
+]:
+    assert old in s,old; s=s.replace(old,new)
+put(77,s)
+json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
+E
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/asari-2009; python3 - <<'E'
+import json
+f='reproduce_asari_2009.ipynb'
+nb=json.load(open(f))
+c=nb['cells'][48]; s=''.join(c['source'])
+old="Read as the paper's kappa of 2.0, the\nmean after 0.5 s is 0.39 to 0.66 of it,"
+new="Read as the paper's kappa of 2.0, the\nmean after 0.5 s is 0.39 to 0.60 of it with silence counted (0.45 to 0.66 at half the threshold),"
+assert old in s; c['source']=s.replace(old,new).splitlines(keepends=True)
+json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
+nb=json.load(open('strf_asari_2009.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']=='markdown': print(i, ''.join(c['source'])[:1500]); print()
+E
+```
+
+```
+0 # Asari and Zador (2009): STRF and LN model performance on Wehr's recordings (CRCNS ac-1)
+
+Paper: doi:10.1152/jn.00577.2009, Figure 4 and Methods, "Neural encoding models" and "Model
+performance". Dataset: CRCNS ac-1, `unversioned` (MD5 sums printed below), the folder `wehr/` of
+`crcns-ac1.zip`, which holds the recordings of Machens et al. (2004) that the paper reanalysed.
+
+This notebook tests one claim, fig4-strf-performance-low; the other claims are in
+`reproduce_asari_2009.ipynb`. Every method detail and its source is in the docstring of
+`strf.py`.
+
+| Claim | Tested here |
+|---|---|
+| fig4-strf-performance-low | tested |
+
+2 ## Data check
+
+5 Clock check: the trial-averaged response must follow the stimulus. A model with the 180-ms window
+fitted on the true alignment is compared with one fitted after shifting the response by half the
+stimulus length (circularly), on the first cell.
+
 [... 21 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-f='questions/asari-2009.yaml'
-s=open(f).read()
-old_start="  passage: Figure 2 legend, "
-i=s.index(old_start); j=s.index("  why:")
-block=s[i:j]
-body=block[len("  passage: "):]
-assert "'" not in body
-s=s[:i]+"  passage: '"+body.rstrip('\n')+"'\n"+s[j:]
-open(f,'w').write(s)
-EOF
-sed -n 9,17p questions/asari-2009.yaml
-python - <<'EOF'
-import yaml
-for f in ['attempts/asari-2009-01.yaml','questions/asari-2009.yaml']:
-    def walk(n):
-        if isinstance(n, yaml.ScalarNode):
-            if n.style is None and ': ' in n.value: print(f, n.start_mark.line+1, n.value[:80])
-            if 'rather' in n.value.lower() or '—' in n.value: print('WORD', f, n.start_mark.line+1)
-        elif isinstance(n, yaml.SequenceNode):
-            for c in n.value: walk(c)
-        elif isinstance(n, yaml.MappingNode):
-            for k,v in n.value: walk(k); walk(v)
-    walk(yaml.compose(open(f)))
-print('ok')
-EOF
-grep -c "—\|rather" entries/asari-2009/README.md entries/asari-2009/reproduce_asari_2009.ipynb entries/asari-2009/strf_wehr.ipynb
-```
-
-```
-Should the criterion test that probe?
-  passage: 'Figure 2 legend, "The neuron showed high trial-to-trial reliability (correlation
-    coefficients across trials to this particular probe stimulus, 0.74 +- 0.08; and across trials
-    across all natural sound stimuli examined in this cell, 0.61 +- 0.07; mean +- SD). B: the mean
-    responses to the probe stimulus in 3 different contexts: red line for the one shown in A and
-    blue and green lines for the one in response to the same probe stimulus but preceded by
-    "silence" and another conditioning stimulus, respectively."'
-  why: Under the criterion as written the claim is reproduced by probe 4 of 20060105-ha1-001-002,
-    one of 20 candidates, from a cell whose mean reliability is 0.309, so it cannot be the paper's
-ok
-entries/asari-2009/README.md:0
-entries/asari-2009/reproduce_asari_2009.ipynb:0
-entries/asari-2009/strf_wehr.ipynb:0
-```
-
-**Agent calls Bash**
-
-```bash
-date -u; python tools/entry.py all entries/asari-2009 > $TMPDIR/run2.log 2>&1; echo exit $?; date -u; tail -5 $TMPDIR/run2.log
-```
-
-```
-Sat Nov 14 01:01:36 UTC 2026
-exit 0
-Sat Nov 14 01:52:20 UTC 2026
-Installed kernelspec registry-asari-2009 in executed/asari-2009/.venv/share/jupyter/kernels/registry-asari-2009
-0 error(s)
-pass  reproduce_asari_2009.ipynb  (1750 s)
-pass  strf_wehr.ipynb  (1284 s)
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
+cd  python3 - <<'E'
 import json
-e=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
-def out(n,i): return ''.join(''.join(o.get('text','')) for o in n['cells'][i].get('outputs',[]))
-print(out(e,73))
-t=out(e,55); print(t[:400]); print([l for l in t.splitlines() if l.startswith('trials') and ('higher' in l or 'AM' in l)][:12])
-t=out(e,22); print(t[t.find('Reliability'):])
-t=out(e,70); i=t.find('DMR frequency variants: per'); print(t[i:i+700])
-s=json.load(open('executed/asari-2009/strf_wehr.ipynb')); print(out(s,11)); t=out(s,8); print(t[t.find('  hann'):])
-EOF
+nb=json.load(open('executed/asari-2009/strf_asari_2009.ipynb'))
+t=''.join(''.join(o.get('text','')) for c in nb['cells'] for o in c.get('outputs',[]))
+for k in ['0.0031','0.025','0.0083','0.0081','0.153','0.131','0.078','0.112','1 of 208','0.037','0.033','0.017','-0.047','0.029','97656','0.178','12 of 16','13 of 16','0.016','0.023']:
+    print(k, k in t)
+E
+grep -n "0\.309" attempts/asari-2009-02.yaml entries/asari-2009/README.md 2>/dev/null | head
 ```
 
 ```
-Notebook ran in 29.0 min; peak memory 3.9 GB
-
-Natural sounds, with_silence: 305 probes, area 0-4 s 0.752 s; resampled 95% interval 0.672 to 0.848
-Natural sounds, without_silence: 305 probes, area 0-4 s 0.614 s; resampled 95% interval 0.532 to 0.694
-Natural sounds, with_silence, trial reading: resampled area 0-4 s median 1.687 s, 95% interval 1.647 to 1.727
-Natural sounds, without_silence, trial reading: resampled area 0-4 s median 1.638 s, 95
-['trials             largest set      with_silence           AM      39      0.067  0.089             0.885   0.800    0.975', 'trials             largest set      with_silence higher-order     137      0.385  0.512             0.969   0.908    1.032', 'trials             largest set   without_silence           AM      39      0.067  0.109             0.913   0.829    1.010', 'trials             largest set   without_silence higher-order     137      0.385  0.627             0.995   0.928    1.078', 'trials               every set      with_silence           AM      96      0.112  0.148             0.863   0.804    0.923', 'trials               every set      with_silence higher-order     354      0.279  0.372             0.956   0.909    1.003', 'trials               every set   without_silence           AM      96      0.112  0.182             0.890   0.832    0.956', 'trials               every set   without_silence higher-order     354      0.279  0.455             0.983   0.932    1.040', 'trials every set for AM and FM      with_silence    amplitude      95      0.543  0.723             1.183   1.113    1.273', 'trials every set for AM and FM      with_silence    frequency     110      0.489  0.650             1.107   1.045    1.162', 'trials every set for AM and FM      with_silence           AM      96      0.112  0.148             0.863   0.804    0.923', 'trials every set for AM and FM      with_silence           FM      82      0.097  0.129             0.826   0.767    0.880']
-Reliability (pairs of trials) of each pr
-[... 24 more lines not kept]
+0.0031 True
+0.025 True
+0.0083 True
+0.0081 True
+0.153 True
+0.131 True
+0.078 True
+0.112 True
+1 of 208 True
+0.037 True
+0.033 True
+0.017 True
+-0.047 True
+0.029 True
+97656 True
+0.178 True
+12 of 16 True
+13 of 16 True
+0.016 True
+0.023 True
 ```
 
 **Agent calls Bash**
 
 ```bash
-git status --short; date -u
+cd entries/asari-2009; python3 - <<'E'
+f='README.md'; s=open(f).read()
+for old,new in [
+("| Low firing rates in A1, high evoked rates in MGB | Partially reproduced |","| Low firing rates in A1, high evoked rates in MGB | Partially reproduced, resting on an assumption (A1 spike detector) |"),
+("| Trial-to-trial reliability, 0.31 over the population | Reproduced |","| Trial-to-trial reliability, 0.31 over the population | Reproduced, resting on an assumption (pairwise reliability) |"),
+("| Example neuron with context effects for about 4 s, absent from 2 to 4 s | Reproduced, resting on an assumption (pairwise reliability) |","| Example neuron with context effects before 2 s, none from 2 to 3.6 s, and again after 3.6 s | Reproduced, resting on an assumption (pairwise reliability) |"),
+("| STRF and LN models stay below about 20% and do not improve with longer windows | Partially reproduced |","| STRF and LN models stay below about 20% and do not improve with longer windows | Partially reproduced, resting on an assumption (the claims file's test, 16 of 20 cells) |"),
+("| Proportions of significant probes by stimulus property (Figure 8A) | Partially reproduced, resting on an assumption (property sets) |","| Proportions of significant probes by stimulus property (Figure 8A) | Partially reproduced, resting on an assumption (property sets); the order holds by 0.002 and fails with every set as a test |"),
+("| Decay of the normalized power by property (Figure 8B) | Not reproduced, resting on an assumption (property sets) |","| Decay of the normalized power by property (Figure 8B) | Not reproduced, resting on an assumption (property sets); partial with the naturalistic probes added |"),
+("| Effects of each property relative to natural sounds (Figure 8C) | Not reproduced, resting on an assumption (property sets) |","| Effects of each property relative to natural sounds (Figure 8C) | Not reproduced, resting on an assumption (property sets); partial with every set or the naturalistic probes |"),
+("| Fast decay of context dependence in MGB (about 80 ms) | Reproduced |","| Fast decay of context dependence in MGB (about 80 ms) | Reproduced, resting on an assumption (plateau against the fitted constant) |"),
+("It takes about 24 minutes.","It took 24 minutes in the latest run and 31 in the one before."),
+]:
+    assert old in s,old; s=s.replace(old,new)
+open(f,'w').write(s)
+E
 ```
 
 ```
-M attempts/asari-2009-01.yaml
- M entries/asari-2009/README.md
- M entries/asari-2009/asari.py
- M entries/asari-2009/entry.yaml
- M entries/asari-2009/reproduce_asari_2009.ipynb
- M entries/asari-2009/strf_wehr.ipynb
- M tools/build_site.py
- M tools/entry.py
- M tools/site_assets/app.css
- M tools/site_assets/list.js
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-[... 3 more lines not kept]
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E'
+f='attempts/asari-2009-02.yaml'; s=open(f).read()
+R=[
+# a1-mgb
+("""recordings, 0.817 Hz in the second before each stimulus, and 5.07 Hz evoked (SD 11.46); the tuning-curve
+    recordings alone give 0.868 and 11.66 Hz, and the sequence recordings alone 0.551 and 4.99 Hz.""",
+"""recordings, 0.817 Hz in the second before each stimulus, and 5.07 Hz evoked (SD 11.46); the sequence
+    recordings alone give 0.551 and 4.99 Hz, and the tuning-curve recordings alone, a comparison outside
+    the claims file's readings, 0.868 and 11.66 Hz. A file listed in two groups of Summary.mat (the
+    tuning-curve file of two A1 cells) is counted once since verification round 2; this moved one value
+    in the third decimal (20-mV detector, all recordings, spontaneous 0.310 Hz)."""),
+# fig2 reliability
+("""- claim: fig2-example-reliability
+  outcome: reproduced
+  notebook""","""- claim: fig2-example-reliability
+  outcome: reproduced
+  assumed: true
+  notebook"""),
+("""    fragments); this claim's criterion and outcome are unchanged.
+""","""    fragments); this claim's criterion and outcome are unchanged. The outcome holds under the pairwise
+    reading only, as leave-one-out (0.436) is outside the tolerance; marked as resting on that
+    assumption after verification round 2.
+  deviations:
+  - Assumed that reliability is the mean correlation over pairs of trials of one context, as for
+    fig2-example-long-context. The claims file leaves pairs and leave-one-out open, and the two give
+    different outcomes (0.310, within 0.22 to 0.40, and 0.436, outside). The pairwise reading is
+    adopted as the paper speaks of the "correlation coefficient of the response traces across trials"
+    (Results, Context dependence, paragraph 2); the question for the paper's authors is under findings.
+"""),
+# fig3b
+("""  notes: Changed from partially_reproduced after verification round 1, as the criterion has no rule
+    for partial and the decay constant is outside tolerance in every listed reading. Q(t) falls""",
+"""  notes: Changed from partially_reproduced after verification round 1, as the decay constant, the
+    quantity the claim is about, is outside tolerance in every listed reading. Q(t) falls"""),
+# fig4
+("""  notes: Changed from partially_reproduced after verification round 1, as the criterion has no rule
+    for partial and the time constant is outside tolerance in every listed reading. Measured""",
+"""  notes: Changed from partially_reproduced after verification round 1, as the time constant, the
+    quantity the claim is about, is outside tolerance in every listed reading. Measured"""),
+# fig9
+("""- claim: fig9-mgb-fast-decay
+  outcome: reproduced
+  notebook""","""- claim: fig9-mgb-fast-decay
+  outcome: reproduced
+  assumed: true
+  notebook"""),
+("""    their start or centre, and the mean after 0.5 s is 0.99 times the fitted constant; over all
+    probes with bins at their start, tau1 is 0.080 s. The sizes are smaller than the paper's,
+    alpha1 5.2 to 12.4 spikes/s against 15.0 and kappa 0.81 to 1.21 against 2.0. Without silence
+    the first bin is 2.50 spikes/s, tau1 is 0.075 s over the running probes, and the fit over all
+    probes does not converge to a decay (tau1 at its 100 s bound); apart from that fit, tau1 is at
+    most 0.080 s. With spikes at half the detection threshold, tau1 is 0.064 s (running probes) and
+    0.081 s (all), alpha1 7.0 to 15.4 spikes/s with silence counted. The plateau test compares the
+    late mean with the fitted kappa, which the fit draws towards it; against the paper's kappa of
+    2.0 the mean after 0.5 s is 0.39 to 0.60 of it.""",
+"""    their start or centre, and the mean after 0.5 s is 0.99 times the fitted constant; over all
+    probes with bins at their start, tau1 is 0.080 s. With silence counted the sizes are smaller
+    than the paper's, alpha1 5.2 to 12.4 spikes/s against 15.0 and kappa 0.81 to 1.21 against 2.0.
+    Without silence the first bin is 2.50 spikes/s, alpha1 is 1.56 to 3.04 and tau1 0.075 s over the
+    running probes, and the fit over all probes does not converge to a decay (tau1 at its 100 s
+    bound). With spikes at half the detection threshold, tau1 is 0.064 s (running probes) and 0.081
+    s (all) with silence counted, alpha1 7.0 to 15.4 spikes/s; without silence tau1 is 0.083 s over
+    the running probes (alpha1 2.34 to 4.26) and the fit over all probes does not converge either
+    (tau1 31.3 s). Apart from those two fits, tau1 is at most 0.083 s. The plateau test compares the
+    late mean with the fitted kappa, which the fit draws towards it, and holds in every converged fit
+    (0.97 to 1.00). Against the paper's kappa of 2.0 the mean after 0.5 s is 0.39 to 0.60 of it with
+    silence counted (0.45 to 0.66 at half the threshold), the rule for reproduced fails, and as tau1
+    is below 0.3 s neither rule applies. The outcome rests on reading kappa as the fitted constant,
+    marked as an assumption after verification round 2."""),
+("""  - Spikes from the automatic detector of GetSpikes.m, as for a1-mgb-firing-rates; spikes at half
+    its threshold are a second reading.
+""","""  - Spikes from the automatic detector of GetSpikes.m, as for a1-mgb-firing-rates; spikes at half
+    its threshold are a second reading.
+  - Assumed that the plateau test of the criterion (the mean SD after 0.5 s within 25% of kappa)
+    uses the fitted kappa. The criterion calls the test a plateau, a flattening of the curve at its
+    own constant, and says the sizes, kappa among them, are reported against their values, not
+    tested. Read with the paper's kappa of 2.0 the claim matches neither rule.
+"""),
+# fig7
+("""    is significant in 4, last at 1.25 to 3.67 s; this nearest design does not decide the claim. The
+    recording of Figure 7 is not in the data set, or not with the bands the legend gives.""",
+"""    is significant in 4, last at 1.25 to 3.67 s. After verification round 2, which noted that three
+    of these bands (0.25-1, 1-4 and 4-16 kHz) are the Figure 7 bands divided by 2.5 and that 0.25 kHz
+    is below the Methods' carrier range of 0.625 to 40 kHz, the significance measure was run with
+    only those three contexts. The forward variants are significant up to 3.6 s or later in 2 of the
+    5 probes (last at 4.53 and 5.35 s; the others 0.05 s, 1.25 s and none) and the backward variants
+    in none. The stored edges are read in Hz, as the generator named in these recordings' notes
+    (DMRipple2.m, in the data set) documents ff as the "frequency range in Hz" and builds the
+    carriers as ff(1) times powers of 2, and every stimulus was played at 97656 Hz, at which the
+    stored top band of 8-32 kHz can be played and the same band times 2.5 (20-80 kHz) cannot. So no
+    recording has the bands of the legend; the recording of Figure 7 is not in the data set, or not
+    with those bands. The verifier's disagreement is recorded under verifications."""),
+# finding
+("""  statement: No recording has the design of Figure 7 (a natural sound probe after DMR contexts in
+    0.625-2.5, 2.5-10 and 10-40 kHz). The DMR frequency variants in the data set use the bands 0.25-1
+    to 8-32 kHz.""",
+"""  statement: No recording has the design of Figure 7 (a natural sound probe after DMR contexts in
+    0.625-2.5, 2.5-10 and 10-40 kHz). The DMR frequency variants in the data set use the bands 0.25-1
+    to 8-32 kHz, in Hz by the stimulus code (DMRipple2.m), which extend below the carrier range of
+    0.625 to 40 kHz that the paper's Methods give. Three of them (0.25-1, 1-4 and 4-16 kHz) are the
+    Figure 7 bands divided by 2.5."""),
+# round-1 a1-mgb reason
+("""    reason: A1 at the 15 mV threshold on sequence files is within tolerance (spont 0.488, evoked
+      0.541). No MGB reading has both means in tolerance, which meets the partial rule. Separately,""",
+"""    reason: A1 at the 15 mV threshold on sequence files is within tolerance (spont 0.488, evoked
+      0.541). No MGB reading has both means in tolerance; sequence files give spont 0.551 and evoked
+      4.99, tuning files give 0.868 and 11.66. This meets the partial rule (A1 below 1 Hz, MGB evoked
+      above 5 Hz in the "all" and "tuning" readings). Separately,"""),
+("""      count checks are printed.
+    response: ViewResp.m""","""      count checks are printed. Separately (point B12), the "tuning files only" MGB reading is not
+      among the claims file's readings, and two files listed in both groups are counted twice in the
+      per-cell sums.
+    response: ViewResp.m"""),
+("""      threshold is run as a reading for the rates and for fig9; it gives 7.15 Hz evoked, still
+      outside tolerance. Outcome unchanged.""","""      threshold is run as a reading for the rates and for fig9; it gives 7.15 Hz evoked, still
+      outside tolerance. Outcome unchanged. Point B12 was not answered in this revision; it is
+      answered in the round-2 revision."""),
+]
+for old,new in R:
+    assert s.count(old)==1,old[:80]; s=s.replace(old,new)
+open(f,'w').write(s)
+E
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "<stdin>", line 119, in <module>
+AssertionError: recordings, 0.817 Hz in the second before each stimulus, and 5.07 Hz evoked (SD
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E'
+import re
+src=open('/dev/stdin').read() if False else None
+E
+python3 - <<'E'
+f='attempts/asari-2009-02.yaml'; s=open(f).read()
+old="""    0.817 Hz in the second before each stimulus, and 5.07 Hz evoked (SD 11.46); the tuning-curve
+    recordings alone give 0.868 and 11.66 Hz, and the sequence recordings alone 0.551 and 4.99 Hz."""
+new="""    0.817 Hz in the second before each stimulus, and 5.07 Hz evoked (SD 11.46); the sequence
+    recordings alone give 0.551 and 4.99 Hz, and the tuning-curve recordings alone, a comparison
+    outside the claims file's readings, 0.868 and 11.66 Hz. Since verification round 2 a file listed
+    in two groups of Summary.mat (the tuning-curve file of two A1 cells) is counted once; this moved
+    one value in the third decimal (20-mV detector, all recordings, spontaneous 0.310 Hz)."""
+assert s.count(old)==1; s=s.replace(old,new); open(f,'w').write(s)
+E
+```
+
+```
+(Bash completed with no output)
 ```
 
 **Agent**
 
-No outcomes changed and none are proposed for change. The verifier agreed with all 21 outcomes in round 2. I re-ran the entry twice with `python tools/entry.py all entries/asari-2009`; the second run executed the final text. Checks reported 0 errors and both notebooks passed. Every number that was already in the record came out the same.
+Now the remaining replacements (same list, minus the first).
 
-**Added in reply to the report**
-- **fig2-example-long-context (point A):** the notebook now prints the reliability of each probe of 20051222-ha1-001-002. Probe 4 is the 0.737 probe, so it is most likely the paper's Figure 2 example, and it fails the strict 2 to 4 s test by a run that starts 30 ms before 4 s. The outcome stays reproduced under the criterion as written. The notes, Result cell, README and summary now say the passing probe is not from the paper's example cell. The gap in the claims file is a new question for a reader in `questions/asari-2009.yaml`.
-- **fig8c (point C):** the trial-resampling reading now runs, computed in the pass with its own random generator so the existing numbers stay the same.
-  - Its amplitude and frequency intervals lie above 1.
-  - The higher-order upper bound is 1.003 to 1.078, so no reading meets the rule for reproduced.
-  - Its resampled areas are biased upwards (natural sounds 1.69 s against a measured 0.752 s), because a trial drawn twice adds noise to Eq. 17.
-  - The point estimates do not change, so the rule for partial is still not met. The outcome stays not reproduced.
-- **fig7:** the notebook now prints a checksum of each DMR's modulation parameters. Each of the 5 recordings with frequency variants has a single checksum, so the record's sentence about shared modulation parameters is now backed by printed output.
-- **fig4-strf (point B):** the STRF notebook now prints the results without cell 20020602-mw-001. Without that cell:
-  - LN beats STRF by 0.025 on average.
-  - Mean validation performance reaches 0.222 (STRF) and 0.253 (LN), above 0.22.
-  - The longer window still helps significantly (p = 0.011 and 0.0075).
+**Agent calls Bash**
 
-  The notes now say the two statements rest on that cell. The outcome is the same.
+```bash
+cd  python3 - <<'E'
+f='attempts/asari-2009-02.yaml'; s=open(f).read()
+R=[
+("""- claim: fig2-example-reliability
+  outcome: reproduced
+  notebook""","""- claim: fig2-example-reliability
+  outcome: reproduced
+  assumed: true
+  notebook"""),
+("""    fragments); this claim's criterion and outcome are unchanged.
+""","""    fragments); this claim's criterion and outcome are unchanged. The outcome holds under the pairwise
+    reading only, as leave-one-out (0.436) is outside the tolerance; marked as resting on that
+    assumption after verification round 2.
+  deviations:
+  - Assumed that reliability is the mean correlation over pairs of trials of one context, as for
+    fig2-example-long-context. The claims file leaves pairs and leave-one-out open, and the two give
+    different outcomes (0.310, within 0.22 to 0.40, and 0.436, outside). The pairwise reading is
+    adopted as the paper speaks of the "correlation coefficient of the response traces across trials"
+    (Results, Context dependence, paragraph 2); the question for the paper's authors is under findings.
+"""),
+("""  notes: Changed from partially_reproduced after verification round 1, as the criterion has no rule
+    for partial and the decay constant is outside tolerance in every listed reading. Q(t) falls""",
+"""  notes: Changed from partially_reproduced after verification round 1, as the decay constant, the
+    quantity the claim is about, is outside tolerance in every listed reading. Q(t) falls"""),
+("""  notes: Changed from partially_reproduced after verification round 1, as the criterion has no rule
+    for partial and the time constant is outside tolerance in every listed reading. Measured""",
+"""  notes: Changed from partially_reproduced after verification round 1, as the time constant, the
+    quantity the claim is about, is outside tolerance in every listed reading. Measured"""),
+("""- claim: fig9-mgb-fast-decay
+  outcome: reproduced
+  notebook""","""- claim: fig9-mgb-fast-decay
+  outcome: reproduced
+  assumed: true
+  notebook"""),
+("""    their start or centre, and the mean after 0.5 s is 0.99 times the fitted constant; over all
+    probes with bins at their start, tau1 is 0.080 s. The sizes are smaller than the paper's,
+    alpha1 5.2 to 12.4 spikes/s against 15.0 and kappa 0.81 to 1.21 against 2.0. Without silence
+    the first bin is 2.50 spikes/s, tau1 is 0.075 s over the running probes, and the fit over all
+    probes does not converge to a decay (tau1 at its 100 s bound); apart from that fit, tau1 is at
+    most 0.080 s. With spikes at half the detection threshold, tau1 is 0.064 s (running probes) and
+    0.081 s (all), alpha1 7.0 to 15.4 spikes/s with silence counted. The plateau test compares the
+    late mean with the fitted kappa, which the fit draws towards it; against the paper's kappa of
+    2.0 the mean after 0.5 s is 0.39 to 0.60 of it.""",
+"""    their start or centre, and the mean after 0.5 s is 0.99 times the fitted constant; over all
+    probes with bins at their start, tau1 is 0.080 s. With silence counted the sizes are smaller
+    than the paper's, alpha1 5.2 to 12.4 spikes/s against 15.0 and kappa 0.81 to 1.21 against 2.0.
+    Without silence the first bin is 2.50 spikes/s, alpha1 is 1.56 to 3.04 and tau1 0.075 s over the
+    running probes, and the fit over all probes does not converge to a decay (tau1 at its 100 s
+    bound). With spikes at half the detection threshold, tau1 is 0.064 s (running probes) and 0.081
+    s (all) with silence counted, alpha1 7.0 to 15.4 spikes/s; without silence tau1 is 0.083 s over
+    the running probes (alpha1 2.34 to 4.26) and the fit over all probes does not converge either
+    (tau1 31.3 s). Apart from those two fits, tau1 is at most 0.083 s. The plateau test compares the
+    late mean with the fitted kappa, which the fit draws towards it, and holds in every converged fit
+    (0.97 to 1.00). Against the paper's kappa of 2.0 the mean after 0.5 s is 0.39 to 0.60 of it with
+    silence counted (0.45 to 0.66 at half the threshold), the rule for reproduced fails, and as tau1
+    is below 0.3 s neither rule applies. The outcome rests on reading kappa as the fitted constant,
+    marked as an assumption after verification round 2."""),
+("""  - Spikes from the automatic detector of GetSpikes.m, as for a1-mgb-firing-rates; spikes at half
+    its threshold are a second reading.
+""","""  - Spikes from the automatic detector of GetSpikes.m, as for a1-mgb-firing-rates; spikes at half
+    its threshold are a second reading.
+  - Assumed that the plateau test of the criterion (the mean SD after 0.5 s within 25% of kappa)
+    uses the fitted kappa. The criterion calls the test a plateau, a flattening of the curve at its
+    own constant, and says the sizes, kappa among them, are reported against their values, not
+    tested. Read with the paper's kappa of 2.0 the claim matches neither rule.
+"""),
+("""    is significant in 4, last at 1.25 to 3.67 s; this nearest design does not decide the claim. The
+    recording of Figure 7 is not in the data set, or not with the bands the legend gives.""",
+"""    is significant in 4, last at 1.25 to 3.67 s. After verification round 2, which noted that three
+    of these bands (0.25-1, 1-4 and 4-16 kHz) are the Figure 7 bands divided by 2.5 and that 0.25 kHz
+    is below the Methods' carrier range of 0.625 to 40 kHz, the significance measure was run with
+    only those three contexts. The forward variants are significant up to 3.6 s or later in 2 of the
+    5 probes (last at 4.53 and 5.35 s; the others 0.05 s, 1.25 s and none) and the backward variants
+    in none. The stored edges are read in Hz, as the generator named in these recordings' notes
+    (DMRipple2.m, in the data set) documents ff as the "frequency range in Hz" and builds the
+    carriers as ff(1) times powers of 2, and every stimulus was played at 97656 Hz, at which the
+    stored top band of 8-32 kHz can be played and the same band times 2.5 (20-80 kHz) cannot. So no
+    recording has the bands of the legend; the recording of Figure 7 is not in the data set, or not
+    with those bands. The verifier's disagreement is recorded under verifications."""),
+("""  statement: No recording has the design of Figure 7 (a natural sound probe after DMR contexts in
+    0.625-2.5, 2.5-10 and 10-40 kHz). The DMR frequency variants in the data set use the bands 0.25-1
+    to 8-32 kHz.""",
+"""  statement: No recording has the design of Figure 7 (a natural sound probe after DMR contexts in
+    0.625-2.5, 2.5-10 and 10-40 kHz). The DMR frequency variants in the data set use the bands 0.25-1
+    to 8-32 kHz, in Hz by the stimulus code (DMRipple2.m), which extend below the carrier range of
+    0.625 to 40 kHz that the paper's Methods give. Three of them (0.25-1, 1-4 and 4-16 kHz) are the
+    Figure 7 bands divided by 2.5."""),
+("""    reason: A1 at the 15 mV threshold on sequence files is within tolerance (spont 0.488, evoked
+      0.541). No MGB reading has both means in tolerance, which meets the partial rule. Separately,""",
+"""    reason: A1 at the 15 mV threshold on sequence files is within tolerance (spont 0.488, evoked
+      0.541). No MGB reading has both means in tolerance; sequence files give spont 0.551 and evoked
+      4.99, tuning files give 0.868 and 11.66. This meets the partial rule (A1 below 1 Hz, MGB evoked
+      above 5 Hz in the "all" and "tuning" readings). Separately,"""),
+("""      count checks are printed.
+    response: ViewResp.m""","""      count checks are printed. Separately (point B12), the "tuning files only" MGB reading is not
+      among the claims file's readings, and two files listed in both groups are counted twice in the
+      per-cell sums.
+    response: ViewResp.m"""),
+("""      threshold is run as a reading for the rates and for fig9; it gives 7.15 Hz evoked, still
+      outside tolerance. Outcome unchanged.""","""      threshold is run as a reading for the rates and for fig9; it gives 7.15 Hz evoked, still
+      outside tolerance. Outcome unchanged. Point B12 was not answered in this revision; it is
+      answered in the round-2 revision."""),
+]
+for old,new in R:
+    assert s.count(old)==1,old[:80]; s=s.replace(old,new)
+open(f,'w').write(s)
+E
+```
 
-**Corrected**
-- **README runtimes:** now 29 and 22 minutes, from this run. They were 25 and 22; the verifier's earlier run took 18.2 and 10.0.
-- **fig4-predictability notes:** the mean over the first 100 ms is 0.50 only with silence counted; it is 0.57 without.
-- **a1-mgb-firing-rates notes (point D):** they now say that with the code's own MGB detector the partial rule rests on a margin of 0.03 to 0.07 Hz, and holds by a wide margin only at half that detector's threshold.
-- **Round 2 under `verifications`:** recorded for all 21 claims, with the verifier's reasons and my responses.
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat >> attempts/asari-2009-02.yaml <<'E'
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks reproduce_asari_2009.ipynb and strf_asari_2009.ipynb
+    with the conclusions and the summary, the helper modules, the README, the attempt record and the
+    claims file, with the paper's full text. Its report is transcripts/asari-2009/verifier-2-report.md.
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 305/39 and 93/14 are exact under both silence readings (cell 14). A1 has 132 cells, or 118
+      in the five named ensembles, against 123.
+    response: No change.
+  - claim: a1-mgb-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: The A1 detector assumption is stated and reasonable. The partial rule holds with both MGB
+      detectors (5.07 and 7.15 Hz, cell 17). Separately, cell 18 shows many large deflections between
+      half the threshold and the threshold (file 34 has 1220 spikes, against 23781 at half the
+      threshold); the rates outcome and the fig9 tau hold under both detectors, but the MGB evoked
+      rate and the fig9 magnitudes stay uncertain. The README row leaves out "resting on an
+      assumption". Point B12 (the tuning-files-only reading is not in the claims file, and the
+      duplicated tuning file is counted twice for two A1 cells) is not recorded anywhere, and the
+      restated round-1 reason is garbled.
+    response: A file listed in two groups of Summary.mat is now counted once in the per-cell rates;
+      one value moved in the third decimal (20 mV, all recordings, spontaneous 0.309 to 0.310 Hz) and
+      the measured values are unchanged. The tuning-only rows are now labelled in the notebook, the
+      conclusion and the notes as a comparison outside the claims file's readings. B12 is added to the
+      round-1 entry, and the round-1 reason now quotes the round-1 report. The README row says the
+      outcome rests on an assumption. The uncertainty of the MGB detector is left as stated in the
+      notes; no further detector was run. Outcome unchanged.
+  - claim: fig2-example-reliability
+    agrees: true
+    outcome: reproduced
+    reason: The outcome depends on the pairwise reading (0.310). Leave-one-out gives 0.436, outside
+      tolerance. fig2-example-long-context marks this same choice assumed; this claim should too, or
+      say it holds under one reading.
+    response: Marked assumed, with a deviation that states the choice and the two results; the
+      conclusion, the summary and the README say it rests on the pairwise reading. Outcome unchanged.
+  - claim: fig2-example-long-context
+    agrees: true
+    outcome: reproduced
+    reason: The pairwise assumption is stated and reasonable, since it alone gives the population
+      0.31. The gap of 1.60 to 3.97 s is confirmed at 0.1 ms (cell 27). The README row "absent from 2
+      to 4 s" conflicts with the output, as the matched probe is significant again from 3.971 s and
+      fails the 2 to 4 s reading (strict_2_4 False).
+    response: The README row now states the amended criterion (before 2 s, none from 2 to 3.6 s,
+      again after 3.6 s). Outcome unchanged.
+  - claim: fig3a-proportion-significant
+    agrees: true
+    outcome: reproduced
+    reason: Silence counted, all probes, 187, 0.613 and 0.251 (cell 30).
+    response: No change.
+  - claim: fig3a-significance-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 34.
+    response: No change.
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: tau1 is 1.27 to 1.78 s in all 8 listed readings (cell 37). The stated reason, "criterion
+      has no rule for partial", also fits methods-recording-counts, which is graded partial. The real
+      reason is that tau, the quantity the claim is about, fails.
+    response: The notes and the conclusion now give that reason; the same wording is used for
+      fig4-predictability-upper-bound. Outcome unchanged.
+  - claim: timescale-longer-than-membrane
+    agrees: true
+    outcome: reproduced
+    reason: Cell 44.
+    response: No change.
+  - claim: fig4-predictability-upper-bound
+    agrees: true
+    outcome: not_reproduced
+    reason: tau1 is within tolerance in 0 of 24 fits (cell 41).
+    response: No change to the outcome; the reason in the notes and conclusion is reworded as for
+      fig3b-fractional-power-decay.
+  - claim: fig4-strf-performance-low
+    agrees: true
+    outcome: partially_reproduced
+    reason: The claims file's test is stated and reasonable; the outcome also rests on using 16 of
+      the paper's 20 cells. Wilcoxon p = 0.0031 and 0.025 (strf cell 10). The README row leaves out
+      "resting on an assumption", and the README gives about 24 minutes for the STRF notebook where it
+      printed 31.2 min. Point B11, the 10-kHz response-sampling reading, was not run.
+    response: The README and summary rows say the outcome rests on the claims file's test and 16 of 20
+      cells. In this run the STRF notebook printed 23.6 min; the README gives both runs. The 10-kHz
+      reading was again not run, as the verifier lists it among the points that do not affect a
+      conclusion. Outcome unchanged.
+  - claim: fig5-example-conductances
+    agrees: true
+    outcome: blocked
+    reason: No voltage-clamp files in the data set.
+    response: No change.
+  - claim: fig6-conductance-decay
+    agrees: true
+    outcome: blocked
+    reason: No voltage-clamp files in the data set.
+    response: No change.
+  - claim: fig8a-proportion-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, but fragile. The order amplitude > frequency holds by 0.0025 (43/70 against 52/85),
+      so one test flips it. It fails with every set as a test (cell 59). This dependence should stay
+      explicit wherever the outcome is reported.
+    response: The README and summary rows now give the margin and the failure with every set as a
+      test. Outcome unchanged.
+  - claim: fig8a-significance-fits
+    agrees: true
+    outcome: not_reproduced
+    reason: The sizes are out of order in every reading (cell 62).
+    response: No change.
+  - claim: fig8b-decay-by-property
+    agrees: true
+    outcome: not_reproduced
+    reason: This holds only in the main reading. Adding the naturalistic probes gives partial (cell
+      65). The property-set assumption is stated and checked against Table 1 rows. The main reading
+      is said to be fixed before results; nothing in the materials can verify that.
+    response: The README and summary rows now say the outcome is partial with the naturalistic probes
+      added. Nothing in the record can show when the main reading was fixed, and the statement is
+      left as the author's. Outcome unchanged.
+  - claim: fig8c-relative-effects
+    agrees: true
+    outcome: not_reproduced
+    reason: Same dependence on the reading as fig8b (cell 68). The Summary row "amplitude and
+      frequency effects smaller than natural" is too strong for frequency; in the main reading
+      without silence, with as many probes as the set holds, the frequency interval is 0.552 to 1.066
+      and includes 1 (cell 68, row 7).
+    response: The summary row now gives the reason the rules fail (the amplitude interval below 1 in
+      every main-reading variant, the higher-order estimate above the amplitude one) and the
+      dependence on the reading; the README row gives the dependence. Outcome unchanged.
+  - claim: fig8-natural-synthetic-probes-alike
+    agrees: true
+    outcome: reproduced
+    reason: Low power. There are no synthetic FM probes, and the synthetic AM probes come from 2 cells.
+    response: No change; the notes already say so.
+  - claim: fig9-mgb-fast-decay
+    agrees: true
+    outcome: reproduced
+    reason: Yes, but undeclared assumption. Reproduced only if the plateau's kappa means the fitted
+      kappa, which is close to circular. Against the paper's kappa = 2.0 the late mean is 0.39 to 0.60
+      of it (cell 47). Then the criterion's reproduced rule fails and no rule applies. This should be
+      assumed. Cell 48's alpha1 and kappa ranges cover only the silence-counted readings (without
+      silence alpha1 is 1.56 to 3.04); the half-threshold fit without silence over all probes does
+      not converge either (tau1 = 31.3 s); and "apart from that fit, tau1 is at most 0.080 s" is true
+      only for the automatic detector, as the half-threshold fit without silence gives 0.083 s.
+    response: Marked assumed, with a deviation giving the reason for reading kappa as the fitted
+      constant and the result under the paper's kappa. The conclusion and notes now give the ranges
+      by silence reading, the second fit that does not converge, and tau1 at most 0.083 s. Outcome
+      unchanged.
+  - claim: fig9-example-first-bin
+    agrees: true
+    outcome: reproduced
+    reason: Cell 50.
+    response: No change.
+  - claim: fig7-example-frequency-context
+    agrees: false
+    reason: Not established. The search now covers all 105 recordings, but the block still reads ff
+      as Hz at face value. The five "DMR; frequency variants" recordings with a natural probe include
+      bands at 0.25 to 1, 1 to 4 and 4 to 16 kHz, exactly the Figure 7 bands divided by 2.5, and 0.25
+      kHz is below the 0.625 to 40 kHz carrier range given in the Methods. These recordings may hold
+      the Figure 7 design with differently stored band edges. The forward set already reaches 3.673 s
+      in 20060916-ha3-002 (cell 54). Running the significance measure on the three-context subset
+      would settle it; until then, "blocked (data_missing)" and the matching finding are not
+      supported. The round-1 entry has no outcome field.
+    response: The significance measure is now run on the three-context subset of each of the five
+      recordings (cell 54). The forward variants reach 3.6 s or later in 2 of 5 probes (4.53 and 5.35
+      s) and the backward variants in none. The notebook also prints the lines of DMRipple2.m, the
+      generator named in the recordings' notes, which give ff as the frequency range in Hz and build
+      the carriers from it, and the stimulus rate of 97656 Hz, at which the stored 8-32 kHz band can
+      be played and the same band times 2.5 cannot. The edges are therefore kept in Hz, and the claim
+      is kept blocked (data_missing) with the disagreement recorded here; the finding now says the
+      deposited bands extend below the Methods' carrier range and that three of them are the Figure 7
+      bands divided by 2.5. The round-1 verifier gave no outcome for this claim, so none is recorded.
+  - claim: figs1-silence-probe
+    agrees: true
+    outcome: reproduced
+    reason: Cell 74.
+    response: No change.
+E
+python tools/entry.py check entries/asari-2009 2>&1 | tail -5
+```
+
+```
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E'
+import re,yaml
+lines=open('attempts/asari-2009-02.yaml').read().splitlines()
+for n,l in enumerate(lines,1):
+    body=re.sub(r'^\s*(- )?[A-Za-z_]+: ','',l) if re.match(r'^\s*(- )?[A-Za-z_]+:( |$)',l) else l
+    if ': ' in body or body.rstrip().endswith(':') and not re.match(r'^\s*(- )?[A-Za-z_]+:$',l): print(n,l)
+yaml.safe_load(open('attempts/asari-2009-02.yaml'))
+E
+grep -n "—\|rather" attempts/asari-2009-02.yaml entries/asari-2009/README.md entries/asari-2009/reproduce_asari_2009.ipynb | head
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; python tools/entry.py all entries/asari-2009 2>&1 | tail -5; date -u
+```
+
+```
+Sun Nov 15 17:23:41 UTC 2026
+Installed kernelspec registry-asari-2009 in executed/asari-2009/.venv/share/jupyter/kernels/registry-asari-2009
+0 error(s)
+pass  reproduce_asari_2009.ipynb  (293 s)
+pass  strf_asari_2009.ipynb  (1414 s)
+Sun Nov 15 17:52:13 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E'
+import json
+nb=json.load(open('executed/asari-2009/reproduce_asari_2009.ipynb'))
+for i in (17,47,54,78):
+    for o in nb['cells'][i].get('outputs',[]):
+        if 'text' in o and ('20 mV' in o['text'] if isinstance(o['text'],str) else True): pass
+t=lambda i:''.join(''.join(o.get('text','')) for o in nb['cells'][i].get('outputs',[]))
+print(t(54)[-1200:]); print(t(78))
+print([l for l in t(17).splitlines() if '20 mV' in l])
+nb2=json.load(open('executed/asari-2009/strf_asari_2009.ipynb')); print(''.join(''.join(o.get('text','')) for o in nb2['cells'][-1].get('outputs',[])))
+E
+```
+
+```
+0.25-1, 1-4, 4-16       4      5.70        [97656]        False                 NaN
+3  20060916-ha3-003-002.mat  backward         3  0.25-1, 1-4, 4-16       4      5.70        [97656]        False                 NaN
+4  20060916-ha4-001-002.mat   forward         3  0.25-1, 1-4, 4-16       6      5.08        [97656]         True               4.532
+5  20060916-ha4-001-002.mat  backward         3  0.25-1, 1-4, 4-16       6      5.08        [97656]         True               0.180
+6  20060916-ha5-002-002.mat   forward         3  0.25-1, 1-4, 4-16       6      5.80        [97656]         True               5.354
+7  20060916-ha5-002-002.mat  backward         3  0.25-1, 1-4, 4-16       6      5.80        [97656]         True               2.777
+8  20060917-ha1-002-002.mat   forward         3  0.25-1, 1-4, 4-16       6      5.08        [97656]         True               1.253
+9  20060917-ha1-002-002.mat  backward         3  0.25-1, 1-4, 4-16       6      5.08        [97656]         True               0.109
+probes (forward variants) significant up to 3.6 s or later: 2 of 5 | backward: 0 of 5
+the band 8-32 kHz times 2.5 would be 20-80 kHz, above half the stimulus sampling rate (48.8 kHz)
+
+notebook runtime 4.8 min; peak memory 6.69 GB
+
+['4      A1           20 mV     all    145       0.310     0.367     0.214   0.295        0.447      0.530', '5      A1           20 mV     seq    145       0.409     0.505     0.423   0.583        0.453      0.542']
+runtime 23.5 min; peak memory 3.87 GB
+```
+
+**Agent**
+
+No outcome changed and nothing is proposed for a third round. I re-ran the entry with `python tools/entry.py all entries/asari-2009`: 0 check errors, both notebooks pass, and the conclusions match the new numbers. I recorded round 2 under `verifications`, with the verifier's reasons in its words and my reply under `response`.
+
+**Disagreement kept: fig7 stays blocked (`data_missing`)**
+- I ran the test the verifier asked for: the five recordings, using only the three bands that equal the Figure 7 bands divided by 2.5 (0.25–1, 1–4 and 4–16 kHz).
+- With the forward stimulus variants as contexts, 2 of 5 probes stay significant to 3.6 s or later (4.53 and 5.35 s). With the backward variants, none do.
+- I still read the stored band edges as Hz, for two reasons:
+  - The authors' generator code in the data set (`DMRipple2.m`) defines the band parameter as "frequency range in Hz" and builds the tones directly from it.
+  - The sounds were played at 97656 Hz. The top stored band, 8–32 kHz, can be played at that rate; the same band times 2.5 (20–80 kHz) cannot.
+- The record keeps the verifier's disagreement. The data finding now says the deposited bands extend below the 0.625–40 kHz range given in the paper's Methods, and that three of them are the Figure 7 bands divided by 2.5.
+
+**Marked as resting on an assumption (outcome unchanged)**
+- **fig2-example-reliability:** reproduced only with reliability taken over pairs of trials (0.310). Correlating each trial with the mean of the others gives 0.436, outside tolerance. I added a deviation saying so.
+- **fig9-mgb-fast-decay:** reproduced only if the plateau test compares against the fitted constant. Against the paper's 2.0, neither rule of the criterion applies. The deviation gives my reason for the first reading and the result under the second.
+
+**Corrected or added**
+- **fig9 text:** the size ranges are now split by whether silence counts as a context. I added the second fit that does not converge (31.3 s), and the bound is now "tau1 at most 0.083 s".
+- **fig3b and fig4:** the stated reason is now that the time constant, the quantity each claim is about, fails in every reading.
+- **Summary, fig8c row:** no longer says the frequency effect is smaller than for natural sounds.
+- **fig8a, 8b and 8c rows** (Summary and README): now say how the outcome depends on which stimulus sets are counted.
+- **README:**
+  - The fig2 row now states the amended criterion.
+  - Four more rows say their outcome rests on an assumption.
+  - The STRF runtime now gives both runs, 24 and 31 minutes.
+- **Point B12:**
+  - A recording file listed under two groups is now counted once in the firing rates. One value moved in the third decimal (0.309 to 0.310 Hz); the measured values are unchanged.
+  - The MGB rows using tuning-curve recordings only are labelled as outside the claims file's readings.
+  - B12 is now recorded in round 1.
+- **Round 1 record:** the garbled firing-rates reason now quotes the round-1 report.
 
 **Not done**
-- The fig8 choice of main reading is post hoc. I made no change, because the verifier noted that all three readings give the same outcomes, and the existing findings already cover the split by probe type.
-- Nothing is committed, as instructed.
+- I did not run the 10-kHz response-sampling version of the STRF models (B11), because the verifier lists it as not affecting a conclusion.
+- I ran no further MGB spike detector. The uncertainty in the MGB evoked rate and the fig9 magnitudes stays as stated in the notes.
+- I did not add a question for the paper's authors on the fig9 plateau assumption, because it is about the claims file's wording, not a method in the paper.
+- The verifier reported no place where the claims file misreads the paper, so `questions/asari-2009.yaml` is unchanged.
+- The round-1 fig7 result still has no `outcome`, because that verifier gave none.
+- Nothing can show when the fig8 main reading was fixed, so that statement stays as my own.
 
 ## End of run
 
-59 turns, 109 minutes, $3.39 at API prices, result: success.
+48 turns, 64 minutes, $2.95 at API prices, result: success.
