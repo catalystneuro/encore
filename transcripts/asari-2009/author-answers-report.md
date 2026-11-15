@@ -1,38 +1,17 @@
-There were no questions to act on, so nothing in the entry changed and all 21 outcomes are the same as before.
+One question was answered. The answer moved fig2-example-long-context from partially reproduced to reproduced. Nothing was committed or pushed.
 
-**No questions were answered.** `questions/asari-2009.yaml` does not exist, either in the working tree or anywhere in the git history. My earlier author run asked the readers nothing. The open points it found went into the attempt as findings: three `methods_unavailable` questions for the paper's authors, one `paper_inconsistency` and one `code_mismatch`. The reader's answer run (`transcripts/asari-2009/answer-report.md`) reached the same conclusion and left `claims/asari-2009.yaml` unedited, which `git diff` confirms.
+**The question (fig2-example-long-context).** I had asked whether the Figure 2 legend identifies the example cell, since its reliability values (cell 0.61 ± 0.07, probe 0.74 ± 0.08) point to one probe in the data. The reader agreed that the claims file had misread the paper and amended the criterion in two ways:
+- The example is now matched by those legend values, taking the closest match if several qualify.
+- The quiet interval ends at 3.6 s, using the default 10% tolerance on the paper's "after about 4 s". The strict 2 to 4 s reading is still reported.
 
-**What I changed:** nothing. With no answers there was no claim to re-run and no notes to add, so the notebook, the conclusions and `attempts/asari-2009-01.yaml` are untouched.
+**What I changed.** I rewrote the claim's cells in `entries/asari-2009/reproduce_asari_2009.ipynb` to apply the matching rule and to test both the 2 to 3.6 s window and the strict 2 to 4 s one. I also updated the claim's conclusion, the summary row, and the claim's outcome and notes in `attempts/asari-2009-02.yaml`. The notes say what the answer changed. I dropped the old deviation about identifying the cell by its reliability values, because the criterion now does this itself.
 
-**Outcomes per claim, unchanged from the earlier run:**
+**Outcome: reproduced** (earlier: partially reproduced).
+- **The match:** 24 current-clamp cells have seven natural fragments. Only 20051222-ha1-001 has a mean reliability inside 0.61 ± 0.07: it has 0.611, and the next highest cell has 0.401. In that cell, only probe 4 matches: its contexts are silence and fragments 2 and 3, it has six repeats, and its reliability is 0.737. This is the same probe the earlier run used.
+- **The significant periods:** context dependence is significant in short periods from 0.026 to 1.601 s and again from 3.970 to 4.596 s. Nothing is significant from 1.601 to 3.970 s. That meets the amended criterion: significant periods before 2 s and after 3.6 s, and none between 2 and 3.6 s.
+- **The strict reading still fails:** the period starting at 3.970 s overlaps the 2 to 4 s interval by 30 ms. That overlap was the only reason for the earlier partial outcome.
+- **The weaker check is unchanged:** 17 of 305 natural sound probes have a significant period later than 4 s.
 
-| Claim | Earlier | Now |
-|---|---|---|
-| methods-recording-counts | partially_reproduced | same |
-| a1-mgb-firing-rates | partially_reproduced | same |
-| fig2-example-reliability | reproduced | same |
-| fig2-example-long-context | partially_reproduced | same |
-| fig3a-proportion-significant | reproduced | same |
-| fig3a-significance-decay | partially_reproduced | same |
-| fig3b-fractional-power-decay | partially_reproduced | same |
-| timescale-longer-than-membrane | reproduced | same |
-| fig4-predictability-upper-bound | partially_reproduced | same |
-| fig4-strf-performance-low | blocked (other, not attempted in the time limit) | same |
-| fig5-example-conductances | blocked (data_missing) | same |
-| fig6-conductance-decay | blocked (data_missing) | same |
-| fig7-example-frequency-context | blocked (data_missing) | same |
-| fig8a-proportion-by-property | partially_reproduced (assumed) | same |
-| fig8a-significance-fits | not_reproduced (assumed) | same |
-| fig8b-decay-by-property | partially_reproduced (assumed) | same |
-| fig8c-relative-effects | partially_reproduced (assumed) | same |
-| fig8-natural-synthetic-probes-alike | reproduced (assumed) | same |
-| fig9-mgb-fast-decay | reproduced | same |
-| fig9-example-first-bin | reproduced | same |
-| figs1-silence-probe | reproduced | same |
+No other claim was affected.
 
-**Entry commands:**
-- `python tools/entry.py lock entries/asari-2009` rewrote `requirements.lock.txt` with the same contents.
-- `python tools/entry.py all entries/asari-2009` found 0 errors and passed. It reused the executed copy from 19:26 UTC (hash ae9290c2663a) because nothing the run reads had changed, so the notebook was not executed again. That copy had taken 1405 s.
-- `python tools/entry.py handover entries/asari-2009` rebuilt `executed/asari-2009/handover/`.
-
-I did not verify the attempt, commit or push.
+**Checks.** I locked the entry and ran it from a clean environment: 0 check errors, and the notebook passed in 666 s. I read the executed copy and its numbers support the new conclusion. The handover in `executed/asari-2009/handover/` has the conclusion cells and the summary removed. I did not verify my own work.
