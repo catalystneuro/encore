@@ -31,8 +31,9 @@ The data set holds 53 cells and 77 maps, where the paper analysed 58 neurons and
 paper's 30 neurons. The baseline comparison depends on taking the baseline squares the Methods
 describe and not the files' own undocumented baseline. The Table 1 Edge and S90 outcomes depend
 on where the Square and Edge squares are placed, and the Table 1 S40 outcome on where the Corners
-squares are; the notebook shows each placement, and the record proposes partial reproduction for
-Edge and S90, under the placement nearer the files' own baseline, for the next verification round. The attempt record, with the reasons and the differences from the paper's
+squares are; the notebook shows each placement. Partial reproduction for Edge and S90, under the
+placement nearer the files' own baseline for Square and Edge, was proposed, and the third
+verification round did not agree. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/martinez-conde-2019-02.yaml`](../../attempts/martinez-conde-2019-02.yaml).
 
 - `reproduce_martinez_conde_2019.ipynb`: the analysis. It takes about two minutes, most of it
