@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -118,6 +119,33 @@ def _git(cwd, *args):
     import subprocess
     return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.org", *args], cwd=cwd, check=True,
                           capture_output=True, text=True).stdout
+
+
+def test_one_chain_at_a_time_holds_a_paper(tmp_path):
+    # Issue 749: two lanes took two datasets of one paper, and the second chain joined the first's attempt. A chain
+    # holds $STATE/chain-<paper>.lock while it runs; another chain on the paper is refused, a replicate has a lock
+    # of its own, and a lock whose process has died is taken over.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    funcs = chain[chain.index('held=""\nhold(){'):chain.index("trap 'release; notify' EXIT")]
+    def run(body):
+        return subprocess.run(["bash", "-c", f"set -uo pipefail\nSTATE={tmp_path}\n{funcs}\n{body}"],
+                              capture_output=True, text=True).stdout.split()
+    # Another process (a bash of its own, with its own $$) is refused while this one holds the paper; a replicate
+    # has a lock of its own; released, the lock is gone.
+    other = f'bash -c "STATE={tmp_path}; $(declare -f hold); hold wirth-2017 && echo second || echo refused-\\$holder"'
+    out = run(f"hold wirth-2017 && echo got-$$; {other}; hold wirth-2017/r1 && echo replicate; "
+              "release; ls $STATE | grep -c wirth-2017 || true")
+    assert out[0].startswith("got-") and out[1] == "refused-" + out[0][4:] and out[2] == "replicate", out
+    # A lock left by a process that has died is taken over.
+    (tmp_path / "chain-gao-2018.lock").mkdir()
+    (tmp_path / "chain-gao-2018.lock" / "pid").write_text("999999\n")
+    assert run("hold gao-2018 && echo took-over") == ["took-over"]
+    # Both places a chain learns its paper take the lock before touching anything of it.
+    body = chain[chain.index("set -uo pipefail"):]
+    assert 'if [ -n "$is_paper" ] && ! hold "$tag"; then' in body
+    switch = body.index('going on as $p"')
+    assert switch < body.index('if ! hold "$p"; then') < body.index('mv "$mark" "$STATE/attempt-$p"')
+    assert body.count("release; notify' EXIT") == 2
 
 
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
