@@ -1,7 +1,8 @@
-Both questions were right, and I changed the claims file for each. The quote check (`python tools/claims_check.py`) reports 0 problems. Nothing is committed.
+I made no changes: there are no unanswered questions for martinez-conde-2019.
 
-1. **fig4b-spike-rate-difference: changed.** The paper says it analysed only bright folds ("We did not analyze dark corner-folds", Methods, Corners, paragraph 2). It also says Corners has "a matching set of dark and bright illusory corner-folds" (Results, paragraph 5). It states averaging of two midpoints only for Square and Star, and nowhere puts the S40 fold at the ROI centre. So I dropped both readings, and the criterion now takes the midpoint of the bright S40 fold alone. I made the same change in the opening comment, `fig4a-above-baseline` and `fig4b-pairwise-significance`. The expected values are unchanged.
+- **On this branch:** `questions/martinez-conde-2019.yaml` doesn't exist, locally or on `origin/replicate/martinez-conde-2019/r1`.
+- **On `origin/main`:** the file exists, merged in commit 5fa9868 (PR #783). It holds two questions, and both were already answered on 2026-11-12:
+  1. **fig4b-spike-rate-difference** (claims file changed then): the Corners condition is now tested on the bright S40 fold only, because the paper says "We did not analyze dark corner-folds" (Methods, Corners, paragraph 2). The expected values did not change.
+  2. **table1-s40** (claims file changed then): for the same reason, the claim now uses the ten blocks along the bright S40 fold only. The expected values did not change.
 
-2. **table1-s40: changed.** For the same reason, readings (i) and (ii) are dropped, and the criterion now uses the ten blocks along the bright S40 fold only. The expected values are unchanged.
-
-Both questions are marked `answered: 2026-11-12`.
+I didn't edit either file, didn't run `claims_check.py`, and didn't commit anything. If new questions were meant to arrive with this run, they aren't on this branch or on main, so they need to be added before I can answer them.
