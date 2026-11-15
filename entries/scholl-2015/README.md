@@ -14,9 +14,10 @@ Of 25 claims, 7 are blocked (`data_missing`: histology, CaMKIIa mice, neuropil p
 all identified cells), 6 reproduced, 4 partially reproduced and 8 not reproduced. Eight of the 18
 tested outcomes are marked as resting on assumptions, chiefly the choice of cell set; the notebook
 shows every reading. The counts of cells are about half the paper's or less (18 PV+ cells at 50 um
-against 86), from 3 of its 6 animals. Two changes of outcome are proposed for a third verification
-round: fig4d-pv-od-matches-local-50um to not reproduced and fig4f-pv-od-spatial-decay to partially
-reproduced.
+against 86), from 3 of its 6 animals. After the third verification round,
+fig4d-pv-od-matches-local-50um is not reproduced (its criterion has no partial case, and the count
+fails under every reading) and fig4f-pv-od-spatial-decay is partially reproduced (only the 50 um
+slope is significant under readings 7b and 1b, 1.42 +/- 1.94 from 17 cells, a fragile value).
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.

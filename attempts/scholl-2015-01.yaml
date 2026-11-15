@@ -347,7 +347,7 @@ outcomes:
     DSI (shown to match it for all 578 cells); responses as measured and blank subtracted without clipping
     are shown.
 - claim: fig4d-pv-od-matches-local-50um
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_scholl_2015.ipynb
   output: claim:fig4d-pv-od-matches-local-50um
   measured:
@@ -360,16 +360,9 @@ outcomes:
     +/- 27.60. N gives 0.40 +/- 0.27 (joint) and 0.52 +/- 0.39 (mono) from 5 cells, W 0.20 +/- 0.07 from
     28; none significant at p < 0.01. The criterion names no partial case. The count fails under every
     reading, and no reading has the slope within tolerance together with p < 0.01 (7b with 1b has p1 =
-    0.003 at 50 um with 1.42 +/- 1.94 from 17 cells); by the criterion the claim is not reproduced, proposed
-    below.'
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion has only a reproduced case, which needs the slope and the count within tolerance
-      under one reading and the slope above the shuffled slopes at p < 0.01. The count is 5 to 28 PV+ cells
-      against 86 +/- 8.6 across the readings, and no reading has the slope within tolerance with p <
-      0.01 (criteria check printed in the notebook). The partially reproduced outcome was assigned without
-      a partial case in the criterion; by the criterion the claim is not reproduced, as the round-2 verifier
-      said.
+    0.003 at 50 um with 1.42 +/- 1.94 from 17 cells); by the criterion the claim is not reproduced. Proposed
+    after round 2 and agreed in round 3; the earlier outcome, partially reproduced, was assigned without
+    a partial case in the criterion.'
   deviations:
   - The per-cell data come from the MATLAB structs in pvc-10/original/to_remove/ (binoc8, binoc8PV, binoc9,
     binoc9PV, binoc10, binoc10PV, binoc7PV and the binocmonocinds lists), which are in the data set's
@@ -399,7 +392,7 @@ outcomes:
     in pixels scaled to um plus depth, within each mouse; 1000 bootstrap resamples and 1000 shuffles (standard
     choice, reading 4).'
 - claim: fig4f-pv-od-spatial-decay
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_scholl_2015.ipynb
   output: claim:fig4d-pv-od-matches-local-50um
   notes: 'Main reading (1b): slopes 0.56, 0.45, 0.13, 0.62, -0.11 at 50 to 150 um, one-sided shuffle p
@@ -407,15 +400,11 @@ outcomes:
     50 um is not the largest. At p < 0.05 the significant radii are 50 and 125 um. No reading gives the
     full pattern (criteria check in the notebook). Under square pixels (7b) with 1b only the 50 um slope
     is significant (1.42 +/- 1.94, 17 cells, p1 = 0.003, p2 = 0.003; p1 0.478 to 0.996 and p2 0.011 to
-    0.986 at 75 to 150 um), the criterion''s partial case, proposed below.'
-  proposed:
-    outcome: partially_reproduced
-    reason: 'The criterion''s partial case is "only the 50 um slope is significant", under one reading.
-      Under square pixels (7b) with population on individual (1b) the 50 um slope is 1.42 +/- 1.94 from
-      17 PV+ cells, p = 0.003 one-sided and two-sided, and no other radius is significant at p < 0.01 (p1
-      0.478 to 0.996, p2 0.011 to 0.986). The criteria check in the notebook shows no other reading meeting
-      the full pattern or a partial case. The 50 um mean slope has an SE of 1.94, so the case rests on
-      a fragile value.'
+    0.986 at 75 to 150 um), the criterion''s partial case. The 50 um mean slope has an SE of 1.94, so the
+    case rests on a fragile value, and p2 at 125 um (0.011) is just above 0.01. The shuffle test compares
+    the mean of the bootstrap slopes with single shuffled slopes, as the Methods describe; the round-3 verifier
+    noted that with 17 cells this mean may sit above the slope of the data. Proposed after round 2 and agreed
+    in round 3.'
   deviations:
   - The per-cell data come from the MATLAB structs in pvc-10/original/to_remove/ (binoc8, binoc8PV, binoc9,
     binoc9PV, binoc10, binoc10PV, binoc7PV and the binocmonocinds lists), which are in the data set's
@@ -1287,3 +1276,39 @@ verifications:
     outcome: blocked
     reason: Agreed; one of the three CaMKIIa claims blocked (data_missing).
     response: No change.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3, the two changes of outcome proposed after round 2 (fig4d-pv-od-matches-local-50um and
+    fig4f-pv-od-spatial-decay) and the analysis behind them, the local-analysis run and per-reading criteria
+    check in cell 56 and the result text in cells 57 and 58. It found no misreading of the paper by the claims
+    file in these two criteria.'
+  results:
+  - claim: fig4d-pv-od-matches-local-50um
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion has only a reproduced case. It needs three things under one reading, the slope within
+      0.78 +/- 0.25, the count within 86 +/- 8.6, and the slope above the shuffles at p < 0.01. In cell 56 the
+      count fails under all 14 reading and axis combinations, the 50 um n ranges from 5 to 28. No row has the
+      slope within tolerance together with p1 < 0.01. Main 1b has 0.56 +/- 0.28 within tolerance, but p1 = 0.015.
+      7b with 1b has p1 = 0.003, but the slope is 1.42, outside. The readings are the claims file''s own, fixed
+      in OD_CONFIGS (cell 51) with formula seeds, so they were not picked per claim. With no partial case, not
+      reproduced is the outcome the criterion gives.'
+    response: Outcome changed to not reproduced and the proposal removed; the notebook conclusion, summary and
+      README updated.
+  - claim: fig4f-pv-od-spatial-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The partial case is "only the 50 um slope is significant" under one reading. Cell 56, row "L, square
+      pixels (7b) (1b)", at 50 um the slope is 1.42 +/- 1.94 from 17 cells, p1 = 0.003, p2 = 0.003. The other
+      radii have p1 from 0.478 to 0.996 and p2 from 0.011 to 0.986. No other row meets the full pattern or either
+      partial case. 7b and 1b are both readings the claims file lists, and they were run for every local claim
+      before this proposal, so the choice was not made to reach the result. Caveats that do not change the outcome,
+      in od_local the true value compared with the shuffles is the mean of the bootstrap slopes while each shuffled
+      value is a single slope, and with 17 cells and an SE of 1.94 that mean can sit above the slope of the data,
+      which would make p1 too favourable; this follows the Methods as written. Printing slope_data beside the
+      mean would show whether the significance depends on the bootstrap mean. Under 7b with 1b, p2 at 125 um is
+      0.011, just above 0.01, so the partial case holds only narrowly under the two-sided reading.'
+    response: Outcome changed to partially reproduced and the proposal removed. The notes, cell 58, the summary
+      and the README now give both caveats. The slope of the data is not printed in this attempt; the comparison
+      the verifier suggests is left to a new attempt, since round 3 does not add analyses.
