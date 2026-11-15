@@ -12,10 +12,10 @@ per condition, in about 21 minutes.
 | Claim | Outcome |
 |---|---|
 | Model: amplification grows with subnetwork connectivity | Reproduced (resting on assumptions) |
-| Model: ablation raises scores at equal connectivity | Not reproduced (resting on assumptions); partially reproduced proposed for a third verification round |
+| Model: ablation raises scores at equal connectivity | Partially reproduced (resting on assumptions) |
 | Model: ablation lowers scores at increased connectivity | Partially reproduced (resting on assumptions) |
 | Model: all-or-none networks robust to ablation | Blocked: the Methods' input rule gives no positive strength here |
-| Model: larger ablations, larger declines | Partially reproduced (resting on assumptions); reproduced proposed for a third verification round |
+| Model: larger ablations, larger declines | Reproduced (resting on assumptions; R = -0.590 against a bound of -0.585) |
 | Model: slow input also sensitive at increased connectivity | Partially reproduced (resting on assumptions) |
 | Model: decline follows response similarity | Not reproduced (resting on assumptions) |
 | Neurons per mouse, representation sizes | Reproduced |

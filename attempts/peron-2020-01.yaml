@@ -81,7 +81,7 @@ outcomes:
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
 - claim: model-equal-connectivity-ablation-increases
-  outcome: not_reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_peron_2020.ipynb
   output: claim:model-equal-connectivity-ablation-increases
@@ -92,9 +92,10 @@ outcomes:
     or after, ablated ones left out) go from a grand median of 0.546 to 0.562 after the 20 strongest encoders
     are ablated (signed-rank p = 1.9e-09, 30 of 30 networks increase), the claimed increase at p < 0.001,
     with both values far outside 0.237 ± 0.024 and 0.274 ± 0.027. All neurons (variant) go from 0.287
-    to 0.279 (p = 6.3e-05, 4 of 30 increase), a decrease. The verified outcome, not reproduced, was set
-    with all neurons counted; the population was revised after round 2, and the change of outcome is proposed.
-    Calibration (b) sets no strength at Pconn 0.4 and is not run.
+    to 0.279 (p = 6.3e-05, 4 of 30 increase), a decrease. The effect is present and the values are not.
+    Round 2 agreed with not reproduced, set with all neurons counted; after the population was revised
+    to excitatory neurons, round 3 agreed with partially reproduced. Calibration (b) sets no strength at
+    Pconn 0.4 and is not run.
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -124,14 +125,6 @@ outcomes:
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
-  proposed:
-    outcome: partially_reproduced
-    reason: The verifier (round 2) found the all-neuron count contestable, and the revision adopts excitatory
-      neurons, as the Methods calibrate and ablate excitatory neurons, the in vivo data are of excitatory
-      neurons, and the paper's Fig. 3b neuron counts are nearer the excitatory counts. With them the scores
-      rise in 30 of 30 networks (0.546 to 0.562, p = 1.9e-09), the effect the claim states, while both
-      grand medians are outside tolerance; the effect is present and the values are not, the rule the
-      record applies to the Pconn 0.4 claim (notebook, model-equal-connectivity cell).
 - claim: model-increased-connectivity-ablation-decreases
   outcome: partially_reproduced
   assumed: true
@@ -215,7 +208,7 @@ outcomes:
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
 - claim: model-more-ablation-larger-decline
-  outcome: partially_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_peron_2020.ipynb
   output: claim:model-more-ablation-larger-decline
@@ -227,8 +220,11 @@ outcomes:
     within -0.65 ± 0.065, and R = -0.456 without them (p = 6.3e-06, n = 90). All neurons (variant) give
     -0.726 and -0.558, both outside the tolerance. Calibration (b), which in the earlier revision gave
     -0.774 and -0.678 at strengths at the bottom of its sweep, sets no strength at Pconn 0.4 once the
-    sweep reaches no input, and is not run. The verified outcome, partially reproduced, was set with all
-    neurons counted; the change of outcome is proposed.
+    sweep reaches no input, and is not run. The margin is small, 0.005 inside the bound of -0.585 with
+    fixed seeds, and the outcome rests on two choices, the counted population and the inclusion of the
+    0-ablation networks, whose 30 points sit at (0, 0) as the run after ablation repeats the same noise.
+    Round 2 left the outcome unsettled under partially reproduced, set with all neurons counted; after
+    the population was revised to excitatory neurons, round 3 agreed with reproduced.
   deviations:
   - The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba
     (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the
@@ -258,13 +254,6 @@ outcomes:
   - The run after ablation repeats the run before with the same background and initial state (as Brian2's
     store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66
     presentations of the Methods.
-  proposed:
-    outcome: reproduced
-    reason: With the population revised to excitatory neurons (see model-equal-connectivity-ablation-increases),
-      the criterion is met under calibration (a), the only calibration that sets both strengths once the
-      sweeps reach no input; R = -0.590 with the 0-ablation networks (p = 1.3e-12), within -0.65 ± 0.065,
-      and the median change is more negative at each larger size (0, -0.026, -0.123, -0.209). The margin
-      is small (the bound is -0.585) (notebook, model-more-ablation-larger-decline cell).
 - claim: model-slow-input-sensitive
   outcome: partially_reproduced
   assumed: true
@@ -1274,3 +1263,46 @@ verifications:
     response: The summary now names per-mouse-table as the exception and says the changes match within
       0.005 in 23 of 24 rows (several differ by 0.001 to 0.002); the finding now says the Methods cylinder
       is the main reading and the code's rule a variant. No change to the outcome.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the two changes of outcome proposed after round 2, model-equal-connectivity-ablation-increases
+    and model-more-ablation-larger-decline, with the analysis behind them in the re-executed notebook
+    and the helper module peron2020_model.py. It took its counts from the record (31 claims, 31 outcomes).
+    It checked where the revised population (excitatory neurons) is applied and justified, found no sign
+    that it was chosen to reach the result, as the same revision makes model-response-similarity worse,
+    and found no place where the claims file misreads the paper. It agreed with both proposals. Report
+    in transcripts/peron-2020/verifier-3-report.md.
+  results:
+  - claim: model-equal-connectivity-ablation-increases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 80, reading (a), Pconn 0.2, excitatory neurons. The grand median goes from 0.546 to 0.562,
+      p = 1.9e-09. All 30 networks increase, and the per-network table shows every change is positive
+      (+0.006 to +0.046). That is the claimed increase at p < 0.001. Both grand medians are far outside
+      0.237 ± 0.024 and 0.274 ± 0.027, so the full criterion is not met. The attempt's scores run about
+      2.3 times the paper's, and its rise (+0.016, about 3%) is smaller than the paper's (+0.037, about
+      16%). The effect is present and the values are not. That is the rule the record applies to model-increased-connectivity-ablation-decreases,
+      which I accepted in round 2. With all neurons the scores fall (0.287 to 0.279). This is shown, and
+      the variant is set aside for the stated reasons.
+    response: Outcome changed to partially reproduced and `proposed` removed. The notes, the notebook's
+      result and summary and the entry README now give partially reproduced, with the smaller rise than
+      the paper's stated.
+  - claim: model-more-ablation-larger-decline
+    agrees: true
+    outcome: reproduced
+    reason: Yes, but only just. Cell 85, reading (a), Pconn 0.4, excitatory neurons, 0-ablation networks
+      included. R = -0.590, p = 1.3e-12, n = 120. This is inside -0.65 ± 0.065, whose bound is -0.585.
+      The median change becomes more negative at each larger size (0, -0.026, -0.123, -0.209). The claims
+      file leaves open whether the 0-ablation networks enter, and accepts R within tolerance "under one
+      reading". It is applied as written. The margin is 0.005 with fixed seeds. Without the 0-ablation
+      networks R is -0.456, outside the tolerance. With all neurons R is -0.726 and -0.558, both outside.
+      The 30 points from the 0-ablation networks sit exactly at (0, 0), because the run is repeated with
+      the same noise; that choice was accepted in round 1 and round 2, and it anchors the correlation.
+      So the outcome rests on two choices, the population, which the paper's text and counts support,
+      and the open reading on the 0-ablation networks, which the claims file permits. "Resting on assumptions"
+      should stay on this outcome.
+    response: Outcome changed to reproduced and `proposed` removed; `assumed` stays true. The notes, the
+      notebook's result and summary and the entry README now state the 0.005 margin, that R is outside
+      tolerance without the 0-ablation networks or with all neurons, and that the 0-ablation points sit
+      at (0, 0).
