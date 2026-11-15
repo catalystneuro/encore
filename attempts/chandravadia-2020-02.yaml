@@ -91,14 +91,21 @@ outcomes:
   notes: In all 87 files events and experiment_ids have the same length and timestamps, and every file has one stimulus
     onset per trial. 78 files meet the whole criterion. Nine files (H23_43, H27_58, CS39_93, CS53_123, CS55_127,
     CS56_128, T88_2001, T88_2002, T90_2003) hold codes outside Table 1 (99 three times, 23 six times, 0 twice, 98,
-    22 and 4 once each), and 30 of 17047 trials, all in those files, break the sequence; in T88_2001, T88_2002 and
-    T90_2003 a second 3 comes before the 2, and CS53_123 starts in the middle of a trial (its first events are 21
-    and 6). Seven files have no 55 marker and T88_2001 has three 66 markers, which the criterion does not test.
+    22 and 4 once each), and 30 of 17047 trials, all in those files, break the sequence. 19 of the 30 show an extra
+    3 before the 2 (1, 3, 2, 3, response, 6), all in the three Toronto files (6 of 7 failing trials in T88_2001, 9
+    of 10 in T88_2002, 4 of 7 in T90_2003); the other failing trials in those files hold a 22 or 23 after the
+    response. The six other files have one failing trial each, with an unlisted code inside or after it, and
+    CS53_123 also starts in the middle of a trial (its first events are 21 and 6). Seven files have no 55 marker
+    and T88_2001 has three 66 markers, which the criterion does not test. Cutting trials at their start and stop
+    times instead gives 75 of 87 files in order (138 failing trials, 97 of them trials of CS53_123 with no events in
+    their interval), so most files hold under either cut.
+  assumed: true
   deviations:
   - A trial's events were taken as those from its stimulus onset (1) to the next onset, with the experiment markers
-    55 and 66 set aside; the claims file does not say how trials are cut from the stream. Cutting at the trial table's
-    start and end times gives more failures, from 55 and 66 markers and next-trial onsets that share a timestamp
-    with a trial's end; this was seen while preparing and is not in the notebook.
+    55 and 66 set aside; the claims file does not say how trials are cut from the stream. The notebook shows the cut
+    at the trial table's start and stop times as a variant; it gives 75 files in order, against 78, with failures
+    from 66 markers and next-trial events that fall inside a trial's interval and from 97 trials of CS53_123 that
+    hold no events.
 - claim: experiment-ids
   outcome: partially_reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -126,8 +133,11 @@ outcomes:
     The quality metrics are not finite for every unit. IsolationDist is NaN for 493 units and SNR for 75, SNR is
     infinite for 11, and 2 isolation distances exceed 1e6 (up to 8.1e32); 568 units in 84 files have a non-finite
     metric. The waveforms are finite.
+  assumed: true
   deviations:
-  - The column named IsolationDist is taken as the paper's IsolDist; the names differ only in spelling.
+  - The column named IsolationDist is taken as the paper's IsolDist; the names differ only in spelling, and the
+    column's description is 'IsolDist'. Without this reading no file holds an IsolDist column and the column test
+    fails.
 - claim: electrodes-table
   outcome: not_reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -255,7 +265,7 @@ outcomes:
   notes: Under the main tests, no two-sided Fisher's exact test finds a difference between sites (VS p = 0.36, MS
     p = 0.46, dual p = 1.0), but only 1 of 6 values is within tolerance; CS has 17.63% VS, 5.82% MS and 0.67% dual
     cells (1787 units), TWH 22.08%, 7.79% and 0% (77 units). With the code's choices all 6 values are within tolerance
-    (CS 18.35%, 7.78%, 1.40%; TWH 19.48%, 10.39%, 1.30%), equal to the figure's values to the second decimal, and
+    (CS 18.35%, 7.78%, 1.40%; TWH 19.48%, 10.39%, 1.30%, against 18.4, 7.7, 1.4, 19.4, 10.4 and 1.3), and
     no Fisher test finds a difference (p = 0.77, 0.39, 1.0). TWH has 77 units, so one cell moves its percentages
     by 1.3 points. The paper's text compares "the existing and new dataset", not the sites; this is asked of a
     reader (questions/chandravadia-2020.yaml). Under that grouping, the earlier release's sessions (1539 units)
@@ -345,8 +355,8 @@ findings:
     the paper's 3% refractory criterion.
 - kind: metadata_error
   statement: The event streams of 9 files hold TTL codes that Table 1 and the events description do not define (0,
-    4, 22, 23, 98, 99), and in T88_2001, T88_2002 and T90_2003 some trials have a second question-screen code (3)
-    before the stimulus offset (2). Seven files have no start-of-experiment marker (55) and T88_2001 has three end
+    4, 22, 23, 98, 99), and in T88_2001, T88_2002 and T90_2003 19 trials have an extra question-screen code
+    (3) before the stimulus offset (2). Seven files have no start-of-experiment marker (55) and T88_2001 has three end
     markers (66).
 - kind: metadata_error
   statement: Four files use experiment ids outside Table 2 of the paper (CS33_77 81 and 82; CS39_100 and H51_105
@@ -575,4 +585,165 @@ verifications:
     reason: Session 144 is in no file. The verifier checked the archive; the draft and both published versions hold
       the same 87 assets, the latest session date is 2019-04 (session 136), and Online-only Table 1 has no session
       144 either. No part can be tested.
+    response: No change.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the round-1 revision, with its conclusions and summary, the helper
+    module, the claims file, the attempt record, the README and the paper's full text. The verifier agreed with all
+    25 outcomes. It found four sentences the printed outputs do not support, in the fig5f-site-proportions notes,
+    the ttl-codes conclusion, notes and finding, the README's run time and the session-dates conclusion; the README
+    point is tied to no claim and its run time was corrected to the measured range (3.6 and 8.3 minutes in the last
+    two runs).
+  results:
+  - claim: counts-neurons-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: counts-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the Methods give "89 sessions", confirmed against the paper.
+    response: No change.
+  - claim: table1-demographics
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; H48 is listed as 54 M and C48 as 32 F, confirmed against the paper.
+    response: No change.
+  - claim: task-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; image identity by pixels is resolved.
+    response: No change.
+  - claim: new-old-label-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Problem 5 is resolved; the strict count (78) and the missing encoding trials are now stated,
+      and the pixel hashes confirm the file names in 87 of 87 files.
+    response: No change.
+  - claim: ttl-codes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The record says cutting trials at the trials' start and end times "gives more failures", but
+      that result is not in the notebook, so it is not shown that "most files" still holds under that cut; the
+      choice is close to an assumption and could be flagged as such. The statement that in T88_2001, T88_2002 and
+      T90_2003 a second 3 comes before the 2 is not supported by the printed outputs; only T88_2001's example shows
+      it, the examples for T88_2002 and T90_2003 are [1, 2, 3, 21, 23, 6], and what the other failing trials in
+      those files show is not printed. The partial outcome does not change.
+    response: The cell now prints every failing trial's event sequence by file. 19 of the 30 failing trials show an
+      extra 3 before the 2 (6 of 7 in T88_2001, 9 of 10 in T88_2002, 4 of 7 in T90_2003), and the others in those
+      files hold a 22 or 23 after the response; the conclusion, notes and finding now say this. The cut at the
+      trials' start and stop times is now a variant in the notebook, 75 of 87 files in order against 78, so most
+      files hold under either cut. The outcome is marked assumed. Outcome unchanged.
+  - claim: experiment-ids
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; reading the ids at TTL-1 is a reasonable stated choice.
+    response: No change.
+  - claim: session-dates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Minor, the conclusion says H44_68 is dated before the Huntington recordings that surround it in
+      the session numbering (2006 to 2016); the nearest H sessions to 68 are H43_56 (2013) and H47_92 (2014), its
+      direct neighbours are CS sessions, and 2006 to 2016 is the span of all H files. The conclusion that the year
+      is likely a default still holds.
+    response: The conclusion now gives the span of the H files (2006 to 2016) and the dates of H43_56 (2013) and
+      H47_92 (2014) separately. Outcome unchanged.
+  - claim: units-table
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Without the IsolationDist reading the column test fails, so the choice is close to an
+      assumption and could be flagged as such.
+    response: The outcome is marked assumed, and the deviation says the column test fails without the reading.
+      Outcome unchanged.
+  - claim: electrodes-table
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the stored form of imp (float64, fill value 0, only NaN) is resolved.
+    response: No change.
+  - claim: isi-criterion
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: fig5a-mtl-locations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: fig5c-auc-all
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; problem 8 is resolved, the variant was removed.
+    response: No change.
+  - claim: fig5c-auc-sites
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: fig5b-roc-asymmetric
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; problem 6 is resolved, CS24_59 is shown as a variant (p = 6.6e-9).
+    response: No change.
+  - claim: fig5d-confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: vs-cells-proportion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: ms-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Problems 1 to 3 are resolved. The three-argument call cited at NWB_singleCellAnalysis_release.m
+      line 102 means mode 1 without variance correction; the verifier cannot see the code, so the citation is
+      unverified. A studentized variant gives 92 under the main reading and 126 under the code's choices; neither
+      reaches 131.4, so this does not bear on the outcome. The spread of the correct-trials variant (132 to 147)
+      and the main count's distance from the null (1.55 points) are now stated.
+    response: No change.
+  - claim: dual-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: fig5f-site-proportions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The notes' "equal to the figure's values to the second decimal" is not supported; cell 75 prints
+      CS 18.35, 7.78, 1.40 and TWH 19.48, 10.39, 1.30 against 18.4, 7.7, 1.4, 19.4, 10.4, 1.3, so 7.78 against 7.7
+      and 19.48 against 19.4 differ even at the first decimal; "all 6 within tolerance" is supported. Problem 9, a
+      possible misreading in the claims file, is filed as a reader question and the text's grouping is shown as a
+      variant (p = 0.87, 0.52, 0.70); the claims file gives no per-group expected values for that grouping, so the
+      outcome under the paper's text is undefined until the question is answered.
+    response: The notes now give the six values beside the figure's without the "second decimal" sentence. The
+      reader question in questions/chandravadia-2020.yaml stands. Outcome unchanged.
+  - claim: twh-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: previous-release-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the H48 unit count is resolved.
+    response: No change.
+  - claim: previous-release-additions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the area breakdown of the 37-neuron gap is resolved.
+    response: No change.
+  - claim: fig4-example-vs-neuron
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs still support the outcome.
+    response: No change.
+  - claim: fig3-example-vs-neuron
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the re-executed outputs still support the outcome.
     response: No change.
