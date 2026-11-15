@@ -172,6 +172,26 @@ def test_a_repeat_authors_commit_may_remove_the_questions_filed_by_dataset():
     assert not ok("claims/silkuniene-2025.yaml")
 
 
+def test_a_run_flagged_on_the_unverified_account_is_queued_on_the_verified_one(tmp_path):
+    # RUNNER_FALLBACK=queue:<file>: the paper goes first in the verified lanes' queue file (once), the rest of its
+    # roles are marked for the verified account, and the chain ends QUEUED ON VERIFIED (exit 0), not STOPPED.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index('      if [[ "${RUNNER_FALLBACK:-verified}" == queue:* ]]'):
+                  chain.index('      if [ "${RUNNER_FALLBACK:-verified}" = none ]; then')]
+    (tmp_path / "resume-verified.txt").write_text("other-2020\njacobsen-2022\n")
+    (tmp_path / "flagged-jacobsen-2022").touch()
+    script = ("set -uo pipefail\nSTATE=%s; d=jacobsen-2022; role=claims; REPLICATE=''; why='FLAGGED on the unverified "
+              "account'\nRUNNER_FALLBACK=queue:resume-verified.txt\nlog(){ :; }\nf(){\n%s\nreturn 0; }\nf; echo rc=$? $queued_at"
+              % (tmp_path, block))
+    out = subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.split()
+    assert out == ["rc=3", "claims"]
+    assert (tmp_path / "resume-verified.txt").read_text() == "jacobsen-2022\nother-2020\n"
+    assert (tmp_path / "verified-jacobsen-2022").exists() and not (tmp_path / "flagged-jacobsen-2022").exists()
+    body = chain[chain.index("set -uo pipefail"):]
+    assert 'queued(){ end "$d QUEUED ON VERIFIED at $queued_at: $last_why"; exit 0; }' in body
+    assert body.count("3) queued;;") == 2   # every role, the recorder too
+
+
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
     # docs/replicates.md: every reference to the chain's branch goes through $br, which a replicate sets to
     # replicate/<paper>/<rN>; its runs are found by the name <paper>/<rN>; it ends before the reconcile step and the

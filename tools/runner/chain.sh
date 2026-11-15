@@ -30,7 +30,10 @@
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
 # account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
 # not committed; the branch is put back and the role runs again on the verified account, as do the
-# rest of the dataset's roles: a paper that was flagged once will be again. With RUNNER_FALLBACK=none
+# rest of the dataset's roles: a paper that was flagged once will be again. With RUNNER_FALLBACK=queue:<file> (a
+# file in $RUNNER_STATE, the verified lanes' queue) the chain instead puts the paper first in that file, marks the
+# rest of its roles for the verified account, and ends with "<paper> QUEUED ON VERIFIED at <role>: <why>", which
+# closes its issue; a verified lane resumes it from that role. With RUNNER_FALLBACK=none
 # the chain stops there instead, leaving $RUNNER_STATE/flagged-<dataset>, and the lane goes on to the
 # next dataset: for when the verified account has no budget left.
 #
@@ -202,6 +205,17 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
       # Put the branch back where the run started, and run the role, and the rest, on the verified account.
       reset_branch "$start" || { last_why="could not reset $br after the flag"; log "STOPPED: $last_why"; return 1; }
       why=$(echo "$runlog" | grep -oE "(FLAGGED on the [a-z]+ account|[A-Z]+-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
+      if [[ "${RUNNER_FALLBACK:-verified}" == queue:* ]] && [ -z "$REPLICATE" ]; then
+        # Hand the paper to the verified account's lanes: first in their queue file, with the rest of its roles
+        # marked for the verified account. A lane there resumes it from this role; its issue is closed (notify.py).
+        q="$STATE/${RUNNER_FALLBACK#queue:}"
+        until mkdir "$STATE/pick.lock" 2>/dev/null; do sleep 2; done
+        { echo "$d"; grep -vxF "$d" "$q" 2>/dev/null; } > "$q.tmp"; mv "$q.tmp" "$q"
+        rmdir "$STATE/pick.lock"
+        touch "$STATE/verified-$d"; rm -f "$STATE/flagged-$d"
+        last_why="$why"; log "$role: $why; queued on the verified account (${RUNNER_FALLBACK#queue:})"
+        queued_at=$role; return 3
+      fi
       if [ "${RUNNER_FALLBACK:-verified}" = none ]; then
         # The verified account is not to be used (out of budget, say): leave the dataset for later.
         last_why="$why; no fallback to the verified account"
@@ -266,7 +280,10 @@ if [ ! -e "$mark" ]; then
   fi
   date -u +%Y-%m-%dT%H:%M:%SZ > "$mark"
 fi
-step(){ is_done "$1" || run_role "$1" || { end "$d STOPPED at $1"; exit 1; }; }
+# A role flagged on the unverified account, with RUNNER_FALLBACK=queue:<file>, ends the chain here: the paper is
+# queued on the verified account (run_role returns 3).
+queued(){ end "$d QUEUED ON VERIFIED at $queued_at: $last_why"; exit 0; }
+step(){ is_done "$1" && return 0; run_role "$1"; case $? in 0) ;; 3) queued;; *) end "$d STOPPED at $1"; exit 1;; esac; }
 # On the branch: python reads a file of the attempt's branch from stdin.
 on_branch(){ git show "origin/$br:$1" 2>/dev/null; }
 claims_file(){ git ls-tree --name-only origin/"$br" "claims/$d.yaml" | head -n 1; }
@@ -435,7 +452,9 @@ while true; do
     2) end "$d STOPPED: could not check out $br in a worktree"; exit 1;;
     *) end "$d STOPPED: could not push $br after merging main"; exit 1;;
   esac
-  is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
+  if ! is_done recorder; then
+    run_role recorder; case $? in 0) ;; 3) queued;; *) end "$d STOPPED at recorder"; exit 1;; esac
+  fi
   # The branch as the recorder left it, for the pull request's title and body (describe.py reads the tree).
   fetch; git -C "$work" checkout -q --detach "origin/$br" \
     || { end "$d STOPPED: could not check out $br after the recorder"; exit 1; }
