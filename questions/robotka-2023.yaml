@@ -24,3 +24,20 @@ questions:
     only under the Methods' cross-validation (p = 0.046). The verifier also notes that reading (b)
     falls as single-unit PCC rises (-p log2 p grows with p up to 1/e), so a negative slope against
     ensemble PCC is close to built in.
+- claim: fig6c-number-of-clusters
+  asked: 2026-11-15
+  attempt: robotka-2023-01
+  question: C12 says the code cuts the tree at 499 evenly spaced thresholds between its smallest and largest
+    linkage distance. The code at the pinned commit (EPHYS4-Population_Clustering.ipynb) sets delta =
+    (clustered.max()-clustered.min())/500 and start_thresh = clustered.min(), where clustered is the whole
+    scipy linkage matrix, so the minimum and maximum run over its index and count columns as well as its
+    distances (minimum 0, maximum at least 2n - 2 = 218 for 110 stimuli). Should C12 describe the code's grid
+    as it is, or does the paper intend the distance range the claims file gives?
+  passage: 'STAR Methods, Hierarchical clustering of neural ensemble activity, which names hierarchical agglomerative
+    clustering and the cut of maximal ARI without giving the thresholds; EPHYS4-Population_Clustering.ipynb at commit
+    f2d2376, "delta = (clustered.max()-clustered.min())/500", "start_thresh = clustered.min()", "for cl in range(1,500)".'
+  why: The claim is blocked for the acoustic labels, so no outcome changes now, but the call-type values the criterion
+    judges on their own depend on the grid. On the 1,800 Figure 5 ensembles with UMAP then Ward, the C12 grid gives
+    medians of 10 under both readings of the good units (outside 9 +- 0.9) and the code's grid medians of 9 (means
+    9.91 and 9.76, within 10.83 +- 1.083). The distance grid also never reaches 1 cluster, while the paper's range
+    starts at 1.

@@ -651,12 +651,17 @@ def ari(a, b):
     return 1.0 if den == 0 else (sij - exp) / den
 
 
-def best_cut(Zl, labels):
-    """ARI-optimal cut of a linkage tree (C12): returns (best ARI, number of clusters)."""
+def best_cut(Zl, labels, grid="distances"):
+    """ARI-optimal cut of a linkage tree (C12): returns (best ARI, number of clusters).
+    grid "distances": 499 thresholds evenly spaced between the smallest and largest linkage
+    distance, as C12 states. grid "matrix": the code's (EPHYS4-Population_Clustering.ipynb,
+    delta = (clustered.max()-clustered.min())/500, start_thresh = clustered.min()), whose min and
+    max run over the whole linkage matrix, its index and count columns included."""
     from scipy.cluster.hierarchy import fcluster
 
     d = Zl[:, 2]
-    th = d.min() + np.arange(1, 500) * (d.max() - d.min()) / 500
+    lo, hi = (d.min(), d.max()) if grid == "distances" else (Zl.min(), Zl.max())
+    th = lo + np.arange(1, 500) * (hi - lo) / 500
     k = len(d) + 1 - np.searchsorted(np.sort(d), th, side="right")   # clusters at each threshold
     first = np.r_[True, k[1:] != k[:-1]]           # a threshold that gives the same grouping as the one before is skipped
     best = (-np.inf, 0)
@@ -682,14 +687,16 @@ def _cluster_chunk(args):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 X = umap.UMAP(n_components=2, random_state=int(sd)).fit_transform(X)
-        out.append(best_cut(linkage(X, method="ward"), labels))
+        Zl = linkage(X, method="ward")
+        out.append(best_cut(Zl, labels) + best_cut(Zl, labels, grid="matrix"))
     return out
 
 
 def run_clustering(db, ensembles, use_umap=True, seed=0, workers=4, chunk=100):
     """ARIcall and the optimal number of clusters of each ensemble (C12). use_umap: (a) UMAP then
     Ward (code), run in spawned processes (UMAP's numba threads hang in forked ones); False, (b)
-    Ward on the averaged responses, run here."""
+    Ward on the averaged responses, run here. Returns ARIcall and the number of clusters under
+    the C12 threshold grid, then the same under the code's grid (best_cut), from the same tree."""
     import multiprocessing as mp
 
     labels = db["y"]
@@ -702,4 +709,4 @@ def run_clustering(db, ensembles, use_umap=True, seed=0, workers=4, chunk=100):
     else:
         res = [_cluster_chunk(a) for a in args]
     res = [r for rr in res for r in rr]
-    return np.array([r[0] for r in res]), np.array([r[1] for r in res])
+    return tuple(np.array([r[j] for r in res]) for j in range(4))

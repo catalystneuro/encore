@@ -37,5 +37,5 @@ judged on the code's scheme, whose results match the paper's printed values, and
 shown beside it. The code's scheme tests trials of exemplars the decoder was trained on, so it also credits
 responses specific to an exemplar. For Figure 5 the code's sound window and discriminant axes are adopted in
 the same way. The notebook streams the whole data set (164 GB of tar.gz) from the CRCNS bucket,
-which takes 15 to 30 minutes; the whole notebook ran in 47 minutes. The attempt record, with the reasons and the differences from the
+which takes 15 to 30 minutes; the notebook prints its run time to the end of Figure 5 and the time of the Figure 6C clustering, and the whole run takes about 55 minutes. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/robotka-2023-01.yaml`](../../attempts/robotka-2023-01.yaml).
