@@ -365,10 +365,11 @@ outcomes:
     ms reading gives p = 8.5e-9 and 2.3e-13. At 0 degrees there are 101 ADn-ADn, 49 ADn-PoS and 19 PoS-PoS
     pairs, against 96, 77 and 29. At 60 degrees there are 217, 107 and 31, against 200, 157 and 57.
 - claim: fig4d-ole-near-bayesian
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_peyrache_2015.ipynb
   output: claim:fig4d-ole-near-bayesian
-  notes: Not reproduced under (hd-a), the verified outcome; partially reproduced under (hd-b), proposed.
+  notes: Partially reproduced under (hd-b), as proposed after round 2 and agreed in round 3; not reproduced
+    under (hd-a).
     With the adopted signal OLE (observed variances on the diagonal of Q) and the 25 ADn and 5 PoS hd-a
     ensembles, the covariance OLE barely beats the signal OLE (median minimum error 12.98 against 13.22
     degrees in ADn, 14 of 25, Wilcoxon p = 0.16; PoS 20.96 against 20.96, p = 0.13), so the first part
@@ -391,15 +392,6 @@ outcomes:
   - Ensembles are formed from HD cells under (hd-a) and, as asked in round 2, under (hd-b), waking decoding
     only for the latter; sessions with at least 6 HD cells in a structure.
   assumed: true
-  proposed:
-    outcome: partially_reproduced
-    reason: Decoding the hd-b ensembles, which the round-2 verifier asked for, gives 27 ADn and 11 PoS
-      ensembles, and the covariance OLE is then better than the signal OLE in both structures with p <
-      0.05 (0.019 and 0.042 with the adopted signal Q; 1.5e-8 and 0.001 with the variant), while it stays
-      beyond 25% of the Bayesian decoder in PoS (1.76). The criterion makes the claim partially reproduced
-      when the first part holds, and the HD readings are taken under one reading in the other claims of
-      this attempt. Under (hd-a) it is not reproduced with either signal Q. Shown in reproduce_peyrache_2015.ipynb,
-      cell claim:fig4d-ole-near-bayesian.
 - claim: fig4e-ole-covariance
   outcome: not_reproduced
   notebook: reproduce_peyrache_2015.ipynb
@@ -473,28 +465,24 @@ outcomes:
     (the link is convex and log-concave), so its maximum is the one the Methods' derivative-free search
     finds. Each fold is iterated to convergence from the fit to all segments.
 - claim: fig5e-readout-windows
-  outcome: blocked
-  blocked_by: too_large
-  notes: Recorded as blocked, the outcome the first two rounds reviewed. The round-1 block rested on a
-    GLM timing of 21.1 minutes that the notebook did not print; it printed 12.2 minutes (longest session
-    561 s) in the round-2 run and prints 15.1 minutes (longest 638 s) now. The dense grid now runs in
-    glm_windows_peyrache_2015.ipynb, in 24.8 minutes, with 26 readout windows (23 at 20 per decade from
-    20 to 251 ms s.d.) for PoS targets of ADn assemblies. For the 122, 101 and 99 kept PoS targets (HD
-    under either reading), the median best window is 168 ms in waking, 178 ms in REM and 63 ms in SWS
-    read as the s.d. (a), and 396, 419 and 149 ms as the full width (b), against 123, 133 and 79 ms; none
-    is within tolerance, and the SWS median is below both others in every variant (SWS against waking
-    and REM, Mann-Whitney p = 1.6e-18 and 6.9e-12; waking against REM p = 0.96). With hd-a targets (a)
-    they are 200, 224 and 67 ms. The best window is at an end of the grid for 10 waking, 22 REM and 6
-    SWS targets. This supports partially reproduced, proposed.
+  outcome: partially_reproduced
   notebook: glm_windows_peyrache_2015.ipynb
   output: claim:fig5e-readout-windows
-  proposed:
-    outcome: partially_reproduced
-    reason: 'The round-2 verifier found the too_large block contradicted by the printed timing. Run with
-      the dense window grid the criterion asks for (glm_windows_peyrache_2015.ipynb, 24.8 minutes), the
-      median best windows are 168, 178 and 63 ms (waking, REM, SWS, s.d. reading) against 123, 133 and
-      79 ms: none within tolerance, and the SWS median below both others, which the criterion calls partially
-      reproduced. The full width reading and the hd-a targets give the same.'
+  measured:
+  - 168.2
+  - 177.8
+  - 63.1
+  notes: Recorded as blocked (too_large) in the first two rounds, on a GLM timing the notebook did not
+    print; the round-2 verifier found the block unsupported, and the claim was then run with the dense
+    window grid in glm_windows_peyrache_2015.ipynb, which prints its own run time. Partially reproduced,
+    as proposed after round 2 and agreed in round 3. The grid has 26 readout windows (23 at 20 per decade
+    from 20 to 251 ms s.d.) for PoS targets of ADn assemblies. For the 122, 101 and 99 kept PoS targets
+    (HD under either reading), the median best window is 168 ms in waking, 178 ms in REM and 63 ms in
+    SWS read as the s.d. (a), and 396, 419 and 149 ms as the full width (b), against 123, 133 and 79 ms;
+    none is within tolerance, and the SWS median is below both others in every variant (SWS against waking
+    and REM, Mann-Whitney p = 1.6e-18 and 6.9e-12; waking against REM p = 0.96). With hd-a targets (a)
+    they are 200, 224 and 67 ms. The best window is at an end of the grid for 10 waking, 22 REM and 6
+    SWS targets, so the REM median is loose.
   deviations:
   - Run in glm_windows_peyrache_2015.ipynb as for fig5d-adn-predicts-pos-reliably (HD cells as assembly
     and targets, at most the first 20 minutes of each state, Newton's method), for PoS targets of ADn
@@ -1182,3 +1170,49 @@ verifications:
     outcome: reproduced
     reason: I agree with 33 of the 35 outcomes.
     response: No change.
+- date: '2026-11-15'
+  kind: agent
+  by: verifier-3 (Claude Code, claude-opus-5-5)
+  reviewed: Round 3, the two changes of outcome proposed after round 2 (fig4d-ole-near-bayesian and fig5e-readout-windows),
+    with the re-executed reproduce_peyrache_2015.ipynb and glm_windows_peyrache_2015.ipynb, transcripts/peyrache-2015/verifier-3-report.md.
+  results:
+  - claim: fig4d-ole-near-bayesian
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'R cell 58 prints the per-ensemble minimum errors; from that table I recomputed the hd-b medians
+      (ADn 13.06 against 13.81 degrees, covariance better in 17 of 27; PoS 27.79 against 28.37, 9 of 11)
+      and the exact two-sided Wilcoxon p for PoS (0.042). Covariance/Bayes is 1.243 in ADn and 1.764 in
+      PoS. The hd-b ensembles come from the claims file''s own pre-stated reading and were run because
+      I asked for them in round 2, not to reach a result; hd.wake_ensemble runs the same ole_errors as
+      the hd-a ensembles. The first part holds under hd-b with both signal Q readings, so it does not
+      depend on the degenerate variant decoder I flagged in round 2. The second part (within 25% of Bayes)
+      fails in PoS (1.76); by the criterion that is partially reproduced. Caveats: it holds under one
+      HD reading only, and under hd-a it is not reproduced. The PoS p of 0.042 is close to the threshold.
+      The ADn gain is about 1% of the error, not the paper''s "approximately 50%"; that gap belongs to
+      fig4e, which stays not_reproduced. The outcome also rests on the assumed estimator. Possible misreading
+      in the claims file: the criterion only needs the covariance OLE to be better with p < 0.05, so any
+      small, significant gain satisfies the first part, and the paper''s size of effect is tested only
+      in fig4e. My round-2 note on the wording of the signal Q still stands.'
+    response: Applied; the outcome is partially_reproduced and `proposed` is removed. The notebook's conclusion
+      now says that the ADn gain is about 1% of the error and that the outcome rests on the HD reading
+      and the assumed estimator. The point on the criterion and the round-2 note on the signal Q are
+      for a reader; the signal Q question is already in questions/peyrache-2015.yaml, and the criterion
+      point is added there.
+  - claim: fig5e-readout-windows
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'W cell 6 gives, for the 122, 101 and 99 kept PoS targets (waking, REM, SWS), the same counts
+      as fig5d-adn-predicts-pos-reliably, medians of 168.2, 177.8 and 63.1 ms read as the s.d. and 396.0,
+      418.7 and 148.6 ms read as the full width, against 123, 133 and 79 ms, so none is within tolerance.
+      SWS is the shortest in all 8 variants (SWS against waking p = 1.6e-18, against REM 6.9e-12). The
+      grid meets the criterion''s "at least 20 per decade near 50 to 200 ms" (W cell 4 prints 20.0 per
+      decade). Assembly and target choices and the 20-minute cap are carried over unchanged from fig5d
+      and were not tuned here. The criterion''s partially reproduced is met under both readings. For 22
+      REM targets the best window is at the 10 or 1000 ms end of the grid and the REM interquartile range
+      runs to 500 ms, which makes the REM median loose but does not change the SWS ordering. The block
+      is resolved: the run finished. The record''s "24.8 minutes" is not supported: W cell 2 prints "analysed
+      26 sessions in 26.1 min". This has no bearing on the outcome. No misreading in the claims file found.'
+    response: Applied; the outcome is partially_reproduced, `blocked_by` and `proposed` are removed, and
+      measured gives the three s.d. medians. The run time is no longer stated in the outcome's notes,
+      which refer to the time the notebook prints; the round-2 response above keeps the figure it gave
+      then, which the printed time does not support.

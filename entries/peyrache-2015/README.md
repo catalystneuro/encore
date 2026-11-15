@@ -12,11 +12,10 @@ sense" (Peyrache, Lacroix, Petersen and Buzsaki, Nature Neuroscience 2015, doi:1
   fig5e-readout-windows needs, for PoS targets only.
 - `hd.py` holds the loading code and the measures. The docstring of each says where its parameters come from.
 
-Of 35 claims, 34 are tested and one, fig5e-readout-windows, is recorded as blocked (too large), the outcome
-the first two verification rounds reviewed. The round-2 verifier found that the printed timing did not
-support the block; the claim now runs in `glm_windows_peyrache_2015.ipynb`, and the record proposes
-partially reproduced for it, and for fig4d-ole-near-bayesian from the ensembles of hd-b cells, for the
-third verification round.
+All 35 claims are tested. fig5e-readout-windows was first recorded as blocked (too large); the round-2
+verifier found that the printed timing did not support the block, and it now runs in
+`glm_windows_peyrache_2015.ipynb`. The third verification round agreed that it, and fig4d-ole-near-bayesian
+from the ensembles of hd-b cells, are partially reproduced.
 The record is `attempts/peyrache-2015-02.yaml`.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences from the paper's method.
