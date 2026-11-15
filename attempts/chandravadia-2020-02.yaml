@@ -79,8 +79,11 @@ outcomes:
     sessions. With the labels reversed, label 1 images are in the encoding block in all 87 sessions (all of them
     in 79; 52 to 58% in the 7 sessions whose table holds 50 encoding trials, 98% in CS53_123) and label 0 images
     in none, and label 1 trials receive more old responses in 86 of 87 (median 0.70 against 0.24; T98_2005 is the
-    exception, 0.68 against 0.72, AUC 0.445). Both tests hold reversed in 86 of 87 sessions. The paper's code also
-    treats 1 as old.
+    exception, 0.68 against 0.72, AUC 0.445). Both tests hold reversed in 86 of 87 sessions, and in 78 when every
+    label 1 image must be in the encoding block. Hashes of the stimulus image pixels give the same fractions as
+    the file names in all 87 files, and pixels and names correspond one to one. The 7 sessions with 50 encoding
+    trials and CS53_123 show old images whose encoding trials are not in the file. The paper's code also treats
+    1 as old.
 - claim: ttl-codes
   outcome: partially_reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -130,7 +133,8 @@ outcomes:
   notebook: reproduce_chandravadia_2020.ipynb
   output: claim:electrodes-table
   notes: The impedance column (imp) is NaN for all 887 electrodes of all 87 files, so one column is empty for every
-    electrode. Location, filtering (300-3000Hz) and origChannel are filled for every electrode; the MNI coordinates
+    electrode. It is stored as float64 with fill value 0 and NaN written as the value; NaN is its only value
+    in any file, so no sentinel value codes the impedance. Location, filtering (300-3000Hz) and origChannel are filled for every electrode; the MNI coordinates
     are missing for 99 electrodes in 8 files.
 - claim: isi-criterion
   outcome: partially_reproduced
@@ -155,8 +159,7 @@ outcomes:
   - 0.094
   notes: Mean AUC over 87 sessions 0.753, standard deviation 0.094 (range 0.445 to 0.919). The confidence response
     (response_value minus 30) equals the TTL 31 to 36 codes in every file. With label 0 taken as old, as the paper's
-    text states, the mean AUC would be 0.247. Leaving out the two sessions whose every unit repeats another file
-    gives 0.752 and 0.094.
+    text states, the mean AUC would be 0.247.
 - claim: fig5c-auc-sites
   outcome: reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -174,11 +177,15 @@ outcomes:
   output: claim:fig5b-roc-asymmetric
   notes: Mean z-ROC slope over 82 sessions 0.782 (SD 0.300, median 0.791), below 1 in 65 of 82; one-sample t-test
     against 1 t = -6.58, p = 4.3e-09. Wilcoxon signed-rank p = 2e-08; the pooled ROC has slope 0.816. By site, CS
-    0.773 (74 sessions, p = 1.6e-08) and TWH 0.861 (8 sessions, p = 0.14).
+    0.773 (74 sessions, p = 1.6e-08) and TWH 0.861 (8 sessions, p = 0.14). Four sessions have five equal hit
+    rates and a slope of exactly 0; three of them are among the five left out, and leaving out the fourth (CS24_59)
+    too gives 81 sessions, mean 0.792, p = 6.6e-09.
   deviations:
   - Five sessions (CS24_60, CS39_93, H48_99, CS51_119, T100_2008) whose five interior false alarm rates are all
     equal have no regression slope and were left out; the claims file does not say how such sessions are treated.
-    This is a standard choice that cannot change the outcome at p = 4e-09.
+    This is a standard choice that cannot change the outcome at p = 4e-09. Sessions whose five hit rates are
+    all equal have a regression slope of 0 and are kept; the one such session not already left out changes p to
+    6.6e-09.
 - claim: fig5d-confidence-accuracy
   outcome: reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -211,7 +218,9 @@ outcomes:
   - 5.9
   notes: 'Under the criterion''s method (Methods'' window, all 50 and 50 trials, bootstrap of bootstrapMeanEqualTest.m)
     110 of 1864 units (5.90%) are MS cells, below the tolerance of 146 +/- 14.6; four other seeds give 109 to 111,
-    and p <= 0.05 gives 111. The null with labels shuffled within session gives 81 (4.35%). The variants differ:
+    and p <= 0.05 gives 111. The null with labels shuffled within session gives 81 (4.35%), so the main count is
+    1.55 points above it. The studentized bootstrap (varCorrection 1) gives 92 (4.94%) under the main reading and
+    126 under the code''s choices. The variants differ:
     all trials in the code''s window 108; correct trials only in the Methods'' window 132 (137 to 147 over four
     other seeds); the code''s choices, correct trials in 200 to 1700 ms, 147 (7.89%; 143 to 147 over other seeds),
     which matches the paper. The paper''s count is reached with the code''s trial selection and not with the Methods''
@@ -219,6 +228,9 @@ outcomes:
   deviations:
   - The denominator is the 1864 unit rows of the files, where the paper has 1863.
   - The bootstrap seed is a standard choice; the spread over five seeds is shown (109 to 111 for the main reading).
+  - The bootstrap statistic is the raw difference of means (bootstrapMeanEqualTest.m without variance correction),
+    as NWB_singleCellAnalysis_release.m line 102 at commit 1d95162 calls bootstrapMeanEqualTest(countOld, countNew,
+    B) with three arguments, so its defaults apply (mode 1, varCorrection 0).
 - claim: dual-cells-proportion
   outcome: not_reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -245,7 +257,10 @@ outcomes:
     cells (1787 units), TWH 22.08%, 7.79% and 0% (77 units). With the code's choices all 6 values are within tolerance
     (CS 18.35%, 7.78%, 1.40%; TWH 19.48%, 10.39%, 1.30%), equal to the figure's values to the second decimal, and
     no Fisher test finds a difference (p = 0.77, 0.39, 1.0). TWH has 77 units, so one cell moves its percentages
-    by 1.3 points.
+    by 1.3 points. The paper's text compares "the existing and new dataset", not the sites; this is asked of a
+    reader (questions/chandravadia-2020.yaml). Under that grouping, the earlier release's sessions (1539 units)
+    against the 23 new sessions (325 units), no Fisher test finds a difference (p = 0.87, 0.52, 0.70 under the
+    main tests; 0.81, 0.054, 0.60 under the code's choices).
 - claim: twh-sessions
   outcome: reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -260,7 +275,9 @@ outcomes:
   notes: Of the 65 sessions of Table 1 of Faraut et al. (2018), 64 are found by session id with the same subject
     label and task variant (98.5%). Session 98 of H48 (variant 2) is not in the dandiset, nor in this paper's Online-only
     Table 1. Among the matched sessions, ages differ for C24 (47 against 57 in the files, sessions 59 and 60), H33
-    (29 against 30) and H48 session 99 (54 against 32), and H48's sex differs (M against F in the file).
+    (29 against 30) and H48 session 99 (54 against 32), and H48's sex differs (M against F in the file). H48 has
+    only session 99 in the dandiset, with 30 units; Faraut et al.'s Table 1 gives no neuron count per session, so
+    the neurons of session 98 cannot be counted.
   deviations:
   - The task variant of a file is read from the image folder in external_image_file (newolddelay, newolddelay2,
     newolddelay3), the folder names Table 2 of Faraut et al. gives for the three variants.
@@ -274,7 +291,9 @@ outcomes:
   - 325
   notes: Relative to Faraut et al.'s Table 1 the dandiset adds 23 sessions and 17 subjects, as stated, but the new
     sessions hold 325 unit rows (CS 248, TWH 77), above 288 +/- 28.8. The sessions shared with the earlier release
-    hold 1539 unit rows, where its abstract states 1576 neurons. The differences of the stated totals are 22 sessions,
+    hold 1539 unit rows, where its abstract states 1576 neurons; by area they hold 626 hippocampal and 913 amygdala
+    units against 633 and 943 in Faraut et al.'s Table 3, so most of the difference is in the amygdala. The earlier
+    release gives no count per session, so the sessions it comes from cannot be told. The differences of the stated totals are 22 sessions,
     17 subjects and 287 neurons; of the counts here 22, 17 and 288.
 - claim: fig4-example-vs-neuron
   outcome: reproduced
@@ -299,13 +318,15 @@ findings:
     AUC of 0.25 in place of 0.75.
 - kind: data_missing
   statement: The impedance column (imp) of the electrodes table is NaN for all 887 electrodes in all 87 files, although
-    the paper lists impedance among the electrode information. The MNI coordinates (x, y, z) are missing for 99
+    the paper lists impedance among the electrode information; NaN is written as the value (the fill value is 0) and
+    is the only value in any file. The MNI coordinates (x, y, z) are missing for 99
     electrodes in 8 files.
 - kind: data_missing
   statement: Eight sessions hold fewer than the 100 encoding trials the paper describes. The trial tables of H14_18,
     H15_20, H15_21, H16_23, H18_26, H19_27 and H23_44 hold 50 encoding trials (150 trials, and 150 stimulus images),
-    and only about half of their old recognition images are among them; CS53_123 holds 97, and its event stream
-    starts in the middle of a trial.
+    and only 52 to 58% of their old recognition images are among them, by file name and by image pixels alike, so
+    the encoding trials of the other old images are not in the files. CS53_123 holds 97 (98% of its old images are
+    among them), and its event stream starts in the middle of a trial.
 - kind: other
   about: data
   statement: Units are deposited in two files without saying so. Sessions 54 and 55 (H42) hold the same 32 spike
@@ -355,3 +376,203 @@ findings:
 - kind: paper_inconsistency
   statement: The Methods state that patients were recorded across 89 sessions, while Online-only Table 1 lists 87,
     as the dandiset holds.
+verifications:
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text (PMC7055261). The verifier checked the archive's file list for the
+    blocked claim and tested window_rates, cumulative_roc, auc, zroc_slope, accuracy_fixed, isi_fraction and
+    bootstrap_mean_equal on synthetic inputs. It had no attempt record. Problem 4 of its report, on the data check's
+    description of the spike time span, is tied to no claim; the text of that cell was corrected to match the
+    printed ranges.
+  results:
+  - claim: counts-neurons-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Cell 15 gives 1864 unit rows (+1) and 59 subjects, both within tolerance under reading (a). Reading (b)
+      gives 1798, also within tolerance.
+    response: No change.
+  - claim: counts-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Cell 17, the 87 (subject, session) pairs in the files equal the 87 in Online-only Table 1. The Methods'
+      89 is 2 more.
+    response: No change.
+  - claim: table1-demographics
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 19, age and sex match for 56 of 59 subjects. C24 and H33 differ in age; H48 differs in age and
+      sex. The table's 25 F / 34 M is confirmed; the files give 26 / 33. The verifier checked the three table rows
+      against the paper.
+    response: No change.
+  - claim: task-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 21, the recognition and category parts hold in 87 of 87 sessions, the encoding part in 79. Seven
+      sessions have 50 encoding trials and one (CS53_123) has 97.
+    response: No change to the outcome. The verifier could not check image identity without the image arrays; the
+      notebook now hashes the pixels of every stimulus image. Pixels and external_image_file names correspond one
+      to one in all 87 files, and the encoding blocks hold 100 distinct images in 79 files, 50 in the seven short
+      sessions and 97 in CS53_123.
+  - claim: new-old-label-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 23, under the stated coding both tests fail in all 87 sessions (no label-0 image is in the encoding
+      block). With the labels reversed both hold in 86, or 78 under the strict image test, which is most either
+      way. Problem 5, the reversed_1 flag only requires some label-1 images to be in the encoding block; in the 7
+      sessions with 50 encoding trials and in CS53_123 only 52 to 98% of old images appear in the file's encoding
+      block, which points to encoding trials missing from those files, and the notebook does not mention it.
+    response: The conclusion and notes now give the strict count (78 of 87) and say that the 8 sessions show old
+      images whose encoding trials are not in the file. A new cell compares the images by pixel hash, which gives
+      the same fractions as the file names in all 87 files; the data_missing finding on encoding trials says so.
+      Outcome unchanged.
+  - claim: ttl-codes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 25, lengths and timestamps match in 87 of 87 files. Only listed codes and correct per-trial order
+      hold in 78 of 87. The other 9 contain codes 0, 4, 22, 23, 98 or 99.
+    response: No change.
+  - claim: experiment-ids
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 27, 83 of 87 files are in the sets. CS33_77, CS39_100, H42_55 and H51_105 use 81/82 or 82/83.
+    response: No change.
+  - claim: session-dates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 29, 86 of 87 files are dated the 1st of a month. H28_48 is dated 2010-03-13, and H44_68 is dated
+      2000, outside the span of the recordings.
+    response: No change.
+  - claim: units-table
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 31, all columns are present (IsolDist is stored as IsolationDist), there is one electrode per unit,
+      and the waveform rate of 98.4 kHz is within tolerance, but 568 units have NaN or infinite SNR or IsolationDist.
+      Problem 7, taking IsolationDist as IsolDist is a reasonable stated assumption (the column's description is
+      "IsolDist"); without it the outcome would still be partial at best.
+    response: No change; the reading of IsolationDist as IsolDist was already stated in the notebook and as a
+      deviation.
+  - claim: electrodes-table
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 33, imp is empty for all 887 electrodes, which is the criterion's not-reproduced case. x, y and z
+      are also missing for 99 electrodes in 8 files. The notebook printed only a non-missing count; the raw dtype,
+      fill value and attributes of electrodes/imp would show whether impedance is absent or stored as a sentinel.
+    response: The cell now prints the stored dataset of one file (float64, fill value 0, NaN written as the values,
+      described as the impedance of the channel) and the distinct values over all files (NaN only). The impedance
+      is absent, not coded by a sentinel. Added to the notes and the finding. Outcome unchanged.
+  - claim: isi-criterion
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 35, with spike times sorted 1858 of 1864 units (99.68%) are below 3%, so at least 95% but not all.
+      Two H27_58 units have about 50% of intervals under 3 ms.
+    response: No change.
+  - claim: fig5a-mtl-locations
+    agrees: true
+    outcome: reproduced
+    reason: Cell 37, all 1864 units are in the amygdala or hippocampus.
+    response: No change.
+  - claim: fig5c-auc-all
+    agrees: true
+    outcome: reproduced
+    reason: Cell 39, mean AUC 0.753 (0.74 +/- 0.10) and SD 0.094 (0.10 +/- 0.01). Problem 8, the variant that drops
+      the two sessions whose every unit repeats has no meaning for behaviour, which is not duplicated; it is
+      harmless.
+    response: The variant was removed from the cell and from the notes. Outcome unchanged.
+  - claim: fig5c-auc-sites
+    agrees: true
+    outcome: reproduced
+    reason: Cell 41, CS 0.760, SD 0.085; TWH 0.688, SD 0.138. All four values are within tolerance. Welch p = 0.16.
+    response: No change.
+  - claim: fig5b-roc-asymmetric
+    agrees: true
+    outcome: reproduced
+    reason: Cell 43, mean z-ROC slope 0.782 over 82 sessions, t-test against 1 gives p = 4.3e-9; five sessions
+      without a slope are left out, and the Wilcoxon and pooled-slope variants agree. Problem 6, sessions with all
+      five hit rates equal get a slope of exactly 0 and are kept while sessions with all false-alarm rates equal
+      are dropped; the treatment is asymmetric but does not change p < 0.05.
+    response: The cell now lists the sessions with five equal hit rates (4, of which 3 are already left out) and a
+      variant that also leaves out the remaining one, CS24_59 (81 sessions, mean 0.792, p = 6.6e-9). Added to the
+      conclusion, notes and deviation. Outcome unchanged.
+  - claim: fig5d-confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Cell 45, fixed split, 84 sessions, 80.1% against 60.9%, paired p = 3.2e-16. The dynamic split also
+      gives p < 0.001.
+    response: No change.
+  - claim: vs-cells-proportion
+    agrees: true
+    outcome: reproduced
+    reason: Cell 49, 332 of 1864 (17.81%) in the Methods' window, within both tolerances. The shuffled null is 4.83%.
+      The paper states no chance level.
+    response: No change.
+  - claim: ms-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 51, 110 of 1864 (5.90%) under the paper's stated reading (1 s window, all 50/50 trials); expected
+      146 +/- 14.6 and 7.8 +/- 0.78%, and seeds 1 to 4 give 109 to 111. Only the code's choices (correct trials,
+      1.5 s window) give 147 (7.89%). The null is 4.35%. Problem 1, bootstrap_mean_equal uses the raw difference of
+      means, while Efron and Tibshirani's algorithm 16.2 uses a studentized statistic; which mode the paper's code
+      calls is not shown, and a studentized variant was not run. Problem 2, MS on correct trials in the Methods'
+      window gives 132 with seed 2020 and 137 to 147 with seeds 1 to 4, a wider spread that is not discussed.
+      Problem 3, the main count is only 1.5 points above the shuffled null, and the notebook does not comment on
+      this.
+    response: The helper and the notebook now cite the call in NWB_singleCellAnalysis_release.m (line 102 at commit
+      1d95162), bootstrapMeanEqualTest(countOld,countNew,B) with three arguments, so mode 1 without variance
+      correction, as the helper does. The studentized form was added as a variant with its own generator; it gives
+      92 MS cells (4.94%) under the main reading and 126 under the code's choices, so it does not close the gap. The
+      conclusion now states the spread of the correct-trials variant (132 to 147, within tolerance with every seed)
+      and that the main count is 1.55 points above the null (110 against 81 units). Outcome unchanged.
+  - claim: dual-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 53, 12 cells (0.64%) under the main tests, against 26 +/- 2.6. The code's choices give 26.
+    response: No change.
+  - claim: fig5f-site-proportions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 55, main reading, no Fisher test is significant (p = 0.36, 0.46, 1.0), but only 1 of 6 values is
+      within tolerance, so only one of the two conditions holds. The code's choices give 6 of 6. Problem 9, a
+      possible misreading in the claims file, reported and not corrected; the paper's text says it compared "the
+      existing and new dataset" (earlier release against the 23 new sessions), while the claim tests CS against TWH,
+      following the Figure 5f legend and the code's constants. Under the text's reading the groups differ, as 14 new
+      CS sessions belong to "new".
+    response: Added as a question for a reader in questions/chandravadia-2020.yaml; the claim is unchanged. The
+      notebook shows the text's grouping as a variant, the earlier release's sessions (1539 units) against the new
+      sessions (325 units), where no Fisher test finds a difference (p = 0.87, 0.52, 0.70 under the main tests).
+      Outcome unchanged.
+  - claim: twh-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Cell 57, 9 T-labelled sessions, all with institution "Toronto Western Hospital".
+    response: No change.
+  - claim: previous-release-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 59, 64 of 65 earlier sessions are found and agree (98.5%). H48 session 98 (variant 2) is absent.
+      Why it is absent could not be checked; a per-session unit count for H48 against Faraut et al. would help.
+    response: The cell now prints H48's sessions in the dandiset with their unit rows (session 99 only, 30 units).
+      Faraut et al.'s Table 1 gives no neuron count per session, so the count for session 98 cannot be compared; the
+      notes say so. Outcome unchanged.
+  - claim: previous-release-additions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 61, 23 new sessions and 17 new subjects match. The new sessions hold 325 neurons, outside 288 +/-
+      28.8. The source of the 37-neuron gap between 1539 and 1576 could not be checked.
+    response: The cell now compares the shared sessions' units by area with Faraut et al.'s Table 3, 626 against 633
+      in the hippocampus and 913 against 943 in the amygdala, so most of the gap is in the amygdala; the earlier
+      release gives no count per session, so the sessions cannot be named. Added to the notes. Outcome unchanged.
+  - claim: fig4-example-vs-neuron
+    agrees: true
+    outcome: reproduced
+    reason: Cell 63, CS58_132, electrode row 4, channel 177, Right Amygdala. ANOVA p = 1.2e-22, animals highest
+      (6.75 Hz). The code's window agrees.
+    response: No change.
+  - claim: fig3-example-vs-neuron
+    agrees: true
+    outcome: blocked
+    reason: Session 144 is in no file. The verifier checked the archive; the draft and both published versions hold
+      the same 87 assets, the latest session date is 2019-04 (session 136), and Online-only Table 1 has no session
+      144 either. No part can be tested.
+    response: No change.

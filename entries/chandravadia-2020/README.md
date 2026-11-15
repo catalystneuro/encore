@@ -42,7 +42,8 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/chandravadia-2020-02.yaml`](../../attempts/chandravadia-2020-02.yaml).
 
 - `reproduce_chandravadia_2020.ipynb`: the analysis. It streams the trials, events, electrodes and
-  units of all 87 files (not the stimulus images) and takes about 3 minutes.
+  units of all 87 files, and hashes the pixels of the stimulus images for the label check; it takes
+  about 6 minutes.
 - `chandravadia.py`: reading the files, the paper's session tables from Europe PMC, the ROC, z-ROC
   and accuracy measures of the paper's code, window firing rates, the ANOVA and the bootstrap test.
   Other notebooks on this dataset can import it.

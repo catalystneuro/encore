@@ -2,8 +2,9 @@
 
 The dandiset holds one NWB file per session of the new/old recognition memory task: the
 trials table, the TTL events and experiment ids, the electrodes table, the units table with
-spike times and mean waveforms, and the 200 stimulus images. Files are streamed from the
-archive with remfile and h5py; the images are never read, as nothing here needs their pixels.
+spike times and mean waveforms, and the stimulus images (one per trial). Files are streamed
+from the archive with remfile and h5py. The images are read only by image_hashes, which keeps
+a hash of each image's pixels and drops the pixels.
 
 Where each parameter comes from:
 
@@ -31,6 +32,10 @@ Where each parameter comes from:
 - The bootstrap test of equal means is bootstrapMeanEqualTest.m (Efron and Tibshirani,
   algorithm 16.2), two-sided, 1000 resamples, with the generator the notebook passes in
   (a fixed seed is a standard choice that cannot change a result beyond resampling noise).
+  NWB_singleCellAnalysis_release.m (line 102) calls it with three arguments,
+  bootstrapMeanEqualTest(countOld, countNew, B), so mode 1 (two-sided) and varCorrection 0:
+  the statistic is the raw difference of means. The studentized statistic of the function's
+  varCorrection 1 is a variant.
 """
 
 from __future__ import annotations
@@ -152,6 +157,28 @@ def read_session(asset_id: str) -> dict:
     out["units"] = units
     p = "stimulus/presentation"
     out["stimulus_series"] = {k: f[p][k]["data"].shape for k in f[p] if "data" in f[p][k]}
+    f.close()
+    return out
+
+
+def image_hashes(asset_id: str) -> dict:
+    """MD5 of the pixels of each stimulus image, with the images' timestamps; the pixels are not kept."""
+    import hashlib
+    f = h5py.File(remfile.File(asset_url(asset_id)), "r")
+    g = f["stimulus/presentation/StimulusPresentation"]
+    d = g["data"]
+    hashes = [hashlib.md5(d[i].tobytes()).hexdigest() for i in range(d.shape[0])]
+    out = {"asset_id": asset_id, "hashes": np.array(hashes), "timestamps": g["timestamps"][()], "shape": d.shape}
+    f.close()
+    return out
+
+
+def dataset_info(asset_id: str, path: str) -> dict:
+    """The stored dtype, shape, fill value, attributes and first values of one dataset of a file."""
+    f = h5py.File(remfile.File(asset_url(asset_id)), "r")
+    d = f[path]
+    out = dict(dtype=str(d.dtype), shape=d.shape, fillvalue=d.fillvalue, compression=d.compression,
+               attrs={k: _str(v) for k, v in d.attrs.items()}, first=d[: min(5, d.shape[0])])
     f.close()
     return out
 
@@ -343,16 +370,28 @@ def anova_p(rates, groups):
     return stats.f_oneway(*gs).pvalue
 
 
-def bootstrap_mean_equal(z, y, B, rng):
-    """Two-sided bootstrap test of equal means (bootstrapMeanEqualTest.m, mode 1, no variance correction)."""
+def bootstrap_mean_equal(z, y, B, rng, var_correction=False):
+    """Two-sided bootstrap test of equal means (bootstrapMeanEqualTest.m, mode 1).
+
+    var_correction False is the paper's call (no variance correction); True divides each
+    difference by sqrt(s_z^2/n + s_y^2/m), with MATLAB's std (ddof 1), as varCorrection 1 does."""
     z, y = np.asarray(z, float), np.asarray(y, float)
     n, m = len(z), len(y)
     xm = np.r_[z, y].mean()
     zt, yt = z - z.mean() + xm, y - y.mean() + xm
-    zs = zt[rng.integers(0, n, size=(B, n))].mean(axis=1)
-    ys = yt[rng.integers(0, m, size=(B, m))].mean(axis=1)
-    t = np.abs(zs - ys)
+    zr = zt[rng.integers(0, n, size=(B, n))]
+    yr = yt[rng.integers(0, m, size=(B, m))]
+    t = np.abs(zr.mean(axis=1) - yr.mean(axis=1))
     tob = z.mean() - y.mean()
+    if var_correction:
+        # NaN when both groups have zero variance, as the statistic is then undefined; a resample
+        # with zero variance in both groups counts as no difference
+        d_ob = np.sqrt(z.var(ddof=1) / n + y.var(ddof=1) / m)
+        if d_ob == 0:
+            return np.nan
+        with np.errstate(divide="ignore", invalid="ignore"):
+            t = np.nan_to_num(t / np.sqrt(zr.var(axis=1, ddof=1) / n + yr.var(axis=1, ddof=1) / m), nan=0.0)
+        tob = tob / d_ob
     return np.mean(t >= abs(tob))
 
 
