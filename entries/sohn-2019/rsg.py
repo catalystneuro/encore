@@ -29,7 +29,9 @@ Where each parameter comes from:
   Methods, "Analysis of behavior with a Bayesian model". Integration grids (241 points for tm,
   201 for the prior) are a standard numerical choice.
 - GLM: Poisson, counts in the 80 ms before 480 ... 800 ms after Ready, BIC comparison. Claims
-  file, glm-prior-ts; Methods, "Generalized linear model".
+  file, glm-prior-ts; Methods, "Generalized linear model". The ts model of the Long prior uses
+  the 80 ms before 800 ... 1200 ms, "that prior's 5 time indicators" (claims file), as the
+  Methods use "two distinct GLMs" because "values of ts were different between the priors".
 """
 
 import numpy as np
@@ -158,14 +160,16 @@ def aligned_rates(spikes, align_s, start_ms, stop_ms):
 
 
 def production_rates(spikes, trials):
-    """Per ts: rates from Set to the shortest tp of that ts (whole 20 ms bins), as a dict
-    ts -> (rates, bin_end_times_ms, n_trials, shortest_tp)."""
+    """Per prior and ts: rates from Set to the shortest tp of that condition (whole 20 ms bins),
+    as a dict (prior, ts) -> (rates, bin_end_times_ms, n_trials, shortest_tp). The two priors'
+    ts = 800 trials are kept apart, as the Methods' 16 matrices are per prior ("Principal
+    component analysis")."""
     out = {}
-    for ts, g in trials.groupby("ts"):
+    for (prior, ts), g in trials.groupby(["prior", "ts"]):
         tmin = g.tp.min()
         stop = int(np.floor(tmin / BIN_MS) * BIN_MS)
         r, ends = aligned_rates(spikes, g.set_time.values, 0, stop)
-        out[ts] = (r, ends, len(g), tmin)
+        out[(prior, ts)] = (r, ends, len(g), tmin)
     return out
 
 

@@ -1,0 +1,40 @@
+questions:
+- claim: beh-slopes
+  question: The criterion asks that each of the 8 slopes of one session lie between 0 and 1 with a
+    95% interval that excludes 0 and 1. Table S1 of the supplement tests the slopes over sessions
+    and conditions instead, with Wilcoxon signed-rank tests of the median slope against 0 and
+    against 1 per prior (W = 2346 for monkey H, the largest value for 68 slopes, 17 sessions by 4
+    conditions). Is the paper's claim about the median slope over sessions, so that a criterion
+    on the median, or on the share of conditions with slopes between 0 and 1, would match it
+    better? The claims file's header also says the supplement was not available, and it is now
+    under paper/.
+  passage: 'Table S1 legend, "We used a weighted linear regression (tp= βts+ε) and Wilcoxon
+    signed-rank test to evaluate the median slope for the Short and Long prior conditions (βShort
+    and βLong)." STAR Methods, Model free analysis of behavior, "We tested whether regression
+    slopes were larger than 0 and less than 1 (Figure 1 and S1, Table S1)."'
+  why: In this session 6 of 8 slopes lie between 0 and 1 (with an intercept); the two Eye Short
+    slopes are 1.011 and 1.107. The criterion as written gives not reproduced. A test on the
+    median, or a majority rule, would give reproduced or partially reproduced, as the median slope
+    is below 1 for both priors.
+- claim: alt-speed-unmodulated
+  question: The criterion measures speed on smoothed rates. The Methods compute the speed of the
+    speed model "in the full neural space to avoid any potential distortion by smoothing and PCA",
+    which can be read as unsmoothed rates of all units. Should the criterion use unsmoothed rates?
+  passage: 'STAR Methods, Test of alternative mechanisms, "For the ''Speed model'', we estimated
+    instantaneous speed of the trajectory in the full neural space to avoid any potential
+    distortion by smoothing and PCA (Figure 5B)."'
+  why: The step distance of unsmoothed rates is dominated by spike-count noise, which grows as
+    fewer trials are averaged across the support; in this session its slopes are 37 to 77 per s,
+    against -1.4 to 7.9 per s on smoothed rates. With 4 datasets the signed-rank test cannot reach p < 0.05 under either
+    reading, so the outcome does not change here, but the effect sizes reported with it do.
+- claim: gpfa-variance-inverted-u
+  question: The criterion z-scores Xu over each prior's trials. The Figure 6C legend says "We
+    z-scored Xu of all trials before computing the variance for each ts", which can also be read
+    as z-scoring over all trials of a dataset, both priors together. Which does the paper mean?
+  passage: 'Figure 6 legend, (C), "Variance of projected neural states (Xu) across ts. We z-scored
+    Xu of all trials before computing the variance for each ts (thin lines: individual conditions;
+    thick line: averages across conditions; shaded area: s.e.m. across conditions)."'
+  why: Z-scoring over both priors scales the two priors' variances by different factors, which
+    changes the relative size of the 8 quadratic coefficients and so the ranks of the one-tailed
+    signed-rank test. Under the criterion's reading p = 0.074 in this session; the notebook shows
+    the other reading as a variant.
