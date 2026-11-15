@@ -167,35 +167,32 @@ outcomes:
     the display) and widths with amplitude and offset by least squares.
   - The fits of fig2de-prediction-accuracy (ridge in place of L1), under penalty reading a.
 - claim: fig3ab-identification-s1
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_nishimoto_2011.ipynb
   output: claim:fig3ab-identification-s1
-  measured: 408
-  notes: 'With the four-delay directional model (reading a), encoding penalty reading a, the repeat-averaged
-    test signal (reading i), the 2,000 voxels best predicted on the held-out training data, and the Tikhonov
-    penalty chosen on the held-out training data (3.162 times the mean residual variance; 521 of 728 held-out
-    samples identified within 1 s), 408 of 486 test volumes (84.0%) are identified within one volume,
-    10 short of the tolerance (at least 418) and 56 short of 464. Chance is 2.96 of 486 (0.61%). No Tikhonov
-    penalty of the grid (0.1 to 100, quarter decades) reaches 418 under this reading; the counts run from
-    313 to 408. Single repeats give 337.3 on average (320 to 364); the single 4 s delay model gives 326
-    (repeat mean) and 231.5 (single repeats). With the encoding penalties of reading b (five-fold cross-validation),
-    the same model and signal give 426 of 486 (87.7%) at the Tikhonov penalty chosen on the held-out data
-    (5.623; 506 of 728 held-out samples), inside the tolerance, with 319 to 432 over the grid and single
-    repeats 360.4 (344 to 390). An earlier run of the same code gave 409 under reading a, so counts move
+  measured: 426
+  notes: 'With the four-delay directional model (reading a), the repeat-averaged test signal (reading
+    i), the encoding penalties of reading b (five-fold cross-validation), the 2,000 voxels best predicted
+    on the held-out training data, and the Tikhonov penalty chosen on the held-out training data (5.623
+    times the mean residual variance; 506 of 728 held-out samples identified within 1 s), 426 of 486 test
+    volumes (87.7%) are identified within one volume, at least the 418 the tolerance needs, and 38 short
+    of 464. Chance is 2.96 of 486 (0.61%). Over the Tikhonov grid the counts run from 319 to 432; penalties
+    1 to 5.623 all give 424 to 432, and the best on the test data (3.162, 432) is not the one chosen. Single
+    repeats give 360.4 on average (344 to 390). The reading b penalties come from cross-validation over
+    all 7,128 training samples, so the held-out 728 samples that choose the voxels and the Tikhonov penalty
+    also took part in choosing each voxel''s encoding penalty; no test data is involved. With encoding
+    penalty reading a, the same model and signal give 408 of 486 (84.0%),
+    10 short of the tolerance (Tikhonov penalty 3.162; 521 of 728 held-out samples). No Tikhonov penalty
+    of the grid (0.1 to 100, quarter decades) reaches 418 under that reading; the counts run from 313
+    to 408. Single repeats give 337.3 on average (320 to 364); the single 4 s delay model gives 326
+    (repeat mean) and 231.5 (single repeats), both under reading a. An earlier run of the same code gave 409 under reading a, so counts move
     by about one between runs from floating-point differences. The round-1 count of 424 came from a different
     analysis (a held-out split drawn per subject, a ridge grid of 10 to 1e7, and the zero-spatial-frequency
     filters summed in the nondirectional model), so its difference from 408 cannot be put down to the
     split alone.'
-  proposed:
-    outcome: reproduced
-    reason: 'The verifier asked for identification under encoding penalty reading b, which the claims file
-      allows (Encoding model fit) and under which fig2de-prediction-accuracy passes. Run in the notebook
-      (cells of fig3ab-identification-s1, encoding penalty reading b), it gives 426 of 486 at the Tikhonov
-      penalty chosen on the held-out training data, at least the 418 the tolerance needs, so the criterion
-      is met under one reading. Under reading a the count stays 408.'
   deviations:
-  - The fits use ridge regression in place of L1 (see fig2de-prediction-accuracy), under penalty reading
-    a and, for the proposed change, reading b; under reading b the 90% fit for voxel selection and the
+  - The fits use ridge regression in place of L1 (see fig2de-prediction-accuracy), under penalty readings
+    a and b; the outcome rests on reading b, under which the 90% fit for voxel selection and the
     Tikhonov choice uses the reading b penalties.
   - The Tikhonov inverse is inv(S + lambda * mean(diag S) * I), lambda from 0.1 to 100 in quarter decades,
     chosen by identification of the held-out 10% of the training data with the residual covariance of
@@ -506,3 +503,30 @@ verifications:
       banded model is still 0.0066 lower than luminance, lower in every subject and in the voxels that chose
       color, one-sided p = 1.0. Outcome unchanged. The run time in the round-1 response is corrected to
       42.4 minutes.'
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3, the proposed change of fig3ab-identification-s1 from partially_reproduced to reproduced
+    and the analysis behind it in reproduce_nishimoto_2011.ipynb (cells 10, 32 and 33), with vim2.py,
+    the claims file and this record.
+  results:
+  - claim: fig3ab-identification-s1
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32 prints 426 of 486 for model reading (a), signal (i) and encoding penalty reading (b)
+      at Tikhonov penalty 5.623, chosen as the best held-out count (506 of 728); chance is 2.96 of 486.
+      Cell 10 fits the 90% model with the reading (b) penalties on the 90% eigensystem, and cell 32 runs
+      the same code path under both penalty readings. Penalty reading (b) is one of the claims file''s
+      own readings. The Tikhonov penalty is chosen on training data only and is not the best on the test
+      data (3.162 gives 432); penalties 1 to 5.623 all give 424 to 432, a margin of 8 over 418 against
+      run-to-run changes of about 1. 426 is at least 418 under readings (a)(i) with penalty reading (b),
+      and chance is reported. Caveats that do not change the outcome: the reading (b) penalties come from
+      cross-validation over all 7,128 training samples, so the held-out 728 samples helped choose each
+      voxel''s penalty before being used for voxel selection and the Tikhonov choice, a slight leak between
+      training-data selections with no test data involved; reading (b) searches only the whole decades
+      of the ridge grid; the outcome rests on ridge in place of L1 and on penalty reading (b), both stated,
+      and under reading (a) the count stays 408.'
+    response: The outcome is changed to reproduced and the proposal removed; measured is now 426. The notes
+      now lead with the reading b result and state the leak of the held-out samples into the encoding
+      penalty choice, the range of Tikhonov penalties that pass, and that the reading a count stays 408.
+      The notebook's conclusions and summary and the entry README are updated to match.
