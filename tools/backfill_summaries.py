@@ -67,8 +67,9 @@ def paragraph(reply: str) -> str:
 
 def write(attempt_id: str, model: str) -> str:
     prompt = (f"You are writing the summary of a finished attempt in the reproduction registry. The attempt is `{attempt_id}`.\n\n"
-              + step2().replace("{attempt}", attempt_id).replace("From the same sources as the notes:", "From the sources below:")
-              + "\n\nReply with the paragraph only.\n\n" + sources(attempt_id))
+              + step2().replace(" in a new file, `summaries/{attempt}.md`", "").replace("From the same sources as the notes:", "From the sources below:")
+              + "\n\nYou have no tools, and the reply is saved as the file as it is. Reply with the paragraph only: no "
+              "note before or after it about the file, saving it, tools or what you could not do.\n\n" + sources(attempt_id))
     for _ in range(2):
         out = subprocess.run(["claude", "-p", "--model", model, "--tools", ""], input=prompt,
                              capture_output=True, text=True, timeout=1200)
