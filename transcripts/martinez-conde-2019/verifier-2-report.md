@@ -1,64 +1,64 @@
-**Verifier report, round 2: Martinez-Conde et al. 2019 on CRCNS pvc-12**
+**Verifier report, round 2: martinez-conde-2019-02**
 
-The claims file has 19 claims, and the attempt record has 19 outcomes: 16 tested and 3 blocked. All conclusions below come from the stored outputs of the re-executed notebook. I re-ran nothing on the data. I found no place where the claims file misreads the paper.
+**1. Outcomes**
 
-### 1. Outcomes
+The claims file has 19 claims and the attempt record has 19 outcomes: 9 reproduced, 3 partially reproduced, 4 not reproduced and 3 blocked.
 
-| Claim | Record | Agree? | Assumption stated and reasonable? |
-|---|---|---|---|
-| neuron-counts | not_reproduced | Yes (cell 20) | – |
-| spikes-per-condition | blocked, data_missing | Yes | – |
-| s4-baseline-no-difference | not_reproduced, assumed | Yes, but fragile | Stated and reasonable. Each stimulus's baseline placement is the one closest to the files' `BaseActivity` (cell 18). The outcome does not survive the main reading on the 38 files that have `BaseActivity` (smallest p = 0.060), the files' own values (0.109), or the Corners squares 32 DU further in (0.063). So the difference depends on which neurons are included as well as on placement. The record says both. |
-| fig4a-above-baseline | reproduced, assumed | Yes | Yes |
-| fig4b-spike-rate-difference | partially_reproduced, assumed | Yes. S90 is 8.39 against 10.69 ± 1.94 (cell 29) | Yes |
-| fig4b-pairwise-significance | reproduced | Yes. It holds under every baseline reading, so no assumption flag is needed | – |
-| fig5-average-maps | reproduced, assumed | Yes. It is not independent of fig4b | Yes |
-| table1-edge | reproduced, assumed | Yes (cell 38: 5 of 5 on the 18 files) | Stated and reasonable, since the Methods say the edge was "never" off the display. Only the main baseline is shown on the 18 files. On all 22 files the result is partial (3 of 5), and other placements give 2 or 0. |
-| table1-p180 | partially_reproduced, assumed | Yes (4 of 5 under ia) | Yes |
-| table1-s90 | not_reproduced, assumed | Yes. At most 2 of 5 under the main baseline | Yes. The main reading on the 9 files with `BaseActivity` gives 5 of 5, and the record says so. |
-| table1-s52 | reproduced, assumed | Yes, under (iia) | Stated. The result is fragile: 3 of 5 with the squares centred, 2 of 5 with the files' values, 1 of 5 with the main reading on those 10 neurons, all on 12 of the paper's 30 neurons. |
-| table1-s40 | reproduced, assumed | Yes | Yes |
-| fig6-midpoint-representative | reproduced | Yes (rank sum p = 0.49 to 0.93) | – |
-| fig7a-rms-contrast-fit | not_reproduced | Yes | – |
-| fig7c-fold-edge-equivalence | not_reproduced, assumed | Yes, under the stated assumption | Stated. Reading (a) fails clearly: P180 (4.03) is below the whole Edge profile, which runs 9.23 to 21.26. So the outcome rests only on how reading (b) counts "one step": 94.3 is 4.3 from 90, against a step of 3.7, a miss of 0.6. The record calls the distance-from-90 reading "the most literal" (deviation 3). The level-based reading is equally literal and passes. The outcome is borderline, not settled. |
-| fig7c-fold-edge-significance | reproduced, assumed | Yes (cell 51) | Yes |
-| fig7d-nonlinear | reproduced, assumed | Yes (cell 54) | Yes |
-| fig7d-dog-similar | blocked, data_missing | Yes. I accept the author's protocol citation over my round-1 "other" | – |
-| s3-latency-peak | blocked, data_missing | Yes | – |
+| Claim | Agree | Assumption (`assumed: true`) stated and reasonable? |
+|---|---|---|
+| neuron-counts | yes, not_reproduced | no assumption |
+| spikes-per-condition | yes, blocked (data_missing) | not applicable |
+| s4-baseline-no-difference | yes, not_reproduced | Stated. Reasonable, but the outcome depends on it. The files' own BaseActivity finds no difference (cell 16, smallest p = 0.11), and so do Corners readings (b) and (c). The record says this. |
+| fig4a-above-baseline | yes | Stated and reasonable. Reading (a) is ordered under every variant (cell 19). |
+| fig4b-spike-rate-difference | yes | Stated and reasonable. S90 is inside its tolerance by 0.02. Every other variant gives 3 of 4 except Corners (c), which gives 4 of 4 (cell 22). |
+| fig4b-pairwise-significance | yes | Stated and reasonable. Holds under every variant (cell 25). |
+| fig5-average-maps | yes | Stated and reasonable. As the criterion says, this is not independent of fig4b. |
+| table1-edge, table1-p180, table1-s90 | yes, partially_reproduced (4 of 5 each) | Stated and reasonable |
+| table1-s52 | yes, reproduced, as the rule says ("under one reading, all five"; cell 31, iia, 5 of 5) | Stated. The result is fragile: it rests on one of four readings, a maximum inside its tolerance by 0.05, n = 12 against 30, and a change of measure made after round 1. The record says all of this. |
+| table1-s40 | yes, reproduced (5 of 5) | Stated and reasonable |
+| fig6-midpoint-representative | yes, reproduced (0 of 10 and 0 of 4 tests significant) | Stated and reasonable |
+| fig7a-rms-contrast-fit | yes, not_reproduced | no assumption. The cause, the paper's definition of RMS contrast (its reference 21), is still unknown. |
+| fig7c-fold-edge-equivalence | yes, not_reproduced, borderline | Stated. The distance reading of "within one step of 90%" is the more literal one. Under the level reading it would pass. Cell 40 prints both. |
+| fig7c-fold-edge-significance | yes, reproduced (all corrections; largest p = 0.044, cell 43) | Stated and reasonable |
+| fig7d-nonlinear | yes, reproduced | Stated and reasonable |
+| fig7d-dog-similar, s3-latency-peak | yes, blocked (data_missing) | not applicable |
 
-### 2. Text against the printed outputs
+**2. Text against the printed outputs**
 
-I checked every **Result:** conclusion (cells 21, 24, 27, 30, 33, 36, 40, 43, 46, 49, 52, 55), the Summary (cell 58), the README and the record's notes against the outputs. The numbers match, with these exceptions:
+Most sentences match the numbers. These do not, or have no output behind them:
 
-- **"`smoothed_image_norm` is missing from 35 of 77 files"** (cell 4, the Summary in cell 58, and the record's second metadata_error finding) is contradicted by cell 3. The field table there gives 39 files without it: Corners 7, Edge 13, Star 1 + 15 + 2 + 1. Only 38 files have it.
-- **"holds a baseline-subtracted map in some and a map scaled to -1 to 1 in others"** (cell 58 and the record's finding) has no printed output behind it.
-- **"Corners frames come in two sizes (273 x 209 and 257 x 193 DU)"** (fig5 deviation) appears only in a code comment in cell 35. No output prints it.
+- **Cell 6 and the spikes-per-condition notes:** "smoothed_image_norm … minus BaseActivity (in 5 of 38 files) or that divided by its maximum (21), or neither (11)". 5 + 21 + 11 = 37, not 38, and nothing explains the missing file.
+- **Cell 17:** "the check above shows that the files' BaseActivity keeps such pixels". Cell 6 only shows better agreement. For the Star it is clear (r 0.953 against 0.809), but for Corners r is nearly the same (0.859 against 0.850). The Summary's "appears to keep them" is the supported wording.
+- **Statements with no printed output behind them:**
+  - "the descriptor says 53" (cell 9 and the neuron-counts notes).
+  - "offsets of up to about 370 DU" (finding; reg_offset is never printed).
+  - "all 75 version 5 files" (finding; the version is not printed).
+  - "BaseActivity … was not reproduced by any placement … tried while preparing (not run here)" (cell 4, repeated in a finding).
+- **Baseline deviation (every outcome):** it cites "median absolute difference 0.72" (cell 14, n = 19) next to "0.75 against 1.21" (cell 6, n = 17) without saying the two are from different subsets.
+- **fig7a notes and cell 38:** reading (b) "fits well (R2 = 0.9994)". Its parameters (a = −87.3, b = 0.0001, c = 87.3, cell 37) are as degenerate as reading (a)'s. It is a near-linear fit, not an exponential.
+- **fig7c notes and cell 41:** "rise from 9.01 … to 20.80". The rise is not monotonic: at 30% it is 16.28 against 15.69 at 40%, and at 0.869 it is 15.99 against 15.58 at 0.906 (cell 40).
+- **README:** fig7c "would be on another [reading of one step]". This holds only under contrast reading (b); under (a) P180 fails either way.
+- **Cell 35** leaves out one significant signed rank result under reading (ii): S90 against the median, p = 0.0115. It is a variant only and changes no conclusion.
 
-The `verifications` block states my round-1 reasons accurately, and largely in my own words. Two small omissions:
+None of these changes an outcome.
 
-- In fig7c-fold-edge-equivalence, the reason leaves out my point that the four border-cut Edge files had been kept for that claim too. It appears only under table1-edge.
-- In fig7a-rms-contrast-fit, the reason leaves out my point that standard deviation over mean (reading a) cannot rise from 0.61 to 0.943 without a black-level offset.
+The attempt record states my round-1 reasons faithfully. They are close to my own wording, and my Problems (B) points are merged into the claims they bear on. B6 is kept with its label "not affecting a conclusion". My claims-file point B9b (the checks block still lists Corners S40 averaging as open) is not recorded. It concerns the claims file, not the attempt.
 
-Neither omission changes the meaning.
+**3. Round-1 points**
 
-### 3. Round-1 points
+Resolved:
+- **B1, as far as the data allow:** cell 6 shows the Star stimulus at one orientation (modulo its 30 degree symmetry) and no detectable difference between the 12 registered and 15 unregistered neurons (p 0.41 to 0.63).
+- **B3, as a stated choice:** the eye time map cannot show coverage, and the BaseActivity comparison is printed.
+- **B4:** gray range, the zero background and example windows are printed.
+- **B5:** the level variant is printed and the garbled sentence is fixed.
+- **B6:** squares are now area-weighted.
+- **B7, B8:** done.
+- **B9a, B9c:** recorded as a reader question and a finding.
+- **All of section C:** fields, eye time, Star stimulus and the 12/15 comparison, fig7a values, Star luminance (l50 48.2 to 50.4) and the S40 fold length (100 DU).
 
-**Resolved:**
-
-- **B1, baseline placement.** There is now a per-file comparison with `BaseActivity`, an inward sweep of the squares, two more Corners placements and reruns on the 38-file subset. This also exposed a real bug: the centred Square and Edge squares had been read as zeros outside the authors' frame. The fix moved table1-p180 to partial, table1-s90 to not reproduced and table1-s52 to reproduced.
-- **B2, the fig7c margin.** It is now stated as an assumption, and the other reading is printed as a variant.
-- **B3, the border-cut Edge files.** The Edge measures use the 18 complete files, and all 22 are shown.
-- **B5, the three unchecked registrations.** All 60 files now register (cell 12, r ≥ 0.986).
-- **B6, the luminance statement.** The text now says the paper gives 14.07 cd/m² at 50%.
-- **B7, units.** Cell 10 now shows that 98.5% of pixels hold non-integer values.
-- **B8, `box_mean`.** Samples are now symmetric; I read the code and did not re-run it.
-- **The cell 31 coincidence.** The printed 1% Edge profile shows a flat stretch (21.18 against 21.01).
-- **The stale summary.** The summary cell left in the round-1 notebook is no longer an issue.
-
-**Remaining, bearing on a conclusion:**
-
-- **s4-baseline-no-difference:** the "not reproduced" result disappears on the files that carry `BaseActivity` and with one other Corners placement. No Corners placement matches the authors' values closely (median difference 0.85 to 2.79 spikes/s).
-- **fig7c-fold-edge-equivalence:** the outcome turns on a 0.6-point choice between two equally literal readings of "one step". It should be presented as borderline, without calling the distance reading "the most literal".
-- **table1-s52 and table1-s90:** both depend on which neurons are included. With the main reading on the files with `BaseActivity`, S52 gets 1 of 5 and S90 gets 5 of 5. Star rests on 12 of 30 neurons, picked by whether the file holds the authors' aligned map (B4 remains, and cannot be fixed with this data).
-- **table1-edge:** "reproduced" holds only on the 18 complete files under the main baseline. Other baseline placements are not shown on those 18 files.
-- **Corrections to make:** the "35 of 77" count, and the two claims with no printed support (Section 2).
+Remaining points that bear on a conclusion:
+- **Baseline placement, chosen after the results were seen:** it decides s4, the Table 1 counts (Edge, P180 and S90 drop to 1 or 2 of 5, S52 to 1, S40 to 1 under variants), fig4b S90 (inside by 0.02) and fig7c. It is stated, but the data cannot resolve it.
+- **table1-s52:** reproduced only under reading (ii)(a), by 0.05 on one value, on 12 of 30 neurons, after the change of measure prompted by B6.
+- **fig7c-fold-edge-equivalence:** the outcome turns on the reading of "one step" (a 0.6 miss under the distance reading).
+- **fig7a:** the definition of RMS contrast (reference 21) and the luminance scale are still unknown, so the failure cannot be told apart from a difference of method.
+- **Star n = 12 of 30:** this limits every S52 result.
