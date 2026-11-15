@@ -1,0 +1,532 @@
+schema_version: 3
+id: zhai-2025-02
+datasets:
+- archive: dandi
+  id: 001538
+  version: draft
+  modified: '2026-11-09T19:30:00.396929Z'
+  relation: primary
+paper: doi:10.1126/sciadv.adv8224
+date: '2026-11-15'
+entry: zhai-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43662525204
+inputs:
+- what: The paper's per-cell and per-mouse tables (Figures 1 to 10 and the supplementary figures), used by the five
+    link claims and by the claims marked data elsewhere.
+  source: doi:10.5281/zenodo.17307059
+- what: The paper's somatic excitability script (spike counting and rheobase), read for method details.
+  source: doi:10.5281/zenodo.14145776
+- what: The paper's dendritic excitability script (backgrounds, smoothing, windows, basal ratio), read for method
+    details.
+  source: doi:10.5281/zenodo.14163502
+- what: The paper's GRAB-ACh3.0 script (F0, AUC window, Fmax and Fmin), read for method details.
+  source: doi:10.5281/zenodo.14163731
+outcomes:
+- claim: link-somatic-cells
+  outcome: partially_reproduced
+  notes: All 12 groups hold the paper's n (123 cells). Over 20 to 300 pA, 73.2% of cells match a row of the paper's
+    table exactly and 85.4% within 3 spikes in total (criterion 80% and 95%; partial at 50% exact). 97.8% of exact
+    matches fall on the row at the cell's position in date and cell order. Exact matches are lowest in dSPN on-state
+    (40%) and on-state with sulpiride (57%); the largest misses are 20 and 24 spikes. The rheobase equals the first
+    step with a spike in the matched row for 97.8% of exact matches and 87.8% of all cells.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:link-somatic-cells
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+  - A step recorded twice keeps its first sweep (the paper's script does not say); 14 of 123 cells have a repeated
+    step.
+- claim: link-dendritic-cells
+  outcome: reproduced
+  notes: The count of cells with an index equals the paper's n in 8 of 10 groups; iSPN on-state (9 against 10) and
+    CDGI KO off-state (10 against 11) each lack a cell imaged at one dendritic site only, at two spots. Over 90
+    matched cells the index differs from the paper's by a median of 2.8% of its value; 83.7% are within 10%. The
+    Figure 6D identifiers line up with the files' cell numbers (letter c is cell 3), with median differences of
+    3.5% and 6.4%.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:link-dendritic-cells
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+  - The claims file's 'letter a, b, c for the first, second and third cell of the day' is read as cell number 1,
+    2, 3; the 6D identifiers include c for days with cells 1 and 3 only.
+  - Rows outside Figure 6D are aligned with every cell that has line scans, in date and cell order, so that a cell
+    without a pair keeps its place.
+- claim: link-sr-cells
+  outcome: partially_reproduced
+  notes: All 33 dandiset cells match a paper identifier (date and letter, the letter read as cell number) and all
+    33 paper cells are in the dandiset. At 5 SD the per-cell mean amplitude is within 25% of the paper's for 90.9%
+    of cells, the event count for 42.4%, both for 39.4% (criterion 75%); the detector finds a median 1.33 times
+    the paper's events (1.50 at 4 SD, 2.14 at 3 SD). The paper's per-cell amplitude equals the median of its own
+    event list for all 33 cells, and its event lists hold frequency x 3.6 s events (10 sweeps of 360 ms), while
+    two dandiset cells have 11 and 12 sweeps, all of which are used here.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:link-sr-cells
+  deviations:
+  - Sr2+-oEPSC events come from a stand-in for TaroTools (lid.detect_events), with a 1 ms running mean, the noise
+    SD before the flash, and events whose threshold crossing falls 40 to 400 ms after the flash at more than 5 SD
+    (Methods, Data acquisition and statistical analysis); the smoothing, noise window, local baseline and 3 ms event
+    separation are assumptions, as the paper used TaroTools with visual verification and gives no parameters.
+  - The paper's event count is taken as its frequency times 3.6 s, which equals the length of its event lists.
+  assumed: true
+- claim: link-grab-rois
+  outcome: not_reproduced
+  notes: The counts per group are the paper's (13 unlesioned, 10 6-OHDA, 11 off-state regions). 16 of 34 dandiset
+    regions match a paper region within 0.05 for every treatment, short of half, and 10 paper regions are the best
+    match of more than one dandiset region; the median of the largest per-treatment difference is 0.052. No identifier
+    links regions, the ROI here is the Methods' 50 um circle on the stored movies where the paper used the region
+    Prairie View saved, and one region takes Fmax from the other region of its slice; these may explain the gaps.
+    The group comparisons of the Figure 5F claims do not use the match.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:link-grab-rois
+  deviations:
+  - The criterion matches 'each mouse'; this version holds several regions per mouse, so each region, the unit of
+    the paper's table, is matched.
+  - One region (2024-04-02 Slice1Roi2) has no acetylcholine trial; its Fmax is the mean of the other region of its
+    slice, an assumption the paper does not cover. One region (2024-05-24 Slice1Roi1) has no TTX trial; its Fmin
+    is the quinpirole baseline, as the Methods allow.
+- claim: link-aim-mice
+  outcome: not_reproduced
+  notes: 'Figure 8: 18 of the 21 dandiset mice are in the paper''s table (4123, 4124 and 5871 are not; 2346, 2347,
+    7741, 7742 and 7744 of the paper are missing), and their session totals equal the paper''s in 6% (control) and
+    16% (CDGI KO) of sessions, as the dandiset description says. Figure 10: all 21 mice match with their groups
+    and 98% of sessions are equal; mouse 4790 session 3 (44 against 43) and mouse 5845 session 4 (39.5 against 36.5)
+    differ. Genotype labels agree throughout. The link holds for the Figure 10 mice and fails for the Figure 8 mice.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:link-aim-mice
+  deviations:
+  - The session total is the sum over time points of axial, limb and orolingual scores, as the claims file states;
+    the lab's own total column differs from that sum at 5 of 1064 time points.
+- claim: fig1f-dspn-rheobase-on-lower
+  outcome: reproduced
+  notes: Rheobase median 140 pA on-state (15 cells, 10 mice) against 220 pA off-state (15 cells, 8 mice), Mann-Whitney
+    P = 8.9e-06 (paper P < 0.0001). Keeping the last sweep of a repeated step gives the same.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig1f-dspn-rheobase-on-lower
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig1e-dspn-fi-on-higher
+  outcome: reproduced
+  notes: Spike sum over 20 to 300 pA, median 88 on-state against 36 off-state, P = 8.8e-05; per-step medians higher
+    on-state from 120 pA, P < 0.05 at each step from 100 to 300 pA. 3 on-state and 5 off-state cells miss a step;
+    the mean per step present gives P = 1.4e-04.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig1e-dspn-fi-on-higher
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig1f-dspn-sch-no-change
+  outcome: reproduced
+  notes: Rheobase median 140 pA on-state (15 cells) and 140 pA with SCH 23390 (10 cells), P = 1.0 (paper P = 0.589).
+    The 5 cells recorded in both conditions give Wilcoxon P = 1.0.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig1f-dspn-sch-no-change
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig1i-dspn-dendritic-on-higher
+  outcome: reproduced
+  notes: Index median 0.476 on-state against 0.353 off-state (10 cells each), P = 0.0091 (paper P = 0.0115). Pairing
+    every proximal with every distal site gives P = 0.017. No pair falls outside the basal-ratio range (0.67 to
+    1.75).
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig1i-dspn-dendritic-on-higher
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+  - 'The index follows the paper''s script (doi:10.5281/zenodo.14163502) on the stored line profiles: backgrounds
+    55 and 161, a 6-sample running mean, trials of a site averaged, R0 and G0 from 0.5 to 0.95 s, the area of dG/R0
+    from 0.95 to 1.5 s.'
+- claim: fig1i-dspn-dendritic-sch-lower
+  outcome: not_reproduced
+  notes: Index median 0.419 with SCH 23390 (9 cells) against 0.476 on-state (10 cells), lower as the claim says
+    but P = 0.066 (paper P = 0.0133); pairing every proximal with every distal site gives P = 0.079. No cell has
+    an index in both conditions. The on-state cells are from 2017 and the SCH cells from 2019, from different mice.
+    The link holds for these groups (median differences from the paper's values about 4%), so the difference is
+    unlikely to come from the files.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig1i-dspn-dendritic-sch-lower
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig1-dspn-lesion-and-off-somatic
+  outcome: reproduced
+  notes: 'On the paper''s table: dSPN rheobase median 120 pA after 6-OHDA against 220 pA in controls (P = 0.00030),
+    and 200 pA off-state against 120 pA (P = 9.5e-05).'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig1-dspn-lesion-and-off-somatic
+- claim: fig1-dspn-lesion-dendritic-unchanged
+  outcome: reproduced
+  notes: 'On the paper''s table: control against 6-OHDA P = 0.82, 6-OHDA against off-state P = 0.90 (paper 0.824
+    and 0.905).'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig1-dspn-lesion-dendritic-unchanged
+- claim: fig2h-dspn-sr-amplitude-on-larger
+  outcome: reproduced
+  notes: 'At 5 SD the per-cell mean amplitude is a median 15.6 pA on-state (8 cells, 4 mice) against 10.1 pA off-state
+    (10 cells, 3 subjects), P = 0.0031 (paper P = 0.0003); the per-cell median gives 12.5 against 8.4 pA, P = 0.0044.
+    Of the six readings (3, 4 and 5 SD; mean or median) five give P < 0.05 with the on-state larger; 3 SD with the
+    median gives P = 0.068. Open for the paper''s authors: the TaroTools settings (filtering, how the noise SD was
+    measured, baseline and event separation) and whether events were removed at visual verification; the detector
+    here finds a median 1.33 times the paper''s events at 5 SD.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig2h-dspn-sr-amplitude-on-larger
+  deviations:
+  - Sr2+-oEPSC events come from a stand-in for TaroTools (lid.detect_events), with a 1 ms running mean, the noise
+    SD before the flash, and events whose threshold crossing falls 40 to 400 ms after the flash at more than 5 SD
+    (Methods, Data acquisition and statistical analysis); the smoothing, noise window, local baseline and 3 ms event
+    separation are assumptions, as the paper used TaroTools with visual verification and gives no parameters.
+  - 'The reading the paper best supports is adopted: 5 SD (Methods) and the per-cell median, which the paper''s
+    table holds; the per-cell mean is shown too and gives the same outcome.'
+  assumed: true
+- claim: fig2i-dspn-sr-frequency-unchanged
+  outcome: reproduced
+  notes: 'Frequency median 28.6 Hz on-state against 23.1 Hz off-state at 5 SD, P = 0.122 (paper P = 0.127); 4 and
+    3 SD give P = 0.0505 and 0.068. The detector finds more events than the paper (median 1.33 times), so absolute
+    frequencies are higher than the paper''s. Open for the paper''s authors: the TaroTools settings (filtering,
+    how the noise SD was measured, baseline and event separation) and whether events were removed at visual verification;
+    the detector here finds a median 1.33 times the paper''s events at 5 SD.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig2i-dspn-sr-frequency-unchanged
+  deviations:
+  - Sr2+-oEPSC events come from a stand-in for TaroTools (lid.detect_events), with a 1 ms running mean, the noise
+    SD before the flash, and events whose threshold crossing falls 40 to 400 ms after the flash at more than 5 SD
+    (Methods, Data acquisition and statistical analysis); the smoothing, noise window, local baseline and 3 ms event
+    separation are assumptions, as the paper used TaroTools with visual verification and gives no parameters.
+  assumed: true
+- claim: fig2bc-dspn-spines
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The dandiset holds the 2PLSM Z-stacks of dendritic segments (files without a suffix, one per mouse and
+    day) but no spine counts. The paper deconvolved the stacks in AutoQuant X3.0.4 and counted spines semi-automatically
+    in NeuronStudio from 3D reconstructions (Methods, Imaging of spines and dendritic Ca2+ transients); both are
+    interactive desktop programs with manual steps, and no automatic counter has a basis in the paper. Not attempted.
+- claim: fig3d-ispn-rheobase-on-higher
+  outcome: reproduced
+  notes: Rheobase median 160 pA on-state (11 cells) against 120 pA off-state (12 cells), P = 0.00083 (paper P =
+    0.0013).
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig3d-ispn-rheobase-on-higher
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig3c-ispn-fi-on-lower
+  outcome: reproduced
+  notes: Spike sum over 20 to 300 pA, median 65 on-state against 118.5 off-state, P = 7.2e-05; per-step medians
+    lower on-state from 120 pA.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig3c-ispn-fi-on-lower
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig3d-ispn-sul-no-change
+  outcome: reproduced
+  notes: Rheobase median 160 pA on-state (11 cells) and 120 pA with sulpiride (7 cells), P = 0.143 (paper P = 0.287);
+    the effect is a 40 pA lower median with sulpiride. The 2 cells recorded in both conditions give Wilcoxon P =
+    0.5.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig3d-ispn-sul-no-change
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig3f-ispn-dendritic-on-lower
+  outcome: reproduced
+  notes: Index median 0.340 on-state (9 cells) against 0.524 off-state (10 cells), P = 0.0128 (paper P = 0.0029).
+    One on-state cell (2016-06-08 cell 1) was imaged at one proximal site only and has no index; the paper has 10.
+    The other pairing gives P = 0.016.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig3f-ispn-dendritic-on-lower
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig3f-ispn-dendritic-sul-no-change
+  outcome: reproduced
+  notes: Index median 0.340 on-state (9 cells) and 0.497 with sulpiride (8 cells), P = 0.093 (paper P = 0.0545);
+    the other pairing gives P = 0.139.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig3f-ispn-dendritic-sul-no-change
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig3-ispn-lesion-and-off-somatic
+  outcome: reproduced
+  notes: 'On the paper''s table: iSPN rheobase median 200 pA after 6-OHDA against 120 pA in controls (P = 0.00040),
+    130 pA off-state against 200 pA (P = 0.00061); paper P = 0.002 for both.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig3-ispn-lesion-and-off-somatic
+- claim: fig3-ispn-lesion-dendritic-up
+  outcome: reproduced
+  notes: 'On the paper''s table: index median 0.516 after 6-OHDA and 0.519 off-state against 0.405 in controls,
+    P = 0.035 and 0.024 (paper 0.0327 and 0.0220).'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig3-ispn-lesion-dendritic-up
+- claim: fig4g-ispn-sr-amplitude-on-smaller
+  outcome: reproduced
+  notes: 'At 5 SD the per-cell mean amplitude is a median 8.2 pA on-state (8 cells) against 11.2 pA off-state (7
+    cells), P = 0.0093 (paper P = 0.0003); all six readings give P < 0.05 with the on-state smaller (0.0059 to 0.040).
+    Open for the paper''s authors: the TaroTools settings (filtering, how the noise SD was measured, baseline and
+    event separation) and whether events were removed at visual verification; the detector here finds a median 1.33
+    times the paper''s events at 5 SD.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig4g-ispn-sr-amplitude-on-smaller
+  deviations:
+  - Sr2+-oEPSC events come from a stand-in for TaroTools (lid.detect_events), with a 1 ms running mean, the noise
+    SD before the flash, and events whose threshold crossing falls 40 to 400 ms after the flash at more than 5 SD
+    (Methods, Data acquisition and statistical analysis); the smoothing, noise window, local baseline and 3 ms event
+    separation are assumptions, as the paper used TaroTools with visual verification and gives no parameters.
+  assumed: true
+- claim: fig4h-ispn-sr-frequency-unchanged
+  outcome: reproduced
+  notes: 'Frequency median 22.2 Hz on-state against 32.2 Hz off-state at 5 SD, P = 0.12 (paper P = 0.23); 4 and
+    3 SD give P = 0.12 and 0.19. Open for the paper''s authors: the TaroTools settings (filtering, how the noise
+    SD was measured, baseline and event separation) and whether events were removed at visual verification; the
+    detector here finds a median 1.33 times the paper''s events at 5 SD.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig4h-ispn-sr-frequency-unchanged
+  deviations:
+  - Sr2+-oEPSC events come from a stand-in for TaroTools (lid.detect_events), with a 1 ms running mean, the noise
+    SD before the flash, and events whose threshold crossing falls 40 to 400 ms after the flash at more than 5 SD
+    (Methods, Data acquisition and statistical analysis); the smoothing, noise window, local baseline and 3 ms event
+    separation are assumptions, as the paper used TaroTools with visual verification and gives no parameters.
+  assumed: true
+- claim: fig4bc-ispn-spines
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The dandiset holds the 2PLSM Z-stacks of dendritic segments (files without a suffix, one per mouse and
+    day) but no spine counts. The paper deconvolved the stacks in AutoQuant X3.0.4 and counted spines semi-automatically
+    in NeuronStudio from 3D reconstructions (Methods, Imaging of spines and dendritic Ca2+ transients); both are
+    interactive desktop programs with manual steps, and no automatic counter has a basis in the paper. Not attempted.
+- claim: fig4k-confocal-spines
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The confocal images of sparsely labelled iSPNs are not in the dandiset; the paper's raw-data archive (Zenodo
+    doi:10.5281/zenodo.17260198, a 13 GB zip) lists them. Their spine counts came from Imaris 10 with a trained
+    Labkit pixel classifier, supervised filament and spine detection and manual correction (Methods, High-resolution
+    confocal microscopy), which cannot be run here. Not attempted.
+- claim: fig5f-ach-off-elevated
+  outcome: reproduced
+  notes: 'One value per mouse (mean of its regions): off-state median 0.388 (5 mice) against 0.131 unlesioned (3
+    mice), P = 0.036, the smallest P for 3 against 5. Per region (the paper''s n): 0.406 (11) against 0.111 (13),
+    P = 5.0e-05 (paper P < 0.0001). Fmin from TTX only and the whole-frame signal give the same. A question to a
+    reader on the unit is in questions/zhai-2025.yaml.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig5f-ach-off-elevated
+  deviations:
+  - 'The area follows the paper''s script (doi:10.5281/zenodo.14163731): F0 over 1 s before the stimulus, the area
+    of (F - F0)/(Fmax - Fmin) over 2 s, two trials averaged, Fmax and Fmin from 2 to 4 s of the acetylcholine and
+    TTX trials, Fmin the smaller of TTX and the quinpirole baseline (Methods), on the mean of the 50 um central
+    circle.'
+  - The criterion's 'one region per mouse' is taken as one value per mouse, the mean of its regions, as this version
+    holds several regions per mouse; the per-region test is shown as a variant and asked about.
+- claim: fig5f-ach-off-like-6ohda
+  outcome: reproduced
+  notes: 6-OHDA median 0.315 (10 regions) and off-state 0.406 (11 regions), P = 0.22 (paper P = 0.4679); with Fmin
+    from TTX only P = 0.79 (one off-state region has no TTX trial); with the whole frame P = 0.22.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig5f-ach-off-like-6ohda
+- claim: fig5f-ach-6ohda-elevated
+  outcome: reproduced
+  notes: 6-OHDA median 0.315 (10 regions, 3 mice) against 0.111 unlesioned (13 regions, 3 mice), P = 0.00022 (paper
+    P < 0.0001); all variants P < 0.0003.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig5f-ach-6ohda-elevated
+- claim: fig5f-ach-d2-control
+  outcome: reproduced
+  notes: In 13 unlesioned regions sulpiride raises the area in all 13 (median 0.111 to 0.212, Wilcoxon P = 0.00024;
+    paper P = 0.0005) and quinpirole lowers it in all 13 (0.111 to 0.036, P = 0.00024; paper P = 0.0034).
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig5f-ach-d2-control
+  deviations:
+  - The paper gives no test for these comparisons beyond its default; the paired Wilcoxon test of the Methods is
+    used, regions paired with themselves.
+- claim: fig5f-ach-da-suppresses
+  outcome: reproduced
+  notes: 'Dopamine lowers the area in all 10 6-OHDA regions (0.315 to 0.103, P = 0.0020; paper 0.002) and all 11
+    off-state regions (0.406 to 0.082, P = 0.00098; paper 0.001). Sulpiride in 6-OHDA regions: median paired difference
+    -0.067, higher in 4 of 10, P = 0.92 (paper 0.5566).'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig5f-ach-da-suppresses
+  deviations:
+  - Paired Wilcoxon tests (the Methods' default for paired data).
+- claim: fig6c-m1r-antag-somatic-unchanged
+  outcome: reproduced
+  notes: Rheobase median 120 pA with vehicle (8 cells) and 140 pA with M1R antagonists (10 cells), P = 0.68; spike
+    sums 139 and 111, P = 0.45.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig6c-m1r-antag-somatic-unchanged
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig6d-m1r-antag-dendritic-lower
+  outcome: reproduced
+  notes: Index median 0.451 with vehicle (9 cells) against 0.269 with M1R antagonists (7 cells), P = 0.023 (paper
+    P = 0.012); the other pairing gives P = 0.0079.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig6d-m1r-antag-dendritic-lower
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig6f-m1r-antag-spines
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The dandiset holds the 2PLSM Z-stacks of dendritic segments (files without a suffix, one per mouse and
+    day) but no spine counts. The paper deconvolved the stacks in AutoQuant X3.0.4 and counted spines semi-automatically
+    in NeuronStudio from 3D reconstructions (Methods, Imaging of spines and dendritic Ca2+ transients); both are
+    interactive desktop programs with manual steps, and no automatic counter has a basis in the paper. Not attempted.
+- claim: fig7c-cdgi-ko-somatic-oscillation
+  outcome: reproduced
+  notes: CDGI KO rheobase median 210 pA on-state (8 cells) against 140 pA off-state (13 cells), P = 0.0010; spike
+    sums P = 0.0033.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig7c-cdgi-ko-somatic-oscillation
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig7e-oxom-cdgi
+  outcome: reproduced
+  notes: 'On the paper''s table (Figure 7E sheet), before and after values paired by experiment number: wild type
+    median 0.214 to 0.335, Wilcoxon P = 0.0098 (as the paper); CDGI KO 0.295 to 0.324, median paired difference
+    -0.045, P = 0.47 (paper 0.910). The dandiset also holds the oxo-M line scans (5 wild-type and 6 KO cells with
+    an index), which this claim, marked data elsewhere, does not use.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig7e-oxom-cdgi
+  deviations:
+  - The table gives no pairing beyond the experiment number; pairing by it is a reading of the table.
+- claim: fig7f-cdgi-ko-dendritic-unchanged
+  outcome: reproduced
+  notes: CDGI KO index median 0.328 off-state (10 cells) and 0.286 on-state (8 cells), P = 0.32 (paper P = 0.395);
+    the other pairing gives P = 0.63. One off-state cell (2016-05-26 cell 3) was imaged at one distal site only
+    and has no index. The wild-type part holds (fig3f-ispn-dendritic-on-lower).
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig7f-cdgi-ko-dendritic-unchanged
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig7h-cdgi-ko-spines
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The dandiset holds the 2PLSM Z-stacks of dendritic segments (files without a suffix, one per mouse and
+    day) but no spine counts. The paper deconvolved the stacks in AutoQuant X3.0.4 and counted spines semi-automatically
+    in NeuronStudio from 3D reconstructions (Methods, Imaging of spines and dendritic Ca2+ transients); both are
+    interactive desktop programs with manual steps, and no automatic counter has a basis in the paper. Not attempted.
+- claim: fig8a-cdgi-rotations
+  outcome: reproduced
+  notes: 'On the paper''s table: CDGI KO median 8.5 rotations in 30 s (10 mice) against 4.25 in wild type (12 mice),
+    Mann-Whitney P = 0.012 (paper 0.0092).'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig8a-cdgi-rotations
+- claim: fig8bc-cdgi-aims
+  outcome: blocked
+  blocked_by: other
+  notes: 'Depends on link-aim-mice, which fails for the Figure 8 mice: their dandiset session totals equal the paper''s
+    in 6% and 16% of sessions, three dandiset mice are not in the paper and five of the paper''s 23 are missing.
+    The dandiset''s sheets are the lab''s, which its description says match the preprint, not the published figure.
+    Not tested.'
+- claim: fig9d-m1r-crispr-somatic-unchanged
+  outcome: reproduced
+  notes: Rheobase median 160 pA in gRNA-only controls (6 cells) and 120 pA with M1R deletion (8 cells), P = 0.147;
+    spike sums P = 0.24.
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig9d-m1r-crispr-somatic-unchanged
+  deviations:
+  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this
+    version of the dandiset does not have.
+- claim: fig9f-m1r-crispr-spines
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The dandiset holds the 2PLSM Z-stacks of dendritic segments (files without a suffix, one per mouse and
+    day) but no spine counts. The paper deconvolved the stacks in AutoQuant X3.0.4 and counted spines semi-automatically
+    in NeuronStudio from 3D reconstructions (Methods, Imaging of spines and dendritic Ca2+ transients); both are
+    interactive desktop programs with manual steps, and no automatic counter has a basis in the paper. Not attempted.
+- claim: fig10a-m1r-rotations
+  outcome: reproduced
+  notes: 'On the paper''s table: M1R deletion median 8.5 rotations (10 mice) against 6 in controls (11 mice), P
+    = 0.0078 (paper 0.0056).'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig10a-m1r-rotations
+- claim: fig10b-m1r-aims
+  outcome: reproduced
+  notes: 'Mixed two-way ANOVA on the dandiset''s per-session sums (11 control, 10 M1R CRISPR mice, 5 sessions):
+    group F(1,19) = 28.70, P = 3.6e-05 for the total (paper 29.30); axial 13.80 (P = 0.0015), limb 41.43 and orolingual
+    44.58 (P below 4e-06), equal to the paper''s F values; M1R CRISPR lower in each (total 26.1 against 41.9 per
+    session). The link holds for all 21 mice of this figure; two sessions differ from the paper''s table, which
+    explains the small difference in the total.'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig10b-m1r-aims
+  deviations:
+  - Only the group effect is tested; the session effect and its Geisser-Greenhouse correction are not.
+  - Tested although link-aim-mice is not reproduced overall, as the link holds for every mouse of Figure 10 (98%
+    of sessions equal); the failure is confined to the Figure 8 mice.
+- claim: fig10ef-open-field
+  outcome: reproduced
+  notes: 'On the paper''s tables: distance MCI-Park 4.68 against control 10.35 m (P = 1.1e-05), MCI-Park with M1R
+    deletion 3.97 against MCI-Park 4.68 m (P = 0.63), levodopa with deletion 28.1 against levodopa 6.5 m (P = 0.00033);
+    time mobile 112 against 190 s (P = 7.0e-06), 101 against 112 s (P = 0.47), 276 against 128 s (P = 0.00057).'
+  notebook: reproduce_zhai_2025.ipynb
+  output: claim:fig10ef-open-field
+findings:
+- kind: data_missing
+  statement: The confocal images of sparsely labelled iSPNs behind Figure 4I to 4K are not in the dandiset, and
+    its description, which lists what is not included, does not mention them. The paper's raw-data archive on Zenodo
+    (doi:10.5281/zenodo.17260198) lists them.
+- kind: data_missing
+  statement: 'Two cells with dendritic line scans were imaged at one dendritic site only, at two spots: 2016-05-26
+    cell 3 (CDGI knockout, off-state, Distal1 Spot1 and Spot2) and 2016-06-08 cell 1 (on-state, Proximal1 Spot1
+    and Spot2). They have no proximal-distal pair and no index, while the paper counts them in Figures 3F and 7F
+    (10 and 11 cells).'
+- kind: other
+  about: data
+  statement: The somatic spike counts of 33 of 123 cells, computed from the files with the paper's rule (upward
+    crossings of 0 mV), do not equal any row of the paper's per-cell table over 20 to 300 pA; 18 differ by more
+    than 3 spikes, up to 24. Exact agreement is lowest in dSPN on-state (6 of 15) and iSPN on-state with sulpiride
+    (4 of 7).
+- kind: other
+  about: data
+  statement: The AIM sheets of the Figure 8 mice differ from the paper's table in most sessions (session totals
+    equal in 6% of control and 16% of CDGI knockout sessions), mice 4123, 4124 and 5871 are not in the paper, and
+    7741, 7742, 7744, 2346 and 2347 of the paper are missing, as the dandiset description states. The Figure 10
+    sheets match the paper in 103 of 105 sessions.
+- kind: other
+  about: data
+  statement: Mouse 7830 (Figure 10, control) has identical AIM sheets for sessions 4 and 5; the paper's table has
+    the same values for both sessions.
+- kind: metadata_insufficient
+  statement: Subjects are defined per recording day. Mouse counts differ from the paper's legends in four groups
+    (Sr2+-oEPSC dSPN and iSPN off-state, 3 subjects against 4 mice; M1R CRISPR control and deletion somatic cells,
+    2 and 3 against 3 and 4), which mice sharing a recording day would explain; the files do not say which mouse
+    each cell came from.
+- kind: metadata_insufficient
+  statement: The GRAB-ACh3.0 regions and the paper's ROIs share no identifier, so the per-region areas cannot be
+    linked one by one; matching by values pairs 16 of 34 regions within 0.05. One region (2024-04-02 Slice1Roi2)
+    has no acetylcholine trial for Fmax and one (2024-05-24 Slice1Roi1) has no TTX trial.
+- kind: other
+  about: data
+  statement: Two Sr2+-oEPSC cells hold more sweeps than the paper's frequencies imply (2023-02-22 cell 1, 12 sweeps;
+    2023-04-06 cell 1, 11 sweeps; the paper's event lists equal frequency x 10 sweeps of 360 ms), and the files
+    do not say which sweeps the paper used.
+- kind: other
+  about: paper
+  statement: The per-cell Sr2+-oEPSC amplitudes of Figures 2H and 4G, labelled average amplitude in the paper's
+    tables, equal the median of each cell's event list in the Figure 2G and 4F sheets for all 33 cells and the mean
+    for none.
+- kind: methods_unavailable
+  statement: The Sr2+-oEPSC events were detected with TaroTools in Igor Pro, followed by visual verification, with
+    a threshold of five SD above the noise; the paper gives no filter, noise window, baseline or event separation,
+    and does not say whether events were removed at verification. Which settings were used? A stand-in detector
+    finds a median 1.33 times the paper's events at 5 SD, though the state comparisons agree.
+- kind: selection_undocumented
+  about: data
+  statement: The control and 6-OHDA patch-clamp recordings of Figures 1 and 3, the rotation counts and the open-field
+    data are not in the dandiset, as its description says; the claims on them can be tested only on the paper's
+    tables.
