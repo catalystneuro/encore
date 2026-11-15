@@ -1,97 +1,116 @@
-# martinez-conde-2019 · verifier-2 · run 43220203383
+# martinez-conde-2019 · verifier-2 · run 43682254033
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
+cd  ls -la; ls paper; cat round-1-report.md; ls docs 2>/dev/null
 ```
 
 ```
-total 1020
-drwxr-xr-x 6 runner runner    4096 Nov 12 12:53 .
-drwxr-xr-x 8 runner runner    4096 Nov 12 12:53 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 12 12:41 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 12 12:41 .bashrc
-drwxr-xr-x 5 runner runner    4096 Nov 12 12:53 .claude
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env.development
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env.development.local
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env.local
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env.production
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env.production.local
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env.test
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .env.test.local
-drwx------ 2 runner runner    4096 Nov 12 12:53 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 12 12:41 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 12 12:41 .github
--rw-r--r-- 1 runner runner       0 Nov 12 12:53 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 12 12:41 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 12 12:41 .mcp.json
-[... 100 more lines not kept]
+Exit code 2
+total 616
+drwxr-xr-x 6 runner runner    4096 Nov 15 05:54 .
+drwxr-xr-x 8 runner runner    4096 Nov 15 05:54 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 15 05:40 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 15 05:40 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 15 05:54 .claude
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .env.test.local
+drwx------ 2 runner runner    4096 Nov 15 05:54 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 15 05:40 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 15 05:40 .github
+-rw-r--r-- 1 runner runner       0 Nov 15 05:54 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 15 05:40 .idea
+[... 69 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat README.md; cat martinez-conde-2019-01.yaml
+cd  sed -n 1,400p round-1-report.md | cut -c1-3000 | sed -n 14,22p; echo ----; cat README.md; echo ----; diff <(head -c 0 /dev/null) /dev/null; wc -l *.yaml; head -50 martinez-conde-2019-02.yaml
+```
+
+```
+| table1-s90 | partially_reproduced (notebook: at most 1/5) | With the inside baseline the best reading is 1/5. With the centred baseline, (a)(i) becomes 2.68 / 13.81 / 7.84 / 7.88 / 8.57, which is 3/5 (max, mean, median). See problem 2. |
+| table1-s52 | reproduced | Reading (a)(ii) is 7.46 / 28.71 / 17.11 / 16.43 / 19.01, all 5 within tolerance (cell 33). This rests on 12 of 30 neurons and on picking the best of 4 readings. |
+| table1-s40 | reproduced | Reading (a) is 10.22 / 34.36 / 23.04 / 23.06 / 26.48, 5/5 (cell 35). |
+| fig6-midpoint-representative | reproduced | 0 of 10 rank sum tests have p < 0.05; the smallest p is 0.43 (cell 37). The paired signed-rank variant is significant in 3 of 10 (S90 median, S40 mean and median). |
+| fig7a-rms-contrast-fit | not_reproduced as run, but the test is invalid | Under neither reading is any value within tolerance (cell 39: rms_a ≈ 1.06 flat; rms_b at most 0.47). The input does not follow the criterion, though (problem 1). With a non-zero background, reading (a) plausibly gives the paper's curve, so the evidence does not support a negative outcome. |
+| fig7c-fold-edge-equivalence | not_reproduced | Edge responses span only about 8.6 to 21 spikes/s, so P180 (3.88) falls below every Edge level and S40 (26.48) above them. No reading meets both conditions (cell 41). It uses the paper's fit parameters, as the criterion asks. |
+| fig7c-fold-edge-significance | reproduced | P180 is below the Edge at 0.943, and S40 is above it at 0.610 and 0.647, under every correction (cell 43). With Bonferroni over 40 tests, exactly 0.610 and 0.647 are significant for S40, matching the paper's "<68%". |
+| fig7d-nonlinear | reproduced | The means fall monotonically with angle. 3 of 4 points lie off the least-squares line by more than their SEM. In the slope variant, 2 of 3 slope pairs differ (cell 45). |
+| fig7d-dog-similar | blocked (data_missing) | The DOG output of reference [3] is external. The zip holds no model files (I checked its director
+[... 97 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 50,654p martinez-conde-2019-02.yaml
 ```
 
 ```
 <persisted-output>
-Output too large (39.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b1j7g5rt3.txt
+Output too large (46KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/10e4cc47-db89-4f85-b666-fae65afa87f0/tool-results/bqvv5vydw.txt
 
 Preview (first 2KB):
-# Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019) from CRCNS pvc-12
-
-Tests the findings of [Martinez-Conde et al. (2019)](https://doi.org/10.1371/journal.pone.0210941)
-on [CRCNS pvc-12](https://doi.org/10.6080/K05D8Q1T), which holds, per V1 neuron and condition, the
-spike rate map made by the authors and the stimulus image, for the Square and Edge, Star and Corners
-stimuli. The files hold 53 neurons; 60 recordings carry the authors' aligned maps and are analysed
-(22 Square and Edge, 12 Star, 26 Corners).
-
-| Claim | Outcome |
-|---|---|
-| Counts of neurons per condition | Not reproduced |
-| Spikes per condition | Blocked: data missing |
-| Baselines do not differ across stimuli | Not reproduced (rests on an assumption) |
-| Midpoint responses above baseline, growing with sharper corners (Fig 4A) | Reproduced (assumption) |
-| Midpoint spike rate differences S40 > S52 > S90 > P180 (Fig 4B) | Partially reproduced (assumption) |
-| Pairwise differences of Fig 4B | Reproduced |
-[... 18 more lines not kept]
+- claim: s4-baseline-no-difference
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:s4-baseline-no-difference
+  assumed: true
+  notes: 'With the adopted placement the readings disagree. Reading (a) finds no difference: Square and Edge, median
+    7.23 spikes/s (n = 22), against Star, 1.89 (n = 12), BH p = 0.071, against Corners, 2.90 (n = 26), BH p = 0.071,
+    and Star against Corners BH p = 0.925. Kruskal-Wallis (p = 0.042) and ANOVA (p = 0.007) find one. The criterion adopts
+    reading (a) when the readings disagree, so the outcome rests on that rule and on the placement. With the squares
+    inside the corners for both stimuli all three readings find a difference (Kruskal-Wallis p = 0.007, smallest BH p
+    = 0.016), and so they do with the squares centred for both (Kruskal-Wallis p = 0.009, smallest BH p = 0.036). With
+    the stored BaseActivity, on the 38 files that have it, no reading finds a difference (Kruskal-Wallis p = 0.114, ANOVA
+    p = 0.166, smallest BH p = 0.109), and the adopted placement on the same files finds none either (Kruskal-Wallis
+    p = 0.081, ANOVA p = 0.054, smallest BH p = 0.075).'
+  deviations:
+  - 'Assumed baseline placement. The paper puts the Square and Edge and Star squares at the corners of the circumscribing
+[... 7 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b1j7g5rt3.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/10e4cc47-db89-4f85-b666-fae65afa87f0/tool-results/bqvv5vydw.txt"
 }
 ```
 
 ```
-1	# Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019) from CRCNS pvc-12
-2	
-3	Tests the findings of [Martinez-Conde et al. (2019)](https://doi.org/10.1371/journal.pone.0210941)
-4	on [CRCNS pvc-12](https://doi.org/10.6080/K05D8Q1T), which holds, per V1 neuron and condition, the
-5	spike rate map made by the authors and the stimulus image, for the Square and Edge, Star and Corners
-6	stimuli. The files hold 53 neurons; 60 recordings carry the authors' aligned maps and are analysed
-7	(22 Square and Edge, 12 Star, 26 Corners).
-8	
-9	| Claim | Outcome |
-10	|---|---|
-11	| Counts of neurons per condition | Not reproduced |
-12	| Spikes per condition | Blocked: data missing |
-13	| Baselines do not differ across stimuli | Not reproduced (rests on an assumption) |
-14	| Midpoint responses above baseline, growing with sharper corners (Fig 4A) | Reproduced (assumption) |
-15	| Midpoint spike rate differences S40 > S52 > S90 > P180 (Fig 4B) | Partially reproduced (assumption) |
-16	| Pairwise differences of Fig 4B | Reproduced |
-17	| Average maps (Fig 5) | Reproduced (assumption) |
-18	| Table 1, Edge, S52 and S40 | Reproduced (assumption) |
-19	| Table 1, P180 | Partially reproduced (assumption) |
-20	| Table 1, S90 | Not reproduced (assumption) |
-[... 646 more lines not kept]
+1	- claim: s4-baseline-no-difference
+2	  outcome: reproduced
+3	  notebook: reproduce_martinez_conde_2019.ipynb
+4	  output: claim:s4-baseline-no-difference
+5	  assumed: true
+6	  notes: 'With the adopted placement the readings disagree. Reading (a) finds no difference: Square and Edge, median
+7	    7.23 spikes/s (n = 22), against Star, 1.89 (n = 12), BH p = 0.071, against Corners, 2.90 (n = 26), BH p = 0.071,
+8	    and Star against Corners BH p = 0.925. Kruskal-Wallis (p = 0.042) and ANOVA (p = 0.007) find one. The criterion adopts
+9	    reading (a) when the readings disagree, so the outcome rests on that rule and on the placement. With the squares
+10	    inside the corners for both stimuli all three readings find a difference (Kruskal-Wallis p = 0.007, smallest BH p
+11	    = 0.016), and so they do with the squares centred for both (Kruskal-Wallis p = 0.009, smallest BH p = 0.036). With
+12	    the stored BaseActivity, on the 38 files that have it, no reading finds a difference (Kruskal-Wallis p = 0.114, ANOVA
+13	    p = 0.166, smallest BH p = 0.109), and the adopted placement on the same files finds none either (Kruskal-Wallis
+14	    p = 0.081, ANOVA p = 0.054, smallest BH p = 0.075).'
+15	  deviations:
+16	  - 'Assumed baseline placement. The paper puts the Square and Edge and Star squares at the corners of the circumscribing
+17	    square (Methods, Visual stimuli) without saying whether they sit inside the corners or are centred on them. The adopted
+18	    placement is the one closer to the stored BaseActivity, the authors'' own baseline in 38 of the 60 analysed files:
+19	    centred on the corners for Square and Edge (median absolute difference 0.67 spikes/s, against 1.51 inside, n = 9)
+20	    and inside them for Star (0.32, against 1.28 centred, n = 10). The Corners squares are only drawn in Fig 2C; they
+[... 586 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -102,7 +121,7 @@ cd  cat martinez-conde-2019.yaml
 
 ```
 <persisted-output>
-Output too large (30KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b4bbgx34a.txt
+Output too large (30KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/10e4cc47-db89-4f85-b666-fae65afa87f0/tool-results/bjk8p0313.txt
 
 Preview (first 2KB):
 # Claims for Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019), PLoS ONE 14(3)
@@ -128,7 +147,7 @@ Preview (first 2KB):
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b4bbgx34a.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/10e4cc47-db89-4f85-b666-fae65afa87f0/tool-results/bjk8p0313.txt"
 }
 ```
 
@@ -165,249 +184,226 @@ nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
 for i,c in enumerate(nb['cells']):
     src=''.join(c['source'])
     print(f"===== CELL {i} [{c['cell_type']}] =====")
-    print(src if c['cell_type']=='markdown' else src[:600]+('...' if len(src)>600 else ''))
-    if c['cell_type']=='code':
+    if c['cell_type']=='markdown':
+        print(src)
+    else:
+        print(src[:600] + (' ...[src truncated]' if len(src)>600 else ''))
         for o in c.get('outputs',[]):
-            if 'text' in o: t=''.join(o['text'])
-            elif 'data' in o and 'text/plain' in o['data']: t=''.join(o['data']['text/plain']) if 'image/png' not in o['data'] else '[image]'
-            else: t=str(o.get('ename',''))+str(o.get('evalue',''))
-            print('--- out:'); print(t)
+            if 'text' in o: print('--OUT--'); print(''.join(o['text']))
+            elif 'data' in o and 'text/plain' in o['data']: print('--OUT--'); print(''.join(o['data']['text/plain'])[:3000])
+            elif o.get('output_type')=='error': print('--ERR--', o['ename'], o['evalue'])
 EOF
 ```
 
 ```
 <persisted-output>
-Output too large (100.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b2qgedz2x.txt
+Output too large (73.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/10e4cc47-db89-4f85-b666-fae65afa87f0/tool-results/b9vrzkw42.txt
 
 Preview (first 2KB):
 ===== CELL 0 [markdown] =====
-# Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12
+# Martinez-Conde et al. (2019) on CRCNS pvc-12
 
-**Paper.** Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1
+Paper: Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1
 responses to illusory corner-folds in Vasarely's nested squares and the Alternating Brightness Star
-illusions. *PLoS ONE* 14(3): e0210941.
-[doi:10.1371/journal.pone.0210941](https://doi.org/10.1371/journal.pone.0210941)
+illusions. PLoS ONE 14(3): e0210941, doi:10.1371/journal.pone.0210941.
 
-**Dataset.** CRCNS pvc-12, "Single-neuron extracellular recordings from area V1 of awake behaving
-rhesus monkeys viewing brightness illusions based on Victor Vasarely's artworks",
-[doi:10.6080/K05D8Q1T](https://doi.org/10.6080/K05D8Q1T). Read in place from the public S3 bucket
-`crcnsarchive` (`pvc-12/live/V1_Vasarely_data.zip`), never written to disk.
+Claims: `claims/martinez-conde-2019.yaml`, written from the version of record (PMC6438452, Europe PMC
+full text: main text, Methods, legends, Table 1 and the legends of the supporting information; S1 and
+S2 Table themselves are not in the text).
 
-**Version.** CRCNS data sets are not versioned, so the version is recorded as `unversioned`
-(docs/archives.md, "CRCNS"); there is only one published copy to choose, the `live` folder, which
-the paper's data statement points to through the DOI. To make a later change detectable, the
-[... 21 more lines not kept]
+Dataset: CRCNS pvc-12, doi:10.6080/K05D8Q1T, the single zip file `pvc-12/live/V1_Vasarely_data.zip`
+(MD5 `e1301fe463e72332e2303b2053ee0559` in the data set's `checksums.md5`), streamed from the public S3
+bucket `crcnsarchive`. Version: CRCNS data sets are not versioned, so the version is recorded as
+`unversioned` and the MD5 sum above identifies the file read; there is no other version to choose
+from, and the data description (version 0.7, 15 Feb 2018) names this paper. Checking the MD5 would mean reading
+[... 19 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b2qgedz2x.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/10e4cc47-db89-4f85-b666-fae65afa87f0/tool-results/b9vrzkw42.txt"
 }
 ```
 
 ```
 1	===== CELL 0 [markdown] =====
-2	# Reproducing Martinez-Conde et al. (2019) from CRCNS pvc-12
+2	# Martinez-Conde et al. (2019) on CRCNS pvc-12
 3	
-4	**Paper.** Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1
+4	Paper: Martinez-Conde S, McCamy MB, Troncoso XG, Otero-Millan J, Macknik SL (2019). Area V1
 5	responses to illusory corner-folds in Vasarely's nested squares and the Alternating Brightness Star
-6	illusions. *PLoS ONE* 14(3): e0210941.
-7	[doi:10.1371/journal.pone.0210941](https://doi.org/10.1371/journal.pone.0210941)
-8	
-9	**Dataset.** CRCNS pvc-12, "Single-neuron extracellular recordings from area V1 of awake behaving
-10	rhesus monkeys viewing brightness illusions based on Victor Vasarely's artworks",
-11	[doi:10.6080/K05D8Q1T](https://doi.org/10.6080/K05D8Q1T). Read in place from the public S3 bucket
-12	`crcnsarchive` (`pvc-12/live/V1_Vasarely_data.zip`), never written to disk.
-13	
-14	**Version.** CRCNS data sets are not versioned, so the version is recorded as `unversioned`
-15	(docs/archives.md, "CRCNS"); there is only one published copy to choose, the `live` folder, which
-16	the paper's data statement points to through the DOI. To make a later change detectable, the
-17	notebook prints the data set's `checksums.md5` and checks that the zip's ETag on the bucket equals
-18	its MD5 there, `e1301fe463e72332e2303b2053ee0559` (the zip was last modified 2026-02-11). The data
-19	descriptor read is version 0.7 (Feb 15, 2018).
-20	
-[... 688 more lines not kept]
+6	illusions. PLoS ONE 14(3): e0210941, doi:10.1371/journal.pone.0210941.
+7	
+8	Claims: `claims/martinez-conde-2019.yaml`, written from the version of record (PMC6438452, Europe PMC
+9	full text: main text, Methods, legends, Table 1 and the legends of the supporting information; S1 and
+10	S2 Table themselves are not in the text).
+11	
+12	Dataset: CRCNS pvc-12, doi:10.6080/K05D8Q1T, the single zip file `pvc-12/live/V1_Vasarely_data.zip`
+13	(MD5 `e1301fe463e72332e2303b2053ee0559` in the data set's `checksums.md5`), streamed from the public S3
+14	bucket `crcnsarchive`. Version: CRCNS data sets are not versioned, so the version is recorded as
+15	`unversioned` and the MD5 sum above identifies the file read; there is no other version to choose
+16	from, and the data description (version 0.7, 15 Feb 2018) names this paper. Checking the MD5 would mean reading
+17	the whole 175 MB file, so the notebook confirms that `checksums.md5` still lists this sum.
+18	
+19	What the dataset holds: per neuron and condition a spike rate map (spikes per eye sample at each
+20	display unit, smoothed, and an aligned copy in the region of interest, "Standard") and the stimulus.
+[... 653 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b2qgedz2x.txt",
- "offset": 708,
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/10e4cc47-db89-4f85-b666-fae65afa87f0/tool-results/b9vrzkw42.txt",
+ "offset": 673,
  "limit": 400
 }
 ```
 
 ```
-708	--- out:
-709	matched [main]
-710	       n  above  fraction above  (a) centre base  (a) centre resp  (a) distance  (b) n positive  (b) distance log10
-711	fold                                                                                                               
-712	P180  22     18           0.818            8.604           12.631         4.027              22               0.221
-713	S90   22     18           0.818            8.604           16.997         8.394              22               0.351
-714	S52   12     12           1.000            3.182           22.375        19.193              12               0.916
-715	S40   26     26           1.000            3.626           29.901        26.274              24               1.002
-716	  ordered P180 < S90 < S52 < S40 by (a) distance: True
-717	  ordered P180 < S90 < S52 < S40 by (b) distance log10: True
-718	centred
-719	       n  above  fraction above  (a) centre base  (a) centre resp  (a) distance  (b) n positive  (b) distance log10
-720	fold                                                                                                               
-721	P180  22     18           0.818            8.604           12.631         4.027              22               0.221
-722	S90   22     18           0.818            8.604           16.997         8.394              22               0.351
-723	S52   12     12           1.000            2.077           22.375        20.297              12               1.210
-724	S40   26     26           1.000            3.626           29.901        26.274              24               1.002
-725	  ordered P180 < S90 < S52 < S40 by (a) distance: True
-726	  ordered P180 < S90 < S52 < S40 by (b) distance log10: False
-727	inside
-[... 380 more lines not kept]
+673	===== CELL 38 [markdown] =====
+674	**Result: partially reproduced.** Under reading (a), P180 gives minimum -1.33, maximum 10.66, mean 3.85, median 3.22 and midpoint 4.26 spikes/s. All but the minimum are within tolerance, 4 of 5; the minimum is 1.51 below 0.18. Reading (b) gives 3 of 5. With the squares inside the corners, and with the stored `BaseActivity`, reading (a) gives 3 of 5.
+675	
+676	===== CELL 39 [markdown] =====
+677	### table1-s90
+678	
+679	> Along the S90 fold of the Square, the spike rate difference over the ten blocks has a mean minimum of 4.36, maximum 14.61, mean 9.22 and median 9.31 spikes/s, and 10.69 at the midpoint.
+680	===== CELL 40 [code] =====
+681	T1_OUT["S90"] = table1("S90")
+682	table1_variants("S90")
+683	--OUT--
+684	S90: n = 22 neurons, 2 fold line(s); block length 7.07 DU; SEM of reading (a)(i): [1.24 2.15 1.48 1.54 2.09]
+685	  reading  min   max  mean  median  midpoint  n_within
+686	   (a)(i) 2.68 13.81  7.84    7.88      8.57       3.0
+687	   (b)(i) 6.43  8.88  7.84    7.97      8.57       2.0
+688	  (a)(ii) 1.68 15.74  7.84    7.61      8.57       2.0
+689	  (b)(ii) 6.36  9.07  7.84    7.97      8.57       2.0
+690	    paper 4.36 14.61  9.22    9.31     10.69       NaN
+691	tolerance 1.07  2.48  1.61    1.62      1.94       NaN
+692	profile (mean over neurons, 0% to 100%): [6.43 6.8  7.36 7.97 8.78 7.97 7.76 8.88 8.4  8.07]
+[... 373 more lines not kept]
 ```
 
-**Agent calls Read**
+**Agent calls Bash**
+
+```bash
+cd  grep -n "table1-p180\|fig7a" round-1-report.md | cut -c1-600; grep -n "rms_profile\|def image_agreement\|def stimulus_luminance" -A30 vasarely.py | head -120
+```
+
+```
+13:| table1-p180 | partially_reproduced | 3/5 under (a) and (b) (cell 29). With the centred baseline it is 4/5. |
+18:| fig7a-rms-contrast-fit | not_reproduced as run, but the test is invalid | Under neither reading is any value within tolerance (cell 39: rms_a ≈ 1.06 flat; rms_b at most 0.47). The input does not follow the criterion, though (problem 1). With a non-zero background, reading (a) plausibly gives the paper's curve, so the evidence does not support a negative outcome. |
+42:- The gray levels of the stimulus image (background value, Edge 0%/100% levels) and the local RMS profile computed from `EdgecompImage`. These would decide fig7a and possibly fig7c. Output needed: those values plus `rms_profile` run on the image.
+221:def image_agreement(z: zipfile.ZipFile, folder: str, code: str) -> dict | None:
+222-    """Stimulus image against its rasterised screen-frame polygons.
+223-
+224-    Shares of pixels whose gray level from the polygons equals the image's (to 1e-6) and lies
+225-    within one level (100/99) of it, and the image's gray level outside every polygon. None for a
+226-    file scipy cannot read (MATLAB 7.3) or without its condition's image.
+227-    """
+228-    try:
+229-        st = sio.loadmat(io.BytesIO(z.read(f"{ROOT}/{folder}/{code}_Stimulus.mat")))["dat"][0, 0]
+230-    except NotImplementedError:
+231-        return None
+232-    if IMAGE_FIELD[folder] not in st.dtype.names:
+233-        return None
+234-    im = _dense(st[IMAGE_FIELD[folder]])
+235-    polys = (_polys(st["SquareVert"]) + _polys(st["RectVert"]) if folder == "Edge-compare"
+236-             else _polys(st[VERT_FIELD[folder]]))
+237-    n = _count(polys, im.shape)
+[... 78 more lines not kept]
+```
+
+**Agent calls Grep**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b2qgedz2x.txt",
- "offset": 1107,
- "limit": 350
+ "pattern": "def _gray|def luminance_point",
+ "path": "vasarely.py",
+ "output_mode": "content",
+ "-A": 14
 }
 ```
 
 ```
-1107	
-1108	- table1-edge: reproduced; on the 18 files all five are within tolerance under (ia) (minimum 6.52,
-1109	  maximum 31.53, mean 18.56, median 18.76, midpoint 21.09 spikes/s). On all 22 files three are
-1110	  (the minimum 5.78 and the median 17.09 fall outside).
-1111	- table1-p180: partially reproduced; four of five under (ia) (maximum 10.33, mean 3.61, median
-1112	  3.03, midpoint 4.03); the minimum, -1.55, is below 0.18 ± 1.01.
-1113	- table1-s90: not reproduced; at most two of five under any reading. Under (ia) the maximum (13.58)
-1114	  and the mean (7.61) are within tolerance; the minimum (2.46), median (7.66) and midpoint (8.39)
-1115	  are below it.
-1116	- table1-s52: reproduced; under (iia), each half of the diagonal as its own ten blocks, all five
-1117	  are within tolerance (7.38, 28.62, 17.15, 16.55, 19.19); under (ia) four are (the minimum, 9.08,
-1118	  is above 6.26 ± 1.33). On 12 neurons in place of 30.
-1119	- table1-s40: reproduced; all five under (a) (10.52, 34.26, 23.01, 23.02, 26.27).
-1120	
-1121	These outcomes rest on the baseline placement and on which neurons are included (the counts by
-1122	reading printed above, best over the readings of each claim). With the squares centred for both
-1123	stimuli S52 has 3 of 5; with the squares inside for both, Edge (22 files) has 2, P180 3 and S90 1;
-1124	with the files' `BaseActivity` (9, 10 and 19 neurons) Edge has 0, P180 3, S90 3 and S52 2; with the
-1125	Corners squares 32 DU further in, S40 has 4. The main reading on the files that have
-1126	`BaseActivity` gives P180 5, S90 5, S52 1 and S40 3, and restricting P180 and S90 to the 18 files
-[... 324 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -o -i ".\{200\}did not analyze dark.\{100\}\|.\{150\}circumscribing square.\{200\}\|.\{100\}0.94 DVA.\{200\}\|.\{150\}94% contrast.\{100\}" paper/10.1371-journal.pone.0210941.txt | head; grep -n "def box_mean" -A25 vasarely.py
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -i "scaled\|-1 to 1\|273\|257 x\|baseline-subtracted" /home/runner/.claude/projects/-home-runner-work--temp-work/4a6f799d-bca0-4e2f-a7f8-7c624e008640/tool-results/b2qgedz2x.txt | head; python3 -c "
-import json;nb=json.load(open('reproduce_martinez_conde_2019.ipynb'))
-for i,c in enumerate(nb['cells']):
-  for o in c.get('outputs',[]):
-    t=''.join(o.get('text',''))
-    if '273' in t or 'norm' in t.lower(): print(i,t[:300])
-"
-```
-
-```
-940:    S90   3.222  0.001273               15.1       0.002545       0.001273
-970:    S90  3.222  0.001273              15.15       0.002545       0.001273
-995:    # Corners frames come in two sizes (273 x 209 and 257 x 193); the smaller ones are padded about the fold
-1213:near 0.86 from 25% to 75% and 1.28 at 100%; with the standard deviation of luminance scaled to 0
-1441:  is a baseline-subtracted map in some and a map scaled to -1 to 1 in others.
-3 loaded in 42 s; peak memory 0.76 GB
-folder        stimulus_type  standard
-Corners       CORNERS        True        26
-Edge-compare  EDGE-COMPARE   True        22
-Star          CORNERS        False        2
-              STAR           False       15
-                             True        12
-
-folde
-32 bright S40 fold [main]
-              z         p  median difference  (a) BH over 6  (b) BH over 3
-S40 S52  0.9107    0.3624              6.293         0.3624            NaN
-    S90   3.807 0.0001405              16.16       0.000281      0.0001405
-    P180   5.09 3.578e-07              19.72      2.
+214:def _gray(folder: str, n: np.ndarray) -> np.ndarray:
+215-    """Gray level (0-100) from the polygon count, as the stimulus images show it."""
+216-    if folder == "Corners":
+217-        return 100.0 - np.minimum(n, 100)
+218-    return np.maximum(n - 1, 0) * 100 / 99
+219-
+220-
+221-def image_agreement(z: zipfile.ZipFile, folder: str, code: str) -> dict | None:
+222-    """Stimulus image against its rasterised screen-frame polygons.
+223-
+224-    Shares of pixels whose gray level from the polygons equals the image's (to 1e-6) and lies
+225-    within one level (100/99) of it, and the image's gray level outside every polygon. None for a
+226-    file scipy cannot read (MATLAB 7.3) or without its condition's image.
+227-    """
+228-    try:
+--
+338:def luminance_point(fold, lum_percent: float) -> tuple[float, float]:
+339-    x, y0, y1 = fold
+340-    return x, y0 + (y1 - y0) * lum_percent / 100.0
+341-
+[... 11 more lines not kept]
 ```
 
 **Agent**
 
-**Verifier report, round 2: Martinez-Conde et al. 2019 on CRCNS pvc-12**
+**Round 2 verification: martinez-conde-2019-02**
 
-The claims file has 19 claims, and the attempt record has 19 outcomes: 16 tested and 3 blocked. All conclusions below come from the stored outputs of the re-executed notebook. I re-ran nothing on the data. I found no place where the claims file misreads the paper.
+**1. Outcomes**
 
-### 1. Outcomes
+The claims file and the attempt record both list 19 claims, and the README and Summary tables match the record. I agree with all 19 outcomes.
 
-| Claim | Record | Agree? | Assumption stated and reasonable? |
-|---|---|---|---|
-| neuron-counts | not_reproduced | Yes (cell 20) | – |
-| spikes-per-condition | blocked, data_missing | Yes | – |
-| s4-baseline-no-difference | not_reproduced, assumed | Yes, but fragile | Stated and reasonable. Each stimulus's baseline placement is the one closest to the files' `BaseActivity` (cell 18). The outcome does not survive the main reading on the 38 files that have `BaseActivity` (smallest p = 0.060), the files' own values (0.109), or the Corners squares 32 DU further in (0.063). So the difference depends on which neurons are included as well as on placement. The record says both. |
-| fig4a-above-baseline | reproduced, assumed | Yes | Yes |
-| fig4b-spike-rate-difference | partially_reproduced, assumed | Yes. S90 is 8.39 against 10.69 ± 1.94 (cell 29) | Yes |
-| fig4b-pairwise-significance | reproduced | Yes. It holds under every baseline reading, so no assumption flag is needed | – |
-| fig5-average-maps | reproduced, assumed | Yes. It is not independent of fig4b | Yes |
-| table1-edge | reproduced, assumed | Yes (cell 38: 5 of 5 on the 18 files) | Stated and reasonable, since the Methods say the edge was "never" off the display. Only the main baseline is shown on the 18 files. On all 22 files the result is partial (3 of 5), and other placements give 2 or 0. |
-| table1-p180 | partially_reproduced, assumed | Yes (4 of 5 under ia) | Yes |
-| table1-s90 | not_reproduced, assumed | Yes. At most 2 of 5 under the main baseline | Yes. The main reading on the 9 files with `BaseActivity` gives 5 of 5, and the record says so. |
-| table1-s52 | reproduced, assumed | Yes, under (iia) | Stated. The result is fragile: 3 of 5 with the squares centred, 2 of 5 with the files' values, 1 of 5 with the main reading on those 10 neurons, all on 12 of the paper's 30 neurons. |
-| table1-s40 | reproduced, assumed | Yes | Yes |
-| fig6-midpoint-representative | reproduced | Yes (rank sum p = 0.49 to 0.93) | – |
-| fig7a-rms-contrast-fit | not_reproduced | Yes | – |
-| fig7c-fold-edge-equivalence | not_reproduced, assumed | Yes, under the stated assumption | Stated. Reading (a) fails clearly: P180 (4.03) is below the whole Edge profile, which runs 9.23 to 21.26. So the outcome rests only on how reading (b) counts "one step": 94.3 is 4.3 from 90, against a step of 3.7, a miss of 0.6. The record calls the distance-from-90 reading "the most literal" (deviation 3). The level-based reading is equally literal and passes. The outcome is borderline, not settled. |
-| fig7c-fold-edge-significance | reproduced, assumed | Yes (cell 51) | Yes |
-| fig7d-nonlinear | reproduced, assumed | Yes (cell 54) | Yes |
-| fig7d-dog-similar | blocked, data_missing | Yes. I accept the author's protocol citation over my round-1 "other" | – |
-| s3-latency-peak | blocked, data_missing | Yes | – |
+- **neuron-counts** (not reproduced), **spikes-per-condition** (blocked), **fig4a** (reproduced), **fig4b-spike-rate-difference** (partially reproduced), **fig4b-pairwise** (reproduced), **fig5** (reproduced), **table1-p180** (partially reproduced), **table1-s40** (reproduced), **fig6** (reproduced), **fig7c-fold-edge-equivalence** (not reproduced), **fig7d-nonlinear** (reproduced), **fig7d-dog-similar** (blocked) and **s3-latency-peak** (blocked): agree. Each of these holds under every baseline placement the notebook prints (cells 23, 26, 37, 46, 49, 55, 61).
+- **s4-baseline-no-difference**, reproduced, assumed: agree, because it follows the claims file's rule for readings that disagree. Reading (a) gives smallest BH p = 0.071, while Kruskal-Wallis gives 0.042 and ANOVA 0.007 (cell 17). The outcome rests on three things: the mixed placement, the tie rule, and a p-value close to 0.05. Both single placements find a difference under all three readings. The stored `BaseActivity` finds none under any reading, which supports the outcome. The assumption is stated, and the notes call the result fragile.
+- **table1-edge** (partially reproduced, 3/5) and **table1-s90** (partially reproduced, 3/5), both assumed: agree. These are the values I derived in round 1. The Square and Edge squares are centred on the corners.
+- **table1-s52**, reproduced, assumed: agree. It needs the Star squares inside the corners and the best of four readings. Centred squares give at most 3/5 and the stored baseline at most 2/5 (cell 43). The notes say both.
+- **fig7a-rms-contrast-fit**, blocked (methods_underspecified): agree. On the image gray levels the background equals the 0% level (cell 8; `_gray` maps polygon count 1 and the background both to 0). Adding a black level never gives a rise from 0.61 to 0.943, and the best case is 2 of 6 values (cell 52). The paper's curve needs a luminance calibration or an RMS definition that neither the text nor the files give. My round-1 synthetic background assumed a background below the 0% level, which the image does not show.
+- **fig7c-fold-edge-significance**, reproduced: agree. It passes under BH over 40, BH over 10 and Bonferroni over 10, and fails under Bonferroni over 40 (cell 58). The notes say so.
 
-### 2. Text against the printed outputs
+On the assumptions (`assumed: true`): every one is stated in a deviation, and each is reasonable.
+- Choosing a placement by how close it comes to the stored `BaseActivity` is fixed before looking at outcomes. The choice for Square and Edge rests on n = 9 and for Star on n = 10.
+- The adopted placement differs between the two stimuli, though the paper describes both with the same words. The record says this openly.
 
-I checked every **Result:** conclusion (cells 21, 24, 27, 30, 33, 36, 40, 43, 46, 49, 52, 55), the Summary (cell 58), the README and the record's notes against the outputs. The numbers match, with these exceptions:
+**2. Text against outputs**
 
-- **"`smoothed_image_norm` is missing from 35 of 77 files"** (cell 4, the Summary in cell 58, and the record's second metadata_error finding) is contradicted by cell 3. The field table there gives 39 files without it: Corners 7, Edge 13, Star 1 + 15 + 2 + 1. Only 38 files have it.
-- **"holds a baseline-subtracted map in some and a map scaled to -1 to 1 in others"** (cell 58 and the record's finding) has no printed output behind it.
-- **"Corners frames come in two sizes (273 x 209 and 257 x 193 DU)"** (fig5 deviation) appears only in a code comment in cell 35. No output prints it.
+Every figure I checked in the conclusions, the Summary, the README and the record notes matches the printed outputs. That includes all within-tolerance counts, the differences (2.09, 3.61, 1.51, 1.68, 2.12), the p-values, the ranges and the variant counts. The points below are unsupported or imprecise; none affects an outcome.
+- Cell 53: "the window at the 100% end holds a quarter of bright rectangle". Nothing printed shows this.
+- Cell 53 and the fig7a notes say RMS is "computed on the gray levels of the stimulus image". `rms_profile` uses the rasterised polygons (`stimulus_luminance`), which match the image in at least 93% of pixels exactly and 99% within one level (cell 8). The image pixels themselves are not used.
+- Cell 63, "no data in … any public archive found", and the cell 0 table, "the DOG output of reference 3 is not public". The record only says the dataset's files and description were searched.
+- Cell 18 and the s4 notes: "the gap … comes mostly from the smaller sample." This is shown only for the adopted placement on the subset (Kruskal-Wallis 0.081 against 0.114). It is a fair reading, but not a full separation of sample size from placement.
 
-The `verifications` block states my round-1 reasons accurately, and largely in my own words. Two small omissions:
+The record states my round-1 reasons faithfully. Problems 2, 4, 5, 6 and 8 are attached to the relevant claims, problem 1 to fig7a and fig7c, and problems 3, 7 and 9 are summarised under `reviewed`. Most of the wording is mine nearly verbatim.
 
-- In fig7c-fold-edge-equivalence, the reason leaves out my point that the four border-cut Edge files had been kept for that claim too. It appears only under table1-edge.
-- In fig7a-rms-contrast-fit, the reason leaves out my point that standard deviation over mean (reading a) cannot rise from 0.61 to 0.943 without a black-level offset.
+**3. Round-1 points**
 
-Neither omission changes the meaning.
+Resolved:
+- **1 (RMS input):** the image gray levels are printed and checked against the polygons. The outcome changed to blocked, which I accept.
+- **2 (placement):** every Table 1 claim now prints both placements and the stored baseline.
+- **3 (Star registration):** the polygon fit error (2.3e-13 DU) and a correlation registration are now printed. The best shift sits at the 64 DU search limit in 8 of 12 files, so that test is weak. Dropping the 15 files rests more securely on the aligned diagonal not being stored.
+- **4:** the adopted placement is now also run on the subset with a stored baseline.
+- **5:** the gray level inside every baseline square is printed (all 0), and the 2 Corners files are fixed.
+- **7 and 8:** fixed. For 7 I checked the record's account only, not the code.
+- **C items:** the gray levels, the rasterisation agreement, the 0% squares, the variant tables and the Star fit error are all now printed.
 
-### 3. Round-1 points
+Partly resolved: **6**. Reading (ii) was not added, which cannot change the result.
 
-**Resolved:**
+Unchanged: **9**. This is a point about the claims file; its checks still list the Corners two-fold question as open.
 
-- **B1, baseline placement.** There is now a per-file comparison with `BaseActivity`, an inward sweep of the squares, two more Corners placements and reruns on the 38-file subset. This also exposed a real bug: the centred Square and Edge squares had been read as zeros outside the authors' frame. The fix moved table1-p180 to partial, table1-s90 to not reproduced and table1-s52 to reproduced.
-- **B2, the fig7c margin.** It is now stated as an assumption, and the other reading is printed as a variant.
-- **B3, the border-cut Edge files.** The Edge measures use the 18 complete files, and all 22 are shown.
-- **B5, the three unchecked registrations.** All 60 files now register (cell 12, r ≥ 0.986).
-- **B6, the luminance statement.** The text now says the paper gives 14.07 cd/m² at 50%.
-- **B7, units.** Cell 10 now shows that 98.5% of pixels hold non-integer values.
-- **B8, `box_mean`.** Samples are now symmetric; I read the code and did not re-run it.
-- **The cell 31 coincidence.** The printed 1% Edge profile shows a flat stretch (21.18 against 21.01).
-- **The stale summary.** The summary cell left in the round-1 notebook is no longer an issue.
+What remains that bears on a conclusion:
+- **Table 1 placement and subset (table1-edge, table1-s90, table1-s52).** The stored `BaseActivity` gives Edge 0/5, S90 at most 2/5 and S52 at most 2/5 on 9 to 10 neurons. The adopted placement was not run on those same subsets for Table 1, so it is unclear whether these low scores come from the subset or from the placement. This is the Table 1 version of problem 4, and it affects how much these three outcomes can be relied on.
+- **s4.** The outcome depends on the tie rule and on BH p = 0.071, as stated above.
+- **Claims file, fig7c-fold-edge-significance.** The criterion tests only the levels 0.610, 0.647 and 0.943, but the paper's wording sets limits that the criterion does not check:
+  - "An Edge of less than 68% contrast" implies S40 is not significant at 0.684 and above. Under the passing readings, S40 is also significant at 0.684 to 0.795 (BH) or 0.684 to 0.721 (Bonferroni over 10).
+  - "A 94% contrast Edge" may mean P180 is lower only near 0.943. Under BH it is lower at all ten levels.
 
-**Remaining, bearing on a conclusion:**
-
-- **s4-baseline-no-difference:** the "not reproduced" result disappears on the files that carry `BaseActivity` and with one other Corners placement. No Corners placement matches the authors' values closely (median difference 0.85 to 2.79 spikes/s).
-- **fig7c-fold-edge-equivalence:** the outcome turns on a 0.6-point choice between two equally literal readings of "one step". It should be presented as borderline, without calling the distance reading "the most literal".
-- **table1-s52 and table1-s90:** both depend on which neurons are included. With the main reading on the files with `BaseActivity`, S52 gets 1 of 5 and S90 gets 5 of 5. Star rests on 12 of 30 neurons, picked by whether the file holds the authors' aligned map (B4 remains, and cannot be fixed with this data).
-- **table1-edge:** "reproduced" holds only on the 18 complete files under the main baseline. Other baseline placements are not shown on those 18 files.
-- **Corrections to make:** the "35 of 77" count, and the two claims with no printed support (Section 2).
+  The notebook reports these levels. I note this as a place where the criterion is looser than the paper's statement, not as a correction.
+- **Not checkable here:** S1 and S2 Table are missing, as in round 1.
 
 ## End of run
 
-12 turns, 3 minutes, $1.27 at API prices, result: success.
+12 turns, 3 minutes, $1.21 at API prices, result: success.
