@@ -87,7 +87,22 @@ notify(){
   gh workflow run notify.yml -f dataset="$d" -f status="$last" -f detail="$last_why" -f run="$last_run" \
     >/dev/null 2>&1 || log "could not dispatch notify.yml"
 }
-trap notify EXIT
+# One chain at a time on a paper (or on a replicate of it): the chain holds $STATE/chain-<paper>.lock, a directory
+# with its process id, from the moment it knows its paper until it exits. Lanes keep apart the datasets they take,
+# but two datasets can be one paper's: on 2026-11-13 one lane took CRCNS hc-21 and another hc-12, both went on as
+# wirth-2017, and the second joined the first's attempt, so that verifier-2 and author-revise-3 ran twice (issue
+# 749). A lock left by a chain that died is taken over.
+held=""
+hold(){ local lock="$STATE/chain-${1//\//-}.lock" pid
+  for _ in 1 2; do
+    if mkdir "$lock" 2>/dev/null; then echo $$ > "$lock/pid"; held=$lock; return 0; fi
+    pid=$(cat "$lock/pid" 2>/dev/null)
+    if [ -n "$pid" ] && [ "$pid" != $$ ] && kill -0 "$pid" 2>/dev/null; then holder=$pid; return 1; fi
+    rm -f "$lock/pid"; rmdir "$lock" 2>/dev/null
+  done
+  holder=unknown; return 1; }
+release(){ [ -z "$held" ] || { rm -f "$held/pid"; rmdir "$held" 2>/dev/null; held=""; }; }
+trap 'release; notify' EXIT
 
 remote_branch(){ git ls-remote --heads origin "$br" | cut -f1; }
 fetch(){ git fetch -q origin main 2>/dev/null || true; git fetch -q origin "$br" 2>/dev/null || true; }
@@ -103,6 +118,10 @@ if [ -n "$REPLICATE" ]; then
   [[ "$REPLICATE" =~ ^r[0-9]+$ ]] && [ -n "$is_paper" ] || { echo "$1 STOPPED: a replicate takes a paper's key and a name r1, r2, ..."; exit 1; }
   br="replicate/$d/$REPLICATE"; tag="$d/$REPLICATE"; mark="$STATE/attempt-$d-$REPLICATE"
   export RUNNER_NOTIFY=none   # a replicate opens no issue: it is not the paper's attempt
+fi
+# A chain given a paper knows it now; one given a dataset, once the paper match names its paper (below).
+if [ -n "$is_paper" ] && ! hold "$tag"; then
+  end "$tag SKIPPED: another chain is running it (process $holder)"; last=""; exit 1   # no issue: nothing to do
 fi
 done_roles(){ { git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/main 2>/dev/null
                 git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/"$br" 2>/dev/null; } \
@@ -282,6 +301,10 @@ case "$match" in
         p=$(python "$here/describe.py" paper "$d") || { end "$d STOPPED: the paper match is on main, but the dataset could not be listed for its paper (papers/datasets/)"; exit 1; }
       fi
       log "the paper match lists the dataset for paper $p; going on as $p"
+      # Before anything of the paper's is touched: another chain may be on it, from another of its datasets.
+      if ! hold "$p"; then
+        last_why=""; end "$d SKIPPED: its paper $p is being run by another chain (process $holder)"; last=""; exit 1
+      fi
       git push -q origin --delete "$br" 2>/dev/null || true
       [ -e "$STATE/attempt-$p" ] || mv "$mark" "$STATE/attempt-$p" 2>/dev/null || true
       rm -f "$mark"
@@ -383,7 +406,7 @@ fi
 # checks again (twice at most).
 work=$(mktemp -d "${TMPDIR:-/tmp}/finish-$d.XXXXXX")
 drop_work(){ git worktree remove --force "$work" >/dev/null 2>&1 || true; rm -rf "$work"; }
-trap 'drop_work; notify' EXIT
+trap 'drop_work; release; notify' EXIT
 # The attempt's branch in the worktree, with main merged in, pushed. Merge, not rebase: main already has the
 # checked claims (the checkpoint), so a rebase replays the branch's claims, claims-check and answer commits onto
 # them and stops on an add/add conflict. The branch's claims file is the same or later (the reader's answers),
