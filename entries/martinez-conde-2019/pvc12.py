@@ -25,7 +25,9 @@ Parameters and where they come from:
   smoothed after dividing by eye time (Fig 3B legend). ``Standard.image`` is the unsmoothed
   variant named in the claim fig4b-spike-rate-difference.
 - Midpoint response: mean in an 8 x 8 DU square at the fold's 50% luminance point (Results,
-  "Strength of neuronal responses...", paragraph 1). Two symmetric midpoints are averaged for
+  "Strength of neuronal responses...", paragraph 1). All squares and blocks weight each pixel by
+  the fraction of its area inside (``rect_weights``), so that they cover the paper's sizes
+  wherever their centres fall; pixel centres strictly inside is a variant. Two symmetric midpoints are averaged for
   the Square and the Star (Methods, Corners, paragraph 2).
 - Blocks along a fold: ten non-overlapping blocks from 0% to 100% luminance, 8 DU wide and
   15, 15, 7, 15 and 10 DU long for Edge, P180, S90, S52 and S40 (Results, "Responses averaged
@@ -42,13 +44,16 @@ Parameters and where they come from:
   to the files' own ``Standard.BaseActivity`` (the authors' baseline, of undocumented
   placement, present for 38 neurons): centred on the corners for Square and Edge, inside the
   corners for the Star, and the ROI corners on the 0% side for Corners (assumption; every
-  reading is shown in the notebook).
+  reading is shown in the notebook). Pixels where the smoothed map is zero are kept, as the
+  files' BaseActivity agrees better with baselines that keep them (checked in the notebook);
+  leaving them out is a variant.
 - Bright S40 fold: of the two 40 degree apices of the Corners pattern, the one pointing toward
   lower luminance, as the bright folds of the nested squares point toward the dark surround
   (Fig 1A legend); found per neuron from the stimulus image.
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import re
 import zipfile
@@ -145,12 +150,33 @@ def load_all(z):
             r["count_integer_err"] = float(np.abs(img * et - np.round(img * et)).max())
         stim = np.asarray(getattr(s, STIM_KEY[folder]), float)
         r["stim_range"] = (stim.min(), stim.max())
+        r["stim_hash"] = hashlib.md5(np.round(stim, 6).tobytes()).hexdigest()[:10]
+        if folder == "Star":
+            # screen position and orientation of the Star: its centre, and the angle of its outer
+            # vertices modulo 30 degrees (the twelve-pointed star repeats every 30 degrees)
+            V0 = _verts(s.DiagVert)
+            c0 = V0[-1].mean(0)
+            rad = np.linalg.norm(V0[0] - c0, axis=1)
+            out = V0[0][rad > rad.max() - 1]
+            r["star_centre"] = c0
+            r["star_angle30"] = float(np.median(np.degrees(np.arctan2(out[:, 1] - c0[1], out[:, 0] - c0[0])) % 30))
+        # what each top-level field holds (shape and range), and the screen map's summaries
+        r["field_summary"] = {f: _summ(getattr(m, f)) for f in m._fieldnames if f != "Standard"}
+        sm_screen = np.asarray(m.smoothed_image, float) * 1000.0
+        r["screen_peak"] = float(sm_screen.max())
+        r["screen_mean_nz"] = float(sm_screen[sm_screen > 0].mean())
+        r["screen_frac_nz"] = float((sm_screen > 0).mean())
         r["has_standard"] = "Standard" in m._fieldnames
         if r["has_standard"]:
             st = m.Standard
             r["S"] = np.asarray(st.smoothed_image, float) * 1000.0
             r["I"] = _arr(st.image) * 1000.0
             r["base_file"] = float(st.BaseActivity) * 1000.0 if "BaseActivity" in st._fieldnames else np.nan
+            if "smoothed_image_norm" in st._fieldnames and "BaseActivity" in st._fieldnames:
+                # is Standard.smoothed_image_norm the map minus BaseActivity, or that divided by its maximum?
+                sin_, S0, b0 = np.asarray(st.smoothed_image_norm, float), r["S"] / 1000.0, float(st.BaseActivity)
+                r["sin_err_diff"] = float(np.abs(sin_ - (S0 - b0)).max())
+                r["sin_err_scaled"] = float(np.abs(sin_ - (S0 - b0) / (S0.max() - b0)).max())
             vk = [k for k in st._fieldnames if k.endswith("Vert")][0]
             V = getattr(st, vk)
             if folder == "Edge-compare":
@@ -177,6 +203,10 @@ def load_all(z):
                 # offset that best matches, on a subsample, and keep the correlation.
                 sm = np.asarray(m.smoothed_image, float)
                 r["reg_corr"], r["reg_offset"] = _register(sm, r["S"] / 1000.0, np.linalg.inv(sol[:2]), sol[2])
+                if "eyetime" in m._fieldnames:
+                    # the eye time and unsmoothed maps moved into the ROI frame as the Standard map is
+                    r["eyetime_roi"] = _to_roi(_arr(m.eyetime), np.linalg.inv(sol[:2]), sol[2], r["reg_offset"], (H, W))
+                    r["image_roi"] = _to_roi(img, np.linalg.inv(sol[:2]), sol[2], r["reg_offset"], (H, W))
             else:
                 # Star: the stimulus is drawn at one orientation on the screen for every neuron;
                 # the ROI frame turns the aligned diagonal vertical. Find the rotation (one of the
@@ -195,8 +225,30 @@ def load_all(z):
                     if c > best[0]:
                         best = (c, off, th)
                 r["reg_corr"], r["reg_offset"], r["star_rotation"] = best
+                # the Star stimulus in the ROI frame, by the rotation found (no offset: the offset
+                # is that of the gaze map from the stimulus)
+                t = np.radians(best[2])
+                Rm = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
+                r["stim_roi"] = _to_roi(stim, Rm.T, cr - cs @ Rm, (0, 0), r["S"].shape, order=1)
         recs.append(r)
     return recs
+
+
+def _summ(x):
+    try:
+        a = _arr(x)
+    except (TypeError, ValueError):
+        return (type(x).__name__,)
+    return (a.shape, float(np.nanmin(a)), float(np.nanmax(a))) if a.size else (a.shape,)
+
+
+def _to_roi(screen, A_inv, t, off, shape, order=0):
+    """A screen-frame array moved into the ROI frame: ROI pixel (col, row) is the screen point
+    ((col, row) + off - t) @ A_inv, as in ``_register``."""
+    H, W = shape
+    yy, xx = np.mgrid[0:H, 0:W]
+    P = (np.c_[xx.ravel() + off[0], yy.ravel() + off[1]] - t) @ A_inv
+    return ndimage.map_coordinates(screen, [P[:, 1], P[:, 0]], order=order, cval=0.0).reshape(H, W)
 
 
 def _register(sm, S, A_inv, t):
@@ -219,19 +271,37 @@ def _register(sm, S, A_inv, t):
 # ---------------------------------------------------------------------------------------------
 # Geometry in the ROI frame. Points are (x, y) = (column, row) of the Standard arrays.
 
-def rect_mask(shape, centre, u, half_along, half_across):
+SS = 4  # subpixels per DU side for the area-weighted squares
+
+
+def rect_weights(shape, centre, u, half_along, half_across, ss=SS):
+    """Pixels of a rectangle centred on ``centre``, with sides along ``u`` and across it, each
+    pixel weighted by the fraction of its area inside (estimated on ss x ss subpixels), so that an
+    8 x 8 DU square covers 64 DU2 wherever its centre lies. With ss=None, pixels whose centres lie
+    strictly inside get weight 1 (at an integer centre an "8 x 8" square then holds 7 x 7 pixels;
+    the variant of the first verification round). Returns the slices of the bounding box and the
+    weights; parts outside the frame are dropped."""
     H, W = shape
-    yy, xx = np.mgrid[0:H, 0:W]
-    d = np.stack([xx - centre[0], yy - centre[1]], -1)
     u = np.asarray(u, float) / np.linalg.norm(u)
     n = np.array([-u[1], u[0]])
-    a = d @ u
-    b = d @ n
-    return (np.abs(a) < half_along) & (np.abs(b) < half_across)
+    R = np.hypot(half_along, half_across) + 1
+    x0, x1 = max(int(np.floor(centre[0] - R)), 0), min(int(np.ceil(centre[0] + R)) + 1, W)
+    y0, y1 = max(int(np.floor(centre[1] - R)), 0), min(int(np.ceil(centre[1] + R)) + 1, H)
+    if x0 >= x1 or y0 >= y1:
+        return (slice(0, 0), slice(0, 0)), np.zeros((0, 0))
+    k = 1 if ss is None else ss
+    off = np.zeros(1) if ss is None else (np.arange(ss) + 0.5) / ss - 0.5
+    xs = (np.arange(x0, x1)[:, None] + off[None, :]).ravel()
+    ys = (np.arange(y0, y1)[:, None] + off[None, :]).ravel()
+    X, Y = np.meshgrid(xs - centre[0], ys - centre[1])
+    inside = (np.abs(X * u[0] + Y * u[1]) < half_along) & (np.abs(X * n[0] + Y * n[1]) < half_across)
+    w = inside.reshape(y1 - y0, k, x1 - x0, k).mean(axis=(1, 3))
+    return (slice(y0, y1), slice(x0, x1)), w
 
 
-def region_mean(M, mask):
-    return float(M[mask].mean()) if mask.any() else np.nan
+def region_mean(M, wm):
+    sl, w = wm
+    return float((M[sl] * w).sum() / w.sum()) if w.sum() > 0 else np.nan
 
 
 def _cross2(a, b):
@@ -337,27 +407,27 @@ def corners_baselines(shape, g):
     return out
 
 
-def baseline(M, centres, axis):
-    return float(np.mean([region_mean(M, rect_mask(M.shape, c, axis, 8, 8)) for c in centres]))
+def baseline(M, centres, axis, ss=SS):
+    return float(np.mean([region_mean(M, rect_weights(M.shape, c, axis, 8, 8, ss)) for c in centres]))
 
 
-def midpoint(M, halves, axis_len=8):
+def midpoint(M, halves, axis_len=8, ss=SS):
     vals = []
     for h in halves:
         mid = (h["p0"] + h["p100"]) / 2
         u = h["p100"] - h["p0"]
-        vals.append(region_mean(M, rect_mask(M.shape, mid, u, axis_len / 2, axis_len / 2)))
+        vals.append(region_mean(M, rect_weights(M.shape, mid, u, axis_len / 2, axis_len / 2, ss)))
     return float(np.mean(vals)), vals
 
 
-def blocks(M, half):
+def blocks(M, half, ss=SS):
     """Ten block means from 0% to 100% luminance along one fold half (8 DU wide)."""
     u = half["p100"] - half["p0"]
     L = np.linalg.norm(u)
     out = []
     for i in range(10):
         c = half["p0"] + u * (i + 0.5) / 10
-        out.append(region_mean(M, rect_mask(M.shape, c, u, L / 20, 4)))
+        out.append(region_mean(M, rect_weights(M.shape, c, u, L / 20, 4, ss)))
     return np.array(out)
 
 
@@ -384,32 +454,34 @@ def rms_contrast_profile(stim, e0, e1, step_pct=1.5, size=16):
     return levels, np.array(vals)
 
 
-def _base_nz(M, centres, axis):
+def _base_nz(M, centres, axis, ss=SS):
     """Baseline leaving out pixels where the smoothed map is exactly zero (no spikes within the
     smoothing kernel, which at the ROI's edge usually means no gaze coverage). A variant."""
     v = []
     for c in centres:
-        x = M[rect_mask(M.shape, c, axis, 8, 8)]
-        x = x[x != 0]
-        if x.size:
-            v.append(x.mean())
+        sl, w = rect_weights(M.shape, c, axis, 8, 8, ss)
+        w = w * (M[sl] != 0)
+        if w.sum() > 0:
+            v.append(float((M[sl] * w).sum() / w.sum()))
     return float(np.mean(v)) if v else np.nan
 
 
-def _zero_frac(M, centres, axis):
-    return float(np.mean([(M[rect_mask(M.shape, c, axis, 8, 8)] == 0).mean() for c in centres]))
+def _zero_frac(M, centres, axis, ss=SS):
+    return float(np.mean([region_mean((M == 0).astype(float), rect_weights(M.shape, c, axis, 8, 8, ss))
+                          for c in centres]))
 
 
-def edge_response(M, e, lum_pct):
+def edge_response(M, e, lum_pct, ss=SS):
     """Mean in a 16 x 16 DU square centred on the Edge at a luminance level (Results, "Neuron
     responses to corner-folds vs. different contrasts along edge", paragraph 1)."""
     u = e["p100"] - e["p0"]
     c = e["p0"] + u * lum_pct / 100.0
-    return region_mean(M, rect_mask(M.shape, c, u, 8, 8))
+    return region_mean(M, rect_weights(M.shape, c, u, 8, 8, ss))
 
 
-def measure(recs, which="S"):
-    """One row per neuron and fold, from the Standard maps (which = "S" smoothed, "I" unsmoothed).
+def measure(recs, which="S", ss=SS):
+    """One row per neuron and fold, from the Standard maps (which = "S" smoothed, "I" unsmoothed;
+    ss as in ``rect_weights``, None for the pixel-centre squares of the first round).
 
     Columns: baselines under each reading, the raw midpoint response, the ten block means (the
     two halves averaged block by block, and each half), and for the Edge the responses in 16 x 16
@@ -427,32 +499,32 @@ def measure(recs, which="S"):
             cb = corners_baselines(M.shape, g)
             ax = np.array([0.0, 1.0])
             for k, cs in cb.items():
-                b["base_" + k] = baseline(M, cs, ax)
+                b["base_" + k] = baseline(M, cs, ax, ss)
             b["base_main"] = b["base_a_roi_corners"]
-            b["base_nz"] = _base_nz(M, cb["a_roi_corners"], ax)
-            b["base_zero_frac"] = _zero_frac(S, cb["a_roi_corners"], ax)
+            b["base_nz"] = _base_nz(M, cb["a_roi_corners"], ax, ss)
+            b["base_zero_frac"] = _zero_frac(S, cb["a_roi_corners"], ax, ss)
             folds = ["S40", "S40dark"]
         else:
             ax = g["baseline_axis"]
             C = np.mean(g["baseline"], axis=0)
             centred = [C + (c - C) * ((np.abs(c - C).max() + 8) / np.abs(c - C).max()) for c in g["baseline"]]
-            b["base_inside"] = baseline(M, g["baseline"], ax)
-            b["base_centred"] = baseline(M, centred, ax)
+            b["base_inside"] = baseline(M, g["baseline"], ax, ss)
+            b["base_centred"] = baseline(M, centred, ax, ss)
             # main reading: the placement closest to the files' own BaseActivity (see module docstring)
             main = centred if r["folder"] == "Edge-compare" else g["baseline"]
-            b["base_main"] = baseline(M, main, ax)
-            b["base_nz"] = _base_nz(M, main, ax)
-            b["base_zero_frac"] = _zero_frac(S, main, ax)
+            b["base_main"] = baseline(M, main, ax, ss)
+            b["base_nz"] = _base_nz(M, main, ax, ss)
+            b["base_zero_frac"] = _zero_frac(S, main, ax, ss)
             folds = [k for k in ("Edge", "P180", "S90", "S52") if k in g]
         b["base_file"] = r.get("base_file", np.nan)
         for fd in folds:
             if fd not in g:
                 continue
-            mp, halves = midpoint(M, g[fd])
-            bl = [blocks(M, h) for h in g[fd]]
+            mp, halves = midpoint(M, g[fd], ss=ss)
+            bl = [blocks(M, h, ss) for h in g[fd]]
             row = dict(folder=r["folder"], code=r["code"], cell=r["cell"], monkey=r["monkey"], fold=fd,
                        mid_resp=mp, mid_halves=halves, blocks=np.mean(bl, 0), blocks_halves=bl, **b)
             if fd == "Edge":
-                row["edge_profile"] = np.array([edge_response(M, g[fd][0], l) for l in range(0, 101)])
+                row["edge_profile"] = np.array([edge_response(M, g[fd][0], l, ss) for l in range(0, 101)])
             rows.append(row)
     return pd.DataFrame(rows)

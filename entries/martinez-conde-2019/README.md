@@ -15,8 +15,8 @@ exist for 22 Square and Edge, 12 Star and 26 Corners neurons.
 | Midpoint spike rate differences S40 > S52 > S90 > P180 (Fig 4B) | Reproduced |
 | Pairwise tests of Fig 4B | Reproduced |
 | Average maps (Fig 5) | Reproduced |
-| Table 1, S40 | Reproduced |
-| Table 1, Edge, P180, S90 and S52 | Partially reproduced |
+| Table 1, S40 and S52 | Reproduced |
+| Table 1, Edge, P180 and S90 | Partially reproduced |
 | Midpoint represents the whole fold (Fig 6) | Reproduced |
 | RMS contrast along the Edge and its fit (Fig 7A) | Not reproduced |
 | P180 like a 50% Edge, S40 like a 90% Edge (Fig 7C) | Not reproduced |
@@ -34,7 +34,10 @@ authors stored in the files. The notebook shows every placement. The data set ho
 than the paper analysed. Its maps are rates, not the raw spike counts its descriptor states. Two
 files in its Star folder hold Corners recordings. The attempt record, with the reasons and the
 differences from the paper's method, is
-[`attempts/martinez-conde-2019-02.yaml`](../../attempts/martinez-conde-2019-02.yaml).
+[`attempts/martinez-conde-2019-02.yaml`](../../attempts/martinez-conde-2019-02.yaml). After the
+first verification round the squares were made to cover their full area, which moved Table 1 for
+S52 to reproduced by a margin of 0.05 spikes/s on one value; the comparison of P180 and S40 with
+the Edge (Fig 7C) is not reproduced on one reading of "one step" and would be on another.
 
 - `reproduce_martinez_conde_2019.ipynb`: the analysis. It takes about a minute, most of it
   streaming the zip.
