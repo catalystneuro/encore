@@ -1,407 +1,390 @@
-"""Loading and measures for dandiset 000004 (Chandravadia et al. 2020, Scientific Data 7, 78).
+"""Loading and measures for the human MTL recognition memory data of dandiset 000004.
 
-Human single neurons from the amygdala and hippocampus during a new/old recognition memory task,
-one NWB file per session. Files are streamed from the archive at a pinned version with h5py over
-remfile; the stimulus images (most of each file's size) are not read, only their shape and
-timestamps.
+Chandravadia, Liang, Schjetnan et al. (2020), Scientific Data 7, 78, doi:10.1038/s41597-020-0415-9.
+
+Each NWB file holds one session: a trials table (100 encoding and 100 recognition trials),
+the TTL event markers and the experiment id of each marker, the electrodes table, the units
+table (spike times, mean waveforms, quality metrics) and the stimulus images. Files are
+streamed from the archive at the pinned version; nothing is written to disk, and the
+stimulus images are not read (only their shape).
 
 Where the parameters come from:
 
-- Analysis windows. The Methods use a 1 s window starting 200 ms after stimulus onset
-  (``WINDOW_METHODS``). The paper's code (rutishauserlab/recogmem-release-NWB, commit 1d95162,
-  NWB_singleCellAnalysis_release.m and single_neuron.py) uses 200 ms to 1700 ms
-  (``WINDOW_CODE``).
-- Visual selectivity: one-way ANOVA of the window rate across the 5 categories of the
-  recognition trials (Methods; code's anovan and f_oneway).
-- Memory selectivity: two-sided bootstrap test of equal means, Efron and Tibshirani algorithm
-  16.2, as in the code's bootstrapMeanEqualTest.m (B = 1000, Methods and code).
-- Behaviour: the cumulative ROC over the six confidence levels, the adjustment of rates of 0
-  and 1 (Macmillan and Creelman, p. 8), the AUC by the trapezoid rule and the z-ROC slope follow
-  the code's calcEmpiricalROC.m, calcCumulativeD.m, adjustHF.m, calcROC_AUC.m and
-  calcZROCSlope.m. The fixed high/low confidence split follows NO_behavior_evaluateSessionStatus.m
-  and the dynamic split NO_dynamic_lowHighSplit.m / helper.dynamic_split.
-- Labels. ``OLD`` is 1, as in the code (its comments say "1 is old, 0 is new"); the paper's text
-  and the files' column description say the reverse. The notebook tests which is right.
+- Recognition trials are the rows with stim_phase "recog"; the confidence response is
+  response_value minus 30 (claims file, opening comment). The paper's code reads it from the
+  events (events of the recognition experiment id between 30 and 36, minus 30;
+  helper.extract_recog_responses in rutishauserlab/recogmem-release-NWB at commit 1d95162);
+  `check_responses_against_events` compares the two.
+- "Old" is new_old_labels_recog == 1, as in the paper's code (claims file; tested in claim
+  new-old-label-coding).
+- Firing rate: spikes strictly inside (onset + start, onset + end) divided by the window
+  length, as `Trial.win_spike_rate` in single_neuron.py of the paper's code. The Methods'
+  window is 0.2 to 1.2 s after stimulus onset (Technical Validation, "a 1 s long window
+  starting 200 ms after stimulus onset"); the code's is 0.2 to 1.7 s (single_neuron.py,
+  vs_test and ms_test). Stimulus onset is the trial's start_time, as in the code
+  (extract_neuron_data_from_nwb).
+- VS cells: one-way ANOVA (scipy f_oneway) of the recognition-trial rates across the
+  stimCategory values, P < 0.05 (Technical Validation; single_neuron.py vs_test).
+- MS cells: the bootstrap test of the paper's code (single_neuron.py ms_test, the same as
+  bootstrapMeanEqualTest.m mode 1 without variance correction, Efron and Tibshirani
+  algorithm 16.2): both groups shifted to the pooled mean, each resampled with replacement
+  within itself, 1000 runs, p = fraction of runs with |mean difference| >= the observed one.
+  The seed is a standard choice (it cannot change a result beyond the resampling noise).
+- Behaviour: cumulative ROC over the six confidence levels from "old, confident" down,
+  hit and false alarm rates adjusted for 0 and 1 (adjustHF), AUC by the trapezoid rule with
+  (0,0) and (1,1) added (helper.cal_cumulative_d, cal_auc; calcROC_AUC.m), z-ROC slope by
+  regressing z(H) on z(F) over the five interior points (calcZROCSlope.m). High/low
+  confidence accuracy by the fixed split of NO_behavior_evaluateSessionStatus.m (high = 1
+  or 6, low = 2 to 5) and the dynamic split of helper.dynamic_split (claims file).
 """
 
 from __future__ import annotations
 
 import re
-import urllib.request
+import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
 import numpy as np
 import pandas as pd
 import remfile
+import requests
 from dandi.dandiapi import DandiAPIClient
 from scipy import stats
 
 DANDISET_ID = "000004"
 DANDISET_VERSION = "0.220126.1852"
 
-WINDOW_METHODS = (0.2, 1.2)   # s after stimulus onset; Methods
-WINDOW_CODE = (0.2, 1.7)      # s after stimulus onset; the paper's code
-OLD, NEW = 1, 0               # label coding of new_old_labels_recog, as the code reads it
+METHODS_WINDOW = (0.2, 1.2)   # s after stimulus onset; Technical Validation
+CODE_WINDOW = (0.2, 1.7)      # s; single_neuron.py vs_test / ms_test
+N_BOOT = 1000                 # Technical Validation, "bootstrap comparison of means with 1,000 runs"
+ALPHA = 0.05
 
-# Online-only Table 1 of the paper (CC BY 4.0): subject, session ids, task variants, age, sex,
-# diagnosis. Copied from the article as text; used only to compare with the files' metadata.
-ONLINE_TABLE_1 = """\
-H09|5, 6|1, 2|55|M|Right Mesial Temporal
-H10|7|1|37|M|Left Frontal
-H11|9|1|16|M|Right Lateral Frontal
-H14|17,18|2, 1|31|M|Bilateral Independent Temporal
-H15|20, 21|1, 2|45|M|Right Mesial Temporal
-H16|23, 24|2, 1|34|F|Right Frontal
-H17|32|1|19|M|Left Inferior Frontal
-H18|26|1|40|M|Right Mesial Temporal
-H19|27, 28|2, 1|34|M|Left Frontal
-H21|38, 39, 41|2,1,3|20|M|Not Localized
-H23|43, 44, 47|3, 2, 1|40|M|Left Mesial Temporal
-H27|58|2|40|M|Bilateral Independent Temporal
-H28|48|3|22|M|Right Mesial Temporal
-H29|49|3|17|F|Left Deep Insula
-H31|50|2|30|M|Right Mesial Temporal
-H33|52|1|29|M|Left Mesial Temporal
-H42|54, 55|1, 1|29|M|Not Localized
-H43|56|1|27|F|Left Mesial Temporal
-H44|68|1|57|F|Right Mesial Temporal
-H47|92, 97|1, 3|20|M|Right Mesial Temporal
-H48|99|1|54|M|Left Mesial Temporal
-H51|104, 105|3, 1|24|M|Bilateral Frontal and Temporal
-C24|59, 60|1, 2|47|F|Not Localized
-C25|61, 63|1, 2|36|F|Bilateral Independent Mesial Temporal
-C26|64, 66|1, 2|56|F|Left Mesial Temporal
-C27|67|1|44|M|Left Mesial Temporal
-C29|69, 70|1, 2|19|M|Left Neocortical Temporal
-C31|73|3|32|M|Left Neocortical Temporal
-C32|74|2|19|M|Not Localized (Generalized)
-C33|76, 77, 78|3, 2, 1|44|F|Right Mesial Temporal
-C34|85|3|70|M|Bilateral Mesial Temporal
-C37|96|3|33|F|Right Mesial Temporal
-C38|102|3|63|F|Right Mesial Temporal
-C39|93, 100|1, 3|26|M|Right Insula
-C40|101|3|25|M|Right Motor Cortex
-C42|111, 112|1, 2|25|F|Not Localized
-C43|113|3|42|F|Left Mesial Temporal
-C44|114|3|53|F|Right Mesial Temporal
-C47|115|3|32|M|Right Mesial Temporal
-C48|116|3|32|F|Left Mesial Temporal
-C49|117, 118|3, 1|24|F|Left Mesial Temporal
-C51|119, 120|3, 1|17|M|Not Localized (No Seizures)
-C53|122, 123|3, 1|60|M|Bilateral Independent Mesial Temporal Lobe
-C54|124, 125, 126|3, 1, 2|59|F|Right Mesial Temporal
-C55|127|1|43|F|Right Mesial Temporal
-C56|128|2|48|M|Multifocal, Bitemporal + Orbitofrontal
-C57|130, 131|3, 2|46|M|Left Neocortical Parietal
-C58|132, 133|3, 1|32|F|Right Frontal Neocortical
-C60|134|1|67|M|Left Mesial Temporal
-C61|135|1|52|F|Left Mesial Temporal
-C62|136|1|25|F|Right Mesial Temporal
-T88|2001, 2002|2, 3|26|M|Right Mesial Temporal
-T89|2004|1|45|F|Right Frontal
-T90|2003|3|20|M|Occipital Cortex
-T98|2005|1|46|F|Left Neocortical Temporal
-T100|2008|1|19|F|Right Insula
-T101|2011|1|25|F|Left Neocortical Temporal
-T103|2009|1|49|M|Right Mesial Temporal
-T107|2007|1|64|F|Left Mesial Temporal
-"""
+# The paper's patient tables, read from Europe PMC's copy of the open access full texts.
+PAPER_PMC = "PMC7055261"      # this paper, doi:10.1038/s41597-020-0415-9, Online-only Table 1
+FARAUT_PMC = "PMC5810422"     # Faraut et al. 2018, doi:10.1038/sdata.2018.10, Table 1
 
 
-# Table 1 of Faraut et al. 2018, Scientific Data 5, 180010 (doi:10.1038/sdata.2018.10, CC BY 4.0),
-# the paper describing the earlier release of this task's data: subject, session ids, task
-# variants, age, sex, diagnosis. Copied from the article as text; used only to mark which sessions
-# of the dandiset were in the earlier release. Its abstract gives 1576 neurons in 65 sessions of
-# 42 patients.
-FARAUT_2018_TABLE_1 = """\
-H09|5, 6|1, 2|55|M|Right Mesial Temporal
-H10|7|1|37|M|Left Frontal
-H11|9|1|16|M|Right Lateral Frontal
-H14|17, 18|2, 1|31|M|Bilateral Indep. Temporal
-H15|20, 21|1, 2|45|M|Right Mesial Temporal
-H16|23, 24|2, 1|34|F|Right Frontal
-H17|32|1|19|M|Left Inferior Frontal
-H18|26|1|40|M|Right Mesial Temporal
-H19|27, 28|2, 1|34|M|Left Frontal
-H21|38, 39, 41|2, 1, 3|20|M|Not Localized
-H23|43, 44, 47|3, 2, 1|40|M|Left Mesial Temporal
-H27|58|2|40|M|Bilateral Indep. Temporal
-H28|48|3|22|M|Right Mesial Temporal
-H29|49|3|17|F|Left Deep Insula
-H31|50|2|30|M|Right Mesial Temporal
-H33|52|1|29|M|Left Mesial Temporal
-H42|54, 55|1, 1|29|M|Not Localized
-H43|56|1|27|F|Left Mesial Temporal
-H44|68|1|57|F|Right Mesial Temporal
-H47|92, 97|1, 3|20|M|Right Mesial Temporal
-H48|98, 99|2, 1|54|M|Left Mesial Temporal
-H51|104, 105|3, 1|24|M|Bilateral Frontal and Temporal
-C24|59, 60|1, 2|47|F|Not localized
-C25|61, 63|1, 2|36|F|Bilateral Indep. Mesial Temporal
-C26|64, 66|1, 2|56|F|Left Mesial Temporal
-C27|67|1|44|M|Left Mesial Temporal
-C29|69, 70|1, 2|19|M|Left Neocortical Temporal
-C31|73|3|32|M|Left Neocortical Temporal
-C32|74|2|19|M|Not Localized (Generalized)
-C33|76, 77, 78|3, 2, 1|44|F|Right Mesial Temporal
-C34|85|3|70|M|Bilateral Mesial Temporal
-C37|96|3|33|F|Right Mesial Temporal
-C38|102|3|63|F|Right Mesial Temporal
-C39|93, 100|1, 3|26|M|Right Insula
-C40|101|3|25|M|Right Motor Cortex
-C42|111, 112|1, 2|25|F|Not Localized
-C43|113|3|42|F|Left Mesial Temporal
-C44|114|3|53|F|Right Mesial Temporal
-C47|115|3|32|M|Right Mesial Temporal
-C48|116|3|32|F|Left Mesial Temporal
-C49|117, 118|3, 1|24|F|Left Mesial Temporal
-C51|119, 120|3, 1|17|M|Not Localized (No Seizures)
-"""
+def _s(x):
+    if isinstance(x, bytes):
+        return x.decode()
+    if isinstance(x, np.ndarray) and x.shape == ():
+        return _s(x[()])
+    return x
 
 
-def _parse_table(text: str) -> pd.DataFrame:
-    rows = []
-    for line in text.strip().splitlines():
-        sid, sessions, variants, age, sex, diagnosis = line.split("|")
-        for s, v in zip(re.findall(r"\d+", sessions), re.findall(r"\d+", variants)):
-            rows.append({"table_subject": sid, "session": int(s), "variant": int(v), "age": int(age),
-                         "sex": sex, "diagnosis": diagnosis})
-    return pd.DataFrame(rows)
+def list_assets():
+    """Paths and S3 URLs of the dandiset's NWB files at the pinned version."""
+    client = DandiAPIClient()
+    ds = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
+    out = []
+    for a in ds.get_assets():
+        if a.path.endswith(".nwb"):
+            out.append((a.path, a.get_content_url(follow_redirects=1, strip_query=True), a.size))
+    return sorted(out)
 
 
-def online_table_1() -> pd.DataFrame:
-    """Online-only Table 1 as one row per session."""
-    return _parse_table(ONLINE_TABLE_1)
+def dandiset_metadata():
+    client = DandiAPIClient()
+    return client.get_dandiset(DANDISET_ID, DANDISET_VERSION).get_raw_metadata()
 
 
-def faraut_2018_table_1() -> pd.DataFrame:
-    """Table 1 of Faraut et al. 2018 (the earlier release) as one row per session."""
-    return _parse_table(FARAUT_2018_TABLE_1)
+def _table(g, skip=()):
+    cols = {}
+    for k in g:
+        if k in skip or k == "id" or k.endswith("_index"):
+            continue
+        d = g[k]
+        if not isinstance(d, h5py.Dataset) or d.ndim != 1:
+            continue
+        v = d[:]
+        if v.dtype.kind in "OS":
+            v = np.array([_s(x) for x in v], dtype=object)
+        cols[k] = v
+    df = pd.DataFrame(cols)
+    df.index = g["id"][:]
+    return df
 
 
-# --- loading ------------------------------------------------------------------
-
-def _text(x):
-    return x.decode() if isinstance(x, bytes) else x
-
-
-def _column(group, name):
-    d = group[name][()]
-    if d.dtype == object:
-        d = np.array([_text(x) for x in d])
-    return d
-
-
-def asset_urls() -> list[tuple[str, str]]:
-    """(path, S3 URL) of every asset of the pinned version, sorted by path."""
-    dandiset = DandiAPIClient().get_dandiset(DANDISET_ID, DANDISET_VERSION)
-    return [(a.path, a.get_content_url(follow_redirects=1, strip_query=True))
-            for a in sorted(dandiset.get_assets(), key=lambda a: a.path)]
-
-
-def load_session(path: str, url: str) -> dict:
-    """Everything the analysis uses from one file, without the stimulus images."""
+def load_session(path, url):
+    """Read one file: everything the analyses use, without the stimulus images."""
     with h5py.File(remfile.File(url), "r") as f:
         s = {"path": path}
-        for key, name in [("identifier", "identifier"), ("session_start_time", "session_start_time"),
-                          ("subject_id", "general/subject/subject_id"), ("age", "general/subject/age"),
-                          ("sex", "general/subject/sex"), ("diagnosis", "general/subject/description"),
-                          ("species", "general/subject/species"), ("institution", "general/institution"),
-                          ("data_collection", "general/data_collection")]:
-            s[key] = _text(f[name][()])
-        s["devices"] = list(f["general/devices"].keys())
-        g = f["intervals/trials"]
-        s["trials"] = pd.DataFrame({k: _column(g, k) for k in g})
-        s["trial_descriptions"] = {k: _text(g[k].attrs.get("description", "")) for k in g}
-        s["events"] = np.array([float(_text(x)) for x in f["acquisition/events/data"][()]])
-        s["events_t"] = f["acquisition/events/timestamps"][()]
-        s["events_description"] = _text(f["acquisition/events"].attrs["description"])
-        s["experiment_ids"] = f["acquisition/experiment_ids/data"][()]
-        s["experiment_ids_t"] = f["acquisition/experiment_ids/timestamps"][()]
+        for k in ["identifier", "session_description", "session_start_time"]:
+            s[k] = _s(f[k][()])
+        for k in ["data_collection", "experiment_description", "institution", "lab"]:
+            s[k] = _s(f["general"][k][()]) if k in f["general"] else None
+        subj = f["general/subject"]
+        s["subject"] = {k: _s(subj[k][()]) for k in subj}
+        s["nwb_version"] = _s(f.attrs.get("nwb_version"))
+        ev = f["acquisition/events"]
+        s["events"] = np.array([float(_s(x)) for x in ev["data"][:]])
+        s["events_t"] = ev["timestamps"][:]
+        s["events_description"] = _s(ev.attrs.get("description"))
+        ex = f["acquisition/experiment_ids"]
+        s["expids"] = ex["data"][:]
+        s["expids_t"] = ex["timestamps"][:]
+        s["expids_description"] = _s(ex.attrs.get("description"))
+        s["trials"] = _table(f["intervals/trials"])
+        s["trials_columns"] = [_s(c) for c in f["intervals/trials"].attrs["colnames"]]
+        s["label_description"] = " ".join(_s(f["intervals/trials/new_old_labels_recog"].attrs.get("description", "")).split())
+        el = f["general/extracellular_ephys/electrodes"]
+        s["electrodes"] = _table(el, skip=("group",))
+        s["electrodes_columns"] = [_s(c) for c in el.attrs["colnames"]]
         u = f["units"]
-        s["unit_columns"] = sorted(u.keys())
-        times, index = u["spike_times"][()], u["spike_times_index"][()]
-        s["spikes"] = np.split(times, index[:-1])
-        s["unit_electrode"] = u["electrodes"][()]
-        s["unit_electrode_index"] = u["electrodes_index"][()]
-        s["cluster_id"] = u["origClusterID"][()]
-        s["snr"] = u["SNR"][()]
-        s["isolation_distance"] = u["IsolationDist"][()]
-        s["waveform_rate"] = u["waveform_mean_sampling_rate"][()].ravel()
-        s["waveform_shape"] = u["waveform_mean_encoding"].shape
-        e = f["general/extracellular_ephys/electrodes"]
-        s["electrodes"] = pd.DataFrame({k: _column(e, k) for k in e if k != "group"})
-        p = f["stimulus/presentation"]
-        s["stimulus"] = {k: (p[k]["data"].shape, p[k]["timestamps"][()]) for k in p}
-    s["session"] = int(s["identifier"].split("_")[1])
-    s["label"] = s["identifier"].split("_")[0]
-    s["site"] = "TWH" if s["label"].startswith("T") else "CS"
+        s["units_columns"] = [_s(c) for c in u.attrs["colnames"]]
+        s["units_datasets"] = sorted(u.keys())
+        s["unit_ids"] = u["id"][:]
+        st = u["spike_times"][:]
+        idx = u["spike_times_index"][:]
+        s["spikes"] = np.split(st, idx[:-1])
+        eidx = u["electrodes_index"][:]
+        s["unit_electrodes"] = np.split(u["electrodes"][:], eidx[:-1])
+        for k in ["origClusterID", "SNR", "IsolationDist", "IsolDist"]:
+            if k in u:
+                s[k] = u[k][:]
+        s["waveform_rate"] = u["waveform_mean_sampling_rate"][:].ravel() if "waveform_mean_sampling_rate" in u else None
+        for k in ["waveform_mean_encoding", "waveform_mean_recognition"]:
+            s[k + "_shape"] = u[k].shape if k in u else None
+        pres = f["stimulus/presentation"] if "stimulus/presentation" in f else {}
+        s["stimulus_series"] = {k: (pres[k]["data"].shape if "data" in pres[k] else None) for k in pres}
+    m = re.match(r"([A-Z]+)(\d+)_(\d+)$", s["identifier"])
+    s["label"] = m.group(1) + m.group(2)
+    s["session_id"] = int(m.group(3))
+    m2 = re.search(r"ID:\s*(\d+)", s["session_description"] or "")
+    s["session_id_description"] = int(m2.group(1)) if m2 else None
     return s
 
 
-def load_all(workers: int = 8) -> list[dict]:
-    """All sessions of the pinned version, streamed in parallel, sorted by session id."""
-    urls = asset_urls()
-    with ThreadPoolExecutor(workers) as pool:
-        sessions = list(pool.map(lambda pu: load_session(*pu), urls))
-    return sorted(sessions, key=lambda s: s["session"])
+def load_all(assets, workers=6):
+    with ThreadPoolExecutor(workers) as ex:
+        sessions = list(ex.map(lambda a: load_session(a[0], a[1]), assets))
+    return sorted(sessions, key=lambda s: s["session_id"])
 
 
-def recognition(s: dict) -> pd.DataFrame:
-    """Recognition trials with integer label, confidence response (1-6) and category."""
-    r = s["trials"][s["trials"].stim_phase == "recog"].copy()
-    r["label"] = r.new_old_labels_recog.astype(int)
-    r["response"] = (r.response_value - 30).astype(int)
-    r["category"] = r.stimCategory.astype(int)
-    return r.reset_index(drop=True)
+def site(label):
+    """CS (labels H or C) or TWH (labels T), as the Figure 5 legend defines."""
+    return "TWH" if label.startswith("T") else "CS"
 
 
-# --- spikes -------------------------------------------------------------------
+# --- the paper's patient tables ------------------------------------------------------------
 
-def window_rates(spikes: np.ndarray, onsets: np.ndarray, window: tuple[float, float]) -> np.ndarray:
-    """Spikes per second in (onset + start, onset + stop] for each onset; spikes need not be sorted."""
+def pmc_table(pmc, label):
+    """Rows of the table with this label in Europe PMC's full-text XML of an article."""
+    r = requests.get(f"https://www.ebi.ac.uk/europepmc/webservices/rest/{pmc}/fullTextXML", timeout=60)
+    r.raise_for_status()
+    root = ET.fromstring(r.content)
+    for tw in root.iter("table-wrap"):
+        lab = tw.find("label")
+        if lab is not None and lab.text and lab.text.strip() == label:
+            return [["".join(td.itertext()).strip() for td in tr] for tr in tw.iter("tr")]
+    raise ValueError(f"{label} not found in {pmc}")
+
+
+def patient_table(pmc, label):
+    """Subject rows of a patient table: one row per (subject, session) with variant, age, sex, diagnosis."""
+    rows = []
+    for r in pmc_table(pmc, label):
+        if len(r) < 7 or not re.match(r"^[HCT]\d+$", r[0]):
+            continue
+        sids = [int(x) for x in re.findall(r"\d+", r[2])]
+        vars_ = [int(x) for x in re.findall(r"\d+", r[3])]
+        for i, sid in enumerate(sids):
+            rows.append({"label": r[0], "n_sessions": int(r[1]), "session_id": sid,
+                         "variant": vars_[i] if i < len(vars_) else None,
+                         "age": int(r[4]), "sex": r[5], "diagnosis": r[6]})
+    return pd.DataFrame(rows)
+
+
+def table_label(label):
+    """File labels are P9HMH, P24CS, TWH088; the tables write H09, C24, T88."""
+    m = re.match(r"P(\d+)(HMH|CS)$", label)
+    if m:
+        return ("H" if m.group(2) == "HMH" else "C") + f"{int(m.group(1)):02d}"
+    m = re.match(r"TWH(\d+)$", label)
+    if m:
+        return f"T{int(m.group(1))}"
+    return label
+
+
+# --- trials and behaviour ------------------------------------------------------------------
+
+def recog_trials(s):
+    t = s["trials"]
+    r = t[t["stim_phase"] == "recog"].copy()
+    r["conf"] = r["response_value"] - 30
+    r["label"] = pd.to_numeric(r["new_old_labels_recog"], errors="coerce")
+    return r
+
+
+def check_responses_against_events(s):
+    """The responses the paper's code reads from the events (recognition experiment id, codes 30 to 36)."""
+    ids = np.unique(s["expids"])
+    recog_id = ids[1] if len(ids) > 1 else np.nan
+    ev = s["events"][(s["expids"] == recog_id) & (s["events"] >= 30) & (s["events"] <= 36)] - 30
+    return ev
+
+
+def typecounters(label, conf):
+    """Counts of old (label 1) and new (label 0) trials at each confidence, from 6 ('old, confident') down."""
+    old = np.array([np.sum((conf == c) & (label == 1)) for c in range(6, 0, -1)])
+    new = np.array([np.sum((conf == c) & (label == 0)) for c in range(6, 0, -1)])
+    return old, new
+
+
+def adjust_hf(h, f, n_old, n_new):
+    """adjustHF.m: rates of 0 or 1 moved by half a trial."""
+    h = np.where(h == 1, 1 - 1 / (2 * n_old), h)
+    f = np.where(f == 1, 1 - 1 / (2 * n_new), f)
+    h = np.where(h == 0, 1 / (2 * n_old), h)
+    f = np.where(f == 0, 1 / (2 * n_new), f)
+    return h, f
+
+
+def cumulative_roc(label, conf):
+    """Hit and false alarm rates at the six cumulative criteria (helper.cal_cumulative_d)."""
+    old, new = typecounters(label, conf)
+    n_old, n_new = old.sum(), new.sum()
+    h = np.cumsum(old) / n_old
+    f = np.cumsum(new) / n_new
+    return adjust_hf(h, f, n_old, n_new)
+
+
+def auc(h, f):
+    """helper.cal_auc / calcROC_AUC.m: trapezoid rule with (0,0) and (1,1) added."""
+    tp, fp = list(h), list(f)
+    if tp[0] != 0 or fp[0] != 0:
+        tp, fp = [0.0] + tp, [0.0] + fp
+    if tp[-1] != 1 or fp[-1] != 1:
+        tp, fp = tp + [1.0], fp + [1.0]
+    a = 0.0
+    for i in range(1, len(tp)):
+        a += (fp[i] - fp[i - 1]) * tp[i - 1] + 0.5 * (tp[i] - tp[i - 1]) * (fp[i] - fp[i - 1])
+    return a
+
+
+def zroc_slope(h, f):
+    """calcZROCSlope.m: regression of z(H) on z(F) over the first five cumulative points."""
+    zh, zf = stats.norm.ppf(h[:5]), stats.norm.ppf(f[:5])
+    if np.unique(zf).size < 2:
+        return np.nan
+    return stats.linregress(zf, zh).slope
+
+
+def accuracy_fixed_split(label, conf):
+    """NO_behavior_evaluateSessionStatus.m (useDynamicSplitMode=0): high = 1 or 6, low = 2 to 5.
+    Returns percent correct among high and among low confidence responses (nan when none)."""
+    correct = ((conf <= 3) & (label == 0)) | ((conf >= 4) & (label == 1))
+    hi = (conf == 1) | (conf == 6)
+    lo = (conf >= 2) & (conf <= 5)
+    f = lambda m: 100 * correct[m].mean() if m.sum() else np.nan
+    return f(hi), f(lo)
+
+
+def accuracy_dynamic_split(label, conf):
+    """helper.dynamic_split and its use in behavior_all.py, as the Python code has it.
+    Mode 1 is high = 1 or 6, low = 2, 3 or 4 (the Python code's low old responses are 4 only;
+    NO_dynamic_lowHighSplit.m has 4 or 5); mode 2 is high = 1, 2, 5, 6, low = 3 or 4."""
+    counts = np.array([np.sum(conf == k) for k in range(1, 7)])
+    c1, c2, c3 = counts[0] + counts[5], counts[1] + counts[4], counts[2] + counts[3]
+    split = np.array([c1 - (c2 + c3), (c1 + c2) - c3])
+    mode = int(np.where(np.abs(split) == np.min(np.abs(split)))[0][0]) + 1
+    if counts[0] == 0 or counts[5] == 0:
+        mode = 2
+    if counts[1] == 0 or counts[4] == 0:
+        mode = 1
+    old, new = label == 1, label == 0
+    if mode == 1:
+        hi_old, lo_old = conf >= 6, conf == 4
+        hi_new, lo_new = conf <= 1, (conf == 2) | (conf == 3)
+    else:
+        hi_old, lo_old = conf >= 5, conf == 4
+        hi_new, lo_new = conf <= 2, conf == 3
+    tp_hi, tp_lo = (old & hi_old).sum(), (old & lo_old).sum()
+    tn_hi, tn_lo = (new & hi_new).sum(), (new & lo_new).sum()
+    n_hi = ((old | new) & (hi_old | hi_new)).sum()
+    n_lo = ((old | new) & (lo_old | lo_new)).sum()
+    hi = 100 * (tp_hi + tn_hi) / n_hi if n_hi else np.nan
+    lo = 100 * (tp_lo + tn_lo) / n_lo if n_lo else np.nan
+    return hi, lo, mode
+
+
+# --- single neurons ------------------------------------------------------------------------
+
+def window_rates(spikes, onsets, window):
+    """Spike counts strictly inside (onset + start, onset + end), divided by the window length."""
     sp = np.sort(spikes)
     lo = np.searchsorted(sp, onsets + window[0], side="right")
-    hi = np.searchsorted(sp, onsets + window[1], side="right")
+    hi = np.searchsorted(sp, onsets + window[1], side="left")
     return (hi - lo) / (window[1] - window[0])
 
 
-def anova_p(rates: np.ndarray, groups: np.ndarray) -> float:
-    """One-way ANOVA p across groups; 1.0 when the rates do not vary."""
-    parts = [rates[groups == g] for g in np.unique(groups)]
-    if np.all(rates == rates[0]):
-        return 1.0
-    return float(stats.f_oneway(*parts).pvalue)
+def vs_p(rates, categories):
+    groups = [rates[categories == c] for c in np.unique(categories)]
+    if len(groups) < 2 or all(np.all(g == g[0]) for g in groups if len(g)):
+        return np.nan
+    return stats.f_oneway(*groups).pvalue
 
 
-def bootstrap_p(z: np.ndarray, y: np.ndarray, rng: np.random.Generator, B: int = 1000) -> float:
-    """Two-sided bootstrap test of equal means (Efron and Tibshirani 16.2; bootstrapMeanEqualTest.m)."""
-    xm = np.mean(np.concatenate([z, y]))
-    zt, yt = z - z.mean() + xm, y - y.mean() + xm
-    zs = zt[rng.integers(0, len(z), size=(B, len(z)))].mean(axis=1)
-    ys = yt[rng.integers(0, len(y), size=(B, len(y)))].mean(axis=1)
-    return float(np.mean(np.abs(zs - ys) >= abs(z.mean() - y.mean())))
+def bootstrap_p(a, b, rng, n_boot=N_BOOT):
+    """Two-tailed bootstrap test of equal means (single_neuron.py ms_test; bootstrapMeanEqualTest.m)."""
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    if len(a) == 0 or len(b) == 0:
+        return np.nan
+    m = np.mean(np.concatenate([a, b]))
+    at, bt = a - a.mean() + m, b - b.mean() + m
+    ia = rng.integers(0, len(a), size=(n_boot, len(a)))
+    ib = rng.integers(0, len(b), size=(n_boot, len(b)))
+    t = np.abs(at[ia].mean(1) - bt[ib].mean(1))
+    return np.mean(t >= abs(a.mean() - b.mean()))
 
 
-def isi_fraction(spikes: np.ndarray, limit: float = 0.003, sort: bool = True) -> float:
-    """Fraction of interspike intervals shorter than ``limit`` seconds."""
-    sp = np.sort(spikes) if sort else spikes
-    isi = np.diff(sp)
-    return float(np.mean(isi < limit)) if len(isi) else np.nan
+def isi_violation_fraction(spikes, sort=True, limit=0.003):
+    sp = np.sort(spikes) if sort else np.asarray(spikes)
+    if len(sp) < 2:
+        return np.nan
+    return np.mean(np.diff(sp) < limit)
 
 
-# --- behaviour ----------------------------------------------------------------
+# --- checks of the files -------------------------------------------------------------------
 
-def type_counters(labels: np.ndarray, responses: np.ndarray) -> np.ndarray:
-    """Hits and false alarms per confidence level, from "old, confident" (6) down to 1."""
-    levels = range(6, 0, -1)
-    hits = [np.sum((responses == k) & (labels == OLD)) for k in levels]
-    fas = [np.sum((responses == k) & (labels == NEW)) for k in levels]
-    return np.array([hits, fas])
-
-
-def _adjust(rate: float, n: int) -> float:
-    if rate == 1:
-        return 1 - 1 / (2 * n)
-    if rate == 0:
-        return 1 / (2 * n)
-    return rate
+def variant_from_images(s):
+    """Task variant from the image directory of the trials (newolddelay, newolddelay2, newolddelay3),
+    the directories of Table 2 of Faraut et al. 2018."""
+    dirs = {re.split(r"[\\/]", p)[0].lower() for p in s["trials"]["external_image_file"]}
+    out = {"newolddelay": 1, "newolddelay2": 2, "newolddelay3": 3}
+    v = {out.get(d) for d in dirs}
+    return v.pop() if len(v) == 1 else None
 
 
-def cumulative_rates(labels: np.ndarray, responses: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Cumulative hit and false alarm rates over the six criteria, adjusted for 0 and 1."""
-    c = type_counters(labels, responses)
-    n_old, n_new = c[0].sum(), c[1].sum()
-    h = [_adjust(c[0, :i + 1].sum() / n_old, n_old) for i in range(6)]
-    f = [_adjust(c[1, :i + 1].sum() / n_new, n_new) for i in range(6)]
-    return np.array(h), np.array(f)
+def trial_event_order(s, learn_codes=(20, 21), recog_codes=tuple(range(31, 37))):
+    """For each stimulus onset (1) in the events, whether the next four codes are offset (2),
+    question (3), a response of the phase's kind and end of trial (6). Returns (n onsets, n bad)."""
+    ids = np.unique(s["expids"])
+    n, bad = 0, 0
+    for k, eid in enumerate(ids):
+        ev = s["events"][s["expids"] == eid]
+        resp = learn_codes if k == 0 else recog_codes
+        for i in np.where(ev == 1)[0]:
+            n += 1
+            nxt = ev[i + 1:i + 5]
+            ok = len(nxt) == 4 and nxt[0] == 2 and nxt[1] == 3 and nxt[2] in resp and nxt[3] == 6
+            bad += not ok
+    return n, bad
 
 
-def auc(labels: np.ndarray, responses: np.ndarray) -> float:
-    """Area under the cumulative ROC (trapezoid rule, with (0,0) and (1,1) added; calcROC_AUC.m)."""
-    h, f = cumulative_rates(labels, responses)
-    if f[0] != 0 or h[0] != 1:      # the code's condition, which always adds (0,0) here
-        h, f = np.r_[0, h], np.r_[0, f]
-    if f[-1] != 1 or h[-1] != 1:
-        h, f = np.r_[h, 1], np.r_[f, 1]
-    area = 0.0
-    for i in range(1, len(h)):
-        if f[i - 1] < f[i]:
-            area += (f[i] - f[i - 1]) * h[i - 1] + 0.5 * (h[i] - h[i - 1]) * (f[i] - f[i - 1])
-    return area
-
-
-def zroc_slope(labels: np.ndarray, responses: np.ndarray) -> float:
-    """Slope of z(hit) on z(false alarm) over the five interior points (calcZROCSlope.m)."""
-    h, f = cumulative_rates(labels, responses)
-    zh, zf = stats.norm.ppf(h[:-1]), stats.norm.ppf(f[:-1])
-    return float(np.polyfit(zf, zh, 1)[0])
-
-
-def zroc_degenerate(labels: np.ndarray, responses: np.ndarray) -> bool:
-    """True when the five interior z(false alarm) or z(hit) points are all equal.
-
-    Then the regression of zroc_slope has no unique fit (equal z(FA)) or a slope of 0 that only
-    reflects the absence of responses between the extremes (equal z(H)), not an estimate.
-    """
-    h, f = cumulative_rates(labels, responses)
-    return bool(np.ptp(f[:-1]) == 0 or np.ptp(h[:-1]) == 0)
-
-
-def confidence_accuracy(labels: np.ndarray, responses: np.ndarray, split: str = "fixed") -> tuple[float, float]:
-    """Percent correct among high and among low confidence responses.
-
-    ``fixed``: high is 1 or 6, low is 2 to 5 (NO_behavior_evaluateSessionStatus.m).
-    ``dynamic``: high is 1 and 6, or 1, 2, 5 and 6, whichever split balances the counts better
-    (NO_dynamic_lowHighSplit.m). NaN when a group has no responses.
-    """
-    correct = ((responses >= 4) & (labels == OLD)) | ((responses <= 3) & (labels == NEW))
-    if split == "fixed":
-        high = (responses == 1) | (responses == 6)
-    else:
-        n = [np.sum(responses == k) for k in range(1, 7)]
-        c1, c2, c3 = n[0] + n[5], n[1] + n[4], n[2] + n[3]
-        mode = 1 if abs(c1 - (c2 + c3)) <= abs((c1 + c2) - c3) else 2
-        if n[0] == 0 or n[5] == 0:
-            mode = 2
-        if n[1] == 0 or n[4] == 0:
-            mode = 1
-        high = np.isin(responses, [1, 6]) if mode == 1 else np.isin(responses, [1, 2, 5, 6])
-    low = ~high
-    acc = lambda m: 100 * correct[m].mean() if m.any() else np.nan
-    return acc(high), acc(low)
-
-
-# --- the paper's code ---------------------------------------------------------
-
-CODE_REPO = "rutishauserlab/recogmem-release-NWB"
-CODE_COMMIT = "1d95162d2672e71dd234a31e4b8d70017a289ee3"
-CODE_DIR = "RutishauserLabtoNWB/events/newolddelay/"
-
-
-def code_file(path: str) -> str:
-    """Text of a file of the paper's code at the pinned commit, path relative to CODE_DIR."""
-    url = f"https://raw.githubusercontent.com/{CODE_REPO}/{CODE_COMMIT}/{CODE_DIR}{path}"
-    with urllib.request.urlopen(url) as response:
-        return response.read().decode()
-
-
-def code_session_list() -> pd.DataFrame:
-    """defineNOsessions_release.ini, the code's session list, one row per section.
-
-    ``session`` is the section's session id, ``name`` its NOsessions.session string; ``active`` is
-    False for sections whose lines are all commented out.
-    """
-    rows, row = [], None
-    for line in code_file("defineNOsessions_release.ini").splitlines():
-        m = re.match(r"^(#?)\[(\d+)\]", line.strip())
-        if m:
-            row = {"session": int(m.group(2)), "active": m.group(1) == ""}
-            rows.append(row)
-            continue
-        m = re.match(r"^(#?)NOsessions\.(\w+)\s*=\s*'?([^'#]*?)'?\s*$", line.strip())
-        if row is not None and m and m.group(2) in ("ID", "age", "sex", "session", "filename") \
-                and (m.group(1) == "") == row["active"]:
-            row["name" if m.group(2) == "session" else m.group(2)] = m.group(3).strip()
-    return pd.DataFrame(rows)
+def duplicated_trains(sessions):
+    """Units whose spike trains are identical to a unit of an earlier file (by session id).
+    Returns a set of (session_id, unit index) to drop when each train is counted once, and the
+    pairs of sessions that share trains with their counts."""
+    seen, drop, pairs = {}, set(), {}
+    for s in sessions:
+        for i, sp in enumerate(s["spikes"]):
+            key = (len(sp), np.asarray(sp).tobytes())
+            if key in seen:
+                drop.add((s["session_id"], i))
+                p = (seen[key][0], s["session_id"])
+                pairs[p] = pairs.get(p, 0) + 1
+            else:
+                seen[key] = (s["session_id"], i)
+    return drop, pairs
