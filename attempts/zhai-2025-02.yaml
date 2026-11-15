@@ -558,6 +558,24 @@ findings:
     in NeuronStudio and in Imaris with manual correction, and the dandiset holds the images but no counts. What did the
     manual correction change (spines added or removed, by what rule), and could the counts per dendrite, with the file
     and segment each comes from, be deposited with the images?
+- kind: metadata_error
+  statement: The session names of the SCH 23390 and sulpiride files (D1RaSch, D2RaSul) state a drug, while 11 somatic
+    cells in these files have baseline on-state sweeps and 4 of them are baseline only (dSPN 2019-05-07 cell 1, iSPN
+    2019-04-08 cell 1, 2019-04-09 cell 1 and 2019-05-08 cell 2). Each sweep's group is in the condition and drug columns
+    of the intracellular recordings table; grouping by session name puts these cells in the drug groups.
+  found: on_prompt
+- kind: paper_inconsistency
+  statement: Recomputed on the paper's per-cell tables (doi:10.5281/zenodo.17307059), two reported P values differ. The
+    Wilcoxon test of oxo-M in CDGI KO iSPNs (Figure 7E, 12 cells) gives P = 0.4697 where the paper reports 0.910, and
+    the Mann-Whitney test of rotations in Figure 8A (10 KO and 12 wild-type mice) gives P = 0.01198 where the paper
+    reports 0.0092. The wild-type oxo-M test gives P = 0.009766, as the paper's 0.0098.
+  found: on_prompt
+- kind: other
+  about: data
+  statement: 18 of 123 somatic cells have no sweep at one or more current steps between 20 and 300 pA, and 14 of these
+    have another step recorded twice (dSPN 2017-07-07 cell 2, on-state, has none at 100 and at 220 to 300 pA and two at
+    -20 pA). Their spike counts over 20 to 300 pA cannot be complete.
+  found: on_prompt
 verifications:
 - date: '2026-11-15'
   kind: agent
@@ -1110,3 +1128,143 @@ verifications:
     outcome: reproduced
     reason: Agrees with the stated outcome.
     response: No change.
+reconciliation:
+  earlier: zhai-2025-01
+  date: '2026-11-15'
+  blind: true
+  findings:
+  - finding: 1
+    status: partly_fixed
+    now: 11
+    note: The draft now holds the oxo-M line scans (5 wild-type and 6 CDGI KO cells, before and after oxo-M, in
+      earlier_findings.ipynb). It still has no patch-clamp file of unlesioned or 6-OHDA mice and no open-field data,
+      which zhai-2025-02 reports with the dandiset description now saying so.
+  - finding: 2
+    status: partly_fixed
+    now: 4
+    note: The draft holds all 33 Sr2+-oEPSC cells (14 files) and the 34 GRAB-ACh3.0 regions, where version 0.260527.1302
+      held one cell or region per mouse. The Figure 8 AIM sheets still lack five of the paper's mice and hold three not in
+      it (4123, 4124, 5871), now stated in the description, while all 21 Figure 10 mice are present.
+  - finding: 3
+    status: still_present
+    now: 13
+    note: In earlier_findings.ipynb the D1RaSch and D2RaSul files still hold 11 somatic cells with baseline on-state
+      sweeps, 4 of them baseline only (the same four cells). Each sweep's condition and drug are now in the intracellular
+      recordings table, so the group can be read from the standard columns.
+  - finding: 4
+    status: fixed
+    note: In earlier_findings.ipynb each of the 42 behaviour mice has one group, one session-name genotype and one subject
+      genotype across its AIM and video files. Mouse 2587 is a control and 1945, 2519, 2828 and 6572 are CDGI knockouts,
+      and all 18 Figure 8 mice in the paper's table have the paper's group.
+  - finding: 5
+    status: still_present
+    now: 4
+    note: Both find the Figure 8 session totals differ from the paper's table (earlier 20 of 25 sessions differ, now 6% of
+      control and 16% of CDGI KO sessions are equal) while the Figure 10 mice agree (now 103 of 105 sessions). The number
+      of time points per session was not checked again.
+  - finding: 6
+    status: partly_fixed
+    now: 1
+    note: The six-trial series of iSPN 2016-05-26 cell 3, iSPN 2016-06-08 cell 1 and dSPN 2017-02-04 cell 1 are now two
+      series of three trials, Spot1 and Spot2 of the same site, so the first two cells still have no proximal-distal pair
+      (zhai-2025-02 finding 1). In earlier_findings.ipynb the one-, two- and four-trial series remain (iSPN 2016-05-24
+      cell 2 Proximal1 has one trial), and a six-trial series appears in the oxo-M data (iSPN 2018-03-14 cell 2 Distal2).
+  - finding: 7
+    status: partly_fixed
+    now: 2
+    note: iSPN 2019-05-08 cell 3 now has a Proximal2 and Distal2 pair, and its index is 0.217, the paper's value
+      (earlier_findings.ipynb). dSPN 2019-04-11 cell 1 still lacks its first site pair and gives 0.584 against the paper's
+      0.228.
+  - finding: 8
+    status: still_present
+    now: 12
+    note: Both report that the dandiset holds the spine image stacks but no spine counts; zhai-2025-02 asks for the counts
+      per dendrite, and its finding 11 reports the rotation counts missing.
+  - finding: 9
+    status: fixed
+    note: In earlier_findings.ipynb all 102 dendritic stimulus series have a peak of 2000 with a conversion of 1e-12 to
+      amperes (2.0 nA), none is all zero, and all 1276 dendritic sweeps have a valid line-scan (kymograph) slice.
+  - finding: 10
+    status: fixed
+    note: In earlier_findings.ipynb each of the 333 Sr2+-oEPSC sweeps (33 cells) has one light pulse in the optogenetic
+      pulses table, at 0.02 s from the sweep start, and references a voltage-clamp stimulus; the all-zero OptogeneticSeries
+      are gone.
+  - finding: 11
+    status: fixed
+    note: No object in the 11 GRAB-ACh3.0 files mentions a background, the PMT, the laser power or zero; the reference
+      images are described as Prairie View field-of-view images, not as a background (earlier_findings.ipynb).
+  - finding: 12
+    status: fixed
+    note: All 391 NWB files give doi 10.1126/sciadv.adv8224 as their related publication, none mentions the preprint or
+      Figure 7J, and the behaviour files name Figures 8 and 10 as in the published paper (earlier_findings.ipynb).
+  - finding: 13
+    status: still_present
+    now: 6
+    note: Both report that subjects are defined per recording day and that the files do not say which mouse each cell came
+      from.
+  - finding: 14
+    status: still_present
+    now: 14
+    note: On the paper's tables, earlier_findings.ipynb gives P = 0.4697 for oxo-M in CDGI KO (paper 0.910), P = 0.01198
+      for Figure 8A (paper 0.0092) and P = 0.009766 for oxo-M in wild type. zhai-2025-02 has the same values in its notes
+      (0.47 and 0.012) but did not record them as a finding.
+  - finding: 15
+    status: still_present
+    now: 15
+    note: In earlier_findings.ipynb 18 of 123 somatic cells still miss a step between 20 and 300 pA and 14 repeat a step,
+      every one of them also missing one. zhai-2025-02 counts the 14 repeats in a deviation but did not record a finding.
+  outcomes:
+  - claim: fig1i-dspn-dendritic-sch-lower
+    earlier: not_reproduced
+    note: A difference in method. Both find dSPN 2019-04-11 cell 1 with only its second site pair and P = 0.0662 (0.066)
+      with it; zhai-2025-01 kept the cell, and zhai-2025-02 left it out as an assumption (P = 0.027), citing the draft's
+      description, which now says the first pair is not deposited.
+  - claim: fig2h-dspn-sr-amplitude-on-larger
+    earlier: blocked
+    note: A change in the dataset. Version 0.260527.1302 held one Sr2+-oEPSC cell per mouse (3 against 4 dSPNs, smallest
+      attainable P 0.057), and the draft holds all 33 cells. The new outcome rests on a stand-in event detector.
+  - claim: fig2i-dspn-sr-frequency-unchanged
+    earlier: blocked
+    note: A change in the dataset, as for fig2h-dspn-sr-amplitude-on-larger. With 3 against 4 cells the claim of absence
+      could not be judged; the draft's 10 and 8 cells give P = 0.122, on a stand-in event detector.
+  - claim: fig3f-ispn-dendritic-sul-no-change
+    earlier: not_reproduced
+    note: A change in the dataset. iSPN 2019-05-08 cell 3 had only a distal site in version 0.260527.1302 (P = 0.0097
+      without it); the draft holds its site pair, with the paper's index 0.217, and zhai-2025-02 gets P = 0.093 with 8
+      sulpiride cells. The on-state group also differs (10 cells against 9), as zhai-2025-01 split the six-trial series of
+      2016-06-08 cell 1 into two sites.
+  - claim: fig4g-ispn-sr-amplitude-on-smaller
+    earlier: blocked
+    note: A change in the dataset. Version 0.260527.1302 held 3 off-state and 4 on-state iSPNs, one per mouse, and the
+      draft holds the paper's 7 and 8. The new outcome rests on a stand-in event detector.
+  - claim: fig4h-ispn-sr-frequency-unchanged
+    earlier: blocked
+    note: A change in the dataset, as for fig4g-ispn-sr-amplitude-on-smaller; the draft's cells give P = 0.12, on a
+      stand-in event detector.
+  - claim: fig5f-ach-6ohda-elevated
+    earlier: blocked
+    note: A change in the dataset. Version 0.260527.1302 held one GRAB-ACh3.0 region per mouse (3 against 3, smallest
+      attainable P 0.10), and the draft holds 13 unlesioned and 10 6-OHDA regions. The claims file gives this claim no
+      criterion, as it was written blocked; zhai-2025-02 used the Methods' Mann-Whitney test.
+  - claim: fig5f-ach-d2-control
+    earlier: blocked
+    note: A change in the dataset. Version 0.260527.1302 held 3 unlesioned regions (smallest paired P 0.25), and the draft
+      holds 13. The claims file gives no criterion; zhai-2025-02 used paired Wilcoxon tests.
+  - claim: fig5f-ach-da-suppresses
+    earlier: blocked
+    note: A change in the dataset. Version 0.260527.1302 held 3 6-OHDA and 5 off-state regions, and the draft holds 10 and
+      11. The claims file gives no criterion; zhai-2025-02 used paired Wilcoxon tests.
+  - claim: fig10b-m1r-aims
+    earlier: blocked
+    note: A change in the dataset. Version 0.260527.1302 held AIM sheets for 2 of the 21 Figure 10 mice, and the draft
+      holds all 21, which match the paper's table in 103 of 105 sessions.
+  protocol: zhai-2025-01 was made under pilot-7 and zhai-2025-02 under pilot-15. pilot-8 added the paper's quotes and
+    statistics to claims files (added to this one on 2026-10-19) and marked link claims as kind link. pilot-9 required
+    the full text and methods taken from the paper, running every reading the paper allows and blocking a claim as
+    methods_underspecified when they disagree. pilot-10 gave the claims file to a reader who does not see the data and
+    bound the author to it. pilot-12 made repeat attempts blind and added this reconciliation; pilot-13 raised the
+    notebook limit to 60 minutes, and pilot-14 filed records by paper, with missing_datasets. For this pair the claims
+    file stayed the one zhai-2025-01's author wrote after a data check, as pilot-7 allowed, with the criteria of
+    fig5f-ach-off-elevated and fig5f-ach-off-like-6ohda changed by a reader's answer to count regions. The claims it
+    blocked for too few units (the Sr2+-oEPSC, three GRAB-ACh3.0 and fig10b claims) carry no criterion, and zhai-2025-02
+    tested them with the Methods' default tests. docs/pilot-notes.md has no section for pilot-11 or pilot-15.
