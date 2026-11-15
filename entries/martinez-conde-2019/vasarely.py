@@ -15,7 +15,7 @@ smoothed_image_norm. The files hold more than it says:
 - `Standard`, in 60 of the 77 spike rate map files, holds the map registered to the stimulus,
   rotated so that the aligned fold is vertical and cropped to the region of interest (ROI), with
   the stimulus's equal-luminance polygons in the same frame (`EdgecompVert`, `DiagVert`,
-  `CornersVert`) and, in 40 of them, `BaseActivity`. The registration from the gaze frame to
+  `CornersVert`) and, in 38 of them, `BaseActivity`. The registration from the gaze frame to
   `Standard` uses the neuron's receptive field position, which the files do not store, so a
   file without `Standard` cannot be registered here.
 
@@ -42,17 +42,20 @@ Where the parameters come from:
   fold long and 8 DU wide (Results, "Responses averaged along the entire fold", paragraph 1).
 - Absolute baseline, reading "squares": the mean rate in 16 x 16 DU squares in 0% luminance
   areas (Methods, Visual stimuli). Square and Edge: four squares inside the corners of the
-  138 x 138 DU square centred on the Square (Methods, Square and edge; centred on the corners
-  they would leave the ROI). Star: four squares inside the corners of the 300 x 300 DU square
-  that circumscribes the 0% star's circumscribed circle (radius 150 DU; Methods, Star). Corners:
-  the paper says only "two 1 x 1 DVA square regions in 0% luminance areas within the ROI"
-  (Fig 2C shows them); the squares taken here are the two bottom corners of the ROI, the only
-  0% band inside it. This placement is an assumption. The squares inside the corners are
-  adopted because the Methods say the baseline was measured within the ROI, and squares centred
-  on the corners of the Square and Edge cross its border; reading "centred" (squares centred on
-  the corners, the part outside the ROI dropped) is a variant. Reading "dataset": the file's own
-  `Standard.BaseActivity`, undocumented, present for 40 of the 60 registered files; the files'
-  `smoothed_image_norm` is normalised by it (`norm_relation`).
+  138 x 138 DU square centred on the Square (Methods, Square and edge). Star: four squares
+  inside the corners of the 300 x 300 DU square that circumscribes the 0% star's circumscribed
+  circle (radius 150 DU; Methods, Star). Corners: the paper says only "two 1 x 1 DVA square
+  regions in 0% luminance areas within the ROI" (Fig 2C shows them); the squares taken here are
+  the two bottom corners of the ROI, in the 0% band at its bottom. These placements are
+  assumptions. The Methods say "at the corners of" the circumscribing square, which allows
+  squares inside the corners or centred on them; reading "centred" (squares centred on the
+  corners, the part outside the ROI dropped; at most 19% of a Square and Edge square) is run
+  throughout. Reading "nearest" takes, per stimulus, the placement whose baseline is nearer the
+  files' BaseActivity (centred for Square and Edge, inside for Star), and reading
+  "corners_quarter" puts the two Corners squares at a quarter and three quarters of the ROI's
+  width on its bottom edge, also on 0% luminance; both are compared in the notebook. Reading
+  "dataset": the file's own `Standard.BaseActivity`, undocumented, present for 38 of the 60
+  registered files; the files' `smoothed_image_norm` is normalised by it (`norm_relation`).
 - RMS contrast: 16 x 16 DU square centred on the Edge, moved from 0% to 100% in 1.5% steps
   (Results, "Neuron responses to corner-folds vs. different contrasts along edge"). The
   definition of RMS contrast is open; `rms_contrast` gives the readings of the claims file.
@@ -356,6 +359,8 @@ def load_all(z: zipfile.ZipFile | None = None, shifts: bool = True) -> list[dict
         d = read_mat(z, name)
         if isinstance(d, h5py.File):
             rec.update(format="v7.3", fields=sorted(d["dat"].keys()), registered=False)
+            if "norm" in d["dat"]:
+                rec["norm_values"] = np.asarray(d["dat"]["norm"], float).ravel()[:5].tolist()
             recs.append(rec)
             continue
         rec["format"] = "v5"

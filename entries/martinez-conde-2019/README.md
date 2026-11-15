@@ -28,9 +28,11 @@ reasoning and the differences from the paper's method.
 
 The data set holds 53 cells and 77 maps, where the paper analysed 58 neurons and 83 maps, and only
 60 of the maps carry the authors' registration to the stimulus; the Star results rest on 12 of the
-paper's 30 neurons. The baseline comparison and the Table 1 Edge and S90 outcomes depend on where
-the baseline squares are placed; the notebook shows both placements the Methods allow and the
-files' own undocumented baseline. The attempt record, with the reasons and the differences from the paper's
+paper's 30 neurons. The baseline comparison depends on taking the baseline squares the Methods
+describe and not the files' own undocumented baseline. The Table 1 Edge and S90 outcomes depend
+on where the Square and Edge squares are placed, and the Table 1 S40 outcome on where the Corners
+squares are; the notebook shows each placement, and the record proposes partial reproduction for
+Edge and S90, under the placement nearer the files' own baseline, for the next verification round. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/martinez-conde-2019-02.yaml`](../../attempts/martinez-conde-2019-02.yaml).
 
 - `reproduce_martinez_conde_2019.ipynb`: the analysis. It takes about two minutes, most of it
