@@ -94,13 +94,15 @@ def hex_sha256(b64: str | None) -> str | None:
 
 def kind_of(path: str) -> str:
     name = path.rsplit("/", 1)[-1].lower()
-    ext = name.rsplit(".", 1)[-1] if "." in name else ""
+    # Only a short suffix of letters and digits is an extension: "x 0.000714 um" has none.
+    ext = name.rsplit(".", 1)[-1] if re.search(r"\.[a-z0-9]{1,6}$", name) else ""
     return {"xlsx": "Excel", "xls": "Excel", "csv": "CSV", "tsv": "TSV", "txt": "text", "md": "Markdown",
             "json": "JSON", "mat": "MATLAB", "m": "MATLAB code", "h5": "HDF5", "hdf5": "HDF5", "nwb": "NWB",
             "tif": "TIFF", "tiff": "TIFF", "jp2": "JPEG 2000", "jpg": "JPEG", "png": "PNG", "pdf": "PDF",
             "zip": "zip", "py": "Python", "ipynb": "Jupyter", "r": "R script", "xml": "XML", "abf": "ABF",
             "smr": "Spike2", "adicht": "LabChart", "edf": "EDF", "nii": "NIfTI", "gz": "gzip",
-            "dcm": "DICOM", "rhd": "Intan", "acq": "AcqKnowledge", "vtk": "VTK", "stl": "STL"}.get(ext, ext or "no extension")
+            "dcm": "DICOM", "rhd": "Intan", "acq": "AcqKnowledge", "vtk": "VTK", "stl": "STL",
+            "czi": "Zeiss CZI", "lsm": "Zeiss LSM", "jpx": "JPEG 2000", "ims": "Imaris", "nd2": "Nikon ND2"}.get(ext, ext or "no extension")
 
 
 def sds(paths: list[str]) -> dict:

@@ -307,8 +307,11 @@ The workflows take a dataset in any of these forms.
   describes its files. The sheets' layout differs between versions of SDS:
   read every column. `metadata/records/` holds the same subjects and
   samples as CSV, from Pennsieve's records. The formats vary: MATLAB, HDF5,
-  CSV, Excel, TIFF and JPEG 2000 images, and acquisition formats
-  (LabChart, Spike2, Intan).
+  CSV and Excel; acquisition formats (LabChart, Spike2, Intan); and
+  microscopy, as TIFF, JPEG 2000 (`.jp2`, `.jpx`) and Zeiss files (`.czi`,
+  read with `czifile` or `aicspylibczi`; `.lsm`, a TIFF that `tifffile`
+  reads). Read an image's metadata (its scale, channels and planes) before
+  its pixels, and only the planes a claim needs.
 - **In an entry.** The entry names the dataset as `sparc:<id>/<version>`
   under `related`, and gives in the notebook header the SHA-256 of each file
   read.

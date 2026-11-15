@@ -159,7 +159,7 @@ def test_a_sparc_dataset_is_named_by_its_id_and_pinned_by_its_version():
 def test_sparc_targets_are_experiments_with_a_paper_in_pmc_and_checksums():
     from archives import ALL
     found = [t for t in datasets.targets() if t["archive"] == "sparc"]
-    assert len(found) == 3 and ALL["sparc"].stage is None and not ALL["sparc"].secrets
+    assert len(found) == 5 and ALL["sparc"].stage is None and not ALL["sparc"].secrets
     assert ALL["sparc"].builder == "tools/build_sparc_targets.py" and (REPO / ALL["sparc"].builder).is_file()
     for t in found:
         assert t["data_standards"][0] == "SDS" and "dataset_description" in t["sds"]["sheets"], t["id"]
@@ -168,6 +168,9 @@ def test_sparc_targets_are_experiments_with_a_paper_in_pmc_and_checksums():
         assert not any(p["doi"].startswith(("10.26275/", "10.17504/")) for p in t["papers"]), t["id"]
         assert len(t["files"]) == t["asset_count"] and all(len(f["sha256"]) == 64 and f["s3_version"]
                                                            for f in t["files"]), t["id"]
+    # SPARC:108 and SPARC:75 are the two datasets of one paper.
+    pnas = [t["id"] for t in found if any(p["doi"] == "10.1073/pnas.2023807118" for p in t["papers"])]
+    assert sorted(pnas) == ["108", "75"]
 
 
 @pytest.mark.parametrize("text, expected", [
@@ -191,6 +194,7 @@ def test_the_sparc_builder_gives_checksums_in_hex_and_knows_the_sds_parts():
     assert b.sds(["files/dataset_description.xlsx", "files/subjects.xlsx", "files/primary/manifest.xlsx",
                   "files/primary/sub-1/a.mat", "files/code/run.m", "readme.md"]) \
         == {"folders": ["code", "primary"], "sheets": ["dataset_description", "subjects"], "folder_manifests": 1}
+    assert b.kind_of("files/primary/a.CZI") == "Zeiss CZI" and b.kind_of("files/x/Z-stack 0.000714 um") == "no extension"
 
 
 @pytest.mark.parametrize("text, expected", [
