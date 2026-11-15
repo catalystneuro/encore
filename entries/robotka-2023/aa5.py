@@ -25,6 +25,14 @@ its code, github.com/ftheunissen/Ensemble-Code-Cell-Reports-2022 at commit f2d23
 - The PC weight of a trial is 1000 per spike at its nearest KDE sample, minus the mean, projected
   on the first five PCs (C4; GenerateDataBase.ipynb cell 17).
 - Decoder: GaussianNB with uniform priors (C5; decoders.naiveBayes).
+- `KDE_SIGMA = 0.03`: the Gaussian kernel of the time-varying response (STAR Methods, PC analysis,
+  "Gaussian kernels of 30 ms"), used only to check the stored spikeKDE (`kde_check`).
+- Neural clustering (C12; EPHYS4-Population_Clustering.ipynb): UMAP with default parameters in 2
+  dimensions, Ward linkage, the tree cut at the 499 thresholds min + i (max - min) / 500 of the
+  linkage distances, i = 1 to 499, and the first cut of highest ARI kept, as the code's strict
+  `ari > max_ari`. The code takes min and max over the whole linkage matrix (its index and count
+  columns too); C12 reads them as the linkage distances, which is followed. The UMAP seed is a
+  standard choice.
 """
 
 from __future__ import annotations
@@ -47,6 +55,7 @@ P_AUD = 0.01
 N_KDE = 1000
 MIN_TRIALS_KDE = 5
 N_PC = 5
+KDE_SIGMA = 0.03
 CALL_TYPES = ["Ag", "Be", "DC", "Di", "LT", "Ne", "So", "Te", "Th", "Wh"]
 
 
@@ -260,10 +269,26 @@ def kde_matrix(u):
     for r in voc_rows(u):
         if r["nTrials"] >= MIN_TRIALS_KDE:
             k = r["kde"][:N_KDE].astype(float)
-            if not np.sum(np.concatenate(r["spikeTimes"]) if r["spikeTimes"] else [0.0]):
+            if not sum(len(st) for st in r["spikeTimes"]):
                 k = np.zeros(N_KDE)  # the code leaves rows of stimuli with no spikes at zero
             out.append(k)
     return np.array(out).reshape(-1, N_KDE)
+
+
+def kde_check(r, sigmas=(0.01, 0.02, 0.03, 0.05)):
+    """Correlation of the stored spikeKDE (first 1000 samples) of one stimulus row with a Gaussian KDE
+    of its pooled spike times for each kernel SD, and the least-squares scale of the stored values
+    on the 30 ms KDE averaged over trials (spikes/s per trial)."""
+    tk = r["tKDE0"] + r["dtKDE"] * np.arange(N_KDE)
+    sp = np.concatenate(r["spikeTimes"]) if r["spikeTimes"] else np.zeros(0)
+    k = r["kde"][:N_KDE].astype(float)
+    out = {}
+    for sig in sigmas:
+        g = np.exp(-0.5 * ((tk[:, None] - sp[None]) / sig) ** 2).sum(axis=1) / (sig * np.sqrt(2 * np.pi)) / r["nTrials"]
+        out[sig] = np.corrcoef(g, k)[0, 1]
+        if sig == KDE_SIGMA:
+            out["scale"] = float(g @ k / (g @ g))
+    return out
 
 
 def trial_pcs(u, pca):
@@ -599,3 +624,82 @@ def lda_axes(mps, y, rule="largest"):
     val, vec = np.linalg.eig(M)
     order = np.argsort(-val.real)
     return np.real(vec[:, order[:3]]), val.real[order]
+
+
+# ----------------------------------------------------------------------------------------------
+# Neural clustering of ensembles (C12)
+
+
+def ensemble_responses(db, uids):
+    """Stimulus x (units x 6) matrix of the trial-averaged Z and T1..T5 of an ensemble (C12)."""
+    F, C = stack(db, uids)
+    W = np.nanmean(F, axis=2)                       # U, S, 6
+    return np.transpose(W, (1, 0, 2)).reshape(F.shape[1], -1)
+
+
+def ari(a, b):
+    """Adjusted Rand index of two labelings (Hubert and Arabie), equal to sklearn's
+    adjusted_rand_score, written with a contingency table for speed."""
+    _, ai = np.unique(a, return_inverse=True)
+    _, bi = np.unique(b, return_inverse=True)
+    M = np.zeros((ai.max() + 1, bi.max() + 1))
+    np.add.at(M, (ai, bi), 1)
+    c2 = lambda x: (x * (x - 1) / 2).sum()
+    sij, sa, sb, n2 = c2(M), c2(M.sum(axis=1)), c2(M.sum(axis=0)), c2(np.array([len(a)], float))
+    exp = sa * sb / n2
+    den = (sa + sb) / 2 - exp
+    return 1.0 if den == 0 else (sij - exp) / den
+
+
+def best_cut(Zl, labels):
+    """ARI-optimal cut of a linkage tree (C12): returns (best ARI, number of clusters)."""
+    from scipy.cluster.hierarchy import fcluster
+
+    d = Zl[:, 2]
+    th = d.min() + np.arange(1, 500) * (d.max() - d.min()) / 500
+    k = len(d) + 1 - np.searchsorted(np.sort(d), th, side="right")   # clusters at each threshold
+    first = np.r_[True, k[1:] != k[:-1]]           # a threshold that gives the same grouping as the one before is skipped
+    best = (-np.inf, 0)
+    for t in th[first]:
+        F = fcluster(Zl, t, criterion="distance")
+        a = ari(labels, F)
+        if a > best[0]:
+            best = (a, int(F.max()))
+    return best
+
+
+def _cluster_chunk(args):
+    Xs, labels, use_umap, seeds = args
+    import warnings
+
+    from scipy.cluster.hierarchy import linkage
+
+    out = []
+    for X, sd in zip(Xs, seeds):
+        if use_umap:
+            import umap
+
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                X = umap.UMAP(n_components=2, random_state=int(sd)).fit_transform(X)
+        out.append(best_cut(linkage(X, method="ward"), labels))
+    return out
+
+
+def run_clustering(db, ensembles, use_umap=True, seed=0, workers=4, chunk=100):
+    """ARIcall and the optimal number of clusters of each ensemble (C12). use_umap: (a) UMAP then
+    Ward (code), run in spawned processes (UMAP's numba threads hang in forked ones); False, (b)
+    Ward on the averaged responses, run here."""
+    import multiprocessing as mp
+
+    labels = db["y"]
+    seeds = np.random.default_rng(seed).integers(0, 2**31 - 1, len(ensembles))
+    Xs = [ensemble_responses(db, e) for e in ensembles]
+    args = [(Xs[i:i + chunk], labels, use_umap, seeds[i:i + chunk]) for i in range(0, len(Xs), chunk)]
+    if use_umap:
+        with mp.get_context("spawn").Pool(workers) as p:
+            res = p.map(_cluster_chunk, args)
+    else:
+        res = [_cluster_chunk(a) for a in args]
+    res = [r for rr in res for r in rr]
+    return np.array([r[0] for r in res]), np.array([r[1] for r in res])

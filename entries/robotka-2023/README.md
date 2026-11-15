@@ -19,12 +19,12 @@ repertoire, with songs and filtered songs.
 | Ensembles of 20 reach 42% with Z+T against 29.6% with Z | Reproduced (assumption) |
 | The top 10% of ensembles reach about 50% | Reproduced (assumption) |
 | Systematic confusions (Ne-Te, LT-Be, Th-Te, Di-Ag) | Reproduced |
-| Per bird and per sex decoding | Blocked: too few units in one bird |
-| PCC rises with the acoustic volume spanned (R2adj 0.1) | Partially reproduced (assumption) |
+| Per bird and per sex decoding | Blocked: too few good units in one bird |
+| PCC rises with the acoustic volume spanned (R2adj 0.1) | Reproduced (assumption) |
 | Mean SI is unrelated to PCC | Reproduced |
 | Mean Entropy Selectivity is negatively related to PCC | Reproduced |
 | PCC falls with neural variability (R2adj 0.1) | Partially reproduced |
-| Four regressors explain R2adj 0.22 | Partially reproduced (assumption) |
+| Four regressors explain R2adj 0.22 | Reproduced (assumption) |
 | Claims by brain area (three) | Blocked: metadata insufficient |
 | Acoustic clustering claims (five) | Blocked: data missing |
 | Anesthetized dataset claims (four) | Blocked: CRCNS aa-4 not analysed in this run |
@@ -34,6 +34,8 @@ the differences from the paper's method.
 
 The paper's Methods and its code differ on how the decoder is cross-validated; the ensemble claims are
 judged on the code's scheme, whose results match the paper's printed values, and the Methods' scheme is
-shown beside it. The notebook streams the whole data set (164 GB of tar.gz) from the CRCNS bucket,
-which takes about 20 minutes. The attempt record, with the reasons and the differences from the
+shown beside it. The code's scheme tests trials of exemplars the decoder was trained on, so it also credits
+responses specific to an exemplar. For Figure 5 the code's sound window and discriminant axes are adopted in
+the same way. The notebook streams the whole data set (164 GB of tar.gz) from the CRCNS bucket,
+which takes 15 to 30 minutes; the whole notebook ran in 47 minutes. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/robotka-2023-01.yaml`](../../attempts/robotka-2023-01.yaml).
