@@ -1,0 +1,357 @@
+schema_version: 3
+id: martinez-conde-2019-02
+datasets:
+- archive: crcns
+  id: pvc-12
+  version: unversioned
+  doi: 10.6080/K05D8Q1T
+  relation: primary
+paper: doi:10.1371/journal.pone.0210941
+date: 2026-11-15
+entry: martinez-conde-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43699045378
+outcomes:
+- claim: neuron-counts
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:neuron-counts
+  measured:
+  - 53
+  - 22
+  - 29
+  - 26
+  - 7
+  - 10
+  - 36
+  notes: Cells are identified by the code in the file names (the experiment prefix and a trailing
+    letter removed), which matches the spreadsheet V1_Vasarely_data_SMC.xlsx cell by cell. The
+    files hold 53 cells (49 from monkey J, 4 from monkey A) and 77 maps, 22 Square and Edge, 29
+    Star and 26 Corners (paper 25, 30, 28); 7 cells are in all three experiments, as in the paper,
+    10 in two and 36 in one (paper 11 and 40). The spreadsheet lists 58 cells, the paper's number,
+    but marks no experiment for 5 of them, and the zip has no files for those 5. The 118 recorded
+    and the 102 and 16 per monkey cannot be checked; the data set holds only analysed cells. Only
+    60 maps (22, 12, 26) can be placed on the stimulus (see the findings).
+- claim: spikes-per-condition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The number of spikes per neuron and condition needs the spike count map or the eye time
+    map, under either reading of the criterion. The files hold rate maps (`image` is the count
+    divided by eye time in 1 ms samples). One file of 77, ABC050900J1A, also stores `eyetime`; its
+    count is 15,644 spikes, above the 10,000 minimum. Spike times are not in the data set either.
+- claim: s4-baseline-no-difference
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:s4-baseline-no-difference
+  notes: With the 16 x 16 DU squares of the Methods, median baselines are 7.68 (Square and Edge,
+    22 neurons), 1.84 (Star, 12) and 2.45 spikes/s (Corners, 26). All three readings find a
+    difference; (a) rank sum with BH, Square and Edge against Star p = 0.0128 and against Corners
+    p = 0.0076, Star against Corners p = 0.73; (b) Kruskal-Wallis H = 11.31, p = 0.0035; (c) ANOVA
+    F = 7.81, p = 0.0010. With the files' own undocumented BaseActivity (9, 10 and 19 neurons;
+    medians 5.64, 2.68, 1.32) no reading is significant (smallest BH p = 0.109, Kruskal-Wallis
+    p = 0.114, ANOVA p = 0.166). The outcome rests on the squares as placed here (see deviations),
+    and the Star group has 12 of the paper's 30 neurons.
+  deviations:
+  - Absolute baseline from squares placed as the Methods describe for Square and Edge (inside the
+    corners of the 138 x 138 DU square around the Square; centred on the corners they leave the
+    ROI) and Star (inside the corners of the 300 x 300 DU square around the 0% star's
+    circumscribed circle). For Corners the paper gives no positions in the text ("two 1 x 1 DVA
+    square regions in 0% luminance areas within the ROI", Methods, Corners; shown only in Fig 2C);
+    the two bottom corners of the ROI, the only 0% band inside it, are assumed. The files'
+    BaseActivity is shown as a variant.
+  - Star has 12 neurons, Square and Edge 22 and Corners 26 (paper 30, 25 and 28).
+- claim: fig4a-above-baseline
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4a-above-baseline
+  notes: Above baseline, 20 of 22 neurons for P180, 20 of 22 for S90, 12 of 12 for S52 and 26 of
+    26 for S40. Mass centres lie above the unit line for every fold, and their vertical distance is
+    ordered P180 < S90 < S52 < S40 under reading (a), raw means (3.88, 8.21, 19.10, 26.41 spikes/s),
+    and (b), log means (0.179, 0.299, 0.926, 1.036 log10 units; 2 S40 neurons with a zero baseline
+    left out of the log). The same holds with the files' BaseActivity.
+  deviations:
+  - Baselines as in s4-baseline-no-difference; the outcome is the same under both baselines.
+  - Star has 12 neurons (paper 30).
+- claim: fig4b-spike-rate-difference
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4b-spike-rate-difference
+  measured:
+  - 26.41
+  - 19.1
+  - 8.21
+  - 3.88
+  notes: Means ± SEM, S40 26.41 ± 4.29 (26 neurons), S52 19.10 ± 3.01 (12), S90 8.21 ± 1.98 (22),
+    P180 3.88 ± 0.91 (22). Ordered S40 > S52 > S90 > P180; S40, S52 and P180 within tolerance, S90
+    0.54 spikes/s below 10.69 ± 1.94. With the files' BaseActivity, 29.10, 20.57, 9.08, 3.58, ordered,
+    with S40 and S90 within tolerance; with the unsmoothed map, 27.75, 20.35, 9.35, 3.25, ordered,
+    with P180 outside. The dark S40 fold of Corners, not used, gives 12.03.
+  deviations:
+  - Baselines as in s4-baseline-no-difference; which values fall within tolerance depends on the
+    baseline, so the outcome rests on the placement of the squares.
+  - The spike rate map is the files' own registered, smoothed map (Standard.smoothed_image), whose
+    smoothing is close to a Gaussian of SD 5 DU, not the 7 DU of the Fig 3B legend.
+  - The bright S40 fold of Corners is identified from the stimulus image as the one on which
+    luminance peaks (Methods, Corners, paragraph 2, "We did not analyze dark corner-folds"); it is
+    the same fold in all 26 files.
+  - Star has 12 neurons, Square and Edge 22, Corners 26 (paper 30, 25, 28).
+- claim: fig4b-pairwise-significance
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4b-pairwise-significance
+  notes: Rank sum tests with BH over all six pairs; S40 > S90 p = 0.00012, S40 > P180 p < 0.00001,
+    S52 > P180 p = 0.00005; also significant over the three named pairs. Of the other pairs, S52 >
+    S90 is significant (p = 0.0053), S40 > S52 (p = 0.35) and S90 > P180 (p = 0.072) are not. With
+    the files' BaseActivity the three named pairs are significant as well.
+  deviations:
+  - Baselines and neuron numbers as in fig4b-spike-rate-difference.
+- claim: fig5-average-maps
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig5-average-maps
+  notes: Average spike rate difference maps per stimulus (22, 12 and 26 neurons) read at the
+    midpoint squares give S40 26.41 > S52 19.07 > S90 8.15 > P180 3.79 spikes/s; the variant, mean
+    over the ten fold blocks, 23.14 > 17.20 > 7.43 > 3.47. As the criterion says, the midpoint
+    reading repeats the means of fig4b-spike-rate-difference.
+  deviations:
+  - The measure of the maps is the assumption the criterion names. The Corners maps of the
+    smaller size (257 x 193) are padded by 8 DU to the larger frame before averaging.
+- claim: table1-edge
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-edge
+  measured:
+  - 5.5
+  - 29.86
+  - 16.92
+  - 16.78
+  - 18.72
+  notes: Reading (a), per neuron then mean over 22 neurons, min 5.50, max 29.86, mean 16.92, median
+    16.78, midpoint 18.72 spikes/s; two of five within tolerance (max, midpoint). Reading (b),
+    population profile, 9.96, 21.01, 16.92, 17.63, 18.72; two of five (median, midpoint). With the
+    files' BaseActivity (9 neurons) none of five under either reading.
+  deviations:
+  - Blocks and midpoint are centred on the Edge line, so half of each block lies outside the
+    rectangle; the paper does not say otherwise.
+  - Baselines as in s4-baseline-no-difference; 22 neurons (paper 25).
+- claim: table1-p180
+  outcome: partially_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-p180
+  measured:
+  - -1.71
+  - 10.28
+  - 3.47
+  - 2.84
+  - 3.88
+  notes: Reading (a), min -1.71, max 10.28, mean 3.47, median 2.84, midpoint 3.88; three of five
+    within tolerance (max, mean, midpoint). Reading (b), 1.59, 4.93, 3.47, 3.58, 3.88; three of
+    five (mean, median, midpoint). With the files' BaseActivity, three of five under (a).
+  deviations:
+  - P180 is the line 48 DU from the Edge inside the rectangle, parallel to it (Methods, Square and
+    edge).
+  - Baselines as in s4-baseline-no-difference; 22 neurons (paper 25).
+- claim: table1-s90
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s90
+  measured:
+  - 2.27
+  - 13.42
+  - 7.46
+  - 7.52
+  - 8.21
+  notes: Reading (a) with halves (i), min 2.27, max 13.42, mean 7.46, median 7.52, midpoint 8.21;
+    one of five within tolerance (max). Halves (ii) under (a) also one; reading (b) none under
+    either half reading. With the files' BaseActivity (9 neurons) the best reading gives two of
+    five. Measured values are reading (a) with halves (i).
+  deviations:
+  - Baselines as in s4-baseline-no-difference; 22 neurons (paper 25).
+- claim: table1-s52
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s52
+  measured:
+  - 9.19
+  - 25.22
+  - 17.2
+  - 16.97
+  - 19.1
+  notes: Reading (a) with halves (i), min 9.19, max 25.22, mean 17.20, median 16.97, midpoint 19.10;
+    four of five within tolerance, the minimum above 6.26 ± 1.33; halves (ii) also four of five
+    (min 7.61). Reading (b) three of five. With the files' BaseActivity (10 neurons) the best
+    reading gives two of five, so the outcome rests on the baseline squares.
+  deviations:
+  - Star has 12 neurons (paper 30); the other 17 Star maps cannot be registered to the stimulus.
+  - Baselines as in s4-baseline-no-difference.
+- claim: table1-s40
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s40
+  measured:
+  - 10.65
+  - 34.4
+  - 23.14
+  - 23.15
+  - 26.41
+  notes: Reading (a), min 10.65, max 34.40, mean 23.14, median 23.15, midpoint 26.41; all five
+    within tolerance. Reading (b) three of five. With the files' BaseActivity (19 neurons), reading
+    (a) also gives five of five.
+  deviations:
+  - The bright S40 fold as in fig4b-spike-rate-difference; 26 neurons (paper 28).
+  - Baselines as in s4-baseline-no-difference; the outcome is the same under both baselines.
+- claim: fig6-midpoint-representative
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig6-midpoint-representative
+  notes: None of the ten rank sum tests (midpoint against the mean and the median of the blocks,
+    for Edge, P180, S90, S52, S40) is significant at 0.05, under either baseline or half reading;
+    smallest p 0.36. Median differences midpoint minus along-fold range from -0.21 (Edge, median)
+    to 2.39 spikes/s (S40, mean). The paired signed rank variant finds 3 of 10 significant (S40
+    mean p = 0.015, S40 median p = 0.009, S90 median p = 0.025), so the absence rests on the
+    unpaired test the paper names.
+  deviations:
+  - Baselines and neuron numbers as in the Table 1 claims.
+- claim: fig7a-rms-contrast-fit
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7a-rms-contrast-fit
+  measured:
+  - 0.9437
+  - 2.0898
+  - 1.155
+  - 0.2497
+  - 0.9668
+  - 0.8904
+  notes: Computed on the 22 Edge stimulus images in the registered frame (a 16 x 16 DU square
+    centred on the Edge, 0% to 100% in 1.5% steps, curves averaged over images; the images differ
+    by up to 0.217). Reading (a), SD over mean, is about 0.95 from 18% to 90% but 2.09 at 0% and
+    1.40 at 99%, range 0.94 to 2.09; its fit gives a = 1.155, b = 0.250, c = 0.967, R2 = 0.890
+    (measured, least squares). Reading (b), SD of 0-1 luminance, rises from 0.014 to 0.475 and fits
+    with a = -52.2, b = 0.0001, c = 52.2, R2 = 0.9988. No value but c of reading (a) and R2 of
+    reading (b) is within tolerance. A robust fit (soft L1, standing in for least absolute
+    residuals) gives the same picture.
+  deviations:
+  - The definition of RMS contrast is the paper's reference [21], not in the text read; the two
+    readings of the claims file were run, and neither gives the paper's curve.
+  - Least absolute residuals (MATLAB LAR) is approximated by a soft L1 robust fit.
+- claim: fig7c-fold-edge-equivalence
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7c-fold-edge-equivalence
+  notes: Edge responses (16 x 16 DU squares centred on the Edge, 22 neurons) rise from 8.61
+    spikes/s at 0% to 20.06 at 90% luminance. P180 (3.88) is below every Edge level, nearest 0%,
+    not 50%; S40 (26.41) is nearest 90%, as the paper says. Under reading (b), RMS levels from the
+    inverse of the paper's fit (luminance 0% to 77.7%), P180 is at the lowest level as the rule
+    allows, but S40 is nearest 0.943, 0.043 from 0.90, more than one step of 0.037. With the
+    files' BaseActivity, P180 nearest 0% and S40 nearest 80% under (a).
+  deviations:
+  - The RMS levels use the paper's fitted parameters, since the refit of fig7a-rms-contrast-fit
+    does not reproduce them.
+  - Baselines and neuron numbers as in fig4b-spike-rate-difference.
+- claim: fig7c-fold-edge-significance
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7c-fold-edge-significance
+  notes: Two-sample t-tests of fold midpoint against Edge response at the ten RMS levels. P180 is
+    lower than the Edge at 0.943 (t = -3.77, p = 0.0005) and S40 higher than the Edge at 0.610
+    (t = 3.63, p = 0.0007) and 0.647 (t = 3.55, p = 0.0009), significant under BH over 40 tests,
+    BH per fold, Bonferroni over 40 and Bonferroni per fold. With Bonferroni over 40, S40 is
+    significant at 0.610 and 0.647 only, the levels below 0.68; with BH over 40, up to 0.795, and
+    0.684 is significant under BH. With the files' BaseActivity the claim holds uncorrected and
+    with BH, not with Bonferroni.
+  deviations:
+  - Edge levels and baselines as in fig7c-fold-edge-equivalence.
+- claim: fig7d-nonlinear
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7d-nonlinear
+  notes: The four means are monotonic in angle. The least-squares line (-0.143 per degree) leaves
+    S40, S90 and P180 off by more than their SEM (residuals 4.77, -6.26, 2.31 spikes/s). Variant,
+    the slope from 52 to 90 degrees (-0.287) differs from that from 90 to 180 (-0.048) by more
+    than the propagated SE (0.098); the slopes 40 to 52 and 52 to 90 do not differ by more than
+    theirs (0.322 against 0.447). With the files' BaseActivity, S90 and P180 are off the line by
+    more than their SEM.
+  deviations:
+  - The rule for non-linearity is the assumption the criterion names; the paper reports no test.
+- claim: fig7d-dog-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the output of the difference-of-Gaussians model of the paper's reference [3] at the
+    four angles. It is not in the data set, and the paper and its supporting information give it
+    only as a curve in Fig 7D; no public, pinned copy of the model output was found.
+- claim: s3-latency-peak
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs maps made at latencies from 1 to 2400 ms, which need the spike times and eye
+    positions. The data set holds only the maps made at 60 ms.
+findings:
+- kind: data_missing
+  statement: The data set holds 53 cells and 77 spike rate maps (22 Square and Edge, 29 Star, 26
+    Corners), where the paper analysed 58 neurons and 83 maps (25, 30, 28). The spreadsheet
+    V1_Vasarely_data_SMC.xlsx lists 58 cells, but five of them (050800J1, 062000J1, 072100_C,
+    062600A2, 09250A1) have no experiment marked and no files.
+- kind: metadata_insufficient
+  statement: 17 of the 29 Star spike rate map files have no `Standard` struct, the map registered
+    to the stimulus. The maps of the other files are in gaze coordinates, and registering them
+    needs the receptive field position of the neuron, which no file stores. Each `Standard` map is
+    the gaze-frame map rotated and shifted (r of at least 0.996 over 60 files), and the shift
+    differs from file to file and, for one cell, by 11 to 58 DU between experiments. These 17 maps, two of them in an older layout (prefix ABS, one
+    saved as MATLAB v7.3), cannot be placed on the stimulus.
+- kind: metadata_insufficient
+  statement: The data descriptor does not mention most of what the files hold. `Standard` (the
+    registered, rotated and cropped map with the equal-luminance polygons of the stimulus in the
+    same frame), `BaseActivity` (a baseline in spikes per ms, in 40 files, whose computation is not
+    stated and does not match the baseline squares the paper describes), `norm`, `eyetime` (one
+    file) and `original_image` (two files) are undocumented, as are the prefixes ABC, ABD, ABS and
+    AEC, the letter after the cell number (A to E), and the units of the maps (spikes per 1 ms
+    sample).
+- kind: metadata_error
+  statement: The data descriptor says `image` "contains the raw spikes counts for each pixel". It
+    holds the count divided by the eye time in 1 ms samples, a rate; in the one file that also
+    stores `eyetime`, image times eyetime is an integer count at every pixel, and the maximum of
+    `image` is 1.0 in every file.
+- kind: data_missing
+  statement: The spike count maps, the eye time maps (except in one file), the spike times and the
+    eye positions are not in the data set, so the number of spikes per condition and the maps at
+    other latencies (S3 Fig) cannot be computed.
+- kind: other
+  about: data
+  statement: The stored `smoothed_image` is not the Gaussian smoothing (16 DU, SD 7 DU) that the
+    paper's Fig 3B legend describes. Smoothing `image` with that filter differs from it by 19% to
+    27% of the peak in the three files tested; a 16 DU Gaussian with SD 5 DU comes within 5% to 7%.
+- kind: other
+  about: data
+  statement: Two files, ABC051000J3 and ABC063000J1, have a `BaseActivity` of exactly 0 spikes/s.
+- kind: methods_unavailable
+  statement: Where were the two baseline squares of the Corners stimulus? The text says only "two
+    1 x 1 DVA (16 x 16 DU) square regions in 0% luminance areas within the ROI" (Methods, Corners)
+    and shows them in Fig 2C. This attempt took the two bottom corners of the ROI. For Square and
+    Edge and for Star, were the four squares inside the corners of the circumscribing square, as
+    assumed here (centred on the corners they leave the ROI)? The baseline decides whether the
+    baselines differ across stimuli (S4 Fig) and which Table 1 values fall within the paper's SEM;
+    the files' own `BaseActivity` gives different results.
+- kind: methods_unavailable
+  statement: How was the local RMS contrast along the Edge computed (reference [21])? Neither the
+    SD of luminance over its mean nor the SD of luminance scaled to 0 to 1, in a 16 x 16 DU square
+    centred on the Edge of the deposited stimulus images, gives the range 0.61 to 0.943 or the fit
+    f(l) = -0.34 exp(-0.05 l) + 0.95.
+- kind: methods_unavailable
+  statement: Which test found no difference in absolute baseline across the stimuli (S4 Fig), and
+    in Table 1 were the minimum, maximum, mean and median taken per neuron and then averaged, or
+    from the population-average profile, and were the two half-diagonals of the Square and the Star
+    averaged before or after the summaries? The attempt ran each reading the claims file lists.

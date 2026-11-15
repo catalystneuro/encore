@@ -1,67 +1,60 @@
-"""Loading and measures for CRCNS pvc-12 (Martinez-Conde et al. 2019, PLoS ONE 14(3) e0210941).
+"""Loading and measures for CRCNS pvc-12, V1 responses to Vasarely-based illusions.
 
-The data set is one zip, ``pvc-12/live/V1_Vasarely_data.zip``, read in place from the public S3
-bucket ``crcnsarchive`` over range requests (docs/archives.md, "CRCNS"). It holds one folder per
-experiment (``Corners``, ``Star``, ``Edge-compare``), and per neuron and experiment a
-``<code>_SpikeRateMap.mat`` and a ``<code>_Stimulus.mat``, plus ``V1_Vasarely_data_SMC.xlsx``.
+Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019), PLoS ONE 14(3): e0210941,
+doi:10.1371/journal.pone.0210941. Data set doi:10.6080/K05D8Q1T.
 
-What the files hold, as found here (the data descriptor says otherwise in places):
+The data set is one zip, V1_Vasarely_data.zip, streamed from the public S3 bucket and opened in
+place; nothing is written to disk. It holds, per neuron and experiment (Corners, Star,
+Edge-compare), a `<code>_SpikeRateMap.mat` and a `<code>_Stimulus.mat`, and a spreadsheet that
+lists the cells. The data descriptor names the fields image, smoothed_image and
+smoothed_image_norm. The files hold more than it says:
 
-- ``image``: the unsmoothed spike rate map on the 480 x 640 display-unit (DU) screen, in spikes
-  per eye-time sample. In the one file that also holds ``eyetime`` (in samples, 1 kHz),
-  ``image * eyetime`` is an integer spike count at every pixel, so the unit is spikes per ms;
-  rates here are multiplied by 1000 to give spikes/s. The descriptor calls ``image`` the raw
-  spike counts.
-- ``smoothed_image``: ``image`` smoothed (Fig 3B legend: Gaussian, 16 DU, STD 7 DU).
-- Both maps are in gaze coordinates: spikes are placed at the gaze position, not at the place of
-  the stimulus the receptive field (RF) covered, so they are offset from the stimulus by the RF
-  eccentricity, which no file states.
-- ``Standard`` (in all Corners and Edge-compare files and 12 of the 27 star files): the authors'
-  ROI-aligned maps (``image``, ``smoothed_image``), the stimulus polygons in the same frame
-  (``CornersVert``, ``DiagVert``, ``EdgecompVert``), and in some files ``BaseActivity`` (the
-  baseline, spikes per ms) and ``smoothed_image_norm``. This frame is the one of Fig 5: the fold
-  aligned with the preferred orientation is vertical. The stimulus polygons of the screen and of
-  ``Standard`` are related by a rotation and a translation (residual below 1e-9 DU), and the
-  screen ``smoothed_image`` rotated by it and shifted correlates with the ``Standard`` one at r
-  above 0.98 (shown in the notebook), so ``Standard`` is the screen map moved by the RF offset
-  and rotated.
-- ``*Vert`` polygons: 100 nested polygons per stimulus, polygon j at luminance 100 - j*100/99 %
-  (Square, Star: 0 is the outermost, 0%; Corners: 0 is the 100% edge; the luminance of every
-  location is checked against the stimulus image in the notebook).
+- `image` (480 x 640) is the unsmoothed spike rate map, spikes per 1 ms sample of eye time at
+  each display unit (DU); one file also stores `eyetime`, and image * eyetime is an integer
+  count there. `smoothed_image` is its smoothed version. Both are in gaze coordinates.
+- `Standard`, in 60 of the 77 spike rate map files, holds the map registered to the stimulus,
+  rotated so that the aligned fold is vertical and cropped to the region of interest (ROI), with
+  the stimulus's equal-luminance polygons in the same frame (`EdgecompVert`, `DiagVert`,
+  `CornersVert`) and, in 40 of them, `BaseActivity`. The registration from the gaze frame to
+  `Standard` uses the neuron's receptive field position, which the files do not store, so a
+  file without `Standard` cannot be registered here.
 
-Geometry (all in the ``Standard`` frame; vertex coordinates are MATLAB 1-based):
+Where the parameters come from:
 
-- Midpoint fold response: mean of the map in an 8 x 8 DU square centred on the fold's 50%
-  luminance point (claims file, opening comment; Results, "Strength of neuronal responses",
-  paragraph 1; Fig 2 legend).
-- Square S90: the two half-diagonals from the centre (100%) to the corners (0%) on the vertical
-  diagonal; Star S52: the two half-diagonals from the centre to the outer vertices on the vertical
-  diagonal; both midpoints are averaged (Methods, "Corners", paragraph 2).
-- Corners S40: the pattern has two 40 degree folds of opposite polarity. The bright one is where
-  the corner of the luminance contours points towards lower luminance; the paper analysed "only
-  ... symmetric bright corner-folds" (Methods, "Corners", paragraph 2), and the claims file takes
-  the bright S40 fold alone (its opening comment). The two folds averaged and the dark fold are
-  kept in ``corners_mode`` for reference only.
-- Edge: the short side of the rectangle, collinear with the Square's diagonal, 0% to 100%.
-  P180: the line parallel to the Edge, 48 DU into the rectangle, through its 50% luminance line
-  (Methods, "Square and edge").
-- Blocks: ten non-overlapping blocks along each fold from 0% to 100%, each 10% of luminance long
-  (15, 7, 15, 10 and 15 DU for P180, S90, S52, S40 and Edge, from the fold length in the data) and
-  8 DU wide (Results, "Responses averaged along the entire fold", paragraph 1).
-- Absolute baseline: the mean of the map in four 16 x 16 DU squares at the corners of the
-  square circumscribing the Square (side 141.4 DU, its diagonal; the text says 8.84 DVA, which
-  is 141.4 DU, and also 138 DU) or the Star's 0% polygon (side 300 DU), and for Corners in two
-  16 x 16 DU squares in the 0% area (Methods, "Visual stimuli"). Whether the squares are centred
-  on the corners or drawn inside them is not stated. The main reading (an assumption) takes, for
-  each stimulus, the placement closest to the files' own ``BaseActivity``: centred for Square and
-  Edge, inside for the Star (``baseline_value``). For Corners the two squares' positions are not
-  given in the text; see ``corners_baseline_centres``.
-- Spike rate difference: response minus absolute baseline (Methods, "Spike rate and spike rate
-  difference map").
-
-Sampling uses bilinear interpolation on a 1 DU grid inside each square or block, a standard
-choice that cannot change a result at these sizes.
+- Spike rate map: the smoothed map of `Standard` (`smoothed_image`), times 1000 to give spikes/s.
+  The Fig 3B legend says the rate map is smoothed after division by eye time. The unsmoothed
+  `Standard.image` is a variant (claim fig4b-spike-rate-difference).
+- Geometry, all in the Standard frame and read from each file's own polygons: polygon k of
+  the Square, the Star and the Edge rectangle is the k% equal-luminance boundary (k = 0..99,
+  the last one collapsing to the 100% point); in Corners it is the (99 - k)% boundary, as the
+  stimulus image shows (`check_luminance`). Fold ends (0% and 100%) come from polygons 0 and 99.
+- Midpoint: the 8 x 8 DU square centred on the 50% point of the fold (Results, "Strength of
+  neuronal responses", paragraph 1; Fig 2 legend). The Square and the Star have two symmetric
+  midpoints on the aligned diagonal, averaged (Methods, Corners, paragraph 2).
+- P180: the line in the rectangle 48 DU from the Edge, parallel to it (Methods, Square and edge:
+  "3 DVA (48 DU) away from Edge in the rectangle at the 50% luminance line").
+- Corners: of the two 40 degree folds, the bright one (Methods, Corners, paragraph 2, "We did
+  not analyze dark corner-folds"). Which one is bright is decided from the stimulus: on a
+  bright fold the luminance on the fold is higher than beside it on the same row, as on the
+  Square's diagonal (Fig 1A legend, nested squares of decreasing luminance have bright
+  diagonals). `fold_is_ridge` computes it.
+- Blocks along a fold: ten non-overlapping blocks from 0% to 100% luminance, each 10% of the
+  fold long and 8 DU wide (Results, "Responses averaged along the entire fold", paragraph 1).
+- Absolute baseline, reading "squares": the mean rate in 16 x 16 DU squares in 0% luminance
+  areas (Methods, Visual stimuli). Square and Edge: four squares inside the corners of the
+  138 x 138 DU square centred on the Square (Methods, Square and edge; centred on the corners
+  they would leave the ROI). Star: four squares inside the corners of the 300 x 300 DU square
+  that circumscribes the 0% star's circumscribed circle (radius 150 DU; Methods, Star). Corners:
+  the paper says only "two 1 x 1 DVA square regions in 0% luminance areas within the ROI"
+  (Fig 2C shows them); the squares taken here are the two bottom corners of the ROI, the only
+  0% band inside it. This placement is an assumption. Reading "dataset": the file's own
+  `Standard.BaseActivity`, undocumented, present for 40 of the 60 registered files.
+- RMS contrast: 16 x 16 DU square centred on the Edge, moved from 0% to 100% in 1.5% steps
+  (Results, "Neuron responses to corner-folds vs. different contrasts along edge"). The
+  definition of RMS contrast is open; `rms_contrast` gives the readings of the claims file.
 """
+
+from __future__ import annotations
 
 import io
 import re
@@ -70,436 +63,366 @@ import zipfile
 import fsspec
 import h5py
 import numpy as np
+import pandas as pd
 import scipy.io as sio
-import scipy.sparse as sp
-from scipy import ndimage
+from scipy.ndimage import map_coordinates
+from scipy.signal import fftconvolve
 
-URL = "https://crcnsarchive.s3-us-west-2.amazonaws.com/pvc-12/live/V1_Vasarely_data.zip"
-CHECKSUMS_URL = "https://crcnsarchive.s3-us-west-2.amazonaws.com/pvc-12/live/checksums.md5"
-ZIP_MD5 = "e1301fe463e72332e2303b2053ee0559"  # from the data set's checksums.md5
-ROOT = "V1_Vasarely_data/"
-XLSX = ROOT + "V1_Vasarely_data_SMC.xlsx"
+DATASET_ID = "pvc-12"
+DATASET_VERSION = "unversioned"   # CRCNS data sets have no versions; the zip's MD5 is pinned below
+BUCKET = "https://crcnsarchive.s3-us-west-2.amazonaws.com/pvc-12/live/"
+ZIP_URL = BUCKET + "V1_Vasarely_data.zip"
+ZIP_MD5 = "e1301fe463e72332e2303b2053ee0559"   # checksums.md5 of the data set
+DOI = "10.6080/K05D8Q1T"
 
-PER_MS_TO_PER_S = 1000.0  # maps are in spikes per 1 ms eye-time sample (see module docstring)
+CONDITIONS = {"Edge-compare": "Square and Edge", "Star": "Star", "Corners": "Corners"}
+DU_PER_DVA = 16
+MID_SIZE = 8            # DU, midpoint square (Results; Fig 2 legend)
+BLOCK_WIDTH = 8         # DU (Results, Responses averaged along the entire fold)
+BASE_SIZE = 16          # DU, baseline squares (Methods, Visual stimuli)
+CIRC_HALF = 69          # DU, half of the 138 DU square around the Square (Methods)
+P180_OFFSET = 48        # DU from the Edge into the rectangle (Methods)
+RMS_BOX = 16            # DU (Results, contrast section)
+RMS_STEP = 1.5          # % luminance (Results, contrast section)
+RATE_SCALE = 1000.0     # maps are spikes per 1 ms sample; times 1000 gives spikes/s
 
-CODE_RE = re.compile(r"^(ABC|ABD|ABS|AEC)(\d{5,6})([JA])(\d)([A-Z]?)$")
-PREFIX_CONDITION = {"ABC": "Corners", "ABD": "Star", "ABS": "Corners", "AEC": "Square and Edge"}
-VERT = {"Corners": "CornersVert", "Star": "DiagVert", "Edge-compare": "SquareVert"}
-IMG = {"Corners": "CornersImage", "Star": "DiagImage", "Edge-compare": "EdgecompImage"}
-
-_ZIP = None
-PAD = 16  # DU added on each side of the Square and Edge frame for the baseline squares (load_record)
-
-
-def zip_file():
-    """The data set's zip, opened in place over HTTP range requests."""
-    global _ZIP
-    if _ZIP is None:
-        _ZIP = zipfile.ZipFile(fsspec.open(URL, block_size=2**20).open())
-    return _ZIP
+CODE_RE = re.compile(r"^(A[A-Z]{2})(\d+[JA]\d)([A-Z]?)$")
 
 
-def parse_code(code):
-    """Split a file code such as ``ABD07240J1B`` into prefix, cell (``07240J1``), monkey, suffix."""
-    m = CODE_RE.match(code)
-    if not m:
-        raise ValueError(code)
-    prefix, date, monkey, num, suffix = m.groups()
-    return {"prefix": prefix, "cell": f"{date}{monkey}{num}", "monkey": monkey, "suffix": suffix}
+def open_zip() -> zipfile.ZipFile:
+    """The data set's zip, opened in place over range requests."""
+    return zipfile.ZipFile(fsspec.open(ZIP_URL, block_size=2**20).open())
 
 
-def list_files():
-    """One row per spike rate map: folder, code, and the parsed code."""
-    rows = []
-    for n in zip_file().namelist():
-        parts = n.split("/")
-        if len(parts) == 3 and parts[2].endswith("_SpikeRateMap.mat"):
-            code = parts[2].split("_")[0]
-            rows.append({"folder": parts[1], "code": code, "path": n, **parse_code(code)})
-    return sorted(rows, key=lambda r: (r["folder"], r["code"]))
+def checksums() -> str:
+    with fsspec.open(BUCKET + "checksums.md5", "rt") as f:
+        return f.read()
 
 
-def _arr(a):
-    return a.toarray() if sp.issparse(a) else np.asarray(a, float)
+def read_mat(z: zipfile.ZipFile, name: str):
+    """The `dat` variable of a MATLAB file; files saved as v7.3 come back as an h5py File."""
+    raw = z.read(name)
+    try:
+        return sio.loadmat(io.BytesIO(raw), squeeze_me=True, struct_as_record=False)["dat"]
+    except NotImplementedError:
+        return h5py.File(io.BytesIO(raw), "r")
 
 
-def load_mat(path):
-    """Return ('v5', struct) or ('h5', group) for the ``dat`` variable of a MATLAB file."""
-    b = zip_file().read(path)
-    if b"MATLAB 7.3" in b[:128]:
-        return "h5", h5py.File(io.BytesIO(b), "r")["dat"]
-    return "v5", sio.loadmat(io.BytesIO(b))["dat"][0, 0]
+def parse_code(stem: str) -> dict:
+    """File code such as ABC07240J1D: experiment prefix, cell (as in the spreadsheet), suffix."""
+    m = CODE_RE.match(stem)
+    prefix, cell, suffix = m.groups()
+    return {"prefix": prefix, "cell": cell, "suffix": suffix, "monkey": cell[-2]}
 
 
-def polygons(s):
-    """A MATLAB struct array of polygons (fields x, y) as an array (n_poly, n_vert, 2)."""
-    return np.array([np.c_[np.asarray(s[j, 0]["x"], float).ravel(),
-                           np.asarray(s[j, 0]["y"], float).ravel()] for j in range(s.shape[0])])
+def spreadsheet(z: zipfile.ZipFile) -> pd.DataFrame:
+    """V1_Vasarely_data_SMC.xlsx: one row per cell, an X under each experiment."""
+    raw = pd.read_excel(io.BytesIO(z.read("V1_Vasarely_data/V1_Vasarely_data_SMC.xlsx")), header=None)
+    head = raw.index[raw.eq("Cell").any(axis=1)][0]
+    cols = raw.iloc[head].tolist()
+    df = raw.iloc[head + 1:].copy()
+    df.columns = cols
+    df = df[[c for c in cols if isinstance(c, str)]].dropna(subset=["Cell"])
+    df["Cell"] = df["Cell"].astype(str)
+    for c in ["Corners", "Star", "Edge-Compare"]:
+        df[c] = df[c].astype(str).str.strip().eq("X")
+    return df.reset_index(drop=True)
 
 
-def fit_rigid(a, b):
-    """Least-squares similarity b ~ s R a + t; returns s, R, t and the largest residual."""
-    a0, b0 = a.mean(0), b.mean(0)
-    u, sv, vt = np.linalg.svd((b - b0).T @ (a - a0))
-    r = u @ vt
-    s = sv.sum() / ((a - a0) ** 2).sum()
-    t = b0 - s * r @ a0
-    return s, r, t, np.abs(b - (s * (r @ a.T).T + t)).max()
+def _dense(a):
+    a = a.toarray() if hasattr(a, "toarray") else a
+    return np.asarray(a, dtype=float)
 
 
-def warp(img, s, r, t, shape, shift=(0.0, 0.0), order=1):
-    """Resample a screen image into a frame of ``shape`` under u = s R x + t + shift (1-based)."""
-    h, w = shape
-    yy, xx = np.mgrid[0:h, 0:w].astype(float)
-    u = np.c_[xx.ravel() + 1 - shift[0], yy.ravel() + 1 - shift[1]]
-    x = (r.T @ (u - t).T).T / s
-    return ndimage.map_coordinates(img, [x[:, 1] - 1, x[:, 0] - 1], order=order, cval=0).reshape(h, w)
+def _poly(p) -> np.ndarray:
+    return np.c_[np.asarray(p.x, float).ravel(), np.asarray(p.y, float).ravel()]
 
 
-def register_shift(screen, s, r, t, target, pad=600):
-    """Integer shift (in the target frame) that best aligns the rotated screen map with target."""
-    big = warp(screen, s, r, t + np.array([pad, pad]), (target.shape[0] + 2 * pad, target.shape[1] + 2 * pad))
-    hh, ww = big.shape[0] + target.shape[0], big.shape[1] + target.shape[1]
-    fa = np.fft.fft2(big - big.mean(), (hh, ww))
-    fb = np.fft.fft2(target - target.mean(), (hh, ww))
-    c = np.real(np.fft.ifft2(fa * np.conj(fb)))
-    i, j = np.unravel_index(np.argmax(c), c.shape)
-    # lags run from -(target size - 1) to (big size - 1); larger indices are the negative lags
-    i = i - hh if i >= big.shape[0] else i
-    j = j - ww if j >= big.shape[1] else j
-    shift = (-(j - pad), -(i - pad))
-    moved = warp(screen, s, r, t, target.shape, shift=shift)
-    return shift, float(np.corrcoef(moved.ravel(), target.ravel())[0, 1])
+def _rigid(P: np.ndarray, Q: np.ndarray):
+    """Rotation R and translation t with Q = P R^T + t (least squares)."""
+    Pm, Qm = P.mean(0), Q.mean(0)
+    U, _, Vt = np.linalg.svd((P - Pm).T @ (Q - Qm))
+    R = (U @ Vt).T
+    return R, Qm - R @ Pm
 
 
-def load_record(row, with_screen=False):
-    """Read one neuron and experiment: maps (spikes/s), the Standard frame, vertices, luminance."""
-    folder = row["folder"]
-    kind, d = load_mat(row["path"])
-    skind, st = load_mat(row["path"].replace("_SpikeRateMap", "_Stimulus"))
-    rec = {**row, "mat": kind, "stim_mat": skind}
-    if skind == "h5":
-        rec["stim_type"] = "".join(chr(c) for c in np.array(st["type"]).ravel())
-        rec["stimulus"] = np.array(st["image"]).T
-        rec["fields"] = sorted(k for k in d.keys()) if kind == "h5" else list(d.dtype.names)
-        rec["has_standard"] = False
-        if with_screen:
-            rec["screen_smoothed"] = (np.array(d["smoothed_image"]).T if kind == "h5"
-                                      else _arr(d["smoothed_image"])) * PER_MS_TO_PER_S
-        return rec
-    rec["stim_type"] = {"Corners": "CORNERS", "Star": "STAR", "Edge-compare": "EDGE-COMPARE"}[folder]
-    rec["fields"] = list(d.dtype.names)
-    rec["stimulus"] = np.asarray(st[IMG[folder]], float)
-    rec["screen_poly"] = polygons(st[VERT[folder]])
-    if folder == "Edge-compare":
-        rec["screen_rect"] = polygons(st["RectVert"])
-    if with_screen or "Standard" not in d.dtype.names:
-        rec["screen_smoothed"] = _arr(d["smoothed_image"]) * PER_MS_TO_PER_S
-        rec["screen_image"] = _arr(d["image"]) * PER_MS_TO_PER_S
-    if "eyetime" in d.dtype.names:
-        rec["eyetime"] = _arr(d["eyetime"])
-        rec["screen_image"] = _arr(d["image"]) * PER_MS_TO_PER_S
-    rec["has_standard"] = "Standard" in d.dtype.names
-    if not rec["has_standard"]:
-        return rec
-    S = d["Standard"][0, 0]
-    rec["smoothed"] = _arr(S["smoothed_image"]) * PER_MS_TO_PER_S
-    rec["raw"] = _arr(S["image"]) * PER_MS_TO_PER_S
-    vname = [q for q in S.dtype.names if q.endswith("Vert")][0]
-    vv = S[vname]
-    if "x" in vv.dtype.names:
-        rec["poly"] = polygons(vv)
+def frame_transform(stim, std, condition: str, every: bool = False):
+    """Rotation R and translation t from the stimulus file's frame to the Standard frame,
+    fitted on the equal-luminance polygons, which both files store (Q = P R^T + t). The star is
+    symmetric under turns of 30 degrees, so its polygons fit several; `every` returns them all."""
+    if condition == "Edge-compare":
+        full, frame = stim.SquareVert, std.EdgecompVert.SquareVert
+    elif condition == "Corners":
+        full, frame = stim.CornersVert, std.CornersVert
     else:
-        rec["poly"] = polygons(vv[0, 0]["SquareVert"])
-        rec["rect"] = polygons(vv[0, 0]["RectVert"])
-    rec["base_activity"] = (float(np.asarray(S["BaseActivity"]).ravel()[0]) * PER_MS_TO_PER_S
-                            if "BaseActivity" in S.dtype.names else np.nan)
-    # Screen-to-Standard transform from the polygons. The Star's 24 vertices are symmetric under
-    # rotations of 30 degrees, so its vertex order is matched by trying every cyclic shift.
-    a = rec["screen_poly"]
-    best = None
-    if rec["folder"] == "Edge-compare":
-        # the rectangle breaks the Square's symmetry, so both are fitted together, in file order
-        s, r, t, err = fit_rigid(np.r_[a.reshape(-1, 2), rec["screen_rect"].reshape(-1, 2)],
-                                 np.r_[rec["poly"].reshape(-1, 2), rec["rect"].reshape(-1, 2)])
-        best = (s, r, t, err, 0)
-    for k in range(a.shape[1] if best is None else 0):
-        s, r, t, err = fit_rigid(np.roll(a, k, axis=1).reshape(-1, 2), rec["poly"].reshape(-1, 2))
-        if np.linalg.det(r) > 0 and (best is None or err < best[3]):
-            best = (s, r, t, err, k)
-    rec["transform"] = best
-    rec["lum"] = warp(rec["stimulus"], best[0], best[1], best[2], rec["smoothed"].shape, order=1)
-    if folder == "Edge-compare":
-        # The authors' frame is 151 DU wide, so 16 x 16 DU squares centred on the corners of the
-        # 141.4 DU circumscribing square run 5 DU beyond it. For those, the screen maps are moved
-        # into the frame widened by PAD on every side (registered as in the notebook's check).
-        screen_s = _arr(d["smoothed_image"]) * PER_MS_TO_PER_S
-        screen_r = _arr(d["image"]) * PER_MS_TO_PER_S
-        shift, corr = register_shift(screen_s, best[0], best[1], best[2], rec["smoothed"])
-        shape = (rec["smoothed"].shape[0] + 2 * PAD, rec["smoothed"].shape[1] + 2 * PAD)
-        tp = best[2] + np.array([PAD, PAD])
-        on_screen = warp(np.ones_like(screen_s), best[0], best[1], tp, shape, shift=shift)
-        rec["padded"] = {"smoothed": warp(screen_s, best[0], best[1], tp, shape, shift=shift),
-                         "raw": warp(screen_r, best[0], best[1], tp, shape, shift=shift),
-                         "on_screen": on_screen, "corr": corr,
-                         "lum": warp(rec["stimulus"], best[0], best[1], tp, shape, order=1)}
-    return rec
+        full, frame = stim.DiagVert, std.DiagVert
+    fits = []
+    # the star's vertices may be listed from another point, so try every cyclic shift
+    for shift in (range(24) if condition == "Star" else [0]):
+        P = np.vstack([np.roll(_poly(full[k]), shift, axis=0) for k in range(0, 90, 10)])
+        Q = np.vstack([_poly(frame[k]) for k in range(0, 90, 10)])
+        R, t = _rigid(P, Q)
+        fits.append((np.abs(P @ R.T + t - Q).max(), R, t))
+    fits.sort(key=lambda f: f[0])
+    if every:
+        return [(R, t) for err, R, t in fits if err < 1e-6]
+    return fits[0][1], fits[0][2]
 
 
-# ---------------------------------------------------------------- geometry in the Standard frame
+def _to_full(shape, R, t, margin: int = 0):
+    H, W = shape
+    cc, rr = np.meshgrid(np.arange(-margin, W + margin) + 1.0, np.arange(-margin, H + margin) + 1.0)
+    return (np.c_[cc.ravel(), rr.ravel()] - t) @ R, (H + 2 * margin, W + 2 * margin)
 
-def folds(rec, corners_mode="bright"):
-    """Fold segments as lists of (P0, P100) in the Standard frame (1-based x, y), per fold name.
 
-    corners_mode: "bright" (the bright S40 fold only, as the claims file takes it), or, for
-    reference only, "both" (the two S40 folds, averaged) or "dark" (the dark S40 fold).
+def standard_stimulus(stim, std, condition: str) -> np.ndarray:
+    """The file's stimulus image resampled into the Standard frame (nearest pixel); image pixel
+    (row, col) has coordinates (x, y) = (col + 1, row + 1), as the image and its polygons show."""
+    image = {"Edge-compare": "EdgecompImage", "Corners": "CornersImage", "Star": "DiagImage"}[condition]
+    R, t = frame_transform(stim, std, condition)
+    F, shape = _to_full(std.smoothed_image.shape, R, t)
+    return map_coordinates(np.asarray(getattr(stim, image), float), [F[:, 1] - 1, F[:, 0] - 1], order=0,
+                           cval=np.nan).reshape(shape)
+
+
+def gaze_shift(full_map: np.ndarray, std_map: np.ndarray, R, t, margin: int = 420):
+    """The shift (DU, display frame) that carries the stimulus-frame position of each Standard
+    pixel to where the gaze-frame map holds its value, found by least squares over integer shifts
+    in the Standard frame; with the correlation of the shifted map with `std_map`. It stands for
+    the receptive field position, which the files do not store."""
+    F, shape = _to_full(std_map.shape, R, t, margin)
+    G = map_coordinates(full_map, [F[:, 1] - 1, F[:, 0] - 1], order=1, cval=0).reshape(shape)
+    xc = fftconvolve(G, std_map[::-1, ::-1], mode="valid")
+    g2 = fftconvolve(G ** 2, np.ones_like(std_map), mode="valid")
+    i, j = np.unravel_index(np.argmin(g2 - 2 * xc), xc.shape)
+    H, W = std_map.shape
+    r = np.corrcoef(G[i:i + H, j:j + W].ravel(), std_map.ravel())[0, 1]
+    return np.array([j - margin, i - margin], float) @ R, float(r)
+
+
+def fold_geometry(std, condition: str) -> dict:
+    """Folds as vertical segments in the Standard frame: x, y at 0% and y at 100% luminance.
+
+    Read from the file's polygons (see the module docstring). Square and Star give two
+    half-diagonals each; Corners gives both 40 degree folds, labelled by apex direction.
     """
-    p = rec["poly"]
+    folds = {}
+    if condition == "Edge-compare":
+        sq0, sq99 = _poly(std.EdgecompVert.SquareVert[0]), _poly(std.EdgecompVert.SquareVert[99])
+        cx, cy = sq99.mean(0)
+        on_axis = sq0[np.abs(sq0[:, 0] - cx) < 1]
+        for y0 in sorted(on_axis[:, 1]):
+            folds["S90_" + ("near" if y0 < cy else "far")] = (cx, y0, cy)
+        r0, r99 = _poly(std.EdgecompVert.RectVert[0]), _poly(std.EdgecompVert.RectVert[99])
+        ex = r0[:, 0].min()
+        inward = 1.0 if r0[:, 0].max() > ex else -1.0
+        y_zero = r0[:, 1].max() if r99[:, 1].mean() < r0[:, 1].mean() else r0[:, 1].min()
+        y_full = r99[:, 1].mean()
+        folds["Edge"] = (ex, y_zero, y_full)
+        folds["P180"] = (ex + inward * P180_OFFSET, y_zero, y_full)
+        folds["_square_centre"] = (cx, cy)
+    elif condition == "Star":
+        p0, p99 = _poly(std.DiagVert[0]), _poly(std.DiagVert[99])
+        cx, cy = p99.mean(0)
+        r = np.hypot(p0[:, 0] - cx, p0[:, 1] - cy)
+        outer = p0[(r > r.max() - 1) & (np.abs(p0[:, 0] - cx) < 1)]
+        for x0, y0 in sorted(map(tuple, outer), key=lambda v: v[1]):
+            folds["S52_" + ("upper" if y0 < cy else "lower")] = (cx, y0, cy)
+        folds["_centre"] = (cx, cy)
+        folds["_outer_radius"] = r.max()
+    else:
+        p0, p99 = _poly(std.CornersVert[0]), _poly(std.CornersVert[99])
+        # apexes: vertices that move along y only; in polygon 0 the up-pointing apex is the
+        # vertex with the smallest y, the down-pointing one is the local maximum inside the zigzag
+        up = p0[np.argmin(p0[:, 1])]
+        inner = p0[(p0[:, 0] > p0[:, 0].min() + 1) & (p0[:, 0] < p0[:, 0].max() - 1)]
+        base_y = np.median(inner[:, 1])
+        down = inner[np.argmax(np.where(inner[:, 1] < base_y + 200, inner[:, 1], -np.inf))]
+        for name, apex in [("S40_up", up), ("S40_down", down)]:
+            same_x = p99[np.abs(p99[:, 0] - apex[0]) < 0.5]
+            k99 = same_x[np.argmin(np.abs(same_x[:, 1] - apex[1] - 100))]
+            # Corners polygons run from 100% (k = 0) to 0% (k = 99); see check_luminance
+            folds[name] = (apex[0], k99[1], apex[1])
+    return folds
+
+
+def box_mask(shape, x: float, y: float, w: float, h: float) -> np.ndarray:
+    """Pixels whose centres (1-based coordinates) lie in [x - w/2, x + w/2) x [y - h/2, y + h/2)."""
+    H, W = shape
+    cols = np.arange(W) + 1.0
+    rows = np.arange(H) + 1.0
+    mc = (cols >= x - w / 2) & (cols < x + w / 2)
+    mr = (rows >= y - h / 2) & (rows < y + h / 2)
+    return mr[:, None] & mc[None, :]
+
+
+def box_mean(M: np.ndarray, x: float, y: float, w: float, h: float | None = None) -> float:
+    m = box_mask(M.shape, x, y, w, w if h is None else h)
+    return float(M[m].mean()) if m.any() else np.nan
+
+
+def point_at(fold, frac: float):
+    """(x, y) at luminance fraction frac (0 = 0%, 1 = 100%) along a fold."""
+    x, y0, y1 = fold
+    return x, y0 + frac * (y1 - y0)
+
+
+def midpoint(M, fold) -> float:
+    x, y = point_at(fold, 0.5)
+    return box_mean(M, x, y, MID_SIZE)
+
+
+def blocks(M, fold, n: int = 10) -> np.ndarray:
+    """Mean of M in n blocks from 0% to 100%, each 1/n of the fold long and 8 DU wide."""
+    x, y0, y1 = fold
+    L = abs(y1 - y0)
+    return np.array([box_mean(M, x, y0 + (i + 0.5) / n * (y1 - y0), BLOCK_WIDTH, L / n)
+                     for i in range(n)])
+
+
+def fold_is_ridge(lum: np.ndarray, fold, side: float = 10.0) -> float:
+    """Luminance on the fold minus beside it (same row, +-side DU), mean over 20% to 80%.
+
+    Positive on a bright fold (luminance peaks on the fold), negative on a dark one.
+    """
+    x, y0, y1 = fold
+    out = []
+    for f in np.linspace(0.2, 0.8, 13):
+        _, y = point_at(fold, f)
+        on = box_mean(lum, x, y, 2)
+        off = np.nanmean([box_mean(lum, x - side, y, 2), box_mean(lum, x + side, y, 2)])
+        out.append(on - off)
+    return float(np.nanmean(out))
+
+
+def baseline_squares(shape, condition: str, folds: dict) -> list[tuple[float, float]]:
+    """Centres of the 16 x 16 DU baseline squares (reading "squares"; module docstring)."""
+    H, W = shape
+    s = BASE_SIZE / 2
+    if condition == "Edge-compare":
+        cx, cy = folds["_square_centre"]
+        return [(cx + sx * (CIRC_HALF - s), cy + sy * (CIRC_HALF - s)) for sx in (-1, 1) for sy in (-1, 1)]
+    if condition == "Star":
+        cx, cy = folds["_centre"]
+        R = folds["_outer_radius"]
+        return [(cx + sx * (R - s), cy + sy * (R - s)) for sx in (-1, 1) for sy in (-1, 1)]
+    # Corners: the two bottom corners of the ROI, in the 0% band (an assumption)
+    return [(s + 0.5, H - s + 0.5), (W - s + 0.5, H - s + 0.5)]
+
+
+def baseline(M, centres) -> float:
+    return float(np.mean([box_mean(M, x, y, BASE_SIZE) for x, y in centres]))
+
+
+def load_all(z: zipfile.ZipFile | None = None, shifts: bool = True) -> list[dict]:
+    """Every spike rate map file with its stimulus, reduced to what the analysis uses."""
+    z = z or open_zip()
+    recs = []
+    for name in sorted(z.namelist()):
+        if not name.endswith("_SpikeRateMap.mat"):
+            continue
+        condition = name.split("/")[1]
+        stem = name.split("/")[-1].split("_")[0]
+        rec = {"file": stem, "condition": condition, **parse_code(stem)}
+        d = read_mat(z, name)
+        if isinstance(d, h5py.File):
+            rec.update(format="v7.3", fields=sorted(d["dat"].keys()), registered=False)
+            recs.append(rec)
+            continue
+        rec["format"] = "v5"
+        rec["fields"] = list(d._fieldnames)
+        img = _dense(d.image)
+        rec["full_image_max"] = float(img.max())
+        rec["full_smoothed_max_hz"] = float(np.asarray(d.smoothed_image).max() * RATE_SCALE)
+        if hasattr(d, "eyetime"):
+            et = _dense(d.eyetime)
+            rec["eyetime_s"] = float(et.sum() / 1000)
+            rec["spikes_from_eyetime"] = float(np.round(img * et).sum())
+            rec["count_is_integer"] = bool(np.allclose(img * et, np.round(img * et)))
+        std = getattr(d, "Standard", None)
+        rec["registered"] = std is not None
+        if std is not None:
+            rec["std_fields"] = list(std._fieldnames)
+            rec["rate"] = np.asarray(std.smoothed_image, float) * RATE_SCALE
+            rec["rate_unsmoothed"] = _dense(std.image) * RATE_SCALE
+            rec["base_dataset"] = (float(std.BaseActivity) * RATE_SCALE
+                                   if hasattr(std, "BaseActivity") else np.nan)
+            rec["folds"] = fold_geometry(std, condition)
+            stim = read_mat(z, name.replace("_SpikeRateMap", "_Stimulus"))
+            rec["lum"] = standard_stimulus(stim, std, condition)
+            if shifts:
+                found = [gaze_shift(np.asarray(d.smoothed_image, float), np.asarray(std.smoothed_image, float), R, t)
+                         for R, t in frame_transform(stim, std, condition, every=True)]
+                rec["gaze_shift"], rec["gaze_shift_r"] = max(found, key=lambda f: f[1])
+            if condition == "Edge-compare":
+                rec["std_rect"] = _poly(std.EdgecompVert.RectVert[0])
+        recs.append(rec)
+    return recs
+
+
+def check_luminance(rec: dict) -> dict:
+    """Stimulus luminance (0-100) at the 0%, 50% and 100% points of each fold, and on the
+    baseline squares, read from the file's own stimulus image in the Standard frame."""
+    lum = rec["lum"]
     out = {}
-    if rec["folder"] == "Edge-compare":
-        centre = p[-1].mean(0)
-        outer = p[0]
-        on_axis = outer[np.argsort(np.abs(outer[:, 0] - centre[0]))[:2]]
-        out["S90"] = [(c, centre) for c in on_axis]
-        r0, r99 = rec["rect"][0], rec["rect"][-1]
-        # the Edge: the short side of the rectangle whose line passes through the Square's centre
-        sides = [(r0[i], r0[(i + 1) % 4]) for i in range(4)]
-        lengths = [np.linalg.norm(b - a) for a, b in sides]
-        short = [sd for sd, ln in zip(sides, lengths) if ln < max(lengths) - 1]
-        edge = min(short, key=lambda sd: abs((sd[0] - centre)[0] * (sd[1] - sd[0])[1]
-                                             - (sd[0] - centre)[1] * (sd[1] - sd[0])[0]))
-        hi = [q for q in edge if np.min(np.linalg.norm(r99 - q, axis=1)) < 1e-6]
-        lo = [q for q in edge if np.min(np.linalg.norm(r99 - q, axis=1)) >= 1e-6]
-        p100, p0 = hi[0], lo[0]
-        out["Edge"] = [(p0, p100)]
-        # P180: parallel to the Edge, 48 DU into the rectangle
-        into = r0.mean(0) - (p0 + p100) / 2
-        d = p100 - p0
-        n = np.array([-d[1], d[0]]) / np.linalg.norm(d)
-        n = n if np.dot(n, into) > 0 else -n
-        out["P180"] = [(p0 + 48 * n, p100 + 48 * n)]
-    elif rec["folder"] == "Star":
-        centre = p[-1].mean(0)
-        outer = p[0]
-        r = np.linalg.norm(outer - centre, axis=1)
-        tips = outer[r > r.max() - 1]
-        on_axis = tips[np.argsort(np.abs(tips[:, 0] - centre[0]))[:2]]
-        out["S52"] = [(c, centre) for c in on_axis]
-    elif rec["folder"] == "Corners":
-        segs = []
-        for i in range(p.shape[1]):
-            a, b = p[0, i], p[-1, i]
-            # an apex: a vertex whose neighbours are not collinear with it, on the travel axis
-            prev, nxt = p[0, i - 1], p[0, (i + 1) % p.shape[1]]
-            if np.linalg.norm(b - a) < 1:
-                continue
-            v1, v2 = prev - a, nxt - a
-            if np.linalg.norm(v1) < 1e-6 or np.linalg.norm(v2) < 1e-6:
-                continue
-            ang = np.degrees(np.arccos(np.clip(np.dot(v1, v2) / np.linalg.norm(v1) / np.linalg.norm(v2), -1, 1)))
-            if 30 < ang < 50:
-                segs.append((b, a, ang))  # polygon 0 is 100%, polygon 99 is 0%
-        bright, dark = [], []
-        for p0, p100, ang in segs:
-            # bright fold: at its midpoint the luminance beside the fold is below 50%
-            mid = (p0 + p100) / 2
-            d = (p100 - p0) / np.linalg.norm(p100 - p0)
-            n = np.array([-d[1], d[0]])
-            side = np.mean([sample_point(rec["lum"], mid + k * n) for k in (-15, 15)])
-            (bright if side < 50 else dark).append((p0, p100))
-        rec["corners_polarity"] = (len(bright), len(dark))
-        out["S40"] = {"bright": bright, "both": bright + dark, "dark": dark}[corners_mode]
+    for k, f in rec["folds"].items():
+        if k.startswith("_"):
+            continue
+        for frac in (0.05, 0.5, 0.95):
+            x, y = point_at(f, frac)
+            out[f"{k}@{int(frac * 100)}%"] = box_mean(lum, x, y, 2)
+        out[f"{k} ridge"] = fold_is_ridge(lum, f)
+    centres = baseline_squares(lum.shape, rec["condition"], rec["folds"])
+    out["baseline squares max lum"] = max(np.nanmax(lum[box_mask(lum.shape, x, y, BASE_SIZE, BASE_SIZE)])
+                                          for x, y in centres)
     return out
 
 
-def sample_point(img, xy):
-    return float(ndimage.map_coordinates(img, [[xy[1] - 1], [xy[0] - 1]], order=1)[0])
+def bright_corner_fold(rec: dict) -> str:
+    """Name of the bright S40 fold of a Corners file (the one with the luminance ridge)."""
+    r = {k: fold_is_ridge(rec["lum"], rec["folds"][k]) for k in ("S40_up", "S40_down")}
+    return max(r, key=r.get)
 
 
-def box_mean(img, centre, direction, length, width):
-    """Mean of img over a length x width box centred at ``centre``, long axis along ``direction``."""
-    d = np.asarray(direction, float)
-    d = d / np.linalg.norm(d)
-    n = np.array([-d[1], d[0]])
-    # samples 1 DU apart (or slightly more for a non-integer side, such as the 7.07 DU S90 blocks),
-    # placed symmetrically about the centre
-    a = (np.arange(max(1, round(length))) + 0.5) * length / max(1, round(length)) - length / 2
-    b = (np.arange(max(1, round(width))) + 0.5) * width / max(1, round(width)) - width / 2
-    aa, bb = np.meshgrid(a, b)
-    pts = centre + aa.ravel()[:, None] * d + bb.ravel()[:, None] * n
-    return float(ndimage.map_coordinates(img, [pts[:, 1] - 1, pts[:, 0] - 1], order=1).mean())
+def fold_measures(rec: dict, base: float, smoothed: bool = True) -> dict:
+    """Per fold: midpoint response, midpoint spike rate difference and the ten block
+    differences (halves of the Square and Star kept apart, as `<fold>_<half>`)."""
+    M = rec["rate"] if smoothed else rec["rate_unsmoothed"]
+    out = {}
+    folds = rec["folds"]
+    if rec["condition"] == "Edge-compare":
+        names = {"Edge": ["Edge"], "P180": ["P180"], "S90": ["S90_near", "S90_far"]}
+    elif rec["condition"] == "Star":
+        names = {"S52": ["S52_upper", "S52_lower"]}
+    else:
+        bright = bright_corner_fold(rec)
+        dark = "S40_down" if bright == "S40_up" else "S40_up"
+        names = {"S40": [bright], "S40dark": [dark]}
+    for fold, parts in names.items():
+        mids = [midpoint(M, folds[p]) for p in parts]
+        out[fold] = {
+            "response": float(np.mean(mids)),
+            "diff": float(np.mean(mids)) - base,
+            "blocks": [blocks(M, folds[p]) - base for p in parts],
+        }
+    return out
 
 
-def midpoint_response(img, segs):
-    """8 x 8 DU square at the 50% point of each segment, averaged over segments."""
-    return float(np.mean([box_mean(img, (p0 + p100) / 2, p100 - p0, 8, 8) for p0, p100 in segs]))
-
-
-def block_profile(img, segs):
-    """Ten 8 DU wide blocks from 0% to 100% per segment; array (n_segments, 10)."""
-    prof = []
-    for p0, p100 in segs:
-        d = p100 - p0
-        ln = np.linalg.norm(d) / 10
-        prof.append([box_mean(img, p0 + (i + 0.5) / 10 * d, d, ln, 8) for i in range(10)])
-    return np.array(prof)
-
-
-def lum_at_fraction(rec, segs, f):
-    return float(np.mean([sample_point(rec["lum"], p0 + f * (p100 - p0)) for p0, p100 in segs]))
-
-
-def baseline_centres(rec):
-    """Centres of the baseline squares in the Standard frame (Star, Square and Edge), centred on the
-    corners of the square circumscribing the 0% polygon."""
-    p = rec["poly"]
-    centre = p[-1].mean(0)
-    outer = p[0]
-    half = np.abs(outer - centre).max()  # half the side of the circumscribing square
-    return [centre + np.array([sx, sy]) * half for sx in (-1, 1) for sy in (-1, 1)]
-
-
-def baseline(img, centres, size=16):
-    return float(np.mean([box_mean(img, c, (1, 0), size, size) for c in centres]))
-
-
-def baseline_centres_inside(rec):
-    """Variant: the 16 x 16 DU squares drawn inside the corners of the circumscribing square."""
-    centre = rec["poly"][-1].mean(0)
-    half = np.abs(rec["poly"][0] - centre).max() - 8
-    return [centre + np.array([sx, sy]) * half for sx in (-1, 1) for sy in (-1, 1)]
-
-
-CORNERS_PLACES = ("bottom", "bottom, 32 DU in", "sides, 24 DU up")
-
-
-def corners_baseline_centres(rec, place="bottom"):
-    """Corners: two 16 x 16 DU squares in the 0% area of the ROI (Methods, "Corners").
-
-    The text says only that the two squares are in 0% luminance areas within the ROI, "shown in
-    Fig 2C", whose drawing is not in the text read. Assumption: the two bottom corners of the ROI,
-    8 DU in from each side ("bottom"), which are in the darkest (1%) area in every file (checked in
-    the notebook) and lie on either side of the folds. Two other placements in that area are run as
-    readings: the squares 32 DU further in from the sides ("bottom, 32 DU in") and 24 DU further up
-    ("sides, 24 DU up"). The files' BaseActivity matches none of them closely (notebook).
-    """
-    h, w = rec["smoothed"].shape
-    dx = 32 if place == "bottom, 32 DU in" else 0
-    dy = 24 if place == "sides, 24 DU up" else 0
-    return [np.array([8.5 + 1 + dx, h - 8.5 - dy]), np.array([w - 8.5 - dx, h - 8.5 - dy])]
-
-
-def baseline_value(rec, map_name="smoothed", reading="matched", corners_place="bottom"):
-    """Absolute baseline (spikes/s) under a reading of where the squares are.
-
-    "centred": centred on the corners of the circumscribing square (Square and Edge on the widened
-    map, see load_record, averaged over the part of the squares on the screen); "inside": drawn inside those corners; "files": the file's own
-    ``BaseActivity`` (NaN where the file has none); "matched" (the main reading, an assumption):
-    for each stimulus the placement whose values come closest to the files' BaseActivity, which is
-    centred for Square and Edge and inside for the Star (shown in the notebook). Corners uses
-    ``corners_baseline_centres(rec, corners_place)`` under every reading but "files".
-    """
-    if reading == "files":
-        return rec["base_activity"]
-    if rec["folder"] == "Corners":
-        return baseline(rec[map_name], corners_baseline_centres(rec, corners_place))
-    if reading == "matched":
-        reading = "centred" if rec["folder"] == "Edge-compare" else "inside"
-    if reading == "inside":
-        return baseline(rec[map_name], baseline_centres_inside(rec))
-    if rec["folder"] == "Edge-compare":
-        # mean over the part of each square that is on the screen (off it the map holds no data)
-        cs = [c + PAD for c in baseline_centres(rec)]
-        num = baseline(rec["padded"][map_name], cs)
-        den = baseline(rec["padded"]["on_screen"], cs)
-        return num / den
-    return baseline(rec[map_name], baseline_centres(rec))
-
-
-FOLD_ANGLE = {"P180": 180, "S90": 90, "S52": 52, "S40": 40}
-FOLD_ORDER = ["Edge", "P180", "S90", "S52", "S40"]
-CONDITION_OF_FOLD = {"Edge": "Square and Edge", "P180": "Square and Edge", "S90": "Square and Edge",
-                     "S52": "Star", "S40": "Corners"}
-
-
-def neuron_table(recs, corners_mode="bright", baseline_reading="matched", map_name="smoothed",
-                 corners_place="bottom"):
-    """One row per neuron and fold: midpoint response, baseline, spike rate difference and blocks.
-
-    ``blocks`` holds the ten block means of the spike rate difference per segment
-    (n_segments x 10, from 0% to 100% luminance).
-    """
-    import pandas as pd
+def rms_contrast(lum: np.ndarray, edge_fold, levels: np.ndarray) -> pd.DataFrame:
+    """Local RMS contrast of the stimulus in a 16 x 16 DU square centred on the Edge at each
+    luminance level (%). Readings: (a) SD / mean of the luminance values; (b) SD of the
+    luminance normalised to 0-1."""
     rows = []
-    for r in recs:
-        if not r.get("has_standard"):
-            continue
-        img = r[map_name]
-        base = baseline_value(r, map_name, baseline_reading, corners_place)
-        for fold, segs in folds(r, corners_mode).items():
-            rows.append({"code": r["code"], "cell": r["cell"], "monkey": r["monkey"], "fold": fold,
-                         "condition": CONDITION_OF_FOLD[fold], "mid": midpoint_response(img, segs),
-                         "base": base, "blocks": block_profile(img, segs) - base})
-    df = pd.DataFrame(rows)
-    df["diff"] = df["mid"] - df["base"]
-    return df
+    for L in levels:
+        x, y = point_at(edge_fold, L / 100)
+        v = lum[box_mask(lum.shape, x, y, RMS_BOX, RMS_BOX)]
+        v = v[~np.isnan(v)]
+        rows.append({"level": L, "a_sd_over_mean": v.std() / v.mean() if v.mean() > 0 else np.nan,
+                     "b_sd_norm": (v / 100).std(), "mean_lum": v.mean()})
+    return pd.DataFrame(rows)
 
 
-def block_summaries(df, halves="averaged"):
-    """Per-neuron min, max, mean and median over the ten blocks.
-
-    halves: "averaged" (two segments averaged block by block, reading i) or "separate" (each
-    segment summarised on its own, then the summaries averaged, reading ii).
-    """
-    out = []
-    for _, row in df.iterrows():
-        b = row["blocks"]
-        if halves == "averaged":
-            b = b.mean(0, keepdims=True)
-        s = np.array([[x.min(), x.max(), x.mean(), np.median(x)] for x in b]).mean(0)
-        out.append(s)
-    return np.array(out)
-
-
-def rms_contrast_profile(rec, steps=np.arange(0, 100.0001, 1.5), size=16, reading="a"):
-    """Local RMS contrast of the stimulus in a 16 x 16 DU square centred on the Edge.
-
-    reading "a": standard deviation of pixel luminance over its mean; "b": standard deviation of
-    luminance scaled to 0 to 1 (claims file, fig7a-rms-contrast-fit). Luminance is the stimulus
-    image in percent, as the file holds it.
-    """
-    p0, p100 = folds(rec)["Edge"][0]
-    d = (p100 - p0) / np.linalg.norm(p100 - p0)
-    n = np.array([-d[1], d[0]])
-    a = np.arange(size) - (size - 1) / 2
-    aa, bb = np.meshgrid(a, a)
-    out = []
-    for lv in steps:
-        c = p0 + lv / 100 * (p100 - p0)
-        pts = c + aa.ravel()[:, None] * d + bb.ravel()[:, None] * n
-        w = ndimage.map_coordinates(rec["lum"], [pts[:, 1] - 1, pts[:, 0] - 1], order=1)
-        out.append(w.std() / w.mean() if reading == "a" and w.mean() > 0 else
-                   (w / 100).std() if reading == "b" else np.nan)
-    return np.asarray(steps, float), np.array(out)
-
-
-def fit_exponential_lar(x, y):
-    """f(l) = a exp(-b l) + c by Levenberg-Marquardt, then least absolute residuals (MATLAB's
-    'LAR' robust option, Methods, "Edge RMS contrast model"), started from the paper's values."""
-    from scipy.optimize import least_squares, minimize
-    ok = np.isfinite(y)
-    x, y = x[ok], y[ok]
-    f = lambda p, xx: p[0] * np.exp(-p[1] * xx) + p[2]
-    p_lm = least_squares(lambda p: f(p, x) - y, [-0.34, 0.05, 0.95], method="lm").x
-    p = minimize(lambda p: np.abs(f(p, x) - y).sum(), p_lm, method="Nelder-Mead",
-                 options={"xatol": 1e-8, "fatol": 1e-10, "maxiter": 20000}).x
-    r2 = 1 - ((y - f(p, x)) ** 2).sum() / ((y - y.mean()) ** 2).sum()
-    return p, r2
-
-
-def edge_response(rec, img, base, lum_points, size=16):
-    """Mean spike rate difference in a 16 x 16 DU square centred on the Edge at each luminance
-    (percent along the Edge from 0% to 100%; Results, "Neuron responses to corner-folds vs.
-    different contrasts along edge", paragraph 1)."""
-    p0, p100 = folds(rec)["Edge"][0]
-    return np.array([box_mean(img, p0 + lv / 100 * (p100 - p0), p100 - p0, size, size) for lv in lum_points]) - base
+def edge_response(M, edge_fold, level: float) -> float:
+    """Mean of M in a 16 x 16 DU square centred on the Edge at a luminance level (%)."""
+    x, y = point_at(edge_fold, level / 100)
+    return box_mean(M, x, y, RMS_BOX)
