@@ -17,5 +17,7 @@ detections; the DANDI result is stated beside it.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences
 from the paper's method.
 
-The notebook streams about 90 GB from CRCNS and reads one or two LFP channels of each DANDI file; it takes about 20
-minutes on 4 CPUs and peaks near 10 GB of memory.
+The notebook streams the 27 CRCNS tar.gz files in full (88.9 GB) and reads one or two LFP channels of each DANDI file
+(149.5 GB in all, read in part). It takes about 25 minutes on 4 CPUs; the notebook process peaks near 2.6 GB and the
+largest of the loading workers, which run two at a time on DANDI and three on CRCNS, about 5 GB (4.9 to 5.3 GB
+in this attempt's runs). The cell before the summary prints the bytes, the time and the memory of the run.

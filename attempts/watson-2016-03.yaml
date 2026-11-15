@@ -156,8 +156,7 @@ outcomes:
   - 4.69
   - 5.8
   notes: CRCNS, reading b, pE 0.76, 0.69 and 0.91 Hz and pI 5.59, 4.69 and 5.80 Hz (WAKE, nonREM, REM); five of six within
-    tolerance, the pI REM median (4.25 expected) is not. No reading puts all six within tolerance on either dataset (DANDI,
-    best reading a, four of six). Per-rat medians vary about twofold (pE WAKE 0.40 to 1.23 Hz on CRCNS). Measured values
+    tolerance, the pI REM median (4.25 expected) is not. No reading puts all six within tolerance on either dataset (DANDI, best reading c, five of six, pI REM 6.00 Hz misses; readings a and b, four of six). Per-rat medians vary about threefold (pE WAKE 0.40 to 1.23 Hz on CRCNS). Measured values
     are CRCNS reading b.
   deviations:
   - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
@@ -354,7 +353,6 @@ outcomes:
   - UP states within the SLEEP of cycles; E/(E+I) only in sessions with pI cells.
 - claim: fig2de-fast-before-slow
   outcome: reproduced
-  assumed: true
   notebook: reproduce_watson_2016.ipynb
   output: claim:fig2de-fast-before-slow
   notes: Per-cell first-spike latencies in the first and second halves of SLEEP correlate (CRCNS R = 0.616, reading a; 0.559
@@ -426,7 +424,7 @@ outcomes:
   notes: CRCNS, with the arousal that ends SLEEP as the WAKE after (reading ii), pE rates fall from 1.261 to 1.135 Hz (signed-rank
     p = 3.1e-11 by cell and cycle; 1.7e-6 two-sided, 8.3e-7 one-sided by cell), below the 1e-6 bound by cell and cycle;
     with the next scored WAKE (reading i) p = 0.018. DANDI, the decrease holds under every reading with two-sided signed-rank
-    p between 2.4e-5 and 1.1e-3, not below 1e-6. Rank-sum tests are not significant.
+    p between 2.4e-5 and 1.1e-3, not below 1e-6. Rank-sum tests are weaker, the one-sided rank-sum p is 0.027 on CRCNS under reading ii with one entry per cell and cycle, and 0.055 to 0.51 under the other readings on both datasets.
   deviations:
   - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
     and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
@@ -564,7 +562,7 @@ outcomes:
   notes: With the arousal that ends SLEEP as WAKE after (reading ii) and one entry per cell and cycle (M1 a), on CRCNS the
     top three sextiles decrease (one-sided p = 2.7e-13, 3.3e-6, 0.039) and the lowest increases (p = 0.0025). With sextiles
     ranked on WAKE without the two test windows the same four hold (p = 7.2e-12, 1.0e-5, 0.021, 0.011), so the result does
-    not come from ranking on the windows tested. With one entry per cell (M1 b) the fourth sextile misses (p = 0.077). With
+    not come from ranking on the windows tested. With one entry per cell (M1 b) the fourth sextile misses (p = 0.077, and 0.055 with the held-out ranking), so under M1 b the claim would be partial; the criterion allows M1 a. With
     the next scored WAKE (reading i) the fourth sextile fails. DANDI, reading ii, M1 a, all four hold (1.1e-5, 0.017, 0.017;
     0.019).
   deviations:
@@ -754,8 +752,7 @@ outcomes:
   notes: CRCNS, per UP state, the top sextile drops (reading a, 3.427 to 3.374 Hz, p = 8.2e-6; reading b, p = 0.0016), never
     below its 1e-8 bound; pI rises (13.12 to 13.66 Hz, p = 9.6e-4, below its 1e-3 bound; p = 5.0e-5 under b); the slowest
     sextile rises under every reading (0.291 to 0.314 and 0.334 Hz), opposite to the claim. With a group holding at M4's
-    reproduced level, one of three holds. Counting p < 0.05 as holding, two would hold and the claim would be partial. DANDI,
-    the same directions.
+    reproduced level, one of three holds. Counting p < 0.05 as holding, two would hold and the claim would be partial. DANDI, pI and the slowest sextile rise under every reading, as on CRCNS; the top sextile falls under reading b (2.789 to 2.719 Hz, p = 0.0051) and under a(ii) (p = 0.051), and rises slightly under a(i) (2.789 to 2.808 Hz, p = 0.64).
   deviations:
   - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
     and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
@@ -1037,7 +1034,7 @@ verifications:
     agrees: true
     outcome: partially_reproduced
     reason: Episode decrease holds (reading c R=-0.816, p=5.3e-13), but the SLEEP correlation is significant (c, R=-0.331,
-      p=0.019), so the stated absence fails.
+      p=0.019), so the stated absence fails. Problem 2, reading c uses whole grid seconds only, so bins under about 2 s keep 0 or 1 second, which hits every packet-level reading c. Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
     response: No change. Reading c now gives each grid second to the bin that holds its centre (problem 2); R = -0.840 over
       episodes and -0.332, p = 0.018, over SLEEP.
   - claim: packet-duration
@@ -1157,7 +1154,7 @@ verifications:
   - claim: fig3d-first-last-packet-slope
     agrees: false
     outcome: reproduced
-    reason: CRCNS reading b slope 0.872 [0.840, 0.904]. The reverse slope is 0.860 (B4). DANDI 0.825 is just outside tolerance.
+    reason: CRCNS reading b slope 0.872 [0.840, 0.904]. The reverse slope is 0.860 (problem 5). DANDI 0.825 is just outside tolerance.
       Problem 3, cell 0 states an outcome rule not in the claims file (partial when a claim holds on one dataset), which
       would downgrade claims that hold on CRCNS, as DANDI is a subset with rebuilt states and different labels. Problem
       5, the reverse slope roughly equals the forward slope, as regression to the mean alone predicts.
@@ -1207,7 +1204,7 @@ verifications:
   - claim: fig3e-wake-before-after-sextiles
     agrees: true
     outcome: reproduced
-    reason: Reading ii, S1 increases (p=0.0025); S4, S5, S6 decrease (p 0.039, 3e-6, 3e-13); same on DANDI. See B3. Problem
+    reason: Reading ii, S1 increases (p=0.0025); S4, S5, S6 decrease (p 0.039, 3e-6, 3e-13); same on DANDI. See problem 5. Problem
       5, the sextiles are ranked on all WAKE of the session, which includes the 5 min pre-sleep window, a bias that produces
       the claimed pattern, and no variant ranked on held-out WAKE is shown; problem 7, only M1 reading a is run.
     response: No change of outcome. Added M1 reading b and a variant with sextiles ranked on WAKE without the two test windows
@@ -1217,7 +1214,7 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: Reading c, delta and sigma rise over episodes and packets, gamma falls over episodes (p=0.011) and not over
-      packets (p=0.29).
+      packets (p=0.29). Problem 2, reading c uses whole grid seconds only, so bins under about 2 s keep 0 or 1 second, which hits every packet-level reading c.
     response: No change. Reading c now uses centre-assigned seconds (problem 2); gamma falls over episodes (p = 0.030) and
       does not change over packets (p = 0.092). The DANDI LFP starting_time is printed (0 in every file) and added to window
       times, and a check that delta power is higher in nonREM than in WAKE, lost when the intervals are shifted by 1800
@@ -1300,7 +1297,7 @@ verifications:
   - claim: fig5b-ma-nrem-ma
     agrees: true
     outcome: not_reproduced
-    reason: Top two sextiles p=0.18 and 0.24; S5C R=0.009.
+    reason: Top two sextiles p=0.18 and 0.24; S5C R=0.009. Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
     response: No change of outcome. The MA table added to ma-statistics (problem 4) shows that the deposited MAs used here,
       those within the SLEEP of cycles, have a median of 11 s against the paper's 15.9 s; the claims are tested on them
       as deposited.
@@ -1312,7 +1309,7 @@ verifications:
   - claim: fig5c-sigma-ma-change
     agrees: true
     outcome: not_reproduced
-    reason: R=−0.034, p=0.68 (DANDI R=−0.247).
+    reason: R=−0.034, p=0.68 (DANDI R=−0.247). Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
     response: No change of outcome. The MA table added to ma-statistics (problem 4) shows that the deposited MAs used here,
       those within the SLEEP of cycles, have a median of 11 s against the paper's 15.9 s; the claims are tested on them
       as deposited.
@@ -1335,7 +1332,7 @@ verifications:
   - claim: fig5b-ma-between-packets
     agrees: true
     outcome: partially_reproduced
-    reason: Lowest sextile increases (p=0.012), but the top sextile falls (p=3e-9) and S5G p=2.3e-8 misses the 1e-10 bound.
+    reason: Lowest sextile increases (p=0.012), but the top sextile falls (p=3e-9) and S5G p=2.3e-8 misses the 1e-10 bound. Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
     response: No change of outcome. The MA table added to ma-statistics (problem 4) shows that the deposited MAs used here,
       those within the SLEEP of cycles, have a median of 11 s against the paper's 15.9 s; the claims are tested on them
       as deposited.
@@ -1374,6 +1371,354 @@ verifications:
       CRCNS, as DANDI is a subset with rebuilt states and different labels.
     response: Changed to reproduced. The three claims it rests on are now reproduced (fig3d under the CRCNS rule of problem
       3); the notes say that the fig3d slope alone does not show narrowing, since its reverse slope is also below 1.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The second executed notebook in full, with its conclusion cells and summary, the helper module, the claims file
+    and the attempt record, with the paper. The verifier agreed with all 53 outcomes (27 reproduced, 10 partially reproduced,
+    16 not reproduced). It also reported, outside any one claim, that the README says the notebook peaks near 10 GB of memory
+    while the only figure printed is 1.98 GB (cell 1), that the 90 GB streamed is not printed, and that loading alone took
+    19.5 minutes, so 20 minutes in total cannot be checked; and that problem 6 is unchanged and does not affect a conclusion.
+    In reply a cell before the summary now prints the CRCNS bytes streamed (88.9 GB), the time since loading began (25.1 min)
+    and the peak memory of the notebook process (2.62 GB) and of the largest loading worker (5.13 GB), and the README states
+    those printed figures.
+  results:
+  - claim: table1-dataset-counts
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: wake-sleep-cycles
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: tables1-state-durations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded. The Summary (cell 172) says the deposited intervals and detections reproduce Table S1, except the microarousals;
+      it leaves out the WAKE-SLEEP duration, 4214 s on CRCNS against the 5918 s Table S1 prints, which cell 17 reports and
+      the record files as a paper_inconsistency finding.
+    response: The Summary now names the WAKE-SLEEP duration (median 4214 s against 5918 s) as a second exception, beside the
+      microarousals.
+  - claim: ma-statistics
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. Problem 4 is still open, and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP
+      of cycles, 26 in WAKE and 1670 in neither, with medians near 11 s, and no subset gives 790; which MAs the paper used
+      is still unknown, and it is filed as a question for the authors. This outcome rests on an MA set that does not match
+      the paper.
+    response: No change; the MA set is tested as deposited, and the question stays with the paper's authors (selection_undocumented
+      finding).
+  - claim: ma-fraction-over-nrem-episodes
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it stays partial, over SLEEP p = 0.018 (cell 22). The round-1 reason does not cite problems 2 and 4,
+      though the responses address them. Problem 4 is still open, and bearing on a conclusion. The deposited MAs are now located,
+      434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither, with medians near 11 s, and no subset gives 790; which MAs
+      the paper used is still unknown, and it is filed as a question for the authors. This outcome rests on an MA set that
+      does not match the paper.
+    response: The round-1 reason now cites problems 2 and 4. No change; the MA set is tested as deposited, and the question
+      stays with the paper's authors (selection_undocumented finding).
+  - claim: packet-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: fig2a-median-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record. Cell 29 and the notes say no reading puts all six within tolerance
+      on either dataset (DANDI, best reading a, four of six); DANDI reading c is the best reading, with five of six inside
+      tolerance (0.72, 0.66, 0.82, 5.23 and 4.78 Hz in; only pI REM, 6.00 Hz, misses). They say per-rat medians vary about
+      twofold (pE WAKE 0.40 to 1.23 Hz); that range is about threefold. The outcome is unaffected.
+    response: Corrected in cell 29 and the notes, DANDI best reading c with five of six (pI REM 6.00 Hz misses), readings
+      a and b four of six, and per-rat medians varying about threefold.
+  - claim: fig2a-skewed-wide-distribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig2a-fraction-above-2hz
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: fig2b-wake-nrem-slope
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: burst-index-by-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it stays partial (cell 40). Under every reading the order is nonREM > REM > WAKE, Kruskal-Wallis p <
+      1e-37 and Dunn p ≤ 7.7e-6, but no reading has all three medians within tolerance. Under reading c, nonREM (11.5%) is
+      inside and WAKE (4.6%) and REM (6.5%) are above.
+    response: No change.
+  - claim: fig2c-acg-peaks
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it is now partial, the outcome I gave in round 1. The assumption that a bin is named by its centre is
+      stated, reasonable, the alternatives are shown, and it is referred to a reader. It would be reproduced if a bin is named
+      by its start.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: fig2c-acg-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: synchrony-skew
+    agrees: true
+    outcome: reproduced
+    reason: I agree. It passes the criterion's direction-only test at 63% of cells, against the paper's 15%; the reading is
+      referred to a reader and the outcome depends on the answer.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: updown-durations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig1e-up-state-dynamics
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. The assumption of 200 ms windows within UP states is stated and reasonable; fig1e is partial either way.
+    response: No change.
+  - claim: fig2de-fast-before-slow
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome, but its assumed mark does not match a stated assumption. Its only text that says assumed
+      is the DANDI UP/DOWN detection; on the same grounds the author removed the mark from updown-durations, fig3c-updown-over-sleep,
+      fig3f-within-up-changes and fig4-updown-within-packets, because their outcomes rest on the deposited CRCNS states. The
+      200 ms latency window comes from the criterion itself. Either the mark should go, or the assumption it stands for should
+      be named.
+    response: The assumed mark is removed. The outcome rests on the deposited CRCNS UP states and the criterion's 200 ms window,
+      and no assumption of this attempt bears on it; the DANDI detection is a deviation for the DANDI result only.
+  - claim: fig2f-rate-group-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig3ab-population-rate-declines
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: first-last-packet-mean-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: post-sleep-wake-lower
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded. Cell 71 and the notes say rank-sum tests are not significant; for CRCNS reading ii with M1 a the one-sided
+      rank-sum p is 0.027 (cell 70), and the criterion allows a one-sided test.
+    response: Corrected in cell 71 and the notes, the one-sided rank-sum p is 0.027 on CRCNS under reading ii with M1 a, and
+      0.055 to 0.51 under the other readings on both datasets. The outcome rests on the signed-rank test and does not change.
+  - claim: fig3d-first-last-packet-slope
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded. The round-1 reason says (B4), my own mis-numbering; it should point to problem 5.
+    response: The round-1 reason now points to problem 5.
+  - claim: fig3b-sextile-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: cv-decreases-over-sleep
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig3c-spindles-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. It uses 1.94 against 2.94 spindles per minute, a claims-file reading referred to a reader; the claim
+      fails either way.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: fig3c-updown-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig3f-within-up-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: figs3a-first-last-rem-ma-slopes
+    agrees: true
+    outcome: reproduced
+    reason: I agree. Reverse slopes are added (problem 5 resolved). Problem 4 is still open, and bearing on a conclusion.
+      The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither, with medians near 11
+      s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question for the authors.
+      The MA slope of this claim rests on an MA set that does not match the paper.
+    response: No change; the MA set is tested as deposited, and the question stays with the paper's authors (selection_undocumented
+      finding).
+  - claim: fig3e-wake-before-after-sextiles
+    agrees: true
+    outcome: reproduced
+    reason: I agree; it stays reproduced under M1 reading a, both as before and with sextiles ranked on held-out WAKE (cell
+      94). It rests on M1 reading a, which enters a cell once per cycle; under M1 reading b (one entry per cell) the fourth
+      sextile misses, p = 0.077, and 0.055 with held-out ranking. The criterion allows reading a, but under reading b the
+      claim would be partial. The round-1 reason says See B3, my own mis-numbering; it should point to problem 5.
+    response: Outcome kept, as the criterion allows M1 a and the verifier agrees with it. The notes now give p = 0.055 with
+      the held-out ranking under M1 b and say that under M1 b the claim would be partial. The round-1 reason now points to
+      problem 5.
+  - claim: fig4i-band-power-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree; it stays reproduced under reading c, gamma falls over episodes (p = 0.030) and does not change over packets
+      (p = 0.092) (cell 99). The round-1 reason does not cite problem 2, though the response addresses it.
+    response: The round-1 reason now cites problem 2.
+  - claim: fig4-delta-packet-length
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4-late-packet-sigma-delta
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4-updown-within-packets
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: fig4-spindles-within-nrem
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it stays partial, spindle frequency changes over packets, p = 0.011 and 0.026 (cell 111).
+    response: No change.
+  - claim: fig4e-late-packet-sigma
+    agrees: true
+    outcome: reproduced
+    reason: I agree. The assumption of 200 ms windows within UP states is stated and reasonable.
+    response: No change.
+  - claim: fig4iv-sextiles-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4v-cv-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4vi-burst-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree; it stays reproduced with spike-time ISIs, R = 0.081 and 0.079, p < 1e-15 (cell 123).
+    response: No change.
+  - claim: fig4cd-packet-rate-lfp-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree; it is now not reproduced, the outcome I gave in round 1. The assumption that a part holds at M4's reproduced
+      level is stated and reasonable (the stricter reading), the lenient result is given, and it is referred to a reader.
+      It would be reproduced if hold means p < 0.05.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: fig4e-within-up-sextiles
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree; it is now not reproduced, the outcome I gave in round 1. The assumption that a part holds at M4's reproduced
+      level is stated and reasonable, the lenient result is given, and it is referred to a reader; it would be partial if
+      hold means p < 0.05. Cell 130 and the notes say DANDI, the same directions; under DANDI reading a(i) the top sextile
+      rises, from 2.789 to 2.808 Hz (cell 129).
+    response: Corrected in cell 130 and the notes, on DANDI pI and the slowest sextile rise under every reading, and the top
+      sextile falls under reading b (p = 0.0051) and a(ii) (p = 0.051) and rises slightly under a(i) (2.789 to 2.808 Hz, p
+      = 0.64). The outcome is judged on CRCNS and does not change.
+  - claim: figs5-within-wake-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The REM part now uses exact spike times and a held-out WAKE ranking is added (problems 2 and 5 resolved);
+      the result is unchanged, 2 of 5 sextiles significant.
+    response: No change.
+  - claim: fig5b-ma-nrem-ma
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The round-1 reason does not cite problem 4, though the response addresses it. Problem 4 is still open,
+      and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither,
+      with medians near 11 s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question
+      for the authors. This outcome rests on an MA set that does not match the paper.
+    response: The round-1 reason now cites problem 4. No change; the MA set is tested as deposited, and the question stays
+      with the paper's authors (selection_undocumented finding).
+  - claim: figs5d-rem-nrem-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-sigma-ma-change
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The round-1 reason does not cite problem 4, though the response addresses it. Problem 4 is still open,
+      and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither,
+      with medians near 11 s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question
+      for the authors. This outcome rests on an MA set that does not match the paper.
+    response: The round-1 reason now cites problem 4. No change; the MA set is tested as deposited, and the question stays
+      with the paper's authors (selection_undocumented finding).
+  - claim: fig5b-wake-between-packets
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-wake-movement
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record. Cell 0 says every claim lists both datasets and each is tested
+      on each; the table in the same cell, and cell 150, say fig5c-wake-movement is tested on CRCNS only.
+    response: Cell 0 now says fig5c-wake-movement is tested on CRCNS only, as DANDI holds no motion or EMG signal.
+  - claim: fig5b-ma-between-packets
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. The round-1 reason does not cite problem 4, though the response addresses it. Problem 4 is still open,
+      and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither,
+      with medians near 11 s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question
+      for the authors. This outcome rests on an MA set that does not match the paper.
+    response: The round-1 reason now cites problem 4. No change; the MA set is tested as deposited, and the question stays
+      with the paper's authors (selection_undocumented finding).
+  - claim: fig5b-rem-between-packets
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-rem-duration
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-rem-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-delta-change-slow-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: figs2d-interneurons-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. Reverse slopes are added (problem 5 resolved). It has an implausibly narrow interval in the legend; the
+      reading is referred to a reader and the outcome depends on the answer.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: sleep-homogenizes-rates
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
 findings:
 - kind: data_missing
   datasets:
