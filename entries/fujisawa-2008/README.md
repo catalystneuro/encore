@@ -51,6 +51,9 @@ The attempt record, with the reasons and the differences from the paper's method
 
 - `reproduce_fujisawa_2008.ipynb`: the analysis. It takes about 40 minutes, most of it the jitter tests and
   streaming the sensor channels.
+- `earlier_findings.ipynb`: the findings of the earlier attempt fujisawa-2008-02 that this attempt did not report,
+  checked on CRCNS pfc-2 for the reconciliation of the two attempts. It takes about 2 minutes, most of it streaming
+  EE.188.tar.gz.
 - `fujisawa.py`: loading both datasets, the permutation test with global bands, the jitter tests for connections
   (both cells or one cell jittered) and for the position of excess coincidences, and the first and later spike test
   (with the shared jitter of both cells, or the presynaptic jitter). Other notebooks on these

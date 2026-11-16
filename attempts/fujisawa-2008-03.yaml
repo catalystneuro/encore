@@ -626,6 +626,47 @@ findings:
 - kind: methods_unavailable
   statement: The paper does not say which of the datasets' rats is the layer 5 rat or which units make its 633 (the lab's
     cell lists hold 627 in three rats). Which rat and sessions are layer 5, and which units were counted?
+- kind: metadata_insufficient
+  found: on_prompt
+  datasets:
+  - crcns-pfc-2
+  statement: The CRCNS description says that session EE0708/EE.188 includes EE188_example.mat, the file of the paper's Figures
+    2A and 3D, without saying where it is. The file is not in folder EE0708 or in the data set's filelist.txt, which list
+    EE188_Behavior.mat, EE188_Behavior_PFC.mat and EE188_Behavior_CA1.mat; it is member 62 of 75 of EE.188.tar.gz, reached
+    1.99 GB into the 2.41 GB gzip stream, so it can be read only by streaming or downloading the session's whole archive.
+- kind: metadata_error
+  found: on_prompt
+  datasets:
+  - crcns-pfc-2
+  statement: In the Behavior_PFC files of all 13 working memory sessions the spikes' trial numbers (spikeLtr, spikeRtr) and
+    positions (spikeX) cover each trial from its first nose-poke (SessionNP column 1), while the description defines the trial
+    start as the end of the last nose-poke (column 2). 269071 of 676892 labelled spikes (22.6% to 64.1% per session) fall
+    between the two, placed near position 0 (median spikeX 0.023 to 0.054 per session); the nose-poke lasts up to 315.6 s
+    (FF103).
+- kind: metadata_insufficient
+  found: on_prompt
+  datasets:
+  - crcns-pfc-2
+  statement: The description gives pairs_all of EE188_example.mat as the cell pairs with monosynaptic connections inferred
+    by CCG, but it holds 43 directed pairs over 43 of the 117 cells, 40 from cells typed pyramidal and 3 from interneurons,
+    where the paper reports 48 and 30 connections for this session (Figure 3b); its largest connected component, 39 cells,
+    is the circuit of Figure 3d. Which selection of the connections it holds is not said.
+- kind: methods_unavailable
+  found: on_prompt
+  statement: Was the 99% global band of the jitter test the minimal band holding 99% of the surrogates entirely within both
+    its sides, as the Methods' stepping procedure defines a global band, or 1% on each side, and were the cross-correlograms
+    binned at 1 ms or 0.5 ms? With 1% on each side this attempt finds 1.449% of directed pairs connected with 1 ms bins and
+    1.091% with 0.5 ms, against 0.79%. How was the set of connections drawn in Figure 3d (pairs_all of EE188_example.mat,
+    43 connections) chosen?
+- kind: selection_undocumented
+  about: data
+  found: on_prompt
+  datasets:
+  - crcns-pfc-2
+  statement: The trial table of EE.188 (SessionNP, 42 correct trials) leaves out 3 trials that the nose-poke sensor channels
+    97 and 98 of EE.188.eeg and the position file show as correct (first pokes at 822.9, 2245.1 and 2370.7 s), and 1 error
+    trial (2687.2 s). In two of the three (822.9 and 2370.7 s) the rat reaches the arm 193.4 and 176.9 s after its last poke,
+    where the table's trials take at most 19.5 s, so they may be left out for that reason; why any are left out is not said.
 verifications:
 - date: '2026-11-16'
   kind: agent
@@ -1097,3 +1138,121 @@ verifications:
     outcome: not_reproduced
     reason: I agree with all 33 stated outcomes.
     response: No change.
+reconciliation:
+  earlier: fujisawa-2008-02
+  date: '2026-11-16'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 10
+    note: Finding 10 reports the same three rats (EE, FF, GG) and the missing 142-cell layer 5 session, and finding 9 that
+      only correct trials are listed, in SessionNP, the whl file's trial numbers and the NWB trials tables.
+  - finding: 2
+    status: still_present
+    now: 18
+    note: In earlier_findings.ipynb folder EE0708 and filelist.txt still hold EE188_Behavior.mat, EE188_Behavior_PFC.mat and
+      EE188_Behavior_CA1.mat and no EE188_example.mat, which is member 62 of 75 of EE.188.tar.gz, reached 1.99 GB into its
+      2.41 GB. As the description's version 0.7 also says each session tar holds all the session's files, finding 18 records
+      the missing location as metadata_insufficient.
+  - finding: 3
+    status: still_present
+    now: 7
+    note: Finding 7 reports the same two classifications of EE.188's cells (87 pyramidal and 18 interneurons in EE188_Behavior_PFC.mat,
+      33, 15 and 69 unknown in EE188_example.mat) and adds that the types agree for 42 of the 105 common cells. It does not
+      repeat that no cell of the 12 sessions of behaviors.zip is coded unknown.
+  - finding: 4
+    status: still_present
+    now: 13
+    note: Finding 13 reports the same undocumented selection, CellsInfo's 627 units against 1,373 sorted mPFC units in spikeph
+      and the NWB files, where fujisawa-2008-02 counted 1,495 clusters listed in spikeph. The 105 of 117 cells of EE.188 are
+      in finding 7.
+  - finding: 5
+    status: still_present
+    now: 10
+    note: Finding 10 reports that neither dataset gives each rat's layer or links EE, FF and GG to the paper's rats E to H.
+  - finding: 6
+    status: still_present
+    now: 19
+    note: In earlier_findings.ipynb 269071 of 676892 labelled spikes, in all 13 sessions, fall between the first nose-poke
+      and the trial start, with median spikeX 0.023 to 0.054. Finding 12 reports the same start for the whl file's position
+      and trial number but not for the spikes' own labels, so the spikes' case is added as finding 19.
+  - finding: 7
+    status: still_present
+    now: 20
+    note: In earlier_findings.ipynb pairs_all still holds 43 connections over 43 of the 117 cells (40 from pyramidal and 3
+      from interneuron references, against the paper's 48 and 30) with a largest component of 39 cells, and the description
+      still says only that these are pairs with monosynaptic connections inferred by CCG.
+  - finding: 8
+    status: still_present
+    now: 11
+    note: Finding 11 reports the same single tracked LED in 10 of 13 sessions, so that head direction exists only for EE.152,
+      EE.165 and EE.188, in the NWB files (led_1 only) as in the whl files.
+  - finding: 9
+    status: still_present
+    now: 21
+    note: A question about the paper, which no dataset version settles; the paper is the same and no answer is recorded. fujisawa-2008-03
+      took 1% on each side without asking it (1.449% and 1.091% of directed pairs connected with 1 ms and 0.5 ms bins, reproduce_fujisawa_2008.ipynb),
+      so the question is added as finding 21 with those numbers.
+  - finding: 10
+    status: still_present
+    now: 14
+    note: Finding 14 asks the same question on Supplementary Figure 2A, with layer 2/3 widths 0.27 to 0.31 for peak-normalised
+      and 0.19 to 0.22 for z-scored rates, where fujisawa-2008-02 found the reported 0.18 and 0.27 with normalised rates.
+  - finding: 11
+    status: still_present
+    now: 22
+    note: In earlier_findings.ipynb, by fujisawa-2008-02's rule, the sensor channels and position file of EE.188 give 46 trials,
+      45 correct and 1 error, and the same 3 correct trials (822.9, 2245.1 and 2370.7 s) and 1 error trial (2687.2 s) are
+      not in SessionNP, with 60 and 40 pixel radii alike.
+  - finding: 12
+    status: still_present
+    now: 13
+    note: Finding 13 reports that the files hold no Cells variable and that CellsInfo's criterion is not stated, with 98.9%
+      of listed units reaching 1 Hz in the trials, where fujisawa-2008-02 found 0 to 10 cells per session below 1 Hz.
+  outcomes:
+  - claim: task-performance
+    earlier: partially_reproduced
+    note: Difference in method. Both claims files say the claim cannot be tested when only correct trials are listed; fujisawa-2008-02
+      found EE188's error trials from the nose-poke sensor channels in its session tar (45 of 46 correct, 97.8%) and tested
+      that one session of 13, while fujisawa-2008-03 kept to the trial tables of both datasets and blocked the claim.
+  - claim: side-arm-selectivity-by-layer
+    earlier: not_reproduced
+    note: Change in the claims file. The fractions are close (reading a, layer 5 62.3% there and 61.0% here, layer 2/3 54.3%
+      and 52.6%) and none is within tolerance in either attempt; the merged claims file adds a partial outcome when layer
+      5 is above layer 2/3 by a one-sided Fisher test at p < 0.05, which fujisawa-2008-03 finds (p = 0.046).
+  - claim: central-arm-selectivity
+    earlier: not_reproduced
+    note: Change in the claims file. Both find fractions near 30% in both layers (reading a, 31.4% and 26.7% there, 30.4%
+      and 29.5% here), none within tolerance; the merged claims file adds a partial outcome when the pooled fraction is above
+      that of a random relabelling of the trials, which fujisawa-2008-03 finds (30.1% against 1.4%).
+  - claim: pyr-pyr-connections
+    earlier: not_reproduced
+    note: Change in the claims file. Neither attempt has both values within tolerance; the merged claims file adds a partial
+      outcome when the layer 5 value is above the layer 2/3 value, which holds in fujisawa-2008-03 (0.355% against 0.261%,
+      B-a W-a). The connections also come from different global bands, the stepping procedure (G-b) there and 1% on each side
+      here.
+  - claim: fig4-pair-156-136
+    earlier: partially_reproduced
+    note: A difference in how nearly the same result was graded, not in the data or the test. Both find a single left-trial
+      region (0.325 to 0.645 there, 0.34 to 0.64 here) whose end is within tolerance and start is not, with cell 136 not steady
+      (59% and 61% of its maximum); fujisawa-2008-02 counted this as holding in part and fujisawa-2008-03 as not reproduced.
+  - claim: thinning-preserves-dependence
+    earlier: not_reproduced
+    note: Difference in method. fujisawa-2008-02 counted a repetition only when both cells' thinned PSTHs reached the Methods'
+      flatness target, which most thinnings did not, and found 0 of 16 pairs under reading a (2 without that condition); fujisawa-2008-03
+      does not make that condition and finds 7 of 34 position-dependent connections under reading a.
+  - claim: population-vector-width
+    earlier: reproduced
+    note: Difference in method. Both assume peak-normalised rates and find layer 5 within tolerance; for EE188 fujisawa-2008-02
+      gets 0.239 (reading a), within 0.18 +/- 0.087, and fujisawa-2008-03 0.268 to 0.314, just above the limit, from PSTHs
+      built differently (200 binned positions there, the Methods' PSTH on 101 grid points here). With z-scored rates both
+      attempts find both layers within tolerance.
+  protocol: Two versions came between. Under pilot-14 records are filed by paper, with one claims file per paper and one attempt
+    on as many of its datasets as load, so fujisawa-2008-03 used DANDI:000067 with CRCNS pfc-2 against the merged claims file
+    (33 claims, several renamed or split, some criteria given a partial outcome), where fujisawa-2008-02 used CRCNS pfc-2
+    alone with the per-dataset claims file of 30 claims; that is why only 19 claim ids are shared and why three of the seven
+    changed outcomes follow from new partial outcomes. docs/pilot-notes.md has no section for pilot-15; tools/entry.py names
+    one rule as pilot-15's, that a finding of kind other or selection_undocumented says whether it is about the data or the
+    paper and that in an attempt on several datasets a finding about the data names its datasets. fujisawa-2008-03 follows
+    it; it changes where findings are shown and no outcome.
