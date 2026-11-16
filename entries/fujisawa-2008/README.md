@@ -15,12 +15,12 @@ trials, positions and cell lists come from CRCNS.
 | Population fires uniformly over the maze | Not reproduced |
 | 10% and 20% of neurons active per 100 ms | Partially reproduced |
 | Firing width 0.27 +/- 0.17 | Reproduced |
-| Population vector widths 0.18 and 0.27 | Not reproduced (rests on an assumption) |
+| Population vector widths 0.18 and 0.27 | Partially reproduced (rests on an assumption) |
 | Layer 5 fires faster than layer 2/3 | Partially reproduced |
 | Layer 5 discriminates over more of the maze | Not reproduced |
 | Paths diverge at 0.30, head direction at 0.24 | Partially reproduced |
 | Side-arm selectivity 40% (layer 5) and 22% (layer 2/3) | Partially reproduced |
-| Central-arm selectivity 16% and 18% | Partially reproduced |
+| Central-arm selectivity 16% and 18% | Partially reproduced (rests on the unit list) |
 | 26% of neurons odor selective during nose poke | Not reproduced |
 | Odor preference unrelated to maze selectivity | Not reproduced |
 | Little retrospective coding | Reproduced |
@@ -33,7 +33,7 @@ trials, positions and cell lists come from CRCNS.
 | Hub of 39 of 117 cells | Not reproduced (the lab's own connection list gives 39) |
 | Connection probability falls with distance | Partially reproduced |
 | Trajectory-specific pyramidal cells and interneurons | Partially reproduced |
-| No spatial clustering on the probe | Reproduced |
+| No spatial clustering on the probe | Reproduced (layer 2/3 session only) |
 | 67 of 343 connections position dependent | Partially reproduced (rests on an assumption) |
 | 15 of 36 connections selective (Figure 5a) | Not reproduced (rests on an assumption) |
 | Pair 156-136 | Not reproduced (rests on an assumption) |
@@ -49,8 +49,9 @@ differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/fujisawa-2008-03.yaml`](../../attempts/fujisawa-2008-03.yaml).
 
-- `reproduce_fujisawa_2008.ipynb`: the analysis. It takes about 30 minutes, most of it the jitter tests and
+- `reproduce_fujisawa_2008.ipynb`: the analysis. It takes about 40 minutes, most of it the jitter tests and
   streaming the sensor channels.
 - `fujisawa.py`: loading both datasets, the permutation test with global bands, the jitter tests for connections
-  and for the position of excess coincidences, and the first and later spike test. Other notebooks on these
+  (both cells or one cell jittered) and for the position of excess coincidences, and the first and later spike test
+  (with the shared jitter of both cells, or the presynaptic jitter). Other notebooks on these
   datasets can import it.

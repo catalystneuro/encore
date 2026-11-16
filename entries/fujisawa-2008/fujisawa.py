@@ -21,6 +21,7 @@ Where each parameter comes from is said where it is defined:
 """
 import io
 import tarfile
+import warnings
 import zipfile
 
 import h5py
@@ -211,12 +212,31 @@ def kernel_matrix(x, grid=GRID, sigma=SIGMA):
 
 def trial_psth(sess, u):
     """Per trial PSTH (spikes per unit normalised length), trials x grid [paper, Methods]."""
-    t, k, x = sess.spikes_in_trials(u)
+    return trial_psth_times(sess, sess.times[u])
+
+
+def trial_psth_times(sess, t):
+    """trial_psth for any spike train t (s) of the session, such as an NWB unit the lab's list leaves out."""
+    t = np.asarray(t, float)
+    k = sess.trial_of(t)
+    m = k >= 0
+    t, k = t[m], k[m]
     P = np.zeros((sess.n_trials, len(GRID)))
-    if len(x):
-        K = kernel_matrix(x)
-        np.add.at(P, k, K)
+    if len(t):
+        np.add.at(P, k, kernel_matrix(sess.position(t)))
     return P
+
+
+def max_trial_rate(P, O, side):
+    """Largest occupancy-normalised rate (Hz) over the grid, of the left or the right trials,
+    whichever is higher (P trial PSTHs, O occupancy, side 'L'/'R' per trial)."""
+    out = 0.0
+    for m in (side == "L", side == "R"):
+        o = O[m].sum(0)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            r = np.where(o > 0, P[m].sum(0) / o, 0.0)
+        out = max(out, float(r.max()))
+    return out
 
 
 def occupancy(sess):
@@ -349,8 +369,10 @@ def _jitter_ccg(ii, jj, dd, na, nb, M, half_jit, edges, seed, jitter_b):
     return out
 
 
-def jitter_pair(ta, tb, M=1000, binw=0.001, seed=0, half_jit=0.005, window=0.005):
-    """Real and jittered CCG of b relative to a over [-window, +window] [paper, Methods]."""
+def jitter_pair(ta, tb, M=1000, binw=0.001, seed=0, half_jit=0.005, window=0.005, jitter_b=True):
+    """Real and jittered CCG of b relative to a over [-window, +window] [paper, Methods]. Every spike
+    of both cells is jittered; jitter_b=False moves the spikes of a only (Supplementary Fig. 9A, a
+    variant named in the claims file header)."""
     edges = np.round(np.arange(-window, window + binw / 2, binw), 6)
     ii, jj, dd = _near_pairs(ta, tb, window + 2 * half_jit + 1e-4)
     if len(dd) == 0:
@@ -358,7 +380,7 @@ def jitter_pair(ta, tb, M=1000, binw=0.001, seed=0, half_jit=0.005, window=0.005
     ua, ia = np.unique(ii, return_inverse=True)
     ub, ib = np.unique(jj, return_inverse=True)
     C = _jitter_ccg(ia.astype(np.int64), ib.astype(np.int64), dd, len(ua), len(ub), M, half_jit,
-                    edges, seed, True)
+                    edges, seed, jitter_b)
     return edges, C
 
 
@@ -515,48 +537,99 @@ def _per_spike_jitter_counts(ta, tb, M, half_jit, lo, hi, seed):
     return H
 
 
-def standardized_height_test(ta, tb, first, later, M_jit=200, R=1000, seed=0, lag=(0.001, 0.004)):
+@njit(cache=True)
+def _per_spike_jitter_counts_both(ii, jj, dd, na, nb, M, half_jit, lo, binw, nbins, seed):
+    """Per spike of a (rows, compact index ii) and lag bin: count of b spikes at lag
+    [lo + k binw, lo + (k+1) binw), real (col 0) and under M surrogates jittering every spike of a
+    and of b (each spike keeps one jitter value within a surrogate for all its pairs)."""
+    np.random.seed(seed)
+    H = np.zeros((nbins, na, M + 1), np.float32)
+    hi = lo + nbins * binw
+    for k in range(len(dd)):
+        d = dd[k]
+        if d >= lo and d < hi:
+            H[int((d - lo) / binw), ii[k], 0] += 1
+    ja = np.zeros(na)
+    jb = np.zeros(nb)
+    for m in range(1, M + 1):
+        for k in range(na):
+            ja[k] = (np.random.random() * 2 - 1) * half_jit
+        for k in range(nb):
+            jb[k] = (np.random.random() * 2 - 1) * half_jit
+        for k in range(len(dd)):
+            d = dd[k] + jb[jj[k]] - ja[ii[k]]
+            if d >= lo and d < hi:
+                H[int((d - lo) / binw), ii[k], m] += 1
+    return H
+
+
+def standardized_height_test(ta, tb, first, later, M_jit=1000, R=1000, seed=0, lag=(0.001, 0.004), jitter="both"):
     """Standardized peak height h_hat = (h - mu_jitter) / sd_jitter [paper, Supplementary Fig. 9B] for
     first and later presynaptic spikes, and the two-sided permutation test of their difference
-    shuffling the labels [paper, Supplementary Fig. 16]. Jitter of the presynaptic spikes only
-    [paper, Supplementary Fig. 9A]. Peak readings: 'sum' over [1, 4] ms, 'max' the largest 1 ms bin
-    (its standardized height). M_jit = 200 jitters per spike and R = 1,000 permutations are standard
-    choices. Returns a dict per peak reading."""
+    shuffling the labels [paper, Supplementary Fig. 16]. The jitter is the shared method's [claims,
+    header]: every spike of both cells on [-5, +5] ms, M_jit = 1,000 surrogates; jitter="pre" moves
+    the presynaptic spikes only (Supplementary Fig. 9A, a variant). Peak readings: 'sum' over
+    [1, 4] ms, 'max' the largest 1 ms bin (its standardized height). R = 1,000 permutations [claims,
+    standard]. The side of a significant pair is the tail of the permutation distribution the
+    observed difference falls in (Figure 6c legend, "one side corresponds 'facilitation', the other
+    to 'depression'"): 'dep' when it is above the permutation median (first spikes relatively
+    stronger), 'fac' when below. The sign of the raw difference is not used, as the standardized
+    height grows with the number of spikes and first spikes usually outnumber later ones.
+    Returns a dict per peak reading."""
     rng = np.random.default_rng(seed)
     idx = np.nonzero(first | later)[0]
     if first.sum() < 5 or later.sum() < 5:
         return None
-    Hb = [_per_spike_jitter_counts(ta[idx], tb, M_jit, 0.005, lo, lo + 0.001, seed)
-          for lo in np.arange(lag[0], lag[1] - 1e-9, 0.001)]
+    nbin = int(round((lag[1] - lag[0]) / 0.001))
+    if jitter == "pre":
+        Hb = [_per_spike_jitter_counts(ta[idx], tb, M_jit, 0.005, lo, lo + 0.001, seed)
+              for lo in np.arange(lag[0], lag[1] - 1e-9, 0.001)]
+        nz = np.nonzero(np.any([H.any(axis=1) for H in Hb], axis=0))[0]
+        Hb = [H[nz] for H in Hb]
+    else:
+        ii, jj, dd = _near_pairs(ta[idx], tb, lag[1] + 2 * 0.005 + 1e-4)
+        if len(dd) == 0:
+            return None
+        nz, ia = np.unique(ii, return_inverse=True)
+        ub, ib = np.unique(jj, return_inverse=True)
+        H3 = _per_spike_jitter_counts_both(ia.astype(np.int64), ib.astype(np.int64), dd, len(nz), len(ub),
+                                           M_jit, 0.005, lag[0], 0.001, nbin, seed)
+        Hb = [H3[k] for k in range(nbin)]
     lab = first[idx]
-    nz = np.nonzero(np.any([H.any(axis=1) for H in Hb], axis=0))[0]
-    Hb = [H[nz].astype(np.float64) for H in Hb]
     labs = np.empty((R + 1, len(idx)), bool)
     labs[0] = lab
     for r in range(1, R + 1):
         labs[r] = rng.permutation(lab)
-    Lf = labs[:, nz].astype(np.float64)
-    Ll = 1.0 - Lf
+    Lf = labs[:, nz].astype(np.float32)
+    Ll = (1.0 - Lf).astype(np.float32)
 
     def z(S):
+        S = S.astype(np.float64)
         mu, sd = S[:, 1:].mean(1), S[:, 1:].std(1)
         with np.errstate(invalid="ignore", divide="ignore"):
             return (S[:, 0] - mu) / np.where(sd > 0, sd, np.nan)
+    PF = [Lf @ H for H in Hb]
+    PL = [Ll @ H for H in Hb]
     out = {}
     for peak in ("sum", "max"):
-        if peak == "sum":
-            Hs = [sum(Hb)]
-        else:
-            Hs = Hb
-        zf = np.nanmax(np.vstack([z(Lf @ H) for H in Hs]), axis=0) if len(Hs) > 1 else z(Lf @ Hs[0])
-        zl = np.nanmax(np.vstack([z(Ll @ H) for H in Hs]), axis=0) if len(Hs) > 1 else z(Ll @ Hs[0])
+        with np.errstate(invalid="ignore"), warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            if peak == "sum":
+                zf, zl = z(sum(PF)), z(sum(PL))
+            else:
+                zf = np.nanmax(np.vstack([z(P) for P in PF]), axis=0)
+                zl = np.nanmax(np.vstack([z(P) for P in PL]), axis=0)
         diff = zf - zl
         d0 = diff[0]
         null = diff[1:][np.isfinite(diff[1:])]
         if not np.isfinite(d0) or len(null) == 0:
             out[peak] = None
             continue
-        p = min(1.0, 2 * min((np.sum(null >= d0) + 1) / (len(null) + 1), (np.sum(null <= d0) + 1) / (len(null) + 1)))
-        out[peak] = dict(z_first=zf[0], z_later=zl[0], diff=d0, p=p)
+        p_up = (np.sum(null >= d0) + 1) / (len(null) + 1)
+        p_lo = (np.sum(null <= d0) + 1) / (len(null) + 1)
+        p = min(1.0, 2 * min(p_up, p_lo))
+        side = "dep" if d0 > np.median(null) else "fac"
+        out[peak] = dict(z_first=zf[0], z_later=zl[0], diff=d0, null_mean=float(null.mean()),
+                         null_median=float(np.median(null)), p=p, side=side)
     out["n_first"], out["n_later"] = int(first.sum()), int(later.sum())
     return out
