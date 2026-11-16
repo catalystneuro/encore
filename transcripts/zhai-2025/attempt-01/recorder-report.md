@@ -1,0 +1,100 @@
+I ran `python tools/readme_row.py 001538 --write`, which added the row to README.md with 15 (+1) reproduced, 0 (+2) partially, 3 (+1) not reproduced and 15 blocked. I added the subsection below at the end of `docs/pilot-notes.md`. Nothing is committed.
+
+### 001538, Zhai et al. 2025
+
+Fifteen claims reproduced, three not reproduced and fifteen blocked on the
+dandiset, none partially. With outside data, counted apart: one reproduced,
+two partially reproduced and one not reproduced. Nine claims on the paper's
+per-cell tables on Zenodo are reproduced. Round 1 gave its own outcome for
+each claim from the notebook with its conclusions removed and agreed with 44
+of the 45; it would call `fig1i-dspn-dendritic-sch-lower` not reproduced, as
+its criterion defines only the reproduced case and P is 0.066, and the author
+changed it from partially reproduced. The author also changed the reason for
+the six spine blocks from `not_runnable` to `methods_underspecified`, as round
+1 proposed. Round 2 agreed with all 45 and nothing was proposed, so there was
+no third round. The paper reports, in a mouse model of levodopa-induced
+dyskinesia, that dSPNs are more excitable in the on-state than in the
+off-state and iSPNs less, at the soma and in dendrites, that evoked ACh
+release is elevated in the off-state, that M1 receptors and CDGI underlie the
+off-state rise in iSPN dendritic excitability, and that deleting CDGI or iSPN
+M1 receptors attenuates dyskinesia. The links to the paper's tables, the
+somatic and dendritic excitability of dSPNs and iSPNs with SCH 23390,
+sulpiride, M1R antagonism, CDGI KO and M1R deletion, and two GRAB-ACh
+comparisons were tested on the dandiset. The four Sr2+-oEPSC claims, three
+GRAB-ACh claims and the two AIM claims are blocked as `other`, as the
+dandiset holds so few cells, regions or mice that the paper's test cannot
+reach P < 0.05 whatever the data, and the six spine claims are blocked as
+`methods_underspecified`, as counting used AutoQuant, NeuronStudio or Imaris
+with manual steps. `fig1i-dspn-dendritic-sch-lower` (P = 0.0662) and
+`fig3f-ispn-dendritic-sul-no-change` (P = 0.0097, paper 0.0545) are not
+reproduced, and each turns on one cell the dandiset holds only in part: with
+the paper's value for that cell the paper's P is recovered (0.0133 and
+0.0545). Some outcomes rest on weak ground: under the stricter basal-ratio
+rule (0.8 to 1.25) `fig3f-ispn-dendritic-on-lower` gives P = 0.0774 and the
+sulpiride claim P = 0.0663, which would reverse both; `fig5f-ach-off-elevated`
+is met at P = 0.0357, the smallest attainable for 3 against 5 mice; and the
+absence claims `fig3d-ispn-sul-no-change`, `fig5f-ach-off-like-6ohda` and
+`fig9d-m1r-crispr-somatic-unchanged` pass with little power. The author used
+the full text of the version of record in PubMed Central (PMC12674127), the
+paper's per-cell tables on Zenodo (doi:10.5281/zenodo.17307059) and its
+analysis scripts on Zenodo, read for method choices and not run.
+
+The dandiset was converted by CatalystNeuro (catalystneuro/surmeier-lab-to-nwb).
+It holds no patch-clamp recordings from unlesioned control or 6-OHDA-lesioned
+mice (10, 12, 11 and 9 dSPNs; 21, 11, 14 and 9 iSPNs in the paper), nor the
+oxo-M line scans of Figure 7E or the open-field data of Figure 10, though the
+paper's raw data on Zenodo list folders for all of them. The Sr2+-oEPSC files
+hold one cell per mouse (14 of the paper's 33 cells), the GRAB-ACh files one
+region per mouse (11 of 34) and the AIM tables 7 of the paper's 44 mice plus
+two mice (4124, 5871) not in the paper, and the dandiset does not say that it
+holds a subset or how it was chosen. Session names state a drug (D1RaSch,
+D2RaSul) for files that also hold baseline on-state sweeps; 11 cells in such
+files have a baseline condition, 7 of them also recorded with the drug and 4
+baseline only, and the condition of each sweep is only in the
+RecordingsIndexTable column condition_subfolder. Two dendritic cells lack the
+sites the paper's values need: dSPN on+SCH 20190411 cell 1 has only its second
+pair of sites (0.584 against the paper's 0.228) and iSPN on+sul 20190508 cell
+3 only a distal site; reading these gaps as missing data is an inference from
+the recovered P values, as the paper does not list each cell's sites. Three
+dendritic site series hold six trials, two sites under one name, and split
+they give the paper's values for these cells; one series holds a single
+trial, one two and one four. The genotypes of the CDGI behaviour mice
+contradict each other across the subject metadata, the session names, the AIM
+table's genotype column and the video files, and the AIM session totals of the
+five Figure 8 mice differ from the paper's table in 20 of 25 sessions (mouse
+1945 session 1, 33.5 against 27.0), while the two Figure 10 mice agree in all
+sessions. The raw spine image stacks and rotation videos are there, but no
+spine or rotation counts (none of the 86 spine files has a processing module
+or analysis entry). Other findings: the stimulus series of every dendritic
+sweep is all zero, and the index table gives no kymograph slice for 53 of 997
+dendritic sweeps; the Sr2+-oEPSC light-pulse OptogeneticSeries is all zero in
+69 of 140 sweeps and the intracellular recordings table references no
+stimulus; the GRAB-ACh background images, described as taken at zero laser
+power, have a mean (381 to 525) above the signal (F0 179 to 355); the files
+cite the bioRxiv preprint and use its figure numbers for the behaviour data;
+patch-clamp subjects are named by recording date with no animal identifier, in
+185 subject folders; 18 somatic cells miss one or more current steps between
+20 and 300 pA and 14 repeat a step; and on the paper's own tables the oxo-M
+test in CDGI KO gives P = 0.47 where the paper reports 0.910, and the rotation
+test of Figure 8A 0.012 where the text reports 0.0092.
+
+The notebook ran in 248 s in the first clean run, about 10 minutes after round
+1 and 640 s after round 2. No run failed; the author's first check for
+kymograph slices missed references of -1, and the data check caught three
+wrong sentences, all corrected before the final run. Round 2 found statements
+the outputs did not support, among them mouse counts the wrong way round for
+the Figure 8A rotations, 11 baseline-only cells where 4 are, a sentence that
+the sulpiride outcome comes from one cell, which holds under the main
+basal-ratio rule only, and a subject count and dendrite count no output
+printed; these were corrected or printed. Untracked files in the repository
+root that the author did not create were left alone. The author's points on
+the protocol: no rule for a dandiset with so few units that the paper's test
+cannot reach P < 0.05; no grading for a criterion that defines only
+"reproduced"; no rule for raw data without the derived measurement, where the
+spine and rotation choices are not fully consistent; whether `elsewhere`
+claims may be tested on the paper's tables in place of its raw data; link
+claims that gate nothing and only check whether the dandiset holds the
+paper's cells; a data check that already showed group medians; clock-check
+recipes that assume trial tables or continuous sessions, not sweeps; whether a
+conclusion may cite the paper's reported values; and no finding kind for a
+reported P that disagrees with the paper's own deposited table.

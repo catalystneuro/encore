@@ -1,0 +1,681 @@
+# Claims for Kay, Naselaris, Prenger & Gallant (2008), Nature 452:352-355, "Identifying natural
+# images from human brain activity", doi:10.1038/nature06713, on CRCNS data set vim-1.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14.
+#
+# Text read: the version of record with its supplement, as PyMuPDF text under paper/
+# (10.1038-nature06713.txt): the Letter, its Methods, and the Supplementary Information
+# (Supplementary Figures 1 to 11, Supplementary Table 1, Supplementary Discussion 1 to 3,
+# Supplementary Methods 1 to 11). PDF pages were rendered only for Figure 4 and Supplementary
+# Figures 4, 5 and 8, whose numbers the text garbles. The data set's description
+# (paper/vim-1.data-description.txt) was read only to know what it holds; no claim comes from it.
+#
+# Code: the paper links no analysis code, so none was read. It names outside code for two steps:
+# m-sequence generation by T. Liu (stimulus design only) and Gaussian kernel density estimation by
+# A. Ihler (http://ttic.uchicago.edu/~ihler/code/), used for the set-size extrapolation.
+#
+# Data the paper used. Two subjects, S1 (author T.N., 33) and S2 (author K.N.K., 25). 4 T Varian
+# INOVA scanner, 18 coronal slices over occipital cortex, 64 x 64 matrix, TR 1 s, nominal 2 x 2 x
+# 2.5 mm. Stimuli are 20 x 20 degree greyscale natural photographs (500 x 500 px, circular mask),
+# each trial 4 s, an image flashed ON-OFF-ON-OFF-ON (200 ms each) for 1 s then 3 s grey. Five scan
+# sessions per subject; each has five model estimation runs (70 distinct images shown twice, 168
+# trials) and two image identification runs (12 distinct images shown 13 times, an m-sequence of
+# 168 trials with 12 null trials, the first 6 trials repeated at the end). In all, 1,750 model
+# estimation images and 120 identification images per subject. Responses are estimated per voxel
+# by the basis-restricted separable (BRS) model (Supplementary Methods 3 and 4): one amplitude per
+# distinct image (repeated-trial analysis; the first 6 trials of each identification run are left
+# out) or per trial (single-trial analysis; all trials, 1,620 identification trials per subject,
+# that is 10 runs x 162 image trials), standardized per session with the model estimation
+# responses' mean and SD. Voxels are assigned to V1, V2 and V3 from multifocal retinotopic mapping,
+# one separate scan session per subject (Supplementary Methods 10 and 11); voxels outside V1 to V3
+# were discarded (Supplementary Methods 10); about 5,000 voxels lie in the stimulated
+# parts of V1 to V3 (Supplementary Table 1 gives 1331, 2208 and 1973 for S1, 1513, 1982 and 1780
+# for S2). S1 had three further sessions of identification runs only: two about two months later
+# (five runs each, 120 new images) and one about 14 months later (one run, 12 new images). The
+# set-size analyses use a library of 999 further images, randomly selected and distinct from the
+# 1,870 above, that the paper does not deposit or name a source for. The data set, by its
+# description, holds the two subjects' five main sessions as time series and as estimated
+# responses to the 1,750 and 120 images, ROI labels (V1, V2, V3, V3A, V3B, V4, lateral occipital),
+# the stimuli and anatomy; it says the localizer scans behind the ROIs are not included, and it does
+# not mention the later S1 sessions or the 999-image library. Whether it holds what each claim needs is the author's to find.
+#
+# The identification method, used by most claims below ("the pipeline"), from the paper:
+# (P1) Receptive-field model, Gabor wavelet pyramid (GWP), Supplementary Methods 5 and 6 and
+# Supplementary Figures 2 and 3. Stimuli downsampled to min(500, round(2^(9 - x/8))) px for x = 0
+# to 24 (the extracted text garbles the formula; this reading gives the two printed examples,
+# 500 px at x = 0 and 215 px at x = 10), converted to luminance and mean-subtracted. Wavelets at
+# 1, 2, 4, 8, 16 (and 32 at 128 px) cycles per field of view, on an f x f grid, 8 orientations
+# (0 to 157.5 degrees), 2 quadrature phases, isotropic Gaussian masks with 1-octave spatial
+# frequency and 41-degree orientation bandwidth, masks zeroed below 0.01 of peak, each wavelet
+# zero-mean and unit-length, plus one luminance-only wavelet over the image (its projection
+# squared, times 2, square-rooted). Projection zeroed for a wavelet whose mask lies more than half
+# beyond 90% of the stimulus radius. Input channels are quadrature contrast energies (square root
+# of summed squared projections); prediction is a weighted sum plus a DC offset.
+# (P2) Fitting (Supplementary Methods 6). Gradient descent with early stopping: 20% of responses
+# drawn at random as a stopping set, responses mean-subtracted, channels z-scored, kernel from
+# zero, step 0.001, normalized gradient with momentum 0.9, stop when stopping-set (or training)
+# squared error no longer decreases. 100 bootstrap samples with the iteration count fixed to that
+# of the fit on the original data; final parameters are the bootstrap mean.
+# (P3) Three steps (Supplementary Methods 5). Initial models at 128 px over the central 20, 10.1
+# and 5.2 degrees, orientation invariant (channels summed over orientation; 1,367 parameters);
+# an isotropic 2-D Gaussian fit to each spatial envelope, RF location = the region within +/-2 SD
+# (valid for the 10.1 and 5.2 degree models only if wholly inside their field of view); the valid
+# initial model with least stopping-set error is the best initial model; only voxels whose best
+# initial model has significant predictive power go on; a final 64 px model, not orientation
+# invariant (2,730 parameters), fitted over the estimated RF location.
+# (P4) Predictive power is Pearson r between measured and predicted responses to the 120
+# identification images; its significance is one-tailed (r > 0) by a bootstrap (Supplementary
+# Methods 6), p < 0.01 where a threshold is used (Supplementary Table 1).
+# (P5) Identification (main text and Supplementary Methods 7). For each measured pattern, the 500
+# voxels with highest predictive power, computed without the image to be identified (so over the
+# other 119 images); the image whose predicted pattern has the highest Pearson r with the
+# measured pattern is chosen. Set size 120; chance 1/120.
+# (P6) Larger sets (Supplementary Methods 7). With a 999-image library, f(m,s) = product over
+# i = 1 to s - 1 of (1000 - g(m) - i) / (1000 - i), g(m) the number of library images whose
+# predicted pattern correlates more with m than the correct image's does (the garbled formula
+# read as drawing s - 1 images without replacement); beyond 1,000, the 999 correlations are
+# smoothed by a Gaussian kernel with width by pseudo-likelihood cross-validation and
+# f(m,s) = (1 - h(m))^(s - 1), h(m) the fraction of the smoothed distribution above the correct
+# image's correlation; f is averaged over all measured patterns.
+#
+# Details the paper leaves open, named again where a claim rests on them:
+# (O1) the candidate voxels. The paper uses V1, V2 and V3 only, and only voxels whose best initial
+# model has significant predictive power (P3). The threshold for that step is not stated in
+# Supplementary Methods 5; Supplementary Table 1 uses p < 0.01. Readings are (a) V1 to V3 voxels
+# passing p < 0.01, (b) all V1 to V3 voxels, ranked by predictive power alone.
+# (O2) the bootstrap for the significance of predictive power: what is resampled and how often is
+# not stated. Standard choice, resampling the 120 image pairs with replacement, 1,000 times; it
+# changes only which voxels pass a threshold near p = 0.01.
+# (O3) wavelet grid placement and the exact mask SD in pixels are fixed by the bandwidths only up
+# to convention; standard choice, centres at the cell centres of the f x f grid.
+# (O4) the goggles' luminance response is not given (only 0.8, 11.1 and 6.3 cd/m2 minimum,
+# maximum and mean); reading, the stimulus values taken as linear in luminance.
+# (O5) the final model's field of view, "specifically tailored to the estimated RF location".
+# Readings are (a) the square bounded by +/-2 SD of the fitted Gaussian, at 64 px, (b) the best
+# initial model's field of view, at 64 px.
+# (O6) single-trial identification. The paper does not say whether models and voxel selection for
+# single trials use the repeated-trial model estimation responses. Readings are (a) models and
+# predictive power from the repeated-trial responses, with single-trial patterns as the measured
+# patterns, (b) models fitted to single-trial model estimation responses.
+# (O7) random seeds (stopping sets, bootstraps, library draws) are standard choices.
+schema_version: 2
+paper: doi:10.1038/nature06713
+claims:
+- id: fig3-s1-repeated-120
+  statement: For subject S1, the image seen was identified correctly for 92% (110 of 120) of the
+    repeated-trial voxel activity patterns from 120 novel natural images, against chance of 0.8%.
+  source: Main text, paragraph 6 ("Identification performance for one subject is illustrated in
+    Fig. 3"); Figure 3 and its legend; Figure 4a
+  quote: For this subject, 92% (110/120) of the images were identified correctly (subject S1),
+    whereas chance performance is just 0.8% (1/120)
+  expected:
+  - quantity: S1 repeated-trial identification performance, set size 120
+    value: 92
+    tolerance: 9.2
+    unit: percent correct
+  criterion: The pipeline of the opening comment (P1 to P5) on S1's 1,750 model estimation and 120
+    identification repeated-trial responses. The value must hold under one of the readings of O1
+    and O5; every combination is shown.
+- id: fig4a-s2-repeated-120
+  statement: For subject S2, 72% (86 of 120) of the images were identified correctly from
+    repeated-trial patterns.
+  source: Main text, paragraph 6; Figure 4a
+  quote: For a second subject, 72% (86/120) of the images were identified correctly (subject S2)
+  expected:
+  - quantity: S2 repeated-trial identification performance, set size 120
+    value: 72
+    tolerance: 7.2
+    unit: percent correct
+  criterion: As fig3-s1-repeated-120, for S2.
+- id: fig4a-single-trial
+  statement: Identification from single-trial voxel activity patterns was 51% (834 of 1,620) for S1
+    and 32% (516 of 1,620) for S2, against chance of 0.8%.
+  source: Main text, paragraph 7; Figure 4a
+  quote: Single-trial performance was 51% (834/1620) and 32% (516/1620) for subjects S1 and S2,
+    respectively (Fig. 4a); once again, chance performance is just 0.8% (13.5/1620)
+  expected:
+  - quantity: S1 single-trial identification performance, set size 120
+    value: 51
+    tolerance: 5.1
+    unit: percent correct
+  - quantity: S2 single-trial identification performance, set size 120
+    value: 32
+    tolerance: 3.2
+    unit: percent correct
+  criterion: Single-trial responses are BRS amplitudes per trial with the HRF from the
+    repeated-trial analysis, all trials of the identification runs used, standardized per session
+    (Supplementary Methods 1, 3 and 4), giving 1,620 patterns per subject; each is identified among
+    the 120 images by P5. The models and voxel selection follow O6, readings (a) and (b); the
+    value must hold under one reading, with O1 and O5 as in fig3-s1-repeated-120.
+- id: fig4a-noise-ceiling
+  statement: The estimated noise ceilings suggest that the lower performance of S2 is due to
+    intrinsically noisier data; the ceilings are near 99% for both subjects with repeated trials,
+    and about 80% (S1) and 64% (S2) with single trials.
+  source: Figure 4a and its legend; Supplementary Methods 7, Estimation of the noise ceiling
+  quote: The noise ceiling estimates suggest that the difference in performance across subjects is
+    due to intrinsic differences in the level of noise
+  expected:
+  - quantity: S1 repeated-trial noise ceiling, read from the Figure 4a marker
+    value: 99
+    tolerance: 9.9
+    unit: percent correct
+  - quantity: S2 repeated-trial noise ceiling, read from the Figure 4a marker
+    value: 99
+    tolerance: 9.9
+    unit: percent correct
+  - quantity: S1 single-trial noise ceiling, read from the Figure 4a marker
+    value: 80
+    tolerance: 8
+    unit: percent correct
+  - quantity: S2 single-trial noise ceiling, read from the Figure 4a marker
+    value: 64
+    tolerance: 6.4
+    unit: percent correct
+  criterion: Noise ceiling as Supplementary Methods 7 gives it. For each of the 120 images, 25
+    simulations; in each, the measured pattern is the mean of a random sample of the correct
+    image's single-trial patterns, each candidate's predicted pattern the mean of a random sample
+    of its own single-trial patterns, and the most correlated candidate is chosen; the ceiling is
+    the percentage of successes. The values are read from the figure, no sentence gives them.
+    Open are the voxels and the sample size. Voxels, the 500 selected for identification (P5).
+    Sample size, readings (a) a bootstrap sample with replacement of the size of the available
+    trials (13, or 14 for an image among the first 6 trials of a run, which the single-trial
+    analysis keeps) for the repeated-trial ceiling and of size 1 for the single-trial ceiling, (b)
+    without replacement, same sizes. Reproduced when, under one reading, the four values are within
+    tolerance and S2's single-trial ceiling is below S1's, as S2's performance is (the paper's
+    argument, read from the figure; no test is reported).
+  depends_on:
+  - fig4a-single-trial
+- id: fig4b-set-size-1000
+  statement: For S1 with repeated trials, performance declined only from 92% to 82% as the set size
+    rose from 100 to 1,000 images.
+  source: Main text, paragraph 8; Figure 4b; Supplementary Methods 7, Identification performance
+    for different set sizes
+  quote: As set size increased tenfold from 100 to 1,000, performance only declined slightly, from
+    92% to 82% (subject S1, ... repeated trial)
+  data: with_inputs
+  expected:
+  - quantity: S1 repeated-trial performance, set size 100
+    value: 92
+    tolerance: 9.2
+    unit: percent correct
+  - quantity: S1 repeated-trial performance, set size 1,000
+    value: 82
+    tolerance: 8.2
+    unit: percent correct
+  criterion: P6 with the paper's 999-image library, the predicted patterns for the library images
+    coming from the S1 models of fig3-s1-repeated-120. The library images are not deposited and no
+    source is given beyond the image collections of the Methods; without them the claim cannot be
+    tested as the paper did it.
+  depends_on:
+  - fig3-s1-repeated-120
+- id: fig4b-extrapolation
+  statement: Extrapolated, performance falls to 10% at set sizes of 10^11.3 (S1, repeated trial),
+    10^7.3 (S2, repeated), 10^5.5 (S1, single trial) and 10^3.5 (S2, single).
+  source: Figure 4b; main text, paragraph 8; Supplementary Methods 7, extrapolation
+  quote: Extrapolation of these measurements (see Supplementary Methods) suggests that performance
+    for this subject would remain above 10% even up to a set size of 1011.3 images
+  data: with_inputs
+  expected:
+  - quantity: log10 set size at 10% performance, S1 repeated trial
+    value: 11.3
+    tolerance: 1.13
+  - quantity: log10 set size at 10% performance, S2 repeated trial (Figure 4b)
+    value: 7.3
+    tolerance: 0.73
+  - quantity: log10 set size at 10% performance, S1 single trial (Figure 4b)
+    value: 5.5
+    tolerance: 0.55
+  - quantity: log10 set size at 10% performance, S2 single trial (Figure 4b)
+    value: 3.5
+    tolerance: 0.35
+  criterion: The extrapolation of P6 over the 999 library images, the set size at which the mean of
+    f(m,s) over patterns reaches 0.1. Tolerances are 10% of the printed exponent, since the paper reports and
+    compares these set sizes as powers of ten (10% of the set size itself would be far below the
+    precision of one printed decimal of the exponent). Needs the library
+    of fig4b-set-size-1000.
+  depends_on:
+  - fig4b-set-size-1000
+  - fig4a-single-trial
+- id: fig4c-retinotopy-only-extrapolation
+  statement: A retinotopy-only model, capturing only the location and size of each voxel's receptive
+    field, falls to 10% correct at a set size of 10^5.1 images, against 10^9.5 for the Gabor wavelet
+    pyramid model (repeated trials, averaged across subjects); it is worse for each subject, with
+    single trials too.
+  source: Main text, paragraph 9; Figure 4c; Supplementary Figure 5a to 5d
+  quote: Performance for this retinotopy-only model declined to 10% correct at a set size of just
+    105.1 images, whereas performance for the Gabor wavelet pyramid model did not decline to 10%
+    correct until 109.5 images were included in the set
+  data: with_inputs
+  expected:
+  - quantity: log10 set size at 10% performance, retinotopy-only, repeated trial, subject average
+    value: 5.1
+    tolerance: 0.51
+  - quantity: log10 set size at 10% performance, GWP, repeated trial, subject average
+    value: 9.5
+    tolerance: 0.95
+  criterion: Retinotopy-only model as Supplementary Methods 8 gives it, two channels, the absolute
+    spatially-weighted luminance and the spatially-weighted contrast with weights from the Gaussian
+    fitted to the best initial model's envelope, at the original resolution, fitted by the gradient
+    descent of P2; voxels selected by its own predictive power (Supplementary Methods 7). How the
+    subjects are averaged is open. Readings are (a) the mean of the two subjects' performance curves,
+    then the set size at 10%, (b) the mean of the two exponents; Supplementary Figure 5 gives 11.3
+    and 7.3 for the GWP model and 7.0 and 3.8 for the retinotopy-only model, whose means (9.3, 5.4)
+    are not the printed 9.5 and 5.1, so (a) is the better supported. Reproduced when, under one
+    reading, both values are within tolerance and the retinotopy-only exponent is below the GWP
+    exponent for each subject and for repeated and single trials (Supplementary Figure 5 gives
+    3.7 against 5.5, S1, and 2.5 against 3.5, S2, single trial). Needs the library of
+    fig4b-set-size-1000.
+  depends_on:
+  - fig4b-extrapolation
+- id: suppm8-retinotopy-only-120
+  statement: At set size 120 with repeated trials, averaged across subjects, the retinotopy-only
+    model identified 55% of images with spatially-weighted luminance and contrast and 42% with the
+    standard (unweighted) metrics, both below the Gabor wavelet pyramid model.
+  source: Supplementary Methods 8, Validation of the spatially-weighted metrics; Figure 4c
+  quote: Identification performance was 55% and 42% for the spatiallyweighted metrics and standard
+    metrics, respectively (repeated trial, 120 images, performance averaged across subjects)
+  expected:
+  - quantity: retinotopy-only performance, spatially-weighted metrics, mean of S1 and S2
+    value: 55
+    tolerance: 5.5
+    unit: percent correct
+  - quantity: retinotopy-only performance, standard metrics, mean of S1 and S2
+    value: 42
+    tolerance: 4.2
+    unit: percent correct
+  criterion: The retinotopy-only model of fig4c-retinotopy-only-extrapolation, identification by P5
+    at set size 120 on each subject, the two subjects' percentages averaged. Standard metrics are
+    the mean and SD of pixel luminance within +/-2 SD of the Gaussian G (Supplementary Methods 8).
+    Reproduced when both values are within tolerance and both are below the GWP mean of
+    fig3-s1-repeated-120 and fig4a-s2-repeated-120 computed here.
+  depends_on:
+  - fig3-s1-repeated-120
+  - fig4a-s2-repeated-120
+- id: suppfig8-constrained-models
+  statement: In constrained versions of the GWP model, both orientation and spatial frequency tuning
+    add to identification (C > A, G > A), spatial frequency more (G > C), and voxel-to-voxel variation
+    in both adds too (F > E, H > E); at 1,000 images the nine models give A 17%, B 22%, C 28%, D 30%,
+    E 51%, F 60%, G 64%, H 62% and I 63%.
+  source: Supplementary Figure 8a and 8b; main text, paragraph 10; Supplementary Methods 9
+  quote: Both orientation and spatial frequency tuning contribute to identification performance
+    (C > A and G > A), but spatial frequency tuning is relatively more important (G > C).
+    Voxel-to-voxel variation in orientation and spatial frequency tuning also contributes to
+    identification performance (F > E and H > E)
+  statistics:
+  - about: C > A, G > A, G > C, F > E and H > E
+    test: one-tailed paired sign test
+    p: 0.05
+    p_relation: "<"
+    n: not stated; repeated trial, 1,000 images, performance averaged across subjects
+  data: with_inputs
+  expected:
+  - quantity: model A (flat orientation, flat spatial frequency)
+    value: 17
+    tolerance: 1.7
+    unit: percent correct
+  - quantity: model C (individual orientation, flat spatial frequency)
+    value: 28
+    tolerance: 2.8
+    unit: percent correct
+  - quantity: model E (ROI-averaged both)
+    value: 51
+    tolerance: 5.1
+    unit: percent correct
+  - quantity: model F (individual orientation, ROI-averaged spatial frequency)
+    value: 60
+    tolerance: 6
+    unit: percent correct
+  - quantity: model G (flat orientation, individual spatial frequency)
+    value: 64
+    tolerance: 6.4
+    unit: percent correct
+  - quantity: model H (ROI-averaged orientation, individual spatial frequency)
+    value: 62
+    tolerance: 6.2
+    unit: percent correct
+  criterion: The nine models of Supplementary Methods 9 at 64 px, the spatial envelope fixed by the
+    Gaussian of the RF location, channels summed over position, transformed by the 640-grating
+    least-squares map and summed over phase, then flat, ROI-averaged (mean tuning across the voxels
+    of the same area) or individual tuning on each dimension, fitted by P2 over one fixed voxel set
+    selected by the predictive power of "the model that imposed no constraints on orientation and
+    spatial frequency tuning" (Supplementary Methods 7). Which model that is the paper leaves open;
+    readings are (a) model I, which fixes the spatial envelope, (b) the final GWP model of P3. Performance at 1,000 images by
+    P6, averaged across subjects. The figure's p-values (C over A 8e-6, G over A 2e-22, G over C
+    2e-16, F over E 4e-4, H over E 4e-5) are read from the low-resolution table of panel b; the
+    legend states only that all five are below 0.05. Which unit the sign test pairs (each measured
+    pattern's f(m,1000), pooled over subjects) is a reading, the one the legend's "paired" allows.
+    Reproduced when the five orderings hold with one-tailed sign-test p < 0.05 and at least four of
+    the six values are within tolerance. Needs the library of fig4b-set-size-1000; the orderings at
+    set size 120 can be shown as a variant, which does not decide the outcome.
+  depends_on:
+  - fig4b-set-size-1000
+- id: time-two-months
+  statement: For 120 novel images seen about two months after the main experiment, 82% (99 of 120)
+    were identified correctly (S1, repeated trials), using the models from the main experiment.
+  source: Main text, paragraph 11; Methods, Data collection, paragraph 3
+  quote: In this case 82% (99/120) of the images were identified correctly (chance performance 0.8%;
+    subject S1, repeated trial)
+  expected:
+  - quantity: S1 repeated-trial performance, sessions two months later, set size 120
+    value: 82
+    tolerance: 8.2
+    unit: percent correct
+  criterion: The S1 models of fig3-s1-repeated-120, applied to the identification responses of the
+    two later sessions, estimated by the BRS model and standardized within each session
+    (Supplementary Methods 3, Analysis for additional scan sessions); P5 on the 120 images. How the
+    500 voxels are chosen for these sessions is not stated; readings are (a) predictive power on the
+    main experiment's 120 identification images, (b) predictive power on the later session's images,
+    leaving out the image to be identified, as P5 does. Needs
+    those sessions, which the data set's description does not mention.
+  depends_on:
+  - fig3-s1-repeated-120
+- id: time-fourteen-months
+  statement: For 12 novel images seen more than a year (about 14 months) after the main experiment,
+    all 12 were identified correctly (S1, repeated trials; chance 8%).
+  source: Main text, paragraph 11; Methods, Data collection, paragraph 3
+  quote: In this case 100% (12/12) of the images were identified correctly (chance performance 8%;
+    subject S1, repeated trial)
+  expected:
+  - quantity: S1 repeated-trial performance, session 14 months later, set size 12
+    value: 100
+    tolerance: 10
+    unit: percent correct
+  criterion: As time-two-months, for the single-run session about 14 months later, set size 12, with
+    the same two readings for voxel selection. A
+    tolerance of 10 points allows 11 of 12.
+  depends_on:
+  - fig3-s1-repeated-120
+- id: errors-similar-images
+  statement: Identification errors tended to occur when the selected image was visually similar to
+    the correct image.
+  source: Main text, paragraph 12
+  quote: Inspection revealed that identification errors tended to occur when the selected image was
+    visually similar to the correct image
+  criterion: The paper judged this by inspection and gives no measure. The two image similarity
+    measures the paper itself uses (Supplementary Discussion 1) are the readings, (a) correlation of
+    pixel luminance, (b) correlation of local RMS contrast in 0.6 degree blocks. For each error of
+    fig3-s1-repeated-120 and fig4a-s2-repeated-120, the percentile of the selected image's
+    similarity to the correct image among the correct image's similarities to the other 119 images.
+    The test is fixed here, not by the paper. Reproduced when, under one reading, the errors pooled
+    over subjects have a median percentile above 50 by a one-sided Wilcoxon signed-rank test against
+    50 at p < 0.05.
+  depends_on:
+  - fig3-s1-repeated-120
+  - fig4a-s2-repeated-120
+- id: suppfig4-500-voxels
+  statement: Identification performance rises with the number of voxels used and is best at about
+    500 voxels for both subjects, with repeated and single trials.
+  source: Supplementary Figure 4 and legend; Supplementary Methods 7, Voxel selection
+  quote: In all cases optimal performance was achieved using about 500 voxels
+  criterion: P5 at set size 120 with 1, 5, 10, 20, 50, 100, 200, 500 and 1,000 voxels (the figure's
+    axis), for S1 and S2, repeated and single trials. "About 500" is not made exact by the paper;
+    the rule here is that, in each of the four conditions, performance at 500 voxels is the highest
+    of the nine or within 3 percentage points of the highest, and performance at 500 is above that
+    at 50. Partially reproduced when this holds in two or three conditions.
+  depends_on:
+  - fig3-s1-repeated-120
+  - fig4a-s2-repeated-120
+  - fig4a-single-trial
+- id: supptable1-voxel-counts
+  statement: The visual areas hold 1331 (V1), 2208 (V2) and 1973 (V3) voxels in S1, and 1513, 1982 and
+    1780 in S2.
+  source: Supplementary Table 1, column Total number of voxels
+  inferred: Numbers from Supplementary Table 1; no sentence states them. Supplementary Methods 7
+    says about 5000 voxels lay in the stimulated parts of V1 to V3.
+  expected:
+  - quantity: S1 V1 voxels
+    value: 1331
+    tolerance: 133.1
+  - quantity: S1 V2 voxels
+    value: 2208
+    tolerance: 220.8
+  - quantity: S1 V3 voxels
+    value: 1973
+    tolerance: 197.3
+  - quantity: S2 V1 voxels
+    value: 1513
+    tolerance: 151.3
+  - quantity: S2 V2 voxels
+    value: 1982
+    tolerance: 198.2
+  - quantity: S2 V3 voxels
+    value: 1780
+    tolerance: 178
+  criterion: Counts of voxels assigned to each area by the retinotopic mapping (Supplementary
+    Methods 10). Reproduced when all six counts are within tolerance; partially when four or five are.
+- id: supptable1-predictive-power-by-area
+  statement: The fraction of voxels whose best initial model has significant predictive power falls
+    from V1 to V2 to V3 (S1 40%, 31%, 17%; S2 25%, 21%, 13%).
+  source: Supplementary Table 1 and legend, column High predictive power
+  quote: Predictive power generally decreased from V1 to V2 to V3, likely reflecting the fact that the
+    Gabor wavelet pyramid model is not optimal for visual areas beyond V1
+  expected:
+  - quantity: S1 V1 fraction with significant predictive power
+    value: 40
+    tolerance: 4
+    unit: percent of voxels
+  - quantity: S1 V2 fraction
+    value: 31
+    tolerance: 3.1
+    unit: percent of voxels
+  - quantity: S1 V3 fraction
+    value: 17
+    tolerance: 1.7
+    unit: percent of voxels
+  - quantity: S2 V1 fraction
+    value: 25
+    tolerance: 2.5
+    unit: percent of voxels
+  - quantity: S2 V2 fraction
+    value: 21
+    tolerance: 2.1
+    unit: percent of voxels
+  - quantity: S2 V3 fraction
+    value: 13
+    tolerance: 1.3
+    unit: percent of voxels
+  criterion: Predictive power of the best initial model (P3, P4), significant at p < 0.01 by the
+    bootstrap (O2), as a percentage of each area's voxels. Reproduced when the order V1 > V2 > V3
+    holds in both subjects and at least four of the six values are within tolerance; partially when
+    the order holds in both subjects only.
+- id: supptable1-snr
+  statement: SNR differs greatly between subjects but is similar across V1, V2 and V3 within a
+    subject; the fraction of voxels with SNR above 1.5 is 32%, 30% and 22% in S1 and 18%, 19% and 13%
+    in S2.
+  source: Supplementary Table 1 and legend, column High SNR
+  quote: Although SNR varied greatly across subjects, SNR was fairly consistent for areas V1, V2, and
+    V3 within each subject
+  expected:
+  - quantity: S1 V1 fraction with SNR above 1.5
+    value: 32
+    tolerance: 3.2
+    unit: percent of voxels
+  - quantity: S1 V2 fraction
+    value: 30
+    tolerance: 3
+    unit: percent of voxels
+  - quantity: S1 V3 fraction
+    value: 22
+    tolerance: 2.2
+    unit: percent of voxels
+  - quantity: S2 V1 fraction
+    value: 18
+    tolerance: 1.8
+    unit: percent of voxels
+  - quantity: S2 V2 fraction
+    value: 19
+    tolerance: 1.9
+    unit: percent of voxels
+  - quantity: S2 V3 fraction
+    value: 13
+    tolerance: 1.3
+    unit: percent of voxels
+  criterion: A voxel's SNR is the median, over its model estimation responses aggregated across
+    sessions, of the absolute response divided by its standard error, from the BRS fits
+    (Supplementary Methods 3). The paper does not say how the standard error of an amplitude is
+    obtained; readings are (a) the ordinary least-squares standard error from the final iteration
+    of the BRS fit after the autoregressive transform, (b) a bootstrap over runs. Reproduced when,
+    under one reading, at least four of the six values are within tolerance and S1's fraction is
+    higher than S2's in every area.
+- id: methods-v4-poor
+  statement: The GWP model characterizes the responses of voxels in V1, V2 and V3 but does poorly for
+    higher areas such as V4.
+  source: Methods, Model estimation, paragraph 1
+  quote: The model was able to characterize responses of voxels in visual areas V1, V2 and V3
+    (Supplementary Table 1), but it did a poor job of characterizing responses in higher visual
+    areas such as V4
+  criterion: The paper shows no V4 result, and its V4 voxels were discarded (Supplementary Methods
+    10), so V4 voxels can only come from the data set's own ROI labels. Measure from Supplementary Table 1, the percentage of
+    voxels whose best initial model has significant predictive power (p < 0.01, P3, P4, O2), for V4
+    voxels as labelled in the data set and for V1 to V3. Reproduced when, in both subjects, the V4
+    percentage is below the V3 percentage (the comparison with V3 is fixed here, not by the paper); the median predictive power per area is reported too.
+  depends_on:
+  - supptable1-predictive-power-by-area
+- id: fig2-representative-voxel
+  statement: A representative V1 voxel of S1 (voxel 42205) has its receptive field in the left
+    hemifield just below the horizontal meridian, broadband orientation tuning and high-pass spatial
+    frequency tuning.
+  source: Figure 2a and 2b and legend
+  quote: This receptive field is located in the left hemifield, just below the horizontal meridian
+    ... This receptive field has broadband orientation tuning and high-pass spatial frequency tuning
+  criterion: Final GWP model of that voxel (P1 to P3, O5), spatial envelope and grating tuning curves
+    as Supplementary Methods 6 (Calculation of tuning curves) gives them. How the paper numbers
+    voxels is not stated; whether 42205 is an index the data set keeps is the author's to find, and
+    if it is not, the claim cannot be tested. Reproduced when the envelope peak lies left of the
+    vertical meridian and below the horizontal meridian within the central half of the stimulus
+    height (the bound for "just below" is fixed here), the spatial frequency tuning is highest at the highest frequency (2.9 cycles per degree
+    on the figure's axis), and the orientation tuning's maximum is less than twice its minimum
+    (the ratio for "broadband" is fixed here).
+- id: suppfig7-roi-tuning
+  statement: The V1-averaged orientation tuning curve is nearly flat and the V1-averaged spatial
+    frequency tuning curve is band-pass; voxels have only a slight orientation bias.
+  source: Supplementary Figure 7a and 7b and legend; main text, paragraph 10
+  quote: The orientation tuning curve is nearly flat ... The spatial frequency tuning curve is
+    band-pass
+  criterion: The ROI-averaged tuning curves of Supplementary Methods 9, the mean over V1 voxels of
+    the grating tuning curves, with bootstrap SE across voxels. Which models give the curves is not
+    stated; readings are (a) the final GWP models (Supplementary Methods 6, Calculation of tuning
+    curves), (b) the grating-transformed weights of model I of suppfig8-constrained-models
+    (Supplementary Methods 9). Which V1 voxels are averaged is not stated; readings are (a) all V1
+    voxels with a final model, (b) the fixed voxel set of suppfig8-constrained-models. The figure is
+    an example and does not name a subject; each subject is shown. Reproduced when, under one reading, the
+    orientation curve's range is under 10% of its mean (the bound for "nearly flat" is fixed here)
+    and the spatial frequency curve peaks at an intermediate frequency, above both its lowest and
+    highest frequency values by more than 2 SE (both bounds fixed here).
+  depends_on:
+  - fig3-s1-repeated-120
+- id: suppfig10-retinotopy-validation
+  statement: Receptive-field angle and eccentricity estimated from the GWP model match those from
+    independent multifocal retinotopic mapping, with discrepancies in eccentricity at the lowest and
+    highest eccentricities.
+  source: Supplementary Figure 10a to 10c and legend
+  quote: Notice that the MF and GWP angle estimates are well matched ... The MF and GWP eccentricity
+    estimates are generally well matched, but there appear to be systematic discrepancies at the
+    lowest and highest eccentricities
+  criterion: GWP angle and eccentricity from the RF location of P3, voxels with predictive power
+    significant at p < 0.01 (as the legend says); multifocal estimates by the vector sum and centre
+    of mass of Supplementary Methods 11, from the separate mapping sessions, pooled across subjects.
+    The paper gives no statistic; the measures fixed here are the circular correlation of angles and
+    the Spearman correlation of eccentricities. Reproduced when both are positive with p < 0.05.
+    Needs the retinotopic mapping data, which the data set's description says are not included.
+- id: suppfig11-rf-size-eccentricity
+  statement: Receptive-field size increases with eccentricity, and from V1 to V2 to V3.
+  source: Supplementary Figure 11 and legend
+  quote: RF size increases with eccentricity and across visual areas, consistent with previous fMRI
+    studies
+  criterion: RF size is the extent of +/-2 SD of the Gaussian fitted to the best initial model's
+    envelope (P3); voxels kept when predictive power is significant at p < 0.01 and the RF lies
+    wholly inside the stimulus; pooled across subjects, binned by eccentricity, median per bin with
+    at least 10 voxels (the legend). The bin edges are not given; standard choice, 1 degree bins
+    from 0 to 10 degrees, with 0.5 degree bins as a variant. Reproduced when, for each area, the
+    Spearman correlation of RF size with eccentricity over voxels is positive at p < 0.05, and in
+    most bins shared by the three areas the medians order V1 < V2 < V3 (tests fixed here).
+- id: suppdisc1-classification-extension
+  statement: Extending classification to novel images (matching the measured pattern to the most
+    similar of the 1,750 training patterns, then picking the identification image most similar to
+    that training image) works poorly, 1.7% and 0.8% correct with pixel luminance similarity (not
+    above chance) and 5% and 5.8% with local contrast (above chance), for S1 and S2.
+  source: Supplementary Discussion 1, An extension of classification-based decoding methods yields
+    poor identification performance, paragraphs 2 and 3
+  quote: Identification performance using the pixel luminance metric was 1.7% (2/120) and 0.8% (1/120)
+    for subjects S1 and S2, respectively (repeated trial). These values were not significantly above
+    chance (p ≥ 0.05, one-tailed binomial test). Identification performance using the local contrast
+    metric was 5% (6/120) and 5.8% (7/120) for subjects S1 and S2, respectively (repeated trial).
+    These values were above chance (p < 0.0001, one-tailed binomial test)
+  statistics:
+  - about: pixel luminance metric, each subject against chance 1/120
+    test: one-tailed binomial test
+    p: 0.05
+    p_relation: ">"
+    n: 120 repeated-trial patterns per subject
+  - about: local contrast metric, each subject against chance 1/120
+    test: one-tailed binomial test
+    p: 0.0001
+    p_relation: "<"
+    n: 120 repeated-trial patterns per subject
+  expected:
+  - quantity: S1, pixel luminance metric
+    value: 1.7
+    tolerance: 0.17
+    unit: percent correct
+  - quantity: S2, pixel luminance metric
+    value: 0.8
+    tolerance: 0.08
+    unit: percent correct
+  - quantity: S1, local contrast metric
+    value: 5
+    tolerance: 0.5
+    unit: percent correct
+  - quantity: S2, local contrast metric
+    value: 5.8
+    tolerance: 0.58
+    unit: percent correct
+  criterion: As Supplementary Discussion 1 gives it. Pattern similarity by Pearson r; image
+    similarity by correlation of pixel luminance, or of local RMS contrast in 0.6 degree blocks
+    (n = 0.6, the best of the values the paper tried). Open are the voxels and the contrast measure.
+    Voxels, readings (a) the 500 voxels of P5, (b) all V1 to V3 voxels of O1. RMS contrast,
+    readings (a) the SD of luminance in the block, (b) that SD over the block mean. With 120 images
+    a tolerance of 10% is less than one image, so the counts are judged instead. Reproduced when,
+    under one reading, each count is within one image of the paper's (2, 1, 6, 7), the luminance
+    results are not above chance (one-tailed binomial p at or above 0.05) and the contrast results
+    are (p < 0.0001); partially when the significance pattern holds but a count is further off.
+    The paper wrote p ≥ 0.05, recorded here as p > 0.05.
+- id: suppm7-selected-voxels-v1
+  statement: Most of the 500 voxels used for identification were located in V1, where predictive
+    power was highest.
+  source: Supplementary Methods 7, Voxel selection, paragraph 2
+  quote: Most of these voxels were located in area V1 where predictive power was highest
+    (Supplementary Table 1)
+  criterion: The 500 voxels of P5 for repeated-trial identification, for each subject, assigned to
+    V1, V2 and V3 as in the data set's ROI labels. Since P5 selects voxels per measured pattern,
+    readings are (a) the voxels selected in more than half of the 120 selections, (b) the 500
+    voxels ranked by predictive power over all 120 images. "Most" is read as more than half (fixed
+    here). Reproduced when, under one reading, more than half of the voxels are in V1 in both
+    subjects.
+  depends_on:
+  - fig3-s1-repeated-120
+  - fig4a-s2-repeated-120
+checks:
+- date: '2026-11-10'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, retinotopic mapping was one separate scan session per subject, and voxels outside V1 to V3 were discarded (Supplementary Methods 10 and 11).
+  - Opening comment, the data set's description says the ROI localizer scans are not included; the comment had said it does not mention them, which contradicted suppfig10-retinotopy-validation.
+  - fig4a-noise-ceiling, statement said the ceilings "show" the noise difference; the legend says they "suggest" it.
+  - fig4a-noise-ceiling, values reread from Figure 4a rendered at 600 dpi; the repeated-trial markers sit at about 99 (not 98) and the S2 single-trial marker at about 64 (not 62); statement and tolerances updated.
+  - fig4a-noise-ceiling, trial count per image can be 14 where an image falls in the first 6 trials of a run, which the single-trial analysis keeps (Supplementary Methods 1).
+  - fig4b-extrapolation, the tolerance of 10% of the exponent now gives its reason.
+  - suppfig8-constrained-models, the voxel set comes from "the model that imposed no constraints" (Supplementary Methods 7), which may be model I or the final GWP model; both are now named as readings, not model I alone.
+  - suppfig8-constrained-models, n was a guess; the paper does not state the sign test's units, so n now says so.
+  - time-two-months and time-fourteen-months, how voxels are selected for the later sessions is not stated; two readings added.
+  - supptable1-snr, criterion wording fixed (S1's fraction above S2's in every area).
+  - methods-v4-poor, the paper discarded V4 voxels (Supplementary Methods 10), so V4 comes from the data set's labels; the comparison with V3 is marked as fixed here.
+  - fig2-representative-voxel, the "central half" bound for "just below" is marked as fixed here.
+  - suppfig7-roi-tuning, which models give the ROI-averaged curves (final GWP, or the grating-transformed model I of Supplementary Methods 9) and which subject are open; readings added, and the curve bounds marked as fixed here.
+  - Added suppm7-selected-voxels-v1, a stated result of Supplementary Methods 7 that had no claim.
+  - Checked and unchanged, Figure 4b and 4c exponents, Supplementary Figure 5 exponents, Supplementary Figure 8 percentages and p-values, and Supplementary Figure 4 axis, all against the rendered PDF.
+  - Open, the 999-image library is not deposited, so fig4b-set-size-1000, fig4b-extrapolation, fig4c-retinotopy-only-extrapolation and suppfig8-constrained-models cannot be tested as the paper did them.
+  - Open, the later S1 sessions and the retinotopic mapping data are not in the data set's description; time-two-months, time-fourteen-months and suppfig10-retinotopy-validation rest on the author finding them.
+  - Open, Supplementary Table 1's third column (high SNR and high predictive power, as % of high SNR) has no claim; it is a detail, not a main finding.

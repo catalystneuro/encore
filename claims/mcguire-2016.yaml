@@ -1,0 +1,963 @@
+# Claims for McGuire, Telian, Laboy-Juarez, Miyashita, Lee, Smith & Feldman (2016), PLoS Biology
+# 14(8) e1002549, on CRCNS ssc-4.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md. The writer did not look at the dataset's data or
+# files; only its title and the summary of its data descriptor were read, to know which experiments
+# it holds.
+#
+# Text read: the version of record (open access), full text as served by Europe PMC (PMC5004814,
+# JATS XML flattened), with the Methods and the legends of the supporting information (S1 to S7
+# Figs, S1 Table, S1 and S2 Data). The contents of S1 Table (baseline firing rates by layer and unit
+# type, DOCX) and of S1 and S2 Data (XLSX) are not in the text; no claim rests on numbers found only
+# there. No PDF was supplied, so no figure could be read. Table 1 is garbled in the text: its
+# sequence rows read "FFF 34 120 65.7 Right", "FMS 34 132 54.4 Right", "SMF 34 132 54.7 Left", "SSS
+# 34 148 44.6 Left" under headers that do not fit. They are read here as interpulse interval (ms),
+# duration (ms, matching the 120 to 148 ms of the Results), mean speed (mm/s, ordered as the
+# Results say) and rewarded port.
+#
+# Code read: none. The paper links no code. The Methods say the regression was run in Matlab and
+# the decoders in Python with scikit-learn; neither script is published.
+#
+# Data the paper used. Female Long-Evans rats (>3 months). Task: the rat enters a nose poke with
+# its right C, D and E row whiskers on a panel; 75 to 100 ms later the panel delivers one of four
+# three-impulse sequences, FFF, FMS, SMF or SSS (F, M, S impulses of 16, 22, 28 ms; 34 ms gap
+# between impulses; impulse onsets 50 to 62 ms apart); the rat holds 250 ms, then chooses the right
+# port (rewarded for FFF and FMS) or the left (SMF and SSS). Eight rats were trained on this task
+# (behaviour, Figure 2, S2 Fig); six also ran a fixed-panel control. Two other rats (58B, 60W) ran
+# an FSFS against SFFS task without recordings (Figure 3). Recordings: four tetrodes in S1 (C1-4,
+# D2-4, E3 columns), advanced about 140 um every one or two sessions from L2/3 to L6, 80 sessions
+# in five rats (18FB, 18Ri, 18Ro, 62BS, 107St), 306 single units and 167 multi-unit clusters (473
+# units). Each unit has a depth (layer boundaries L2/3 200-650 um, L4 650-975, L5a 975-1285, L5b
+# 1285-1575, L6 1575-2200 um), a single or multi-unit label, and an RS or FS label (FS when
+# trough-to-peak width < 0.375 ms). Per trial: stimulus, nose poke entry, stimulus onset, drink
+# port choice and nose poke withdrawal time. The panel speed profile of each sequence is in S1 Fig
+# and S2 Data. High-speed video of 43 trials (4 rats) is summarised in S6 Fig, with data in S2
+# Data. The dataset's descriptor says it holds the spike and trial data of the five recorded rats
+# over 80 sessions, the basis of Figures 4 to 9.
+#
+# Method details used across claims, from the Methods. Temporally modulated units: permutation
+# test on 10-ms bins, 10,000 permutations, p < 0.05 (Methods, Temporal response modulation). PSTHs
+# in 1 ms bins aligned to first impulse onset. Mean impulse-evoked rate in 5-35 ms after impulse
+# onset; impulse baseline 0-10 ms before impulse onset; impulse-responsive units by t test of the
+# two (Methods, Stimulus-evoked responses). Unit classes from the regression of firing rate (5-ms
+# bins, 0-180 ms after stimulus onset, all trials of each sequence) on panel speed integrated over
+# 5 to 180 ms windows (Methods, Stimulus regression). Decoders per Methods, Neural Decoders.
+schema_version: 2
+paper: doi:10.1371/journal.pbio.1002549
+claims:
+- id: fig2ab-fms-smf-not-discriminated
+  statement: All eight rats discriminated FFF from SSS but treated FMS and SMF as equivalent and
+    intermediate; seven of eight showed no difference between FMS and SMF, and one rat (62SC) made
+    more right choices to FMS than to SMF.
+  source: Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 3;
+    Figure 2A and 2B
+  quote: Seven out of eight rats failed to differentiate at all between FMS from SMF stimuli
+    (proportion test, Bonferroni-adjusted p -value >0.00625). One rat (62SC) showed modest but
+    significant discrimination, with more right-side choices to FMS than SMF stimuli ( p = 0.0039).
+  statistics:
+  - about: FMS against SMF right-choice fraction, each of seven rats
+    test: proportion test
+    p: 0.00625
+    p_relation: ">"
+    corrected: Bonferroni
+    n: seven rats
+  - about: FMS against SMF right-choice fraction, rat 62SC
+    test: proportion test
+    p: 0.0039
+    n: one rat
+  criterion: Per rat, over all its FFF-FMS-SMF-SSS sessions pooled, the fraction of right-port
+    choices for each stimulus (Figure 2B, "all behavior sessions"). FMS against SMF is compared by
+    a two-proportion test at the Bonferroni level 0.05/8 = 0.00625 (Results). The paper does not
+    say which proportion test; the readings are (a) the chi-square test of two proportions with
+    continuity correction, (b) the same without it (a two-proportion z test). Which trials count
+    is also open; the readings are (i) all completed trials, (ii) completed trials excluding
+    premature withdrawals and trials with no choice. Reproduced when, for every rat the data hold,
+    FFF has a higher right-choice fraction than SSS, FMS and SMF both lie between them, and FMS
+    against SMF is not significant at 0.00625 for every rat but 62SC, and for 62SC (if the data
+    hold it) is significant with more right choices to FMS, under one reading. The paper
+    tests eight rats; if the data hold fewer, the result is stated for those held and is at most
+    partially reproduced.
+- id: training-days
+  statement: Rats trained on FFF-FMS-SMF-SSS discrimination for 14.2 days on average (s.d. 4.4,
+    range 8 to 22).
+  source: Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 3
+  quote: 'After 14.2 ± 4.4 (standard deviation [s.d.]) (range: 8–22) d of training on
+    FFF-FMS-SMF-SSS discrimination, all eight rats successfully discriminated FFF from SSS stimuli'
+  expected:
+  - quantity: mean days of FFF-FMS-SMF-SSS training per rat
+    value: 14.2
+    tolerance: 4.4
+    unit: days
+  - quantity: fewest days of training
+    value: 8
+    tolerance: 0.8
+    unit: days
+  - quantity: most days of training
+    value: 22
+    tolerance: 2.2
+    unit: days
+  criterion: Days are counted per rat as the distinct days with FFF-FMS-SMF-SSS sessions. The
+    tolerance on the mean is the stated s.d. The paper counts eight rats; the result is stated for
+    the rats the data hold.
+- id: fig2c-choice-follows-mean-speed
+  statement: Relative right-port choice (fraction of right choices for a stimulus minus the mean
+    over all stimuli) was strongly related to the mean speed of the sequence for all rats.
+  source: Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 3;
+    Figure 2C
+  quote: Right drink port choice was strongly related to mean sequence speed for all rats ( Fig 2C
+    ).
+  criterion: Relative right choice per rat and stimulus as defined in the Results (fraction right
+    for the stimulus minus the mean fraction right over the four stimuli). Mean speeds from Table 1
+    (65.7, 54.4, 54.7 and 44.6 mm/s for FFF, FMS, SMF, SSS; see the opening comment on the garbled
+    table). The paper names no test or measure for "strongly related". The readings are (a) for
+    each rat, relative right choice ordered FFF > (FMS and SMF) > SSS; (b) for each rat, a
+    positive Pearson correlation of relative right choice with mean speed over the four stimuli
+    with r > 0.8 (a threshold chosen here, not from the paper). Reproduced when every rat the data hold satisfies one reading; partially when
+    all but one do.
+- id: fig2d-fixed-panel-impairs
+  statement: Fixing the panel in place, with the piezo moving behind it, impaired FFF against SSS
+    discrimination in all but one of six rats tested.
+  source: Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 4;
+    Figure 2D; S2B Fig
+  quote: Panel fixation strongly impaired behavioral discrimination in all but one rat
+  statistics:
+  - about: FFF minus SSS right-choice fraction, fixed-panel against normal sessions
+    test: two-sided paired t test
+    p: 0.012
+  criterion: Per rat, discrimination as the fraction of right choices to FFF minus that to SSS
+    (S2B Fig), on the fixed-panel trials and on normal (moving-panel) trials. Paired t test across
+    rats, two-sided (S2B Fig legend). What the fixed-panel trials are compared with is open. The
+    control ran "immediately after the final normal training session" (Results), Figure 2D says
+    "normal sessions", and S2C Fig speaks of "fixed-panel blocks" beside "moving panel stimuli".
+    The readings are (a) the final normal session before the control, (b) all normal sessions,
+    (c) the moving-panel trials of the control session. One rat "did not complete trials during
+    fixed-panel blocks" (S2C Fig) yet is counted as impaired; how it entered the t test is not
+    said; the readings are (i) it is left out of the test, (ii) it enters with a discrimination
+    of 0. Reproduced when the fixed-panel value is lower in all rats but one and p < 0.05, under
+    one reading. The d-prime of Figure 2D is shown as a variant, computed as
+    z(right on FFF) minus z(right on SSS); the correction for rates of 0 or 1 is not given and is
+    a standard choice (add 0.5 to counts) that cannot change the sign. If the data hold no
+    fixed-panel sessions the claim cannot be tested on them.
+- id: dprime-fff-sss-range
+  statement: Discrimination of FFF against SSS in normal sessions was modest, with d-prime from 0.5
+    to 1.5 across rats.
+  source: Discussion, Behavioral Integration of Stimulus Sequences, paragraph 2; Figure 2D
+  quote: 'Task performance was relatively low (d-prime for FFF versus SSS: 0.5–1.5), as in a prior
+    study [ 13 ]'
+  expected:
+  - quantity: lowest per-rat d-prime, FFF against SSS
+    value: 0.5
+    tolerance: 0.05
+  - quantity: highest per-rat d-prime, FFF against SSS
+    value: 1.5
+    tolerance: 0.15
+  criterion: Per rat, d-prime as z(fraction right on FFF) minus z(fraction right on SSS) over its
+    normal sessions; the paper does not define d-prime, and this is the standard definition.
+    Which sessions enter is open; the readings are (a) all FFF-FMS-SMF-SSS sessions pooled, (b)
+    the mean of per-session d-prime. Reproduced when, under one reading, the lowest and the
+    highest per-rat values are within tolerance of 0.5 and 1.5, so that every rat lies in 0.45 to
+    1.65.
+- id: fig3-fsfs-sffs-intensity-only
+  statement: Two rats discriminated FSFS from SFFS when the sequences differed in mean speed (70
+    and 69.2% correct) but not when mean speed was the same (52 and 53%), even after more than 20
+    days; d-prime was 1.02 against 0.12.
+  source: Results, Discrimination of FSFS versus SFFS Sequences, paragraph 2; Figure 3B and 3C
+  quote: 'Both rats consistently discriminated FSFS from SFFS when they had different mean speed
+    (58B: 70 ± 1.5% correct, 60W: 69.2 ± 1.6%), but not when they had the same mean speed, even
+    after >20 cumulative days of training (58B: 52 ± 0.8% correct; 60W: 53 ± 0.8% correct). This
+    was evident in the d-prime measure of discrimination between FSFS and SFSF stimuli, which was
+    1.02 for different-intensity stimuli and 0.12 for same-intensity stimuli'
+  data: elsewhere
+  where: PLOS Biology supporting information of doi:10.1371/journal.pbio.1002549, S1 Data (XLSX,
+    data for Figure 3)
+  expected:
+  - quantity: 58B percent correct, different intensity
+    value: 70
+    tolerance: 1.5
+    unit: percent
+  - quantity: 60W percent correct, different intensity
+    value: 69.2
+    tolerance: 1.6
+    unit: percent
+  - quantity: 58B percent correct, same intensity
+    value: 52
+    tolerance: 0.8
+    unit: percent
+  - quantity: 60W percent correct, same intensity
+    value: 53
+    tolerance: 0.8
+    unit: percent
+  - quantity: d-prime, different intensity
+    value: 1.02
+    tolerance: 0.102
+  - quantity: d-prime, same intensity
+    value: 0.12
+    tolerance: 0.012
+  criterion: These rats were not recorded ("No recordings were performed", Methods), so the
+    dataset does not hold them. Percent correct is the mean over sessions with its SEM (Figure 3
+    legend), the tolerance used here. The d-prime is the mean over sessions and over the two
+    rats (Figure 3C, "mean ± SEM across sessions"); the text does not say whether the two rats
+    are averaged; the readings are (a) the mean of both rats' session values, (b) each rat
+    separately.
+- id: units-recorded
+  statement: The recordings yielded 306 single units and 167 multi-unit clusters (473 units) over
+    80 sessions in five rats, 3.8 single units per session on average (range 0 to 11).
+  source: Results, S1 Recordings during Behavioral Discrimination, paragraph 1
+  quote: 'Spike sorting yielded 3.8 (range: 0–11) well-separated single units per recording session
+    ( Fig 4B ). ... We obtained 306 single units and 167 multi-unit clusters (total: 473 units)
+    across 80 recording sessions in five rats (18FB, 18Ri, 18Ro, 62BS, 107St)'
+  expected:
+  - quantity: single units
+    value: 306
+    tolerance: 30.6
+  - quantity: multi-unit clusters
+    value: 167
+    tolerance: 16.7
+  - quantity: recording sessions
+    value: 80
+    tolerance: 0
+  - quantity: rats
+    value: 5
+    tolerance: 0
+  - quantity: mean single units per session
+    value: 3.8
+    tolerance: 0.38
+  - quantity: most single units in one session
+    value: 11
+    tolerance: 1.1
+  criterion: Counted from the units as deposited, single and multi by their labels. Sessions and
+    rats are whole numbers that a deposit of the same recordings fixes, so their tolerance is 0.
+- id: baseline-rates
+  statement: Mean firing rate in the 25-ms prestimulus baseline in the nose poke was 6 to 10 Hz
+    across layers for RS units, 8 to 32 Hz for FS units, and higher for multi-unit clusters.
+  source: Results, S1 Recordings during Behavioral Discrimination, paragraph 2; S1 Table
+  quote: Mean firing rate during a 25-ms prestimulus baseline period in the nose poke was 6–10 Hz
+    across layers for RS units, 8–32 Hz for FS units, and higher for multi-unit clusters ( S1 Table
+    ).
+  expected:
+  - quantity: lowest layer mean baseline rate, RS single units
+    value: 6
+    tolerance: 0.6
+    unit: Hz
+  - quantity: highest layer mean baseline rate, RS single units
+    value: 10
+    tolerance: 1
+    unit: Hz
+  - quantity: lowest layer mean baseline rate, FS single units
+    value: 8
+    tolerance: 0.8
+    unit: Hz
+  - quantity: highest layer mean baseline rate, FS single units
+    value: 32
+    tolerance: 3.2
+    unit: Hz
+  criterion: Baseline is the 25 ms before first impulse onset, over all trials; per unit the mean
+    rate, then the mean over units in each layer (L2/3, L4, L5a, L5b, L6) and type (RS single, FS
+    single, multi-unit). All units, modulated or not (S1 Table legend). "Higher for multi-unit
+    clusters" does not say higher than what; the readings are (a) higher than RS single units in
+    each layer, (b) higher than both RS and FS single units in each layer. Reproduced when the
+    lowest and highest layer means of RS units are within tolerance of 6 and 10 Hz and those of
+    FS units within tolerance of 8 and 32 Hz (so that every layer mean lies in 5.4 to 11 Hz for RS
+    and 7.2 to 35.2 Hz for FS), and the multi-unit mean is higher in most layers under one
+    reading.
+- id: temporal-modulation-count
+  statement: 305 of 473 units (63.5%) had firing rates significantly modulated in time during the
+    nose poke period.
+  source: Results, S1 Recordings during Behavioral Discrimination, paragraph 3; Methods, Temporal
+    response modulation
+  quote: Three hundred five out of 473 units (63.5%) showed significant temporal modulation.
+  expected:
+  - quantity: temporally modulated units
+    value: 305
+    tolerance: 30.5
+  - quantity: percent of units temporally modulated
+    value: 63.5
+    tolerance: 6.35
+    unit: percent
+  criterion: The Methods fix 10-ms bins, 10,000 permutations of spike times and p < 0.05. Two
+    details are open. The window is "0–180 ms after NP entry" in the Methods but "the stimulus
+    presentation period" in the same sentence, and the stimulus starts 75 to 100 ms after entry;
+    the readings are (a) 0 to 180 ms after nose poke entry, (b) 0 to 180 ms after stimulus onset,
+    the window of the regression. The statistic compared with the permuted spikes is not named
+    (the Methods cite ref. 55); the readings are (i) the variance across bins of the trial-averaged
+    10-ms PSTH, (ii) the sum over bins of squared deviations of the PSTH from the mean permuted
+    PSTH. How spikes are "randomly time-permuted" is not said; they are permuted uniformly in
+    time within the window on each trial, a standard choice. Reproduced when
+    one reading gives a count within tolerance.
+- id: modulated-higher-baseline
+  statement: Temporally modulated units were distributed uniformly across columns and layers and had
+    higher baseline firing rates than non-modulated units.
+  source: Results, S1 Recordings during Behavioral Discrimination, paragraph 3; Figure 4C; S3B Fig
+  quote: Temporally modulated units were distributed uniformly across whisker columns and layers (
+    Fig 4C ) and had higher baseline firing rates than non-modulated units ( S3B Fig ).
+  depends_on:
+  - temporal-modulation-count
+  criterion: Baseline as in baseline-rates. S3B Fig shows RS single units by layer, mean ± SEM.
+    Reproduced when the mean baseline rate of modulated RS single units exceeds that of
+    non-modulated RS single units in most layers. "Uniformly" has no test in the paper; the
+    fraction of modulated units per layer is reported, and a chi-square test of layer against
+    modulation at 0.05 is shown as a variant (a standard choice).
+- id: fig4d-evoked-modulation-by-layer
+  statement: The mean impulse-evoked firing rate modulation, above the pre-impulse baseline, was
+    14.2 Hz in L2/3, 15.2 in L4, 6.3 in L5a, 14.4 in L5b and 7.0 in L6, greatest in L2/3, L4 and L5b.
+  source: Results, S1 Recordings during Behavioral Discrimination, paragraph 4; Figure 4D
+  quote: The mean impulse-evoked firing rate modulation (in Hz above pre-impulse baseline) was 14.2
+    ± 2.3 in L2/3, 15.2 ± 1.9 in L4, 6.3 ± 1.2 in L5a, 14.4 ± 2.3 in L5b, and 7.0 ± 1.5 in L6 ( n =
+    28–82 units per layer).
+  depends_on:
+  - temporal-modulation-count
+  expected:
+  - quantity: evoked modulation L2/3
+    value: 14.2
+    tolerance: 2.3
+    unit: Hz
+  - quantity: evoked modulation L4
+    value: 15.2
+    tolerance: 1.9
+    unit: Hz
+  - quantity: evoked modulation L5a
+    value: 6.3
+    tolerance: 1.2
+    unit: Hz
+  - quantity: evoked modulation L5b
+    value: 14.4
+    tolerance: 2.3
+    unit: Hz
+  - quantity: evoked modulation L6
+    value: 7.0
+    tolerance: 1.5
+    unit: Hz
+  criterion: Temporally modulated units by layer. Per the Methods (Stimulus-evoked responses), the
+    modulation is the maximum or minimum rate in a 40-ms window after impulse onset (PSTH in 1-ms
+    bins, smoothed with a 10-ms boxcar) minus the mean rate 0 to 10 ms before impulse onset; the
+    tolerance is the reported spread, taken as SEM across units. Open details, with readings.
+    Which measure is meant is open. The Results speak of "mean impulse-evoked firing rate modulation (in
+    Hz above pre-impulse baseline)", and the Methods define both this peak modulation and a "mean
+    impulse-evoked firing rate" 5 to 35 ms after impulse onset; the readings are (A) the peak
+    modulation above, (B) the mean rate 5 to 35 ms after impulse onset minus the rate 0 to 10 ms
+    before it. For the peak, maximum or minimum is read as (a) the extreme of larger absolute deviation, signed; (b) its absolute
+    value. For pooling, (i) the PSTH over all impulses of all sequences pooled, one value per unit;
+    (ii) one value per impulse and sequence, averaged per unit. Reproduced when all five layer
+    values fall within tolerance under one combination, and partially when L5a and L6 are the two
+    lowest layers under one combination but some values fall outside.
+- id: latency-by-layer
+  statement: Among impulse-responsive units, peak response latency was shortest in L4, L5a and L5b
+    (9.8, 10.3 and 12.0 ms) and longest in L2/3 and L6 (13.8 and 16.1 ms).
+  source: Results, S1 Recordings during Behavioral Discrimination, paragraph 4
+  quote: Among units with significant impulse responses, peak response latency was shortest in L4,
+    L5a, and L5b (9.8, 10.3, and 12.0 ms) and longest in L2/3 and L6 (13.8 and 16.1 ms).
+  depends_on:
+  - temporal-modulation-count
+  expected:
+  - quantity: latency L4
+    value: 9.8
+    tolerance: 0.98
+    unit: ms
+  - quantity: latency L5a
+    value: 10.3
+    tolerance: 1.03
+    unit: ms
+  - quantity: latency L5b
+    value: 12.0
+    tolerance: 1.2
+    unit: ms
+  - quantity: latency L2/3
+    value: 13.8
+    tolerance: 1.38
+    unit: ms
+  - quantity: latency L6
+    value: 16.1
+    tolerance: 1.61
+    unit: ms
+  criterion: Impulse-responsive units are those whose mean rate 5 to 35 ms after impulse onset
+    exceeds the rate 0 to 10 ms before it by t test (Methods); open are (a) a paired t test across
+    trials, one-sided, (b) the same two-sided, both at 0.05, a standard level. Latency is the time
+    of the maximum in the 40-ms window after impulse onset of the 10-ms smoothed PSTH (Methods),
+    with impulses pooled as in fig4d-evoked-modulation-by-layer reading (i). The summary over units
+    is open; the readings are the mean and the median. Reproduced when all five values fall
+    within tolerance under one reading, and partially when only the ordering (L4, L5a, L5b below
+    L2/3 and L6) holds.
+- id: fig4d-gradual-decrease
+  statement: Superimposed on the phasic impulse responses, average firing rate decreased gradually
+    during the nose poke period in all layers except L5a.
+  source: Results, S1 Recordings during Behavioral Discrimination, paragraph 4; Figure 4D
+  quote: Superimposed on these phasic responses to individual impulses was a gradual decrease in
+    average firing rate during the nose poke period, observed in all layers except L5a ( Fig 4D ).
+  depends_on:
+  - temporal-modulation-count
+  criterion: Population PSTH of temporally modulated units by layer, 1-ms bins aligned to first
+    impulse onset, all sequences. The paper gives no measure of the decrease. The readings are (a)
+    the slope of a linear fit to the population PSTH from the start of the 25-ms baseline to 180
+    ms after onset is negative; (b) the mean rate in the last 30 ms of that span is below the mean
+    rate in the 25-ms baseline. Reproduced when one reading shows a decrease in L2/3, L4, L5b and
+    L6 and none in L5a.
+- id: fig6-regression-significant
+  statement: Of the 305 temporally modulated units, 204 had a significant regression of firing
+    rate on integrated panel speed for at least one of the 36 integration windows.
+  source: Results, Regression Analysis to Identify Fast- and Slow-Time Scale Units, paragraph 1;
+    Methods, Stimulus regression
+  quote: Two hundred four units showed a significant regression for at least one stimulus
+    integration window (α = 0.05/36 = 0.0014, using Bonferroni correction for the multiple
+    regressions).
+  depends_on:
+  - temporal-modulation-count
+  expected:
+    quantity: units with a significant regression
+    value: 204
+    tolerance: 20.4
+  criterion: Per the Methods and Results, firing rate in 5-ms bins from 0 to 180 ms after stimulus
+    onset, over all trials of each of the four sequences (36 bins times 4 sequences), is regressed
+    on panel speed integrated over the window ending at the start of that bin, for windows of 5
+    to 180 ms in 5-ms steps; one linear regression per window ("a total of 36 regressions"); a
+    unit is significant when any window has p < 0.05/36. Panel speed is the speed profile of each
+    sequence (S1 Fig, S2 Data, or the dataset's stimulus record). Integrated speed as a sum or a
+    mean over the window gives the same R2 and p, so the choice cannot change the outcome; the sum
+    is used. Speed is taken as the absolute value of panel velocity, as "speed" implies.
+- id: fig6e-unit-classes
+  statement: Units were classed by best-fit integration window as Fast (5 to 20 ms, 158 units, 52%,
+    positive slopes), Medium (25 to 55 ms, 52 units, largely negative slopes), Slow Positive (51)
+    and Slow Negative (44); 44% of units had very fast (5 to 10 ms) windows.
+  source: Results, Regression Analysis to Identify Fast- and Slow-Time Scale Units, paragraphs 2
+    and 3; Figure 6E; Discussion, Stimulus Encoding in S1, paragraph 1
+  quote: Empirically, units with 5–20 ms best integration windows (Fast units; n = 158) had positive
+    slopes. Units with 25–55 ms integration windows were rarer (Medium units; n = 52) and had
+    largely negative slopes. Units with slow (55–180 ms) integration windows had either positive
+    regression slope (Slow Positive units; n = 51) or negative regression slope (Slow Negative
+    units; n = 44).
+  depends_on:
+  - fig6-regression-significant
+  expected:
+  - quantity: Fast units
+    value: 158
+    tolerance: 15.8
+  - quantity: Medium units
+    value: 52
+    tolerance: 5.2
+  - quantity: Slow Positive units
+    value: 51
+    tolerance: 5.1
+  - quantity: Slow Negative units
+    value: 44
+    tolerance: 4.4
+  - quantity: percent of temporally modulated units that are Fast
+    value: 52
+    tolerance: 5.2
+    unit: percent
+  - quantity: percent of temporally modulated units with 5-10 ms best window
+    value: 44
+    tolerance: 4.4
+    unit: percent
+  criterion: Best window is the one with the highest R2 (Methods). Two details are open. Which
+    units are classed; the four counts sum to 305, all temporally modulated units, while the
+    Methods take the best window only for the 204 with a significant regression; the readings are
+    (a) all 305 units classed by their highest-R2 window, (b) only the 204. The 55-ms window is
+    Medium in the Results ("25–55 ms") and Slow in the Figure 6D legend ("best integration window
+    <55 ms" for Fast and Medium); the readings are (i) 55 ms Slow, (ii) 55 ms Medium. The slope sign
+    is that of the best window's regression. Reproduced when, under one combination, the counts
+    are within tolerance, most Fast units have positive slopes and most Medium units negative.
+- id: fig6fg-laminar-classes
+  statement: Fast units were 73% of temporally modulated units in L2/3 and L4, 50% in L5 and 23% in
+    L6; slow units were 13% in L2/3 and L4, 31% in L5 and 56% in L6.
+  source: Results, Regression Analysis to Identify Fast- and Slow-Time Scale Units, paragraph 3;
+    Figure 6F and 6G
+  quote: Fast units were 73% of temporally modulated units in L2/3 and L4, 50% in L5, and 23% in L6.
+    ... Overall, slow units were 13% of temporally responsive units in L2/3 and L4, 31% in L5 and
+    56% in L6.
+  depends_on:
+  - fig6e-unit-classes
+  expected:
+  - quantity: Fast percent, L2/3 and L4
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  - quantity: Fast percent, L5
+    value: 50
+    tolerance: 5
+    unit: percent
+  - quantity: Fast percent, L6
+    value: 23
+    tolerance: 2.3
+    unit: percent
+  - quantity: Slow percent, L2/3 and L4
+    value: 13
+    tolerance: 1.3
+    unit: percent
+  - quantity: Slow percent, L5
+    value: 31
+    tolerance: 3.1
+    unit: percent
+  - quantity: Slow percent, L6
+    value: 56
+    tolerance: 5.6
+    unit: percent
+  criterion: Layers from depth with the Methods' boundaries, L5 being L5a and L5b together.
+    Denominator is the temporally modulated units in each layer group; slow units are Slow
+    Positive and Slow Negative together. Readings as in fig6e-unit-classes. A second reading of
+    the "73% ... in L2/3 and L4" is that each of L2/3 and L4 separately is about 73%; both are
+    shown. Reproduced when all six values fall within tolerance under one reading; partially when
+    the gradient (Fast falling and Slow rising from superficial to deep) holds but values fall
+    outside.
+- id: fig7c-fast-impulse-velocity
+  statement: In Fast units the evoked rate after an impulse was greater for F than S impulses and
+    intermediate for M impulses.
+  source: Results, Fast and Medium Time Scale Units, paragraph 2; Figure 7C left
+  quote: The firing rate of Fast units ( n = 158) in a brief window after each impulse was greater
+    for F versus S impulses, and intermediate for M impulses ( Fig 7C , left).
+  depends_on:
+  - fig6e-unit-classes
+  criterion: Per Fast unit and impulse type (all F, M or S impulses of all sequences), the net
+    evoked rate is the mean rate 5 to 35 ms after impulse onset minus the rate 0 to 10 ms before it
+    (Figure 7C legend, "post-impulse rate–pre-impulse rate", with the windows of the Methods).
+    Reproduced when the mean over Fast units orders F > M > S. The paper reports no test; a paired
+    t test of F against S across units is shown as a variant.
+- id: fig7c-fast-sequence-rate
+  statement: Mean firing rate of Fast units over the whole sequence (0 to 150 ms) followed the mean
+    speed of the sequence, highest for FFF, lowest for SSS, and intermediate and equal for FMS and
+    SMF.
+  source: Results, Fast and Medium Time Scale Units, paragraph 2; Figure 7C right
+  quote: Mean firing rate measured over the entire duration of a sequence (0–150 ms after sequence
+    onset) varied closely with mean speed of the sequence, being highest for FFF, lowest for SSS,
+    and intermediate and equal for FMS and SMF ( Fig 7C , right).
+  depends_on:
+  - fig6e-unit-classes
+  criterion: Per Fast unit and sequence, the mean rate 0 to 150 ms after onset above the
+    pre-stimulus baseline (Figure 7C legend); the baseline window is open, with readings (a) the
+    25 ms before onset (as in baseline-rates), (b) 0 to 10 ms before onset (the impulse baseline of
+    the Methods). Reproduced when the mean over units orders FFF > FMS and SMF > SSS and FMS and SMF
+    are equal, judged (no test is given) by a paired t test across units that is not significant
+    at 0.05, a standard choice that is named here as such.
+- id: fig7-fff-adaptation
+  statement: Fast RS single units adapted modestly in FFF trains, with pulse 2 to pulse 1 ratio 0.80
+    and pulse 3 to pulse 1 ratio 0.70, significant by t test.
+  source: Results, Fast and Medium Time Scale Units, paragraph 1; S4 Fig
+  quote: 'Adaptation within each train was quantified as mean firing rate to pulse N/pulse 1 and was
+    modest in FFF trains (2/1: 0.80 ± 0.11, 3/1: 0.70 ± 0.14, p < 0.05 by t test, n = 61 single RS
+    units with significant response to F impulses)'
+  statistics:
+  - test: t test
+    p: 0.05
+    p_relation: "<"
+    n: 61 Fast RS single units with significant response to F impulses
+  depends_on:
+  - fig6e-unit-classes
+  expected:
+  - quantity: FFF pulse 2/pulse 1 ratio
+    value: 0.80
+    tolerance: 0.11
+  - quantity: FFF pulse 3/pulse 1 ratio
+    value: 0.70
+    tolerance: 0.14
+  criterion: Units are Fast RS single units with a significant response to F impulses (impulse
+    responsive by the Methods' t test); expected 61. Evoked rate is the rate 5 to 35 ms after
+    impulse onset above the pre-sequence baseline (S4 Fig legend); the baseline window is open as
+    in fig7c-fast-sequence-rate. The tolerance is the reported SEM. Open are (a) the mean of
+    per-unit ratios, (b) the ratio of the population means; and the test, (i) a one-sample t test
+    of per-unit ratios against 1, (ii) a paired t test of pulse N against pulse 1 rates. Reproduced
+    when both ratios are within tolerance and the test gives p < 0.05 under one combination.
+- id: fig7-sss-no-adaptation
+  statement: Adaptation was statistically absent in SSS trains (pulse 2/pulse 1 ratio 1.09, pulse
+    3/pulse 1 ratio 0.86).
+  source: Results, Fast and Medium Time Scale Units, paragraph 1; S4 Fig
+  quote: 'statistically absent in SSS trains (2/1: 1.09 ± 0.26, 3/1: 0.86 ± 0.35, all mean ± SEM)'
+  depends_on:
+  - fig7-fff-adaptation
+  expected:
+  - quantity: SSS pulse 2/pulse 1 ratio
+    value: 1.09
+    tolerance: 0.26
+  - quantity: SSS pulse 3/pulse 1 ratio
+    value: 0.86
+    tolerance: 0.35
+  criterion: The same units, measures and readings as fig7-fff-adaptation. A claim of absence,
+    judged on the paper's t test at 0.05 (the readings of the test are those of
+    fig7-fff-adaptation, as the paper does not say which t test). Reproduced when neither ratio
+    differs significantly from 1 (or pulse N from pulse 1) and the ratios are within tolerance.
+- id: s4-fms-middle-pulse
+  statement: The middle M pulse appeared weaker in FMS than in SMF sequences in Fast RS single
+    units, but the difference was not significant.
+  source: Results, Fast and Medium Time Scale Units, paragraph 3; S4A Fig
+  quote: the middle M pulse in FMS sequences appeared weaker than in SMF sequences, though this did
+    not achieve statistical significance ( p = 0.08, paired t test, n = 61 units)
+  statistics:
+  - test: paired t test
+    p: 0.08
+    n: 61 Fast RS single units
+  depends_on:
+  - fig7-fff-adaptation
+  criterion: The same 61 units; evoked rate to pulse 2 (5 to 35 ms after its onset, above
+    pre-sequence baseline, S4 Fig legend) in FMS against SMF. A claim of absence judged on the
+    paper's paired t test at 0.05. Reproduced when the mean FMS response is lower and p >= 0.05;
+    the size of the difference is reported.
+- id: fig7de-medium-suppressed
+  statement: Medium units were suppressed by F, M and S impulses and did not distinguish impulse
+    identity or sequence identity.
+  source: Results, Fast and Medium Time Scale Units, paragraph 4; Figure 7D and 7E
+  quote: In firing rate analysis, these cells were inhibited by F, M, and S impulses and did not
+    distinguish either individual impulse identity or whole sequence identity ( Fig 7D and 7E ).
+  depends_on:
+  - fig6e-unit-classes
+  criterion: Net evoked rates as in fig7c-fast-impulse-velocity and mean sequence rates as in
+    fig7c-fast-sequence-rate, for Medium units. Suppression holds when the mean net evoked rate is
+    negative for each of F, M and S. The paper reports no test for the absence of a difference;
+    the standard choice named here is paired t tests across units, F against S impulses and FFF
+    against SSS sequences, at 0.05. Reproduced when all three means are negative and neither test
+    is significant.
+- id: fig8a-slow-positive-no-sequence-difference
+  statement: Slow Positive units showed small, sustained responses mostly to the second and third
+    impulses, evident for F and M but not S impulses, and their mean firing did not differ between
+    FFF, FMS, SMF and SSS.
+  source: Results, Slow Positive and Slow Negative Units, paragraph 1; Figure 8A
+  quote: Responses were small and sustained (unlike the large, transient responses by Fast units)
+    and were evident for F and M impulses but not S impulses ( Fig 8A ). However, mean firing was
+    not different for FFF, FMS, SMF, or SSS trains
+  depends_on:
+  - fig6e-unit-classes
+  criterion: Slow Positive units, all layers. Net evoked rates per impulse type as in
+    fig7c-fast-impulse-velocity, and mean rate 0 to 150 ms after onset per sequence as in
+    fig7c-fast-sequence-rate. F and M responses hold when their mean net evoked rate is positive
+    and the S response when it is near zero; no test is given, and the standard choice named here
+    is a one-sample t test against 0 at 0.05 (F and M significant, S not). For the sequences, the
+    paper reports no test; the standard choice is a one-way repeated-measures ANOVA across units
+    on the four sequence rates at 0.05, not significant. Reproduced when both parts hold.
+- id: fig8b-slow-negative-no-impulse-response
+  statement: Slow Negative units did not respond to impulses, and their firing declined steadily
+    over time.
+  source: Results, Slow Positive and Slow Negative Units, paragraph 1; Figure 8B
+  quote: Slow negative units did not respond to impulses at all, and firing rate steadily declined
+    over time, not locked to panel impulses ( Fig 8B ).
+  depends_on:
+  - fig6e-unit-classes
+  criterion: Slow Negative units. No impulse response holds when the mean net evoked rate (as in
+    fig7c-fast-impulse-velocity) is not positive for F, M or S impulses (one-sample t test against
+    0 at 0.05, a standard choice). The decline holds when the population PSTH slope over 0 to 180
+    ms after onset is negative (linear fit, a standard choice). Reproduced when both hold.
+- id: fig8d-slow-positive-right-choice-l5
+  statement: Slow Positive units fired more on right-choice trials (contralateral to the recording)
+    for all stimuli; right-choice bias, measured 5 to 50 ms after the start of the final impulse,
+    was significant in L5a and L5b but not in other layers.
+  source: Results, Slow Positive and Slow Negative Units, paragraph 2; Figure 8C and 8D
+  quote: Slow Positive units fired more on trials when the rat chose right (contralateral to the S1
+    recording). ... We quantified right-choice bias as the firing rate difference on right versus
+    left trials, measured 5–50 ms after the start of the final impulse. Right-choice bias was
+    significant for Slow Positive units in L5a and L5b, but not other layers ( Fig 8D ).
+  statistics:
+  - about: right against left choice rate, one of the starred groups of Figure 8D (the text does
+      not say which; three stars against two significant Slow Positive layers, so one may mark a
+      group of Fast and Medium units)
+    test: paired t test
+    p: 0.022
+  - about: right against left choice rate, one of the starred groups of Figure 8D (the text does
+      not say which; three stars against two significant Slow Positive layers, so one may mark a
+      group of Fast and Medium units)
+    test: paired t test
+    p: 9.5e-4
+  - about: right against left choice rate, one of the starred groups of Figure 8D (the text does
+      not say which; three stars against two significant Slow Positive layers, so one may mark a
+      group of Fast and Medium units)
+    test: paired t test
+    p: 7.5e-5
+  depends_on:
+  - fig6e-unit-classes
+  criterion: Per Slow Positive unit, the mean rate 5 to 50 ms after onset of the third impulse on
+    right-choice and on left-choice trials; per layer, a paired t test across units at 0.05
+    (Figure 8D legend). Which trials enter is open; the readings are (a) all trials with a choice,
+    pooled over the four sequences, (b) the difference computed within each sequence and averaged.
+    Reproduced when L5a and L5b are significant with right higher and L2/3, L4 and L6 are not,
+    under one reading. The three printed p-values cannot be matched to layers or panels from the
+    text (no figure was read); they are reported beside the values found.
+- id: fig8d-fast-medium-no-choice-bias
+  statement: Choice-related activity was absent in L4 Fast units.
+  source: Results, Slow Positive and Slow Negative Units, paragraph 2; Figure 8E bottom
+  quote: Choice-related activity was absent in fast time scale units in L4 ( Fig 8E ).
+  depends_on:
+  - fig6e-unit-classes
+  criterion: A claim of absence, judged on the paper's test, the sliding paired t test of
+    fig8e-choice-divergence-125ms (Figure 8E legend, p < 0.05) on L4 Fast units, with its
+    readings. The bar of Figure 8E marks the significant times, so the claim is reproduced when
+    no time from stimulus onset to the end of the 150-ms sequence is significant; a run of
+    significant times lasting to the end of the third impulse (the onset rule of
+    fig8e-choice-divergence-125ms) is shown as a variant. The text says nothing of the
+    Fast and Medium units by layer in Figure 8D right, and one of its three starred p-values may
+    belong there; their right-choice bias by layer (paired t test, as in
+    fig8d-slow-positive-right-choice-l5) is reported as a variant, not judged. Effect sizes are
+    given either way.
+- id: fig8e-choice-divergence-125ms
+  statement: In L5 Slow Positive units, firing on right- and left-choice trials diverged after the
+    second impulse and was consistently significant by 125 ms, before the earliest withdrawals (150
+    ms) and the mean withdrawal time (190 ms).
+  source: Results, Slow Positive and Slow Negative Units, paragraph 2; Figure 8E
+  quote: Firing rate began to diverge on right versus left choice trials after the second impulse
+    and was consistently significant by 125 ms, which is during the third impulse ( p < 0.05,
+    sliding paired t test) ( Fig 8E ). This preceded the earliest withdrawals (150 ms) and mean
+    withdrawal time (190 ms).
+  statistics:
+  - test: sliding paired t test
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig8d-slow-positive-right-choice-l5
+  expected:
+  - quantity: time from which right and left differ consistently
+    value: 125
+    tolerance: 12.5
+    unit: ms
+  - quantity: earliest nose poke withdrawal after stimulus onset
+    value: 150
+    tolerance: 15
+    unit: ms
+  - quantity: mean nose poke withdrawal after stimulus onset
+    value: 190
+    tolerance: 19
+    unit: ms
+  criterion: L5 (L5a and L5b) Slow Positive units; per unit the PSTH averaged over the four
+    sequences for right- and left-choice trials; at each time a paired t test across units at
+    0.05. The sliding window is not given; the readings are (a) 10-ms windows (the smoothing of the
+    Methods) stepped by 1 ms, (b) 5-ms bins (the regression bins). "Consistently significant by"
+    is read as the start of the first run of significant times that lasts to the end of the third
+    impulse. Withdrawal times are taken from stimulus onset over the same trials; "earliest" is
+    read as (i) the minimum, (ii) the 1st percentile. Reproduced when all three values fall within
+    tolerance under one reading.
+- id: s5-slow-positive-no-integration
+  statement: Within right- or left-choice trials, L5 Slow Positive units fired little to pulses 1 and
+    2, and their pulse 3 firing was the same for FFF, FMS, SMF and SSS and did not correlate with
+    mean speed of the sequence or of the last two impulses (the "preceding two pulses" in the S5
+    Fig legend).
+  source: Results, Slow Positive and Slow Negative Units, paragraph 3; S5 Fig
+  quote: Pulse 3 firing rate was higher but was essentially identical for FFF, FMS, SMF, and SSS
+    sequences and did not correlate with mean speed of the entire sequence or of the last two
+    impulses.
+  depends_on:
+  - fig8d-slow-positive-right-choice-l5
+  criterion: L5a and L5b Slow Positive units; evoked rate per impulse as in S4 Fig (5 to 35 ms after
+    onset, above pre-sequence baseline), separately for right- and left-choice trials. The paper
+    reports no test. The standard choices named here are a one-way repeated-measures ANOVA across
+    units on pulse 3 rates over the four sequences at 0.05, and a Pearson correlation of the four
+    population pulse 3 rates with sequence mean speed and with the mean speed of two impulses
+    (from the S1 Fig speed profiles). Which two is open. The Results say "the last two impulses"
+    (pulses 2 and 3), the S5 Fig legend "the preceding two pulses" (pulses 1 and 2, before pulse
+    3); both are run. Reproduced when, in both choice groups, the ANOVA is not
+    significant and neither correlation is significant at 0.05.
+- id: s6-head-position-choice
+  statement: In high-speed video of 43 trials, head angle and whisker tip trajectories did not differ
+    between right- and left-choice trials, while head position differed modestly from 100 ms, by
+    0.6 mm at 125 ms.
+  source: Results, Slow Positive and Slow Negative Units, paragraph 4; S6 Fig
+  quote: Head angle and whisker tip trajectories were invariant between right- and left-choice
+    trials. Head position differed modestly between right- and left-choice trials beginning at 100
+    ms, with a 0.6 mm difference at 125 ms ( S6 Fig ).
+  data: elsewhere
+  where: PLOS Biology supporting information of doi:10.1371/journal.pbio.1002549, S2 Data (XLSX,
+    data for S6 Fig)
+  expected:
+    quantity: right-left head position difference at 125 ms
+    value: 0.6
+    tolerance: 0.06
+    unit: mm
+  criterion: Tracked positions from the video data (S2 Data), 22 left- and 21 right-choice trials.
+    The test behind "significant" in the S6 Fig legend is not named; the readings are an unpaired
+    t test at each frame at 0.05, and the same with Welch's correction. Reproduced when head x
+    position differs from about 100 ms with a difference near 0.6 mm at 125 ms, and head angle and
+    whisker tip do not differ at any frame.
+- id: s7-no-fs-l5-slow-positive
+  statement: All four response classes (Fast, Medium, Slow Positive, Slow Negative) included RS
+    single units, FS single units and multi-unit clusters; few FS units were in the Slow classes and
+    none among L5 Slow Positive units.
+  source: Results, RS and FS Single Units, paragraph 1; S7 Fig; Results, Regression Analysis to
+    Identify Fast- and Slow-Time Scale Units, paragraph 3
+  quote: Fast, Medium, Slow Positive, and Slow Negative response classes all included RS, FS, and
+    multi-unit clusters, although few FS cells were found in the Slow classes ( S7 Fig ). ...
+    Among L5 Slow Positive units, both RS units and multi-unit clusters had similar
+    choice-related firing, and no FS units existed in this category ( S7 Fig ).
+  depends_on:
+  - fig6e-unit-classes
+  criterion: FS and RS by the 0.375 ms width threshold (Methods), as labelled in the data.
+    Reproduced when every class holds RS single units, FS single units and multi-unit clusters,
+    the fraction of FS single units in each Slow class is below that in the Fast class ("few" has
+    no number; this comparison is a reading chosen here), and L5 Slow Positive units hold no FS
+    single unit.
+- id: fig9b-stimulus-decoder-fast-medium
+  statement: A decoder built from all Fast and Medium units with 10-ms bins identified the sequence
+    with 83% accuracy (74% for FMS to 88% for FFF; chance 25%), and identified FMS and SMF with 78%
+    accuracy.
+  source: Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure
+    9B
+  quote: 'This model predicted sequence identity, using one single-trial spike train per model unit,
+    with 83% overall accuracy (range: 74% for FMS to 88% for FFF spike trains). ... Remarkably, this
+    model identified SMF and FMS sequences with 78% accuracy, even though rats could not.'
+  depends_on:
+  - fig6e-unit-classes
+  expected:
+  - quantity: overall accuracy
+    value: 83
+    tolerance: 8.3
+    unit: percent
+  - quantity: accuracy for FMS
+    value: 74
+    tolerance: 7.4
+    unit: percent
+  - quantity: accuracy for FFF
+    value: 88
+    tolerance: 8.8
+    unit: percent
+  - quantity: accuracy for FMS and SMF
+    value: 78
+    tolerance: 7.8
+    unit: percent
+  criterion: Per the Methods (Neural Decoders) each unit has four logistic functions (one per
+    stimulus, one against all) on spike counts in 10-ms bins 0 to 150 ms after onset; 70% of each
+    unit's trials fit, the rest test; each unit's outputs normalised to equal weight; population
+    prediction the stimulus of highest summed probability, the test trial for each unit drawn at
+    random from its test trials of that stimulus (units recorded in different sessions combined
+    as independent); 300 repeats, mean performance. Open, with readings. The logistic regression
+    penalty and the use of "k-fold cross-validation" allow (a) scikit-learn LogisticRegression defaults
+    (L2, C = 1); (b) LogisticRegressionCV choosing C by 5-fold cross-validation on the 70%. Output
+    normalisation "so that each unit had the same weight" is not specified; each unit's four
+    probabilities are divided by their sum, the reading the Methods allow (leaving them
+    unnormalised would contradict the Methods). The
+    number of pseudo-trials per stimulus per repeat is not given, and is a standard choice (100)
+    that changes only the precision. All trials enter, correct and incorrect, as the text does not
+    restrict them. "SMF and FMS with 78%" is open; the readings are (A) the mean of their two
+    diagonal entries, (B) among FMS and SMF test trials decoded as FMS or SMF, the fraction decoded
+    as the right one of the two.
+    Reproduced when all values fall within tolerance under one combination.
+- id: fig9c-best-units-short-windows
+  statement: The individual units with the best stimulus prediction in the Fast/Medium decoder were
+    those with 5 to 10 ms best integration windows.
+  source: Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure
+    9C
+  quote: The individual neurons with best stimulus prediction were those with 5–10 ms best
+    integration windows ( Fig 9C ).
+  depends_on:
+  - fig9b-stimulus-decoder-fast-medium
+  criterion: Per unit, percent correct of its own classifier (10-ms bins) on its test trials,
+    averaged over repeats, grouped by best integration window (Figure 9C). Reproduced when the
+    mean percent correct is highest in the 5-ms or 10-ms group and the top-ranked units are mostly
+    from those groups (more than half of the top 10%, a standard choice).
+- id: fig9b-stimulus-decoder-slow-chance
+  statement: A decoder built from all Slow units with 10-ms bins predicted sequence identity near
+    chance (32%, not different from chance).
+  source: Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure
+    9B
+  quote: A second decoder constructed of all Slow units, also using 10 ms bins, predicted sequence
+    identity at near chance levels (32% correct, not significantly different from chance, p = 0.47)
+  statistics:
+  - about: Slow decoder accuracy against chance (25%)
+    p: 0.47
+  depends_on:
+  - fig9b-stimulus-decoder-fast-medium
+  expected:
+    quantity: Slow decoder overall accuracy
+    value: 32
+    tolerance: 3.2
+    unit: percent
+  criterion: Slow Positive and Slow Negative units, the decoder of fig9b-stimulus-decoder-fast-medium
+    with its readings. A claim of absence; the paper does not name its test against chance. The
+    readings are (a) the fraction of the 300 repeats at or below 25%, two-sided; (b) a binomial
+    test of the pooled test predictions against 0.25. Reproduced when accuracy is within tolerance
+    and the test is not significant at 0.05 under one reading.
+- id: fig9d-single-bin-decoder
+  statement: Decoding from mean firing rate in a single 150-ms bin reduced Fast/Medium decoder
+    accuracy to 43% and did not improve Slow decoder accuracy.
+  source: Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure
+    9D
+  quote: Decoding from mean firing rate in a single 150-ms bin substantially reduced Fast/Medium
+    decoder accuracy (43% correct) and did not improve Slow decoder accuracy ( Fig 9D ).
+  depends_on:
+  - fig9b-stimulus-decoder-slow-chance
+  expected:
+    quantity: Fast/Medium decoder accuracy, single 150-ms bin
+    value: 43
+    tolerance: 4.3
+    unit: percent
+  criterion: As fig9b-stimulus-decoder-fast-medium with one bin of 0 to 150 ms, with the same
+    readings. Reproduced when the Fast/Medium accuracy is within tolerance and the Slow single-bin
+    accuracy is not above its 10-ms accuracy by more than the 3.2-point tolerance of that value.
+- id: fig9e-temporal-pattern-decoding
+  statement: Fast/Medium decoders trained on rate-normalized spike trains performed well (80%),
+    while time-scrambling spikes within trials abolished performance.
+  source: Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 3; Figure
+    9E
+  quote: Fast/Medium decoders trained on rate-normalized data performed well (80% correct), but
+    time-scrambling spikes abolished performance ( Fig 9E ).
+  depends_on:
+  - fig9b-stimulus-decoder-fast-medium
+  expected:
+    quantity: Fast/Medium accuracy, rate-normalized
+    value: 80
+    tolerance: 8
+    unit: percent
+  criterion: As fig9b-stimulus-decoder-fast-medium with 10-ms bins. Rate-normalized trains are each
+    trial's 15-bin count vector divided by its Euclidean norm (Methods; the text prints
+    "-Euclidean norm", read as the L2 norm); trials with no spikes stay zero. Time-scrambled trains
+    have spike times shuffled within the 0 to 150 ms window of each trial (Methods). "Abolished"
+    has no number; the readings are (a) not above chance by the tests of
+    fig9b-stimulus-decoder-slow-chance; (b) below 32%, the Slow decoder's near-chance value.
+    Reproduced when the rate-normalized accuracy is within tolerance and the scrambled accuracy
+    meets one reading.
+- id: fig9f-choice-decoder
+  statement: A choice decoder from Slow units predicted drink port choice at 65% (chance 50%) from a
+    single 150-ms bin or from the last 100 ms before nose poke withdrawal, while one from Fast and
+    Medium units could not predict choice.
+  source: Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 4; Figure
+    9F
+  quote: A choice decoder based on Fast/Medium units was unable to predict drink port choice ...
+    A choice decoder based on Slow units successfully predicted drink port choice using a single
+    150-ms bin, or mean firing rate in the last 100 ms before nose poke withdrawal (65% correct for
+    both models) ( Fig 9F ).
+  depends_on:
+  - fig6e-unit-classes
+  expected:
+  - quantity: Slow choice decoder accuracy, single 150-ms bin
+    value: 65
+    tolerance: 6.5
+    unit: percent
+  - quantity: Slow choice decoder accuracy, last 100 ms before withdrawal
+    value: 65
+    tolerance: 6.5
+    unit: percent
+  criterion: Per the Methods, one logistic function per unit, fit on trials of all four stimuli, and
+    tested separately within FFF, FMS, SMF and SSS trials; population choice the one of highest
+    summed probability, test trials drawn per unit from trials of the chosen stimulus and the
+    true choice; fitting and repeats as in fig9b-stimulus-decoder-fast-medium, with its readings.
+    Open is how the four per-stimulus accuracies are summarised; the readings are (a) their mean,
+    (b) the accuracy over all test trials pooled. Also open is how test trials of each choice are
+    drawn; the readings are (i) equal numbers of right and left (so chance is 50%, as the legend
+    says), (ii) in proportion to the data. Fast/Medium is "unable" when its accuracy is within 45 to
+    55% under one reading; the paper gives no number or test for this, and the band is 10% of
+    chance, a choice made here. Reproduced when the Slow values are within
+    tolerance and Fast/Medium is unable, for both windows.
+- id: fig9g-l5b-slow-positive-best-choice
+  statement: The units with the best choice prediction were Slow Positive units located primarily in
+    L5b.
+  source: Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 4; Figure
+    9G
+  quote: Post-hoc analysis showed that units with best choice prediction were Slow Positive units
+    located primarily in L5b ( Fig 9G ).
+  depends_on:
+  - fig9f-choice-decoder
+  criterion: Per Slow unit, percent correct of its own choice classifier on a single 100-ms bin
+    before withdrawal (Figure 9G legend), grouped by layer and Slow Positive or Negative.
+    Reproduced when the group with the highest mean is L5b Slow Positive, or (a second reading of
+    "primarily") when more than half of the top 10% of units (a standard choice) are L5b Slow
+    Positive units.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig8d-fast-medium-no-choice-bias. The statement said Fast and Medium units showed no right-choice bias; the paper says only that choice-related activity was absent in L4 Fast units (Fig 8E), and Figure 8D carries three starred p-values against two significant Slow Positive layers, so one may belong to the Fast and Medium panel. The statement is now the L4 Fast finding alone, judged on the sliding paired t test of Figure 8E; the Fast and Medium by-layer test is a variant, not judged.
+  - fig8d-slow-positive-right-choice-l5. The statistics notes now say the three starred p-values may not all belong to Slow Positive layers.
+  - s7-no-fs-l5-slow-positive. The paper says every class included RS, FS and multi-unit clusters (Results, RS and FS Single Units; Regression paragraph 3); the statement had RS only. Added FS and multi-units to the statement, quote and criterion, and named the test of "few FS in the Slow classes" as a reading chosen here.
+  - s5-slow-positive-no-integration. The Results say "last two impulses", the S5 Fig legend "preceding two pulses" (pulses 1 and 2 before pulse 3); the criterion fixed pulses 2 and 3. Both are now readings.
+  - fig4d-evoked-modulation-by-layer. The Methods define both a peak modulation in a 40-ms window and a mean impulse-evoked rate 5 to 35 ms after onset, and the Results phrase "mean impulse-evoked firing rate modulation" fits either; the criterion took the peak only. Both are now readings.
+  - fig2d-fixed-panel-impairs. The comparison was fixed as the final normal session; Figure 2D says "normal sessions" and S2C Fig speaks of fixed-panel blocks beside moving-panel stimuli. Named three readings for the comparison, and two for the rat that completed no fixed-panel trials but is counted as impaired.
+  - fig2ab-fms-smf-not-discriminated. The criterion did not test the one rat (62SC) the statement says discriminated FMS from SMF; added it, for when the data hold that rat.
+  - baseline-rates. The criterion's last sentence contradicted the expected range bounds; it now requires the lowest and highest layer means to match the bounds. "Higher for multi-unit clusters" names no comparison; two readings added.
+  - dprime-fff-sss-range. Said that the d-prime formula is the standard one, as the paper gives none, and made the criterion match the expected bounds.
+  - fig9b-stimulus-decoder-fast-medium. Removed the reading that leaves unit outputs unnormalised, which contradicts the Methods ("normalized so that each unit had the same weight"). Added a second reading of the 78% for FMS and SMF (accuracy between the two among trials decoded as either).
+  - fig2c-choice-follows-mean-speed, fig9f-choice-decoder, temporal-modulation-count. Said that r > 0.8, the 45 to 55% band for "unable", and uniform spike permutation are choices made here, not from the paper.
+  - Open. The headers of Table 1 are garbled in the text and no PDF was supplied; the reading of the sequence columns as interval, duration, mean speed and rewarded port (used by fig2c-choice-follows-mean-speed) could not be checked against the table.
+  - Open. The three p-values of Figure 8D cannot be matched to layers or panels without the figure.
+  - Open. The paper reports that behavior was stable across training (S2A Fig), that head movement averaged 0.8 and 1.0 mm during the stimulus, and that firing was lowest in L2/3, L4 and L6; these have no claim. They are minor observations.
+  - Open. Ref. 55, cited for the temporal modulation permutation test, is not in the text, so the statistic of that test stays open with the two readings given.
