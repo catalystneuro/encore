@@ -22,8 +22,11 @@ standard choice that cannot change a result):
   NaN rates to 0). Box smoothing over 20 bins, a centred moving mean that
   shrinks at the edges (C; S for the edge handling).
 - Phase map: circular mean of the bin's spike phases; box smoothing by circular
-  mean over non-empty bins (C). Bins with no spike within the window stay
-  undefined and are left out of phase decoding (A, see decode()).
+  mean over non-empty bins (C). Bins with no spike within the window are
+  undefined; they are set to phase 0 for decoding and information, as a
+  zero-initialised phase map would give (A, see decode_unit()). Leaving them
+  out is a variant; it lets phase decoding read where the cell fires (the
+  phase-shift null of shift_phases() passes it as often as the real data).
 - Bins, reading (a): one bin per point of the condition's template
   (trial_conditions, 201 points; the claims' "200 bins"); reading (b): bins of
   1.5 cm of template path length (C). Reading (b) needs a metric template; the
@@ -32,7 +35,9 @@ standard choice that cannot change a result):
   prediction = the bin whose template value is nearest the test value; MSE of
   predicted against true bin (C; STAR Methods, position prediction). 10 random
   60/40 splits (C); chance permutes the feature vector against positions (C).
-  Splits, reading (a) whole trials, (b) pooled trial-by-bin samples (C).
+  Splits, reading (a) whole trials, (b) pooled trial-by-bin samples (C). Ties
+  between equally near template bins are broken at random (A; the lowest bin,
+  as MATLAB's min returns, is a variant).
 - Place fields: peaks of the trial-mean rate map >= 2 Hz, edges where the rate
   falls below 20% of the peak, width 8-120 cm at 1.5 cm per bin, peak mean rate
   above the SD over trials, merged peaks dropped (C, after buzcode
@@ -41,6 +46,12 @@ standard choice that cannot change a result):
   The "first field" is the field with the highest peak (A).
 - Olypher information: values discretized into 7 levels, (a) equal widths over
   the map's range, (b) equal counts (C); I(x) = sum_k P(k|x) log2 P(k|x)/P(k) (C).
+  Best smoothing: argmax of the curve smoothed as MATLAB smooth(y, 5) (S).
+- Peer prediction (Figure 5): windows of +/- 1 to 150 ms, 10 trial-order
+  shuffles, strength as makeFig5.m (C); a normal GLM solved by least squares,
+  one fit per trial with intercept, CA1 theta sine, cosine and angle, position
+  and speed (C, STAR Methods); trials of unequal length cut to the shorter in
+  the shuffles (A).
 """
 
 from __future__ import annotations
@@ -153,6 +164,7 @@ def load_session(asset: dict, lfp_measures=None, read_lfp=True) -> dict:
     for k in list(T):
         T[k] = [T[k][i] for i in order] if isinstance(T[k], list) else T[k][order]
     S["trials"] = T
+    S["trials_description"] = str(tr.attrs.get("description", ""))
     tc = f["processing/behavior/trial_conditions"]
     conds = tc["condition"][:]
     tmpl = np.stack([tc[c][:] for c in ("template_x", "template_y", "template_z") if c in tc], -1)
@@ -255,6 +267,12 @@ def load_session(asset: dict, lfp_measures=None, read_lfp=True) -> dict:
         if ref is not None:
             ph69 = theta_phase(ref, (6, 9))
             ph412 = theta_phase(ref, (4, 12))
+            # reference phase at 1 ms steps within each trial (peer prediction covariates)
+            S["trial_phase_ms"] = []
+            for j in range(len(starts)):
+                tt = np.arange(starts[j], stops[j], 0.001)
+                kk = np.clip(np.round(tt * LFP_RATE).astype(int) - a, 0, b - a - 1)
+                S["trial_phase_ms"].append(ph69[kk].astype(np.float32))
             for U in units:
                 k = np.clip(np.round(U["t"] * LFP_RATE).astype(int) - a, 0, b - a - 1)
                 U["phase"] = ph69[k].astype(np.float32)
@@ -372,8 +390,13 @@ def maps(S, unit, cond, reading="a", phase_key="phase"):
 
 
 # ----------------------------------------------------------------- decoder
-def _nearest(template, values):
-    """Index of the template entry nearest each value (template may hold NaN)."""
+def _nearest(template, values, rng=None):
+    """Index of the template entry nearest each value (template may hold NaN).
+
+    Ties (several bins whose template value is equally near, as when many bins
+    of a rate template are exactly 0 Hz) are broken at random when rng is given
+    (A: a tie has no preferred bin; the first-index rule of a MATLAB min/max,
+    which sends every tie to the lowest bin, is the variant rng=None)."""
     ok = np.where(~np.isnan(template))[0]
     if len(ok) == 0:
         return np.full(len(values), -1)
@@ -383,14 +406,19 @@ def _nearest(template, values):
     k = np.clip(np.searchsorted(sv, values), 1, len(sv) - 1) if len(sv) > 1 else np.zeros(len(values), int)
     if len(sv) > 1:
         k = np.where(np.abs(sv[k - 1] - values) <= np.abs(sv[k] - values), k - 1, k)
+    if rng is not None and len(sv) > 1:
+        lo = np.searchsorted(sv, sv[k], side="left")
+        hi = np.searchsorted(sv, sv[k], side="right")
+        k = lo + (rng.random(len(k)) * (hi - lo)).astype(int)
     return ok[o[k]]
 
 
-def decode(feat, rng, split="a", n_splits=N_SPLITS, shuffle=False):
+def decode(feat, rng, split="a", n_splits=N_SPLITS, shuffle=False, ties="random"):
     """Maximum correlation decoder on one feature (trials x bins); MSE per split.
 
-    Samples with an undefined feature (phase in bins without spikes nearby) are
-    left out of training and testing (A).
+    Samples with an undefined feature (NaN; phase in bins without spikes nearby
+    under the left-out reading) are left out of training and testing.
+    ties: "random" (adopted, A) or "low" (lowest bin, variant); see _nearest.
     """
     ntr, nb = feat.shape
     pos = np.tile(np.arange(nb), (ntr, 1))
@@ -419,18 +447,21 @@ def decode(feat, rng, split="a", n_splits=N_SPLITS, shuffle=False):
         cnts = np.bincount(p[train], minlength=nb)
         with np.errstate(invalid="ignore", divide="ignore"):
             tmpl = np.where(cnts > 0, sums / cnts, np.nan)
-        pred = _nearest(tmpl, f[test])
+        pred = _nearest(tmpl, f[test], rng if ties == "random" else None)
         out[s] = np.mean((pred - p[test]) ** 2)
     return out
 
 
-def decode_unit(M, rng, split="a", smooth=SMOOTH, fill=None, full=False):
+def decode_unit(M, rng, split="a", smooth=SMOOTH, fill=0.0, full=False):
     """Rate and phase (cosine of the smoothed phase) MSEs over splits, with the
-    phase chance; with full=True also the raw phase and the rate chance.
+    phase chance; with full=True also the raw phase, the rate chance, and the
+    rate and phase MSEs with ties sent to the lowest bin.
 
-    fill: None leaves samples with an undefined smoothed phase out (reading 1);
-    0 sets them to phase 0, as a zero-initialised phase map would (reading 2).
-    Both are A: the paper does not say how bins without spikes are treated.
+    fill: 0 sets bins whose smoothed phase is undefined (no spike within the
+    smoothing window) to phase 0, as a zero-initialised phase map would
+    (reading 1, adopted, A); None leaves them out (reading 0). Leaving them out
+    lets the phase decoder read where the cell fires: phase shuffled within
+    trials still beats chance and rate (the real-data null of the notebook).
     """
     rate = box_fast(M["rate"], smooth)
     ph = circ_box(M["phase"], smooth)
@@ -442,7 +473,22 @@ def decode_unit(M, rng, split="a", smooth=SMOOTH, fill=None, full=False):
     if full:
         res["phase_raw"] = decode(ph, rng, split)
         res["chance_rate"] = decode(rate, rng, split, shuffle=True)
+        res["rate_low"] = decode(rate, rng, split, ties="low")
+        res["phase_cos_low"] = decode(np.cos(ph), rng, split, ties="low")
+        res["chance_phase_low"] = decode(np.cos(ph), rng, split, shuffle=True, ties="low")
     return res
+
+
+def shift_phases(U, rng):
+    """Copy of the unit whose spike phases are circularly shifted within each
+    trial by a random offset (positions and spike times kept): a null with
+    the cell's firing positions intact and no phase-position relation."""
+    ph = U["phase"].copy()
+    for j in np.unique(U["trial"]):
+        idx = np.where(U["trial"] == j)[0]
+        if len(idx) > 1:
+            ph[idx] = np.roll(ph[idx], int(rng.integers(1, len(idx))))
+    return dict(U, phase=ph)
 
 
 def length_scale(S):
@@ -455,15 +501,18 @@ def length_scale(S):
 
 
 # readings: split (a whole trials, b pooled samples), bins (a template points,
-# b 1.5 cm), undefined phase (0 left out, 1 set to 0)
-READINGS = ["aa0", "ba0", "aa1", "ba1", "ab0", "bb0"]
-MAIN = "aa0"
+# b 1.5 cm), undefined phase (1 set to 0, adopted; 0 left out, variant)
+READINGS = ["aa1", "ba1", "ab1", "bb1", "aa0", "ba0"]
+MAIN = "aa1"
+NULL_READINGS = ["aa1", "ba1", "aa0", "ba0"]
+NULL_FRAC = 0.25          # share of hippocampal unit-conditions given the phase-shift null; all LS ones (S)
 
 
 def analyse_session(S, seed=0, readings=READINGS, info=True):
     """Per unit and included condition: decoders under every reading, place
     fields under both rate-map readings, and information curves. Returns rows."""
     rng = np.random.default_rng(seed)
+    rng_null = np.random.default_rng(seed + 500000)
     rows = []
     if not S.get("units"):
         return rows
@@ -471,6 +520,7 @@ def analyse_session(S, seed=0, readings=READINGS, info=True):
     for ui, U in enumerate(S["units"]):
         if "phase" not in U:
             continue
+        U_null = None
         for c in included_conditions(S, U):
             row = {"session": S["session"], "subject": S["subject"], "unit": ui, "region": U["region"],
                    "cond": c, "site": U["site"], "shank": U["shank"]}
@@ -503,18 +553,41 @@ def analyse_session(S, seed=0, readings=READINGS, info=True):
                     row[f"pf{pr}_peaks_all"] = [x["peak_rate"] for x in fl]
                     row[f"pf{pr}_widths_all"] = [x["width_bins"] for x in fl]
             is_hpc = U["region"] in HPC_LABELS
+            # real-data null on a random share of unit-conditions: spike phases
+            # circularly shifted within each trial, decoded under the null readings
+            row["null"] = (U["region"] == "ls") or (is_hpc and bool(rng_null.random() < NULL_FRAC))
+            Mn = None
+            if row["null"]:
+                if U_null is None:
+                    U_null = shift_phases(U, rng_null)
+                Mn = maps(S, U_null, c, "a")
+                for rd in NULL_READINGS:
+                    r = decode_unit(Mn, rng_null, rd[0], fill=(None if rd[2] == "0" else 0.0))
+                    for k in ("rate", "phase_cos", "chance_phase"):
+                        row[f"null_{rd}_{k}"] = r[k]
             want = info and ((U["region"] == "ls") or (is_hpc and (row["pfa_n"] > 0 or row["pfb_n"] > 0)))
             if want:
                 for mode in ("a", "b"):
-                    rc, pc = [], []
+                    rc, pc, pc0, pn, pn0 = [], [], [], [], []
                     for w in range(1, 51):
                         rc.append(olypher_peak(box_fast(M["rate"], w), mode=mode))
                         if is_hpc:
-                            pc.append(olypher_peak(circ_box(M["phase"], w), mode=mode,
-                                                   value_range=(-np.pi, np.pi)))
+                            # phase information: undefined smoothed phase set to 0 (adopted,
+                            # as in the decoder), and left out (variant)
+                            for MM, a1, a0 in ((M, pc, pc0), (Mn, pn, pn0)):
+                                if MM is None:
+                                    continue
+                                ph = circ_box(MM["phase"], w)
+                                a1.append(olypher_peak(np.where(np.isnan(ph), 0.0, ph), mode=mode,
+                                                       value_range=(-np.pi, np.pi)))
+                                a0.append(olypher_peak(ph, mode=mode, value_range=(-np.pi, np.pi)))
                     row[f"info_rate_{mode}"] = np.array(rc)
                     if is_hpc:
                         row[f"info_phase_{mode}"] = np.array(pc)
+                        row[f"info_phase0_{mode}"] = np.array(pc0)
+                        if Mn is not None:
+                            row[f"null_info_phase_{mode}"] = np.array(pn)
+                            row[f"null_info_phase0_{mode}"] = np.array(pn0)
             # first 15 bins of the phase field: spikes and smoothed map (Figure 4E)
             m = np.isin(U["trial"], M["tid"]) & (U["bin"] >= 0) & (U["bin"] < 15)
             row["onset_spikes"] = circ_mean(U["phase"][m]) if m.any() else np.nan
@@ -605,7 +678,52 @@ def olypher_peak(values, levels=7, mode="a", value_range=None):
     return float(np.nanmax(info))
 
 
+def matlab_smooth(y, span=5):
+    """MATLAB smooth(y, span): moving mean whose span shrinks symmetrically at
+    the ends (1, 3, ... points), so the ends are not pulled towards zero (S:
+    the default of the function makeFig1.m names; a zero-padded convolution
+    pulls the last points down)."""
+    y = np.asarray(y, float)
+    n = len(y)
+    h = span // 2
+    out = np.empty(n)
+    for i in range(n):
+        r = min(h, i, n - 1 - i)
+        out[i] = np.mean(y[i - r:i + r + 1])
+    return out
+
+
+def best_scale(curve):
+    """Smoothing (1-based bins) of the peak of the 5-point smoothed information curve."""
+    c = matlab_smooth(np.nan_to_num(np.asarray(curve, float)), 5)
+    return int(np.argmax(c)) + 1
+
+
 # ----------------------------------------------------------------- circular stats
+def circ_kappa(R):
+    """CircStat circ_kappa (no small-sample correction)."""
+    if R < 0.53:
+        return 2 * R + R ** 3 + 5 * R ** 5 / 6
+    if R < 0.85:
+        return -0.4 + 1.39 * R + 0.43 / (1 - R)
+    return 1 / (R ** 3 - 4 * R ** 2 + 3 * R)
+
+
+def circ_wwtest(groups):
+    """CircStat circ_wwtest (Watson-Williams), one array of angles per group.
+    Returns p, F and the pooled resultant length rw (the test assumes rw > 0.45)."""
+    alpha = np.concatenate(groups)
+    n, s = len(alpha), len(groups)
+    pn = np.array([len(g) for g in groups], float)
+    pr = np.array([np.abs(np.mean(np.exp(1j * g))) for g in groups])
+    r = np.abs(np.mean(np.exp(1j * alpha)))
+    rw = np.sum(pn * pr) / n
+    kk = circ_kappa(rw)
+    beta = 1 + 3 / (8 * kk)
+    A = np.sum(pr * pn) - r * n
+    B = n - np.sum(pr * pn)
+    F = beta * (n - s) * A / (s - 1) / B
+    return float(stats.f.sf(F, s - 1, n - s)), float(F), float(rw)
 def circ_corrcl(alpha, x):
     """CircStat circ_corrcl: circular-linear correlation and its p-value."""
     alpha = np.asarray(alpha, float)
@@ -793,19 +911,22 @@ def speed_precession_condition(S, U, cond, rng, n_shuffles=100, min_spikes=5):
     if len(sp) < 5:
         return None
     sp, out = np.array(sp), {}
-    for key, v in (("a", np.array(sa)), ("b", np.array(sb))):
-        if np.std(v) == 0 or np.std(sp) == 0:
-            out[key] = (np.nan, np.nan)
-            continue
-        r = np.corrcoef(sp, v)[0, 1]
-        null = np.array([np.corrcoef(sp[rng.permutation(len(sp))], v)[0, 1] for _ in range(n_shuffles)])
+
+    def test(spv, v):
+        if np.std(v) == 0 or np.std(spv) == 0:
+            return (np.nan, np.nan)
+        r = np.corrcoef(spv, v)[0, 1]
+        null = np.array([np.corrcoef(spv[rng.permutation(len(spv))], v)[0, 1] for _ in range(n_shuffles)])
         null = null[np.isfinite(null)]
         if len(null) < 10 or null.std() == 0:
-            out[key] = (r, np.nan)
-            continue
+            return (r, np.nan)
         # two-sample t test of one value against the shuffles (pooled variance)
         t = (r - null.mean()) / (null.std(ddof=1) * np.sqrt(1 + 1 / len(null)))
-        out[key] = (r, 2 * stats.t.sf(abs(t), len(null) - 1))
+        return (r, 2 * stats.t.sf(abs(t), len(null) - 1))
+    for key, v in (("a", np.array(sa)), ("b", np.array(sb))):
+        out[key] = test(sp, v)
+        # calibration: the same test with speed first permuted over trials (no relation)
+        out[key + "_null"] = test(sp[rng.permutation(len(sp))], v)
     return out
 
 
@@ -912,6 +1033,115 @@ def peer_prediction_cost(n_samples, windows=150, shuffles=10, rng=None):
         float(np.sum((y - X @ beta) ** 2))
     per_fit = (time.perf_counter() - t) / reps
     return per_fit * windows * (1 + shuffles), per_fit
+
+
+# ----------------------------------------------------------------- Figure 5: peer prediction
+PP_WINDOWS = np.arange(1, 151)   # half-widths in ms, 1 to 150 (C, bz_peerPrediction)
+PP_SHUFFLES = 10                 # trial-order shuffles (C)
+
+
+def _ms_trains(S, U, j, n):
+    """Spike counts of unit U in 1 ms bins of trial j (n bins)."""
+    t0 = S["trials"]["start"][j]
+    st = U["t"][U["trial"] == j]
+    k = np.floor((st - t0) * 1000).astype(int)
+    k = k[(k >= 0) & (k < n)]
+    return np.bincount(k, minlength=n).astype(float)
+
+
+def _covariates(S, j, n):
+    """Intercept, CA1 theta phase (sine, cosine, angle), linearized position and
+    speed at 1 ms steps of trial j (STAR Methods, peer prediction)."""
+    T = S["trials"]
+    tt = T["start"][j] + np.arange(n) / 1000.0
+    ph = S["trial_phase_ms"][j][:n].astype(float)
+    ts, lp = T["lints"][j], T["linpos"][j]
+    pos = np.interp(tt, ts, lp.astype(float)) if len(ts) else np.zeros(n)
+    vel = np.interp(tt, S["speed_t"], S["speed"].astype(float))
+    if np.isfinite(length_scale(S)):
+        vel = vel * length_scale(S)
+    return np.column_stack([np.ones(n), np.sin(ph), np.cos(ph), ph, pos / 200.0, vel])
+
+
+def _smoothed(x, windows=PP_WINDOWS):
+    """x box-smoothed over +/- w bins for every w (n x len(windows)); the window
+    shrinks at the ends (bz_peerPrediction averages over +/- w ms)."""
+    n = len(x)
+    cs = np.r_[0.0, np.cumsum(x)]
+    t = np.arange(n)[:, None]
+    lo = np.clip(t - windows[None, :], 0, n)
+    hi = np.clip(t + windows[None, :] + 1, 0, n)
+    return (cs[hi] - cs[lo]) / (hi - lo)
+
+
+def _dev_windows(C, y, X):
+    """Residual sum of squares (normal-GLM deviance) of y on [C, X[:, w]] for every w."""
+    G = C.T @ C
+    try:
+        Gi = np.linalg.inv(G)
+    except np.linalg.LinAlgError:
+        Gi = np.linalg.pinv(G)
+    Cy = C.T @ y
+    CX = C.T @ X
+    base = y @ y - Cy @ Gi @ Cy
+    rxy = X.T @ y - CX.T @ (Gi @ Cy)
+    rxx = np.einsum("ij,ij->j", X, X) - np.einsum("ij,ij->j", CX, Gi @ CX)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        red = np.where(rxx > 1e-12, rxy ** 2 / rxx, 0.0)
+    return base - red
+
+
+def peer_prediction_pair(S, Uh, Ul, cond, rng, shuffles=PP_SHUFFLES):
+    """Peer prediction of an LS unit (response) by a hippocampal unit (predictor)
+    over the trials of one condition (STAR Methods, peer prediction; claim
+    criterion). A normal GLM (least squares) per trial and window, with the
+    covariates of _covariates; deviance summed over trials per window. The
+    control pairs the predictor of one trial with the response (and covariates)
+    of another, in a random trial order, 10 times; trials of unequal length are
+    cut to the shorter (A). Strength as makeFig5.m: (mean - min) of the actual
+    deviance curve over (mean - min) of the mean control curve."""
+    tid = np.where(S["trials"]["condition"] == cond)[0]
+    lens = [len(S["trial_phase_ms"][j]) for j in tid]
+    Cs = [_covariates(S, j, n) for j, n in zip(tid, lens)]
+    ys = [_ms_trains(S, Ul, j, n) for j, n in zip(tid, lens)]
+    xs = [_ms_trains(S, Uh, j, n) for j, n in zip(tid, lens)]
+    Xs = [_smoothed(x) for x in xs]
+    dev = sum(_dev_windows(C, y, X) for C, y, X in zip(Cs, ys, Xs))
+    ctrl = []
+    for _ in range(shuffles):
+        perm = rng.permutation(len(tid))
+        d = 0.0
+        for i, k in enumerate(perm):
+            m = min(lens[i], lens[k])
+            d = d + _dev_windows(Cs[k][:m], ys[k][:m], Xs[i][:m])
+        ctrl.append(d)
+    ctrl = np.array(ctrl)
+    mc = ctrl.mean(0)
+    red_a = dev.mean() - dev.min()
+    red_c = mc.mean() - mc.min()
+    return {"strength": float(red_a / red_c) if red_c > 0 else np.nan,
+            "best_w": int(PP_WINDOWS[np.argmin(dev)]), "best_idx": int(np.argmin(dev)) + 1,
+            "mean_dev": float(dev.mean()), "ntrials": len(tid),
+            "spikes_h": int(sum(x.sum() for x in xs)), "spikes_l": int(sum(y.sum() for y in ys))}
+
+
+def peer_session(S, picks, seed=0):
+    """peer_prediction_pair for the sampled (LS unit, condition) picks of a
+    session, against every hippocampal unit included in the same condition."""
+    rng = np.random.default_rng(seed)
+    out = []
+    if not S.get("units") or "trial_phase_ms" not in S:
+        return out
+    for ul, c in picks:
+        Ul = S["units"][ul]
+        for uh, Uh in enumerate(S["units"]):
+            if Uh["region"] not in HPC_LABELS or c not in included_conditions(S, Uh):
+                continue
+            r = peer_prediction_pair(S, Uh, Ul, c, rng)
+            r.update({"session": S["session"], "subject": S["subject"], "ls": ul, "hpc": uh, "cond": c,
+                      "region": Uh["region"]})
+            out.append(r)
+    return out
 
 
 def speed_session(S, seed=0):
