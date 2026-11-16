@@ -177,8 +177,9 @@ outcomes:
     cm reading ab1 with rate map b gives p = 0.066 and 0.82, and ties sent to the lowest bin give p = 0.18 and 0.82
     for rate map b; with rate map a both still give p < 0.01. Under the left-out variant p < 1e-100. Of the eight
     readings with undefined phase 0 and ties at random, only ab1 with rate map b has neither test at p < 0.05 (notebook,
-    line under the table), so under the rule for readings the outcome would be reproduced; that change is proposed.
-    The equivalence is fragile: 7 of the 8 readings find a difference. The decoder is weak on these files: the median
+    line under the table). Reproduced was proposed on that reading; the third verification round did not agree,
+    as the criterion has no "under one reading" clause, so the outcome stays on the adopted reading aa1 and the
+    proposal stands with the disagreement. 7 of the 8 readings find a difference. The decoder is weak on these files: the median
     hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with
     recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what
     this decoder does on these files, not what the paper''s data contain.'
@@ -190,7 +191,12 @@ outcomes:
       (a criterion is met under one reading): with undefined phase 0 and ties at random, the 1.5 cm reading ab1
       with rate map (b) gives KS p = 0.066 over 1,924 place fields and 0.82 over 45 sessions, neither below 0.05
       (notebook, fig1i cell, line under the table). Under the other 7 readings at least one test gives p < 0.05,
-      so the reproduction is fragile.'
+      so the reproduction is fragile. The verifier did not agree in round 3 and gives not_reproduced: the criterion
+      has no "under one reading" clause and says "Reproduced when neither test gives p < 0.05; not reproduced when
+      either does"; for a claim of absence a pass under any of 8 readings grows easier with each reading added;
+      the rule was chosen after the per-reading results were known; ab1 is only partly a 1.5 cm reading, as 2,822
+      of its 5,723 hippocampal conditions keep 201 bins and take the aa1 result; and each criterion should be applied
+      as written. The outcome is kept.'
 - claim: ls-lower-peak-info
   outcome: partially_reproduced
   notebook: reproduce_tingley_2018.ipynb
@@ -298,7 +304,10 @@ outcomes:
     match is a bare majority under one reading, and that reading splits samples. Shifted phases under bb1 do not
     give the across-animal pattern (DT8 +0.14, DT9 +0.21; pooled r = -0.094, p = 0.48), but they reach the within-session
     majority as well (28 of 47 negative with sites deepening), so the within-session part is no stronger than chance.
-    The outcome follows the rule for readings, which fig1i now also follows. The decoder is weak on these files:
+    The outcome is the one verified in round 2, on bb1 alone. In round 3, which reviewed only proposed changes,
+    the verifier noted that this criterion also has no "under one reading" clause for the decoder readings and
+    that judged on the adopted aa1 the claim would likely be not reproduced; no change was proposed for it, so
+    the outcome stands and a later attempt should take this up. The decoder is weak on these files:
     the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate
     decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome
     shows what this decoder does on these files, not what the paper''s data contain.'
@@ -456,7 +465,7 @@ outcomes:
     against 0.185; median window 4 or 20 ms against 25 ms; zero-lag rule not applied; 874 pairs at 1 ms).'
   deviations: *id003
 - claim: fig6-session-counts
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_tingley_2018.ipynb
   output: claim:fig6-session-counts
   measured:
@@ -468,14 +477,8 @@ outcomes:
     reading) or 33 (unit labels), against 63. Counting a session''s CA1 by its flagged CA1 channel gives 57, within
     tolerance. DT8 has hippocampal channels and a flagged CA1 channel in all 17 sessions but no hippocampal units,
     which accounts for part of the shortfall: with all 17 DT8 LS sessions counted, LS with CA1 would be 42 or 50,
-    still short of 63. The criterion has no partial rule, and not_reproduced is proposed.'
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion says "Reproduced when all three counts are within tolerance" and has no partial rule.
-      LS with CA1 units is 25 (session reading) or 33 (unit labels) against 63 +/- 6.3; the notebook now prints
-      the check, all three within is False under both readings. The 57 from flagged CA1 channels is a variant, as
-      the claim is about CA1 neurons; figs1f-trial-counts was judged the same way. The verifier, which agreed with
-      partial in round 1, now gives not_reproduced.
+    still short of 63. The criterion has no partial rule ("Reproduced when all three counts are within tolerance"),
+    so the outcome is not_reproduced, as the third verification round agreed.'
 - claim: fig6c-ca3-coherence-increases
   outcome: reproduced
   notebook: reproduce_tingley_2018.ipynb
@@ -1139,3 +1142,39 @@ verifications:
     outcome: blocked
     reason: Agreed (blocked).
     response: No change.
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the two changes of outcome proposed by the final revision (fig1i-hpc-rate-phase-equivalent,
+    fig6-session-counts) and the analysis behind them in the full executed notebook, with the claims file and the
+    attempt record. Its report is transcripts/tingley-2018/verifier-3-report.md. In reply, fig6-session-counts
+    is now not_reproduced; fig1i-hpc-rate-phase-equivalent stays not_reproduced with its proposal and the verifier's
+    view recorded, and the notebook header no longer states one rule for readings.
+  results:
+  - claim: fig6-session-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The counts come from the data (cell 77): LS shares sessions with CA1 units in 25 (session reading)
+      or 33 (unit labels), against 63 +/- 6.3; LS with CA3 is 19 or 11; 14 sessions have CA1, CA3 and LS LFP; "all
+      three within: False" under both readings. The criterion reads "Reproduced when all three counts are within
+      tolerance" and has no partial rule, so not_reproduced follows. The 57 counts flagged CA1 LFP channels, and
+      the claim is about CA1 neurons. The DT8 sessions explain only part of the shortfall (42 or 50 with all of
+      them counted).'
+    response: Outcome changed to not_reproduced and the proposal removed. The notes, the notebook's conclusion
+      and the summary now give not reproduced.
+  - claim: fig1i-hpc-rate-phase-equivalent
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Under the adopted reading aa1 both KS tests find a difference for both rate maps (cell 31); of the 8
+      rows with undefined phase 0 and ties at random only ab1 with fields (b) passes, p = 0.066 over fields. The
+      rule that changes the outcome is not in the claims file: it writes "under one reading" into the criteria
+      where it intends that rule, and fig1i''s criterion has no such clause ("Reproduced when neither test gives
+      p < 0.05; not reproduced when either does"). For a claim of absence, passing if any of 8 readings finds no
+      difference grows easier with each reading added. The rule was chosen after the per-reading results were known;
+      fig4d''s criterion also lacks the clause, and judged on aa1 it would likely be not_reproduced. ab1 is only
+      partly a 1.5 cm reading: 2,822 of its 5,723 hippocampal conditions keep 201 bins and take the aa1 result.
+      The round-2 inconsistency should be resolved by applying each criterion as written, so fig1i stays not_reproduced.'
+    response: Outcome kept as not_reproduced; the proposal stands with the verifier's view added to its reason. The
+      notebook header no longer states one rule for readings, and the fig1i conclusion, the summary and the notes
+      say the proposal was not agreed. The fig4d notes and conclusion now record the verifier's point that its criterion
+      also lacks the clause; fig4d had no proposed change, so its round-2 outcome stands.
