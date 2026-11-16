@@ -160,8 +160,14 @@ def runs(mask):
     return np.flatnonzero(d == 1), np.flatnonzero(d == -1)
 
 
+def lfp_start(f):
+    """starting_time of the LFP ElectricalSeries (s), on the clock of the position timestamps."""
+    return float(f["processing/ecephys/LFP/ElectricalSeries/starting_time"][()])
+
+
 def speed_trace(f, n_lfp):
-    """Smoothed speed (cm/s) at each LFP sample (Methods: Gaussian-smoothed velocity)."""
+    """Smoothed speed (cm/s) at each LFP sample (Methods: Gaussian-smoothed velocity). LFP sample k is at
+    starting_time + k / FS, read from the file."""
     ps = f["processing/behavior/Position/SpatialSeries"]
     t = ps["timestamps"][:]
     xy = ps["data"][:]
@@ -175,8 +181,9 @@ def speed_trace(f, n_lfp):
     sig = SPEED_SMOOTH_S * POS_HZ
     gx, gy = gaussian_filter1d(gx, sig), gaussian_filter1d(gy, sig)
     sp = np.hypot(np.gradient(gx), np.gradient(gy)) * POS_HZ
-    tl = np.arange(n_lfp) / FS
-    return np.interp(tl, grid, sp, left=np.nan, right=np.nan), dict(pos_t0=float(t[0]), pos_t1=float(t[-1]),
+    t_start = lfp_start(f)
+    tl = t_start + np.arange(n_lfp) / FS
+    return np.interp(tl, grid, sp, left=np.nan, right=np.nan), dict(pos_t0=float(t[0]), pos_t1=float(t[-1]), lfp_t0=t_start,
                                                                    pos_hz=float(1 / np.median(np.diff(t))),
                                                                    x_range=(float(xy[:, 0].min()), float(xy[:, 0].max())),
                                                                    y_range=(float(xy[:, 1].min()), float(xy[:, 1].max())))
@@ -406,19 +413,32 @@ def process_homecage(asset_id: str) -> dict:
     out["n_artifact"] = int(ca1["art"].sum())
     out["all_event_lengths"] = ca1["all_len"]     # every detected event, before the edge and artifact rules
     out["ripple_band"] = dict(mean=ca1["mu"], sd=ca1["sd"])
-    # SW amplitude on CA1-sr: (a) the sr site on the detection shank, (b) every CA1-sr site
+    # SW amplitude on CA1-sr (Methods: maximum of the Hilbert envelope of the 0-30 Hz trace during the SWR).
+    # Main: the 0-30 Hz trace minus its mean over rest (the file values carry an offset that the envelope
+    # would otherwise measure; the deposited LFP is said to be high-passed at 0.1 Hz); variants: the trace as
+    # filtered ("raw"), and the maximum absolute deviation from the median of the 200 ms before the SWR
+    # ("baseline"). Sites: (a) the sr site on the detection shank, (b) every CA1-sr site.
     sw_taps = remez_band(0, 30.0, ntaps=301)
-    sw = {}
+    sw, sw_raw, sw_base, sw_offset = {}, {}, {}, {}
     for s in reg["ca1_sr"]:
         x = lfp[:, s].astype(np.float64) * conv
-        e = envelope(_zero_phase(x, sw_taps))
+        y = _zero_phase(x, sw_taps)
+        sw_offset[s] = dict(median_lfp=float(np.median(x[rest])), mean_sw=float(y[rest].mean()))
+        e = envelope(y - y[rest].mean())
         sw[s] = np.array([e[a:b].max() for a, b in ev])
+        e = envelope(y)
+        sw_raw[s] = np.array([e[a:b].max() for a, b in ev])
+        sw_base[s] = np.array([np.abs(y[a:b] - np.median(y[max(0, a - 200):a])).max() for a, b in ev])
+    out["sw_offset"] = sw_offset
     ev_df = pd.DataFrame({"start": ev[:, 0] / FS, "end": ev[:, 1] / FS, "size": feats[:, 0], "length": feats[:, 1],
                           "freq": feats[:, 2], "chain": chain_flags(ev, pid, rest) if len(ev) else []})
     if reg["ca1_sr_ref"]:
         ev_df["sw_amp"] = sw[reg["ca1_sr_ref"][0]]
+        ev_df["sw_amp_raw"] = sw_raw[reg["ca1_sr_ref"][0]]
+        ev_df["sw_amp_base"] = sw_base[reg["ca1_sr_ref"][0]]
     out["sw_all_sites"] = pd.DataFrame(sw) if sw else pd.DataFrame()
     out["swr"] = ev_df
+    swr_sg_measures(out, lfp, conv, reg, ev, rest)
     out["swr_minutes"] = minute_bins(rest, ev_df.start.values)
     out["swr_minutes_5sd"] = minute_bins(rest, ev_df.start.values[ev_df["size"].values >= 5])
     # CA3 SWRs
@@ -467,6 +487,127 @@ def process_homecage(asset_id: str) -> dict:
     if reg["dg_mua"]:
         out["ds"] = dentate_spikes(lfp[:, reg["dg_mua"][0]].astype(np.float64) * conv, rest)
     mua_measures(out, trains, rest)
+    out["seconds"] = time.time() - t0
+    out["maxrss_kb"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return out
+
+
+SWR_WIN = 100                          # samples: the 100 ms window after SWR onset (Methods, paragraph 3)
+PRE_OFFSET = 400                       # coherence baseline window starts 400 ms before onset (Methods, paragraph 3)
+
+
+def _win_spec(lfp, conv, site, starts, tap):
+    """Tapered spectra (n_windows, n_tapers, n_freq) of SWR_WIN-sample windows starting at `starts`."""
+    seg = lfp[starts[:, None] + np.arange(SWR_WIN)[None], site].astype(np.float64) * conv
+    seg = seg - seg.mean(1, keepdims=True)
+    return np.fft.rfft(seg[:, None, :] * tap[None], axis=2)
+
+
+def swr_sg_measures(out, lfp, conv, reg, ev, rest):
+    """SWR-coincident SG (fig4d, fig4e). Multitaper over the 100 ms after SWR onset, 3 tapers (time-bandwidth 2;
+    the paper gives the 100 ms window but not the tapers: an assumption), SG 30-50 Hz (Methods, paragraph 3).
+    Power: per SWR and site, mean power over 30-50 Hz, kept raw with the site's mean and SD over the
+    non-overlapping 100 ms windows of rest, so that the notebook can z-score by the session's own statistics or
+    by those of a vehicle session. Coherence: per SWR, CA1 SWR site against each site of CA3 and of DG, SG
+    coherence in the 100 ms after onset minus that in the 100 ms from 400 ms before onset, averaged over the
+    region's pairs; SWRs with another SWR ending within the 400 ms before onset are left out."""
+    n = lfp.shape[0]
+    tap = signal.windows.dpss(SWR_WIN, 2.0, Kmax=3)
+    fr = np.fft.rfftfreq(SWR_WIN, 1 / FS)
+    band = (fr >= REST_SG[0]) & (fr <= REST_SG[1])
+    starts = ev[:, 0].astype(int)
+    ok = (starts + SWR_WIN <= n) & (starts - PRE_OFFSET >= 0)
+    st, en = runs(rest)
+    win = np.concatenate([np.arange(a, b - SWR_WIN + 1, SWR_WIN) for a, b in zip(st, en)] or [np.array([], int)])
+    sg, stats_ = {}, {}
+    for r in ("ca1_sr", "ca3", "dg"):
+        if not reg[r] or not len(starts):
+            continue
+        P = np.full((len(starts), len(reg[r])), np.nan)
+        ms = []
+        for j, s in enumerate(reg[r]):
+            X = _win_spec(lfp, conv, s, starts[ok], tap)
+            P[ok, j] = (np.abs(X) ** 2).mean(1)[:, band].mean(1)
+            W = (np.abs(_win_spec(lfp, conv, s, win, tap)) ** 2).mean(1)[:, band].mean(1)
+            ms.append((W.mean(), W.std()))
+        sg[r], stats_[r] = P, np.array(ms)
+    out["swr_sg"], out["swr_sg_rest"] = sg, stats_
+    prev_end = np.r_[-np.inf, ev[:-1, 1]] if len(ev) else np.array([])
+    clean = ok & (prev_end < starts - PRE_OFFSET)
+    if reg["ca1_ref"] and clean.any():
+        a_post = _win_spec(lfp, conv, reg["ca1_ref"][0], starts[clean], tap)
+        a_pre = _win_spec(lfp, conv, reg["ca1_ref"][0], starts[clean] - PRE_OFFSET, tap)
+
+        def coh(x, y):
+            sxy = (x * np.conj(y)).sum(1)
+            return (np.abs(sxy) / np.sqrt((np.abs(x) ** 2).sum(1) * (np.abs(y) ** 2).sum(1)))[:, band].mean(1)
+        for r in ("ca3", "dg"):
+            if not reg[r]:
+                continue
+            d = [coh(a_post, _win_spec(lfp, conv, s, starts[clean], tap))
+                 - coh(a_pre, _win_spec(lfp, conv, s, starts[clean] - PRE_OFFSET, tap)) for s in reg[r]]
+            v = np.full(len(starts), np.nan)
+            v[clean] = np.mean(d, axis=0)
+            out["swr"][f"sgcoh_{r}"] = v
+
+
+def process_csd(asset_id: str) -> dict:
+    """fig2ef, cohort 1 (single-shank probe, 50 um spacing). SWRs as in process_homecage (3 SD on the
+    "ca1-pyr 1" site, rest, edge and artifact rules). CSD: each site smoothed with its neighbours as
+    (a + 2b + c) / 4 (code RTCSD.m, cited in the claims file), then minus the second difference across
+    depth divided by the spacing squared (uV/mm2 in file units), so that sources are positive and sinks
+    negative. Per SWR, the peak source (maximum) and peak sink (minimum, as a magnitude) over the CA1-sr
+    sites and the 100 ms after onset (Methods, paragraph 4)."""
+    t0 = time.time()
+    f = open_file(asset_id)
+    meta = read_meta(f)
+    sites = site_table(f)
+    depth = f["general/extracellular_ephys/electrodes/rel_y"][:]
+    reg = region_sites(sites)
+    lfp, conv = read_lfp(f)
+    n = lfp.shape[0]
+    speed, pinfo = speed_trace(f, n)
+    rest = rest_mask(np.nan_to_num(speed, nan=99.0))
+    out = dict(meta=meta, sites=sites, n_samples=n, rest_s=rest.sum() / FS, rest_periods=np.c_[runs(rest)] / FS,
+               depth_sorted=bool(np.all(np.diff(depth) > 0)), n_sr=len(reg["ca1_sr"]))
+    if not reg["ca1_ref"] or rest.sum() < 60 * FS:
+        out["skipped"] = "no ca1-pyr 1 site" if not reg["ca1_ref"] else "less than 1 min of rest"
+        return out
+    rtaps = remez_band(*RIPPLE_BAND)
+    gauss = lambda x: gaussian_filter1d(x, RIPPLE_SMOOTH_S * FS, axis=0)
+    good = [s for s in range(lfp.shape[1]) if sites.label[s] not in ("", "dead")]
+    zall = np.zeros((n, len(good)), dtype=bool)
+    for j0 in range(0, len(good), 4):
+        cols = good[j0:j0 + 4]
+        e = gauss(envelope(_zero_phase(lfp[:, cols].astype(np.float32) * conv, rtaps)))
+        with np.errstate(invalid="ignore", divide="ignore"):
+            zall[:, j0:j0 + len(cols)] = (e - e[rest].mean(0)) / e[rest].std(0) > ARTIFACT_SD
+    del e
+    env = gauss(envelope(_zero_phase(lfp[:, reg["ca1_ref"][0]].astype(np.float64) * conv, rtaps)))
+    mu, sd = env[rest].mean(), env[rest].std()
+    ev = detect_events(env, rest, mu, sd)
+    ok, _ = period_edges_ok(ev, rest)
+    ev = ev[ok]
+    art = np.array([zall[a:b].any(0).sum() for a, b in ev]) >= ARTIFACT_SITES if len(ev) else np.zeros(0, bool)
+    ev = ev[~art]
+    ev = ev[ev[:, 0] + SWR_WIN <= n]
+    size = np.array([((env[a:b] - mu) / sd).max() for a, b in ev])
+    order = np.argsort(depth)
+    sr = [k for k, s in enumerate(order) if s in reg["ca1_sr"] and 0 < k < len(order) - 1]
+    h = 0.05   # mm
+    src, snk = np.full(len(ev), np.nan), np.full(len(ev), np.nan)
+    if sr:
+        rows = order[min(sr) - 2: max(sr) + 3] if min(sr) >= 2 else order[: max(sr) + 3]
+        k0 = list(order).index(rows[0])
+        for i, (a, b) in enumerate(ev):
+            x = lfp[a:a + SWR_WIN, rows].astype(np.float64) * conv
+            sm = x.copy()
+            sm[:, 1:-1] = (x[:, :-2] + 2 * x[:, 1:-1] + x[:, 2:]) / 4
+            csd = -(sm[:, :-2] - 2 * sm[:, 1:-1] + sm[:, 2:]) / h ** 2     # at rows[1:-1]
+            keep = [j - 1 for j in range(1, len(rows) - 1) if (k0 + j) in sr]
+            c = csd[:, keep]
+            src[i], snk[i] = c.max(), -c.min()
+    out["swr"] = pd.DataFrame({"start": ev[:, 0] / FS, "end": ev[:, 1] / FS, "size": size, "source": src, "sink": snk})
     out["seconds"] = time.time() - t0
     out["maxrss_kb"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     return out
@@ -545,6 +686,14 @@ def _dpss(n=1000, nw=3.0, k=5):
     return signal.windows.dpss(n, nw, Kmax=k)
 
 
+def _lagcorr(x, y, k):
+    """Correlation of x[t] with y[t + k] (bins)."""
+    n = len(x)
+    a, b = x[max(0, -k):n - max(0, k)], y[max(0, k):n + min(0, k)]
+    ok = np.isfinite(a) & np.isfinite(b)
+    return float(np.corrcoef(a[ok], b[ok])[0, 1]) if ok.sum() > 10 else np.nan
+
+
 def process_track(asset_id: str) -> dict:
     t0 = time.time()
     f = open_file(asset_id)
@@ -583,9 +732,32 @@ def process_track(asset_id: str) -> dict:
         x = x - x.mean(1, keepdims=True)
         P = (np.abs(np.fft.rfft(x[:, None, :] * tap[None], axis=2)) ** 2).mean(1)
         th = np.log(P[:, (freqs >= THETA[0]) & (freqs <= THETA[1])].mean(1))
+        td = th - np.log(P[:, (freqs >= 1) & (freqs <= 4)].mean(1))
         spb = sp[: nb1 * 1000].reshape(nb1, 1000).mean(1)
-        out["clock"] = {k: float(np.corrcoef(th[max(0, k):nb1 + min(0, k)], spb[max(0, -k):nb1 - max(0, k)])[0, 1])
-                        for k in (-30, 0, 30)}
+        out["clock"] = {k: _lagcorr(th, spb, k) for k in (-30, 0, 30)}
+        # lag scan, -60 to +60 s in 1 s steps: speed shifted by k bins against log theta power, log theta/delta
+        # ratio and CA1 MUA rate (positive k: speed later than the LFP or spikes)
+        lags = np.arange(-60, 61)
+        ca1_tr = trains.get(reg["ca1_mua"][0]) if reg["ca1_mua"] else None
+        mu1 = np.histogram(ca1_tr, np.arange(nb1 + 1.0))[0].astype(float) if ca1_tr is not None else None
+        out["clock_scan"] = pd.DataFrame({"lag_s": lags, "theta": [_lagcorr(th, spb, k) for k in lags],
+                                          "theta_delta": [_lagcorr(td, spb, k) for k in lags],
+                                          "mua_ca1": [_lagcorr(mu1, spb, k) if mu1 is not None else np.nan for k in lags],
+                                          "mua_theta": [_lagcorr(mu1, th, k) if mu1 is not None else np.nan for k in lags]})
+        # spike clock on the track: CA1 MUA around SWRs detected in still periods (speed < 1 cm/s)
+        still = (sp < IMMOBILE_CM_S) & np.isfinite(speed)
+        if still.sum() > 30 * FS and ca1_tr is not None:
+            xr = _zero_phase(lfp[:, reg["ca1_ref"][0]].astype(np.float64) * conv, remez_band(*RIPPLE_BAND))
+            env = gaussian_filter1d(envelope(xr), RIPPLE_SMOOTH_S * FS)
+            ev = detect_events(env, still, env[still].mean(), env[still].std())
+            out["track_swr_n"] = len(ev)
+            out["track_mua_lag"], out["track_mua_lag_ratio"] = (mua_lag(ca1_tr, ev.mean(1) / FS) if len(ev) >= 20
+                                                                else (np.nan, np.nan))
+    # run MUA with the spike times shifted by the track lag found above (variant)
+    lag = out.get("track_mua_lag", np.nan)
+    if np.isfinite(lag) and out.get("track_mua_lag_ratio", 0) >= LAG_MIN_RATIO:
+        out["mua_run_aligned"] = {r: np.histogram(trains[reg[f"{r}_mua"][0]] - lag, edges)[0][rb] / 0.1
+                                  for r in ("ca1", "ca3", "dg") if reg[f"{r}_mua"] and reg[f"{r}_mua"][0] in trains}
     fr = freqs[keepf]
     bands = {"theta": (fr >= THETA[0]) & (fr <= THETA[1]), "sg": (fr >= SG[0]) & (fr <= SG[1]),
              "fg": (fr >= FG[0]) & (fr <= FG[1])}
@@ -627,9 +799,14 @@ def process_track(asset_id: str) -> dict:
                 coh_sess[f"{b}_coh_{r}"] = float(np.mean(cs))
     out["coh_session"] = coh_sess
     del spec
-    # band-filtered traces: instantaneous frequency (one site per region) and modulation index
+    # band-filtered traces: instantaneous frequency and modulation index. Frequency (a) pools the interpeak
+    # intervals of every site of the region (Method M: a region is the mean over its sites; Table S3's counts
+    # of data points imply peaks from several sites); (b) one site per region: the CA1 SWR site, and in CA3
+    # and DG the MUA site when it is one of the region's sites, otherwise the region's first site.
     taps = {"theta": firls_band(*THETA, 1001), "sg": firls_band(*SG, 301), "fg": firls_band(*FG, 151)}
-    freq_sites = {"ca1": reg["ca1_ref"][:1], "ca3": reg["ca3_mua"][:1] or reg["ca3"][:1], "dg": reg["dg_mua"][:1] or reg["dg"][:1]}
+    one = lambda m, ss: [m[0]] if m and m[0] in ss else ss[:1]
+    freq_sites = {"ca1": reg["ca1_ref"][:1], "ca3": one(reg["ca3_mua"], reg["ca3"]), "dg": one(reg["dg_mua"], reg["dg"])}
+    out["freq_sites"] = freq_sites
     ifreq = {}
     st, en = runs(run)
     seg_id = np.zeros(n, int) - 1
@@ -660,13 +837,16 @@ def process_track(asset_id: str) -> dict:
                 p = mean_amp / mean_amp.sum(1, keepdims=True)
                 h = -(p * np.log(np.where(p > 0, p, 1))).sum(1)
                 mis[b].append((np.log(N_PHASE_BINS) - h) / np.log(N_PHASE_BINS))
-            if s in freq_sites[r]:
-                for b in ("theta", "sg", "fg"):
-                    pk, _ = signal.find_peaks(filt[b])
-                    pk = pk[run[pk]]
-                    same = seg_id[pk[1:]] == seg_id[pk[:-1]]
-                    fq = FS / np.diff(pk)
-                    ifreq[f"{b}_freq_{r}"] = fq[same].astype(np.float32)
+            for b in ("theta", "sg", "fg"):
+                pk, _ = signal.find_peaks(filt[b])
+                pk = pk[run[pk]]
+                same = seg_id[pk[1:]] == seg_id[pk[:-1]]
+                fq = (FS / np.diff(pk))[same].astype(np.float32)
+                ifreq.setdefault(f"{b}_freq_{r}", []).append(fq)
+                if s in freq_sites[r]:
+                    ifreq[f"{b}_freq1_{r}"] = fq
+        for b in ("theta", "sg", "fg"):
+            ifreq[f"{b}_freq_{r}"] = np.concatenate(ifreq[f"{b}_freq_{r}"])
         for b in ("sg", "fg"):
             bins[f"{b}_mi_{r}"] = np.mean(mis[b], axis=0)
     out["bins"] = pd.DataFrame(bins)
@@ -816,7 +996,7 @@ def _safe(fn, asset_id):
 
 def process_many(asset_ids, kind, workers=4):
     from concurrent.futures import ProcessPoolExecutor
-    fn = process_homecage if kind == "HomeCage" else process_track
+    fn = {"HomeCage": process_homecage, "LinearTrack": process_track, "CSD": process_csd}[kind]
     with ProcessPoolExecutor(workers) as ex:
         return list(ex.map(_safe, [fn] * len(asset_ids), asset_ids))
 
@@ -881,13 +1061,23 @@ def test_feature(df, groups=("PV", "SST"), pairs=(("PV", "SST"),)):
         for g in groups:
             if cs[g].animal.nunique() < 2 or cs[g].cno.nunique() < 2:
                 continue
-            t = treatment_test(cs[g])
+            try:
+                t = treatment_test(cs[g])
+            except np.linalg.LinAlgError as e:      # reported in the table as a failed fit, p NaN
+                out.append(dict(reading=reading, log=use_log, skew=sk, test=g, coef=np.nan, p=np.nan, F=np.nan,
+                                n_animals=cs[g].animal.nunique(), n_obs=int(cs[g]["size"].sum()), error=str(e)))
+                continue
             out.append(dict(reading=reading, log=use_log, skew=sk, test=g, coef=t["coef"], p=t["p"], F=t["F"],
                             n_animals=t["n_animals"], n_obs=t["n_obs"]))
         for pair in pairs:
             if not all(p in cs and len(cs[p]) for p in pair):
                 continue
-            gt = genotype_test(cs[pair[0]], cs[pair[1]])
+            try:
+                gt = genotype_test(cs[pair[0]], cs[pair[1]])
+            except np.linalg.LinAlgError as e:
+                out.append(dict(reading=reading, log=use_log, skew=sk, test=f"{pair[0]} vs {pair[1]}", coef=np.nan,
+                                p=np.nan, F=np.nan, p_df5=np.nan, n_animals=0, n_obs=0, error=str(e)))
+                continue
             out.append(dict(reading=reading, log=use_log, skew=sk, test=f"{pair[0]} vs {pair[1]}",
                             coef=gt["coef_b"] - gt["coef_a"], p=gt["p_df9"], F=gt["LR"], p_df5=gt["p_df5"],
                             n_animals=cs[pair[0]].animal.nunique() + cs[pair[1]].animal.nunique(),
@@ -964,8 +1154,9 @@ def scan_one(asset_id):
 
 
 def scan(asset_ids, workers=16):
-    from concurrent.futures import ThreadPoolExecutor
-    with ThreadPoolExecutor(workers) as ex:
+    """File metadata, in processes (h5py serialises threads)."""
+    from concurrent.futures import ProcessPoolExecutor
+    with ProcessPoolExecutor(workers) as ex:
         return pd.DataFrame(list(ex.map(scan_one, asset_ids)))
 
 
@@ -1016,6 +1207,8 @@ REST_FEATURES = {
     "ca3_mua": _col("ca3_swr", "mua_ca3_aligned"),
     "ds_rate": _minutes("ds"), "ds_length": _col("ds", "length"), "ds_amp": _col("ds", "amp"),
     "ds_mua": _col("ds", "mua_dg_aligned"),
+    "sg_ca1": _col("swr", "sg_ca1"), "sg_ca3": _col("swr", "sg_ca3"), "sg_dg": _col("swr", "sg_dg"),
+    "sgcoh_ca3": _col("swr", "sgcoh_ca3"), "sgcoh_dg": _col("swr", "sgcoh_dg"),
 }
 REST_VARIANTS = {
     "swr_rate_5sd": ("swr_rate", _minutes("swr", min_size=5)), "chain_5sd": ("chain", _sel("swr", "chain", min_size=5)),
@@ -1030,7 +1223,46 @@ REST_VARIANTS = {
     "ca3_mua_overlap": ("ca3_mua", _sel("ca3_swr", "mua_ca3_aligned", mask_col="overlap")),
     "ca3_mua_deposited": ("ca3_mua", _col("ca3_swr", "mua_ca3")),
     "ds_mua_deposited": ("ds_mua", _col("ds", "mua_dg")),
+    "sw_amp_raw": ("sw_amp", _col("swr", "sw_amp_raw")), "sw_amp_base": ("sw_amp", _col("swr", "sw_amp_base")),
+    "sg_ca1_own": ("sg_ca1", _col("swr", "sg_ca1_own")), "sg_ca3_own": ("sg_ca3", _col("swr", "sg_ca3_own")),
+    "sg_dg_own": ("sg_dg", _col("swr", "sg_dg_own")),
+    "sg_ca1_5sd": ("sg_ca1", _sel("swr", "sg_ca1", min_size=5)),
 }
+
+
+def add_swr_sg_z(results, sessions):
+    """Z-scored SWR-coincident SG power per SWR, mean over the region's sites, as columns of each session's SWR
+    table: sg_<region> z-scores a CNO session by the rest statistics of the mouse's latest earlier vehicle
+    session (the Methods: the vehicle epoch of the day before), or of its nearest later one when none is
+    earlier, and a vehicle session by its own (claims file); sg_<region>_own z-scores every session by its own
+    (code RTspecgram3.m). Returns, per CNO session, the vehicle session used."""
+    s = sessions.assign(num=sessions.session.str.extract(r"(\d+)")[0].astype(int))
+    used = []
+    for animal, g in s.sort_values("num").groupby("animal"):
+        veh = g[g.cno == 0]
+        for _, row in g.iterrows():
+            r = results[row.i]
+            if "swr_sg" not in r:
+                continue
+            if row.cno == 0:
+                ref = row
+            else:
+                earlier = veh[veh.num < row.num]
+                ref = earlier.iloc[-1] if len(earlier) else (veh.iloc[(veh.num - row.num).abs().argmin()] if len(veh) else None)
+                used.append(dict(animal=animal, cno_session=row.session,
+                                 vehicle_session=None if ref is None else ref.session,
+                                 earlier=bool(len(earlier))))
+            for reg, P in r["swr_sg"].items():
+                key = {"ca1_sr": "ca1", "ca3": "ca3", "dg": "dg"}[reg]
+                own = r["swr_sg_rest"][reg]
+                r["swr"][f"sg_{key}_own"] = np.nanmean((P - own[:, 0]) / own[:, 1], axis=1)
+                if ref is None:
+                    continue
+                rr = results[ref.i]
+                st = dict(zip(rr["regions"][reg], rr["swr_sg_rest"].get(reg, np.zeros((0, 2)))))
+                m = np.array([st.get(x, (np.nan, np.nan)) for x in r["regions"][reg]])
+                r["swr"][f"sg_{key}"] = np.nanmean((P - m[:, 0]) / m[:, 1], axis=1)
+    return pd.DataFrame(used)
 
 
 def _bins(k):
@@ -1049,20 +1281,31 @@ for _r in ("ca1", "ca3", "dg"):
 for _r in ("ca3", "dg"):
     for _b in ("theta", "sg", "fg"):
         RUN_FEATURES[f"{_b}_coh_{_r}"] = _bins(f"{_b}_coh_{_r}")
+# variants: frequency at one site per region; run MUA with the track spike-clock shift
+RUN_VARIANTS = {}
+for _r in ("ca1", "ca3", "dg"):
+    for _b in ("theta", "sg", "fg"):
+        RUN_VARIANTS[f"{_b}_freq1_{_r}"] = (f"{_b}_freq_{_r}", (lambda r, k=f"{_b}_freq1_{_r}": r["ifreq"].get(k)))
+    RUN_VARIANTS[f"mua_{_r}_aligned"] = (f"mua_{_r}", (lambda r, k=_r: r.get("mua_run_aligned", {}).get(k)))
 
 
 def build_tables(results, sessions, features):
     return {name: long_table(results, sessions, getter) for name, getter in features.items()}
 
 
-def test_all(tables, groups=("PV", "SST"), pairs=(("PV", "SST"),)):
-    out = []
-    for name, d in tables.items():
-        if not len(d):
-            continue
-        t = test_feature(d, groups, pairs)
-        t.insert(0, "feature", name)
-        out.append(t)
+def _test_one(args):
+    name, d, groups, pairs = args
+    t = test_feature(d, groups, pairs)
+    t.insert(0, "feature", name)
+    return t
+
+
+def test_all(tables, groups=("PV", "SST"), pairs=(("PV", "SST"),), workers=4):
+    """test_feature for every table, features in parallel processes (the fits are deterministic)."""
+    from concurrent.futures import ProcessPoolExecutor
+    jobs = [(name, d, groups, pairs) for name, d in tables.items() if len(d)]
+    with ProcessPoolExecutor(workers) as ex:
+        out = list(ex.map(_test_one, jobs))
     return pd.concat(out, ignore_index=True)
 
 
@@ -1071,14 +1314,19 @@ def add_decisions(res, family, main_features, counterpart=None):
     variant's p is judged in place of its main feature's p (counterpart: variant -> main feature)."""
     counterpart = counterpart or {}
     res = res.copy()
-    dec = []
+    dec, dec5 = [], []
     for _, r in res.iterrows():
         main = counterpart.get(r.feature, r.feature)
         fam = res[(res.reading == r.reading) & (res.test == r.test) & res.feature.isin(main_features)
                   & (res.feature != main)]
         ps = np.r_[fam.p.values, r.p]
         dec.append(bool(holm(ps, family)[-1]))
+        if "p_df5" in res and np.isfinite(r.get("p_df5", np.nan)):
+            dec5.append(bool(holm(np.r_[fam.p_df5.values, r.p_df5], family)[-1]))
+        else:
+            dec5.append(None)
     res["significant"] = dec
+    res["significant_df5"] = dec5      # genotype tests with 5 degrees of freedom in place of Table S3's 9
     return res
 
 
@@ -1099,7 +1347,10 @@ def show_parts(res, parts):
                 ok = r.significant
             else:
                 ok = r.significant and ((r.coef > 0) if exp == "up" else (r.coef < 0))
-            rows.append(dict(feature=feat, test=test, expected=exp, reading=reading, log=r.log, coef=r.coef,
-                             stat=r.F, p=r.p, significant=r.significant, holds=ok, animals=r.n_animals, n=r.n_obs))
+            row = dict(feature=feat, test=test, expected=exp, reading=reading, log=r.log, coef=r.coef,
+                       stat=r.F, p=r.p, significant=r.significant, holds=ok, animals=r.n_animals, n=r.n_obs)
+            if " vs " in test and "p_df5" in r:
+                row.update(p_df5=r.p_df5, significant_df5=r.significant_df5)
+            rows.append(row)
     t = pd.DataFrame(rows)
     return t
