@@ -371,7 +371,9 @@ def check(entry_dir: Path) -> Report:
                 report.error(where, f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r}, but the last "
                                     f"verification agreed with {verified!r}; record the change under `proposed`, "
                                     "and verify it in another round")
-            if outcome.get("claim") not in known:
+            # Only the latest attempt is held to the claims file as it is now: a later reading of the paper may
+            # drop or rename a claim that an earlier attempt tested (tingley-2018, 2026-11-16).
+            if outcome.get("claim") not in known and path == mine[-1]:
                 report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is not in the claims file")
             notebook = outcome.get("notebook")
             # A claim that was tested names the notebook that tested it. One whose outcome changed from blocked
