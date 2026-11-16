@@ -1,0 +1,1443 @@
+# Claims for Kussovska, Kim & Rungratsameetaweemana (2025), "Neural heterogeneity shapes the
+# temporal structure of human working memory", bioRxiv, doi:10.1101/2025.10.31.684900, tested on
+# DANDI:000469 (reused; the paper analyses the dataset of Kyzar et al. 2024, ref. 59).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. paper/10.1101-2025.10.31.684900.txt, the bioRxiv full-text page of the preprint
+# posted 1 November 2025 (its header says "version of record"; the page says "New Results" and
+# offers a "current version", so a later version may exist; it was not read). It holds the
+# abstract, Introduction, Results, legends of Figures 1 to 6, Discussion, Methods, Data and Code
+# availability and references. No PDF was supplied. The Extended Data figures (Extended Data
+# Figs 1 to 5, behind "Supplementary Material") and their legends are not in the text read; the
+# Source Data are not either. The main findings are all stated in the main text and legends, so
+# claims were written; claims on Extended Data panels rest on the main-text sentences that cite
+# them, and their sources say "(not in the text read)". Several equations of the Methods (the GLM
+# link, the local-peak and prominence formulas of Burst detection) were lost in extraction.
+#
+# Code read. github.com/dariakussovska/heterogeneitywm at commit 5144fe8 (2025-10-26), the last
+# commit before the preprint was posted. Later commits (REVISIONS/ and R2_REVISIONS/, 2026) are
+# for a revised version and were not used. The repository holds Python scripts named by figure
+# panel (01_task, 02_psth_decoding, 03_dpca, 04_bursting, 05_cell_analysis, 06_cell_specific),
+# pipeline scripts 01 to 08 (extraction from the NWB files, standardisation, concept cells,
+# spectral clustering, dPCA matrices), MATLAB functions for the autocorrelograms and the
+# CellExplorer fit (data/cell_analysis/calc_ACG_metrics.m, fit_ACG.m, Mean_ACG.m,
+# normalize_acg_to_unit.m), and shipped intermediate tables. Facts about the code that bear on
+# every claim:
+# - The code reads only the Sternberg file of each subject (sub-<n>/sub-<n>_ses-2_ecephys+image.nwb,
+#   01_data_extraction.py:417), and its README downloads dandiset version 0.240123.1806, while
+#   the paper cites version 0.231213.2047 (Methods, Participants; Data availability).
+# - The matched trial sets of the Methods (96 trials per participant matched on load; 75 per
+#   participant matched on stimulus identity) come only from the shipped tables
+#   data/new_trial_info.xlsx (new_trial_id) and data/new_trial_final.xlsx (trial_id_final),
+#   merged at 03_standardization.py:97-121 and 232-261. No script builds them, and the paper
+#   does not say how the trials were chosen. Pseudo-population analyses align every
+#   participant's neurons on these ids and take the trial labels of one participant (subject 1
+#   for the GLM, main_1e,f.py:9; subject 14 for decoding and dPCA, main_2d,supp_1d,e.py:11-12,
+#   08_dpca_matrices.py:15-26).
+# - The ACG features (R2, tau_rise, tau_decay, mean normalised ACG, burst index) are computed in
+#   MATLAB with CellExplorer; the spike input data/cell_analysis/spikes_struct.mat is an empty
+#   2-byte placeholder, and the Python scripts read the outputs from the shipped
+#   data/cell_analysis/Cell_metrics.xlsx. They can be recomputed from the dataset's spike times
+#   with the MATLAB functions (or a port of them); the shipped table is outside data.
+# - The concept-cell bootstrap (04_concept_cells.py:76-90) has no random seed.
+#
+# Data the paper used (as the paper reports it). 21 patients with intractable epilepsy, 41
+# recording sessions (age 17 to 71), microwires in hybrid depth electrodes; 902 single units
+# sorted with OSort, in amygdala (259), hippocampus (190), dACC (171), preSMA (250) and vmPFC
+# (32). Task: a modified Sternberg task. Each trial is fixation (900 to 1000 ms), encoding of 1
+# to 3 images (load 1 to 3) from a participant-specific set of five images, maintenance of 2.5
+# to 2.8 s ("hold"), and a probe with a yes/no (old/new) button response; reaction time is from
+# probe onset to button press. Sixteen participants completed 135 trials and five completed
+# 108. Measured variables used: spike times per unit and the unit's brain area; per trial the
+# load, the image identity of each encoding period and of the probe, whether the probe was in
+# memory, response accuracy, and the timestamps of fixation, encodings, maintenance, probe and
+# response. MTL is amygdala and hippocampus combined (Results, paragraph on Fig. 2e). Unless a
+# claim says otherwise, main-figure analyses use load 1 trials (Methods, Statistical analyses).
+# The rodent validation of the cell-type classifier uses the CellExplorer ground-truth dataset
+# (ref. 72), which is not in DANDI:000469.
+schema_version: 2
+paper: doi:10.1101/2025.10.31.684900
+claims:
+- id: units-by-region
+  statement: Recordings from the 21 patients yielded 902 well-isolated units, 259 in the amygdala,
+    171 in the dACC, 190 in the hippocampus, 250 in the preSMA and 32 in the vmPFC.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 1;
+    Figure 1i; Methods, Electrophysiology, paragraph 2
+  quote: Recordings from the 21 patients yielded 902 well-isolated units (Fig. 1b,i), distributed
+    across the amygdala (AMY; 259 neurons), dorsal anterior cingulate cortex (dACC; 171 neurons),
+    hippocampus (HPC; 190 neurons), presupplementary motor area (preSMA; 250 neurons), and
+    ventromedial prefrontal cortex (vmPFC; 32 neurons).
+  expected:
+  - quantity: units
+    value: 902
+    tolerance: 0
+  - quantity: amygdala units
+    value: 259
+    tolerance: 0
+  - quantity: dACC units
+    value: 171
+    tolerance: 0
+  - quantity: hippocampus units
+    value: 190
+    tolerance: 0
+  - quantity: preSMA units
+    value: 250
+    tolerance: 0
+  - quantity: vmPFC units
+    value: 32
+    tolerance: 0
+  - quantity: patients
+    value: 21
+    tolerance: 0
+  criterion: Counted over the units of the 21 Sternberg sessions, left and right hemispheres of
+    each region merged (as main_1e,f.py:87-104 merges the location labels). Counts are exact,
+    so the tolerance is zero.
+- id: behavior-accuracy
+  statement: Task accuracy was 88.73% ± 1.25%.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 2;
+    Extended Data Fig. 1a (not in the text read)
+  quote: Task accuracy was 88.73% ± 1.25%
+  expected:
+    quantity: task accuracy
+    value: 88.73
+    tolerance: 1.25
+    unit: percent
+  criterion: Accuracy is the fraction of correct responses over all trials of a participant,
+    averaged over the 21 participants, as 01_task/supp_1a.py:9-17 computes it (mean and s.e.m.
+    across subjects). The tolerance is the paper's stated spread. The spread is printed as ±;
+    Methods, Statistical analyses say descriptive values are mean ± s.d., while the code computes
+    s.e.m.; the spread is reported both ways and does not decide the claim. A second reading,
+    correct trials over all trials pooled across participants, is shown as a variant.
+- id: fig1c-accuracy-load1-vs-load3
+  statement: Accuracy was higher for load 1 than for load 3 trials across patients.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 2;
+    Figure 1c
+  quote: Task accuracy was 88.73% ± 1.25% and was higher for load 1 than for load 3 (Wilcoxon
+    rank-sum, P = 0.027; Fig. 1c).
+  statistics:
+  - test: Wilcoxon rank-sum
+    p: 0.027
+    n: 21 patients
+  criterion: Per patient, the accuracy at each load; load 1 against load 3 with a two-sided
+    Wilcoxon rank-sum (Mann-Whitney) test, as in 01_task/main_1c.py:16-36. The code runs a
+    Kruskal-Wallis test over the three loads and then pairwise rank-sum tests with a Bonferroni
+    factor of 3 and prints both raw and corrected p; the paper does not say which it reports.
+    Readings are (a) the raw p and (b) the Bonferroni-corrected p. Reproduced when load 1
+    accuracy is higher and p < 0.05 under one reading; the value of p under both is reported.
+    A paired signed-rank test across patients is shown as a variant.
+- id: behavior-rt
+  statement: Reaction time for correct trials was 1.06 ± 0.28 s.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 2;
+    Figure 1d
+  quote: Reaction time for correct trials was 1.06 ± 0.28 s.
+  expected:
+    quantity: reaction time, correct trials
+    value: 1.06
+    tolerance: 0.28
+    unit: s
+  criterion: Reaction time is probe onset to button press (Methods, Psychophysical task), the
+    probe interval of the trials table as in 01_data_extraction.py:304-309 and main_1d.py:6-8.
+    No code computes the reported value, and Methods, Statistical analyses say RTs are reported
+    as median with IQR while the Results print a ±. Readings are (a) the mean across
+    participants of each participant's median RT on correct trials (main_1d.py takes the median
+    per subject); (b) the mean across participants of each participant's mean RT; (c) the median
+    over all correct trials pooled. The tolerance is the paper's stated spread. Reproduced when
+    one reading falls within it; the spread under each reading (s.d., and half the IQR) is
+    reported.
+- id: rt-in-vs-out-memory
+  statement: Reaction time was faster for probes held in memory than for probes not in memory.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 2
+  quote: Reaction time was faster for probes held in memory than for probes not in memory
+    (permutation test, P = 0.001)
+  statistics:
+  - test: permutation test
+    p: 0.001
+  criterion: No code in the repository computes this test, and the paper names only a
+    permutation test (1,000 shuffles unless stated, Methods, Statistical analyses; two-sided by
+    default). Which trials enter (correct trials, as for the RT above, or all trials) and what
+    is permuted are open. Readings are (a) a paired permutation (sign flips, 1,000) of the
+    per-participant difference in median RT between in-memory and not-in-memory probes; (b) a
+    permutation of the in/out labels over all trials pooled, on the difference in mean RT;
+    each on correct trials and on all trials. Reproduced when in-memory probes are faster and
+    p < 0.05 under one reading.
+- id: rt-correct-vs-incorrect
+  statement: Correct decisions were faster than incorrect ones.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 2
+  quote: correct decisions were faster than incorrect ones (permutation test, P = 0.002)
+  statistics:
+  - test: permutation test
+    p: 0.002
+  criterion: No code computes this test. Readings are (a) a paired permutation (sign flips,
+    1,000) of the per-participant difference in median RT between correct and incorrect trials,
+    over participants with incorrect trials; (b) a permutation of the correct/incorrect labels
+    over all trials pooled, on the difference in mean RT. Reproduced when correct trials are
+    faster and p < 0.05 under one reading.
+- id: fig1e-load-modulated-neurons
+  statement: During maintenance a significant proportion of neurons in the preSMA (19.6%), vmPFC
+    (18.75%) and dACC (10.53%) was modulated by memory load.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 3;
+    Figure 1e
+  quote: >-
+    During the maintenance epoch, the preSMA, vmPFC, and dACC showed a significant proportion of
+    neurons modulated by memory load (preSMA: 19.6%, vmPFC: 18.75%, dACC: 10.53%; permutation
+    test, PpreSMA = 0.001, PvmPFC = 0.009, and PdACC = 0.026; Fig. 1e)
+  statistics:
+  - about: preSMA
+    test: permutation test on the count of significant neurons
+    p: 0.001
+    n: 250 neurons
+  - about: vmPFC
+    test: permutation test on the count of significant neurons
+    p: 0.009
+    n: 32 neurons
+  - about: dACC
+    test: permutation test on the count of significant neurons
+    p: 0.026
+    n: 171 neurons
+  expected:
+  - quantity: preSMA load-modulated neurons
+    value: 19.6
+    tolerance: 1.96
+    unit: percent
+  - quantity: vmPFC load-modulated neurons
+    value: 18.75
+    tolerance: 1.875
+    unit: percent
+  - quantity: dACC load-modulated neurons
+    value: 10.53
+    tolerance: 1.053
+    unit: percent
+  criterion: From the Methods (GLM encoding analysis) and 01_task/main_1e,f.py. For each neuron
+    the spike count in the first 2.5 s of maintenance (main_1e,f.py:67-75) on each trial is the
+    response of a Poisson GLM with log link on z-scored load (sklearn PoissonRegressor, alpha 0,
+    main_1e,f.py:147). A neuron is significant when |beta1| is at or above the 95th percentile
+    of its null from 1,000 permutations of the predictor (seed 17 in the code); a region's p is
+    the fraction of null counts of significant neurons at or above the observed count. Open
+    details, with the readings run. For the trials, the Methods say "96 trials per participant matched
+    on load" and also "load 1 encoding and maintenance epochs", which cannot hold for a load
+    predictor; readings are (a) the code's 96 load-matched trials of data/new_trial_info.xlsx
+    (an input from the code repository), (b) all trials of each participant. The permutation is
+    within participant (Methods) or over the shared trial vector (the code, whose blocks are
+    None, main_1e,f.py:124-135); both are run. For correction, the code applies none across
+    regions; the paper's P values are taken as uncorrected. Reproduced when, under one
+    reading, each of the three regions is within tolerance and has p < 0.05.
+- id: fig1f-rt-modulation-not-significant
+  statement: No region had a significant proportion of neurons whose maintenance firing
+    covaried with reaction time after correction, although the amygdala (5.79%), preSMA (8.00%)
+    and vmPFC (6.25%) showed elevated percentages.
+  source: Results, Behavior and single-neuron recordings in a working memory task, paragraph 3;
+    Figure 1f
+  quote: Although elevated percentages of RT-modulated neurons were observed in the amygdala
+    (5.79%), preSMA (8.00%), and vmPFC (6.25%), none were significant after correction for
+    multiple comparisons (permutation tests, P > 0.05; Fig. 1f).
+  statistics:
+  - test: permutation test on the count of significant neurons
+    p: 0.05
+    p_relation: ">"
+    corrected: correction for multiple comparisons (FDR, Methods, Statistical analyses)
+  expected:
+  - quantity: amygdala RT-modulated neurons
+    value: 5.79
+    tolerance: 0.579
+    unit: percent
+  - quantity: preSMA RT-modulated neurons
+    value: 8.0
+    tolerance: 0.8
+    unit: percent
+  - quantity: vmPFC RT-modulated neurons
+    value: 6.25
+    tolerance: 0.625
+    unit: percent
+  criterion: A claim of absence, on the paper's test, the GLM and count permutation of
+    fig1e-load-modulated-neurons with RT as the predictor, and Benjamini-Hochberg FDR over the
+    five regions at 0.05 (Methods, Statistical analyses name BH-FDR for multiple comparisons).
+    Reproduced when no region has corrected p < 0.05; not reproduced when one does. RT is each
+    trial's own reaction time in its participant (the code uses subject 1's RT vector for every
+    neuron, main_1e,f.py:113; shown as a variant). The trial readings of
+    fig1e-load-modulated-neurons apply to the expected percentages; uncorrected p values are
+    reported.
+- id: concept-cells-count
+  statement: Of 902 neurons, 58 (6.4%) were concept cells, 4 ± 4 across participants, 70.69% of
+    them in the amygdala, 18.96% in the hippocampus, 1.72% in the dACC, 3.45% in the preSMA and
+    5.15% in the vmPFC.
+  source: Results, Concept cell definition and criteria, paragraphs 1 and 2; Figure 1j; Methods,
+    Identification of concept cells
+  quote: Of 902 neurons (Fig. 1i), 58 were identified as concept cells (6.4%; 4 ± 4 across
+    participants). Of these 58 concept cells, 70.69% were in the AMY, 18.96% in the HPC, 1.72% in
+    the dACC, 3.45% in the preSMA, and 5.15% in the vmPFC (Fig. 1j).
+  expected:
+  - quantity: concept cells
+    value: 58
+    tolerance: 5.8
+  - quantity: concept cells in the amygdala
+    value: 70.69
+    tolerance: 7.069
+    unit: percent
+  - quantity: concept cells in the hippocampus
+    value: 18.96
+    tolerance: 1.896
+    unit: percent
+  criterion: From the Methods (Identification of concept cells) and 04_concept_cells.py. For each
+    neuron, spike counts 200 to 1000 ms after the onset of the first encoding image, on all
+    trials of all loads; the two images with the highest mean rate; a bootstrap of the
+    difference in mean rate between them (1,000 resamples with replacement), two-tailed p as
+    twice the smaller tail; concept cell when p < 0.05 and both images have more than one
+    trial. The code differs from the Methods in two ways, run as readings, (a) the Methods,
+    each image's trials resampled to their own number; (b) the code, both resampled to the
+    smaller number and p as the minimum of the four terms at 04_concept_cells.py:86-90. The
+    code sets no seed, so each reading is run with ten seeds and the range of counts reported.
+    Reproduced when, under one reading, the count is within tolerance and the amygdala is the
+    region with most concept cells, with the two largest shares within tolerance. The small
+    shares (one to three cells) and the per-participant 4 ± 4 are reported without deciding.
+- id: fig2ab-single-cells-not-persistent
+  statement: Examined neuron by neuron, most concept cells did not maintain elevated firing for
+    their preferred image throughout the maintenance epoch.
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 2; Figure 2a,b
+  quote: Neuron-by-neuron examination showed that most concept cells did not maintain elevated
+    firing throughout the maintenance epoch (Fig. 2a–b).
+  depends_on:
+  - concept-cells-count
+  criterion: The paper shows one example cell and gives no rule for "throughout". From the
+    Fig. 2a legend and Methods, Electrophysiology, per concept cell, load 1 trials, firing in 50
+    ms bins of maintenance z-scored to fixation and smoothed (Gaussian, sigma one bin), preferred
+    (first encoding image is the preferred image) against nonpreferred trials, with a
+    permutation test per bin at P < 0.05. The rule for "elevated throughout" is open; readings
+    are (a) significantly higher on preferred trials in at least half of the bins of the first
+    2.5 s of maintenance; (b) significantly higher spike count on preferred trials in each of
+    the three 1 s windows from maintenance onset (M1 to M3 as in Burst detection; M3 truncated
+    at the end of maintenance), permutation test of counts, P < 0.05. Reproduced when, under one
+    reading, more than half of the concept cells are not persistent; the counts under both are
+    reported.
+- id: fig2c-population-persistence
+  statement: Averaged across the 58 concept cells, firing on preferred trials stayed higher than
+    on nonpreferred trials across the maintenance epoch of load 1 trials, a pattern of persistent
+    activity.
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 2; Figure 2c and legend
+  quote: By contrast, averaging across the concept cell population revealed a clear pattern of
+    persistent activity (n = 58; Fig. 2c).
+  statistics:
+  - test: bootstrap test per time bin
+    p: 0.05
+    p_relation: "<"
+    n: 58 concept cells
+  depends_on:
+  - concept-cells-count
+  criterion: From the Fig. 2c legend and 02_psth_decoding/main_2c,5k,l,supp_1b,c.py. Load 1
+    trials; per concept cell the trial-mean rate in 50 ms bins of maintenance (aligned to its
+    onset), z-scored with the cell's fixation mean and s.d. and smoothed (Gaussian, sigma one
+    bin); preferred trials are those whose first encoding image is the cell's preferred image,
+    nonpreferred all others (06_add_category.py:24-25). Per bin, a bootstrap over cells (1,000,
+    paired resampling of cells, seed 42) of the preferred minus nonpreferred mean, two-sided,
+    with BH-FDR over all bins of all panels as in the code (lines 196-286); per-panel FDR is
+    shown as a variant. What counts as persistent is open; readings are (a) significant bins
+    cover at least half of the first 2.5 s of maintenance; (b) every 500 ms segment of the first
+    2.5 s holds a significant bin. Reproduced when the mean preferred trace is above the
+    nonpreferred one and the rule holds under one reading.
+- id: ext1bc-persistence-by-load
+  statement: The population-level persistence of concept cells was robust at loads 1 and 2 and
+    attenuated at load 3.
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 2; Extended Data Fig. 1b,c (not in the text read)
+  quote: This effect was robust at loads 1 and 2, and attenuated at load 3 (Extended Data Fig.
+    1b–c).
+  depends_on:
+  - fig2c-population-persistence
+  criterion: The analysis of fig2c-population-persistence for load 2 and load 3 trials, with a
+    trial preferred when any encoded image is the preferred image (06_add_category.py:96-125).
+    The Extended Data legends are not in the text read, so the measure is open; it is the
+    fraction of maintenance bins (first 2.5 s) with a significant preferred-over-nonpreferred
+    difference. Reproduced when loads 1 and 2 meet a reading of fig2c-population-persistence
+    and load 3 has a smaller fraction of significant bins than either.
+- id: fig2d-cross-temporal-localized
+  statement: In load 1 trials, decoders trained at specific times of encoding or early
+    maintenance classified the image above chance at other times, but cross-time generalization
+    clusters were sparse and temporally localized, so the information was not stably held across
+    maintenance.
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 3; Figure 2d and legend; Methods, Population decoding
+    analysis, paragraph 2
+  quote: However, cross-time generalization clusters were sparse and temporally localized,
+    indicating that the stimulus-specific information was not stably maintained across the
+    maintenance epoch but re-emerged at specific moments (Fig. 2d).
+  statistics:
+  - test: binomial test per train-test bin pair, FDR, cluster-duration permutation null
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - concept-cells-count
+  criterion: From the Methods and 02_psth_decoding/main_2d,supp_1d,e.py. A pseudo-population of
+    all concept cells, trials aligned across participants on the 75 identity-matched trials
+    (data/new_trial_final.xlsx of the code; how they were chosen is not stated), load 1 trials,
+    labels the first encoding image (five classes). Spike counts in 250 ms windows stepped by
+    100 ms from first-encoding onset through encoding, maintenance and probe, z-scored with
+    fixation; a linear SVM (sklearn SVC, linear kernel, C = 1; the Methods name the Neural
+    Decoding Toolbox with LIBSVM) trained at each bin and tested at every bin with LOOCV. Per
+    pair a binomial test against 20% with BH-FDR over the grid. Open, the sidedness of the
+    binomial test (two-sided in Methods, Population decoding; one-sided in Methods, Statistical
+    analyses and in the code) and the cluster rule (a 95th-percentile cluster-duration null from
+    1,000 label shuffles in the Methods; contours longer than 13 points in the code, lines
+    175-178). Both sidedness readings and both cluster rules are run. Reproduced when, under one
+    reading, above-chance clusters exist for training bins in encoding or early maintenance, and
+    no training bin in maintenance generalizes above chance to more than half of the maintenance
+    test bins.
+- id: ext1de-cross-temporal-load23
+  statement: In load 2 and load 3 trials cross-time generalization was minimal.
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 3; Extended Data Fig. 1d,e (not in the text read)
+  quote: In load 2 and load 3 trials, cross-time generalization was minimal, suggesting that
+    higher memory load further fragments or destabilizes these representations (Extended Data
+    Fig. 1d–e).
+  depends_on:
+  - fig2d-cross-temporal-localized
+  criterion: The analysis of fig2d-cross-temporal-localized on load 2 and load 3 trials. The label
+    is the first encoding image (Methods) or the last (the code, main_2d,supp_1d,e.py:147-152);
+    both are run. "Minimal" is open; it is read as fewer off-diagonal train-test pairs in
+    surviving clusters than at load 1, under the same cluster rule. Reproduced when both loads
+    have fewer than load 1 under one label reading.
+- id: fig2e-maintenance-decoding-amy-mtl
+  statement: Concept cells in the amygdala and in the MTL carried significant stimulus
+    information during load 1 maintenance (35.56% and 32.13% decoding accuracy, chance 20%).
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 4; Figure 2e
+  quote: >-
+    concept cells in AMY and in the medial temporal lobe (MTL; AMY and HPC combined) carried
+    significant stimulus-relevant information during load 1 maintenance (AMY: 35.56% decoding
+    accuracy, P = 0.001; MTL: 32.13% decoding accuracy, P = 0.001; permutation test; Fig. 2e)
+  statistics:
+  - about: amygdala
+    test: permutation test
+    p: 0.001
+  - about: MTL
+    test: permutation test
+    p: 0.001
+  expected:
+  - quantity: amygdala decoding accuracy, load 1
+    value: 35.56
+    tolerance: 3.556
+    unit: percent
+  - quantity: MTL decoding accuracy, load 1
+    value: 32.13
+    tolerance: 3.213
+    unit: percent
+  depends_on:
+  - concept-cells-count
+  criterion: From the Results, Methods (Population decoding, paragraph 3) and
+    02_psth_decoding/main_2e,supp_1f.py. Within each participant, the participant's concept
+    cells in the region, all of its load 1 trials, labels the last (for load 1 the only) image;
+    features are spike counts in 1 s windows stepped by 250 ms over the first 2.5 s of
+    maintenance, all windows and cells concatenated (lines 24-27, 115-122); linear SVM, LOOCV;
+    accuracy is the mean over participants. p from 1,000 label shuffles, (count of null means at
+    or above the real + 1) / 1001, BH-FDR within the load over the region groups (lines
+    313-336). Open, the minimum number of concept cells per participant, at least three
+    (Methods) or more than three (the code, line 70); both are run. The Fig. 2e legend says
+    "pooled across participants" while the Results and code are within participant; a
+    pseudo-population variant is shown. Reproduced when, under one reading, both accuracies
+    are within tolerance and both p < 0.05.
+- id: ext1f-maintenance-decoding-load2
+  statement: Amygdala and MTL concept cells also carried significant information about the last
+    image during load 2 maintenance (23.56% and 28.89%).
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 4; Extended Data Fig. 1f (not in the text read)
+  quote: >-
+    The same held for AMY and MTL concept cells at load 2 (AMY: 23.56%, P = 0.031; MTL: 28.89%,
+    P = 0.002; permutation test; Extended Data Fig. 1f)
+  statistics:
+  - about: amygdala
+    test: permutation test
+    p: 0.031
+  - about: MTL
+    test: permutation test
+    p: 0.002
+  expected:
+  - quantity: amygdala decoding accuracy, load 2
+    value: 23.56
+    tolerance: 2.356
+    unit: percent
+  - quantity: MTL decoding accuracy, load 2
+    value: 28.89
+    tolerance: 2.889
+    unit: percent
+  depends_on:
+  - fig2e-maintenance-decoding-amy-mtl
+  criterion: As fig2e-maintenance-decoding-amy-mtl on load 2 trials, the label the second
+    encoding image (Results). Reproduced when, under one reading, both accuracies are within
+    tolerance and both p < 0.05.
+- id: fig2f-bin-width-decoding
+  statement: In load 1 trials, pseudo-population decoding of the image during maintenance was
+    above chance at every bin width and rose with bin width (250 ms 40.00%, 500 ms 56.67%, 750
+    ms 66.67%, 1000 ms 80.00%).
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 5; Figure 2f
+  quote: >-
+    In load 1 trials, accuracy was above chance at all bin widths (250 ms: 40.00%; 500 ms:
+    56.67%; 750 ms: 66.67%; 1000 ms: 80.00%; permutation tests against shuffled controls, Pmax =
+    0.001) and increased nearly twofold as bin width increased
+  statistics:
+  - test: permutation test against shuffled controls
+    p: 0.001
+    p_relation: "="
+    corrected: FDR within each family (Methods, Population decoding)
+  expected:
+  - quantity: accuracy, 250 ms bins
+    value: 40.0
+    tolerance: 4.0
+    unit: percent
+  - quantity: accuracy, 500 ms bins
+    value: 56.67
+    tolerance: 5.667
+    unit: percent
+  - quantity: accuracy, 750 ms bins
+    value: 66.67
+    tolerance: 6.667
+    unit: percent
+  - quantity: accuracy, 1000 ms bins
+    value: 80.0
+    tolerance: 8.0
+    unit: percent
+  depends_on:
+  - concept-cells-count
+  criterion: From the Methods (Population decoding, paragraph 3) and
+    02_psth_decoding/main_2f,supp_1g.py. A pseudo-population of all concept cells, trials aligned
+    on the identity-matched trial ids, load 1 trials (the reported accuracies are multiples of
+    1/30, consistent with 30 trials), label the image; features are spike counts in windows of
+    the given width slid by 25 ms over the first 2.5 s of maintenance, z-scored with fixation,
+    all windows and cells concatenated (lines 118-139); linear SVM, LOOCV. p from 1,000 label
+    shuffles, (k + 1) / 1001, BH-FDR over the 12 tests of 4 widths and 3 loads (lines 186-192).
+    Open, the trial alignment; readings are (a) the code's data/new_trial_final.xlsx (an input
+    from the code repository), (b) for each participant the first six load 1 trials of each
+    image in trial order, aligned by image and rank (30 trials). Reproduced when, under one
+    reading, every accuracy is within tolerance, each p < 0.05 and accuracy rises from 250 to
+    1000 ms.
+- id: fig2f-bin-width-pairwise
+  statement: Pairwise, accuracy was higher for 750 than 250 ms, for 1000 than 250 ms and for 1000
+    than 500 ms bins, while 500 against 250, 1000 against 750 and 750 against 500 ms did not
+    differ after correction.
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 5; Figure 2f
+  quote: Pairwise comparisons across bin widths confirmed higher accuracies for 750 versus 250 ms
+    (66.67% vs. 40.00%, P = 0.026), 1000 versus 250 ms (80.00% vs. 40.00%, P = 0.004), and 1000
+    versus 500 ms (80.00% vs. 56.67%, P = 0.032), whereas differences for 500 versus 250 ms
+    (56.67% vs. 40.00%, P > 0.05), 1000 versus 750 ms (80.00% vs. 66.67%, P > 0.05), and 750
+    versus 500 ms (66.67% vs. 56.67%, P > 0.05) were not significant after correction
+    (permutation tests).
+  statistics:
+  - about: 750 against 250 ms
+    test: permutation test
+    p: 0.026
+  - about: 1000 against 250 ms
+    test: permutation test
+    p: 0.004
+  - about: 1000 against 500 ms
+    test: permutation test
+    p: 0.032
+  - about: 500 against 250, 1000 against 750, 750 against 500 ms
+    test: permutation test
+    p: 0.05
+    p_relation: ">"
+    corrected: correction for multiple comparisons (FDR, Methods)
+  depends_on:
+  - fig2f-bin-width-decoding
+  criterion: No code in the repository computes these tests and the paper names only
+    permutation tests with FDR correction. Readings are (a) a paired permutation over trials,
+    swapping each trial's LOOCV correctness between the two widths (1,000 permutations), p
+    two-sided; (b) the observed accuracy difference against the distribution of differences
+    between the two widths' label-shuffled nulls (1,000); each with BH-FDR over the six pairs.
+    Reproduced when, under one reading, the three named pairs have corrected p < 0.05 and the
+    other three do not; partially reproduced when the three named pairs are significant and
+    another is too. The trial readings of fig2f-bin-width-decoding apply.
+- id: ext1g-bin-width-load2
+  statement: Bin width had little effect on decoding of the second image in load 2 trials, and
+    load 2 accuracy was lower than load 1 accuracy.
+  source: Results, Persistent activity during maintenance emerges with population pooling and
+    coarse temporal binning, paragraph 5; Extended Data Fig. 1g (not in the text read)
+  quote: Temporal bin width had little effect on decoding accuracy for the second image in load
+    2 trials. Decoding accuracy in load 2 was also lower than in load 1 (Extended Data Fig. 1g).
+  depends_on:
+  - fig2f-bin-width-decoding
+  criterion: The analysis of fig2f-bin-width-decoding on load 2 trials with the second image as
+    label (main_2f,supp_1g.py:98-109). "Little effect" is open; it is read as the range of the
+    four load 2 accuracies being less than half the load 1 range (40.0 points). Reproduced when
+    that holds and each load 2 accuracy is below the load 1 accuracy at the same width, under
+    one trial reading.
+- id: fig3abc-trajectory-complexity
+  statement: dPCA encoding trajectories of load 1 concept-cell activity made a single large
+    excursion in state space, while maintenance trajectories were more complex, with multiple
+    turns and changes in direction.
+  source: Results, Encoding and maintenance occupy distinct neural subspaces, paragraph 2;
+    Figure 3a-c
+  quote: Applying dPCA revealed simple encoding trajectories characterized by a single large
+    excursion in state space ... In contrast, maintenance trajectories were markedly more
+    complex, with multiple turns and changes in direction
+  depends_on:
+  - concept-cells-count
+  criterion: The dPCA fits of fig3d-encoding-vs-maintenance-separability. The paper gives no
+    measure of complexity; the figure is a visual reading. The measure is open; readings are
+    (a) tortuosity, the path length of each held-out stimulus trajectory in the first three
+    stimulus dPCs divided by the largest distance from its start point; (b) the number of
+    reversals of direction (sign changes of the derivative) summed over the first three
+    stimulus dPCs. Reproduced when, under one reading, the median over stimuli and resampling
+    splits is larger for maintenance than for encoding.
+- id: fig3d-encoding-vs-maintenance-separability
+  statement: Stimulus separation in dPCA space was higher during encoding than during
+    maintenance, and higher than maintenance activity projected into the encoding space, while
+    maintenance separation did not differ between its own space and the encoding space.
+  source: Results, Encoding and maintenance occupy distinct neural subspaces, paragraph 2;
+    Figure 3d
+  quote: Stimulus separation, quantified as the mean pairwise Euclidean distance between
+    condition-averaged trajectories in dPCA space, differed significantly across conditions
+    (Kruskal-Wallis, H = 457.217, P = 1.20 × 10−97). Separation in the encoding state space was
+    higher than during maintenance and higher than maintenance activity projected into the
+    encoding state space (Dunn's post hoc test, Penc vs. maint = 2.38 × 10−38, Penc vs.
+    projected maint = 1.25 × 10−29)
+  statistics:
+  - about: across conditions
+    test: Kruskal-Wallis
+    statistic: H = 457.217
+    p: 1.2e-97
+  - about: encoding against maintenance
+    test: Dunn's post hoc test
+    p: 2.38e-38
+    corrected: FDR
+  - about: encoding against maintenance projected into the encoding space
+    test: Dunn's post hoc test
+    p: 1.25e-29
+    corrected: FDR
+  - about: maintenance in its own space against maintenance in the encoding space
+    test: Dunn's post hoc test
+    p: 0.05
+    p_relation: ">"
+    corrected: FDR
+  expected:
+    quantity: Kruskal-Wallis H
+    value: 457.217
+    tolerance: 45.72
+  depends_on:
+  - concept-cells-count
+  criterion: From the Methods (State-space analysis) and 08_dpca_matrices.py with
+    03_dpca/main_3d,supp_2a,b,i.py. All 58 concept cells, 30 load 1 trials (6 per image), spikes
+    in 2 ms bins, z-scored with fixation and smoothed with a Gaussian of 60 bins (120 ms;
+    Methods "α = 60; bin width = 120 ms" and the code agree, the Results "σ = 60 ms" is a
+    variant); encoding 0 to 1 s, maintenance 0 to 2.5 s. 100 stratified splits, 3 train and 3
+    test trials per image; dPCA (Kobak) with labels stimulus and time, regularizer chosen by
+    its cross-validation; per split the mean over the 10 image pairs of the Euclidean distance
+    between time-averaged held-out trajectories on the first five stimulus dPCs (lines 26-68).
+    Kruskal-Wallis then Dunn with BH-FDR (scikit-posthocs). Open, the groups of the
+    Kruskal-Wallis; the code has five (the three test conditions and the two training sets),
+    the Methods compare "conditions"; H = 457 exceeds what three groups of 100 can give, so the
+    five-group reading is the main one and three groups a variant. Open, the trials; the code
+    draws the 30 from subject 14's load-matched trial ids (random_state 42) and selects
+    maintenance trials by trial_id, not new_trial_id (08_dpca_matrices.py:192); readings are
+    (a) the same 30 trials for both epochs, (b) the code as written. Reproduced when, under one
+    reading, H is within tolerance, encoding is above both maintenance conditions with Dunn
+    corrected p < 0.05, and the two maintenance conditions do not differ (Dunn corrected p at
+    or above 0.05, the paper's test, judged as written).
+- id: fig3h-early-vs-late-maintenance
+  statement: Stimulus separation was higher in the first half of maintenance than in the second
+    half, and higher than second-half activity projected into the first-half space.
+  source: Results, Encoding and maintenance occupy distinct neural subspaces, paragraph 3;
+    Figure 3e-h
+  quote: stimulus separability was significantly higher in the early half than in the late half,
+    and higher than late-maintenance activity projected into the early-maintenance state space
+    (Kruskal-Wallis, H = 417.58, P = 4.43 × 10−89, Dunn's post hoc, Pearly vs. late = 9.70 ×
+    10−12, Pearly vs. late→early = 2.54 × 10−9; Fig. 3g–h)
+  statistics:
+  - about: across conditions
+    test: Kruskal-Wallis
+    statistic: H = 417.58
+    p: 4.43e-89
+  - about: early against late
+    test: Dunn's post hoc test
+    p: 9.7e-12
+    corrected: FDR
+  - about: early against late projected into the early space
+    test: Dunn's post hoc test
+    p: 2.54e-9
+    corrected: FDR
+  expected:
+    quantity: Kruskal-Wallis H
+    value: 417.58
+    tolerance: 41.76
+  depends_on:
+  - fig3d-encoding-vs-maintenance-separability
+  criterion: As fig3d-encoding-vs-maintenance-separability, with maintenance split at bin 624 of
+    1249 (about 1.25 s, 03_dpca/main_3h,supp_2c,d,l.py:22) into early and late halves, each with
+    its own dPCA fit, and late test data also projected into the early space. The code's
+    Kruskal-Wallis again takes five groups (train sets included). The code protects time in the
+    early fit (protect ['t']) and not in the late one (lines 115 and 124); both settings for
+    both halves are run as readings. Reproduced when, under one reading, H is within tolerance
+    and early separation exceeds both late conditions with Dunn corrected p < 0.05.
+- id: fig4c-encoding-bursts-vs-poisson
+  statement: During encoding, population bursting did not exceed a rate-matched Poisson null for
+    most neuronal groups; it differed from the null only for all neurons and for the low mean ACG
+    amplitude group.
+  source: Results, Bursting dynamics reorganize spiking activity between encoding and
+    maintenance, paragraph 2; Figure 4c
+  quote: During encoding, population bursting did not exceed a rate-matched Poisson null
+    (Wilcoxon signed-rank; Fig. 4c) for most neuronal groups. Significant effects were detected
+    for all neurons (W = 9.0, P = 0.003) and for the group with low mean ACG amplitude (W = 0.0,
+    P = 0.012).
+  statistics:
+  - about: all neurons
+    test: Wilcoxon signed-rank
+    statistic: W = 9.0
+    p: 0.003
+    corrected: FDR
+  - about: low mean ACG amplitude
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.012
+    corrected: FDR
+  - about: high mean ACG, short and long tau decay, concept cells
+    test: Wilcoxon signed-rank
+    p: 0.05
+    p_relation: ">"
+    corrected: FDR
+  depends_on:
+  - concept-cells-count
+  - acg-fit-yield
+  criterion: Burst detection from the Methods (Burst detection) and 04_bursting/main_4c,d,6a,b.py.
+    Within each participant and group, load 1 trials, the first encoding image (1 s per trial);
+    the group's spikes pooled and trials concatenated, binned at 70 ms and smoothed with a
+    Gaussian of sigma 40 ms; peaks at least 2 bins (140 ms) apart. Rate-matched Poisson
+    surrogates per neuron and trial (each trial's count as the rate, spike times uniform), 100
+    per participant and group, their mean burst count compared with the real count by a paired
+    two-sided Wilcoxon signed-rank test over participants, BH-FDR over the groups. Open details,
+    with readings run. Peak rule; (a) the smoothed value exceeds the 90th percentile of the
+    epoch's bins (Methods), (b) prominence at or above that percentile (Results, "a
+    90th-percentile prominence threshold", and the code, lines 251-255). Peak spacing; 2 bins
+    (140 ms) in the Methods and the code (line 17) is the main reading; the Results say
+    candidates "within 70 ms of a previous event were suppressed", run as a variant with a
+    spacing of 1 bin. Surrogate threshold;
+    the real data's (code) or each surrogate's own. Groups; (a) median split within participant
+    on mean ACG amplitude and on tau decay, participants with fewer than 5 neurons in a group
+    left out (Methods), (b) the code's 6 lowest and 6 highest of participants with at least 10
+    neurons (lines 52, 95-120, 164-172); groups use neurons with R2 > 0.3 (acg-fit-yield);
+    "all neurons" is all 902 (code, line 183; participants with at least 10 neurons, line 185)
+    or the 294 fitted neurons; concept cells need at
+    least 3 per participant (code) or 5 (Methods). Reproduced when, under one reading, all
+    neurons and low ACG differ from the null with corrected p < 0.05 and the other four groups
+    do not; partially reproduced when the two named groups differ and one other does too.
+- id: fig4d-maintenance-bursts-vs-poisson
+  statement: During maintenance, bursting exceeded the Poisson null for all neurons pooled and
+    for the low and high mean ACG and short and long tau decay groups, but not for concept
+    cells.
+  source: Results, Bursting dynamics reorganize spiking activity between encoding and
+    maintenance, paragraph 3; Figure 4d
+  quote: During maintenance, bursting exceeded the Poisson null across most groups (Fig. 4d)
+  statistics:
+  - about: all neurons
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.001
+    corrected: FDR
+  - about: low mean ACG
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.004
+    corrected: FDR
+  - about: high mean ACG
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.004
+    corrected: FDR
+  - about: short tau decay
+    test: Wilcoxon signed-rank
+    statistic: W = 4.0
+    p: 0.011
+    corrected: FDR
+  - about: long tau decay
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.004
+    corrected: FDR
+  - about: concept cells
+    test: Wilcoxon signed-rank
+    statistic: W = 10.0
+    p: 0.05
+    p_relation: ">"
+    corrected: FDR
+  depends_on:
+  - fig4c-encoding-bursts-vs-poisson
+  criterion: The method and readings of fig4c-encoding-bursts-vs-poisson on the maintenance
+    epoch of load 1 trials, each trial's window 2.8 s from maintenance onset (the code's
+    TRIAL_WIN for maintenance, line 13; the maintenance lasts 2.5 to 2.8 s, so the window is
+    also run as each trial's own maintenance). Reproduced when, under one reading, the five
+    named groups have more real than surrogate bursts in most participants with corrected
+    p < 0.05, and concept cells do not differ (the paper's test, judged as written).
+- id: fig4-acg-group-differences
+  statement: The low mean ACG group burst more than the high mean ACG group in both encoding and
+    maintenance, whereas the short tau decay group exceeded the long tau decay group only during
+    encoding.
+  source: Results, Bursting dynamics reorganize spiking activity between encoding and
+    maintenance, paragraph 4
+  quote: Specifically, the low mean ACG group showed greater bursting than the high mean ACG group
+    in both encoding (W = 0.0, P = 0.002) and maintenance (W = 0.0, P = 0.003), whereas the short
+    τdecay group exceeded the long τdecay group only during encoding (W = 3.5, P = 0.015).
+  statistics:
+  - about: low against high mean ACG, encoding
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.002
+  - about: low against high mean ACG, maintenance
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.003
+  - about: short against long tau decay, encoding
+    test: Wilcoxon signed-rank
+    statistic: W = 3.5
+    p: 0.015
+  depends_on:
+  - fig4c-encoding-bursts-vs-poisson
+  criterion: Real burst counts of fig4c-encoding-bursts-vs-poisson and
+    fig4d-maintenance-bursts-vs-poisson, compared between groups within participant by a paired
+    two-sided Wilcoxon signed-rank test; the code compares all 28 pairs of the 8 groups with
+    BH-FDR over them (main_4c,d,6a,b.py:482-518), shown as given and also with FDR over the four
+    tests named here. Reproduced when, under one reading of fig4c-encoding-bursts-vs-poisson,
+    low ACG exceeds high ACG in both epochs and short exceeds long tau decay in encoding with
+    p < 0.05, and short and long tau decay do not differ in maintenance.
+- id: fig4f-all-cells-epochs
+  statement: At the population level, load 1 burst rates increased from encoding to each of the
+    three 1 s maintenance windows and to the probe.
+  source: Results, Bursting dynamics reorganize spiking activity between encoding and
+    maintenance, paragraph 5; Figure 4f
+  quote: >-
+    At the population level, burst rates increased from encoding to each maintenance window
+    (load 1; Wilcoxon signed-rank, Enc → M1: W = 1.0, P = 0.007; Enc → M2: W = 0.0, P = 0.005;
+    Enc → M3: W = 0.0, P = 0.005), as well as to probe (load 1; Wilcoxon signed-rank, Enc →
+    Probe: W = 4.0, P = 0.039)
+  statistics:
+  - about: encoding against M1
+    test: Wilcoxon signed-rank
+    statistic: W = 1.0
+    p: 0.007
+    corrected: FDR
+  - about: encoding against M2
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.005
+    corrected: FDR
+  - about: encoding against M3
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.005
+    corrected: FDR
+  - about: encoding against probe
+    test: Wilcoxon signed-rank
+    statistic: W = 4.0
+    p: 0.039
+    corrected: FDR
+  depends_on:
+  - fig4c-encoding-bursts-vs-poisson
+  criterion: Burst detection of fig4c-encoding-bursts-vs-poisson (its peak-rule readings),
+    within participant, on encoding (1 s), maintenance and probe (1 s, the code's window,
+    04_bursting/main_4f-k,6c,d.py:19-25). Open, how M1 to M3 are formed; readings are (a) the
+    Methods, three consecutive 1 s windows from each trial's maintenance onset, M3 ending at the
+    end of maintenance; (b) the code, peaks of the concatenated 3 s maintenance trains assigned
+    to thirds of the whole train (lines 216-219). Counts are per window; with 1 s windows count
+    and rate agree, and for a shorter M3 the rate per second is also reported. Open, the
+    population; all 902 neurons (as in fig4c) or the 294 fitted neurons (the code here, line 47).
+    Paired two-sided Wilcoxon signed-rank tests over participants with BH-FDR over the 10 pairs
+    of periods (line 289). Reproduced when, under one reading, each of the four comparisons
+    shows more bursts after encoding with corrected p < 0.05. The Results also say the rate
+    rose "across successive maintenance windows" but report no test of M1 against M2 or M3;
+    those pairs are reported without deciding.
+- id: fig4hj-group-epochs
+  statement: The increase of bursting from encoding into maintenance was driven by neurons with
+    high mean ACG amplitude (also increasing to the probe) and neurons with a long tau decay,
+    while the low ACG, short tau decay and concept-cell groups showed no change across epochs.
+  source: Results, Bursting dynamics reorganize spiking activity between encoding and
+    maintenance, paragraph 5; Figure 4g-k
+  quote: >-
+    Neurons with high mean ACG amplitude increased from encoding to maintenance and to the probe
+    period (Fig. 4h; Enc → M1: W = 1.0, P = 0.020; Enc → M2: W = 3.5, P = 0.020; Enc → Probe: W
+    = 1.0, P = 0.020), and and neurons with a long τdecay also increased from encoding to
+    maintenance (Fig. 4j; Enc → M1: W = 2.5, P = 0.033; Enc → M2: W = 2.0, P = 0.033; Enc → M3:
+    W = 3.0, P = 0.033). Other groups showed no change across epochs (Fig. 4g,i,k; Wilcoxon
+    signed-rank, P > 0.05)
+  statistics:
+  - about: high mean ACG, encoding against M1, M2 and probe
+    test: Wilcoxon signed-rank
+    p: 0.02
+    corrected: FDR
+  - about: long tau decay, encoding against M1, M2 and M3
+    test: Wilcoxon signed-rank
+    p: 0.033
+    corrected: FDR
+  - about: low mean ACG, short tau decay and concept cells, all epoch pairs
+    test: Wilcoxon signed-rank
+    p: 0.05
+    p_relation: ">"
+    corrected: FDR
+  depends_on:
+  - fig4f-all-cells-epochs
+  criterion: The method and readings of fig4f-all-cells-epochs for each group, with the group
+    readings of fig4c-encoding-bursts-vs-poisson. Reproduced when, under one reading, high ACG
+    exceeds encoding at M1, M2 and probe and long tau decay at M1, M2 and M3 with corrected
+    p < 0.05, and the low ACG, short tau decay and concept-cell groups have no epoch pair with
+    corrected p < 0.05 (the paper's test for the absence). Partially reproduced when the
+    increases hold for one of the two groups.
+- id: ext2-bursts-loads23
+  statement: The patterns of burst rates across epochs held for loads 2 and 3.
+  source: Results, Bursting dynamics reorganize spiking activity between encoding and
+    maintenance, paragraph 5; Extended Data Fig. 2b-m (not in the text read)
+  quote: Similar patterns held for load 2 and load 3 (Extended Data Fig. 2b–m)
+  depends_on:
+  - fig4hj-group-epochs
+  criterion: The analyses of fig4f-all-cells-epochs and fig4hj-group-epochs on load 2 and load 3
+    trials, encoding taken from the last encoding image (the code, main_4f-k,6c,d.py:49). The
+    Extended Data legends are not in the text read, so "similar" is read as all cells and the
+    high ACG and long tau decay groups showing more bursts in each maintenance window than in
+    encoding, in the median over participants, at each load. Reproduced when that holds at both
+    loads under one reading; the tests are reported.
+- id: acg-fit-yield
+  statement: Fitting CellExplorer's triple-exponential model to each neuron's autocorrelogram and
+    keeping well-fit units (R2 > 0.3) left 294 neurons for cell-type analysis.
+  source: Results, Feature-based classification of putative cell types, paragraph 2; Methods,
+    Autocorrelogram-based characterization of single-neuron temporal dynamics
+  quote: For each neuron, we fit Cell Explorer's triple-exponential model [72] to its spike train
+    and retained well-fit units (R2 > 0.3), yielding 294 neurons for analysis.
+  expected:
+    quantity: neurons with ACG fit R2 above 0.3
+    value: 294
+    tolerance: 29.4
+  criterion: From the Methods and data/cell_analysis/calc_ACG_metrics.m and fit_ACG.m. Spikes of
+    all task epochs of each neuron aggregated; the narrow ACG within ±50 ms in 0.5 ms bins (201
+    bins), self-coincidences removed, divided by spike count and bin width; the raw narrow ACG
+    fitted at positive lags with the CellExplorer triple-exponential, start, lower and upper
+    bounds as in fit_ACG.m:19-21, by bounded nonlinear least squares; R2 the fit's
+    goodness-of-fit. Open, which spikes are "all task epochs"; readings are (a) every spike of
+    the unit in the session, (b) only spikes within the trial epochs (fixation to probe end).
+    The threshold is R2 > 0.3 (Results) or R2 >= 0.3 (07_spectral_clustering.py:16); both are
+    reported. Reproduced when the count under one reading is within tolerance.
+- id: fig5c-cell-type-clusters
+  statement: Spectral clustering on firing rate, mean normalised ACG and ACG rise time constant
+    split the 294 neurons into two clusters, 92 putative pyramidal neurons and 202 putative
+    interneurons.
+  source: Results, Feature-based classification of putative cell types, paragraph 3; Figure 5c
+  quote: We labeled this cluster as putative interneurons (IN; n = 202). The remaining neurons,
+    with lower firing rates, lower normalized mean ACG amplitude, and smaller τrise, were labeled
+    as putative pyramidal neurons (PY; n = 92).
+  expected:
+  - quantity: putative pyramidal neurons
+    value: 92
+    tolerance: 9.2
+  - quantity: putative interneurons
+    value: 202
+    tolerance: 20.2
+  depends_on:
+  - acg-fit-yield
+  criterion: From the Methods (Putative cell-type classification) and 07_spectral_clustering.py.
+    Features firing rate (spike count over the time from first to last spike,
+    02_trial_info.py:37-40), mean of the max-normalised wide ACG (±500 ms, 1 ms bins; Mean_ACG.m
+    and normalize_acg_to_unit.m) and tau_rise of the fit; standardised; SpectralClustering with
+    two clusters, nearest-neighbour affinity (10 neighbours, the default), random_state 42. The
+    cluster with higher firing rate, mean ACG and tau_rise is labelled IN (Results; the code
+    instead fixes cluster label 1 as PY, lines 37-45, which depends on the library version).
+    Reproduced when the two counts are within tolerance.
+- id: fig5dfh-cluster-features
+  statement: Putative interneurons had higher firing rates, greater normalised mean ACG amplitude
+    and larger tau_rise than putative pyramidal neurons.
+  source: Results, Feature-based classification of putative cell types, paragraph 3; Figure 5d-f
+  quote: One cluster comprised neurons with higher firing rates (Mann–Whitney U = 17294, P = 1.42
+    × 10−32; Fig. 5d), greater normalized mean ACG amplitude (U = 18522, P = 2.16 × 10−41; Fig. 5e),
+    and larger τrise (U = 13465, P = 2.58 × 10−9; Fig. 5f).
+  statistics:
+  - about: firing rate
+    test: Mann-Whitney U (Wilcoxon rank-sum)
+    statistic: U = 17294
+    p: 1.42e-32
+  - about: normalised mean ACG amplitude
+    test: Mann-Whitney U (Wilcoxon rank-sum)
+    statistic: U = 18522
+    p: 2.16e-41
+  - about: tau_rise
+    test: Mann-Whitney U (Wilcoxon rank-sum)
+    statistic: U = 13465
+    p: 2.58e-9
+  depends_on:
+  - fig5c-cell-type-clusters
+  criterion: Two-sided Mann-Whitney U tests of IN against PY on each feature, with Benjamini-Yekutieli
+    FDR over the five metrics of Fig. 5d-h as in 05_cell_analysis/main_5d-h.py:49-63. Reproduced
+    when IN is higher on all three with corrected p < 0.05. The features are those the clusters
+    were formed on, so the claim follows from fig5c-cell-type-clusters by construction; the
+    U values are reported.
+- id: fig5gh-burst-index-cv2
+  statement: Putative pyramidal neurons had a higher burst index (0.985 against 0.622) and
+    greater spike-train irregularity (CV2 1.673 against 1.319) than putative interneurons.
+  source: Results, Feature-based classification of putative cell types, paragraph 4; Figure 5g,h
+  quote: Putative pyramidal neurons showed higher burst index (PY = 0.985 vs. IN = 0.622; U =
+    6835, P = 6.35 × 10−6; Fig. 5g). They also exhibited greater spike-train irregularity (CV2;
+    PY = 1.673 vs. IN = 1.319; U = 6056, P = 4.84 × 10−4; Fig. 5h)
+  statistics:
+  - about: burst index
+    test: Mann-Whitney U (Wilcoxon rank-sum)
+    statistic: U = 6835
+    p: 6.35e-6
+  - about: CV2
+    test: Mann-Whitney U (Wilcoxon rank-sum)
+    statistic: U = 6056
+    p: 4.84e-4
+  expected:
+  - quantity: burst index, PY
+    value: 0.985
+    tolerance: 0.0985
+  - quantity: burst index, IN
+    value: 0.622
+    tolerance: 0.0622
+  - quantity: CV2, PY
+    value: 1.673
+    tolerance: 0.1673
+  - quantity: CV2, IN
+    value: 1.319
+    tolerance: 0.1319
+  depends_on:
+  - fig5c-cell-type-clusters
+  criterion: Burst index as defined by Royer et al. (ref. 97), computed as in
+    calc_ACG_metrics.m:45, the mean wide ACG at lags +2 to +4 ms over its mean at +199 to +299
+    ms. CV2 is Holt's local coefficient of variation (Methods cite ref. 98) of the session's
+    interspike intervals; the column the code feeds to Fig. 5h is std/mean of the ISIs
+    (02_trial_info.py:42-46), a plain CV; both are run as readings. Whether the printed values
+    are group means or medians is open; both are reported. Two-sided Mann-Whitney U with
+    Benjamini-Yekutieli FDR over the five metrics. Reproduced when PY is higher on both with
+    corrected p < 0.05 and, under one reading of each open detail, the four values are within
+    tolerance.
+- id: supp4-rodent-validation
+  statement: Applied to a labelled rodent dataset of 44 pyramidal neurons and 299 PV and SST
+    interneurons, the spectral-clustering classifier assigned 333 of 343 neurons correctly (97%).
+  source: Results, Feature-based classification of putative cell types, paragraph 4; Methods,
+    Putative cell-type classification, paragraph 4; Extended Data Fig. 4a (not in the text read)
+  quote: Using τrise, normalized mean ACG amplitude, and firing rate as inputs to spectral
+    clustering, 333 of 343 neurons were correctly assigned, with only one pyramidal neuron and
+    nine interneurons (PV or SST) misclassified (Extended Data Fig. 4a).
+  data: elsewhere
+  where: CellExplorer ground-truth reference dataset of Petersen et al. 2021 (Neuron 109, 3594;
+    ref. 72), no archive identifier given in the paper; its features are shipped as
+    data/cell_analysis/validation_data.xlsx in github.com/dariakussovska/heterogeneitywm at
+    commit 5144fe8
+  expected:
+    quantity: neurons correctly assigned
+    value: 333
+    tolerance: 0
+  criterion: Not testable on DANDI:000469. As in 05_cell_analysis/supp_4a-e.py, the three
+    features standardised and clustered as in fig5c-cell-type-clusters; each cluster labelled by
+    its majority ground-truth type (pyramidal or interneuron); accuracy is matched over total.
+    Reproduced when 333 of 343 are matched, with 1 pyramidal and 9 interneurons misassigned;
+    the tolerance is zero as a count from a deterministic clustering of fixed features.
+- id: fig5kl-concept-cell-types
+  statement: Of the classified concept cells, 11 were putative pyramidal and 14 putative
+    interneurons; pyramidal concept cells showed pronounced bursting, interneuron concept cells
+    smoother regular spiking.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 1; Figure 5i-l and legend
+  quote: Pyramidal concept-cell populations showed pronounced bursting (Fig. 5i,k), whereas
+    interneuron populations exhibited smoother regular-spiking activity (Fig. 5j,l).
+  expected:
+  - quantity: pyramidal concept cells
+    value: 11
+    tolerance: 1.1
+  - quantity: interneuron concept cells
+    value: 14
+    tolerance: 1.4
+  depends_on:
+  - concept-cells-count
+  - fig5c-cell-type-clusters
+  criterion: Counts are the concept cells among the PY and IN neurons (Fig. 5k,l legends).
+    "Pronounced bursting" and "smoother" are read from rasters in the paper; they are judged by
+    the Royer burst index and CV2 of fig5gh-burst-index-cv2 in these concept cells, PY median
+    above IN median for both. Reproduced when the counts are within tolerance and the medians
+    are so ordered; no test is reported for the second part.
+- id: fig6ab-celltype-bursts-vs-null
+  statement: Pyramidal populations showed elevated bursting over a null in both encoding and
+    maintenance, whereas interneurons showed elevated bursting during maintenance but not during
+    encoding.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 2; Figure 6a,b and legend
+  quote: >-
+    Across participants, pyramidal populations showed elevated bursting during both encoding and
+    maintenance relative to chance (label-shuffled null; Encoding: W = 1.0, P = 0.012;
+    Maintenance: W = 0.0, P = 0.004; Fig. 6a–b). By contrast, interneurons exhibited elevated
+    population bursting during maintenance (W = 5.0, P = 0.001) but not during encoding (W =
+    41.0, P > 0.05)
+  statistics:
+  - about: PY, encoding
+    test: Wilcoxon signed-rank
+    statistic: W = 1.0
+    p: 0.012
+  - about: PY, maintenance
+    test: Wilcoxon signed-rank
+    statistic: W = 0.0
+    p: 0.004
+  - about: IN, maintenance
+    test: Wilcoxon signed-rank
+    statistic: W = 5.0
+    p: 0.001
+  - about: IN, encoding
+    test: Wilcoxon signed-rank
+    statistic: W = 41.0
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - fig4c-encoding-bursts-vs-poisson
+  - fig5c-cell-type-clusters
+  criterion: The burst method and peak-rule readings of fig4c-encoding-bursts-vs-poisson on the
+    PY and IN groups, all of a participant's PY (or IN) neurons, participants with fewer than 3
+    in the group left out (Methods, Putative cell-type classification; code lines 178-181).
+    The null is open; the Results say "label-shuffled null", the Fig. 6a,b legend says
+    rate-matched Poisson surrogates and the code has only the Poisson null; readings are (a)
+    the Poisson surrogates, (b) a null from shuffling the cell-type labels within participant
+    (100 shuffles). BH-FDR over the groups tested together, as in fig4c. Reproduced when, under
+    one reading, PY exceeds the null in both epochs and IN in maintenance with corrected
+    p < 0.05, and IN in encoding does not (the paper's test, judged as written).
+- id: fig6cd-celltype-epochs
+  statement: Pyramidal burst rates stayed stable across task epochs at every load, whereas
+    interneuron burst rates changed from encoding to each maintenance window and to the probe
+    in load 1 trials.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 3; Figure 6c,d
+  quote: >-
+    Pyramidal burst rates remained stable across task epochs and load (Wilcoxon signed-rank, all
+    P > 0.05; Fig. 6c, Extended Data Fig. 5a,c), whereas interneuron burst rates changed across
+    task epochs (load 1; Enc → M1: W = 17.0, P = 0.011; Enc → M2: W = 26.0, P = 0.024; Enc → M3:
+    W = 7.5, P = 0.001; Enc → Probe: W = 18.5, P = 0.003; Fig. 6d)
+  statistics:
+  - about: PY, all epoch pairs and loads
+    test: Wilcoxon signed-rank
+    p: 0.05
+    p_relation: ">"
+  - about: IN, encoding against M1
+    test: Wilcoxon signed-rank
+    statistic: W = 17.0
+    p: 0.011
+  - about: IN, encoding against M2
+    test: Wilcoxon signed-rank
+    statistic: W = 26.0
+    p: 0.024
+  - about: IN, encoding against M3
+    test: Wilcoxon signed-rank
+    statistic: W = 7.5
+    p: 0.001
+  - about: IN, encoding against probe
+    test: Wilcoxon signed-rank
+    statistic: W = 18.5
+    p: 0.003
+  depends_on:
+  - fig4f-all-cells-epochs
+  - fig5c-cell-type-clusters
+  criterion: The epoch method and readings of fig4f-all-cells-epochs on the PY and IN groups
+    (participants with at least 3 neurons in the group), paired two-sided Wilcoxon signed-rank,
+    BH-FDR within group and load over the 10 period pairs. Reproduced when, under one reading,
+    IN differs from encoding at M1, M2, M3 and probe with corrected p < 0.05 and PY has no pair
+    with corrected p < 0.05 at load 1, 2 or 3 (the paper's test for the absence; "all P > 0.05"
+    covers Fig. 6c and Extended Data Fig. 5a,c). Partially reproduced when this holds at load 1
+    only. The direction of the IN change is reported; the paper does not state it.
+- id: ext5bd-in-load-dependence
+  statement: Interneuron burst-rate differences across maintenance epochs increased with load.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 3; Extended Data Fig. 5b,d (not in the text read)
+  quote: Interneuron burst-rate differences across maintenance epochs increased with load
+    (Extended Data Fig. 5b,d)
+  depends_on:
+  - fig6cd-celltype-epochs
+  criterion: The analysis of fig6cd-celltype-epochs on IN at loads 1, 2 and 3. The Extended Data
+    legends are not in the text read, so the measure is open; it is read as the median over
+    participants of the absolute difference in bursts between encoding and each of M1 to M3,
+    averaged over the three windows. Reproduced when it rises from load 1 to load 3, under one
+    reading of the epochs.
+- id: fig6e-load-modulation-in
+  statement: A significant portion of interneurons was modulated by memory load during
+    maintenance (14.36%), including interneuron concept cells (21.42%), while pyramidal neurons
+    showed minimal load modulation (5.43%; concept pyramidal 0.00%).
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 4; Figure 6e; Extended Data Fig. 5e (not in the text read)
+  quote: >-
+    A significant portion of interneurons was modulated by memory load during maintenance
+    (14.36%; permutation test, P = 0.002; Fig. 6e), including interneuron concept cells (21.42%;
+    P = 0.032; Extended Data Fig. 5e).
+  statistics:
+  - about: all IN
+    test: permutation test
+    p: 0.002
+    n: 202 interneurons
+  - about: IN concept cells
+    test: permutation test
+    p: 0.032
+    n: 14 interneuron concept cells
+  - about: all PY and PY concept cells
+    test: permutation test
+    p: 0.05
+    p_relation: ">"
+  expected:
+  - quantity: load-modulated IN
+    value: 14.36
+    tolerance: 1.436
+    unit: percent
+  - quantity: load-modulated IN concept cells
+    value: 21.42
+    tolerance: 2.142
+    unit: percent
+  - quantity: load-modulated PY
+    value: 5.43
+    tolerance: 0.543
+    unit: percent
+  - quantity: load-modulated PY concept cells
+    value: 0.0
+    tolerance: 0
+    unit: percent
+  depends_on:
+  - fig1e-load-modulated-neurons
+  - fig5c-cell-type-clusters
+  criterion: The GLM, permutation and trial readings of fig1e-load-modulated-neurons, with groups
+    PY, IN, PY concept cells and IN concept cells (06_cell_specific/main_6e,f,supp_e,f.py, the
+    concept subsets by its commented option, lines 24-32). The tolerance of PY concept cells is
+    zero, as 10% of 0. Reproduced when, under one reading, the IN and IN concept percentages are
+    within tolerance with p < 0.05, and the PY groups have p at or above 0.05 (the paper's test
+    for the absence); the PY percentages are reported.
+- id: fig6f-rt-modulation-in-concept
+  statement: Interneuron concept cells were modulated by reaction time during maintenance
+    (35.71%), but not all interneurons, and pyramidal neurons showed no significant RT
+    modulation in either the full population or the concept subset.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 4; Figure 6f; Extended Data Fig. 5f (not in the text read)
+  quote: Interneuron concept cells were also modulated by reaction time (RT; 35.71%; P = 0.002),
+    although this effect was not robust across all interneurons (P > 0.05; Fig. 6f; Extended Data
+    Fig. 5f). Pyramidal neurons showed no significant RT modulation in either the full population
+    or the concept-cell subset (permutation tests, all P > 0.05; Fig. 6f; Extended Data Fig. 5f).
+  statistics:
+  - about: IN concept cells
+    test: permutation test
+    p: 0.002
+    n: 14 interneuron concept cells
+  - about: all IN, all PY, PY concept cells
+    test: permutation test
+    p: 0.05
+    p_relation: ">"
+  expected:
+    quantity: RT-modulated IN concept cells
+    value: 35.71
+    tolerance: 3.571
+    unit: percent
+  depends_on:
+  - fig1f-rt-modulation-not-significant
+  - fig5c-cell-type-clusters
+  criterion: The GLM of fig1e-load-modulated-neurons with RT as predictor, each trial's own RT
+    (fig1f-rt-modulation-not-significant), the groups of fig6e-load-modulation-in. Reproduced
+    when the IN concept percentage is within tolerance with p < 0.05, and all IN, all PY and PY
+    concept cells have p at or above 0.05 (the paper's test for the absence), under one trial
+    reading.
+- id: fig6gh-in-concept-cv2
+  statement: Interneuron concept cells had higher CV2 during maintenance than encoding on
+    preferred load 1 trials but not on nonpreferred trials, while pyramidal concept cells showed
+    stable CV2.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 5; Figure 6g,h
+  quote: By contrast, interneuron concept cells exhibited higher CV2 during maintenance than
+    during encoding on preferred trials (W = 13.0, P = 0.032), but not on nonpreferred trials (W =
+    50.0, P > 0.05; Fig. 6g–h)
+  statistics:
+  - about: IN concept cells, preferred trials
+    test: Wilcoxon signed-rank
+    statistic: W = 13.0
+    p: 0.032
+  - about: IN concept cells, nonpreferred trials
+    test: Wilcoxon signed-rank
+    statistic: W = 50.0
+    p: 0.05
+    p_relation: ">"
+  - about: PY concept cells, preferred and nonpreferred, encoding and maintenance
+    test: Wilcoxon signed-rank
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - fig5kl-concept-cell-types
+  criterion: From the Results and 06_cell_specific/main_6g,h.py. Per PY or IN concept cell, CV2
+    (Holt's local measure, lines 117-122) of the interspike intervals of spikes concatenated
+    over preferred (or nonpreferred) trials, in encoding (first image, 1 s) and maintenance
+    (2.5 s); encoding against maintenance by a two-sided Wilcoxon signed-rank test over cells.
+    Open, the trials; the Results say load 1 trials, the code uses all loads (no load filter);
+    both are run. Open, which PY comparisons the Results mean by "stable CV2 across preferred
+    and nonpreferred trials during both encoding and maintenance"; readings are (a) encoding
+    against maintenance within preferred and within nonpreferred trials (the code, lines
+    138-139, run once per trial type), (b) preferred against nonpreferred within encoding and
+    within maintenance (paired over cells). Reproduced when, under one reading, IN preferred
+    has maintenance above encoding with p < 0.05, IN nonpreferred does not, and PY has no
+    comparison with p < 0.05 (the paper's tests, judged as written).
+- id: ext5gh-py-decay-preferred
+  statement: Pyramidal concept cells showed increased decay time constants on preferred trials
+    during encoding and maintenance, an effect absent in interneurons.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 5; Extended Data Fig. 5g,h (not in the text read)
+  quote: Pyramidal concept cells showed increased decay time constants during encoding and
+    maintenance on preferred trials (Wilcoxon signed-rank, Pmax = 0.029), an effect absent in
+    interneurons (all P > 0.05; Extended Data Fig. 5g–h).
+  statistics:
+  - about: PY concept cells, preferred against nonpreferred, encoding and maintenance
+    test: Wilcoxon signed-rank
+    p: 0.029
+  - about: IN concept cells
+    test: Wilcoxon signed-rank
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - fig5kl-concept-cell-types
+  criterion: No code computes the decay constants per trial type; 06_cell_specific/supp_5g,h.py
+    reads them from the shipped decay_constant_change.xlsx and tests them with a paired t-test,
+    while the paper names a Wilcoxon signed-rank test (the paper's test is used, the t-test is
+    a variant). The paper does not define the "decay time constants" of this test; the reading
+    taken is tau_decay of the ACG fit of acg-fit-yield (the only decay constant the Methods
+    define) on the spikes of preferred (or nonpreferred) trials of each epoch, and the outcome
+    rests on it. Open, the trials (load 1 or all loads), both run. Reproduced when, under one reading, PY tau_decay is larger on preferred
+    than nonpreferred trials in both epochs with p < 0.05 and IN has no comparison with
+    p < 0.05.
+- id: fig6i-py-bin-width-decoding
+  statement: Pyramidal concept cells did not decode the image above chance during load 1
+    maintenance with 250 and 500 ms bins (26.67%, 23.33%) but did with 750 and 1000 ms bins
+    (40.00%, 43.33%).
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 6; Figure 6i
+  quote: >-
+    For pyramidal neurons, decoding accuracy did not exceed chance with short temporal windows
+    (250 ms: 26.67%, permutation test, P > 0.05; 500 ms: 23.33%, P > 0.05) ... Accuracy improved
+    with larger windows (750 ms: 40.00%, P = 0.030; 1000 ms: 43.33%, P = 0.030)
+  statistics:
+  - about: 250 and 500 ms
+    test: permutation test
+    p: 0.05
+    p_relation: ">"
+  - about: 750 ms
+    test: permutation test
+    p: 0.03
+  - about: 1000 ms
+    test: permutation test
+    p: 0.03
+  expected:
+  - quantity: PY accuracy, 250 ms
+    value: 26.67
+    tolerance: 2.667
+    unit: percent
+  - quantity: PY accuracy, 500 ms
+    value: 23.33
+    tolerance: 2.333
+    unit: percent
+  - quantity: PY accuracy, 750 ms
+    value: 40.0
+    tolerance: 4.0
+    unit: percent
+  - quantity: PY accuracy, 1000 ms
+    value: 43.33
+    tolerance: 4.333
+    unit: percent
+  depends_on:
+  - fig5kl-concept-cell-types
+  - fig2f-bin-width-decoding
+  criterion: The method and trial readings of fig2f-bin-width-decoding with the PY concept cells
+    as the pseudo-population (06_cell_specific/main_6i,j,supp_5i,j.py), BH-FDR over the 12 tests
+    of 4 widths and 3 loads (line 193). Reproduced when, under one reading, the four accuracies
+    are within tolerance, 750 and 1000 ms have corrected p < 0.05 and 250 and 500 ms do not.
+- id: fig6j-in-bin-width-decoding
+  statement: Interneuron concept cells decoded the image above chance during load 1 maintenance
+    at all bin widths (53.33%, 50.00%, 46.67%, 53.33%), less sensitive to bin width than
+    pyramidal cells.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 7; Figure 6j
+  quote: >-
+    In contrast, interneurons (n = 14) decoded above chance across all window sizes (250 ms:
+    53.33%, P = 0.002; 500 ms: 50.00%, P = 0.002; 750 ms: 46.67%, P = 0.002; 1000 ms: 53.33%, P
+    = 0.002; Fig. 6j)
+  statistics:
+  - test: permutation test
+    p: 0.002
+    n: 14 interneuron concept cells
+  expected:
+  - quantity: IN accuracy, 250 ms
+    value: 53.33
+    tolerance: 5.333
+    unit: percent
+  - quantity: IN accuracy, 500 ms
+    value: 50.0
+    tolerance: 5.0
+    unit: percent
+  - quantity: IN accuracy, 750 ms
+    value: 46.67
+    tolerance: 4.667
+    unit: percent
+  - quantity: IN accuracy, 1000 ms
+    value: 53.33
+    tolerance: 5.333
+    unit: percent
+  depends_on:
+  - fig5kl-concept-cell-types
+  - fig2f-bin-width-decoding
+  criterion: As fig6i-py-bin-width-decoding with the IN concept cells. Reproduced when, under one
+    reading, the four accuracies are within tolerance and each has corrected p < 0.05.
+- id: fig6kl-cross-temporal-by-type
+  statement: Cross-temporal decoding showed no above-chance generalization for the 11 pyramidal
+    concept cells, while interneuron concept cells decoded above chance in cross-temporal maps.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraphs 6 and 7; Figure 6k,l
+  quote: Cross-temporal decoding showed no above-chance generalization across time even for
+    populations of 11 pyramidal concept cells (Fig. 6k)
+  depends_on:
+  - fig5kl-concept-cell-types
+  - fig2d-cross-temporal-localized
+  criterion: The method and readings of fig2d-cross-temporal-localized (06_cell_specific/main_6k,l.py)
+    with PY and with IN concept cells. Reproduced when, under one reading, no off-diagonal
+    train-test pair survives for PY (the paper's test for the absence, the binomial test with
+    FDR and the cluster rule) and at least one cluster survives for IN.
+- id: ext5ij-load2-decoding-by-type
+  statement: Interneuron concept cells also decoded the second image in load 2 trials above
+    chance at all bin widths, while pyramidal concept cells did not.
+  source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
+    and pyramidal neurons, paragraph 7; Extended Data Fig. 5i,j (not in the text read)
+  quote: Interneurons also decoded the second stimulus in load 2 trials above chance across all
+    windows (all P < 0.05), an effect not observed in pyramidal concept cells (all P > 0.05;
+    Extended Data Fig. 5i–j).
+  statistics:
+  - about: IN concept cells, all widths
+    test: permutation test
+    p: 0.05
+    p_relation: "<"
+  - about: PY concept cells, all widths
+    test: permutation test
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - fig6j-in-bin-width-decoding
+  criterion: As fig6i-py-bin-width-decoding and fig6j-in-bin-width-decoding on load 2 trials with
+    the second image as label. Reproduced when, under one reading, IN has corrected p < 0.05 at
+    all four widths and PY at none.
+checks:
+- date: '2026-11-10'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4c-encoding-bursts-vs-poisson, criterion. Added the peak spacing, 2 bins (140 ms) from the
+    Methods and the code (line 17) as the main reading and the Results' "within 70 ms of a
+    previous event" as a variant; the criterion used 140 ms without naming the conflict.
+  - fig4c-encoding-bursts-vs-poisson, criterion. Added that the code's "all neurons" group keeps
+    participants with at least 10 neurons (main_4c,d,6a,b.py:183-185).
+  - fig4f-all-cells-epochs, criterion. The Results also say the rate rose across successive
+    maintenance windows, with no test reported; those pairs are now reported without deciding.
+  - fig6cd-celltype-epochs, statement and criterion. The paper says pyramidal burst rates were
+    stable "across task epochs and load" (all P > 0.05, Fig. 6c and Extended Data Fig. 5a,c);
+    the claim covered load 1 only. Loads 2 and 3 now enter the absence test, with partial
+    reproduction when only load 1 holds.
+  - fig6gh-in-concept-cv2, criterion. Which pyramidal comparisons "stable CV2 across preferred
+    and nonpreferred trials during both encoding and maintenance" means was left unstated; both
+    readings (epoch within trial type, as the code runs, and trial type within epoch) are named.
+  - ext5gh-py-decay-preferred, criterion. The paper does not define the decay constants of this
+    test; the criterion took ACG tau_decay as given. It is now named as the reading taken, with
+    the outcome resting on it.
+  - Not settled. The checker reports fig3h-early-vs-late-maintenance p 9.7e-12 as not found; the
+    paper prints "9.70 × 10−12" (Results, Encoding and maintenance occupy distinct neural
+    subspaces, paragraph 3), which the checker does not match for the trailing zero. The value is
+    right.
+  - Not settled. ext2-bursts-loads23 cites Extended Data Fig. 2b-m as the paper does, though the
+    dPCA paragraph also assigns Extended Data Fig. 2 to dPCA details; the Extended Data are not in
+    the text read, so the panel cannot be confirmed.
+  - Not settled. The Extended Data figures and legends are not in the text read; the claims on
+    them (ext1bc, ext1de, ext1f, ext1g, ext2, ext5bd, ext5gh, ext5ij, supp4) rest on the main-text
+    sentences and name their measures as open.

@@ -1,5 +1,5 @@
 name: Paper run
-run-name: "Paper run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
+run-name: "Paper run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('/{0}', inputs.replicate) || '' }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
 
 # One reader run on a target (docs/protocol.md, "Reader"): writing the claims file from the
 # paper (`claims`), checking it against the paper (`claims-check`), or answering an attempt's
@@ -48,6 +48,9 @@ on:
         type: choice
         options: [verified, unverified, api]
         default: verified
+      replicate:
+        description: "For a replicate's answer run (docs/replicates.md): its name, r1, r2, ... Empty otherwise"
+        default: ""
   # Called by attempt-sequence.yml, before the author.
   workflow_call:
     inputs:
@@ -69,6 +72,9 @@ on:
       account:
         type: string
         default: verified
+      replicate:
+        type: string
+        default: ""
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
@@ -81,7 +87,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}
+  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('-{0}', inputs.replicate) || '' }}
   cancel-in-progress: false
 
 env:
@@ -90,6 +96,7 @@ env:
   ROLE: ${{ inputs.role }}
   MODEL: ${{ inputs.model }}
   ACCOUNT: ${{ inputs.account || 'verified' }}
+  REPLICATE: ${{ inputs.replicate }}
   CLAUDE_CODE_VERSION: 2.1.284
   # The tools the agent may use without asking. With CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set, Claude
   # Code forces permission mode `default`, so this list and --permission-prompts none decide what
@@ -112,7 +119,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-          fetch-depth: 0
+          fetch-depth: 1   # no step reads history, and all of it is ~930 MB (two jobs a run, eleven runs a chain)
 
       - name: Start from the attempt's branch if it exists
         id: start
@@ -128,10 +135,15 @@ jobs:
             TDIR=$FOLDER
           fi
           BRANCH="attempt/$FOLDER"
+          # A replicate's questions are answered on its own branch (docs/replicates.md); only the answer role runs there.
+          if [ -n "$REPLICATE" ]; then
+            [[ "$REPLICATE" =~ ^r[0-9]+$ ]] && [ "$ROLE" = answer ] || { echo "::error::A replicate takes a name r1, r2, ... and only the answer role"; exit 1; }
+            BRANCH="replicate/$FOLDER/$REPLICATE"
+          fi
           { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; echo "TDIR=$TDIR"; } >> "$GITHUB_ENV"
           echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
-            git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
+            git fetch --depth 1 origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
             # The registry's tools as the workflow has them, not as the branch had them when its attempt began: a
             # branch made before a fix would otherwise run without it. Working files only, so they are never committed.
             git restore --worktree --source "$GITHUB_SHA" -- tools
@@ -152,7 +164,13 @@ jobs:
         run: |
           # The credential scrub runs the agent's commands in a sandbox built on bubblewrap and
           # socat. Bubblewrap needs unprivileged user namespaces; Ubuntu 24.04 restricts them.
-          sudo apt-get install -y -q bubblewrap socat
+          # The runner's DNS can fail for a few minutes (2026-11-11: six author runs stopped here in an hour, on
+          # "Temporary failure resolving archive.ubuntu.com"). Each download is tried again, then the whole install.
+          for try in 1 2 3 4; do
+            sudo apt-get install -y -q -o Acquire::Retries=3 bubblewrap socat && break
+            [ $try = 4 ] && { echo "::error::could not install bubblewrap and socat (the network?)"; exit 1; }
+            sleep $((try * 30)); sudo apt-get update -q || true
+          done
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           bwrap --ro-bind / / --unshare-all true && echo "bubblewrap works"
           npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
@@ -170,7 +188,8 @@ jobs:
         run: |
           # The paper match reads the dataset's papers; the other roles, the paper's, from each of its datasets.
           if [ "$ROLE" = paper-match ]; then tools/get_papers.sh "$FOLDER" paper
-          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper; fi
+          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper \
+                 "$(python tools/paper_records.py doi "$FOLDER")"; fi
 
       - name: Run the paper match's cheap checks
         id: checks
@@ -319,11 +338,11 @@ jobs:
       contents: write
     env:
       FOLDER: ${{ needs.run.outputs.folder }}
-      BRANCH: attempt/${{ needs.run.outputs.folder }}
+      BRANCH: ${{ inputs.replicate && format('replicate/{0}/{1}', needs.run.outputs.folder, inputs.replicate) || format('attempt/{0}', needs.run.outputs.folder) }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1   # no step reads history, and all of it is ~930 MB (two jobs a run, eleven runs a chain)
 
       - uses: actions/download-artifact@v4
         with:
@@ -339,13 +358,15 @@ jobs:
           # Take the archiving script from the workflow's own ref: a branch made before it existed lacks it.
           cp tools/archive_transcripts.sh "$RUNNER_TEMP/"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
-            git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
+            git fetch --depth 1 origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
           else
             git checkout -b "$BRANCH"
           fi
           # Refuse anything that is not this run's: a guard against results being mixed up.
-          if [ "$ROLE" = paper-match ]; then others=$(ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER")
-          else others=$(ls out/transcripts | grep -vx "$FOLDER"); fi
+          # `|| true`: grep finds nothing in a run that is all this one's, and fails, which `set -e` would stop on.
+          if [ "$ROLE" = paper-match ]; then
+            others=$({ ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER"; } || true)
+          else others=$(ls out/transcripts | grep -vx "$FOLDER" || true); fi
           others=$(echo "$others" | grep . || true)
           [ -z "$others" ] || { echo "::error::Transcripts for other datasets or papers: $others"; exit 1; }
           # The claims run starts an attempt: it moves an earlier attempt's transcripts aside first.
