@@ -173,12 +173,13 @@ claims:
   - quantity: Fraction of LS sessions with lower mean phase than rate MSE
     value: 1.0
     tolerance: 0.1
-  criterion: Single-cell decoder of the shared methods. A condition is better when its phase MSE
-    is below its rate MSE; a neuron when at least one of its included conditions is; a session
-    when its mean phase MSE over included LS conditions is below its mean rate MSE (makeFig2.m
-    session means). The text attaches the t test at p < 0.01 to the neuron level only; open
-    whether conditions were counted by the same test. Readings for a condition, (a) two-sample t
-    test over the 10 splits at p < 0.01, (b) lower mean MSE. The neuron tolerance is the distance
+  criterion: Single-cell decoder of the shared methods. A neuron is better when, in at least one
+    of its included conditions, its phase MSE is below its rate MSE by a two-sample t test over
+    the 10 splits at p < 0.01 (Results, paragraph 4, which attaches this test to the neuron
+    count); a session when its mean phase MSE over included LS conditions is below its mean rate
+    MSE (makeFig2.m session means). Open whether conditions were counted by the same test.
+    Readings for a condition, (a) two-sample t test over the 10 splits at p < 0.01, (b) lower
+    mean MSE. The neuron tolerance is the distance
     to 100%, as 10% of 0.936 would pass any value above 84% and exceed 1. Reproduced when all
     three fractions are within tolerance under one reading; partially reproduced when phase is
     better in more than half of neurons, conditions and sessions but a fraction is outside
@@ -265,6 +266,37 @@ claims:
     level for this test; 0.05 is used, the level of its Figure 6E and S2 legends. Reproduced
     when neither test gives p < 0.05; not reproduced when either does. The number of place
     fields and the mean difference are reported either way.
+- id: ls-lower-peak-info
+  statement: LS rate maps had lower peak information rates than hippocampal place field maps
+    (average 0.4 against 1.7 bits/cm; two-sample t test, p < 1e-100).
+  source: Results, paragraph 4
+  quote: LS action potential ratemaps had significantly lower peak information rates than
+    hippocampal place field maps (average of 0.4 bits/cm versus 1.7 bits/cm; two-sample t test
+  statistics:
+  - test: two-sample t test
+    p: 1.0e-100
+    p_relation: "<"
+  depends_on:
+  - ls-active-neurons
+  - fig1e-phase-info-smaller-scale
+  expected:
+  - quantity: Average peak information rate, LS rate maps
+    value: 0.4
+    tolerance: 0.04
+    unit: bits/cm
+  - quantity: Average peak information rate, hippocampal place field maps
+    value: 1.7
+    tolerance: 0.17
+    unit: bits/cm
+  criterion: Rate information as in fig1e-phase-info-smaller-scale (STAR Methods, spatial
+    information analysis), for every LS included condition (the 4,393 LS rate maps) and every
+    hippocampal place field (the 1,820 of Figure 1). The paper does not say at which smoothing
+    the peak is read or how bits become bits/cm. Readings for the smoothing, (a) the peak over
+    smoothings of 1 to 50 bins, as Figure 1D plots it, (b) 20-bin smoothing, as the decoders use;
+    for the unit, (a) bits per bin divided by 1.5 cm, (b) bits per bin over the bin width of the
+    condition's map in cm. Two-sample t test of LS against hippocampal values. Reproduced when,
+    under one reading, both averages are within tolerance and LS is lower at p < 1e-100;
+    partially reproduced when LS is lower at p < 0.05 but an average is outside tolerance.
 - id: ls-few-place-fields
   statement: Only 5.3% (232 of 4,393) of LS rate maps showed place fields by the criteria applied
     to hippocampal units, where 31.7% (1,820 of 5,735) did.
@@ -287,8 +319,8 @@ claims:
   criterion: A rate map is an included condition (shared methods); the place-field rule of the
     shared methods under both rate-map readings. Reproduced when both fractions are within
     tolerance under one reading; partially reproduced when the LS fraction is lower than the
-    hippocampal one by a chi-squared test at p < 0.05 but a fraction is outside tolerance. The
-    map counts are judged with them.
+    hippocampal one but a fraction is outside tolerance (the paper reports no test for this
+    comparison). The map counts are judged with them.
 - id: hpc-place-field-properties
   statement: 711 of 1,425 hippocampal neurons had at least one place field (1.27 fields per neuron
     on average); the median peak in-field rate was 8.5 Hz and the median field width 38 bins
@@ -318,7 +350,9 @@ claims:
     paper does not say which they are. Readings for the denominator, (a) hippocampal units with
     at least one included condition, (b) all hippocampal units. A neuron has a field when any of
     its included conditions has one; fields per neuron averaged over the same neurons; peak rate
-    and width over all fields. Reproduced when all four values are within tolerance under one
+    and width over all fields. The paper's spreads (1.76 fields, 12 Hz, 16 bins) describe the
+    distributions, not the uncertainty of the mean or median, and would admit almost any value
+    (8.5 plus or minus 12 Hz includes zero), so the tolerances are 10% of each value. Reproduced when all four values are within tolerance under one
     reading; partially reproduced when one to three are.
 - id: ls-place-fields-unstable
   statement: The few LS rate maps with a place field were less stable across trials than CA1/CA3
@@ -447,9 +481,11 @@ claims:
     phase minus rate MSE against the site of its largest waveform. The paper reports no test.
     Readings, (a) per animal r < 0 (deeper is more negative, stronger phase coding) in every
     animal with at least four LS sessions, (b) with depth and value centred within animal, the
-    pooled Pearson correlation negative at p < 0.05. Reproduced when both hold, and the within-
-    session correlation is negative in the majority of sessions with units on at least five
-    sites; partially reproduced when one of the three holds.
+    pooled Pearson correlation negative at p < 0.05. Both readings, the four-session and
+    five-site minimums and the majority rule are choices the paper does not make. Reproduced
+    when (a) or (b) holds and the within-session correlation is negative in the majority of
+    sessions with units on at least five sites; partially reproduced when only one of the
+    across-animal and within-session parts holds.
 - id: fig4e-onset-depth
   statement: The theta phase at the onset of LS phase fields varies with recording depth (DT5 r =
     0.38, DT9 r = 0.25, DT2 r = 0.27; circular-linear correlation, p < 0.001).
@@ -497,7 +533,10 @@ claims:
   - fig4e-onset-depth
   criterion: With each neuron's onset phase from fig4e-onset-depth, the circular mean per animal,
     against the animal's medial-lateral LS coordinate (Figure S1A). The paper reports no test
-    and has five animals. Reproduced when the circular-linear correlation of animal mean onset
+    and has five animals; the tests and the 0.8 bound below are choices the paper does not
+    make. Figure S1A, as extracted, gives more than one coordinate for some animals (DT2 has
+    0.6 and 1.5 ML; DT5, DT7 and DT8 share 0.5 ML); open, readings, (a) the LS coordinate of the
+    probe as listed first, (b) the mean of an animal's listed LS coordinates. Reproduced when the circular-linear correlation of animal mean onset
     with medial-lateral coordinate (circ_corrcl) has |r| at least 0.8, and a Kruskal-Wallis or
     Watson-Williams test finds onsets differ between animals at p < 0.05; partially reproduced
     when only the difference between animals holds.
@@ -812,8 +851,10 @@ claims:
     1e-10, without saying which pairs. Readings for "many", (a) the allocentric group predicts
     phase better than its shuffle (two-sample t test over neurons, p < 1e-10), (b) among
     phase-precessing neurons in rotation sessions, at least a quarter have lower MSE with
-    allocentric than with route and goal variables. Reproduced when (a) and (b) hold; partially
-    reproduced when one does. Figure S6C (circular SD of phase aligned to goal or room) is shown
+    allocentric than with route and goal variables; the quarter is a choice the paper does not
+    make. Reading (a) alone does not test that some neurons follow distal and others local
+    cues, so both parts are required. Reproduced when (a) and (b) hold; partially reproduced
+    when one does. Figure S6C (circular SD of phase aligned to goal or room) is shown
     for the same neurons.
 - id: figs1f-trial-counts
   statement: The behaviour comprises 2,889 circle-alternation, 6,608 central-alternation and 625
@@ -834,7 +875,7 @@ claims:
     tolerance: 62.5
   - quantity: Fraction of attempted trials that are ballistic, per recording
     value: 0.925
-    tolerance: 0.0345
+    tolerance: 0.115
   criterion: Trials by maze type. The ballistic fraction holds when every recording's fraction is
     within 0.81 to 1.0 (the 90 to 95% range widened by 10% of each bound); it can be tested only
     if the non-ballistic trials are available. Reproduced when the three trial counts are
@@ -863,3 +904,20 @@ claims:
     below chance, the static and random models' phase MSE are not below chance or not below their
     rate MSE, and the phase MSE without theta sequences is above the dynamic model's; partially
     reproduced when the dynamic model holds but one comparison fails.
+checks:
+- date: 2026-11-16
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - ls-lower-peak-info. Added. Results, paragraph 4 reports lower peak information rates for LS rate maps than for hippocampal place field maps (0.4 against 1.7 bits/cm, p < 1e-100); no claim covered it. The smoothing at which the peak is read and the conversion to bits/cm are not given, and are named as readings.
+  - fig2-ls-phase-beats-rate. The neuron rule counted a neuron when any condition had a lower mean phase MSE, which under the condition reading (b) dropped the two-sample t test at p < 0.01 that the Results attach to the neuron count (786/840). The neuron rule now always uses that test; only the condition rule stays open.
+  - ls-few-place-fields. The partial rule used a chi-squared test the paper does not use or report; it now asks only that the LS fraction be lower.
+  - hpc-place-field-properties. Gave the reason for 10% tolerances. The paper's plus-or-minus values are distribution spreads, which the protocol would otherwise take as tolerances and which admit almost any value.
+  - fig4d-depth-gradient. Required both readings (a) and (b) at once; the protocol counts a match under any reading. Now (a) or (b), and the thresholds that are not from the paper are named as such.
+  - fig4e-onset-mediolateral. Said that the tests and the 0.8 bound are not from the paper. Added that Figure S1A gives more than one medial-lateral coordinate for some animals, with two readings.
+  - figs6-reference-frame. Said that the one-quarter bound for "many" is not from the paper, and why both parts stay required (reading (a) alone does not separate distal from local anchoring).
+  - figs1f-trial-counts. The ballistic-fraction tolerance (0.0345 around 0.925, so 0.89 to 0.96) did not match the criterion's range of 0.81 to 1.0, which is the protocol's rule for a reported range. The tolerance is now 0.115.
+  - Not settled. The criteria cite DavidTingley/papers at 9f4cd48 and buzcode at e615663 for many details (makeFig1.m to makeFig6.m, bz_getPlaceFields1D, bz_peerPrediction). Those repositories are not in this checkout, so this check could not confirm the code details. Only that they do not contradict the Methods was checked.
+  - Not settled. figs5-assembly-independent-of-locking. The paper names no test, and the Figure S5C and S5E legends call two of the relations weakly correlated. The Pearson test at p < 0.05 is an assumption and may find the effect the Results say is absent.
+  - Not settled. Minor findings without a claim are the retrobead tracing of Figure S3C (data not public), the Discussion's lack of relation between speed-rate correlation and precession magnitude, LS phase fields spanning about 3.2 m, and the per-bin CA1 against CA3 KS test of Figure 6E.
