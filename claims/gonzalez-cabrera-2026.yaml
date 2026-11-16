@@ -1,0 +1,957 @@
+# Claims for Gonzalez-Cabrera et al. (2026), "A VTA-pontine GABA pathway biases locomotor
+# direction via local and distal inhibition", doi:10.64898/2026.02.17.706301, tested on
+# DANDI:001955.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. paper/10.64898-2026.02.17.706301.txt, the bioRxiv preprint, version 1, flattened
+# from bioRxiv's JATS XML. Its title line reads "biases backward locomotion"; the registry title
+# reads "biases locomotor direction". It holds the main text, the figure legends of Figures 1
+# to 4, the Methods, and the legends of Supplementary Figures 1 to 4. No PDF was supplied, so
+# figure panels were not seen; the reference list is empty in the text. Every claim rests on a
+# sentence of the main text, a legend or the Methods.
+#
+# Code. The paper links github.com/CGonzC/VTAPnO_Locomotion_Analysis, release
+# "v1.0_manuscript_submission", read at that tag, commit
+# 1ff5196e20fdaa86dd1b6d1efc26a981fb1e09ab. It holds three files: notebooks/Backward_Loc_min.ipynb
+# (open-field DLC frame classification, 200-ms peri-stimulus bins, a linear mixed model
+# Proportion ~ Time_bin * MovementType with mouse as group), notebooks/Fiber_Photometry_PSTH.ipynb
+# (405-to-470 robust linear fit, dF/F, per-trial baseline-subtracted dF/F, mean/SD z-score and
+# median/MAD robust z-score, AUC per 1-s bin) and matlab/optoTag_classification_unifiedCriteria_v2.m
+# (opto-tag shuffle test, 6-ms fixed window and fidelity). The branch main (b3b3628) adds example
+# inputs and reformats the same code; no parameter changes. No code for the per-bin statistics,
+# the frequency-screen mixed model, the auROC activation criterion, the temporal classes, the
+# direction analysis, the waveform metrics or the 2-ms DA analysis is in the repository.
+# Where the code and the Methods differ (named in the claims concerned):
+# - Photometry z-score baseline. Methods, −1.0 to −0.1 s; code, pre_time −3.0 to −0.1 s. The
+#   Methods reading is primary, the code's a variant.
+# - Open-field tracking. Methods, likelihood filter p ≥ 0.9 and gap filling; the code applies
+#   neither (it smooths raw DLC positions with a 6-frame moving average, np.convolve mode
+#   "same"). The Methods reading is primary, the code's a variant.
+# - Opto-tagging. Methods add a third, waveform-stability criterion (pre/post Pearson r ≥ 0.90);
+#   the MATLAB script has only the shuffle test and fidelity. The Methods are followed.
+#
+# Data the paper used, as it reports them.
+# - Juxtacellular recordings and Neurobiotin fills in urethane-anaesthetised mice (Fig. 1,
+#   Supplementary Fig. 1): 42 neurons; 32 recovered TH− neurons (20 local-and-projection, LP;
+#   12 projection-only, PO) and 10 TH+ neurons; 200-s baseline and three 15-s hindpaw pinches.
+#   Gad2-Cre bulk tracing with AAV-DIO-mNeon (Fig. 1a).
+# - Ex vivo slices (Fig. 2a-c, Supplementary Fig. 2a-c): C57BL/6 mice (n = 5), retroAAV-Cre in
+#   PnO and DIO-ChR2-mCherry in VTA; whole-cell recordings of light-evoked IPSCs in putative DA
+#   and putative GABA VTA neurons (control n = 14, cocktail n = 9 for latency).
+# - Open-field optogenetics (Fig. 2d-i, Supplementary Fig. 2d-f): somatic stimulation of VTA-PnO
+#   neurons (retroAAV-Flp in PnO, Flp-dependent Chrimson in VTA; 3 s of 635-nm light every 10 s
+#   in 5-min sessions; n = 8; the Fig. 2d legend says retroAAV-Flp, the Methods describe it in
+#   DAT-Cre mice, and Supplementary Fig. 2d calls the group DAT-Cre); terminal stimulation of
+#   Gad2-Cre VTA GABA axons in PnO (DIO-ChR2, 3 s of 60-Hz 470-nm light; n = 5); a frequency
+#   screen at 20 to 60 Hz and continuous light. DeepLabCut tracking at 30 fps (nose, back, tail
+#   base).
+# - Fiber photometry (Fig. 3a-c, Supplementary Fig. 3a): DAT-Cre mice with retroAAV-FlpO in PnO,
+#   Flp-dependent Chrimson and DIO-GCaMP8f in VTA (opsin n = 5) and opsin controls (n = 3) that,
+#   as the Methods list them, received the PnO retroAAV with Flp-dependent Chrimson and
+#   AAV-EF1a-DIO-HDM4-mCherry in VTA (the list names no GCaMP for them); freely moving; 470-nm and 405-nm channels; Chrimson driven at 568 nm; 5, 10, 20
+#   Hz trains and continuous light, 3 s.
+# - Acute silicon-probe recordings (Fig. 3d-k, Supplementary Fig. 3b-d): isoflurane-anaesthetised
+#   DAT-Cre mice (n = 7), ChR2 in DA neurons and Chrimson in VTA-PnO neurons; 64-channel optrodes,
+#   3-4 penetrations per mouse; tagging with 1-ms pulses at 5 Hz (3 s on, 10 s off, 210 pulses),
+#   470 nm for DA and 635 nm for VTA-PnO; then 1-s continuous 635-nm light every 10 s for 3 min.
+#   173 tagged VTA-PnO and 30 tagged DA units. Kilosort and Phy curation; 30 kHz.
+# - Chronic silicon-probe recordings (Fig. 4, Supplementary Fig. 4): DAT-Cre mice (n = 3) with the
+#   same two opsins and a 32-channel optrode; tagging as above; then a rotarod turned for 2 s at
+#   2 rad/s, in reverse (backward stepping) and, in separate blocks, forward. 40 tagged VTA-PnO
+#   units; 17 units in one bidirectional session per mouse.
+#
+# The dandiset's description lists acute electrophysiology, chronic electrophysiology during
+# forward and reverse rotarod locomotion, and fiber photometry at 5, 10, 20 Hz and continuous
+# stimulation. Claims on the juxtacellular, slice, tracing and open-field experiments are listed
+# because they are main findings; the author finds whether the dandiset holds their data. The
+# paper's Links section names Zenodo doi:10.5281/zenodo.18661700 for "Figures and KRT"; the
+# dandiset description names Zenodo doi:10.5281/zenodo.21390830 for figure-level source data and
+# behavioral source data. Neither is said by the paper to hold raw recordings.
+#
+# Method details fixed by the paper for the recorded data in the dandiset. Opto-tagging (Methods,
+# Acute silicon-probe recordings): spikes summed in 0-6 ms after each 1-ms pulse; null from
+# 10,000 circular shuffles of each trial's 0-100 ms spike train, taking the maximum 6-ms count;
+# pass when the real count exceeds the 99.9th percentile; fidelity ≥ 0.1; pre (−180 to 0 ms) and
+# post (0-6 ms) mean waveforms correlated at r ≥ 0.90. The MATLAB script fixes 1-ms bins, shifts
+# drawn uniformly from 1 to 100 bins, a sliding 6-bin maximum for the null, and a strict ">".
+# Acute activation (Methods, Acute recordings): 0.5-s bins, baseline −1.25 to −0.25 s, auROC per
+# bin, paired two-tailed tests against time-matched baseline, FDR across bins, activated when
+# significant with auROC > 0.5. Chronic activation (Methods, Chronic silicon-probe recordings):
+# 100-ms bins, pooled baseline −1.25 to −0.25 s, six 0.5-s windows W1-W6 over 0-3 s, FDR across
+# windows (and directions), class rules as quoted in the claims. Photometry: Pre −1.0 to −0.1 s,
+# Stim 0-3 s, trials averaged within animal. Details left open are named in each criterion.
+schema_version: 2
+paper: doi:10.64898/2026.02.17.706301
+claims:
+- id: fig1a-gad2-long-range-projections
+  statement: Bulk labelling of VTA GABAergic neurons in Gad2-Cre mice shows axons across forebrain
+    and brainstem regions, including nucleus accumbens, lateral hypothalamus and PnO.
+  source: Results, VTA outputs previewed by bulk labeling, paragraph 1; Figure 1a
+  quote: we observed widespread axonal labeling across forebrain and brainstem regions, including
+    nucleus accumbens, lateral hypothalamus and PnO
+  criterion: Histology (Methods, Axonal projection quantification; ABBA registration, QuPath mean
+    mNeon intensity minus a local background ROI, averaged per animal and region, summarised as
+    mean ± s.e.m. across animals). Reproduced when the mean across animals of the
+    background-corrected intensity is above zero in nucleus accumbens, lateral hypothalamus and
+    PnO. The paper gives no values, test or animal count; the threshold of zero is the reader's.
+- id: fig1-th-neg-all-project
+  statement: All 32 recovered juxtacellularly labelled TH− VTA neurons sent axons outside the
+    VTA.
+  source: Results, VTA outputs previewed by bulk labeling, paragraph 1; Figure 1c
+  quote: Surprisingly, all recovered TH − neurons (32/32) extended axons outside the VTA
+  expected:
+  - quantity: TH− neurons with axons leaving the VTA
+    value: 32
+    tolerance: 0
+    unit: neurons of 32
+  criterion: From the per-neuron target matrix of reconstructed fills (Methods, Three-dimensional
+    reconstructions). The tolerance is 0 because the claim is "all".
+- id: fig1-lp-majority
+  statement: Most TH− projection neurons (62%; 20 of 32, the LP group) also had local axon
+    collaterals in the VTA; the other 12 were projection-only (PO).
+  source: Results, VTA outputs previewed by bulk labeling, paragraph 1; Figure 1c,e legend
+  quote: The majority of them (62%) also formed local collaterals in the VTA, consistent with a
+    dual projection architecture
+  expected:
+  - quantity: fraction of TH− neurons with intra-VTA collaterals
+    value: 62
+    tolerance: 6.2
+    unit: percent
+  - quantity: LP neurons
+    value: 20
+    tolerance: 2
+    unit: neurons
+  - quantity: PO neurons
+    value: 12
+    tolerance: 1.2
+    unit: neurons
+- id: fig1-pno-subset
+  statement: Four of the 32 TH− neurons (12%), all in the LP group, projected to the PnO.
+  source: Results, VTA outputs previewed by bulk labeling, paragraph 1; Figure 1c
+  quote: Among the LP neurons, a subset projected to the PnO (12%, 4/32 TH − ), identifying a VTA
+    PnO subpopulation
+  expected:
+  - quantity: TH− neurons with axons in PnO
+    value: 4
+    tolerance: 0.4
+    unit: neurons of 32
+  criterion: Counted from the target matrix (terminals or en passant profiles in PnO, Figure 1c
+    legend). The paper does not say whether en passant profiles alone count as projecting to
+    PnO; the readings are (a) terminals or en passant, (b) terminals only. Reproduced when 4 of
+    32 neurons, all LP, project to PnO under one reading. 4/32 is 12.5%, printed as 12%.
+- id: supp1d-cv2-lp-po
+  statement: LP TH− neurons fire more irregularly than PO TH− neurons (CV2 0.871 ± 0.069 against
+    0.609 ± 0.116).
+  source: Supplementary Figure 1d, left; Results, VTA outputs previewed by bulk labeling,
+    paragraph 1
+  quote: 'Left: spike-time variability (CV2) across juxtacellularly labeled TH − cells: LP (0.871
+    ± 0.069) vs. PO (0.609 ± 0.116) ( p = 0.0468, unpaired t -test)'
+  statistics:
+  - test: unpaired t-test
+    p: 0.0468
+    n: 20 LP and 12 PO neurons (Figure 1 legend; Supplementary Fig. 1d right has 19 LP)
+  expected:
+  - quantity: CV2, LP
+    value: 0.871
+    tolerance: 0.069
+  - quantity: CV2, PO
+    value: 0.609
+    tolerance: 0.116
+  criterion: Tolerances are the reported s.e.m. (Methods, data are mean ± s.e.m.). CV2 is not
+    defined in the Methods; the standard definition, the mean over consecutive interspike
+    intervals of 2|ISI(n+1) − ISI(n)|/(ISI(n+1) + ISI(n)), is used, on the 200-s baseline
+    (Methods, Juxtacellular recordings). Whether the baseline or the whole recording is used is
+    open; both are run. Reproduced when both means are within tolerance and the unpaired t-test
+    gives p < 0.05 with LP higher, under one reading.
+- id: supp1d-cv2-rate-correlation
+  statement: Within both LP and PO TH− neurons, firing rate falls as spike-time variability
+    rises (Spearman r −0.76 and −0.73).
+  source: Supplementary Figure 1d, right; Results, VTA outputs previewed by bulk labeling,
+    paragraph 1
+  quote: 'relationship between CV2 and mean firing rate of all recorded TH − neurons (LP: Spearman
+    r = −0.76, p = 0.0002, n = 19; PO: r = −0.73, p = 0.0096, n = 12)'
+  statistics:
+  - about: LP
+    test: Spearman correlation
+    statistic: r = −0.76
+    p: 0.0002
+    n: 19 LP neurons
+  - about: PO
+    test: Spearman correlation
+    statistic: r = −0.73
+    p: 0.0096
+    n: 12 PO neurons
+  expected:
+  - quantity: Spearman r, LP
+    value: -0.76
+    tolerance: 0.076
+  - quantity: Spearman r, PO
+    value: -0.73
+    tolerance: 0.073
+  depends_on:
+  - supp1d-cv2-lp-po
+  criterion: CV2 as in supp1d-cv2-lp-po; mean firing rate over the same epoch. The paper does not
+    say which LP neuron is left out (19 of 20); run with all 20 and report. Reproduced when both
+    r values are within tolerance and both p < 0.05.
+- id: fig1e-spike-duration
+  statement: Spikes of TH− neurons, both LP and PO, are shorter in duration than those of TH+
+    (dopaminergic) neurons.
+  source: Figure 1e legend; Results, VTA outputs previewed by bulk labeling, paragraph 1
+  quote: 'Spike duration was shorter in TH − than in TH + neurons (TH + vs. LP: p = 0.0023; TH +
+    vs. PO: p = 0.0185; one-way ANOVA, FDR-corrected post hoc tests)'
+  statistics:
+  - about: TH+ against LP
+    test: one-way ANOVA, post hoc test
+    p: 0.0023
+    corrected: FDR
+    n: 10 TH+ and 20 LP neurons
+  - about: TH+ against PO
+    test: one-way ANOVA, post hoc test
+    p: 0.0185
+    corrected: FDR
+    n: 10 TH+ and 12 PO neurons
+  criterion: The paper does not define spike duration or the post hoc test. Readings for the
+    measure are (a) the full action-potential width from onset to return to baseline of the
+    average juxtacellular waveform, (b) peak-to-trough width. The legend names only
+    FDR-corrected post hoc tests; they are read as pairwise t-tests (Welch or pooled) with
+    Benjamini-Hochberg FDR over the three pairs. Reproduced when
+    under one reading both TH+ against LP and TH+ against PO give corrected p < 0.05 with TH+
+    longer.
+- id: fig1e-firing-rate-no-difference
+  statement: Baseline firing rate does not differ between LP, PO and TH+ neurons.
+  source: Figure 1e legend; Results, VTA outputs previewed by bulk labeling, paragraph 1
+  quote: Mean firing rate did not differ between cell groups (Kruskal–Wallis test, FDR-corrected
+    post hoc tests)
+  criterion: A claim of absence, judged on the paper's test, a Kruskal-Wallis test across LP (n
+    = 20), PO (n = 12) and TH+ (n = 10) mean rates over the 200-s baseline (Methods,
+    Juxtacellular recordings), at alpha 0.05. Reproduced when it is not significant; not
+    reproduced when it is. The group medians and the effect size are reported either way.
+- id: supp1e-pinch-response-profiles
+  statement: Hindpaw pinch mostly decreases the firing of TH+ neurons, while TH− neurons show
+    both increases and decreases.
+  source: Supplementary Figure 1e, left and centre; Results, VTA outputs previewed by bulk
+    labeling, paragraph 1
+  quote: 'TH+ cells showed predominant decreases in firing rate, whereas TH − neurons exhibited
+    heterogeneous rate changes (both increases and decreases)'
+  criterion: Classification as in Methods, Juxtacellular pinch, 1-s bins over −20 to +20 s
+    from pinch onset, baseline −10 to 0 s, Stim 0-15 s; responsive with at least two consecutive
+    FDR-significant Stim bins (excited, inhibited, or mixed). The per-bin test is not named;
+    readings are (a) each bin's counts over the three pinch trials against the baseline bins by
+    Mann-Whitney, (b) a z-test of each bin against the baseline mean and SD. Reproduced when
+    under one reading inhibited is the largest class among TH+ neurons and TH− neurons include
+    both excited and inhibited cells.
+- id: supp1e-pinch-rate-th-pos-lower
+  statement: The firing rate in response to hindpaw pinch is lower in TH+ neurons than in TH−
+    neurons.
+  source: Supplementary Figure 1e, right
+  quote: 'Right: mean firing rate in response to paw pinch is lower for TH + ( n = 9) than TH − (
+    n = 31) cells ( p = 0.021, Mann–Whitney test)'
+  statistics:
+  - test: Mann-Whitney
+    p: 0.021
+    n: 9 TH+ and 31 TH− neurons
+  criterion: Stim window 0-15 s and baseline −10 to 0 s (Methods, Juxtacellular pinch). The
+    measure is not defined; readings are (a) mean rate in 0-15 s, (b) that minus the baseline
+    rate, (c) the mean peri-event z-score in 0-15 s (Supplementary Fig. 1e centre is z-scored).
+    Each neuron's value is its mean over the three pinches. Reproduced when under one reading
+    the Mann-Whitney test gives p < 0.05 with TH+ lower.
+- id: supp1f-pinch-burst-th-pos-lower
+  statement: Pinch-evoked bursting is lower in TH+ neurons than in TH− neurons.
+  source: Supplementary Figure 1f; Results, VTA outputs previewed by bulk labeling, paragraph 1
+  quote: 'Right: mean firing rate of bursting activity in response to paw pinch is lower for TH +
+    ( n = 8) than TH − ( n = 18) cells ( p = 0.047, Mann–Whitney test)'
+  statistics:
+  - test: Mann-Whitney
+    p: 0.047
+    n: 8 TH+ and 18 TH− neurons
+  criterion: The paper gives no burst definition. Readings are (a) for TH+ neurons the standard
+    dopamine-neuron rule (burst onset at an ISI ≤ 80 ms, end at an ISI > 160 ms) and the same
+    rule for TH− neurons, (b) a rate-independent rule (Poisson surprise). The measure is the
+    rate of spikes in bursts in 0-15 s, read as in supp1e-pinch-rate-th-pos-lower (raw, minus
+    baseline, or z-scored). Neurons with no bursts are left out (n = 8 and 18 of 9 and 31).
+    Reproduced when under one reading the Mann-Whitney test gives p < 0.05 with TH+ lower.
+- id: fig2a-local-oipsc
+  statement: Light activation of the local axons of PnO-projecting VTA neurons in slices evokes
+    IPSCs in both putative dopaminergic and putative GABAergic VTA neurons.
+  source: Results, A VTA GABA subpopulation combines long-range output, paragraph 1; Figure 2a
+  quote: Brief photostimulation evoked optical IPSCs in dopaminergic and putative GABAergic neurons
+    in the VTA
+  criterion: Whole-cell recordings at −60 mV with high-chloride internal (Methods, Ex-vivo
+    electrophysiology). Reproduced when light-evoked inward currents locked to 5-ms pulses are
+    present in cells of both putative types (classified as in fig2b-intrinsic-separation).
+- id: fig2c-gabaa-monosynaptic
+  statement: The light-evoked IPSCs persist with TTX and 4-AP (monosynaptic) and are abolished by
+    picrotoxin (GABA-A).
+  source: Figure 2c legend; Results, A VTA GABA subpopulation combines long-range output,
+    paragraph 1
+  quote: Single-pulse IPSCs persist in control and cocktail conditions (CNQX + D-AP5 + 4-AP + TTX)
+    but are abolished by picrotoxin, indicating monosynaptic GABA A transmission
+  criterion: Reproduced when in the cells tested, oIPSC amplitude in TTX plus 4-AP stays above
+    noise and in picrotoxin (100 µM) falls to noise. Noise is read as the SD of the 50 ms before
+    the pulse, and "above noise" as a peak over 3 SD; these thresholds are not in the paper.
+- id: fig2c-latency-cocktail
+  statement: IPSC peak delay is longer in the TTX/4-AP cocktail (5.09 ms) than in control (3.32
+    ms).
+  source: Figure 2c legend; Results, A VTA GABA subpopulation combines long-range output,
+    paragraph 1
+  quote: IPSC peak delay is increased in cocktail (5.09 ± 0.26 ms, n = 9) vs. control (3.32 ± 0.14
+    ms, n = 14; unpaired t -test, p < 0.0001)
+  statistics:
+  - test: unpaired t-test
+    p: 0.0001
+    p_relation: <
+    n: 9 cocktail and 14 control cells
+  expected:
+  - quantity: IPSC peak delay, cocktail
+    value: 5.09
+    tolerance: 0.26
+    unit: ms
+  - quantity: IPSC peak delay, control
+    value: 3.32
+    tolerance: 0.14
+    unit: ms
+  criterion: Tolerances are the reported s.e.m. Delay is from light onset to IPSC peak (legend,
+    "peak delay"); the Results speak of synaptic latency from light-on, which reads as onset.
+    Readings are (a) light onset to peak, (b) light onset to IPSC onset. Reproduced when under
+    one reading both means are within tolerance and the unpaired t-test gives p < 0.0001.
+- id: fig2b-intrinsic-separation
+  statement: AP half-width, Ih and AHP area separate putative DA from putative GABA neurons in
+    the slice recordings.
+  source: Figure 2b legend
+  quote: Intrinsic properties (AP half-width, I h , AHP area) separate putative DA from putative
+    GABA neurons ( p = 0.0012, p = 0.0012, p = 0.0105, respectively; unpaired t -tests)
+  statistics:
+  - about: AP half-width
+    test: unpaired t-test
+    p: 0.0012
+  - about: Ih
+    test: unpaired t-test
+    p: 0.0012
+  - about: AHP area
+    test: unpaired t-test
+    p: 0.0105
+  criterion: Cells are typed by location and Ih with slow firing under 5 Hz (Methods, Ex-vivo
+    electrophysiology), so the test is partly circular. Ih, half-width and AHP area are not
+    defined further; readings for Ih are the sag current at the end of a step to −120 mV or the
+    largest step used. Reproduced when all three unpaired t-tests give p < 0.05.
+- id: supp2c-oipsc-depression
+  statement: Repeated light trains at several frequencies evoke reliable oIPSCs whose amplitude
+    decreases along the train.
+  source: Results, A VTA GABA subpopulation combines long-range output, paragraph 1;
+    Supplementary Figure 2b,c
+  quote: Repetitive stimulation trains at various frequencies, evoked reliable oIPSCs with
+    decreasing amplitude
+  criterion: Trains at 8, 20 and 50 Hz (Supplementary Fig. 2c). Reproduced when for each
+    frequency every pulse evokes an oIPSC and the mean normalised amplitude of the last pulse is
+    below that of the first.
+- id: fig2e-somatic-backward
+  statement: Continuous 3-s red-light stimulation of VTA-PnO cell bodies drives backward walking
+    in the open field, with a sharp onset peak in backward movement that declines during the
+    light and falls below baseline after offset, while forward movement moves inversely.
+  source: Results, Optogenetic activation of the VTA PnO pathway, paragraph 1; Figure 2e
+  quote: The population PSTH (peristimulus time histogram) showed a sharp onset peak in the
+    backward movement ratio (blue) that declined across the 3-s light window and fell below
+    baseline after offset, while forward movement (green) shows inverse relation
+  depends_on:
+  - fig2f-somatic-bins
+  criterion: Frame classification from the Methods (Open-Field; Open-field video) and the
+    notebook Backward_Loc_min.ipynb, DLC back and tail base, likelihood ≥ 0.9, gap filled,
+    6-frame moving average, movement vector of Back between consecutive frames, body axis tail
+    base to back, speed gate ≥ 0.2 units per frame (the Methods do not name the unit; pixels
+    is a reading), forward < 60°, backward > 120°; 200-ms bins over
+    −1 to +4 s, proportion per trial, averaged per mouse, then over mice (n = 8). Gap filling is
+    not specified (linear interpolation is used, a standard choice); the notebook applies no
+    likelihood filter, run as a variant. Reproduced when the mouse-averaged backward proportion
+    peaks in 0-1 s, is lower in 2-3 s than in 0-1 s, and is below the pre-stimulus mean in 3-4
+    s, and the forward proportion is lower in 0-1 s than before the light.
+- id: fig2f-somatic-bins
+  statement: With somatic stimulation, the backward movement ratio exceeds baseline in the 0-1 s
+    and 1-2 s bins, does not differ at 2-3 s, and falls below baseline at 3-4 s.
+  source: Figure 2f legend; Results, Optogenetic activation of the VTA PnO pathway, paragraph 1
+  quote: Backward ratio exceeded baseline at 0–1 s and 1–2 s ( p < 0.0001 and p = 0.0088,
+    respectively), dropped to baseline at 2–3 s ( p = 0.086), and fell below baseline at 3–4 s (
+    p = 0.04; one-way ANOVA with repeated measures, FDR-corrected post hoc tests)
+  statistics:
+  - about: 0-1 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.0001
+    p_relation: <
+    corrected: FDR
+    n: 8 mice
+  - about: 1-2 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.0088
+    corrected: FDR
+    n: 8 mice
+  - about: 2-3 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.086
+    corrected: FDR
+    n: 8 mice
+  - about: 3-4 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.04
+    corrected: FDR
+    n: 8 mice
+  criterion: Frames classified as in fig2e-somatic-backward; per mouse, the backward proportion
+    in each 1-s bin from light onset (0-1, 1-2, 2-3 during light, 3-4 after offset) and in the
+    baseline. The legend's "light stimulation at 1-3 s" cannot be the time base, since 0-1 s then
+    precedes the light; bins are read from light onset, as in the Results. Open details, all run
+    (a) baseline −1 to 0 s (the peri-stimulus window of Methods, Open-Field) or −1.0 to −0.1 s
+    (the frequency screen's baseline); (b) correction, FDR as in the legend or Holm as in the
+    Methods ("Per-bin (1-s) open-field comparisons ... used Holm step-down across bins"); (c)
+    post hoc tests as paired t-tests of each bin against baseline, with Wilcoxon signed-rank as
+    a variant (the paired tests of Methods, Open-field video). Reproduced when under one
+    reading 0-1 s and 1-2 s are above baseline with corrected p < 0.05, 2-3 s is not significant,
+    and 3-4 s is below baseline with p < 0.05. Partially reproduced when the 0-1 s and 1-2 s
+    results hold and one of the other two does not.
+- id: fig2h-terminal-backward
+  statement: 60-Hz blue-light stimulation of VTA GABA terminals in PnO in Gad2-Cre mice also
+    triggers backward walking, with a transient rise in the backward ratio that returns to
+    baseline after the light.
+  source: Results, Optogenetic activation of the VTA PnO pathway, paragraph 1; Figure 2h
+  quote: This stimulation likewise triggered backward walking and yielded a transient increase in
+    the backward movement ratio that returned to baseline after the stimulus
+  depends_on:
+  - fig2i-terminal-bins
+  criterion: Classification as in fig2e-somatic-backward, n = 5 Gad2-Cre mice, 3-s 60-Hz 470-nm
+    trains. Reproduced when the mouse-averaged backward proportion is above its pre-stimulus mean
+    in each 1-s bin of 0-3 s and the 3-4 s bin does not differ from baseline by the paper's test,
+    as judged in fig2i-terminal-bins.
+- id: fig2i-terminal-bins
+  statement: With PnO terminal stimulation, the backward ratio is above baseline at 0-1, 1-2 and
+    2-3 s and not different from baseline at 3-4 s.
+  source: Figure 2i legend; Results, Optogenetic activation of the VTA PnO pathway, paragraph 1
+  quote: Backward ratio was above baseline at 0–1 s, 1–2 s, and 2–3 s ( p = 0.0006, p = 0.0194,
+    and p = 0.03, respectively) and not different from baseline at 3–4 s ( p = 0.33
+  statistics:
+  - about: 0-1 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.0006
+    corrected: FDR
+    n: 5 mice
+  - about: 1-2 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.0194
+    corrected: FDR
+    n: 5 mice
+  - about: 2-3 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.03
+    corrected: FDR
+    n: 5 mice
+  - about: 3-4 s against baseline
+    test: one-way repeated-measures ANOVA, post hoc test
+    p: 0.33
+    corrected: FDR
+    n: 5 mice
+  criterion: As fig2f-somatic-bins, with the same open readings (baseline −1 to 0 or −1.0 to
+    −0.1 s; FDR or Holm). Reproduced when under one reading the three light bins are above
+    baseline with corrected p < 0.05 and 3-4 s is not significant. Partially reproduced when two
+    of the three light bins hold.
+- id: supp2e-latency-to-peak-backward-similar
+  statement: Latency to peak backward movement is similar for somatic and terminal stimulation
+    (0.425 against 0.404 s).
+  source: Supplementary Figure 2e, lower panel; Results, Optogenetic activation of the VTA PnO
+    pathway, paragraph 1
+  quote: 'both stimulation protocols resulted in a similar latency to peak movement across animals.
+    VTA PnO somatic stimulation (0.425 ± 0.066 s) vs. PnO terminals (0.404 ± 0.035 s) (unpaired t
+    -test, p = 0.8217)'
+  statistics:
+  - test: unpaired t-test
+    p: 0.8217
+    n: 8 somatic and 5 terminal mice
+  expected:
+  - quantity: latency to peak backward ratio, somatic
+    value: 0.425
+    tolerance: 0.066
+    unit: s
+  - quantity: latency to peak backward ratio, terminal
+    value: 0.404
+    tolerance: 0.035
+    unit: s
+  depends_on:
+  - fig2e-somatic-backward
+  - fig2h-terminal-backward
+  criterion: A claim of absence, judged on the unpaired t-test at alpha 0.05; the means are
+    within tolerance (the reported s.e.m.) as well. Latency is not defined. Per mouse, the time
+    of the maximum of the mouse-averaged backward proportion in 200-ms bins within 0-3 s; the
+    readings for the time stamp are (a) bin end (as the notebook labels bins), (b) bin centre,
+    (c) bin start. Reproduced when the t-test is not significant and, under one reading, both
+    means are within tolerance; partially reproduced when the test holds but the means do not.
+- id: supp2f-latency-to-peak-speed
+  statement: Time to maximum speed is shorter for somatic stimulation (0.590 s) than for PnO
+    terminal stimulation (1.164 s).
+  source: Supplementary Figure 2f, lower panel; Results, Optogenetic activation of the VTA PnO
+    pathway, paragraph 1; Discussion, paragraph 5
+  quote: By contrast, the time to maximum speed for VTA somatic stimulation was less than for PnO
+    terminals
+  statistics:
+  - test: unpaired t-test
+    p: 0.0131
+    n: 8 somatic and 5 terminal mice
+  expected:
+  - quantity: latency to peak speed, somatic
+    value: 0.590
+    tolerance: 0.104
+    unit: s
+  - quantity: latency to peak speed, terminal
+    value: 1.164
+    tolerance: 0.184
+    unit: s
+  criterion: The legend says latency "was higher for VTA PnO somatic stimulation (0.590 ± 0.104
+    s) than PnO terminals (1.164 ± 0.184 s)", which contradicts its own numbers; the Results and
+    Discussion (≈ 0.6 s against ≈ 1.16 s) say somatic is faster, and that is the statement.
+    Speed is not defined; readings are (a) the magnitude of the smoothed Back displacement per
+    frame on all frames, (b) on frames passing the speed gate, (c) on backward frames only.
+    Latency per mouse is the time of the maximum of the mouse-averaged speed in 200-ms bins
+    within 0-3 s (bin end, centre or start). Reproduced when under one reading both means are
+    within tolerance (the reported s.e.m.) and the unpaired t-test gives p < 0.05 with somatic
+    shorter.
+- id: supp2d-frequency-trend
+  statement: Backward movement during somatic stimulation scales with light frequency, minimal
+    at 20 Hz or below and robust at 60 Hz and continuous light, with a significant linear trend
+    and greater responses at 30-60 Hz than at 20 Hz.
+  source: Results, Optogenetic activation of the VTA PnO pathway, paragraph 1; Supplementary
+    Figure 2d
+  quote: A per-trial mixed-effects model on Δ (backward ratio) showed a significant linear trend
+    across frequencies ( n = 8 mice, 14 trials/mouse). Post-hoc pairwise tests with Holm’s
+    step-down correction indicated that 30–60 Hz elicited greater responses than 20 Hz
+  statistics:
+  - about: linear trend across frequencies
+    test: linear mixed-effects model
+    p: 0.0001
+    p_relation: <
+    n: 8 mice, 14 trials per mouse
+  depends_on:
+  - fig2e-somatic-backward
+  criterion: Methods, Open-field video and frequency screen. Per trial, Δ = mean backward ratio
+    in the stimulus window minus that in the baseline −1.0 to −0.1 s; a mixed model Δ ~
+    frequency with a random intercept per mouse, frequencies 20, 30, 40, 50, 60 Hz; the trend
+    with frequency coded numerically; planned contrasts of each ≥ 30 Hz level against 20 Hz,
+    Holm-corrected. Open details, all run. (a) The window, 0-1 s (initiation) or 1-2 s (early
+    maintenance), both named in the Methods. (b) The mice, 8 (Results) or "the same three mice"
+    (Methods). Reproduced when under one reading the trend has p < 0.0001 with Δ rising and each
+    of 30, 40, 50 and 60 Hz exceeds 20 Hz with Holm p < 0.05; partially reproduced when the
+    trend holds and some of the four contrasts do not. The Supplementary Figure 2d legend shows
+    the same screen for Gad2-Cre mice; no result is stated for them.
+- id: supp2d-continuous-vs-60hz
+  statement: For somatic stimulation, continuous light and 60 Hz do not differ in the backward
+    response.
+  source: Results, Optogenetic activation of the VTA PnO pathway, paragraph 1; Supplementary
+    Figure 2d
+  quote: whereas 60 Hz vs. continuous light were not significantly different for VTA somatic
+    stimulation
+  depends_on:
+  - supp2d-frequency-trend
+  criterion: A claim of absence, judged on the paper's test, the per-trial mixed model of Δ with
+    reference 60 Hz and continuous light as the other level (Methods, Open-field video), at alpha
+    0.05, under the readings of supp2d-frequency-trend. Reproduced when not significant under
+    the window and mice reading that reproduces supp2d-frequency-trend (both windows reported
+    when neither does); the effect size is reported.
+- id: fig3b-photometry-continuous-only
+  statement: In opsin mice, VTA-PnO stimulation raises the DA population calcium signal above
+    its pre-stimulus level with continuous light, but not with 5, 10 or 20 Hz trains.
+  source: Figure 3b legend; Results, Optogenetic activation of VTA PnO elevates dopaminergic
+    population signals, paragraph 1
+  quote: Within-opsin pre-post comparison was significant at continuous stimulation, with 5-20 Hz
+    yielding non-significant differences
+  statistics:
+  - about: continuous, Pre against Stim
+    test: two-way ANOVA, post hoc comparison
+    p: 0.0001
+    p_relation: <
+    corrected: FDR
+    n: 5 opsin mice
+  - about: 5, 10 and 20 Hz, Pre against Stim
+    test: two-way ANOVA, post hoc comparison
+    p: 0.05
+    p_relation: '>'
+    corrected: FDR
+    n: 5 opsin mice
+  criterion: Methods, In vivo fiber photometry and Fiber photometry, with the notebook
+    Fiber_Photometry_PSTH.ipynb for preprocessing; 405 fitted to 470 by least squares with
+    three passes trimming residuals over 3 SD, dF/F = (470 − fit)/fit with the denominator
+    floored at 1% of its median; trials aligned to light onset; z-scored per trial; averaged
+    within mouse per condition; Pre = −1.0 to −0.1 s, Stim = 0-3 s; per mouse the mean z in
+    each epoch. Open details, all run. (a) z-score baseline, −1.0 to −0.1 s (Methods; Pre is
+    then 0 by construction for the mean/SD z) or −3.0 to −0.1 s (notebook, a variant). (b)
+    z-score form, mean/SD or median/MAD (the notebook computes both; the Methods say z-scores).
+    (c) The epoch value, the mean over the window or the area (the notebook's AUC). (d) The
+    ANOVA, epoch by frequency with repeated measures on both factors or without; post hoc paired
+    Pre against Stim per frequency, Benjamini-Hochberg over the four. The control mice are not
+    in this test. Reproduced when under one reading continuous gives p < 0.0001 with Stim
+    higher and 5, 10 and 20 Hz each give p > 0.05; partially reproduced when continuous holds at
+    p < 0.05 but not at 0.0001, or one train frequency is significant.
+- id: fig3c-photometry-opsin-vs-control
+  statement: The stimulation-evoked change in DA calcium signal (Stim minus Pre) is larger in
+    opsin mice than in controls for continuous light only, not for 5-20 Hz.
+  source: Figure 3c legend; Results, Optogenetic activation of VTA PnO elevates dopaminergic
+    population signals, paragraph 1
+  quote: change-scores (Δ = Stim-Pre) were larger in the opsin group compared to the controls (n =
+    3) for continuous illumination only, with no effects at 5-20 Hz
+  statistics:
+  - about: continuous, opsin against control
+    test: two-way ANOVA, post hoc comparison
+    p: 0.002
+    corrected: FDR
+    n: 5 opsin and 3 control mice
+  - about: 5, 10 and 20 Hz, opsin against control
+    test: two-way ANOVA, post hoc comparison
+    p: 0.05
+    p_relation: '>'
+    corrected: FDR
+    n: 5 opsin and 3 control mice
+  depends_on:
+  - fig3b-photometry-continuous-only
+  criterion: Δ per mouse and frequency as in fig3b-photometry-continuous-only under the same
+    readings; a two-way ANOVA group by frequency (frequency repeated within mouse, or not);
+    post hoc unpaired opsin against control per frequency, Benjamini-Hochberg over the four.
+    Reproduced when under one reading continuous gives p < 0.05 with opsin larger and 5, 10 and
+    20 Hz each give p > 0.05.
+- id: fig3-optotag-counts
+  statement: Across seven anaesthetised DAT-Cre mice, 173 VTA-PnO units and 30 DA units were
+    opto-tagged.
+  source: Results, Acute opto-tagging reveals transient DA activation, paragraph 1; Figure 3i
+    legend
+  quote: Across seven mice, we isolated 173 opto-tagged VTA PnO neurons and 30 opto-tagged DA
+    neurons
+  expected:
+  - quantity: opto-tagged VTA-PnO units
+    value: 173
+    tolerance: 17.3
+    unit: units
+  - quantity: opto-tagged DA units
+    value: 30
+    tolerance: 3
+    unit: units
+  criterion: The three criteria of Methods, Acute silicon-probe recordings, implemented as the
+    MATLAB script (6ms_fixed; 1-ms bins over 0-100 ms; 10,000 circular shifts drawn from 1 to
+    100 bins per trial; null = sliding 6-bin maximum; real 0-6 ms count > 99.9th percentile;
+    fidelity, the share of pulses with a spike in 0-6 ms, ≥ 0.1), plus the waveform rule
+    (pre −180 to 0 ms and post 0-6 ms mean waveforms, r ≥ 0.90). Pulses are the 635-nm tagging
+    pulses for VTA-PnO and the 470-nm pulses for DA. Open details. (a) Waveform channel, the
+    unit's peak channel or all channels concatenated. (b) A unit passing for both colours; the
+    paper does not say, and such units are reported apart. Reproduced when both counts are
+    within tolerance under one reading; the shuffle has a random seed, a choice that cannot
+    change the count by more than units near threshold, which are reported.
+- id: fig3e-onset-latency
+  statement: Light-evoked spikes of tagged VTA-PnO units have a shorter onset latency (3.82 ms)
+    than those of tagged DA units (4.99 ms).
+  source: Figure 3e legend; Results, Acute opto-tagging reveals transient DA activation,
+    paragraph 1
+  quote: 'Onset latency: DA (4.99 ± 0.24 ms) vs. VTA PnO (3.82 ± 0.07 ms) ( p < 0.0001)'
+  statistics:
+  - test: Mann-Whitney
+    p: 0.0001
+    p_relation: <
+    n: 30 DA and 173 VTA-PnO units
+  expected:
+  - quantity: onset latency, DA
+    value: 4.99
+    tolerance: 0.24
+    unit: ms
+  - quantity: onset latency, VTA-PnO
+    value: 3.82
+    tolerance: 0.07
+    unit: ms
+  depends_on:
+  - fig3-optotag-counts
+  criterion: Tolerances are the reported s.e.m. Onset latency is not defined in the Methods, and
+    the MATLAB script leaves latency undefined for the 6-ms criterion. Readings per unit are (a)
+    the mean first-spike latency in 0-6 ms over pulses with a spike, (b) the median of the same,
+    (c) the mean of all spike times in 0-6 ms (the script's rule for its 2-ms mode). Reproduced
+    when under one reading both means are within tolerance and the Mann-Whitney test gives p <
+    0.0001 with DA longer; partially reproduced when the order and p < 0.05 hold but a mean is
+    out of tolerance.
+- id: fig3f-spike-width
+  statement: Tagged DA units have broader spikes (574.1 µs) than tagged VTA-PnO units (451.5 µs).
+  source: Figure 3f legend; Results, Acute opto-tagging reveals transient DA activation,
+    paragraph 1
+  quote: 'Spike width: DA (574.1 ± 27.3 µ s) vs. VTA PnO (451.5 ± 14.3 µ s) ( p = 0.0002)'
+  statistics:
+  - test: Mann-Whitney
+    p: 0.0002
+    n: 30 DA and 173 VTA-PnO units
+  expected:
+  - quantity: spike width, DA
+    value: 574.1
+    tolerance: 27.3
+    unit: µs
+  - quantity: spike width, VTA-PnO
+    value: 451.5
+    tolerance: 14.3
+    unit: µs
+  depends_on:
+  - fig3-optotag-counts
+  criterion: Tolerances are the reported s.e.m. Spike width is not defined; readings are (a)
+    trough-to-peak time of the mean waveform on the peak channel, (b) full width at half
+    maximum of the trough, (c) the "AP width" of Supplementary Fig. 3c, taken as (a). Reproduced
+    when under one reading both means are within tolerance and the Mann-Whitney test gives p <
+    0.05 with DA broader.
+- id: fig3g-firing-rate-no-difference
+  statement: Tagged DA and VTA-PnO units do not differ in mean firing rate (7.142 against 7.162
+    Hz).
+  source: Figure 3g legend
+  quote: 'Firing rate: DA (7.142 ± 1.02 Hz) vs. VTA PnO (7.162 ± 0.48 Hz) ( p = 0.649)'
+  statistics:
+  - test: Mann-Whitney
+    p: 0.649
+    n: 30 DA and 173 VTA-PnO units
+  expected:
+  - quantity: firing rate, DA
+    value: 7.142
+    tolerance: 1.02
+    unit: Hz
+  - quantity: firing rate, VTA-PnO
+    value: 7.162
+    tolerance: 0.48
+    unit: Hz
+  depends_on:
+  - fig3-optotag-counts
+  criterion: A claim of absence, judged on the Mann-Whitney test at alpha 0.05; means within
+    tolerance (the reported s.e.m.) as well. The epoch is open; readings are (a) the baseline
+    epoch before tagging (Methods, Acute recordings), (b) the whole recording. Reproduced when
+    the test is not significant and, under one reading, both means are within tolerance.
+- id: fig3i-recruitment-beyond-tagged
+  statement: VTA-PnO stimulation modulates many simultaneously recorded VTA units beyond the
+    tagged ones, sharply at light onset.
+  source: Figure 3i legend, left; Results, Acute opto-tagging reveals transient DA activation,
+    paragraph 1
+  quote: Many units show sharp onset modulation, indicating recruitment beyond the opto-tagged
+    subset
+  criterion: Activation as in Methods, Acute recordings (classification of responsive units), on
+    1-s continuous 635-nm light; windows read as in fig3i-da-responsive-subset. "Many" is not
+    quantified; the reader sets it at one fifth or more of the untagged units of a session, a
+    threshold not in the paper. Reproduced when in at least one session one fifth or more of the
+    untagged units are activated with the first post-onset window significant. The fraction per
+    session is reported.
+- id: fig3i-da-responsive-subset
+  statement: Some, but not all, tagged DA units are activated by continuous light on VTA-PnO
+    neurons.
+  source: Results, Acute opto-tagging reveals transient DA activation, paragraph 1; Figure 3i
+  quote: a subset of recorded DA units was classified as responsive to VTA PnO stimulation, while
+    the remaining DA units did not meet the criterion
+  depends_on:
+  - fig3-optotag-counts
+  criterion: Methods, Acute recordings; per DA unit, counts in 0.5-s bins after the onset of
+    each 1-s 635-nm pulse, auROC of each bin against baseline −1.25 to −0.25 s, paired
+    two-tailed tests per bin against time-matched baseline, Benjamini-Hochberg over bins,
+    activated when a bin is significant with auROC > 0.5. Open details, all run. (a) The bins,
+    −1 to +1.5 s (Methods; 0-0.5, 0.5-1, 1-1.5 after onset) or six 0.5-s windows over 0-3 s
+    (Results, "per-unit auROC in six 0.5-s windows"). (b) Time-matched baseline, per trial the
+    count in a 0.5-s piece of the baseline, or the 1-s baseline count halved. (c) Paired test,
+    paired t-test or Wilcoxon signed-rank. The paper gives no count. Reproduced when under one
+    reading at least one and fewer than 30 DA units are activated; the counts are reported.
+- id: fig3j-vta-pno-light-locked
+  statement: Tagged VTA-PnO units show reliable light-locked activation during continuous light.
+  source: Figure 3j legend; Results, Acute opto-tagging reveals transient DA activation,
+    paragraph 1
+  quote: Population responses show reliable, light-locked VTA PnO (GABA) activation and
+    heterogeneous DA outcomes
+  depends_on:
+  - fig3-optotag-counts
+  criterion: auROC per unit as in fig3i-da-responsive-subset. "Reliable" is not quantified; the
+    reader reads it as the mean auROC of the 173 tagged VTA-PnO units in the first post-onset
+    window above 0.5 by a one-sample t-test (the test the paper uses for DA units in Fig. 3j) at
+    p < 0.05, and more than half of them activated. Reproduced when both hold under one reading.
+- id: fig3j-da-onset-transient
+  statement: Responsive DA units show an onset-locked transient, with time-binned auROC above
+    chance.
+  source: Figure 3j legend; Results, Acute opto-tagging reveals transient DA activation,
+    paragraph 1
+  quote: Responsive DA units exhibited an onset-locked signal transient ( p = 0.0013, one-sample t
+    -test against chance)
+  statistics:
+  - test: one-sample t-test against chance
+    p: 0.0013
+    n: responsive DA units (count not given)
+  depends_on:
+  - fig3i-da-responsive-subset
+  criterion: The paper does not say which bin is tested. Readings are (a) the auROC of the first
+    post-onset 0.5-s window across responsive DA units against 0.5, (b) each unit's mean auROC
+    over the post-onset windows against 0.5. Reproduced when under one reading p < 0.05 with
+    auROC above 0.5. The test is on units selected for activation, so it is circular; it is
+    run as the paper ran it.
+- id: fig3k-da-early-timing
+  statement: At 2-ms resolution, responsive DA units rise within about 3 ms of light onset, peak
+    at 7 ms, have a response centroid at 37.8 ms, and increase their firing by 0.50 spikes/s
+    over 0-100 ms.
+  source: Figure 3k legend; Results, Acute opto-tagging reveals transient DA activation,
+    paragraph 1
+  quote: At 2-ms bin resolution, within the set of responsive DA neurons, firing rose within ∼3
+    ms, peaked at 7.0 ms (IQR 2.5-22.5 ms), and had a centroid of 37.8 ms (IQR 35.5-43.6 ms) with
+    a consistent early-window increase (0-100 ms, baseline-subtracted 0.50 spikes·s-1
+  statistics:
+  - about: early-window increase, 0-100 ms
+    test: permutation test
+    p: 0.029
+    ci: {level: 0.95, low: 0.30, high: 0.66, unit: spikes/s}
+    n: responsive DA units (count not given)
+  expected:
+  - quantity: peak latency
+    value: 7.0
+    tolerance: 2
+    unit: ms
+  - quantity: centroid latency
+    value: 37.8
+    tolerance: 3.78
+    unit: ms
+  - quantity: baseline-subtracted rate increase, 0-100 ms
+    value: 0.50
+    tolerance: 0.20
+    unit: spikes/s
+  depends_on:
+  - fig3i-da-responsive-subset
+  criterion: Methods, Acute recordings; responsive labels inherited from the auROC criterion,
+    2-ms bins over 0-100 ms. The peak tolerance is one 2-ms bin, as 10% of 7 ms is below the
+    bin width; the increase tolerance is the larger distance from 0.50 to a bound of the 95% CI.
+    Open details, all run. (a) The event, the onset of the 1-s continuous 635-nm light (the
+    responsive set comes from it) or the 1-ms 635-nm tagging pulses. (b) Peak and centroid, of
+    the pooled PSTH (legend, "P ... C ... computed over 0-100 ms") or medians of per-unit values
+    (Results give IQRs). (c) The baseline for subtraction, −1.25 to −0.25 s (the auROC
+    baseline) or −100 to 0 ms. (d) The permutation test, sign-flip of per-unit increases, or
+    shuffling of event times; the CI by bootstrap over units. Onset "within ∼3 ms" is read as
+    the first bin above the baseline mean plus 2 SD, a standard choice. Reproduced when under
+    one reading the three expected values are within tolerance and the permutation p < 0.05;
+    partially reproduced when the increase holds but a latency is out of tolerance.
+- id: chronic-optotag-count
+  statement: In chronic recordings from three mice, 40 VTA-PnO units were opto-identified.
+  source: Results, Chronic single-unit recordings show direction-selective engagement, paragraph
+    1; Methods, Chronic silicon-probe recordings
+  quote: We opto-identified 40 VTA PnO GABA units
+  expected:
+  - quantity: opto-tagged VTA-PnO units, chronic
+    value: 40
+    tolerance: 4
+    unit: units
+  criterion: The tagging criteria are written for the acute recordings; the paper does not say
+    they were applied unchanged to the chronic ones. They are applied as in fig3-optotag-counts
+    to the 635-nm 1-ms pulses of the chronic sessions. Reproduced when the count is within
+    tolerance.
+- id: fig4c-activated-fraction
+  statement: During reverse rotation, 65% (26 of 40) of opto-identified VTA-PnO units are
+    activated and 35% (14 of 40) are not modulated.
+  source: Results, Chronic single-unit recordings show direction-selective engagement, paragraph
+    1; Figure 4c
+  quote: Among opto-identified VTA PnO neurons, 65% (26/40) were classified as activated and 35%
+    (14/40) as non-modulated
+  expected:
+  - quantity: activated units, reverse rotation
+    value: 26
+    tolerance: 2.6
+    unit: units of 40
+  - quantity: fraction activated
+    value: 65
+    tolerance: 6.5
+    unit: percent
+  depends_on:
+  - chronic-optotag-count
+  criterion: Methods, Chronic silicon-probe recordings; reverse rotations; spikes in 100-ms bins;
+    baseline −1.25 to −0.25 s; six 0.5-s windows W1-W6 over 0-3 s from rotation onset; per unit
+    and window, auROC and a test against time-matched baseline; FDR (Benjamini-Hochberg) across
+    windows; activated when a window is significant with auROC > 0.5. Open details, all run.
+    (a) Time-matched baseline, per trial the count in a 0.5-s piece of the baseline or the 1-s
+    baseline halved. (b) Test, paired two-tailed t-test or Wilcoxon signed-rank (Results, "the
+    same criterion as in the acute experiment"). (c) The FDR family, windows only, or windows
+    and both directions (Methods, "and directions, when applicable"). (d) Units with only
+    suppressed windows; 26 + 14 = 40 leaves none, so they count as non-modulated. Which session
+    each unit comes from is not stated; all reverse sessions are used. Reproduced when under one
+    reading the activated count is within tolerance.
+- id: fig4c-temporal-classes
+  statement: Activated VTA-PnO units split into early-onset (13 of 26), late-onset (6 of 26) and
+    offset-only (7 of 26) classes.
+  source: Results, Chronic single-unit recordings show direction-selective engagement, paragraph
+    1; Figure 4c
+  quote: Using the W1-W6 scheme, activated units segregated into early-onset 50% (13/26),
+    late-onset 23% (6/26), offset-only 27% (7/26) classes
+  expected:
+  - quantity: early-onset units
+    value: 13
+    tolerance: 1.3
+    unit: units
+  - quantity: late-onset units
+    value: 6
+    tolerance: 0.6
+    unit: units
+  - quantity: offset-activated units
+    value: 7
+    tolerance: 0.7
+    unit: units
+  depends_on:
+  - fig4c-activated-fraction
+  criterion: Class rules from Methods, Chronic silicon-probe recordings, on reverse rotations
+    ("Early-Onset (W1, with later significance or run ≥ 2), Late-Onset (W2–W3, with later
+    significance), Offset-Activated (none in W1–W4, ≥ 1 in W5–W6)"). The rules leave some units
+    unclassed (W1 alone; first at W2-W3 with nothing later; first at W4). Readings are (a) such
+    units are non-activated, (b) they join the class of their first significant window. Counts
+    of 6 and 7 have tolerances under one unit, so a class within one unit of its value is taken
+    as within tolerance. Reproduced when under one reading all three counts are within one unit
+    (13 ± 1.3); partially reproduced when the order early > offset ≥ late holds.
+- id: fig4d-reverse-activated-direction-selective
+  statement: Reverse-activated VTA-PnO units fire more during reverse than forward rotation
+    across the rotation epoch.
+  source: Figure 4d legend; Results, Chronic single-unit recordings show direction-selective
+    engagement, paragraph 1
+  quote: population PSTHs (100-ms bins) restricted to reverse-activated units showed sustained
+    elevation during reverse relative to forward across the rotation epoch
+  depends_on:
+  - fig4c-activated-fraction
+  criterion: One bidirectional session per mouse, 17 units over 3 mice (Methods, Chronic
+    silicon-probe recordings, direction contrasts), restricted to units activated in reverse.
+    PSTH in 100-ms bins over 0-2 s, averaged over trials then units. Open details, all run.
+    (a) Units as raw rate, or minus each direction's own baseline. (b) Activation in reverse
+    from the per-direction or the joint FDR family. "Sustained" is not quantified; the reader
+    reads it as reverse above forward in at least 15 of the 20 bins of 0-2 s, a threshold not
+    in the paper. Reproduced when under one reading that holds; the bin count is reported.
+- id: fig4e-reverse-greater-magnitude
+  statement: Across all opto-tagged VTA-PnO units of the bidirectional sessions, mean response
+    magnitude over 0-3 s is higher during reverse than forward rotation.
+  source: Figure 4e legend; Methods, Chronic silicon-probe recordings, direction contrasts
+  quote: Mean response magnitude of all opto-tagged VTA PnO units over 0–3 s (0–2 s rod rotation
+    and 1 s post stimulus) is higher in reverse than forward condition (paired t -test, p =
+    0.0038)
+  statistics:
+  - test: paired t-test
+    p: 0.0038
+    n: 17 units from 3 mice
+  depends_on:
+  - chronic-optotag-count
+  criterion: Per unit and direction, the mean over W1-W6 of the window response, compared within
+    unit by paired t-test (Methods). "Response magnitude" is not defined; readings are (a)
+    auROC against baseline per window, (b) baseline-subtracted rate per window, (c) rate per
+    window divided by baseline rate. Reproduced when under one reading p < 0.05 with reverse
+    higher.
+- id: fig4f-paired-unit-profiles
+  statement: Paired units show a larger fraction of activated windows in reverse than forward,
+    and one unit not modulated in reverse is activated in forward.
+  source: Results, Chronic single-unit recordings show direction-selective engagement, paragraph
+    1; Figure 4f
+  quote: A paired-unit analysis revealed a greater fraction of activated bins during reverse and
+    distinct temporal motifs that reorganized across directions; notably, one unit non-modulated
+    in reverse was activated during forward
+  depends_on:
+  - fig4c-activated-fraction
+  criterion: The 17 units of the bidirectional sessions, windows W1-W6 classified per direction as
+    in fig4c-activated-fraction, under its readings. Reproduced when under one reading the
+    fraction of activated unit-windows is larger in reverse than forward and at least one unit
+    non-modulated in reverse is activated in forward; the number of such units is reported. The
+    paper gives no test.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, photometry controls. The header said the controls had a DIO-mCherry virus in place of the GCaMP-plus-opsin pair; the Methods (Stereotaxic injections) give them the PnO retroAAV with Flp-dependent Chrimson and AAV-EF1a-DIO-HDM4-mCherry in VTA. Corrected to the Methods' list.
+  - fig1a-gad2-long-range-projections. The criterion required labelling above background in every animal; the Methods summarise per region as mean ± s.e.m. across animals and give no test. Now judged on the mean across animals, with the zero threshold named as the reader's.
+  - fig1e-spike-duration. The post hoc test was stated as pairwise t-tests; the legend names only FDR-corrected post hoc tests. Now said to be a reading.
+  - fig2e-somatic-backward. The speed gate was given in pixels per frame; the Methods say units per frame. Pixels is now named as a reading.
+  - fig2f-somatic-bins. The post hoc test was given without a source; now cited to the paired tests of Methods, Open-field video, with Wilcoxon signed-rank as the variant those Methods name.
+  - fig2h-terminal-backward. Return to baseline was judged by a mean ± 2 s.e.m. band set by the reader, though the paper has a test for the 3-4 s bin (Fig. 2i, p = 0.33). Now judged on that test, as in fig2i-terminal-bins.
+  - fig3g-firing-rate-no-difference. The statement said the rates are the same; the legend reports only a non-significant Mann-Whitney test. Restated as not differing, with the two means.
+  - Open. The paper's code (github.com/CGonzC/VTAPnO_Locomotion_Analysis) was not reread in this check; the header's account of it, and the criteria details taken from it (photometry fit and denominator floor, opto-tag shuffle parameters), are as the first reader recorded them.
+  - Open. No PDF was supplied, so no figure panel was seen; claims rest on the text and legends.
+  - Open. The paper reports that VTA-PnO units have low-jitter and DA units more variable tagging latencies (Results, Acute opto-tagging); jitter is not quantified and has no claim of its own.
+  - Checked, unchanged. Every quote, p-value, CI, n and expected value against the text; the criteria's readings for the open details (time base of Fig. 2f and 2i, FDR or Holm, frequency-screen mice and windows, photometry z-score baseline, activation windows and FDR family, temporal class gaps, the contradictory Supplementary Fig. 2f legend).
