@@ -120,59 +120,86 @@ outcomes:
   notebook: reproduce_okuno_2025.ipynb
   output: claim:fig3d-flyem-vs-flywire
   measured:
-  - 0.6161
-  - 0.5808
+  - 0.6058
+  - 0.5664
   assumed: true
-  notes: '63 primary ROIs, no smoothing, Poly-tCompCor, code''s eight flies, SC neuron layer 2. FlyEM r = 0.616 and FlyWire
-    r = 0.581, so FlyEM is higher but both are below the tolerances (0.657 to 0.803 and 0.612 to 0.748). FlyEM is higher in
-    every variant: no nuisance removal 0.630 against 0.592, nine flies 0.608 against 0.573, signed FC (O3) the same as the
-    main values, a second registration with another seed 0.611 against 0.570, left and right swapped 0.530 against 0.524.
-    Synapse SC gives 0.562 against 0.535. The paper''s own output file for the FlyWire setting (Zenodo, results/auc/poltcomparhemiroi_fw0sr140-fcauc.mat)
-    gives R(7) = 0.684 with the same SC, so the shortfall is in the FC computed here, most likely its missing motion and slice-timing
-    correction (claims file M1) and the registration, not in the SC.'
+  notes: >-
+    63 primary ROIs, no smoothing, Poly-tCompCor, code's eight flies, SC neuron layer 2. FlyEM r = 0.606 and FlyWire r
+    = 0.566, so FlyEM is higher but both are below the tolerances (0.657 to 0.803 and 0.612 to 0.748). FlyEM is higher
+    in every variant: no nuisance removal 0.636 against 0.597, nine flies 0.601 against 0.562, signed FC (O3) the same
+    as the main values, a second registration with seed 11 0.592 against 0.554, left and right swapped 0.518 against
+    0.508, and the two tdTomato in-plane shift series added to the nuisance regressors 0.611 against 0.571. Synapse SC
+    gives 0.553 against 0.524. The paper's own output file for the FlyWire setting (Zenodo,
+    results/auc/poltcomparhemiroi_fw0sr140-fcauc.mat) gives R(7) = 0.684 with the same SC, so the shortfall is in the
+    FC computed here, most likely its missing motion and slice-timing correction (claims file M1; the raw series moves
+    by about one voxel in plane) and the registration, not in the SC.
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
     is followed).
-  - Native voxel size from the NWB grid_spacing (2.55 to 2.61 by 2.61 to 2.68 by 5 um); the paper's NWB-to-NIfTI script is
-    not published, so the voxel size its NIfTI headers carried is not known.
+  - >-
+    Native voxel size from each fly's NWB grid_spacing (2.55 to 2.61 by 2.61 to 2.68 by 5 um); the earlier runs used
+    fly-087's spacing for every fly. The paper's NWB-to-NIfTI script is not published, so the voxel size its NIfTI
+    headers carried is not known.
   - Subjects. The code's subject list [1 2 3 4 5 6 8 9] is applied to the flies in name order, which the notebook confirms
     by reproducing the code's per-volume speed and walking regressor (data/behavior.mat) fly by fly to 1e-5; the seventh fly
     is fly-100. Nine flies are shown as a variant.
-  - Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed; with left
-    and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.514 against 0.603), which supports the choice.
-    The swapped result is shown for every claim.
+  - >-
+    Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed. With
+    left and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.518 against 0.606), and the paper's
+    own per-region FlyWire FC-SC values correlate with this attempt's at r = 0.661 as registered and 0.407 swapped,
+    which supports the choice. The GLM points the other way, more weakly: this attempt's walking t map correlates with
+    the paper's deposited map at r = 0.359 as registered and 0.394 mirrored, and per neuropil at 0.41 as registered
+    and 0.463 with left and right ROIs swapped. No flip is kept, as the stronger evidence and the one computed on the
+    quantity the FC claims use. The swapped result is shown for every claim.
   - The FlyEM SC is the 114-ROI cf0.8 connect list of the code repository indexed by the 63 primary ROIs of the FlyWire file;
     the paper's hemiroi_hb0sr80 file is not published but is computed by the same function over all 114 ROIs (makeStructConnectivity.m).
 - claim: fig3e-flyem-higher-most-regions
   outcome: reproduced
   notebook: reproduce_okuno_2025.ipynb
   output: claim:fig3e-flyem-higher-most-regions
-  measured: 53
+  measured: 55
   assumed: true
-  notes: 'FlyEM has the higher per-region FC-SC correlation in 53 of 63 regions (tolerance 52.2 to 63.8), 53 with nine flies
-    and 55 with a second registration. The count is close to the bound and depends on the orientation and the nuisance removal:
-    with left and right swapped it is 43 and without nuisance removal 50, both outside the tolerance. The orientation used
-    is supported by the paper''s own per-region FlyWire values (Zenodo auc file), which correlate with this attempt''s at
-    r = 0.704 as registered and r = 0.414 with left and right swapped.'
+  notes: >-
+    FlyEM has the higher per-region FC-SC correlation in 55 of 63 regions (tolerance 52.2 to 63.8), 54 with nine flies
+    and 55 with a second registration (seed 11). The outcome is not robust. The count is one to four regions above the
+    bound in every registration made so far (53, 54 and 55 in the earlier unseeded runs, 55 and 56 with their second
+    registrations), while the registration itself is unstable: the seed 11 registration moves native voxels by a
+    median of 2.5 to 44 um per fly. The count also depends on the orientation and the nuisance removal: with left and
+    right swapped it is 47 and without nuisance removal 51, both outside the tolerance. The orientation used is
+    supported by the paper's own per-region FlyWire values (Zenodo auc file), which correlate with this attempt's at r
+    = 0.661 as registered and r = 0.407 with left and right swapped; the GLM comparison points weakly the other way
+    (see the orientation deviation).
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
@@ -180,32 +207,44 @@ outcomes:
   - Subjects. The code's subject list [1 2 3 4 5 6 8 9] is applied to the flies in name order, which the notebook confirms
     by reproducing the code's per-volume speed and walking regressor (data/behavior.mat) fly by fly to 1e-5; the seventh fly
     is fly-100. Nine flies are shown as a variant.
-  - Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed; with left
-    and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.514 against 0.603), which supports the choice.
-    The swapped result is shown for every claim.
+  - >-
+    Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed. With
+    left and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.518 against 0.606), and the paper's
+    own per-region FlyWire FC-SC values correlate with this attempt's at r = 0.661 as registered and 0.407 swapped,
+    which supports the choice. The GLM points the other way, more weakly: this attempt's walking t map correlates with
+    the paper's deposited map at r = 0.359 as registered and 0.394 mirrored, and per neuropil at 0.41 as registered
+    and 0.463 with left and right ROIs swapped. No flip is kept, as the stronger evidence and the one computed on the
+    quantity the FC claims use. The swapped result is shown for every claim.
 - claim: fig3g-transmitter-correlation
   outcome: not_reproduced
   notebook: reproduce_okuno_2025.ipynb
   output: claim:fig3g-transmitter-correlation
   measured:
-  - 0.033
-  - -0.17
+  - -0.04
+  - -0.096
   assumed: true
-  notes: With this attempt's per-region FlyWire FC-SC correlation, the acetylcholine output share gives r = 0.033 (p = 0.80)
-    and GABA r = -0.170 (p = 0.18). No variant (no nuisance removal, nine flies, left and right swapped) gives a significant
-    ACh or GABA correlation. The paper's own per-region values from its Zenodo file, run through the same transmitter table,
-    give ACh r = 0.395 (p = 0.0014) and GABA r = -0.252 (p = 0.047), the paper's numbers, so the table is right and the difference
-    comes from the FC computed here (its per-region values correlate with the paper's at r = 0.704), which lacks the motion
-    and slice-timing correction of claims file M1.
+  notes: >-
+    With this attempt's per-region FlyWire FC-SC correlation, the acetylcholine output share gives r = -0.040 (p =
+    0.76) and GABA r = -0.096 (p = 0.46). No variant (no nuisance removal, nine flies, left and right swapped) gives a
+    significant ACh or GABA correlation. The paper's own per-region values from its Zenodo file, run through the same
+    transmitter table, give ACh r = 0.395 (p = 0.0014) and GABA r = -0.252 (p = 0.047), the paper's numbers, so the
+    table is right and the difference comes from the FC computed here (its per-region values correlate with the
+    paper's at r = 0.661), which lacks the motion and slice-timing correction of claims file M1.
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
@@ -213,9 +252,14 @@ outcomes:
   - Subjects. The code's subject list [1 2 3 4 5 6 8 9] is applied to the flies in name order, which the notebook confirms
     by reproducing the code's per-volume speed and walking regressor (data/behavior.mat) fly by fly to 1e-5; the seventh fly
     is fly-100. Nine flies are shown as a variant.
-  - Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed; with left
-    and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.514 against 0.603), which supports the choice.
-    The swapped result is shown for every claim.
+  - >-
+    Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed. With
+    left and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.518 against 0.606), and the paper's
+    own per-region FlyWire FC-SC values correlate with this attempt's at r = 0.661 as registered and 0.407 swapped,
+    which supports the choice. The GLM points the other way, more weakly: this attempt's walking t map correlates with
+    the paper's deposited map at r = 0.359 as registered and 0.394 mirrored, and per neuropil at 0.41 as registered
+    and 0.463 with left and right ROIs swapped. No flip is kept, as the stronger evidence and the one computed on the
+    quantity the FC claims use. The swapped result is shown for every claim.
 - claim: fig3a-postsynapse-counts
   outcome: partially_reproduced
   notebook: reproduce_okuno_2025.ipynb
@@ -321,22 +365,29 @@ outcomes:
   output: claim:fig4e-unsegregated-higher
   measured: 2373104
   assumed: true
-  notes: Unsegregated SC (code target sp10db3000mi1_only1) against the 99 rd185-20 null SC matrices, Poly-tCompCor, eight
-    flies. Neuron SC r = 0.636 against null 0.598 +- 0.0016 (z = +23.9, p = 3e-126); synapse SC r = 0.586 against 0.570 +-
-    0.0023 (z = +6.6, p = 3e-11); both above the null at p < 0.05/6. The paper's own deposited R values for the same SC matrices
-    give z = +25.7 and +13.7. The selected synapse total is 2,373,104 and the null totals do not differ from it (p = 0.832).
-    Nine flies agree; with left and right swapped the synapse SC is not different from the null (p = 0.88). Without nuisance
-    removal both are below the null (z = -9.0 and -10.6), so the result needs Poly-tCompCor, here applied to data without
-    motion correction.
+  notes: >-
+    Unsegregated SC (code target sp10db3000mi1_only1) against the 99 rd185-20 null SC matrices, Poly-tCompCor, eight
+    flies. Neuron SC r = 0.626 against null 0.587 +- 0.0016 (z = +23.5, p = 3e-122); synapse SC r = 0.577 against
+    0.560 +- 0.0023 (z = +7.4, p = 2e-13); both above the null at p < 0.05/6. The paper's own deposited R values for
+    the same SC matrices give z = +25.7 and +13.7. The selected synapse total is 2,373,104 and the null totals do not
+    differ from it (p = 0.832). Nine flies agree; with left and right swapped the synapse SC is not different from the
+    null (p = 0.17). Without nuisance removal both are below the null (z = -11.0 and -12.8), so the result needs
+    Poly-tCompCor, here applied to data without motion correction.
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
@@ -344,30 +395,42 @@ outcomes:
   - Subjects. The code's subject list [1 2 3 4 5 6 8 9] is applied to the flies in name order, which the notebook confirms
     by reproducing the code's per-volume speed and walking regressor (data/behavior.mat) fly by fly to 1e-5; the seventh fly
     is fly-100. Nine flies are shown as a variant.
-  - Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed; with left
-    and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.514 against 0.603), which supports the choice.
-    The swapped result is shown for every claim.
+  - >-
+    Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed. With
+    left and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.518 against 0.606), and the paper's
+    own per-region FlyWire FC-SC values correlate with this attempt's at r = 0.661 as registered and 0.407 swapped,
+    which supports the choice. The GLM points the other way, more weakly: this attempt's walking t map correlates with
+    the paper's deposited map at r = 0.359 as registered and 0.394 mirrored, and per neuropil at 0.41 as registered
+    and 0.463 with left and right ROIs swapped. No flip is kept, as the stronger evidence and the one computed on the
+    quantity the FC claims use. The swapped result is shown for every claim.
   - The selected and null SC matrices are the paper's own (Zenodo 15532272); only the FC comes from the dandiset.
 - claim: fig4f-segregated-lower
   outcome: reproduced
   notebook: reproduce_okuno_2025.ipynb
   output: claim:fig4f-segregated-lower
   assumed: true
-  notes: Reading (a), the code's target sp90db3000mi1, against the 99 rd1560-80 null SC matrices. Neuron SC r = 0.579 against
-    null 0.584 +- 0.0008 (z = -5.6, p = 2e-8); synapse SC r = 0.529 against 0.545 +- 0.0014 (z = -11.7, p = 2e-31); both below
-    the null at p < 0.05/6. The paper's deposited R values give z = -7.7 and -24.4. Nine flies and left-right swapped agree.
-    Without nuisance removal the neuron SC is not different from the null (p = 0.93) and the synapse SC is below it (p = 1e-6).
-    The null totals match the selected total (p = 0.64). Reading (b), both sides at 0.9 or more, needs an SC rebuilt from
-    the synapse table and was not run.
+  notes: >-
+    Reading (a), the code's target sp90db3000mi1, against the 99 rd1560-80 null SC matrices. Neuron SC r = 0.566
+    against null 0.570 +- 0.0008 (z = -4.8, p = 1.3e-6); synapse SC r = 0.519 against 0.534 +- 0.0014 (z = -10.9, p =
+    2e-27); both below the null at p < 0.05/6. The paper's deposited R values give z = -7.7 and -24.4. Nine flies and
+    left-right swapped agree. Without nuisance removal the neuron SC is not different from the null (p = 0.83) and the
+    synapse SC is below it (p = 1.4e-8). The null totals match the selected total (p = 0.64). Reading (b), both sides
+    at 0.9 or more, needs an SC rebuilt from the synapse table and was not run.
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
@@ -375,29 +438,42 @@ outcomes:
   - Subjects. The code's subject list [1 2 3 4 5 6 8 9] is applied to the flies in name order, which the notebook confirms
     by reproducing the code's per-volume speed and walking regressor (data/behavior.mat) fly by fly to 1e-5; the seventh fly
     is fly-100. Nine flies are shown as a variant.
-  - Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed; with left
-    and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.514 against 0.603), which supports the choice.
-    The swapped result is shown for every claim.
+  - >-
+    Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed. With
+    left and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.518 against 0.606), and the paper's
+    own per-region FlyWire FC-SC values correlate with this attempt's at r = 0.661 as registered and 0.407 swapped,
+    which supports the choice. The GLM points the other way, more weakly: this attempt's walking t map correlates with
+    the paper's deposited map at r = 0.359 as registered and 0.394 mirrored, and per neuropil at 0.41 as registered
+    and 0.463 with left and right ROIs swapped. No flip is kept, as the stronger evidence and the one computed on the
+    quantity the FC claims use. The swapped result is shown for every claim.
   - Only reading (a) of the criterion was run; reading (b) needs the per-synapse cPPSSI and positions to rebuild the SC.
 - claim: fig4i-reciprocal-higher
   outcome: reproduced
   notebook: reproduce_okuno_2025.ipynb
   output: claim:fig4i-reciprocal-higher
   assumed: true
-  notes: Reciprocal SC (code target rc20_only1) against the 99 rd140-15 null SC matrices. Neuron SC r = 0.640 against null
-    0.601 +- 0.0016 (z = +23.9, p = 2e-126); synapse SC r = 0.582 against 0.574 +- 0.0021 (z = +3.8, p = 0.00016, below 0.05/6).
-    The paper's deposited R values give z = +24.8 and +11.8. Nine flies agree. Without nuisance removal the synapse SC is
-    below the null (p = 0.0002), and with left and right swapped too (p = 0.00025), so the synapse part is fragile. The null
-    totals match the selected total (p = 0.852).
+  notes: >-
+    Reciprocal SC (code target rc20_only1) against the 99 rd140-15 null SC matrices. Neuron SC r = 0.629 against null
+    0.590 +- 0.0016 (z = +24.1, p = 8e-129); synapse SC r = 0.574 against 0.564 +- 0.0021 (z = +4.3, p = 1.5e-5, below
+    0.05/6). The paper's deposited R values give z = +24.8 and +11.8. Nine flies agree. Without nuisance removal the
+    neuron SC is not different from the null (p = 0.94) and the synapse SC is below it (z = -4.8, p = 1.3e-6); with
+    left and right swapped the synapse SC is below it too (z = -3.1, p = 0.002). The synapse part therefore rests on
+    the nuisance removal and the orientation. The null totals match the selected total (p = 0.852).
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
@@ -405,9 +481,14 @@ outcomes:
   - Subjects. The code's subject list [1 2 3 4 5 6 8 9] is applied to the flies in name order, which the notebook confirms
     by reproducing the code's per-volume speed and walking regressor (data/behavior.mat) fly by fly to 1e-5; the seventh fly
     is fly-100. Nine flies are shown as a variant.
-  - Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed; with left
-    and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.514 against 0.603), which supports the choice.
-    The swapped result is shown for every claim.
+  - >-
+    Left-right orientation. The files do not state it, and a symmetric brain cannot fix it. No flip is assumed. With
+    left and right swapped the matrix-level FC-SC correlations are lower (FlyEM 0.518 against 0.606), and the paper's
+    own per-region FlyWire FC-SC values correlate with this attempt's at r = 0.661 as registered and 0.407 swapped,
+    which supports the choice. The GLM points the other way, more weakly: this attempt's walking t map correlates with
+    the paper's deposited map at r = 0.359 as registered and 0.394 mirrored, and per neuropil at 0.41 as registered
+    and 0.463 with left and right ROIs swapped. No flip is kept, as the stronger evidence and the one computed on the
+    quantity the FC claims use. The swapped result is shown for every claim.
 - claim: figs4-1-flyem-permutation
   outcome: blocked
   blocked_by: data_missing
@@ -429,20 +510,30 @@ outcomes:
   notebook: reproduce_okuno_2025.ipynb
   output: claim:fig5b-walking-activation
   assumed: true
-  notes: Second level over the nine flies, graded regressor (O1, the code's), height p < 0.001 (t > 3.242, df 56). One positive
-    cluster of 396,982 voxels (the paper's deposited map, recomputed here from s80poltcomparfly-all-Tukey8full.mat, 416,801),
-    maximum t = 20.9 (paper 14.7). LAL, FB, IPS and GNG all lie in it with peak t at least half the maximum (reading a) under
-    the hemibrain and JFRC2010 atlases and with the binary regressor. Reading (b) fails for LAL (rank 23 of 63). The per-neuropil
-    mean t correlates with the paper's deposited map at r = 0.447.
+  notes: >-
+    Second level over the nine flies, graded regressor (O1, the code's), height p < 0.001 (t > 3.242, df 56). One
+    positive cluster of 404,335 voxels (351,796 with the binary regressor; the paper's deposited map, recomputed here
+    from s80poltcomparfly-all-Tukey8full.mat, has one of 416,801), maximum t = 17.2 (paper 14.7). LAL, FB, IPS and GNG
+    all lie in it with peak t at least half the maximum (reading a) under the hemibrain and JFRC2010 atlases and with
+    both regressors. Reading (b), a mean t in the top third of the neuropils, holds for all four under the hemibrain
+    atlas with both regressors (LAL(L) rank 19 graded and 21 binary of 63, where the top third ends at 21); under
+    JFRC2010 it fails for LAL (ranks 28 to 32 of 75) and holds for the other three. The per-neuropil mean t correlates
+    with the paper's deposited map at r = 0.41.
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
@@ -461,22 +552,30 @@ outcomes:
   notebook: reproduce_okuno_2025.ipynb
   output: claim:fig5b-walking-suppression
   assumed: true
-  notes: 'No voxel in the brain mask falls below -3.242 (the lowest t is -1.74), so there is no negative cluster, under either
-    regressor. WED(R) and AVLP(R) are mostly positive: 87 to 98% of their voxels are above the positive threshold (hemibrain
-    atlas). The paper''s deposited second-level map has the README''s two negative clusters (406 and 260 voxels, t = -6.14
-    and -5.65 at (82,78,12) and (174,80,15)); at those voxels this attempt has t = 3.32 and 4.62. In the paper''s map too,
-    58% of AVLP(R) and 88% of WED(R) are positive-significant. The two maps correlate voxel by voxel at r = 0.363, so the
-    difference lies in this attempt''s processing (no motion or slice-timing correction, no Tukey taper), which the deposited
-    map shows the paper''s processing does not share.'
+  notes: >-
+    No voxel in the brain mask falls below -3.242 (the lowest t is -0.70, and -0.68 with the binary regressor), so
+    there is no negative cluster. WED and AVLP are mostly positive: 88 to 100% of their voxels are above the positive
+    threshold under both atlases and both regressors. The paper's deposited second-level map has the README's two
+    negative clusters (406 and 260 voxels, t = -6.14 and -5.65 at (82,78,12) and (174,80,15)); at those voxels this
+    attempt has t = 4.37 and 4.68. In the paper's map too, 58% of AVLP(R) and 88% of WED(R) are positive-significant.
+    The two maps correlate voxel by voxel at r = 0.359 (0.394 with this attempt's map mirrored), so the difference
+    lies in this attempt's processing (no motion or slice-timing correction, no Tukey taper), which the deposited map
+    shows the paper's processing does not share. Neither orientation gives a negative voxel.
   deviations:
-  - 'Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing correction
-    was applied (claims file M1 requires it): a streamed in-plane realignment and slice-timing correction were written in
-    the revision but did not finish within the notebook limit, so the data are uncorrected. The mean of three blocks of 152
-    green volumes was registered to the resized FDA template with antspy (affine start, the better of mean squares and Mattes
-    mutual information, then SyN with defaults), and the ROI means were computed through the registration''s linear interpolation
-    map, which equals warping each volume and averaging (extractROItimeseries.m). The registration is not repeatable: a second
-    registration with another seed moved native voxels by a median of 3 to 35 um per fly (data check), and the notes give
-    the results under it.'
+  - >-
+    Registration (claims file O2). The paper gives no SPM12 or ANTs settings. No SPM12 motion or slice-timing
+    correction was applied (claims file M1 requires it), so the data are uncorrected. The raw series moves: a rigid
+    in-plane shift estimated per volume from the tdTomato channel has a median of 0.6 to 3.2 um and a 95th percentile
+    of 2.8 to 6.1 um per fly, against an in-plane voxel of about 2.6 um (motion cell). Regressing the two shift series
+    out moves the fig3d values by 0.005; that check does not stand in for a realignment and was not applied to the
+    other claims. The mean of three blocks of 152 green volumes was registered to the resized FDA template with antspy
+    (affine start, the better of mean squares and Mattes mutual information, then SyN with defaults), and the ROI
+    means were computed through the registration's linear interpolation map, which equals warping each volume and
+    averaging (extractROItimeseries.m). The registration is seeded through ants.config (antspy 0.6.3 ignores the
+    random_seed argument that the earlier runs passed, so they were unseeded) with ITK on one thread, and it now
+    repeats exactly; two runs of the notebook gave identical output. It is unstable across seeds: a registration with
+    seed 11 moved native voxels by a median of 2.5 to 44 um per fly, and its ROI series correlate with the first at a
+    median of 0.18 to 0.98 (data check). The notes give the results under it.
   - tCompCor (claims file M3). The 1000 highest-SD voxels are taken among native voxels inside the template's field of view,
     not among template voxels after warping, an assumption made to avoid warping every volume. Their SD is taken on the mean-centred
     series before detrending, as lib/getNuisancetCompCor.m does (the claims file's M3 says after detrending; the code it cites
@@ -515,12 +614,13 @@ findings:
   statement: Question for the paper's authors. The paper does not give the SPM12 realignment and slice-timing settings, the
     ANTs registration settings, or the voxel size written into the NIfTI files by its NWB-to-NIfTI script, which is not published.
     This attempt registered the mean green image with antspy SyN without motion or slice-timing correction and obtains a FlyWire
-    FC-SC correlation of 0.581 on the 63 primary ROIs where the paper's own output file gives 0.684, and finds no negative
+    FC-SC correlation of 0.566 on the 63 primary ROIs where the paper's own output file gives 0.684, and finds no negative
     GLM cluster where the paper's deposited map has two. Which settings were used?
 - kind: metadata_insufficient
   statement: The NWB files do not state the orientation of the functional volumes relative to the brain (which end of each
     axis is left, dorsal or anterior). Dorsoventral and anteroposterior can be read from the images against the template;
-    left and right cannot, and one claim's outcome (fig3e) changes with it.
+    left and right cannot. With left and right swapped, fig3e and the synapse parts of fig4e and fig4i would no longer be
+    reproduced; the evidence on which way is right conflicts between the FC and the GLM comparisons with the paper's deposits.
 - kind: metadata_error
   statement: TwoPhotonSeriesFunctionalGreen and Red store data as (time, 256, 128, 49) while their `dimension` attribute is
     [128, 256, 49]. The processed FDA-space series has an imaging plane with grid_spacing [1, 1, 1] in unit 'unknown', so
@@ -529,9 +629,8 @@ findings:
   statement: The dandiset's FicTrac speed, in the files' name order, reproduces the per-volume speed and the walking regressor
     stored in the paper's code (data/behavior.mat) to within 1e-5 for all nine flies, with the code's 104.654892 ms offset,
     which confirms the subject order and the alignment of behaviour to imaging. The seventh fly in that order (fly-100), the
-    one the code leaves out, has the lowest coverage of any fly after registration (in the run of 2026-11-16, 8 hemibrain
-    ROIs partly outside the field of view, AL(L) 59% inside; the coverage moves between runs with the registration), consistent
-    with the paper's stated reason.
+    one the code leaves out, has the lowest coverage of any fly after registration (9 hemibrain ROIs partly outside the field
+    of view, AL(L) 55% inside; the next lowest, fly-105, has 2 ROIs at 99%), consistent with the paper's stated reason.
 - kind: other
   statement: The paper's deposited second-level GLM (Zenodo 15532272, s80poltcomparfly-all-Tukey8full.mat) reproduces the
     code README's printed result exactly (maximum t 14.71, one positive cluster of 416,801 voxels, negative clusters of 406
@@ -602,8 +701,8 @@ verifications:
       Both values are outside tolerance under every variant. The paper's own deposited R(7) is 0.6835 for the same FlyWire
       SC, so the shortfall is in this attempt's FC.
     response: The missing motion and slice-timing correction (problem 1) is now stated in the deviations, the notebook summary
-      and here. A streamed realignment and slice-timing correction were written and tested on one fly (sub-voxel in-plane
-      motion), but the full notebook with them ran past the 60-minute cell limit twice, so the run is on uncorrected data.
+      and here. A streamed realignment and slice-timing correction were written and tried on one fly (that test left no output in the
+      notebooks; round 2 adds a motion check), but the full notebook with them ran past the 60-minute cell limit twice, so the run is on uncorrected data.
       Added a second registration with another seed (FlyEM 0.611, FlyWire 0.570). Re-run values 0.616 and 0.581; outcome unchanged.
   - claim: fig3e-flyem-higher-most-regions
     agrees: true
@@ -723,3 +822,285 @@ verifications:
       PPSSI table has 0.1332, matching 0.133 +- 0.0133. The connectivity counts need codex sc50.
     response: 'Problem 5: tested in the companion notebook from the deposited PPSSI and synapse tables; outcome changed from
       blocked to reproduced under reading (b).'
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebooks of the author-revise-1 run (reproduce_okuno_2025.ipynb and
+    connectome_okuno_2025.ipynb), the helper module, the claims file and this record, with the paper. Report in
+    transcripts/okuno-2025/verifier-2-report.md. The verifier agrees with all 30 outcomes. Its main finding was that
+    the notebook had been re-executed but its Result cells, summary and this record still quoted an earlier run,
+    because the registration changed between runs. In reply the registration was made repeatable (antspy 0.6.3 ignored
+    the random_seed argument; the seed is now set through ants.config with ITK on one thread), each fly's own voxel
+    size is used, a motion check from the tdTomato channel and the GLM orientation checks were added, the entry was
+    re-run twice with identical output, and every number in the notebook text and this record was rewritten from that
+    output. No outcome changed and none is proposed to change.
+  results:
+  - claim: fig1-poltcomp-optimal
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig2b-distkm-smoothing-optimum
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: figs2-1b-sckm-smoothing
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig2c-smoothing-plus-poltcomp
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: figs2-1d-highpass-degrades
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig2d-log-decline
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig2d-fly-values
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig2d-ten-thousand-rois
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: discussion-twenty-rois
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig3d-confidence-threshold
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig3d-flyem-vs-flywire
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agree. Cell 19 prints FlyEM 0.5925 and FlyWire 0.5557: FlyEM is higher, and both values are below tolerance. The
+      record's measured values (0.6161, 0.5808) are not this run's. The fig3d response's "tested on one fly (sub-voxel
+      in-plane motion)" has no output in either notebook. Motion and slice-timing correction (M1) are still missing;
+      whether the raw series needs the correction is still not shown in any output.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). The
+      registration is now seeded through ants.config (antspy 0.6.3 ignored the random_seed argument, so the earlier
+      runs were unseeded) with ITK on one thread; two full runs gave identical output. New values FlyEM 0.6058 and
+      FlyWire 0.5664, measured updated; outcome unchanged. Added a motion check: a rigid in-plane shift per volume
+      from the tdTomato channel (median 0.6 to 3.2 um, 95th percentile 2.8 to 6.1 um per fly, against a 2.6 um voxel),
+      so the motion is not sub-voxel; the round-1 response's unsupported parenthesis is corrected. With the shift
+      series added to the nuisance regressors fig3d gives 0.611 and 0.571, still below tolerance. A full SPM12-style
+      realignment and slice-timing correction were still not applied. Each fly's own grid_spacing is now used as its
+      voxel size.
+  - claim: fig3e-flyem-higher-most-regions
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree, but it is fragile. Cell 23 prints 55. Across runs the count has been 54 (round 1), 53 (record) and 55
+      (now), against a lower bound of 52.2. It falls out of tolerance with left and right swapped (44) and with no
+      nuisance removal (48). The record's measured: 53 is not this run's value. The registration is unstable: the
+      second seed moves voxels by up to about 25 um (median), and fig3e sits 1 to 3 regions above its bound across
+      runs, so its reproduced is not robust; its note should say so in terms of this instability, not "second or third
+      decimal". The orientation evidence conflicts: per-region r 0.637 as registered against 0.404 swapped, voxel-wise
+      GLM 0.373 against 0.40 flipped; fig3e depends on this choice.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). The
+      registration is now seeded through ants.config (antspy 0.6.3 ignored the random_seed argument, so the earlier
+      runs were unseeded) with ITK on one thread; two full runs gave identical output. The count is 55 (54 with nine
+      flies, 55 with the seed 11 registration, 47 swapped, 51 without nuisance removal); measured updated. The note
+      now says the outcome is not robust, in terms of the instability across registrations (53 to 56 so far, seed 11
+      moving voxels by a median of 2.5 to 44 um), and cell 2's "second or third decimal" is gone. The GLM orientation
+      checks are now printed (voxel-wise 0.359 against 0.394 mirrored, per neuropil 0.41 against 0.463 swapped) and
+      recorded in the orientation deviation beside the FC check (0.661 against 0.407); no flip is kept as the stronger
+      evidence. Outcome unchanged.
+  - claim: fig3g-transmitter-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agree. Cell 26 prints ACh r = -0.072 (p = 0.573) and GABA r = -0.067 (p = 0.601). The record's measured values
+      (0.033, -0.17) are not this run's.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). New values
+      ACh r = -0.040 (p = 0.76) and GABA r = -0.096 (p = 0.46); measured updated. Outcome unchanged.
+  - claim: fig3a-postsynapse-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agree. Cells 46 to 53 print values consistent with the notes.
+    response: >-
+      No change.
+  - claim: fig3c-regional-detection
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree. Cells 46 to 53 print values consistent with the notes.
+    response: >-
+      No change.
+  - claim: figs3-1a-regional-count-similarity
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree. Cells 46 to 53 print values consistent with the notes.
+    response: >-
+      No change.
+  - claim: fig3f-output-transmitters
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree. Cells 46 to 53 print values consistent with the notes.
+    response: >-
+      No change.
+  - claim: figs3-2cd-apl-similarity
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree. figs3-2cd is now not_runnable with a stated reason.
+    response: >-
+      No change.
+  - claim: fig4b-ppssi-distribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agree with reservations. The criterion defines no partial outcome for this claim, and the claims-file misreading
+      I raised in round 1 is still open. The claims file's quantity, neurons with a PPSSI = 139,255 with tolerance 0,
+      may misread the paper's count of neurons the index was applied to.
+    response: >-
+      Kept. The protocol's partially_reproduced covers a result that holds only in part, as here: the mean holds and
+      the count does not. The question for a reader stays open in questions/okuno-2025.yaml; the claim is unchanged.
+  - claim: fig4a-unsegregated-ranking
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agree. The FlyWire halves hold (connectome notebook cells 10 and 13). blocked_by: other is honest: the FlyEM
+      synapses are public but the DBSCAN was not run.
+    response: >-
+      No change.
+  - claim: fig4c-segregated-ranking
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agree. The FlyWire halves hold (connectome notebook cells 10 and 13). blocked_by: other is honest: the FlyEM
+      synapses are public but the DBSCAN was not run.
+    response: >-
+      No change.
+  - claim: figs4-1ij-segregation-index-biased
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agree. The FlyWire mean is 0.363, which is closer to 0.5 than to 0. The claim fails whatever the 0.25 bound and
+      whatever the untested FlyEM half gives.
+    response: >-
+      No change.
+  - claim: fig4e-unsegregated-higher
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree. In cell 30 the MAIN line is True/True. The Result cell's values (0.636 against 0.598, z = +23.9; 0.586
+      against 0.570, z = +6.6; no nuisance z = -9.0 and -10.6; swapped p = 5e-45 and 0.88) are not the printed ones.
+      fig4e's synapse result depends on the orientation choice.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). New
+      values: neuron z = +23.5, synapse z = +7.4, no nuisance z = -11.0 and -12.8, swapped synapse p = 0.17. The
+      orientation conflict is recorded in the deviation and the metadata_insufficient finding now names fig4e. Outcome
+      unchanged.
+  - claim: fig4f-segregated-lower
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree (reading a). In cell 32 the MAIN line is True/True. The Result cell's values (0.579 against 0.584, z =
+      -5.6; 0.529 against 0.545, z = -11.7; p = 0.93) are not the printed ones.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). New
+      values: neuron z = -4.8, synapse z = -10.9, no nuisance neuron p = 0.83. Outcome unchanged.
+  - claim: fig4i-reciprocal-higher
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree. In cell 34 the MAIN line is True/True; the synapse p = 1.4e-4 is below 8.3e-3. "Without nuisance removal
+      the synapse SC is below the null (p = 0.0002)": printed p = 0.0232, which is not significant at 0.05/6; the
+      fig4i no-nuisance statement reverses.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). In the
+      seeded run the synapse p is 1.5e-5; without nuisance removal the synapse SC is below the null (z = -4.8, p =
+      1.3e-6) and with left and right swapped too (z = -3.1, p = 0.002), as the notes now say from this run's output.
+      Outcome unchanged.
+  - claim: figs4-1-flyem-permutation
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The 14 blocked outcomes, agree.
+    response: >-
+      No change.
+  - claim: fig4h-reciprocal-distances
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree. The mode is the 1 to 2 um bin, and ACh plus GABA make up 0.756. The criterion says "pairs", but each
+      reciprocal synapse is counted from both of its neurons. The presynaptic-only split (0.761) gives the same
+      outcome.
+    response: >-
+      No change.
+  - claim: fig5b-walking-activation
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree under reading (a). Cell 38 prints True for all four neuropils, both atlases and both regressors. The
+      Result cell's 396,982 voxels, maximum t = 20.9, r = 0.447 and "Reading (b) fails for LAL (rank 23 of 63 at
+      best)" are not the printed values: cell 38 prints reading (b) True for LAL with the graded regressor; it fails
+      only with the binary regressor, and for GNG with the graded regressor under JFRC2010. No cell prints the
+      deposited positive cluster.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). In the
+      seeded run: one cluster of 404,335 voxels, maximum t = 17.2, per-neuropil r = 0.41; reading (b) holds for all
+      four under the hemibrain atlas with both regressors and fails only for LAL under JFRC2010. The deposited map's
+      positive cluster (416,801 voxels) is now printed. Outcome unchanged.
+  - claim: fig5b-walking-suppression
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agree. Cell 41: no voxel is below -3.24 (minimum -1.45). The Result cell's lowest t -1.74, 87 to 100%, t = 3.32
+      and 4.62 and r = 0.363 (0.390) are not the printed values.
+    response: >-
+      The Result cells, summary and record were rewritten from this run's output (see the round's summary). In the
+      seeded run the lowest t is -0.70, 88 to 100% of WED and AVLP voxels are positive-significant, t = 4.37 and 4.68
+      at the README peaks, voxel-wise r = 0.359 (0.394 mirrored). Outcome unchanged.
+  - claim: fig5-wagn
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agree (reading b). The values are PPSSI 0.1332 and 22 ascending neurons at sc50 with at least 5 synapses each.
+      At sc140 they are 212 synapses from the ANs, 65 to WPNb and a closest distance of 852.3 nm.
+    response: >-
+      No change.

@@ -23,7 +23,11 @@ Where each parameter comes from:
 - registration of the mean green image to the resized FDA template with ANTs SyN:
   Methods, Preprocessing ("the averaged NIfTI image was registered by ANTs to the
   resized FDA template"; Ext. Data Fig. 1-1a). Defaults of antspy's "SyN" are a
-  standard choice (claims file, O2). The mean image is taken over three blocks of
+  standard choice (claims file, O2). The native voxel size is each fly's NWB
+  grid_spacing. antspy 0.6.3 silently ignores a random_seed argument to
+  ants.registration; the seed is set through ants.config and ITK runs on one thread
+  (ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1), which makes a registration repeatable
+  (shown in the notebook). Another seed still gives another registration. The mean image is taken over three blocks of
   152 volumes (start, middle, end), a standard choice that cannot change which
   template voxel a native voxel maps to by more than the registration error.
 - the axis orientation of the native volume against the template is not stated in
@@ -83,8 +87,10 @@ CODE_TARBALL = f"https://github.com/takuto-okuno-riken/flywalk/archive/{CODE_COM
 ZENODO_RECORD = "15532272"
 ZENODO_URL = f"https://zenodo.org/api/records/{ZENODO_RECORD}/files/flywalkdemodata.zip/content"
 GREEN = "acquisition/TwoPhotonSeriesFunctionalGreen/data"
+RED = "acquisition/TwoPhotonSeriesFunctionalRed/data"
 SUBJECT_IDS = [1, 2, 3, 4, 5, 6, 8, 9]  # code's sbjids, 1-based, flies in name order
-NATIVE_SPACING_MM = (0.00261117299, 0.00261117299, 0.005)  # NWB grid_spacing (m -> mm)
+GRID_SPACING = "general/optophysiology/ImagingPlaneGCaMP6fFunctional/grid_spacing"
+os.environ.setdefault("ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS", "1")  # read when ITK starts
 
 
 # --------------------------------------------------------------------------- archive
@@ -108,6 +114,11 @@ def list_assets():
 
 def open_nwb(s3):
     return h5py.File(remfile.File(s3), "r")
+
+
+def spacing_mm(h5):
+    """The fly's native voxel size in mm, from the NWB grid_spacing (in m)."""
+    return tuple(float(v) * 1000 for v in h5[GRID_SPACING][()])
 
 
 class ChunkReader:
@@ -267,19 +278,26 @@ def _flip(a, fl):
     return a[::fl[0], ::fl[1], ::fl[2]].copy()
 
 
-def choose_flip(mean, tmpl_img, seed=1):
+def _seed(seed):
+    """antspy 0.6.3 passes --random-seed to antsRegistration only from ants.config."""
+    from ants import config
+    config._random_seed = seed
+
+
+def choose_flip(mean, tmpl_img, spacing, seed=1):
     """Correlation with the template after an affine registration, for each flip."""
     import ants
+    _seed(seed)
     out = {}
     tm = tmpl_img.numpy().ravel()
     for fl in FLIPS:
-        mov = ants.from_numpy(_flip(mean, fl).astype(np.float32), spacing=NATIVE_SPACING_MM)
-        r = ants.registration(tmpl_img, mov, type_of_transform="Affine", random_seed=seed)
+        mov = ants.from_numpy(_flip(mean, fl).astype(np.float32), spacing=spacing)
+        r = ants.registration(tmpl_img, mov, type_of_transform="Affine")
         out[fl] = float(np.corrcoef(tm, r["warpedmovout"].numpy().ravel())[0, 1])
     return out
 
 
-def register(mean, tmpl_img, fl, seed=1):
+def register(mean, tmpl_img, fl, spacing, seed=1):
     """SyN registration of the flipped mean image to the template.
 
     The affine start is the better of two affine registrations (mean squares and
@@ -291,20 +309,21 @@ def register(mean, tmpl_img, fl, seed=1):
     outside the field of view), the correlations with the template after the
     affine and the SyN stages, and the warped mean image."""
     import ants
+    _seed(seed)
     m = _flip(mean, fl).astype(np.float32)
     m = np.clip(m / np.percentile(m, 99.5), 0, 1)
-    mov = ants.from_numpy(m, spacing=NATIVE_SPACING_MM)
+    mov = ants.from_numpy(m, spacing=spacing)
     tm = tmpl_img.numpy().ravel()
     aff = {}
     for metric in ("meansquares", "mattes"):
         r = ants.registration(tmpl_img, mov, type_of_transform="Affine", aff_metric=metric,
-                              random_seed=seed, aff_iterations=(2100, 1200, 1200, 10),
+                              aff_iterations=(2100, 1200, 1200, 10),
                               aff_shrink_factors=(6, 4, 2, 1), aff_smoothing_sigmas=(3, 2, 1, 0))
         aff[metric] = (float(np.corrcoef(tm, r["warpedmovout"].numpy().ravel())[0, 1]),
                        r["fwdtransforms"][0])
     best = max(aff, key=lambda k: aff[k][0])
     r = ants.registration(tmpl_img, mov, type_of_transform="SyNOnly",
-                          initial_transform=aff[best][1], random_seed=seed)
+                          initial_transform=aff[best][1])
     cc = {"affine_" + k: v[0] for k, v in aff.items()}
     cc["syn"] = float(np.corrcoef(tm, r["warpedmovout"].numpy().ravel())[0, 1])
     shp = mean.shape
@@ -315,7 +334,7 @@ def register(mean, tmpl_img, fl, seed=1):
         sh = [1, 1, 1]
         sh[ax] = -1
         g[:] = idx.reshape(sh)
-        ci = ants.from_numpy(g, spacing=NATIVE_SPACING_MM)
+        ci = ants.from_numpy(g, spacing=spacing)
         w = ants.apply_transforms(tmpl_img, ci, r["fwdtransforms"], interpolator="linear",
                                   defaultvalue=-1e6).numpy()
         coords.append(w.ravel())
@@ -401,20 +420,21 @@ def process_fly(asset, tmpl_img, masks, n_top=1000, flip=(1, 1, 1), repeats=()):
     ct = rd.chunks[0]
     tstarts = {0, ct * ((T // ct) // 2), ct * ((T - 1) // ct)}
     mean = rd.mean_image(tstarts)
+    vox = spacing_mm(h5)
     fl = flip
-    coords, cc, warped = register(mean, tmpl_img, fl)
+    coords, cc, warped = register(mean, tmpl_img, fl, spacing=vox)
     P, inside = interp_matrix(coords, (X, Y, Z))
     W = roi_weights(masks, P)
     cover = np.array([inside[m.ravel()].mean() if m.any() else np.nan for m in masks])
     fov = np.asarray(P.sum(0)).ravel() > 0  # native voxels that reach the template grid
     Ws = []
     for seed in repeats:
-        c2, _, _ = register(mean, tmpl_img, fl, seed=seed)
+        c2, _, _ = register(mean, tmpl_img, fl, seed=seed, spacing=vox)
         P2, _ = interp_matrix(c2, (X, Y, Z))
         Ws.append(roi_weights(masks, P2))
         if seed == repeats[0]:
             ok = ~np.isnan(coords).any(1) & ~np.isnan(c2).any(1)
-            dmm = np.sqrt((((coords[ok] - c2[ok]) * np.array(NATIVE_SPACING_MM) * 1000) ** 2).sum(1))
+            dmm = np.sqrt((((coords[ok] - c2[ok]) * np.array(vox) * 1000) ** 2).sum(1))
             cc["repeat_displacement_um_median"] = float(np.median(dmm))
             cc["repeat_displacement_um_p95"] = float(np.percentile(dmm, 95))
     t_reg = time.time() - t0
@@ -423,7 +443,9 @@ def process_fly(asset, tmpl_img, masks, n_top=1000, flip=(1, 1, 1), repeats=()):
     top_sd = np.empty(0)
     top_ts = np.empty((0, T), np.float32)
     nvox = X * Y
+    proj = np.zeros((T, X, Y), np.float32)  # sum over z of each volume, for the motion estimate
     for z, a in rd.slices(range(Z)):
+        proj += a
         xz = a.reshape(T, nvox).astype(np.float32)
         cols = slice(z * nvox, (z + 1) * nvox)
         for Wx, Rx in [(W, R)] + list(zip(Ws, Rr)):
@@ -442,12 +464,45 @@ def process_fly(asset, tmpl_img, masks, n_top=1000, flip=(1, 1, 1), repeats=()):
             if top_sd.size > n_top:
                 keep = np.argpartition(-top_sd, n_top - 1)[:n_top]
                 top_sd, top_ts = top_sd[keep], top_ts[keep]
+    shift_green = inplane_shift(proj) * np.array(vox[:2]) * 1000
+    # the same from the structural tdTomato channel, which carries no activity, over the middle 20 slices
+    rr = ChunkReader(asset["s3"], h5, path=RED)
+    proj[:] = 0
+    for z, a in rr.slices(range(15, 35)):
+        proj += a
+    shift = inplane_shift(proj) * np.array(vox[:2]) * 1000
+    del proj
     h5.close()
-    return dict(subject=asset["subject"], R=R.T, R_repeats=[x.T for x in Rr], top_ts=top_ts, top_sd=top_sd,
+    return dict(subject=asset["subject"], R=R.T, shift=shift, shift_green=shift_green, vox=vox, R_repeats=[x.T for x in Rr], top_ts=top_ts, top_sd=top_sd,
                 flip=fl, cc=cc, cover=cover, coords=coords.astype(np.float32),
                 speed=speed, speed_rate=speed_rate, rate=rate, T=T, shape=(X, Y, Z),
                 mean=mean, warped=warped, t_reg=t_reg, t_total=time.time() - t0,
-                mb_read=rd.bytes_read / 1e6)
+                mb_read=(rd.bytes_read + rr.bytes_read) / 1e6)
+
+
+def inplane_shift(proj):
+    """Rigid in-plane shift (T x 2, voxels along x and y) of each volume's z-sum
+    against the mean over volumes, by cross-correlation with a parabolic sub-voxel
+    peak. A check of whether the raw series moves (the paper corrects motion with
+    SPM12, Methods, Preprocessing); it sees no motion along z."""
+    ref = np.fft.rfft2(proj.mean(0) - proj.mean())
+    T, X, Y = proj.shape
+    out = np.empty((T, 2))
+    for t0 in range(0, T, 256):
+        F = np.fft.rfft2(proj[t0:t0 + 256] - proj[t0:t0 + 256].mean((1, 2), keepdims=True))
+        Rm = F * np.conj(ref)
+        c = np.fft.irfft2(Rm, s=(X, Y))
+        for k in range(c.shape[0]):
+            i, j = np.unravel_index(np.argmax(c[k]), (X, Y))
+            sh = []
+            for ax, (n, q) in enumerate([(X, i), (Y, j)]):
+                lo = c[k][(q - 1) % n, j] if ax == 0 else c[k][i, (q - 1) % n]
+                hi = c[k][(q + 1) % n, j] if ax == 0 else c[k][i, (q + 1) % n]
+                d = lo - 2 * c[k][i, j] + hi
+                frac = 0.5 * (lo - hi) / d if d != 0 else 0.0
+                sh.append(((q + n // 2) % n - n // 2) + frac)
+            out[t0 + k] = sh
+    return out
 
 
 # --------------------------------------------------------------------------- nuisance and FC
@@ -480,13 +535,14 @@ def tcompcor(top_ts, Sd, ncomp=6):
     return U[:, :ncomp] * S[:ncomp]
 
 
-def roi_series(fly, nuisance):
-    """ROI series (T x ROIs) for nuisance '' (none) or 'poltcomp'."""
+def roi_series(fly, nuisance, extra=None):
+    """ROI series (T x ROIs) for nuisance '' (none) or 'poltcomp'; extra: further
+    nuisance columns (T x k) added to Poly-tCompCor (a variant)."""
     Y = fly["R"].T.copy()
     Y = Y - Y.mean(0)
     if nuisance == "poltcomp":
         Sd = poly_regressors(Y.shape[0])
-        Xn = np.hstack([Sd, tcompcor(fly["top_ts"], Sd)])
+        Xn = np.hstack([Sd, tcompcor(fly["top_ts"], Sd)] + ([] if extra is None else [extra]))
         Y = residualize(Y, Xn)
     elif nuisance != "":
         raise ValueError(nuisance)
