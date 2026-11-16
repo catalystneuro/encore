@@ -19,12 +19,12 @@ timestamps of all 30 imaged sessions, so every claim is tested there and counted
 | Platform-exit and freezing activity on day 2 (Figure 1P, 1Q, S1H) | Reproduced, except 1P partially; 1P and S1H sit near p = 0.05 |
 | Excited mixed cells at platform exits on day 1 (Figure 1R) | Partially reproduced (assumed reading) |
 | Tone strengthens entry and exit encoding (Figure 2) | Day 1 and exits reproduced; day 2 entries partially or not reproduced |
-| Decoding better in shocked mice (Figure 3A) | Reproduced (assumed readings; a change to partially reproduced is proposed, as the pre-shock part does not exceed shuffled-label decoders); peak before the shock not reproduced |
+| Decoding better in shocked mice (Figure 3A) | Reproduced (assumed readings; above shuffled-label decoders the pre-shock difference is not significant, a caveat outside the criterion); peak before the shock not reproduced |
 | Feature-encoding cells enhance decoding (Figure 3B) | Not reproduced (assumed readings); 3C blocked |
 | Hybrid Rescorla-Wagner model fits best (Figure 4B) | Reproduced (assumed tone windows) |
 | Cell registration (Figure 1N, 1O) | Blocked: not runnable (no registration deposited; CellReg is MATLAB) |
 | CILDS latent trajectories (Figure 4E to 4L, S3, S4; 13 claims) | Blocked: not runnable (MATLAB) |
-| Innate behaviours (Figure S2) | Blocked: not runnable (no jumping or rearing labels); the escape part fails, so not reproduced is proposed |
+| Innate behaviours (Figure S2) | Not reproduced (the escape part fails; jumping and rearing have no labels) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

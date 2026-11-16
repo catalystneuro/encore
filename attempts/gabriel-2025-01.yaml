@@ -376,9 +376,9 @@ outcomes:
   - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
     ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: figs2-innate-behaviors
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: 'Neither the Zenodo record nor the dandiset holds jumping, rearing or escape labels: the data check lists
+  outcome: not_reproduced
+  notes: 'The criterion needs the jumping, escape-excited and similar-activity parts all to hold; the escape-excited
+    part fails in every run, so the claim fails whatever the untested jumping part would give. Neither the Zenodo record nor the dandiset holds jumping, rearing or escape labels: the data check lists
     every field of Behavior.mat in all 30 sessions (platform, freezing, tone, platform entry and exit, tone onset
     and offset, inter-platform interval) and none names jumping, rearing or escape; Params.mat holds the freezing
     classifier''s parameters only. Making the labels would mean running BehaviorDEPOT''s default jumping and rearing
@@ -403,11 +403,6 @@ outcomes:
     on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
     camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
     Every result is also shown on the paper's bouts (`paper`).
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion is met only when the jumping, escape-excited and similar-activity parts all hold. The
-      escape part, run after round 2 as the round-2 report noted it could be, fails in all 24 runs (day 1 p = 0.40
-      to 0.99), so the claim fails whatever the jumping part gives. The jumping part still cannot be tested.
 - claim: fig2-day1-tone-stronger
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
@@ -518,8 +513,12 @@ outcomes:
     cohort (p = 0.17 and 0.057). Shuffled-label control (each mouse decoded again with its outcomes permuted 5
     times): with shuffled labels shocked mice score 0.476 pre-shock and 0.482 in the shock epoch, non-shocked
     mice 0.230 and 0.262. Above the shuffled values the pre-shock difference is not significant in any cohort or
-    coding (C1 N1 0.013 against -0.122, Sidak p = 0.57, 0.67 and 0.55 in the three cohorts); the shock epoch
-    is higher in shocked mice (C1 N1 p = 0.054, 0.046 and 0.048; C2 N1 p = 0.0018 to 0.013).'
+    coding (C1 N1 0.013 against -0.122, Sidak p = 0.57, 0.67 and 0.55 in the three cohorts; p >= 0.547 in every
+    cohort and coding), and under C1 N1 with all mice neither is the shock epoch difference (p = 0.054; 0.046 and
+    0.048 in the other two cohorts; C2 N1 p = 0.0018 to 0.013). With shuffled labels the groups do not differ
+    (pre-shock p = 0.455), and a mouse''s number of successes does not predict its shuffled value (r = 0.16, p
+    = 0.57). The control uses 5 permutations per mouse, and in 5 of 16 mice (F1, F2, F3, F7, M6) the normalised
+    F1 is 0 in every epoch, observed and shuffled. The control is not part of the criterion.'
   proposed:
     outcome: partially_reproduced
     reason: The shuffled-label control the round-2 report asked for shows the shocked mice's pre-shock value under
@@ -527,7 +526,12 @@ outcomes:
       pre-shock difference is not significant in any cohort or coding (p >= 0.55); the C1 N1 difference there
       comes from the non-shocked mice scoring below their own shuffled values (0.108 against 0.230). The shock
       epoch difference stays above the shuffled values (C1 N1 p = 0.046 to 0.054, C2 N1 p = 0.0018 to 0.013). The
-      claim holds for the shock epoch and not for the pre-shock epoch.
+      claim holds for the shock epoch and not for the pre-shock epoch. The round-3 verifier did not agree and would
+      keep reproduced (assumed C1 N1 and the clock tone windows). The criterion asks only for shocked mice higher with
+      Sidak p < 0.05 in the pre-shock and shock epochs, which C1 N1 meets in all three cohorts; the shuffled-label
+      control is not in the criterion or the paper, so its result belongs in the notes as a caveat. Under C1 N1
+      with all mice the shock epoch above the shuffled values also fails (p = 0.054), and citing C2 N1 for it mixes
+      readings. The control uses 5 permutations per mouse and is degenerate in 5 of 16 mice.
   deviations:
   - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
     calcium imaging and behaviour labels for 2 of 30 sessions.
@@ -1587,3 +1591,39 @@ verifications:
     reason: 'Unchanged since round 1, agreed. My round-1 reason was stated faithfully but was my own error: I wrote spread
       under 0.04 s, while cell 15 gives up to 0.050 (F7 day 1). The outcome is unaffected.'
     response: No change; the record's notes give the spread as under 0.1 s, which cell 15 supports.
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the two changes of outcome proposed after round 2 (figs2-innate-behaviors and fig3a-decoding-shock-gt-ns)
+    and the analysis behind them in the re-executed notebook (cells 56 to 58 and 71 to 74), with the claims file and
+    the paper. Report in transcripts/gabriel-2025/verifier-3-report.md.
+  results:
+  - claim: figs2-innate-behaviors
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The numbers come from the data (cell 57): escape frames are the calcium frames off the platform in the
+      last 2 s of each tone, as the STAR Methods and the claims file define them, escape cells are called with the
+      same whole-session ROC and activity measured with the same event_area as fig1p. Day 1 escape-excited cells give
+      p = 0.397 to 0.993 over all 24 runs; day 2 shocked mice are higher in every run but p >= 0.067; escape-suppressed
+      cells p < 0.05 in 0 of 48 runs. The analysis runs all three windows the criterion names, both tone readings
+      and four seeds, and they all agree, so the methods_underspecified clause does not apply. The criterion says
+      reproduced when the jumping, escape-excited and similar-activity parts all hold; the escape-excited part fails
+      on day 1 in all 24 runs, so the claim fails whatever the untestable jumping part would give. This settles the
+      reservation I raised in round 2.'
+    response: Outcome set to not_reproduced and the proposal removed; the notes, the notebook's result and summary
+      and the README now give not reproduced.
+  - claim: fig3a-decoding-shock-gt-ns
+    agrees: false
+    outcome: reproduced
+    reason: 'The criterion as written is met: under the assumed reading (C1 N1, clock windows) shocked mice are higher
+      with Sidak p < 0.05 in the pre-shock and shock epochs in all three cohorts (cell 72). The shuffled-label control
+      is not part of the criterion, and the paper has none; using it to change the outcome replaces the written criterion
+      with a new one, and its result belongs in the notes as a caveat. The control answers my round-2 concern in the
+      authors'' favour (with shuffled labels the groups do not differ, p = 0.455; successes do not predict the shuffled
+      value, r = 0.16, p = 0.57). Applied to the shock epoch the proposal''s own test fails under C1 N1 with all mice
+      (p = 0.054), and citing C2 N1 to keep that part mixes readings, a choice that reaches a result. The control
+      is weak: 5 permutations per mouse, and 5 of 16 mice have a normalised F1 of 0 in every epoch.'
+    response: Outcome kept as reproduced (assumed); the proposal stays with the verifier's view added to its reason.
+      The notes, the notebook's result and summary and the README now give the control as a caveat outside the criterion,
+      with the verifier's figures (pre-shock p >= 0.547 in every cohort and coding, shock p = 0.054 under C1 N1 with
+      all mice, 5 permutations, 5 degenerate mice).
