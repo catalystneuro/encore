@@ -1,0 +1,43 @@
+questions:
+- claim: fig5g-entropy-selectivity
+  asked: 2026-11-15
+  attempt: robotka-2023-01
+  question: C11 lists two readings of the Entropy Selectivity, (a) the code's, which normalizes the
+    diagonal of the unit's confusion matrix to sum 1 before the entropy, and (b) the formula as
+    printed, with the diagonal PCC values used directly. The Figure 5G legend says the index ranges
+    between 0 and 1, and the Methods speak of a normalized entropy of the probabilities in the
+    diagonal. Reading (b) takes negative values on these data (ensemble means of the unit values
+    -0.18 to -0.07), so it falls outside the range the legend gives. The claims file used the same argument
+    (a range the legend states) to rule out C3 reading (a) on C2 reading (a) for SI. Should reading
+    (b) stay a reading of C11 for this claim, or is the code's normalized ES the only one the paper
+    allows?
+  passage: 'Figure 5G legend, "The average entropy selectivity over all units in the ensemble: this
+    index also ranges between 0 and 1 and is based on the PCC of the decoder"; STAR Methods, Naive
+    Bayesian decoder and decoder-based selectivity, "we estimated the normalized entropy obtained
+    from the probabilities in the diagonals (PCCc in the equations below) and defined an
+    entropy-based selectivity measure", followed by GS = 1 - Hobs/Hmax with Hobs the sum over the
+    10 call types of -PCCc log2(PCCc).'
+  why: The outcome turns on it. With reading (b) the slope is negative and significant under both
+    cross-validations (code, -69.4, F(1,68) = 4.87, p = 0.031), so the claim is reproduced as the
+    claims file stands. With reading (a) alone, under the code's cross-validation that the attempt
+    adopts for the other ensemble claims, the slope is +18.9, p = 0.79, and the claim would hold
+    only under the Methods' cross-validation (p = 0.046). The verifier also notes that reading (b)
+    falls as single-unit PCC rises (-p log2 p grows with p up to 1/e), so a negative slope against
+    ensemble PCC is close to built in.
+- claim: fig6c-number-of-clusters
+  asked: 2026-11-15
+  attempt: robotka-2023-01
+  question: C12 says the code cuts the tree at 499 evenly spaced thresholds between its smallest and largest
+    linkage distance. The code at the pinned commit (EPHYS4-Population_Clustering.ipynb) sets delta =
+    (clustered.max()-clustered.min())/500 and start_thresh = clustered.min(), where clustered is the whole
+    scipy linkage matrix, so the minimum and maximum run over its index and count columns as well as its
+    distances (minimum 0, maximum at least 2n - 2 = 218 for 110 stimuli). Should C12 describe the code's grid
+    as it is, or does the paper intend the distance range the claims file gives?
+  passage: 'STAR Methods, Hierarchical clustering of neural ensemble activity, which names hierarchical agglomerative
+    clustering and the cut of maximal ARI without giving the thresholds; EPHYS4-Population_Clustering.ipynb at commit
+    f2d2376, "delta = (clustered.max()-clustered.min())/500", "start_thresh = clustered.min()", "for cl in range(1,500)".'
+  why: The claim is blocked for the acoustic labels, so no outcome changes now, but the call-type values the criterion
+    judges on their own depend on the grid. On the 1,800 Figure 5 ensembles with UMAP then Ward, the C12 grid gives
+    medians of 10 under both readings of the good units (outside 9 +- 0.9) and the code's grid medians of 9 (means
+    9.91 and 9.76, within 10.83 +- 1.083). The distance grid also never reaches 1 cluster, while the paper's range
+    starts at 1.

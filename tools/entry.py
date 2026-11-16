@@ -322,6 +322,28 @@ def check(entry_dir: Path) -> Report:
                 report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
+        # A finding is about the data (its dataset's page) or the paper (the paper's page). Its kind says which,
+        # except for these two kinds, which must say; and in an attempt on several datasets a finding about the data
+        # names the datasets it is about (docs/protocol.md, the attempt record).
+        import datasets as archive_datasets
+        used = [archive_datasets.folder(archive_datasets.key_of(d["archive"], str(d["id"])))
+                for d in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else [])]
+        # The rule is the protocol's from pilot-15. An attempt made under an earlier version is not held to it: its
+        # agents had not been told (a chain under way when the rule reached main ended in a failed check, as
+        # hazon-2022 did on 2026-11-12), and the site takes such a finding by its kind.
+        version = re.fullmatch(r"pilot-(\d+)", str(((attempt.get("provenance") or {}).get("agent") or {}).get("protocol") or ""))
+        told = not version or int(version[1]) >= 15
+        for n, f in enumerate(attempt.get("findings") or [], 1):
+            if told and f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
+            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
+                                                                   "paper_inconsistency") else "data")
+            if told and about == "data" and len(used) > 1 and not f.get("datasets"):
+                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
+                                    f"(`datasets:`, from {', '.join(used)})")
+            for d in f.get("datasets") or []:
+                if str(d) not in used:
+                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
         # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}
@@ -349,9 +371,17 @@ def check(entry_dir: Path) -> Report:
                 report.error(where, f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r}, but the last "
                                     f"verification agreed with {verified!r}; record the change under `proposed`, "
                                     "and verify it in another round")
-            if outcome.get("claim") not in known:
+            # Only the latest attempt is held to the claims file as it is now: a later reading of the paper may
+            # drop or rename a claim that an earlier attempt tested (tingley-2018, 2026-11-16).
+            if outcome.get("claim") not in known and path == mine[-1]:
                 report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is not in the claims file")
             notebook = outcome.get("notebook")
+            # A claim that was tested names the notebook that tested it. One whose outcome changed from blocked
+            # in a late revision can be left without (andrews-2024, 2026-11-13): the site then lists it with the
+            # claims no notebook tests.
+            if outcome.get("outcome") != "blocked" and not notebook:
+                report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r} "
+                             "and names no notebook; give the notebook that tests it (`notebook`) and its cell (`output`)")
             if notebook and notebook not in listed:
                 report.error(path.relative_to(ROOT), f"notebook {notebook!r} is not in the entry")
             tag = outcome.get("output")

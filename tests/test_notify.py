@@ -47,6 +47,17 @@ def test_a_merge_closes_the_issue_and_a_failed_check_links_the_pull_request():
 
 
 
+def test_a_run_queued_on_the_verified_account_closes_the_issue():
+    # chain.sh with RUNNER_FALLBACK=queue:<file>: a run flagged on the unverified account hands the paper to the
+    # verified lanes, which needs no one, so its issue (issue 663, say) is closed with where the paper went.
+    status = ("jacobsen-2022 QUEUED ON VERIFIED at claims: FLAGGED on the unverified account: a request was "
+              "answered by claude-sonnet-5-5")
+    said = notify.closing_comment("jacobsen-2022", status)
+    assert said.startswith("The run of `claims` was flagged on the unverified account") and "Nothing is needed" in said
+    assert notify.closing_comment("jacobsen-2022", "jacobsen-2022 MERGED https://x/pull/1") == "Done: MERGED https://x/pull/1."
+    assert notify.closing_comment("jacobsen-2022", "jacobsen-2022 STOPPED at claims") is None
+
+
 def test_a_failed_run_says_which_step_failed_shows_its_log_and_what_to_do(monkeypatch):
     monkeypatch.setattr(notify, "branch_file", lambda folder, path: None)
     monkeypatch.setattr(notify, "failed_run", lambda run, lines=30: {
@@ -82,3 +93,16 @@ def test_each_stop_that_needs_a_person_says_what_to_do(monkeypatch):
             ("STOPPED: could not push attempt/000147 after merging main", "GitHub is up")):
         text = notify.body("000147", f"000147 {status}", "", "", "")
         assert "**Why:** " in text and "**What you can do:**" in text and told in text, status
+
+
+def test_a_notebook_over_the_time_limit_before_a_role_is_told_apart(monkeypatch):
+    monkeypatch.setattr(notify, "branch_file", lambda folder, path: None)
+    monkeypatch.setattr(notify, "failed_run", lambda run, lines=30: {
+        "steps": ['job `run`, step "Prepare the verifier\'s materials, and remove the repository"'],
+        "log": "nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 3600 seconds.\n"
+               "FAIL  reproduce_x.ipynb  (3608 s)"})
+    text = notify.body("drieu-2018", "drieu-2018 STOPPED at verifier-2", "the run of verifier-2 failed", "5", "")
+    assert "ran over the time limit when it was run again before `verifier-2`" in text
+    assert "reproduce_x.ipynb, stopped after 60 minutes" in text and "had not started" in text
+    assert "put `drieu-2018` first in the runner's queue" in text
+
