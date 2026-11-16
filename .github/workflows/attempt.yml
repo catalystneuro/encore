@@ -440,6 +440,14 @@ jobs:
             # Only the registry's own files: the sandbox leaves placeholder files for the paths it
             # protects (.bashrc, .gitconfig, ...) in the working directory.
             paths=(attempts claims entries README.md); [ ! -d questions ] || paths+=(questions)
+            # A new file over 20 MB is the author's scratch (a cache of loaded data), not part of an entry: on
+            # 2026-11-15 two pickles of 1.4 and 2.6 GB left in entries/petersen-2020 made a patch git could not
+            # apply ("patch too large"), and the role's work was lost. They are left out, and the log says so.
+            git ls-files --others --exclude-standard -z -- "${paths[@]}" | while IFS= read -r -d '' f; do
+              if [ "$(stat -c %s "$f")" -gt 20000000 ]; then
+                echo "::warning::Left out of the changes, over 20 MB: $f ($(stat -c %s "$f") bytes)"; rm -f "$f"
+              fi
+            done
             git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           elif [ "$ROLE" = recorder ]; then

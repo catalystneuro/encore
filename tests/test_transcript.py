@@ -52,6 +52,15 @@ def test_keeps_the_run_and_leaves_out_context_thinking_and_paper_text(tmp_path):
         assert gone not in text
 
 
+def test_a_line_cut_short_does_not_lose_the_transcript(tmp_path):
+    # A run stopped while writing its last line left half a JSON object; the export failed on it, and the role's
+    # transcript and report were lost (sohn-2019's verifier-2, 2026-11-15).
+    path = write_run(tmp_path / "run.jsonl", RUN)
+    whole = tool.render(path, "Demo")
+    path.write_text(path.read_text() + '{"type": "assistant", "message": {"content": [{"type": "text", "text": "cut sho')
+    assert tool.render(path, "Demo") == whole
+
+
 def test_long_tool_output_is_cut(tmp_path):
     text = tool.render(write_run(tmp_path / "run.jsonl", RUN), "Demo")
     assert "line 19" in text and "line 20" not in text

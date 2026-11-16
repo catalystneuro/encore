@@ -207,6 +207,15 @@ def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
     assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in papers and "format('-{0}', inputs.replicate)" in papers
 
 
+def test_an_authors_large_scratch_files_are_left_out_of_its_changes():
+    # petersen-2020, 2026-11-15: two pickles of 1.4 and 2.6 GB in the entry made a patch git refused to apply. New
+    # files over 20 MB are removed before the changes are collected, with a warning.
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    drop = workflow.index('git ls-files --others --exclude-standard -z -- "${paths[@]}"')
+    assert '-gt 20000000' in workflow[drop:drop + 400] and "::warning::Left out of the changes" in workflow[drop:drop + 400]
+    assert drop < workflow.index('git add -A -- "${paths[@]}" && git diff --cached --binary')
+
+
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
     # docs/replicates.md: every reference to the chain's branch goes through $br, which a replicate sets to
     # replicate/<paper>/<rN>; its runs are found by the name <paper>/<rN>; it ends before the reconcile step and the
