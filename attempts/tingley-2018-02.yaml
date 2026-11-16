@@ -641,6 +641,26 @@ findings:
   statement: Which probe each of the two depths in a session name belongs to, and the order of sites along a shank,
     are not stored (session descriptions; electrodes table). The depth analysis of Figure 4 needs both; the direction
     of the depth gradient depends on them.
+- kind: other
+  about: data
+  found: on_prompt
+  statement: In sub-DT9_ses-20170501 the trials do not match the head position. At the times of the trials' linearized
+    samples the head is a median 601.5 units from the template point each sample is assigned to (0.224 of the path length,
+    against 0.021 to 0.107 in the other sessions), at every shift from -2 to 2 s, and running speed inside the trial
+    windows does not rise at a shift of 0. In sub-DT2 20160221 the linearized positions match the head best 0.75 s after
+    the trial times (45.1 pixels, against 151.6 at 0).
+- kind: methods_unavailable
+  about: paper
+  found: on_prompt
+  statement: bz_phaseMap2Bins, which makeFig4.m (DavidTingley/papers at 9f4cd48) calls to bin spike phases for Figure
+    4, is in none of the public repositories, neither buzsakilab/buzcode at e615663 or its current master nor DavidTingley/scratch
+    at 2f80453.
+- kind: code_mismatch
+  about: paper
+  found: on_prompt
+  statement: In scratch_07_25_17_calc_firingMaps.m (DavidTingley/scratch at 2f80453), the loop that writes placeFields.20_pctThresh.mat,
+    the place-field file the figure scripts load, calls bz_getPlaceFields1D without a percentThreshold, so the function's
+    default of 0.01 (buzcode at e615663) applies, where STAR Methods state 20%.
 verifications:
 - date: '2026-11-16'
   kind: agent
@@ -1178,3 +1198,162 @@ verifications:
       notebook header no longer states one rule for readings, and the fig1i conclusion, the summary and the notes
       say the proposal was not agreed. The fig4d notes and conclusion now record the verifier's point that its criterion
       also lacks the clause; fig4d had no proposed change, so its round-2 outcome stands.
+reconciliation:
+  earlier: tingley-2018-01
+  date: '2026-11-16'
+  blind: true
+  findings:
+  - finding: 1
+    status: partly_fixed
+    now: 3
+    note: All 67 files now hold the lab's linearized positions, trial conditions and condition templates, and 61 flag
+      a CA1 channel (electrodes.ca1_channel). DT7 20170317 and the five DT9 sessions from 20170518 to 20170525 flag none,
+      which is finding 3.
+  - finding: 2
+    status: partly_fixed
+    now: 6
+    note: Units now carry shank, max_waveform_channel and raw_waveform in 65 of the 66 files with units, and electrodes
+      give shank_electrode_number; DT7 20170317 lacks the waveform columns, as finding 6 reports. The order of sites
+      along a shank is still not stored (finding 14).
+  - finding: 3
+    status: partly_fixed
+    now: 14
+    note: The region descriptions now define hpc as the probe aimed at dorsal CA1, not resolved to a subfield. All 67
+      session descriptions still say that which probe each depth belongs to, and what it is measured from, are not stored.
+  - finding: 4
+    status: partly_fixed
+    now: 1
+    note: The eight DT8 files whose positions span 1.141 to 1.310 now state meters, which is right. The 31 files that
+      hold millimetres (DT7 8, DT8 9, DT9 14), which tingley-2018-01 found consistent with their stated unit, now also
+      state meters, so the stated unit is wrong in other files.
+  - finding: 5
+    status: fixed
+    note: None of the 56 files with three position columns has z equal to y, and the 11 DT2 files now store only x and
+      y (earlier_findings.ipynb, section 5).
+  - finding: 6
+    status: fixed
+    note: The DT2 positions are now stored at a regular 30 Hz from 0 s, with no repeated or decreasing times in any of
+      the 11 files, and the description says how the lab's rounded timestamps were rebuilt.
+  - finding: 7
+    status: fixed
+    note: No unit in the 66 files with units has spike times out of order (earlier_findings.ipynb, section 7).
+  - finding: 8
+    status: partly_fixed
+    now: 2
+    note: No electrode is labelled unknown any longer, and the 43 units of DT7 20170317 are labelled hpc. DT2 positions
+      are still in pixels with no scale (all 11 descriptions now say the source has none), and DT7 20170324 still has
+      no units, which is finding 2.
+  - finding: 9
+    status: partly_fixed
+    now: 6
+    note: DT8 20170207 and 20170224 now give trial type and direction. The linear-track sessions (two of DT5, one of
+      DT7, six of DT9) and DT7 20170317 still have no trial_type or direction column, as finding 6 reports.
+  - finding: 10
+    status: still_present
+    now: 15
+    note: In DT9 20170501 the head is a median 601.5 units from the template point of each linearized sample at a shift
+      of 0 (0.224 of the path length, against 0.021 to 0.107 in the other files), and speed in the trial windows does
+      not peak at 0. In DT2 20160221 the speed check now peaks at 0.5 s, but the linearized positions match the head
+      best 0.75 s after the trial times (45.1 pixels, against 151.6 at 0).
+  - finding: 11
+    status: still_present
+    now: 5
+    note: The files hold 1696 LS and 3260 hippocampal units (2636 hpc, 624 ca3), against 1,647 and 2,951; the 43 units
+      of DT7 20170317, unlabelled before, now count as hpc. Which units the paper left out is still not documented.
+  - finding: 12
+    status: still_present
+    now: 16
+    note: bz_phaseMap2Bins, which makeFig4.m calls, is still in none of the public repositories, buzcode's master included.
+      buzcode at e615663 does hold bz_olypherInfo.m and bz_peerPrediction.m, which the earlier statement counted as missing,
+      and the NWB files now carry the contents of behavior.mat and sessionInfo that it names (linearized positions, trial
+      conditions, the CA1 channel).
+  - finding: 13
+    status: fixed
+    note: The quaternion is now processing/behavior/head_orientation, with unit dimensionless, in all 56 OptiTrack files,
+      and no file has allocentric_frame_tracking.
+  - finding: 14
+    status: partly_fixed
+    now: 5
+    note: Each session now flags its CA1 and CA3 channels (61 with CA1, 19 with CA3, 14 with both), so the per-session
+      channels can be recovered. Units still carry one hippocampal label per session (37 hpc, 11 ca3, 19 neither), so
+      a unit's subfield cannot, as finding 5 reports.
+  - finding: 15
+    status: still_present
+    now: 17
+    note: At the commits the paper's analysis used, scratch_07_25_17_calc_firingMaps.m still calls bz_getPlaceFields1D
+      with no percentThreshold in the loop that writes placeFields.20_pctThresh.mat (line 26), and the function's default
+      is 0.01 (line 31). tingley-2018-02 followed the 20% of the Methods and did not report it.
+  - finding: 16
+    status: fixed
+    note: All 67 files now chunk the LFP as 1048576 samples by 16 channels, so a single channel is read with 16 of the
+      96 or 128 channels.
+  outcomes:
+  - claim: hpc-unit-count
+    earlier: partially_reproduced
+    note: A change in the claims file. The earlier criterion gave partially reproduced when only the sum of CA1 and CA3
+      units was within 10% of 2,951; the present one needs both counts within tolerance under one reading and has no
+      partial rule on the sum. The data changed little (2,593 to 2,636 hpc units, the 43 of DT7 20170317 now labelled).
+  - claim: fig2e-ls-phase-lower-mse
+    earlier: reproduced
+    note: A difference in method. tingley-2018-02 sets the phase of position bins with no spike in the smoothing window
+      to 0, an assumption under which phase MSE is above rate MSE; its variant that leaves those bins out puts phase
+      lower (p = 2.1e-44 over conditions), as the earlier notebook found, but phases shifted within trials also beat
+      rate under it.
+  - claim: fig2fg-mse-difference
+    earlier: partially_reproduced
+    note: A difference in method, the same as for fig2e-ls-phase-lower-mse. With undefined phase set to 0 every phase
+      minus rate value is positive (+133 to +302); under the variant that leaves those bins out the LS values are negative,
+      as in the earlier notebook (-1,045 over LS conditions), but the hippocampal ones are larger in magnitude, so the
+      partial rule fails too.
+  - claim: ls-place-fields-unstable
+    earlier: not_reproduced
+    note: A difference in method, in the rate maps. tingley-2018-02 builds them on the lab's linearization and templates,
+      which this version adds, where tingley-2018-01 rebuilt its own; under reading (b) the hippocampal median falls
+      from 83.6% to 71.7%, so LS (81.7%) is higher at p = 9.6e-13, where the earlier medians (86.2% and 83.6%) did not
+      differ.
+  - claim: fig1g-phase-more-info-fine-scale
+    earlier: partially_reproduced
+    note: A change in the claims file and a difference in method. The present criterion adds the KS test of the Figure
+      1G legend as a reading, and the match holds only under it (37 of 44 coarse smoothings, where the t test gives 35);
+      tingley-2018-02 also sets undefined phase to 0, which its notes say produces the fine-scale excess.
+  - claim: fig4d-depth-gradient
+    earlier: partially_reproduced
+    note: A change in the claims file and in the dataset. The present criterion is met by either the per-animal or the
+      pooled reading and adds a within-session part, which the units' largest-waveform channels in this version make
+      testable; the outcome rests on one decoder reading (bb1) alone, while tingley-2018-01 fell short only because DT8
+      had r = +0.24.
+  - claim: fig6c-ca3-coherence-increases
+    earlier: not_reproduced
+    note: A change in the dataset and in the claims file. This version flags each session's CA1 and CA3 channels, so
+      CA3-LS coherence is measured in 19 sessions, where tingley-2018-01 grouped 11 sessions by unit label on a theta
+      channel it chose; the present criterion also follows makeFig6.m (multitaper coherence per trial, z-scored) where
+      the earlier one used the phase locking of a phase difference over ten segments.
+  - claim: fig6d-cfc-stronger-ca3
+    earlier: not_reproduced
+    note: A change in the dataset and in the claims file, as for fig6c-ca3-coherence-increases. With the flagged CA1
+      and CA3 channels and the per-trial, z-scored coupling of makeFig6.m, CA3 coupling is above CA1 (p = 5.3e-187 per
+      trial), where the earlier grouping of 11 CA3 and 36 CA1 sessions gave p = 0.089.
+  - claim: fig5g-assembly-neurons-stronger-phase
+    earlier: blocked
+    note: A difference in method. tingley-2018-01 judged that its 1% sample of pairs left most LS neurons without a sampled
+      pair and blocked the claim as not runnable in the time; tingley-2018-02 tested it on its sample of pairs, with
+      13 sampled LS neuron-conditions outside an assembly under the Methods rule.
+  - claim: fig6e-assembly-position
+    earlier: blocked
+    note: A difference in method, as for fig5g-assembly-neurons-stronger-phase. tingley-2018-01 needed every pair (about
+      12 process-hours) and blocked the claim; tingley-2018-02 tested it on its sample of pairs (452 CA1 and 71 CA3 assembly
+      pairs with a field).
+  - claim: speed-independent
+    earlier: blocked
+    note: A change in the claims file and in the protocol. tingley-2018-01 blocked the claim as methods_underspecified,
+      since the paper defines neither analysis; the present claims file, written by a reader from the paper, names readings
+      for both, and since pilot-9 every reading the paper allows is run before a claim is blocked.
+  protocol: tingley-2018-01 was made under pilot-7 and tingley-2018-02 under pilot-15. pilot-8 added to each claim the
+    paper's sentence word for word and its reported statistics. pilot-9 required the full text and took every part of
+    a criterion's method from the paper, running every reading it allows. pilot-10 split the reader from the author,
+    so the claims file was written again by a reader who had not seen the data (32 claims, against 25), where tingley-2018-01's
+    author wrote its own criteria after the data check, those of ls-neuron-count and hpc-unit-count after seeing the
+    counts; ls-information-lower became ls-lower-peak-info, so the two are not compared here. pilot-12 made repeat attempts
+    blind and added this reconciliation, pilot-13 raised the notebook limit to 60 minutes (tingley-2018-02's main notebook
+    is listed at 55), and pilot-14 filed records by paper, which moved the claims file from claims/000213/ to claims/tingley-2018.yaml.
+    docs/pilot-notes.md has no section for pilot-11 or pilot-15.
