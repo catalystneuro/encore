@@ -8,18 +8,17 @@ CRCNS bucket and reduced in memory by `drieu2018.py`.
 
 | Claims | Outcome |
 |---|---|
-| Peak rates lower in Passive 1; fields cover the track; field size alike (assumed field-size rule); theta frequency unchanged; theta asymmetry reduced in passive travel | Reproduced |
-| Theta scores above chance; quadrant scores highest in Active; joint score-slope excess in Active, for theta sequences and for replay | Reproduced |
-| No remapping between conditions (three claims); theta power lower in passive travel; precession slopes degraded | Partially reproduced |
-| Average and per-rat theta reconstructions; steeper Active theta slopes; decoding-quality control; steeper replay slopes after Active; forward replay after Active | Partially reproduced |
-| Travel alike across conditions; place-cell counts; burst frequency and proportions; precession range alike; sleep sessions alike | Not reproduced |
-| Proportion of significant theta sequences; replay scores and proportions relative to baseline; ripple-restricted replay | Not reproduced |
-| Bias correlations (fig. 3G, 4G); cell-count, firing-rate and lap-by-lap controls (figs. S7, S8, S10) | Blocked: too large |
+| Peak rates lower in Passive 1; fields cover the track; theta frequency unchanged; theta power (per-window reading) and asymmetry reduced in passive travel; precession range alike | Reproduced |
+| Theta scores above chance; per-rat reconstructions; steeper Active theta slopes; quadrant scores highest in Active; joint score-slope excess in Active, for theta sequences and for replay; forward replay after Active | Reproduced |
+| Place-cell counts (assumed field limits); no remapping between conditions (three claims); burst and precession proportions; precession slopes degraded | Partially reproduced |
+| Average theta reconstruction; proportion of significant theta sequences; decoding-quality, cell-count, firing-rate and lap-by-lap controls; replay scores relative to baseline | Partially reproduced |
+| Travel alike across conditions; field size alike; burst frequency; sleep sessions alike; steeper replay slopes after Active; replay proportions relative to baseline; ripple-restricted replay; bias correlations (fig. 3G, 4G) | Not reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The data set includes the paper's MATLAB scripts (`code.zip`), but not the channel lists, theta-cycle
 files and place-cell lists they load, so these were rebuilt from the data. The place cells found
-here outnumber the paper's. The attempt record, with the reasons and the differences from the
+here outnumber the paper's. A third notebook, added after the first round of verification, runs the
+decoding controls, the pairwise bias correlations on samples of pairs, and the decoding under other readings. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/drieu-2018-01.yaml`](../../attempts/drieu-2018-01.yaml).

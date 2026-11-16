@@ -545,6 +545,7 @@ FIELD_READINGS = {
     # name: (kernel s.d. in cm, min field size in bins, max size in bins, min spikes (Active, Passive))
     "a": (4.5, 0, None, (0, 0)),          # Methods only
     "b": (4.5, 10, None, (0, 0)),         # + FiringCurve's minSize 10 bins (claims file, reading b)
+    "c": (4.5, 10, 187, (50, 30)),        # the Methods' kernel with BatchPlaceFields.m's size and spike limits
     "code": (12.0, 10, 187, (50, 30)),    # BatchPlaceFields.m: smooth 5 bins, minSize 10, maxSize 3/4, min spikes
 }
 
@@ -639,10 +640,12 @@ def rayleigh(theta):
 
 
 def vtest(theta, mu0=0.0):
+    """V-test for a mean angle mu0; two-tailed P, as the paper's statistics are
+    (Methods, Data analysis and statistics)."""
     n = len(theta)
     V = np.sum(np.cos(theta - mu0))
     u = V * np.sqrt(2 / n)
-    return u, stats.norm.sf(u)
+    return u, 2 * stats.norm.sf(abs(u))
 
 
 # ----------------------------------------------------------------------------
@@ -796,6 +799,38 @@ def spike_train_spectrum_peak(u, lo=0.75, hi=1.25, dt=1 / 50, NW=3, K=5):
     if pk_i in (np.flatnonzero(m)[0], np.flatnonzero(m)[-1]):
         return np.nan
     return f[pk_i]
+
+
+def spike_train_spectrogram_peak(u, win, lo=0.75, hi=1.25, dt=1 / 50, NW=3, K=5, df=0.005):
+    """Theta burst frequency from a spectrogram (the paper's Methods, Theta burst
+    frequency: "spectrograms computed on the resulting spike trains"): the train in
+    theta-cycle units binned at 1/50 cycle, cut in windows of `win` cycles overlapping
+    by half, each window mean-subtracted and its multitaper spectrum taken (chronux
+    default tapers, standard choice) on a grid of 0.005 cycle^-1 within 0.75-1.25
+    cycle^-1; the spectra averaged over windows; the mode. The window is not given in
+    the paper; readings in the notebook."""
+    if len(u) < 20:
+        return np.nan
+    u = np.sort(u)
+    nb = int(np.ceil((u[-1] - u[0]) / dt)) + 1
+    n = int(round(win / dt))
+    if nb < 2 * n:
+        return np.nan
+    x = np.bincount(((u - u[0]) / dt).astype(int), minlength=nb).astype(float)
+    starts = np.arange(0, nb - n + 1, n // 2)
+    W = np.lib.stride_tricks.sliding_window_view(x, n)[starts]
+    W = W[W.sum(1) > 0]
+    W = W - W.mean(1, keepdims=True)
+    tap = signal.windows.dpss(n, NW, K)
+    f = np.arange(lo, hi + df / 2, df)
+    E = np.exp(-2j * np.pi * np.outer(np.arange(n) * dt, f))
+    S = np.zeros(len(f))
+    for k in range(K):
+        S += (np.abs((W * tap[k]) @ E) ** 2).sum(0)
+    k = int(np.argmax(S))
+    if k in (0, len(S) - 1):
+        return np.nan
+    return f[k]
 
 
 # ----------------------------------------------------------------------------
@@ -1088,7 +1123,8 @@ def reduce_lfp(r, P, ripple_peak_thr=3.0):
     the data set. Pyramidal-layer channels: the first channel of each spike group
     with at least one well-isolated pyramidal cell. Theta channel, reading (a):
     the one of these with the largest 6-10 Hz power during moving travel; reading
-    (b): their mean (claims file, Common methods, Theta cycles)."""
+    (b): their mean (claims file, Common methods, Theta cycles). Both leave out channels
+    with reversed theta (see below). Ripples use every pyramidal-layer channel."""
     lf = r["lfp"]
     data = lf["data"]
     groups_with_pyr = sorted({r["units"][i]["group"] for i in range(len(r["units"])) if P["pyr"][i] and P["iso"][i]})
@@ -1105,14 +1141,38 @@ def reduce_lfp(r, P, ripple_peak_thr=3.0):
         segs = [data[k, int(lo * LFP_FS):int(hi * LFP_FS)] for _, lo, hi in trav_mov]
         f, S, _ = mt_psd(segs)
         tpow.append(S[(f >= 6) & (f <= 10)].max())
-    best = rows[int(np.argmax(tpow))]
+    # Theta phase of the pyramidal cells' spikes on each channel (Hilbert phase of the
+    # 6-10 Hz LFP, 0 at peaks), Active travel, moving periods. A channel whose spike
+    # phase is more than 90 deg from the circular mean over channels has reversed theta,
+    # so it is not in the pyramidal layer (theta reverses below it; Buzsaki 2002); such
+    # channels are left out of the theta readings (an assumption, added after round 1 of
+    # verification: in rat 272 four channels are reversed and one had the most power).
+    a, b = P["ep"]["travel"]["A"]
+    i, j = int(a * LFP_FS), int(b * LFP_FS)
+    spk = np.concatenate([u["times"] for k_, u in enumerate(r["units"]) if P["pyr"][k_] and P["iso"][k_]])
+    spk = spk[(spk >= i / LFP_FS) & (spk < j / LFP_FS)]
+    spk = spk[in_intervals(spk, P["mov"])]
+    si = ((spk - i / LFP_FS) * LFP_FS).astype(int)
+    sph = []
+    for k in rows:
+        ph = np.angle(signal.hilbert(bandpass(data[k, i:j].astype(float), 6, 10)))
+        sph.append(np.angle(np.mean(np.exp(1j * ph[si]))))
+    sph = np.array(sph)
+    layer = np.ones(len(sph), bool)
+    for _ in range(3):   # the mean of the kept channels, recomputed once reversed ones are out
+        ref = np.angle(np.mean(np.exp(1j * sph[layer])))
+        layer = np.abs(np.angle(np.exp(1j * (sph - ref)))) <= np.pi / 2
+    trows = [k for k, ok in zip(rows, layer) if ok]
+    best = trows[int(np.argmax([p for p, ok in zip(tpow, layer) if ok]))]
     out = dict(pyr_rows=rows, pyr_channels=[lf["channels"][k] for k in rows], theta_row=best,
-               theta_channel=lf["channels"][best], theta_power_by_row=dict(zip(rows, tpow)), travel={})
+               theta_channel=lf["channels"][best], theta_power_by_row=dict(zip(rows, tpow)),
+               spike_phase_by_row=dict(zip(rows, np.degrees(sph))), theta_rows=trows,
+               reversed_channels=[lf["channels"][k] for k, ok in zip(rows, layer) if not ok], travel={})
     for c in CONDS:
         a, b = P["ep"]["travel"][c]
         i, j = int(a * LFP_FS), int(b * LFP_FS)
         out["travel"][c] = dict(t0=i / LFP_FS, a=data[best, i:j].astype(np.float32),
-                                b=data[rows, i:j].astype(np.float32).mean(0))
+                                b=data[trows, i:j].astype(np.float32).mean(0))
     # sleep: SWS on the theta channel; ripples on the pyramidal-layer channels
     out["sleep"] = {}
     for s in SLEEPS:
@@ -1232,3 +1292,99 @@ def replay_matrices(events, spikes, px, lam, win=0.02, min_dur=0.06, min_cells=3
         mats.append(decode(cnt, np.full(nw, win), px, lam))
         keep.append(k)
     return mats, np.array(keep, int)
+
+
+# ----------------------------------------------------------------------------
+# Controls (figs. S7 to S10) and pairwise bias correlations (added after round 1)
+# ----------------------------------------------------------------------------
+def train_on(P, c, cells, keep_t, rd="a", spikes=None):
+    """Occupancy prior and firing curves of condition c from the moving samples and
+    spikes whose times pass keep_t (a function of times returning a boolean mask), as
+    train_decoder does for the whole travel (used for lap-by-lap decoders and
+    downsampled spikes). spikes: optional list of spike-time arrays replacing the
+    cells' own (moving) travel spikes."""
+    cd = P["cond"][c]
+    a, b = cd["interval"]
+    sel = P["mv"] & (P["t"] >= a) & (P["t"] <= b)
+    sel &= keep_t(P["t"])
+    occ_lin = P["lin"][sel]
+    sd = FIELD_READINGS[rd][0] / (P["L"] / NBINS)
+    occ = np.bincount(np.minimum((occ_lin * NBINS).astype(int), NBINS - 1), minlength=NBINS).astype(float)
+    px = np.maximum(circ_gauss_smooth(occ, sd), 1e-12)   # floor: a lap may leave bins unvisited (standard choice)
+    px /= px.sum()
+    ok = np.isfinite(P["lin_unw"])
+    lam = []
+    for k, i in enumerate(cells):
+        st = cd["cells"][i]["spk_t"] if spikes is None else spikes[k]
+        st = st[keep_t(st)]
+        sl = np.mod(np.interp(st, P["t"][ok], P["lin_unw"][ok]), 1)
+        lam.append(firing_curve(sl, occ_lin, sd)[0])
+    return px, np.maximum(np.array(lam).reshape(len(cells), NBINS), 1e-3)
+
+
+def decode_cycles(P, edges, spikes, px, lam, min_spikes=3, min_cells=3, min_win=3):
+    """The cycle loop of decode_theta for given window edges (cycles x 7), spikes and
+    decoder. Returns the same dict (mats, cent, pos, dur, edges)."""
+    mats, cent, pos, dur, keep = [], [], [], [], []
+    ok = np.isfinite(P["lin_unw"])
+    tt, lu = P["t"][ok], P["lin_unw"][ok]
+    for e in edges:
+        cnt = spike_matrix(spikes, e)
+        if cnt.sum() < min_spikes or (cnt.sum(1) > 0).sum() < min_cells or (cnt.sum(0) > 0).sum() < min_win:
+            continue
+        post = decode(cnt, np.diff(e), px, lam)
+        mid = (e[:-1] + e[1:]) / 2
+        cb = np.floor(np.mod(np.interp(mid, tt, lu), 1) * NBINS).astype(int)
+        mats.append(post)
+        cent.append(np.array([np.roll(post[k], NBINS // 2 - cb[k]) for k in range(6)]))
+        pos.append(cb)
+        dur.append(e[-1] - e[0])
+        keep.append(e)
+    return dict(mats=mats, cent=np.array(cent).reshape(-1, 6, NBINS), pos=np.array(pos).reshape(-1, 6),
+                dur=np.array(dur), edges=np.array(keep).reshape(-1, 7))
+
+
+def laps_of(P, c, t):
+    """Lap index of times t in travel condition c: completed turns of the unwrapped
+    linear position since the start of the travel (as laps are counted for figs1)."""
+    a, b = P["cond"][c]["interval"]
+    ok = np.isfinite(P["lin_unw"])
+    u = np.interp(t, P["t"][ok], P["lin_unw"][ok])
+    u0 = np.interp(a, P["t"][ok], P["lin_unw"][ok])
+    return np.floor(u - u0).astype(int)
+
+
+def bias_counts(O):
+    """Pairwise order counts of one sequence: O is (spikes x cells) one-hot, in time
+    order (or a stack of such, shape (..., spikes, cells)). Returns the bias matrix
+    B(i, j) = (n(i, j) - n(j, i)) / (n(i) n(j)) (the paper's Methods, Pairwise bias
+    correlations), n(i, j) the number of spike pairs with i before j."""
+    before = np.cumsum(O, -2) - O
+    N = np.einsum("...bi,...bj->...ij", before, O)
+    n = O.sum(-2)
+    return (N - np.swapaxes(N, -1, -2)) / (n[..., :, None] * n[..., None, :])
+
+
+def bias_correlation(seq_k, seq_l, n_sur, rng):
+    """Bias correlation of two sequences (arrays of cell ids in spike order) over the
+    cells active in both; None when fewer than 3 are common (Methods). Surrogates
+    shuffle the spike order of the second sequence (Methods); returns the
+    correlation and the proportion of surrogates at or above it."""
+    common = np.intersect1d(seq_k, seq_l)
+    if len(common) < 3:
+        return None
+    sk = seq_k[np.isin(seq_k, common)]
+    sl = seq_l[np.isin(seq_l, common)]
+    Ok = (sk[:, None] == common[None, :]).astype(float)
+    Ol = (sl[:, None] == common[None, :]).astype(float)
+    Bk = bias_counts(Ok).ravel()
+    perm = np.argsort(rng.random((n_sur, len(sl))), 1)
+    Bs = bias_counts(Ol[perm]).reshape(n_sur, -1)
+    Bl = bias_counts(Ol).ravel()
+    def cos(x, Y):
+        den = np.linalg.norm(x) * np.linalg.norm(Y, axis=-1)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            return np.where(den > 0, (Y @ x) / den, np.nan)
+    rho = float(cos(Bk, Bl[None])[0])
+    sur = cos(Bk, Bs)
+    return rho, float(np.mean(sur >= rho)) if np.isfinite(rho) else np.nan
