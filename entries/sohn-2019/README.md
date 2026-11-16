@@ -40,7 +40,7 @@ paper's method, is [`attempts/sohn-2019-02.yaml`](../../attempts/sohn-2019-02.ya
 
 - `reproduce_sohn_2019.ipynb`: behaviour, the Bayesian model, the GLM, PCA, encoding axis, speed
   and the alternative mechanisms. It takes about a minute.
-- `gpfa_sohn_2019.ipynb`: the single-trial GPFA analysis (Elephant's GPFA). It takes about twelve
+- `gpfa_sohn_2019.ipynb`: the single-trial GPFA analysis (Elephant's GPFA). It takes about sixteen
   minutes.
 - `rsg.py`: loading the files, unit and trial selection, rates, PCA, the encoding axis and the
   Bayesian observer model. Other notebooks on this dandiset can import it.

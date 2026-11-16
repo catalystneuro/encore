@@ -86,14 +86,15 @@ outcomes:
     is 0.671 (Eye Left), 0.128 (Eye Right), 0.978 (Hand Left) and 0.865 (Hand Right), so at least
     0.8 in 2 of 4; the squared correlation gives the same split. Fitted wm are 0.025, 0.014, 0.117
     and 0.074, and wp 0.103, 0.106, 0.090 and 0.104; all fits converged. In the Eye datasets the
-    behaviour is nearly unbiased and the model fits a small wm. Against Table S3 (monkey H, mean and
+    model fits a small wm and so predicts little bias. Against Table S3 (monkey H, mean and
     SD over sessions), every fitted parameter lies within 1.7 SD of the mean (largest |z| 1.68, bLong
     of Hand Right); wm is below the mean in both Eye datasets (z = -1.11 and -1.46) and above it in
     both Hand datasets (1.26 and 0.45), and wp is 0.2 to 1.0 SD above it.
   deviations:
-  - The model is fit per dataset on one session. Table S3 gives fits made "to each session
-    separately" (supplement, Table S3 legend), so this is the paper's procedure for one of its 17
-    sessions of H.
+  - The model is fit per dataset on one session. The paper describes its fits two ways, "after
+    pooling across sessions (Table S3)" (STAR Methods, Analysis of behavior with a Bayesian model) and "to each
+    session separately" (supplement, Table S3 legend); see the paper_inconsistency finding. With
+    one session the two are the same here.
   - Numerical integration on fixed grids (241 points of tm, 201 of the prior) and Nelder-Mead from 8
     starting points; standard numerical choices.
 - claim: glm-prior-ts
@@ -158,8 +159,9 @@ outcomes:
     0.9809 soft, 0.9830 and 0.9693 z-scored), with random-axis medians of 0.872 to 0.944 and 0.736
     to 0.907.
   deviations:
-  - te comes from the Bayesian model fitted to the same dataset of this session, where the paper's
-    model is fitted to pooled sessions.
+  - te comes from the Bayesian model fitted to the same dataset of this session. The paper's fits
+    pool sessions in the STAR Methods and are per session in the Table S3 legend (see the
+    paper_inconsistency finding).
 - claim: encoding-bayes-beats-linear
   outcome: partially_reproduced
   notebook: reproduce_sohn_2019.ipynb
@@ -179,10 +181,12 @@ outcomes:
   notes: The two-sided signed-rank test of the RMSE difference over the 4 datasets gives p = 0.125
     with the axis from the state at 480 to that at 800 ms and p = 0.25 with averaged difference
     vectors; with 4 datasets p cannot fall below 0.125. With the single axis the Bayesian RMSE is
-    lower in 4 of 4 datasets (mean difference -0.096, against -0.260 for the Short prior); with the
-    averaged axis in 3 of 4. The test does not find the effect, but the data show a smaller version
-    of the Short-prior effect in this period. In the soft-normalised and z-scored PC spaces
-    (variants) p = 0.875 and 0.25, with the Bayesian RMSE lower in 2 and 1 of 4 datasets.
+    lower in 4 of 4 datasets (mean difference -0.096, against -0.260 for the Short prior), though in
+    Hand Left the difference is -0.0007, which is zero; with the averaged axis it is lower in 3 of
+    4. The test does not find the effect. In the 2-PC space of unnormalised rates the data show a
+    smaller version of the Short-prior effect in this period; in the soft-normalised and z-scored
+    PC spaces (variants) p = 0.875 and 0.25, with the Bayesian RMSE lower in only 2 and 1 of 4
+    datasets, so there they do not.
   deviations:
   - The Methods' "same projection analysis" (STAR Methods, Analysis of neural projection) would
     average the difference vectors; that axis is shown and gives the same outcome.
@@ -247,8 +251,9 @@ outcomes:
     permutations), the observed slope exceeds the permutation mean in 1 of 4 (Short) and 0 of 4
     (Long) datasets and lies outside the permutation 95% range in 2 and 1 of 4 (Eye Left Short
     above, Hand Left Short and Eye Left Long below). On unsmoothed rates the slopes are 37 to 77 per
-    s, above the permutation mean in 1 and 2 of 4. The positive slopes are what attrition gives
-    without any time course; the bootstrap intervals resample trials with replacement and sit above
+    s, above the permutation mean in 1 and 2 of 4. Attrition explains the sign and size of most
+    slopes, but not all, as Eye Left Short is above the permutation range (7.926 against 7.796, 2% of
+    permutations as large). The bootstrap intervals resample trials with replacement and sit above
     the point estimates, so they are not used as the effect size. A reader is asked whether the
     criterion should use unsmoothed rates (questions/sohn-2019.yaml); with 4 datasets the test
     gives the same outcome either way.
@@ -327,8 +332,8 @@ findings:
     1220 ms for Long-prior trials. The data hold 1220 ms for every Short trial and 500 ms for every
     Long trial, as the paper's Methods state.
 - kind: metadata_insufficient
-  statement: The `tp` column is longer than go_time - set_time in every completed trial, by 0.1 to
-    153.3 ms (median 17.9 ms; more than 60 ms in 13 trials). The files do not say how tp was measured
+  statement: The `tp` column is longer than go_time - set_time in every completed trial (1025), by
+    0.1 to 162.4 ms (median 17.9 ms; more than 60 ms in 14 trials). The files do not say how tp was measured
     or which of the two is the produced interval. set_time - ready_time differs from `ts` by up to
     23.5 ms in either direction.
 - kind: data_missing
@@ -347,6 +352,12 @@ findings:
     or probe; the electrodes table has no positions or impedances (x, y, z and imp are NaN for all
     72). Nothing in the files says which of the paper's sessions this is; its 48 units that pass the
     paper's unit rule match the GPFA session of H the Results describe (N = 48).
+- kind: paper_inconsistency
+  statement: The paper describes the fits of the Bayesian observer model two ways. The STAR Methods
+    (Analysis of behavior with a Bayesian model) fit the 4 parameters "to data for each animal, effector, and target directions after pooling
+    across sessions (Table S3)", and the Table S3 legend says "We fit the model to each session
+    separately and computed mean ± standard deviation of each parameter across sessions". With one
+    session the two procedures are the same here, and no outcome depends on which is meant.
 - kind: methods_unavailable
   statement: Question for the authors. Was the weighted regression of tp on ts (Table S1, Figures 1E
     and 2H) fitted with an intercept? The Methods write "tp = β ts + ε". In this session the Long
@@ -420,7 +431,9 @@ verifications:
       (480 to 800 ms); the criterion says "that prior's 5 time indicators", and the Methods say "Since
       values of ts were different between the priors, we used two distinct GLMs". Both point to Long
       windows ending at 800 to 1200 ms, and no Long-window version was run. The ts fraction could
-      move into tolerance, which would make the outcome partial (affects a conclusion).
+      move into tolerance, which would make the outcome partial (affects a conclusion). Also,
+      glm_bic returns None when a fit fails, so a failed fit counts as "not dependent", and the
+      notebook does not report how many fits failed.
     response: The Long prior's ts model now uses windows ending at 800 to 1200 ms from Long trials
       (rsg.py docstring and the notebook cite the passage). The ts fraction is 45.8% (31.4 to 60.8%),
       still outside tolerance, so the outcome stays not reproduced; the earlier windows are shown as
@@ -440,7 +453,7 @@ verifications:
       normalisation choice; soft-normalised gives 6 of 8 (partial), z-scored 8 of 8. The paper says
       nothing about normalisation, and the claims file's "not normalised" is one reading of that
       silence (affects a conclusion). Also, the production trajectory for ts = 800 pools Short and Long
-      trials (problem 2).
+      trials, the same problem as for speed-vs-projection.
     response: Production trajectories are now one per prior and ts; the counts are 2, 2, 4 and 5 (1 of
       8 in range), still not reproduced. The outcome is kept on the claims file's unnormalised rates,
       which the author may not change; the normalised counts are shown (z-scored 8 of 8, soft 6 of 8),
@@ -565,4 +578,165 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The archive lists one subject (Haydn) and 2 files; no part can be tested.
+    response: No change.
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of the first revision (reproduce_sohn_2019.ipynb and
+    gpfa_sohn_2019.ipynb, with conclusions and summaries), the attempt record, the README, rsg.py and the
+    claims file, with the paper and supplement under paper/. Points on no single claim, with the replies.
+    The findings on the electrodes table and the unit labels appeared in no printed output; notebook cell
+    3 now prints the units' columns and the electrodes table (x, y, z and imp NaN for all 72). The tp
+    finding said every completed trial but was computed over the 982 valid ones; cell 4 now computes it
+    over all 1025 completed trials (tp longer in all, by 0.1 to 162.4 ms), and the finding gives these
+    numbers.
+  results:
+  - claim: beh-slopes
+    agrees: true
+    outcome: not_reproduced
+    reason: 6 of 8 slopes lie in (0,1). The claims file still says the supplement was unavailable, which the
+      author cannot fix; Figure S1A appears to show some of monkey H's Short slopes above 1, which supports
+      the reading that the criterion is stricter than the paper.
+    response: No change; the question in questions/sohn-2019.yaml stands.
+  - claim: beh-overlap-prior
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from the printed outputs under its criterion (cell 12).
+    response: No change.
+  - claim: beh-sigmoid-increments
+    agrees: true
+    outcome: reproduced
+    reason: Follows from the printed outputs under its criterion (cell 15).
+    response: No change.
+  - claim: beh-long-more-bias
+    agrees: true
+    outcome: reproduced
+    reason: The assumption of a regression with an intercept is stated in the deviation, the notebook and
+      the README, and is reasonable, as a slope below 1 shows a bias toward the mean only if the line has an
+      intercept. The other reading (3 of 4, partial) is shown.
+    response: No change.
+  - claim: beh-bayes-model
+    agrees: true
+    outcome: partially_reproduced
+    reason: Bias R2 is at least 0.8 in 2 of 4 datasets. The notes' "In the Eye datasets the behaviour is
+      nearly unbiased" is not supported, as both Eye Long slopes are below 1 with intervals that exclude 1
+      and Eye Left Short has a mean bias of +64 ms at ts = 800; cell 24's "predicts little bias" is
+      supported. The paper says both that the fits pool sessions (STAR Methods) and that each session is
+      fitted separately (Table S3 legend); this deviation cites only the legend, the encoding-r2
+      deviation and the Summary only the Methods. The record and notebook should state the conflict once
+      and consistently. No outcome depends on it.
+    response: The notes now say the model fits a small wm in the Eye datasets and so predicts little bias.
+      The conflict is stated as a paper_inconsistency finding, and the beh-bayes-model and encoding-r2
+      deviations, notebook cell 22 and the Summary now give both passages.
+  - claim: glm-prior-ts
+    agrees: true
+    outcome: not_reproduced
+    reason: 79.2% and 45.8%; with the Long prior's windows the ts fraction is still outside tolerance. My
+      round-1 problem 11 (glm_bic returning None) appears in no reason, though it is answered by the
+      printed failed-fit counts, which are 0.
+    response: Problem 11 is added to the round-1 reason for this claim.
+  - claim: dfr-overlap-support
+    agrees: true
+    outcome: reproduced
+    reason: Follows from the printed outputs under its criterion (cell 30).
+    response: No change.
+  - claim: pca-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: 1 of 8 values in range. The outcome rests on the claims file's unnormalised rates; z-scored
+      rates put 8 of 8 in range. The paper neither states nor rules out normalisation; the record reports
+      this and asks the authors, which is appropriate, and it is still open. The round-1 reason ends
+      "(problem 2)", which means nothing inside the record.
+    response: The round-1 reason now names the problem it refers to (the pooled ts = 800 production
+      trajectory, as for speed-vs-projection). The normalisation question stays with the authors.
+  - claim: encoding-r2
+    agrees: true
+    outcome: reproduced
+    reason: Follows from the printed outputs under its criterion (cell 38).
+    response: The deviation now gives both of the paper's descriptions of the Bayesian fits.
+  - claim: encoding-bayes-beats-linear
+    agrees: true
+    outcome: partially_reproduced
+    reason: Follows from cell 42. With normalised rates the outcome changes (the soft-normalised space gives
+      4 and 4 of 4); it holds only under the claims file's unnormalised choice, which the paper neither
+      states nor rules out. The record reports this and asks the authors.
+    response: No change; the normalisation question stays with the authors.
+  - claim: short-in-long-control
+    agrees: true
+    outcome: reproduced
+    reason: Cell 46's "so the data show a smaller version of the Short-prior effect, not its absence" is not
+      supported. In Hand Left the single-axis difference is -0.0007, which is zero; in the variants the
+      Bayesian RMSE is lower in only 2 of 4 (soft) and 1 of 4 (z-scored) datasets. The record's milder
+      wording holds only in the unnormalised 2-PC space and should say so next to the variant counts.
+    response: Cell 46 and the notes now give the Hand Left difference and say that the smaller effect holds
+      in the unnormalised 2-PC space and not in the normalised ones.
+  - claim: neural-long-more-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: Follows from cell 48. In both normalised spaces the Long slope is below in 4 of 4, so the
+      outcome holds only under the claims file's unnormalised choice; the record reports this and asks
+      the authors.
+    response: No change; the normalisation question stays with the authors.
+  - claim: speed-vs-projection
+    agrees: true
+    outcome: partially_reproduced
+    reason: Follows from the printed outputs under its criterion (cell 54).
+    response: No change.
+  - claim: initial-speed-biased
+    agrees: true
+    outcome: not_reproduced
+    reason: p = 0.0547 (cell 57).
+    response: No change.
+  - claim: speed-predicts-tp
+    agrees: true
+    outcome: partially_reproduced
+    reason: -0.722 and -0.744, both negative with p < 0.05 and both outside tolerance (cell 60).
+    response: No change.
+  - claim: alt-speed-unmodulated
+    agrees: true
+    outcome: reproduced
+    reason: Cell 66 and the notes say the slopes are what attrition gives "without any time course", and
+      the Summary says the slopes are "no larger than with time permuted". In cell 65, 3 of 8 observed
+      slopes lie outside the permutation 95% range, and Eye Left Short is above it (7.926 against 7.796;
+      frac_null_ge 0.02). Attrition explains the sign and size of most slopes, but not every dataset.
+    response: Cell 66, the notes and the Summary row now say that attrition explains most slopes and that
+      Eye Left Short is above the permutation range.
+  - claim: alt-transient-parallel
+    agrees: true
+    outcome: reproduced
+    reason: Follows from the printed outputs under its criterion (cell 68).
+    response: No change.
+  - claim: alt-threshold-monotonic
+    agrees: true
+    outcome: not_reproduced
+    reason: -250 ms (cell 71).
+    response: No change.
+  - claim: gpfa-variance-inverted-u
+    agrees: true
+    outcome: not_reproduced
+    reason: Every variant gives p >= 0.074. Fits with up to 1500 EM iterations and z-scoring over the
+      dataset were both run. x_dim = 8 at the top of the criterion's {4, 8} remains, but the criterion
+      fixes that range. The README's "about twelve minutes" for the GPFA notebook does not match the 986 s
+      it printed.
+    response: The README and entry.yaml now give about sixteen minutes; the two runs of this revision took
+      978 and 1026 s.
+  - claim: gpfa-mean-sigmoid
+    agrees: true
+    outcome: reproduced
+    reason: Follows from the printed outputs under its criterion (NB2 cell 11).
+    response: No change.
+  - claim: rnn-curved-manifold
+    agrees: true
+    outcome: blocked
+    reason: Blocked.
+    response: No change.
+  - claim: rnn-perturbation
+    agrees: true
+    outcome: blocked
+    reason: Blocked.
+    response: No change.
+  - claim: monkey-g
+    agrees: true
+    outcome: blocked
+    reason: Blocked.
     response: No change.
