@@ -45,7 +45,7 @@ Cohort 2 are blocked as too large for the time limit.
 | Freely moving findings that need the Cohort 2 LN model (azimuthal head velocity, Figs. 2c, 3, Supp. Fig. 9) and Supp. Fig. 3 head part | Blocked: too large |
 | No-landmark track (Fig. 8c, e) | Blocked: data missing |
 | Left and right hemispheres | Blocked: metadata insufficient |
-| No false detection of eye tuning in simulated data (Supp. Fig. 12) | Blocked: too large (now run; reproduced, proposed for the next round) |
+| No false detection of eye tuning in simulated data (Supp. Fig. 12) | Reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
