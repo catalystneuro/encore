@@ -156,6 +156,9 @@ outcomes:
     33 extra units are all in L2/3 to L5b by the S1 Table counts, so they are a likely source of the difference.
   deviations:
   - All 506 deposited units, not the paper's 473.
+  - The baseline is averaged over completed trials, while the criterion says all trials. With all trials
+    RS layer means are 6.09 to 11.49 Hz and FS 7.80 to 29.93 Hz, shown as a variant, and the outcome is
+    the same.
 - claim: temporal-modulation-count
   outcome: reproduced
   notebook: reproduce_mcguire_2016.ipynb
@@ -220,16 +223,17 @@ outcomes:
   notebook: reproduce_mcguire_2016.ipynb
   output: claim:latency-by-layer
   measured:
-  - 15.0
-  - 19.0
-  - 15.0
-  - 17.0
-  - 21.0
+  - 16.0
+  - 17.2
+  - 16.9
+  - 18.7
+  - 20.4
   notes: With the centred 10-ms boxcar, latencies of impulse-responsive units on the stored modulated
     set are 15 to 22 ms in every layer, longer than the paper's 9.8 to 16.1 ms, and no layer is within
     tolerance. The ordering (L4, L5a and L5b below L2/3 and L6) holds for the mean and the median with
     the two-sided test and not with the one-sided test, where L5a is among the latest. Measured gives
-    the one-sided medians in the claim's order (L4, L5a, L5b, L2/3, L6). 21 to 48 impulse-responsive units
+    the two-sided centred means, the reading the partial outcome rests on, in the claim's order (L4, L5a,
+    L5b, L2/3, L6); the one-sided medians are 15, 19, 15, 17 and 21 ms. 21 to 48 impulse-responsive units
     per layer. Placing the boxcar forward (t to t+9 ms) shortens latencies by about 5 ms and puts at most
     2 of 5 layers within tolerance (3 on the recomputed set); the trailing boxcar puts none and the unsmoothed
     PSTH at most 2 (3 on the recomputed set). No reading puts all five within tolerance. Latency is now
@@ -480,8 +484,8 @@ outcomes:
   notebook: reproduce_mcguire_2016.ipynb
   output: claim:fig8d-fast-medium-no-choice-bias
   notes: In 53 L4 Fast units, with 5-ms bins (reading b) no bin from 0 to 150 ms differs between right-
-    and left-choice trials. With 10-ms windows stepped by 1 ms (reading a), steps at 28 to 32 ms and 91
-    ms reach p < 0.05, isolated times that do not last to the end of the sequence. The largest right-left
+    and left-choice trials. With 10-ms windows stepped by 1 ms (reading a), steps at 28, 29, 31, 32 and
+    91 ms reach p < 0.05, isolated times that do not last to the end of the sequence. The largest right-left
     difference is 2.4 to 3.3 Hz.
   deviations:
   - Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor
@@ -524,7 +528,11 @@ outcomes:
     of pulses 2 and 3 or 1 and 2 (all p of 0.17 or more). But pulse 3 differs across sequences on right-choice
     trials (ANOVA p = 0.016; SMF 5.32 Hz against 11.8 to 12.6), and with the 0 to 10 ms baseline the ANOVA
     is not significant (p = 0.241 and 0.707) but the left-choice correlation with pulses 2 and 3 is (r
-    = -0.96, p = 0.04). No baseline meets the criterion. On the recomputed set the 25-ms baseline meets
+    = -0.96, p = 0.035). That correlation is below 0.05 however the impulse speed is taken from S1 Fig,
+    p = 0.035 with the 0.2-mm span, 0.038 with a span above 20% of each impulse's own excursion, 0.048
+    with one speed per impulse kind and 0.049 with the Table 1 ramp. Impulses of one kind differ in the
+    recorded profiles themselves (M 123.7 mm/s in FMS and 103.3 in SMF under both span rules). No baseline
+    meets the criterion. On the recomputed set the 25-ms baseline meets
     it (right-choice ANOVA p = 0.052), the first run's outcome, so the outcome rests on the unit set.
   deviations:
   - Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor
@@ -534,7 +542,8 @@ outcomes:
     verifier's first report.
   - Impulse mean speed is the mean of the S2 Data 'Fig S1' speed over the span where the panel is more
     than 0.2 mm from rest, per impulse of each sequence (F 135 to 153, M 104 to 124, S 80 to 91 mm/s).
-    The first run used a ramp on the Table 1 amplitudes, shown as a variant.
+    The first run used a ramp on the Table 1 amplitudes, shown as a variant. A span above 20% of each
+    impulse's own excursion and one speed per impulse kind are also shown; all four give the same outcome.
 - claim: s6-head-position-choice
   outcome: reproduced
   notebook: reproduce_mcguire_2016.ipynb
@@ -617,8 +626,9 @@ outcomes:
   measured: 38.2
   notes: With one 0 to 150 ms bin the Fast/Medium decoder is 38.2%, 0.5 points below the tolerance of
     43% (38.7 to 47.3), and the Slow decoder 26.6%, 7.3 points below its 10-ms accuracy. With C by cross-validation,
-    33.5% and 24.5%. The fall in Fast/Medium accuracy and the absence of a Slow gain hold. The first run,
-    on the recomputed set, gave 39.4%, within tolerance, so the outcome rests on the unit set.
+    33.5% and 24.5%. The fall in Fast/Medium accuracy and the absence of a Slow gain hold. On the recomputed
+    set the Fast/Medium single-bin decoder is 40.0%, within tolerance, so the outcome rests on the unit
+    set.
   deviations:
   - Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor
     names as the units of the paper's analyses; the set recomputed with the Methods' test has the same
@@ -652,8 +662,9 @@ outcomes:
   - 92.9
   notes: 'The Slow choice decoder predicts choice at 80.8% from the 150-ms bin and 92.9% from the 100
     ms before withdrawal (equal draws, mean over sequences; 80.7 to 93.3% under the other readings), and
-    at 72.7% and 75.8% with C by cross-validation, all above 71.5%. The Fast/Medium decoder predicts choice
-    at 71.3% and 81.9% (65.2% and 76.1% with cross-validation), not within 45 to 55%. Trained without
+    at about 73% and 76% with C by cross-validation, all above 71.5%. The Fast/Medium decoder predicts
+    choice at 71.3% and 81.9% (about 65% and 76% with cross-validation), not within 45 to 55%. The cross-validated
+    values change by 0.1 point between runs with the same seeds. Trained without
     balancing the two choices, both decoders fall to 50 to 56%, Slow included. No reading gives Slow at
     65% with Fast/Medium near chance. Accuracy grows with the number of units summed: random sets of 20
     Slow units give 74.2% (pre-withdrawal) and 65.5% (150-ms bin), of 20 Fast/Medium units 60.9% and 55.7%,
@@ -1062,3 +1073,281 @@ verifications:
     outcome: reproduced
     reason: L5b Slow Positive has the highest mean unit choice accuracy (59.8%).
     response: 'Main set changed (B1): 60.3% over 14 units, still the highest. Outcome unchanged.'
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks of the author-revise-1 run (reproduce_mcguire_2016.ipynb and
+    decoders.ipynb), the helper module ssc4.py, the claims file and this record, with the paper. Report in
+    transcripts/mcguire-2016/verifier-2-report.md. The verifier agrees with all 37 outcomes, found again no
+    place where the claims file misreads the paper, and found that each assumed outcome states its assumption
+    reasonably. It quoted six places where the text did not match the printed outputs (fig9f cross-validated
+    values and unweighted range, latency-by-layer measured, fig8d-fast-medium times, fig9d first-run value,
+    baseline-rates deviations), listed B1 and B3 to B11 as resolved, and named five remaining points that bear
+    on a conclusion (the 62 Fast RS units of fig7-fff-adaptation, the unit-set dependence of seven outcomes,
+    the s5 impulse speeds, the weak support of fig9e, and fig9d at the edge of its band).
+  results:
+  - claim: fig2ab-fms-smf-not-discriminated
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: training-days
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig2c-choice-follows-mean-speed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig2d-fixed-panel-impairs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: dprime-fff-sss-range
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig3-fsfs-sffs-intensity-only
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: units-recorded
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). B9 (S1 Table added, the 33 extra units located by layer) is resolved.
+    response: No change.
+  - claim: baseline-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). The criterion says over all trials, but the main table uses completed trials (cell 34); the notes
+      give the all-trials value (11.49 Hz), but the deviations list leaves it out. The outcome is the same
+      either way.
+    response: Added a deviation for the completed-trial baseline, with the all-trials layer means (RS 6.09
+      to 11.49 Hz, FS 7.80 to 29.93 Hz). Outcome unchanged.
+  - claim: temporal-modulation-count
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). B1 resolved: the attempt switched to the deposited set, kept the recomputed set as a variant and
+      ran the bin-shuffle null (cell 37). How the deposited p-values were computed is still unknown (listed
+      as a question for the authors).'
+    response: No change; the question for the authors stays in findings.
+  - claim: modulated-higher-baseline
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig4d-evoked-modulation-by-layer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: latency-by-layer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). B4 resolved. The measured values (15, 19, 15, 17, 21) are the one-sided centred medians, the reading
+      under which the ordering fails (cell 47, row 1); the partial outcome rests on the two-sided reading (rows
+      8 and 9).
+    response: Measured now gives the two-sided centred means (16.0, 17.2, 16.9, 18.7, 20.4 ms in the claim's
+      order), and the notes and the Result cell say so. Outcome unchanged.
+  - claim: fig4d-gradual-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig6-regression-significant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig6e-unit-classes
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced, assumed. On the deposited set the four classes equal the deposited labels unit
+      for unit, and the values are within tolerance (cell 56). Agrees. The outcome changes between the deposited
+      and the recomputed set (remaining point 2).
+    response: No change.
+  - claim: fig6fg-laminar-classes
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced, assumed. All six laminar values are within tolerance on the deposited set (cell
+      60). Agrees. The outcome changes between the deposited and the recomputed set (remaining point 2).
+    response: No change.
+  - claim: fig7c-fast-impulse-velocity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig7c-fast-sequence-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig7-fff-adaptation
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced, assumed. The criterion defines the units as Fast RS units that pass the impulse
+      t test, but the attempt uses all 62 Fast RS units; this is stated and reasonable, since the paper's n
+      = 61 is close to 62 and every t-test reading selects 29 to 37 units. Every t-test selection fails, so
+      the outcome rests entirely on this assumption (cell 71), which cannot be checked against the data (remaining
+      point 1, B2). B3 resolved (guard pulse 1 above 1 Hz).
+    response: No change. The assumption and the failing t-test selections are stated in the deviations and
+      notes, and the question of which test selected the 61 units is in findings for the authors.
+  - claim: fig7-sss-no-adaptation
+    agrees: true
+    outcome: reproduced
+    reason: Uses the same 62 units as fig7-fff-adaptation, marked assumed. Agrees.
+    response: No change.
+  - claim: s4-fms-middle-pulse
+    agrees: true
+    outcome: reproduced
+    reason: Uses the same 62 units. Every selection gives FMS lower with p of 0.06 or more, so its assumption
+      does not bear on its outcome. Agrees.
+    response: No change. assumed is kept, as the unit set is the one fig7-fff-adaptation assumes, though the
+      notes show that the outcome does not depend on it.
+  - claim: fig7de-medium-suppressed
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced; the verifier withdraws its round-1 disagreement. The criterion asks only for three
+      negative means and two non-significant paired tests, and the deposited set meets both (cell 80); in round
+      1 it asked for a test of suppression, which the criterion does not require. The effect is tiny (-0.27
+      to -0.52 Hz, p of 0.45 or more against 0), and the notes say so. The outcome changes with the unit set
+      (remaining point 2).
+    response: No change.
+  - claim: fig8a-slow-positive-no-sequence-difference
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig8b-slow-negative-no-impulse-response
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig8d-slow-positive-right-choice-l5
+    agrees: true
+    outcome: reproduced
+    reason: 'Now reproduced. This passes on reading (a) only, and only just: L5a p = 0.049 with n = 7 (cell
+      89). It fails under reading (b) and on the recomputed set. The record states this. Agrees. It also hangs
+      on L5a p = 0.049 (remaining point 2).'
+    response: No change; the notes give L5a p = 0.049 with 7 units, the reading b and recomputed-set results,
+      and that the outcome rests on the unit set.
+  - claim: fig8d-fast-medium-no-choice-bias
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). Cell 96 and the notes say 28 to 32 ms, but 30 ms is not significant: the printout lists [28, 29,
+      31, 32, 91] (cell 95).'
+    response: Corrected to 28, 29, 31, 32 and 91 ms in the Result cell and the notes. Outcome unchanged.
+  - claim: fig8e-choice-divergence-125ms
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). B11 resolved.
+    response: No change.
+  - claim: s5-slow-positive-no-integration
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Now partially reproduced. On the deposited set the 25-ms baseline fails on the right-choice ANOVA
+      (p = 0.016); the 10-ms baseline fails only on the left-choice correlation with the speed of pulses 2
+      and 3 (r = -0.96, p = 0.04, n = 4), with the impulse speeds now taken from S1 Fig; the Table 1 ramp gives
+      p = 0.05 (cell 98). Agrees. Remaining point 3: the 0.2-mm span rule gives the M impulse 123.7 mm/s in
+      FMS but 103.3 in SMF, and the first F impulse 135 against 151 for the later ones, which suggests the
+      spans do not capture comparable parts of each impulse; under the 10-ms baseline whether that reading
+      meets the criterion turns on this extraction, so the outcome could go from partial to reproduced only
+      through the 10-ms baseline.'
+    response: 'Added two more extractions from the S1 Fig profiles: the span above 20% of each impulse''s own
+      excursion from its lowest position in the 15 ms before, and one speed per impulse kind (the mean of its
+      spans), with p printed to three decimals. The left-choice 10-ms correlation with pulses 2 and 3 is p
+      = 0.035 (0.2-mm span), 0.038 (own excursion), 0.048 (per kind) and 0.049 (Table 1 ramp), so it is significant
+      under every extraction and the outcome does not turn on it. The own-excursion rule gives the same M speeds
+      (122.4 against 103.3 mm/s), so the difference between impulses of one kind is in the recorded profiles.
+      Outcome unchanged.'
+  - claim: s6-head-position-choice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). The README's three claims on the paper's supporting data (fig2d, fig3, s6) is correct.
+    response: No change.
+  - claim: s7-no-fs-l5-slow-positive
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig9b-stimulus-decoder-fast-medium
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). B5 resolved.
+    response: No change.
+  - claim: fig9c-best-units-short-windows
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
+  - claim: fig9b-stimulus-decoder-slow-chance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Now partially reproduced. The slow decoder scores 33.9% but is above chance by test (a), p = 0.027.
+      Agrees. B6 resolved: the notes say that test (a) is not a null distribution. The outcome changes with
+      the unit set (remaining point 2).'
+    response: No change.
+  - claim: fig9d-single-bin-decoder
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now partially reproduced. The Fast/Medium single-bin value is 38.2%, 0.5 points under the tolerance
+      band. Agrees; the partial outcome is correct but sits at the edge of the band. The notes' 'The first
+      run ... gave 39.4%' refers to the earlier run; the current notebook does not print a recomputed-set single-bin
+      decoder.
+    response: 'Added the Fast/Medium single-bin decoder on the recomputed set to the notebook (300 repeats):
+      40.0%, within tolerance. The notes and the Result cell now cite it in place of the first run. Outcome
+      unchanged.'
+  - claim: fig9e-temporal-pattern-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Still reproduced; agrees. It now rests on test (a) alone (p = 0.060), which is not a null distribution;
+      the binomial test gives p = 0 and the 32% reading is not met. The criterion allows this, so the outcome
+      stands, but it is weakly supported (remaining point 4).
+    response: No change; the notes already give the binomial result and that the scrambled decoder is not below
+      32%.
+  - claim: fig9f-choice-decoder
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1). Decoders cell 21 and the notes give 72.7% and 75.8% with C by cross-validation, and 65.2% and 76.1%,
+      while the cell 20 printout gives 72.8%, 75.8%, 65.3% and 76.2%. Cell 21 says the unweighted fits fall
+      to 50 to 54%, but the printout includes 56.0% (Slow, draws ii).
+    response: 'The cross-validated choice decoders change by 0.1 point between runs with the same seeds: the
+      two runs of this revision print 72.7%, 75.8%, 65.2% and 76.1%, the run the verifier saw 72.8%, 75.8%,
+      65.3% and 76.2%. The Result cell and the notes now give them rounded (about 73%, 76%, 65% and 76%) and
+      say they vary. The unweighted range is corrected to 50 to 56% in the Result cell. Outcome unchanged.'
+  - claim: fig9g-l5b-slow-positive-best-choice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; listed among the outcomes that did not change since round 1 (section
+      1).
+    response: No change.
