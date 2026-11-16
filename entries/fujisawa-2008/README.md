@@ -10,7 +10,7 @@ trials, positions and cell lists come from CRCNS.
 | Claim | Outcome |
 |---|---|
 | The DANDI channels follow the CRCNS channel map | Not reproduced (no nose-poke sensor on channels 97 and 98 in rat GG) |
-| 633 units in four rats, 222 in layer 5 | Partially reproduced (627 in three rats, no rat with 222) |
+| 633 units in four rats, 222 in layer 5 | Partially reproduced (627 in three rats, no rat with 222; rests on the unit list) |
 | Task performance 91.9% | Blocked: data missing (correct trials only) |
 | Population fires uniformly over the maze | Not reproduced |
 | 10% and 20% of neurons active per 100 ms | Partially reproduced |
@@ -18,7 +18,7 @@ trials, positions and cell lists come from CRCNS.
 | Population vector widths 0.18 and 0.27 | Partially reproduced (rests on an assumption) |
 | Layer 5 fires faster than layer 2/3 | Partially reproduced |
 | Layer 5 discriminates over more of the maze | Not reproduced |
-| Paths diverge at 0.30, head direction at 0.24 | Partially reproduced |
+| Paths diverge at 0.30, head direction at 0.24 | Partially reproduced (rests on an assumption) |
 | Side-arm selectivity 40% (layer 5) and 22% (layer 2/3) | Partially reproduced |
 | Central-arm selectivity 16% and 18% | Partially reproduced (rests on the unit list) |
 | 26% of neurons odor selective during nose poke | Not reproduced |

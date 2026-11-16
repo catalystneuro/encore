@@ -47,6 +47,7 @@ outcomes:
     blocks, from the first poke start to the last poke end.
 - claim: rats-and-units
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_fujisawa_2008.ipynb
   output: claim:rats-and-units
   measured:
@@ -56,8 +57,9 @@ outcomes:
     222 +/- 22.2 under R-a (FF 146) or R-b (EE 446, GG 35). With the EE.188 behavior file's 105 cells in place of the example
     file's 117 the total is 615. The measured layer 5 value is FF under R-a. With every mPFC unit of the NWB files (all
     sorted clusters) the total is 1,373 (EE 1,155, FF 162, GG 56), outside 633 +/- 63.3, and no rat holds 222 +/- 22.2,
-    so the outcome does not depend on the unit list. No session has 142 units in either list (largest 117 in the lab's lists,
-    231 among the NWB mPFC units).
+    so under that list the outcome would be not reproduced. The partial outcome rests on taking the lab's lists as the paper's
+    units, and that check is partly circular, as the lists were adopted in part because their total is near 633. No session
+    has 142 units in either list (largest 117 in the lab's lists, 231 among the NWB mPFC units).
   deviations:
   - 'Units are the lab''s per-session lists (CellsInfo; for EE.188 the example file''s 117 cells), an assumption: the CRCNS
     description documents a 1 Hz ''Cells'' list but not CellsInfo, and the lists are consistent with that rule (98.9% of
@@ -111,12 +113,12 @@ outcomes:
   notebook: reproduce_fujisawa_2008.ipynb
   output: claim:fig2-field-size
   measured:
-  - 0.24
-  - 0.177
+  - 0.241
+  - 0.169
   notes: Five of 24 combinations put both values within tolerance, P-a (b)(i)(x) 0.241 +/- 0.169, P-a (c)(i)(x) 0.240 +/-
     0.177, P-b (a)(ii)(x) 0.234 +/- 0.154, P-b (a)(ii)(y) 0.286 +/- 0.185 and P-b (b)(ii)(y) 0.267 +/- 0.169. Other combinations
-    give means from 0.161 to 0.416. The measured values are P-a (c)(i)(x), the first listed reading (occupancy normalised
-    rate, side of higher peak, contiguous run, the Figure 2a session) that matches.
+    give means from 0.161 to 0.416. The measured values are P-a (b)(i)(x), the first listed reading that matches (occupancy
+    normalised rate, left and right trials as separate curves, contiguous run, the Figure 2a session).
 - claim: population-vector-width
   outcome: partially_reproduced
   assumed: true
@@ -131,9 +133,10 @@ outcomes:
     displays the rates), layer 5 is within tolerance (FF.130 stand-in 0.358 to 0.398, all FF sessions 0.324 to 0.359, within
     0.27 +/- 0.13) and layer 2/3 just outside (EE.188 0.268 to 0.314, against the limit 0.267). With rates z-scored per
     neuron both layers are within tolerance (EE.188 0.185 to 0.219, all FF 0.208 to 0.238), with s.d. 0.022 to 0.052, below
-    the paper's 0.087 and 0.13. One value matches and the other misses by 0.001 under the adopted normalisation, so the
-    outcome is partial (changed from not reproduced after verification round 1). The measured values are P-b, reading (a),
-    peak normalised, EE.188 and FF.130. The question is for the paper's authors (findings).
+    the paper's 0.087 and 0.13. Under the adopted normalisation layer 5 matches and layer 2/3 does not under any reading.
+    The measured value (P-b, reading (a)) is 0.282, 0.015 above the limit, and the closest (reading (b)) 0.268, 0.001 above
+    it. One value matches, so the outcome is partial (changed from not reproduced after verification round 1). The measured
+    values are P-b, reading (a), peak normalised, EE.188 and FF.130. The question is for the paper's authors (findings).
   deviations:
   - The paper does not say how the rates enter the population vectors; with raw rates the measure is degenerate. Each neuron's
     rate is normalised to its peak, the normalisation Figure 2a states; the z-scored reading, which reproduces, is shown.
@@ -203,7 +206,8 @@ outcomes:
     53.6% against 56.9% and GG as layer 5 gives 40.0% against 55.4%, with layer 5 not above layer 2/3. One random relabelling
     of each neuron's trials gives 3.3%, so the test holds its level; per session the fraction ranges from 31% to 73%. With
     every NWB mPFC unit, R-a, reading (a), layer 5 58.6% (95/162) and layer 2/3 33.8% (409/1,211), Fisher p = 1.2e-09, neither
-    within tolerance, so the outcome is the same under both unit lists.
+    within tolerance, so the outcome is the same under both unit lists. These variant counts move by one unit between runs
+    of the same seeded code (the round-2 verifier's executed copy had 408/1,211, 33.7%, p = 1.1e-09).
   deviations:
   - The datasets give the lab's positions (0 at the end of the last poke, 1 at the start of reward consumption) and correct
     trials only, so of readings N, E and T only N-a, E-b and T-a can be run.
@@ -223,8 +227,8 @@ outcomes:
     relabelling (one-sided Fisher p = 6e-52). By layer under R-a 30.4% (layer 2/3) and 29.5% (layer 5), and under all readings
     22.9% to 30.7%, none within 16 +/- 1.6 or 18 +/- 1.8. With every NWB mPFC unit (1,373 units) the fractions fall, and
     under R-b2 (GG layer 5), reading (b), both are within tolerance (layer 2/3 16.2%, layer 5 17.9%); under R-a layer 2/3
-    is within (17.2%, 15.2%) and layer 5 not (26.5%, 24.1%). The outcome therefore rests on the unit list, the lab's lists
-    being adopted as the paper's units.
+    is within (17.2%, and 15.2% in this run, 15.3% in the round-2 verifier's copy) and layer 5 not (26.5%, 24.1%). The
+    outcome therefore rests on the unit list, the lab's lists being adopted as the paper's units.
   assumed: true
   deviations:
   - 'Units are the lab''s per-session lists (CellsInfo; for EE.188 the example file''s 117 cells), an assumption: the CRCNS
@@ -385,8 +389,9 @@ outcomes:
   notes: 'Tested in the layer 2/3 session only: the layer 5 session of Supplementary Figure 11B is not in the datasets.
     In EE.188 shank against class gives chi-square 24.4, asymptotic p = 0.273, permutation p = 0.265, Cramer''s V 0.26;
     shank against peak tenth, peaks from P-b, chi-square 62.7, p = 0.251 and 0.232, V 0.28, and from P-a 71.5, p = 0.217
-    and 0.173, V 0.30. Across the 10 sessions with 15 or more cells two of 20 P-b permutation tests fall below 0.05 (EE.210
-    class, p = 0.02; FF.103 peak tenth, p = 0.01), and none of the ten P-a peak tests.'
+    and 0.173, V 0.30. Across the 10 sessions with 15 or more cells, two of the 20 permutation tests of shank against class
+    and shank against P-b peak tenth fall below 0.05 (EE.210 shank against class, p = 0.022; FF.103 shank against P-b peak
+    tenth, p = 0.013), and none of the ten P-a peak tests.'
   deviations:
   - A permutation p-value (2,000 shufflings of the shank labels) is shown with the asymptotic one, as many cells of the
     tables are small.
@@ -469,12 +474,18 @@ outcomes:
   notes: 'With the shared method''s jitter (both cells, 1,000 surrogates) and each significant pair assigned to the tail
     of its permutation distribution, depressing pairs are 4.0% to 5.9% and facilitating pairs 6.8% to 12.5% over the eight
     combinations, and the share of significant pairs on different shanks 19.4% to 34.1%. Facilitation is within tolerance
-    in two combinations ((a) y i, 10.4%; (b) y ii, 11.1%) and above the 5% null level in all eight (binomial p 0.036 to
-    1.5e-10), depression in none (p = 0.18 or more), so no combination has both fractions above 5%. The permutation median
+    in three combinations ((a) y i, 10.4%; (b) y i, 9.9%; (b) y ii, 11.1%) and above the 5% null level in all eight (binomial
+    p 0.036 to 1.5e-10), depression in none (p = 0.18 or more), so no combination has both fractions above 5%. The permutation median
     of the first-minus-later difference is above 0 in 76% of the tests (median 0.65): the standardized height grows with
     the number of spikes, so the raw sign does not say which side a pair is on. The presynaptic jitter (200) and the round-1
-    labelling by sign give no combination with both fractions above 5% at p < 0.05 either. The measured values are pairs
-    (a), later (x), peak (i). The literal reading of the criterion is asked of a reader (questions).'
+    labelling by sign give no combination with both fractions above 5% at p < 0.05 either. The criterion as written, labelling
+    by the sign of the raw difference, with the shared jitter gives depressing 5.3% to 7.7% and facilitating 5.0% to 11.3%;
+    depression is above 5% at p < 0.05 in (a) x ii, (b) x i and (b) x ii (p = 0.011, 0.036, 0.0039), facilitation in the
+    four combinations with later (y), and neither in (a) x i, so no combination has both and the outcome is the same under
+    both labellings. The tail labelling leans to facilitation: the observed difference lies above the permutation median
+    in 43% of the 1,158 tests (binomial p = 3.8e-06 against 50%), so part of the facilitation excess under it may come
+    from the test. The measured values are pairs (a), later (x), peak (i). The literal reading of the criterion is asked
+    of a reader (questions).'
   deviations:
   - The side of a significant pair is the tail of the permutation distribution its difference lies in (above the permutation
     median depressing, below facilitating), from the Figure 6c legend ('two-sided test; one side corresponds facilitation,
@@ -526,7 +537,8 @@ findings:
   statement: In 11 of 13 working memory sessions of DANDI:000067 every unit has cell_type 'not classified in the source'
     and lab_cell_number -1, although CRCNS pfc-2 behaviors.zip holds the lab's cell list and cell type codes (CellsInfo)
     for all of them. The NWB units can be linked to the lab's cells only through shank and cluster_id (spikeph), and then
-    their spike times are identical to the lab's for all 627 cells.
+    their spike times are identical to the lab's for every cell the lab gives spike times for (615 of the 627 used; the
+    other 12 are EE.188 cells of the example file that EE188_Behavior_PFC.mat does not list).
 - kind: metadata_error
   datasets:
   - crcns-pfc-2
@@ -559,8 +571,8 @@ findings:
   datasets:
   - crcns-pfc-2
   statement: The cell types of EE188_example.mat disagree with the paper for the cells it names. Cells 32 and 72 are coded
-    interneurons, but Figure 7a names them presynaptic pyramidal cells of a satellite and the file's own pairs_all lists
-    them as presynaptic (32 to 30, 52 and 135); cell 136, the interneuron of Figure 4, and 52 are coded unknown.
+    interneurons, but Figure 7a names them presynaptic pyramidal cells of a satellite, and the file's own pairs_all lists
+    32 as presynaptic (32 to 30, 52 and 135); cell 136, the interneuron of Figure 4, and 52 are coded unknown.
 - kind: data_missing
   datasets:
   - crcns-pfc-2
@@ -856,4 +868,232 @@ verifications:
     agrees: true
     outcome: not_reproduced
     reason: S-b gives 14 satellites, but the excess over linear at 5 ms is negative in every reading (cell 77).
+    response: No change.
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The full executed notebook of the first revision, with its conclusions and summary, the README, the helper
+    module, the claims file and the attempt record, with the paper''s full text under paper/. Its general points not tied
+    to one claim: findings with no printed output behind them (the NWB cell_type and lab_cell_number columns, DANDI''s use
+    of EE.188''s 105-cell list, cells 32 and 72 coded interneurons and presynaptic in pairs_all), and the finding that spike
+    times are identical "for all 627 cells", where cell 3 shows 615. Answered in the second revision: the data check now
+    prints, per session, the NWB cell_type values and the count of lab_cell_number -1 (every unit of 11 of 13 sessions;
+    in EE.188 and EE.210 the units with a type are exactly the Behavior_PFC CellsInfo list, 105 and 60 cells, with the same
+    types, and the 12 other cells of EE.188''s example file are ''not used in the paper''), the example file''s codes for
+    cells 32, 72, 52 and 136 and its pairs_all rows from 32 and 72 (32 to 30, 52 and 135; none from 72, so the finding now
+    names 32 only), and the count of identical spike trains (615 of 627; the finding is corrected). The entry was re-run
+    with python tools/entry.py all; the other numbers are as before, apart from the unit-list variant counts noted under
+    side-arm-selectivity-by-layer and central-arm-selectivity, which differ by one unit from the verifier''s copy.'
+  results:
+  - claim: channel-region-link
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: rats-and-units
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree under the adopted unit list, but the outcome rests on an assumption the record does not mark. With every
+      NWB mPFC unit the total is 1,373, outside 633 +/- 63.3, and no rat has 222 units. That gives not reproduced by the
+      criterion (cell 11). The lab''s lists were also chosen because their total matches 633, so the total check is partly
+      circular. This outcome should carry assumed: true. Cell 12 and the notes say "so the outcome does not depend on the
+      unit list"; cell 11 shows that under the NWB list the outcome becomes not reproduced.'
+    response: 'Outcome kept, now marked assumed: true in the record, the notebook, the Summary and the README. The sentence
+      is corrected in cell 12 and the notes: under every NWB mPFC unit the outcome would be not reproduced, the partial outcome
+      rests on taking the lab''s lists as the paper''s units, and the total check is partly circular. The Summary''s "only
+      the central-arm outcome would change with it" now names rats-and-units too.'
+  - claim: task-performance
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: fig2-population-uniform
+    agrees: true
+    outcome: not_reproduced
+    reason: 'B2 (peak positions) resolved: peaks are now taken from both P-a and P-b, and every session fails under both.'
+    response: No change.
+  - claim: fig2c-active-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I withdraw my round-1 disagreement. Neither this criterion nor population-vector-width''s defines a partial
+      outcome. In round 1 I gave population-vector-width partial for one value in tolerance, so the same rule makes fig2c
+      partial. Under R-a, layer 5 is 20.3% (in tolerance), layer 2/3 is 12.6% (out), and the fraction is constant over the
+      maze (cell 59).'
+    response: No change; the round-1 disagreement is now resolved.
+  - claim: fig2-field-size
+    agrees: true
+    outcome: reproduced
+    reason: 'The notes say "P-a (c)(i)(x), the first listed reading ... that matches". P-a (b)(i)(x) comes earlier in the
+      list and also matches (cell 62).'
+    response: 'Corrected: the measured values are now P-a (b)(i)(x), 0.241 and 0.169, the first listed reading that matches,
+      and the notes say so.'
+  - claim: population-vector-width
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption (the normalisation of each neuron''s rate) is stated in the deviations and is reasonable. The
+      outcome is decided by the normalisation: peak normalisation gives partial; z-scoring gives reproduced. This is stated
+      and flagged as an assumption, so it remains only as a question for the authors. The measured layer 2/3 value is 0.282
+      (reading a); the "misses by 0.001" in the notes and in cell 66 refers to reading (b), 0.268 (cell 65).'
+    response: 'Cell 66 and the notes now say that layer 2/3 is outside tolerance under every reading with peak normalisation:
+      the measured value (reading (a)) 0.282 by 0.015, the closest (reading (b)) 0.268 by 0.001. The question for the authors
+      stays in the findings (methods_unavailable).'
+  - claim: fig2d-layer-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: fig2e-layer-discrimination
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: traj-diverge
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption, M = 10,000 permutations, is stated in the deviations and is reasonable. traj-diverge is marked
+      assumed in the record, but neither the README nor the Summary table (cell 114) marks it. B6 resolved: the LED axis
+      follows the direction of movement (resultant length 0.98), the early angles are far from the wrap, and the re-centred
+      angles give 0.03, so the 0.02 onset is real: it is the turn out of the start box (cell 74). The round-1 reason keeps
+      my own typo "see B8", which should read B6.'
+    response: The README and the Summary table now mark traj-diverge as resting on an assumption. The round-1 reason is left
+      in the verifier's words; its "B8" refers to problem B6.
+  - claim: side-arm-selectivity-by-layer
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 21 and the side-arm notes give "33.8% (409/1,211)" and "Fisher p = 1.2e-09". Cell 20 prints 33.7% (408/1211)
+      and p = 1.09e-09. The value 1.21e-10 belongs to reading (b).'
+    response: 'The re-run of the same seeded code prints 33.8% (409/1,211) and p = 1.24e-09 again, the values the text gave,
+      so the verifier''s copy and the author''s runs differ by one unit in this variant (with the central-arm variant, the
+      only difference found; the lab-list results checked are the same in both). Cell 21 and the notes now give this run''s values and say that
+      the verifier''s copy had 408/1,211, 33.7% and p = 1.1e-09. Outcome unchanged under either.'
+  - claim: central-arm-selectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption, the unit list, is stated in the deviations and is reasonable. Cell 24 and the central-arm notes
+      give "15.2%"; cell 23 prints 15.3%.'
+    response: 'The re-run prints 15.2% (184/1,211), as the text had, so this variant moves by one unit between runs (as
+      for side-arm-selectivity-by-layer). Cell 24 and the notes now give 15.2% and say that the verifier''s copy had 15.3%.
+      The outcome rests on the unit list either way.'
+  - claim: odor-nosepoke
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: odor-unrelated-to-stem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: retrospective-coding-rare
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: speed-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: fig3-connection-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: 'B8 resolved: the one-cell jitter variant was run and finds more connections, not fewer.'
+    response: No change.
+  - claim: fig3-cell-classes
+    agrees: true
+    outcome: not_reproduced
+    reason: 'B7: the troughs were inspected; this does not affect a conclusion.'
+    response: No change.
+  - claim: pyr-pyr-connections
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: nearby-pyr-int-probability
+    agrees: true
+    outcome: not_reproduced
+    reason: 'B9 fixed; values unchanged.'
+    response: No change.
+  - claim: fig3b-session-connections
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: fig3d-hub
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: fig3f-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: fig3-trajectory-by-class
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 33 stated outcomes.
+    response: No change.
+  - claim: no-spatial-clustering
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 54 says "two of 20 P-b tests" fall below 0.05. One of the two (EE.210, p = 0.022) is a shank-against-class
+      test, not a P-b test.'
+    response: 'Corrected in cell 54 and the notes: two of the 20 permutation tests of shank against class and shank against
+      P-b peak tenth fall below 0.05 (EE.210 shank against class, p = 0.022; FF.103 shank against P-b peak tenth, p = 0.013).'
+  - claim: fig4-position-dependence
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption, M = 5,000 surrogates, is stated in the deviations and is reasonable, shown to be needed because
+      17 of 23 tests cannot reject with 1,000 (cell 89).'
+    response: No change.
+  - claim: fig5a-session-selective-connections
+    agrees: true
+    outcome: not_reproduced
+    reason: The assumption, M = 5,000 surrogates, is stated in the deviations and is reasonable.
+    response: No change.
+  - claim: fig4-pair-156-136
+    agrees: true
+    outcome: not_reproduced
+    reason: The assumption, M = 5,000 surrogates, is stated in the deviations and is reasonable.
+    response: No change.
+  - claim: fig5b-example-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: The assumption, M = 5,000 surrogates, is stated in the deviations and is reasonable.
+    response: No change.
+  - claim: thinning-preserves-dependence
+    agrees: true
+    outcome: reproduced
+    reason: The assumption, M = 5,000 surrogates, is stated in the deviations and is reasonable.
+    response: No change.
+  - claim: fig6-facilitation-depression
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree, but it rests on a deviation not marked as an assumption. The claims file says "depression is first
+      above later". The attempt reads this by the tail of the permutation distribution, and that deviation is stated. The
+      literal sign reading was run only with the presynaptic jitter, never with the shared jitter (cell 106); so the outcome
+      under the criterion as written is unknown. The fig6 notes say "Facilitation is within tolerance in two combinations";
+      cell 106 shows three, (a,y,i) 10.4%, (b,y,i) 9.9% and (b,y,ii) 11.1%. The observed difference lies above the permutation
+      median in only 43% of tests, so the tail labelling is lopsided overall, and part of the facilitation excess may come
+      from the test itself; this does not change the not-reproduced outcome. As reported in round 1, the claims file''s "first
+      above later" for fig6 and fig6b repeats a misreading of the Figure 6c legend.'
+    response: 'The literal sign reading is now run with the shared jitter (cell 106): depressing 5.3% to 7.7%, facilitating
+      5.0% to 11.3%, depression above 5% at p < 0.05 in three combinations and facilitation in four others, none with both.
+      So the criterion as written gives not reproduced too, and the outcome is the same under both labellings; it no longer
+      rests on the choice of labelling and is not marked assumed. The "two combinations" is corrected to three. The cell
+      now prints a binomial test of the 43% (p = 3.8e-06 against 50%), and the conclusion and notes say that part of the
+      facilitation excess under the tail labelling may come from the test. The misreading is already a question for a reader
+      in questions/fujisawa-2008.yaml, which now gives the shared-jitter numbers; the claim is unchanged.'
+  - claim: fig6b-convergent-examples
+    agrees: true
+    outcome: partially_reproduced
+    reason: As I reported in round 1, the claims file's "first above later" for fig6 and fig6b repeats a misreading of the
+      Figure 6c legend.
+    response: The question for a reader in questions/fujisawa-2008.yaml covers fig6b (also); the claim is unchanged. No change
+      of outcome.
+  - claim: fig7-supralinear
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 33 stated outcomes.
     response: No change.
