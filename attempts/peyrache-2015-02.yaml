@@ -654,6 +654,18 @@ findings:
     With the decoder of the Methods (posterior maximum on 1 degree bins, 10 ms bins) the median speed
     at 10 ms steps is 0 or 100 deg/s; located below the grid it gives an ADn SWS to waking ratio of 5.1,
     and at the smoothing window 6, not 10. Mean speeds per ensemble give 5.3 to 14.8.'
+- kind: data_missing
+  found: on_prompt
+  statement: In Mouse20-130515, Mouse20-130516 and Mouse20-130517 the position and head-direction series
+    end 665, 4905 and 6538 s before the recording (at 21351.3, 19742.3 and 19731.4 s, against 22016.6,
+    24647.5 and 26269.4 s), so the second_environment epoch of 130515 and the wake_opto and rest_opto
+    epochs of 130516 and 130517 have no position.
+- kind: methods_unavailable
+  found: on_prompt
+  statement: Neither the paper nor the dandiset links analysis code. The dandiset's only related resource
+    is the paper, and the paper says only that the analyses were run in Matlab, so the von Mises fit, the
+    Rayleigh test, the cross-correlogram estimate of angular velocity and the coherence measure cannot be
+    checked against the authors' code.
 verifications:
 - date: '2026-11-15'
   kind: agent
@@ -1216,3 +1228,139 @@ verifications:
       measured gives the three s.d. medians. The run time is no longer stated in the outcome's notes,
       which refer to the time the notebook prints; the round-2 response above keeps the figure it gave
       then, which the printed time does not support.
+reconciliation:
+  earlier: peyrache-2015-01
+  date: '2026-11-16'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: Every unit now has a region (853 Anterodorsal nucleus, 365 Postsubiculum, 216 Prelimbic area, 154
+      Field CA1, 22 Reticular nucleus of the thalamus, 72 unknown), an electrode group, a shank and a cluster_id,
+      and no file has only unknown electrode locations (earlier_findings.ipynb). Units are labelled in both
+      structures in sessions of Mouse20, 24, 25 and 28; finding 3 takes up the Mouse20 labels.
+  - finding: 2
+    status: partly_fixed
+    now: 4
+    note: The files now hold 1682 unit rows in 42 sessions, none without spikes, with shank and cluster_id in
+      all files, lratio in 40, and an in_lab_cell_list column marking the 1351 units of the lab's cell list.
+      Which of them are the paper's 720 thalamic and 357 PoS cells is still not recorded, as the column's
+      description says, and finding 4 reports that the sessions the paper kept are not marked.
+  - finding: 3
+    status: fixed
+    note: 41 of 42 sessions have an open_field epoch, and in all 37 sessions with both the scored wake state
+      lies wholly inside the open_field epochs (fraction 1.000). Only Mouse32-140820, which has no epochs
+      (finding 1), lacks one.
+  - finding: 4
+    status: fixed
+    note: No unit in the 42 files has unsorted spike times (0 of 1682).
+  - finding: 5
+    status: fixed
+    note: With the head direction shifted against the spikes, the tuning of the six most tuned ADn units of
+      Mouse12-120808 is best at -0.1 to +0.1 s in each quarter of the wake interval, as in the 32 other sessions
+      tested (-0.2 to +0.1 s), and the files mark 11 of its units as HD cells. Finding 6 is about the extent
+      of the same session's wake interval, not its clock.
+  - finding: 6
+    status: fixed
+    note: The raw LED series are now blue_led_position_pixels and red_led_position_pixels, with unit pixels
+      and conversion 1.0 in all 84 series.
+  - finding: 7
+    status: partly_fixed
+    now: 1
+    note: Mouse17-130201 now has head direction, processed position and sleep states, and Mouse32-140820 still
+      has none, as finding 1 reports. The position of Mouse20-130515, 130516 and 130517 still ends 665, 4905
+      and 6538 s (11, 82 and 109 min) before the recording, added as finding 11.
+  - finding: 8
+    status: fixed
+    note: The annotations are now the TimeIntervals tables down_states, hd_down_states and ripples (in 37, 13
+      and 21 files), each with a description and every column described; no series named dow, hdD or rip
+      remains.
+  - finding: 9
+    status: fixed
+    note: The related resource now gives the name "Internally organized mechanisms of the head direction sense"
+      and the identifier doi:10.1038/nn.3968.
+  - finding: 10
+    status: still_present
+    now: 12
+    note: The dandiset's only related resource is the paper (a journal article), its description does not
+      mention code, and the paper links none, so the finding stands as finding 12.
+  outcomes:
+  - claim: hd-cell-fraction
+    earlier: partially_reproduced
+    note: A change in the dataset and in the claims file. The earlier files had no regions, so its claims
+      file tested the pooled count (378 against 353) and fraction (0.218 against 0.328); the new claims file
+      tests the thalamic and PoS counts and fractions, which the new region labels allow, and the thalamic
+      HD count (293 under hd-a) exceeds 242 plus or minus 24.2 because the files add sessions of the dual
+      mice the paper did not count.
+  - claim: fig3a-packet-60-degrees
+    earlier: reproduced
+    note: A change in the dataset and in the claims file. The earlier attempt pooled all pairs, as units had
+      no region (crossings 54.2, 56.9 and 55.9 degrees); the new claims file asks for the crossing in each
+      pair type and state, which the region labels allow, and 7 of 9 combinations are within tolerance with
+      10 degree bins, PoS-PoS in SWS crossing at 54 and 108 degrees.
+  - claim: ensemble-sizes
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient); with the region
+      labels the new attempt tests the claim, and both means fall within tolerance (8.00 and 5.22 under hd-b)
+      but neither s.d. does (4.42 and 4.11).
+  - claim: adn-pos-peak-rate
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions; with the labels the Mann-Whitney test
+      holds (p = 1.9e-13 under hd-a) and the ratio is 3.76, above 3 plus or minus 0.3.
+  - claim: adn-pos-hd-information
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim.
+  - claim: fig3a-adn-stronger-than-pos
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim.
+  - claim: fig3b-packet-coherence
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim; the new claims file also names the readings
+      of the coherence measure, which the earlier finding 10 said could not be repeated.
+  - claim: fig4c-noise-adn-vs-pos
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim.
+  - claim: fig4e-ole-covariance
+    earlier: blocked
+    note: A change in the dataset lets the claim be tested, as the earlier files had no regions. It is not
+      reproduced on an estimator the paper does not define (median error ratio 0.99 in ADn with the adopted
+      signal OLE), so the outcome rests on the new notebook's assumed OLE.
+  - claim: fig5b-adn-decoded-tuning
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim.
+  - claim: fig5e-adn-predicts-pos
+    earlier: blocked
+    note: A change in the dataset, with the region labels, and in the claims file, which moved the readout
+      windows of the earlier statement (123, 133 and 79 ms) to the claim fig5e-readout-windows. The new
+      attempt runs the GLM in its own notebooks.
+  - claim: fig6b-adn-synchrony
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim.
+  - claim: fig7-adn-pos-connections
+    earlier: blocked
+    note: A change in the dataset lets the claim be tested, as the earlier files had no regions. It is not
+      reproduced because the files hold only 4765 ADn by PoS pairs against 6960, and the PoS to ADn (0.44%)
+      and pyramidal fractions (1.07% and 0.44%) are outside tolerance; the ADn to PoS fraction (4.11%) is
+      within it.
+  - claim: fig7d-same-preferred-direction
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim.
+  - claim: fig7c-adn-triggered-pos-lfp
+    earlier: blocked
+    note: A change in the dataset. The earlier files had no regions (metadata_insufficient), and the region
+      labels added since let the new attempt test the claim.
+  protocol: Between pilot-7 and pilot-15, pilot-8 added to each claim the paper's quote and its statistics;
+    pilot-9 required the full text and took every method from the paper, running every reading it allows;
+    pilot-10 had a reader, who never sees the data, write the claims file, which binds the author; pilot-12
+    made repeat attempts blind and moved the comparison to this reconcile step; pilot-13 raised the notebook
+    limit to 60 minutes; and pilot-14 filed records by paper. Here the claims file was written again by a
+    reader from the full text (35 claims against 21, with named readings in each criterion), so several shared
+    claims are tested on different criteria; the author did not see peyrache-2015-01; and the GLM claims
+    ran in two notebooks of 15 and 26 minutes, which the 60 minute limit allows.
