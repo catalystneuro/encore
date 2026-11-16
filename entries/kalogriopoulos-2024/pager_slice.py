@@ -40,6 +40,7 @@ Where the parameters come from:
 from __future__ import annotations
 
 import hashlib
+import re
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
@@ -143,6 +144,8 @@ def sweep_measures(v_mv, i_pa, stim_pa):
             out[f"rheo_formula_{rule}_pa"] = float(ramp_formula(t))
             out[f"rheo_fit_{rule}_pa"] = float(intercept + slope * t)
             out[f"rheo_stored_{rule}_pa"] = float(stim_pa[r0 + k])
+        # peak voltage in the 3 ms after the first event, to tell an action potential from noise
+        out[f"peak_{rule}_mv"] = np.nan if k is None else float(vr[k:k + s(0.003)].max())
     # timing check: the voltage drop at the step onset, and the current monitor's step onset
     out["dv_step_onset_mv"] = float(v_mv[s(STEP[0]) + 40:s(STEP[0]) + 100].mean()
                                     - v_mv[s(STEP[0]) - 60:s(STEP[0])].mean())
@@ -153,38 +156,64 @@ def sweep_measures(v_mv, i_pa, stim_pa):
     return out
 
 
-def file_text(f, first_sweep):
-    """Every text value in the file outside the sweep series, plus the first sweep's attributes.
+def _sweep_pattern(name):
+    """A path with its sweep number replaced by NN, so that every sweep's series reads the same."""
+    return re.sub(r"-\d+-ch-", "-NN-ch-", name)
 
-    Used to look for a record of the condition, the drug onset, the mEGFP intensity or the
-    preincubation time. Returns a list of "path: value" strings.
+
+def file_text(f):
+    """Every text value in the file, and every path in it, with sweep numbers replaced by NN.
+
+    Visits every group and dataset (the namespace specifications excepted): all attributes of every
+    sweep's series, every string dataset of any length (the text columns of the icephys tables
+    included), and /intervals, /analysis and /processing where they exist. Used to look for a
+    record of the condition, the drug onset, the mEGFP intensity or the preincubation time.
+    Returns (sorted "path: value" strings, sorted paths).
     """
-    found = []
+    found, paths = set(), set()
 
     def visit(name, obj):
+        if name.startswith("specifications"):
+            return
+        name = _sweep_pattern(name)
+        paths.add(name)
         for k, v in obj.attrs.items():
-            if isinstance(v, (str, bytes)) and k not in ("namespace", "neurodata_type", "object_id"):
-                found.append(f"{name}@{k}: {v.decode() if isinstance(v, bytes) else v}")
-        if isinstance(obj, h5py.Dataset) and obj.dtype.kind in "SU" or (
-                isinstance(obj, h5py.Dataset) and obj.dtype.kind == "O"
-                and h5py.check_string_dtype(obj.dtype) is not None and obj.size <= 4):
-            vals = np.atleast_1d(obj[()])
-            found.append(f"{name}: " + "; ".join(x.decode() if isinstance(x, bytes) else str(x) for x in vals))
-
-    for top in ("general", "analysis", "processing", "session_description", "identifier"):
-        if top in f:
-            obj = f[top]
-            if isinstance(obj, h5py.Group):
-                obj.visititems(lambda n, o: visit(f"{top}/{n}", o))
+            if k in ("namespace", "neurodata_type", "object_id"):
+                continue
+            if isinstance(v, (str, bytes)):
+                vals = [v]
+            elif isinstance(v, np.ndarray) and v.dtype.kind in "OSU":
+                vals = list(v.ravel())
             else:
-                visit(top, obj)
-    for top in ("acquisition", "stimulus/presentation"):
-        for k in f[top]:
-            if k.split("-")[-3] == first_sweep:
-                g = f[f"{top}/{k}"]
-                visit(f"{top}/{k}", g)
-                g.visititems(lambda n, o, k=k: visit(f"{top}/{k}/{n}", o))
-    return found
+                continue
+            found.update(f"{name}@{k}: {x.decode() if isinstance(x, bytes) else x}" for x in vals)
+        if isinstance(obj, h5py.Dataset) and (obj.dtype.kind in "SU"
+                                              or h5py.check_string_dtype(obj.dtype) is not None):
+            found.update(f"{name}: {x.decode() if isinstance(x, bytes) else x}"
+                         for x in np.atleast_1d(obj[()]))
+
+    visit("", f)
+    f.visititems(visit)
+    return sorted(found), sorted(paths)
+
+
+def interpolation_residual(raw, taps=8):
+    """How well each half of a sweep's samples is predicted from the other half, in ADC counts.
+
+    Odd samples are fitted by least squares on the `taps` even samples on each side, and even
+    samples on the odd ones. Data upsampled from 10 kHz by any linear interpolator that keeps the
+    original samples give one residual near the rounding error (about 0.3 counts); data sampled
+    at 20 kHz with content above 5 kHz give two similar, larger residuals. A data check, not used
+    in any measure.
+    """
+    x = raw.astype(float)
+    out = []
+    for phase in (1, 0):
+        idx = np.arange(2 * taps + phase, len(x) - 2 * taps, 2)
+        X = np.column_stack([x[idx + o] for o in range(-2 * taps + 1, 2 * taps, 2)] + [np.ones(len(idx))])
+        beta = np.linalg.lstsq(X, x[idx], rcond=None)[0]
+        out.append(float(np.std(x[idx] - X @ beta)))
+    return out
 
 
 def load_cell(asset):
@@ -215,7 +244,7 @@ def load_cell(asset):
             "stim_unit": stim[f"stimulus-{sweeps[0]}-ch-0"]["data"].attrs["unit"],
             "stim_description": g0.attrs["description"],
         })
-        meta["text"] = file_text(f, sweeps[0])
+        meta["text"], meta["paths"] = file_text(f)
         rows = []
         for n, sw in enumerate(sweeps):
             d0 = acq[f"current_clamp-response-{sw}-ch-0"]
@@ -232,6 +261,7 @@ def load_cell(asset):
                 meta["stim_levels_pa"] = sorted(set(np.round(np.unique(stim_pa), 1)))
                 meta["pairs_identical"] = float(np.mean(raw[0::2] == raw[1::2]))
                 meta["pairs_identical_shift"] = float(np.mean(raw[1:-1:2] == raw[2::2]))
+                meta["interp_resid_odd"], meta["interp_resid_even"] = interpolation_residual(raw)
             rows.append(row)
     df = pd.DataFrame(rows)
     df.insert(0, "cell_id", meta["cell_id"])

@@ -24,7 +24,7 @@ the stored stimulus gives the ramp as a step, and that 10 of the 50 cells receiv
 than the Methods describe. The attempt record, with the reasons, is
 [`attempts/kalogriopoulos-2024-01.yaml`](../../attempts/kalogriopoulos-2024-01.yaml).
 
-- `reproduce_kalogriopoulos_2024.ipynb`: the data check and the measures. It takes about 16
+- `reproduce_kalogriopoulos_2024.ipynb`: the data check and the measures. It takes about 13
   minutes, nearly all of it streaming the 12,858 sweeps.
 - `pager_slice.py`: loading the files and the per-sweep measures and exclusions of the Methods.
   Other notebooks on this dandiset can import it.

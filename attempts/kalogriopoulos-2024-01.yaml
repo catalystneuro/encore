@@ -155,12 +155,18 @@ outcomes:
     from 8 mice. The paper's 15 plus 26 cells total 41; its 7 and 6 mice fit in 8 only if at least 5 mice
     gave cells to both groups, which the Methods allow. The per-condition counts the claim states cannot
     be formed. No file records which condition a cell was in (DCZ alone or DCZ plus mCherry) or when DCZ
-    was applied. The intervals, epochs, notes and pharmacology fields are empty, the session description
-    is the same generic sentence in all 50 files, and a search of every text value in the files for a
-    drug, condition, timing or expression term finds none (notebook, Data check). The dandiset metadata
-    names the two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5
-    to 26 min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot
-    be formed.
+    was applied. No file has an intervals group (no epochs, trials or time intervals), the analysis and
+    processing groups are empty, and the session description is the same generic sentence in all 50 files.
+    A scan of every attribute of every object, all sweeps included, and of every string dataset of any
+    length, the text columns of the intracellular recording tables included, finds no drug, condition,
+    timing or expression term; every sweep's series has the same description of a ramp stimulus, the stimulus
+    description N/A and the comment no comments (notebook, Data check). The dandiset metadata names the
+    two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5 to 26
+    min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot be
+    formed. The totals alone rule out 'reproduced' under both readings, as no split of 50 or 49 cells
+    gives 15 and 26; had the conditions been recorded, the outcome could only have been partially or not
+    reproduced, depending on the mouse counts. The 8 or 9 extra cells are not explained by any exclusion
+    the paper states.
   deviations:
   - Rheobase, used only for the sweep exclusion here, is read from channel 1 (the current monitor), as
     the stored stimulus gives the ramp as a step to +500 pA; this is the criterion's "recorded stimulus"
@@ -175,38 +181,57 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: No file records which condition a cell was in (DCZ alone or DCZ plus mCherry) or when DCZ was
-    applied. The intervals, epochs, notes and pharmacology fields are empty, the session description is
-    the same generic sentence in all 50 files, and a search of every text value in the files for a drug,
-    condition, timing or expression term finds none (notebook, Data check). The dandiset metadata names
-    the two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5 to
-    26 min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot
-    be formed. The notebook computes RMP for every sweep (mean of 0 to 0.5 s) and applies the exclusions
+    applied. No file has an intervals group (no epochs, trials or time intervals), the analysis and processing
+    groups are empty, and the session description is the same generic sentence in all 50 files. A scan
+    of every attribute of every object, all sweeps included, and of every string dataset of any length,
+    the text columns of the intracellular recording tables included, finds no drug, condition, timing
+    or expression term; every sweep's series has the same description of a ramp stimulus, the stimulus
+    description N/A and the comment no comments (notebook, Data check). The dandiset metadata names the
+    two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5 to 26
+    min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot be
+    formed. The notebook computes RMP for every sweep (mean of 0 to 0.5 s) and applies the exclusions
     under both Rin windows and both detection rules, 10,429 to 10,884 sweeps of 49 cells kept, but cannot
-    split them by group or by time from DCZ onset. Also blocked through methods-slice-sample, on which
-    it depends.
+    split them by group or by time from DCZ onset. A2 keeps more sweeps than A1 (10,884 against 10,429)
+    mainly because it detects fast spikes that do not reach 0 mV, which A1 misses (456 sweeps with RMP
+    at or below -50 mV, peaks -19.7 to -0.1 mV, concentrated in a few cells). Also blocked through methods-slice-sample,
+    on which it depends.
 - claim: fig4j-rheobase-increase
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: No file records which condition a cell was in (DCZ alone or DCZ plus mCherry) or when DCZ was
-    applied. The intervals, epochs, notes and pharmacology fields are empty, the session description is
-    the same generic sentence in all 50 files, and a search of every text value in the files for a drug,
-    condition, timing or expression term finds none (notebook, Data check). The dandiset metadata names
-    the two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5 to
-    26 min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot
-    be formed. Rheobase is computed for every sweep from channel 1. In 10 of 50 cells the delivered ramp
+  notes: 'No file records which condition a cell was in (DCZ alone or DCZ plus mCherry) or when DCZ was
+    applied. No file has an intervals group (no epochs, trials or time intervals), the analysis and processing
+    groups are empty, and the session description is the same generic sentence in all 50 files. A scan
+    of every attribute of every object, all sweeps included, and of every string dataset of any length,
+    the text columns of the intracellular recording tables included, finds no drug, condition, timing
+    or expression term; every sweep''s series has the same description of a ramp stimulus, the stimulus
+    description N/A and the comment no comments (notebook, Data check). The dandiset metadata names the
+    two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5 to 26
+    min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot be
+    formed. Rheobase is computed for every sweep from channel 1. In 10 of 50 cells the delivered ramp
     reaches +500 pA at 2.7 or 2.5 s (407.5 or 465.7 pA/s) where the Methods state 2 s (326 pA/s in the
     other 40 cells), the same in every sweep of a cell; a change within a cell is unaffected, but the
-    stored stimulus does not show it. Also blocked through methods-slice-sample.
+    stored stimulus does not show it. The criterion asks to show whether the holding current is constant.
+    This cannot be shown: channel 1 reads 0.47 to 0.56 pA before any injection and varies by at most 0.037
+    pA within a cell, so either it does not include the holding current, which is then not recorded, or
+    none was applied. This item of the criterion is not met. Rheobase under A1 and A2 agrees within 1
+    pA in 10,335 of the 10,675 sweeps with RMP at or below -50 mV where both rules detect an event; A2
+    is earlier by more than 10 pA in 335 sweeps, 325 of them in two cells (2024_08_07_0022 and 2024_08_07_0012)
+    whose first spikes peak near -15 mV, and the per-cell mean differs by up to 336 pA. In the first 100
+    ms of the ramp A2 takes two deflections that peak at -49.3 and -55.8 mV for action potentials. Also
+    blocked through methods-slice-sample.'
 - claim: ed12b-input-resistance-trend
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: No file records which condition a cell was in (DCZ alone or DCZ plus mCherry) or when DCZ was
-    applied. The intervals, epochs, notes and pharmacology fields are empty, the session description is
-    the same generic sentence in all 50 files, and a search of every text value in the files for a drug,
-    condition, timing or expression term finds none (notebook, Data check). The dandiset metadata names
-    the two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5 to
-    26 min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot
-    be formed. Rin is computed for every sweep under both steady-state windows. Also blocked through methods-slice-sample.
+    applied. No file has an intervals group (no epochs, trials or time intervals), the analysis and processing
+    groups are empty, and the session description is the same generic sentence in all 50 files. A scan
+    of every attribute of every object, all sweeps included, and of every string dataset of any length,
+    the text columns of the intracellular recording tables included, finds no drug, condition, timing
+    or expression term; every sweep's series has the same description of a ramp stimulus, the stimulus
+    description N/A and the comment no comments (notebook, Data check). The dandiset metadata names the
+    two conditions only in its description. Each file is one continuous run of 5-s sweeps (15.5 to 26
+    min), so a change upon DCZ addition has no onset to be measured from, and the two groups cannot be
+    formed. Rin is computed for every sweep under both steady-state windows. Also blocked through methods-slice-sample.
 - claim: ed12cd-expression-baseline
   outcome: blocked
   blocked_by: data_missing
@@ -281,7 +306,8 @@ outcomes:
 findings:
 - kind: metadata_insufficient
   statement: No file records the condition of its cell (DCZ alone or DCZ plus mCherry) or the time DCZ
-    was applied. The intervals, notes and pharmacology fields are empty and the session description is
+    was applied. No file has an intervals group, the pharmacology and notes fields are empty, every sweep's
+    series has the same generic description and the comment no comments, and the session description is
     the same generic sentence in all 50 files; the conditions are named only in the dandiset's description.
     The paper's slice comparisons (Fig. 4i,j, Extended Data Fig. 12b) cannot be made from the files.
 - kind: data_missing
@@ -312,18 +338,261 @@ findings:
 - kind: other
   about: data
   statement: The files are sampled at 20 kHz; the Methods state digitization at 10 kHz. Neighbouring samples
-    are equal no more often within pairs than across them, so the 20 kHz samples are not repeated 10 kHz
+    are equal no more often within pairs than across them, and each half of the samples is predicted from
+    the other half no better than the other way round (residual 0.87 to 1.58 ADC counts, against about
+    0.3 for a linear interpolation), so the 20 kHz samples are neither repeated nor interpolated 10 kHz
     samples.
-- kind: metadata_error
-  statement: By their dates of birth, mice PK-109 and PK-110 were 101 and 107 days old at recording; the
-    Methods (injection at 4 to 8 weeks, recording 3 to 6 weeks later) allow at most 98 days. Either the
-    dates of birth or the Methods' timeline is off for these two mice.
 - kind: metadata_insufficient
-  statement: Experimenter, lab and institution are "_" in every file, the electrodes and the device have
-    no description, and the series have no stimulus description ("N/A") or comments.
+  statement: 'Experimenter, lab and institution are "_" in every file, the electrodes and the device have
+    no description, and the series have no stimulus description ("N/A") or comments. The holding current
+    the Methods describe (adjusted so each cell began at -65 mV) is not recorded: the current monitor
+    reads about 0.5 pA before any injection in every sweep.'
 - kind: methods_unavailable
   statement: The paper's analysis scripts are available only on request, and the Methods do not define
     the windows that give a change "upon 2-min DCZ addition", the unit of the mixed linear model (one
     change per cell or every sweep), the action potential detection rule, or the steady-state window for
     input resistance. The question for the authors is which windows, unit, detection rule and Rin window
     were used, and which 41 of the 50 deposited cells were analysed, in which group?
+verifications:
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text. The verifier read the dandiset metadata, the
+    list of 50 assets and the metadata of every asset through the DANDI API, and tested the helper's measures
+    on synthetic sweeps. It did not download the files.
+  results:
+  - claim: fig1c-antagonist-screen
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed2-tev-reversible
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig1hi-gfp-relieves-inhibition
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig1op-linker-soluble-antigen
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed3a-nanobody-swap
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed3b-detection-limits
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed3b-orthogonal
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed3cd-reversibility-affinity
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig2a-many-antigens
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed5bc-spike-nanobodies
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig2c-macrophage-m1
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig2f-bite-killing
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed7-toxin-screen
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig3el-pagerg-coupling
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig3mo-second-messengers
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig3qs-tnf-vegf-sensitivity
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig4bd-culture-calcium-suppressed
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: methods-slice-sample
+    agrees: true
+    outcome: blocked
+    reason: 'No file or asset record says which condition a cell belongs to, so the per-condition counts
+      cannot be formed. The totals already rule out reproduced: reading (a) gives 50 cells and 8 mice,
+      reading (b) gives 49 cells and 8 mice under all four Rin/AP combinations, and the paper''s total
+      is 41. The only outcomes still possible are partially or not reproduced, depending on the mouse
+      split, which is unknown. The scan behind ''no condition recorded'' never visits /intervals, reads
+      the attributes of the first sweep only, and skips string datasets with more than 4 elements, so
+      the block rests on a check that was not fully made. Neither the outputs nor the status table says
+      that the totals rule out reproduced; the nine extra cells are not explained by any exclusion the
+      paper states. In the data check, the 49 to 98 day range is too strict, as injection at 4-8 weeks
+      plus 3-6 weeks allows ages up to about 104-110 days, so calling PK-109 (101 days) and PK-110 (107
+      days) older than the Methods imply is overstated; and the equal-neighbour test cannot exclude interpolated
+      upsampling from 10 kHz, so ''consistent with acquisition at 20 kHz'' is weaker than stated.'
+    response: 'The scan now visits every object in every file: all attributes of every sweep''s series,
+      every string dataset of any length, and /intervals, /analysis and /processing. The notebook lists
+      every path of one file (all 50 files have the same paths), and the distinct description, stimulus
+      description and comment values over all sweeps. No file has an intervals group, and nothing names
+      a drug, condition, onset or expression level. The result cell now prints the totals against 41 and
+      says that they rule out reproduced under both readings and that the 8 or 9 extra cells are not explained
+      by any stated exclusion; the notes say the same. In the data check: The 49 to 98 day range the notebook
+      took from the Methods was too strict: injection ''when 4-8 weeks old'' plus ''3-6 weeks'' later
+      allows up to about 110 days, so calling PK-109 (101 days) and PK-110 (107 days) older than the Methods
+      imply was overstated. The notebook now shows both readings, and the finding that called the ages
+      a metadata error is withdrawn. The equal-neighbour test cannot exclude interpolated upsampling from
+      10 kHz, so ''consistent with acquisition at 20 kHz'' was weaker than stated. The helper now fits
+      each half of the samples on the other half; both residuals are 0.87 to 1.58 ADC counts in every
+      file, against about 0.3 for a linear interpolation, and the finding says so. The verifier found
+      no misreading of the paper in the claims file, so no question was added. Outcome unchanged.'
+  - claim: methods-mcherry-preincubation
+    agrees: true
+    outcome: blocked
+    reason: The text scan finds no preincubation field. The asset metadata hold only subject, age, sex,
+      session start and slice/cell IDs.
+    response: No change beyond the fuller scan, which also finds no preincubation field.
+  - claim: fig4i-rmp-hyperpolarization
+    agrees: true
+    outcome: blocked
+    reason: No condition per cell and no DCZ onset. The criterion requires the application time the dataset
+      records. Per-sweep RMP is computed, but neither W1 nor W2 can be formed. The scan behind this has
+      gaps (/intervals, sweeps after the first, long text columns).
+    response: 'The scan now visits every object in every file: all attributes of every sweep''s series,
+      every string dataset of any length, and /intervals, /analysis and /processing. The notebook lists
+      every path of one file (all 50 files have the same paths), and the distinct description, stimulus
+      description and comment values over all sweeps. No file has an intervals group, and nothing names
+      a drug, condition, onset or expression level. Outcome unchanged.'
+  - claim: fig4j-rheobase-increase
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4i. A2 takes a single-sample difference at 20 kHz, so a 1 mV step is already 20
+      V/s; on a synthetic sweep, noise of SD 0.2 mV moved the A2 first AP from 2.0 s to 1.18 s while A1
+      was unaffected, and the notebook never compares A2 and A1 rheobase. Channel 1 reads about 0.5 pA
+      before any injection, so whether the holding current is constant cannot be shown, which the criterion
+      asks for; the notebook reports the gap but does not mark the criterion item as unmet.
+    response: 'The scan now visits every object in every file: all attributes of every sweep''s series,
+      every string dataset of any length, and /intervals, /analysis and /processing. The notebook lists
+      every path of one file (all 50 files have the same paths), and the distinct description, stimulus
+      description and comment values over all sweeps. No file has an intervals group, and nothing names
+      a drug, condition, onset or expression level. A new data-check cell compares A2 with A1 sweep by
+      sweep and prints the peak voltage after each first event: the rules agree within 1 pA in 10,335
+      of 10,675 sweeps; A2 is earlier mainly in two cells whose spikes peak near -15 mV, which A1 misses,
+      and in two sweeps it takes a deflection early in the ramp (peaks -49.3 and -55.8 mV) for an action
+      potential. The notebook prints the per-cell range of the channel 1 baseline, and the notes now say
+      that the holding-current item of the criterion is not met. Outcome unchanged.'
+  - claim: ed12b-input-resistance-trend
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4i.
+    response: 'The scan now visits every object in every file: all attributes of every sweep''s series,
+      every string dataset of any length, and /intervals, /analysis and /processing. The notebook lists
+      every path of one file (all 50 files have the same paths), and the distinct description, stimulus
+      description and comment values over all sweeps. No file has an intervals group, and nothing names
+      a drug, condition, onset or expression level. Outcome unchanged.'
+  - claim: ed12cd-expression-baseline
+    agrees: true
+    outcome: blocked
+    reason: There is no mEGFP intensity or image. The archive's variableMeasured lists only CurrentClampSeries
+      and CurrentClampStimulusSeries.
+    response: No change.
+  - claim: ed12ef-expression-shift
+    agrees: true
+    outcome: blocked
+    reason: No mEGFP data, and no condition or onset.
+    response: No change.
+  - claim: ed12g-expression-rmp
+    agrees: true
+    outcome: blocked
+    reason: No mEGFP data, and no condition or onset.
+    response: No change.
+  - claim: fig4lm-t-cell-chemotaxis
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig4mn-chemotaxis-kinetics-dose
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: ed13-dcz-sensor
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig5d-mcherry-pagerfl
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig5g-bfp-pagerfl
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig5jl-pagerfl-kinetics
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
+  - claim: fig5mp-tnf-vegf-pagerfl
+    agrees: true
+    outcome: blocked
+    reason: The dandiset holds only current-clamp NWB files from CA1 slices. None of the culture, imaging,
+      biochemical, T-cell or sensor data is in it.
+    response: No change.
