@@ -201,8 +201,8 @@ def interpolation_residual(raw, taps=8):
     """How well each half of a sweep's samples is predicted from the other half, in ADC counts.
 
     Odd samples are fitted by least squares on the `taps` even samples on each side, and even
-    samples on the odd ones. Data upsampled from 10 kHz by any linear interpolator that keeps the
-    original samples give one residual near the rounding error (about 0.3 counts); data sampled
+    samples on the odd ones. Data upsampled from 10 kHz give one residual near the rounding error
+    (about 0.3 counts; `upsampled_residuals` shows it on the same sweeps); data sampled
     at 20 kHz with content above 5 kHz give two similar, larger residuals. A data check, not used
     in any measure.
     """
@@ -214,6 +214,27 @@ def interpolation_residual(raw, taps=8):
         beta = np.linalg.lstsq(X, x[idx], rcond=None)[0]
         out.append(float(np.std(x[idx] - X @ beta)))
     return out
+
+
+def upsampled_residuals(raw):
+    """The smaller `interpolation_residual` of a sweep's even samples upsampled back to 20 kHz.
+
+    The even samples (10 kHz) are upsampled by linear, cubic (4-tap, Catmull-Rom) and band-limited
+    (zero-padded FFT) interpolation and rounded to integer counts, as a stored file would be. This
+    shows the residual the test gives on upsampled data from the same sweep. A data check, not used
+    in any measure.
+    """
+    x = raw[0::2].astype(float)
+    linear = np.empty(2 * len(x) - 1)
+    linear[0::2] = x
+    linear[1::2] = (x[:-1] + x[1:]) / 2
+    cubic = linear.copy()
+    cubic[3:-2:2] = (-x[:-3] + 9 * x[1:-2] + 9 * x[2:-1] - x[3:]) / 16
+    spectrum = np.zeros(len(x) + 1, complex)
+    spectrum[:len(x) // 2 + 1] = np.fft.rfft(x)
+    fft = np.fft.irfft(spectrum, 2 * len(x)) * 2
+    return {name: min(interpolation_residual(np.round(y)))
+            for name, y in [("linear", linear), ("cubic", cubic), ("fft", fft)]}
 
 
 def load_cell(asset):
@@ -262,6 +283,8 @@ def load_cell(asset):
                 meta["pairs_identical"] = float(np.mean(raw[0::2] == raw[1::2]))
                 meta["pairs_identical_shift"] = float(np.mean(raw[1:-1:2] == raw[2::2]))
                 meta["interp_resid_odd"], meta["interp_resid_even"] = interpolation_residual(raw)
+                for name, r in upsampled_residuals(raw).items():
+                    meta[f"upsampled_resid_{name}"] = r
             rows.append(row)
     df = pd.DataFrame(rows)
     df.insert(0, "cell_id", meta["cell_id"])
