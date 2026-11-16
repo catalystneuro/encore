@@ -1,46 +1,17 @@
-# Tingley & Buzsáki (2018) from dandiset 000213
+# Tingley and Buzsaki (2018) on DANDI:000213
 
-Tests the findings of [Tingley and Buzsáki (2018)](https://doi.org/10.1016/j.neuron.2018.04.028)
-that can be tested on [DANDI:000213](https://dandiarchive.org/dandiset/000213/0.250624.0438), which
-holds 67 sessions from five rats: 62 hold lateral septum (LS) units and 47 hold hippocampal units
-(36 labelled hpc, 11 labelled ca3).
+Tests the claims of Tingley and Buzsaki (2018), "Transformation of a Spatial Map across the
+Hippocampal-Lateral Septal Circuit" (Neuron 98, 1229-1242), on dandiset 000213 at version
+0.261109.2219, streamed from the archive.
 
-| Claim | Outcome |
-|---|---|
-| 1,647 LS neurons in 62 sessions | Reproduced |
-| 2,297 CA1 and 654 CA3 units | Partially reproduced |
-| 840 LS neurons fire at least 1.5 spikes per trial | Reproduced |
-| 89% of LS neurons code position in spike phase | Not reproduced |
-| Phase beats rate in most neurons, conditions and all sessions | Not reproduced |
-| Phase MSE below rate MSE across LS conditions and sessions | Reproduced |
-| Mean phase minus rate MSE, LS and hippocampus | Partially reproduced |
-| Rate and phase decoding equivalent for hippocampal place fields | Not reproduced |
-| 5.3% of LS and 31.7% of hippocampal rate maps have place fields | Partially reproduced |
-| Hippocampal place field counts, peak rates and widths | Partially reproduced |
-| LS place fields less stable | Not reproduced |
-| Peak information at a smaller smoothing for phase than rate | Partially reproduced |
-| Phase more informative at fine scales, rate at coarse ones | Partially reproduced |
-| Phase coding grows with LS depth | Partially reproduced |
-| Onset phase of LS phase fields varies with depth | Not reproduced |
-| LS-CA3 theta coherence rises along the run | Not reproduced |
-| Theta-gamma coupling rises along the run, stronger for CA3 | Not reproduced |
-| LS ensemble phases decode position better than hippocampal ensembles | Not reproduced |
-| 18.5% of hippocampal-LS pairs form gamma assemblies (on a 1% sample of pairs) | Not reproduced |
-| LS rate maps carry less information than hippocampal place fields | Partially reproduced |
-| Assembly members and assembly strength along the track (two claims) | Blocked: not runnable |
-| Speed and phase precession | Blocked: methods underspecified |
-| Maze rotation (Figure S6) | Blocked: metadata insufficient |
-| Spiking model (Figure 7) | Blocked: other |
+- `reproduce_tingley_2018.ipynb`: one notebook for all claims. It loads every session, reduces it to
+  the spikes within trials with their linearized position, CA1 theta phase, instantaneous rate and
+  running speed, then tests each claim. It runs in about 20 minutes on 4 CPUs.
+- `tingley.py`: loading and the reusable measures (maps, the single-cell decoder, place fields,
+  Olypher information, circular statistics, LFP coherence and coupling, ensemble decoding). Its
+  docstring says where each parameter comes from.
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
+the differences from the paper's method.
 
-The paper's linearized behaviour, trial conditions and choice of CA1 channel are not in the
-dandiset, so they are rebuilt here; several outcomes depend on those choices. The attempt record,
-with the reasons and the differences from the paper's method, is
-[`attempts/tingley-2018-01.yaml`](../../attempts/tingley-2018-01.yaml).
-
-- `reproduce_tingley_2018.ipynb`: the analysis. It takes about twelve to fifteen minutes on four
-  processes, streaming only the trials of each file.
-- `lshpc.py`: loading, linearization, conditions, the per-cell decoder, place fields, information,
-  the LFP measures and the peer prediction. Other notebooks on this dandiset can import it.
+The outcomes and their reasons are in `attempts/tingley-2018-02.yaml`.
