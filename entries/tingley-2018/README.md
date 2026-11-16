@@ -6,7 +6,7 @@ Hippocampal-Lateral Septal Circuit" (Neuron 98, 1229-1242), on dandiset 000213 a
 
 - `reproduce_tingley_2018.ipynb`: one notebook for all claims. It loads every session, reduces it to
   the spikes within trials with their linearized position, CA1 theta phase, instantaneous rate and
-  running speed, then tests each claim. It runs in about 40 minutes on 4 CPUs.
+  running speed, then tests each claim. It runs in about 55 minutes on 4 CPUs.
 - `tingley.py`: loading and the reusable measures (maps, the single-cell decoder, place fields,
   Olypher information, circular statistics, LFP coherence and coupling, ensemble decoding, peer
   prediction). Its docstring says where each parameter comes from.

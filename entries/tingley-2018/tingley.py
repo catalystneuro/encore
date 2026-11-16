@@ -504,7 +504,7 @@ def length_scale(S):
 # b 1.5 cm), undefined phase (1 set to 0, adopted; 0 left out, variant)
 READINGS = ["aa1", "ba1", "ab1", "bb1", "aa0", "ba0"]
 MAIN = "aa1"
-NULL_READINGS = ["aa1", "ba1", "aa0", "ba0"]
+NULL_READINGS = ["aa1", "ba1", "aa0", "ba0", "ab1", "bb1"]
 NULL_FRAC = 0.25          # share of hippocampal unit-conditions given the phase-shift null; all LS ones (S)
 
 
@@ -513,6 +513,7 @@ def analyse_session(S, seed=0, readings=READINGS, info=True):
     fields under both rate-map readings, and information curves. Returns rows."""
     rng = np.random.default_rng(seed)
     rng_null = np.random.default_rng(seed + 500000)
+    rng_null_b = np.random.default_rng(seed + 600000)   # 1.5 cm null readings (added in round 2), own stream
     rows = []
     if not S.get("units"):
         return rows
@@ -561,8 +562,12 @@ def analyse_session(S, seed=0, readings=READINGS, info=True):
                 if U_null is None:
                     U_null = shift_phases(U, rng_null)
                 Mn = maps(S, U_null, c, "a")
+                Mnb = maps(S, U_null, c, "b") if "b" in Ms and Ms["b"]["nb"] != Ms["a"]["nb"] else None
                 for rd in NULL_READINGS:
-                    r = decode_unit(Mn, rng_null, rd[0], fill=(None if rd[2] == "0" else 0.0))
+                    MM = Mn if rd[1] == "a" else Mnb
+                    if MM is None:
+                        continue      # 1.5 cm map with 201 bins: the notebook takes the 201-bin result
+                    r = decode_unit(MM, rng_null if rd[1] == "a" else rng_null_b, rd[0], fill=(None if rd[2] == "0" else 0.0))
                     for k in ("rate", "phase_cos", "chance_phase"):
                         row[f"null_{rd}_{k}"] = r[k]
             want = info and ((U["region"] == "ls") or (is_hpc and (row["pfa_n"] > 0 or row["pfb_n"] > 0)))
