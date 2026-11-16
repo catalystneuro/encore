@@ -11,7 +11,7 @@ all share the helper `jones2021.py`.
 | Claims | Outcome |
 |---|---|
 | SWR frequency up and SWR size down with PV+ suppression; FG coherence unchanged during run; theta coherence and frequency unchanged except DG frequency with PV+ suppression; baseline genotype differences | Reproduced (5; the last two rest on pooling frequency over a region's sites) |
-| Rest SG power with PV+ suppression; FG frequency up with SST+ suppression; FG theta modulation down with PV+ suppression | Partially reproduced (3) |
+| Rest SG power with PV+ suppression; FG frequency up with SST+ suppression; FG theta modulation down with PV+ suppression | Partially reproduced (3; FG frequency rests on pooling frequency over a region's sites and on fitting to the likelihood maximum) |
 | Other SWR, CA3 SWR, dentate spike, CSD, SWR-coincident SG, run, double suppression, empty vector, running speed and sex claims | Not reproduced (31) |
 | Histology, slice recordings, fast ripples | Blocked: data missing (3) |
 
@@ -22,8 +22,11 @@ Three properties of the dandiset bear on most results: the MUA spike times are o
 a session-specific lag (event-locked MUA is tested with each session shifted to its SWRs, an
 assumption); four mice have no vehicle sessions; and in cohort 3 all vehicle sessions come before the
 CNO sessions, so treatment is confounded with session order, and the empty vector control changes with
-CNO (a check within the vehicle sessions explains only part of this). The LMMs are fitted by maximum likelihood from per-mouse, per-treatment sufficient statistics; for
-features with millions of observations (frequency per peak) the variance estimates can move between
-nearby optima, so p-values of those features are less stable than their coefficients. The attempt
+CNO (a check within the vehicle sessions explains only part of this). The LMMs are fitted by maximum likelihood from per-mouse, per-treatment sufficient statistics. For
+features with millions of observations (frequency per peak) the L-BFGS-B fits can stop short of the
+maximum at points that vary between runs, so p-values of those features are less stable than their
+coefficients. A fit check in the run notebook refits every run test to the maximum: 12 Holm decisions
+change and no outcome does. With mice as the unit, most of the significant frequency effects would
+not pass Holm. The rest notebook's fits were not refitted. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/jones-2021-01.yaml`](../../attempts/jones-2021-01.yaml).

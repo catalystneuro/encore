@@ -924,9 +924,12 @@ def _negll_core(theta, blocks, ngroups, return_beta=False):
     return nll
 
 
-def fit_lmm(cs, groups=None, ngroups=1):
+def fit_lmm(cs, groups=None, ngroups=1, polish=False):
     """ML fit of feature ~ treatment + (treatment|animal) from cell statistics; with groups, one set of
-    fixed effects and one random-effects covariance per group and a shared residual variance."""
+    fixed effects and one random-effects covariance per group and a shared residual variance. With polish,
+    a Nelder-Mead search continues from the best of the three L-BFGS-B fits: with millions of observations
+    the likelihood is large and its finite-difference gradient noisy, and L-BFGS-B can stop short of the
+    maximum (fit check in the run notebook)."""
     blocks = _animal_blocks(cs, groups)
     w = np.concatenate([b[1] for b in blocks])
     mu = np.average(np.concatenate([b[2] for b in blocks]), weights=w)
@@ -937,13 +940,18 @@ def fit_lmm(cs, groups=None, ngroups=1):
         r = optimize.minimize(_negll, th0, args=(blocks, ngroups), method="L-BFGS-B")
         if best is None or r.fun < best.fun:
             best = r
+    if polish:
+        r = optimize.minimize(_negll, best.x, args=(blocks, ngroups), method="Nelder-Mead",
+                              options=dict(xatol=1e-6, fatol=1e-6, maxfev=20000, adaptive=True))
+        if r.fun < best.fun:
+            best = r
     nll, beta, cov, ntot = _negll(best.x, blocks, ngroups, return_beta=True)
     return dict(ll=-nll, beta=beta, cov=cov, n=ntot, theta=best.x, converged=bool(best.success))
 
 
-def treatment_test(cs):
+def treatment_test(cs, polish=False):
     """F test of the treatment fixed effect (code calcLMM.m, coefTest; residual df n - 2)."""
-    r = fit_lmm(cs)
+    r = fit_lmm(cs, polish=polish)
     b, v = r["beta"][1], r["cov"][1, 1]
     F = b * b / v
     p = stats.f.sf(F, 1, r["n"] - 2)
@@ -951,13 +959,13 @@ def treatment_test(cs):
                 n_animals=cs.animal.nunique(), converged=r["converged"])
 
 
-def genotype_test(cs_a, cs_b):
+def genotype_test(cs_a, cs_b, polish=False):
     """LRT of feature ~ treatment + (treatment|animal) against feature ~ treatment:genotype +
     (treatment:genotype|animal), data of two genotypes pooled (Quantification, paragraph 2)."""
     cs = pd.concat([cs_a.assign(g=0), cs_b.assign(g=1)])
     groups = dict(zip(cs.animal, cs.g))
-    r0 = fit_lmm(cs)
-    r1 = fit_lmm(cs, groups, 2)
+    r0 = fit_lmm(cs, polish=polish)
+    r1 = fit_lmm(cs, groups, 2, polish=polish)
     lr = max(0.0, 2 * (r1["ll"] - r0["ll"]))
     return dict(LR=lr, p_df9=stats.chi2.sf(lr, 9), p_df5=stats.chi2.sf(lr, 5),
                 coef_a=r1["beta"][1], coef_b=r1["beta"][3])
@@ -1047,7 +1055,7 @@ def within_skew(df):
     return float(stats.skew(r))
 
 
-def test_feature(df, groups=("PV", "SST"), pairs=(("PV", "SST"),)):
+def test_feature(df, groups=("PV", "SST"), pairs=(("PV", "SST"),), polish=False):
     """Treatment F test per group and genotype LRT per pair, under reading (a) (log when right skewed) and
     (b) (log always). The skewness is taken over the PV-Cre and SST-Cre data."""
     out = []
@@ -1062,7 +1070,7 @@ def test_feature(df, groups=("PV", "SST"), pairs=(("PV", "SST"),)):
             if cs[g].animal.nunique() < 2 or cs[g].cno.nunique() < 2:
                 continue
             try:
-                t = treatment_test(cs[g])
+                t = treatment_test(cs[g], polish)
             except np.linalg.LinAlgError as e:      # reported in the table as a failed fit, p NaN
                 out.append(dict(reading=reading, log=use_log, skew=sk, test=g, coef=np.nan, p=np.nan, F=np.nan,
                                 n_animals=cs[g].animal.nunique(), n_obs=int(cs[g]["size"].sum()), error=str(e)))
@@ -1073,7 +1081,7 @@ def test_feature(df, groups=("PV", "SST"), pairs=(("PV", "SST"),)):
             if not all(p in cs and len(cs[p]) for p in pair):
                 continue
             try:
-                gt = genotype_test(cs[pair[0]], cs[pair[1]])
+                gt = genotype_test(cs[pair[0]], cs[pair[1]], polish)
             except np.linalg.LinAlgError as e:
                 out.append(dict(reading=reading, log=use_log, skew=sk, test=f"{pair[0]} vs {pair[1]}", coef=np.nan,
                                 p=np.nan, F=np.nan, p_df5=np.nan, n_animals=0, n_obs=0, error=str(e)))
@@ -1294,16 +1302,16 @@ def build_tables(results, sessions, features):
 
 
 def _test_one(args):
-    name, d, groups, pairs = args
-    t = test_feature(d, groups, pairs)
+    name, d, groups, pairs, polish = args
+    t = test_feature(d, groups, pairs, polish)
     t.insert(0, "feature", name)
     return t
 
 
-def test_all(tables, groups=("PV", "SST"), pairs=(("PV", "SST"),), workers=4):
-    """test_feature for every table, features in parallel processes (the fits are deterministic)."""
+def test_all(tables, groups=("PV", "SST"), pairs=(("PV", "SST"),), workers=4, polish=False):
+    """test_feature for every table, features in parallel processes."""
     from concurrent.futures import ProcessPoolExecutor
-    jobs = [(name, d, groups, pairs) for name, d in tables.items() if len(d)]
+    jobs = [(name, d, groups, pairs, polish) for name, d in tables.items() if len(d)]
     with ProcessPoolExecutor(workers) as ex:
         out = list(ex.map(_test_one, jobs))
     return pd.concat(out, ignore_index=True)

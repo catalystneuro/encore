@@ -156,9 +156,10 @@ outcomes:
   notes: CNO sessions z-scored by the mouse's previous vehicle session. PV-Cre SWR-coincident SG power rises in
     CA1 (p = 1.3e-11, 13 of 13 mice) and CA3 (p = 0.00046), not significantly in DG (p = 0.19). No SST-Cre effect
     is significant (CA1 p = 0.0095, CA3 0.23, DG 0.14). The CA1 genotype test is not significant (p = 0.11; 0.013
-    with 5 degrees of freedom), so the partial rule fails. Empty vector mice also rise in CA1 (p = 1.6e-05). With
-    every session z-scored by its own statistics (code) no PV-Cre effect is significant (CA1 coefficient -0.06,
-    p = 0.044).
+    with 5 degrees of freedom), so the partial rule fails. Empty vector mice also rise in CA1 (p = 1.6e-05), which
+    may come from z-scoring a CNO session by another session's statistics or from session order; no output separates
+    the two. With every session z-scored by its own statistics (code) no PV-Cre effect is significant (CA1 coefficient
+    -0.06, p = 0.044).
   deviations:
   - Multitaper power over 30-50 Hz in the 100 ms after SWR onset with 3 tapers, time-bandwidth 2; the paper gives
     the 100 ms window but not the tapers. This is an assumption.
@@ -228,8 +229,8 @@ outcomes:
   notes: Five of eight parts hold (DS MUA unchanged p = 0.97 and 0.26; PV-Cre amplitude decrease p = 3.4e-05; SST-Cre
     length and amplitude unchanged after Holm). DS rate does not fall in either genotype (p = 0.40 and 0.071, SST-Cre
     coefficient positive) and PV-Cre length does not rise (p = 0.91). The detection as the Methods describe it finds
-    8.6 events per second of rest, which suggests a step is missing from the description; question for the authors
-    in findings.
+    8.58 events per second of rest, close to Table S4's dentate spike rates of 9.18 (PV-Cre) and 8.45 Hz (SST-Cre),
+    which supports this reading of the Methods. The amplitude is in z units, where Table S4 gives uV.
   deviations:
   - Dentate spikes from every peak of the z-scored 5 to 100 Hz trace during rest, amplitude to the nearest minimum,
     kept with z-scored log amplitude above 0.75 and length 5 to 25 ms (Methods, Analysis of neural data, paragraph
@@ -265,7 +266,9 @@ outcomes:
   notes: 'Peaks pooled over each region''s sites: PV-Cre decreases in CA3 (p = 0.0087) and DG (p = 0.033) do not
     pass Holm, CA1 p = 0.44; SST-Cre no effect (p 0.30 to 0.75). One site per region: PV-Cre CA3 decrease p = 0.00099,
     CA1 p = 0.30, DG p = 0.13. The partial rule needs CA1 under both readings. All 8 PV-Cre and 7 SST-Cre mice are
-    included.'
+    included. Genotype tests p 0.11 to 0.998 (0.013 to 0.93 with 5 degrees of freedom). Refitted to the likelihood
+    maximum (fit check), the pooled PV-Cre decreases in CA3 (p = 0.00066) and DG (p = 0.0015) pass Holm and the DG
+    genotype test passes with 5 degrees of freedom (p = 0.00019), but CA1 does not change (p = 0.14); same outcome.'
   deviations:
   - Frequency from the interpeak intervals of every site of a region, pooled (Method M averages a region over its
     sites; Table S3's data-point counts imply peaks from several sites); one site per region (CA1 SWR site, the
@@ -308,17 +311,25 @@ outcomes:
     to 0.90); coefficients -0.02 to +0.03.
 - claim: fig6g-fg-frequency-sst
   outcome: partially_reproduced
+  assumed: true
   notebook: run_linear_track.ipynb
   output: claim:fig6g-fg-frequency-sst
   notes: 'Peaks pooled over each region''s sites: SST-Cre FG frequency rises in CA3 (p = 1.4e-08) and DG (p = 2.2e-11),
-    not significantly in CA1 (p = 0.013). One site per region: DG only (p = 2.2e-08; CA1 p = 0.81, CA3 0.24). Both
-    readings give one or two regions of three. All 7 SST-Cre mice.'
+    not significantly in CA1 (p = 0.013). One site per region, main fit: DG only in the deposited run (p = 2.2e-08;
+    CA1 p = 0.81, CA3 0.24), no region in the run the verifier reviewed (DG p = 0.33); the fit stops short of the
+    maximum at points that vary between runs. Refitted to the maximum, both readings give CA3 and DG (pooled p
+    = 2.8e-07 and 2.4e-09, one site 3.5e-06 and 7.1e-09) and not CA1 (p = 0.0093 and 0.58). Pooled FG frequency
+    rises in CA3 and DG in all 7 SST-Cre mice (t test of per-mouse changes p = 0.0031 and 0.0015).'
   deviations:
   - Frequency from the interpeak intervals of every site of a region, pooled (Method M averages a region over its
     sites; Table S3's data-point counts imply peaks from several sites); one site per region (CA1 SWR site, the
     CA3 and DG MUA sites when they are among the region's sites, else the first site) is a variant. Version 1 of
     this attempt used one site and silently dropped mice whose DG or CA3 MUA site was not a region site; this is
     fixed.
+  - Models fitted by L-BFGS-B from three starts, as in the rest of the attempt. For the per-peak frequency features
+    this can stop short of the likelihood maximum at points that differ from run to run; the run notebook's fit
+    check refits every run test with a Nelder-Mead search continuing from the best start and shows the outcome
+    is the same.
 - claim: fig6h-fg-theta-modulation-sst
   outcome: not_reproduced
   notebook: run_linear_track.ipynb
@@ -344,7 +355,10 @@ outcomes:
   notes: 'Peaks pooled over each region''s sites: PV-Cre DG theta frequency rises (+0.040 log units, p = 0.00049)
     and none of the other nine tests is significant (coherence p 0.015 to 0.47, frequency p 0.0071 to 0.55). With
     one site per region PV-Cre CA3 theta frequency is significant (p = 0.0011), which the claim excludes, so the
-    outcome rests on the pooled reading.'
+    outcome rests on the pooled reading. The refit to the likelihood maximum gives the same pooled results. DG theta
+    frequency rises in all 8 PV-Cre mice (t test of per-mouse changes p = 0.014); referred to the number of mice
+    the F test gives p = 0.010, which would not pass Holm over 36. The per-peak p-value rests on the per-peak degrees
+    of freedom of the paper''s code.'
   deviations:
   - Frequency from the interpeak intervals of every site of a region, pooled (Method M averages a region over its
     sites; Table S3's data-point counts imply peaks from several sites); one site per region (CA1 SWR site, the
@@ -371,7 +385,8 @@ outcomes:
   output: claim:figs6-empty-vector-control
   notes: Empty vector mice change with CNO in 4 rest features (SWR rate, chains, SWR size, CA1 SWR-coincident SG
     power; p 2.9e-07 to 0.0017) and 9 run features (CA3 theta power; DG theta, SG and FG power, FG frequency, theta
-    frequency, SG and FG theta modulation, theta coherence). Every empty vector mouse had its vehicle sessions before
+    frequency, SG and FG theta modulation, theta coherence; refitted to the likelihood maximum also CA3 FG frequency).
+    Every empty vector mouse had its vehicle sessions before
     its CNO sessions. Within the vehicle sessions alone, DG theta frequency drifts from the first to the third session
     (p = 0.00021); the other eight run changes do not (p 0.115 to 0.93), so session order explains only part of
     them.
@@ -383,8 +398,8 @@ outcomes:
   - 4.7
   - 5.24
   notes: Run speed 4.70 against 5.24 cm/s, both in tolerance, but t(29) = 2.69, p = 0.012. Over the whole session
-    0.96 against 1.51 cm/s, p = 8.4e-06. Speed rises over the three vehicle sessions in every group (empty vector
-    4.28, 4.71, 5.39 cm/s), before any CNO session.
+    0.96 against 1.51 cm/s, p = 8.4e-06. Speed is higher in the third vehicle session than in the first in every
+    group (empty vector 4.28, 4.71, 5.39 cm/s; P/S 5.14, 4.72, 5.75 cm/s), before any CNO session.
 - claim: tables4-genotype-baseline
   outcome: reproduced
   assumed: true
@@ -402,8 +417,10 @@ outcomes:
   notes: 'Peaks pooled over each region''s sites: PV-Cre lower SG frequency in CA3 (39.66 against 40.95 Hz, p =
     0.00056) and DG (40.16 against 41.48 Hz, p = 0.00034), higher SG/FG ratio in CA3 (6.08 against 3.89, p = 0.00054)
     and DG (5.09 against 3.27, p = 0.00026), each passing Holm over 36; all eight means within tolerance. With one
-    site per region (untransformed) neither frequency difference is significant (CA3 p = 0.31, DG p = 0.44), so
-    the outcome rests on the pooled reading.'
+    site per region (untransformed) neither frequency difference is significant (CA3 p = 0.31, DG p = 0.44); logged,
+    CA3 is (p = 0.00052) and DG is not (p = 0.0063). The outcome rests on the pooled reading. The refit leaves the
+    four p-values as they are; referred to the number of mice they would be 0.0029 to 0.0044, and Welch t tests
+    of the per-mouse means give 0.0051 to 0.0070, none below 0.05/36.'
   deviations:
   - Frequency from the interpeak intervals of every site of a region, pooled (Method M averages a region over its
     sites; Table S3's data-point counts imply peaks from several sites); one site per region (CA1 SWR site, the
@@ -440,7 +457,7 @@ findings:
   statement: In cohort 3 every mouse has its vehicle sessions before its CNO sessions, on the track and in the home
     cage, where the Methods say the treatments alternated; cohort 2 alternates. Either the labels or the description
     is wrong. As deposited, treatment is confounded with session order, and the empty vector mice change with CNO
-    in 3 rest and 7 run features, and run faster on CNO days.
+    in 4 rest and 9 run features, and run faster on CNO days.
 - kind: other
   statement: The scale of the LFP values is unclear. The unit attribute says microvolts, and the ripple-band envelope
     over rest (mean 68.8 file units over 311 home cage sessions) is close to Table S2's 72.39 uV. But the SW amplitude
@@ -466,8 +483,8 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. The dentate spike detection as the Methods describe it (peaks of the z-scored
     5-100 Hz trace, amplitude to the nearest minimum, z-scored log amplitude above 0.75, length 5 to 25 ms) finds
-    about 8.6 events per second of rest. Which further step (a threshold on the peak itself, a minimum interval)
-    did the detection use?
+    8.58 events per second of rest, close to Table S4's rates of 9.18 and 8.45 Hz. Table S4 gives the dentate spike
+    amplitude in uV, where the Methods z-score the trace. On which trace and in which units was the amplitude measured?
 - kind: methods_unavailable
   statement: Question for the authors. The Methods log-transform features "when errors were not Gaussian" and the
     figure code logs every feature. Which features were logged for the published LMMs, and how were SWR start and
@@ -491,7 +508,8 @@ verifications:
   reviewed: The first executed notebooks (rest and run) with the conclusion cells and the summary removed, the helper
     module and the claims file, with the paper's full text. The verifier checked the archive's asset list for the
     blocked claims and tested fit_lmm, treatment_test, holm, region_sites and freq_sites on synthetic inputs. It
-    had no attempt record.
+    had no attempt record. Some author result cells remained in the handover (rest cells 41, 44 and 47; run cells
+    42 and 45); the verifier did not use them.
   results:
   - claim: fig1-tables1-expression
     agrees: true
@@ -768,3 +786,276 @@ verifications:
       so the 'either or both' MUA exception is untested for P/S.
     response: 'The track group sizes by sex are now printed: P/S has 6 female and 1 male mouse, which is why it
       is skipped; this is said in the notes. No change of outcome.'
+- date: '2026-11-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of the first revision (rest, run and CSD) with their conclusions, the helper
+    module, the claims file and the attempt record, with the paper's full text.
+  results:
+  - claim: fig1-tables1-expression
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: figs1ef-exvivo-cno
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig2ef-csd-sr
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the 3 SD main reading. Under the code's 5 SD SWRs with reading (b), three of four effects hold,
+      which meets the partial rule (csd cell 5). The notes say this. csd cell 6 and the record say 'p = 4.4e-11'; the
+      printed value is 4.51e-11 (csd cell 5).
+    response: No change of outcome. The fits vary slightly between runs (see fig6g-fg-frequency-sst); in the run now
+      deposited the printed value is 4.43e-11, as the text says.
+  - claim: fig3b-mua-during-swr
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. The spike-clock shift, with a deposited-time variant, is a reasonable assumption.
+    response: No change of outcome.
+  - claim: fig3c-swr-rate-bidirectional
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig3d-swr-chains
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig3e-swr-length-sst
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: swr-longer-100ms-sst
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig3f-swr-frequency-pv
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. Rest cell 29 and the record say 'p = 4.5e-05'; the printed value is 4.82e-05 (rest cell 28). The
+      verification response says 'the numbers are the same in the new run'.
+    response: No change of outcome. The fits vary slightly between runs; in the run now deposited the printed value is
+      4.51e-05, as the text says. The round-1 response was wrong to say the numbers were the same.
+  - claim: fig3g-sw-amplitude-pv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Rest cell 32 and the record say 'p = 0.00207, just below ... 0.00208'; the printed value is 0.00202
+      (rest cell 31), and the decision is unchanged. The record's 'SST-Cre p 0.00016 to 0.0021' should end at 0.0020.
+      The offset is ruled out; the factor of about 8 against Table S4 remains unexplained and is recorded.
+    response: No change of outcome. In the run now deposited the printed values are 0.00207 and 0.000159 to 0.00207,
+      as the text says; the fits vary slightly between runs.
+  - claim: figs2a-swr-size-pv
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: tables2-fast-ripples-pv
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: tables2-detection-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: tables2-rest-sg-pv
+    agrees: true
+    outcome: partially_reproduced
+    reason: As in round 1, the criterion defines no partial outcome. Read strictly, the SST CA3 and DG failures make
+      it not_reproduced.
+    response: No change of outcome (round 2 allows none); the disagreement on the partial rule is recorded here. The
+      PV-Cre parts hold and the SST-Cre absence fails in two regions, which the outcome describes as holding in part.
+  - claim: fig4d-swr-sg-power-pv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed; the tapers and z-scoring are reasonable assumptions, and fig4d is not reproduced under both z-scorings.
+      Rest cell 44 says 'so part of the rise comes from z-scoring a CNO session by another session's statistics'. The
+      empty vector rise in CA1 (p=1.6e-05) is equally consistent with session order. No output separates the two causes.
+    response: No change of outcome. Rest cell 44 and the notes now say the empty vector rise may come from either cause
+      and that no output separates them.
+  - claim: fig4e-swr-sg-coherence-pv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed; the tapers and z-scoring are reasonable assumptions.
+    response: No change of outcome.
+  - claim: figs2cd-sg-predicts-sw-frequency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed; the tapers and z-scoring are reasonable assumptions.
+    response: No change of outcome.
+  - claim: ca3-swr-overlap
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: figs3-ca3-swr-pv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. The spike-clock shift, with a deposited-time variant, is a reasonable assumption.
+    response: No change of outcome.
+  - claim: figs3c-ca3-swr-rate-sst
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: figs3-dentate-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. The assumption is stated, but its justification is wrong. Rest cell 62 says 'far more than dentate
+      spikes usually occur', and the record says the rate 'suggests a step is missing'. Table S4 reports a DS rate of
+      9.18 Hz (PV) and 8.45 Hz (SST), so the paper's own rate matches the 8.58/s found here, which supports the reading
+      as implemented. The amplitude is still in z units against Table S4's uV.
+    response: No change of outcome. Rest cell 62, the notes and the question for the authors now say the rate matches
+      Table S4 and supports this reading; the question now asks on which trace and in which units the amplitude was measured.
+  - claim: fig5b-mua-run
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Run cell 13 says 'no group has such sessions under both treatments from two or more mice'; no output
+      prints this count, only 'holds None'. starting_time is 0 in every file and theta/delta against speed peaks near
+      zero lag, but 48 of 170 sessions have their peak more than 2 s from zero, and the position end minus LFP end ranges
+      from -92 to +1229 s and is not discussed. The 'only at the edges' argument is weak for laps of about 7 s if lags
+      reach 1 to 2 s.
+    response: 'No change of outcome. The run notebook now prints the mice with shifted spike times by group and treatment:
+      PV-Cre has them only under vehicle (2 mice) and SST-Cre only under CNO (2 mice), and cell 13 says so. The position-end
+      difference and the 48 sessions are not analysed further in this round.'
+  - claim: fig5d-sg-power-run
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig5e-sg-coherence-run
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig5f-sg-frequency-pv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Run cell 22 says 'No genotype test is significant (p from 0.11 to 0.998)'; the printed values are
+      0.0496 to 0.998, and 0.0046 to 0.93 with 5 df (run cell 21).
+    response: 'No change of outcome. In the run now deposited the genotype p-values are 0.106 to 0.998 (0.013 to 0.93
+      with 5 df); both ranges are now stated. The fit check refits every run test to the likelihood maximum: the PV-Cre
+      CA3 and DG decreases then pass Holm, but CA1 does not change, so the outcome is the same.'
+  - claim: fig5g-sg-theta-modulation
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig6b-fg-power-sst
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: figs4e-sg-fg-inverse
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig6e-sg-fg-ratio
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig6f-fg-coherence-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: fig6g-fg-frequency-sst
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree only under the pooled-frequency reading, and the outcome is not marked assumed. With one site per
+      region, none of the three regions is significant (run cell 39: CA1 p=0.807, CA3 0.239, DG 0.327); under that reading
+      the outcome would be not_reproduced. Run cell 40 and the record say ''With one site per region it rises in DG only
+      (p = 2.2e-08...)'', which the printed DG p of 0.327 does not support. The outcome also rests on per-peak p-values
+      the README calls unstable; refits from several starting values, or the fitted random-slope variances, would show
+      whether the pooled significance holds.'
+    response: 'Marked assumed: true, with a deviation. The one-site main fit varies between runs: DG p = 2.2e-08 in the
+      run now deposited and in a second run, 0.327 in the run reviewed. A new fit check refits every run test with a
+      Nelder-Mead search from the best L-BFGS-B start, which reaches the maximum found from a dense grid of starts; it
+      shows L-BFGS-B stopping short of the maximum. Refitted, both readings give CA3 and DG and not CA1, so the outcome
+      is partially reproduced under both. The fitted random-slope SDs and per-mouse tests are printed: pooled FG frequency
+      rises in all 7 SST-Cre mice in CA3 and DG (p = 0.0031 and 0.0015). No change of outcome.'
+  - claim: fig6h-fg-theta-modulation-sst
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: figs4h-fg-theta-modulation-pv
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: figs5-theta-power-ca1
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: figs5-theta-coherence-frequency
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. It rests on pooling peaks over a region's sites; the assumption is stated and reasonable (pooled
+      PV CA1 SG count 980,169 against 1,038,019 in Table S3). However, the README says p-values of these per-peak features
+      are 'less stable than their coefficients'; refits from several starting values, or the fitted random-slope variances,
+      would show whether the pooled significance holds.
+    response: 'No change of outcome. The fit check refits to the likelihood maximum and gives the same pooled results.
+      It also prints the random-slope SDs and per-mouse tests: DG theta frequency rises in all 8 PV-Cre mice (p = 0.014),
+      and referred to the number of mice the F test gives p = 0.010, which would not pass Holm over 36; the notes say
+      the per-peak p-value rests on the per-peak degrees of freedom of the paper''s code.'
+  - claim: figs6-double-like-pv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Rest cell 69 says 'Rest features computed here (17 of the 24)'; cell 70 computes 22. 22 of 24 rest
+      features now enter the figs6 comparisons.
+    response: No change of outcome. Rest cell 69 now says 22 of the 24.
+  - claim: figs6-double-unlike-sst
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Run cell 64 and the record say 'FG frequency in CA3 (p = 8.5e-07) and DG (p = 1.8e-08)'; the printed
+      values are 1.35e-06 and 1.44e-08 (run cells 7 and 63).
+    response: No change of outcome. In the run now deposited the printed values are 8.48e-07 and 1.75e-08, as the text
+      says; the per-peak fits vary between runs (fit check).
+  - claim: figs6-empty-vector-control
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. The cohort 3 finding says the empty vector mice 'change with CNO in 3 rest and 7 run features'; this
+      is stale, the current outputs give 4 rest and 9 run features. Note that fig4d's empty vector rise may come from
+      session order and not only from z-scoring.
+    response: No change of outcome. The finding now says 4 rest and 9 run features; fig4d's text now names session order
+      as a possible cause.
+  - claim: running-speed-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. The record says 'Speed rises over the three vehicle sessions in every group'. SST runs 4.43, 4.38,
+      4.55 and P/S runs 5.14, 4.72, 5.75 (run cell 60). Cell 61's 'from the first to the third' is accurate.
+    response: No change of outcome. The notes now say speed is higher in the third vehicle session than in the first
+      in every group.
+  - claim: tables4-genotype-baseline
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. It rests on pooling peaks over a region's sites; the assumption is stated and reasonable. The one-site
+      p-values are 0.31 and 0.44, against 0.00056 and 0.00034 pooled, for similar mean differences. Refits from several
+      starting values, or the fitted random-slope variances, would show whether the pooled significance holds.
+    response: No change of outcome. The refit leaves the four p-values as they are. The one-site p-values of 0.31 and
+      0.44 are untransformed; logged, as the pooled values are, they are 0.00052 and 0.0063. Referred to the number of
+      mice the four p-values would be 0.0029 to 0.0044, and Welch t tests of the per-mouse means give 0.0051 to 0.0070;
+      the notes say so.
+  - claim: tables6-sex-swr-size
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 42 stated outcomes.
+    response: No change of outcome.
+  - claim: sex-stratified-effects
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed. Run cell 58 and the record say 'p from 0.021 to 0.85'; the printed maximum is 1.0 (SST fg_pow_dg,
+      run cell 57). The 6 female and 1 male P/S track mice explain the skipped interaction.
+    response: No change of outcome. In the run now deposited the printed maximum is 0.854, as the text says; the fits
+      vary between runs (fit check).
