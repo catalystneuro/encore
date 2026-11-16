@@ -380,8 +380,12 @@ def roi_weights(masks, P):
 
 
 # --------------------------------------------------------------------------- per fly
-def process_fly(asset, tmpl_img, masks, n_top=1000, flip=(1, 1, 1)):
+def process_fly(asset, tmpl_img, masks, n_top=1000, flip=(1, 1, 1), repeats=()):
     """Stream one fly's green series once and reduce it to ROI series.
+
+    repeats: further registration seeds; for each, the ROI series are computed in the
+    same pass through that registration (R_repeats), to show how much the
+    registration's run-to-run variation moves the results.
 
     Returns a dict with the ROI mean series (rows = masks, T columns), the series of
     the n_top native voxels with the highest temporal SD (for tCompCor), the
@@ -403,17 +407,29 @@ def process_fly(asset, tmpl_img, masks, n_top=1000, flip=(1, 1, 1)):
     W = roi_weights(masks, P)
     cover = np.array([inside[m.ravel()].mean() if m.any() else np.nan for m in masks])
     fov = np.asarray(P.sum(0)).ravel() > 0  # native voxels that reach the template grid
+    Ws = []
+    for seed in repeats:
+        c2, _, _ = register(mean, tmpl_img, fl, seed=seed)
+        P2, _ = interp_matrix(c2, (X, Y, Z))
+        Ws.append(roi_weights(masks, P2))
+        if seed == repeats[0]:
+            ok = ~np.isnan(coords).any(1) & ~np.isnan(c2).any(1)
+            dmm = np.sqrt((((coords[ok] - c2[ok]) * np.array(NATIVE_SPACING_MM) * 1000) ** 2).sum(1))
+            cc["repeat_displacement_um_median"] = float(np.median(dmm))
+            cc["repeat_displacement_um_p95"] = float(np.percentile(dmm, 95))
     t_reg = time.time() - t0
     R = np.zeros((T, W.shape[0]))
+    Rr = [np.zeros((T, W.shape[0])) for _ in Ws]
     top_sd = np.empty(0)
     top_ts = np.empty((0, T), np.float32)
     nvox = X * Y
     for z, a in rd.slices(range(Z)):
         xz = a.reshape(T, nvox).astype(np.float32)
         cols = slice(z * nvox, (z + 1) * nvox)
-        Wz = W[:, cols]
-        if Wz.nnz:
-            R += xz @ Wz.toarray().T
+        for Wx, Rx in [(W, R)] + list(zip(Ws, Rr)):
+            Wz = Wx[:, cols]
+            if Wz.nnz:
+                Rx += xz @ Wz.toarray().T
         m = fov[cols]
         if m.any():
             mu = xz.mean(0, dtype=np.float64)
@@ -427,7 +443,7 @@ def process_fly(asset, tmpl_img, masks, n_top=1000, flip=(1, 1, 1)):
                 keep = np.argpartition(-top_sd, n_top - 1)[:n_top]
                 top_sd, top_ts = top_sd[keep], top_ts[keep]
     h5.close()
-    return dict(subject=asset["subject"], R=R.T, top_ts=top_ts, top_sd=top_sd,
+    return dict(subject=asset["subject"], R=R.T, R_repeats=[x.T for x in Rr], top_ts=top_ts, top_sd=top_sd,
                 flip=fl, cc=cc, cover=cover, coords=coords.astype(np.float32),
                 speed=speed, speed_rate=speed_rate, rate=rate, T=T, shape=(X, Y, Z),
                 mean=mean, warped=warped, t_reg=t_reg, t_total=time.time() - t0,

@@ -20,7 +20,9 @@ commit 4b92add and Zenodo record 15532272).
 | Smoothing, nuisance removal and ROI-count analyses on SCKm and DistKm ROIs (nine claims) | Blocked: atlases not published |
 | FlyEM confidence thresholds, FlyEM permutation tests | Blocked: SC not published |
 | PPSSI distribution over FlyWire neurons | Partially reproduced |
-| Other connectome-only claims (six) | Blocked |
+| Reciprocal synapse distances; the Wedge-AVLP GABA neuron's PPSSI and connections | Reproduced |
+| Segregation index biased toward 0 | Not reproduced |
+| PPSSI rankings (FlyWire half holds), APL similarity | Blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
