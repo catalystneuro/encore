@@ -1,0 +1,1018 @@
+schema_version: 3
+id: park-2019-02
+datasets:
+- archive: crcns
+  id: hc-20
+  version: unversioned
+  doi: 10.6080/K0SF2TDN
+  relation: primary
+paper: doi:10.1016/j.neuron.2018.11.019
+date: 2026-11-13
+entry: park-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43334985688
+outcomes:
+- claim: cell-counts
+  outcome: partially_reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:cell-counts
+  measured:
+  - 115
+  - 115
+  - 146
+  notes: The data set holds 115 head-direction units from 13 rats, matching the paper's 115 from 13
+    rats; per rat they match Table S1 except R029 (40 against 41) and R523 (2 against 1), and both
+    R523 units are named R523 in all their files. Applying the paper's criteria at p < 0.05
+    (reading b), with the Rayleigh test of the tuning curve's vector and n the spikes behind it,
+    110 of 115 pass; two units fire above 10 AP/s in stable1 (13.8 and 11.9), two have Kuiper p of
+    0.051 and 0.054, and three a Rayleigh p of 0.28 to 0.43 (two of them among the Kuiper
+    failures). With n = 36 bins 83 pass, and with the Rayleigh test of the raw spike directions
+    110. Reading (b) is circular, as the deposited units were already selected as head-direction
+    cells.
+    The data set holds no other MEC units, so the 353 MEC cells and 556 MEC cell pairs of Table S1
+    cannot be counted; the measured values for them are the 115 units and the 146 simultaneously
+    recorded pairs the data set holds, all head-direction cells. The paper analyses 142
+    head-direction pairs in Figure 4; 142 of the 146 have a defined 5 s internally referenced curve
+    in every condition (fig4-internal-tuning-preserved), which may be how the paper counted them.
+  deviations:
+  - Spike width cannot be applied (no waveforms are deposited).
+  - Units matched across trials by tetrode and cluster in the file names, as FileNameList.xlsx is
+    shifted for five units of session 1121R157.
+  - The n of the Rayleigh test of the tuning curve's vector is not stated (STAR Methods, Quantifying
+    Head-direction Signals, Directionality, "converted to a z statistic"); it is taken as the number
+    of spikes behind the curve, with n = 36 bins shown as a variant. The count under reading (a)
+    does not depend on it.
+- claim: hd-cell-rate
+  outcome: reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:hd-cell-rate
+  measured: 1.392
+  notes: Mean stable1 rate 1.392 AP/s (reading a) and mean over three trials 1.433 AP/s (reading b),
+    both within 1.41 ± 0.20. The median is 0.668 AP/s. Two units fire above 10 AP/s in stable1, the
+    paper's stated upper limit. Spike width is not tested.
+- claim: fig1a-avoidance-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The learning curves are over the pretraining and training sessions. The data set's 176
+    tracker files hold only the 44 recording sessions (stable1, rotating in room and arena
+    coordinates, stable2), 1 to 12 per rat; the training sessions are not deposited, and the data
+    descriptor does not mention them.
+- claim: fig1c-speed
+  outcome: reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig1c-speed
+  notes: Mean speed per session from the TSD positions (2.1333 pixels/cm). With the 40 sessions whose
+    tracking is not duplicated, reading (a), successive samples, gives F(1.94, 75.59) = 64.80, p =
+    7.6e-17 (the paper F(2.02, 74.68) = 46.61); stable2 10.76 cm/s against 14.63 to 15.60 for the
+    others, each adjusted p below 0.0001 by Tukey HSD on the repeated-measures error term, and
+    stable1 and the two rotating frames do not differ (adjusted p 0.08 to 1.00); the between-groups
+    Tukey-Kramer HSD gives the same (0.38 to 1.00). Reading (b), 1 s steps, F(1.87, 72.82) = 55.86,
+    p = 6.9e-15, gives the pattern with the between-groups test (others adjusted p 0.07 to 0.84)
+    but not with the repeated-measures error term, where the room and arena frames differ
+    (adjusted p = 0.0045). Reading (a) gives the pattern under either error term. With all 44
+    sessions, reading (a) gives a room-arena difference at adjusted p = 0.048 on the
+    repeated-measures error term.
+  deviations:
+  - The four sessions whose tracking duplicates another session's (1015R029, 1025R029, 1211R039,
+    1212R039) are left out of the main test, as one trial of each pair carries another day's
+    tracking; they are kept in a variant.
+  - Tukey HSD uses the repeated-measures error term of the ANOVA (an assumption; STAR Methods,
+    Statistics, name Tukey-Kramer HSD after repeated-measures ANOVAs run in JMP), with the
+    between-groups Tukey-Kramer HSD and paired t-tests as variants. The outcome is the same under
+    both error terms (reading a).
+- claim: fig1c-lfp-power
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds no LFP; the zip holds only TSD spike and tracking files and tracker .dat
+    files, and the data descriptor does not mention LFP.
+- claim: fig1c-firing-rate
+  outcome: reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig1c-firing-rate
+  notes: Mean rates 1.392, 1.710 and 1.198 AP/s in stable1, rotating and stable2; repeated-measures
+    ANOVA with Greenhouse-Geisser correction (Mauchly p = 9.4e-17) F(1.35, 154.10) = 1.76, p = 0.184
+    (the paper F(1.34, 153.21) = 1.89, p = 0.17). Mean change +0.318 AP/s in rotation and -0.194 in
+    stable2. Without the unit with the highest rotating rate (1001R523-P9C1, 40.1 AP/s in rotation,
+    7.8 in stable1) p = 0.275, and without it and 1024R157-P9C1 p = 0.29. Variants find
+    differences, a Wilcoxon test of rotating against stable1 (p = 0.02) and the ANOVA on log rates
+    (p = 0.0015), so the absence rests on the paper's test on raw rates.
+- claim: fig1c-directionality
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig1c-directionality
+  notes: Directionality differs across conditions, F(2.77, 315.60) = 72.66, p = 8.9e-34 (the paper
+    F(3, 342) = 70.36). Means 0.460 stable1, 0.421 stable2, 0.344 room, 0.170 arena. With Tukey HSD
+    on the repeated-measures error term, stable1 and stable2 do not differ (p = 0.27), room is below
+    stable1 (p below 0.0001) and stable2 (p = 0.0019), and arena is below room (p below 0.0001),
+    every required pair at p < 0.01. With the between-groups Tukey-Kramer HSD (variant) room is not
+    below stable2 at p < 0.01 (p = 0.055), which would make the outcome partial.
+    Bonferroni-corrected paired t-tests agree with the main reading (stable2 against room p =
+    0.0048, stable1 against stable2 p = 0.14). The outcome was partially reproduced before the
+    first verification round, with the between-groups test.
+  deviations:
+  - Greenhouse-Geisser applied, as Mauchly's test is significant (p = 0.0042); the paper's degrees
+    of freedom, F(3, 342), are uncorrected.
+  - Tukey HSD uses the repeated-measures error term of the ANOVA, an assumption. The STAR Methods
+    (Statistics) name Tukey-Kramer HSD after repeated-measures ANOVAs run in JMP 12 without saying
+    which error term, and the paper's F(3, 342) on 115 cells implies a within-cell error term. A
+    between-groups HSD ignores that the four conditions are measured on the same cells. The
+    outcome rests on this choice.
+- claim: fig1d-preference-change
+  outcome: partially_reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig1d-preference-change
+  notes: Trial pairs F(2, 228) = 17.80, p = 6.6e-08 (the paper F(2, 228) = 10.54); four groups
+    F(3, 456) = 19.62, p = 5.6e-12 (the paper F(3, 456) = 15.38). Every trial pair exceeds the
+    stable1 halves by Dunnett's test (p = 0.019, 0.0073, below 0.0001). Stable1-stable2 and
+    stable1-room do not differ (58 and 60 degrees, Tukey p = 0.94 on the repeated-measures error
+    term, 0.95 between groups), but stable1-arena is larger (91 degrees, p < 0.0001), where the
+    legend orders it below the other two. The criterion makes this partial. Whether the legend's
+    order is garbled, as the round 1 verifier suggested, is asked of a reader
+    (questions/park-2019.yaml); the claim is tested as written.
+  deviations:
+  - Halves of stable1 are its first and second 15 min, as the claims file reads them.
+- claim: fig1d-instability
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig1d-instability
+  notes: KLD on spike counts (reading a) gives trial pairs F(1.60, 182.42) = 11.74, p = 7.2e-05 (the
+    paper F(1.62, 184.22) = 7.78) and four groups F(3, 456) = 13.74, p = 1.4e-08; stable1-stable2
+    and stable1-arena exceed the halves by Dunnett's test (p = 0.0044 and below 0.0001), but
+    stable1-room does not (p = 0.13). KLD on rates (reading b) gives F(1.60, 182.29) = 8.47, p =
+    0.00084, four groups p = 0.0026, and only stable1-arena exceeds the halves (p = 0.0008). With
+    the rates rescaled to the spike count before the Krichevsky-Trofimov estimate (a variant, as
+    adding 0.5 to rates far below 1 flattens the probabilities) only stable1-arena exceeds the
+    halves (p below 0.0001; the others 0.15 and 0.26). The criterion has no partial form; the
+    outcome is partial because two of the three comparisons with the halves hold under reading (a).
+    Read strictly, the claim is not reproduced.
+  deviations:
+  - The criterion gives only the reproduced form. Partially reproduced is a judgement outside it,
+    made because both ANOVAs and two of the three comparisons with the halves hold under reading
+    (a); this is an assumption, and under a strict reading of the criterion the outcome would be
+    not reproduced.
+- claim: fig2-decoding-stable-vs-rotating
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig2-decoding-stable-vs-rotating
+  measured: 7
+  notes: Seven sessions hold at least five head-direction units (four of 6 and three of 5). With
+    20-sample windows the stable2 error is below the arena-frame error in 4 of 7 ensembles and below
+    the room-frame error in 4 of 7, by the median and by the mean absolute error, and the same with
+    4-sample windows. Stable2 decoding is near or above chance (90 degrees) in 1026R157, 1117R157
+    and 1121R157 (medians 102 to 135), where decoding the second half of stable1 from its first half
+    is also poor (65 to 116 degrees). Room is decoded better than arena in 6 of 7. The outcome rests
+    on the claims file's majority rule (four of seven), which the paper does not give.
+  deviations:
+  - Windows without any tracked direction are dropped from training; the code would place them in
+    the first bin.
+  - The stable2 decoding of 1121R157 uses the first 15 min, as one of its stable2 files lasts 15 min.
+- claim: figs2-frame-preference
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:figs2-frame-preference
+  measured:
+  - 4
+  - 2
+  notes: Of the 16 readings the criterion names (bins 10 or 45 degrees, probabilities from the
+    rotating trial or stable1, SD of the ΔIdir series or of stable1 Idir, no-preference margin a
+    factor of 2 or both below 0.05), one gives 4 room- and 2 arena-preferring ensembles (45 degree
+    bins, rotating-trial probabilities, ΔIdir SD, both below 0.05). The other 15 give 0 to 5 room
+    and 0 to 1 arena; 14 of 16 give more room- than arena-preferring ensembles. Under the matching
+    reading the room-preferring ensembles are 0930R029, 1004R029, 1022R029 and 1117R157 (p above 2
+    SD 0.605, 0.291, 0.199 and 0.054 against below 0.000, 0.000, 0.000 and 0.030) and the
+    arena-preferring 1023R029 (0.000 against 0.367) and 1121R157 (0.041 against 0.061); two labels
+    rest on differences of 0.02 to 0.03. The criterion reproduces the claim under any reading; the
+    outcome rests on that one reading.
+  deviations:
+  - Idir is undefined where the observed count never occurs at that direction in the reference
+    trial (only with stable1 probabilities); an interval where any cell's Idir is undefined is left
+    out.
+  - The direction of an interval is the circular mean of its tracked samples.
+- claim: fig2c-proximity-anticorrelation
+  outcome: partially_reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig2c-proximity-anticorrelation
+  measured: -0.0698
+  notes: Under every reading (Idir bins and probabilities, proximity a or b, and distance to the
+    zone's centre, to its nearest point, or by angle about the arena centre to the zone's centre
+    direction) the mean of the 14 frame-specific correlations is negative, -0.043 to -0.087 (first
+    reading -0.0698), and none of the 24 is within -0.141 ± 0.029 or -0.132 ± 0.024; 9 to 12 of 14
+    are negative and 7 to 11 negative with p < 0.0001, never all 14. ΔIdir correlates negatively
+    with proximity at p < 0.05 in 4 to 6 of 7 ensembles (mean r -0.040 to -0.128). The criterion
+    makes this partial under every reading, so the outcome does not rest on how the distance is
+    measured.
+  deviations:
+  - The paper does not define the distance to a shock zone. Three are run, to the zone's centre
+    (centre angle and mid radius from the tracker headers, angle counted with y up as the
+    tracker's zone flags show), to its nearest point (0 inside), and the angle about the arena
+    centre between the rat and the zone's centre direction. They give the same outcome.
+- claim: figs3-no-head-direction-bias
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:figs3-no-head-direction-bias
+  measured: 0.166
+  notes: With 10 degree Idir bins and rotating-trial probabilities the average Rayleigh r is 0.166
+    (expected 0.17 ± 0.02). With n the sum of the weights no test of 14 is significant (smallest p =
+    0.35); with n the number of bins one is (1121R157 room frame, p = 0.014). The other Idir
+    readings give average r 0.180 to 0.264 and 1 to 5 significant tests of 14. A question on the
+    claims file asked whether every test should have p > 0.17, the bound the paper reports; the
+    reader answered on 2026-11-13 that the criterion stands (non-significance at 0.05), so the
+    answer changed nothing here and the claim was not re-run. With the assumed n the smallest p is
+    0.35, so the tests would also meet that bound. The 10 degree, rotating-trial Idir reading is
+    not the only one under which figs2-frame-preference reproduces; that claim matches with 45
+    degree bins and rotating-trial probabilities, and under that Idir reading 1 of 14 tests here is
+    significant even with n the sum of the weights (smallest p = 0.040), so the claim would not be
+    reproduced under it.
+  deviations:
+  - The n of the weighted Rayleigh test is taken as the sum of the weights, the convention of the
+    weighted Rayleigh test in CircStat (circ_rtest), the field's standard MATLAB toolbox; the paper
+    does not say. With n the number of bins the claim is not reproduced (1 of 14 tests at p <
+    0.05). The Idir reading is the first the figs2 criterion lists, not the one under which figs2
+    reproduces (45 degree bins), where 1 of 14 tests is significant under either n. Both are
+    assumptions the outcome rests on.
+- claim: fig3-hd-pair-correlations-preserved
+  outcome: reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig3-hd-pair-correlations-preserved
+  notes: 146 simultaneously recorded head-direction pairs; one-way ANOVA of the Fisher-transformed
+    Kendall tau over the three trials F(2, 435) = 0.098, p = 0.907 at 40 ms, 0.329, p = 0.72 at 250
+    ms, 0.483, p = 0.617 at 1000 ms (the paper F(2, 420) = 0.097, 0.305, 0.44). Tau in stable1
+    correlates with tau in rotation at r = 0.85 to 0.97. A repeated-measures ANOVA, a variant, finds
+    small differences at 250 and 1000 ms (p = 0.034 and 0.036), with stable2 lowest. The units of
+    every session share their first timestamp in every trial (0 of 132 session trials differ), so
+    each pair is binned on a common origin; session 1017R035, whose stable2 header states a first
+    timestamp of 5, holds one unit and forms no pair.
+  deviations:
+  - 146 pairs where the paper's degrees of freedom imply about 141.
+  - Counts binned from the spike times over each trial, not from the tracker samples.
+- claim: figs4-all-pair-correlations-preserved
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim uses all 556 MEC cell pairs. The data set holds only the 115 head-direction units
+    (115 files in each trial folder, all listed in FileNameList.xlsx); the other MEC units are not
+    deposited.
+- claim: figs5-hd-cells-high-model-information
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim compares the head-direction cells with the 921 modelled MEC cells, which are not
+    deposited; only the 115 head-direction units are.
+- claim: figs6-subclass-correlations-preserved
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The grid, position and speed classes come from the 921 modelled MEC cells, which are not
+    deposited.
+- claim: no-angular-velocity-tuning
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:no-angular-velocity-tuning
+  notes: In stable1, 12 of 115 units correlate with signed angular velocity at p < 0.05 (binomial p =
+    0.013 against 5%) and 49 of 115 with unsigned angular velocity (p = 5.7e-33); rotating and stable2
+    give the same. The correlations are small (|r| at most 0.028 signed, 0.068 unsigned), and the
+    sample-to-sample angular velocity reaches about 5400 degrees/s, which points to tracking noise.
+    Tested against circular shifts of at least 30 s, which keep the serial dependence of the
+    samples, 11 of 115 (binomial p = 0.029) and 41 of 115 (p = 3e-24) are significant, and after
+    removing the head-direction bin means from both series 14 (p = 0.0019) and 34 (p = 1.8e-17), so
+    the excess does not come from treating the samples as independent. The correlations are of
+    both signs (49 to 53 of 115 positive for unsigned velocity) and at most 0.068 in size. The
+    paper shows no data and names no test; the test is the claims file's assumption, and the
+    outcome rests on it.
+  deviations:
+  - The test (per-unit Pearson correlation with angular velocity from successive samples, and a
+    binomial test of the fraction significant) is the claims file's assumption; the paper names
+    none. Stable1 is the main trial, as the classification trial; the others are variants.
+- claim: fig4-internal-tuning-preserved
+  outcome: not_reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig4-internal-tuning-preserved
+  notes: Under the main readings (5 s, cell 2 spikes before the cell 1 spike, the Methods'
+    normalisation; 142 pairs with a defined curve in every condition) instability differs across
+    trial pairs, F(2.00, 282.00) = 10.20, p = 5.3e-05, and in the four-group ANOVA, F(3, 564) =
+    3.76, p = 0.011, and the preference change across trial pairs, F = 6.39, p = 0.0019; only the
+    four-group preference test has p ≥ 0.05 (0.125). The differences are small (mean KLD 0.148 to
+    0.207 against 0.166 for the halves; stable1-room the largest). Of the eight readings, only 5 s,
+    before, with the code's occupancy normalisation has all four at p ≥ 0.05. Its KLD is near 0
+    (means about 0.001), as the Krichevsky-Trofimov 0.5 swamps the normalised values; with the curve
+    rescaled to its spike count (variant) that reading still has all four at p ≥ 0.05, the
+    instability test at p = 0.052.
+  deviations:
+  - Cell 1 is the first-listed unit of each pair, as the code labels pairs i < j.
+  - With the Methods' normalisation (a single number per curve) the curve is the spike-difference
+    histogram; KLD uses its counts.
+- claim: fig4c-arena-registration-short-lived
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig4c-arena-registration-short-lived
+  notes: Run under the four readings of window side and normalisation. With the Methods'
+    normalisation and cell 2 spikes before, the conditions do not differ at 3, 4 and 5 s (p = 0.13,
+    0.17, 0.11) but do at 10 s (p = 0.0086); with cell 2 spikes after they differ at 5 s (p = 0.020)
+    and 10 s (p = 0.0024); with the code's normalisation they do not differ up to 10 s with cell 2
+    before (p = 0.096 to 0.50) and differ at 10 s with cell 2 after (p = 0.0094). Every reading
+    differs at every interval beyond 10 s (p below 0.002). The arena frame is below all three other
+    conditions at none of 20 to 60 s with the Methods' normalisation, and only at 60 s (before) or
+    50 and 60 s (after) with the code's. With the Methods' normalisation the room frame falls as
+    far as or further than the arena frame at 20 to 50 s (before, 40 s, 0.267 and 0.281 against
+    0.410 and 0.452). With the code's normalisation the room frame falls first (cell 2 before, below
+    both stable trials at 20 s, where the arena frame is not), and the arena frame is lower from 40
+    s (0.180 against 0.204 before, 0.181 against 0.208 after) and below the room frame by Tukey's
+    test from 50 s (after) or 60 s (before). At 300 and 600 s the arena frame is below the others
+    in every reading, and the room frame below both stable trials with the Methods' normalisation,
+    as reported, but not at 600 s with the code's. The code's normalisation with cell 2 before meets
+    the words of the partial form (no difference up to 10 s, differences at every later interval,
+    the arena frame below the other three at 60, 300 and 600 s, the room frame not below stable2
+    at 600 s). The outcome takes "beyond 10 s" in the partial form as from 20 s, the arena-frame
+    part of the full criterion, and under that reading no reading of window side and
+    normalisation meets it; read as any interval beyond 10 s, the outcome would be partially
+    reproduced. The outcome was partially reproduced before the first verification round, when
+    only cell 2 spikes before were run; the verifier gave not reproduced.
+  deviations:
+  - Strength is the Rayleigh vector length of the internally referenced curve, the reading the
+    claims file gives.
+  - One-way ANOVA on 141 to 146 pairs per interval (pairs with a defined curve in all four
+    conditions at that interval), with between-groups Tukey-Kramer HSD, as the criterion's one-way
+    ANOVA implies.
+  - The partial form ("the arena frame falls below the others beyond 10 s and not before, but the
+    room-frame order at long intervals is not found") is read as requiring the arena-frame order
+    of the full criterion, below the three others from 20 s, since it names only the room-frame
+    order as missing, and the paper writes that arena-frame tuning "abruptly decreased after 10 s"
+    while the ensemble registered to the room frame within about 10 s (Results, Transient
+    Allocentric Registration, paragraph 3). This is an assumption the outcome rests on.
+- claim: fig5-error-inhomogeneous
+  outcome: partially_reproduced
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig5-error-inhomogeneous
+  measured:
+  - 0.604
+  - 0.484
+  - 0.0718
+  - 0.36
+  notes: A reader amended the criterion on 2026-11-13 in answer to a question
+    (questions/park-2019.yaml) so that it names three readings of what the error distribution is
+    over, (i) mean absolute error per 10 degree head-direction bin, (ii) head directions of windows
+    decoded within 15, 30 or 45 degrees, (iii) the signed error angles. Before the answer only
+    (iii) was run. The claim was re-run under all three with the three pooling readings and both
+    windows. Every test holds (all four distributions non-uniform, both Kuiper's tests at p <
+    0.05) in 75 of 80 combinations, but none has all four r within tolerance; the most is two. With
+    the six-cell ensemble 0930R029 (reading b) and 20-sample windows, the room-frame r is 0.604
+    under reading (ii) at 15 degrees, 0.555 at 30 degrees and 0.560 under reading (iii), within
+    tolerance of 0.589, and the arena-frame head-direction r is 0.360 (0.378); the arena-frame r is
+    0.484, 0.543 and 0.144 (0.653) and the room-frame head-direction r 0.072 (0.147). The measured
+    values are those of reading (ii) at 15 degrees, the first listed reading with two r within
+    tolerance. Reading (i) gives error r of 0.031 to 0.426 at 20 samples. Pooled (reading a) no r
+    is within tolerance under any reading, and the medians over ensembles (reading c) reach at most
+    0.348 (room, reading ii at 666 ms) and 0.548 (arena, reading ii at 133 ms). The answer brings the arena-frame error r
+    closer to 0.653 but not within tolerance, and leaves the outcome as it was under reading (iii)
+    (partially reproduced, with measured values 0.560, 0.144, 0.0718 and 0.360). Four ensembles
+    tie at six cells; the other three match at most one value under any reading. The paper's z
+    values imply about 681 and 679 windows for the error distributions and 10,671 and 1,072
+    samples for the head-direction distributions; no row has both error counts within 10% of 681
+    and 679, and no ensemble or sum of ensembles matches the head-direction counts of both frames,
+    so the paper's pooling cannot be recovered from the counts.
+  deviations:
+  - For reading (i) the paper does not give the n of the Rayleigh test; it is taken as the number
+    of decoded windows, as the paper's z = 236.36 at r = 0.589 implies about 680, and n = 36 bins
+    is shown as a variant (which leaves the arena-frame error uniform for every ensemble). Neither
+    choice changes the outcome, which readings (ii) and (iii) also give.
+  - For reading (i) Kuiper's test compares the error weights with the head-direction occupancy
+    over the same 10 degree bins, with n the number of windows on each side; the paper does not say
+    how the test was applied to this reading.
+- claim: fig5c-error-minima-at-cues
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_park_2019.ipynb
+  output: claim:fig5c-error-minima-at-cues
+  measured:
+  - 105
+  - 345
+  notes: With the seven ensembles pooled and 20-sample windows, the mean absolute room-frame error by
+    room-frame head direction (reading a) has its two deepest minima in the bins starting at 100 and
+    340 degrees (centres 105 and 345), within 10 degrees of 110 and 350 by their bin centres. This
+    is 1 of 32 combinations of window, pooling and reading, against 0.20 expected by chance for two
+    minima placed at random; 10 others find one of the two minima (6.6 expected by chance) and the
+    pooled reading (a) with 133 ms windows finds neither. Were the 32 rows independent, at least one
+    would match both minima by chance with probability 0.18 (they share data, so this is rough).
+    The pooled curve is shallow (Rayleigh r 0.032 under fig5-error-inhomogeneous reading i; mean
+    error 63.2 to 91.3 degrees by head direction, mean 76.8), and the two minima lie 13.6 and 13.4
+    degrees below the mean but only 0.1 and 1.6 degrees below their lower neighbouring bin, so the
+    match is weak support. The outcome rests on the pooled reading. Whether the minima match the
+    cue positions cannot be tested.
+  deviations:
+  - The paper does not say which recordings are pooled or which measure Figure 5C plots; the match
+    is found with all seven ensembles pooled and the mean error by head direction, an assumption
+    the outcome rests on.
+  - The decoded direction is the start of the winning bin, as in the code, which biases the signed
+    error by about -5 degrees; minima are located by their bin centres.
+findings:
+- kind: data_missing
+  statement: The data set holds only the 115 head-direction units. The other MEC units of the paper
+    (353 cells and 556 pairs in Table S1, 921 modelled cells in Figures S5 and S6), the LFP, the
+    waveforms and the pretraining and training sessions are not deposited, so the claims of Figures
+    1A, 1C (LFP), S4, S5 and S6 cannot be tested.
+- kind: metadata_error
+  statement: In FileNameList.xlsx the stable2 column of session 1121R157 is shifted by one row for
+    five units (P11C2 to P9C3); each is listed with the next unit's stable2 file, and the last with
+    1121SA2R157-cl1.P11C2Rm. The spike counts confirm the shift (P11C2 has 327 spikes in stable1, 52
+    in rotation, and is listed with a stable2 file of 21567).
+- kind: other
+  about: data
+  statement: Two pairs of trials from different days carry identical tracking (positions and
+    directions, sample for sample) with different spikes. Stable2 of 1015R029 and of 1025R029, and
+    the room-frame rotating trial of 1211R039 and of 1212R039, whose arena-frame tracking differs.
+    One trial of each pair holds another day's tracking.
+- kind: other
+  about: data
+  statement: The stable1 TSD file of unit 1024R157-P9C1 holds the same spikes, sample for sample, as
+    its rotating-trial files (2919 spikes), on stable1 tracking; its stable1 spike train is very
+    likely the rotating trial's.
+- kind: format_error
+  statement: The header of 1017SA2R035-cl.P11C2Rm states a sampling rate of 2000 samples/s and a
+    first timestamp of 5; the file holds 54,185 samples, a 30 min trial at 30 Hz.
+- kind: format_error
+  statement: The spike times of 1020RAR157-cl.P11C1 (room and arena files) decrease once, by 1.5 ms.
+- kind: other
+  about: data
+  statement: The stable2 file 1121SA2R157-cl1.P11C2Rm holds 26,954 samples (15 min), where every
+    other trial file holds about 54,000 (30 min).
+- kind: metadata_insufficient
+  statement: Samples without a tracked direction (direction 4294967295, that is -1, 4 to 73% of a
+    file's samples) and without a position (x = y = 0) are not described in the data descriptor.
+- kind: metadata_insufficient
+  statement: The data descriptor does not say that the tracker's shock zone angles are counted with
+    y pointing up (pixel y grows downwards), nor that spike times run ahead of the nominal sample
+    times (first timestamp plus index over rate) by up to about 3 s within a trial, so the tracker
+    samples are not evenly spaced at the stated rate.
+- kind: other
+  about: data
+  statement: The per-rat counts of head-direction units differ from Table S1 for R029 (40 in the data
+    set, 41 in the table) and R523 (2 against 1); the totals agree (115). Both R523 units (session
+    1001R523, P1C1 and P9C1) are named R523 in all their files, so the files do not show which unit
+    the table counts under another rat. Two deposited units fire
+    above 10 AP/s in stable1 (13.8 and 11.9 AP/s), above the paper's stated limit for
+    head-direction cells.
+- kind: metadata_error
+  statement: The tracker file 0803SA2R024RoomTrack_Room_20150803_153906.dat belongs to the session of
+    rat R027 on 0803 (the other three trial files and the TSD files are R027), and
+    1007SA1R29RoomTrack... drops the leading zero of R029.
+- kind: methods_unavailable
+  statement: For Idir and ΔIdir (Figure 2C, S2, S3), the paper does not give the direction bins, the
+    trial from which p(n|d) and p(n) are estimated, which SD the 2 SD rule uses, or the margin for no
+    frame preference. The 4 room and 2 arena counts are found under 1 of 16 readings. Which were
+    used?
+- kind: methods_unavailable
+  statement: Relative proximity to the shock zones (Figure 2C) is not defined. Is it a normalised
+    difference of distances to the zones, and measured to the zone centre, its nearest edge or by
+    angle? Here none of 24 readings gives the reported mean r of -0.141.
+- kind: methods_unavailable
+  statement: For the Rayleigh test of the normalised ΔIdir over head direction (Figure S3), is n the
+    number of bins or the sum of the weights? With n the number of bins one of 14 tests is
+    significant here (p = 0.014); with the sum of weights none is.
+- kind: methods_unavailable
+  statement: Tukey-Kramer HSD followed repeated-measures ANOVAs (Figure 1C, 1D). Did the post hoc
+    tests use the repeated-measures error term? For directionality the room frame against stable2
+    gives p = 0.0019 with it and p = 0.055 between groups, which decides the outcome here.
+- kind: methods_unavailable
+  statement: For internally referenced tuning (Figure 4), the Methods normalise the histogram by the
+    sum of the time offsets and the code by the occupancy of each displacement; the strength
+    measure of Figure 4C is not defined; and the Methods do not say on which side of the cell 1 spike
+    the cell 2 spikes are taken. Which normalisation and strength measure were used? Under the
+    Methods' normalisation the trial-pair differences of Figure 4D are significant here (p = 5.3e-05
+    for instability).
+- kind: methods_unavailable
+  statement: Which decoded windows are pooled in the Figure 5 error distributions (the Rayleigh z
+    values imply about 680 windows), and which measure Figure 5C plots (error by head direction, or
+    the signed error histogram)?
+- kind: other
+  about: data
+  statement: The paper reports 142 simultaneously recorded head-direction pairs; the 115 deposited
+    units form 146. 142 of them have a defined 5 s internally referenced curve in every condition,
+    which may be the count the paper used.
+- kind: format_error
+  statement: In sessions 1009R029, 1015R029, 1023R029 and 1025R029 the room-frame and arena-frame TSD
+    tracks of the rotating trial disagree in distance from the arena centre (median 6.85 to 13.49 px
+    at the best constant lag), while the session's room and arena .dat files agree (0.31 px), as the
+    two TSD frames of 1022R029 do (0.31 px). Against the room .dat track the TSD tracks fall behind
+    more and more through the trial, by 705 to at least 1500 samples in the room frame and 354 to
+    828 samples in the arena frame at sample 48000, so the spikes cannot be aligned with both frames.
+  found: on_prompt
+- kind: paper_inconsistency
+  statement: The decoding window is 660 ms in the STAR Methods (20 samples of 33 ms, and num_samps =
+    20 in HD_Max_likelihood.py, 666 ms at the tracker's 30.02 samples/s) and 133 ms in the Figure 2
+    legend. The arena-frame error z is 289.63 in the Results and 153.24 and 230.58 in the Figure 5
+    legend, the z values the legend gives for the head-direction distributions.
+  found: on_prompt
+verifications:
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed (one
+    fig1d conclusion cell, whose heading did not begin "**Result:", was left in), the helper module
+    and the claims file, with the paper's full text. The verifier checked the archive's file list
+    for the blocked claims and tested rayleigh_p, kuiper_two_sample, kld, rm_anova, internal_tuning
+    and the decoder on synthetic inputs. It had no attempt record.
+  results:
+  - claim: cell-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under reading (a) there are exactly 115 HD units from 13 rats; under (b) 110 pass the
+      criteria, within tolerance. The 353 MEC cells and 556 pairs cannot be tested, because the zip
+      holds only 115 TSD files per trial folder. Per rat, R029 has 40 against 41 and R523 has 2
+      against 1. Separately, reading (b) runs the Rayleigh test on raw spike directions, where the
+      Methods name the Rayleigh vector of the tuning curve, and the substitution is not stated as an
+      assumption; reading (b) is also circular, since the deposited set is already selected as HD
+      cells.
+    response: Reading (b) now uses the Rayleigh vector of the tuning curve, with n the spikes behind
+      it (n = 36 bins and the raw spike directions as variants, 83 and 110 pass); 110 still pass,
+      with a different set of failing units. The circularity is stated, and the n is recorded as a
+      deviation. The two R523 units are printed; both are named R523 in all their files, so the
+      mislabelled unit cannot be identified. Outcome unchanged.
+  - claim: hd-cell-rate
+    agrees: true
+    outcome: reproduced
+    reason: 1.392 AP/s in stable1 and 1.433 over three trials, both within 1.41 ± 0.20. The SEM of
+      0.207 also matches the paper's ±0.20.
+    response: No change.
+  - claim: fig1a-avoidance-learning
+    agrees: true
+    outcome: blocked
+    reason: The archive's DAT folder holds only the SA1, SA2 and RA/TF files of the 44 recording
+      sessions (88 + 88 files) plus two .xls file lists. There are no pretraining or training
+      sessions. The two .xls lists are in the zip and never read.
+    response: The data check now reads both .xls lists; each names 88 tracker files, all in the
+      zip, and every tracker file is in one of them. Outcome unchanged.
+  - claim: fig1c-speed
+    agrees: true
+    outcome: reproduced
+    reason: Both speed readings, with and without the duplicated-tracking sessions, give p < 1e-14.
+      Stable2 is lower than each other condition by Tukey and the other three do not differ. The
+      Tukey helper is a between-subjects HSD that ignores the repeated-measures error term, and the
+      same helper is used for the fig1c-speed ordering.
+    response: Added hd20.tukey_rm, Tukey HSD on the ANOVA's repeated-measures error term, checked
+      against the paired t-test for two conditions, as the main post hoc test, with the
+      between-groups test as a variant. Reading (a) gives the claimed pattern under both; reading
+      (b) gives it only between groups (room against arena adjusted p = 0.0045 on the
+      repeated-measures term). Outcome unchanged.
+  - claim: fig1c-lfp-power
+    agrees: true
+    outcome: blocked
+    reason: There is no LFP in the zip (checked the file list).
+    response: No change.
+  - claim: fig1c-firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: RM ANOVA F(1.35, 154.10) = 1.76, p = 0.184, which meets the claim-of-absence test. The
+      result is fragile, on log rates p = 0.0015 and Wilcoxon rotating vs stable1 gives p = 0.02.
+      One R523 unit fires about 40 AP/s in the rotating trial and its variance helps the absence
+      test pass; the notebook drops 1024R157-P9C1 as a sensitivity check but not this outlier.
+    response: Added the ANOVA without 1001R523-P9C1 (p = 0.275) and without it and 1024R157-P9C1 (p
+      = 0.29); the absence does not rest on it. Outcome unchanged.
+  - claim: fig1c-directionality
+    agrees: true
+    outcome: partially_reproduced
+    reason: The main effect holds (p = 8.9e-34), stable1 = stable2, stable1 > room (p = 0.0009) and
+      room > arena (p < 0.0001), but stable2 vs room has Tukey p = 0.055, short of the required p <
+      0.01. The Tukey helper ignores the repeated-measures error term of the ANOVA the paper reports
+      (F(3, 342) implies within-subject error on 115 cells); the paired t-test gives p = 0.00081, q
+      ≈ 4.8, above the critical value for p = 0.01, so with the correct error term the claim would
+      likely be reproduced.
+    response: Changed to reproduced, resting on an assumption. With Tukey HSD on the
+      repeated-measures error term, stable2 against room has p = 0.0019 and every required pair is
+      at p < 0.01 (stable1 against stable2 p = 0.27); the between-groups test is shown as a variant
+      and gives the partial outcome. The error term is recorded as an assumption and as a
+      methods_unavailable finding.
+  - claim: fig1d-preference-change
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both ANOVAs hold (p = 6.6e-8 and 5.6e-12) and all three Dunnett tests are significant.
+      The order is reversed, the stable1-arena change is the largest (91° against 58° and 60°),
+      where the legend orders it lowest. The legend order may be garbled, and with the arena frame's
+      degraded tuning the reverse is what one would expect.
+    response: The trial-pair Tukey test now also uses the repeated-measures error term (same order,
+      p = 0.94 for stable1-stable2 against stable1-room). The possible misreading of the legend is
+      asked of a reader in questions/park-2019.yaml; the claim is tested as written. Outcome
+      unchanged.
+  - claim: fig1d-instability
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under reading (a) both ANOVAs hold (p = 7.2e-5 and 1.4e-8), but stable1-room does not
+      exceed the halves (Dunnett p = 0.13). Under (b) only stable1-arena exceeds them. The
+      criterion's "every pair" condition fails under both readings. KLD under rates applies the
+      Krichevsky-Trofimov +0.5 to values far below 1, which distorts reading (b) for low-rate cells.
+    response: Added a variant with the rates rescaled to the spike count before the estimate; only
+      stable1-arena exceeds the halves (the others p = 0.15 and 0.26). The fig1d conclusion cell is
+      split into two cells that begin "**Result:", so a handover removes both. Outcome unchanged.
+  - claim: fig2-decoding-stable-vs-rotating
+    agrees: true
+    outcome: reproduced
+    reason: There are 7 ensembles of at least 5 cells. Stable2 error is below arena in 4/7 and below
+      room in 4/7, under both error measures and both windows. This is exactly at the assumed
+      threshold. The three R157 ensembles decode near or worse than chance (90°) even within
+      stable1.
+    response: No change; the notes already give the threshold and the R157 ensembles.
+  - claim: figs2-frame-preference
+    agrees: true
+    outcome: reproduced
+    reason: The count is 4 room and 2 arena under one reading out of 16 (45° bins, rotating-trial
+      probabilities, ΔIdir SD, both-below-0.05 margin). Room exceeds arena in 14/16 readings. Only
+      one reading matches, and the main 10° readings give 3/1 or 4/0. Per-ensemble labels and p(ΔIdir
+      > 2 SD) under the matching reading are needed to compare with ensemble b's 0.56 / 0.
+    response: The per-ensemble table is now printed for 45 degree bins as well. Under the matching
+      reading 0930R029 has 0.605 and 0.000, and two of the six labels (1117R157 room, 1121R157
+      arena) rest on differences of 0.02 to 0.03. The deviation on undefined Idir is corrected (an
+      interval is left out when any cell's Idir is undefined). Outcome unchanged.
+  - claim: fig2c-proximity-anticorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: The mean r is negative in every reading (−0.05 to −0.087), but no reading is within
+      tolerance of −0.141 or −0.132; 10–12 of 14 correlations are negative and only 7–10 are
+      negative at p < 1e-4. Relative proximity as distance to each zone's centre is the author's
+      choice; distance to the zone edge, or angular distance as in Kelemen & Fenton (2010), was not
+      tried, and could decide whether r falls within tolerance.
+    response: Added distance to the zone's nearest point and the angle about the arena centre to the
+      zone's centre direction. Over 24 readings the mean r is -0.042 to -0.087, none within
+      tolerance, and never all 14 negative at p < 1e-4, so the outcome no longer rests on the
+      choice of distance and assumed is removed. Outcome unchanged.
+  - claim: figs3-no-head-direction-bias
+    agrees: true
+    outcome: reproduced
+    reason: With 10° Idir bins, rotating-trial probabilities and n = sum of weights, 0/14 tests are
+      significant, and mean r = 0.166 matches 0.17 ± 0.02. With n = bins (the reading the claims
+      file says fits p ≈ 0.35), 1/14 is significant (p = 0.013), and the other Idir readings have
+      1–5 significant.
+    response: No change.
+  - claim: fig3-hd-pair-correlations-preserved
+    agrees: true
+    outcome: reproduced
+    reason: One-way ANOVA p = 0.907, 0.72 and 0.617 at 40, 250 and 1000 ms, on 146 pairs. The RM
+      variant gives p = 0.034 and 0.036 at 250 and 1000 ms, but the paper's degrees of freedom imply
+      the between-groups test. spike_count_series aligns each unit's bins to its own header first
+      timestamp; the 1017R035-P11C2 stable2 header gives a first timestamp of 5, so its bins may be
+      offset from its session partners, which affects a few pairs.
+    response: The notebook now shows that the units of every session share their first timestamp
+      in every trial (0 of 132 differ) and that session 1017R035 holds one unit, so it forms no
+      pair and no pair is offset. Outcome unchanged.
+  - claim: figs4-all-pair-correlations-preserved
+    agrees: true
+    outcome: blocked
+    reason: Only HD units are deposited (confirmed). The 146 HD pairs alone give Pearson r of tau of
+      0.85–0.97, but the claim concerns all 556 MEC pairs.
+    response: No change.
+  - claim: figs5-hd-cells-high-model-information
+    agrees: true
+    outcome: blocked
+    reason: The 921 modelled cells are not deposited (confirmed).
+    response: No change.
+  - claim: figs6-subclass-correlations-preserved
+    agrees: true
+    outcome: blocked
+    reason: Same reason as figs5.
+    response: No change.
+  - claim: no-angular-velocity-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: 12/115 units are significant for signed angular velocity (binomial p = 0.013) and 49/115
+      for unsigned (p = 6e-33), both above chance. This rests on Pearson correlations over about
+      54,000 serially dependent 30 Hz samples, with unsmoothed angular velocity reaching ±5,400°/s,
+      which is tracker jitter; the p-values are anti-conservative, and the outcome comes from this
+      test (a claims-file criterion), not from tuning, as all |r| are below 0.07.
+    response: Added a circular-shift test of the same correlations (shifts of at least 30 s), and
+      the same after removing the head-direction bin means. The excess remains (signed 11 and 14 of
+      115, binomial p = 0.029 and 0.0019; unsigned 41 and 34, p below 1e-16), so it does not come
+      from the independence assumption. The notes say the correlations are of both signs and at
+      most 0.068. The test stays the claims file's; outcome unchanged.
+  - claim: fig4-internal-tuning-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the main readings (5 s, before, normalisation a), three of four tests are
+      significant, RM KLD p = 5.3e-5, RM preference p = 0.0019, 4-group KLD p = 0.011. Only the
+      variant 5 s/before/(b) passes, and its KLD tests are degenerate, as the Krichevsky-Trofimov
+      +0.5 swamps the normalised curve and drives KLD toward 0.
+    response: Added a variant with the normalised curve rescaled to its spike count; the 5 s,
+      before, (b) reading still passes all four tests (instability p = 0.052). The main readings
+      decide; outcome unchanged.
+  - claim: fig4c-arena-registration-short-lived
+    agrees: false
+    outcome: not_reproduced
+    reason: Under (a), p = 0.0086 at 10 s. At 20–60 s the room frame falls as much as or more than
+      the arena frame; at 20 s arena > room. Under (b), the room frame falls first (20 s) and the
+      arena frame is below the room frame only from 60 s. Neither normalisation shows the claimed
+      room-preserved pattern. The "after" window side was computed only for 5 and 30 s, though the
+      criterion asks for the window-side readings of fig4.
+    response: Changed to not reproduced. The after side is now computed at every interval and the
+      notebook checks each part of the criterion under all four readings. In none is the arena
+      frame below the other three at 20 to 50 s; it falls below them only from 50 or 60 s, after
+      the room frame, so the partial form (arena falls beyond 10 s) does not hold either.
+  - claim: fig5-error-inhomogeneous
+    agrees: true
+    outcome: partially_reproduced
+    reason: Rayleigh and Kuiper tests hold in 75/80 combinations, but none has all four r within
+      tolerance (at most 2). Pooled head-direction r is 0.026 (room) and 0.264 (arena), against
+      0.147 and 0.378. No subset matches the paper's implied about 680 decoded windows and about
+      10,700 / 1,070 head-direction samples.
+    response: The notebook now prints the n implied by each z value (681, 679, 10,671, 1,072), the
+      counts per ensemble and window, and the sums of ensembles near them; no combination matches
+      both error counts or both head-direction counts. Outcome unchanged.
+  - claim: fig5c-error-minima-at-cues
+    agrees: true
+    outcome: reproduced
+    reason: Under the main readings (660 ms, pooled, error by head direction) the two deepest minima
+      are at bins 100 and 340, within one bin of 110 and 350. Only 1 of 32 rows hits both, and the
+      133 ms pooled row misses. The decoder returns the start of the winning bin, which biases the
+      signed error by about −5°, and near() accepts either the bin start or the bin centre, which
+      widens the tolerance; single-minimum hits (14/32) are close to the roughly 10 expected by
+      chance.
+    response: Minima are now matched by bin centre only; the pooled row still matches both, and 10
+      rows match one. The chance rates are printed (0.20 rows expected with both, 6.6 with one).
+      The bin-start convention follows the paper's code and is kept, noted as a deviation. Outcome
+      unchanged.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the first revision, with its conclusion cells and
+    summary, the helper module, the claims file, the README and this attempt record, with the
+    paper's full text.
+  results:
+  - claim: cell-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Round-1 point resolved, cell-counts now uses the Rayleigh vector of
+      the tuning curve.
+    response: No change.
+  - claim: hd-cell-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: fig1a-avoidance-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands. Round-1 point resolved, the two .xls lists are now read.
+    response: No change.
+  - claim: fig1c-speed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands. Round-1 point resolved, tukey_rm added (formula checked by reading).
+    response: No change.
+  - claim: fig1c-lfp-power
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: fig1c-firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands. Round-1 point resolved, with the R523 outlier dropped as a variant p
+      = 0.275.
+    response: No change.
+  - claim: fig1c-directionality
+    agrees: true
+    outcome: reproduced
+    reason: The repeated-measures error term for Tukey is stated and reasonable. The Bonferroni
+      paired t-test gives 0.0048 for the deciding pair, so the outcome does not depend on tukey_rm
+      assuming sphericity while Mauchly's test is significant.
+    response: No change.
+  - claim: fig1d-preference-change
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Point 13 (the fig1d legend order) is passed to a reader; the claim
+      is tested as written, which is acceptable.
+    response: No change.
+  - claim: fig1d-instability
+    agrees: false
+    outcome: partially_reproduced
+    reason: The criterion has no partial form, and the record says so. Partial is therefore a
+      judgement outside the criterion (the verifier made the same one in round 1). Either mark it
+      assumed with that reason, or give not reproduced.
+    response: Kept partially reproduced, the outcome the verifier gave in round 1, and marked it
+      assumed, with a deviation saying that partial is a judgement outside the criterion and that
+      under a strict reading the outcome would be not reproduced. The notebook's result cell and
+      summary say the same.
+  - claim: fig2-decoding-stable-vs-rotating
+    agrees: true
+    outcome: reproduced
+    reason: The claims file's majority rule is stated and reasonable.
+    response: No change. The decoder's window directions are now rounded to 1e-6 degrees before
+      binning (see fig5-error-inhomogeneous); the counts of 4 of 7 are unchanged.
+  - claim: figs2-frame-preference
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (1 of 16 readings, two labels on 0.02 to 0.03 differences) is stated and
+      reasonable. Cell 43 and the record give 0.605, 0.291, 0.199 and 0.054, and 1023R029 0.000
+      against 0.367; cell 42 prints 0.606, 0.292, 0.200 and 0.368.
+    response: The printed values depended on floating-point noise in the window directions (see
+      fig5-error-inhomogeneous). After the fix the output prints 0.605, 0.291, 0.199, 0.054 and
+      0.367, which the text and notes now match. Counts and outcome unchanged.
+  - claim: fig2c-proximity-anticorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Cell 46 gives -0.062 to 0.113 where cell 45 prints a maximum of
+      0.114, and the record gives a first reading of -0.071 and measured -0.071 where cell 45
+      prints -0.0704. Round-1 point resolved, with edge and angle distances added; the outcome
+      holds under all 24 readings.
+    response: Corrected to the new run, in which the window-direction fix moves these values
+      slightly; measured is now -0.0698, the range of means -0.043 to -0.087, 9 to 12 of 14
+      negative, and the per-ensemble range -0.063 to 0.115. Outcome unchanged.
+  - claim: figs3-no-head-direction-bias
+    agrees: false
+    outcome: reproduced
+    reason: The n = sum-of-weights assumption is stated and is reasonable (CircStat convention). Not
+      stated is that the Idir reading used (10 degree bins) is not the only one under which figs2
+      reproduces (45 degree bins, rotating trial, ΔIdir SD, both below 0.05). Under the figs2
+      reading figs3 has 1 of 14 tests significant even with n = sum of weights (min p 0.039, cell
+      48), so it would not reproduce. The record should say so.
+    response: The notes, the deviation and the notebook's result cell now say that under the Idir
+      reading that reproduces figs2, 1 of 14 tests is significant under either n (smallest p 0.040
+      with n the sum of the weights in the new run), so the claim would not be reproduced there,
+      and that the outcome rests on both assumptions. Outcome unchanged.
+  - claim: fig3-hd-pair-correlations-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as it stands. Round-1 point resolved, the offset unit forms no pair.
+    response: No change.
+  - claim: figs4-all-pair-correlations-preserved
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: figs5-hd-cells-high-model-information
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: figs6-subclass-correlations-preserved
+    agrees: true
+    outcome: blocked
+    reason: Agrees as it stands.
+    response: No change.
+  - claim: no-angular-velocity-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: The claims file's test, now with shift controls, is stated and reasonable; the shift
+      tests keep the excess, so it does not come from treating samples as independent.
+    response: No change.
+  - claim: fig4-internal-tuning-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as it stands. Round-1 point resolved, the rescaled KLD variant was added and the
+      (b) reading still passes, instability p = 0.052. The README says the notebook takes about
+      seven minutes, four and a half of them for the internally referenced tuning; cell 59 prints
+      306 s (5.1 min), and the notebook prints no total runtime.
+    response: The notebook now prints its total run time at the end, and the README gives the times
+      of recent runs (6.1 to 7.3 min in total, 270 to 313 s for the internally referenced tuning) as
+      six to eight minutes, about five of them for that step.
+  - claim: fig4c-arena-registration-short-lived
+    agrees: false
+    outcome: not_reproduced
+    reason: The outcome depends on how "beyond 10 s" is read, and the record does not state that as
+      an assumption. The before-side, code-normalisation reading meets the partial clause word for
+      word (no differences up to 10 s, p < 0.05 at every later interval, arena below all three
+      others at 60, 300 and 600 s, room not below stable2 at 600 s). Both 50 and 60 s are beyond 10
+      s, and "after the room frame" is not a condition in the criterion. Not reproduced is
+      defensible if "beyond 10 s" is read as "from 20 s", which fits the paper's "abruptly
+      decreased after 10 s" and its legend's 20 to 60 s order; the verifier's round-1 outcome made
+      the same reading. Either mark it assumed and state that reading, or change it to partially
+      reproduced. Separately, "at 20 to 50 s the room frame falls as far as or further than the
+      arena frame" holds only with the Methods' normalisation; with the code's the arena frame is
+      lower at 40 s (0.180 against 0.204 before, 0.181 against 0.208 after) and at 50 s.
+    response: Kept not reproduced and marked it assumed, with a deviation stating the reading of
+      "beyond 10 s" as from 20 s and why (the partial form names only the room-frame order as
+      missing, and the paper's "abruptly decreased after 10 s" with registration to the room frame
+      within about 10 s), and saying that read as any interval beyond 10 s the outcome would be
+      partially reproduced. The sentence on the room frame now holds only for the Methods'
+      normalisation, and the code's normalisation is described separately (the room frame falls
+      first at 20 s with cell 2 before, the arena frame is lower from 40 s and below the room frame
+      by Tukey's test from 50 or 60 s).
+  - claim: fig5-error-inhomogeneous
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as it stands. Cell 67 and the record give the arena-frame r as 0.484, 0.543 where
+      cell 66 prints 0.542; the room-frame medians as at most 0.343 where cell 66 prints 0.345 (4
+      samples, (ii) ≤15); and reading (i) error r of 0.030 to 0.426 at 20 samples where the lowest
+      printed value is 0.0284 (1121R157).
+    response: The re-run showed that these values moved between runs. Window directions that are
+      exact multiples of 10 degrees came out of the circular mean a rounding error above or below
+      the bin edge, so they fell in different bins on different machines. hd20.window_directions
+      now rounds the mean to 1e-6 degrees. In the new run the arena-frame r is 0.543, the room
+      medians reach 0.348 (reading ii, 20 samples), and reading (i) gives 0.031 to 0.426; text and
+      notes match these. The measured values and the outcome are unchanged.
+  - claim: fig5c-error-minima-at-cues
+    agrees: true
+    outcome: reproduced
+    reason: Agrees it is reproduced as the criterion is written, but the support is weak. It is 1
+      match in 32 combinations at 0.0063 per combination by chance; at least one match is expected
+      about 18% of the time, and the record gives only the 0.20 expected count. The pooled
+      error-by-direction curve is nearly flat (r = 0.029, cell 66). The note should say both.
+    response: The notebook now prints the chance of at least one match in 32 rows (0.18, rough as
+      the rows share data) and the depth of the pooled curve's minima (13.6 and 13.4 degrees below
+      the mean of 76.8, 0.1 and 1.6 below their lower neighbour; Rayleigh r 0.032 in the new run).
+      The notes and result cell state both and call the match weak support. The 1 of 32 and 10 of
+      32 counts are unchanged after the window-direction fix. Outcome unchanged.
+reconciliation:
+  earlier: park-2019-01
+  date: '2026-11-13'
+  blind: false
+  blind_note: The author's first run saw nothing of park-2019-01, and all 17 of its first findings and
+    the figs3 outcome were written then. In the author-answers run it printed questions/park-2019.yaml,
+    which the answer run had copied from main and which held the two questions of park-2019-01 with
+    that attempt's results (fig5 error r of 0.014 to 0.211, one of 14 figs3 tests at p = 0.0134 with n
+    the number of bins), and the first lines of the author-answers and author-revise-3 reports of
+    park-2019-01, left in transcripts/park-2019 (figs3 changed to not_reproduced, the outcomes of
+    fig1c-speed, fig4-internal-tuning-preserved and no-angular-velocity-tuning, and the topics of its
+    two methods_unavailable findings, among them the Tukey error term). In author-revise-2 it read the
+    round 3 verifier report of park-2019-01 (figs3 not reproduced with n the number of bins) and said
+    so in its report. It kept figs3 as reproduced, and the one finding added after these runs (number
+    15, on the Tukey error term) answers point 1 of its own round 1 verifier.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that the data set holds only the 115 head-direction cells, without the other MEC
+      cells of Table S1, the 921 modelled cells, the LFP, the waveforms and the training sessions, so
+      the claims of Figures 1A, 1C (LFP), S4, S5 and S6 cannot be tested.
+  - finding: 2
+    status: still_present
+    now: 2
+    note: Both report the stable2 column of 1121R157 shifted by one row for P11C2 to P9C3. The CON names
+      of the second sheet were not reported again; in earlier_findings.ipynb Sheet2 still lists
+      1020CONR035-cl.P11C3Rm, 1030CONR035-cl.P11C2Rm and 1030CONR035-cl.P11C3Rm, while the zip holds
+      only the SA2 files and no file named CON.
+  - finding: 3
+    status: still_present
+    now: 4
+    note: Both find that unit 1024R157 P9C1 has the same 2919 spike times in its stable1 and rotating
+      files; the earlier attempt took the rotating files to be wrong and the blind one the stable1 file.
+  - finding: 4
+    status: still_present
+    now: 3
+    note: Both find the room-frame rotating track of 1211R039 identical to that of 1212R039. The blind
+      attempt reports it with the identical stable2 tracks of 1015R029 and 1025R029.
+  - finding: 5
+    status: still_present
+    now: 19
+    note: In earlier_findings.ipynb the two TSD frames of 1009R029, 1015R029, 1023R029 and 1025R029
+      still differ by 6.85 to 13.49 px in distance from the centre at the best constant lag, against
+      0.31 px for their .dat files and for 1022R029, and their lag behind the room .dat track grows to
+      705 to 1500 samples (room) and 354 to 828 (arena) by sample 48000. The effect on the paper's
+      comparisons was not run again.
+  - finding: 6
+    status: still_present
+    now: 5
+    note: Both report the stable2 header of 1017R035 P11C2 with 2000 samples/s, a first timestamp of 5
+      and 54185 samples. The 614 spikes off the spike clock line are not reported again.
+  - finding: 7
+    status: still_present
+    now: 7
+    note: Both report that the stable2 file 1121SA2R157-cl1.P11C2Rm holds 26954 samples, about half a
+      trial.
+  - finding: 8
+    status: still_present
+    now: 9
+    note: Both find that spike times run ahead of the sample times computed from the header's rate and
+      first timestamp, and that the data descriptor does not say how they relate. The earlier attempt
+      gives about 25 samples (0.8 s) by the end of a trial, the blind one up to about 3 s.
+  - finding: 9
+    status: still_present
+    now: 10
+    note: Both find R029 with 40 cells against 41 in Table S1 and R523 with 2 against 1. The 146 pairs
+      against 142 in the Results are reported in finding 18.
+  - finding: 10
+    status: still_present
+    now: 12
+    note: Both ask for the Idir direction bins and probabilities, the SD of the 2 SD rule and the margin
+      for no frame preference, and both find the reported 4 room and 2 arena counts under 1 of 16
+      readings. Relative proximity and the n of the Figure S3 Rayleigh test are asked in findings 13
+      and 14.
+  - finding: 11
+    status: still_present
+    now: 15
+    note: Both ask whether the Tukey-Kramer tests used the repeated-measures error term, which decides
+      fig1c-directionality in both. Internally referenced tuning is asked in finding 16; how speed is
+      computed for Figure 1C is not asked again.
+  - finding: 12
+    status: still_present
+    now: 20
+    note: The paper's text is unchanged (660 ms in the STAR Methods, 133 ms in the Figure 2 legend, z =
+      289.63 in the Results and 153.24 and 230.58 in the Figure 5 legend), and in earlier_findings.ipynb
+      the paper's code sets num_samps = 20, 666 ms at 30.02 samples/s.
+  outcomes:
+  - claim: figs3-no-head-direction-bias
+    earlier: not_reproduced
+    note: A difference in method between the two notebooks, the n of the weighted Rayleigh test, which
+      the criterion leaves open. Both find an average r of 0.166 and one test of 14 below 0.05 with n
+      the number of bins (1121R157, room frame, p = 0.0134 and 0.014). The earlier attempt took n as
+      the number of bins (reading a) and the blind one as the sum of the weights (reading b, as in
+      CircStat), under which no test is significant.

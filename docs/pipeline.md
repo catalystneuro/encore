@@ -149,7 +149,9 @@ text garbles.
 `papers/manifest.yaml` in this repository, which is public, records for each
 target paper whether its full text is in the store, from where, and what is
 missing (the paper, a supplement), without any of the text. The dashboard reads
-it; it is the list of papers a person needs to supply.
+it; it is the list of papers a person needs to supply. The `Paper manifest`
+workflow (`manifest.yml`) rewrites it from the store every hour, and when the
+targets change, so a paper added to the store shows as stored within the hour.
 
 ## State
 
