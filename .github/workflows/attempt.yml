@@ -153,6 +153,19 @@ jobs:
           fi
           git log --oneline -1
 
+      # The reconcile run compares this attempt's code with the earlier attempt's (docs/protocol.md, "Repeat
+      # attempts"). The new entry replaced the earlier one on the branch, and the checkout has no history, so the
+      # earlier entry is copied from main, where it stays until this attempt is merged. It is outside the folders
+      # whose changes are collected, so it is never committed.
+      - name: Put the earlier attempt's entry under earlier-entry/, for the reconcile run
+        if: inputs.role == 'reconcile'
+        run: |
+          mkdir -p earlier-entry
+          git fetch --depth 1 origin main
+          git archive FETCH_HEAD "entries/$FOLDER" | tar -x --strip-components=2 -C earlier-entry \
+            || echo "::warning::main has no entries/$FOLDER; the reconcile run has only the earlier record"
+          ls earlier-entry
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'

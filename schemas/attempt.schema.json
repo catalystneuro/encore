@@ -574,7 +574,7 @@
           }
         },
         "outcomes": {
-          "description": "The claims tested by both attempts whose outcome differs.",
+          "description": "The claims tested by both attempts whose outcome differs, each with why.",
           "type": "array",
           "items": {
             "type": "object",
@@ -599,6 +599,50 @@
               "note": {
                 "type": "string",
                 "minLength": 1
+              },
+              "cause": {
+                "description": "The main reason the two outcomes differ (docs/protocol.md, \"Repeat attempts\").",
+                "enum": [
+                  "dataset_changed",
+                  "protocol_changed",
+                  "claims_changed",
+                  "reading",
+                  "error",
+                  "label",
+                  "random",
+                  "data_used",
+                  "unclear"
+                ]
+              },
+              "error_in": {
+                "description": "For `error`: which attempt's code or record has the mistake.",
+                "enum": [
+                  "this",
+                  "earlier",
+                  "both"
+                ]
+              },
+              "choice": {
+                "description": "For `reading`: the method choice the paper or the criterion leaves open, and what each attempt chose.",
+                "type": "string",
+                "minLength": 1
+              },
+              "supports": {
+                "description": "The outcome the evidence best supports, when it supports one.",
+                "enum": [
+                  "reproduced",
+                  "partially_reproduced",
+                  "not_reproduced",
+                  "blocked"
+                ]
+              },
+              "confidence": {
+                "description": "How sure the diagnosis is.",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
               }
             }
           }

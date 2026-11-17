@@ -600,15 +600,38 @@ check of the one before it.
   directly, in its own notebook `earlier_findings.ipynb` in the entry: fixed,
   still present (added to the record's findings with `found: on_prompt`, so it
   is never counted as found blind), or not checked. A finding no earlier one
-  points at is new. For each claim whose outcome differs from the earlier one,
-  it gives the likeliest reason. It changes no outcome or statement of the
-  blind attempt.
+  points at is new. It changes no outcome or statement of the blind attempt.
+- **Why outcomes differ.** For each claim whose outcome differs from the
+  earlier one, the reconcile run reads both attempts' code and records and
+  names the main `cause`. It does not vote: two attempts that agree can both
+  be wrong, and on three claims of asari-2009 one attempt of four was the one
+  that was right. The causes are:
+
+  | `cause` | Meaning |
+  |---|---|
+  | `dataset_changed` | The attempts tested different versions, and the files differ where it matters. |
+  | `protocol_changed`, `claims_changed` | The rule or the criterion applied differs. |
+  | `reading` | The paper or the criterion leaves a method choice open, and the attempts chose differently. `choice` names it. |
+  | `error` | An attempt's code or record has a mistake. `error_in` says which: `this`, `earlier` or `both`. |
+  | `label` | The numbers are essentially the same, and the criterion was applied differently. |
+  | `random` | Random draws. |
+  | `data_used` | Different sessions, units, files or exclusions of the same version. |
+  | `unclear` | It could not be told. |
+
+  Each item also gives a `note` with what exactly differs, how sure the
+  diagnosis is (`confidence`), and the outcome the evidence best supports
+  (`supports`) when it supports one.
 
 This keeps two things apart that a repeat attempt used to mix: the dataset's
 owners still get the list of what is fixed and what is not, and the attempt's
 own outcomes and findings are a second independent reading, so two attempts
 on the same version measure how far the registry's results repeat. The
 earlier record stays as it was.
+
+A paper can also be attempted again with nothing changed, as a second
+independent attempt: the reconcile run then says where the two differ and
+why (`docs/replicates.md` has the first results). The author is told that
+this is the reason.
 
 A draft can be used when the fixes are not yet published, with its
 modification time recorded under `dataset: modified`, since a draft can
