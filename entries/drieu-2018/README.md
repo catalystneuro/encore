@@ -8,15 +8,17 @@ CRCNS bucket and reduced in memory by `drieu2018.py`.
 
 | Claims | Outcome |
 |---|---|
-| Peak rates lower in Passive 1; fields cover the track; theta frequency unchanged; theta power (per-window reading) and asymmetry reduced in passive travel; precession range alike | Reproduced |
+| Peak rates lower in Passive 1; fields cover the track; no remapping between Passive 1 and Active (assumed field limits); theta frequency unchanged; theta power (per-window reading) and asymmetry reduced in passive travel; precession range alike | Reproduced |
 | Theta scores above chance; per-rat reconstructions; steeper Active theta slopes; quadrant scores highest in Active; joint score-slope excess in Active, for theta sequences and for replay; forward replay after Active | Reproduced |
-| Place-cell counts (assumed field limits); no remapping between conditions (three claims); burst and precession proportions; precession slopes degraded | Partially reproduced |
-| Average theta reconstruction; proportion of significant theta sequences; decoding-quality, cell-count, firing-rate and lap-by-lap controls; replay scores relative to baseline | Partially reproduced |
-| Travel alike across conditions; field size alike; burst frequency; sleep sessions alike; steeper replay slopes after Active; replay proportions relative to baseline; ripple-restricted replay; bias correlations (fig. 3G, 4G) | Not reproduced |
+| Place-cell counts (assumed field limits); no remapping between Active and Passive 2 and stability between the passive travels; burst and precession proportions; precession slopes degraded | Partially reproduced |
+| Average theta reconstruction; proportion of significant theta sequences; decoding-quality control; replay scores relative to baseline | Partially reproduced |
+| Travel alike across conditions; field size alike; burst frequency; sleep sessions alike; steeper replay slopes after Active; replay proportions relative to baseline; ripple-restricted replay; bias correlations (fig. 3G, 4G); cell-count, firing-rate and lap-by-lap controls | Not reproduced |
 
-After the second round of verification, changes of outcome are proposed for a third round: the cell-count,
-firing-rate and lap-by-lap controls to not reproduced, and no remapping between Passive 1 and Active to
-reproduced under the adopted field limits. The table gives the verified outcomes.
+A third round of verification changed four outcomes. No remapping between Passive 1 and Active is reproduced
+under the adopted field limits, which the claims file does not list, with cells that have a field in both
+conditions. The cell-count, firing-rate and lap-by-lap controls are not reproduced; the lap-by-lap control
+rests on decoding each lap with its own firing curves, and decoding it with the other laps' curves passes
+every test the criterion names.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
