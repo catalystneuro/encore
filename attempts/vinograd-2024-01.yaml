@@ -137,25 +137,23 @@ outcomes:
     frames; the paper does not say how. The decoder is a linear SVM on the one-dimensional normalized x1 signal (z-scored
     projection), as the Methods describe.
 - claim: ed3h-decode-engaged-from-observed
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: rslds_fits.ipynb
   output: claim:ed3h-decode-engaged-from-observed
+  assumed: true
   notes: 'Seed 0: the decoder trained on all observation trials classifies engaged attack against as many non-attack frames
     with accuracy 0.60 to 0.86 (engaging session projected on the observation weights) and 0.59 to 0.92 (its own weights),
     against 0.49 to 0.52 for shuffled decoders; p = 0.0079 for both. Across the four seeds the sample code tries, the observation-weights
-    reading gives p = 0.0079 with three seeds (0, 137, 1337) and 0.15 with seed 1; the own-weights reading gives p < 0.05
-    with seed 0 only (0.15 to 0.69 with the others, accuracy as low as 0.12 in one mouse). The decoding holds for most fits
-    under one reading and for one fit under the other, so it is partially reproduced. Changed from reproduced after verification
-    round 1. With the seed-0 fits, on which ed3g-decode-observed-attack is recorded as reproduced, both readings give p
-    = 0.0079; a change to reproduced is proposed below.'
-  proposed:
-    outcome: reproduced
-    reason: 'Verification round 2 found that ed3h is judged differently from ed3g although both rest on the same fits. With
-      the seed-0 fits, the assumption ed3g is recorded under (assumed: true), both readings the criterion names give p =
-      0.0079 (rslds_fits.ipynb, the cell that runs every seed). The observation-weights reading gives p = 0.0079 with three
-      of four seeds, the same pattern as ed3g. The proposed outcome is reproduced, assumed on the seed-0 fits as ed3g, with
-      the own-weights reading''s dependence on the seed (p < 0.05 with 1 of 4 seeds) kept in the notes.'
+    reading gives p = 0.0079 with three seeds (0, 137, 1337) and 0.15 with seed 1, as ed3g does; the own-weights reading
+    gives p < 0.05 with seed 0 only (0.15 to 0.69 with the others, accuracy as low as 0.12 in one mouse). With the seed the
+    code keeps by its R2, both readings give p = 0.15 (M35R at 0.29 on the observation weights, M36L at 0.33 on its own),
+    where ed3g gives p = 0.0079 for leave-one-out and fivefold. The outcome rests on the seed-0 fits, as ed3g''s does. Changed
+    to partially reproduced after verification round 1, and to reproduced after round 3, which agreed that ed3h should be
+    judged on the same fits as ed3g.'
   deviations:
+  - 'Assumed: the seed-0 fits. Seed 0 is the default of the sample code''s rslds function and the seed of its two-photon
+    notebook. All four seeds the code tries are run as variants; the observation-weights reading gives p < 0.05 with three
+    of four, the own-weights reading with one.'
   - The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the
     sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed
     0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation;
@@ -1407,3 +1405,25 @@ verifications:
     outcome: blocked
     reason: Agrees with blocked (all 26 blocked claims).
     response: No change needed.
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, on ed3h-decode-engaged-from-observed, and the analysis behind it
+    (the ed3h cell and the four-seed cell of rslds_fits.ipynb). Nothing else was reviewed.
+  results:
+  - claim: ed3h-decode-engaged-from-observed
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with reproduced (assumed: seed-0 fits). With seed 0 both readings give p = 0.0079 (observation weights
+      0.82, 0.68, 0.86, 0.60, 0.63 and own weights 0.87, 0.92, 0.67, 0.67, 0.59, against shuffled 0.49 to 0.52), and the
+      shuffle matches the Methods and the decoder of ed3g. Seed 0 was fixed as the main reading in round 1 for all claims,
+      before the four-seed run existed, and ed3g is already recorded as reproduced with assumed: true on the same fits, so
+      the choice was not made for this claim. The criterion does not say whether one reading or both must pass; with seed
+      0 both pass. The own-weights reading''s weakness across seeds fits ed4c, as refits share only 47% of the five strongest
+      x1 neurons. Two changes are needed: the applied entry should carry assumed: true and an assumed deviation worded as
+      ed3g''s, and the notes should report the seed the code keeps, which gives p = 0.15 for both ed3h readings (M35R at
+      0.29 on observation weights, one mouse at 0.33 on own weights) where ed3g gives p = 0.0079 for leave-one-out and fivefold;
+      "the same pattern as ed3g" holds for the four-seed sweep only.'
+    response: 'Outcome changed to reproduced, with assumed: true and an assumed deviation worded as ed3g''s. The notes now
+      give the result on the kept seed (p = 0.15 for both readings, M35R at 0.29 and M36L at 0.33) and say that ed3g gives
+      p = 0.0079 there for leave-one-out and fivefold. The notebook''s conclusion and summary say the same.'
