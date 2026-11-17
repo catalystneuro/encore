@@ -382,6 +382,11 @@ def check(entry_dir: Path) -> Report:
             if outcome.get("outcome") != "blocked" and not notebook:
                 report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r} "
                              "and names no notebook; give the notebook that tests it (`notebook`) and its cell (`output`)")
+            # The entry is the latest attempt's: a repeat attempt writes a new one in its place, so an earlier
+            # attempt's notebooks and cells are checked only when it was made, not against the entry as it is now
+            # (tingley-2018's second attempt, 2026-11-16, whose first had a claim the second renamed).
+            if path != mine[-1]:
+                continue
             if notebook and notebook not in listed:
                 report.error(path.relative_to(ROOT), f"notebook {notebook!r} is not in the entry")
             tag = outcome.get("output")

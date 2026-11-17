@@ -194,7 +194,10 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
       fi
       tls_fails=0
       id=""
-      for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
+      # GitHub can take minutes to list a run it has started: on 2026-11-16 two runs that were going (kalogriopoulos-2024's
+      # recorder, prakash-2022's author-answers) were not listed in the 5 minutes the chain then looked for, and it
+      # stopped for a person. It looks for 20 minutes now.
+      for _ in $(seq 1 240); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
       [ -n "$id" ] || { last_why="the run of $role was not found"; log "STOPPED: $last_why"; return 1; }
       log "$role started: run $id"
     fi
