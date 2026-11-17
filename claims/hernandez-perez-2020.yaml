@@ -1,0 +1,804 @@
+# Claims for Hernández-Pérez, Cooper & Newman (2020), "Medial entorhinal cortex activates in a
+# traveling wave in the rat", eLife, doi:10.7554/elife.52289, tested on CRCNS:hc-27.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-11, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. paper/10.7554-elife.52289.txt, the version of record (PMC7046467, open access,
+# Europe PMC full-text XML flattened). It holds the abstract, Introduction, Results, Discussion,
+# Materials and methods, the legends of Figures 1 to 8 and of Figure 1, figure supplement 1
+# (histology, the only supplement), and the Data availability statement. No PDF was supplied, so
+# no figure could be read. One display equation, the asymmetry-related delay of "Asymmetry-
+# corrected data", was lost in extraction; it was read from the same Europe PMC full-text XML
+# (PMC7046467, disp-formula equ1) and is
+#   Delay_Asym = (D_falling(elec i) - D_rising(elec i)) - (D_falling(elec j) - D_rising(elec j)).
+# The reference list is not in the text; Cole and Voytek (2017, 2019) and Belluscio et al. (2012)
+# are known only by name.
+#
+# Code. The paper links none. Methods, Data analysis, say only "custom scripts and ... the CMBHOME
+# toolbox", with no repository or commit. The dataset descriptor says the dataset's code folder
+# holds loading and plotting scripts only (readData.m, spreadLFP.m) and that the analysis code is
+# available on request. No code was read; every method below is from the paper's text.
+#
+# Data the paper used. Six male Long-Evans rats (Methods, Animals), each implanted over the right
+# MEC with a custom multi-shank array of up to eight shanks whose tips are about 566 um apart
+# along the dorsal-ventral axis (Methods, Electrode array construction). Recordings were made as
+# rats ran laps on a circular track for food in 25-min trials (Behavioral protocol); one key
+# recording per rat is analysed. Field potentials were recorded at 30 kHz (Electrophysiological
+# recordings). One of the six rats carried a laminar variant of the array, up to six stereotrodes
+# per shank at 450 um vertical spacing (Figure 3). For multi-unit activity, arrays were lowered
+# into layer II in later recordings; three rats had multi-unit activity on four or more channels
+# (Figure 4). Measured variable, the LFP voltage on each selected channel, ordered dorsal to
+# ventral. The dataset's descriptor (CRCNS hc-27) says it holds one MATLAB file per rat for the six
+# rats, channel 1 the most dorsal, at 500 Hz. The multi-unit band (600 to 3000 Hz) lies above that
+# rate's Nyquist limit, so the Figure 4 claims need recordings the descriptor does not list;
+# whether the dataset holds them is the author's to find.
+#
+# Shared method, from the Methods. Artefacts are voltage swings over 5 times the signal's RMS,
+# removed with 500 ms either side, repeated until none remain (Data inclusion criteria). Analyses
+# use high-amplitude theta epochs, where the 6-12 Hz amplitude (zero-phase fourth-order
+# Butterworth) exceeds 400 uV for 500 ms or longer, dips of 100 ms or less ignored, unless
+# otherwise noted (same section; coherence is not restricted to them). Hilbert phase from the
+# 6-12 Hz band; waveform phase from the 1-25 Hz band, local maxima (0 deg) and minima (180 deg)
+# separated by 83 to 250 ms, 90 and 270 deg at the time the filtered voltage is closest to the
+# mean of the nearest minimum and maximum (Theta phase estimation). Summaries are medians with
+# 95% bootstrap CIs from 500 resamples; paired tests Wilcoxon signed-rank, unpaired rank-sum;
+# Pearson correlation for goodness of fit (Statistics).
+#
+# Open details, with the readings the text allows (criteria refer to them by number).
+# O1 Electrode positions. Distance from the dorsal-most electrode is (a) 0.566 mm times the
+#    channel index, from the nominal spacing (Electrode array construction); (b) per rat, the
+#    spacing the dataset or its documentation gives, where it differs (one array had merged
+#    shanks whose spacing was measured, and its value is not in the text).
+# O2 Which channels. The Methods select one electrode per shank before analysis (Electrode
+#    selection criteria); Figure 1, figure supplement 1 marks some electrodes as outside the MEC.
+#    Readings, (a) every channel the rat's file holds; (b) only those marked inside the MEC, where
+#    the dataset marks them.
+# O3 Artefacts and theta epochs, which channel. Readings, (a) each channel's own artefacts and
+#    epochs, with pairwise measures on the times both channels keep; (b) times kept on all of the
+#    rat's channels at once; (c) epochs from the dorsal-most channel. Artefact threshold on the
+#    absolute deviation of the raw signal from its mean (standard choice). Theta amplitude is the
+#    magnitude of the Hilbert transform of the 6-12 Hz signal (standard choice).
+# O4 The test printed as "rank sum [max]". Its printed values (maximum 21 with n = 6, p = 0.03 at
+#    a statistic of 0 or 21, p = 0.06 at 20, p = 0.09 at 19, p = 0.16 at 3, p = 0.84 at 12) are
+#    those of an exact two-sided Wilcoxon signed-rank test on six values; a rank-sum test of six
+#    values does not have a maximum of 21. Read as a signed-rank test of the six per-rat values
+#    against zero (one-sample) or of their paired differences.
+# O5 Significance level. Not stated. The paper calls p = 0.06 significant (Results, Theta waveform
+#    varies, paragraph 1) and p = 0.09 and 0.16 not. Read as p of at most 0.0625, the exact
+#    signed-rank p of a statistic of 1 or 20 with n = 6; p = 0.03 is the exact p at 0 or 21.
+# O6 Phase offset and its slope (Hilbert). Per electrode, the circular mean of the instantaneous
+#    phase difference to the dorsal-most electrode over theta epochs (Phase locking), positive
+#    when the ventral site lags. Per rat, the slope of offset on distance, (a) by least squares
+#    with an intercept; (b) through the origin. The value reported with "+/-" is (a) the mean of
+#    the per-rat slopes; (b) their median. What "+/-" is (SEM or SD) is not stated; it is used as
+#    the tolerance.
+# O7 Waveform extrema. Readings, (a) local maxima and minima of the 1-25 Hz signal, alternating,
+#    keeping those whose spacing to the neighbouring opposite extremum gives a cycle of 83 to 250
+#    ms; (b) one maximum and one minimum between successive zero crossings of the 6-12 Hz signal,
+#    as in the method of Cole and Voytek, with the same 83-250 ms limits. Rise duration is the time
+#    from a trough to the next peak, decay from a peak to the next trough; peak duration is the
+#    time from the rising-phase midpoint to the next falling-phase midpoint, trough duration from a
+#    falling-phase midpoint to the next rising-phase midpoint (Figure 5A legend).
+# O8 Filters. "Fourth-order" Butterworth applied with zero phase; read as MATLAB butter(4, band)
+#    passed through filtfilt (standard choice, unlikely to change an outcome).
+schema_version: 2
+paper: doi:10.7554/elife.52289
+claims:
+- id: fig2d-phase-shift-rate
+  statement: Dorsal MEC sites are phase advanced relative to ventral sites, the theta phase
+    shifting at 26.36 +/- 2.64 deg/mm along the dorsal-ventral axis, a shift significantly
+    different from zero across six rats.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 2; Figure 2A and 2D
+  quote: Dorsal sites were phase advanced relative to ventral, as can be seen in the cycle-triggered
+    averages of the raw LFP, with the phase shifting at an average rate of 26.36 °/mm ± 2.64 °/mm (
+    Figure 2A and D ). This mean shift was significantly different from zero (rank sum [max]=21
+    [21], p = 0.03, n=6)
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, O4)
+    statistic: rank sum [max]=21 [21]
+    p: 0.03
+    n: 6 rats
+  expected:
+  - quantity: theta phase shift along the dorsal-ventral axis
+    value: 26.36
+    tolerance: 2.64
+    unit: deg/mm
+  criterion: Hilbert phase (Methods, Theta phase estimation) on the high-theta epochs (Data
+    inclusion criteria), offsets and per-rat slopes as in O6, positions as in O1, channels as in
+    O2, epochs as in O3. Reproduced when, under one combination of readings, the value is within
+    tolerance, ventral sites lag, and an exact two-sided signed-rank test of the six per-rat slopes
+    against zero gives p of at most 0.0625 (O4, O5).
+- id: fig2d-linear-fit
+  statement: The phase offsets are fit well by a linear relation with distance (r2 = 0.7627),
+    so the phase changes steadily along the sampled length of the MEC.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 2; Figure 2D
+  quote: The observed offsets were fit well by a linear Pearson correlation ( r 2 = 0.7627),
+    indicating that the phase changed steadily across the sampled length of the MEC
+  expected:
+  - quantity: r2 of phase offset against distance
+    value: 0.7627
+    tolerance: 0.0763
+  depends_on:
+  - fig2d-phase-shift-rate
+  criterion: The offsets of fig2d-phase-shift-rate. The paper does not say whether r2 is over the
+    pooled points of all rats (Figure 2D plots them together) or per rat. Readings, (a) squared
+    Pearson r of offset on distance over all rats' electrodes pooled, dorsal-most electrodes (0,
+    0) included; (b) the same without the dorsal-most points; (c) the median over rats of each
+    rat's r2. Reproduced when one reading is within tolerance.
+- id: fig2a-all-rats
+  statement: Gradual theta phase shifts along the long axis of the MEC are seen in every one of
+    the six rats.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 1; Figure 2A legend
+  quote: In each of the six rats implanted, gradual phase shifts in the ~8 Hz theta-band were
+    apparent in the raw recordings
+  criterion: Per rat, the slope of fig2d-phase-shift-rate (O6, reading a), and the
+    cycle-triggered average of the raw LFP on each channel, triggered on the waveform-method peaks
+    of the dorsal-most channel (Methods, Cycle-triggered averages theta waves). Reproduced when
+    all six rats have a positive slope (ventral lags) and the peak of the cycle-triggered average
+    on the ventral-most channel follows that of the dorsal-most; partially reproduced for five.
+  depends_on:
+  - fig2d-phase-shift-rate
+- id: fig2e-phase-locking-high
+  statement: The phase offset between sites is stable over the recording, the median phase
+    locking between sites being 0.90.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 3; Figure 2B and 2E
+  quote: The phase offset between any two channels was relatively stable over the duration of the
+    recording ( Figure 2B and E ) given the median phase locking observed between sites of 0.90
+    [0.85–0.95]
+  statistics:
+  - ci:
+      level: 0.95
+      low: 0.85
+      high: 0.95
+  expected:
+  - quantity: median phase locking (mean resultant length) between sites
+    value: 0.90
+    tolerance: 0.05
+  criterion: Mean resultant length of the circular Hilbert phase differences between electrodes
+    over theta epochs (Methods, Phase locking); tolerance from the paper's 95% CI. Which pairs
+    form the median is not stated. Readings, (a) each electrode against the dorsal-most (Figure
+    2E), the median per rat then across rats; (b) all electrode pairs, likewise; (c) all values of
+    all rats pooled. Reproduced when one reading is inside 0.85 to 0.95.
+- id: fig2e-phase-locking-decrease
+  statement: Phase locking decreases modestly but reliably with distance between electrodes, at
+    -0.067 per mm.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 3; Figure 2E
+  quote: The strength of phase locking (i.e., mean resultant length) decreased modestly but reliably
+    as a function of the distance between the electrodes (slope of −0.067/mm ± 0.011; rank sum
+    [max]=0 [21], p = 0.03, n=6
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, O4)
+    statistic: rank sum [max]=0 [21]
+    p: 0.03
+    n: 6 rats
+  expected:
+  - quantity: slope of phase locking against distance
+    value: -0.067
+    tolerance: 0.011
+    unit: 1/mm
+  depends_on:
+  - fig2e-phase-locking-high
+  criterion: Per rat, the least-squares slope of the mean resultant length between each electrode
+    and the dorsal-most (Figure 2E) on distance (O1), with or without the dorsal-most electrode's
+    own value of 1 (both readings shown); the centre value is the mean or the median over rats
+    (O6). Reproduced when one reading is within tolerance and the signed-rank test of the six
+    slopes against zero gives p of at most 0.0625 with all or nearly all slopes negative (O4, O5).
+- id: fig2c-coherence
+  statement: Theta coherence across the MEC is 0.73.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 3; Figure 2C
+  quote: Theta coherence across the MEC was 0.73 [0.66–0.81]
+  statistics:
+  - ci:
+      level: 0.95
+      low: 0.66
+      high: 0.81
+  expected:
+  - quantity: median theta-band coherence
+    value: 0.73
+    tolerance: 0.08
+  criterion: Coherence by MATLAB cohere (now mscohere) on the artefact-free data, not restricted to
+    theta epochs, averaged over 6 to 12 Hz in 1 Hz steps (Methods, Theta band coherence); tolerance
+    from the paper's 95% CI. The window is not stated. Readings, (a) 1 s Hann windows with 50%
+    overlap, so that the 1 Hz steps are the spectral bins; (b) cohere's default (Hann window of
+    256 samples, no overlap, nfft 256), interpolated to 6, 7, ... 12 Hz. Pairs as in the
+    readings of fig2e-phase-locking-high, (a) against the dorsal-most electrode, (b) all pairs.
+    Reproduced when one combination is inside 0.66 to 0.81.
+- id: fig2f-coherence-decrease
+  statement: Theta coherence decreases with distance between electrode pairs, at 0.067 per mm.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 3; Figure 2C and 2F
+  quote: Coherence also decreased as a function of the distance between electrode pairs
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, O4)
+    statistic: rank sum [max]=21 [21]
+    p: 0.03
+    n: 6 rats
+  expected:
+  - quantity: rate of decrease of coherence with distance
+    value: 0.067
+    tolerance: 0.018
+    unit: 1/mm
+  depends_on:
+  - fig2c-coherence
+  criterion: The slope is printed as positive (0.067/mm +/- 0.018) with a statistic of 21 of 21,
+    while the text says coherence decreased. Read as a decrease of 0.067 per mm, the slope's
+    magnitude. Per rat, the least-squares slope of coherence between each electrode and the
+    dorsal-most (Figure 2F) on distance (O1), coherence as in fig2c-coherence. Reproduced when the
+    slopes are negative, the magnitude of their mean or median is within tolerance, and the
+    signed-rank test against zero gives p of at most 0.0625 (O4, O5).
+- id: fig2g-power-no-change
+  statement: Theta power does not change significantly along the long axis of the MEC.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 3; Figure 2G
+  quote: We observed no significance change in theta power along the long axis of the MEC (slope of
+    0.73 [–0.08 – 0.93] AU/mm; rank sum [max]=19 [21], p = 0.09, n=6; Figure 2G )
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, O4)
+    statistic: rank sum [max]=19 [21]
+    p: 0.09
+    n: 6 rats
+  - about: median slope of theta power against distance
+    ci:
+      level: 0.95
+      low: -0.08
+      high: 0.93
+      unit: AU/mm
+  criterion: A claim of absence, judged on the paper's test, an exact two-sided signed-rank test
+    of the six per-rat slopes of theta power on distance against zero (O4) at the level of O5.
+    Reproduced when p exceeds 0.0625; not reproduced otherwise; the median slope and its bootstrap
+    CI are given either way. The power measure is not stated. "AU" and the circles of Figure 2G
+    (power relative to each animal's across-electrode mean) point to relative power, used for the
+    test, with raw power shown as a variant. Power per channel is the mean of the Welch power
+    spectral density (1 s Hann windows, 50% overlap) over 6 to 12 Hz on the theta epochs, or the
+    mean squared Hilbert amplitude of the 6-12 Hz signal; when the two give different outcomes
+    the author adopts one as an assumption.
+- id: fig3-along-not-across-layers
+  statement: In the rat with a laminar array, theta phase shift between electrode pairs is
+    positively correlated with displacement along the cell layers (rho = 0.58) but not with
+    displacement across the layers (rho = 0.02), so the shifts are not due to placement across
+    layers.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 4; Figure 3C to 3G
+  quote: Phase shift was positively correlated with displacement ‘along the cell layer’ (rho = 0.58)
+    but not with displacement ‘across the layers’ (rho = 0.02)
+  expected:
+  - quantity: correlation of phase shift with displacement along the layers
+    value: 0.58
+    tolerance: 0.058
+  - quantity: correlation of phase shift with displacement across the layers
+    value: 0.02
+    tolerance: 0.1
+  criterion: The one rat implanted with the laminar array (Figure 3A). For every electrode pair,
+    the Hilbert phase difference (O6), with 180 deg added to pairs that span the layer I phase
+    reversal (Figure 3F and 3G legends), against the pair's displacement along and across the
+    layers. Displacements from the probe geometry (450 um vertical spacing within a shank, shanks
+    300 um apart, each 470 um longer than the last; Methods, Electrode array construction) resolved
+    on an axis at 57 deg to the horizontal (along) and its perpendicular (across); the
+    reconstruction of Figure 3B and its exclusions (sites outside the MEC, high impedance) are not
+    in the text, so sites are excluded only as the dataset marks them. "rho" may be (a) Pearson r
+    (Methods, Statistics, the only correlation named) or (b) Spearman rho; both shown. The
+    tolerance of the near-zero value is 0.1, not 10% of 0.02, which is below any sampling
+    precision of a correlation. Reproduced when, under one reading, both are within tolerance.
+- id: fig4d-mua-phase-shift
+  statement: Theta-rhythmic multi-unit activity in layer II also forms a traveling wave, its lag
+    increasing linearly with distance at the equivalent of 33.20 +/- 2.69 deg/mm, significantly
+    greater than zero.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 5; Figure 4C and 4D
+  quote: Computing the cross-correlogram of the amplitude envelope between each channel and the
+    dorsal-most channel showed that multiunit activity also generated a traveling wave with a lag
+    consistent with a 33.20°/mm ± 2.69°/mm phase shift ( Figure 4C and D ). This phase shift was
+    significantly greater than zero (rank sum [max]=21 [21], p = 0.03, n=3) and was fit well by a
+    linear trendline ( r 2 = 0.9269)
+  statistics:
+  - test: rank sum
+    statistic: rank sum [max]=21 [21]
+    p: 0.03
+    n: 3 rats
+  expected:
+  - quantity: multi-unit phase shift
+    value: 33.2
+    tolerance: 2.69
+    unit: deg/mm
+  - quantity: r2 of multi-unit lag against distance
+    value: 0.9269
+    tolerance: 0.0927
+  criterion: The layer II recordings of the three rats with multi-unit activity on four or more
+    channels (Figure 4D legend). Spiking band 600-3000 Hz, zero-phase fourth-order Butterworth;
+    its amplitude envelope (Hilbert magnitude, standard choice) band-passed to 4-12 Hz,
+    zero-phase third-order Butterworth; cross-correlogram of each channel with the dorsal-most,
+    lag of the maximum within +/-120 ms; per rat, the regression slope of lag on distance in
+    ms/mm (Methods, Analysis of multiunit spiking activity). Which epochs (all artefact-free data,
+    or the theta epochs) is not stated, readings (a) and (b). The conversion to degrees is not
+    stated, readings (a) 360 deg per 125 ms, the 8 Hz the paper assumes for Figure 6, (b) each
+    rat's mean theta frequency. The printed test is not possible with three rats (an exact
+    signed-rank test of three values has a maximum of 6 and a smallest p of 0.25). The test is
+    read as (a) all three slopes positive, (b) a signed-rank test over the pooled per-channel
+    lags against zero at p of at most 0.0625. r2 is over the pooled points or the median per rat.
+    Reproduced when, under one combination, both values are within tolerance and the test holds.
+- id: fig4d-mua-matches-lfp
+  statement: The slope relating lag to position does not differ significantly between
+    theta-rhythmic multi-unit activity and LFP theta phase in the same three rats.
+  source: Results, Theta phase shifts gradually across the dorsal-ventral axis of the MEC,
+    paragraph 5; Figure 4D
+  quote: The slope relating lag to position was not significantly different between theta-rhythmic
+    multiunit activity and LFP theta phase across these three animals (rank sum [max]=0 [6], p =
+    0.25, n=3)
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, paired, O4)
+    statistic: rank sum [max]=0 [6]
+    p: 0.25
+    n: 3 rats
+  depends_on:
+  - fig4d-mua-phase-shift
+  - fig2d-phase-shift-rate
+  criterion: A claim of absence, judged on the paper's test, an exact two-sided paired signed-rank
+    test of the three rats' multi-unit slopes against their LFP theta-phase slopes (O6), both in
+    deg/mm, the LFP from the same three rats (Methods, Analysis of multiunit spiking activity).
+    Reproduced when p exceeds 0.0625, not reproduced otherwise. With three rats the test cannot
+    give p below 0.25, so the per-rat differences and their mean are reported as the size of the
+    effect.
+- id: fig5c-rise-decay-gradient
+  statement: The rise/decay asymmetry of theta is strongly negative at dorsal sites and
+    significantly less so at ventral sites (-0.43 against -0.11).
+  source: Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1;
+    Figure 5C
+  quote: theta was asymmetric at dorsal sites and significantly less so at relatively ventral sites,
+    whether analyzed in terms of the asymmetric durations of the rise and decay (−0.43 [−0.57 –
+    0.35] vs. −0.11 [−0.13 – 0.09]; rank sum [max]=0 [21], p=0.03, n=6)
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, paired, O4)
+    statistic: rank sum [max]=0 [21]
+    p: 0.03
+    n: 6 rats
+  - about: dorsal rise/decay asymmetry, read as -0.57 to -0.35 (an interval led by a minus sign
+      drops the upper bound's sign, as in Figure 8D's printed CI; intervals that span zero are
+      printed with a dash before both bounds)
+    ci:
+      level: 0.95
+      low: -0.57
+      high: -0.35
+  - about: ventral rise/decay asymmetry, read as -0.13 to -0.09 on the same convention
+    ci:
+      level: 0.95
+      low: -0.13
+      high: -0.09
+  expected:
+  - quantity: rise/decay asymmetry, dorsal
+    value: -0.43
+    tolerance: 0.14
+  - quantity: rise/decay asymmetry, ventral
+    value: -0.11
+    tolerance: 0.02
+  criterion: Per cycle, log10 of rise duration over decay duration, on the 1-25 Hz signal (O7);
+    per channel, the median over cycles in the theta epochs; across rats, the median (Methods,
+    Asymmetry analysis; Figure 5A and 5C legends). Tolerances from the paper's 95% CIs (distance
+    to the farther bound). The sites compared are not named. Readings, (a) the dorsal-most against
+    the ventral-most channel of each rat; (b) the dorsal-most against the channel nearest 2.8 mm
+    from it (the distance the next sentences use). Reproduced when, under one reading, both
+    medians are within tolerance and the paired signed-rank test gives p of at most 0.0625 with
+    ventral values higher (O4, O5).
+- id: fig5c-peak-trough-gradient
+  statement: The peak/trough asymmetry of theta is positive at dorsal sites and significantly
+    lower at ventral sites (0.21 against -0.10).
+  source: Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1;
+    Figure 5C
+  quote: or in terms of the asymmetric duration of the peak and trough durations (0.21 [0.00–0.29]
+    vs. −0.10 [–0.16 – 0.01]; rank sum [max]=0 [21], p=0.03, n=6) as shown in Figure 5
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, paired, O4)
+    statistic: rank sum [max]=0 [21]
+    p: 0.03
+    n: 6 rats
+  - about: dorsal peak/trough asymmetry
+    ci:
+      level: 0.95
+      low: 0.0
+      high: 0.29
+  - about: ventral peak/trough asymmetry, read as -0.16 to 0.01 (printed with a dash before both
+      bounds, as the zero-spanning CI of Figure 2G is)
+    ci:
+      level: 0.95
+      low: -0.16
+      high: 0.01
+  expected:
+  - quantity: peak/trough asymmetry, dorsal
+    value: 0.21
+    tolerance: 0.21
+  - quantity: peak/trough asymmetry, ventral
+    value: -0.10
+    tolerance: 0.11
+  criterion: Per cycle, log10 of peak duration over trough duration (O7; Figure 5A legend); medians
+    and sites as in fig5c-rise-decay-gradient. Tolerances from the paper's 95% CIs, the farther
+    bound; the ventral CI is printed "[–0.16 – 0.01]", read as -0.16 to 0.01, so the tolerance is
+    0.11; the reading -0.16 to -0.01 lies inside it. The Methods define only the rise/decay index; the peak/trough index
+    is from the Figure 5A legend. Reproduced when, under one site reading, both medians are within
+    tolerance and the paired signed-rank test gives p of at most 0.0625 with ventral values lower.
+- id: fig5-dorsal-sawtooth
+  statement: At dorsal sites the rising phase of theta is significantly shorter than the decaying
+    phase and the peaks are longer than the troughs.
+  source: Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1;
+    Figure 5B and 5C
+  quote: at dorsal sites, the rising phase was significantly shorter than the decaying phase (signed
+    rank [max]=0 [21], p=0.03, n=6) and the peaks were significantly longer than the troughs
+    (signed rank [max]=20 [21], p=0.06, n=6)
+  statistics:
+  - about: rise against decay duration, dorsal
+    test: signed rank
+    statistic: signed rank [max]=0 [21]
+    p: 0.03
+    n: 6 rats
+  - about: peak against trough duration, dorsal
+    test: signed rank
+    statistic: signed rank [max]=20 [21]
+    p: 0.06
+    n: 6 rats
+  depends_on:
+  - fig5c-rise-decay-gradient
+  criterion: On the dorsal-most channel of each rat, the per-rat median rise/decay and peak/trough
+    indices of fig5c-rise-decay-gradient and fig5c-peak-trough-gradient (or, equivalently, the
+    paired median durations). Reproduced when the exact signed-rank test of the six rise/decay
+    values against zero gives p of at most 0.0625 with values negative, and that of the six
+    peak/trough values gives p of at most 0.0625 with values positive (O5, which reads the paper's
+    p = 0.06 as significant); partially reproduced when one of the two holds.
+- id: fig5-ventral-rise-not-peak
+  statement: About 2.8 mm from the dorsal edge, the rising phase is still shorter than the
+    decaying phase, but peak and trough durations no longer differ significantly.
+  source: Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 1;
+    Figure 5C
+  quote: At ~2.8 mm from the dorsal edge of the MEC, the rising phase was still significantly
+    shorter than the decaying phase (signed rank [max]=20 [21], p=0.06, n=6) but the duration of the
+    peaks was not significantly different than that of the troughs (signed rank [max]=3 [21],
+    p=0.16, n=6)
+  statistics:
+  - about: rise against decay duration, about 2.8 mm
+    test: signed rank
+    statistic: signed rank [max]=20 [21]
+    p: 0.06
+    n: 6 rats
+  - about: peak against trough duration, about 2.8 mm
+    test: signed rank
+    statistic: signed rank [max]=3 [21]
+    p: 0.16
+    n: 6 rats
+  depends_on:
+  - fig5c-rise-decay-gradient
+  criterion: On the channel of each rat nearest 2.8 mm from the dorsal-most (O1), indices as in
+    fig5-dorsal-sawtooth. Two parts. The rise/decay part is reproduced when the exact signed-rank
+    test against zero gives p of at most 0.0625 with values negative. The peak/trough part is a
+    claim of absence, on the same test, reproduced when p exceeds 0.0625, with the median given
+    either way. Reproduced when both parts hold, partially when one does. The ventral-most channel
+    is shown as a variant.
+- id: fig6b-delay-by-phase
+  statement: The conduction delay of theta along the dorsal-ventral axis is shortest for the
+    falling phase (5.47 ms/mm) and longest for the peak (12.00 ms/mm), and the two differ
+    significantly.
+  source: Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 3;
+    Figure 6B
+  quote: We found that the conduction delay was shortest for the falling phase (5.47 ms/mm
+    [2.87–8.70]) and greatest for the peak to travel from dorsal sites to ventral sites (12.00 ms/mm
+    [6.52–14.43]) as shown in Figure 6 . These conduction delays differed significantly (rank sum
+    [max]=0 [21], p=0.03, n=6)
+  statistics:
+  - test: rank sum (read as Wilcoxon signed-rank, paired, O4)
+    statistic: rank sum [max]=0 [21]
+    p: 0.03
+    n: 6 rats
+  - about: falling-phase conduction delay
+    ci:
+      level: 0.95
+      low: 2.87
+      high: 8.70
+      unit: ms/mm
+  - about: peak conduction delay
+    ci:
+      level: 0.95
+      low: 6.52
+      high: 14.43
+      unit: ms/mm
+  expected:
+  - quantity: conduction delay, falling phase
+    value: 5.47
+    tolerance: 3.23
+    unit: ms/mm
+  - quantity: conduction delay, peak
+    value: 12.0
+    tolerance: 5.48
+    unit: ms/mm
+  criterion: As in Methods, Conduction delays of specific theta phases. Waveform-method phases
+    (O7); for each cycle's peak (or falling phase) on the dorsal-most channel, the nearest same
+    phase on every other channel, forward or backward in time; per cycle, a robust regression
+    (MATLAB robustfit, bisquare by default) of time offset on position (O1); cycles that fail to
+    converge dropped; the median over cycles per rat, the median over rats. Theta epochs only (O3).
+    Tolerances from the paper's 95% CIs, the farther bound. Reproduced when both medians are within
+    tolerance, the falling phase is the shortest and the peak the longest of the four phases, and
+    the paired signed-rank test of falling against peak gives p of at most 0.0625 (O4, O5).
+    Partially reproduced when the values and order hold and the test does not.
+- id: fig6c-delay-phase-slope
+  statement: Conduction delay increases linearly with reference phase between the falling phase
+    and the peak, at 0.02 (ms/mm)/deg (R2 = 0.82).
+  source: Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 3;
+    Figure 6C
+  quote: The conduction delay increased at a rate of 0.02 (ms/mm)/deg [0.017–0.025] between the
+    falling phase and the peak, a relationship that was fit well by a linear trendline (R 2 = 0.82;
+    Figure 6C )
+  statistics:
+  - ci:
+      level: 0.95
+      low: 0.017
+      high: 0.025
+      unit: (ms/mm)/deg
+  expected:
+  - quantity: slope of conduction delay on reference phase
+    value: 0.02
+    tolerance: 0.005
+    unit: (ms/mm)/deg
+  - quantity: R2 of the linear fit
+    value: 0.82
+    tolerance: 0.082
+  depends_on:
+  - fig6b-delay-by-phase
+  criterion: The per-rat delays of fig6b-delay-by-phase at the four phases, placed at falling 90,
+    trough 180, rising 270 and peak 360 deg (Figure 6B legend), each rat's mean delay subtracted
+    (Figure 6C legend). The slope is read as (a) a least-squares line over all rats' points pooled
+    (the trendline of Figure 6C) or (b) the median of the six per-rat least-squares slopes, since
+    it is printed with a bootstrap CI and summaries are medians with bootstrap CIs (Methods,
+    Statistics); R2 is that of the pooled line. Tolerance of the slope from the paper's 95% CI. Reproduced when the slope is inside 0.017 to 0.025 and R2 within
+    tolerance.
+- id: fig6b-hilbert-between-limits
+  statement: Converted to degrees at 8 Hz, the phase-specific shifts range from 15.38 deg/mm
+    (falling phase) to 34.56 deg/mm (peak), and the Hilbert-based shift of about 26 deg/mm falls
+    between them.
+  source: Results, Theta waveform varies along the dorsal-ventral axis of the MEC, paragraph 3;
+    Figure 6B
+  quote: The converted phase shifts varied from 15.38°/mm [8.27–25.06] to 34.56°/mm [17.78–41.56]
+    between the falling phase and peak phase, respectively. As expected given the phase smoothing
+    that occurs during the filtering step of the Hilbert-based phase estimation approach, the phase
+    shift estimate derived from the Hilbert-based approach(~26°/mm) falls between these limits
+  statistics:
+  - about: falling-phase shift
+    ci:
+      level: 0.95
+      low: 8.27
+      high: 25.06
+      unit: deg/mm
+  - about: peak shift
+    ci:
+      level: 0.95
+      low: 17.78
+      high: 41.56
+      unit: deg/mm
+  expected:
+  - quantity: phase shift, falling phase
+    value: 15.38
+    tolerance: 9.68
+    unit: deg/mm
+  - quantity: phase shift, peak
+    value: 34.56
+    tolerance: 16.78
+    unit: deg/mm
+  depends_on:
+  - fig6b-delay-by-phase
+  - fig2d-phase-shift-rate
+  criterion: The delays of fig6b-delay-by-phase times 360/125 deg/ms (8 Hz). The paper's 15.38 is
+    not 5.47 times 2.88 (15.75), so the median may be taken (a) after converting per rat or (b) of
+    the converted delays per cycle; both shown. Tolerances from the paper's 95% CIs, the farther
+    bound. Reproduced when both values are within tolerance and the Hilbert shift of
+    fig2d-phase-shift-rate lies between them.
+- id: fig7-asymmetry-delay
+  statement: The conduction delay attributable to the change in waveform asymmetry along the axis
+    is 3.56 ms/mm, significantly greater than zero.
+  source: Results, Theta waveform changes are a source of phase shift along the dorsal-ventral axis
+    of MEC, paragraph 1; Figure 7B and 7D
+  quote: These calculations revealed that the conduction delay due to varying asymmetry was 3.56
+    ms/mm [5.89–1.56] ( Figure 7B and D ). This was significantly greater than zero (signed rank
+    [max]=21 [21], p=0.03, n=6)
+  statistics:
+  - test: signed rank
+    statistic: signed rank [max]=21 [21]
+    p: 0.03
+    n: 6 rats
+  - ci:
+      level: 0.95
+      low: 1.56
+      high: 5.89
+      unit: ms/mm
+  expected:
+  - quantity: asymmetry-related conduction delay
+    value: 3.56
+    tolerance: 2.33
+    unit: ms/mm
+  criterion: Per cycle and channel j, Delay_Asym = (D_falling(i) - D_rising(i)) - (D_falling(j) -
+    D_rising(j)) with i the dorsal-most channel, D the durations of the falling (decay) and rising
+    phases of that cycle (Methods, Asymmetry-corrected data, equation read from the XML; O7). How
+    it becomes ms/mm is not stated. Readings, (a) per cycle, the robust regression of Delay_Asym on
+    position as for conduction delays, the median over cycles; (b) per channel, the median
+    Delay_Asym over cycles, then the least-squares slope on distance. The sign is taken so that a
+    delay adds to the ventral lag; the formula with i and j swapped is shown. Tolerance from the
+    paper's 95% CI, the farther bound. Reproduced when, under one reading, the median over rats is
+    within tolerance and the signed-rank test of the six values against zero gives p of at most
+    0.0625 with values positive (O5).
+- id: fig7-residual-delay
+  statement: Subtracting the asymmetry-related delay (3.56 ms/mm) from the total observed conduction
+    delay (12.98 ms/mm) leaves a residual delay of 9.61 ms/mm, so part of the total phase shift is
+    due to waveform changes and a substantial shift remains.
+  source: Results, Theta waveform changes are a source of phase shift along the dorsal-ventral axis
+    of MEC, paragraph 1; Figure 7C and 7D
+  quote: Subtracting the asymmetry-related conduction delay (3.56 ms/mm [5.89–1.56]) from the total
+    observed conduction delay (12.98 ms/mm [18.21–8.87]) left a conduction delay of 9.61 ms/mm
+    [11.98–6.99] ( Figure 7C and D )
+  statistics:
+  - about: total conduction delay
+    ci:
+      level: 0.95
+      low: 8.87
+      high: 18.21
+      unit: ms/mm
+  - about: residual conduction delay
+    ci:
+      level: 0.95
+      low: 6.99
+      high: 11.98
+      unit: ms/mm
+  expected:
+  - quantity: total conduction delay
+    value: 12.98
+    tolerance: 5.23
+    unit: ms/mm
+  - quantity: residual conduction delay
+    value: 9.61
+    tolerance: 2.62
+    unit: ms/mm
+  depends_on:
+  - fig7-asymmetry-delay
+  - fig6b-delay-by-phase
+  criterion: Peak is the reference phase (Methods, Asymmetry-corrected data). The total, 12.98
+    ms/mm, is not the 12.00 ms/mm peak delay of fig6b-delay-by-phase, and the text does not say how
+    it differs. Readings, (a) the peak delay of fig6b-delay-by-phase; (b) the per-channel median
+    peak offset regressed on distance (as reading b of fig7-asymmetry-delay); (c) the delay
+    equivalent of the Hilbert shift of fig2d-phase-shift-rate at 8 Hz. The residual is the total
+    minus Delay_Asym, per cycle under (a), per channel under (b). Tolerances from the paper's 95%
+    CIs, the farther bound. Reproduced when, under one reading, both are within tolerance and the
+    residual is below the total in every rat (Figure 7D, "significantly reduced", for which no test
+    is printed; a paired signed-rank test is given as well).
+- id: fig8c-relative-delay-flat
+  statement: The relative conduction delay (percent of the theta period) does not change
+    significantly with theta frequency.
+  source: Results, Residual phase shifts after accounting for varying waveform asymmetry resemble
+    those generated by weakly coupled oscillators, paragraph 2; Figure 8C
+  quote: The results revealed that the relationship between relative conduction delay (% theta
+    period) and theta frequency (Hz) was not significantly different from zero (median slope 0.34%
+    theta period/Hz [−0.42, 0.42]; signed rank [max]=12 [21], p=0.84, n=6; Figure 8C )
+  statistics:
+  - test: signed rank
+    statistic: signed rank [max]=12 [21]
+    p: 0.84
+    n: 6 rats
+  - about: median slope of relative delay on frequency
+    ci:
+      level: 0.95
+      low: -0.42
+      high: 0.42
+      unit: '% theta period/Hz'
+  depends_on:
+  - fig7-residual-delay
+  criterion: A claim of absence, judged on the paper's test. Per cycle, the asymmetry-corrected
+    absolute delay with the peak as reference (fig7-residual-delay), relative delay as that delay
+    over the cycle's period in percent, frequency as the inverse of the period (Methods, Comparison
+    to coupled-oscillators and fixed-delay models). The period is not defined beyond this; read as
+    the dorsal-most channel's peak-to-next-peak interval, with peak-to-previous-peak shown. Per rat,
+    the least-squares slope of relative delay on frequency. Reproduced when the exact signed-rank
+    test of the six slopes against zero gives p above 0.0625 (O5); not reproduced otherwise; the
+    median slope and its bootstrap CI given either way.
+- id: fig8d-absolute-delay-slope
+  statement: The absolute conduction delay decreases significantly as theta frequency increases
+    (median slope -3.12 ms/Hz).
+  source: Results, Residual phase shifts after accounting for varying waveform asymmetry resemble
+    those generated by weakly coupled oscillators, paragraph 2; Figure 8D
+  quote: By contrast, the relationship between the absolute conduction delay and theta frequency
+    differed significantly from zero (median slope −3.12 ms/Hz [−3.52–2.71]; signed rank [max]=0
+    [21], p=0.03, n=6; Figure 8D )
+  statistics:
+  - test: signed rank
+    statistic: signed rank [max]=0 [21]
+    p: 0.03
+    n: 6 rats
+  - about: median slope, read as -3.52 to -2.71 since all six slopes are negative (signed rank
+      0 of 21)
+    ci:
+      level: 0.95
+      low: -3.52
+      high: -2.71
+      unit: ms/Hz
+  expected:
+  - quantity: median slope of absolute conduction delay on theta frequency
+    value: -3.12
+    tolerance: 0.41
+    unit: ms/Hz
+  depends_on:
+  - fig7-residual-delay
+  criterion: As in fig8c-relative-delay-flat, with the absolute asymmetry-corrected delay in place
+    of the relative delay. The unit (ms per Hz) does not say whether the delay is per mm or per
+    the full span of the array; readings, (a) the per-cycle delay in ms/mm, (b) that delay times
+    the rat's span from the dorsal-most to the ventral-most electrode. Tolerance from the paper's
+    95% CI, the farther bound. Reproduced when, under one reading, the median slope is within
+    tolerance and the signed-rank test against zero gives p of at most 0.0625 with slopes negative.
+- id: fig8-correlation-strength
+  statement: Conduction delay varies more strongly with theta frequency than does the relative
+    delay (median rho 0.14 against 0.02).
+  source: Results, Residual phase shifts after accounting for varying waveform asymmetry resemble
+    those generated by weakly coupled oscillators, paragraph 2
+  quote: Comparing the correlation strength between the relative conduction delays (median rho =
+    0.02 [0.02–0.04]) and absolute conduction delays (median rho = 0.14 [0.09–0.19]) confirmed that
+    conduction delay varied significantly more with theta frequency than did the phase difference
+    (signed rank [max]=21 [21], p=0.03, n=6)
+  statistics:
+  - test: signed rank
+    statistic: signed rank [max]=21 [21]
+    p: 0.03
+    n: 6 rats
+  - about: median correlation, relative delay
+    ci:
+      level: 0.95
+      low: 0.02
+      high: 0.04
+  - about: median correlation, absolute delay
+    ci:
+      level: 0.95
+      low: 0.09
+      high: 0.19
+  expected:
+  - quantity: median correlation strength, relative delay and frequency
+    value: 0.02
+    tolerance: 0.02
+  - quantity: median correlation strength, absolute delay and frequency
+    value: 0.14
+    tolerance: 0.05
+  depends_on:
+  - fig8c-relative-delay-flat
+  - fig8d-absolute-delay-slope
+  criterion: Per rat, the correlation over cycles of each delay with frequency, as in the two
+    preceding claims. The absolute delay's slope is negative but its rho is printed positive, so
+    "correlation strength" is read as (a) the absolute value of Pearson r (Methods, Statistics)
+    or (b) r squared; Spearman rho is shown as a variant. Tolerances from the paper's 95% CIs, the
+    farther bound. Reproduced when, under one reading, both medians are within tolerance and the
+    paired signed-rank test of absolute against relative gives p of at most 0.0625 with the
+    absolute larger.
+- id: fig8-coupled-oscillators
+  statement: The residual phase shifts behave as weakly coupled oscillators predict and not as a
+    fixed-delay mechanism, with stable relative delays and absolute delays that shorten as theta
+    frequency rises.
+  source: Results, Residual phase shifts after accounting for varying waveform asymmetry resemble
+    those generated by weakly coupled oscillators, paragraph 2; Figure 8
+  quote: These results are consistent with the pattern of effects that would be generated by a
+    coupled-oscillator-based mechanism
+  depends_on:
+  - fig8c-relative-delay-flat
+  - fig8d-absolute-delay-slope
+  criterion: Following the predictions in Methods, Comparison to coupled-oscillators and
+    fixed-delay models, reproduced when fig8c-relative-delay-flat and fig8d-absolute-delay-slope
+    are both reproduced; not reproduced when the relative delay rises significantly with frequency
+    and the absolute delay does not change (the fixed-delay pattern); partially reproduced
+    otherwise.
+checks:
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig5c-peak-trough-gradient. The ventral tolerance of 0.09 was said to cover both readings of "[–0.16 – 0.01]" but excluded an upper bound of 0.01 (farther bound 0.11). The paper prints zero-spanning intervals with a dash before both bounds (Figure 2G, "[–0.08 – 0.93]"), so the CI is read as -0.16 to 0.01, recorded under statistics, and the tolerance set to 0.11.
+  - fig5c-rise-decay-gradient. The CIs were read as all negative "since the median must lie inside", but -0.43 and -0.11 also lie inside -0.57 to 0.35 and -0.13 to 0.09. Gave the reason from the paper's typography (intervals led by a minus sign drop the upper bound's sign, as in "[−3.52–2.71]" of Figure 8D, whose six slopes are all negative). Values and tolerances unchanged.
+  - fig8d-absolute-delay-slope. Same faulty reason for the CI reading; replaced with the paper's statistic (signed rank 0 of 21, all six slopes negative).
+  - fig2c-coherence. Reading (b) gave MATLAB cohere's default overlap as 50%; cohere (like psd and csd) defaults to no overlap. Corrected.
+  - fig6c-delay-phase-slope. The slope was fixed as the pooled least-squares line, but it is printed with a bootstrap CI and the Methods report summaries as medians with bootstrap CIs; added the median of per-rat slopes as a second reading.
+  - Checked, unchanged. The asymmetry-related delay equation of the header against the Europe PMC XML of PMC7046467 (disp-formula equ1); it matches. The exact signed-rank p-values of O4 (0.03 at 0 or 21, 0.06 at 1 or 20, 0.09 at 2 or 19, 0.16 at 3, 0.84 at 12, n = 6; 0.25 at 0, n = 3) are correct. Every tolerance from a CI is the farther bound.
+  - Open. fig4d-mua-phase-shift prints a test of n = 3 with a maximum of 21, which no signed-rank test of three per-rat values can give; the readings named in its criterion (all three slopes positive, or a test over pooled per-channel lags) are this file's, not the paper's.
+  - Open. The ventral rise/decay CI of fig5c-rise-decay-gradient is read by typography only; the reading -0.13 to 0.09 (farther bound 0.20) is not excluded by the text.
+  - Open. The multi-unit claims (fig4d-mua-phase-shift, fig4d-mua-matches-lfp) need layer II broadband recordings that the dataset descriptor (500 Hz LFP) does not list; whether the dataset holds them is the author's to find.
+  - Open. No PDF was supplied, so no figure could be read; the per-rat values, the Figure 3B reconstruction and the sites of Figure 5C rest on the text and legends.

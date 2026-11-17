@@ -1,0 +1,67 @@
+# Questions from attempt burman-2023-01 (author revision after verifier round 1, 2026-11-10) about
+# the claims file claims/burman-2023.yaml. Both were raised by the verifier as points about the
+# claims file (verifier-1 report, B1 and B2). The attempt tests the claims as the file has them and
+# shows the other reading as a variant; the outcomes stay as tested.
+dandiset: "000458"
+paper: doi:10.1016/j.neuron.2023.08.005
+questions:
+- claim: fig4c-sample
+  also: [fig4d-synchrony-lower-awake, fig4d-entropy-higher-awake]
+  asked: 2026-11-10
+  question: >-
+    The opening comment (N7) judges every Neuropixels claim under the Methods reading of the evoked
+    rate (F1, a spike count over trials times 10 ms) and shows the gist's rate (F2, which sums the
+    spikes' latencies in ms) as a variant. The paper's reported numbers are what F2 gives: the
+    analysis gist, run unmodified on version 0.230317.0039, keeps 662 and excludes 203 units and
+    gives synchrony 0.3253 and 0.3928 and entropy 1.3474 and 1.1106, the values of Figure 4C and
+    4D; F1 gives 721 and 144, synchrony 0.3188 and 0.3862, entropy 1.3887 and 1.1502. Should the
+    expected values of these claims be judged under F2, the reading the paper's numbers were
+    computed with, keeping F1 as a variant, or does the Methods' wording take precedence as the
+    file has it?
+  passage: >-
+    Methods, Pre-processing of Neuropixels dataset, "Neurons with an average evoked firing rate
+    below 0.1 Hz or above 200 Hz in either condition (awake/anesthesia) were excluded from further
+    analysis (203 neurons). The 662 remaining neurons derived from 17 recordings in 16 mice"; the
+    gist's get_firing_rate (np.sum of spike_times over the trials times 10 ms).
+  why: >-
+    Under F1 the three claims are partially reproduced (excluded 144 against 203 +- 20.3, awake
+    synchrony 0.3188 against 0.320 to 0.330, both entropy means outside tolerance); under F2 every
+    expected value is matched and all three would be reproduced. The direction and the tests hold
+    under both.
+- claim: fig4h-model-synchrony
+  also: [fig4h-model-entropy]
+  asked: 2026-11-10
+  question: >-
+    The tolerances of the model means (0.001 for synchrony, 0.002 for entropy) are the paper's SEM
+    over 16,000 pooled neurons. The criterion reruns the gist with seeds other than the paper's
+    (the gist sets none), so the 20-run mean varies between sets of seeds by its run-to-run
+    standard error, 0.0013 for synchrony and 0.0023 for entropy in the hyperpolarizing condition
+    here, larger than the tolerances. Is the SEM over pooled neurons the intended tolerance for a
+    rerun with other seeds, or should the tolerance allow for the spread between runs (for
+    example the standard error of the 20-run mean, or a multiple of it)?
+  passage: >-
+    Figure 4H legend, "Neurons in the shunting E GABAAR condition exhibited lower synchrony (Shunt
+    0.784 ± 0.001 vs. Hyperpol 0.881 ± 0.001, p < 0.001, paired t test) and higher entropy (Shunt
+    0.451 ± 0.002 nats vs. Hyperpol 0.197 ± 0.002 nats, p < 0.001, paired t test)"; Methods,
+    Neuronal network simulations, "Each simulation was repeated 20 times".
+  why: >-
+    The hyperpolarizing means here, 0.8789 and 0.2014, miss the tolerances by 0.0011 and 0.0024,
+    1.6 and 1.9 run-to-run standard errors from the paper's values. With a tolerance that allows
+    for seed noise both claims would be reproduced; with the SEM over neurons they are partially
+    reproduced. The direction and the tests hold in all 20 runs.
+- claim: fig4c-sample
+  asked: 2026-11-10
+  question: >-
+    The criterion gives reproduced when kept and excluded are both within 10% of 662 and 203, and
+    partially reproduced when only the total (865) is within 10%. Under the Methods reading A1F1
+    the kept count, 721, is within 662 +- 66.2 and the excluded count, 144, is outside 203 +- 20.3,
+    a case neither branch names. The attempt gives partially reproduced. Should the partial case
+    read "the total, and at most one of kept and excluded, within 10%", or is another outcome
+    meant for this case?
+  passage: >-
+    Methods, Pre-processing of Neuropixels dataset, "Neurons with an average evoked firing rate
+    below 0.1 Hz or above 200 Hz in either condition (awake/anesthesia) were excluded from further
+    analysis (203 neurons). The 662 remaining neurons derived from 17 recordings in 16 mice".
+  why: >-
+    Raised by the verifier in round 2 as a small gap in the claims file. The outcome does not change
+    under either reading of the gap; the wording of the criterion does.

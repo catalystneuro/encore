@@ -1,0 +1,786 @@
+# Claims for Simmons et al. (2026), Science Advances 12, eadq8840, tested on dandiset 001777.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md (reader, steps 1 to 4).
+#
+# Text read: the version of record (Science Advances, 9 September 2026, CC BY), full text with
+# Results, Discussion, Materials and Methods and figure legends, and its supplement PDF
+# (sciadv.adq8840_sm.pdf, Figs. S1 to S9). PDF pages 3, 4, 5, 6, 7 and 8 and supplement page 7
+# were opened to read Fig. 2B (the train runs from 2 to 4 s of a 6-s sweep), Fig. 3B (about 45
+# cells are plotted), Fig. 5F (the inhibitor-treated group fires faster) and Fig. S6 (WT against
+# KO, marked n.s.).
+#
+# Code read: the paper's code deposit, doi:10.5281/zenodo.10855006, which resolves to record
+# 17297995 (doi:10.5281/zenodo.17297995), one Mathematica notebook, "Code Sample.nb". It holds
+# three parts. (1) "Detect Mean Spike rate per trial/episode" imports the spike events exported
+# from Clampfit (.atf), counts events per episode, divides by EPISODE_LENGTH to give a rate per
+# episode, plots the rates "to identify stable baselines from START to END", and takes the median
+# rate over episodes START to END. (2) "Collect Spiketimes across episodes into Histogram" builds a
+# PSTH (findPSTHMini) as spike counts summed over episodes in bins of BINWIDTH, divided by bin
+# width times the number of episodes, relative to TIMEZERO, after dropping "Glitched Episodes"
+# (BADEP1, BADEP2). (3) Down-sampling and segmenting traces for figures. Every window, bin width,
+# trigger time and dropped episode is a placeholder. Spike detection itself was done in Clampfit;
+# its settings are not given in the paper or the code.
+#
+# Data the paper used. Male and female mice (C57BL/6J, DAT-Cre, PV-Cre, Aldh1a1-2A-iCre and
+# Aldh1a1-2A-iCre/DAT-2A-Flpo). Ex vivo sagittal or coronal slices with the SNr, 240 um, recorded
+# at 32 to 33 C (Methods). SNr neurons were recorded in cell-attached mode for spike rate, before
+# and after bath application of a drug (quinpirole 2 uM, gabazine 10 uM, CNO, SCH39166 2 uM, NPPB,
+# disulfiram 10 uM, DEAB 10 uM, rasagiline 10 uM, NNC-711, SNAP-5114 20 uM), in slices from mice
+# injected with Chronos in GPe (Figs. 1, 2), Gi-DREADD in GPe (Fig. 4), Gq- or Gi-DREADD under GFAP
+# in SNr (Figs. 7, S4), ALDH1A1 shRNA in SNc (Fig. 5) or Cre-dependent Gi-DREADD in SNc of DAT-Cre
+# mice (Figs. 6, S3), and in low glucose (Fig. S8) or at room temperature (Fig. S4). Whole-cell
+# voltage clamp at -60 mV with a Cs+ electrode gave optically (Fig. 1) or electrically (Fig. 4A)
+# evoked IPSCs. SNc neurons were recorded for Fig. S3. Other data are two-photon PercevalHR imaging
+# in SNc dopaminergic neurons (Fig. S9), RNAscope for D2R and S100B (Figs. 7A, S7), fluorescence
+# images of ALDH1A1+ and ALDH1A1- dendrites (Fig. 5A, B), fast-scan cyclic voltammetry in striatum
+# (Fig. S6), and outside expression data (Fig. 6D, Fig. S5). The n of each test is a number of
+# neurons (Fig. 3B, 5D), except where the legend says mice or cells and mice. The dandiset's title
+# is the paper's; its description says it holds "binary files of electrophysiology data", and its
+# variables are VoltageClampSeries and VoltageClampStimulusSeries.
+#
+# Outside data. The paper's raw data and analyses per figure are deposited at
+# doi:10.5281/zenodo.10850896 (resolves to record 15881780, "Data Files and Analysys for ...", with
+# folders for Figs. 1 to 7, S2, S3, S4, S7 and S9). The key resource table is
+# doi:10.5281/zenodo.17296457. Fig. 6D uses Dopabase (ref. 36, Gaertner et al. 2025, eLife 13,
+# RP101035). Fig. S5 is a table from Gonzalez-Rodriguez et al. 2021, doi:10.1038/s41586-021-04059-0.
+#
+# Common method, used by the criteria below (cited as M1 to M6).
+# M1 Spike rate. Spikes detected in Clampfit 10.3 (Methods, Analysis and statistics; the code
+#    imports Clampfit event exports). Detection settings are given nowhere; this cannot be fixed
+#    from the paper, so the author uses a standard threshold detection on the cell-attached current
+#    and reports it. Rate per episode is the spike count divided by the episode length (code, part
+#    1). A cell's rate in a condition is the median of its per-episode rates over a stable window
+#    (code, part 1). Which episodes form the stable window is chosen by eye in the code and not
+#    given in the paper. Readings: (a) all episodes of each condition; (b) the last stable stretch
+#    of each condition, for a drug the episodes from 6 min after the start of application, when
+#    the two example time courses of Fig. 7G have reached their steady level (the whole drug
+#    period when it is shorter than 6 min); the 6 min is read from those two examples, a choice
+#    made here. A claim holds when its result holds under either reading.
+# M2 Percent change. The paper gives changes as "roughly 30%", "about 50%", "28% mean increase" and
+#    the Discussion calls them "modal". Readings: (a) the mean over cells of each cell's percent
+#    change; (b) the percent change of the group mean rates; (c) the median over cells of each
+#    cell's percent change. Where the paper writes "mean", readings (a) and (b) only.
+# M3 Tests. As named in each figure legend (paired t test for before and after in the same cell,
+#    Welch's t test for groups of cells, Wilcoxon or Mann-Whitney where named), at P < 0.05
+#    (Methods, Analysis and statistics). Sidedness is not stated; tests are two-sided (the
+#    GraphPad Prism default, a standard choice) and a one-sided result is shown as a variant.
+#    Where a legend names no test for a before and after comparison in the same cells, the paired
+#    t test used by the other such legends is the main reading and the Wilcoxon signed-rank test a
+#    variant.
+# M4 Before and after. The control value is from the recording before the drug; the drug value is
+#    from the same cell after bath application (legends, "before and after bath application").
+#    For an occlusion experiment the control is the cell in the first drug and the second value
+#    after the second drug is added (Figs. 3D, 5G, 5H, 6A, 6E, 7E, 7F).
+# M5 Units of n. Neurons, as in the legends; the attempt reports the number of mice where the
+#    dataset gives it. Where the text and the legend give different n or P for the same test, both
+#    are recorded and the claim holds when the result matches either.
+# M6 Absence. A claim that a drug had no effect is judged on the paper's test in M3 at P < 0.05:
+#    reproduced when the test does not find the effect, not reproduced when it does, with the size
+#    of the change given either way.
+schema_version: 2
+paper: doi:10.1126/sciadv.adq8840
+claims:
+- id: fig1c-quinpirole-reduces-gpe-ipsc
+  statement: The D2R agonist quinpirole (2 uM) reduces the amplitude of optogenetically evoked
+    GPe IPSCs in SNr neurons by roughly 30%.
+  source: Results, D2R agonists inhibited phasic GABA release from GPe terminals, paragraph 1;
+    Figure 1C
+  quote: Quinpirole reduced the amplitude of the GPe evoked inhibitory postsynaptic currents
+    (IPSCs) by roughly 30% (P = 0.02 and n = 5)
+  statistics:
+  - test: paired t test
+    p: 0.02
+    n: 5 neurons
+  expected:
+  - quantity: reduction in GPe evoked IPSC amplitude with quinpirole
+    value: 30
+    tolerance: 3
+    unit: "%"
+  criterion: Whole-cell voltage clamp at -60 mV, Cs+ internal, optical stimulation of Chronos in
+    GPe axons (Results, paragraph 1). IPSC amplitude is how the paper does not say; read as the
+    peak of the evoked current from the pre-stimulus baseline, averaged over sweeps in each
+    condition (a standard choice, stated as one). Reproduced when a two-sided paired t test of
+    before against after quinpirole has P < 0.05 with amplitudes lower after, and the reduction
+    is within tolerance under one reading of M2.
+- id: fig1b-gabazine-blocks-gpe-ipsc
+  statement: The optically evoked GPe currents in SNr neurons are blocked by the GABAA receptor
+    antagonist gabazine (10 uM).
+  source: Results, D2R agonists inhibited phasic GABA release from GPe terminals, paragraph 1;
+    Figure 1B
+  quote: These optically evoked currents were blocked by bath application of the GABAA receptor
+    (GABAAR) antagonist gabazine (10 μM).
+  criterion: The paper reports no test, no n and no measure of "blocked". Evoked current amplitude
+    as in fig1c-quinpirole-reduces-gpe-ipsc, before and in gabazine, in each cell recorded in
+    gabazine. Reproduced when the amplitude in gabazine is under 10% of its control amplitude in
+    every such cell; the 10% is a choice made here, as the paper gives none, and the remaining
+    amplitude of each cell is reported. Not testable when the dataset holds no voltage-clamp
+    recording of evoked GPe currents in gabazine.
+  depends_on:
+  - fig1c-quinpirole-reduces-gpe-ipsc
+- id: fig1e-ppr-rises
+  statement: Quinpirole raises the paired-pulse ratio of GPe evoked IPSCs at a 50 ms interval,
+    consistent with a presynaptic site of action.
+  source: Results, D2R agonists inhibited phasic GABA release from GPe terminals, paragraph 1;
+    Figure 1D and 1E
+  quote: Consistent with a presynaptic locus of the ... the paired-pulse ratio of GPe
+    evoked IPSCs rose in the presence of quinpirole (P = 0.02 and n = 6)
+  statistics:
+  - test: paired t test
+    p: 0.02
+    n: 6 neurons
+  criterion: Paired pulses 50 ms apart (Fig. 1D legend). Paired-pulse ratio as the second IPSC
+    peak over the first; the paper does not define it, and whether the second peak is taken from
+    the pre-pulse baseline or from the decaying first IPSC is open. Readings (a) second peak from
+    the baseline before the first pulse; (b) second peak from the current just before the second
+    pulse. Reproduced when, under one reading, a two-sided paired t test has P < 0.05 with the
+    ratio higher after quinpirole.
+- id: fig2c-quinpirole-attenuates-gpe-inhibition
+  statement: A 2-s, 30-Hz optogenetic train of GPe inputs inhibits SNr spiking, and quinpirole
+    attenuates this inhibition.
+  source: Results, D2R agonists inhibited phasic GABA release from GPe terminals, paragraph 2;
+    Figure 2A to 2C
+  quote: quinpirole attenuated the ability of GPe stimulation to slow the spiking of
+    SNr neurons (P = 0.02 and n = 8)
+  statistics:
+  - test: Wilcoxon matched-pairs signed rank test
+    p: 0.02
+    n: 8 neurons
+  criterion: Cell-attached recording, 6-s sweeps with the 2-s, 30-Hz train from 2 to 4 s (Fig. 2A
+    and 2B). Percent inhibition is "change in discharge rate/basal discharge rate" (Fig. 2C
+    legend), with the rate during the train from 2 to 4 s of each condition's PSTH, built as in
+    the code (part 2) over the condition's episodes. The legend does not say which part of the
+    sweep gives the basal rate; readings (a) 0 to 2 s, before the train; (b) 0 to 2 s and 4 to
+    6 s together. The
+    paper gives no bin width; the rates are taken over the whole windows, so the bin does not
+    matter. A per-sweep percent inhibition, its median over sweeps, is shown as a variant.
+    Reproduced when, under one reading, a two-sided Wilcoxon signed-rank test of control against
+    quinpirole has P < 0.05 with less inhibition in quinpirole.
+- id: fig2b-inhibition-wanes
+  statement: The GPe train initially suppresses SNr spiking strongly, and the inhibition wanes
+    during the 2-s train.
+  source: Results, D2R agonists inhibited phasic GABA release from GPe terminals, paragraph 2;
+    Figure 2A and 2B
+  quote: this stimulation effectively suppressed SNr activity, but the efficacy of this
+    inhibition waned with time (Fig. 2, A to C)
+  criterion: The paper reports no test. From each cell's control PSTH (code, part 2), the rate in
+    the first 0.5 s of the train (2 to 2.5 s) and in the last 0.5 s (3.5 to 4 s); the 0.5-s
+    windows are a choice made here, as the paper gives none. Reproduced when the last window's
+    rate is higher than the first in the PSTH pooled over the 8 cells and in more than half of
+    the cells.
+- id: fig3a-quinpirole-increases-rate
+  statement: Quinpirole alone, with no GPe stimulation, raises the basal spike rate of SNr neurons,
+    by about 50% in cell-attached recordings.
+  source: Results, D2R agonists lowered tonic GABA release, paragraph 1; Figure 3A
+  quote: One of the unexpected observations in these experiments was the ... in the basal
+    spiking rate of SNr neurons with bath application of quinpirole, in the absence of GPe axon
+    stimulation (P < 0.01 and n = 8) (Fig. 3A). The quinpirole-induced elevation in discharge rate
+    was about 50% when monitored in cell-attached mode.
+  statistics:
+  - test: paired t test
+    p: 0.01
+    p_relation: "<"
+    n: 8 neurons
+  expected:
+  - quantity: increase in SNr spike rate with quinpirole
+    value: 50
+    tolerance: 5
+    unit: "%"
+  criterion: Spike rates as in M1, before and after quinpirole (M4). Reproduced when a two-sided
+    paired t test has P < 0.05 with rates higher after, and the increase is within tolerance
+    under one reading of M2.
+- id: fig3b-gabazine-increases-rate
+  statement: Gabazine raises the basal spike rate of SNr neurons by roughly 25%, which the paper
+    reads as a tonic inhibition through GABAA receptors.
+  source: Results, D2R agonists lowered tonic GABA release, paragraph 1; Figure 3B
+  quote: gabazine (10 μM) increased the basal spiking rate of SNr ...
+    recorded in cell-attached mode by roughly 25%, suggesting that they were tonically inhibited by
+    activation of GABAARs (P < 0.01 and n = 10)
+  statistics:
+  - about: as given in the Results
+    test: not named in the Results
+    p: 0.01
+    p_relation: "<"
+    n: 10 neurons
+  - about: as given in the Figure 3B legend
+    test: paired t test
+    p: 0.01
+    p_relation: "<"
+    n: 45 neurons
+  expected:
+  - quantity: increase in SNr spike rate with gabazine
+    value: 25
+    tolerance: 2.5
+    unit: "%"
+  criterion: Spike rates as in M1, before and after gabazine 10 uM at 32 to 33 C (M4). The Results
+    give n = 10 and the legend n = 45 (Fig. 3B plots about 45 cells; Fig. S4E has 44 at
+    physiological temperature, Fig. S1 has 39). The test uses every control cell with gabazine
+    alone the dataset holds, and the count is reported (M5). Reproduced when a two-sided paired t
+    test has P < 0.05 with rates higher after, and the increase is within tolerance under one
+    reading of M2.
+- id: fig3d-gabazine-occludes-quinpirole
+  statement: In the presence of gabazine, quinpirole does not change SNr spike rate.
+  source: Results, D2R agonists lowered tonic GABA release, paragraph 1; Figure 3D (the Results
+    cite it as Fig. 3C, which is the map of gabazine-treated cells)
+  quote: Indeed, in the presence of gabazine, quinpirole did not modulate SNr spiking rate (P =
+    0.13 and n = 7)
+  statistics:
+  - about: as given in the Results
+    test: not named in the Results
+    p: 0.13
+    n: 7 neurons
+  - about: as given in the Figure 3D legend
+    test: paired t test
+    p: 0.06
+    n: 7 neurons
+  criterion: A claim of absence (M6). Cells pretreated with gabazine, rate before and after
+    quinpirole (M1, M4). Reproduced when a two-sided paired t test gives P >= 0.05; not reproduced
+    when it gives P < 0.05. The change in rate is reported either way.
+- id: figs1-gabazine-effect-vs-base-rate
+  statement: The increase in SNr spike rate with gabazine is weakly and positively correlated with
+    the basal rate.
+  source: Supplementary Figure S1
+  quote: Summary data and linear regression of a weak positive correlation between basal discharge
+    rate and the effect of gabazine R2 = 0.11, n = 39
+  expected:
+  - quantity: R2 of the linear regression of the gabazine change in rate on basal rate
+    value: 0.11
+    tolerance: 0.011
+  criterion: Per cell, the basal rate and the change in rate (Hz) after gabazine (M1, M4), the axes
+    of Fig. S1 being "Base Rate" and "Delta". An ordinary least squares fit of the change on the
+    basal rate over the cells of fig3b-gabazine-increases-rate. Fig. S1 has n = 39 against 45 in
+    the Fig. 3B legend, and the paper does not say which cells form the 39; all the cells are
+    used and the count is reported. Reproduced when the slope is positive and R2 is within
+    tolerance.
+  depends_on:
+  - fig3b-gabazine-increases-rate
+- id: fig4a-gpe-gi-dreadd-reduces-ipsc
+  statement: Activating Gi-DREADD in GPe with CNO reduces the amplitude of electrically evoked IPSCs
+    in SNr neurons, similar in size to the quinpirole effect on optogenetically evoked IPSCs.
+  source: Results, Tonic GABA release was not derived from GPe terminals or astrocytes, paragraph
+    1; Figure 4A
+  quote: Bath application of the DREADD agonist clozapine-N-oxide (CNO) reduced the ... of
+    electrically evoked IPSCs in voltage-clamped SNr neurons (P = 0.02 and n = 4) (Fig. 4A). This
+    modulation was similar in ... to that seen in optogenetically evoked IPSCs following D2R
+    stimulation.
+  statistics:
+  - about: as given in the Results
+    test: not named in the Results
+    p: 0.02
+    n: 4 neurons
+  - about: as given in the Figure 4A legend
+    test: paired t test
+    p: 0.01
+    p_relation: "<"
+    n: 4 neurons
+  criterion: IPSC amplitude as in fig1c-quinpirole-reduces-gpe-ipsc, before and after CNO.
+    Reproduced when a two-sided paired t test has P < 0.05 with amplitudes lower after, and the
+    percent reduction (M2) is within 10 percentage points of the reduction found for
+    fig1c-quinpirole-reduces-gpe-ipsc; the paper gives no measure of "similar", so this margin is
+    a choice made here, and the two reductions are reported.
+  depends_on:
+  - fig1c-quinpirole-reduces-gpe-ipsc
+- id: fig4b-gpe-gi-dreadd-no-rate-change
+  statement: Inhibiting GPe terminals with Gi-DREADD does not change the basal spike rate of SNr
+    neurons, which the paper takes as evidence that GPe terminals do not contribute to tonic GABA
+    release.
+  source: Results, Tonic GABA release was not derived from GPe terminals or astrocytes, paragraph
+    1; Figure 4B
+  quote: However, CNO application had no effect on the basal spiking rate of SNr neurons recorded
+    in cell-attached mode, arguing that GPe terminals were not contributing to tonic GABA release
+    (P = 0.19 and n = 5)
+  statistics:
+  - about: as given in the Results
+    test: not named in the Results
+    p: 0.19
+    n: 5 neurons
+  - about: as given in the Figure 4B legend
+    test: paired t test
+    p: 0.16
+    n: 5 neurons
+  criterion: A claim of absence (M6). Rate before and after CNO in slices with GPe Gi-DREADD (M1,
+    M4). Reproduced when a two-sided paired t test gives P >= 0.05.
+- id: figs4b-astrocyte-gq-increases-rate
+  statement: Activating Gq-DREADD in SNr astrocytes with CNO raises the basal spike rate of SNr
+    neurons.
+  source: Results, Tonic GABA release was not derived from GPe terminals or astrocytes, paragraph
+    2; Figure S4B
+  quote: In these slices, bath ... of the DREADD agonist CNO elevated the basal spiking rate
+    of SNr neurons recorded in cell-attached mode (P = 0.03 and n = 8)
+  statistics:
+  - test: paired t test
+    p: 0.03
+    n: 8 neurons
+  criterion: Rate before and after CNO in slices with GFAP-hM3 Gq-DREADD in SNr (M1, M4).
+    Reproduced when a two-sided paired t test has P < 0.05 with rates higher after.
+- id: figs4c-nppb-decreases-rate
+  statement: The bestrophin1 inhibitor NPPB lowers SNr spike rate, which the paper takes to
+    suggest that bestrophin1 channels in SNr astrocytes release an excitatory transmitter, not
+    GABA.
+  source: Results, Tonic GABA release was not derived from GPe terminals or astrocytes, paragraph
+    2; Figure S4C
+  quote: In line with the notion that astrocytes were exciting (not inhibiting) SNr neurons, bath
+    application of the bestrophin1 inhibitor NPPB decreased SNr spiking rate (P = 0.03 and n = 6)
+  statistics:
+  - test: paired t test
+    p: 0.03
+    n: 6 neurons
+  criterion: Rate before and after NPPB (M1, M4); the NPPB concentration is not given. Reproduced
+    when a two-sided paired t test has P < 0.05 with rates lower after.
+- id: figs2a-d1-antagonist-increases-rate
+  statement: The D1R antagonist SCH39166 (2 uM) raises SNr spike rate significantly, by a small
+    amount (about 10%).
+  source: Results, Dopamine enhanced tonic GABA release from dSPN terminals, paragraph 1; Figure
+    S2A; Discussion, Tonic GABAergic signaling..., paragraph 2
+  quote: Bath application of SCH39166 (2 μM) did significantly elevate SNr spiking rate (P = 0.02
+    and n = 12) ... the modal change in spiking rate produced by antagonizing D1Rs was small (∼10%)
+  statistics:
+  - test: paired t test
+    p: 0.02
+    n: 12 neurons
+  expected:
+  - quantity: change in SNr spike rate with SCH39166
+    value: 10
+    tolerance: 1
+    unit: "%"
+  criterion: Rate before and after SCH39166 (M1, M4). Reproduced when a two-sided paired t test
+    has P < 0.05 with rates higher after, and the change is within tolerance under one reading of
+    M2. The Discussion's "modal" makes reading (c) of M2 the closest to the text, but all three
+    are shown.
+- id: figs2b-quinpirole-larger-than-d1
+  statement: Quinpirole raises SNr spike rate more than the D1R antagonist does.
+  source: Figure S2B; Results, Dopamine enhanced tonic GABA release from dSPN terminals, paragraph 1
+  quote: Bath applied D2R agonist elevates SNr firing rate significantly more than bath applied D1R
+    antagonist. Unpaired T-test, n = 8 D2R / 12 D1R, p = 0.03.
+  statistics:
+  - test: unpaired t test
+    p: 0.03
+    n: 8 quinpirole and 12 SCH39166 neurons
+  criterion: Per cell, the fold change in rate (after over before, the axis of Fig. S2B) for the
+    cells of fig3a-quinpirole-increases-rate and figs2a-d1-antagonist-increases-rate. Reproduced
+    when a two-sided unpaired t test has P < 0.05 with the quinpirole fold change higher. The
+    paper does not say whether variances were pooled; Student's test is the main reading, as the
+    legend says "Unpaired T-test" where others say Welch's, and Welch's test is a variant.
+  depends_on:
+  - fig3a-quinpirole-increases-rate
+  - figs2a-d1-antagonist-increases-rate
+- id: fig5ab-aldh1a1-dendrites-in-snr
+  statement: The dendrites of ALDH1A1+ dopaminergic neurons course through much of the dorsoventral
+    extent of the SNr, in rostral and caudal sections.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    1; Figure 5A and 5B
+  quote: In both rostral and caudal regions, the ... of ALDH1A1+ dopaminergic neurons coursed
+    through much of dorsoventral extent of SNr
+  criterion: The paper shows this with images of Aldh1a1-2A-iCre/DAT-2A-Flpo mice injected with
+    Con/Fon-YFP and Coff/Fon-mCherry and gives no measure. Reproduced when, in rostral and caudal
+    coronal sections, YFP-labelled processes are found across the dorsal, middle and ventral
+    thirds of the SNr outline; the division into thirds is a choice made here. Not testable when the dataset holds no such images.
+- id: fig5d-shrna-higher-rate
+  statement: SNr neurons from mice with ALDH1A1 knocked down in the SNc by shRNA fire faster than
+    control SNr neurons.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    2; Figure 5D
+  quote: In ex vivo, cell-attached recordings from SNr neurons, the basal spiking rate was
+    significantly higher than in controls (P < 0.001 and n = 18 control/15 shRNA)
+  statistics:
+  - test: Welch's t test
+    p: 0.001
+    p_relation: "<"
+    n: 18 control and 15 shRNA neurons
+  criterion: Basal rate per cell (M1, the control condition). Which control cells form the 18 is
+    not said; readings (a) the control cells recorded alongside the shRNA experiments, as the
+    dataset labels them; (b) the same 18 control cells as Fig. 5F, which also gives n = 18
+    control. Reproduced when, under one reading, a two-sided Welch's t test has P < 0.05 with the
+    shRNA cells faster.
+- id: fig5e-shrna-gabazine-no-change
+  statement: In SNr neurons from ALDH1A1 shRNA mice, gabazine does not significantly change the
+    basal spike rate.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    2; Figure 5E
+  quote: Moreover, bath application of gabazine did not significantly change the basal spiking rate
+    of SNr neurons from ALDH1A1 shRNA treated mice (P = 0.05 and n = 15)
+  statistics:
+  - test: paired t test
+    p: 0.05
+    n: 15 neurons
+  criterion: A claim of absence (M6). Rate before and after gabazine in shRNA slices (M1, M4).
+    Reproduced when a two-sided paired t test gives P >= 0.05. The paper's own P sits at the
+    threshold, so the change in rate and its P are reported in full.
+- id: fig5f-aldh-inhibitors-higher-rate
+  statement: SNr neurons in slices pretreated with the aldehyde dehydrogenase inhibitors DEAB or
+    disulfiram fire faster than control neurons.
+  source: Figure 5F
+  quote: Example trace and summary data of SNr spiking from control neurons and neurons pretreated
+    with ALDH1A1 antagonists DEAB or disulfiram. Welch's t test, n = 18 control/18 blocked, P <
+    0.01.
+  statistics:
+  - test: Welch's t test
+    p: 0.01
+    p_relation: "<"
+    n: 18 control and 18 inhibitor-treated neurons
+  criterion: Basal rate per cell (M1) in control slices and in slices with DEAB or disulfiram,
+    pooled, as the legend pools them; the 18 treated cells are more than the 5 and 5 of Fig. 5G
+    and 5H, so all cells recorded in either inhibitor are used. Reproduced when a two-sided
+    Welch's t test has P < 0.05 with the treated cells faster.
+- id: fig5g-disulfiram-blocks-gabazine
+  statement: In slices treated with disulfiram (10 uM), gabazine no longer changes SNr spike rate.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    3; Figure 5G
+  quote: Disulfiram blocked the effect of gabazine (P = 0.40 and n = 5)
+  statistics:
+  - test: paired t test
+    p: 0.4
+    n: 5 neurons
+  criterion: A claim of absence (M6). Rate before and after gabazine in disulfiram (M1, M4).
+    Reproduced when a two-sided paired t test gives P >= 0.05.
+- id: fig5h-deab-blocks-gabazine
+  statement: In slices treated with DEAB (10 uM), gabazine does not change SNr spike rate.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    3; Figure 5H
+  quote: As with disulfiram, gabazine had no effect on DEAB-exposed SNr neurons (P = 0.10 and n =
+    5)
+  statistics:
+  - test: paired t test
+    p: 0.1
+    n: 5 neurons
+  criterion: A claim of absence (M6). Rate before and after gabazine in DEAB (M1, M4). Reproduced
+    when a two-sided paired t test gives P >= 0.05.
+- id: fig6a-rasagiline-blocks-gabazine
+  statement: In slices incubated in the MAO-B inhibitor rasagiline (10 uM), gabazine has no
+    discernible effect on SNr spike rate.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    4; Figure 6A
+  quote: Incubating brain slices in the irreversible MAO-B antagonist ... (10 μM) blunted any
+    discernible effect of gabazine on the spiking rate of SNr neurons (P = 0.23 and n = 9)
+  statistics:
+  - test: paired t test
+    p: 0.23
+    n: 9 neurons
+  criterion: A claim of absence (M6). Rate before and after gabazine in rasagiline (M1, M4).
+    Reproduced when a two-sided paired t test gives P >= 0.05.
+- id: figs3-snc-gi-dreadd-slows-snc
+  statement: Activating Gi-DREADD in SNc dopaminergic neurons of DAT-Cre mice with CNO slows their
+    spiking, by 19% on average.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    5; Figure S3
+  quote: bath application of the DREADD activator CNO significantly slowed the spiking rate of SNc
+    dopaminergic neurons (mean reduction of 19%, P = 0.02 and n = 6)
+  statistics:
+  - test: not named
+    p: 0.02
+    n: 6 neurons
+  expected:
+  - quantity: mean reduction in SNc spike rate with CNO
+    value: 19
+    tolerance: 1.9
+    unit: "%"
+  criterion: SNc neurons, rate before and after CNO (M1, M4). The test is not named (M3, paired t
+    test main, Wilcoxon variant). Reproduced when the test has P < 0.05 with rates lower after
+    and the mean reduction is within tolerance under reading (a) or (b) of M2.
+- id: fig6c-snc-gi-dreadd-no-snr-change
+  statement: Slowing SNc dopaminergic neurons with Gi-DREADD does not increase SNr spike rate,
+    which the paper takes as evidence against activity-dependent vesicular release of the tonic
+    GABA.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    5; Figure 6C
+  quote: However, CNO application did not increase the ... rate in SNr (P = 0.29 and n = 8)
+  statistics:
+  - test: not named
+    p: 0.29
+    n: 8 neurons
+  criterion: A claim of absence (M6). SNr rate before and after CNO in DAT-Cre mice with
+    Cre-dependent Gi-DREADD in SNc (M1, M4). The test is not named; it is judged on a two-sided
+    paired t test (M3), with the Wilcoxon signed-rank test shown as a variant. Reproduced when
+    the test gives P >= 0.05.
+  depends_on:
+  - figs3-snc-gi-dreadd-slows-snc
+- id: fig6d-gat1-enriched-aldh1a1
+  statement: In Dopabase, GAT-1 expression is enriched in ALDH1A1+ dopaminergic neurons, with
+    roughly one-third of ventral SNc dopaminergic neurons in clusters 4 and 10 expressing both.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    6; Figure 6D
+  quote: Queries of Dopabase (36) revealed that GAT-1 expression was enriched in ALDH1A1+
+    dopaminergic neurons (Fig. 6D) ... one-third of the ventral SNc dopaminergic neurons in
+    clusters 4 and 10 had detectable levels of both transcripts.
+  data: elsewhere
+  where: Dopabase, from Gaertner et al. 2025, eLife 13, RP101035 (ref. 36); no version or accession
+    is given in the paper
+  expected:
+  - quantity: fraction of ventral SNc dopaminergic neurons in clusters 4 and 10 with both Slc6a1
+      and Aldh1a1 detected
+    value: 33
+    tolerance: 3.3
+    unit: "%"
+  criterion: Detection threshold and cluster labels as Dopabase defines them; "detectable" read as
+    a count above zero. Reproduced when the fraction is within tolerance and Slc6a1 expression is
+    higher in Aldh1a1-expressing cells than in other dopaminergic cells.
+- id: fig6e-nnc711-blocks-gabazine
+  statement: In slices incubated in the GAT-1 antagonist NNC-711, gabazine fails to increase SNr
+    spike rate, which the paper takes as support for GABA release through GAT-1.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    6; Figure 6E
+  quote: In the presence of NNC-711, bath application of gabazine failed to increase SNr firing
+    rate (P = 0.32 and n = 6)
+  statistics:
+  - test: paired t test
+    p: 0.32
+    n: 6 neurons
+  criterion: A claim of absence (M6). Rate before and after gabazine in NNC-711 (M1, M4); the
+    NNC-711 concentration is not given. Reproduced when a two-sided paired t test gives P >= 0.05.
+- id: figs8-low-glucose-blocks-gabazine
+  statement: With extracellular glucose lowered to 2.5 mM, gabazine does not significantly increase
+    SNr spike rate.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    7; Figure S8A
+  quote: When extracellular glucose concentration is lowered to 2.5 mM, gabazine does not
+    significantly increase SNr spiking. Paired T-test, n = 8, p = 0.10 .
+  statistics:
+  - test: paired t test
+    p: 0.1
+    n: 8 neurons
+  criterion: A claim of absence (M6). Rate before and after gabazine in 2.5 mM glucose aCSF (M1,
+    M4). Reproduced when a two-sided paired t test gives P >= 0.05.
+- id: figs9c-vigabatrin-lowers-perceval
+  statement: The GABA-T inhibitor vigabatrin lowers the PercevalHR ATP/ADP ratio in SNc
+    dopaminergic neurons.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    8; Figure S9B and S9C
+  quote: Bath application of the GABA-T inhibitor Vigabatrin (44) decreased the PercevalHR ratio,
+    consistent with a drop in mitochondrial ATP
+  statistics:
+  - test: Wilcoxon matched pairs signed rank test
+    p: 0.002
+    n: 10 neurons from 10 mice (7 wild type with a TH-promoter probe, 3 Aldh1a1-cre with a
+      Cre-dependent probe, pooled)
+  criterion: Two-photon PercevalHR imaging; F950/F820 ratio per time point after background
+    subtraction from a cytosolic region (Methods, 2PLSM optical workstation and PercevalHR
+    experiments), in 1.5 mM glucose aCSF. Per cell, the baseline ratio (the stable baseline of
+    four acquisitions) against the ratio in vigabatrin 20 uM (Fig. S9 legend); which vigabatrin
+    acquisitions are used is open, readings (a) the last acquisition before oligomycin; (b) the
+    mean of all vigabatrin acquisitions. Reproduced when, under one reading, a two-sided Wilcoxon
+    signed-rank test has P < 0.05 with the ratio lower in vigabatrin.
+- id: figs9de-vigabatrin-lowers-oxphos
+  statement: Vigabatrin lowers the oligomycin-sensitive (OXPHOS) contribution to cytosolic ATP in
+    SNc dopaminergic neurons and leaves the 2-DG-sensitive (glycolytic) contribution unchanged.
+  source: Results, SNc dopaminergic neurons directly contributed to tonic GABA release, paragraph
+    8; Figure S9D and S9E
+  quote: with engagement of the GABA shunt, GABA-T inhibition ... decreased the
+    mitochondrial contribution to maintenance of cytosolic ATP levels.
+  statistics:
+  - about: oligomycin-sensitive contribution, control against vigabatrin
+    test: Mann-Whitney test
+    p: 0.0017
+    n: 6 control cells from 5 mice and 10 vigabatrin cells from 10 mice
+  - about: 2-DG-sensitive contribution, control against vigabatrin
+    test: Mann-Whitney test
+    p: 0.367
+    n: 6 control cells from 5 mice and 10 vigabatrin cells from 10 mice
+  criterion: Percent oligomycin-sensitive and percent 2-DG-sensitive contributions to the
+    PercevalHR ratio (Fig. S9D, E axes), computed as the drop in ratio after oligomycin 10 uM and
+    after 2-DG 3.5 mM, each as a percent of the ratio before that step (Methods; Fig. S9 legend);
+    the paper does not give the formula, and the other reading, each drop as a percent of the
+    baseline ratio, is shown. Reproduced when, under one reading, a two-sided Mann-Whitney test
+    gives P < 0.05 for the oligomycin-sensitive part (lower in vigabatrin) and P >= 0.05 for the
+    2-DG-sensitive part.
+- id: fig7a-d2r-in-snr-astrocytes
+  statement: D2R transcripts colocalise with the astrocyte marker S100B in about a third of SNr
+    astrocytes, 37% in lateral and 32% in medial SNr.
+  source: Results, Astrocytic D2Rs promote GABA uptake through GAT-3 transporters, paragraph 1;
+    Figure 7A; Figure S7
+  quote: The two were colocalized in a significant fraction of both lateral and medial SNr
+    astrocytes (lateral SNr... mean ratio of D2R-positive astrocytes = 37 ± 4%; medial SNr... mean
+    ratio of D2R-positive astrocytes = 32 ± 4%; n = 3 mice/516 astrocytes)
+  expected:
+  - quantity: D2R-positive fraction of S100B astrocytes, lateral SNr
+    value: 37
+    tolerance: 4
+    unit: "%"
+  - quantity: D2R-positive fraction of S100B astrocytes, medial SNr
+    value: 32
+    tolerance: 4
+    unit: "%"
+  - quantity: D2R-positive fraction of S100B astrocytes, overall (Fig. S7, mean)
+    value: 35
+    tolerance: 15
+    unit: "%"
+  criterion: RNAscope for D2R and S100B in SNr (Fig. 7A, Fig. S7). Tolerances are the paper's own
+    spread (the plus or minus 4% the text gives, and the SD of 15% Fig. S7 gives). The ratio is
+    per image or section and averaged (Fig. 7A plots many points for 3 mice); the paper does not
+    give the rule for calling an astrocyte D2R-positive, which the attempt states. Reproduced
+    when the three fractions are within tolerance.
+- id: fig7d-astrocyte-gi-increases-rate
+  statement: Activating Gi-DREADD in SNr astrocytes with CNO raises SNr spike rate, by 28% on
+    average.
+  source: Results, Astrocytic D2Rs promote GABA uptake through GAT-3 transporters, paragraph 1;
+    Figure 7C and 7D
+  quote: Bath application of CNO to activate hM4Di significantly increased the spiking rate of SNr
+    ... (28% mean increase, P < 0.01 and n = 10)
+  statistics:
+  - test: not named
+    p: 0.01
+    p_relation: "<"
+    n: 10 neurons
+  expected:
+  - quantity: mean increase in SNr spike rate with CNO, GFAP-hM4Di
+    value: 28
+    tolerance: 2.8
+    unit: "%"
+  criterion: Rate before and after CNO in slices with GFAP-hM4Di in SNr (M1, M4). The test is not
+    named (M3, paired t test main, Wilcoxon variant). Reproduced when the test has P < 0.05 with
+    rates higher after, and the mean increase is within tolerance under reading (a) or (b) of M2.
+- id: fig7e-gabazine-occludes-astrocyte-gi
+  statement: When gabazine is applied first, CNO activation of astrocytic Gi-DREADD no longer
+    increases SNr spike rate.
+  source: Results, Astrocytic D2Rs promote GABA uptake through GAT-3 transporters, paragraph 1;
+    Figure 7E
+  quote: The CNO effect on SNr spiking rate was occluded by application of ... directly
+    implicating astrocytic regulation of GABA (P = 0.10 and n = 11)
+  statistics:
+  - test: not named
+    p: 0.1
+    n: 11 neurons
+  criterion: A claim of absence (M6). Rate in gabazine before and after CNO (M1, M4), GFAP-hM4Di
+    slices. Judged on a two-sided paired t test (M3), Wilcoxon as a variant. Reproduced when the
+    test gives P >= 0.05.
+- id: fig7f-snap5114-decreases-rate
+  statement: The GAT-3 antagonist SNAP-5114 (20 uM) lowers SNr spike rate, by 23%.
+  source: Results, Astrocytic D2Rs promote GABA uptake through GAT-3 transporters, paragraph 2;
+    Figure 7F
+  quote: The GAT-3–selective antagonist significantly decreased SNr firing rate (23% decrease, P =
+    0.02 and n = 19)
+  statistics:
+  - test: paired t test
+    p: 0.02
+    n: 19 neurons
+  expected:
+  - quantity: decrease in SNr spike rate with SNAP-5114
+    value: 23
+    tolerance: 2.3
+    unit: "%"
+  criterion: Rate before and after SNAP-5114 (M1, M4). Reproduced when a two-sided paired t test
+    has P < 0.05 with rates lower after, and the decrease is within tolerance under one reading
+    of M2.
+- id: fig7f-snap5114-occludes-quinpirole
+  statement: In the presence of SNAP-5114, quinpirole has no effect on SNr spike rate.
+  source: Results, Astrocytic D2Rs promote GABA uptake through GAT-3 transporters, paragraph 2;
+    Figure 7F
+  quote: In the presence of the GAT-3 antagonist, bath application of quinpirole had no effect on
+    SNr ... rate (P = 0.27)
+  statistics:
+  - test: Welch's t test
+    p: 0.27
+  criterion: A claim of absence (M6). Rates in SNAP-5114 and in SNAP-5114 with quinpirole (M1),
+    from the cells of fig7f-snap5114-decreases-rate that received quinpirole; the paper gives no n
+    for this test. Judged on the paper's test as written, a two-sided Welch's t test of the two
+    sets of rates as unpaired groups; a paired t test is shown as a variant. Reproduced when the
+    Welch's test gives P >= 0.05.
+  depends_on:
+  - fig7f-snap5114-decreases-rate
+- id: fig7h-nnc711-increases-rate
+  statement: The GAT-1 antagonist NNC-711 alone raises SNr spike rate, by 36%.
+  source: Results, Astrocytic D2Rs promote GABA uptake through GAT-3 transporters, paragraph 3;
+    Figure 7G and 7H
+  quote: Indeed, the bath application of GAT-1 antagonist NNC-711 alone upon SNr neurons
+    significantly increased mean firing rate (36% increase, P < 0.01 and n = 6)
+  statistics:
+  - test: not named
+    p: 0.01
+    p_relation: "<"
+    n: 6 neurons
+  expected:
+  - quantity: increase in SNr mean firing rate with NNC-711
+    value: 36
+    tolerance: 3.6
+    unit: "%"
+  criterion: Rate before and after NNC-711 (M1, M4). The test is not named (M3, paired t test
+    main, Wilcoxon variant). Reproduced when the test has P < 0.05 with rates higher after, and
+    the increase is within tolerance under reading (a) or (b) of M2 ("mean firing rate").
+- id: figs4d-room-temperature-gabazine-no-change
+  statement: At room temperature (20 to 22 C), gabazine does not change SNr spike rate.
+  source: Results, Astrocytic D2Rs promote GABA uptake through GAT-3 transporters, paragraph 3;
+    Figure S4D
+  quote: lowering the ... of the slice to 20° to 22°C (from 32°C) blunted the ability of
+    gabazine to accelerate SNr spiking rate (P = 0.05 and n = 7)
+  statistics:
+  - test: not named
+    p: 0.05
+    n: 7 neurons
+  criterion: A claim of absence (M6). Rate before and after gabazine at 20 to 22 C (M1, M4).
+    Judged on a two-sided paired t test (M3), Wilcoxon as a variant. Reproduced when the test
+    gives P >= 0.05. The paper's P sits at the threshold, so the change and its P are reported
+    in full.
+- id: figs4e-temperature-reduces-gabazine-effect
+  statement: The fold change in SNr spike rate with gabazine is smaller at room temperature than at
+    physiological temperature.
+  source: Figure S4E
+  quote: Summary data comparison of the SNr neuron firing rate fold change following gabazine
+    treatment at physiological (30oC) and room temperature (20oC) Mann- Whitney test, n = 44/7, p <
+    0.0001.
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.0001
+    p_relation: "<"
+    n: 44 physiological-temperature and 7 room-temperature neurons
+  criterion: Per cell, gabazine fold change (after over before, M1, M4) for the cells of
+    fig3b-gabazine-increases-rate and figs4d-room-temperature-gabazine-no-change. The legend says
+    30 C, the Results and Methods 32 to 33 C; the physiological group is the cells recorded at the
+    standard bath temperature. Reproduced when a two-sided Mann-Whitney test gives P < 0.05 with
+    the room-temperature fold changes lower.
+  depends_on:
+  - fig3b-gabazine-increases-rate
+  - figs4d-room-temperature-gabazine-no-change
+- id: figs6-aldh1a1-ko-da-release-unchanged
+  statement: Deleting ALDH1A1 does not change electrically evoked dopamine release in striatum,
+    measured by fast-scan cyclic voltammetry, for single pulses, 5-pulse trains or the paired-pulse
+    ratio.
+  source: Figure S6
+  quote: Deletion of ALDH1A1 does not affect basal dopamine release.
+  criterion: A claim of absence. FSCV in coronal striatal slices as in the Methods (Fast-scan
+    cyclic voltammetry), peak DA concentration for 1 pulse (first of the pair) and for 5 pulses at
+    25 Hz, and the paired-pulse ratio at 15 s; WT against Aldh1a1 KO (Fig. S6B labels), with
+    recording sites as points. The paper names no test (the panels say n.s.) and does not
+    describe the KO mice; judged on a two-sided unpaired t test at P < 0.05 (the paper's
+    between-group test in Fig. S2B), a choice made here, with Welch's t test (Fig. 5D, 5F) and
+    Mann-Whitney (Fig. S4E, S9) as variants, the other between-group tests the paper uses.
+    Reproduced when none of the three comparisons gives P < 0.05.
+- id: figs5-gat-expression-in-snc
+  statement: In SNc dopaminergic neurons, Slc6a1 (GAT-1) has the most reads among the GAT genes,
+    followed by Slc6a12, with little Slc6a11 (GAT-3) and no Slc6a13.
+  source: Figure S5
+  inferred: No sentence states the values or their order; they are read from the four rows of the
+    Fig. S5 table, titled "Table of GAT (1-4) expression in SNC dopaminergic cells."
+  data: elsewhere
+  where: Gonzalez-Rodriguez et al. 2021, Nature, doi:10.1038/s41586-021-04059-0 (as cited in the
+    Figure S5 legend); no accession is given
+  expected:
+  - quantity: Slc6a1 reads
+    value: 2118.494118
+    tolerance: 211.8
+  - quantity: Slc6a12 reads
+    value: 1444.866233
+    tolerance: 144.5
+  - quantity: Slc6a11 reads
+    value: 13.86342026
+    tolerance: 1.39
+  - quantity: Slc6a13 reads
+    value: 0
+    tolerance: 0
+  criterion: The numbers are in the table only. The ordering is read from
+    the table. Reproduced when the four values are within tolerance in the cited data, with the
+    normalisation that source uses.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1b-gabazine-blocks-gpe-ipsc. Added. Results, paragraph 1, states that gabazine blocks the optically evoked GPe currents, a finding with no claim; the paper gives no test or measure, so the 10% threshold is marked as a choice.
+  - Header, M1. The 6-min start of the stable drug window is read from two example time courses in Fig. 7G; marked it as a choice made here.
+  - fig2c-quinpirole-attenuates-gpe-inhibition. The criterion fixed the basal rate at 0 to 2 s; the Fig. 2C legend does not say which part of the sweep is basal. Named it open with readings (a) 0 to 2 s and (b) 0 to 2 s with 4 to 6 s.
+  - fig3b-gabazine-increases-rate, fig4b-gpe-gi-dreadd-no-rate-change, figs4c-nppb-decreases-rate, fig6c-snc-gi-dreadd-no-snr-change, fig6e-nnc711-blocks-gabazine. The statements gave the paper's interpretation as established ("showing", "so"); the paper says "suggesting", "arguing" or "support the hypothesis". Reworded as the paper's reading. The figs4c statement now gives the paper's conclusion (an excitatory transmitter, not GABA, Results, Astrocytic D2Rs, paragraph 4).
+  - fig3d-gabazine-occludes-quinpirole. The Results cite this experiment as Fig. 3C; the legend puts it in Fig. 3D. Noted in the source.
+  - figs1-gabazine-effect-vs-base-rate. Fig. S1 has n = 39 against 45 in the Fig. 3B legend and the paper does not say which cells; named this as open.
+  - fig5ab-aldh1a1-dendrites-in-snr. Marked the division of the SNr into thirds as a choice made here.
+  - figs6-aldh1a1-ko-da-release-unchanged. The paper names no test; marked the unpaired t test as a choice and added Welch's t test as a variant beside Mann-Whitney, as the three between-group tests the paper uses.
+  - figs5-gat-expression-in-snc. The quote was the table title and states no finding; replaced it with an inferred note naming the table.
+  - Open. fig4a-gpe-gi-dreadd-reduces-ipsc judges "similar in magnitude" with a 10-point margin and fig2b-inhibition-wanes uses 0.5-s windows and a more-than-half rule; the paper gives no measure for either, and both are stated as choices.
+  - Open. Spike detection settings and the stable episode window (M1) are given neither in the paper nor in the code; the readings in M1 stand.
