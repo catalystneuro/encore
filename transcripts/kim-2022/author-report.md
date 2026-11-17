@@ -1,55 +1,50 @@
-I finished steps 1 to 6 for DANDI:000489 (Kim et al. 2022). The entry locks, checks with 0 errors and runs from a clean environment in 519 s, and the handover is built. None of the 22 claims was reproduced in full: one partially, four not reproduced, one blocked on method, 16 blocked for missing data.
+The attempt is written and passes its checks: entry at `entries/kim-2022`, record at `attempts/kim-2022-02.yaml`. `tools/entry.py all` gives 0 errors and the notebook runs in 494 s; `handover` built the verifier package in `executed/kim-2022/handover/`. Of the 25 claims, 12 were tested and 13 are blocked. Nothing was committed, and I did not come across any earlier attempt's results.
 
-## 1. Outcomes
+**(1) Outcomes**
 
 | Claim | Outcome |
 |---|---|
-| fig2a-uptake-rises-with-field | partially reproduced (assumed): 3 of 5 amplitudes pass the strongest-against-weakest test; unipolar (2 dishes) and 25% do not |
-| fig2a-vertical-scales | not reproduced (assumed): the 75% mean + s.e.m. is 283 a.u., above the 250 limit |
-| fig2b-exponential-same-slope | blocked, methods_underspecified: the criterion's 12 readings disagree (10 not reproduced, 2 partial) |
-| fig2c-max-inhibition-50-75 | not reproduced (assumed): 54.5% (mean) or 31.6% (lowest) of unipolar, not ~20%; no test reaches p < 0.01 |
-| fig2c-inhibition-flat-above-8-7 | not reproduced: the percent rises toward 8.7 kV/cm, significant under both pairings; every variant agrees |
-| fig2c-weaker-at-6-7 | not reproduced (assumed): the unipolar mean at 6.7 kV/cm is −8.6 a.u. (background). The bottom side alone, or the left footprint alone, gives reproduced |
-| 16 claims on Figs. 1E and 3 to 7 | blocked, data_missing |
+| fig2a-uptake-rises-with-field | reproduced (assumed: unpaired t-test; the paired test passes 3 of 5) |
+| fig2a-vertical-scales | not reproduced (75% mean + s.e.m. is 339 a.u., axis says 250) |
+| fig2b-exponential-same-slope | partially reproduced (exponential fits better for 3 of 5 at 8 kV/cm; no slope differs) |
+| fig2c-max-inhibition-50-75 | partially reproduced (50% gives 49% of unipolar, not 20%) |
+| fig2c-inhibition-flat-above-8-7 | reproduced |
+| fig2c-weaker-at-6-7 | reproduced (assumed: unpaired) |
+| fig7-unipolar-pole-polarization | reproduced (assumed: pole regions, cathode side) |
+| fig7-charging-time-constant | not reproduced (charging tau 191 ns matches; amplitudes 23% against 31%, discharge tau 613 against 520 ns) |
+| fig7-later-pulses-same-tau-difference | partially reproduced |
+| fig7-bipolar-overshoot | reproduced |
+| fig7-bipolar-alternation | reproduced |
+| fig7-summation-without-buildup | reproduced |
+| Figs. 3 to 6 (12 claims) | blocked: dataset_missing |
+| fig1e-heating | blocked: data_missing |
 
-## 2. Dataset, assumptions, questions
+**(2) What I found about the datasets**
+- **Missing figures:** 000489 holds only the 17 Fig. 2 dishes plus one Fig1F staining sample; 000448 holds the Fig. 7 strobe data.
+- **Three more datasets for this paper:** DANDI 000548, 000549 and 000550 name the paper in their metadata and match Figs. 3, 4 and 6 by title. They are not in `papers/datasets/kim-2022.yaml`, so I did not use them. I listed them under `missing_datasets` and blocked those 12 claims; a later attempt could test them.
+- **Duplicate image:** the YO-PRO-1 channel of sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25%) is the same image, while their MemBrite channels differ. The main analysis leaves both out, so the unipolar and 25% groups have 2 dishes each; assigning the image to either group is shown as a variant.
+- **Missing metadata in 000489:** no pixel size, electrode positions or polarity, or ROIs. The electrode spacing I measured, 4.44 to 4.66 mm against the paper's 4.5 mm, supports 0.65 µm per pixel. The image description's "Channel1" naming does not say which channel holds which dye (the data show index 0 is MemBrite, index 1 YO-PRO-1), and it says "144 images, six-well plate" where the paper says 216 images of 35 mm dishes.
+- **000448 has 9 cells, not 18:** 5 unipolar and 4 bipolar, against 18 and 17 in the paper. Each cell is filed as two subjects (forward and reverse trial).
+- **Undocumented frame order in 000448:** reverse files store frames in acquisition order and are offset by 74 frames (1.85 µs) from the forward trial. No frame delays, pole regions or field direction are given, and the first frame of most files is dark.
+- **Assumptions:**
+  - Unpaired t-test where the paper does not say.
+  - ROIs tiled every 200 µm from the centre out to 3 mm.
+  - A footprint disc of 0.2 mm for the background values.
+  - Fields from an exact 2D two-cylinder model, scaled to the paper's 15.1 kV/cm at the centre.
+  - The pole regions I drew.
+  - The pole that brightens taken as cathode-facing.
+  - Pulse onset found from the data.
+- **Questions for the authors** (recorded as `methods_unavailable` findings): how the ROIs were placed and whether the t-test was paired; how the pole regions were drawn and where the cathode was relative to the image.
+- **Questions to a reader:** none.
 
-What I found about the dataset:
-- **Contents:** only the 17 Fig. 2 dishes and a Fig. 1F sample. Each file is one stitched 2-channel uint16 image. There is no pixel size, ROI, field per ROI, footprint values or voltage.
-- **Duplicate:** the YP channel of `sub-Fig2-0-03` (unipolar) is identical to that of `sub-Fig2-25-04`. Phase correlation shows the image belongs to 25-04, so the unipolar group has 2 dishes. The main analysis leaves 0-03 out; a variant keeps it.
-- **Fig. 1F file:** both channels are the same image.
-- **Storage:** the images are ImageSeries of shape (22323, 22323, 2) with a 2 Hz rate, so the first axis reads as time. The three 25% files share the acquisition name `Fig2_25`.
-- **Description against paper:** 144 tiles of a six-well-plate well, where the paper says 216 tiles of a 35 mm dish.
-- **Days:** all unipolar dishes are from 2021-07-29 and all 75% and 100% dishes from 2021-08-24. The 100% dishes show more uptake than unipolar (761 against 571 a.u.).
-- **Scale:** 0.65 µm/px fits the geometry: electrode centres 4.54 mm apart and footprints 1.49 mm across, against 4.5 and 1.5 mm in the paper.
+**(3) Protocol points**
+1. Claims list a dataset the paper does not name for their data. The claims file lists the Fig. 3 to 6 claims under 000489, but they belong to other public datasets of the same paper. Neither `data_missing` nor `dataset_missing` fits exactly; I used `dataset_missing` with `missing_datasets` and noted it.
+2. Repeated recordings stored differently. The protocol asks to count duplicated recordings once but says nothing about a channel shared between two files of different conditions. I left both dishes out and showed both assignments.
+3. Criteria with no outcome for some cases. fig2b gives no outcome for "slopes agree but the exponential fails", and fig2c-max does not say at how many fields "the test holds". I chose partially reproduced and "most fields", and recorded each as a deviation.
+4. "Develop on a subset" says nothing about caching data during development. I cached block-averaged images in the scratch directory for development only; the notebook streams everything.
 
-I pinned 0.230518.1811: the paper cites no version, and the draft holds the same files.
-
-Assumptions:
-- ROI are 200 µm squares tiled along bb', with the two sides averaged (the claims file's reading a).
-- YP_0 and MB_0 are averaged over both footprints.
-- Pixel size is 0.65 µm.
-- The field is recomputed in closed form for two cylinders (exact in 2D, since the electrodes span the full liquid depth). It gives 15.38 kV/cm at the centre, against the paper's 15.1. I listed it under `inputs`.
-- The files' camera counts are the paper's a.u.
-
-Every claim is also shown on one side only, with the scale set from the electrode distance, with each footprint alone, and with 0-03 kept.
-
-Five questions for the paper's authors are recorded as a `methods_unavailable` finding: ROI placement, which footprints, the Fig. 2B fit method, t-test pairing and the comparison behind p < 0.01, and the field values. I asked a reader nothing.
-
-## 3. Protocol points
-1. **Same exposure, other dishes.** The Fig. 2 dishes had the same 600 ns exposure as Fig. 4, but they are other dishes. I kept Figs. 4 and 5 blocked and showed their measures on the Fig. 2 dishes in a section that decides no outcome.
-2. **The clock check** assumes time series and does not apply to single images. I said so in the notebook.
-3. **Readings from both sources.** The claims file's readings multiply with the protocol's step 1.6 readings (ROI side, footprint). Where they changed the outcome, I adopted the best-supported reading and marked the outcome `assumed`.
-4. **Recomputed inputs.** The protocol does not say whether a field recomputed from the paper's geometry counts as outside data. I kept `data: dataset` and listed it under `inputs`, citing the paper.
-5. **Speed advice.** "Develop on a subset" does not cover a CPU-bound load. I cached the reduced data in a temporary directory during development only, and the notebook streams everything.
-
-## 4. Runtime
-The run took about 1 h 20 min (15:31 to 16:51 UTC); the notebook takes 8.7 min. Nothing failed in the final runs. During development, one range request was reset (I added retries) and a newline escape broke a notebook cell (fixed).
-
-Files are in `entries/000489-kim-2022/`:
-- reproduce_kim_2022.ipynb
-- bipolar.py
-- README.md
-- entry.yaml
-
-The attempt record is `attempts/000489-kim-2022-01.yaml`.
+**(4) Runtime and failures**
+- About 2 h (03:20 to 05:20 UTC). The notebook takes about 8 minutes and peaks around 2 GB of memory.
+- About 1 h was lost when a footprint-search command with a large direct convolution hit its 60-minute timeout. I replaced it with FFT convolution.
+- Earlier, a background download was killed when its shell call ended; I re-ran it in the foreground.
+- Nothing else failed.

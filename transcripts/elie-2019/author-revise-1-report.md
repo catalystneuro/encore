@@ -1,0 +1,18 @@
+I went through every point in the report. No outcome changed: fig1-model-neurons stays partially reproduced and the other 25 claims stay blocked. The verifier agreed with all 26, and the round is recorded under `verifications` in `attempts/elie-2019-01.yaml`. The entry ran cleanly with `python tools/entry.py all entries/elie-2019` (1117 s), `check` reports 0 errors, and the conclusions match the new numbers.
+
+**What I fixed or added, by point**
+- **Snippet files (B1, C):** the helper now reads the `.f32` snippet files the way `h5_plot_one_spike.m` does and computes each sorted unit's signal-to-noise ratio (SNR) under two readings of the paper's definition. There are 42 snippet files and every site has one for its call recordings, so the earlier "only some sites" was wrong; I corrected it in the notes and findings. A threshold of 5 leaves 461 or 274 auditory units, not 914. units-404 stays blocked.
+- **1401 check (B2):** the spike-sorted files of any type at the 2.3 bits/s threshold number exactly 1401, matching the data description. This confirms the threshold is read the same way the authors read it.
+- **Anatomy (B3):** the notebook now lists every dataset in `class_info` and `extra_info` across all files. They hold coherence, mean rate, inter-spike-interval and section statistics, and no area or coordinate. I kept `data_missing` as the main reason for the five anatomy claims; the verifier gave `methods_underspecified`. The response explains why, and the dependence on units-337 is in the notes.
+- **Stimulus selection (B4):** call stimuli now come only from each unit's call recordings, as the docstring says. The notebook shows per-group counts, and no stimulus appears in two groups of a unit. All stimuli in the call recordings average 115.3 per unit (34 to 133), against the paper's 114 (34 to 123). I updated the stimulus-count finding, and the non-deciding variants were re-run.
+- **Category information bug (B5):** `cum_info_mc` now weights categories equally throughout. A new cell checks it against exact enumeration on a synthetic case; the largest difference is 0.0034 bits for stimuli and 0.0019 for categories.
+- **fig1 method (B6):** a new cell runs the paper's procedure as its MATLAB code does: adaptive sample size, 20 bootstraps of the jackknife, and the 0.6-bit stop. The code evaluates the jackknife sets on the same random samples, so that is the paper's method, not an assumption. Under it the cumulative information reaches 1.982 bits (MATLAB saved 1.981) and the peak instantaneous information is 0.520 bits, so all three conditions still hold. That cell now decides the outcome.
+- **Coherence and cost (B7, B8):** the text now says the stored coherence curve is not shown to be the S1 Fig computation, so its 65.8% says nothing about the paper, and that the power part was not computed. The cost cell now names `too_large` as a second reason for the claims that need the rate estimates.
+- **fig3-5:** a new section says the S4 to S6 Fig images were not among the materials, so they were not inspected or matched.
+
+**Record changes:** updated notes, deviations and findings, plus one new finding about the paper: it states 20 bootstraps while its tutorial uses 10 and 100, and the text omits two code details. `measured` for fig1 is now [0.009, 0.52]. The README now gives the SNR result, and `runtime_minutes` is 19.
+
+**Not done**
+- I added nothing to `questions/elie-2019.yaml`, because the verifier found no place where the claims file misreads the paper.
+- I did not redo the 2015 decoding. Its method is not in the provided text, and the 914 starting units cannot be found.
+- I did not commit, as instructed. The changes to `tools/` were already in the working tree before I started and are not mine.

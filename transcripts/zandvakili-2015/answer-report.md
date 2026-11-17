@@ -1,0 +1,3 @@
+There is nothing to answer. `questions/zandvakili-2015.yaml` does not exist in the working tree or anywhere in the git history (`git log --all -- questions/zandvakili-2015.yaml` returns nothing). No other file holds questions to the reader for this attempt either. The only "question" entries in `attempts/zandvakili-2015-01.yaml` are questions for the paper's authors, recorded as `methods_unavailable` findings, and those are not mine to settle.
+
+I made no changes: `claims/zandvakili-2015.yaml` is untouched, and I did not create a questions file. If the author or a verifier meant to file questions, they need to write `questions/zandvakili-2015.yaml` first. Then I can answer them.
