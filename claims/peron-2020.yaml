@@ -1,0 +1,988 @@
+# Claims for Peron, Pancholi, Voelcker, Wittenbach, Olafsdottir, Freeman & Svoboda (2020),
+# "Recurrent interactions in local cortical circuits", Nature 579, 256-259, on CRCNS ssc-11.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (paper/10.1038-s41586-020-2062-x.txt, supplied by a person,
+# extracted from the PDF), with the main text, figure legends, Methods, Extended Data Figs. 1-8
+# legends, Extended Data Table 1 and the reporting summary. The P values printed only inside
+# Figs. 2j, 2k, 3b, 3f, 3g and Extended Data Figs. 5 and 6, and the rows of Extended Data
+# Table 1, were read from the PDF pages, as the text extraction garbles or omits them. The
+# supplementary information named online is the reporting summary, which is in the text; no
+# other supplement is cited by the results.
+#
+# Code read. Analysis, github.com/peronlab/ablation at commit 74b7321 (74b732149ea5813c2394207f94a6a9e7f84d9bed,
+# 2020-02-16), MATLAB. It holds the mouse lists per ablation type (get_anims.m), the pre and
+# post data folders and ablation files per mouse (get_data_path.m), the per-neuron table of
+# touch and whisking scores, shuffle scores, event rates, positions and ablation flags
+# (get_ablation_data.m), the membership rule (get_restricted_neurons.m,
+# get_rejects_based_on_shuffle.m), Fig. 2j-l (ablation_figure_score_change.m), Fig. 2m and
+# Extended Data Figs. 3a and 5 (ablation_figure_distance.m), Fig. 3c-g
+# (ablation_figure_correlation.m), Extended Data Fig. 6 (ablation_figure_beh.m), Extended Data
+# Fig. 2 (ablation_figure_energy.m), Fig. 2h-i maps (ablation_figure_3d_plot.m) and the counts
+# quoted in the Results (ablation_summ_stats.m). Simulation, github.com/jwittenbach/ablation-sim
+# at commit a8b5583 (a8b5583ef8ac9b8ad1cfef883186e67763c925ef, 2016-02-05), Python with Brian.
+# Its parameter files (5,000 neurons, 4,000 excitatory, tauE 15 ms, ablation of 30 neurons)
+# are not those of the Methods (2,000 neurons, 1,700 excitatory, tau 30 ms, 20 ablated), so it
+# predates the published model; the model claims follow the Methods and use the repository only
+# for its structure (encoding score by cross-correlation, removal of outgoing synapses).
+#
+# Data the paper used. 16 mice (Extended Data Table 1; 15 male), two lines: j mice
+# (Emx1-IRES-cre x R26-LSL-H2B-mCherry, AAV2/1-syn-GCaMP6s) and n mice (Ai162 x
+# Slc17a7-IRES2-cre). IDs j250220, j257218, j257220, j258836, j271211, j278937, j278939,
+# j281915, n274424, n272761, n274577, n275801, n275798, n278288, n276013, n278759. Mice
+# performed a single-whisker object localization task (pole in proximal or distal positions,
+# lick right or left; sample, delay and response epochs). Two-photon volumetric imaging of L2/3
+# of the spared whisker's barrel column at 7 Hz, three 600 x 600 um planes 15 um apart per
+# subvolume, 4-6 subvolumes (12-18 planes, 180-270 um), about 50 trials per subvolume per day.
+# Pre-ablation and post-ablation data are each 2-4 sessions (typically 3), with the ablation
+# day between them. Ablation types (24 ablations in all): touch, 9 mice (code: 250220, 257220,
+# 258836, 271211, 281915, 274424, 272761, 274577, 275801); whisking, 7 mice (278937, 278939,
+# 281915, 275798, 278288, 276013, 278759); silent, 8 mice (257218, 258836, 271211, 278937,
+# 278939, 275801, 275798, 276013). Several mice had two ablations in sequence; the code takes
+# the post data of the first as the pre data of the second (get_data_path.m). Measured
+# variables, as the code reads them from the session files: per neuron, the touch encoding
+# score Rtouch (feature eventBasedDff_k16t14_<whisker>AbsMaxKappaZeroNotouchGLMScore), the
+# whisking score Rwhisking (eventBasedDff_k16t14_MeanWhiskerAmplitudeGLMScore), their shuffle
+# scores (GLMShuffleScore), the calcium event rate (eventRateHz), ROI positions, and
+# trial-averaged dF/F on correct left and right trials (dffBased_HitLTrialAvg,
+# dffBased_HitRTrialAvg); the ablation logs and the curation files flagging which targets were
+# ablated successfully; whisker angle, curvature at touch, touches and trial outcomes.
+#
+# Methods common to the experimental claims, from the Methods and the analysis code.
+# A neuron belongs to a representation when its score exceeds 0.1 and exceeds the 99th
+# percentile of the shuffle scores of the neurons in its subvolume and event-rate decile
+# (Methods, Neuronal classification; get_rejects_based_on_shuffle.m), in the pre-ablation
+# period, the post-ablation period or both (Methods; get_restricted_neurons.m). Neurons that
+# belong to both representations are left out (Methods; code). Ablated neurons (successful
+# targets in the curation file) are always left out, and so are neurons within a cylinder of
+# radius 10 um and height 60 um centred on an ablated neuron (Methods, Multiphoton ablation).
+# The code applies the cylinder as lateral distance < 10 um and signed depth difference < 30
+# um (get_ablation_data.m), which also drops every neuron shallower than the ablated one within
+# 10 um laterally; the Methods cylinder (|depth difference| < 30 um) is the main reading and
+# the code's rule a variant. For each mouse, the median of the included neurons' scores before
+# and after ablation; across mice, the grand median and the adjusted MAD (1.4826 x MAD); pre
+# against post by the Wilcoxon signed-rank test on the paired mouse medians; ablation types
+# compared by the Wilcoxon rank-sum test on the per-mouse changes (Methods, Statistical
+# analyses; ablation_figure_score_change.m). The response-similarity analysis uses an
+# encoding-score cutoff of 0.25 in place of 0.1, with the same shuffle rule (Methods; code).
+#
+# Tolerances. The +/- values the paper gives with its grand medians and means are the spread
+# across mice (adjusted MAD or s.d.), not an uncertainty of the statistic; as the attempt
+# reruns the same mice, the statistic itself should come out close, so each value takes 10% of
+# itself. Simulation values take 10% likewise, as the networks are random.
+#
+# Simulation claims (data elsewhere). The model outputs were not deposited; they are to be
+# regenerated from the Methods. Open in the Methods and not settled by the repository: the
+# input strength for Pconn 0.2 and 0.4, chosen as the one whose excitatory encoding-score
+# distribution "most closely" matched the in vivo data "in terms of distribution shape and
+# fraction of neurons encoding the stimulus". The paper matched to the data of its ref. 7
+# (Peron et al. 2015, Neuron; "measured in vivo7", "physiological data7"), which are not this
+# paper's recordings; this paper's in vivo values stand in for them. Readings: (a) the strength
+# at which the fraction of excitatory neurons with score above 0.1 equals the in vivo fraction
+# of touch neurons (0.108, Results); (b) the strength minimizing the Kolmogorov-Smirnov
+# distance between the model's excitatory score distribution and the pooled pre-ablation
+# Rtouch of the touch ablation mice; (c) as (a), with the fraction of 17% the Methods take
+# from ref. 7 ("of which 17% (287) belonged to each representation7"). Also open, with no
+# effect expected on the outcome, the stimulus interval
+# (20 s holds 66 presentations, so about 300 ms apart, as the repository's interval of 300
+# ms) and the random seeds.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: ssc-11
+paper: doi:10.1038/s41586-020-2062-x
+claims:
+- id: model-amplification-increases
+  statement: In the L2/3 network model, the sensory input needed to match in vivo responses
+    declines as subnetwork connectivity rises, so amplification (network output over input,
+    normalized to Pconn 0.2) increases with subnetwork connectivity.
+  source: Results, paragraph 3; Figure 1c
+  quote: The strength of sensory input required to match in vivo responses declined with increasing
+    subnetwork connectivity. Amplification ... therefore increased with subnetwork connectivity
+  data: elsewhere
+  where: Not deposited; generated by the model of the Methods (Network model), with structure from
+    github.com/jwittenbach/ablation-sim at commit a8b5583
+  criterion: >-
+    The network of the Methods (2,000 leaky integrate-and-fire neurons; 200 input-recipient
+    excitatory, 1,500 other excitatory, 300 inhibitory; connection probabilities 0.2 among
+    excitatory and 0.6 for all with inhibitory; PSP 1 mV, and 1.6 mV within the subnetwork at
+    Pconn 0.4, linearly interpolated or extrapolated in between; beta(3,5) input peaking at 10
+    ms; Poisson background 5,000 Hz excitatory and 2,000 Hz inhibitory; dt 0.1 ms; 20 s per run).
+    The input strengths for Pconn 0.2 and 0.4 are set under each reading named in the opening
+    comment and interpolated linearly for other Pconn. Amplification is the inverse of input
+    strength normalized to Pconn 0.2 (Methods). As the strengths between 0.2 and 0.4 are
+    interpolated from the two matched ones, amplification over that range follows from them
+    alone. Reproduced when the matched input strength at Pconn 0.4 is below that at 0.2, so
+    that normalized amplification at 0.4 is above 1, under each reading; the readings' strengths
+    and amplification are reported.
+- id: model-equal-connectivity-ablation-increases
+  statement: In networks with equal subnetwork connectivity (Pconn 0.2), ablating the strongest
+    encoders raises the encoding scores of spared neurons, from 0.237 to 0.274, owing to reduced
+    feedback inhibition.
+  source: Results, paragraph 4; Figure 1d-f
+  quote: Encoding scores for spared neurons increased after simulated ablation of 10% of the subnetwork14,
+    owing to reduced feedback inhibition13,20 (encoding score, from 0.237 ± 0.027 to 0.274 ± 0.032
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 30 simulated networks
+  data: elsewhere
+  where: Not deposited; generated by the model of the Methods (Network model)
+  depends_on:
+  - model-amplification-increases
+  expected:
+  - quantity: grand median encoding score before ablation, Pconn 0.2
+    value: 0.237
+    tolerance: 0.024
+  - quantity: grand median encoding score after ablation, Pconn 0.2
+    value: 0.274
+    tolerance: 0.027
+  criterion: >-
+    Model as in model-amplification-increases at Pconn 0.2, 30 random networks. Encoding score
+    per neuron as the Methods define it (spikes convolved with a 20 ms s.d. Gaussian, rate and
+    stimulus downsampled to 0.5 ms, peak normalized cross-correlation within lags of 10 ms). The
+    20 excitatory neurons with the highest score are ablated by setting their outgoing synapses
+    to 0 (Methods, which fix 20; the Results say 10% of the subnetwork, also 20) and the run is
+    repeated. Neurons with score above 0.1 before or after, ablated neurons left out; per
+    network the median score before and after; grand median across networks; Wilcoxon
+    signed-rank test over networks. Reproduced when both grand medians are within tolerance and
+    the test gives an increase at p < 0.001.
+- id: model-increased-connectivity-ablation-decreases
+  statement: In networks with increased subnetwork connectivity (Pconn 0.4), ablation lowers the
+    encoding scores of spared neurons, from 0.243 to 0.143, because amplification is reduced.
+  source: Results, paragraph 5; Figure 1d-f
+  quote: Ablations reduced encoding scores for spared neurons, from 0.243 ± 0.049 to 0.143 ± 0.028
+    (connectivity = 0.4; P < 0.001, n = 30 networks), because of reduced amplification
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 30 simulated networks
+  data: elsewhere
+  where: Not deposited; generated by the model of the Methods (Network model)
+  depends_on:
+  - model-amplification-increases
+  expected:
+  - quantity: grand median encoding score before ablation, Pconn 0.4
+    value: 0.243
+    tolerance: 0.024
+  - quantity: grand median encoding score after ablation, Pconn 0.4
+    value: 0.143
+    tolerance: 0.014
+  criterion: >-
+    As model-equal-connectivity-ablation-increases, at Pconn 0.4 with PSPs of 1.6 mV within the
+    subnetwork. Reproduced when both grand medians are within tolerance and the signed-rank test
+    gives a decrease at p < 0.001.
+- id: model-all-or-none-robust
+  statement: Subnetwork connectivity above 0.4 gives all-or-none responses, a transient input
+    driving the subnetwork into persistent activity, and such networks keep their all-or-none
+    response after ablation of 10% of the subnetwork.
+  source: Results, paragraphs 3 and 5; Extended Data Fig. 1 (Pconn 0.44)
+  quote: Networks in the all-or-none regime19 were robust to ablation, and maintained their all-or-none
+    response
+  data: elsewhere
+  where: Not deposited; generated by the model of the Methods (Network model)
+  criterion: >-
+    Model at Pconn 0.44 (Extended Data Fig. 1), with the input strength twice the extrapolated
+    value and a strong excitatory pulse to the inhibitory population 300 ms after each stimulus
+    onset (Methods). The pulse strength is not given; the reading used is the smallest pulse
+    that returns the subnetwork rate to its pre-stimulus level before the next stimulus.
+    All-or-none is read as a bimodal response, each stimulus either driving the subnetwork to a
+    sustained rate until the reset pulse or leaving it near baseline. The paper gives no measure
+    of robustness beyond "maintained their all-or-none response". Reproduced when the response
+    is all-or-none before and after ablating the 20 strongest encoders (10% of the subnetwork,
+    Extended Data Fig. 1 legend); the fraction of stimuli that trigger the persistent state and
+    the change in encoding score are reported.
+- id: model-more-ablation-larger-decline
+  statement: In the model with Pconn 0.4, ablating more neurons (top 10, 20 or 50 encoders) gives
+    larger declines in encoding score, the change correlating with the net encoding score
+    ablated (R = -0.65).
+  source: Results, paragraph 7; Extended Data Fig. 4
+  quote: >-
+    Correlation of net Rstimulus ablated and ΔRstimulus: R = −0.65, P < 0.01
+  statistics:
+  - test: Pearson correlation
+    statistic: R = -0.65
+    p: 0.01
+    p_relation: "<"
+    n: 30 networks per ablation size
+  data: elsewhere
+  where: Not deposited; generated by the model of the Methods (Network model)
+  depends_on:
+  - model-increased-connectivity-ablation-decreases
+  expected:
+  - quantity: Pearson R, net encoding score ablated against change in encoding score
+    value: -0.65
+    tolerance: 0.065
+  criterion: >-
+    Pconn 0.4, 30 networks for each of the top 0, 10, 20 and 50 neurons ablated (Methods list 0,
+    10, 20, 50 and 100; the legend omits sizes above 50 as unstable). Per network, the change in
+    median encoding score of spared neurons (score above 0.1 before or after) against the summed
+    pre-ablation score of the ablated neurons; Pearson correlation over all networks. Whether
+    the 0-ablation networks enter is open; both readings are run. Reproduced when R is within
+    tolerance with p < 0.01 under one reading, and the median change is more negative for each
+    larger ablation size.
+- id: model-slow-input-sensitive
+  statement: Networks with Pconn 0.4 given slower, whisking-like input (peak at 50 ms) are also
+    sensitive to ablation, encoding scores falling from 0.143 to 0.104; with equal subnetwork
+    connectivity (Pconn 0.2) the slow-input representation is not degraded.
+  source: Results, paragraph 9; Extended Data Fig. 8 (title and panel c)
+  quote: >-
+    Change in encoding score after ablation: from 0.143 ± 0.024 to 0.104 ± 0.013, grand median
+    ± adjusted MAD. P < 0.001, Wilcoxon signed-rank test paired by network (n = 30 networks)
+  statistics:
+  - test: Wilcoxon signed-rank test, paired by network
+    p: 0.001
+    p_relation: "<"
+    n: 30 networks
+  data: elsewhere
+  where: Not deposited; generated by the model of the Methods (Network model)
+  expected:
+  - quantity: grand median encoding score before ablation, slow input, Pconn 0.4
+    value: 0.143
+    tolerance: 0.014
+  - quantity: grand median encoding score after ablation, slow input, Pconn 0.4
+    value: 0.104
+    tolerance: 0.010
+  criterion: >-
+    As model-increased-connectivity-ablation-decreases, with the beta(3,5) input stretched so
+    that it peaks 50 ms after onset (Methods). The input strength for slow input is not given;
+    readings are (a) the strength used for touch input at the same Pconn, and (b) a strength
+    set anew by the matching rule of the opening comment. The same is run at Pconn 0.2 (Methods,
+    "We examined both the equal (Pconn = 0.2) and increased (Pconn = 0.4) connectivity cases").
+    Reproduced when, under one reading, at Pconn 0.4 both grand medians are within tolerance
+    and the signed-rank test gives a decrease at p < 0.001, and at Pconn 0.2 the same test does
+    not give a decrease at p < 0.05 (the legend's title, "representation degradation in
+    networks with increased, but not equal subnetwork connectivity"; the paper gives no
+    number for Pconn 0.2, so its change is reported).
+- id: model-response-similarity
+  statement: In networks with increased subnetwork connectivity, neurons whose activity is more
+    similar to the mean activity of the ablated neurons lose the most encoding score after
+    ablation; with equal connectivity the relationship is absent.
+  source: Results, paragraph 10; Figure 3a, b
+  quote: In networks with increased subnetwork connectivity, neurons with high response similarity
+    showed the largest decline in encoding score after ablation (Fig. 3b). In networks without
+    increased subnetwork connectivity, the relationship disappeared
+  statistics:
+  - about: Pconn 0.4, slopes of change in encoding score against response similarity
+    test: sign test
+    p: 0.001
+    n: 30 networks, 3,466 neurons
+  - about: Pconn 0.2
+    test: sign test
+    p: 0.2
+    n: 30 networks, 3,779 neurons
+  data: elsewhere
+  where: Not deposited; generated by the model of the Methods (Network model)
+  depends_on:
+  - model-equal-connectivity-ablation-increases
+  - model-increased-connectivity-ablation-decreases
+  criterion: >-
+    Response similarity is the Pearson correlation of a neuron's Gaussian-convolved rate (20 ms
+    s.d.) with the mean convolved rate of the ablated neurons (Methods, Response similarity),
+    neurons with encoding score above 0.25 (Methods). Per network, a line is fitted to the
+    change in encoding score against response similarity of the neurons (Methods, Statistical
+    analyses, "we first fit a line to individual networks or mice (for example, Fig. 3e; the
+    linear fit is distinct from the cross-cell mean that is shown)"). A fit to the means in
+    0.1-wide similarity bins, as the analysis code does for the mice
+    (ablation_figure_correlation.m), is run as a variant. Sign test of the 30 slopes against 0. Reproduced when at Pconn 0.4 the slopes are negative with p < 0.05 and
+    at Pconn 0.2 the sign test gives p >= 0.05.
+- id: neurons-per-mouse
+  statement: Volumetric imaging in L2/3 of the spared whisker's barrel column recorded 8,126 ±
+    2,436 (mean ± s.d.) neurons per mouse across 16 mice.
+  source: Results, paragraph 6; Extended Data Table 1
+  quote: 8,126 ± 2,436 (mean ± s.d.) neurons per mouse, n = 16 mice
+  expected:
+  - quantity: mean neurons imaged per mouse
+    value: 8126
+    tolerance: 813
+  - quantity: s.d. of neurons imaged per mouse
+    value: 2436
+    tolerance: 244
+  criterion: >-
+    The neuron count of a mouse is the number of neurons in its first pre-ablation data set,
+    before any exclusion (ablation_summ_stats.m, size of the per-neuron table, over each mouse's
+    first ablation). Mean and s.d. over the 16 mice. Reproduced when both are within tolerance;
+    the per-mouse counts are compared with the Cell count column of Extended Data Table 1.
+- id: representation-sizes
+  statement: Across 16 mice, 901 ± 539 of the imaged neurons encoded touch (fraction 0.108 ±
+    0.051) and 865 ± 364 encoded whisking (fraction 0.106 ± 0.028).
+  source: Results, paragraph 6
+  quote: >-
+    Across 16 mice (Extended Data Table 1), 901 ± 539 of the imaged neurons encoded touch (fraction:
+    0.108 ± 0.051) and 865 ± 364 encoded whisking (fraction: 0.106 ± 0.028)
+  depends_on:
+  - neurons-per-mouse
+  expected:
+  - quantity: mean touch neuron count per mouse
+    value: 901
+    tolerance: 90
+  - quantity: mean touch neuron fraction
+    value: 0.108
+    tolerance: 0.011
+  - quantity: mean whisking neuron count per mouse
+    value: 865
+    tolerance: 87
+  - quantity: mean whisking neuron fraction
+    value: 0.106
+    tolerance: 0.011
+  criterion: >-
+    Counts from each mouse's first pre-ablation data set, mean and s.d. over 16 mice. The rule
+    for counting is open; the readings are (a) the code's, neurons with score above 0.1 alone,
+    without the shuffle test and without leaving out neurons in both representations or ablated
+    neurons (ablation_summ_stats.m, which notes that it does not exclude neurons of both types);
+    (b) the Methods membership rule (score above 0.1 and above the shuffle 99th percentile,
+    neurons in both representations and ablated neurons left out). Extended Data Table 1 gives
+    counts "for the 0.1 encoding score criteria" whose means over the 16 first rows are about
+    780 touch and 624 whisking, below the text's values, so the table may follow (b) and the
+    text (a). Reproduced when, under one reading, all four values are within tolerance.
+- id: touch-ablation-size
+  statement: Touch ablations removed 16.8 ± 12.8 strong touch neurons per mouse (about 6% of the
+    touch neurons of the barrel column, 9 mice), whose touch scores were at the 70th ± 35th
+    percentile.
+  source: Results, paragraph 7; Methods, Multiphoton ablation
+  quote: Ablating a small proportion of strong touch cells (16.8 ± 12.8 neurons, 6% of touch neurons
+    in the barrel column of the spared whisker, n = 9 mice; touch score, 70th ± 35th percentile)
+  expected:
+  - quantity: mean touch neurons ablated per mouse
+    value: 16.8
+    tolerance: 1.7
+  - quantity: s.d. of touch neurons ablated per mouse
+    value: 12.8
+    tolerance: 1.3
+  - quantity: mean ablated count as percentage of 287 touch neurons per barrel column
+    value: 6
+    tolerance: 0.6
+    unit: "%"
+  - quantity: mean percentile of ablated neurons' touch scores
+    value: 70
+    tolerance: 7
+  - quantity: s.d. of percentile of ablated neurons' touch scores
+    value: 35
+    tolerance: 3.5
+  criterion: >-
+    Ablated neurons are the successful targets of the curation files (get_ablation_data.m). The
+    percentage is the mean count over 287, the estimated touch neurons per barrel column
+    (Methods; ablation_summ_stats.m). The percentile of an ablated neuron is the rank of its
+    pre-ablation Rtouch among the included touch neurons' pre-ablation Rtouch of its mouse; mean
+    and s.d. over all ablated neurons pooled (ablation_summ_stats.m). Reproduced when all values
+    are within tolerance.
+- id: touch-ablation-reduces-touch
+  statement: Ablating touch neurons reduced the touch-encoding score of the spared touch neurons,
+    from 0.123 to 0.100 (grand median across 9 mice, 8,392 neurons).
+  source: Results, paragraph 7; Figure 2g, h, j
+  quote: The touch-encoding score (Rtouch) across touch neurons declined (from 0.123 ± 0.021 to 0.100
+    ± 0.037 (grand median ± adjusted MAD); n = 9 mice, 8,392 neurons, P = 0.004, Wilcoxon signed-rank
+    test for mouse medians, paired by mouse)
+  statistics:
+  - test: Wilcoxon signed-rank test for mouse medians, paired by mouse
+    p: 0.004
+    n: 9 mice, 8,392 neurons
+  depends_on:
+  - touch-ablation-size
+  expected:
+  - quantity: grand median Rtouch before touch ablation
+    value: 0.123
+    tolerance: 0.012
+  - quantity: grand median Rtouch after touch ablation
+    value: 0.100
+    tolerance: 0.010
+  - quantity: touch neurons included, all 9 mice
+    value: 8392
+    tolerance: 839
+  criterion: >-
+    The common method of the opening comment, touch neurons, touch ablation mice. Reproduced
+    when both grand medians are within tolerance and the signed-rank test on the paired mouse
+    medians gives a decline at p < 0.05. The neuron count is reported; the code's proximity rule
+    is run as a variant.
+- id: touch-ablation-touch-count
+  statement: After touch ablation the number of touch neurons fell, from 932 ± 634 to 716 ± 469
+    (mean ± s.d. over 9 mice), ablated neurons excluded.
+  source: Results, paragraph 7
+  quote: as did the touch neuron count (from 932 ± 634 to 716 ± 469 (mean ± s.d.), calculations
+    exclude ablated neurons)
+  depends_on:
+  - representation-sizes
+  expected:
+  - quantity: mean touch neuron count before touch ablation
+    value: 932
+    tolerance: 93
+  - quantity: mean touch neuron count after touch ablation
+    value: 716
+    tolerance: 72
+  criterion: >-
+    Per mouse, the touch neurons counted in the pre-ablation and in the post-ablation data
+    separately; mean over the 9 touch ablation mice. Readings for the count as in
+    representation-sizes, (a) the code's score above 0.1 alone (ablation_summ_stats.m, which
+    keeps ablated neurons although the text says they are excluded; run with them left out, as
+    the text says, and with them kept) and (b) the Methods membership rule in each period.
+    Reproduced when, under one reading, both means are within tolerance.
+- id: touch-ablation-whisking-unchanged
+  statement: Touch ablation did not change the whisking-encoding score of whisking neurons (0.116
+    to 0.115, 6,975 neurons, P = 0.820); the whisking neuron count went from 775 ± 267 to 721 ±
+    241.
+  source: Results, paragraph 7; Figure 2i, k
+  quote: >-
+    The whisking-encoding score (Rwhisking) did not change (from 0.116 ± 0.013 to 0.115 ± 0.024;
+    6,975 neurons, P = 0.820; neuron count: from 775 ± 267 to 721 ± 241)
+  statistics:
+  - test: Wilcoxon signed-rank test for mouse medians, paired by mouse
+    p: 0.82
+    n: 9 mice, 6,975 neurons
+  expected:
+  - quantity: grand median Rwhisking before touch ablation
+    value: 0.116
+    tolerance: 0.012
+  - quantity: grand median Rwhisking after touch ablation
+    value: 0.115
+    tolerance: 0.012
+  - quantity: whisking neurons included
+    value: 6975
+    tolerance: 698
+  - quantity: mean whisking neuron count before touch ablation
+    value: 775
+    tolerance: 78
+  - quantity: mean whisking neuron count after touch ablation
+    value: 721
+    tolerance: 72
+  criterion: >-
+    A claim of absence. The common method, whisking neurons, touch ablation mice; Wilcoxon
+    signed-rank test on paired mouse medians at the 0.05 level (the level at which the paper
+    calls its P values significant, Extended Data Fig. 6 legend). Reproduced when the test gives
+    p >= 0.05; the change is reported either way. Counts as in touch-ablation-touch-count.
+- id: ablation-size-correlation
+  statement: The decline in the touch representation grew with the touch representation ablated,
+    the change in Rtouch correlating with the net Rtouch ablated (R = -0.794 over all 24
+    ablations; R = -0.779 over the 9 touch ablations).
+  source: Results, paragraph 8; Figure 2l
+  quote: the decline in touch representation increased as more of the touch representation was ablated
+    (Pearson correlation of change in Rtouch and net Rtouch ablated, R = −0.794, P < 0.001 across
+    all 24 ablations; R = −0.779, P = 0.013 for the 9 touch cell ablations)
+  statistics:
+  - about: all 24 ablations
+    test: Pearson correlation
+    statistic: R = -0.794
+    p: 0.001
+    p_relation: "<"
+    n: 24 ablations
+  - about: touch ablations
+    test: Pearson correlation
+    statistic: R = -0.779
+    p: 0.013
+    n: 9 ablations
+  depends_on:
+  - touch-ablation-reduces-touch
+  - whisking-ablation-no-effect-touch
+  - silent-ablation-no-effect-touch
+  expected:
+  - quantity: Pearson R, all ablations
+    value: -0.794
+    tolerance: 0.079
+  - quantity: Pearson R, touch ablations
+    value: -0.779
+    tolerance: 0.078
+  criterion: >-
+    For each of the 24 ablations, the change in the mouse median Rtouch of touch neurons (common
+    method) against the net Rtouch ablated, the sum of the pre-ablation Rtouch of the ablated
+    neurons (Fig. 2l legend; ablation_figure_score_change.m). Pearson correlation over the 24
+    ablations and over the 9 touch ablations. Reproduced when both R are within tolerance with p
+    < 0.05 and negative.
+- id: distance-dependence-touch
+  statement: After touch ablation, touch neurons 15-35 um from the nearest ablated neuron lost
+    more Rtouch than those 115-135 um away (-0.132 against -0.056), and the effect decayed with
+    distance with a length constant of 87 um.
+  source: Results, paragraph 8; Figure 2m
+  quote: Touch neurons proximal (15–35 μm) to the ablated cells experienced a larger decline in Rtouch
+    values than those distal (115–135 μm) from the ablated cells (Fig. 2m). The effects of ablating
+    the touch neurons decayed over a distance (λ = 87 μm, exponential fit)
+  statistics:
+  - test: Wilcoxon signed-rank test for proximal versus distal medians, paired by mouse
+    p: 0.02
+    n: 9 mice
+  depends_on:
+  - touch-ablation-reduces-touch
+  expected:
+  - quantity: change in Rtouch, proximal (15-35 um)
+    value: -0.132
+    tolerance: 0.013
+  - quantity: change in Rtouch, distal (115-135 um)
+    value: -0.056
+    tolerance: 0.006
+  - quantity: exponential length constant
+    value: 87
+    tolerance: 8.7
+    unit: um
+  criterion: >-
+    Touch neurons of the touch ablation mice (common method); distance is the 3-D distance to
+    the closest ablated neuron (Fig. 2m legend; get_ablation_data.m), proximal 15-35 um and
+    distal 115-135 um. Per-mouse summary and the reported values are open: the legend says
+    "proximal versus distal medians" and "grand median"; the code takes per-mouse means for the
+    test and the median and MAD over all neurons pooled for the values
+    (ablation_figure_distance.m). Readings are (a) the code's and (b) per-mouse medians, with
+    the grand median over mice as the value. The length constant is 1/|b| of a fit a exp(b d) to
+    the cross-mouse mean of per-mouse mean changes in 25-um bins from 0 to 150 um (code).
+    Reproduced when, under one reading, proximal declines more than distal with p < 0.05, and
+    the two values and the length constant are within tolerance.
+- id: distance-dependence-whisking-absent
+  statement: Touch ablation produced no distance-dependent change in the whisking representation
+    (proximal 0.000, distal -0.023).
+  source: Results, paragraph 8; Extended Data Fig. 5
+  quote: Whisking neurons exhibited no distance-dependent changes
+  statistics:
+  - test: Wilcoxon signed-rank test comparing proximal paired to distal
+    p: 0.098
+    n: 9 mice
+  expected:
+  - quantity: change in Rwhisking, proximal (15-35 um)
+    value: 0.0
+    tolerance: 0.01
+  - quantity: change in Rwhisking, distal (115-135 um)
+    value: -0.023
+    tolerance: 0.0023
+  criterion: >-
+    A claim of absence. As distance-dependence-touch, for whisking neurons, Wilcoxon signed-rank
+    test of proximal against distal paired by mouse at the 0.05 level. Reproduced when p >=
+    0.05 under the code's reading (per-mouse means), with the per-mouse medians shown as a
+    variant. The proximal value is 0.000, so its tolerance is set at 0.01, the smallest
+    difference the paper's distance values resolve with meaning (distal -0.023). P = 0.098 is
+    read from the figure.
+- id: behaviour-unchanged
+  statement: Ablations did not change whisker movement or behaviour, so behaviour does not account
+    for the decline of the touch representation; no mouse showed a significant change in whisker
+    angle, angle at touch or curvature change at touch.
+  source: Results, paragraph 8; Extended Data Fig. 6
+  quote: The declining touch representation was not caused by changes in whisker movement or behaviour
+  statistics:
+  - about: fraction correct, touch ablations
+    test: Wilcoxon signed-rank test, paired by mouse
+    p: 0.863
+    n: 9 mice
+  - about: touches per trial, touch ablations
+    test: Wilcoxon signed-rank test, paired by mouse
+    p: 0.666
+    n: 9 mice
+  - about: fraction correct, silent ablations
+    test: Wilcoxon signed-rank test, paired by mouse
+    p: 0.065
+    n: 8 mice
+  - about: touches per trial, silent ablations
+    test: Wilcoxon signed-rank test, paired by mouse
+    p: 0.721
+    n: 8 mice
+  - about: fraction correct, whisking ablations
+    test: Wilcoxon signed-rank test, paired by mouse
+    p: 0.71
+    n: 7 mice
+  - about: touches per trial, whisking ablations
+    test: Wilcoxon signed-rank test, paired by mouse
+    p: 0.62
+    n: 7 mice
+  criterion: >-
+    A claim of absence. Per mouse and ablation, fraction correct (correct over all scored trials)
+    and touches per trial (touches with bursts merged at a 50 ms intertouch interval) over all
+    pre and over all post sessions (ablation_figure_beh.m); Wilcoxon signed-rank test paired by
+    mouse, as the legend says, at the 0.05 level; the code's rank-sum test is a variant. Per
+    mouse, two-sample Kolmogorov-Smirnov tests of whisker angle, angle at touch onset and net
+    curvature change at touch, pre against post, on the samples (legend); the code's test on
+    normalized histograms is a variant. Reproduced when none of the six paired tests and no
+    mouse's KS tests give p < 0.05; partially reproduced when only the KS tests of some mice do
+    (with large samples a KS test can detect small shifts; the sizes are reported). P values
+    are read from the figure.
+- id: whisking-ablation-size
+  statement: Whisking ablations removed 12.7 ± 5.7 strong whisking neurons per mouse (about 4% of
+    the barrel column's whisking neurons, 7 mice), at the 66th ± 37th percentile of whisking
+    score.
+  source: Results, paragraph 9
+  quote: >-
+    ablating a subset of strong whisking neurons (12.7 ± 5.7 neurons, approximately 4% of whisking
+    neurons in the barrel column of the spared whisker, n = 7 mice; whisking score: 66th ± 37th
+    percentile)
+  expected:
+  - quantity: mean whisking neurons ablated per mouse
+    value: 12.7
+    tolerance: 1.3
+  - quantity: s.d. of whisking neurons ablated per mouse
+    value: 5.7
+    tolerance: 0.6
+  - quantity: mean ablated count as percentage of 287
+    value: 4
+    tolerance: 0.4
+    unit: "%"
+  - quantity: mean percentile of ablated neurons' whisking scores
+    value: 66
+    tolerance: 6.6
+  - quantity: s.d. of percentile
+    value: 37
+    tolerance: 3.7
+  criterion: >-
+    As touch-ablation-size. For the percentile, the Methods reading ranks each ablated neuron's
+    pre-ablation Rwhisking among the included whisking neurons' Rwhisking; the code ranks it
+    among the included touch neurons' Rtouch (ablation_summ_stats.m), which is run as a variant.
+    Reproduced when the counts and percentage are within tolerance, and the percentile values
+    are under one of the two readings.
+- id: whisking-ablation-no-effect-touch
+  statement: Ablating whisking neurons had no effect on the touch representation (Rtouch 0.112 to
+    0.095, 7 mice, 5,866 neurons, P = 0.109; count 838 ± 401 to 899 ± 548).
+  source: Results, paragraph 9; Figure 2j; Extended Data Fig. 7
+  quote: produced no effect on either the touch representation (Rtouch from 0.112 ± 0.081 to 0.095
+    ± 0.069, n = 7 mice, 5,866 neurons; P = 0.109, count from 838 ± 401 to 899 ± 548)
+  statistics:
+  - test: Wilcoxon signed-rank test for mouse medians, paired by mouse
+    p: 0.109
+    n: 7 mice, 5,866 neurons
+  expected:
+  - quantity: grand median Rtouch before whisking ablation
+    value: 0.112
+    tolerance: 0.011
+  - quantity: grand median Rtouch after whisking ablation
+    value: 0.095
+    tolerance: 0.010
+  - quantity: touch neurons included
+    value: 5866
+    tolerance: 587
+  - quantity: mean touch neuron count before
+    value: 838
+    tolerance: 84
+  - quantity: mean touch neuron count after
+    value: 899
+    tolerance: 90
+  criterion: >-
+    A claim of absence. Common method, touch neurons, whisking ablation mice; signed-rank test
+    on paired mouse medians at the 0.05 level. Reproduced when p >= 0.05; the change is reported
+    either way. Counts as in touch-ablation-touch-count.
+- id: whisking-ablation-no-effect-whisking
+  statement: Ablating whisking neurons did not degrade the whisking representation (Rwhisking
+    0.108 to 0.107, 6,161 neurons, P = 0.812; count 880 ± 387 to 974 ± 558).
+  source: Results, paragraph 9; Figure 2k; Extended Data Fig. 7
+  quote: or the whisking representation (Rwhisking from 0.108 ± 0.076 to 0.107 ± 0.076, n = 6,161; P
+    = 0.812, count from 880 ± 387 to 974 ± 558)
+  statistics:
+  - test: Wilcoxon signed-rank test for mouse medians, paired by mouse
+    p: 0.812
+    n: 7 mice, 6,161 neurons
+  expected:
+  - quantity: grand median Rwhisking before whisking ablation
+    value: 0.108
+    tolerance: 0.011
+  - quantity: grand median Rwhisking after whisking ablation
+    value: 0.107
+    tolerance: 0.011
+  - quantity: whisking neurons included
+    value: 6161
+    tolerance: 616
+  - quantity: mean whisking neuron count before
+    value: 880
+    tolerance: 88
+  - quantity: mean whisking neuron count after
+    value: 974
+    tolerance: 97
+  criterion: >-
+    A claim of absence, as whisking-ablation-no-effect-touch, for whisking neurons. Reproduced
+    when p >= 0.05.
+- id: silent-ablation-size
+  statement: Silent-neuron ablations (event rate below 0.025 Hz) removed 16.3 ± 2.6 neurons per
+    mouse in 8 mice.
+  source: Results, paragraph 9; Methods, Multiphoton ablation
+  quote: ablating silent neurons (event rate below 0.025 Hz; 16.3 ± 2.6 neurons, n = 8 mice)
+  expected:
+  - quantity: mean silent neurons ablated per mouse
+    value: 16.3
+    tolerance: 1.6
+  - quantity: s.d. of silent neurons ablated per mouse
+    value: 2.6
+    tolerance: 0.3
+  criterion: >-
+    Successful targets in the curation files of the 8 silent ablation mice. Reproduced when both
+    values are within tolerance, and the ablated neurons' pre-ablation event rates are reported
+    against the 0.025 Hz targeting rule.
+- id: silent-ablation-no-effect-touch
+  statement: Ablating silent neurons did not change the touch representation (Rtouch 0.115 to
+    0.107, 8 mice, 7,110 neurons, P = 0.383; count 889 ± 713 to 926 ± 681).
+  source: Results, paragraph 9; Figure 2j; Extended Data Fig. 7
+  quote: did not change the touch representation (Rtouch from 0.115 ± 0.021 to 0.107 ± 0.023, n = 8
+    mice, 7,110 neurons; P = 0.383, count from 889 ± 713 to 926 ± 681)
+  statistics:
+  - test: Wilcoxon signed-rank test for mouse medians, paired by mouse
+    p: 0.383
+    n: 8 mice, 7,110 neurons
+  expected:
+  - quantity: grand median Rtouch before silent ablation
+    value: 0.115
+    tolerance: 0.012
+  - quantity: grand median Rtouch after silent ablation
+    value: 0.107
+    tolerance: 0.011
+  - quantity: touch neurons included
+    value: 7110
+    tolerance: 711
+  - quantity: mean touch neuron count before
+    value: 889
+    tolerance: 89
+  - quantity: mean touch neuron count after
+    value: 926
+    tolerance: 93
+  criterion: >-
+    A claim of absence. Common method, touch neurons, silent ablation mice; signed-rank test at
+    the 0.05 level. Reproduced when p >= 0.05. Counts as in touch-ablation-touch-count.
+- id: silent-ablation-no-effect-whisking
+  statement: Ablating silent neurons did not change the whisking representation (Rwhisking 0.115
+    to 0.114, 7,684 neurons, P = 0.844; count 961 ± 464 to 904 ± 384).
+  source: Results, paragraphs 9 and 10
+  quote: or the whisking representation (Rwhisking from 0.115 ± 0.014 to 0.114 ± 0.015, 7,684 neurons;
+    P = 0.844, count from
+  statistics:
+  - test: Wilcoxon signed-rank test for mouse medians, paired by mouse
+    p: 0.844
+    n: 8 mice, 7,684 neurons
+  expected:
+  - quantity: grand median Rwhisking before silent ablation
+    value: 0.115
+    tolerance: 0.012
+  - quantity: grand median Rwhisking after silent ablation
+    value: 0.114
+    tolerance: 0.011
+  - quantity: whisking neurons included
+    value: 7684
+    tolerance: 768
+  - quantity: mean whisking neuron count before
+    value: 961
+    tolerance: 96
+  - quantity: mean whisking neuron count after
+    value: 904
+    tolerance: 90
+  criterion: >-
+    A claim of absence, as silent-ablation-no-effect-touch, for whisking neurons. Reproduced
+    when p >= 0.05. The counts continue the quoted sentence on the next page ("961 ± 464 to 904
+    ± 384").
+- id: ablation-type-specificity
+  statement: Touch ablations produced significantly different changes in Rtouch from whisking or
+    silent ablations,
+    while whisking and silent ablations did not differ; for Rwhisking no pair of ablation types
+    differed.
+  source: Results, paragraph 10; Figure 2j, k
+  quote: Touch ablations produced significantly different changes in encoding scores among touch (but
+    not whisking) representations than either whisking or silent ablations, whereas whisking ablations
+    did not produce significantly different changes from silent ablations
+  statistics:
+  - about: change in Rtouch, touch against silent ablations
+    test: Wilcoxon rank-sum test
+    p: 0.002
+    n: 9 and 8 mice
+  - about: change in Rtouch, touch against whisking ablations
+    test: Wilcoxon rank-sum test
+    p: 0.042
+    n: 9 and 7 mice
+  - about: change in Rtouch, silent against whisking ablations
+    test: Wilcoxon rank-sum test
+    p: 0.152
+    n: 8 and 7 mice
+  - about: change in Rwhisking, touch against silent ablations
+    test: Wilcoxon rank-sum test
+    p: 0.743
+  - about: change in Rwhisking, touch against whisking ablations
+    test: Wilcoxon rank-sum test
+    p: 0.758
+  - about: change in Rwhisking, silent against whisking ablations
+    test: Wilcoxon rank-sum test
+    p: 1
+  depends_on:
+  - touch-ablation-reduces-touch
+  - whisking-ablation-no-effect-touch
+  - silent-ablation-no-effect-touch
+  criterion: >-
+    Per-mouse change in median score (common method), compared between ablation types by the
+    Wilcoxon rank-sum test (Fig. 2j legend; ablation_figure_score_change.m). Reproduced when for
+    Rtouch the touch-silent and touch-whisking tests give p < 0.05 and the whisking-silent test p
+    >= 0.05, and for Rwhisking all three give p >= 0.05. The pairings of the P values were read
+    from the figure.
+- id: response-similarity-example
+  statement: In an example touch ablation mouse, the change in Rtouch of touch neurons falls with
+    their response similarity to the ablated neurons, with a slope of -0.44.
+  source: Figure 3c-e
+  quote: Changes induced by ablation of touch neurons on the touch score as a function of response similarity
+    in an example mouse
+  depends_on:
+  - response-similarity-touch-ablation
+  expected:
+  - quantity: slope of change in Rtouch against response similarity, example mouse
+    value: -0.44
+    tolerance: 0.044
+  criterion: >-
+    The example mouse is 272761 (ablation_figure_correlation.m). Method as in
+    response-similarity-touch-ablation. The slope is that of a line fitted to the neurons'
+    points (legend, "Slope for a linear fit of the points"; Methods, "the linear fit is distinct
+    from the cross-cell mean that is shown"). The code fits the 0.1-wide bin means of bins with
+    more than 3 neurons (ablation_figure_correlation.m, example_plot), which is run as a
+    variant. Reproduced when the slope of the Methods fit is within tolerance; the variant's
+    slope is reported.
+- id: response-similarity-touch-ablation
+  statement: After touch ablation, the change in Rtouch depended on response similarity to the
+    ablated neurons; similar neurons declined and neurons with negative similarity increased,
+    while the whisking representation showed no such dependence.
+  source: Results, paragraph 12; Figure 3e, f
+  quote: Changes in Rtouch values after ablation depended on response similarity (Fig. 3e, f). Rtouch
+    values in neurons with high response similarity declined. Neurons with negative response similarity
+    showed increased Rtouch values ... Ablation of touch neurons had no effect on the whisking network
+  statistics:
+  - about: touch neurons, slope of change in Rtouch against response similarity
+    test: sign test
+    p: 0.039
+    n: 9 mice, 2,768 touch neurons
+  - about: whisking neurons, slope of change in Rwhisking
+    test: sign test
+    p: 0.508
+    n: 9 mice, 1,085 whisking neurons
+  depends_on:
+  - touch-ablation-reduces-touch
+  expected:
+  - quantity: touch neurons in the analysis
+    value: 2768
+    tolerance: 277
+  - quantity: whisking neurons in the analysis
+    value: 1085
+    tolerance: 109
+  criterion: >-
+    Neurons of each representation with encoding score above 0.25 by the membership rule
+    (Methods; get_restricted_neurons.m with threshold 0.25), the 9 touch ablation mice. A
+    neuron's trial-averaged dF/F is its mean dF/F over correct proximal and correct distal pole
+    trials, the two vectors concatenated (Methods), from the pre-ablation data; the ablated
+    neuron mean is their average over ablated neurons; response similarity is the Pearson
+    correlation of the two. The code reads the per-session averages dffBased_HitLTrialAvg and
+    dffBased_HitRTrialAvg, 70 frames each, but writes both into the first 70 rows, so only the
+    right-trial average enters its correlation (ablation_figure_correlation.m); that is run as a
+    variant. Per mouse, the change in score averaged in 0.1-wide similarity bins from -1 to 1
+    (Methods), bins with more than 3 neurons (code), for the bin means shown. Per mouse, a line
+    fitted to the neurons' change in score against response similarity (Methods, "the linear
+    fit is distinct from the cross-cell mean that is shown"; Fig. 3e legend, "a linear fit of
+    the points"), and a sign test of the 9 slopes against 0 (Methods). The code fits the bin
+    means instead (ablation_figure_correlation.m), which is run as a variant. Reproduced when,
+    with the Methods fit, the touch slopes are negative with sign-test p < 0.05, the bin means
+    are above 0 for negative similarity, and the whisking slopes give p >= 0.05; the variant is
+    shown.
+- id: response-similarity-whisking-ablation
+  statement: Ablation of whisking neurons had no similarity-dependent effect on either
+    representation.
+  source: Results, paragraph 12; Figure 3g
+  quote: Ablation of whisker neurons had no effect on either representation (Fig. 3g)
+  statistics:
+  - about: touch neurons
+    test: sign test
+    p: 0.453
+    n: 7 mice, 1,692 touch neurons
+  - about: whisking neurons
+    test: sign test
+    p: 1
+    n: 7 mice, 935 whisking neurons
+  expected:
+  - quantity: touch neurons in the analysis
+    value: 1692
+    tolerance: 169
+  - quantity: whisking neurons in the analysis
+    value: 935
+    tolerance: 94
+  criterion: >-
+    A claim of absence. As response-similarity-touch-ablation, for the 7 whisking ablation mice,
+    with the sign test at the 0.05 level. Reproduced when both sign tests give p >= 0.05 with
+    the Methods fit to the neurons; the code's bin-mean fit is shown as a variant.
+- id: ablation-no-off-target-event-rate
+  statement: Ablation of silent neurons did not change the calcium event rate of neurons adjacent
+    (10-25 um) to the ablated cells (0.014 Hz before and after).
+  source: Methods, Multiphoton ablation, paragraph 5; Extended Data Fig. 3a
+  quote: >-
+    Event rates among neurons adjacent to ablated silent cells did not change (event rate before
+    ablation: 0.014 ± 0.008 Hz, grand median ± adjusted MAD; after ablation: 0.014 ± 0.007 Hz; P = 0.055
+    before versus after ablation, Wilcoxon signed-rank test, paired medians across n = 8 mice; 1,028
+    neurons across all mice)
+  statistics:
+  - test: Wilcoxon signed-rank test, paired medians across mice
+    p: 0.055
+    n: 8 mice, 1,028 neurons
+  expected:
+  - quantity: grand median event rate of adjacent neurons, before
+    value: 0.014
+    tolerance: 0.0014
+    unit: Hz
+  - quantity: grand median event rate of adjacent neurons, after
+    value: 0.014
+    tolerance: 0.0014
+    unit: Hz
+  - quantity: adjacent neurons, all mice
+    value: 1028
+    tolerance: 103
+  criterion: >-
+    A claim of absence. Neurons more than 10 and less than 25 um from the closest ablated neuron,
+    ablated and cylinder-excluded neurons left out, all neurons regardless of representation;
+    per-mouse median event rate before and after; signed-rank test at the 0.05 level
+    (ablation_figure_distance.m, event_rate_plot). Reproduced when p >= 0.05.
+- id: ablation-success-rate
+  statement: About two thirds of ablation attempts succeeded; 293 cells were ablated successfully
+    in 22 sessions in 14 mice with complete logs.
+  source: Methods, Multiphoton ablation, paragraph 3; Extended Data Fig. 2c-e
+  quote: In all cases, approximately 2/3 of ablations were successful
+  expected:
+  - quantity: fraction of targeted neurons ablated successfully
+    value: 0.667
+    tolerance: 0.067
+  - quantity: successfully ablated cells with complete logs
+    value: 293
+    tolerance: 29
+  criterion: >-
+    Per targeted neuron, success is membership in the curation file's successful list, and
+    attempts are the logged ablation attempts (ablation_figure_energy.m); the fraction is
+    successes over targeted neurons, all 24 ablations. The legend excludes j250220, j257218 and 7
+    other ablations for incomplete logs from the count of 293; the 7 are not named, so the count
+    is compared after leaving out the two named mice. Reproduced when the fraction is within
+    tolerance, and the count is reported.
+- id: glial-reaction-local
+  statement: Glial reactions after ablation were confined to the lesioned neuron, IBA1 reactions
+    having radii of 11.7 ± 1.7 um (8 of 10 IBA1-labelled sites; no GFAP reaction in 6).
+  source: Methods, Multiphoton ablation, paragraph 5; Extended Data Fig. 3b-d
+  quote: These reactions had radii of 11.7 ± 1.7 μm (mean ± s.d.; n = 8 sites)
+  expected:
+  - quantity: mean IBA1 reaction radius
+    value: 11.7
+    tolerance: 1.2
+    unit: um
+  criterion: >-
+    Histology of two mice perfused 24 h after ablation (Methods). Radii by the edge detection of
+    the Methods on the IBA1 images. Reproduced when the mean radius is within tolerance and 8 of
+    10 IBA1 and 0 of 6 GFAP sites show a reaction.
+- id: per-mouse-table
+  statement: Extended Data Table 1 lists, for each of the 24 ablations, the mouse's neuron count,
+    the ablation type, the number ablated, the touch and whisking neuron counts and the change in
+    median Rtouch and Rwhisking.
+  source: Extended Data Table 1
+  inferred: The per-mouse numbers are only in Extended Data Table 1 (read from the PDF); no sentence
+    states them.
+  depends_on:
+  - neurons-per-mouse
+  - touch-ablation-reduces-touch
+  criterion: >-
+    For each row of the table, the cell count and ablated count from the per-neuron table and
+    curation files, the touch and whisking counts (readings as in representation-sizes; the
+    table says "for the 0.1 encoding score criteria"), and the change in mouse median Rtouch and
+    Rwhisking by the common method. Counts match when within 10%; a change matches when within
+    0.005 of the table's value, as the table rounds to 0.001 and most changes are near 0, where a
+    10% tolerance would be below the rounding. The paper sets no share of rows; reproduced when
+    every row matches in cell count, ablated count and both changes, partially reproduced when
+    some rows do not, with the number of matching rows reported.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, simulation input strength. The Methods match the model to the in vivo data of ref. 7 (Peron et al. 2015), not to this paper's recordings; said so, and added reading (c), the 17% fraction the Methods take from ref. 7.
+  - model-amplification-increases. The test over Pconn steps of 0.05 was not from the paper, and the Methods interpolate the input strength linearly between 0.2 and 0.4, so amplification there follows from the two matched strengths. The criterion now asks that the matched strength at 0.4 be below that at 0.2 under each reading.
+  - model-all-or-none-robust. Removed the rule that the fraction of stimuli triggering the persistent state may not fall by more than half; the paper gives no such threshold ("maintained their all-or-none response"). The fraction and the change in score are now reported.
+  - model-slow-input-sensitive. Extended Data Fig. 8 is titled "representation degradation in networks with increased, but not equal subnetwork connectivity" and the Methods examined both cases; added the Pconn 0.2 half to the statement and criterion.
+  - model-response-similarity, response-similarity-example, response-similarity-touch-ablation, response-similarity-whisking-ablation. The Methods fix the per-network or per-mouse line as a fit to the neurons ("the linear fit is distinct from the cross-cell mean that is shown"; Fig. 3e legend, "a linear fit of the points"). The code's fit to the bin means (ablation_figure_correlation.m, checked at commit 74b7321) disagrees, so per protocol step 2 it is now a variant, not an equal reading.
+  - touch-ablation-whisking-unchanged. The statement said the count did not change "materially"; the paper only reports the counts. Reworded to give them.
+  - ablation-type-specificity. The statement said touch ablations changed Rtouch "more"; the paper says "significantly different changes". Reworded.
+  - per-mouse-table. Removed the rule of 20 of 24 rows (and 12 to 19 for partial); the paper sets no share. Every row must now match, with the number of matching rows reported.
+  - Confirmed from the PDF the seven P values the checker could not find (Extended Data Fig. 5, P = 0.098; Extended Data Fig. 6, 0.863, 0.666, 0.065, 0.721, 0.710, 0.620), the pairings of the Fig. 2j and 2k P values, and the Extended Data Table 1 means quoted in representation-sizes. Confirmed in the code the cylinder rule, the percentile rules, the counts without the shuffle test, the per-mouse means in the distance analysis and the trial-average bug.
+  - Open. The tolerances take 10% of each value, not the stated across-mouse spread (adjusted MAD or s.d.); the file gives its reason (the spread is not an uncertainty of the statistic), which this check accepts, though protocol step 3 names the stated spread as the default.
+  - Open. The input strengths of the model (readings a to c), the reset pulse strength for Pconn 0.44 and the slow-input strength are not given in the paper; the model claims rest on those readings.
+  - Open. The Results counts (901 touch, 932 before touch ablation) exceed the Extended Data Table 1 counts (means about 780 and 788); which counting rule each uses is not stated, so both readings stay.

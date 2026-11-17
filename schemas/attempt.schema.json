@@ -453,7 +453,7 @@
       }
     },
     "findings": {
-      "description": "What the attempt found about the dataset itself, whatever the outcomes. These roll up into the per-dataset report.",
+      "description": "What the attempt found, whatever the outcomes: about the dataset itself (`about: data`, for its owner and the archive, shown on the dataset's page) or about the paper (`about: paper`, shown on the paper's page).",
       "type": "array",
       "items": {
         "type": "object",
@@ -486,6 +486,21 @@
             "enum": [
               "on_prompt"
             ]
+          },
+          "about": {
+            "description": "What the finding is about. `data`: the dataset's files or metadata, including where they differ from what the paper says they hold. `paper`: the paper, its methods or its published code, with nothing wrong in the files. Unset: by its kind (docs/protocol.md): `methods_unavailable`, `code_mismatch` and `paper_inconsistency` are about the paper, the other kinds about the data. `other` and `selection_undocumented` must say.",
+            "enum": [
+              "data",
+              "paper"
+            ]
+          },
+          "datasets": {
+            "description": "For a finding about the data, in an attempt that used several datasets: the folders of the datasets it is about (000147, crcns-hc-18). Unset: the attempt's one dataset, or all of them.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
