@@ -1,0 +1,109 @@
+# robotka-2023, Robotka et al. 2023
+
+Thirteen claims reproduced (five on an assumption), one partially, one not
+reproduced and four blocked, with five more blocked that also use outside
+data, the acoustic clustering claims; the two link claims, `stimulus-set-link`
+(reproduced, the paper's 110 stimuli and call-type counts exactly) and
+`paper-good-units-link` (partially reproduced, 91 of the paper's 100 listed
+good units), and the four claims on CRCNS aa-4 are counted apart. The first
+verification round agreed with 27 of the 30 outcomes as they stood and the
+second with all 30; nothing was proposed after the second, so there was no
+third round. CRCNS data sets carry no version, so the record gives
+`unversioned`. The paper, Robotka, Thomas, Yu, Wood, Elie, Gahr and Theunissen,
+"Sparse ensemble neural code for a complete vocal repertoire" (Cell Reports
+42, 112034), records units in the auditory pallium of four freely behaving
+zebra finches (ZF4F, ZF5M, ZF6M, ZF7F) while 110 vocalizations of 10 call
+types play, decodes the call type from ensembles of units with a naive Bayes
+decoder on response strength (Z) and temporal pattern (T), relates ensemble
+decoding to the volume its modulation receptive fields span in a discriminant
+space of call types, to selectivity and to neural noise, and compares neural
+clusters with call types and acoustic clusters. The claims were written from
+the version of record with its supplement and from the paper's code
+(ftheunissen/Ensemble-Code-Cell-Reports-2022 at f2d2376). Reproduced are the
+auditory and inhibited unit counts (287 of 726, 39.5%; 47 of 287), the SNR of
+Table 1, the PC variance (92.4%), the single-unit gain of Z+T over Z (10.68%
+and 12.05%, t(186) = 7.17), the confusions of Figure 4B, the absence of a
+relation with SI (p = 0.85) and the entropy selectivity slope (p = 0.031); on
+the code's cross-validation, an assumption, the ensembles of 20 (Z+T 43.15%,
+Z 30.36%) and the top ensembles (48.80%), and with the code's sound window and
+discriminant axes as well, the volume (R2adj 0.094) and the multiple
+regression (0.238); on the code's per-call-type response, also an assumption,
+the peak call types of Figure 3C (Di 53, So 58). The neural noise relation is
+partial (R2adj 0.210 against 0.1), and `good-units-100` is not reproduced: one
+run gives 89 good units, one below the tolerance, with 87 to 101 over 10 other
+seeds and ZF6M at 8 to 14 against 16 in every run. Blocked are the area
+claims (no brain area per unit), the acoustic clustering claims (the lab's
+vocalization database is not public), the per-bird and sex test (ZF6M has 10
+good units, fewer than the 16 it needs) and the aa-4 claims, not analysed in
+a run that spent its time on aa-5. The author's first run had `fig5e-volume`
+and `fig5-multiple-regression` partially reproduced. Round 1 disagreed on
+those two (reproduced on the code's choices) and on `good-units-100`
+(partially reproduced), and found that the code's cross-validation credits
+exemplar-specific responses, that the variant on the paper's listed units and
+the call-type half of `fig6c-number-of-clusters` had not been run and that the
+stored KDE had not been checked; in reply the two regressions moved to
+reproduced on an assumption, `good-units-100` stayed not reproduced with the
+disagreement recorded, a synthetic check gave 78.2% under the code's scheme
+against 9.8% under the Methods' (chance 10%), and the missing analyses were
+run. Round 2 agreed with all 30 and found that the KDE_BW finding, that its
+values could only be milliseconds, had no printed output behind it, and it
+was withdrawn. The two questions for a reader in `questions/robotka-2023.yaml`,
+on the entropy selectivity reading of C11 and the threshold grid of C12, were
+written during the revisions, after the answer and author-answers runs had
+found no questions file, so they are not answered. The notebook ran in 35.5
+min at first (16.9 of them streaming the data), with peak memory 4.2 GB, 46.5
+min after round 1 and 3,281 s at the end, and nothing failed; in the last run
+the UMAP values moved slightly from round 1 while the Ward values did not,
+which the author put down to the machine without confirming it.
+
+No file gives the brain area (Field L, CLM, CMM, NCM or the L/NCM border) of
+a unit, though the paper's analyses by area use one, so the area claims
+cannot be tested; the data descriptor says only that the arrays targeted the
+primary and secondary auditory pallium. Nine of the 100 good units the
+paper's code lists come from a site folder named
+ZF4F_2t_190613_101015.old; the dataset's site ZF4F_2t_190613_101015 holds 18
+unit pickles, none with those names, so the deposited sorting of that site
+differs from the one the paper analysed, and the units cannot be matched by
+spike train. The other 91 listed units are in the dataset, and unit counts
+are near the paper's (726 units with vocalization trials against 730, 287
+auditory against 292, 187 with all 110 stimuli against 191). 34 of the 872
+unit pickles hold no stimulus rows (20 of them in site ZF4F_4t_190614_094759,
+whose tar.gz is 17 KB), and 112 hold song stimuli only, which the data
+descriptor does not say. Every site tar.gz holds an AppleDouble file
+(`._goodPlayback-...pkl`, 524 bytes) for each unit pickle, 872 in all, and the
+pickles are written with pandas 1.x and need pandas' pickle compatibility
+layer. The descriptor calls spikeKDE the time-varying rate, but its values
+are a 30 ms Gaussian KDE of the spike times scaled by the number of trials
+over 5, so it is not a per-trial rate when a stimulus has more than 5 trials.
+No recording is deposited twice. In the paper and its code, the Methods hold
+out one exemplar per call type in the decoder's cross-validation while the
+code holds out one random trial of every stimulus; the two differ by about 11
+points of PCC for ensembles of 20 (32.0% against 43.2% with Z+T), and only
+the code's scheme gives the paper's values. The Methods define the
+per-call-type response as the average of the trial z-scores, the code as
+mean(d)/sd(d) within the call type, and under the Methods' definition song,
+not distress calls, has the highest average response. The Methods compute the
+MPS on the first 500 ms of the stimulus and use the first three discriminant
+dimensions, while the code takes 500 ms before to 500 ms after onset and
+numpy eigh's first three eigenvectors, the smallest eigenvalues; only the
+code's choices give the paper's R2adj of about 0.1 for the volume. The 1,746
+ensembles of Figure 5 are those of the 1,800 with PCC above 30%, a filter the
+Methods do not state. Two questions are put to the paper's authors: which
+cross-validation scheme produced Figures 4 and 5, and how a count of exactly
+100 good units was obtained when the count moves from 87 to 101 between
+seeds.
+
+The author's points on the protocol: `archives.md` covers CRCNS zip files
+only, and this dataset's tar.gz files had to be streamed in full, four sites
+at a time; developing on a subset does not fit a dataset where every claim
+needs a full pass, so the data were streamed once and a reduced copy kept in
+`$TMPDIR`; the protocol treats a seed as unable to change an outcome, but the
+good-unit count crosses the tolerance edge with the seed, so it was judged on
+the first seed with the range over 10 others reported; it is not clear
+whether one assumption, the cross-validation scheme, may be adopted across
+many claims, and it was adopted throughout with each outcome marked
+`assumed`; no `blocked_by` value fits public outside data not run for lack of
+time, and `other` was used for aa-4; the claims file does not name the code's
+list of good units as an input, so a link claim was added and the repository
+listed under `inputs`; and the link claim's evidence spans two cells, one of
+them a data-check cell, where the protocol expects one tagged output.

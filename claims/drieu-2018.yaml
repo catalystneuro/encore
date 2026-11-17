@@ -1,0 +1,1195 @@
+# Claims for Drieu, Todorova & Zugaro (2018), Science 362, 675-679, tested on CRCNS hc-18.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (main text, figure legends of Figs. 1 to 3), and the
+# author manuscript (HAL hal-02330673v1) for its Materials and Methods, the Fig. 4 legend and
+# supplementary figures S1 to S13 with their legends. The extracted text of the version of
+# record lacks its page 5 (Fig. 4 and the closing paragraphs), so the Fig. 4 legend is quoted
+# from the author manuscript. Where the two versions print different bounds, the version of
+# record is recorded: Fig. 1C peak rate P < 10^-3 (manuscript 10^-4); Fig. 1E V-test
+# P < 10^-10 (manuscript 10^-11). The Methods' Data acquisition paragraph describes
+# "three rats" with tetrodes and "three rats" with octrodes,
+# while the paper reports five rats throughout; five is taken as the count.
+#
+# Data the paper used (Methods, Animal training, Behavioural task; Fig. 1A; fig. S1): five
+# adult male Long-Evans rats, each tested on a single day in a novel room, so one session
+# per rat. Each session is baseline sleep, Passive 1 travel (treadmill off), sleep, Active
+# travel (treadmill on), sleep, Passive 2 travel, sleep. Each travel condition was 2 x ~15
+# laps on a 2.20 m x 1.30 m obround track, always forward at ~45-50 cm/s; each sleep epoch
+# ~90 min in a flower pot. Measured: sorted CA1 units (pyramidal cells and interneurons),
+# LFP at 1250 Hz, and head position from one or two LEDs (30 Hz video, resampled at
+# 39.0625 Hz). The data set's description (CRCNS hc-18) says it holds 5 sessions, one
+# per rat, with spikes, LFP, positions and event files; it also says custom scripts are
+# provided in the archive. Those are part of the dataset's files and were not read here.
+#
+# Code read: FMAToolbox (github.com/michael-zugaro/FMAToolbox, commit 6bbb366, 2018-03-27),
+# the toolbox the Methods name for all analyses. It holds general functions (FiringCurve,
+# MapStats, TestRemapping, FieldShift, PhasePrecession, ReconstructPosition, FindSubcycles,
+# FindRipples, MTSpectrum and others) but not the paper's own scripts for trajectory
+# scores, quadrant scores, z-proportions or pairwise bias correlations. Where the Methods
+# and the toolbox defaults disagree (field threshold 30% in the Methods, 20% by default;
+# ripple thresholds 1 and 3 s.d. and 20 to 110 ms in the Methods, 2 and 5 s.d. and 20 to
+# 100 ms by default; decoding bins), the Methods are followed.
+#
+# Common methods, all from the Materials and Methods of the author manuscript; the criteria
+# below refer to them by name.
+# - Units: putative pyramidal cells by k-means on waveform width, trough-to-peak duration
+#   and firing rate; only clusters with L-ratio < 0.05 (Data acquisition and preprocessing).
+# - Awake spike analyses restricted to linear velocity > 5 cm/s (Firing fields).
+# - Firing curves on the linearized track, kernel method, 2.4 cm bins, Gaussian kernel
+#   4.5 cm. A field is the set of contiguous bins holding the peak (peak at least 1 Hz in
+#   Active, 0.7 Hz in Passive) with rate above 30% of the peak; a place cell is a pyramidal
+#   cell with at least one field (Firing fields). Open: a minimum field size. Readings: (a)
+#   none, as the Methods give none; (b) FiringCurve's default of 10 bins.
+# - Theta cycles: start at peaks of the theta-band (6-10 Hz) filtered LFP; cycles shorter
+#   than 80 ms or longer than 200 ms dropped; only runs of at least three contiguous cycles
+#   kept (Theta power, frequency and cycles). Peaks and troughs for asymmetry and phase
+#   precession from the LFP filtered at 1-40 Hz (Theta asymmetry and phase precession).
+#   Open: the LFP channel. Readings: (a) one CA1 pyramidal-layer channel per rat with the
+#   largest theta power; (b) the mean of the pyramidal-layer channels, as for ripples.
+#   Open: how spike phase is assigned. Readings: (a) linear interpolation between the
+#   1-40 Hz peaks (0) and troughs (pi); (b) Hilbert phase of the theta-band filtered LFP.
+# - Bayesian decoding (Bayesian trajectory decoding): occupancy prior, Poisson likelihood,
+#   trained on each travel session and applied to that session (theta sequences, windows
+#   of pi/3, six per cycle) and to the following sleep (replay, 20 ms windows). Baseline
+#   sleep is decoded with the model of the travel session whose post-sleep it is compared
+#   with. Only events with at least three units, and candidate events lasting > 60 ms.
+#   Position bins 2.4 cm, as for firing curves; ReconstructPosition's default of 200 bins
+#   is a variant.
+# - Trajectory score and slope (Assessing trajectories): R(v, rho) is the mean probability
+#   within d = 45 cm of a line, maximized over all v and rho whose total distance is under
+#   the 6 m track length, the line wrapping around the track. Significance from 5000
+#   shuffles, each circularly shifting the decoded probabilities within each window by a
+#   random number of bins; Monte Carlo p is the proportion of shuffled scores above the
+#   observed one; significant at p <= 0.05. Normalized score is (score - mean of shuffled
+#   scores) / s.d. of shuffled scores. Open: how slopes per phase window become m/s.
+#   Readings: (a) with each cycle's duration; (b) with the session's mean theta period.
+# - Quadrant score (same section): the central zone of the decoded matrix, +/-1.5 m around
+#   the current position and +/-2/3 cycle around the trough, split in four quadrants;
+#   (bottom left + top right - top left - bottom right) / sum of all four.
+# - Z-proportions (Assessing trajectories, Z-proportions): the score-slope matrix of event
+#   proportions, each cell z-scored against the same cell of 5000 shuffled matrices. The
+#   bin sizes are not given; a 0.05 score by 3 m/s slope grid is used as a standard choice,
+#   and readings with half and double these sizes are shown.
+# - SWS (Candidate replay events): k-means on the theta (6-10 Hz) / delta (1-4 Hz) ratio of
+#   sleep spectrograms; epochs > 120 s, gaps < 1 s bridged. Candidate events: place-cell
+#   spike count in 1 ms bins, Gaussian smoothing s.d. 10 ms, peak > 3 s.d., bounded where
+#   it falls back to the mean, events > 500 ms excluded. Open: over what the mean and s.d.
+#   are taken. Readings: (a) all SWS of the sleep session; (b) the whole sleep session.
+# - Ripples (Ripple detection): pyramidal-layer channels filtered 100-250 Hz and averaged,
+#   minus the averaged 300-500 Hz signal; negative values dropped, positive values z-scored;
+#   above 1 s.d. with a peak above 3 s.d.; events <= 20 ms or >= 110 ms excluded.
+# - Pairwise bias correlation (Pairwise bias correlations): bias matrix per sequence,
+#   cosine between bias matrices over neurons that fired in both, sequences with at least
+#   three common neurons, autocorrelations dropped; a pair is significant when it exceeds
+#   95% of a surrogate built by shuffling spike order in the second sequence. For Figs. 3G
+#   and 4G each condition is cut in 20 temporal bins; median over pairs within a session,
+#   then median over sessions. Open: the number of surrogates (a standard 1000 is used; it
+#   only sets the resolution of the 95% bound) and which theta cycles count as sequences.
+#   Readings: (a) every analysed theta cycle with at least three active place cells; (b)
+#   only cycles with a significant trajectory score.
+# - Statistics (Data analysis and statistics): two-tailed throughout. Gaussian paired data,
+#   repeated-measures ANOVA, post hoc paired t-tests with Bonferroni correction;
+#   non-Gaussian independent data, Kruskal-Wallis, post hoc Wilcoxon rank-sum with
+#   Bonferroni correction; non-Gaussian paired data, Friedman, post hoc signed-rank;
+#   proportions, binomial proportion test; a median against a single value, Wilcoxon
+#   signed-rank; distributions, Kolmogorov-Smirnov. Gaussianity by Jarque-Bera. With three
+#   conditions the Bonferroni levels are 0.05/3 = 0.017, 0.01/3 = 0.0033 and
+#   0.001/3 = 0.00033, as the legends print.
+schema_version: 2
+paper: doi:10.1126/science.aat2952
+claims:
+- id: figs1-travel-similar
+  statement: Train velocity, number of laps and travel duration did not differ between
+    Passive 1, Active and Passive 2 (repeated-measures ANOVA, P > 0.05 for each, 5 rats).
+  source: Results, paragraph 5; fig. S1B to S1D and legend
+  quote: The train velocity, number of laps, and travel duration were similar in all
+    conditions for all rats (fig. S1, B to D)
+  statistics:
+  - about: train velocity
+    test: repeated measures ANOVA
+    p: 0.05
+    p_relation: ">"
+    n: 5 rats
+  - about: number of laps
+    test: repeated measures ANOVA
+    p: 0.05
+    p_relation: ">"
+    n: 5 rats
+  - about: travel duration
+    test: repeated measures ANOVA
+    p: 0.05
+    p_relation: ">"
+    n: 5 rats
+  expected:
+  - quantity: train velocity, Passive 1, mean over rats
+    value: 46.80
+    tolerance: 2.04
+    unit: cm/s
+  - quantity: train velocity, Active, mean over rats
+    value: 47.87
+    tolerance: 1.83
+    unit: cm/s
+  - quantity: train velocity, Passive 2, mean over rats
+    value: 46.73
+    tolerance: 1.85
+    unit: cm/s
+  - quantity: laps, Passive 1, mean over rats
+    value: 38.2
+    tolerance: 2.8
+  - quantity: laps, Active, mean over rats
+    value: 30.8
+    tolerance: 2.24
+  - quantity: laps, Passive 2, mean over rats
+    value: 32.2
+    tolerance: 1.77
+  - quantity: travel duration, Passive 1, mean over rats
+    value: 8.24
+    tolerance: 0.69
+    unit: min
+  - quantity: travel duration, Active, mean over rats
+    value: 6.50
+    tolerance: 0.33
+    unit: min
+  - quantity: travel duration, Passive 2, mean over rats
+    value: 7.20
+    tolerance: 0.51
+    unit: min
+  criterion: Tolerances are the s.e.m. the fig. S1 legend gives. Per rat and condition, the
+    mean train velocity over the travel (from tracked head position on the linearized
+    track), the number of completed laps and the duration of the travel session. The
+    paper does not say how velocity is averaged; readings are (a) over all position
+    samples of the session, (b) over samples above 5 cm/s, the Methods' threshold for awake
+    analyses. A claim of absence, judged on the paper's test, a repeated-measures ANOVA
+    over the 5 rats for each measure. Reproduced when all three ANOVAs give P > 0.05 and
+    all nine means are within tolerance; partially reproduced when the ANOVAs hold but some
+    means do not. The effect sizes are reported.
+- id: fig1c-field-size-similar
+  statement: Place field size was the same in the three travel conditions (Kruskal-Wallis,
+    P > 0.05).
+  source: Fig. 1C and legend; Results, paragraph 5
+  quote: Place field size was maintained across travel conditions [Kruskal-Wallis (KW) test,
+    P > 0.05]
+  statistics:
+  - test: Kruskal-Wallis
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - figs2b-place-cell-count
+  criterion: A claim of absence. Field size of every place field (Common methods, Firing
+    curves), pooled over rats per condition, compared with a Kruskal-Wallis test across
+    the three conditions as the legend states. Reproduced when P > 0.05, not reproduced
+    when P <= 0.05; the median sizes are reported. Open is whether a cell with two fields
+    contributes both; readings (a) the field holding the peak only, (b) every field.
+- id: fig1c-peak-rate-lower-passive1
+  statement: Place-cell peak firing rates were lower in Passive 1 than in Active.
+  source: Fig. 1C and legend
+  quote: Peak firing rates were somewhat lower in Passive 1 than in Active (KW test, ***P <
+    10–3)
+  statistics:
+  - test: Kruskal-Wallis
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - figs2b-place-cell-count
+  criterion: Peak in-field rate of each place cell (Common methods, Firing curves), pooled
+    over rats per condition. Kruskal-Wallis across the three conditions, then a post hoc
+    Wilcoxon rank-sum Passive 1 against Active with Bonferroni correction (Methods,
+    Data analysis and statistics). Reproduced when the post hoc test gives P < 0.001/3 with
+    the Passive 1 median lower; partially reproduced when it is significant at 0.05/3 only.
+    The legend's P could also be the Kruskal-Wallis test itself; that reading (P < 0.001
+    with Passive 1 lowest) is shown as well, and either reading reproduces.
+- id: figs2b-place-cell-count
+  statement: Fewer place cells were recorded in Passive 1 (94) than in Active (150) and
+    Passive 2 (135), a difference significant across rats (repeated-measures ANOVA, P <
+    0.05).
+  source: fig. S2B and legend; Results, paragraph 5
+  quote: However, peak firing rates and place cell count were somewhat reduced during
+    passive travels
+  statistics:
+  - test: repeated measures ANOVA
+    p: 0.05
+    p_relation: "<"
+    n: 5 rats
+  expected:
+  - quantity: place cells in Passive 1, all rats
+    value: 94
+    tolerance: 9.4
+  - quantity: place cells in Active, all rats
+    value: 150
+    tolerance: 15
+  - quantity: place cells in Passive 2, all rats
+    value: 135
+    tolerance: 13.5
+  criterion: Place cells by the Methods' definition (Common methods, Units and Firing
+    curves), counted per rat and condition and summed over rats; a repeated-measures ANOVA
+    of the per-rat counts across conditions. Reproduced when all three totals are within
+    tolerance under one field-size reading and the ANOVA gives P < 0.05; partially
+    reproduced when the totals hold but not the test, or the order (Passive 1 lowest) and
+    the test hold but not the totals. The counts rest on unit sorting and the k-means
+    classification, which are redone or taken from the dataset's clusters as the author
+    finds them.
+- id: figs2c-track-coverage
+  statement: In every travel condition the place fields together covered the whole track.
+  source: Results, paragraph 5; fig. S2C
+  quote: together covered the entire train track (fig. S2C)
+  depends_on:
+  - figs2b-place-cell-count
+  criterion: The percentage of linearized track bins (2.4 cm) inside at least one place
+    field, per condition. The paper gives no number (fig. S2C plots it, and no value is
+    legible in the text) and no threshold for entire; 95% is used as the threshold, a
+    choice made here. Readings are (a) fields pooled over all rats; (b) each rat
+    separately. Reproduced when coverage is at least 95% in all three conditions under
+    reading (a), and the per-rat values are reported, as is whether coverage reaches 100%,
+    the literal reading of entire.
+- id: fig1d-no-remapping-p1-active
+  statement: Place fields did not remap between Passive 1 and Active; the mean unsigned
+    proportional field shift was smaller than under random remapping (P < 0.01, 2000
+    bootstraps), and peak-location shifts were non-uniform and centred on zero (Rayleigh
+    P < 0.001, V-test P < 10^-4).
+  source: Fig. 1D and legend; Results, paragraph 5
+  quote: 'Firing fields did not remap between Passive 1 and Active. Left: Mean unsigned
+    proportional shift s (vertical gray line; **P < 0.01) and s distribution for n = 2000
+    bootstrapped remapping data sets'
+  statistics:
+  - about: mean unsigned proportional shift against shuffled cell identities
+    test: bootstrap
+    p: 0.01
+    p_relation: "<"
+    n: 2000 bootstrapped remapping data sets
+  - about: uniformity of angular peak shifts
+    test: Rayleigh test
+    p: 0.001
+    p_relation: "<"
+  - about: mean angular shift against 0
+    test: V-test
+    p: 0.0001
+    p_relation: "<"
+  depends_on:
+  - figs2b-place-cell-count
+  criterion: Following the Methods (Firing fields, paragraph 2) and FMAToolbox
+    TestRemapping and FieldShift. For each place cell, the shift is the mode of the spatial
+    cross-correlogram of its two firing curves divided by its mean field size; the mean
+    unsigned shift is compared with 2000 shuffles of cell identity in the test condition;
+    p is the proportion of shuffled means at or below the observed one. Then peak locations
+    as angles on the obround track, differences tested with a Rayleigh test and a V-test
+    against 0. Open, with readings run each; (a) cells with a field in both conditions,
+    (b) cells with a field in either; the cross-correlogram (a) circular, as the track is
+    a closed loop, (b) linear, TestRemapping's default; no repeat-control correction, as
+    the Methods mention none (TestRemapping with the control given twice). Reproduced when
+    all three tests reach their legend bounds under one reading; partially reproduced when
+    the bootstrap test and the V-test are significant at 0.05 only.
+- id: fig1e-no-remapping-active-p2
+  statement: Place fields did not remap between Active and Passive 2 (bootstrap P ~ 0;
+    Rayleigh P < 10^-9; V-test P < 10^-10).
+  source: Fig. 1E and legend
+  quote: 'Firing fields also did not remap between Active and Passive 2. Data are displayed as
+    in (D). Left: ***P ~ 0. Inset: Rayleigh test, P < 10–9; V-test against 0, P < 10–10.'
+  statistics:
+  - about: mean unsigned proportional shift against shuffled cell identities
+    test: bootstrap
+    p: 0
+    n: 2000 bootstrapped remapping data sets
+  - about: uniformity of angular peak shifts
+    test: Rayleigh test
+    p: 1.0e-09
+    p_relation: "<"
+  - about: mean angular shift against 0
+    test: V-test
+    p: 1.0e-10
+    p_relation: "<"
+  depends_on:
+  - figs2b-place-cell-count
+  criterion: As fig1d-no-remapping-p1-active, Active as control and Passive 2 as test. P ~ 0
+    is read as no shuffled mean at or below the observed one in 2000. Reproduced when the
+    bootstrap gives P < 0.001 and the Rayleigh and V-tests reach P < 10^-9 and P < 10^-10;
+    partially reproduced when all three are significant at 0.001 only.
+- id: figs2d-stability-p1-p2
+  statement: Place fields were also stable between Passive 1 and Passive 2 (bootstrap P <
+    0.02; V-test P < 0.05), though the angular shifts did not depart from uniformity by the
+    Rayleigh test (P > 0.05).
+  source: fig. S2D and legend
+  quote: Stability of place fields between Passive 1 and Passive 2. Top, mean unsigned
+    proportional shift σ (∗P < 0.02). ... Inset, circular distribution of angular differences
+    between in-field peak firing rates (Rayleigh test, P > 0.05, V-test against 0, ∗P < 0.05)
+  statistics:
+  - about: mean unsigned proportional shift against shuffled cell identities
+    test: bootstrap
+    p: 0.02
+    p_relation: "<"
+    n: 2000 bootstrap random remapping data sets
+  - about: uniformity of angular peak shifts
+    test: Rayleigh test
+    p: 0.05
+    p_relation: ">"
+  - about: mean angular shift against 0
+    test: V-test
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - figs2b-place-cell-count
+  criterion: As fig1d-no-remapping-p1-active, Passive 1 as control and Passive 2 as test.
+    Reproduced when the bootstrap gives P < 0.02 and the V-test P < 0.05 under one reading;
+    the Rayleigh result is reported, and it is judged as the paper's test of absence
+    (not significant at 0.05).
+- id: fig2b-theta-frequency-unchanged
+  statement: Theta frequency did not differ between travel conditions (repeated-measures
+    ANOVA, P > 0.90).
+  source: Fig. 2B, top, and legend; Results, paragraph 6
+  quote: Theta frequency was unchanged across conditions [top; repeated-measures analysis of
+    variance (ANOVA), P > 0.90]
+  statistics:
+  - test: repeated measures ANOVA
+    p: 0.9
+    p_relation: ">"
+  criterion: A claim of absence. Multitaper power spectrum of the detrended LFP per rat and
+    condition (Methods, Theta power, frequency and cycles); theta frequency as the mode in
+    6-10 Hz. Repeated-measures ANOVA across the three conditions with rats as subjects.
+    Reproduced when P > 0.05 (the paper's test finds no effect), and the P is reported
+    against the paper's 0.90. The LFP used is open (Common methods, Theta cycles), and so
+    is whether it is restricted to velocity > 5 cm/s; readings (a) all of the travel
+    session, (b) only samples above 5 cm/s.
+- id: fig2b-theta-power-reduced
+  statement: Theta power was lower during passive travel than active travel
+    (repeated-measures ANOVA, P < 10^-6), with power reduced at both the fundamental and
+    the first harmonic.
+  source: Fig. 2A and 2B, middle, and legend; Results, paragraph 6
+  quote: However, during passive travel, power was slightly reduced at both the fundamental
+    frequency and the first harmonic
+  statistics:
+  - test: repeated measures ANOVA
+    p: 1.0e-06
+    p_relation: "<"
+  - about: post hoc comparisons
+    test: paired Student's t-test
+    p: 0.0033
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Power spectra per rat and condition normalized as (S_ij - mu_j) / sigma_j over
+    the conditions of rat j; theta power as the maximum in 6-10 Hz (Methods, Theta power,
+    frequency and cycles). Repeated-measures ANOVA, post hoc paired t-tests with Bonferroni
+    correction (Methods, statistics). The unit the ANOVA runs over is open, since P <
+    10^-6 is hard to reach with 5 rats; readings (a) one value per rat and condition, (b)
+    one value per spectrogram window, paired by rat. Reproduced when, under one reading,
+    the ANOVA gives P < 0.001 and both passive conditions are lower than Active in the post
+    hoc tests at 0.05/3; partially reproduced when the direction holds with the ANOVA
+    significant at 0.05 only. The first-harmonic power is reported as the peak in 12-20 Hz,
+    twice the theta band, a band the paper does not give.
+- id: fig2b-theta-asymmetry-reduced
+  statement: The shape of theta cycles changed during passive travel, with decreased cycle
+    asymmetry (Kruskal-Wallis, P < 10^-84).
+  source: Fig. 2B, bottom, and legend; Results, paragraph 6
+  quote: whereas theta power (middle; repeated-measures ANOVA, P < 10–6) and shape (bottom,
+    theta asymmetry; KW test, P < 10–84) were altered during passive travel
+  statistics:
+  - test: Kruskal-Wallis
+    p: 1.0e-84
+    p_relation: "<"
+  - about: post hoc comparisons
+    test: Wilcoxon rank-sum
+    p: 0.00033
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Per theta cycle (Common methods, Theta cycles), asymmetry log(dt2/dt1), dt1 from
+    cycle start to trough and dt2 from trough to cycle end, on the 1-40 Hz LFP (Methods,
+    Theta asymmetry and phase precession); cycles pooled over rats. Kruskal-Wallis across
+    conditions, post hoc rank-sum with Bonferroni correction. Decreased asymmetry is read
+    as median asymmetry closer to zero (smaller absolute value) in each passive condition
+    than in Active. Reproduced when the Kruskal-Wallis P < 10^-10 and both passive
+    conditions differ from Active at 0.001/3 in that direction; partially reproduced when
+    significant at 0.05 only.
+- id: fig2cd-spike-bursts-slower
+  statement: Place cells oscillated faster than theta during active travel, while during
+    passive travel their spike bursts recurred at lower frequencies, closer to theta
+    frequency.
+  source: Fig. 2C and 2D and legend; fig. S4A; Results, paragraph 6
+  quote: place cells continued to oscillate slightly faster than theta (i.e., phase
+    precession) during active travel, whereas this was reduced in passive travel
+  statistics:
+  - about: spectral modes, overall or first comparison
+    p: 1.0e-06
+    p_relation: "<"
+  - about: spectral modes, second comparison
+    p: 0.02
+    p_relation: "<"
+  criterion: Per place cell, spike times converted to unwrapped theta phase / 2 pi and a
+    multitaper spectrum of this spike train taken (Methods, Theta burst frequency); its
+    mode within 0.75 to 1.25 cycle^-1 (fig. S4A legend), cells without a peak there
+    dropped. The legend names no test for Fig. 2D; by the Methods' rules for independent
+    non-Gaussian data this is Kruskal-Wallis with rank-sum post hoc tests. Which pairs the
+    two P values belong to is open; readings (a) Kruskal-Wallis P < 10^-6 and one post hoc
+    pair at 0.02, (b) Passive 1 against Active and Active against Passive 2. Spectrum
+    parameters are not given; the chronux defaults (time-bandwidth 3, 5 tapers) are used
+    as a standard choice. Reproduced when the median mode in Active exceeds those of both
+    passive conditions and, under reading (a), the Kruskal-Wallis gives P < 10^-6 and one
+    Active post hoc comparison P < 0.02, or, under reading (b), one Active comparison
+    reaches P < 10^-6 and the other P < 0.02, in either assignment, as the legend does not
+    pair them; partially reproduced when the ordering holds with both differences
+    significant at 0.05.
+- id: figs4b-proportions-oscillating-precessing
+  statement: Fewer place cells oscillated faster than theta in passive travel (36/94 Passive
+    1, 90/150 Active, 63/135 Passive 2), and fewer were significantly phase precessing
+    (14/94, 53/150, 21/135).
+  source: fig. S4B and legend
+  quote: 'Proportion of place cells oscillating faster than theta frequency (top, Passive 1:
+    36/94, Active: 90/150, Passive 2: 63/135) and proportion of significant phase-precessing
+    cells (bottom, Passive 1: 14/94, Active: 53/150, Passive 2: 21/135)'
+  depends_on:
+  - figs2b-place-cell-count
+  - fig2cd-spike-bursts-slower
+  expected:
+  - quantity: proportion oscillating faster than theta, Passive 1
+    value: 0.383
+    tolerance: 0.038
+  - quantity: proportion oscillating faster than theta, Active
+    value: 0.6
+    tolerance: 0.06
+  - quantity: proportion oscillating faster than theta, Passive 2
+    value: 0.467
+    tolerance: 0.047
+  - quantity: proportion significantly phase precessing, Passive 1
+    value: 0.149
+    tolerance: 0.015
+  - quantity: proportion significantly phase precessing, Active
+    value: 0.353
+    tolerance: 0.035
+  - quantity: proportion significantly phase precessing, Passive 2
+    value: 0.156
+    tolerance: 0.016
+  criterion: Oscillating faster than theta is a spectral mode above 1 cycle^-1 (as in
+    fig2cd-spike-bursts-slower); the denominator is all place cells of the condition, as
+    the legend's fractions show. Significant precession is a significant linear-circular
+    regression of in-field spike phase on linearized position (Methods, Theta asymmetry
+    and phase precession; ref. 43), at p < 0.05, a level the paper does not state but
+    the usual one. The figure marks the Active proportions as differing, by the binomial
+    proportion test of the Methods. Reproduced when all six proportions are within
+    tolerance and Active exceeds both passive conditions by binomial proportion tests at
+    P < 0.05 for both measures; partially reproduced when the tests hold but some
+    proportions do not.
+- id: fig2f-phase-precession-degraded
+  statement: The distribution of phase precession slopes over all place cells differed
+    between passive and active travel, indicating an overall degradation of phase
+    precession in passive travel.
+  source: Fig. 2E and 2F and legend; Results, paragraph 6
+  quote: Distribution of phase precession slopes for all place cells (Kolmogorov-Smirnov
+    test, **P < 0.008, *P < 0.04; colored dashed vertical lines are medians)
+  statistics:
+  - about: one pair of conditions
+    test: Kolmogorov-Smirnov
+    p: 0.008
+    p_relation: "<"
+  - about: the other pair of conditions
+    test: Kolmogorov-Smirnov
+    p: 0.04
+    p_relation: "<"
+  depends_on:
+  - figs2b-place-cell-count
+  criterion: Slope of the linear-circular regression of in-field spike phase on position
+    normalized to field size (rad per field size), for every place cell (Methods, Theta
+    asymmetry and phase precession). Two-sample KS tests. The legend does not say which
+    pairs; readings are (a) Passive 1 against Active and Active against Passive 2, in
+    either assignment of the two P values. Reproduced when both Active comparisons reach
+    P < 0.04 and one reaches P < 0.008, with the Active median slope more negative than
+    both passive medians; partially reproduced when one comparison is significant at 0.05.
+- id: figs4de-precession-range-similar
+  statement: Among significantly phase-precessing cells, phase precession range and slopes
+    did not differ between passive and active travel (Kruskal-Wallis and KS tests, P >
+    0.05).
+  source: fig. S4C to S4E and legend; Results, paragraph 6
+  quote: in phase-precessing neurons, phase range was similar in all conditions (26) (fig.
+    S4, C to E)
+  statistics:
+  - about: precession range
+    test: Kruskal-Wallis
+    p: 0.05
+    p_relation: ">"
+  - about: distributions of significant slopes
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  - about: median significant slopes
+    test: Kruskal-Wallis
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - figs4b-proportions-oscillating-precessing
+  criterion: A claim of absence, on significantly precessing cells only. The paper does not
+    define the precession range (the Methods are silent; the Results cite ref. 26 only).
+    Read, as an assumption, as the phase change over the field from the regression (slope
+    times normalized field size, in degrees per field size, as fig. S4D's axis). Kruskal-Wallis across conditions for range and for slope, and KS tests between
+    pairs of conditions for slopes. Reproduced when none of these tests gives P < 0.05;
+    not reproduced when any does. Effect sizes reported.
+- id: fig3b-average-theta-reconstruction
+  statement: Averaged over all theta cycles of all rats, the reconstruction of position
+    across theta phase had trajectory score 0.17 and slope 6 cm/cycle in Passive 1, 0.23
+    and 48 cm/cycle in Active, and 0.19 and 21 cm/cycle in Passive 2.
+  source: Fig. 3B and legend; Results, paragraph 8
+  quote: This was confirmed over all theta cycles for all rats (Fig. 3B and fig. S5)
+  expected:
+  - quantity: average reconstruction trajectory score, Passive 1
+    value: 0.17
+    tolerance: 0.017
+  - quantity: average reconstruction trajectory score, Active
+    value: 0.23
+    tolerance: 0.023
+  - quantity: average reconstruction trajectory score, Passive 2
+    value: 0.19
+    tolerance: 0.019
+  - quantity: average reconstruction slope, Passive 1
+    value: 6
+    tolerance: 3
+    unit: cm/cycle
+  - quantity: average reconstruction slope, Active
+    value: 48
+    tolerance: 4.8
+    unit: cm/cycle
+  - quantity: average reconstruction slope, Passive 2
+    value: 21
+    tolerance: 3
+    unit: cm/cycle
+  criterion: The assignment of the three printed pairs to Passive 1, Active and Passive 2
+    is read from the panel order, the same order as the matching panels of figs. S7A, S8A
+    and S9A. Decoded probabilities per phase window centred on the animal's position and
+    averaged over cycles (Methods, Bayesian trajectory decoding, paragraph 2), then scored
+    over the averaged cycle (Common methods, Trajectory score). Every slope the paper
+    prints for these averages is a multiple of 3 cm/cycle, so the slope grid moves in
+    steps of 3; the tolerance for the two smaller slopes is one step, where 10% would be
+    below it. Reproduced when all six values are within tolerance and Active has the
+    highest score and slope; partially reproduced when Active is highest but some values
+    are outside tolerance.
+- id: figs5b-per-rat-reconstruction
+  statement: Across the five rats, the trajectory scores, slopes and quadrant scores of the
+    average theta reconstructions differed between conditions (repeated-measures ANOVA, P
+    = 0.008, 0.007 and 0.004), higher in Active.
+  source: fig. S5A and S5B
+  inferred: The P values are printed only inside fig. S5B, whose legend says only that it
+    shows the scores, slopes and quadrant scores of the reconstructions in (A); the order
+    of the three P values follows the panel order in the extracted text, and higher in
+    Active is read from the per-rat values of fig. S5A.
+  statistics:
+  - about: trajectory score
+    test: repeated measures ANOVA
+    p: 0.008
+    n: 5 rats
+  - about: slope
+    test: repeated measures ANOVA
+    p: 0.007
+    n: 5 rats
+  - about: quadrant score
+    test: repeated measures ANOVA
+    p: 0.004
+    n: 5 rats
+  depends_on:
+  - fig3b-average-theta-reconstruction
+  criterion: Per rat and condition, the average reconstruction as in
+    fig3b-average-theta-reconstruction, its trajectory score and slope, and the quadrant
+    score (Common methods). Repeated-measures ANOVA across conditions over the 5 rats for
+    each. Reproduced when all three give P < 0.05 with the Active mean highest; partially
+    reproduced for two of three.
+- id: fig3c-theta-scores-above-chance
+  statement: Normalized trajectory scores of theta sequences were better than chance in all
+    three conditions, and differed between conditions (Kruskal-Wallis, P < 10^-23).
+  source: Fig. 3C, left, and legend; Results, paragraph 8
+  quote: Whereas normalized trajectory scores were significantly better than chance in all
+    conditions (Fig. 3C)
+  statistics:
+  - about: across conditions
+    test: Kruskal-Wallis
+    p: 1.0e-23
+    p_relation: "<"
+  - about: post hoc comparisons
+    test: Wilcoxon rank-sum
+    p: 0.00033
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Normalized score of every theta-cycle candidate event (Common methods,
+    Trajectory score), pooled over rats. Better than chance is a median normalized score
+    above 0 by a Wilcoxon signed-rank test (Methods, statistics) in each condition.
+    Kruskal-Wallis across conditions and post hoc rank-sum tests with Bonferroni
+    correction. Reproduced when all three signed-rank tests give P < 0.05 with medians
+    above 0 and the Kruskal-Wallis gives P < 10^-10; partially reproduced when the
+    above-chance tests hold and the Kruskal-Wallis is significant at 0.05 only. Which
+    pairs differ, and in which direction, is reported.
+- id: fig3c-proportion-significant-theta
+  statement: The proportion of significant theta sequences (significant score, positive
+    slope) was 7.95% in Passive 1, 13.61% in Active and 9.05% in Passive 2, each above
+    shuffled control, and Active exceeded both passive conditions.
+  source: Fig. 3C, right, and legend; Methods, Assessing trajectories, paragraph 4
+  quote: 'Proportion of significant theta sequences (Passive 1: 7.95%, Active: 13.61%,
+    Passive 2: 9.05%; all proportions are significantly greater than shuffled control
+    proportions, Monte Carlo test, P ~ 0; binomial proportion tests, *P < 0.05, ***P <
+    0.001)'
+  statistics:
+  - about: each proportion against shuffled control proportions
+    test: Monte Carlo test
+    p: 0
+  - about: between conditions
+    test: binomial proportion test
+    p: 0.001
+    p_relation: "<"
+  - about: between conditions, the weaker comparison
+    test: binomial proportion test
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: significant theta sequences, Passive 1
+    value: 7.95
+    tolerance: 0.795
+    unit: percent
+  - quantity: significant theta sequences, Active
+    value: 13.61
+    tolerance: 1.361
+    unit: percent
+  - quantity: significant theta sequences, Passive 2
+    value: 9.05
+    tolerance: 0.905
+    unit: percent
+  - quantity: significant theta sequences without slope restriction, Passive 1
+    value: 14.66
+    tolerance: 1.466
+    unit: percent
+  - quantity: significant theta sequences without slope restriction, Active
+    value: 20.20
+    tolerance: 2.02
+    unit: percent
+  - quantity: significant theta sequences without slope restriction, Passive 2
+    value: 16.37
+    tolerance: 1.637
+    unit: percent
+  criterion: Events with Monte Carlo p <= 0.05 and positive slope, over all analysed theta
+    cycles pooled over rats (Methods, Assessing trajectories, paragraph 4); the
+    unrestricted proportions count significant events of any slope. Each against the
+    proportion of shuffled events passing the same rule. Binomial proportion tests between
+    conditions. The legend marks one pair at *P < 0.05 and others at P < 0.001; read as
+    Active against each passive condition at P < 0.001 and Passive 1 against Passive 2 at
+    P < 0.05. Reproduced when all six values are within tolerance, all
+    proportions exceed the shuffled ones, and Active exceeds both passive conditions at P
+    < 0.001; partially reproduced when the order and tests hold but fewer values match.
+- id: fig3d-theta-slopes-steeper-active
+  statement: Slopes of significant theta sequences were steeper during active travel than
+    in either passive condition, while the two passive conditions did not differ.
+  source: Fig. 3D and legend; fig. S5C and S5D; Results, paragraph 8
+  quote: slopes were significantly steeper during active travel (Fig. 3D and fig. S5, C and
+    D)
+  statistics:
+  - about: slope distributions, Passive 1 against Active
+    test: Kolmogorov-Smirnov
+    p: 1.0e-16
+    p_relation: "<"
+  - about: slope distributions, Active against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 1.0e-18
+    p_relation: "<"
+  - about: slope distributions, Passive 1 against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  - about: significant slopes across conditions
+    test: Kruskal-Wallis
+    p: 1.0e-20
+    p_relation: "<"
+  depends_on:
+  - fig3c-proportion-significant-theta
+  criterion: Slopes in m/s (Common methods, Trajectory score; both conversion readings) of
+    the theta sequences with significant scores. Signed slope distributions compared by
+    two-sample KS tests; slopes across conditions by Kruskal-Wallis. Whether fig. S5D uses
+    signed or absolute slopes is open; both are shown. Reproduced when both Active
+    comparisons give P < 10^-6 with the Active median higher, and Passive 1 against
+    Passive 2 gives P > 0.05 (a claim of absence on the paper's KS test); partially
+    reproduced when the Active comparisons hold at 0.001 only or the passive pair differs.
+- id: fig3e-joint-score-slope-theta
+  statement: Joint analysis of trajectory scores and slopes showed a much greater
+    proportion of high-score, high-slope theta sequences during active travel.
+  source: Fig. 3E and legend; Results, paragraph 8
+  quote: Joint analysis of trajectory scores and slopes revealed a much greater proportion
+    of high-value pairs during active travel (Fig. 3E)
+  depends_on:
+  - fig3c-proportion-significant-theta
+  criterion: The z-proportion matrix per condition (Common methods, Z-proportions), events
+    pooled over rats. High-value pairs are not defined in the paper; read as cells with
+    trajectory score above the 95th percentile of the pooled shuffled scores and positive
+    slope above 3 m/s (the slope sign of forward theta sequences), bounds that are a choice
+    made here and not the paper's. Reproduced when, under each bin-size
+    reading, the summed positive z-proportion of that region is larger in Active than in
+    each passive condition, and the proportion of events in that region is higher in
+    Active by a binomial proportion test at P < 0.05.
+- id: fig3f-quadrant-scores
+  statement: Quadrant scores of theta cycles were greater during active travel, remained
+    very low in passive travel, and were higher in Passive 2 than in Passive 1
+    (Kruskal-Wallis, P < 10^-24).
+  source: Fig. 3F and legend; Results, paragraphs 8 and 9
+  quote: Quadrant scores were significantly greater for active travel (clear trajectories)
+    and remained very low for passive travel (degraded trajectories) (Fig. 3F and fig.
+    S5B). ... Note that reconstruction quality and quadrant scores were higher in Passive 2
+    than in Passive 1 (Fig. 3, E and F)
+  statistics:
+  - about: across conditions
+    test: Kruskal-Wallis
+    p: 1.0e-24
+    p_relation: "<"
+  - about: post hoc comparisons
+    test: Wilcoxon rank-sum
+    p: 0.00033
+    p_relation: "<"
+    corrected: Bonferroni
+  - about: the weakest post hoc comparison, read as Passive 1 against Passive 2
+    test: Wilcoxon rank-sum
+    p: 0.017
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Quadrant score per theta cycle (Common methods), pooled over rats.
+    Kruskal-Wallis and post hoc rank-sum tests with Bonferroni correction. Reproduced when
+    the Kruskal-Wallis gives P < 10^-10, Active exceeds both passive conditions at
+    0.001/3, and Passive 2 exceeds Passive 1 at 0.05/3; partially reproduced when Active is
+    highest at 0.05/3 but Passive 2 does not exceed Passive 1.
+- id: fig3g-theta-self-consistency
+  statement: Theta sequences were most self-consistent in Active, more so in Passive 2 than
+    in Passive 1, with no consistency in Passive 1 and progressive decay during Passive 2.
+  source: Fig. 3G and legend; fig. S6A and legend; Results, paragraph 9
+  quote: This was further supported by higher self-consistency of theta sequences (31) in
+    Passive 2 than in Passive 1, whereas Active sequences were the most self-consistent
+    (Fig. 3G and fig. S6A).
+  statistics:
+  - about: proportion of significantly correlated sequence pairs between conditions
+    test: binomial proportion test
+    p: 0.001
+    p_relation: "<"
+  criterion: Pairwise bias correlations between theta sequences of the same condition
+    (Common methods, Pairwise bias correlation), both sequence readings. Per condition, the
+    mean correlation over pairs (compared by Kruskal-Wallis, as fig. S6A names) and the
+    proportion of significantly correlated pairs (binomial proportion tests). Reproduced
+    when the proportion is highest in Active and higher in Passive 2 than Passive 1, with
+    those differences at P < 0.001, and the Kruskal-Wallis is significant at 0.05. The
+    20-bin matrices of Fig. 3G are reported, with the Passive 1 mean correlation and its
+    Wilcoxon signed-rank test against 0.
+- id: figs7-control-cell-count
+  statement: With Active and Passive 2 restricted to random subsets matching the Passive 1
+    place-cell count, theta sequences were still degraded in passive travel; slopes,
+    normalized scores and quadrant scores still differed.
+  source: fig. S7 and legend; Methods, Bayesian trajectory decoding, control (i)
+  quote: Reduced cell count does not account for theta sequence degradation during passive
+    travel.
+  statistics:
+  - about: slopes, Passive 1 against Active
+    test: Kolmogorov-Smirnov
+    p: 1.0e-13
+    p_relation: "<"
+  - about: slopes, Active against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 1.0e-43
+    p_relation: "<"
+  - about: slopes, Passive 1 against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  - about: slopes of significant sequences
+    test: Kruskal-Wallis
+    p: 1.0e-39
+    p_relation: "<"
+  - about: normalized score
+    test: Kruskal-Wallis
+    p: 1.0e-09
+    p_relation: "<"
+  - about: quadrant score
+    test: Kruskal-Wallis
+    p: 1.0e-75
+    p_relation: "<"
+  depends_on:
+  - fig3d-theta-slopes-steeper-active
+  - fig3f-quadrant-scores
+  criterion: Per rat, random subsets of Active and Passive 2 place cells matching the
+    Passive 1 count, 30 repetitions, up to 300 theta cycles per subset (Methods, control
+    (i)); the analyses of Fig. 3D, 3C and 3F repeated. Reproduced when the Active
+    comparisons of slopes give P < 10^-6 with Active steeper, the Kruskal-Wallis tests of
+    score and quadrant score give P < 10^-6 with Active highest, and Passive 1 against
+    Passive 2 slopes gives P > 0.05; partially reproduced when the Active effects hold at
+    0.001 only.
+- id: figs8-control-firing-rate
+  statement: With Active and Passive 2 spikes downsampled to match the Passive 1 median
+    firing rate, theta sequences were still degraded in passive travel.
+  source: fig. S8 and legend; Methods, Bayesian trajectory decoding, control (ii)
+  quote: Reduced firing rate does not account for theta sequence degradation during passive
+    travel.
+  statistics:
+  - about: slopes, Passive 1 against Active
+    test: Kolmogorov-Smirnov
+    p: 1.0e-09
+    p_relation: "<"
+  - about: slopes, Active against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 1.0e-09
+    p_relation: "<"
+  - about: slopes, Passive 1 against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 0.1
+    p_relation: ">"
+  - about: slopes of significant sequences
+    test: Kruskal-Wallis
+    p: 1.0e-11
+    p_relation: "<"
+  - about: normalized score
+    test: Kruskal-Wallis
+    p: 1.0e-10
+    p_relation: "<"
+  - about: quadrant score
+    test: Kruskal-Wallis
+    p: 1.0e-07
+    p_relation: "<"
+  - about: firing rates after downsampling
+    test: Kruskal-Wallis
+    p: 0.9
+    p_relation: ">"
+  expected:
+  - quantity: place-cell firing rate after downsampling, Passive 1
+    value: 0.905
+    tolerance: 0.145
+    unit: Hz
+  - quantity: place-cell firing rate after downsampling, Active
+    value: 0.933
+    tolerance: 0.083
+    unit: Hz
+  - quantity: place-cell firing rate after downsampling, Passive 2
+    value: 0.829
+    tolerance: 0.130
+    unit: Hz
+  depends_on:
+  - fig3d-theta-slopes-steeper-active
+  - fig3f-quadrant-scores
+  criterion: Tolerances are the spread the fig. S8F legend gives. Per rat, spikes of the
+    most active Active and Passive 2 place cells randomly removed until the median rate is
+    below the Passive 1 median (Methods, control (ii); fig. S8 legend). Which rate is
+    matched is open; readings (a) mean rate over the travel session, (b) peak in-field
+    rate. Reproduced when the Active effects (slopes, score, quadrant score) hold at P <
+    10^-6, Passive 1 against Passive 2 slopes gives P > 0.1, and the rate comparison gives
+    P > 0.05; partially reproduced when the Active effects hold at 0.001 only.
+- id: figs9-control-decoding-quality
+  statement: With passive-travel theta cycles restricted to low decoding-error periods
+    matching Active, slopes and quadrant scores still differed between conditions,
+    while normalized scores no longer did (Kruskal-Wallis, P > 0.05).
+  source: fig. S9 and legend; Methods, Bayesian trajectory decoding, control (iii)
+  quote: Reduced decoding quality cannot account for theta sequence degradation during
+    passive travel.
+  statistics:
+  - about: slopes, Passive 1 against Active
+    test: Kolmogorov-Smirnov
+    p: 1.0e-09
+    p_relation: "<"
+  - about: slopes, Active against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 1.0e-16
+    p_relation: "<"
+  - about: slopes, Passive 1 against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  - about: slopes of significant sequences
+    test: Kruskal-Wallis
+    p: 1.0e-15
+    p_relation: "<"
+  - about: normalized score
+    test: Kruskal-Wallis
+    p: 0.05
+    p_relation: ">"
+  - about: quadrant score
+    test: Kruskal-Wallis
+    p: 1.0e-16
+    p_relation: "<"
+  expected:
+  - quantity: decoding error after restriction, Passive 1
+    value: 0.802
+    tolerance: 0.018
+  - quantity: decoding error after restriction, Active
+    value: 0.80
+    tolerance: 0.023
+  - quantity: decoding error after restriction, Passive 2
+    value: 0.802
+    tolerance: 0.014
+  depends_on:
+  - fig3d-theta-slopes-steeper-active
+  - fig3f-quadrant-scores
+  criterion: Tolerances are the spread the fig. S9F legend gives; the unit of the error is
+    not printed and is read as metres (fig. S9F axis "Error (m)"). Reconstruction errors
+    in 500 ms bins per condition; high-error bins progressively excluded in Passive 1 and
+    Passive 2 until their median error is below the Active median; theta cycles in the kept
+    bins decoded (Methods, control (iii)). Open is the order of exclusion; read as the
+    highest-error bin first. Reproduced when the Active effects on slopes and quadrant
+    scores hold at P < 10^-6, the normalized-score Kruskal-Wallis gives P > 0.05 (absence,
+    on the paper's test), and the errors are within tolerance; partially reproduced when
+    the Active effects hold at 0.001 only or the normalized scores differ.
+- id: figs10-control-lap-variability
+  statement: With the decoder retrained on each lap, theta sequences were still degraded in
+    passive travel.
+  source: fig. S10 and legend; Methods, Bayesian trajectory decoding, control (iv)
+  quote: Trial-to-trial field variability does not account for theta sequence degradation
+    during passive travel.
+  statistics:
+  - about: slopes, Passive 1 against Active
+    test: Kolmogorov-Smirnov
+    p: 1.0e-12
+    p_relation: "<"
+  - about: slopes, Active against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 1.0e-13
+    p_relation: "<"
+  - about: slopes, Passive 1 against Passive 2
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  - about: slopes of significant sequences
+    test: Kruskal-Wallis
+    p: 1.0e-18
+    p_relation: "<"
+  - about: normalized score
+    test: Kruskal-Wallis
+    p: 1.0e-27
+    p_relation: "<"
+  - about: quadrant score
+    test: Kruskal-Wallis
+    p: 1.0e-09
+    p_relation: "<"
+  depends_on:
+  - fig3d-theta-slopes-steeper-active
+  - fig3f-quadrant-scores
+  criterion: The decoder trained on each lap and applied to that lap's theta cycles
+    (Methods, control (iv)). Open is whether a lap is decoded from its own firing curves
+    or from those of the other laps; readings (a) its own lap, as the text reads, (b)
+    the other laps. Reproduced when the Active effects on slopes, scores and quadrant
+    scores hold at P < 10^-6 and Passive 1 against Passive 2 slopes gives P > 0.05;
+    partially reproduced when the Active effects hold at 0.001 only.
+- id: figs11-sleep-sessions-similar
+  statement: SWS duration, number and rate of candidate events and ripple rate did not
+    differ between sleep sessions (repeated-measures ANOVA, P > 0.05), and candidate events
+    coincided with ripples alike in all sessions (KS, P > 0.05).
+  source: fig. S11 and legend; Results, paragraph 11
+  quote: The average SWS duration, number and rate of candidate events, and ripple
+    occurrence rate were not significantly different across animals (fig. S11, B and D to
+    F)
+  statistics:
+  - about: SWS duration
+    test: repeated measures ANOVA
+    p: 0.05
+    p_relation: ">"
+  - about: number of candidate events, their frequency, ripple rates
+    test: repeated measures ANOVA
+    p: 0.05
+    p_relation: ">"
+  - about: timing of candidate events relative to ripple peaks, between all pairs of
+      conditions
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  criterion: The main text says across animals; the legend says between sleep conditions;
+    the legend's comparison (rats as subjects, conditions as the factor) is the one tested.
+    SWS, candidate events and ripples as in Common methods, per rat and sleep session.
+    Fig. S11B includes baseline sleep, fig. S11D to F only the three post-travel sessions.
+    A claim of absence on the paper's tests. Reproduced when none of the four ANOVAs and
+    none of the KS tests of event-to-ripple-peak times gives P < 0.05; not reproduced when
+    any does. The fraction of candidate events within 0.1 s of a ripple peak is reported.
+- id: fig4b-replay-scores-vs-baseline
+  statement: Replay trajectory scores, relative to baseline sleep, were improved only in
+    sleep after Active and after Passive 2 (Kruskal-Wallis, P < 10^-17).
+  source: Fig. 4B and legend; Results, paragraph 12
+  quote: scores were significantly improved relative to baseline (31) only in sleep sessions
+    following Active and Passive 2 (Fig. 4B)
+  statistics:
+  - about: across conditions
+    test: Kruskal-Wallis
+    p: 1.0e-17
+    p_relation: "<"
+  - about: post hoc comparisons
+    test: Wilcoxon rank-sum
+    p: 0.00033
+    p_relation: "<"
+    corrected: Bonferroni
+  - about: comparisons other than post hoc
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - figs11-sleep-sessions-similar
+  criterion: Per rat, each post-sleep candidate event's trajectory score relative to
+    baseline sleep as (score - median baseline score) / (third - first quartile of baseline
+    scores), baseline events decoded with the same travel model; pooled over rats
+    (Methods, Assessing trajectories, paragraph 3). Improved relative to baseline is a
+    median above 0 by a Wilcoxon signed-rank test (Methods, statistics). Reproduced when
+    the medians after Active and after Passive 2 are above 0 at P < 0.01, the median after
+    Passive 1 is not above 0 at P < 0.05, and the Kruskal-Wallis across the three sessions
+    gives P < 10^-6; partially reproduced when after-Active alone is above 0 at P < 0.05.
+- id: fig4c-replay-slopes-steeper-active
+  statement: Replay slopes were steeper in sleep after Active than after either passive
+    travel, while sleep after Passive 1 and Passive 2 did not differ.
+  source: Fig. 4C and legend; fig. S13B and legend; Results, paragraph 12
+  quote: In addition, slopes were significantly steeper following Active (Fig. 4C and fig.
+    S13B).
+  statistics:
+  - about: absolute slopes across sleep sessions
+    test: Kruskal-Wallis
+    p: 1.0e-27
+    p_relation: "<"
+  - about: slope distributions, sleep after Passive 1 against after Active
+    test: Kolmogorov-Smirnov
+    p: 1.0e-08
+    p_relation: "<"
+  - about: slope distributions, sleep after Active against after Passive 2
+    test: Kolmogorov-Smirnov
+    p: 1.0e-06
+    p_relation: "<"
+  - about: slope distributions, sleep after Passive 1 against after Passive 2
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - figs11-sleep-sessions-similar
+  criterion: Slopes in m/s of the candidate events of each post-travel sleep session
+    (Common methods, Trajectory score; 20 ms windows). Fig. 4C uses absolute slopes;
+    whether all events or only those with significant scores is open, and both are run
+    (fig. S13 shows significant events). Reproduced when the Kruskal-Wallis gives P <
+    10^-10 with sleep after Active highest, both Active KS comparisons give P < 10^-4, and
+    the passive pair gives P > 0.05; partially reproduced when the Active effect holds at
+    0.001 only.
+- id: fig4d-joint-score-slope-replay
+  statement: Joint analysis of replay trajectory scores and slopes showed a much greater
+    proportion of high-score, high-slope events in sleep after Active.
+  source: Fig. 4D and legend; fig. S13C and S13D; Results, paragraph 12
+  quote: Joint analysis of trajectory scores and slopes confirmed a much greater proportion
+    of high-value pairs after active travel
+  depends_on:
+  - fig4c-replay-slopes-steeper-active
+  criterion: As fig3e-joint-score-slope-theta, on candidate events of each post-travel
+    sleep session, with high-value cells read as score above the 95th percentile of the
+    shuffled scores and absolute slope above 3 m/s (replay runs in both directions), bounds
+    chosen here as the paper gives none. The
+    proportion ratio of fig. S13D (Methods, Z-proportions and proportion ratios) is shown
+    as well. Reproduced when, under each bin-size reading, the summed positive
+    z-proportion of that region is largest after Active and the proportion of events in it
+    is higher after Active than after each passive travel by a binomial proportion test at
+    P < 0.05.
+- id: fig4e-replay-proportion-vs-baseline
+  statement: Relative to baseline sleep, the proportion of significant replay events was
+    not increased after Passive 1, was boosted after Active, and was intermediate but
+    significantly increased after Passive 2.
+  source: Fig. 4E and legend; Results, paragraph 13
+  quote: We did not observe replay during sleep following Passive 1 (Fig. 4E) ... Trajectory
+    replay was then boosted in sleep following Active (Fig. 4E) ... an intermediate but
+    significant level of reactivation was observed following Passive 2 (Fig. 4E)
+  statistics:
+  - about: post-sleep against baseline proportions
+    test: binomial proportion test
+    p: 0.001
+    p_relation: "<"
+  - about: the weaker significant comparison
+    test: binomial proportion test
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - figs11-sleep-sessions-similar
+  criterion: Proportion of candidate events with Monte Carlo p <= 0.05 in each post-travel
+    sleep session and in baseline sleep decoded with the same travel model, pooled over
+    rats; the ratio post / baseline as plotted, and binomial proportion tests of post
+    against baseline (Methods, statistics). Whether a positive slope is also required, as
+    for theta sequences, is open; readings (a) significant score only, (b) significant
+    score and slope above 0. Which of the legend's two levels goes with which comparison
+    is not printed; read as after Active against baseline at P < 0.001 and after Passive 2
+    against baseline at P < 0.01, with the after-Active ratio largest. For Passive 1, a
+    claim of absence on the paper's binomial test. Reproduced when, under one reading,
+    after Passive 1 is not different from baseline (P >= 0.05), after Active is higher at
+    P < 0.001, after Passive 2 is higher at P < 0.01, and the after-Active ratio is largest.
+- id: fig4f-forward-replay-after-active
+  statement: Forward and reverse replay events were equally common in sleep after passive
+    travel, while sleep after Active held more forward than reverse events.
+  source: Fig. 4F and legend; Results, paragraph 13
+  quote: Although forward and backward trajectories were found in equal proportions during
+    sleep after passive travel, only active travel resulted in a greater proportion of
+    forward replay actually reflecting awake experience (Fig. 4F).
+  statistics:
+  - test: binomial proportion test
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - fig4e-replay-proportion-vs-baseline
+  criterion: Among significant replay events of each post-travel session, forward events
+    have a positive slope (the train always moved forward along the linearized track;
+    Methods, Animal training) and reverse events a negative one. The binomial proportion
+    test compares the forward and reverse proportions; the comparison is open, readings
+    (a) forward against reverse proportion within the session (equivalently against 0.5),
+    (b) the session's forward proportion against baseline sleep's. Reproduced when, under
+    one reading, after Active forward exceeds reverse at P < 0.001 and after both passive
+    travels the test finds no difference (P >= 0.05, absence on the paper's test).
+- id: fig4g-theta-replay-correlation-active
+  statement: Theta sequences correlated selectively with candidate replay events in the
+    sleep that followed them only for Active.
+  source: Fig. 4G and legend; fig. S6B and S6C and legend; Results, paragraph 13
+  quote: a direct comparison of theta and replay sequences (31) highlighted a selective ...
+    correlation between theta sequences in Active and candidate replay events in
+    subsequent sleep (Fig. 4G and fig. S6, B and C)
+  statistics:
+  - about: proportion of significantly correlated theta-replay pairs
+    test: binomial proportion test
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - fig3g-theta-self-consistency
+  criterion: Pairwise bias correlations between theta sequences of each travel session and
+    candidate events of its post-sleep, and of baseline sleep (Common methods, Pairwise
+    bias correlation; fig. S6B and S6C). Reproduced when the proportion of significantly
+    correlated pairs Active-post-Active exceeds Active-baseline at P < 0.001 by a binomial
+    proportion test while neither passive session's pairs with its post-sleep exceed its
+    pairs with baseline at P < 0.05; partially reproduced when the Active effect holds at
+    0.05 only. Mean correlations, compared by Kruskal-Wallis as fig. S6 names, are
+    reported.
+- id: figs12-ripple-restricted
+  statement: Restricting candidate events to ripples left the replay results unchanged;
+    scores relative to baseline, slopes, the boost after Active and the forward bias after
+    Active all held.
+  source: fig. S12 and legend; Results, paragraph 11
+  quote: results remained unchanged when candidate events were restricted to ripples (fig.
+    S12)
+  statistics:
+  - about: scores relative to baseline
+    test: Kruskal-Wallis
+    p: 1.0e-15
+    p_relation: "<"
+  - about: slopes, sleep after Passive 1 against after Active
+    test: Kolmogorov-Smirnov
+    p: 1.0e-05
+    p_relation: "<"
+  - about: slopes, sleep after Active against after Passive 2
+    test: Kolmogorov-Smirnov
+    p: 1.0e-05
+    p_relation: "<"
+  - about: slopes, sleep after Passive 1 against after Passive 2
+    test: Kolmogorov-Smirnov
+    p: 0.05
+    p_relation: ">"
+  - about: absolute slopes
+    test: Kruskal-Wallis
+    p: 1.0e-27
+    p_relation: "<"
+  depends_on:
+  - fig4b-replay-scores-vs-baseline
+  - fig4c-replay-slopes-steeper-active
+  - fig4e-replay-proportion-vs-baseline
+  - fig4f-forward-replay-after-active
+  criterion: Candidate events kept only when they overlap a detected ripple (Common methods,
+    Ripples); the analyses of Fig. 4B, 4C, 4E and 4F repeated. Restricted to ripples is
+    open; readings (a) any overlap with a ripple, (b) the event's peak inside a ripple.
+    Reproduced when the four claims' criteria hold on the restricted events, with the
+    p-value bounds of this legend in place of theirs; partially reproduced when two or
+    three do.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2cd-spike-bursts-slower. The criterion fixed P < 10^-6 to Active-Passive 1 and P < 0.02 to Active-Passive 2, though the Fig. 2D legend does not pair them; reading (b) now takes either assignment, and reading (a) is spelled out.
+  - figs4de-precession-range-similar. The criterion attributed its range definition to ref. 26; the paper never defines the range, so it is now marked an assumption.
+  - fig3e-joint-score-slope-theta, fig4d-joint-score-slope-replay. Said that the high-value bounds (95th shuffled percentile, 3 m/s) are choices made here; the paper gives none.
+  - fig3c-proportion-significant-theta. Added the binomial *P < 0.05 of the Fig. 3C legend as a statistics entry; only the P < 0.001 level was recorded.
+  - fig2b-theta-power-reduced. Said that the 12-20 Hz first-harmonic band is not the paper's.
+  - figs1-travel-similar, figs4b-proportions-oscillating-precessing, fig3b-average-theta-reconstruction, fig3c-proportion-significant-theta. Removed the rules that some of the expected values may miss (7 of 9, 5 of 6, 4 of 6); the paper gives no such allowance, so every value must be within tolerance for a full reproduction.
+  - figs2c-track-coverage. Added that coverage at 100%, the literal reading of entire, is reported.
+  - Open. figs2c-track-coverage, the 95% coverage threshold is not from the paper, which gives no number for entire.
+  - Open. fig3e-joint-score-slope-theta and fig4d-joint-score-slope-replay rest on a high-value region that the paper does not define, so their outcomes rest on an assumption.
+  - Open. figs5b-per-rat-reconstruction, which P value of fig. S5B goes with which measure is read from the extracted panel order; the criterion requires all three below 0.05, so the order does not change the outcome.
+  - Open. Results paragraph numbers in the sources follow the author manuscript's paragraphs; the version of record merges some of them, so the numbers may be off by one there. Each source also names its figure panel.

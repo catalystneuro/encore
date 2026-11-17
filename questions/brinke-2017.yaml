@@ -1,0 +1,53 @@
+# Questions from attempt brinke-2017-01 (author, 2026-11-13) about the claims file
+# claims/brinke-2017.yaml. Asked under docs/protocol.md, Author, step 1.6. The attempt tested the
+# claims as the file has them and blocked the four claims below as data_missing.
+dataset: crcns:cb-1
+paper: doi:10.7554/elife.28132
+questions:
+- claim: firing-rate-depth
+  also: [fig4s1-cs-peak-suppression-not-different, fig5ej-cs-pause-cells-shallower, fig6g-us-response-depth]
+  asked: 2026-11-13
+  question: These claims need each recording's depth, which CRCNS cb-1 does not hold (its data
+    structure has no depth field). The paper's Source data 1, elife-28132-data1-v2.mat on the eLife
+    site (https://cdn.elifesciences.org/articles/28132/elife-28132-data1-v2.mat), is a structure
+    `ipn` of 51 variables for the 372 cells in the same order, and one of its variables is named
+    `Depth`. The opening comment of the claims file mentions Source data 1 but lists only the Purkinje
+    cell data as outside data. Should these claims be `data elsewhere` (or `with_inputs`, with a link
+    claim that matches the 372 cells by order and checks shared values such as baseline rate and
+    valid trial count), with Source data 1 as the pinned input, so that a later attempt can test them?
+  passage: Additional files, Source data 1, "For 51 variables relevant to the analyses in this paper,
+    the values for each trial for each cell are contained in a data structure ... The two IpN datasets
+    central to this study are combined, with the first 270 cells denoting the first dataset, and the
+    remaining 102 cells denoting the second dataset."
+  why: As the file stands, each of the four claims is blocked as data_missing, although the paper
+    deposited the depths in a public file. The attempt read only the variable names of Source data 1,
+    to ask this question; it used none of its values.
+  answered: 2026-11-13
+  answer: Yes, the claims file changed. The paper publishes Source data 1 with the article ("For 51
+    variables relevant to the analyses in this paper, the values for each trial for each cell are
+    contained in a data structure"), with the 372 cells
+    in the dataset's order, and the four claims test recording depth, which the CRCNS description
+    does not list. The opening comment now names Source data 1 and its eLife URL as outside data
+    that supplies recording depth. The four claims are now data with_inputs and their criteria take
+    depth from it. They are not elsewhere, because the spikes and eyelid traces still come from the
+    dataset. The link claim that matches cells by order and checks shared values is the author's to
+    write (Author, step 4). Statements, quotes and expected values are unchanged.
+- claim: fig2n-suppression-ds2
+  also: [ds2-modulation-proportion, fig2e-facilitation-ds2, fig2f-facilitation-trial-correlations-ds2, fig2f-lmm-ds2,
+    fig2h-facilitation-leads-eyelid-ds2, fig2p-suppression-no-lead-ds2, ds2-stronger-facilitation-same-suppression,
+    fig4c-cs-pause-ds2, fig5hi-cs-pause-faster-facilitation-ds2]
+  asked: 2026-11-13
+  question: For the second dataset the claims file's opening comment gives two windows for CS-US modulation, the
+    last 200 ms of the data description's 212 ms CS-US interval (12-212 ms) and the paper's 200 ms interval (0-200
+    ms). Should the whole CS-US interval of the second dataset, 0 to 212 ms, also be a reading? The paper describes
+    the second dataset's modulation as taken over "the CS-US interval" and gives that interval as 200 ms, while the
+    data set gives 212 ms, so the paper's text could mean the whole interval as recorded. Asked after the round-1
+    verifier reported this as a gap in the claims file. The attempt ran 0-212 ms only as a variant.
+  passage: Results, IpN facilitation but not suppression can drive conditioned eyelid behavior, paragraph 4, "In
+    the second dataset, 16 cells showed CS-US spike suppression"; Materials and methods, on the second dataset,
+    "the CS was 220 ms, the US was 20 ms, resulting in a CS-US interval of 200 ms"; and the data description of
+    CRCNS cb-1, which gives a US onset of 212 ms for the second dataset.
+  why: The count of second-dataset suppression cells with behavior is 18 (12-212 ms) or 14 (0-200 ms) under class
+    reading (a), both outside 16 +/- 1.6, and 16 on 0-212 ms. On 0-212 ms fig2n still misses its significant-cell
+    count (5 against 8 +/- 1) and slope (-0.60 against -1.01 +/- 0.2), so its outcome would not change, but the
+    window sets every second-dataset class and could move other counts.
