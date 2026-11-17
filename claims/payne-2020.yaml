@@ -1,0 +1,747 @@
+# Claims for Payne, Wiedmann, Eiber, Wong, Senn, Osborne, Keast & Fallon (2020), "Recording of
+# Electrically Evoked Neural Activity and Bladder Pressure Responses in Awake Rats Chronically
+# Implanted With a Pelvic Nerve Array", Front. Neurosci. 14, 619275, on SPARC:206.
+#
+# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-17, protocol pilot-16 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the version of record, from Europe PMC (PMC7773906, JATS XML flattened;
+# paper/10.3389-fnins.2020.619275.txt), the main text, Materials and Methods, Table 1, figure
+# legends and Discussion. The paper has no supplement. No figure was read from a PDF page (no
+# PDF was supplied); Figure 2C, 3C and 5C/D are known here only from their legends and the
+# Results.
+#
+# Code read: none. The paper links no code; its Data Availability Statement says the raw data
+# "will be made available by the authors". Cystometry was analysed with customized MATLAB
+# software (R2019b) and c-Fos counts in R 3.5.2 and RStudio (Methods), neither of which is
+# linked. So no method detail below is settled by code. The SPARC dataset's title and
+# description (electrical neuromodulation of the rat pelvic nerve by chronically implanted
+# planar four-electrode arrays, and bladder pressure responses by cystometry in awake rats)
+# were read; no file of the dataset was opened.
+#
+# Data the paper used (Methods; Results).
+# - Animals. 24 male Sprague-Dawley rats, 8 to 9 weeks old. Pelvic nerve array (four platinum
+#   electrodes E1 to E4, E1 closest to the bladder; E1-E2 and E3-E4 are 0.75 mm apart centre to
+#   centre, the two pairs 2.85 mm apart centre to centre) sutured over the right pelvic nerve
+#   near the major pelvic ganglion (MPG); bladder catheter in the dome.
+# - Anaesthetised ECAPs (Figure 2A to C). 5 urethane-anaesthetised rats, end of life.
+#   Stimulation on E1-E2 (bipolar, 100 us pulse, 50 us interphase gap, 10 Hz), recording on
+#   E3-E4. Two sets of ECAPs, each the average of 50 responses, at 0 to 2 mA in 0.1 mA steps;
+#   sampled at 100 kHz, filtered 300 to 5000 Hz, gain 10^2. Three positive peaks P1, P2, P3.
+#   Threshold, the lowest current giving a response of at least 0.05 uV in both recordings.
+# - Awake ECAPs. Chronically implanted awake rats at week 0 and week 1 after implantation
+#   (Methods say three rats, Results say n = 4).
+# - Impedance. Common ground impedance (biphasic 25 us per phase, 931 uA; Z from the voltage
+#   at the end of the first phase): 38 electrodes in 10 arrays before implantation, day 1 and
+#   2 weeks; 8 electrodes in 2 arrays at 8 weeks.
+# - Colonic pressure. 3 urethane-anaesthetised rats, colonic balloon at 30 to 35 mmHg, pelvic
+#   nerve stimulation at 10 Hz, 100 us, 1 mA; 13 replicate responses in the one responder.
+# - Awake cystometry (Figure 3, Table 1). 12 rats in initial studies and 12 habituated rats
+#   (3 days, 30 min a day). Sessions of 2 h between day 7 and 18 after surgery, and in 2 rats
+#   at 8 weeks. Saline infused at 100 ul/min; bladder pressure sampled at 1 kHz (LabChart).
+#   Pelvic nerve stimulation trains of 10 s, biphasic, 100 us, 10 to 25 Hz, 0.5 to 1.5 mA, at
+#   chosen stages of the cycle (mostly at an estimated 50 to 80% fill). Unstimulated voiding
+#   parameters from the three cycles before any stimulation, in 9 rats (Table 1). Stimulated
+#   responses in 8 rats, classified as evoked voids (visible urine) or evoked non-voiding
+#   contractions (eNVC).
+# - Ganglion histology (Figure 4). L6 and S1 DRG and MPG, ipsi- and contralateral, from 2 rats
+#   at 50 days; ATF-3, CGRP and synaptophysin; archived axotomy ganglia (Payne et al., 2015) as
+#   positive control. Assessed qualitatively.
+# - Spinal c-Fos (Figure 5). 3 rats at day 10 after a session of cystometry and stimulation;
+#   segments L5 to S2, five 40 um sections per segment; c-Fos+ neurons counted per region
+#   (laminae I to VIII and X, SDCom, SPN) on each side.
+#
+# Inconsistencies in the paper, noted for the author. The awake ECAP cohort is three rats in
+# the Methods and n = 4 in the Results. The anaesthetised thresholds are called "mean" in the
+# Results, but the Statistics section says thresholds are given as median and IQR. The awake
+# thresholds are given as value plus or minus a spread that is not named (SD or SEM). The
+# impedance spreads are also unnamed. The c-Fos session is 60 min in the Results and a 2-h
+# testing period in the Methods.
+#
+# Details the paper leaves open, named in the criteria with the readings it allows: the
+# electrode distance used for conduction velocity; the stimulus level at which peak latencies
+# are taken; how threshold amplitude is measured; mean or median across rats; which groups
+# the awake Friedman test compares; the definitions of threshold pressure, peak pressure,
+# contraction duration and HFPO frequency (the paper cites Andersson et al., 2011 and Fraser
+# et al., 2020 for them); the window that makes a void "immediately" follow stimulation; the
+# family of comparisons for the c-Fos Welch tests.
+schema_version: 2
+paper: doi:10.3389/fnins.2020.619275
+claims:
+- id: anes-ecap-recorded
+  statement: In all five urethane-anaesthetised rats, ECAPs with complex waveforms were recorded
+    on the non-stimulating electrode pair during graded stimulation and could be separated from
+    the stimulation artefact.
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 1; Figure 2A and 2B
+  quote: In all cases, ECAPs with complex waveforms could be recorded from the non-stimulating
+    electrode pair during graded electrical stimulation; these ECAPS could be separated from the
+    stimulation artifact
+  criterion: >-
+    Per rat, the averaged E3-E4 response to E1-E2 stimulation at each current (Methods, ECAP and
+    Impedance Testing). Reproduced when, in each of the five rats, at least one positive peak
+    after the end of the stimulus artefact reaches the paper's threshold of 0.05 uV in both
+    recordings at some current, and is absent at 0 mA. The paper does not say where the artefact
+    ends; the readings are (a) after 1 ms from pulse onset, (b) after the first return of the
+    trace to baseline; both are shown.
+- id: anes-ecap-latencies
+  statement: In anaesthetised rats, ECAPs at supra-threshold stimulation show three positive
+    peaks centred at 1.80 ms (P1, range 1.65 to 2.90 ms), 3.48 ms (P2, 2.51 to 4.16 ms) and 3.77
+    ms (P3, 3.25 to 5.67 ms), n = 5.
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 1
+  quote: >-
+    At supra-threshold stimulation levels these waveforms showed positive peaks centered at:
+    P1, 1.80 ms (range 1.65–2.90 ms, n = 5); P2, 3.48 ms (2.51–4.16 ms); and P3, 3.77 ms
+    (3.25–5.67 ms)
+  expected:
+  - quantity: P1 latency, central value over 5 rats
+    value: 1.80
+    tolerance: 0.18
+    unit: ms
+  - quantity: P2 latency, central value over 5 rats
+    value: 3.48
+    tolerance: 0.348
+    unit: ms
+  - quantity: P3 latency, central value over 5 rats
+    value: 3.77
+    tolerance: 0.377
+    unit: ms
+  criterion: >-
+    Tolerance is 10% of each value; the printed ranges are the spread across rats, not an
+    uncertainty of the central value, and each rat's latency is also expected to lie within its
+    range widened by 10% of each bound. Latency is the time of each positive peak in the averaged
+    E3-E4 response. Open, and named here. The central value is (a) the median (the Statistics
+    section presents latency as median and IQR) or (b) the mean. The time origin is (a) pulse
+    onset or (b) the end of the biphasic pulse (250 us later). The stimulus level is (a) the
+    highest current, 2 mA, (b) the lowest current at which all three peaks pass threshold, or
+    (c) the mean over all currents above P3 threshold. Reproduced when all three values are
+    within tolerance under one combination of readings; every combination is shown.
+- id: anes-conduction-velocity
+  statement: Approximate conduction velocities of the three populations in anaesthetised rats
+    are 1.60 m/s (P1, 0.98 to 1.72), 0.82 m/s (P2, 0.35 to 1.13) and 0.78 m/s (P3, 0.50 to 0.88),
+    in the range of myelinated A-fibres and unmyelinated C-fibres.
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 1; Discussion,
+    paragraph 4
+  quote: >-
+    Approximate conduction velocities for these populations are 1.60 m/s (P1, 0.98–1.72 m/s),
+    0.82 m/s (P2, 0.35–1.13 m/s) and 0.78 m/s (P3, 0.50–0.88 m/s)
+  depends_on:
+  - anes-ecap-latencies
+  expected:
+  - quantity: P1 conduction velocity
+    value: 1.60
+    tolerance: 0.16
+    unit: m/s
+  - quantity: P2 conduction velocity
+    value: 0.82
+    tolerance: 0.082
+    unit: m/s
+  - quantity: P3 conduction velocity
+    value: 0.78
+    tolerance: 0.078
+    unit: m/s
+  criterion: >-
+    Velocity is conduction distance over peak latency, per rat, with latencies as in
+    anes-ecap-latencies. The paper does not state the distance. The readings, from the array
+    geometry in the Methods (Design of a Custom Planar Four-Electrode Array), are (a) 2.85 mm,
+    pair centre to pair centre, (b) 2.10 mm, E2 to E3, (c) 3.60 mm, E1 to E4. The central value
+    is the median or the mean across rats, as in anes-ecap-latencies. Reproduced when all three
+    values are within tolerance under one reading; all are shown.
+- id: anes-threshold-order
+  statement: In anaesthetised rats the stimulation threshold rises in the order of the first
+    (P1, 377 uA, 267 to 783), second (P2, 648 uA, 595 to 648) and third (P3, 930 uA, 550 to 1225)
+    responding populations, a main effect in a Friedman test (P = 0.039, n = 5).
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 1; Figure 2C
+  quote: >-
+    The mean stimulation threshold of these peaks increased in the order of the first (P1: 377
+    μA, 267–783 μA), second (P2: 648 μA, 595–648 μA) and third (P3: 930 μA, 550–1225 μA)
+    responding populations (main effect: non-parametric Friedman’s within-subject ANOVA: P =
+    0.039, n = 5)
+  statistics:
+  - test: Friedman test (non-parametric within-subject ANOVA), main effect of population
+    p: 0.039
+    n: 5 rats
+  depends_on:
+  - anes-ecap-latencies
+  expected:
+  - quantity: P1 threshold, central value over 5 rats
+    value: 377
+    tolerance: 37.7
+    unit: uA
+  - quantity: P2 threshold, central value over 5 rats
+    value: 648
+    tolerance: 64.8
+    unit: uA
+  - quantity: P3 threshold, central value over 5 rats
+    value: 930
+    tolerance: 93
+    unit: uA
+  criterion: >-
+    Threshold per rat and peak is the lowest stimulus current giving a response amplitude of at
+    least 0.05 uV in both of the two recordings (Methods, ECAP and Impedance Testing). Open, and
+    named here. The amplitude is (a) the positive peak voltage relative to the pre-stimulus
+    baseline, or (b) peak to the preceding trough. The threshold is (a) the lowest 0.1 mA step
+    passing, or (b) linearly interpolated between the last failing and first passing step (the
+    printed values are not multiples of 100 uA, which favours a reading finer than the step).
+    The central value is the median (Statistics section) or the mean (the word used in the
+    Results). Reproduced when a Friedman test over P1, P2 and P3 with rat as block gives P <
+    0.05 and the central values rise from P1 to P3; the three values are also checked against
+    tolerance under each combination of readings, and all are shown.
+- id: fig2c-p3-above-p1
+  statement: The third responding population has a significantly higher threshold than the
+    first (P = 0.034).
+  source: Figure 2C legend
+  quote: Quantification of neural thresholds shows the third responding neural population had
+    significantly higher thresholds ( P = 0.034) than the first responding
+  statistics:
+  - test: Dunn's post hoc test after Friedman test
+    p: 0.034
+    n: 5 rats
+  depends_on:
+  - anes-threshold-order
+  criterion: >-
+    Thresholds as in anes-threshold-order. Dunn's post hoc test on the Friedman rank sums, P3
+    against P1 (Statistics section names Friedman and Dunn's tests). The paper does not say
+    whether the Dunn P is adjusted for the three pairwise comparisons; readings (a) unadjusted,
+    (b) Bonferroni adjusted over three pairs. Reproduced when P < 0.05 with P3 higher under one
+    reading; both are shown.
+- id: fig2ab-one-rat-p2-below-p1
+  statement: In four of five anaesthetised rats the first responding population had a lower
+    threshold than later responding populations; in one rat the threshold of P1 was higher than
+    that of P2.
+  source: Figure 2A and 2B legends; Results, Electrically Evoked Compound Action Potentials,
+    paragraph 1
+  quote: Typically ( n = 4 of 5), the first responding neural populations had lower thresholds
+    than later responding populations. (B) In one animal, the first responding neural fiber
+    population had a higher threshold than the second
+  depends_on:
+  - anes-threshold-order
+  criterion: >-
+    Per rat, thresholds as in anes-threshold-order. Reproduced when exactly four of five rats
+    have the P1 threshold below both the P2 and P3 thresholds and one rat has the P1 threshold
+    above the P2 threshold, under one reading of threshold; counts under every reading are
+    shown.
+- id: awake-ecap-latencies
+  statement: In chronically implanted awake rats (n = 4), three populations were recruited in
+    all animals at week 0 and week 1, with mean latencies of 2.27 ms (P1, 1.93 to 2.65), 3.92 ms
+    (P2, 3.19 to 4.44) and 5.62 ms (P3, 4.57 to 6.72) and conduction velocities of 1.26, 0.73
+    and 0.51 m/s.
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 2
+  quote: >-
+    Three neural populations, distinguished by their distinct latencies, were consistently
+    recruited in all animals at 0 and 1 week following implantation. The first responding fiber
+    population (P1) had a mean latency of 2.27 ms (range: 1.93–2.65 ms), second responding
+    fibers (P2) had a mean latency of 3.92 ms (range: 3.19–4.44 ms), and the third (P3) had a
+    mean latency of 5.62 ms (range: 4.57–6.72 ms). Approximate conduction velocities for these
+    populations are 1.26 m/s (P1, 1.08–1.48 m/s), 0.73 m/s (P2, 0.64–0.89 m/s) and 0.51 m/s
+    (P3, 0.42–0.62 m/s)
+  expected:
+  - quantity: P1 mean latency, awake
+    value: 2.27
+    tolerance: 0.227
+    unit: ms
+  - quantity: P2 mean latency, awake
+    value: 3.92
+    tolerance: 0.392
+    unit: ms
+  - quantity: P3 mean latency, awake
+    value: 5.62
+    tolerance: 0.562
+    unit: ms
+  - quantity: P1 conduction velocity, awake
+    value: 1.26
+    tolerance: 0.126
+    unit: m/s
+  - quantity: P2 conduction velocity, awake
+    value: 0.73
+    tolerance: 0.073
+    unit: m/s
+  - quantity: P3 conduction velocity, awake
+    value: 0.51
+    tolerance: 0.051
+    unit: m/s
+  criterion: >-
+    Same stimulation and recording as the anaesthetised ECAPs (Methods). Latency and velocity
+    readings as in anes-ecap-latencies and anes-conduction-velocity (time origin, stimulus level,
+    distance 2.85, 2.10 or 3.60 mm). The mean is over the awake rats; the paper does not say
+    whether week 0 and week 1 are pooled. Readings (a) mean over all rat and week recordings,
+    (b) mean over rats of each rat's mean over the two weeks, (c) week 0 alone. The number of
+    rats is three (Methods) or four (Results); the count found is reported. Reproduced when
+    three peaks are found in every awake rat at both weeks and all six values are within
+    tolerance under one combination of readings.
+- id: awake-threshold-increase
+  statement: In awake implanted rats, thresholds of all three populations increased from week 0
+    to week 1 (P1 391 to 643 uA, P2 677 to 1051 uA, P3 713 to 1263 uA), significantly by a
+    Friedman test (P = 0.039, n = 4).
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 2; Figure 2C
+  quote: >-
+    Neural thresholds of first (P1, week 0: 391 ± 138 μA, week 1: 643 ± 300 μA), second (P2,
+    week 0: 677 ± 149 μA, week 1: 1051 ± 275 μA) and third (P3, week 0: 713 ± 119 μA, week 1:
+    1263 ± 333 μA) responding fiber populations significantly increased at 1 week (Friedman
+    test, P = 0.039, n = 4
+  statistics:
+  - test: Friedman test
+    p: 0.039
+    n: 4 rats
+  depends_on:
+  - awake-ecap-latencies
+  expected:
+  - quantity: P1 threshold, week 0
+    value: 391
+    tolerance: 138
+    unit: uA
+  - quantity: P1 threshold, week 1
+    value: 643
+    tolerance: 300
+    unit: uA
+  - quantity: P2 threshold, week 0
+    value: 677
+    tolerance: 149
+    unit: uA
+  - quantity: P2 threshold, week 1
+    value: 1051
+    tolerance: 275
+    unit: uA
+  - quantity: P3 threshold, week 0
+    value: 713
+    tolerance: 119
+    unit: uA
+  - quantity: P3 threshold, week 1
+    value: 1263
+    tolerance: 333
+    unit: uA
+  criterion: >-
+    Tolerances are the paper's printed spread, whose kind (SD or SEM) is not named. Thresholds
+    as in anes-threshold-order (amplitude and step readings). The central value is (a) the mean
+    or (b) the median. The groups of the Friedman test are not stated; readings (a) one test
+    over six groups, three populations at two weeks, with rat as block, (b) one test per
+    population over week 0 and week 1 (a sign test in effect), (c) week as factor with
+    population and rat combined as blocks. Reproduced when every population's threshold is
+    higher at week 1 than at week 0 and the Friedman test gives P < 0.05 under one reading;
+    the six values are checked against tolerance and all readings are shown.
+- id: impedance-increase
+  statement: Mean electrode impedance rose from 4.19 kOhm before implantation to 7.25 kOhm on
+    day 1, 12.04 kOhm at 2 weeks and 13.1 kOhm at 8 weeks.
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 3
+  quote: >-
+    The mean electrode impedance prior to implantation) was 4.19 ± 0.17 kΩ (range 3.16–5.03, n
+    = 38 electrodes, 10 arrays). On post-surgical day 1, this increased to 7.25 ± 0.79 kΩ
+    (range: 4.54–15.18 kΩ), and further increased after 2 weeks implantation to 12.04 ± 1.15 kΩ
+    (range: 6.24–18.3 kΩ, 38 electrodes in 10 arrays) and 8 weeks implantation to 13.1 ± 2.06
+    kΩ (8.0–20.2 kΩ, n = 8 electrodes, 2 arrays)
+  expected:
+  - quantity: mean impedance before implantation, 38 electrodes
+    value: 4.19
+    tolerance: 0.17
+    unit: kOhm
+  - quantity: mean impedance, day 1
+    value: 7.25
+    tolerance: 0.79
+    unit: kOhm
+  - quantity: mean impedance, 2 weeks, 38 electrodes
+    value: 12.04
+    tolerance: 1.15
+    unit: kOhm
+  - quantity: mean impedance, 8 weeks, 8 electrodes
+    value: 13.1
+    tolerance: 2.06
+    unit: kOhm
+  criterion: >-
+    Tolerances are the paper's printed spread, whose kind is not named. Impedance per electrode
+    is the voltage at the end of the first phase over the current (931 uA), as the Methods
+    define it. Mean over electrodes at each time point. Reproduced when all four means are
+    within tolerance; partially reproduced when they rise in this order but one or more is out
+    of tolerance. The printed ranges are also checked, widened by 10% of each bound.
+- id: electrode-failures
+  statement: No short circuits occurred during implantation, and only 2 of 40 electrodes became
+    open circuit, both within 2 weeks of implantation.
+  source: Results, Electrically Evoked Compound Action Potentials, paragraph 3
+  quote: No short circuits occurred during the implantation period, and only 2 out of 40
+    electrodes became open circuit (both within 2 weeks of implantation)
+  expected:
+  - quantity: open-circuit electrodes
+    value: 2
+    tolerance: 0
+    unit: electrodes of 40
+  criterion: >-
+    The counts are exact (tolerance 0, as they are counts of events). The paper does not state
+    the impedance that marks an open or short circuit; readings (a) a flag or note in the data,
+    (b) an impedance that the stimulator could not measure (out of range) or a value far above
+    the electrode's others. Reproduced when 2 of 40 electrodes are open within 2 weeks and none
+    is short.
+- id: colonic-pressure
+  statement: Pelvic nerve stimulation increased colonic pressure in only 1 of 3 anaesthetised
+    rats, by 2.6 mmHg (mean and SEM 2.6 and 0.1, 13 replicate responses), time-locked to
+    stimulation.
+  source: Results, Colonic Pressure Changes and Non-urological Effects of Pelvic Nerve Array
+    Stimulation, paragraph 1
+  quote: Only 1 of 3 animals responded, showing a small increase in colonic pressure of 2.6 ±
+    0.1 mm Hg (mean ± SEM, 13 within-subject replicate responses) time locked to pelvic nerve
+    stimulation
+  expected:
+  - quantity: colonic pressure increase in the responder, mean of 13 responses
+    value: 2.6
+    tolerance: 0.1
+    unit: mmHg
+  - quantity: responding rats
+    value: 1
+    tolerance: 0
+    unit: rats of 3
+  criterion: >-
+    Tolerance is the paper's SEM. The paper does not define the increase or a response.
+    Readings for the increase (a) peak colonic pressure during the 10 Hz, 1 mA train minus the
+    mean over an equal window before it, (b) mean during the train minus mean before it. A rat
+    responds when its increases exceed zero by a one-sample t-test at P < 0.05 (a choice made
+    here, as the paper gives no rule). Reproduced when one of three rats responds and its mean
+    increase is within tolerance under one reading.
+- id: no-fecal-expulsion-or-erection
+  statement: In awake rats, pelvic nerve stimulation did not cause expulsion of faecal pellets
+    (n = 10) or penile erection (n = 6), and no erection was seen in anaesthetised rats.
+  source: Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in
+    Awake Rats, paragraph 1; Results, Colonic Pressure Changes, paragraph 1
+  quote: stimulation did not cause expulsion of fecal pellets ( n = 10 animals) or penile
+    erection ( n = 6)
+  criterion: >-
+    Visual observation (Results). Reproduced when the data hold observation notes for these
+    rats and none records faecal expulsion or erection with stimulation.
+- id: table1-minimum-pressure
+  statement: In 9 awake implanted rats, the minimum bladder pressure of unstimulated voiding
+    cycles was 10.3 mmHg (95% CI 7.4 to 13.2).
+  source: Table 1, row Minimum pressure
+  inferred: The number is only in Table 1; the Results sentence before it says the parameters
+    were comparable to published values.
+  statistics:
+  - test: mean and 95% CI
+    ci:
+      low: 7.4
+      high: 13.2
+      level: 0.95
+      unit: mmHg
+    n: 9 rats
+  expected:
+  - quantity: mean minimum pressure
+    value: 10.3
+    tolerance: 2.9
+    unit: mmHg
+  criterion: &urodynamics >-
+    Tolerance is the half-width of the printed 95% CI. From the three voiding cycles before any
+    stimulation in each rat (Methods, Bladder Pressure Responses). The minimum pressure is the
+    lowest pressure after a voiding contraction; relative pressures subtract it (Methods). The
+    paper takes the other definitions from Andersson et al. (2011) and Fraser et al. (2020)
+    without stating them, so they are open, with readings. Threshold pressure is (a) the pressure
+    at the onset of the voiding contraction, where pressure begins its rapid rise, or (b) the
+    pressure at the moment of urine release. Peak (closing) pressure is the maximum pressure
+    during the contraction. Contraction duration is (a) from the onset of the rapid rise to the
+    return to minimum pressure, or (b) the time pressure stays above threshold pressure.
+    Inter-void interval is the time between successive voids. The mean over 9 rats is (a) the
+    mean of each rat's mean over three cycles, with a t-based 95% CI, or (b) the mean over all
+    cycles pooled. Reproduced when the mean lies within the printed 95% CI under one reading;
+    all readings are shown.
+- id: table1-threshold-pressure
+  statement: The relative threshold pressure of unstimulated voiding was 6.6 mmHg (95% CI 4.7
+    to 8.4), n = 9 rats.
+  source: Table 1, row Relative threshold pressure
+  inferred: The number is only in Table 1.
+  statistics:
+  - test: mean and 95% CI
+    ci:
+      low: 4.7
+      high: 8.4
+      level: 0.95
+      unit: mmHg
+    n: 9 rats
+  expected:
+  - quantity: mean relative threshold pressure
+    value: 6.6
+    tolerance: 1.9
+    unit: mmHg
+  criterion: *urodynamics
+- id: table1-peak-pressure
+  statement: The relative peak (closing) pressure of unstimulated voiding was 51.2 mmHg (95% CI
+    39.5 to 63.0), n = 9 rats.
+  source: Table 1, row Relative peak (closing) pressure
+  inferred: The number is only in Table 1.
+  statistics:
+  - test: mean and 95% CI
+    ci:
+      low: 39.5
+      high: 63.0
+      level: 0.95
+      unit: mmHg
+    n: 9 rats
+  expected:
+  - quantity: mean relative peak pressure
+    value: 51.2
+    tolerance: 11.8
+    unit: mmHg
+  criterion: *urodynamics
+- id: table1-contraction-duration
+  statement: The contraction duration of unstimulated voiding was 28.9 s (95% CI 17.1 to 37.5),
+    n = 9 rats.
+  source: Table 1, row Contraction duration
+  inferred: The number is only in Table 1. The printed CI is not symmetric about the mean.
+  statistics:
+  - test: mean and 95% CI
+    ci:
+      low: 17.1
+      high: 37.5
+      level: 0.95
+      unit: s
+    n: 9 rats
+  expected:
+  - quantity: mean contraction duration
+    value: 28.9
+    tolerance: 11.8
+    unit: s
+  criterion: *urodynamics
+- id: table1-intervoid-interval
+  statement: The inter-void interval of unstimulated voiding was 7.6 min (95% CI 5.9 to 9.4), n
+    = 9 rats.
+  source: Table 1, row Inter-void interval
+  inferred: The number is only in Table 1.
+  statistics:
+  - test: mean and 95% CI
+    ci:
+      low: 5.9
+      high: 9.4
+      level: 0.95
+      unit: min
+    n: 9 rats
+  expected:
+  - quantity: mean inter-void interval
+    value: 7.6
+    tolerance: 1.8
+    unit: min
+  criterion: *urodynamics
+- id: table1-hfpo-frequency
+  statement: High-frequency pressure oscillations during voiding contractions had a centre
+    frequency of 10.7 Hz (95% CI 8.3 to 13.0), n = 9 rats.
+  source: Table 1, row HFPO frequency; Methods, Bladder Pressure Responses, paragraph 3
+  inferred: The number is only in Table 1; the Methods say only that HFPOs were analysed to
+    estimate the centre frequency of oscillation.
+  statistics:
+  - test: mean and 95% CI
+    ci:
+      low: 8.3
+      high: 13.0
+      level: 0.95
+      unit: Hz
+    n: 9 rats
+  expected:
+  - quantity: mean HFPO centre frequency
+    value: 10.7
+    tolerance: 2.4
+    unit: Hz
+  criterion: >-
+    Tolerance is the half-width of the printed 95% CI (the larger side). Same cycles and rat
+    means as table1-minimum-pressure. The paper does not say how the centre frequency is
+    estimated. Readings (a) the frequency of the largest peak of the power spectrum of the
+    pressure during the oscillation period, between 3 and 30 Hz, (b) the number of oscillation
+    peaks per second over that period. The oscillation period is the stretch of elevated
+    pressure in the voiding contraction (Figure 3B2 legend). Reproduced when the mean lies within
+    the printed CI under one reading; both are shown.
+- id: table1-comparable-to-published
+  statement: Voiding parameters after array implantation were comparable to published values
+    in naive rats, including Wiedmann et al. (2020) for threshold pressure, peak pressure,
+    contraction duration and inter-void interval.
+  source: Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in
+    Awake Rats, paragraph 2; Table 1; Figure 3C legend
+  quote: These urodynamic parameters were comparable to published values ( Zhao et al., 2010 ;
+    Andersson et al., 2011 ; Fraser et al., 2020 ; Wiedmann et al., 2020 )
+  data: with_inputs
+  depends_on:
+  - table1-threshold-pressure
+  - table1-peak-pressure
+  - table1-contraction-duration
+  - table1-intervoid-interval
+  criterion: >-
+    The paper reports no test; Table 1 sets each mean and 95% CI beside those of Wiedmann et
+    al. (2020, n = 6 rats; threshold 4.5, 1.8 to 7.3 mmHg; peak 44.6, 15.3 to 74 mmHg; duration
+    37.2, 25.1 to 49.3 s; interval 8, 5.3 to 10.6 min), so the comparison is judged as the table
+    makes it. Reproduced when, for each of the four parameters, the 95% CI computed here
+    overlaps the Wiedmann CI printed in Table 1; partially reproduced for two or three.
+- id: stim-evoked-voiding
+  statement: Stimulation delivered at a partial fill was immediately followed by voiding in
+    seven of eight rats, repeated in 3 to 6 cycles in six of these.
+  source: Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in
+    Awake Rats, paragraph 2; Figure 3A, 3B and 3D
+  quote: When delivered during this partly filled state, electrical stimulation of the pelvic
+    nerve was immediately followed by post-stimulation voiding (urine release) in seven of eight
+    rats and was repeated in 3–6 cycles in six of these rats
+  expected:
+  - quantity: rats with stimulus-evoked voiding
+    value: 7
+    tolerance: 0
+    unit: rats of 8
+  - quantity: rats with evoked voiding in 3 to 6 cycles
+    value: 6
+    tolerance: 0
+    unit: rats
+  criterion: >-
+    Counts of rats are exact. A response is a void when urine is visibly excreted (Methods,
+    Bladder Pressure Responses), so the classification needs the experimenters' annotation of
+    each stimulation; when the data hold none, the claim cannot be tested from pressure alone
+    and is blocked. "Immediately followed" is read as a void within 30 s of stimulation, the
+    window the Discussion uses (paragraph 5); the end of the 10-s train or its onset as the
+    start of the window are both shown. The eight rats are those with stimulation after
+    habituation.
+- id: stim-void-trials
+  statement: In 27 trials across eight rats a void was observed within 30 s of stimulation.
+  source: Discussion, paragraph 5
+  quote: we consider it unlikely that in the 27 trials in eight rats where we observed a void
+    within 30 s of our stimulation this was always the case
+  depends_on:
+  - stim-evoked-voiding
+  expected:
+  - quantity: stimulation trials followed by a void within 30 s
+    value: 27
+    tolerance: 2.7
+    unit: trials
+  criterion: >-
+    Tolerance 10%. Voids as annotated in the data (see stim-evoked-voiding); window starts at
+    (a) train onset or (b) train end. Reproduced when the count is within tolerance under one
+    reading.
+- id: stim-early-void
+  statement: In two rats the stimulus-evoked void occurred very early in the normal void cycle.
+  source: Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in
+    Awake Rats, paragraph 2; Figure 3A and 3B1
+  quote: in two rats stimulus evoked voiding was even more clearly demonstrated by the pelvic
+    nerve induced void occurring very early in the normal void cycle
+  depends_on:
+  - stim-evoked-voiding
+  - table1-intervoid-interval
+  criterion: >-
+    The paper gives no cut-off for "very early". Readings (a) an evoked void less than half the
+    rat's mean unstimulated inter-void interval after the previous void (below the 50 to 80%
+    fill the experimenters targeted), (b) less than a quarter of it. Reproduced when at least
+    two rats have such a void under one reading.
+- id: stim-nonvoiding
+  statement: Stimulation also produced non-voiding bladder pressure responses, without urine
+    release, in six of eight rats.
+  source: Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in
+    Awake Rats, paragraph 3; Figure 3D
+  quote: Electrical stimulation of the pelvic nerve also produced non-voiding bladder pressure
+    responses (not accompanied by release of urine) in six of eight rats
+  expected:
+  - quantity: rats with evoked non-voiding contractions
+    value: 6
+    tolerance: 0
+    unit: rats of 8
+  criterion: >-
+    Classification as in stim-evoked-voiding, from the experimenters' annotation of urine
+    release. Where a response must be judged from pressure, the paper gives no amplitude
+    criterion; readings (a) a rise in bladder pressure after the train above the pre-train
+    baseline by more than the relative threshold pressure of that rat, (b) any annotated eNVC.
+    Reproduced when exactly six of eight rats show a non-voiding response.
+- id: stim-voiding-to-nonvoiding
+  statement: Within sessions with both responses, evoked voids were common early and became
+    less frequent as the session went on, while non-voiding pressure changes became more common.
+  source: Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in
+    Awake Rats, paragraph 3
+  quote: it was common to observe stimulus evoked voiding contractions early in the experimental
+    session, but as the session progressed, voiding responses became less frequent and
+    non-voiding pressure changes become more common
+  depends_on:
+  - stim-evoked-voiding
+  - stim-nonvoiding
+  criterion: >-
+    The paper reports no measure or test. Fixed here from the sentence: in each rat with both
+    evoked voids and eNVCs, the mean stimulation time of the voids is earlier than that of the
+    eNVCs. Reproduced when this holds in more than half of those rats; the per-rat order is
+    shown.
+- id: fig3e-eight-week-responses
+  statement: In both rats implanted for 8 weeks, stimulation produced both voiding and
+    non-voiding responses, and the parameters of filling-evoked and stimulation-evoked voids
+    were similar to those of rats implanted for a shorter time.
+  source: Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in
+    Awake Rats, paragraph 4; Figure 3E
+  quote: In both cases, stimulation produced both voiding (indicated in as “eV” in Figure 3E )
+    and non-voiding responses (indicated in as “eNVC” in Figure 3E ) during cystometry ...
+    The urodynamic parameters of filling evoked voids and stimulation evoked voids where similar
+    to those in rats implanted for the shorter duration
+  depends_on:
+  - table1-minimum-pressure
+  criterion: >-
+    Classification as in stim-evoked-voiding. The paper gives no test for "similar"; fixed here
+    from Table 1 as the comparison it offers. Reproduced when both 8-week rats show at least one
+    evoked void and one eNVC, and their mean parameters (Table 1 definitions and readings) lie
+    within the range of the per-rat means of the short-term rats widened by 10% of each bound,
+    for at least four of the six parameters.
+- id: fig4-atf3-rare
+  statement: ATF3-positive neuronal nuclei were absent or rare in L6 and S1 DRG and in the MPG
+    ipsi- and contralateral to the array 50 days after implantation, while numerous in archived
+    axotomised positive controls.
+  source: Results, Immunohistochemical Analysis of Neural Injury Markers in Ganglia, paragraphs 1
+    and 2; Figure 4A to 4D
+  quote: ATF3-positive neuronal nuclei were absent or rare in sections taken from ganglia either
+    ipsi- or contralateral to the implant ... very few or no ATF3-positive neuronal nuclei (
+    Figure 4C ) were seen in sections from MPG ipsi- or contralateral to the array
+  criterion: >-
+    Sections were assessed qualitatively (Methods). Reproduced when the images or annotations in
+    the data show no more than a few ATF3-positive nuclei per section in implanted-animal DRG
+    and MPG, and many in the control ganglia. The paper fixes no count; "a few" is read as at
+    most 5 per section, a choice made here.
+- id: fig4ef-axons-intact
+  statement: CGRP-positive sensory axons traversed ipsi- and contralateral MPG, and
+    synaptophysin-positive boutons surrounded the entire population of MPG neurons on both sides
+    after 50 days of implantation.
+  source: Results, Immunohistochemical Analysis of Neural Injury Markers in Ganglia, paragraph
+    3; Figure 4E and 4F
+  quote: many axons were observed to traverse both ipsi- and contralateral MPG ( Figure 4E ) ...
+    We found that following 50 days implantation of the device, synaptic boutons innervated the
+    entire population of MPG neurons, ipsilateral and contralateral to the surgery
+  criterion: >-
+    Qualitative assessment (Methods). Reproduced when the data's images or annotations show
+    CGRP-positive axons in the MPG on both sides and synaptophysin boutons around MPG neurons on
+    both sides.
+- id: fig5-cfos-distribution
+  statement: After cystometry and stimulation, c-Fos-positive neurons in L5 to S1 were most
+    dense in the dorsal horn, the sacral dorsal commissural nucleus and the sacral preganglionic
+    nucleus of L6 and S1.
+  source: Results, Immunohistochemical Analysis of Noxious Neuronal Activity in Spinal Cord,
+    paragraph 1; Figure 5A to 5C
+  quote: In spinal segments L5-S1, neurons with c-Fos + nuclei were most densely distributed in
+    dorsal horn, the sacral dorsal commissural nucleus (SDCom) and the SPN of segments L6 and S1
+  criterion: >-
+    From the per-section counts of c-Fos+ neurons by region, segment and side (Methods). The
+    paper does not normalise by region area; readings (a) raw counts per region, (b) counts per
+    unit area where areas are given. "Dorsal horn" is laminae I to IV (1Sp to 4Sp). Reproduced
+    when, summed over the three rats, the dorsal horn, SDCom and SPN (L6 and S1) rank above the
+    other regions (laminae V to VIII and X) under one reading.
+- id: fig5-cfos-no-side-difference
+  statement: c-Fos-positive neuron counts did not differ between the implanted and stimulated
+    side and the contralateral side of the lumbosacral cord.
+  source: Results, Immunohistochemical Analysis of Noxious Neuronal Activity in Spinal Cord,
+    paragraph 1; Figure 5C and 5D legends
+  quote: No difference was detected in the pattern of c-Fos between the two sides of the spinal
+    cord ( Figure 5D )
+  criterion: >-
+    A claim of absence, judged on the paper's test (Statistics section). Exact Welch two-sample
+    t-tests of counts per rat, implanted side against contralateral side (n = 3 rats), with the
+    Hommel correction across the comparisons. The family is not stated; readings (a) one test
+    per region, counts summed over segments L5 to S2; (b) one test per region and segment.
+    Reproduced when no Hommel-adjusted P is below 0.05 under the reading run; both readings are
+    shown with the mean differences and CIs, and a paired t-test is shown as a variant.
+- id: fig5-no-lamina1
+  statement: No activation of lamina I neurons was detected on either the stimulated side or the
+    contralateral side.
+  source: Results, Immunohistochemical Analysis of Noxious Neuronal Activity in Spinal Cord,
+    paragraph 1; Figure 5C; Discussion, paragraph 4
+  quote: No activation of lamina I neurons was detected in either the stimulated side (array
+    implanted on the pelvic nerve) or the contralateral side
+  criterion: >-
+    From the c-Fos counts in lamina I (1Sp). The paper gives no threshold for activation.
+    Readings (a) zero c-Fos+ lamina I neurons in every section, (b) lamina I counts per section
+    no higher than the lowest of the other dorsal horn laminae (2Sp to 4Sp). Reproduced under
+    either reading; the counts are shown.
+- id: macroscopic-no-pathology
+  statement: At euthanasia no infection, irritation or inflammation was seen around the
+    connector, cable or array; a thin fibrous capsule formed around the array without spreading,
+    and the prostate, pelvic nerve and vessels were undamaged.
+  source: Results, Post-mortem Analysis of Pathology After Chronic Implantation of Pelvic Nerve
+    Array, paragraph 1
+  quote: A thin fibrous tissue encapsulation had formed around the array further stabilizing the
+    device ... Suturing of the electrode array to the soft tissue overlying the prostate had not
+    caused any macroscopic damage to the prostate, pelvic nerve or blood vessels
+  criterion: >-
+    Visual post-mortem examination. Reproduced when the data hold post-mortem notes for the
+    implanted rats and none records infection, inflammation or damage.
