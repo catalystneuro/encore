@@ -153,9 +153,23 @@ def gauss(x, w):
 def detect_bursts(M, mtype, min_dist_ms=MIN_PEAK_DIST_MS):
     """Population bursts (claims, opening comment; Methods "Population rate calculations").
 
-    Returns a dict with arrays start, end and peak (frames) and the coarse population rate."""
+    A peak in the tail of a long burst, where the rate never falls below the edge fraction between
+    the two peaks, gives a second burst that overlaps the first. The Methods avoid this by raising
+    the minimum peak distance "up to 2000 ms" for "recordings with long duration bursts ... to
+    prevent peaks in the tail of the burst from being detected as separate burst instances", without
+    saying for which recordings. Here every recording keeps 700 ms, and of bursts that overlap only
+    the one with the highest peak of the coarse rate is kept (an assumption that applies the stated
+    purpose to every recording; 2000 ms for all is a variant in the notebook).
+
+    Returns a dict with arrays start, end and peak (frames), the coarse population rate, its RMS, the
+    number of peaks found and the number of overlapping bursts dropped."""
+    return bursts_from_pop(M.sum(0), mtype, min_dist_ms)
+
+
+def bursts_from_pop(pop, mtype, min_dist_ms=MIN_PEAK_DIST_MS):
+    """detect_bursts on the population count per frame (pop)."""
     p = BURST_PARAMS["PR"] if mtype == "PR" else BURST_PARAMS["default"]
-    pop = M.sum(0).astype(float)
+    pop = np.asarray(pop, float)
     coarse = gauss(movmean(pop, p["square_ms"]), p["gauss_ms"])
     fine = gauss(movmean(pop, 5), 5)
     rms = np.sqrt(np.mean(coarse ** 2))
@@ -173,9 +187,26 @@ def detect_bursts(M, mtype, min_dist_ms=MIN_PEAK_DIST_MS):
         ends.append(e)
         peaks.append(pt)
     starts, ends, peaks = (np.array(x, dtype=int) for x in (starts, ends, peaks))
-    keep = (peaks >= EDGE_DROP_START_MS) & (peaks <= T - EDGE_DROP_END_MS)
+    keep = np.zeros(len(pk), bool)
+    for i in np.argsort(-coarse[pk], kind="stable"):
+        if not (keep & (starts <= ends[i]) & (ends >= starts[i])).any():
+            keep[i] = True
+    n_overlap = int((~keep).sum())
+    keep &= (peaks >= EDGE_DROP_START_MS) & (peaks <= T - EDGE_DROP_END_MS)
     return dict(start=starts[keep], end=ends[keep], peak=peaks[keep], coarse=coarse,
-                rms=rms, n_raw=len(pk))
+                rms=rms, n_raw=len(pk), n_overlap=n_overlap)
+
+
+def length_for_bursts(pop, mtype, lo=38, step_s=5):
+    """Recording-length reading (b) of the claims file (opening comment): the shortest initial
+    segment, in steps of step_s seconds, in which detect_bursts finds at least lo bursts (38 to 40);
+    the whole recording when it holds fewer. Returns the length in frames."""
+    T = len(pop)
+    for n in range(60_000, T + step_s * 1000, step_s * 1000):
+        n = min(n, T)
+        if len(bursts_from_pop(pop[:n], mtype)["peak"]) >= lo:
+            return n
+    return T
 
 
 def spikes_in_bursts(M, bursts):
@@ -238,41 +269,74 @@ def burst_segments(R, peaks, pre=WIN_PRE, post=WIN_POST):
 # ---------------------------------------------------------------- correlations
 
 
-def xcorr_coeff_max(X, maxlag):
+def xcorr_coeff_max(X, maxlag, Y=None):
     """For a units-by-bursts-by-frames array, MATLAB xcorr(x, y, maxlag, 'coeff') between every pair
-    of bursts of each unit; returns the maximum over lags, units by bursts by bursts."""
-    U, B, T = X.shape
+    of bursts of each unit; returns the maximum over lags, units by bursts by bursts. With Y (the
+    same units' bursts in a second recording), between every burst of X and every burst of Y."""
     X = X.astype(np.float64)
-    norm = np.sqrt((X ** 2).sum(2))
-    best = np.full((U, B, B), -np.inf)
+    Y = X if Y is None else Y.astype(np.float64)
+    U, B, T = X.shape
+    nx = np.sqrt((X ** 2).sum(2))
+    ny = np.sqrt((Y ** 2).sum(2))
+    best = np.full((U, B, Y.shape[1]), -np.inf)
     for lag in range(-maxlag, maxlag + 1):
         if lag >= 0:
-            a, b = X[:, :, lag:], X[:, :, :T - lag]
+            a, b = X[:, :, lag:], Y[:, :, :T - lag]
         else:
-            a, b = X[:, :, :T + lag], X[:, :, -lag:]
+            a, b = X[:, :, :T + lag], Y[:, :, -lag:]
         c = np.einsum("ubt,uct->ubc", a, b)
         best = np.maximum(best, c)
-    den = norm[:, :, None] * norm[:, None, :]
+    den = nx[:, :, None] * ny[:, None, :]
     with np.errstate(invalid="ignore", divide="ignore"):
         return best / den
 
 
-def burst_to_burst(M, bursts, min_frac=0.3, min_spikes=MIN_SPIKES, R=None):
+def cross_burst_to_burst(M1, b1, M2, b2, min_frac=0.3, min_spikes=MIN_SPIKES):
+    """Burst-to-burst correlation of each unit between two recordings whose units are the same
+    (Supplementary Fig. 8E: bursts paired across the 0 h and 4 h recordings): burst-only rates, the
+    maximum xcorr coefficient within 10 ms for every burst of the first recording against every
+    burst of the second in which the unit has at least two spikes in the -250 to 500 ms window; the
+    mean over those pairs. Units kept when they pass the rules of burst_to_burst in both recordings.
+    Returns an array with NaN for units not kept."""
+    parts = []
+    for M, b in ((M1, b1), (M2, b2)):
+        T = M.shape[1]
+        win = np.clip(b["peak"][:, None] + np.arange(-WIN_PRE, WIN_POST + 1)[None, :], 0, T - 1)
+        active = M[:, win].sum(2) >= 2
+        keep = (active.mean(1) >= min_frac) & (M.sum(1) >= min_spikes)
+        parts.append((isi_rates(M, b)[:, win], active, keep))
+    (X1, a1, k1), (X2, a2, k2) = parts
+    out = np.full(M1.shape[0], np.nan)
+    idx = np.nonzero(k1 & k2)[0]
+    if len(idx) == 0:
+        return out
+    C = xcorr_coeff_max(X1[idx], B2B_MAXLAG, X2[idx])
+    for j, u in enumerate(idx):
+        v = C[j][a1[u][:, None] & a2[u][None, :]]
+        v = v[np.isfinite(v)]
+        out[u] = v.mean() if len(v) else np.nan
+    return out
+
+
+def burst_to_burst(M, bursts, min_frac=0.3, min_spikes=MIN_SPIKES, R=None, n_spk=None):
     """Burst-to-burst correlation per unit (claims, fig2e-b2b-correlation; Methods).
 
     Burst-only rates; per pair of bursts in which the unit has at least two spikes in the -250 to
     500 ms window, the maximum xcorr coefficient within 10 ms; the mean over those pairs. Units kept
-    with at least two spikes in at least min_frac of the bursts and at least min_spikes spikes.
-    Returns an array with NaN for units not kept."""
+    with at least two spikes in at least min_frac of the bursts and at least min_spikes spikes in the
+    whole recording (n_spk; M's own counts when not given). Returns an array with NaN for units not
+    kept."""
     U, T = M.shape
     if R is None:
         R = isi_rates(M, bursts)
+    if n_spk is None:
+        n_spk = M.sum(1)
     peaks = bursts["peak"]
     win = peaks[:, None] + np.arange(-WIN_PRE, WIN_POST + 1)[None, :]
     win = np.clip(win, 0, T - 1)
     cnt_win = M[:, win].sum(2)  # units by bursts
     active = cnt_win >= 2
-    keep = (active.mean(1) >= min_frac) & (M.sum(1) >= min_spikes)
+    keep = (active.mean(1) >= min_frac) & (n_spk >= min_spikes)
     out = np.full(U, np.nan)
     idx = np.nonzero(keep)[0]
     if len(idx) == 0:
@@ -288,22 +352,6 @@ def burst_to_burst(M, bursts, min_frac=0.3, min_spikes=MIN_SPIKES, R=None):
         v = v[np.isfinite(v)]
         out[u] = v.mean() if len(v) else np.nan
     return out
-
-
-def compress_zeros(R, keep_gap=PAIR_MAXLAG + 1):
-    """Shorten every run of frames where all rates are zero to keep_gap frames. Lags up to
-    keep_gap - 1 of a zero-padded cross-correlation are unchanged by this (exact)."""
-    nz = (R != 0).any(0)
-    keep = nz.copy()
-    run = 0
-    for i in range(len(nz)):
-        if nz[i]:
-            run = 0
-        else:
-            run += 1
-            if run <= keep_gap:
-                keep[i] = True
-    return R[:, keep]
 
 
 def pairwise_xcorr(R, maxlag=PAIR_MAXLAG):
@@ -460,8 +508,11 @@ def lognormal_r2_legend(rates):
 def burst_segments_compressed(M, bursts, margin=60, gap=PAIR_MAXLAG + 1):
     """Cut the recording to the burst neighbourhoods, each from min(start, peak - 250) - margin to
     max(end, peak + 500) + margin, joined by gap frames of silence. Burst-only rates are zero
-    outside the burst windows (apart from the 50 ms Gaussian's tail, under margin), so their
-    cross-correlations up to 350 ms lag and their sums are the same on the cut recording (exact).
+    outside the burst windows (apart from the 50 ms Gaussian's tail, under margin), so their sums
+    are the same on the cut recording. Every gap between neighbourhoods becomes gap frames long: a
+    longer gap is shortened, which leaves the cross-correlations up to 350 ms lag unchanged, and a
+    shorter one is lengthened, which drops the lag terms between rates at the end of one burst and
+    the start of the next (not exact; such gaps are below 351 ms of near-zero burst-only rate).
     Returns the cut matrix and the bursts in its frames."""
     U, T = M.shape
     s0 = np.minimum(bursts["start"], bursts["peak"] - WIN_PRE) - margin
@@ -563,10 +614,12 @@ SIM_FRAMES = np.arange(-450, 1001)  # the code's FRAME_RANGE for burst similarit
 
 
 def analyse(name, M, seed, n_shuf=0, n_shuf_pair=0, similarity=False, min_dist_ms=MIN_PEAK_DIST_MS,
-            light=False):
+            light=False, cut_rates=False):
     """Every measure of one recording that does not need an HMM. M is units by 1 ms frames.
     light=True keeps only bursts, backbone units, peak times and rank-order correlations (with
-    their shuffles), for the drug recordings."""
+    their shuffles), for the drug recordings. cut_rates=True takes the peak times from the rates of
+    the cut recording (as for the shuffles), which saves memory on long recordings; the inverse ISI
+    held across a cut can then differ at a burst's edge."""
     rng_seeds = np.random.default_rng(seed).integers(0, 2 ** 31 - 1, size=max(n_shuf, 1))
     mt = model_type(name)
     U, T = M.shape
@@ -576,6 +629,12 @@ def analyse(name, M, seed, n_shuf=0, n_shuf_pair=0, similarity=False, min_dist_m
     res["bursts"] = {k: b[k] for k in ("start", "end", "peak")}
     res["n_bursts"] = len(b["peak"])
     res["n_bursts_800"] = len(detect_bursts(M, mt, 800)["peak"])
+    res["n_bursts_2000"] = len(detect_bursts(M, mt, 2000)["peak"])
+    res["n_overlap"] = b["n_overlap"]
+    res["rms"], res["thr"] = b["rms"], BURST_PARAMS["PR" if mt == "PR" else "default"]["rms_mult"] * b["rms"]
+    pk_all, _ = signal.find_peaks(b["coarse"], distance=min_dist_ms)
+    res["coarse_top"] = np.sort(b["coarse"][pk_all])[::-1][:5]
+    res["coarse_median"] = float(np.median(b["coarse"]))
     res["cv2"] = np.array([cv2(np.nonzero(m)[0]) for m in M])
     if res["n_bursts"] < 2:
         return res
@@ -587,9 +646,10 @@ def analyse(name, M, seed, n_shuf=0, n_shuf_pair=0, similarity=False, min_dist_m
     if mt == "MS":
         res["bb_70"] = res["frac2"] >= MS_BACKBONE_VARIANT - 1e-12
     res["duration"] = b["end"] - b["start"]
+    Mc, bc = burst_segments_compressed(M, b)
     # full rates: peak times, unit sequence, burst similarity
-    R = isi_rates(M)
-    res["P"] = peak_times(R, b, counts)
+    R = isi_rates(Mc) if cut_rates else isi_rates(M)
+    res["P"] = peak_times(R, bc if cut_rates else b, counts)
     if similarity:
         Z = zscore_rows(R)
         bbm = res["bb"]
@@ -598,12 +658,12 @@ def analyse(name, M, seed, n_shuf=0, n_shuf_pair=0, similarity=False, min_dist_m
         res["sim_nr"] = burst_similarity(Z[~bbm], b["peak"], SIM_FRAMES)
         del Z
     del R
-    Mc, bc = burst_segments_compressed(M, b)
     if light:
         res["rank"] = rank_order_corr(res["P"][res["bb"]]) if res["bb"].sum() >= 3 else None
-        sh = dict(rank=[])
+        sh = dict(rank=[], done=[], requested=5 * int(n_spk.sum()))
         for k in range(n_shuf if res["rank"] is not None else 0):
-            Ms, _ = okun_shuffle(M, int(rng_seeds[k]))
+            Ms, done = okun_shuffle(M, int(rng_seeds[k]))
+            sh["done"].append(done)
             Msc, _ = burst_segments_compressed(Ms, b)
             Ps = peak_times(isi_rates(Msc), bc, spikes_in_bursts(Msc, bc))
             sh["rank"].append(rank_order_corr(Ps[res["bb"]]))
@@ -611,26 +671,34 @@ def analyse(name, M, seed, n_shuf=0, n_shuf_pair=0, similarity=False, min_dist_m
         return res
     # burst-only measures on the cut recording
     Rb = isi_rates(Mc, bc)
-    res["b2b30"] = burst_to_burst(Mc, bc, 0.3, R=Rb)
-    res["b2b70"] = burst_to_burst(Mc, bc, 0.7, R=Rb)
+    res["b2b30"] = burst_to_burst(Mc, bc, 0.3, R=Rb, n_spk=n_spk)
+    res["b2b70"] = burst_to_burst(Mc, bc, 0.7, R=Rb, n_spk=n_spk)
     keep30 = n_spk >= MIN_SPIKES
     res["idx30"] = np.nonzero(keep30)[0]
     C, L = pairwise_xcorr(Rb[keep30])
     res["pw_corr"], res["pw_lag"] = C, L
     sel = {"all": np.arange(U), "bb": np.nonzero(res["bb"])[0], "nr": np.nonzero(~res["bb"])[0]}
     res["pca"] = {k: (pca_cumvar(Rb, v, T) if len(v) >= 3 else None) for k, v in sel.items()}
+    if similarity:
+        # the code's burst-only rates: spikes outside bursts removed, the inverse ISI then held
+        # across the gaps between bursts as well (compute_rate_isi on the burst-only spikes)
+        Rcode = isi_rates(M & burst_mask(b, T)[None, :])
+        res["pca_code"] = {k: (pca_cumvar(Rcode, v, T) if len(v) >= 3 else None) for k, v in sel.items()}
+        del Rcode
     # burst segments (-250 to 500 ms) of burst-only rates, for burst clustering
     res["segments"] = burst_segments(Rb, bc["peak"]).astype(np.float32)
     res["rank"] = rank_order_corr(res["P"][res["bb"]]) if res["bb"].sum() >= 3 else None
     del Rb
     # shuffles
-    sh = dict(b2b30=[], cv2=[], pca=[], rank=[], pw_corr=[], pw_lag=[], sim_all=[])
+    sh = dict(b2b30=[], cv2=[], pca=[], rank=[], pw_corr=[], pw_lag=[], sim_all=[], done=[],
+              requested=5 * int(n_spk.sum()))
     for k in range(n_shuf):
-        Ms, _ = okun_shuffle(M, int(rng_seeds[k]))
+        Ms, done = okun_shuffle(M, int(rng_seeds[k]))
+        sh["done"].append(done)
         sh["cv2"].append(np.array([cv2(np.nonzero(m)[0]) for m in Ms]))
         Msc, _ = burst_segments_compressed(Ms, b)
         Rbs = isi_rates(Msc, bc)
-        sh["b2b30"].append(burst_to_burst(Msc, bc, 0.3, R=Rbs))
+        sh["b2b30"].append(burst_to_burst(Msc, bc, 0.3, R=Rbs, n_spk=n_spk))
         pv = {kk: (pca_cumvar(Rbs, v, T) if len(v) >= 3 else None) for kk, v in sel.items()}
         sh["pca"].append(pv)
         if res["rank"] is not None:
@@ -676,17 +744,21 @@ def recording_table(assets, infos):
 
 
 class RandomInterceptFit:
-    """Result of lmm: fixed effects, their covariance, Wald z and two-sided p."""
+    """Result of lmm: fixed effects, their covariance, t statistics with Satterthwaite degrees of
+    freedom and two-sided p, as lmerTest reports them."""
 
-    def __init__(self, names, beta, cov, lam, sigma2, n_groups, n_obs):
+    def __init__(self, names, beta, cov, lam, sigma2, n_groups, n_obs, dV, A):
         import pandas as pd
         self.fe_params = pd.Series(beta, index=names)
         self.params = self.fe_params
         self._cov = pd.DataFrame(cov, index=names, columns=names)
+        self._dV, self._A = dV, A
         se = np.sqrt(np.diag(cov))
         self.bse = pd.Series(se, index=names)
         self.tvalues = self.fe_params / self.bse
-        self.pvalues = pd.Series(2 * stats.norm.sf(np.abs(self.tvalues.values)), index=names)
+        self.df = pd.Series([self.satterthwaite(np.eye(len(names))[j]) for j in range(len(names))],
+                            index=names)
+        self.pvalues = pd.Series(2 * stats.t.sf(np.abs(self.tvalues.values), self.df.values), index=names)
         self.group_var = lam * sigma2
         self.resid_var = sigma2
         self.n_groups, self.nobs = n_groups, n_obs
@@ -694,13 +766,22 @@ class RandomInterceptFit:
     def cov_params(self):
         return self._cov
 
+    def satterthwaite(self, w):
+        """Satterthwaite degrees of freedom of the contrast w (lmerTest's contest1D): 2 (w'Vw)^2 over
+        g'Ag, g the gradient of w'Vw in the variance parameters and A their asymptotic covariance."""
+        v = float(w @ self._cov.values @ w)
+        g = np.array([float(w @ d @ w) for d in self._dV])
+        den = float(g @ self._A @ g)
+        return 2 * v ** 2 / den if den > 0 else np.inf
+
 
 def lmm(df, formula, group):
     """Linear mixed-effects model with a random intercept per group, fitted by REML, the model of
     lme4's lmer(y ~ x + (1 | group)) that the paper uses (Methods, "Statistical analyses for model
     comparisons"). The variance ratio is found by maximising the profile REML likelihood over one
-    parameter; fixed effects are tested with Wald z tests, where lmerTest uses Satterthwaite t tests
-    (a deviation that matters only with few groups)."""
+    parameter. Fixed effects and contrasts are tested with t tests on Satterthwaite degrees of
+    freedom, as lmerTest does: the gradient of the fixed-effect covariance and the Hessian of the
+    REML deviance in the log variance parameters are taken by central differences."""
     import patsy
     from scipy.optimize import minimize_scalar
     df = df.replace([np.inf, -np.inf], np.nan).reset_index(drop=True)
@@ -712,11 +793,11 @@ def lmm(df, formula, group):
     G = gi.max() + 1
     n_g = np.bincount(gi, minlength=G).astype(float)
     N, p = Xv.shape
+    ym = np.bincount(gi, yv, G) / n_g
+    Xm = np.vstack([np.bincount(gi, Xv[:, j], G) for j in range(p)]).T / n_g[:, None]
 
     def transform(lam):
         theta = 1 - np.sqrt(1 / (1 + n_g * lam))
-        ym = np.bincount(gi, yv, G) / n_g
-        Xm = np.vstack([np.bincount(gi, Xv[:, j], G) for j in range(p)]).T / n_g[:, None]
         return yv - theta[gi] * ym[gi], Xv - theta[gi][:, None] * Xm[gi]
 
     def fit(lam):
@@ -727,29 +808,188 @@ def lmm(df, formula, group):
         s2 = rss / (N - p)
         sign, logdet = np.linalg.slogdet(XtX)
         ll = -0.5 * ((N - p) * np.log(s2) + np.log(1 + n_g * lam).sum() + logdet)
-        return ll, beta, s2, XtX
+        return ll, beta, s2, XtX, rss, logdet
 
     res = minimize_scalar(lambda t: -fit(np.exp(t))[0], bounds=(-15, 8), method="bounded")
     lam = np.exp(res.x)
     if fit(0.0)[0] > fit(lam)[0]:
         lam = 0.0
-    ll, beta, s2, XtX = fit(lam)
+    ll, beta, s2, XtX, _, _ = fit(lam)
     cov = s2 * np.linalg.pinv(XtX)
-    return RandomInterceptFit(names, beta, cov, lam, s2, G, N)
+
+    # variance parameters phi = log(group variance), log(residual variance); the group variance
+    # is left out when it is estimated at zero (lmerTest drops a parameter on the boundary)
+    def unpack(phi):
+        s2_ = np.exp(phi[-1])
+        return (np.exp(phi[0]) / s2_ if len(phi) == 2 else 0.0), s2_
+
+    def deviance(phi):
+        lam_, s2_ = unpack(phi)
+        _, _, _, XtX_, rss_, logdet_ = fit(lam_)
+        return ((N - p) * np.log(s2_) + np.log(1 + n_g * lam_).sum() + logdet_ + rss_ / s2_)
+
+    def vcov(phi):
+        lam_, s2_ = unpack(phi)
+        return s2_ * np.linalg.pinv(fit(lam_)[3])
+
+    phi0 = np.log([lam * s2, s2]) if lam > 0 else np.log([s2])
+    k, h = len(phi0), 1e-3
+    E = np.eye(k) * h
+    H = np.zeros((k, k))
+    for i in range(k):
+        for j in range(k):
+            H[i, j] = (deviance(phi0 + E[i] + E[j]) - deviance(phi0 + E[i] - E[j])
+                       - deviance(phi0 - E[i] + E[j]) + deviance(phi0 - E[i] - E[j])) / (4 * h * h)
+    A = 2 * np.linalg.pinv(H)
+    dV = [(vcov(phi0 + E[i]) - vcov(phi0 - E[i])) / (2 * h) for i in range(k)]
+    return RandomInterceptFit(names, beta, cov, lam, s2, G, N, dV, A)
 
 
 def contrast(fit, weights):
-    """Estimate, z and two-sided p of a linear combination of fixed effects (dict name -> weight)."""
+    """Estimate, t, Satterthwaite degrees of freedom and two-sided p of a linear combination of
+    fixed effects (dict name -> weight)."""
     names = fit.fe_params.index
     w = np.array([weights.get(n, 0.0) for n in names])
     est = float(w @ fit.fe_params.values)
     cov = fit.cov_params().loc[names, names].values
     se = float(np.sqrt(w @ cov @ w))
-    z = est / se if se > 0 else np.nan
-    return dict(estimate=est, se=se, z=z, p=2 * stats.norm.sf(abs(z)))
+    t = est / se if se > 0 else np.nan
+    dfree = fit.satterthwaite(w)
+    return dict(estimate=est, se=se, z=t, t=t, df=dfree, p=2 * stats.t.sf(abs(t), dfree))
 
 
 def cell_means_contrast(fit, a, b):
     """Contrast between two cells of a model fitted with the cell-means formula "0 + C(cell)":
     a minus b, by their names in the fit."""
     return contrast(fit, {f"C(cell)[{a}]": 1.0, f"C(cell)[{b}]": -1.0})
+
+
+# ---------------------------------------------------------------- d2 (Supplementary Fig. 27)
+# Ported from the d2 code of Sooter et al. that the paper's r_download.sh fetches (figshare article
+# 25927081, version 1: myYuleWalker.m, myAutocorr.m, getFixedPointDistance.m, getAvalanches.m), on
+# one window per recording.
+
+D2_BIN_MS = 30  # Supplementary Methods, "d2 calculation": 30 ms bins
+D2_ORDER = 20  # order-20 AR model
+
+
+def load_pop(asset_id, keep_s=None, chunk=200_000):
+    """Population spike count per 1 ms frame, read in chunks of frames (the whole recording when
+    keep_s is None)."""
+    with open_nwb(asset_id) as f:
+        d = f["processing/curated_binning/t_spk_mat/data"]
+        n = d.shape[0] if keep_s is None else min(d.shape[0], int(keep_s * 1000))
+        return np.concatenate([d[a:min(a + chunk, n), :].astype(bool).sum(1) for a in range(0, n, chunk)])
+
+
+def ar_yule_walker(x, order=D2_ORDER):
+    """myYuleWalker.m: the z-scored series' autocorrelation at lags 1 to order (sums over n - j
+    products), the Toeplitz system solved for the AR coefficients; returns them and the noise
+    variance 1 - acf . varphi."""
+    z = (x - x.mean()) / x.std(ddof=1)
+    n = len(z)
+    acf = np.array([np.sum(z[:n - j] * z[j:]) / (n - j) for j in range(1, order + 1)])
+    col = np.r_[1.0, acf[:-1]]
+    R = col[np.abs(np.subtract.outer(np.arange(order), np.arange(order)))]
+    varphi = np.linalg.solve(R, acf)
+    return varphi, 1 - acf @ varphi
+
+
+def d2_distance(varphi):
+    """getFixedPointDistance.m with beta = 2: the Euclidean distance of the AR coefficients from the
+    hyperplane through the history kernels x_k (k = 1 to order, x_k(t) = C(k, t)(-1)^(t+1) for
+    t <= k)."""
+    from scipy.special import comb
+    order = len(varphi)
+    x = np.zeros((order, order))
+    for k in range(1, order + 1):
+        for t in range(1, k + 1):
+            x[t - 1, k - 1] = comb(k, t, exact=True) * (-1) ** (t + 1)
+    X = x[:, 1:] - x[:, [0]]
+    v = np.linalg.lstsq(X, varphi - x[:, 0], rcond=None)[0]
+    return float(np.linalg.norm(varphi - (x[:, 0] + X @ v)))
+
+
+def bin_pop(M_or_pop, bin_ms=D2_BIN_MS):
+    p = np.asarray(M_or_pop)
+    if p.ndim == 2:
+        p = p.sum(0)
+    n = len(p) // bin_ms
+    return p[:n * bin_ms].reshape(n, bin_ms).sum(1).astype(float)
+
+
+def shuffle_each_unit(M, rng):
+    """The d2 control (Supplementary Methods): each unit's spikes moved to random frames of the
+    recording independently, keeping its spike count."""
+    U, T = M.shape
+    out = np.zeros_like(M)
+    for u in range(U):
+        out[u, rng.choice(T, int(M[u].sum()), replace=False)] = True
+    return out
+
+
+def simulate_ar(varphi, var_noise, n, rng, burn=1000):
+    """simAR.m (MATLAB arima simulate, zero constant): an AR series of n steps after a burn-in."""
+    p = len(varphi)
+    e = rng.normal(0, np.sqrt(max(var_noise, 1e-12)), n + burn + p)
+    x = np.zeros(n + burn + p)
+    for t in range(p, len(x)):
+        x[t] = varphi @ x[t - p:t][::-1] + e[t]
+    return x[-n:]
+
+
+def avalanches(x, quant=0.1):
+    """getAvalanches.m with above_thresh = 1: runs above the quant quantile; size, the summed excess
+    over the threshold; duration, the run length in bins. quant 0.1 is test.m's value."""
+    thr = np.quantile(x, quant)
+    below = np.nonzero(x <= thr)[0]
+    sizes, durs = [], []
+    for a, b in zip(below[:-1], below[1:]):
+        if b - a > 1:
+            sizes.append(np.sum(x[a + 1:b] - thr))
+            durs.append(b - a - 1)
+    return np.array(sizes), np.array(durs)
+
+
+def log_ratios(a, b, bins):
+    """|log10| ratios of two probability densities on shared bins, over bins where both have mass."""
+    ha, _ = np.histogram(a, bins=bins, density=True)
+    hb, _ = np.histogram(b, bins=bins, density=True)
+    ok = (ha > 0) & (hb > 0)
+    return np.abs(np.log10(ha[ok] / hb[ok]))
+
+
+def ar_fit_check(x, varphi, var_noise, rng, nperseg=1000):
+    """The AR fit check (Supplementary Methods): the AR model simulated over the same number of
+    bins, then the avalanche size and duration distributions and the power spectrum compared with
+    the data's. The paper's rule is a deviation of more than one order of magnitude; it is read
+    here as the largest |log10| ratio of the densities over logarithmic bins where both have mass,
+    and of the Welch spectra (1000-bin, 30 s, segments; the code's 200 s window is longer than the
+    180 s recordings) over frequencies (reading i), or as the median of those ratios (reading ii).
+    Returns both for each of the three comparisons."""
+    z = (x - x.mean()) / x.std(ddof=1)
+    sim = simulate_ar(varphi, var_noise, len(z), rng)
+    s, d = avalanches(z)
+    s_ar, d_ar = avalanches(sim)
+    keep = s_ar >= s.min() if len(s) else np.ones(len(s_ar), bool)  # getARstats.m
+    s_ar, d_ar = s_ar[keep], d_ar[keep]
+    out = dict(n_aval=len(s), n_aval_ar=len(s_ar))
+    if len(s) < 5 or len(s_ar) < 5:
+        return out
+    lo, hi = min(s.min(), s_ar.min()), max(s.max(), s_ar.max())
+    f, p1 = signal.welch(z, nperseg=min(nperseg, len(z)))
+    _, p2 = signal.welch(sim, nperseg=min(nperseg, len(z)))
+    ok = (f > 0) & (p1 > 0) & (p2 > 0)
+    lr = {"size": log_ratios(s, s_ar, np.logspace(np.log10(lo), np.log10(hi), 15)),
+          "duration": log_ratios(d, d_ar, np.unique(np.round(np.logspace(0, np.log10(max(d.max(), d_ar.max()) + 1), 15)))),
+          "spectrum": np.abs(np.log10(p1[ok] / p2[ok]))}
+    for k, v in lr.items():
+        out[f"{k}_max"] = float(v.max()) if len(v) else np.nan
+        out[f"{k}_median"] = float(np.median(v)) if len(v) else np.nan
+    return out
+
+
+def unit_positions(asset_id):
+    """Unit positions (x_pos, y_pos) from the units table: units by 2."""
+    with open_nwb(asset_id) as f:
+        return np.c_[f["units/x_pos"][:], f["units/y_pos"][:]]
