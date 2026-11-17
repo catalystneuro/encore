@@ -45,8 +45,8 @@ outcomes:
     over all planes the identity untagged count is 2328. The Go/NoGo per-session OB-p mean is 103.3 (days
     1 to 3, reading a) or 107.5 (days 0 to 3, reading b), outside 95 +/- 2 under every reading. The mPFC-p
     mean is 91.7 (a) and 94.5 (b) without sub-668, within 87 +/- 8, and 95.7 and 98.2 with it. The untagged
-    mean is 1623.3 (a) and 1656.2 (b) without sub-668, 1655.0 and 1690.0 with it. Measured values are
-    the code rule and reading (a) without sub-668.
+    mean is 1623.3 (a) and 1656.2 (b) without sub-668, 1655.0 and 1690.0 with it; 1623.3 is outside
+    1690 +/- 35, the other three within. Measured values are the code rule and reading (a) without sub-668.
   deviations:
   - Counts follow the code's compute_dFF0, which skips planes without red cells (src/nwb_processor.py
     at commit f478b34).
@@ -106,7 +106,9 @@ outcomes:
     OB-p against untagged (0.38 and 0.42) do not differ. The effect is small (difference of medians 0.06).
     The outcome depends on how never-active neurons are treated. Kept with sparseness set to 0, no pair
     differs (smallest corrected p 0.061 start, 0.10 centre), which would reproduce the claim; set to 1,
-    OB-p and mPFC-p each differ from untagged (corrected p 0.0079 and 0.019 start, 0.011 and 0.040 centre).'
+    OB-p and mPFC-p each differ from untagged (corrected p 0.0079 and 0.019 start, 0.011 and 0.040 centre).
+    The criterion''s n counts every neuron, so this attempt proposes blocking the claim as methods_underspecified
+    (see proposed).'
   deviations:
   - Neurons never active on an odor trial have no defined sparseness and are left out (21 OB-p, 11 mPFC-p
     and 230 untagged under the start reading), an assumption. The paper's formula is lost from the text
@@ -116,6 +118,15 @@ outcomes:
     outcomes. The question is recorded for the paper's authors.
   - Untagged neurons are those of planes with red cells (1937, against the paper's 1978).
   assumed: true
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The criterion fixes n at 81, 84 and 1978, every neuron, which argues for keeping the never-active
+      neurons, and the two values that keep them give different outcomes (set to 0, no pair differs under
+      either window reading, smallest corrected p 0.061 and 0.10; set to 1, OB-p and mPFC-p each differ from
+      untagged, smallest corrected p 0.0079 and 0.011). Leaving them out conflicts with the criterion's n, and
+      the paper's formula is lost from the text, so no reading has a defensible basis over the others. The
+      notebook prints, for each window reading and each treatment, whether the claim's condition holds.
 - claim: fig2c-mutual-information
   outcome: not_reproduced
   notebook: reproduce_daste_2025_passive.ipynb
@@ -177,7 +188,14 @@ outcomes:
     3.84 against 4.62 s, corrected p = 0.030. By mouse the OB-p medians are 2.70 to 4.96 s and the mPFC-p
     medians 4.59 to 4.79 s. The odor onset (stim_onset_timestamp) falls 1 to 10 ms after a rising edge of
     the files'' sniff signal (acquisition/sniff_on) in all 500 trials, so latencies are measured from a
-    sniff-aligned onset, as the paper describes.'
+    sniff-aligned onset, as the paper describes. Projection is confounded with mouse: sub-2456 and sub-2457
+    are the only mPFC mice of this dataset, and their untagged neurons are slow too (medians 4.82 and 4.12
+    s, against 2.70 to 3.73 s in the OB mice). Within each mouse OB-p is not faster than untagged (2.70
+    against 2.70 s, p = 0.55; 3.51 against 2.97 s, p = 0.00034; 4.96 against 3.73 s, p = 8e-16), and mPFC-p
+    is as slow as its own mouse''s untagged neurons or slower (4.59 against 4.82 s, p = 0.46; 4.79 against
+    4.12 s, p = 0.00065). The criterion pools neurons, so the outcome stands, but the latency difference
+    follows the mouse at least as much as the projection. These two mice also supply 61 of the 93 day 3
+    Go/NoGo mPFC-p cells.'
   deviations:
   - The first second of each trial is left out by starting the trace 4 s before onset; the trace ends
     15 s after onset, more than a second before the trial's end.
@@ -187,7 +205,10 @@ outcomes:
   output: claim:fig2g-early-peaks
   notes: 'Mean peaks per trial per neuron, 0 to 2 s: OB-p 0.198, mPFC-p 0.138 (Mann-Whitney p = 0.17);
     0 to 3 s: 0.349 and 0.203 (p = 0.026). One of the three OB-p mice (sub-2401) has fewer early peaks
-    (0.073 and 0.122) than either mPFC-p mouse. The OASIS variant (Figure S4) was not run.'
+    (0.073 and 0.122) than either mPFC-p mouse. The groups are confounded with mouse, as for the latencies;
+    in 0 to 3 s the untagged neurons of the two mPFC mice also have few early peaks (0.216 and 0.302), against
+    0.464 and 0.491 in sub-2372 and sub-2400 and 0.307 in sub-2401. The OASIS variant (Figure S4) was not
+    run.'
 - claim: fig2h-identity-decoding-5s
   outcome: blocked
   blocked_by: methods_underspecified
@@ -209,10 +230,8 @@ outcomes:
   output: claim:fig2j-identity-decoding-peaks-earlier
   notes: 'The mean curve peaks at 5.75 s for OB-p and 9.25 s for mPFC-p with 250 ms windows, and at 5.50
     and 9.00 s with 500 ms windows. The per-repeat peak times overlap widely (250 ms: OB-p 3.87 to 7.00
-    s, mPFC-p 2.12 to 12.17 s; medians 5.75 and 7.62 s), so the mPFC-p peak time is poorly determined.
-    During development a run with other seeds put the 250 ms mPFC-p peak at 4.75 s, before OB-p; that
-    run is not in the notebook and does not decide the outcome, but the outcome may not hold under other
-    seeds. Untagged peaks earliest (2.50 and 3.50 s). Before onset all groups are at or below chance (9.3
+    s, mPFC-p 2.12 to 12.17 s; medians 5.75 and 7.62 s), so the mPFC-p peak time is poorly determined,
+    and the outcome may not hold under other seeds. Untagged peaks earliest (2.50 and 3.50 s). Before onset all groups are at or below chance (9.3
     to 12.0%).'
   deviations:
   - At 4.51 Hz a 250 ms window holds one frame; the windows are non-overlapping and start every 250 or
@@ -232,7 +251,8 @@ outcomes:
     9.2% and 6.9%. OB-p exceeds mPFC-p for concentration and interaction, and the identity difference
     (1.6 points) is smaller than the concentration difference (3.5). The time course shows OB-p higher
     for concentration mainly 1.5 to 4.5 s after onset; over 0 to 15 s the means are close (10.3 and 9.5%,
-    500 ms windows). The mPFC-p fractions are near the 5% false positive level. Untagged neurons have
+    500 ms windows). The mPFC-p concentration and interaction fractions (6.9%) are near the 5% false positive
+    level; its identity fraction (15.7%) is not. Untagged neurons have
     the highest fractions (22.2, 11.3 and 10.5%).'
   deviations:
   - Type II sums of squares; the paper does not say which type (the design is nearly balanced, 9 or 10
@@ -307,15 +327,23 @@ outcomes:
     above 25% in every phase (corrected p <= 5e-71), highest in the delay and lower in act-late; mPFC-p
     36.4, 52.7, 65.8 and 60.2%, lowest in odor and delay, highest in act-early. The maximum aggregate
     and all 8 mice give the same pattern. mPFC-p is above chance in every phase (odor corrected p = 5e-43),
-    so ''near chance'' holds only as lowest. With labels shuffled this procedure gives 26 to 29% (95th
-    percentile 36 to 39%), a little above 25%, and every mean above is higher. OB-p exceeds mPFC-p in odor,
+    so ''near chance'' holds only as lowest against 25%. With labels shuffled this procedure gives 26 to
+    29% (95th percentile 36 to 39%), a little above 25%. Every mean is higher than the shuffled means, but
+    mPFC-p odor (36.4% with 7 mice and the mean aggregate, 36.2 and 36.1% with 8) is below the mPFC-p shuffled
+    95th percentile (37.2 and 37.1%); only 7 mice with the maximum (37.3%) is just above it. OB-p exceeds mPFC-p in odor,
     delay and act-early (corrected p <= 3.1e-12), not in act-late (p = 0.12). By mouse, from its own red
     cells, each of the three mPFC mice decodes least in the odor phase (sub-2456 31.4%, sub-2457 30.0%, sub-644 35.5%),
     so the pattern is not carried by sub-2456 and sub-2457 alone (61 of the 93 day 3 mPFC-p cells). In
-    the per-session clock check these two mice decode CS identity later and less (34 to 51% in 1 to 2 s
-    after onset, against 40 to 85% for the other mice), with pre-onset decoding at the shuffled level and
-    the onset frame equal to the files'' stim_onset_frame in every trial; this is consistent with a shared
-    clock and slower or weaker odor responses, not a proof of it.'
+    the per-session clock check these two mice decode CS identity later and less early in the trial (34
+    to 51% in 1 to 2 s after onset, against 56 to 85% for the other mice except sub-2400 day 1, 40%); later
+    sub-2456 reaches 73 to 74% on days 2 and 3, above any sub-2400 session (at most 70%), while sub-2457 stays
+    at or below 63%. The onset frame equals the files'' stim_onset_frame in every trial. Before onset the
+    per-session accuracies are 20 to 39%; no per-session null was run, and some sessions sit above the
+    pooled tables'' shuffled means of 26 to 29% (sub-664 day 3 at 34 to 37%, sub-2456 day 2 at 32 to 39%).
+    The day 3 mean traces of sub-2457, sub-2400 and sub-2401 drift upward before onset (sub-2457 0.80 at
+    frame -4, 0.85 at frame 0) and keep rising after it. This is consistent with a shared clock and slower
+    or weaker odor responses, not a proof of it. The 30 Hz passive data, aligned to sniffs independently,
+    also show these two mice to be slow, untagged cells included (fig2f-latency).'
   deviations:
   - 'The paper''s Go/NoGo experiment has 7 mice (4 OB-p, 3 mPFC-p); the dandiset has 8. The analysis leaves
     out sub-668, an assumption: it is the only Go/NoGo mouse without tracking identifiers and has 24 to
@@ -366,7 +394,26 @@ outcomes:
     to 69%, not the paper''s 50%, so that procedure is not the paper''s; under it OB-p reaches 83.5, 83.7,
     79.4 and 81.9% and mPFC-p 72.6, 80.7, 80.4 and 82.7% (mean aggregate), mPFC-p odor is above 50% and
     the groups differ in 2 of 4 phases, which would not reproduce the claim. The first record gave not
-    reproduced on that table. The balanced accuracies rest on 12 pseudo-trials.'
+    reproduced on that table. The balanced accuracies rest on 12 pseudo-trials. Neither table credibly repeats
+    the paper''s procedure. On the balanced table mPFC-p reaches 27.8% (mean) and 31.4% (maximum) in the odor
+    phase, about 20 points below that table''s mean shuffled level (51.3 and 51.0%); only 6% and 12% of shuffled
+    repeats fall below these accuracies (Mann-Whitney p = 3e-14 and 1.4e-11), so the decoder predicts systematically
+    below its null and this does not show mPFC-p at chance. The shuffled repeats spread from about 15 to 82%
+    (5th to 95th percentiles). The Methods also decode "odor identity for correct trials: Decode the 4 CS on
+    only correct trials", which cannot be cross-validated with 3 trials per CS, so the paper''s correct-trial
+    table was probably not a 3-per-CS table. A change to blocked (methods_underspecified) is proposed.'
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: Neither correct-trial table is credibly the paper's. The matched table has a shuffled level of 65
+      to 69%, not the paper's 50%. The balanced table has 3 trials per CS, which cannot be the table of the
+      paper's identity decoding on correct trials (Methods, "Decode the 4 CS on only correct trials"); on it
+      the claim passes only with the maximum aggregate, and the mPFC-p odor condition is met by accuracies
+      of 27.8 and 31.4%, about 20 points below that table's shuffled level of 51% (Mann-Whitney p = 3e-14
+      and 1.4e-11 against the shuffled repeats), which is a misbehaving decoder, not chance. No construction
+      of the correct-trial pseudo-populations has a defensible basis, so the claim cannot be tested as the
+      paper ran it. The notebook prints both tables, their shuffled levels and the comparison with the
+      shuffled repeats.
   deviations:
   - 'The paper''s Go/NoGo experiment has 7 mice (4 OB-p, 3 mPFC-p); the dandiset has 8. The analysis leaves
     out sub-668, an assumption: it is the only Go/NoGo mouse without tracking identifiers and has 24 to
@@ -491,8 +538,9 @@ outcomes:
     in the direction of the paper''s within-session result. Entries are not independent (they share mice,
     neurons and trials), which inflates the significance of reading (a). Leaving out one mouse at a time
     under reading (a), distal generalized valence stays higher for mPFC-p (corrected p <= 0.0019 under
-    both aggregates); without sub-2400 OB-p identity is higher for distal sessions (corrected p = 0.0062,
-    mean aggregate), so the identity part holds in 5 of the 6 leave-one-out sets.'
+    both aggregates). The identity part fails without sub-2400 (OB-p higher for distal sessions, corrected
+    p = 0.0062 mean and 0.00015 maximum aggregate) and, under the maximum, without sub-2456 (p = 0.041), so
+    it holds in 5 of the 6 leave-one-out sets under the mean aggregate and in 4 of 6 under the maximum.'
   deviations:
   - Within a session, train and test trials are split by stratified 5-fold cross-validation, the claims
     file's reading; across sessions all trials of one day train and all of the other test.
@@ -546,7 +594,8 @@ findings:
   statement: 'Question for the authors: how do neurons without a defined lifetime sparseness (never active
     in a phase on a day) enter the slope analysis of Figure S10E and the comparison of Figure 2B? Leaving
     them out keeps 16 of 87 tracked neurons; setting their sparseness to 0 or 1 keeps all and changes
-    the projection p-value from 0.29 to 0.08 or 0.38.'
+    the projection p-value from 0.29 to 0.08 or 0.38. For Figure 2B the two values give different outcomes
+    (set to 0, no pair differs; set to 1, OB-p and mPFC-p each differ from untagged).'
 - kind: methods_unavailable
   statement: 'Question for the authors: which mice form the Go/NoGo dataset, and is sub-668 excluded?
     The analyses here assume it is. Also, is the 0.7 s window of the response binarization placed at the
@@ -555,7 +604,9 @@ findings:
   statement: 'Question for the authors: how were the correct-trial pseudo-populations of Figures 4I-J and
     S8E-G built? Matched by CS and order across the 7 mice, day 3 keeps 17, 6, 4 and 3 correct trials per
     CS (77% CS+), and shuffled labels then give 65 to 69% for valence, not the stated 50%. Balancing each
-    CS to 3 trials gives a chance near 50% but only 12 trials. The analyses here assume the balanced table.'
+    CS to 3 trials gives a chance near 50% but only 12 trials, too few for the identity decoding on correct
+    trials that the Methods describe, and on it mPFC-p odor-phase valence decoding falls about 20 points
+    below the shuffled level. The analyses here assume the balanced table, and a change to blocked is proposed.'
 verifications:
 - date: '2026-11-10'
   kind: agent
@@ -755,7 +806,7 @@ verifications:
       mPFC-p lowest in odor and delay, peak in act-early. mPFC-p odor accuracy (36%) is far from "near
       chance". Problem 1, in the clock check sub-2456 and sub-2457 decode no better in the odor phase than
       at baseline with all their cells (33.4% vs 29.0%, 29.2% vs 33.2%) while the other five reach 48-73%;
-      they supply about two-thirds of the day-3 mPFC-p cells, a wrong onset alignment or an absence of odor
+      they supply about two-thirds of the day-3 mPFC-p cells (59 of 93), a wrong onset alignment or an absence of odor
       responses would produce the "mPFC-p near chance early" pattern, and the notebook never follows this
       up. Problem 2, the trials are unbalanced and an empirical baseline of 29.4% suggests an effective
       chance near 30%.
@@ -866,3 +917,278 @@ verifications:
     response: >-
       Outcome changed from partially reproduced to not reproduced, as the verifier gives it: the criterion
       requires all three valence schemes and has no partial outcome.
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebooks of the author-revise-1 run (passive and Go/NoGo), the helper module,
+    the entry README, the claims file and the attempt record, with the paper. The verifier agreed with 34
+    of the 36 outcomes; it would give blocked (methods_underspecified) for fig4ij-valence-correct-trials and,
+    agreeing only in part, for fig2b-lifetime-sparseness-similar. It found no new place where the claims file
+    misreads the paper. In reply both outcomes are kept as verified and a change to blocked is proposed on
+    each, for a third round; the sentences it found unsupported are corrected in the notebooks, the record and
+    the README, and the notebooks now print the claim's condition under each treatment of never-active neurons
+    (fig2b), the balanced correct-trial accuracies against their shuffled repeats (fig4ij), and the latencies
+    of projection neurons against their own mouse's untagged neurons (fig2f). Report in
+    transcripts/daste-2025/verifier-2-report.md.
+  results:
+  - claim: dataset-neuron-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees. Neither the conclusion nor the record's notes say that the measured Go/NoGo untagged mean,
+      1623.3 (7 mice, days 1 to 3), is outside 1690 +/- 35; the outcome is unchanged. The Summary's "the counts
+      match the paper's to within 2% for the identity and concentration experiments" is not supported:
+      untagged neurons are 1937 against 1978 (-2.1%) and 2132 against 2232 (-4.5%).
+    response: >-
+      Outcome kept. The conclusion and the notes now say that 1623.3 is outside 1690 +/- 35 and the other
+      three readings within. The Summary now gives the exact projection counts and the untagged counts as 2.1%
+      and 4.5% lower. The README no longer lists this claim's passive counts as a reproduced row of their own.
+  - claim: fast-dataset-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: figs2b-labeling-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: mlp-projection-f1
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: transformer-projection-f1
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig1g-attention-timing
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig1f-latent-separation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2b-lifetime-sparseness-similar
+    agrees: false
+    outcome: blocked
+    reason: >-
+      Agrees only partly. The assumption (never-active neurons left out) is stated, but the criterion fixes n
+      at 81/84/1978, every neuron, which argues for keeping them. The two readings that keep every neuron
+      disagree, set to 0 the claim is reproduced (smallest corrected p 0.061), set to 1 it is not. The data
+      therefore do not settle the outcome; it would record methods_underspecified, and if the outcome stays
+      it should stay marked as assumed.
+    response: >-
+      Outcome kept as verified (not reproduced, assumed) and a change to blocked (methods_underspecified) is
+      proposed, for the verifier's reason. The notebook now prints, for each window reading and each treatment
+      of never-active neurons, whether the claim's condition holds (true only with the value 0). The finding
+      for the authors now says that the two values give different outcomes for Figure 2B.
+  - claim: fig2c-mutual-information
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2d-population-sparseness
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2-proportion-responding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2e-reliability
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees. The assumption (Bonferroni x3) is stated and reasonable; the x2 correction is now labelled as
+      the attempt's own reading.
+    response: No change.
+  - claim: fig2f-latency
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees on the criterion. New observation, projection is confounded with mouse. In the 30 Hz data,
+      within each mouse OB-p is not faster than untagged (2.70/2.70, 3.51/2.97, 4.96/3.73 s), and mPFC-p is
+      about as slow as its own mouse's untagged cells (4.59/4.82, 4.79/4.12 s). The latency difference follows
+      the mouse more than the projection; sub-2456 and sub-2457 are the only mPFC mice in that dataset and
+      supply 61 of 93 day-3 Go/NoGo mPFC-p cells. The criteria pool neurons, so the outcome stands, but the
+      notes should say this.
+    response: >-
+      Outcome kept. The notebook now compares each mouse's projection neurons with its own untagged neurons
+      (OB-p not faster in any OB mouse, slower in sub-2400 and sub-2401, p = 0.00034 and 8e-16; mPFC-p not
+      faster than its mouse's untagged in either mouse), and the conclusion and the notes state the confound.
+  - claim: fig2g-early-peaks
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. As for fig2f, the difference follows the mouse more than the projection; the notes should say
+      this.
+    response: >-
+      Outcome kept. The conclusion and the notes now say that in 0 to 3 s the untagged neurons of the two mPFC
+      mice also have few early peaks (0.216 and 0.302, against 0.464, 0.491 and 0.307 in the OB mice).
+  - claim: fig2h-identity-decoding-5s
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2i-identity-decoding-early
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2j-identity-decoding-peaks-earlier
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. The record's sentence about a development run with mPFC-p peaking at 4.75 s has no printed
+      output behind it; it is disclosed as such.
+    response: >-
+      Outcome kept. The sentence and its number are removed from the notes, which keep that the mPFC-p peak
+      time is poorly determined and the outcome may not hold under other seeds.
+  - claim: fig2k-mpfc-late-identity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3bc-concentration-tuning
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. The notes' "The mPFC-p fractions are near the 5% false positive level" holds for concentration
+      and interaction (6.9%), not for identity (15.7%); the notebook says it correctly.
+    response: The notes now say that the concentration and interaction fractions are near 5% and the identity fraction is not.
+  - claim: fig3de-concentration-decoding
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees, as given in round 1. A cross-validated peak and a shuffled null were added; the pre-onset offset
+      is still unexplained and is said so.
+    response: No change.
+  - claim: figs5g-pairwise-concentration
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: figs5-sparseness-concentration
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4c-behavior-learning
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. The lick time reference is confirmed.
+    response: No change.
+  - claim: fig4c-anticipatory-licking
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4def-identity-decoding-gng
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. Unsupported sentences in the clock check and the notes. The sub-2457 trace starts rising before
+      onset (0.80 at frame -4, 0.84 at -1, 0.85 at frame 0), and sub-2400 and sub-2401 also drift upward
+      before onset, so 0.80 is a pre-onset value. "34 to 51% ... against 40 to 85%" overlaps (sub-2456 day 2
+      reaches 51%, sub-2400 day 1 has 40%), and later sub-2456 reaches 73-74%, above any sub-2400 session.
+      "Pre-onset decoding at the shuffled level" uses shuffled levels of the pseudo-population tables, not of
+      per-session decoding; sub-664 day 3 (34-37%) and sub-2456 day 2 (32-39%) sit above the shuffled means
+      of 26-29%. "Every mean above is higher than that" holds against the shuffled means, not the 95th
+      percentiles; mPFC-p odor is 36.4% (7 mice, mean) and 36.2 and 36.1% (8 mice), below the mPFC-p shuffled
+      95th percentile of about 37.2%. The sub-2456 and sub-2457 clock point is partly resolved; the 30 Hz data
+      favour slow responses in these mice over a Go/NoGo clock error.
+    response: >-
+      Outcome kept. The clock-check text and the notes are rewritten on the printed numbers (pre-onset drift of
+      the traces, the overlap with sub-2400 day 1 and sub-2456's later accuracy, no per-session null, the two
+      sessions above the shuffled means), and the conclusion and the notes now compare mPFC-p odor with the
+      shuffled 95th percentile. The notes add that the 30 Hz data show these two mice to be slow, untagged
+      cells included.
+  - claim: fig4g-valence-any
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4h-valence-timing
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4ij-valence-correct-trials
+    agrees: false
+    outcome: blocked
+    reason: >-
+      Disagrees; it would give blocked (methods_underspecified). The assumption (correct-trial tables balanced
+      to 3 trials per CS) is stated but not well supported. The Methods also decode "odor identity for correct
+      trials" on the 4 CS, which the notebook says cannot be cross-validated with 3 trials per CS, so the
+      paper's table was probably not a 3-per-CS table. The matched table's shuffled level is 65-69%, against
+      the paper's 50%. Under the balanced reading the claim passes only with the maximum aggregate; with the
+      mean, act-early fails (p = 1). The condition "mPFC-p odor not above 50%" is met by 27.8% and 31.4%,
+      about 20 points below that table's shuffled level of about 51%; a 12-trial decoder that systematically
+      anti-predicts is misbehaving and does not show mPFC-p at chance, and the notes do not mention it.
+      Neither table is credibly the paper's procedure.
+    response: >-
+      Outcome kept as verified (reproduced, assumed) and a change to blocked (methods_underspecified) is
+      proposed, for the verifier's reasons. The notebook now prints the balanced accuracies against the 50
+      shuffled repeats of the same table (mPFC-p odor 27.8 and 31.4% against shuffled means of 51.3 and 51.0%,
+      6% and 12% of repeats below, Mann-Whitney p = 3e-14 and 1.4e-11), and the conclusion, the notes and the
+      finding for the authors give the below-null accuracy and the identity-on-correct-trials evidence.
+  - claim: figs8-generalized-valence-correct
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: discussion-differences-grow
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. The assumption (sub-668 left out) is stated and reasonable. Round-1 point 8 is handled as far
+      as the attempt can; the difference by day is printed and the question is with a reader.
+    response: No change.
+  - claim: tracked-neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The count over days 0 to 3 only is printed, 43 and 37.
+    response: No change.
+  - claim: figs10d-slope-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: figs10e-sparseness-slope-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees on the criterion's terms. The assumption is stated and is the standard treatment of an undefined
+      value. The outcome is weak, 16 or 8 of 87 neurons are kept, and one fill variant gives p = 0.048.
+    response: No change; the notes already give the kept neurons, the fill variants and the bounds.
+  - claim: fig5c-cv-higher-obp
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5e-transferability
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees under reading (a). "So the identity part holds in 5 of the 6 leave-one-out sets" holds only for
+      the mean aggregate; under the maximum, removing sub-2456 also gives a distal identity difference
+      (corrected p = 0.041), so the identity part holds in 4 of 6. The round-1 response "fails only without
+      sub-2400" is wrong for the same reason. Pooling correlated entries remains; the per-mouse reading gives
+      p = 0.6.
+    response: >-
+      Outcome kept. The conclusion and the notes now say that the identity part holds in 5 of 6 leave-one-out
+      sets under the mean aggregate and 4 of 6 under the maximum (it also fails without sub-2456, p = 0.041);
+      the round-1 response above is wrong on this and is left as it was recorded.
+  - claim: fig5f-stability
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as given in round 1.
+    response: No change.

@@ -11,16 +11,16 @@ reasoning and the differences from the paper's method.
 
 | Claims | Outcome |
 |---|---|
-| Neuron counts of the passive and 30 Hz experiments, tracked-neuron counts | Reproduced |
-| Go/NoGo neuron counts per session | Partially reproduced |
+| Neuron counts of the passive and Go/NoGo experiments (one claim) | Partially reproduced: passive counts within tolerance, Go/NoGo per-session counts not |
+| Neuron counts of the 30 Hz experiment, tracked-neuron counts | Reproduced |
 | Labeling similar in OB-p and mPFC-p mice | Reproduced |
 | Transformer and MLP classifiers (four claims) | Blocked: Tables 5, 6 and 8 missing from the text |
-| Single-cell properties of Figure 2 (sparseness, mutual information, reliability) | Not reproduced (four claims, two resting on an assumption); proportion responding reproduced |
-| 30 Hz latencies and early peaks | Reproduced |
+| Single-cell properties of Figure 2 (sparseness, mutual information, reliability) | Not reproduced (four claims, two resting on an assumption; for lifetime sparseness a change to blocked is proposed); proportion responding reproduced |
+| 30 Hz latencies and early peaks | Reproduced (projection confounded with mouse) |
 | Identity decoding (Figure 2H to 2K) | Three reproduced, one blocked (the two windows disagree) |
 | Concentration tuning, decoding and sparseness (Figures 3, S5) | Two reproduced, two not |
 | Behavior (learning, anticipatory licking) | Learning not reproduced, licking reproduced |
-| Go/NoGo decoding (Figures 4D to 4J, S8) | Identity, any-p valence and correct-trial valence reproduced (the last resting on an assumption); two valence claims not |
+| Go/NoGo decoding (Figures 4D to 4J, S8) | Identity, any-p valence and correct-trial valence reproduced (the last resting on an assumption, with a change to blocked proposed); two valence claims not |
 | Differences growing over learning (Discussion) | Reproduced, resting on an assumption |
 | Tracked neurons (Figures 5, S10) | Four reproduced (one resting on an assumption), one not |
 
