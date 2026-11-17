@@ -1,0 +1,1114 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "ssc-4",
+  "label": "CRCNS:ssc-4"
+ },
+ "page": "datasets/crcns/ssc-4/",
+ "generated": "2026-11-17T09:31:34+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 22,
+  "partially_reproduced": 10,
+  "not_reproduced": 2,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 3,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "mcguire-2016-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "ssc-4",
+    "version": "unversioned",
+    "doi": "10.6080/K06D5QXN",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:ssc-4"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:ssc-4",
+   "label": "CRCNS:ssc-4",
+   "dataset_version": "unversioned",
+   "paper": "10.1371/journal.pbio.1002549",
+   "paper_title": null,
+   "date": "2026-11-11",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43061505476"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "mcguire-2016",
+   "entry_title": "Short time-scale coding in rat S1 during whisker sequence discrimination (McGuire et al. 2016)",
+   "summary": "Most main findings held up: rats judged whisker sequences by mean speed and treated FMS and SMF alike, S1 units split into Fast, Medium and Slow classes with the reported laminar pattern, Fast units tracked impulse velocity, L5 Slow Positive units signalled choice, and Fast and Medium units decoded the sequence. The choice decoder did not reproduce: Slow units predicted choice far above the paper's 65%, Fast and Medium units also well above chance, and the Methods leave open how it was trained. The one rat that told FMS from SMF is not deposited. Several class outcomes assume the dataset's stored modulated units are the paper's. Minor claims on baseline rates and latencies reproduced in part.",
+   "description": "Tests the findings of McGuire, Telian, Laboy-Juarez et al. (2016) on CRCNS ssc-4, which holds the spike times and trial data of 80 recording sessions in the five recorded rats. It checks the behaviour of those rats, the unit counts, baseline rates, temporal modulation, impulse responses by layer, the regression on integrated panel speed that classes units as Fast, Medium, Slow Positive and Slow Negative, the responses and choice coding of each class, and the population decoders of stimulus and choice. Three claims are tested on the paper's supporting data.",
+   "notebooks": [
+    {
+     "path": "reproduce_mcguire_2016.ipynb",
+     "title": "Behaviour, units, regression classes and responses (Figures 2 to 8)",
+     "executed": "notebooks/mcguire-2016/reproduce_mcguire_2016.html"
+    },
+    {
+     "path": "decoders.ipynb",
+     "title": "Stimulus and choice decoders (Figure 9)",
+     "executed": "notebooks/mcguire-2016/decoders.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig2ab-fms-smf-not-discriminated",
+     "statement": "All eight rats discriminated FFF from SSS but treated FMS and SMF as equivalent and intermediate; seven of eight showed no difference between FMS and SMF, and one rat (62SC) made more right choices to FMS than to SMF.",
+     "source": "Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 3; Figure 2A and 2B",
+     "quote": "Seven out of eight rats failed to differentiate at all between FMS from SMF stimuli (proportion test, Bonferroni-adjusted p -value >0.00625). One rat (62SC) showed modest but significant discrimination, with more right-side choices to FMS than SMF stimuli ( p = 0.0039).",
+     "statistics": [
+      {
+       "about": "FMS against SMF right-choice fraction, each of seven rats",
+       "test": "proportion test",
+       "p": 0.00625,
+       "p_relation": ">",
+       "corrected": "Bonferroni",
+       "n": "seven rats"
+      },
+      {
+       "about": "FMS against SMF right-choice fraction, rat 62SC",
+       "test": "proportion test",
+       "p": 0.0039,
+       "n": "one rat"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "The data set holds five of the eight rats (18FB, 18Ri, 18Ro, 62BS, 107St). In all five, FFF draws more right choices than SSS (0.537 to 0.698 against 0.234 to 0.390) and FMS and SMF lie between, and FMS against SMF is not significant at 0.00625 (smallest p 0.10 by the z test and 0.11 by the continuity-corrected chi-square, 62BS). Both trial readings select the same 14186 trials. Rat 62SC, the one the paper finds discriminating, is not in the data set, so that part cannot be tested; the criterion caps the outcome at partial for fewer than eight rats. The data set's per-rat means over sessions equal the S1 Data values for four rats and differ by up to 0.026 for 18FB.",
+     "deviations": [
+      "Five of eight rats; the three behaviour-only rats are not deposited."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "training-days",
+     "statement": "Rats trained on FFF-FMS-SMF-SSS discrimination for 14.2 days on average (s.d. 4.4, range 8 to 22).",
+     "source": "Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 3",
+     "quote": "After 14.2 \u00b1 4.4 (standard deviation [s.d.]) (range: 8\u201322) d of training on FFF-FMS-SMF-SSS discrimination, all eight rats successfully discriminated FFF from SSS stimuli",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Distinct recording dates per rat are 11 (18FB), 12 (18Ri, 107St), 19 (18Ro) and 20 (62BS); mean 14.8, s.d. 4.3. The mean and the maximum are within tolerance, the minimum (11) is not within 0.8 of 8. Counting sessions, which match the paper's 12-22 d of recording, gives 12 to 22, mean 16.0, and the minimum is still outside. The data set holds only the recording days of the five recorded rats, and the shortest-trained rats may be among the three not deposited.",
+     "deviations": [
+      "Five of eight rats, and only days with a deposited recording session."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-choice-follows-mean-speed",
+     "statement": "Relative right-port choice (fraction of right choices for a stimulus minus the mean over all stimuli) was strongly related to the mean speed of the sequence for all rats.",
+     "source": "Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 3; Figure 2C",
+     "quote": "Right drink port choice was strongly related to mean sequence speed for all rats ( Fig 2C ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "For each of the five rats relative right choice orders FFF above FMS and SMF above SSS (reading a), and the Pearson correlation with Table 1 mean speed is 0.967 to 0.998 (reading b), under both trial readings. The S1 Data means of all eight rats give the same (r 0.967 to 0.995).",
+     "deviations": [
+      "Five of eight rats in the data set; all eight shown from S1 Data as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-fixed-panel-impairs",
+     "statement": "Fixing the panel in place, with the piezo moving behind it, impaired FFF against SSS discrimination in all but one of six rats tested.",
+     "source": "Results, Behavioral Discrimination of FFF, FMS, SMF, and SSS Sequences, paragraph 4; Figure 2D; S2B Fig",
+     "quote": "Panel fixation strongly impaired behavioral discrimination in all but one rat",
+     "statistics": [
+      {
+       "about": "FFF minus SSS right-choice fraction, fixed-panel against normal sessions",
+       "test": "two-sided paired t test",
+       "p": 0.012
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Tested on S2 Data after a reader's answer to this attempt's question. The first run had the claim as data from the data set and recorded it as blocked (data_missing), since the data set holds only the four normal sequences and no fixed-panel session; the reader changed the claim to data elsewhere, on the per-rat S2B Fig values in S2 Data, and to a lower fixed-panel value in at least five of six rats. On those values fixed-panel discrimination (FFF minus SSS right-choice fraction) is lower than moving-panel discrimination in all six rats, by 0.067 (18Ri) to 0.374 (107SI). The paired t test gives p = 0.0120 with the rat at 0 kept (reading ii, the paper's 0.012), mean change -0.169 (95% CI -0.282 to -0.056), and p = 0.0308 without it (reading i), mean change -0.174 (-0.322 to -0.026), so the criterion holds under both readings. The Figure 2D d-prime from S1 Data is lower in all six rats too (p = 0.0051 and 0.0176). The moving-panel values of S2B differ from the Figure 2B means and from the data set's mean and last session for the six rats with the control, so they summarise sessions the data set does not hold. The statement's \"all but one\" (one rat not significantly impaired) cannot be tested from per-rat summaries; the lowest change is 18Ri's (0.067, d-prime 1.02 to 0.78).",
+     "deviations": [
+      "The per-rat values of S2B Fig are taken from S2 Data as deposited; the single trials are not public, so the paper's computation of each value is not repeated."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "PLOS Biology supporting information of doi:10.1371/journal.pbio.1002549, S2 Data (XLSX, data for S2B Fig) and S1 Data (XLSX, data for Figure 2D)",
+     "proposed": null
+    },
+    {
+     "claim": "dprime-fff-sss-range",
+     "statement": "Discrimination of FFF against SSS in normal sessions was modest, with d-prime from 0.5 to 1.5 across rats.",
+     "source": "Discussion, Behavioral Integration of Stimulus Sequences, paragraph 2; Figure 2D",
+     "quote": "Task performance was relatively low (d-prime for FFF versus SSS: 0.5\u20131.5), as in a prior study [ 13 ]",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Per-rat d-prime over pooled sessions (reading a) is 0.45 (18FB) to 1.09 (18Ro), and the mean of per-session values (reading b) 0.46 to 1.23. The lowest value is within tolerance of 0.5; the highest is below 1.35 under both readings. Of the three rats not deposited, two have the highest d-prime by the S1 Data means (62SS 1.32, 107Si 1.17).",
+     "deviations": [
+      "Five of eight rats.",
+      "Rates of 0 or 1 in a session are moved by half a trial before the z transform, a standard choice."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-fsfs-sffs-intensity-only",
+     "statement": "Two rats discriminated FSFS from SFFS when the sequences differed in mean speed (70 and 69.2% correct) but not when mean speed was the same (52 and 53%), even after more than 20 days; d-prime was 1.02 against 0.12.",
+     "source": "Results, Discrimination of FSFS versus SFFS Sequences, paragraph 2; Figure 3B and 3C",
+     "quote": "Both rats consistently discriminated FSFS from SFFS when they had different mean speed (58B: 70 \u00b1 1.5% correct, 60W: 69.2 \u00b1 1.6%), but not when they had the same mean speed, even after >20 cumulative days of training (58B: 52 \u00b1 0.8% correct; 60W: 53 \u00b1 0.8% correct). This was evident in the d-prime measure of discrimination between FSFS and SFSF stimuli, which was 1.02 for different-intensity stimuli and 0.12 for same-intensity stimuli",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "From the per-session values of S1 Data, 58B is 69.98 +- 1.47% correct (13 sessions) and 60W 69.17 +- 1.57% (15) with different intensities, and 51.74 +- 0.81% (22) and 53.02 +- 0.82% (21) with the same intensity, with same-intensity sessions up to day 56 and 52. D-prime as the mean of the two rats (reading a) is 1.004 and 0.130; per rat 1.061 and 0.947, 0.168 and 0.093 (reading b, outside tolerance for single rats). All six values are within tolerance under reading a.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "PLOS Biology supporting information of doi:10.1371/journal.pbio.1002549, S1 Data (XLSX, data for Figure 3)",
+     "proposed": null
+    },
+    {
+     "claim": "units-recorded",
+     "statement": "The recordings yielded 306 single units and 167 multi-unit clusters (473 units) over 80 sessions in five rats, 3.8 single units per session on average (range 0 to 11).",
+     "source": "Results, S1 Recordings during Behavioral Discrimination, paragraph 1",
+     "quote": "Spike sorting yielded 3.8 (range: 0\u201311) well-separated single units per recording session ( Fig 4B ). ... We obtained 306 single units and 167 multi-unit clusters (total: 473 units) across 80 recording sessions in five rats (18FB, 18Ri, 18Ro, 62BS, 107St)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "330 single units (257 RS, 73 FS) and 176 multi-unit clusters, 506 in all, over 80 sessions in five rats; 4.12 single units per session, 0 to 12. Each value is within its tolerance, but the total is 33 above the paper's 473. The descriptor says units in columns A1 and B2 are to be dropped using MapPosition, which the file lacks; leaving out the fifth electrode of 18FB and 18Ri gives 459, not 473. By the unit counts per layer and type of the paper's S1 Table, the 33 extra units are in L2/3 (4), L4 (8), L5a (15) and L5b (6), none in L6.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "baseline-rates",
+     "statement": "Mean firing rate in the 25-ms prestimulus baseline in the nose poke was 6 to 10 Hz across layers for RS units, 8 to 32 Hz for FS units, and higher for multi-unit clusters.",
+     "source": "Results, S1 Recordings during Behavioral Discrimination, paragraph 2; S1 Table",
+     "quote": "Mean firing rate during a 25-ms prestimulus baseline period in the nose poke was 6\u201310 Hz across layers for RS units, 8\u201332 Hz for FS units, and higher for multi-unit clusters ( S1 Table ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Layer means of the 25-ms baseline over completed trials are 5.93 (L2/3) to 11.40 Hz (L5a) for RS single units and 7.59 (L2/3) to 30.18 Hz (L5b) for FS. The RS maximum is above 11 Hz; the other bounds are within tolerance. Multi-units are higher than RS in 5 of 5 layers and higher than both RS and FS in 4 of 5. With all trials the RS maximum is 11.49 Hz. The paper's S1 Table gives 6.0 to 10.8 Hz for RS (L5a 10.8 Hz over 68 units, against 77 here) and 7.9 to 31.6 Hz for FS; the data set's 33 extra units are all in L2/3 to L5b by the S1 Table counts, so they are a likely source of the difference.",
+     "deviations": [
+      "All 506 deposited units, not the paper's 473.",
+      "The baseline is averaged over completed trials, while the criterion says all trials. With all trials RS layer means are 6.09 to 11.49 Hz and FS 7.80 to 29.93 Hz, shown as a variant, and the outcome is the same."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "temporal-modulation-count",
+     "statement": "305 of 473 units (63.5%) had firing rates significantly modulated in time during the nose poke period.",
+     "source": "Results, S1 Recordings during Behavioral Discrimination, paragraph 3; Methods, Temporal response modulation",
+     "quote": "Three hundred five out of 473 units (63.5%) showed significant temporal modulation.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "With 0 to 180 ms after nose poke entry (reading a) 310 of 506 units (61.3%) are modulated; with 0 to 180 ms after onset (reading b) 261 (51.6%). The two statistics the criterion names give the same p-value under uniform permutation, so they are one reading. The data set's stored p-values also mark 310 units, but they agree with reading a unit by unit for 73.1% (Spearman r of the p-values 0.60). They were computed over -50 to 300 ms (TempSig.Params); that window gives 363 units here (81.6% agreement), and a null that shuffles each trial's 10-ms bins gives 365 on that window (82.0%) and 321 on the Methods' window (73.7%), so the authors' test is not repeated exactly. The claims that depend on this one use the stored set, which the descriptor names as the paper's units, with reading a as a variant.",
+     "deviations": [
+      "506 units in the denominator, not 473.",
+      "Spikes are permuted uniformly within the window on each trial (the criterion's standard choice), drawn as a multinomial over the pooled bins, which is the same null.",
+      "A second null, shuffling each trial's 10-ms bins (1000 permutations), is shown as a variant at the verifier's request."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "modulated-higher-baseline",
+     "statement": "Temporally modulated units were distributed uniformly across columns and layers and had higher baseline firing rates than non-modulated units.",
+     "source": "Results, S1 Recordings during Behavioral Discrimination, paragraph 3; Figure 4C; S3B Fig",
+     "quote": "Temporally modulated units were distributed uniformly across whisker columns and layers ( Fig 4C ) and had higher baseline firing rates than non-modulated units ( S3B Fig ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "On the stored modulated set, modulated RS single units have the higher baseline in 5 of 5 layers (for example L4 10.14 against 6.55 Hz, L6 10.54 against 2.51 Hz; L5a 11.46 against 11.35 Hz). The fraction modulated is 0.49 to 0.73 across layers, chi-square p = 0.002, so on this variant layers are not uniform (p = 0.105 on the recomputed set, where the baseline is also higher in 5 of 5 layers). Columns cannot be tested, as the column map is missing.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-evoked-modulation-by-layer",
+     "statement": "The mean impulse-evoked firing rate modulation, above the pre-impulse baseline, was 14.2 Hz in L2/3, 15.2 in L4, 6.3 in L5a, 14.4 in L5b and 7.0 in L6, greatest in L2/3, L4 and L5b.",
+     "source": "Results, S1 Recordings during Behavioral Discrimination, paragraph 4; Figure 4D",
+     "quote": "The mean impulse-evoked firing rate modulation (in Hz above pre-impulse baseline) was 14.2 \u00b1 2.3 in L2/3, 15.2 \u00b1 1.9 in L4, 6.3 \u00b1 1.2 in L5a, 14.4 \u00b1 2.3 in L5b, and 7.0 \u00b1 1.5 in L6 ( n = 28\u201382 units per layer).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "No combination of the criterion's readings puts all five layers within tolerance. The closest, the signed peak over pooled impulses (A, a, i), gives 14.33, 14.23, 2.55, 13.11 and 5.76 Hz, 4 of 5 within tolerance (L5a outside); measured gives it. The absolute peak gives 3 of 5 or fewer and the 5 to 35 ms mean (B) 1.6 to 8.0 Hz, none. L5a and L6 are the two lowest layers under every combination. Units per layer 28 to 83. The recomputed set gives at most 3 of 5 and the same two lowest layers.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "The 10-ms boxcar is centred, a standard choice; the segments now extend to 50 ms after impulse onset, so that the smoothing needs no padding at the end of the 40-ms window."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "latency-by-layer",
+     "statement": "Among impulse-responsive units, peak response latency was shortest in L4, L5a and L5b (9.8, 10.3 and 12.0 ms) and longest in L2/3 and L6 (13.8 and 16.1 ms).",
+     "source": "Results, S1 Recordings during Behavioral Discrimination, paragraph 4",
+     "quote": "Among units with significant impulse responses, peak response latency was shortest in L4, L5a, and L5b (9.8, 10.3, and 12.0 ms) and longest in L2/3 and L6 (13.8 and 16.1 ms).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "With the centred 10-ms boxcar, latencies of impulse-responsive units on the stored modulated set are 15 to 22 ms in every layer, longer than the paper's 9.8 to 16.1 ms, and no layer is within tolerance. The ordering (L4, L5a and L5b below L2/3 and L6) holds for the mean and the median with the two-sided test and not with the one-sided test, where L5a is among the latest. Measured gives the two-sided centred means, the reading the partial outcome rests on, in the claim's order (L4, L5a, L5b, L2/3, L6); the one-sided medians are 15, 19, 15, 17 and 21 ms. 21 to 48 impulse-responsive units per layer. Placing the boxcar forward (t to t+9 ms) shortens latencies by about 5 ms and puts at most 2 of 5 layers within tolerance (3 on the recomputed set); the trailing boxcar puts none and the unsmoothed PSTH at most 2 (3 on the recomputed set). No reading puts all five within tolerance. Latency is now the mean of the times sharing the maximum, so that a plateau is not read at its first sample.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "The impulse t test compares, per trial, the 5 to 35 ms rate with the 0 to 10 ms rate, averaged over the trial's three impulses, across trials (Methods, Stimulus-evoked responses, by t test).",
+      "The Methods say only 10 ms smoothing; the boxcar is centred (Matlab's smooth), a standard choice, with trailing, forward and no smoothing shown. The outcome is the same under all four."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-gradual-decrease",
+     "statement": "Superimposed on the phasic impulse responses, average firing rate decreased gradually during the nose poke period in all layers except L5a.",
+     "source": "Results, S1 Recordings during Behavioral Discrimination, paragraph 4; Figure 4D",
+     "quote": "Superimposed on these phasic responses to individual impulses was a gradual decrease in average firing rate during the nose poke period, observed in all layers except L5a ( Fig 4D ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "The population rate of modulated units falls in every layer, L5a included. On the stored set the slope from -25 to 180 ms is -0.94 Hz per 100 ms in L5a (p below 0.001) and -1.42 to -2.12 in the other layers (reading a), and the last 30 ms are below the baseline in all five layers, by 1.70 Hz in L5a (reading b). The recomputed set gives the same (L5a -0.88 Hz per 100 ms). The claim requires no decrease in L5a.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-regression-significant",
+     "statement": "Of the 305 temporally modulated units, 204 had a significant regression of firing rate on integrated panel speed for at least one of the 36 integration windows.",
+     "source": "Results, Regression Analysis to Identify Fast- and Slow-Time Scale Units, paragraph 1; Methods, Stimulus regression",
+     "quote": "Two hundred four units showed a significant regression for at least one stimulus integration window (\u03b1 = 0.05/36 = 0.0014, using Bonferroni correction for the multiple regressions).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "207 of the 310 stored modulated units have a regression at p < 0.05/36 in at least one window (194 of the 310 units of the recomputed set). With rates per trial in place of summed counts, also 207. The fit reproduces the data set's stored R2 and p for every unit to numerical precision.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "The regressor is the data set's stored integrated speed (Xval), the stimulus record the criterion allows; the dependent variable is the spike count summed over completed trials, as the stored inputs show."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-unit-classes",
+     "statement": "Units were classed by best-fit integration window as Fast (5 to 20 ms, 158 units, 52%, positive slopes), Medium (25 to 55 ms, 52 units, largely negative slopes), Slow Positive (51) and Slow Negative (44); 44% of units had very fast (5 to 10 ms) windows.",
+     "source": "Results, Regression Analysis to Identify Fast- and Slow-Time Scale Units, paragraphs 2 and 3; Figure 6E; Discussion, Stimulus Encoding in S1, paragraph 1",
+     "quote": "Empirically, units with 5\u201320 ms best integration windows (Fast units; n = 158) had positive slopes. Units with 25\u201355 ms integration windows were rarer (Medium units; n = 52) and had largely negative slopes. Units with slow (55\u2013180 ms) integration windows had either positive regression slope (Slow Positive units; n = 51) or negative regression slope (Slow Negative units; n = 44).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Classing all stored modulated units by their highest-R2 window (reading a) gives 160 Fast, 52 Medium, 51 Slow Positive and 47 Slow Negative with 55 ms Slow, and 160, 53, 51 and 46 with 55 ms Medium; all within tolerance, with 51.6% Fast and 43.5% with 5 to 10 ms windows. 94% of Fast units have positive slopes and 69 to 70% of Medium units negative. Reading b (significant units only) gives 125, 30 or 31, 28, 24 or 23, outside tolerance. With 55 ms Medium the classes equal the data set's labels unit for unit. On the recomputed modulated set Slow Negative is 50 or 51, above its limit of 48.4 (the first run's partial outcome), so the outcome rests on the unit set.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6fg-laminar-classes",
+     "statement": "Fast units were 73% of temporally modulated units in L2/3 and L4, 50% in L5 and 23% in L6; slow units were 13% in L2/3 and L4, 31% in L5 and 56% in L6.",
+     "source": "Results, Regression Analysis to Identify Fast- and Slow-Time Scale Units, paragraph 3; Figure 6F and 6G",
+     "quote": "Fast units were 73% of temporally modulated units in L2/3 and L4, 50% in L5, and 23% in L6. ... Overall, slow units were 13% of temporally responsive units in L2/3 and L4, 31% in L5 and 56% in L6.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Under reading a on the stored modulated set, 6 of 6 values are within tolerance (Fast 74.0, 49.6 and 23.2%; Slow 13.0, 32.6 and 56.5% with 55 ms Slow, 31.9% in L5 with 55 ms Medium) and Fast falls and Slow rises from superficial to deep. Separately, L2/3 is 75.0% Fast and L4 73.6%. On the recomputed set 4 of 6 are within tolerance (L6 Fast 26.5%, L2/3 and L4 Slow 18.3%), so the outcome rests on the unit set.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-fast-impulse-velocity",
+     "statement": "In Fast units the evoked rate after an impulse was greater for F than S impulses and intermediate for M impulses.",
+     "source": "Results, Fast and Medium Time Scale Units, paragraph 2; Figure 7C left",
+     "quote": "The firing rate of Fast units ( n = 158) in a brief window after each impulse was greater for F versus S impulses, and intermediate for M impulses ( Fig 7C , left).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Over 160 Fast units the net evoked rate is 9.99 Hz for F, 8.54 for M and 7.77 for S impulses (SEM 0.75 to 0.88); paired t F against S, t = 4.47, p = 1.5e-05. The recomputed set gives 9.59, 8.73 and 7.42 Hz. In 18Ri M is above F and in 107St S above M.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-fast-sequence-rate",
+     "statement": "Mean firing rate of Fast units over the whole sequence (0 to 150 ms) followed the mean speed of the sequence, highest for FFF, lowest for SSS, and intermediate and equal for FMS and SMF.",
+     "source": "Results, Fast and Medium Time Scale Units, paragraph 2; Figure 7C right",
+     "quote": "Mean firing rate measured over the entire duration of a sequence (0\u2013150 ms after sequence onset) varied closely with mean speed of the sequence, being highest for FFF, lowest for SSS, and intermediate and equal for FMS and SMF ( Fig 7C , right).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "With the 25-ms baseline (reading a) Fast units give FFF 4.10, FMS 2.68, SMF 3.56 and SSS 1.59 Hz above baseline, FMS against SMF p = 0.058; with the 0 to 10 ms baseline (reading b) 4.75, 2.28, 3.19 and 1.63 Hz, p = 0.234. The claim holds under both. On the recomputed set FMS and SMF differ at p = 0.046 with the 25-ms baseline.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-fff-adaptation",
+     "statement": "Fast RS single units adapted modestly in FFF trains, with pulse 2 to pulse 1 ratio 0.80 and pulse 3 to pulse 1 ratio 0.70, significant by t test.",
+     "source": "Results, Fast and Medium Time Scale Units, paragraph 1; S4 Fig",
+     "quote": "Adaptation within each train was quantified as mean firing rate to pulse N/pulse 1 and was modest in FFF trains (2/1: 0.80 \u00b1 0.11, 3/1: 0.70 \u00b1 0.14, p < 0.05 by t test, n = 61 single RS units with significant response to F impulses)",
+     "statistics": [
+      {
+       "test": "t test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "61 Fast RS single units with significant response to F impulses"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "The impulse t test selects 29 to 37 of the 62 Fast RS single units (one-sided 37, two-sided 34, first impulse only 29), not 61, and on those no combination meets the criterion (ratios of means within tolerance, paired p 0.04 to 0.28). All 62 Fast RS single units, the selection closest to the paper's 61, give ratios of population means of 0.744 (2/1) and 0.663 (3/1), within tolerance, with paired t tests p = 0.037 and 0.013 (25-ms baseline; 0.779 and 0.709 with the same p for the 0 to 10 ms baseline), which meets the criterion under (b, ii). The mean of per-unit ratios (pulse 1 above 1 Hz) is outside tolerance for 2/1 (0.42 and 0.65). On the recomputed set the 63 Fast RS units give 0.701 and 0.773, p = 0.039 and 0.141.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "Units are all Fast RS single units (62), an assumption. The Methods' t test as run here (one-sided, two-sided, or on first impulses only) selects 29 to 37, about half, so it cannot be the paper's test, whose 61 is close to all Fast RS units. The t-test selections are shown and do not meet the criterion.",
+      "Per-unit ratios are taken only where the pulse 1 response is above 1 Hz (44 of 62 units with the 25-ms baseline), in place of above 0, which let near-zero denominators give ratios of order 1e13."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-sss-no-adaptation",
+     "statement": "Adaptation was statistically absent in SSS trains (pulse 2/pulse 1 ratio 1.09, pulse 3/pulse 1 ratio 0.86).",
+     "source": "Results, Fast and Medium Time Scale Units, paragraph 1; S4 Fig",
+     "quote": "statistically absent in SSS trains (2/1: 1.09 \u00b1 0.26, 3/1: 0.86 \u00b1 0.35, all mean \u00b1 SEM)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "On the same 62 Fast RS units the SSS ratios of population means are 0.892 and 0.871, within tolerance, and the paired tests are not significant (p = 0.465 and 0.504). The per-unit ratio 2/1 differs from 1 (mean 0.713, p = 0.046 with the 25-ms baseline) and is outside tolerance, so the claim holds under (b, ii), the combination that gives fig7-fff-adaptation. Over every selection and baseline the ratios of means are 0.76 to 0.91.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s4-fms-middle-pulse",
+     "statement": "The middle M pulse appeared weaker in FMS than in SMF sequences in Fast RS single units, but the difference was not significant.",
+     "source": "Results, Fast and Medium Time Scale Units, paragraph 3; S4A Fig",
+     "quote": "the middle M pulse in FMS sequences appeared weaker than in SMF sequences, though this did not achieve statistical significance ( p = 0.08, paired t test, n = 61 units)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.08,
+       "n": "61 Fast RS single units"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "In the 62 Fast RS units the pulse 2 response is 1.26 Hz lower in FMS than in SMF with the 25-ms baseline (paired t p = 0.150) and 0.91 Hz lower with the 0 to 10 ms one (p = 0.411). Every selection gives FMS lower with p of 0.06 or more; the 63 units of the recomputed set give 1.60 Hz, p = 0.087, against the paper's 0.08.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7de-medium-suppressed",
+     "statement": "Medium units were suppressed by F, M and S impulses and did not distinguish impulse identity or sequence identity.",
+     "source": "Results, Fast and Medium Time Scale Units, paragraph 4; Figure 7D and 7E",
+     "quote": "In firing rate analysis, these cells were inhibited by F, M, and S impulses and did not distinguish either individual impulse identity or whole sequence identity ( Fig 7D and 7E ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "The 53 Medium units have negative net evoked rates for F (-0.27 Hz), M (-0.39) and S (-0.52), and do not distinguish F from S impulses (p = 0.766) or FFF from SSS (p = 0.156 and 0.200), which meets the criterion. None of the three rates differs from 0 (p 0.45 to 0.72), so the suppression is small. Their sequence rates are 2.0 to 4.5 Hz below the pre-stimulus baseline. On the recomputed set (50 units) the F rate is +0.20 Hz, the first run's partial outcome, so the outcome rests on the unit set.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8a-slow-positive-no-sequence-difference",
+     "statement": "Slow Positive units showed small, sustained responses mostly to the second and third impulses, evident for F and M but not S impulses, and their mean firing did not differ between FFF, FMS, SMF and SSS.",
+     "source": "Results, Slow Positive and Slow Negative Units, paragraph 1; Figure 8A",
+     "quote": "Responses were small and sustained (unlike the large, transient responses by Fast units) and were evident for F and M impulses but not S impulses ( Fig 8A ). However, mean firing was not different for FFF, FMS, SMF, or SSS trains",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "The 51 Slow Positive units respond to F (1.77 Hz, p = 0.0009) and M impulses (2.71 Hz, p = 0.0011) but also to S impulses (1.30 Hz, p = 0.021), which the claim says they do not. Their sequence rates do not differ with the 0 to 10 ms baseline (repeated-measures ANOVA p = 0.329) and differ with the 25-ms baseline (p = 0.005). Responses grow over the pulses (-0.43, 1.87 and 5.80 Hz above the 25-ms baseline for pulses 1 to 3). The recomputed set gives the same S response (p = 0.022).",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-slow-negative-no-impulse-response",
+     "statement": "Slow Negative units did not respond to impulses, and their firing declined steadily over time.",
+     "source": "Results, Slow Positive and Slow Negative Units, paragraph 1; Figure 8B",
+     "quote": "Slow negative units did not respond to impulses at all, and firing rate steadily declined over time, not locked to panel impulses ( Fig 8B ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "In 46 Slow Negative units no impulse kind gives a significant increase (t = 0.78, -0.77 and 0.94 for F, M and S), and the population rate falls by 5.90 Hz per 100 ms over 0 to 180 ms. The recomputed set gives the same.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8d-slow-positive-right-choice-l5",
+     "statement": "Slow Positive units fired more on right-choice trials (contralateral to the recording) for all stimuli; right-choice bias, measured 5 to 50 ms after the start of the final impulse, was significant in L5a and L5b but not in other layers.",
+     "source": "Results, Slow Positive and Slow Negative Units, paragraph 2; Figure 8C and 8D",
+     "quote": "Slow Positive units fired more on trials when the rat chose right (contralateral to the S1 recording). ... We quantified right-choice bias as the firing rate difference on right versus left trials, measured 5\u201350 ms after the start of the final impulse. Right-choice bias was significant for Slow Positive units in L5a and L5b, but not other layers ( Fig 8D ).",
+     "statistics": [
+      {
+       "about": "right against left choice rate, one of the starred groups of Figure 8D (the text does not say which; three stars against two significant Slow Positive layers, so one may mark a group of Fast and Medium units)",
+       "test": "paired t test",
+       "p": 0.022
+      },
+      {
+       "about": "right against left choice rate, one of the starred groups of Figure 8D (the text does not say which; three stars against two significant Slow Positive layers, so one may mark a group of Fast and Medium units)",
+       "test": "paired t test",
+       "p": 0.00095
+      },
+      {
+       "about": "right against left choice rate, one of the starred groups of Figure 8D (the text does not say which; three stars against two significant Slow Positive layers, so one may mark a group of Fast and Medium units)",
+       "test": "paired t test",
+       "p": 7.5e-05
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Under reading a, Slow Positive units in L5a (7 units, 4.58 Hz, p = 0.049) and L5b (14 units, 6.62 Hz, p = 0.0051) fire more on right-choice trials, and L4 and L6 show no bias; L2/3 has one unit, so no test. Under reading b L5a is not significant (p = 0.074). On the recomputed set L5a is not significant under either reading (6 units, p = 0.117 and 0.121), the first run's partial outcome, so the outcome rests on the unit set. The printed p-values here are not the paper's (0.022, 9.5e-4, 7.5e-5). Fast and Medium units, a variant, show right-choice bias in L4 (p = 0.0028) and L5b (p = 0.039) under reading a.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8d-fast-medium-no-choice-bias",
+     "statement": "Choice-related activity was absent in L4 Fast units.",
+     "source": "Results, Slow Positive and Slow Negative Units, paragraph 2; Figure 8E bottom",
+     "quote": "Choice-related activity was absent in fast time scale units in L4 ( Fig 8E ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "In 53 L4 Fast units, with 5-ms bins (reading b) no bin from 0 to 150 ms differs between right- and left-choice trials. With 10-ms windows stepped by 1 ms (reading a), steps at 28, 29, 31, 32 and 91 ms reach p < 0.05, isolated times that do not last to the end of the sequence. The largest right-left difference is 2.4 to 3.3 Hz.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8e-choice-divergence-125ms",
+     "statement": "In L5 Slow Positive units, firing on right- and left-choice trials diverged after the second impulse and was consistently significant by 125 ms, before the earliest withdrawals (150 ms) and the mean withdrawal time (190 ms).",
+     "source": "Results, Slow Positive and Slow Negative Units, paragraph 2; Figure 8E",
+     "quote": "Firing rate began to diverge on right versus left choice trials after the second impulse and was consistently significant by 125 ms, which is during the third impulse ( p < 0.05, sliding paired t test) ( Fig 8E ). This preceded the earliest withdrawals (150 ms) and mean withdrawal time (190 ms).",
+     "statistics": [
+      {
+       "test": "sliding paired t test",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "In 21 L5 Slow Positive units, with 10-ms windows (reading a), right and left differ without a break from 120 ms to the end of the sequence, whether the end of the third impulse is taken as 140, 150 or 160 ms; a trailing window gives 124 ms. With 5-ms bins (reading b) the run from 120 ms lasts to 150 ms. Over the 2443 trials of these units' sessions, withdrawal is at 154 ms at the earliest (1st percentile 158.0) and 193.3 ms on average. All three values are within tolerance. The recomputed set gives 122 ms (reading a).",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "The end of the third impulse is taken as 150 ms, the end of the paper's 0 to 150 ms sequence window; 140 and 160 ms give the same onset under reading a.",
+      "Each unit's PSTH per choice is the mean of its per-sequence PSTHs; the 10-ms window is centred, a standard choice, with a trailing window shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s5-slow-positive-no-integration",
+     "statement": "Within right- or left-choice trials, L5 Slow Positive units fired little to pulses 1 and 2, and their pulse 3 firing was the same for FFF, FMS, SMF and SSS and did not correlate with mean speed of the sequence or of the last two impulses (the \"preceding two pulses\" in the S5 Fig legend).",
+     "source": "Results, Slow Positive and Slow Negative Units, paragraph 3; S5 Fig",
+     "quote": "Pulse 3 firing rate was higher but was essentially identical for FFF, FMS, SMF, and SSS sequences and did not correlate with mean speed of the entire sequence or of the last two impulses.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "L5 Slow Positive units (21) fire little to pulses 1 and 2 (2.00 Hz on right-choice and 0.39 Hz on left-choice trials, 25-ms baseline) against 5.3 to 12.6 Hz for pulse 3 on right-choice trials, and with the 25-ms baseline pulse 3 does not correlate with sequence speed or with the S1 Fig speed of pulses 2 and 3 or 1 and 2 (all p of 0.17 or more). But pulse 3 differs across sequences on right-choice trials (ANOVA p = 0.016; SMF 5.32 Hz against 11.8 to 12.6), and with the 0 to 10 ms baseline the ANOVA is not significant (p = 0.241 and 0.707) but the left-choice correlation with pulses 2 and 3 is (r = -0.96, p = 0.035). That correlation is below 0.05 however the impulse speed is taken from S1 Fig, p = 0.035 with the 0.2-mm span, 0.038 with a span above 20% of each impulse's own excursion, 0.048 with one speed per impulse kind and 0.049 with the Table 1 ramp. Impulses of one kind differ in the recorded profiles themselves (M 123.7 mm/s in FMS and 103.3 in SMF under both span rules). No baseline meets the criterion. On the recomputed set the 25-ms baseline meets it (right-choice ANOVA p = 0.052), the first run's outcome, so the outcome rests on the unit set.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "Impulse mean speed is the mean of the S2 Data 'Fig S1' speed over the span where the panel is more than 0.2 mm from rest, per impulse of each sequence (F 135 to 153, M 104 to 124, S 80 to 91 mm/s). The first run used a ramp on the Table 1 amplitudes, shown as a variant. A span above 20% of each impulse's own excursion and one speed per impulse kind are also shown; all four give the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s6-head-position-choice",
+     "statement": "In high-speed video of 43 trials, head angle and whisker tip trajectories did not differ between right- and left-choice trials, while head position differed modestly from 100 ms, by 0.6 mm at 125 ms.",
+     "source": "Results, Slow Positive and Slow Negative Units, paragraph 4; S6 Fig",
+     "quote": "Head angle and whisker tip trajectories were invariant between right- and left-choice trials. Head position differed modestly between right- and left-choice trials beginning at 100 ms, with a 0.6 mm difference at 125 ms ( S6 Fig ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "From S2 Data, head x position differs between right- and left-choice trials at every frame from 100.8 ms (p = 0.037) to 151.2 ms, by 0.595 mm at 126 ms (right minus left -0.595), with both t tests. Head angle, both whisker tip coordinates and head y differ at no frame.",
+     "deviations": [
+      "The tests are computed from the per-frame means and SEMs, with 22 left- and 21 right-choice trials, as S2 Data holds no single trials."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "PLOS Biology supporting information of doi:10.1371/journal.pbio.1002549, S2 Data (XLSX, data for S6 Fig)",
+     "proposed": null
+    },
+    {
+     "claim": "s7-no-fs-l5-slow-positive",
+     "statement": "All four response classes (Fast, Medium, Slow Positive, Slow Negative) included RS single units, FS single units and multi-unit clusters; few FS units were in the Slow classes and none among L5 Slow Positive units.",
+     "source": "Results, RS and FS Single Units, paragraph 1; S7 Fig; Results, Regression Analysis to Identify Fast- and Slow-Time Scale Units, paragraph 3",
+     "quote": "Fast, Medium, Slow Positive, and Slow Negative response classes all included RS, FS, and multi-unit clusters, although few FS cells were found in the Slow classes ( S7 Fig ). ... Among L5 Slow Positive units, both RS units and multi-unit clusters had similar choice-related firing, and no FS units existed in this category ( S7 Fig ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mcguire_2016.ipynb",
+     "notes": "Every class holds RS, FS and multi-units (Fast 62, 31, 67; Medium 26, 7, 20; Slow Positive 32, 7, 12; Slow Negative 23, 2, 21). The FS fraction is 0.137 in Slow Positive and 0.043 in Slow Negative against 0.194 in Fast. The 21 L5 Slow Positive units are 14 RS and 7 multi-units.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9b-stimulus-decoder-fast-medium",
+     "statement": "A decoder built from all Fast and Medium units with 10-ms bins identified the sequence with 83% accuracy (74% for FMS to 88% for FFF; chance 25%), and identified FMS and SMF with 78% accuracy.",
+     "source": "Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure 9B",
+     "quote": "This model predicted sequence identity, using one single-trial spike train per model unit, with 83% overall accuracy (range: 74% for FMS to 88% for FFF spike trains). ... Remarkably, this model identified SMF and FMS sequences with 78% accuracy, even though rats could not.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "decoders.ipynb",
+     "notes": "With C = 1 (reading a, 300 repeats) 213 Fast and Medium units decode the sequence at 86.9%, 78.5% for FMS and 91.7% for FFF; FMS and SMF at 81.2% under reading A (98.8% under reading B). All within tolerance. With C by cross-validation (reading b, 5 repeats), 72.0% overall and 42.4% for FMS. The recomputed set gives 83.8%.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "100 pseudo-trials per sequence per repeat, and a split stratified by sequence, standard choices."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9c-best-units-short-windows",
+     "statement": "The individual units with the best stimulus prediction in the Fast/Medium decoder were those with 5 to 10 ms best integration windows.",
+     "source": "Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure 9C",
+     "quote": "The individual neurons with best stimulus prediction were those with 5\u201310 ms best integration windows ( Fig 9C ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "decoders.ipynb",
+     "notes": "Mean single-unit accuracy is 33.5% for 5-ms units (65), 31.7% for 10-ms units (70), 32.5% for 15 ms and 27.3 to 31.9% for longer windows; 17 of the 22 top-ranked units have 5 or 10 ms windows.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9b-stimulus-decoder-slow-chance",
+     "statement": "A decoder built from all Slow units with 10-ms bins predicted sequence identity near chance (32%, not different from chance).",
+     "source": "Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure 9B",
+     "quote": "A second decoder constructed of all Slow units, also using 10 ms bins, predicted sequence identity at near chance levels (32% correct, not significantly different from chance, p = 0.47)",
+     "statistics": [
+      {
+       "about": "Slow decoder accuracy against chance (25%)",
+       "p": 0.47
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "decoders.ipynb",
+     "notes": "97 Slow units decode the sequence at 33.9% (C = 1, 300 repeats), within tolerance of 32%, but above chance by both tests, the fraction of repeats at or below 25% (p = 0.027, reading a) and the binomial test (p near 0, reading b). With C by cross-validation, 28.4%, below the tolerance, with p = 0.400 by reading a. No reading has the accuracy within tolerance and the test not significant. The recomputed set gives 29.2%, p = 0.360 by reading a, which meets the criterion (the first run's outcome), so the outcome rests on the unit set. Test a measures the spread of repeats around 25%, not a null distribution.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9d-single-bin-decoder",
+     "statement": "Decoding from mean firing rate in a single 150-ms bin reduced Fast/Medium decoder accuracy to 43% and did not improve Slow decoder accuracy.",
+     "source": "Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 2; Figure 9D",
+     "quote": "Decoding from mean firing rate in a single 150-ms bin substantially reduced Fast/Medium decoder accuracy (43% correct) and did not improve Slow decoder accuracy ( Fig 9D ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "decoders.ipynb",
+     "notes": "With one 0 to 150 ms bin the Fast/Medium decoder is 38.2%, 0.5 points below the tolerance of 43% (38.7 to 47.3), and the Slow decoder 26.6%, 7.3 points below its 10-ms accuracy. With C by cross-validation, 33.5% and 24.5%. The fall in Fast/Medium accuracy and the absence of a Slow gain hold. On the recomputed set the Fast/Medium single-bin decoder is 40.0%, within tolerance, so the outcome rests on the unit set.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9e-temporal-pattern-decoding",
+     "statement": "Fast/Medium decoders trained on rate-normalized spike trains performed well (80%), while time-scrambling spikes within trials abolished performance.",
+     "source": "Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 3; Figure 9E",
+     "quote": "Fast/Medium decoders trained on rate-normalized data performed well (80% correct), but time-scrambling spikes abolished performance ( Fig 9E ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "decoders.ipynb",
+     "notes": "Rate-normalized trains give 84.5%. Time-scrambled trains give 32.7%, not above chance by the fraction of repeats (p = 0.060, reading a of the chance test), which meets reading a of abolished; they are not below 32% (reading b) and the binomial test finds them above chance. With C by cross-validation, 69.0% and 22.7%.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "Scrambling redistributes each trial's spikes uniformly over 0 to 150 ms, once per run, a standard choice."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9f-choice-decoder",
+     "statement": "A choice decoder from Slow units predicted drink port choice at 65% (chance 50%) from a single 150-ms bin or from the last 100 ms before nose poke withdrawal, while one from Fast and Medium units could not predict choice.",
+     "source": "Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 4; Figure 9F",
+     "quote": "A choice decoder based on Fast/Medium units was unable to predict drink port choice ... A choice decoder based on Slow units successfully predicted drink port choice using a single 150-ms bin, or mean firing rate in the last 100 ms before nose poke withdrawal (65% correct for both models) ( Fig 9F ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "decoders.ipynb",
+     "notes": "The Slow choice decoder predicts choice at 80.8% from the 150-ms bin and 92.9% from the 100 ms before withdrawal (equal draws, mean over sequences; 80.7 to 93.3% under the other readings), and at about 73% and 76% with C by cross-validation, all above 71.5%. The Fast/Medium decoder predicts choice at 71.3% and 81.9% (about 65% and 76% with cross-validation), not within 45 to 55%. The cross-validated values change by 0.1 point between runs with the same seeds. Trained without balancing the two choices, both decoders fall to 50 to 56%, Slow included. No reading gives Slow at 65% with Fast/Medium near chance. Accuracy grows with the number of units summed: random sets of 20 Slow units give 74.2% (pre-withdrawal) and 65.5% (150-ms bin), of 20 Fast/Medium units 60.9% and 55.7%, and single units average 54.9% (Slow) and 52.1% (Fast/Medium).",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "Training weights the two choices equally (an assumption, as the Methods give chance as 50% and an unweighted fit predicts one side for every trial); the unweighted fit is shown and does not give the claim either.",
+      "Cross-validated C (reading b) run with 10 repeats."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9g-l5b-slow-positive-best-choice",
+     "statement": "The units with the best choice prediction were Slow Positive units located primarily in L5b.",
+     "source": "Results, Neural Decoding of Stimulus Identity and Behavioral Choice, paragraph 4; Figure 9G",
+     "quote": "Post-hoc analysis showed that units with best choice prediction were Slow Positive units located primarily in L5b ( Fig 9G ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "decoders.ipynb",
+     "notes": "L5b Slow Positive units have the highest mean single-unit choice accuracy, 60.3% balanced accuracy over 14 units (next L5a Slow Positive 57.1%, L5b Slow Negative 56.5%), and 4 of the 10 top-ranked Slow units are L5b Slow Positive, the largest group but not more than half.",
+     "deviations": [
+      "Temporally modulated units are the data set's own (TempSig.TemporalPval < 0.05), which the data descriptor names as the units of the paper's analyses; the set recomputed with the Methods' test has the same count but agrees for 73% of units and is shown as a variant. Classes are recomputed from the regression (reading a, 55 ms Medium) and equal the data set's labels. Changed from the recomputed set after the verifier's first report.",
+      "Single-unit accuracy is balanced accuracy on the unit's own test trials, a standard choice so that chance is 50%."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The data descriptor gives the column of each electrode as AllRats(expt).MapPosition and says units in columns A1 and B2 must not be used in stimulus analyses, but AllRats.mat has no MapPosition field. No field gives the recorded column.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "AllRats.mat holds 506 units (330 single, 176 multi-unit) where the paper reports 473 (306 single, 167 multi-unit). The extra units are probably those in columns A1 and B2, but without the column map they cannot be identified, so every unit analysis here uses all 506. Against the unit counts per layer and type of the paper's S1 Table, the extra units are in L2/3 (4), L4 (8), L5a (15) and L5b (6), none in L6.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds only the five recorded rats. The fixed-panel control sessions and the behaviour of rats 62SC, 107Si and 62SS (Figure 2) are not deposited; the paper's S1 and S2 Data give only per-rat and per-session summaries.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The stored regression inputs (StimReg Yval) equal the spike counts summed over completed trials (Complete equal to 1) for all 506 units, while the descriptor says the paper used trials with nose poke duration over 250 ms, a set that also holds 129 trials without a choice. The stored regression results are reproduced exactly from the spikes and the stored regressor.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "For rat 18FB the per-rat right-choice fractions computed from the data set's sessions differ by up to 0.026 from the S1 Data values of Figure 2B, while for the other four rats they are equal, so S1 Data and the data set hold different sessions for 18FB.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-11",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 1. The first executed notebooks (reproduce_mcguire_2016.ipynb and decoders.ipynb) with the conclusion cells and the summaries removed, the helper module ssc4.py and the claims file, with the paper's full text. The verifier tested perm_pval and evoked_peak on synthetic inputs and checked the archive listing on S3. It found no place where the claims file misreads the paper and no train/test leakage in the decoders.",
+     "agreed": 36,
+     "of": 37,
+     "disagreements": [
+      {
+       "claim": "fig7de-medium-suppressed",
+       "outcome": "not_reproduced",
+       "reason": "The F response is +0.05 Hz, so not all three means are negative. With deposited labels all three are negative but none differs from 0 (p >= 0.45), so suppression is not shown under either set."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 2. The full executed notebooks of the author-revise-1 run (reproduce_mcguire_2016.ipynb and decoders.ipynb), the helper module ssc4.py, the claims file and this record, with the paper. Report in transcripts/mcguire-2016/verifier-2-report.md. The verifier agrees with all 37 outcomes, found again no place where the claims file misreads the paper, and found that each assumed outcome states its assumption reasonably. It quoted six places where the text did not match the printed outputs (fig9f cross-validated values and unweighted range, latency-by-layer measured, fig8d-fast-medium times, fig9d first-run value, baseline-rates deviations), listed B1 and B3 to B11 as resolved, and named five remaining points that bear on a conclusion (the 62 Fast RS units of fig7-fff-adaptation, the unit-set dependence of seven outcomes, the s5 impulse speeds, the weak support of fig9e, and fig9d at the edge of its band).",
+     "agreed": 37,
+     "of": 37,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The stored temporal-modulation p-values (TempSig) were computed over -50 to 300 ms in 10-ms bins (TempSig.Params), while the Methods give 0 to 180 ms after nose poke entry, and the Methods do not name the statistic compared with permuted spikes. Permuting spikes uniformly and comparing the PSTH variance gives 310 modulated units over the Methods' window, the same count as the stored values, but the two agree for only 73% of units (82% with the stored window, and 82% with the stored window and a null that shuffles each trial's 10-ms bins). Which window and statistic were used for the paper's 305?",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which test selected the 61 Fast RS single units with significant response to F impulses? A paired t test across trials of the 5 to 35 ms rate against the 0 to 10 ms rate selects 29 to 37 of the 62 Fast RS single units of the data set's classes (one-sided, two-sided, or first impulses only); the paper's 61 is close to all of them.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How was the choice decoder's 65% obtained? With per-unit logistic functions summed over a pseudo-population, as the Methods describe, Slow units give 81 to 93% when the two choices are weighted equally in training and about 54% when they are not, and Fast/Medium units 71 to 82%. Accuracy grows with the number of units (about 66 to 74% with 20 Slow units). Were the choices balanced, how many units entered each prediction, and were test trials drawn within each rat?",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How were the peak latency and the evoked modulation of Figure 4D computed (placement of the 10-ms smoothing window, pooling of impulses and sequences)? From the centred 10-ms smoothed 1-ms PSTH the latencies are 15 to 22 ms in every layer, against 9.8 to 16.1 ms in the paper; a forward window shortens them by about 5 ms but still puts at most 2 or 3 of 5 layers within 10%.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "In S1 Data the Figure 2A sheet is labelled \"Rat 107ST\", but its values are those of 107Si in the same file and in S2 Data. Its mean FFF fraction over 13 days is 0.7485, the Figure 2B mean of 107Si (0.7485, 107ST 0.5856), and its fixed-panel FFF minus SSS (0.0991, d-prime 0.277) equals 107SI in S2B Fig and 107Si in Figure 2D. The example rat of Figure 2A appears to be 107Si.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "mcguire-2016",
+   "type": "reproduction",
+   "title": "Short time-scale coding in rat S1 during whisker sequence discrimination (McGuire et al. 2016)",
+   "description": "Tests the findings of McGuire, Telian, Laboy-Juarez et al. (2016) on CRCNS ssc-4, which holds the spike times and trial data of 80 recording sessions in the five recorded rats. It checks the behaviour of those rats, the unit counts, baseline rates, temporal modulation, impulse responses by layer, the regression on integrated panel speed that classes units as Fast, Medium, Slow Positive and Slow Negative, the responses and choice coding of each class, and the population decoders of stimulus and choice. Three claims are tested on the paper's supporting data.",
+   "datasets": [
+    "crcns:ssc-4"
+   ],
+   "papers": [
+    "10.1371/journal.pbio.1002549"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mcguire_2016.ipynb",
+     "title": "Behaviour, units, regression classes and responses (Figures 2 to 8)",
+     "executed": "notebooks/mcguire-2016/reproduce_mcguire_2016.html"
+    },
+    {
+     "path": "decoders.ipynb",
+     "title": "Stimulus and choice decoders (Figure 9)",
+     "executed": "notebooks/mcguire-2016/decoders.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 33,
+   "hashed": true
+  }
+ ],
+ "badge": {
+  "text": "22 findings reproduced",
+  "reproduced": 22,
+  "papers": [
+   {
+    "doi": "10.1371/journal.pbio.1002549",
+    "key": "mcguire-2016",
+    "byline": "Mcguire et al. 2016",
+    "title": "Short Time-Scale Sensory Coding in S1 during Discrimination of Whisker Vibrotactile Sequences",
+    "relation": "primary",
+    "reproduced": 22,
+    "url": "https://encorescience.org/papers/mcguire-2016/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/crcns/ssc-4/",
+  "svg": "https://encorescience.org/badge/crcns/ssc-4.svg",
+  "alt": "Encore: 22 findings reproduced, from CRCNS:ssc-4"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/crcns/ssc-4.svg",
+  "outcomes": "https://encorescience.org/badge/crcns/ssc-4-outcomes.svg",
+  "card": "https://encorescience.org/badge/crcns/ssc-4-card.svg"
+ }
+}
