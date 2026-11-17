@@ -29,10 +29,12 @@ The paper analysed the TE networks of its reference [44] (Timme et al. 2014), wh
 deposited; the notebook rebuilds them from the spike times with that study's bins, past states and
 jitter test. A surrogate whose TE equals the real TE counts as exceeding it (the "tie rule"); the
 literal "larger than" of that study calls about 11% of independent pairs significant here, and is
-shown as a variant. The attempt record, with the reasons and the differences from the paper's method, is
+shown as a variant. The rule used calls 0.32% of independent pairs significant, three times the
+nominal 0.1%, so 8% to 30% of the connections in five tested recordings are expected by chance; a
+stricter threshold is shown as a variant. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/timme-2016-01.yaml`](../../attempts/timme-2016-01.yaml).
 
-- `reproduce_timme_2016.ipynb`: the analysis. It takes about 52 minutes on four cores, most of it
+- `reproduce_timme_2016.ipynb`: the analysis. It takes 55 to 65 minutes on four cores, most of it
   the jitter tests of the TE networks under both readings of the past state and the analyses of
   the variants.
 - `hdn.py`: loading the data set, the TE networks with their jitter test, sub-networks, the partial
