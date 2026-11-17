@@ -85,6 +85,13 @@ def manifest(store: Path) -> dict:
         rows = []
         for doi in dois:
             text = store / d / f"{slug(doi)}.txt"
+            if not text.is_file():
+                # The store names a text by the DOI as its record gives it. clean_doi drops an eLife version
+                # (10.7554/elife.107990.1 names the article), so the text of a paper listed by a version is under
+                # the longer name: okuno-2025 was reported missing with its text in the store (2026-11-11).
+                versions = sorted(store.joinpath(d).glob(f"{slug(doi)}.[0-9].txt")
+                                  ) + sorted(store.joinpath(d).glob(f"{slug(doi)}.[0-9][0-9].txt"))
+                text = versions[-1] if versions else text
             if text.is_file():
                 h = header(text)
                 row = {"doi": doi, "status": "stored", "version": h.get("version"), "source": h.get("source"),

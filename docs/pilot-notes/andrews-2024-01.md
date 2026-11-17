@@ -1,0 +1,131 @@
+# andrews-2024, Andrews et al. 2024
+
+No claim reproduced on the dandiset, one partially, none not reproduced and 26
+blocked, all for missing data, with one more blocked that also uses outside
+inputs, `transduction-not-explaining-response`, which takes its transduction
+values from Table 2; `simulation-dampening`, the paper's network model rerun
+from its code (`data: elsewhere`), reproduced and is counted apart. One outcome,
+`table1-cohort`, rests on an assumption. The first verification round agreed
+with every outcome and would have given `simulation-dampening` the reason other
+where the record had not_runnable; the author kept not_runnable, which the
+protocol lists, and the round-3 verifier withdrew the objection. The second
+round agreed with all 29 and held that the simulation block rested on untested
+steps, chiefly that NEST 3.4 from conda-forge could not be installed; the author
+installed it, ran the model and proposed the claim as reproduced, so a third
+round reviewed that one claim and agreed. The dandiset is pinned at
+0.241130.1903, the latest published version; the paper cites no version, and
+both published versions hold the same 69 assets. The paper, Andrews, Geng,
+Voitiuk et al., "Multimodal evaluation of network activity and optogenetic
+interventions in human hippocampal slices" (Nature Neuroscience 27, 2487-2499,
+doi:10.1038/s41593-024-01782-5), records 12 hippocampal slices from 7 patients
+with drug-refractory temporal lobe epilepsy on high-density multielectrode
+arrays (HD-MEAs), and reports that light on the potassium channelrhodopsin
+HcKCR1 suppresses unit firing in physiologic media, under bicuculline, in
+magnesium-free media (0-mg) and with kainic acid added (0-mg+KA), also in closed
+loop, that bursts in 0-mg+KA show theta coherence and propagate from the hilar
+to the outer aspect of the granule cell layer (GCL), that waveform clusters over
+the GCL are associated with an opto-response cluster, and that in a network
+model closed-loop activation of a potassium channel in under half of the
+granule cells dampens seizure-like events. The claims were written from the NIH
+author manuscript (PMC11881784) with its two supplement files, without the
+version of record, and from the paper's code at commit 6865bf6, which lacks the
+R code for the t-tests, the logistic regression and the chi-square test; the
+claims check corrected the statements or criteria of nine claims and left two
+points open, for 29 claims. `table1-cohort` is partial: the files resolve by
+name to 12 slices from 7 patients, 5 female and 2 male, aged 20 to 52, each
+patient's age and sex as in Table 1, and the 8 HcKCR1 slices are present by
+name, but no file or metadata field records a slice's opsin; the outcome reads
+"present and identifiable" as identifiable by name, and under the stricter
+reading neither clause of the criterion holds. `simulation-dampening`
+reproduced at the script's seed, 20: from opsin fraction 0 to 0.10, 0.25 and
+0.50 the total event duration is 278, 124, 37 and 4 ms and the spikes in events
+52,366, 17,594, 4,086 and 441, while the number of events (10, 10, 10 and 4)
+does not meet the criterion; with seeds 21, 23 and 24 the first two readings
+are at most 0.70 of their value at 0, and seed 22 meets the criterion under no
+reading (103 against 101 spikes in events at 0.50). The model ran in a
+throwaway micromamba environment with NEST 3.4 and NESTML 5.3.0 from
+conda-forge, with odetoolbox, unpinned in the environment file, set to 2.5 and
+the conda-forge nest-config changed to print the environment's compiler; the
+model and the script are unchanged. The other 27 claims are blocked: 23 need
+the curated units, three need histology or patch clamp, and
+transduction-not-explaining-response depends on the blocked Table 2 claims. The
+author's first run had 1 partially reproduced and 28 blocked, with the
+simulation not runnable after NESTML 5 failed against NEST 3.10 and a port to
+NESTML 9 failed to build. The author asked no questions of a reader and no
+questions file exists, so the answer and author-answers runs changed nothing.
+Round 1 found that the search for opsin and condition fields skipped general/,
+that the simulation block showed no install attempt, that light steps were
+sought only in the first 64-channel group and missed steps split across two
+bins, and that the threshold-crossing variant's windows start on light
+artifacts; in reply every object under general/ of every file was read and
+holds no such field, the failing NEST 3.10 install was shown, every channel
+group of the 47 files of seven slices was read, which found light periods in 4C
+and 7D as well, and the variant was rerun without the first second of each
+window. Round 2 asked that the cohort reading be marked assumed and the
+conda-forge install be tried, and found sentences with no output behind them,
+on MATLAB and a GPU, the repository's contents and the NESTML 9 port, which were
+removed. The author's run took about 1 h 41 min; the notebook ran in 19.6 min at
+first, with peak memory 1.8 GB, 839 s after the author-answers run, 30.2 min
+after round 1 and 48.4 min in the last run, 5.9 of them for the network model.
+A first draft binned threshold crossings per 3.906 s chunk, which drifted
+against the clock, and was fixed before the final runs; an S3 read timed out
+during a full run, after which reads were retried; and an odetoolbox release,
+2.5.1, hung while the round-2 revision was prepared and cost about 50 minutes.
+
+The 69 files (192.37 GB) hold raw HD-MEA voltage only, with no units table,
+sorted spikes or processing module, so the sorted and curated units on which
+almost every result of the paper rests are missing, and they are not public
+elsewhere; the histology and patch-clamp data are not deposited either, and 27
+of the 28 claims on the paper's recordings cannot be tested. Round 1 noted that
+the paper's repository holds per-unit, per-trial rate tables and saved
+waveforms; the claims file does not use them, and they would test the authors'
+derived data, not the deposit. The light ON and OFF times, which the Methods say
+were stored in the MaxWell file's GPIO bit and a stimulation log, are not in the
+files, nor are the light intensities. They can be recovered from a step the LED
+leaves in the voltage, on every channel in the eight 3C recordings and on part
+of the array, with steps of 40 to 88 counts, in 4C-1, 4C-3, 7D-0, 7D-2, 7D-5 and
+7D-7; no channel group of any 5C, 8D, 10F or 11G recording shows a 10 s light
+step, including 10F, which the paper illuminated for 10 trials, and 9E and 12G
+show none in the first channel group, the only one read. 3C-1 to 3C-5 each hold
+one 10 s light period with steps of 90 to 153 counts, which fits an intensity
+sweep, but the intensities are not recorded. No file says which medium, drug or
+light protocol it was recorded under, which opsin its slice carries or which of
+the paper's recordings it is: the session descriptions are empty, the files
+keep no original recording names, so the code's recording
+Hc112723_hckcr1_21841_120323_base cannot be matched to a file, and general/
+holds no virus, pharmacology, protocol, notes, optogenetics or genotype field,
+with experiment_description the paper's title in all 69 files. Each file's
+subject_id is the recording (for example 3C-7), so the archive counts 69
+subjects where the paper has 7 patients and 12 slices, and every
+session_start_time is 2024-09-28, the date of the NWB conversion. Electrode
+location is "unknown" for every channel, and nothing places the array over the
+GCL or hilus, which the GCL and propagation analyses use. The conversion to
+volts is 6.29 uV per count for slices 1A to 8D and 1.57 uV per count for 9E to
+12G, a gain difference the dandiset does not describe. In the 3C recordings
+light onset drives 81 to 94% of the channels in the first 64-channel group to
+the ends of the 0 to 1023 range in the first 0.5 s, and in at least one 5C
+recording 34% of that group sits at the ends of the range in the median 100 ms
+bin. A variant on multi-unit threshold crossings, which decides nothing, finds
+crossings 86 to 90% lower during light in the single-trial files 3C-1 to 3C-5
+and no change in 3C-6 (-16%, adjusted p 0.82) or 3C-7 (+6%, p 0.87), and with
+the first second of each window left out 89 to 93% lower, 18% lower (adjusted p
+0.77) and 17% higher (adjusted p 0.06); the crossings are confounded by
+saturation and transients either way, and some pre and OFF windows of 3C-6 hold
+part of a neighbouring light period. No two files share a first or last chunk.
+In the paper, the supplementary table cross-references are mismatched, ST2
+prints identical amplitude rows for 5C and 7D, and the cluster 5 confidence
+interval is 5.8 to 18.3 in the Fig. 5 legend and 5.810 to 18.030 in ST5. No
+questions are put to the paper's authors.
+
+The author's points on the protocol: it does not say whether events
+reconstructed from the data, here the light artifact, may stand in for missing
+events, and they were used only for a survey and a variant; table1-cohort's
+criterion has no case for counts, ages and sexes that match while the opsins
+are not recorded, judged partial; the schema wants a measured value for each
+expected value even when one cannot be measured, so `measured` was left out and
+the numbers put in the notes; `data: elsewhere` is written for data in another
+archive, not for rerunning code, and it does not say whether to port outdated
+software; it has no rule for which of data_missing and metadata_insufficient is
+the main reason when both apply; its duplicate check is impractical on 192 GB,
+and hashes of each file's first and last compressed chunk were compared
+instead; and its clock check does not apply without a trial table.

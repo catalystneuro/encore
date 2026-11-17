@@ -1,32 +1,34 @@
-I've worked through every point in the round-1 report, and six outcomes changed. I re-ran the entry with `python tools/entry.py all entries/gao-2018`: the check found 0 errors and the notebook ran from a clean environment in 320 s. The conclusions match the new numbers, and the round is recorded under `verifications` with all 45 claims.
+I've worked through every point in the round-1 report, re-run the entry, and recorded the round. `python tools/entry.py all entries/gao-2018` passed: 0 check errors, and the notebook ran in 25 minutes. Every conclusion matches the new outputs.
 
-**Outcome changes (all after round 1, so allowed):**
+**Outcomes changed** (5 of the 22 tested claims; now 10 reproduced, 9 partially reproduced, 3 not reproduced, 24 blocked):
+- **fig1g-dentate-activation-little-effect**: reproduced → partially_reproduced. On all sessions there is still no drop (p = 0.107). Without the two dentate sessions whose laser traces disagree with the trial codes, the bootstrap finds a small drop (−0.052, p = 0.042). Simpler trial-level tests also find one on all sessions (p = 0.007 and 0.016).
+- **fig2-preparatory-more-in-alm**: reproduced → partially_reproduced. The claim compares ALM with the CN, and the CN half cannot be tested. This matches how fig2-peri-movement-equal was already treated.
+- **fig3d-alm-altered-by-cn-inhibition**: partially_reproduced → not_reproduced. I dropped the assumption that the fraction could stand in for the count. The claims file allows that only when the data hold fewer neurons, and here they hold more.
+- **fig3e-alm-increase-decrease**: reproduced → not_reproduced, for the same reason.
+- **cd-captures-selectivity**: reproduced → partially_reproduced. The single-trial variance was my own variant, not a reading in the claims file. With variance over condition means, the variance fraction (35.9 to 58.9%) misses 27.0 ± 4.2, while selectivity (66.3%) still matches. It is still marked as resting on an assumption, that selectivity is measured on held-out trials.
 
-| Claim | Was | Now | Why |
-|---|---|---|---|
-| fig2cd-selectivity-emerges-gradually | blocked, methods underspecified | partially reproduced | Agrees with the verifier. The paper says the epoch that fixes each neuron's preference doesn't matter, but the response-epoch peak appears with only one of the three epochs. |
-| fig3d-alm-altered-by-cn-inhibition | partially reproduced | not reproduced | Agrees. The data hold more neurons than the paper, so the count is judged. Both the count (270) and the latency (14.1 to 22.3 ms) miss. |
-| fig3e-alm-increase-decrease | reproduced | partially reproduced | Agrees. The counts (158 and 112) miss; only the increase fraction (0.585) matches. |
-| cd-captures-selectivity | reproduced | partially reproduced | Agrees. Under the notebook's chosen reading the selectivity matches (62.1%) but the variance doesn't (34.2%). |
+**Kept, with the disagreement recorded**: fig3f-alm-selectivity-abolished-by-cn-inhibition stays partially_reproduced; the verifier would give not_reproduced. Selectivity is reduced by 73 to 82% but not abolished, which fits "effect present but weaker".
 
-The totals are now 9 reproduced, 6 partially reproduced, 4 not reproduced and 26 blocked.
+**Added or corrected**
+- **Laser-trace sessions**: the four sessions whose light disagrees with their codes are now found from the laser table, and every claim that uses those codes shows its result without them. Leaving them out changes two things:
+  - The dentate behaviour result shows a drop (above).
+  - fig4i-fastigial-collapses-cd would pass in the last 400 ms. Its outcome stays the one on all sessions, because the lab's scripts use the codes.
+  - ed10d still fails: the slope is p = 0.035 without them, and p = 0.038 with the lab's 23 coding-direction sessions.
+- **Lab's compiled files**: I compared them with the data. They hold exactly the deposited units (1186 and 737, the same cell types). So they cannot explain the paper's 912 and 454.
+  - Our selectivity verdict matches theirs for all 1084 pyramidal neurons.
+  - Our per-neuron photostimulation p-values equal theirs to 3e-13.
+  - Their coding-direction list has 23 sessions, which include our 20.
+- **fig4e**: with control trials subsampled to the photo-activation counts, 0.86 to 0.89 of selective neurons still lose significance (0.51 to 0.52 under dentate). So the loss is not a matter of fewer trials.
+- **fig4f/fig4g**: computed within each lick direction. Fastigial persistence holds both ways; dentate still does not recover.
+- **fig1i/fig1l**: the early-lick part is now tested and shows no difference (p = 0.33, 0.13 and 0.22). Both claims stay blocked, because no session has any lick channel. All 54 hold only the two laser channels, although the descriptor says tongue movements are recorded. That mismatch is a new finding.
+- **Other checks added**:
+  - The clock check now covers the photo-inhibition sessions, and passes there.
+  - The selectivity test on spike counts gives the same 856 neurons as on rates.
+  - Spike widths agree with the cell-type labels.
+  - The latency notes now say a bin labelled by its start gives the earliest possible onset.
+- **Conclusion cells**: the notebook had none. I added a "**Result:**" cell for every tested claim and rewrote the summary and README.
+- **Record**: I updated the notes and findings in `attempts/gao-2018-02.yaml` and added the `verifications` round with all 46 claims.
 
-**Disagreements kept and recorded:**
-- **fig3e-alm-mean-rate-unchanged** stays partially reproduced. The "no change" part holds by the unpaired test (p = 0.214). The rate level misses, and that level depends on which neurons are counted: the files hold many slow neurons.
-- **fig4-fastigial-activation-alm-latency** stays partially reproduced. The fast latency holds (2.07 ms by bin start); only the count of modulated neurons misses.
-
-**Corrected or added:**
-- **A bug, found while checking B1:** the last 127 trials of BAYLORCD8 20171020 (120 of them without an early lick) come after its units' recording ends and hold no spikes. The first run counted them as silent trials. They are now left out of the neural analyses and recorded as a finding. Only the photo-inhibition numbers moved.
-- **Why the files hold more neurons (B1):** the data check now prints every units-table column and every group in the files. There is no quality or isolation field, the acquisition and processing groups are empty (so no lick channel), and the paper gives no per-session counts. Rate figures show how many slow neurons the files hold.
-- **fig3f, repeated over 20 random draws (B2):** in the last 500 ms the criterion is met in 15 of 20 draws with 5 preference trials of each type, and 13 of 20 with 10 of each. It stays reproduced, and is no longer marked as resting on an assumption.
-- **fig2cd, held-out selection (B4):** selecting neurons on one half of the trials and measuring on the other gives the same pattern.
-- **fig4f and fig4g (B5):** a variant tests lick-right and lick-left trials separately, and a comparison with a single pre-onset bin is added. fig4f still holds. Much of the late dentate effect in fig4g follows the mix of lick directions, but the outcome stays not reproduced on the claims file's readings.
-- **When the photo-inhibition effect starts (B6):** a per-code time course shows the ALM change starting about 30 ms after delay onset for CN photo-inhibition, against 4 ms for fastigial photo-activation. A time course of the two inhibition codes over the delay is also added.
-- **Sensitivity run (B9):** dropping the five sessions that failed the clock check changes no outcome. One thing to know: without them, the fig3d bootstrap latency falls to 9.9 ms, inside tolerance. The count still misses and the observed onset stays at 25 ms, so the outcome holds, but that latency is fragile.
-- **fig1l early licks (B10):** now tested, with no change (two-sided p = 0.59). The claim stays blocked because lick rates and video aren't in the files.
-- **Smaller additions:** a check that early-lick trials keep their stimulation code. Text that wrongly said the fraction is judged when the data hold more neurons is corrected in the record and the notebook summary.
-
-**Not done:**
-- No questions for a reader were filed. The verifier didn't report a place where the claims file misreads the paper; its question about single-trial versus averaged variance is a gap in the paper itself.
-- I didn't run `handover`, since round 2 gets the full executed notebook.
-- I didn't commit, and I left alone the change to `tools/entry.py` and the untracked dotfiles and `scripts/` in the repository root; none of them are mine.
+**Not done**
+- No question added to `questions/gao-2018.yaml`: the report names no place where the claims file misreads the paper.
+- The coding-direction analysis keeps the claims file's random half split. I did not switch it to the lab script's split.
