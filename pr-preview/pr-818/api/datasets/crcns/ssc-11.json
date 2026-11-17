@@ -1,0 +1,1190 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "ssc-11",
+  "label": "CRCNS:ssc-11"
+ },
+ "page": "datasets/crcns/ssc-11/",
+ "generated": "2026-11-17T01:07:31+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 17,
+  "partially_reproduced": 3,
+  "not_reproduced": 3,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 2,
+  "partially_reproduced": 3,
+  "not_reproduced": 1,
+  "blocked": 1
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "peron-2020-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "ssc-11",
+    "version": "unversioned",
+    "doi": "10.6080/K0Z31WWG",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:ssc-11"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:ssc-11",
+   "label": "CRCNS:ssc-11",
+   "dataset_version": "unversioned",
+   "paper": "10.1038/s41586-020-2062-x",
+   "paper_title": null,
+   "date": "2026-11-14",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-15"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/43630250712"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "peron-2020",
+   "entry_title": "Recurrent interactions in local cortical circuits (Peron et al. 2020)",
+   "summary": "Most of the paper's experimental findings hold up in this data: ablating a few touch neurons lowered touch encoding in the remaining neurons, most near the ablated cells, while ablating whisking or silent neurons did not. The finding that neurons responding most like the ablated ones lost the most did not reproduce by the paper's described method; its values come from code using only right-trial averages. The network model, rebuilt from the Methods with unstated parameters chosen by the agent, gave the claimed directions of change at scores about 2.3 times the paper's, but not its response-similarity result. Among minor claims, behaviour changed after some ablations under the legend's paired test, and the histology is not deposited.",
+   "description": "Tests the experimental findings of Peron, Pancholi, Voelcker, Wittenbach, Olafsdottir, Freeman and Svoboda (2020) on CRCNS ssc-11, which holds volumetric calcium imaging of L2/3 of mouse barrel cortex in 16 mice before and after 24 targeted two-photon ablations of touch, whisking or silent neurons. It compares encoding scores before and after each kind of ablation, the dependence on distance and on response similarity to the ablated neurons, behaviour, ablation success and the per-mouse table, and rebuilds the network model of the Methods (2,000 leaky integrate-and-fire neurons) to test the model claims.",
+   "notebooks": [
+    {
+     "path": "reproduce_peron_2020.ipynb",
+     "title": "Reproducing Peron et al. (2020) from CRCNS ssc-11",
+     "executed": "notebooks/peron-2020/reproduce_peron_2020.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "model-amplification-increases",
+     "statement": "In the L2/3 network model, the sensory input needed to match in vivo responses declines as subnetwork connectivity rises, so amplification (network output over input, normalized to Pconn 0.2) increases with subnetwork connectivity.",
+     "source": "Results, paragraph 3; Figure 1c",
+     "quote": "The strength of sensory input required to match in vivo responses declined with increasing subnetwork connectivity. Amplification ... therefore increased with subnetwork connectivity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Under calibration reading (a) the matched input strength is 218.0 at Pconn 0.2 and 28.2 at Pconn 0.4, so normalized amplification at 0.4 is 7.74, and the strength at 0.4 is below that at 0.2. Reading (a) is weakly set at Pconn 0.2 (the fraction above 0.1 moves from 0.106 to 0.109 between strengths 200 and 225, two networks per strength), which bears on the size of the amplification, not its direction. With the sweeps extended down to no input, reading (b) sets 75.0 at Pconn 0.2 and no strength at 0.4, where the smallest KS distance is at no input (0.514; 0.522 at the next strength). Reading (c), a fraction of 0.17 excitatory neurons above 0.1, cannot be met (largest fraction over all sweeps 0.119, below the input-recipient share of 200 of 1,700). The criterion's condition holds under the one reading that sets both strengths. Amplification is far larger than in the paper's Fig. 1c. The outcome rests on the assumptions of the model (deviations).",
+     "deviations": [
+      "The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the claims file; github.com/jwittenbach/ablation-sim at a8b5583 gives only the 300 ms stimulus interval and the Gaussian kernel cut at 3.5 s.d.",
+      "Assumption. The background PSP is not given; one PSP per target population is set (0.39 mV to excitatory, 1.4 mV to inhibitory neurons) so that the tonic rates at Pconn 0.2 without stimulus are 0.51 and 10.35 Hz, the 0.5 and 10 Hz the Methods say the background frequencies were selected for (notebook, first model cell, with a 3 by 3 grid around the values).",
+      "Assumption. Inhibitory PSPs are -1 mV, from \"All connections had the same strength, which was chosen so that the resulting post-synaptic potential (PSP) is 1 mV\" (Methods).",
+      "Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only the 200 input-recipient neurons pass 0.1).",
+      "Assumption, revised after verification round 2. \"All neurons that met the 0.1 encoding score criteria\" (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the \"distributions of excitatory neuron encoding scores\", ablate \"The 20 excitatory neurons with the highest encoding score\", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058 and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are shown as a variant; the outcomes verified in round 2 were set with all neurons counted.",
+      "The run after ablation repeats the run before with the same background and initial state (as Brian2's store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66 presentations of the Methods."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the model of the Methods (Network model), with structure from github.com/jwittenbach/ablation-sim at commit a8b5583",
+     "proposed": null
+    },
+    {
+     "claim": "model-equal-connectivity-ablation-increases",
+     "statement": "In networks with equal subnetwork connectivity (Pconn 0.2), ablating the strongest encoders raises the encoding scores of spared neurons, from 0.237 to 0.274, owing to reduced feedback inhibition.",
+     "source": "Results, paragraph 4; Figure 1d-f",
+     "quote": "Encoding scores for spared neurons increased after simulated ablation of 10% of the subnetwork14, owing to reduced feedback inhibition13,20 (encoding score, from 0.237 \u00b1 0.027 to 0.274 \u00b1 0.032",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "30 simulated networks"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "At Pconn 0.2 under calibration (a), 30 networks, the spared excitatory neurons (above 0.1 before or after, ablated ones left out) go from a grand median of 0.546 to 0.562 after the 20 strongest encoders are ablated (signed-rank p = 1.9e-09, 30 of 30 networks increase), the claimed increase at p < 0.001, with both values far outside 0.237 \u00b1 0.024 and 0.274 \u00b1 0.027. All neurons (variant) go from 0.287 to 0.279 (p = 6.3e-05, 4 of 30 increase), a decrease. The effect is present and the values are not. Round 2 agreed with not reproduced, set with all neurons counted; after the population was revised to excitatory neurons, round 3 agreed with partially reproduced. Calibration (b) sets no strength at Pconn 0.4 and is not run.",
+     "deviations": [
+      "The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the claims file; github.com/jwittenbach/ablation-sim at a8b5583 gives only the 300 ms stimulus interval and the Gaussian kernel cut at 3.5 s.d.",
+      "Assumption. The background PSP is not given; one PSP per target population is set (0.39 mV to excitatory, 1.4 mV to inhibitory neurons) so that the tonic rates at Pconn 0.2 without stimulus are 0.51 and 10.35 Hz, the 0.5 and 10 Hz the Methods say the background frequencies were selected for (notebook, first model cell, with a 3 by 3 grid around the values).",
+      "Assumption. Inhibitory PSPs are -1 mV, from \"All connections had the same strength, which was chosen so that the resulting post-synaptic potential (PSP) is 1 mV\" (Methods).",
+      "Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only the 200 input-recipient neurons pass 0.1).",
+      "Assumption, revised after verification round 2. \"All neurons that met the 0.1 encoding score criteria\" (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the \"distributions of excitatory neuron encoding scores\", ablate \"The 20 excitatory neurons with the highest encoding score\", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058 and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are shown as a variant; the outcomes verified in round 2 were set with all neurons counted.",
+      "The run after ablation repeats the run before with the same background and initial state (as Brian2's store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66 presentations of the Methods."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the model of the Methods (Network model)",
+     "proposed": null
+    },
+    {
+     "claim": "model-increased-connectivity-ablation-decreases",
+     "statement": "In networks with increased subnetwork connectivity (Pconn 0.4), ablation lowers the encoding scores of spared neurons, from 0.243 to 0.143, because amplification is reduced.",
+     "source": "Results, paragraph 5; Figure 1d-f",
+     "quote": "Ablations reduced encoding scores for spared neurons, from 0.243 \u00b1 0.049 to 0.143 \u00b1 0.028 (connectivity = 0.4; P < 0.001, n = 30 networks), because of reduced amplification",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "30 simulated networks"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "At Pconn 0.4 under calibration (a), ablation lowers the spared neurons' scores in both populations over 30 networks: 0.356 to 0.231 for excitatory neurons (p = 3.9e-07, 4 of 30 increase) and 0.282 to 0.096 for all neurons (variant, p = 1.9e-08). Neither gives both grand medians within 0.243 \u00b1 0.024 and 0.143 \u00b1 0.014, so the effect is present and the values are not. Calibration (b) sets no strength at Pconn 0.4.",
+     "deviations": [
+      "The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the claims file; github.com/jwittenbach/ablation-sim at a8b5583 gives only the 300 ms stimulus interval and the Gaussian kernel cut at 3.5 s.d.",
+      "Assumption. The background PSP is not given; one PSP per target population is set (0.39 mV to excitatory, 1.4 mV to inhibitory neurons) so that the tonic rates at Pconn 0.2 without stimulus are 0.51 and 10.35 Hz, the 0.5 and 10 Hz the Methods say the background frequencies were selected for (notebook, first model cell, with a 3 by 3 grid around the values).",
+      "Assumption. Inhibitory PSPs are -1 mV, from \"All connections had the same strength, which was chosen so that the resulting post-synaptic potential (PSP) is 1 mV\" (Methods).",
+      "Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only the 200 input-recipient neurons pass 0.1).",
+      "Assumption, revised after verification round 2. \"All neurons that met the 0.1 encoding score criteria\" (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the \"distributions of excitatory neuron encoding scores\", ablate \"The 20 excitatory neurons with the highest encoding score\", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058 and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are shown as a variant; the outcomes verified in round 2 were set with all neurons counted.",
+      "The run after ablation repeats the run before with the same background and initial state (as Brian2's store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66 presentations of the Methods."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the model of the Methods (Network model)",
+     "proposed": null
+    },
+    {
+     "claim": "model-all-or-none-robust",
+     "statement": "Subnetwork connectivity above 0.4 gives all-or-none responses, a transient input driving the subnetwork into persistent activity, and such networks keep their all-or-none response after ablation of 10% of the subnetwork.",
+     "source": "Results, paragraphs 3 and 5; Extended Data Fig. 1 (Pconn 0.44)",
+     "quote": "Networks in the all-or-none regime19 were robust to ablation, and maintained their all-or-none response",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Not run. The criterion sets the input at Pconn 0.44 to twice the strength extrapolated linearly from the two matched strengths (Methods). The extrapolation gives -9.8 under calibration (a), and readings (b) and (c) set no strength at Pconn 0.4, so the Methods' rule gives no positive input here. The negative value follows from this attempt's calibration, whose amplification at Pconn 0.4 (7.7) is far above the paper's Fig. 1c. The Methods give neither the matched strengths nor the strength and length of the reset pulse to the inhibitory population, and the pulse 300 ms after each onset falls on the next onset at the 300 ms interval of the claims file. Any input and pulse chosen in their place would be arbitrary.",
+     "deviations": [
+      "The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the claims file; github.com/jwittenbach/ablation-sim at a8b5583 gives only the 300 ms stimulus interval and the Gaussian kernel cut at 3.5 s.d.",
+      "Assumption. The background PSP is not given; one PSP per target population is set (0.39 mV to excitatory, 1.4 mV to inhibitory neurons) so that the tonic rates at Pconn 0.2 without stimulus are 0.51 and 10.35 Hz, the 0.5 and 10 Hz the Methods say the background frequencies were selected for (notebook, first model cell, with a 3 by 3 grid around the values).",
+      "Assumption. Inhibitory PSPs are -1 mV, from \"All connections had the same strength, which was chosen so that the resulting post-synaptic potential (PSP) is 1 mV\" (Methods).",
+      "Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only the 200 input-recipient neurons pass 0.1).",
+      "Assumption, revised after verification round 2. \"All neurons that met the 0.1 encoding score criteria\" (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the \"distributions of excitatory neuron encoding scores\", ablate \"The 20 excitatory neurons with the highest encoding score\", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058 and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are shown as a variant; the outcomes verified in round 2 were set with all neurons counted.",
+      "The run after ablation repeats the run before with the same background and initial state (as Brian2's store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66 presentations of the Methods."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the model of the Methods (Network model)",
+     "proposed": null
+    },
+    {
+     "claim": "model-more-ablation-larger-decline",
+     "statement": "In the model with Pconn 0.4, ablating more neurons (top 10, 20 or 50 encoders) gives larger declines in encoding score, the change correlating with the net encoding score ablated (R = -0.65).",
+     "source": "Results, paragraph 7; Extended Data Fig. 4",
+     "quote": "Correlation of net Rstimulus ablated and \u0394Rstimulus: R = \u22120.65, P < 0.01",
+     "statistics": [
+      {
+       "test": "Pearson correlation",
+       "statistic": "R = -0.65",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "30 networks per ablation size"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Pconn 0.4, calibration (a), 30 networks per size. For the excitatory neurons the median change falls with each larger ablation (0, -0.026, -0.123 and -0.209 for 0, 10, 20 and 50 ablated). The change correlates with the net score ablated, R = -0.590 with the 0-ablation networks (p = 1.3e-12, n = 120), within -0.65 \u00b1 0.065, and R = -0.456 without them (p = 6.3e-06, n = 90). All neurons (variant) give -0.726 and -0.558, both outside the tolerance. Calibration (b), which in the earlier revision gave -0.774 and -0.678 at strengths at the bottom of its sweep, sets no strength at Pconn 0.4 once the sweep reaches no input, and is not run. The margin is small, 0.005 inside the bound of -0.585 with fixed seeds, and the outcome rests on two choices, the counted population and the inclusion of the 0-ablation networks, whose 30 points sit at (0, 0) as the run after ablation repeats the same noise. Round 2 left the outcome unsettled under partially reproduced, set with all neurons counted; after the population was revised to excitatory neurons, round 3 agreed with reproduced.",
+     "deviations": [
+      "The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the claims file; github.com/jwittenbach/ablation-sim at a8b5583 gives only the 300 ms stimulus interval and the Gaussian kernel cut at 3.5 s.d.",
+      "Assumption. The background PSP is not given; one PSP per target population is set (0.39 mV to excitatory, 1.4 mV to inhibitory neurons) so that the tonic rates at Pconn 0.2 without stimulus are 0.51 and 10.35 Hz, the 0.5 and 10 Hz the Methods say the background frequencies were selected for (notebook, first model cell, with a 3 by 3 grid around the values).",
+      "Assumption. Inhibitory PSPs are -1 mV, from \"All connections had the same strength, which was chosen so that the resulting post-synaptic potential (PSP) is 1 mV\" (Methods).",
+      "Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only the 200 input-recipient neurons pass 0.1).",
+      "Assumption, revised after verification round 2. \"All neurons that met the 0.1 encoding score criteria\" (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the \"distributions of excitatory neuron encoding scores\", ablate \"The 20 excitatory neurons with the highest encoding score\", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058 and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are shown as a variant; the outcomes verified in round 2 were set with all neurons counted.",
+      "The run after ablation repeats the run before with the same background and initial state (as Brian2's store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66 presentations of the Methods."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the model of the Methods (Network model)",
+     "proposed": null
+    },
+    {
+     "claim": "model-slow-input-sensitive",
+     "statement": "Networks with Pconn 0.4 given slower, whisking-like input (peak at 50 ms) are also sensitive to ablation, encoding scores falling from 0.143 to 0.104; with equal subnetwork connectivity (Pconn 0.2) the slow-input representation is not degraded.",
+     "source": "Results, paragraph 9; Extended Data Fig. 8 (title and panel c)",
+     "quote": "Change in encoding score after ablation: from 0.143 \u00b1 0.024 to 0.104 \u00b1 0.013, grand median \u00b1 adjusted MAD. P < 0.001, Wilcoxon signed-rank test paired by network (n = 30 networks)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test, paired by network",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "30 networks"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "With the slow-input strength set anew under calibration (a) (reading (b) of the criterion; 6.6 at Pconn 0.4, 87.3 at 0.2), the score of the excitatory neurons falls at Pconn 0.4 from 0.314 to 0.104 (p = 3.9e-07, 3 of 30 networks increase), the post value within 0.104 \u00b1 0.010 and the pre value outside 0.143 \u00b1 0.014, and rises at Pconn 0.2 (0.803 to 0.850, p = 1.9e-09), so it is not degraded there. With the touch strength (reading (a)) it does not fall at Pconn 0.4 (0.952 to 0.947, p = 0.16). All neurons (variant) give 0.269 to 0.088 at Pconn 0.4 and 0.424 to 0.424 at 0.2 (p = 0.21) with the strength set anew. Calibration (b) sets no slow-input strength at Pconn 0.4 (smallest KS distance at no input). No reading gives both grand medians within tolerance.",
+     "deviations": [
+      "The slow-input strength set anew uses the same rules as the touch input (fraction 0.108 of excitatory neurons above 0.1, or the smallest KS distance to the in vivo Rtouch), as the criterion's reading (b) points to the opening comment's rule.",
+      "The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the claims file; github.com/jwittenbach/ablation-sim at a8b5583 gives only the 300 ms stimulus interval and the Gaussian kernel cut at 3.5 s.d.",
+      "Assumption. The background PSP is not given; one PSP per target population is set (0.39 mV to excitatory, 1.4 mV to inhibitory neurons) so that the tonic rates at Pconn 0.2 without stimulus are 0.51 and 10.35 Hz, the 0.5 and 10 Hz the Methods say the background frequencies were selected for (notebook, first model cell, with a 3 by 3 grid around the values).",
+      "Assumption. Inhibitory PSPs are -1 mV, from \"All connections had the same strength, which was chosen so that the resulting post-synaptic potential (PSP) is 1 mV\" (Methods).",
+      "Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only the 200 input-recipient neurons pass 0.1).",
+      "Assumption, revised after verification round 2. \"All neurons that met the 0.1 encoding score criteria\" (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the \"distributions of excitatory neuron encoding scores\", ablate \"The 20 excitatory neurons with the highest encoding score\", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058 and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are shown as a variant; the outcomes verified in round 2 were set with all neurons counted.",
+      "The run after ablation repeats the run before with the same background and initial state (as Brian2's store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66 presentations of the Methods."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the model of the Methods (Network model)",
+     "proposed": null
+    },
+    {
+     "claim": "model-response-similarity",
+     "statement": "In networks with increased subnetwork connectivity, neurons whose activity is more similar to the mean activity of the ablated neurons lose the most encoding score after ablation; with equal connectivity the relationship is absent.",
+     "source": "Results, paragraph 10; Figure 3a, b",
+     "quote": "In networks with increased subnetwork connectivity, neurons with high response similarity showed the largest decline in encoding score after ablation (Fig. 3b). In networks without increased subnetwork connectivity, the relationship disappeared",
+     "statistics": [
+      {
+       "about": "Pconn 0.4, slopes of change in encoding score against response similarity",
+       "test": "sign test",
+       "p": 0.001,
+       "n": "30 networks, 3,466 neurons"
+      },
+      {
+       "about": "Pconn 0.2",
+       "test": "sign test",
+       "p": 0.2,
+       "n": "30 networks, 3,779 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Neurons above 0.25 before or after, a line per network through the change in score against the similarity to the mean rate of the 20 ablated neurons. Under calibration (a), excitatory neurons, the slopes are negative at Pconn 0.2 (30 of 30, sign test p = 1.9e-09) and show no dependence at Pconn 0.4 (11 of 30 negative, p = 0.2), the reverse of the claim, which has negative slopes at 0.4 and none at 0.2. All neurons (variant) give positive slopes at Pconn 0.4 (6 of 30 negative, p = 0.0014) and mostly positive ones at 0.2 (8 of 30, p = 0.016). The bin-mean fit leans the same way. The excitatory counts (4,058 at Pconn 0.4 and 4,327 at 0.2) are nearer the paper's 3,466 and 3,779 than those of all neurons (7,078 and 7,815).",
+     "deviations": [
+      "The network is rebuilt from the Methods (Network model) in numpy, with the step loop compiled by numba (helper peron2020_model.py); the paper used Brian2. The parameters are those of the Methods and the claims file; github.com/jwittenbach/ablation-sim at a8b5583 gives only the 300 ms stimulus interval and the Gaussian kernel cut at 3.5 s.d.",
+      "Assumption. The background PSP is not given; one PSP per target population is set (0.39 mV to excitatory, 1.4 mV to inhibitory neurons) so that the tonic rates at Pconn 0.2 without stimulus are 0.51 and 10.35 Hz, the 0.5 and 10 Hz the Methods say the background frequencies were selected for (notebook, first model cell, with a 3 by 3 grid around the values).",
+      "Assumption. Inhibitory PSPs are -1 mV, from \"All connections had the same strength, which was chosen so that the resulting post-synaptic potential (PSP) is 1 mV\" (Methods).",
+      "Assumption. The input strength is the peak current of the beta(3,5) waveform. It is set by the claims file's readings from sweeps of two networks per strength, each sweep starting at no input. Only reading (a) sets both matched strengths (218.0 at Pconn 0.2, 28.2 at 0.4). Reading (b) is set only where its smallest KS distance lies at a positive strength inside the sweep; at Pconn 0.4 it lies at no input (0.514 for the touch input, 0.510 for the slow input), as 0.66 to 0.75 of the model's excitatory neurons score exactly 0 at every strength. Reading (c), 17%, cannot be reached (largest fraction 0.119, as almost only the 200 input-recipient neurons pass 0.1).",
+      "Assumption, revised after verification round 2. \"All neurons that met the 0.1 encoding score criteria\" (Methods) is taken as the excitatory neurons. The Methods calibrate the input on the \"distributions of excitatory neuron encoding scores\", ablate \"The 20 excitatory neurons with the highest encoding score\", and the in vivo data the model stands for are of excitatory neurons (Ai162 x Slc17a7-IRES2-cre mice, and Emx1-IRES-cre mice whose mCherry marks only excitatory nuclei; Methods, Mice). The paper's Fig. 3b counts (3,466 and 3,779 neurons above 0.25) are also nearer the excitatory counts here (4,058 and 4,327) than those of all neurons (7,078 and 7,815). All neurons, inhibitory ones included, are shown as a variant; the outcomes verified in round 2 were set with all neurons counted.",
+      "The run after ablation repeats the run before with the same background and initial state (as Brian2's store and restore), a standard choice; the first stimulus starts 300 ms into the run, giving the 66 presentations of the Methods."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the model of the Methods (Network model)",
+     "proposed": null
+    },
+    {
+     "claim": "neurons-per-mouse",
+     "statement": "Volumetric imaging in L2/3 of the spared whisker's barrel column recorded 8,126 \u00b1 2,436 (mean \u00b1 s.d.) neurons per mouse across 16 mice.",
+     "source": "Results, paragraph 6; Extended Data Table 1",
+     "quote": "8,126 \u00b1 2,436 (mean \u00b1 s.d.) neurons per mouse, n = 16 mice",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Over the first ablation of each of the 16 mice, the per-neuron tables hold 8,126.3 \u00b1 2,435.6 neurons, and all 16 per-mouse counts equal the Cell count column of Extended Data Table 1. Counting the raw pre-ablation files instead gives 8,188.5 \u00b1 2,340.3, because an278937's pre-ablation directory has a sixth subvolume (995 neurons) that its post-ablation directories lack.",
+     "deviations": [
+      "The count is the size of the per-neuron table, which keeps the neurons present in both periods, as the criterion cites (ablation_summ_stats.m)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "representation-sizes",
+     "statement": "Across 16 mice, 901 \u00b1 539 of the imaged neurons encoded touch (fraction 0.108 \u00b1 0.051) and 865 \u00b1 364 encoded whisking (fraction 0.106 \u00b1 0.028).",
+     "source": "Results, paragraph 6",
+     "quote": "Across 16 mice (Extended Data Table 1), 901 \u00b1 539 of the imaged neurons encoded touch (fraction: 0.108 \u00b1 0.051) and 865 \u00b1 364 encoded whisking (fraction: 0.106 \u00b1 0.028)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Reading (a), score above 0.1 alone in each mouse's first pre-ablation data, gives 900.6 \u00b1 538.8 touch neurons (fraction 0.108 \u00b1 0.051) and 864.6 \u00b1 364.4 whisking neurons (0.106 \u00b1 0.028), all within tolerance and with the paper's spreads. Reading (b), the Methods membership rule, gives 578.1 and 453.8 (fractions 0.069 and 0.056), outside tolerance.",
+     "deviations": [
+      "The criterion names two readings; (a) matches and (b) does not, so the Results count by score alone."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "touch-ablation-size",
+     "statement": "Touch ablations removed 16.8 \u00b1 12.8 strong touch neurons per mouse (about 6% of the touch neurons of the barrel column, 9 mice), whose touch scores were at the 70th \u00b1 35th percentile.",
+     "source": "Results, paragraph 7; Methods, Multiphoton ablation",
+     "quote": "Ablating a small proportion of strong touch cells (16.8 \u00b1 12.8 neurons, 6% of touch neurons in the barrel column of the spared whisker, n = 9 mice; touch score, 70th \u00b1 35th percentile)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "The curation files give 50, 9, 15, 15, 11, 17, 14, 11 and 9 ablated neurons in the nine touch ablations (mean 16.78, s.d. 12.77, 5.85% of 287), all equal to Extended Data Table 1, within tolerance. Under the criterion's rule, the rank of each ablated neuron's pre-ablation Rtouch among the included touch neurons, the 145 ablated neurons with a score sit at the 79.3 \u00b1 27.1 percentile, outside 70 \u00b1 7 and 35 \u00b1 3.5. The code's rule (ablation_summ_stats.m) gives 70.3 \u00b1 35.0 over the 151, the paper's values: it gives 1/N to the 9 ablated neurons that score above every included neuron and to the 6 with no score, as a synthetic check shows (0.01 for a score above all of 100). The criterion's description of the code's rule as a rank is asked of a reader (questions/peron-2020.yaml).",
+     "deviations": [
+      "The criterion's rank rule is the main reading (fraction of included neurons at or below the ablated neuron's score; ablated neurons with no score left out); the code's rule is shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "touch-ablation-reduces-touch",
+     "statement": "Ablating touch neurons reduced the touch-encoding score of the spared touch neurons, from 0.123 to 0.100 (grand median across 9 mice, 8,392 neurons).",
+     "source": "Results, paragraph 7; Figure 2g, h, j",
+     "quote": "The touch-encoding score (Rtouch) across touch neurons declined (from 0.123 \u00b1 0.021 to 0.100 \u00b1 0.037 (grand median \u00b1 adjusted MAD); n = 9 mice, 8,392 neurons, P = 0.004, Wilcoxon signed-rank test for mouse medians, paired by mouse)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test for mouse medians, paired by mouse",
+       "p": 0.004,
+       "n": "9 mice, 8,392 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Grand median Rtouch 0.123 before and 0.100 after touch ablation, all 9 mice declining, signed-rank p = 0.004, the same with the code's cylinder. The members entering the medians number 7,121 (7,089 with the code's cylinder), outside the tolerance of 8,392; the paper's 8,392 equals the sum over the 9 mice of the pre-ablation count of neurons with score above 0.1, so the reported neuron count is that sum. The criterion only asks for the count to be reported. The adjusted MADs here (0.011 and 0.016, 1.4826 times the median absolute deviation) are about half the paper's 0.021 and 0.037; 1.4826 times the mean absolute deviation, MATLAB's default mad, gives 0.021 and 0.038.",
+     "deviations": [
+      "The code's proximity rule (signed depth difference below 30 um) is shown as a variant, as the claims file asks; it changes no outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "touch-ablation-touch-count",
+     "statement": "After touch ablation the number of touch neurons fell, from 932 \u00b1 634 to 716 \u00b1 469 (mean \u00b1 s.d. over 9 mice), ablated neurons excluded.",
+     "source": "Results, paragraph 7",
+     "quote": "as did the touch neuron count (from 932 \u00b1 634 to 716 \u00b1 469 (mean \u00b1 s.d.), calculations exclude ablated neurons)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Reading (a), score above 0.1 with ablated neurons kept (the code), gives 932.4 before and 715.8 after; with ablated neurons left out (the text) 918.3 and 712.6; both within tolerance. Reading (b), the Methods rule in each period, gives 623.7 and 472.6.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "touch-ablation-whisking-unchanged",
+     "statement": "Touch ablation did not change the whisking-encoding score of whisking neurons (0.116 to 0.115, 6,975 neurons, P = 0.820); the whisking neuron count went from 775 \u00b1 267 to 721 \u00b1 241.",
+     "source": "Results, paragraph 7; Figure 2i, k",
+     "quote": "The whisking-encoding score (Rwhisking) did not change (from 0.116 \u00b1 0.013 to 0.115 \u00b1 0.024; 6,975 neurons, P = 0.820; neuron count: from 775 \u00b1 267 to 721 \u00b1 241)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test for mouse medians, paired by mouse",
+       "p": 0.82,
+       "n": "9 mice, 6,975 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Rwhisking 0.116 before and 0.115 after touch ablation, signed-rank p = 0.820, so no change at the 0.05 level (median per-mouse change +0.0008). Counts (reading (a)) 775.0 and 721.2. The members number 5,389; the paper's 6,975 is the sum of the reading (a) pre counts, which is 6,975 here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ablation-size-correlation",
+     "statement": "The decline in the touch representation grew with the touch representation ablated, the change in Rtouch correlating with the net Rtouch ablated (R = -0.794 over all 24 ablations; R = -0.779 over the 9 touch ablations).",
+     "source": "Results, paragraph 8; Figure 2l",
+     "quote": "the decline in touch representation increased as more of the touch representation was ablated (Pearson correlation of change in Rtouch and net Rtouch ablated, R = \u22120.794, P < 0.001 across all 24 ablations; R = \u22120.779, P = 0.013 for the 9 touch cell ablations)",
+     "statistics": [
+      {
+       "about": "all 24 ablations",
+       "test": "Pearson correlation",
+       "statistic": "R = -0.794",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "24 ablations"
+      },
+      {
+       "about": "touch ablations",
+       "test": "Pearson correlation",
+       "statistic": "R = -0.779",
+       "p": 0.013,
+       "n": "9 ablations"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "The change in mouse median Rtouch correlates with the summed pre-ablation Rtouch of the ablated neurons, R = -0.790 over the 24 ablations (p = 4.4e-06) and R = -0.761 over the 9 touch ablations (p = 0.017); with the code's cylinder -0.797 and -0.781 (p = 0.013), the paper's values within rounding. an250220 (50 neurons ablated, net score 12.2) carries much of the touch-ablation correlation.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "distance-dependence-touch",
+     "statement": "After touch ablation, touch neurons 15-35 um from the nearest ablated neuron lost more Rtouch than those 115-135 um away (-0.132 against -0.056), and the effect decayed with distance with a length constant of 87 um.",
+     "source": "Results, paragraph 8; Figure 2m",
+     "quote": "Touch neurons proximal (15\u201335 \u03bcm) to the ablated cells experienced a larger decline in Rtouch values than those distal (115\u2013135 \u03bcm) from the ablated cells (Fig. 2m). The effects of ablating the touch neurons decayed over a distance (\u03bb = 87 \u03bcm, exponential fit)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test for proximal versus distal medians, paired by mouse",
+       "p": 0.02,
+       "n": "9 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Under reading (a), the code's, the pooled median change is -0.133 for touch neurons 15 to 35 um from the nearest ablated neuron and -0.056 at 115 to 135 um, signed-rank on per-mouse means p = 0.012, and the exponential length constant is 87.3 um; with the code's cylinder -0.132, -0.056, p = 0.020 and 87.6 um, the paper's values. Under reading (b), per-mouse medians, the values are -0.103 and -0.019 with p = 0.359, which do not match. The claim holds under reading (a), as the criterion allows.",
+     "deviations": [
+      "The criterion leaves the per-mouse summary open between two readings; reading (a) matches and reading (b) does not. The paper's printed values (-0.132, -0.056, 87 um) equal reading (a) exactly with the code's cylinder, which shows it is the paper's own."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "distance-dependence-whisking-absent",
+     "statement": "Touch ablation produced no distance-dependent change in the whisking representation (proximal 0.000, distal -0.023).",
+     "source": "Results, paragraph 8; Extended Data Fig. 5",
+     "quote": "Whisking neurons exhibited no distance-dependent changes",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test comparing proximal paired to distal",
+       "p": 0.098,
+       "n": "9 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Under the code's reading the whisking neurons change by -0.004 at 15 to 35 um and -0.023 at 115 to 135 um, signed-rank p = 0.164, so no distance dependence at the 0.05 level; with the code's cylinder 0.000, -0.023 and p = 0.129 (the paper reads 0.098 from its figure). Per-mouse medians give p = 0.652.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "behaviour-unchanged",
+     "statement": "Ablations did not change whisker movement or behaviour, so behaviour does not account for the decline of the touch representation; no mouse showed a significant change in whisker angle, angle at touch or curvature change at touch.",
+     "source": "Results, paragraph 8; Extended Data Fig. 6",
+     "quote": "The declining touch representation was not caused by changes in whisker movement or behaviour",
+     "statistics": [
+      {
+       "about": "fraction correct, touch ablations",
+       "test": "Wilcoxon signed-rank test, paired by mouse",
+       "p": 0.863,
+       "n": "9 mice"
+      },
+      {
+       "about": "touches per trial, touch ablations",
+       "test": "Wilcoxon signed-rank test, paired by mouse",
+       "p": 0.666,
+       "n": "9 mice"
+      },
+      {
+       "about": "fraction correct, silent ablations",
+       "test": "Wilcoxon signed-rank test, paired by mouse",
+       "p": 0.065,
+       "n": "8 mice"
+      },
+      {
+       "about": "touches per trial, silent ablations",
+       "test": "Wilcoxon signed-rank test, paired by mouse",
+       "p": 0.721,
+       "n": "8 mice"
+      },
+      {
+       "about": "fraction correct, whisking ablations",
+       "test": "Wilcoxon signed-rank test, paired by mouse",
+       "p": 0.71,
+       "n": "7 mice"
+      },
+      {
+       "about": "touches per trial, whisking ablations",
+       "test": "Wilcoxon signed-rank test, paired by mouse",
+       "p": 0.62,
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "With the paired signed-rank test the legend names, fraction correct rises after the 8 silent ablations (mean 0.697 to 0.786, p = 0.008) and touches per trial rise after the 7 whisking ablations (1.654 to 2.031, p = 0.047); after touch ablations neither changes (p = 0.910 and 0.570). Per-mouse KS tests on the samples give p < 0.05 in all 24 ablations for whisker angle and in 23 of 24 for angle at touch and curvature change at touch, with small effects (median D 0.085, 0.128, 0.105) and samples of 10^3 to 10^6. The code's tests find no change (rank-sum p = 0.863, 0.065 and 0.710 for fraction correct and 0.620 for whisking touches, equal to the figure; 0.796 and 0.645 for touches after touch and silent ablations against 0.666 and 0.721; KS on normalized histograms never below 0.05). So the paper's P values come from unpaired tests, not the paired test its legend names. The part of the statement about touch ablations, that behaviour does not explain the decline of the touch representation, holds under every test run. The trial types begin HitL, HitR, ErrL, ErrR in all 201 files of both formats, and the touch properties have one value per event edge in all 201 files, so the fraction correct and the [0::2] selection of angle and curvature at touch read the intended values; that kappaMaxAbsOverTouch is the legend's net curvature change at touch is an assumption from its name. The paired test the criterion names and the paper's rank-sum test are asked of a reader.",
+     "deviations": [
+      "Touches are merged into bursts when a touch starts less than 50 ms after the previous touch of the trial ended; the code calls a toolbox method (getBurstTimes) that is not in its repository. This bears only on touches per trial; the outcome rests also on the fraction correct after silent ablations, which does not use it.",
+      "Fraction correct is hits over hits and errors, the first four trial types the code sums (ablation_figure_beh.m); trials without a lick are not scored."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "whisking-ablation-size",
+     "statement": "Whisking ablations removed 12.7 \u00b1 5.7 strong whisking neurons per mouse (about 4% of the barrel column's whisking neurons, 7 mice), at the 66th \u00b1 37th percentile of whisking score.",
+     "source": "Results, paragraph 9",
+     "quote": "ablating a subset of strong whisking neurons (12.7 \u00b1 5.7 neurons, approximately 4% of whisking neurons in the barrel column of the spared whisker, n = 7 mice; whisking score: 66th \u00b1 37th percentile)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "12.71 \u00b1 5.68 neurons ablated per mouse, within tolerance; 4.43% of 287, outside 4 \u00b1 0.4 (the paper's \"approximately 4%\" is itself 12.7 / 287 = 4.4%, asked of a reader). Under the criterion's rank rule the percentile is 75.4 \u00b1 31.8 (Methods reading, Rwhisking among whisking neurons) and 75.8 \u00b1 30.2 (code reading, among the touch neurons' Rtouch), both outside 66 \u00b1 6.6; the code's percentile rule gives 68.8 \u00b1 36.2 and 65.9 \u00b1 36.5, within tolerance. 6 and 9 of the 89 ablated neurons score above every included neuron.",
+     "deviations": [
+      "As touch-ablation-size, the rank rule is the main reading and the code's rule a variant."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "whisking-ablation-no-effect-touch",
+     "statement": "Ablating whisking neurons had no effect on the touch representation (Rtouch 0.112 to 0.095, 7 mice, 5,866 neurons, P = 0.109; count 838 \u00b1 401 to 899 \u00b1 548).",
+     "source": "Results, paragraph 9; Figure 2j; Extended Data Fig. 7",
+     "quote": "produced no effect on either the touch representation (Rtouch from 0.112 \u00b1 0.081 to 0.095 \u00b1 0.069, n = 7 mice, 5,866 neurons; P = 0.109, count from 838 \u00b1 401 to 899 \u00b1 548)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test for mouse medians, paired by mouse",
+       "p": 0.109,
+       "n": "7 mice, 5,866 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Signed-rank p = 0.109 over the 7 whisking ablation mice, no change at the 0.05 level (6 of 7 decline; median change -0.008). The grand median over the 7 mice is 0.113 to 0.106; the post value is outside the tolerance of 0.095, which does not decide this claim of absence. The paper's 0.112 to 0.095 is reproduced (0.112 to 0.096) by the median that ablation_summ_stats.m takes over all 24 ablation rows while the 8 silent rows are still zero. Counts 838.0 to 898.9 (reading (a)), whose pre counts sum to 5,866, the paper's neuron count; the members number 4,605.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "whisking-ablation-no-effect-whisking",
+     "statement": "Ablating whisking neurons did not degrade the whisking representation (Rwhisking 0.108 to 0.107, 6,161 neurons, P = 0.812; count 880 \u00b1 387 to 974 \u00b1 558).",
+     "source": "Results, paragraph 9; Figure 2k; Extended Data Fig. 7",
+     "quote": "or the whisking representation (Rwhisking from 0.108 \u00b1 0.076 to 0.107 \u00b1 0.076, n = 6,161; P = 0.812, count from 880 \u00b1 387 to 974 \u00b1 558)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test for mouse medians, paired by mouse",
+       "p": 0.812,
+       "n": "7 mice, 6,161 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Signed-rank p = 0.938 with the Methods cylinder and 0.812 (the paper's value) with the code's. Rwhisking 0.114 to 0.110 over the 7 mice; the paper's 0.108 to 0.107 is the zero-padded median (0.109 to 0.107 here). Counts 880.1 to 973.7; the reading (a) pre counts sum to 6,161, the paper's neuron count.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "silent-ablation-size",
+     "statement": "Silent-neuron ablations (event rate below 0.025 Hz) removed 16.3 \u00b1 2.6 neurons per mouse in 8 mice.",
+     "source": "Results, paragraph 9; Methods, Multiphoton ablation",
+     "quote": "ablating silent neurons (event rate below 0.025 Hz; 16.3 \u00b1 2.6 neurons, n = 8 mice)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "16.25 \u00b1 2.55 neurons ablated per mouse over 8 mice. Of the 130 ablated neurons, 118 have a pre-ablation event rate below 0.025 Hz in these data (median 0.012 Hz, highest 0.079 Hz); the paper gives the 0.025 Hz rule for choosing targets, and 12 of the 130 are above it in these pre-ablation data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "silent-ablation-no-effect-touch",
+     "statement": "Ablating silent neurons did not change the touch representation (Rtouch 0.115 to 0.107, 8 mice, 7,110 neurons, P = 0.383; count 889 \u00b1 713 to 926 \u00b1 681).",
+     "source": "Results, paragraph 9; Figure 2j; Extended Data Fig. 7",
+     "quote": "did not change the touch representation (Rtouch from 0.115 \u00b1 0.021 to 0.107 \u00b1 0.023, n = 8 mice, 7,110 neurons; P = 0.383, count from 889 \u00b1 713 to 926 \u00b1 681)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test for mouse medians, paired by mouse",
+       "p": 0.383,
+       "n": "8 mice, 7,110 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Signed-rank p = 0.383, no change at the 0.05 level (3 of 8 decline). Rtouch 0.111 to 0.113 over the 8 mice; the paper's 0.115 to 0.107 equal the median over all 24 ablations (ablation_summ_stats.m). Counts 888.8 to 925.8; the reading (a) pre counts sum to 7,110.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "silent-ablation-no-effect-whisking",
+     "statement": "Ablating silent neurons did not change the whisking representation (Rwhisking 0.115 to 0.114, 7,684 neurons, P = 0.844; count 961 \u00b1 464 to 904 \u00b1 384).",
+     "source": "Results, paragraphs 9 and 10",
+     "quote": "or the whisking representation (Rwhisking from 0.115 \u00b1 0.014 to 0.114 \u00b1 0.015, 7,684 neurons; P = 0.844, count from",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test for mouse medians, paired by mouse",
+       "p": 0.844,
+       "n": "8 mice, 7,684 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Signed-rank p = 0.844, no change at the 0.05 level. Rwhisking 0.114 to 0.115 over the 8 mice (the 24-ablation median is 0.115 to 0.113). Counts 960.5 to 904.4; the reading (a) pre counts sum to 7,684.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ablation-type-specificity",
+     "statement": "Touch ablations produced significantly different changes in Rtouch from whisking or silent ablations, while whisking and silent ablations did not differ; for Rwhisking no pair of ablation types differed.",
+     "source": "Results, paragraph 10; Figure 2j, k",
+     "quote": "Touch ablations produced significantly different changes in encoding scores among touch (but not whisking) representations than either whisking or silent ablations, whereas whisking ablations did not produce significantly different changes from silent ablations",
+     "statistics": [
+      {
+       "about": "change in Rtouch, touch against silent ablations",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.002,
+       "n": "9 and 8 mice"
+      },
+      {
+       "about": "change in Rtouch, touch against whisking ablations",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.042,
+       "n": "9 and 7 mice"
+      },
+      {
+       "about": "change in Rtouch, silent against whisking ablations",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.152,
+       "n": "8 and 7 mice"
+      },
+      {
+       "about": "change in Rwhisking, touch against silent ablations",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.743
+      },
+      {
+       "about": "change in Rwhisking, touch against whisking ablations",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.758
+      },
+      {
+       "about": "change in Rwhisking, silent against whisking ablations",
+       "test": "Wilcoxon rank-sum test",
+       "p": 1
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Exact rank-sum tests on the per-mouse changes. For Rtouch, touch against silent p = 0.002, touch against whisking p = 0.031, whisking against silent p = 0.152. For Rwhisking, 0.743, 0.837 and 0.955 with the Methods cylinder and 0.743, 0.758 and 1.000 with the code's (the paper's values). Only the touch against whisking Rtouch value differs from the paper's 0.042. The table's own per-mouse changes give p = 0.042: an278937's whisking-ablation change is -0.003 here and -0.006 in Extended Data Table 1, which swaps its rank with an257220's touch ablation (-0.005 here, -0.004 in the table).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "response-similarity-touch-ablation",
+     "statement": "After touch ablation, the change in Rtouch depended on response similarity to the ablated neurons; similar neurons declined and neurons with negative similarity increased, while the whisking representation showed no such dependence.",
+     "source": "Results, paragraph 12; Figure 3e, f",
+     "quote": "Changes in Rtouch values after ablation depended on response similarity (Fig. 3e, f). Rtouch values in neurons with high response similarity declined. Neurons with negative response similarity showed increased Rtouch values ... Ablation of touch neurons had no effect on the whisking network",
+     "statistics": [
+      {
+       "about": "touch neurons, slope of change in Rtouch against response similarity",
+       "test": "sign test",
+       "p": 0.039,
+       "n": "9 mice, 2,768 touch neurons"
+      },
+      {
+       "about": "whisking neurons, slope of change in Rwhisking",
+       "test": "sign test",
+       "p": 0.508,
+       "n": "9 mice, 1,085 whisking neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "With the claims file's method (correct left and right trial averages concatenated, a line through each mouse's neurons with score above 0.25), 7 of 9 touch-neuron slopes are negative, sign test p = 0.180, and the whisking-neuron slopes are positive in 8 of 9, p = 0.039; the criterion asks for p < 0.05 and p >= 0.05 respectively. The bin means are above 0 at negative similarity (3 of 3 bins). The paper's numbers are those of the code, whose trial average keeps only the right-trial average (it writes both averages into the same rows); with it and the code's cylinder, the bin-mean fit gives 8 of 9 touch slopes negative (p = 0.039) with 2,768 neurons in bins and whisking slopes with p = 0.508 and 1,085 neurons, exactly the paper's values. The point fit with the same average and cylinder gives the touch result (8 of 9, p = 0.039, 2,824 neurons) but 4 of 9 whisking slopes negative (p = 1.000). With both averages the code's bin-mean fit gives 9 of 9 negative (p = 0.004) and whisking p = 0.180. Neurons in the analysis 2,845 and 1,174, within tolerance of 2,768 and 1,085. Trial averages of 75 frames, in all files of the 8 NYU mice (80 files), are cut to the first 70 frames, as the code's 70 rows; whether the paper's right-trial average is a reading is asked of a reader.",
+     "deviations": [
+      "The variants the criterion names (the code's trial average and its fit to bin means) are shown; the outcome follows the criterion's main method."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "response-similarity-example",
+     "statement": "In an example touch ablation mouse, the change in Rtouch of touch neurons falls with their response similarity to the ablated neurons, with a slope of -0.44.",
+     "source": "Figure 3c-e",
+     "quote": "Changes induced by ablation of touch neurons on the touch score as a function of response similarity in an example mouse",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "In an272761, the slope of the line through the neurons is -0.393 with the claim's method, just outside -0.44 \u00b1 0.044. With the code's right-trial average the point-fit slope is -0.433 (-0.426 with the code's cylinder), within tolerance; the code's bin-mean fit gives -0.617 and -0.608.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "response-similarity-whisking-ablation",
+     "statement": "Ablation of whisking neurons had no similarity-dependent effect on either representation.",
+     "source": "Results, paragraph 12; Figure 3g",
+     "quote": "Ablation of whisker neurons had no effect on either representation (Fig. 3g)",
+     "statistics": [
+      {
+       "about": "touch neurons",
+       "test": "sign test",
+       "p": 0.453,
+       "n": "7 mice, 1,692 touch neurons"
+      },
+      {
+       "about": "whisking neurons",
+       "test": "sign test",
+       "p": 1,
+       "n": "7 mice, 935 whisking neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Sign tests over the per-mouse point-fit slopes give p = 1.000 for touch neurons (3 of 6 negative) and p = 0.688 for whisking neurons (4 of 6), no similarity dependence at the 0.05 level, with 1,624 and 889 neurons. Only 6 of the 7 mice enter, as an278939's pre-ablation files for its whisking ablation hold no trial-averaged dF/F (their 27 features include psthHitLeftTrialsMatrix and psthHitRightTrialsMatrix, which the analysis does not use), so an278939 enters with 0 neurons. Variants give p = 0.031 for touch neurons (bin-mean fit with both averages, or point fit with the right-trial average).",
+     "deviations": [
+      "an278939 is left out for lack of trial averages in its post-silent directory (6 of 7 mice)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ablation-no-off-target-event-rate",
+     "statement": "Ablation of silent neurons did not change the calcium event rate of neurons adjacent (10-25 um) to the ablated cells (0.014 Hz before and after).",
+     "source": "Methods, Multiphoton ablation, paragraph 5; Extended Data Fig. 3a",
+     "quote": "Event rates among neurons adjacent to ablated silent cells did not change (event rate before ablation: 0.014 \u00b1 0.008 Hz, grand median \u00b1 adjusted MAD; after ablation: 0.014 \u00b1 0.007 Hz; P = 0.055 before versus after ablation, Wilcoxon signed-rank test, paired medians across n = 8 mice; 1,028 neurons across all mice)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test, paired medians across mice",
+       "p": 0.055,
+       "n": "8 mice, 1,028 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Neurons 10 to 25 um from the nearest ablated silent neuron, grand median event rate 0.0141 Hz before and 0.0140 Hz after, 1,035 neurons (1,028 with the code's cylinder, the paper's count), signed-rank p = 0.055, no change at the 0.05 level; 7 of 8 mice have a slightly lower rate after.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ablation-success-rate",
+     "statement": "About two thirds of ablation attempts succeeded; 293 cells were ablated successfully in 22 sessions in 14 mice with complete logs.",
+     "source": "Methods, Multiphoton ablation, paragraph 3; Extended Data Fig. 2c-e",
+     "quote": "In all cases, approximately 2/3 of ablations were successful",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Over the 23 ablations whose curation files list the targeted neurons, 320 of 474 targets were ablated (0.675). Leaving out an250220 and an257218, 300 neurons were ablated in 22 ablations of 14 mice, within tolerance of 293; the legend leaves out 7 more ablations it does not name, so the count cannot be matched exactly. In the JRC mice the target ids in the ablation logs equal the curation files' attempted ids, except an257218, whose logs carry no target id, and an250220, which has no list of attempts. In the NYU mice the 510 per-attempt logs are the curation files' attempts: each mouse has as many logs as attempts over its ablations (30 + 61 = 91 in an275798), and their target ids are the curation files' targets.",
+     "deviations": [
+      "Targets are the curation files' lists (NYU per-attempt targets and flags; JRC attempted_ids), not the logs the code reads, which agree with them where both exist; an250220 is left out of the fraction, as it has no list of targets."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "glial-reaction-local",
+     "statement": "Glial reactions after ablation were confined to the lesioned neuron, IBA1 reactions having radii of 11.7 \u00b1 1.7 um (8 of 10 IBA1-labelled sites; no GFAP reaction in 6).",
+     "source": "Methods, Multiphoton ablation, paragraph 5; Extended Data Fig. 3b-d",
+     "quote": "These reactions had radii of 11.7 \u00b1 1.7 \u03bcm (mean \u00b1 s.d.; n = 8 sites)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The histology (IBA1 and GFAP sections of two mice perfused 24 h after ablation) is not in the data set. The 16 archives hold session structs, ablation logs, curation files and 44 other .mat files (ablation master logs, session logs, roiArrayBrowser and target lists); no member's name points to histology or images (none ends in .tif, .czi, .lsm, .nd2, .jpg or .png, or names IBA1, GFAP, slices or sections). The paper names no other place for it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "per-mouse-table",
+     "statement": "Extended Data Table 1 lists, for each of the 24 ablations, the mouse's neuron count, the ablation type, the number ablated, the touch and whisking neuron counts and the change in median Rtouch and Rwhisking.",
+     "source": "Extended Data Table 1",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "The per-mouse numbers are only in Extended Data Table 1 (read from the PDF); no sentence states them.",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peron_2020.ipynb",
+     "notes": "Under the main reading, the Methods cylinder, 23 of 24 rows match in cell count, ablated count and both changes (within 0.005); in an275801's touch ablation the change in Rtouch is -0.071 against -0.065. With the code's cylinder (variant) all 24 rows match. The table's touch and whisking counts are the members that enter the medians with the code's cylinder (21 and 22 rows equal, all 24 within 10%), not reading (a) (10 and 9 rows within 10%) or (b) (1 and 1); this is asked of a reader.",
+     "deviations": [
+      "The code's signed proximity rule is shown as a variant, as the claims file asks; under it all 24 rows match."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The data descriptor names only the session structs and the ablation logs. The files that say which neurons were ablated (manualCurationData.mat in the NYU mice, with per-attempt targets and success flags; an<id>_<date>.mat and ablation_ids_manually_curated.mat in the JRC mice, with attempted_ids and ablated_ids), and which directory is the pre-ablation and post-ablation data of each of the 24 ablations, can be found only by reading the paper's analysis code (get_data_path.m).",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The session structs come in two MATLAB formats, 94 in version 5 and 107 in version 7.3 (HDF5), even within one mouse's directories, with no note of it; a reader needs both scipy.io and h5py. The archives are tar.gz files of 2.7 to 11.9 GB that cannot be read at an offset, so any use of one file means streaming the whole archive; the 16 archives hold 120.9 GB compressed, and the JRC ablation logs make up 77.1 GB of the 166.7 GB their members hold uncompressed.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The six session files of an278939's session_neuropilone_postablate_silent_merged directory, the pre-ablation data of its whisking ablation, hold no trial-averaged dF/F (dffBased_HitLTrialAvg, dffBased_HitRTrialAvg), unlike the other 195 files; their 27 features include psthHitLeftTrialsMatrix and psthHitRightTrialsMatrix, which are not documented. The response-similarity analysis of Fig. 3g cannot include that ablation.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "an278937's pre-ablation directory holds six subvolumes (5,225 neurons) and its post-ablation directories five (4,230); the 995 neurons of the sixth subvolume have no post-ablation data, with no note of it.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "an250220's curation file (an250220_all.mat) lists only the ablated ids, not the attempted ones, and the code looks for its logs under a folder that does not exist; the ablation logs of an257218 carry no target id (la.ablatedId). The success rate of these ablations cannot be computed from the logs.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The histology behind Extended Data Fig. 3b-d (IBA1 and GFAP sections) is not in the data set.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The trial-averaged dF/F of the 8 NYU mice (80 session files) has 75 frames, those of the JRC mice 70, with no note of it; the analysis code keeps 70 rows.",
+     "found": null,
+     "status": null,
+     "n": 15,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the helper module peron2020.py and the claims file, with the paper. The verifier checked the archive listing (filelist.txt and the S3 listing) and tested pct on synthetic inputs; it downloaded no data. It gave its own outcome for each claim; 28 of 31 agree with the record it reviewed, and it reported the seven model claims blocked without an allowed reason. Its claims-file points (problems 2 and 10) are asked of a reader in questions/peron-2020.yaml. Report in transcripts/peron-2020/verifier-1-report.md.",
+     "agreed": 28,
+     "of": 31,
+     "disagreements": [
+      {
+       "claim": "touch-ablation-size",
+       "outcome": "partially_reproduced",
+       "reason": "Cell 16: 16.78 \u00b1 12.77 neurons and 5.85% are within tolerance. The percentile (70.3 \u00b1 35.0) uses a rule that differs from the criterion's \"rank\": when no included neuron scores above an ablated neuron (or its score is NaN), the percentile comes out as 1/N instead of 1, and the markdown misdescribes this (problem 2), so the criterion's percentile was never computed."
+      },
+      {
+       "claim": "whisking-ablation-size",
+       "outcome": "partially_reproduced",
+       "reason": "Cell 16: 12.71 \u00b1 5.68 neurons pass. 4.43% is outside 4 \u00b1 0.4; the tolerance was set on the paper's rounded \"approximately 4%\", and 12.7/287 is 4.43%. The percentiles (68.8 \u00b1 36.2; variant 65.9 \u00b1 36.5) carry the same rule issue as touch (problem 2)."
+      },
+      {
+       "claim": "per-mouse-table",
+       "outcome": "partially_reproduced",
+       "reason": "Cell 49: with the Methods cylinder (main reading) 23 of 24 rows match; 275801 touch gives \u0394Rtouch \u22120.071 against \u22120.065. With the code's cylinder 24 of 24 match."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the revision after round 1, with its conclusions and summary, the helper modules peron2020.py and peron2020_model.py, the claims file and this record, with the paper. It took its counts from the record (31 claims, 18 reproduced, 6 partially reproduced, 5 not reproduced, 2 blocked). It agreed with 29 outcomes, disagreed with model-equal-connectivity-ablation-increases and left model-more-ablation-larger-decline unsettled, found the counted population (inhibitory neurons included) contestable and calibration (b) undetermined, and quoted sentences the outputs do not support. It noted that the round-1 entries for the seven model claims (agrees true, outcome blocked) understate its round-1 reason, that the block had no allowed reason; those entries are left as recorded. It could not check the transcription of Extended Data Table 1, having no PDF renderer. In reply the counted population was revised, the calibration sweeps were extended to no input, two changes of outcome are proposed for a third round, and the quoted sentences were corrected. Report in transcripts/peron-2020/verifier-2-report.md.",
+     "agreed": 29,
+     "of": 31,
+     "disagreements": [
+      {
+       "claim": "model-equal-connectivity-ablation-increases",
+       "outcome": "partially_reproduced",
+       "reason": "Do not agree as it stands. The outcome depends on the attempt's own choice to count inhibitory neurons (about 250 of the 415 neurons per network, cell 80). With excitatory neurons only, scores rise in 30 of 30 networks (p = 1.9e-09), the claimed direction, with values outside tolerance; by the record's own rule for the Pconn 0.4 claim, that is partially reproduced. The printed counts argue against the all-neuron reading. The paper reports 3,466 and 3,779 neurons above 0.25; all neurons give 7,078 and 7,815, about twice that, and excitatory neurons 4,058 and 4,327 (cell 91)."
+      },
+      {
+       "claim": "model-more-ablation-larger-decline",
+       "outcome": null,
+       "reason": "Not settled. The criterion is met under two readings (cell 85). Calibration (b), a claims-file reading, with all neurons and the 0-ablation networks left out gives R = -0.678 (p = 2e-13), with the decline growing at each size. Calibration (a) with excitatory neurons and the 0-ablation networks included gives -0.590. The record sets (b) aside because its KS minimum is the weakest strength tried; that is a reason to extend the sweep, not to drop the reading."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. Only the two changes of outcome proposed after round 2, model-equal-connectivity-ablation-increases and model-more-ablation-larger-decline, with the analysis behind them in the re-executed notebook and the helper module peron2020_model.py. It took its counts from the record (31 claims, 31 outcomes). It checked where the revised population (excitatory neurons) is applied and justified, found no sign that it was chosen to reach the result, as the same revision makes model-response-similarity worse, and found no place where the claims file misreads the paper. It agreed with both proposals. Report in transcripts/peron-2020/verifier-3-report.md.",
+     "agreed": 2,
+     "of": 2,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The grand medians the paper gives for whisking ablations (Rtouch 0.112 to 0.095, Rwhisking 0.108 to 0.107) and silent ablations (Rtouch 0.115 to 0.107, Rwhisking 0.115 to 0.114) are not medians over those mice. ablation_summ_stats.m stores mouse medians in one matrix indexed by position among all 24 ablations and takes the median over the whole matrix, which for the whisking block includes 9 touch rows and 8 zero rows, and for the silent block all 24 ablations. Over the mice of each type the medians are 0.113 to 0.106 and 0.114 to 0.110 (whisking), 0.111 to 0.113 and 0.114 to 0.115 (silent). The P values, computed per type, are unaffected.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The behaviour P values of Extended Data Fig. 6, described as Wilcoxon signed-rank tests paired by mouse, are rank-sum tests (ablation_figure_beh.m), and its KS tests compare normalized histograms, not samples. With the paired test, fraction correct rises after silent ablations (p = 0.008) and touches per trial after whisking ablations (p = 0.047).",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "In the response-similarity analysis (Fig. 3) the code writes the correct-left and correct-right trial averages into the same 70 rows, so the similarity uses the right-trial average alone, not the concatenation the Methods describe; and it fits the per-mouse lines to bin means, not to the neurons' points as the Methods say. The paper's sign-test P values (0.039, 0.508) and neuron counts (2,768, 1,085) equal the code's version exactly; with the Methods' trial average and fit, the touch slopes are not significant (p = 0.180) and the whisking slopes are (p = 0.039).",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods exclude neurons within a cylinder of 60 um height centred on each ablated neuron, but the code excludes every neuron less than 30 um below it, and all neurons above it, within 10 um laterally (signed depth difference). The paper's counts (1,028 adjacent neurons, Extended Data Table 1's touch and whisking counts) and several values follow the code's rule.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The neuron counts given with the grand medians (8,392, 6,975, 5,866, 6,161, 7,110 and 7,684 neurons) are the sums over mice of the number of neurons with score above 0.1 before ablation, not the number of neurons that enter the medians (7,121, 5,389, 4,605, 4,960, 6,339 and 5,436 under the Methods rule), which leave out neurons failing the shuffle test or belonging to both representations.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which proximity rule is meant, the Methods cylinder (|depth difference| < 30 um) or the code's signed rule? Extended Data Table 1 matches the code's rule in all 24 rows and the Methods cylinder in 23 (an275801's touch ablation gives -0.071 against -0.065); this attempt takes the Methods cylinder as the main reading, as the claims file does, and shows the code's rule as a variant.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How are touches merged into bursts at the 50 ms interval (the toolbox method getBurstTimes is not in the repository)? This attempt joined a touch to the previous one when it started less than 50 ms after that touch ended; touches per trial then give rank-sum p = 0.796 and 0.645 for touch and silent ablations, against the figure's 0.666 and 0.721.",
+     "found": null,
+     "status": null,
+     "n": 13,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The \u00b1 values given with the grand medians, described as adjusted median absolute deviations, are 1.4826 times the mean absolute deviation (MATLAB's mad with its default flag): touch ablation Rtouch 0.021 / 0.038 against the paper's 0.021 / 0.037, Rwhisking 0.013 / 0.024 as printed, and the whisking and silent values on the same 24-row matrices as their medians. The median absolute deviation gives about half (0.011 / 0.016).",
+     "found": null,
+     "status": null,
+     "n": 14,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors, on the network model. The Methods do not give the PSP of the background Poisson input, the sign and size of inhibitory PSPs (\"All connections had the same strength\"), the input strengths matched at Pconn 0.2 and 0.4, the slow-input strength, the strength and length of the reset pulse at Pconn 0.44, or which neurons enter \"all neurons that met the 0.1 encoding score criteria\" (excitatory neurons only, or inhibitory ones too). This attempt set the background PSPs (0.39 and 1.4 mV) to give the stated tonic rates, took inhibitory PSPs as -1 mV, counted excitatory neurons and calibrated the input on this paper's touch data; it then finds matched strengths of 218 and 28.2 (peak current, mV), whose linear extrapolation to Pconn 0.44 is negative. What were the values used?",
+     "found": null,
+     "status": null,
+     "n": 16,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "peron-2020",
+   "type": "reproduction",
+   "title": "Recurrent interactions in local cortical circuits (Peron et al. 2020)",
+   "description": "Tests the experimental findings of Peron, Pancholi, Voelcker, Wittenbach, Olafsdottir, Freeman and Svoboda (2020) on CRCNS ssc-11, which holds volumetric calcium imaging of L2/3 of mouse barrel cortex in 16 mice before and after 24 targeted two-photon ablations of touch, whisking or silent neurons. It compares encoding scores before and after each kind of ablation, the dependence on distance and on response similarity to the ablated neurons, behaviour, ablation success and the per-mouse table, and rebuilds the network model of the Methods (2,000 leaky integrate-and-fire neurons) to test the model claims.",
+   "datasets": [
+    "crcns:ssc-11"
+   ],
+   "papers": [
+    "10.1038/s41586-020-2062-x"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_peron_2020.ipynb",
+     "title": "Reproducing Peron et al. (2020) from CRCNS ssc-11",
+     "executed": "notebooks/peron-2020/reproduce_peron_2020.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 47,
+   "hashed": true
+  }
+ ],
+ "badge": null,
+ "badges": {
+  "reproduced": null,
+  "outcomes": "https://encorescience.org/badge/crcns/ssc-11-outcomes.svg",
+  "card": "https://encorescience.org/badge/crcns/ssc-11-card.svg"
+ }
+}
