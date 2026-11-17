@@ -1,25 +1,35 @@
-I wrote the claims file at `claims/000489/10.1016-j.bioelechem.2022.108319.yaml`. The quote checker passes: 21 claims, 21 quotes, 7 statistical values, 0 problems.
+I've brought `claims/kim-2022.yaml` up to the current protocol (pilot-14). The quote checker passes with 0 problems, and nothing is committed.
 
-**Text read:** the accepted author manuscript in PubMed Central (PMC9729435), with the Methods, Results, Discussion and the legends of Figs. 1 to 7. The paper has no supplement and no PDF was supplied, so values shown only inside figures were not used. The paper links no code or data deposit, so there was no repository to read. The dandiset's title and description match the Fig. 2 experiment: BPAE cells given 5 pulses at 1 Hz, with the second phase at 0, 25, 50, 75 or 100% of the first.
+**Text read.** I read the accepted author manuscript from PubMed Central (PMC9729435, NIHMS1849847), not the version of record. It has the Methods 2.1 to 2.6, the Results 3.1 to 3.5, the Discussion and the legends of Figs. 1 to 7. The paper has no supplement, and none was supplied. There was no PDF, so I read no figures. The paper links no code and no data deposit, so I read no repository.
 
-**Claims:**
-- **Count:** 21 claims, all with quotes and none inferred.
-- **Statistics:** 5 claims carry them (7 entries), all two-sided Student's t-test bounds plus the two Fig. 7 fit correlations.
-- **Criteria:** all 21 claims have one; 13 also have expected values.
-- **Coverage:** Fig. 2 has 6 claims, and these are what the dandiset is meant to hold. Figs. 3 to 7 have 14 and the heating measurement has 1.
+**Counts.** There are 24 claims. All 24 have quotes and criteria, 5 carry statistics (7 values), and 9 have expected values.
+- **000489:** the 6 claims on Fig. 2 rest on it, since its title is the Fig. 2A legend.
+- **000448:** the 5 claims on Fig. 7 rest on it, since its title is the Fig. 7 legend.
+- **Figs. 3 to 6 and the Fig. 1E heating (13 claims):** neither dataset's title names these data. I listed them under 000489, the YO-PRO-1 dataset from the same cells and measure. The opening comment says the author must check whether 000489 holds them; if it does not, they are blocked as `data_missing`.
 
-**Details the paper leaves open, and the readings named:**
-- **Field strength per ROI (outside input):** the field strength for each measurement area comes from the paper's simulation, which was never deposited. If the dataset lacks it, the author recomputes it from the geometry in Methods 2.3, with the paper's 15.1 kV/cm maximum as a check.
-- **Measurement areas along the bb' line:** spacing and number are not given. Readings: contiguous areas on both sides of the centre, or on one side. A named field strength uses the area closest to it.
-- **t-test pairing:** not stated. Read both paired and unpaired where areas of the same dishes are compared.
-- **Fig. 2B exponential fit:** low-signal cutoff read as 6, 7 or 8 kV/cm. Fit method read as nonlinear least squares or regression of log YP. The slope test is read on per-dish fits or on fits to the means.
-- **Fig. 2C "~20%":** read as the mean over 8.7 to 15.1 kV/cm, or the minimum. The p < 0.01 comparison is read against unipolar pulses, or against the 25% and 100% amplitudes, each on raw or normalized values. The unnamed "selected" field strengths are taken as all areas in that range.
-- **Figs. 3 and 4 cutoff and fits:** background cutoff read as 7 or 8 kV/cm. Which durations got exponential and which got polynomial fits is not given, so both are run. "Moderate field" for the 1200 ns pulses is read as the curve minimum or the middle of the range.
-- **Fig. 5 test:** the text does not say whether the p < 0.01 for the anode side covers bipolar pulses.
-- **Fig. 6 "difference between 1 Hz and kHz-rate trains":** read against the mean of all kHz rates, or against each rate.
-- **Fig. 7 fits:** the 425 datapoints are read as per-cell points pooled (about 18 cells times 24 steps, which the count supports), or as the averaged trace.
-- **Fig. 2A vertical scales (1200 and 250 a.u.):** these are axis limits, so the claim treats them as upper bounds. It is blocked on the absolute values if the images are not in the units the paper measured.
+**What changed**
+- The top-level `dataset: 000489` is gone, as the schema requires for a paper's own claims file, and every claim now has `datasets:`.
+- I added two Fig. 7 claims: `fig7-unipolar-pole-polarization` and `fig7-later-pulses-same-tau-difference`. The second is a "data not shown" finding that 000448 can test.
+- The claims of absence (fig2b slope, fig2c flat, fig3d, fig4ac field independence, fig5 symmetry, fig6 same efficiency, fig7 same initial polarization and no build-up) are now judged on a single test: the paper's unpaired two-sided Student's t-test at p < 0.05. The paired test is shown as a variant.
+- Where readings are method choices and give different outcomes, the author now picks one or blocks the claim as `methods_underspecified`. Before, the file declared that outcome directly. Readings of what a reported number means still need only one match.
+- fig4eg now has a stated rule for which ROI count as measurable uptake, and two readings of what the p < 0.01 covers. fig4d's statement no longer says "a tenth of unipolar".
+- I removed the old `checks` block. Its last entry said `ready: true` about the previous version, so the new file needs a fresh check.
 
-**Missing from the paper:** nothing the protocol requires. The field simulation output and the exact positions of the measurement areas were never published. For the Fig. 1E heating claim, the paper describes only the method (photographs of thermochromic sheets), and the dandiset is not meant to hold those photographs.
+**Details the paper leaves open, and the readings named**
+- **ROI spacing and count along bb' and aa':** ROIs tiled from the centre on both sides, or on one side only. A named field strength is taken from the ROI closest to it.
+- **Paired or unpaired t-test for comparisons within the same dishes or cells:** both are run. For claims of absence the unpaired test decides.
+- **Grapher fitting:** nonlinear least squares, or regression on log values. Fits to means, or to each dish.
+- **Fig. 4 and Fig. 6 fit type** ("either exponential or polynomial"): exponential for all, polynomial for all, or the better fit per curve.
+- **Background cutoffs:** Fig. 2B "6-8 kV/cm" uses 8, with 6 and 7 as variants. For Figs. 3, 4 and 6 the Fig. 3 cutoff is read as 7 or 8 kV/cm. Microsecond pulses have no cutoff, so the file uses ROIs where unipolar YP is above zero by more than its s.e.m.
+- **Which "~20%" (fig2c):** the mean over 8.7 to 15.1 kV/cm, or the lowest value in that range. The p < 0.01 is read as against unipolar, or against 25% and 100%.
+- **What "moderate" field means (fig4d):** the lowest value of the ratio curve, or the ratio mid-range.
+- **What "high-frequency" means (fig6cf):** 833 kHz only, or every kHz rate.
+- **"30-50%" and its p < 0.01 (fig4eg):** the mean over the range or the whole curve; tested at most ROIs or on summed dish values.
+- **The 425 fitted points (Fig. 7):** per-cell points pooled, or the trace averaged over cells.
+- **Fig. 7 sign:** which direction of emission change means depolarization is fixed from the data itself. "Mirroring" is given a tolerance of the file's own: anodic size within half to twice the cathodic.
 
-Nothing was committed.
+**Missing from the paper.** These gaps affect claims:
+- The paper gives no data location for Figs. 3 to 6 or the heating photographs, and neither dataset's title names them.
+- The finite element field model behind each ROI's field strength is not deposited. Its geometry is in Methods 2.3, so the author can recompute it.
+- The paper links no code.
+- Several findings (fig2a, fig3d, fig4h, fig6cf trend, the fig7 sign tests) have no reported test. Their criteria apply the general Methods 2.5 t-test, and the file says so.

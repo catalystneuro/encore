@@ -1,16 +1,42 @@
-The verifier agreed with all 22 outcomes in round 2, and none changed. The 22 outcomes are 1 partially reproduced, 4 not reproduced and 17 blocked. Nothing is proposed for round 3. The entry re-ran cleanly with `python tools/entry.py all entries/000489-kim-2022` (passed in 559 s), every number is the same as before, and `entry.py check` reports 0 errors.
+I've worked through the round-2 report and re-run the entry twice with `python tools/entry.py all entries/kim-2022`. Both runs passed (755 s for the second), and the checks report 0 errors. All conclusions now match the new numbers.
 
-**Corrected**
-- **fig2c-max-inhibition-50-75:** the conclusion (cell 27) and the record notes gave the "largest p at every ROI" sentence for 50% only. They now give it for both amplitudes: for 50%, 0.79 against unipolar and 0.072 against 25 and 100%; for 75%, 0.996 and 0.249.
-- **fig4ac-ns-bipolar-20-25pct:** the Summary (cell 37) and the notes said the polynomial fits cross zero. That holds only at the 7 kV/cm cutoff (minimum −457.4%); at 8 kV/cm the ratio runs from 34.8 to 1537.4%. Both are now stated.
-- **Cell 7:** removed the out-of-date mention of a "with 0-03" variant that no longer exists.
-- **Cell 0:** the status table now shows fig2c-weaker-at-6-7 as analysed and blocked (other), no longer "tested".
-- **Round-1 record:** the verifier noted that two of its round-1 points were missing from the claim reasons. Its problem 2 (dropping dish 0-03 leaves 2 unipolar dishes, and the invalid variant) and problem 11 (imaging dates confound amplitude) are now in fig2a's round-1 reason, in the verifier's words. The round-1 response now says what was done about them.
-- **Round 2** is recorded under `verifications` for all 22 claims, with the verifier's reasons and my responses.
+**Outcomes:** none changed and none proposed. The verifier agreed with all 25 (12 tested, 13 blocked), and the new outputs gave no reason to propose a change.
 
-**Not done, and why**
-- **The third unipolar dish:** dish 0-03's real image, which is in dandiset 000548, was not measured. Author step 1.4 allows outside data only where the claims file says the paper relies on it, and the claims file names no outside source for Fig. 2. The three Fig. 2C claims and fig2a therefore still rest on 2 unipolar dishes. The notes say so, and the existing finding says where the image is.
-- **Two remaining judgement points:** where the p < 0.01 test of fig2c-max applies, and treating camera counts as the paper's units. Both stay stated assumptions, with every reading shown.
-- **Questions file:** no question was added to `questions/000489.yaml`, because the verifier reported no misreading of the paper in the claims file.
+**fig2c-weaker-at-6-7 (the verifier's main point):**
+- The record and notebook now say plainly that the criterion's literal wording, pooling every dish and ROI value, would give reproduced. That holds under every variant (50% p = 1.5e-09, 100% p = 2.6e-09), and the notebook now prints it. The per-dish averaging used here is recorded as a departure from the criterion's letter.
+- The notes now say the 100% pass rests on a near-background unipolar mean (19 a.u.) from only 2 dishes. I kept it counted, because the criterion counts it.
+- The verifier's two caveats point in opposite directions: the literal wording gives reproduced, while discounting the 100% pass would give not reproduced. So partially reproduced, which the verifier agreed with, stays.
 
-Nothing is committed; the workflow commits the changes.
+**Pole regions in groups of touching cells:**
+- All 9 recordings in 000448 turned out to be groups of 2 or more cells, so restricting to single cells wasn't possible.
+- Instead I added a variant to the helper (`facing_out`) that keeps only pole pixels facing no other cell along the field axis. It keeps 61 to 100% of pole pixels per file.
+- It changes nothing: pole ratio 0.92, charging amplitude still 23.2%, time constants 191 and 614 ns. The record's assumption and the question for the paper's authors now mention the groups.
+
+**Outputs the verifier could not find, now printed:**
+- conversion, offset, resolution and unit for every 000489 file;
+- series names and descriptions ("Channel1", 144 images in a 12 x 12 grid, "Fig2_25");
+- both dandiset descriptions, including FluoVolt's sensitivity of about 10% dF/F per 100 mV;
+- the darkest frame of each 000448 file;
+- the draft against the published versions of both dandisets;
+- channel ratio ranges, the per-field means for 25% and 100%, and the build-up as a percent of the first peak.
+
+**Text corrected:**
+- The channel brightness ratio is now 1.28 to 6.54 (below 3 in 10 of 17 dishes), replacing "three to six times".
+- The two unipolar dishes analysed have YP0 of 236 and 292 a.u., not the day mean of 273.
+- Fig2_25_04 is dated 2021-07-26, and the metadata finding now notes that the two files sharing one YP image give different dates.
+- The reverse-trial lag is 74 frames in 8 cells and 75 in cell24.
+- The dark-frame finding now uses the printed counts: the darkest frame is the first in 10 of 18 files, and 5 files have frames below half their median.
+- The build-up is 7.8 to 10.1% for pulses 2 to 4, with pulse 5 separately at 6.1% (p = 0.089).
+- 25% and 100% pulses do not inhibit on average (110.0% and 118.1% of unipolar).
+
+**Differences from the report:**
+- The verifier counted 25% below 100% at 6 of 10 fields; the printed table gives 7, and I used 7.
+- The notebook header said the drafts were modified before publication. That was wrong: they were modified on 2023-06-20, after it, but hold the same assets. The header now says so.
+- The re-run showed that the two channels of the Fig1F sample image are the same image. I added this as a new finding.
+
+**Not done:**
+- The imaging-day confound (amplitudes imaged on different days) can't be separated with these dishes, so it stays disclosed only.
+- The Fig. 3 to 6 claims are listed under the wrong dandiset in the claims file. That is a matter of how the claims file and the registry's dataset list are set up, not a misreading of the paper, so I added no reader question and `questions/kim-2022.yaml` was not created.
+- Nothing was committed, as instructed.
+
+The round-2 review is recorded under `verifications` in `attempts/kim-2022-02.yaml`.

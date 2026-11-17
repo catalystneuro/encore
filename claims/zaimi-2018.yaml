@@ -70,12 +70,43 @@ dataset:
   id: "001436"
 paper: doi:10.1038/s41598-018-22181-4
 claims:
+- id: osf-group-labels-link
+  kind: link
+  statement: Each mouse of the dandiset (sub-nyuMouseNN) is the mouse of the same number in the NYU
+    component of the White Matter Microscopy Database, which files its micrographs in one folder
+    per diet group and time point, so that each mouse can be labelled as control or cuprizone.
+  source: Data availability (the White Matter Microscopy Database, https://osf.io/yp4qg/,
+    doi:10.17605/OSF.IO/YP4QG); Methods, Dataset (mice from ref. 27, Jelescu et al. 2016)
+  data: with_labels
+  criterion: >-
+    Mice are matched by number, the dandiset's sub-nyuMouseNN to the OSF mouse folders whose name
+    begins with NN (suffixes G, S, SG, SC and _redo ignored), under
+    NewYorkUniversitySchoolOfMedicine/histology/MiceMyelinQuantification of OSF node adrcs. A
+    mouse is labelled control when its folder is in a group folder whose name begins with ctl.
+    Agreement is checked in two ways. (i) Each matched mouse is in exactly one group folder, and
+    no group folder holds more than 3 dandiset mice, as Jelescu et al. 2016 (Methods 2.4) analysed
+    the electron micrographs of three mice per time point and diet group. (ii) For each matched
+    mouse whose OSF folder holds full-size micrographs, up to four of them (in name order) are
+    compared with every dandiset image by the absolute correlation of 32 x 32 block-mean
+    thumbnails (top-left crop to the dandiset's image size, the best of the three colour
+    channels). A micrograph has a counterpart when its best correlation is above 0.5, and it
+    agrees when that counterpart is an image of the same mouse. The 0.5 threshold was set on
+    development runs on mice 25 and 26, where a micrograph and its counterpart gave 0.84 to 0.89
+    and every other pair at most 0.14. Reproduced when every dandiset mouse is matched, (i) holds,
+    and in (ii) every counterpart is an image of the same mouse; partially reproduced when at
+    least 90% of the mice are matched and (i) holds; not reproduced otherwise. OSF micrographs
+    with no counterpart (the dandiset holds 8 of each mouse's images, the deposit more) are
+    reported, not counted against the link. Added by the author of attempt zaimi-2018-01,
+    as the dandiset names no diet group and table3-tem-mice-accuracy needs the control mice for
+    its reading (b).
 - id: table3-tem-mice-accuracy
   statement: The TEM model trained on mouse images segments the mouse test images with a mean
     three-class pixel-wise accuracy of 95% (0.9451 in Table 3, mean over 24 test images).
   source: Results, Segmentation, paragraph 1; Table 3, row TEM, Mice
   quote: The TEM model trained on mice microscopy achieved a pixel-wise accuracy of 95% on mice samples
   data: with_inputs
+  depends_on:
+  - osf-group-labels-link
   expected:
   - quantity: mean pixel-wise accuracy over the mouse test images
     value: 0.9451
@@ -166,6 +197,12 @@ claims:
     and 88% on the two rat test images (0.8510 and 0.8822 in Table 3).
   source: Results, Segmentation, paragraph 1; Table 3, rows SEM, Rat 1 and Rat 2
   quote: The SEM model trained on rat microscopy was able to achieve a pixel-wise accuracy between 85% and 88% on the rat test samples
+  data: elsewhere
+  where: SEM dataset of AxonDeepSeg, https://github.com/axondeepseg/data_axondeepseg_sem at tag
+    r20211130 (commit d7884f9ab6cd8f06cba4885e752988a7706f0ede, archived as
+    doi:10.5281/zenodo.5498378), sub-rat6 sample-data15 (0.13 um, 150 x 97 um, Rat 1) and sub-rat8
+    sample-V915 (0.07 um, 108 x 77 um, Rat 2), matched to Table 1 by pixel size, field of view and
+    fixation; set by the author of attempt zaimi-2018-01
   expected:
   - quantity: pixel-wise accuracy, rat 1 SEM test image
     value: 0.8510
@@ -196,6 +233,10 @@ claims:
     pixel-wise accuracy of 84% (0.8438).
   source: Results, Segmentation, paragraph 1; Table 3, row TEM, Macaque
   quote: and a pixel-wise accuracy of 84% on macaque samples
+  data: elsewhere
+  where: White Matter Microscopy Database, OSF node yp4qg (doi:10.17605/OSF.IO/YP4QG), folder
+    MontrealNeurologicalInstitute/histology/Macaque (data/sample1 to sample8, segmentation/sample1
+    to sample8), files dated 2017-03-06; set by the author of attempt zaimi-2018-01
   expected:
   - quantity: pixel-wise accuracy, macaque TEM test image
     value: 0.8438
@@ -267,6 +308,10 @@ claims:
     compared with its ground truth.
   source: Discussion, Performance metrics, paragraph 1
   quote: Note that myelin sheaths of the macaque TEM sample are slightly underestimated when compared to the ground truth segmentation.
+  data: elsewhere
+  where: White Matter Microscopy Database, OSF node yp4qg (doi:10.17605/OSF.IO/YP4QG), folder
+    MontrealNeurologicalInstitute/histology/Macaque, as for table3-tem-macaque-accuracy; set by
+    the author of attempt zaimi-2018-01
   criterion: >-
     Not testable on this dandiset, which holds no macaque image. The paper gives no measure;
     the reading would be a predicted myelin area below the ground-truth myelin area on the
