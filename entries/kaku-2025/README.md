@@ -11,7 +11,7 @@ tracing data are not in it.
 | Claim | Outcome |
 |---|---|
 | The dandiset holds the inputs of the paper's code (20,109 units pass its filter) | Reproduced |
-| 20,300 units, 5,700 cerebellum, 3,700 pons, 10,900 medulla, 339 insertions | Partially reproduced |
+| 20,300 units, 5,700 cerebellum, 3,700 pons, 10,900 medulla, 339 insertions | Partially reproduced (change to not reproduced proposed) |
 | Spike rates of cerebellum, vestibular nuclei and medulla | Not reproduced |
 | Lick and breath frequencies (Fig 1d) | Partially reproduced |
 | Inspiration never coincides with licking (Fig 1f) | Not reproduced |
@@ -26,11 +26,11 @@ tracing data are not in it.
 | Inter-breath interval preserved; breath cycle prolonged by 48.0 ms (Fig 1n) | Reproduced (both) |
 | 3,551 licking, 1,015 breathing and 182 both-tuned units | Partially reproduced |
 | Swallow-modulated unit counts | Not reproduced |
-| Breathing units near preBotzinger and posterior ventral IRN (Fig 2f) | Reproduced, on an assumption |
+| Breathing units near preBotzinger and posterior ventral IRN (Fig 2f) | Reproduced, on an assumption (change to blocked proposed) |
 | Licking units in XII, V, IRN and pons (Fig 2g) | Reproduced |
 | Swallow units in V, IC, NLL, beside NTS and above AMB (Fig 2h) | Blocked: methods underspecified |
 | Swallow activity leads in V and IRN, follows in IC and NLL (Extended Data Fig 6e) | Reproduced |
-| preBotzinger units fire at inspiration (Extended Data Fig 8b-c) | Reproduced, on an assumption |
+| preBotzinger units fire at inspiration (Extended Data Fig 8b-c) | Reproduced, on an assumption (change to blocked proposed) |
 | Licking units active at full protrusion (Extended Data Fig 8e) | Reproduced |
 | Licking map robust to a 500 uV amplitude filter (Extended Data Fig 4c) | Reproduced |
 | Licking units anticipate the next breath (Fig 4e) | Reproduced |
@@ -51,10 +51,10 @@ standard NWB reader misassigns spikes; the helper reads them by the per-trial sp
 the CCF does not label are built from the Allen CCFv3 annotation volume. The peak-difference measures
 of Figs 1g and 4e give a positive difference under a random split of the cycles, so their positive
 results carry little weight (see the notebook). The attempt
-record, with the reasons, the verifier's first report and the replies to it, and the differences from the paper's method, is
+record, with the reasons, the verifier's two reports and the replies to them, the changes proposed for a third round, and the differences from the paper's method, is
 [`attempts/kaku-2025-01.yaml`](../../attempts/kaku-2025-01.yaml).
 
-- `reproduce_kaku_2025.ipynb`: the analysis. It takes about 42 minutes, most of it streaming the
-  airflow of 173 sessions and fitting tuning curves.
+- `reproduce_kaku_2025.ipynb`: the analysis. It took 50 to 71 minutes in the runs made so far, most of it
+  streaming the airflow of 173 sessions and fitting tuning curves.
 - `kaku.py`: loading, and the paper's code steps (movement timing, swallow detection, phase tuning,
   peak differences, swallow modulation). Other notebooks on this dandiset can import it.
