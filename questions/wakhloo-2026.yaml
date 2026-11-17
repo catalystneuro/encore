@@ -1,0 +1,61 @@
+dandiset: "000978"
+paper: doi:10.1038/s41593-025-02183-y
+questions:
+- claim: fig7f-theory-vs-empirical
+  asked: 2026-11-10
+  question: >-
+    The criterion judges "good agreement" by a mean absolute difference between theoretical and
+    empirical error below 10% of the mean empirical error. The paper's own results files for
+    Fig. 7f (results/PFC_results_nu_dt_0.5_ns_500_P_300.npy and the CA1 file in the paper's
+    repository at commit 9674a6c) give 11.55% in PFC and 9.04% in CA1, so the bound fails on the
+    paper's own numbers in PFC, while the legend calls the agreement good. The legend also names
+    a bias at low error values, which a bound on the mean difference counts against the claim.
+    Does the 10% bound misread the legend? A bound that the paper's own figure passes (for
+    example a positive correlation with the theory tracking the empirical error, the bias being
+    the one the legend allows) would fit the legend better.
+  passage: >-
+    "Empirical generalization error versus our estimate from equation ( 1 ). Although there is a
+    small bias for low error values, we find a good agreement overall." (Fig. 7f legend.)
+  why: >-
+    This attempt gives r = 0.983 (PFC) and 0.948 (CA1) and mean differences of 11.55% and 10.69%
+    (24 CA1 units; 8.91% with the code's 19), almost the same as the paper's file, and the claim is
+    not reproduced under the criterion. Under the correlation part of the criterion alone it would
+    be reproduced in both areas.
+  answer: >-
+    Changed. The question is right. The legend says "Although there is a small bias for low error
+    values, we find a good agreement overall", and the paper gives no bound on the size of the
+    difference. Computed from the paper's own results files at commit 9674a6c (64 rat and session
+    means over the 500 subsets per area), the theory lies above the empirical error by a mean of
+    0.034 (PFC) and 0.028 (CA1), which is 11.6% and 9.0% of the mean empirical error, and the gap
+    is largest in the lowest-error quarter. The 10% bound therefore fails the figure the legend
+    calls good, so it misreads the legend. The criterion now asks for a positive Pearson
+    correlation with p < 0.05 and r of at least 0.9 in each area (the paper's files give 0.98
+    and 0.96). The signed and absolute mean differences and the low-error difference are reported
+    but not judged, because the legend allows that bias.
+  answered: 2026-11-10
+- claim: late-trends-match-optimal
+  asked: 2026-11-10
+  question: >-
+    The criterion takes the task-relevant dimension from the shared pipeline, which computes it on
+    random sets of 19 units in both areas (rat_utils.format_glm_results), while the same pipeline
+    makes 24 CA1 units the main reading for the geometric terms, as the Methods give. The Methods
+    say of the GLM dimensionality "Just as with previous analyses, we calculated this
+    dimensionality using the participation ratio", which points to the same unit counts as the
+    geometric terms, 24 in CA1. Does the claims file misread the Methods in taking the CA1
+    task-relevant dimension on 19 units for the main reading, where it takes 24 for the other
+    measures?
+  passage: >-
+    "To use all available rat data while balancing across rats and sessions, we used 19 PFC units
+    and 24 CA1 units." (Methods, readout and geometry of rat data.) "We used these GLMs to estimate
+    the dimensionality of the component of neural activity related to navigational signals. Just as
+    with previous analyses, we calculated this dimensionality using the participation ratio of the
+    covariance matrix" (Methods, Generalized linear model analysis.)
+  why: >-
+    The round-2 verifier reported this as a possible misreading. It bears on this claim's outcome.
+    With 19-unit sets the CA1 task-relevant dimension falls from session 4 to 8 (-0.126; mixed slope
+    -0.0153, P = 0.82) and the claim is partially reproduced (PFC only). With 24-unit sets it falls
+    under reading (a) (-0.0259) but has a slope of +0.0130 (P = 0.86) under reading (b), so CA1
+    holds under reading (b) and the claim would be reproduced; the paper's own GLM fits on 24 units
+    give 10.289 at both session 4 and session 8. The same choice enters
+    fig7h-task-dimension-increases, fig7hk-measures-increase-early, mixed-quadratic-task-dim and
+    mixed-linear-ssf-task-dim, whose outcomes it does not change.
