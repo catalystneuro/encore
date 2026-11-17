@@ -6,7 +6,11 @@ Where each parameter comes from is said next to it:
 - "code"   : the authors' sample code linked from the dandiset's description,
              github.com/neuralcomputation/hypothalamic-dynamics at commit 28fee70;
 - "assumption" : a choice the paper leaves open (said what and why);
-- "standard" : a choice that cannot change a result (a seed, a plotting detail).
+- "standard" : a choice that cannot change a result (a plotting detail, the seed of a shuffle).
+
+The seed of an rSLDS fit is not such a choice: the fits differ from seed to seed, and some outcomes
+with them. Seed 0, the default of the sample code's rslds function, is the main reading (an
+assumption), and the four seeds the code tries are shown as variants in rslds_fits.ipynb.
 
 Data are streamed from the DANDI Archive with remfile and h5py; nothing is written to disk.
 """
@@ -180,10 +184,11 @@ def top_neurons(w, n=5):
 # Measures
 def autocorr(y, max_lag):
     """Autocorrelation as in Methods eqs 7 and 8 (code: autocorr_matlab): r_k = c_k / c_0 with
-    c_k = 1/T sum (y_t - ybar)(y_t+k - ybar) and c_0 the sample variance (ddof 1)."""
+    c_k = 1/T sum (y_t - ybar)(y_t+k - ybar) and c_0 the variance with the same 1/T, so that r_0 = 1,
+    as MATLAB's autocorr, which the code's function is named after, computes it."""
     y = np.asarray(y, float) - np.mean(y)
     T = len(y)
-    c0 = (y ** 2).sum() / (T - 1)
+    c0 = (y ** 2).sum() / T
     n = 1 << int(np.ceil(np.log2(2 * T)))
     F = np.fft.rfft(y, n)
     ac = np.fft.irfft(F * np.conj(F), n)[:max_lag + 1] / T
@@ -227,7 +232,8 @@ def fit_rslds(Y, K, D=2, l2_A=820, l2=100, alpha=0.9, iters=150, seed=0, inputs=
 
     Settings (claims header, from the code): 2P K=2, l2_penalty_A 820, l2_penalty 100, alpha 0.9,
     150 iterations; miniscope K=3, l2_penalty_A 10, l2_penalty 500, alpha 0.5, 100 iterations.
-    The seed is a standard choice (the code's 0)."""
+    The seed changes the fit; seed 0, the code's default, is the main reading (an assumption) and
+    the code's four seeds are variants (module docstring)."""
     import autograd.numpy.random as npr
     import ssm
     npr.seed(seed)

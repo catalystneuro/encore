@@ -17,4 +17,4 @@ and the differences from the paper's method.
 
 The rSLDS library ssm cannot be built in an isolated build environment, so the notebooks install it
 at a pinned commit (`linattr.ensure_ssm`) against the locked numpy and Cython. The cross-validation
-notebook runs 255 fits and takes about 40 minutes on four cores.
+notebook runs 255 fits and takes about 45 minutes on four cores.
