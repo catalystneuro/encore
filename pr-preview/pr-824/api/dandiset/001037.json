@@ -1,0 +1,1962 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001037",
+  "label": "DANDI:001037"
+ },
+ "page": "datasets/dandi/001037/",
+ "generated": "2026-11-17T11:56:42+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 9,
+  "partially_reproduced": 9,
+  "not_reproduced": 10,
+  "blocked": 26
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "vinograd-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001037",
+    "version": "0.260609.1402",
+    "doi": "10.48324/dandi.001037/0.260609.1402",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001037"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001037",
+   "label": "DANDI:001037",
+   "dataset_version": "0.260609.1402",
+   "paper": "10.1038/s41586-024-07915-x",
+   "paper_title": " Causal evidence of a line attractor encoding an affective state.",
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41260858719"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "vinograd-2024",
+   "entry_title": "Line attractor dynamics and holographic perturbation in VMHvl (Vinograd, Nair et al. 2024)",
+   "summary": "The paper's group photostimulation results hold in this data: activating x1 neurons drives integration along the x1 dimension, and activating x2 neurons does not. The slow integration dimension that defines the line attractor in rSLDS fits did not reproduce, with x1 slower than x2 in 5 of 7 two-photon mice; the paper's fitted models are not deposited, and new fits change with the random seed. That stimulation moves activity along the attractor holds only in part. The single-neuron stimulation and connectivity findings could not be tested because those sessions are not in the dataset, and the network model could not be run as the Methods describe it. Smaller claims on neuron overlap and variance explained did not reproduce.",
+   "description": "Tests the findings of Vinograd, Nair, Kim, Linderman and Anderson (2024) on dandiset 001037, which holds miniscope traces and behaviour annotations of 5 freely behaving mice engaging in and observing aggression, and two-photon observation and group photostimulation sessions of 7 head-fixed mice with stored rSLDS factor weights. It fits rSLDS models with the authors' sample-code settings, cross-validates them, tests integration under holographic activation of x1 and x2 neurons, and recomputes the excitatory network model of Figure 4. The unitary stimulation, 1 mW, random-neuron and combined sessions, cell positions and face video are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "stored_weights_and_stimulation.ipynb",
+     "title": "Stored rSLDS weights and holographic photostimulation",
+     "executed": null
+    },
+    {
+     "path": "rslds_fits.ipynb",
+     "title": "rSLDS fits to the miniscope and two-photon sessions",
+     "executed": null
+    },
+    {
+     "path": "cross_validation.ipynb",
+     "title": "Fivefold cross-validation of the rSLDS fits",
+     "executed": null
+    },
+    {
+     "path": "network_model.ipynb",
+     "title": "Network time constants of the excitatory model",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "ed1n-engaging-x1-slower",
+     "statement": "In freely behaving mice engaging in aggression, rSLDS fits show an integration dimension x1 with a longer time constant than the orthogonal dimension x2, an approximate line attractor.",
+     "source": "Extended Data Fig. 1n and 1o; Results, Line attractor for observing aggression, paragraph 1",
+     "quote": "revealed an approximate line attractor under both conditions, exhibiting ramping and persistent activity aligned and maintained across both performed and observed attack sessions",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0079,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "With seed 0, x1 is slower than x2 in 3 of 5 engaging sessions (x1 95 to 740 s, x2 7 to 39 s); in M36L and M38R the slowest state has a complex pair of eigenvalues, so x1 and x2 share one time constant (156 and 191 s, line attractor score 0). Mann-Whitney p = 0.093 (paper 0.0079). Scores 3.70, 4.23, 0, 3.61, 0. With the code's seeds x1 is slower in 2 of 5 (p = 0.75). With the number of states chosen by cross-validation, 3 of 5 (p = 0.14). The sample code's R2 of each fit is printed in rslds_fits.ipynb; the held-out cvR2 is in cross_validation.ipynb (no fit reaches 70%, and no mouse was excluded, as the criterion says).",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed1p-observing-x1-slower",
+     "statement": "In the same mice observing aggression, rSLDS fits also show an x1 dimension with a longer time constant than x2.",
+     "source": "Extended Data Fig. 1p and 1q; Results, Line attractor for observing aggression, paragraph 1",
+     "quote": "revealed an approximate line attractor under both conditions",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0079,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "x1 is slower than x2 in 3 of 5 observation sessions under seed 0 (p = 0.21), the code's seeds (p = 0.40) and the cross-validated number of states (p = 0.21); the other sessions have complex slow states. Scores with seed 0 2.81, 3.25, 0, 2.47, 0.",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed1m-x1-observe-attack-vs-sniff",
+     "statement": "In freely behaving mice, average x1 activity differs between sniffing the SW mouse and observing the SW mouse attack a BALB/c intruder.",
+     "source": "Extended Data Fig. 1m",
+     "quote": "Average activity in the x 1 dimension during sniffing of the SW mouse, vs observing the SW mouse a BALB\\c intruder (n = 4 mice, *p = 0.0286, Two-tailed Mann Whitney U -test",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0286,
+       "n": "4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Sniffing of the SW mouse (watch_sniff) is annotated in M30L only; the other four miniscope files have Balb/c, SW and Watch_attack only (SessionMetadata notes say these are rows 2 to 4 of behs_mirror1). The legend uses 4 mice. Checked in the data check of rslds_fits.ipynb and in the archive's file list.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3c-x1-activity-observe-vs-engage",
+     "statement": "The activity of x1 neurons during observed attack bouts does not differ from their activity during engaged attack.",
+     "source": "Extended Data Fig. 3c",
+     "quote": "comparison of the activity during observing attack bouts and engaging in attack (n = 5 mice, p = 0.42, Two-tailed Mann-Whitney U -test",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.42,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Mean z of the five x1 neurons of each condition's fit during observed attack 0.36 and engaged attack 0.31 (seed 0), Mann-Whitney p = 1.0, difference +0.05 z; with the code's seeds p = 0.84, difference +0.06 z. The dandiset marks no x1 neurons for the miniscope mice, so the second reading of the criterion does not exist.",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "The cells of the two miniscope sessions of a mouse are assumed to be the same cells; the files do not say so."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3e-achw-full-session",
+     "statement": "Over the full interaction, autocorrelation half-widths of x1 neurons are similar when observing (25 +/- 0.8 s) and engaging in aggression (20 +/- 1.7 s).",
+     "source": "Extended Data Fig. 3e",
+     "quote": "mean achw during observation: 25 \u00b1 0.8s, mean achw during engagement: 20 \u00b1 1.7s, n=5 mice, p = 0.125",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.125,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Whole session, seed 0, observation 40.8 +/- 0.9 s and engagement 27.0 +/- 3.8 s (expected 25 +/- 0.8 and 20 +/- 1.7); Mann-Whitney p = 0.016, signed-rank p = 0.062. First entry to last removal, 9.9 and 14.9 s (p = 0.31, 0.31). Code's seeds 38.6 and 23.6 s (p = 0.016, 0.062); 10.2 and 13.7 s. No reading puts the values within tolerance, and the unpaired test finds a difference over the whole session.",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C')."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3f-achw-after-removal",
+     "statement": "Aligned to removal of the last intruder, autocorrelation half-widths of x1 neurons are similar when observing (14 +/- 1 s) and engaging (11 +/- 1.6 s).",
+     "source": "Extended Data Fig. 3f",
+     "quote": "mean achw during observation: 14 \u00b1 1s, mean achw during engagement: 11 \u00b1 1.6s, n = 5 mice, p = 0.187",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.187,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "From the last BALB/c removal to the session end (71 to 147 s), seed 0, observation 12.8 +/- 1.1 s and engagement 8.7 +/- 1.4 s (expected 14 +/- 1 and 11 +/- 1.6), Mann-Whitney p = 0.095, signed-rank p = 0.125, so no difference, as the paper finds, and observation is the longer as in the paper; both values are outside tolerance (by 0.2 and 0.7 s beyond its edge). Code's seeds 9.2 and 7.6 s (p = 0.55, 0.81).",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "The autocorrelation is normalized by the variance with the same 1/T as c_k, so that r_0 = 1, as MATLAB's autocorr computes it (the code's function is autocorr_matlab); the earlier run used the sample variance (ddof 1), which moved this value from 12.7 to 12.8 s."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3g-decode-observed-attack",
+     "statement": "A decoder trained on x1 activity during observation separates observed attack bouts from non-attack bouts better than shuffled controls.",
+     "source": "Extended Data Fig. 3g",
+     "quote": "A SVM decoder was trained on data from integration dimension activity to separate bouts of observing attack from non attack bouts. Right: Quantification of the decoder accuracy performance (n = 5 mice, p = 0.0079",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0079,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Seed 0: accuracy 0.66 to 0.83 against 0.49 to 0.51 for the shuffled decoders (1,000 shuffles per mouse) in every mouse, Mann-Whitney p = 0.0079 under all three splits (train on one trial and test on the others, leave one trial out, fivefold over trials, which is leave-one-out with 4 or 5 trials). Run with each of the four seeds the sample code tries, every split gives p = 0.0079 with seeds 0, 137 and 1337 and p = 0.15 to 0.69 with seed 1. With the seed the code keeps by its R2, leave-one-out and fivefold give p = 0.0079 and training on one trial p = 0.15 (M35R at 0.48). The outcome rests on the seed-0 fits, which most seeds agree with; the open choice is put to the paper's authors under findings (methods_unavailable).",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "Assumed: the seed-0 fits. Seed 0 is the default of the sample code's rslds function and the seed of its two-photon notebook. All four seeds the code tries are run as variants; three of four give p < 0.05 under every split.",
+      "Balancing (Methods, 'balancing the data') is done by drawing as many non-attack frames at random as each trial has attack frames; the paper does not say how. The decoder is a linear SVM on the one-dimensional normalized x1 signal (z-scored projection), as the Methods describe."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3h-decode-engaged-from-observed",
+     "statement": "The decoder trained on observing attack decodes engaged attack from x1 activity better than shuffled data, so x1 encodes a similar variable in both conditions.",
+     "source": "Extended Data Fig. 3h; Results, Line attractor for observing aggression, paragraph 1",
+     "quote": "could be reliably used to decode from held-out data instances of both observation of and engagement in attack, suggesting that this dimension encodes a similar internal state variable under both conditions",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0079,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Seed 0: the decoder trained on all observation trials classifies engaged attack against as many non-attack frames with accuracy 0.60 to 0.86 (engaging session projected on the observation weights) and 0.59 to 0.92 (its own weights), against 0.49 to 0.52 for shuffled decoders; p = 0.0079 for both. Across the four seeds the sample code tries, the observation-weights reading gives p = 0.0079 with three seeds (0, 137, 1337) and 0.15 with seed 1, as ed3g does; the own-weights reading gives p < 0.05 with seed 0 only (0.15 to 0.69 with the others, accuracy as low as 0.12 in one mouse). With the seed the code keeps by its R2, both readings give p = 0.15 (M35R at 0.29 on the observation weights, M36L at 0.33 on its own), where ed3g gives p = 0.0079 for leave-one-out and fivefold. The outcome rests on the seed-0 fits, as ed3g's does. Changed to partially reproduced after verification round 1, and to reproduced after round 3, which agreed that ed3h should be judged on the same fits as ed3g.",
+     "deviations": [
+      "Assumed: the seed-0 fits. Seed 0 is the default of the sample code's rslds function and the seed of its two-photon notebook. All four seeds the code tries are run as variants; the observation-weights reading gives p < 0.05 with three of four, the own-weights reading with one.",
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "The cells of the two miniscope sessions of a mouse are assumed to be the same cells; the files do not say so.",
+      "Engaged attack frames are balanced with as many non-attack frames, as for the observation trials (Methods, 'creating trials from bouts of attack during observation and engaging in aggression ... and balancing the data').",
+      "The four seeds of the sample code are each run, as the outcome depends on the fit."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4c-x1-neuron-overlap",
+     "statement": "Around 70% of the neurons that contribute to the line attractor overlap between observing and engaging in aggression.",
+     "source": "Extended Data Fig. 4c; Results, Line attractor for observing aggression, paragraph 1",
+     "quote": "suggesting that a highly overlapping set of neurons (70%) contributes to line-attractor dynamics during observing or engaging in attack",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Overlap of the five strongest x1 neurons of the engaging and observation fits 0.2, 0, 0, 0, 0 (mean 4%) under both seed readings, against 70 +/- 7% and 7% by chance; with 10 or 20 neurons 16 to 34%. The dandiset marks no x1 neurons for the miniscope mice, so reading (b) does not exist; with five neurons in each set both denominators are the same. The outcome rests on the cells of the two sessions being the same cells in the same order, which the files do not state; each cell's autocorrelation at a 5 s lag agrees across the two sessions in every mouse (Spearman r 0.35 to 0.61, permutation p <= 0.016; data check of rslds_fits.ipynb), which is consistent with matched cells but does not prove it. The five strongest x1 neurons are not stable from fit to fit; refits of one session with the four seeds share 47% of them on average (13 to 90% by session, 70% or more in 4 of 10 sessions), while the two conditions share 7% over all 16 seed pairs, the chance level. The overlap between conditions is lower than the variation between fits.",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "Assumed: the cells of the two miniscope sessions of a mouse are the same cells in the same order. The files hold both sessions with the same number of cells and no masks; the paper compares single cells across the two (Extended Data Fig. 4a-d)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4d-weight-dot-product",
+     "statement": "The x1 weight vector during observation is more aligned with the x1 weight vector during engagement than with the x2 weight vector.",
+     "source": "Extended Data Fig. 4d",
+     "quote": "rSLDS weights of the x 1 dimension during observation were compared to model weights of the x 1 and x 2 dimensions during engagement using a dot product of the two weight vectors. (n = 5 mice, ***p = 0.0079",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0079,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Seed 0: absolute dot products of the unit observation x1 vector with the engagement x1 vector 0.57, 0.15, 0.20, 0.39, 0.55 and with the engagement x2 vector 0.14, 0.19, 0.51, 0.11, 0.23; larger in 3 of 5, Mann-Whitney p = 0.22 for raw and absolute products. Code's seeds 2 of 5, p = 0.55 and 0.69. The outcome rests on the cells of the two sessions being the same cells in the same order, which the files do not state; each cell's autocorrelation at a 5 s lag agrees across the two sessions in every mouse (Spearman r 0.35 to 0.61, permutation p <= 0.016; data check of rslds_fits.ipynb), which is consistent with matched cells but does not prove it. Refits of one session with the four seeds give x1 vectors with an absolute dot product of 0.75 on average (session means 0.40 to 0.99), above the engagement-observation products.",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "Assumed: the cells of the two miniscope sessions of a mouse are the same cells in the same order. The files hold both sessions with the same number of cells and no masks; the paper compares single cells across the two (Extended Data Fig. 4a-d)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4g-x2-more-spontaneous",
+     "statement": "During the solitary baseline, x2 neurons show more frequent spontaneous calcium transients than x1 neurons (2.3 against 1.6 events).",
+     "source": "Extended Data Fig. 4g; Results, Line attractor for observing aggression, paragraph 2",
+     "quote": "we did see a slightly but significantly higher frequency of spontaneous calcium transients in x 2 neurons",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.012,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Seed 0, engaging baselines: 1.68 events per baseline in x1 neurons and 3.12 in x2 (Mann-Whitney p = 0.46, x2 higher in 3 of 5); observation baselines 1.72 and 1.12 (p = 1.0); per minute and with the code's seeds p = 0.40 to 1.0. Counts per baseline are not comparable with the paper's 1.6 and 2.3 (see deviations), so the measured values are not compared with the expected ones. The outcome rests on the baseline window stated under deviations.",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "Assumed: the time before the first annotation (0.9 to 1.6 min) is the end of the 5 min solitary baseline the Methods describe (\"A 'baseline' period of 5 min when the animal was alone in its home cage was recorded at the start of every recording session\"), which the files do not hold. Counts per baseline are therefore not comparable with the paper's; counts per minute are."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4hi-amplitude-tau-similar",
+     "statement": "Baseline transient amplitude (0.58 against 0.71 z) and decay constant (1.7 against 2.3 s) do not differ between x1 and x2 neurons.",
+     "source": "Extended Data Fig. 4h and 4i; Results, Line attractor for observing aggression, paragraph 2",
+     "quote": "We did not detect a difference in amplitude or decay constant (tau) between x 1 and x 2 neurons",
+     "statistics": [
+      {
+       "about": "amplitude, x1 against x2",
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.188,
+       "n": "5 mice"
+      },
+      {
+       "about": "decay constant, x1 against x2",
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.34,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "No reading finds a difference between x1 and x2 neurons in amplitude or decay constant (Mann-Whitney and signed-rank, all p >= 0.125), as the paper finds. The values differ from the paper's: peak amplitudes 1.76 and 1.96 z (seed 0, engaging; expected 0.58 and 0.71, values below the 1.5 SD detection threshold, so the paper measures amplitude another way), decay constants 29.9 and 21.8 s on average, single mice ranging from 0.05 s to the fit's bound of 100 s. Some mice have no transient in one set within the short baseline, so some tests use 3 or 4 mice. The decay constants depend on the window of the exponential fit: with 5 s instead of 10 s the observation sessions give x2 slower than x1 (48.5 against 2.0 s, Mann-Whitney p = 0.029, signed-rank p = 0.125, 4 mice), with 20 s no test differs (p >= 0.70), and the engaging sessions differ under no window (p >= 0.42). The outcome rests on the baseline window stated under deviations.",
+     "deviations": [
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "x1 and x2 neurons of the miniscope fits are the five with the largest absolute weight, the weight being the emission matrix C mapped onto the slow and the other eigenvector of the slowest state, or C's columns when that state's eigenvalues are a complex pair (Methods, Dynamical system models, 'we then used the columns of the emission matrix C').",
+      "Assumed: the time before the first annotation (0.9 to 1.6 min) is the end of the 5 min solitary baseline the Methods describe (\"A 'baseline' period of 5 min when the animal was alone in its home cage was recorded at the start of every recording session\"), which the files do not hold. Counts per baseline are therefore not comparable with the paper's; counts per minute are.",
+      "Amplitude is the peak z of each transient and the decay constant an exponential fit over 10 s from the peak of the mean transient; the paper does not define either (claims criterion reading). The 10 s window is a choice; 5 and 20 s are shown as variants."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-2p-x1-slower",
+     "statement": "In head-fixed mice observing aggression, rSLDS fits to 2P data show an x1 dimension with longer time constants than x2.",
+     "source": "Figure 1e; Results, Line attractor for observing aggression, paragraph 4",
+     "quote": "during observation of aggression by the head-fixed mice, rSLDS analysis identified an integration dimension with slow dynamics ( x 1 ) aligned to an approximate line attractor, and an orthogonal dimension with faster dynamics ( x 2 )",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "9 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Two-photon observation fits, seed 0: x1 slower than x2 in 5 of 7 mice, equal in M70 and M18R (complex slow states, 63 and 137 s); Mann-Whitney p = 0.37 (code's seeds 0.096; cross-validated number of states 0.31). The paper reports P < 0.0001 over 9 mice, which 7 mice against 7 cannot reach (smallest p 0.0006); even at p < 0.05 the effect is not found. The fit with the BALB/c-presence input (Methods) could be run for M70 only, the one mouse with BALB/c intervals; it gives x1 30,479 s and x2 2.9 s.",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "The input-driven reading covers one mouse; the other six two-photon files hold only a BALB/c entry marker."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-line-attractor-score",
+     "statement": "The line attractor score is positive across the 9 head-fixed mice.",
+     "source": "Figure 1f",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "The legend shows the score across mice without a value or test; the statement reads it from the score's definition (Methods) and the Results calling the dynamics an approximate line attractor.",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Line attractor scores 0, 0.28, 1.91, 1.21, 0, 2.06, 0.34 (seed 0), mean 0.83, above 0 in 5 of 7; code's seeds mean 1.32, 5 of 7. Reading (a) holds, reading (b) does not.",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "x1-time-constant-range",
+     "statement": "The experimentally observed network time constants of the integration dimension lie in a range of about 50 to 200 s.",
+     "source": "Results, Line-attractor neurons form ensembles, paragraph 5",
+     "quote": "could yield network time constants ( \u03c4 n ) in the experimentally observed range (~50\u2013200 s",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Two-photon x1 time constants 50, 52, 63, 114, 137, 474, 2984 s (seed 0): 5 of 7 inside 45 to 220 s, median 114 s. Code's seeds 5 of 7, median 114 s. With the miniscope fits, 12 of 17 (13 of 17), median 137 s (121 s).",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "methods-subspace-angle",
+     "statement": "The x1 and x2 dimensions are nearly orthogonal, with a subspace angle of 88.1 +/- 0.87 degrees across 9 mice.",
+     "source": "Methods, Dynamical system models of neural data, paragraph 2",
+     "quote": "we initially confirmed the orthogonality of these dimensions by computing the subspace angle between them (88.1 \u00b1 0.87\u00b0, n = 9 mice)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "Angles between the stored x1 and x2 factor weights 89.84, 86.37, 89.34, 89.91, 88.77, 87.75, 87.84 deg; mean 88.55 (s.e.m. 0.49, sd 1.30), inside 88.1 +/- 0.87. The earlier M70 file's weights give 87.61 deg.",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "The stored factor weights are taken as the columns of C, as the claim's criterion says."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "methods-cvr2",
+     "statement": "rSLDS models of miniscope data explain 84.7% of variance during engagement and 67.2% during observation of aggression (cross-validated R2).",
+     "source": "Methods, Dynamical system models of neural data, paragraph 2",
+     "quote": "Models fit to miniscope data during engagement of aggression obtained a cvR 2 = 84.7 \u00b1 0.03%, while the same model explains 67.2 \u00b1 0.02% of variance in data obtained from observation of aggression",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "cross_validation.ipynb",
+     "notes": "Contiguous blocks, the code's 3-state miniscope model: activity reconstructed from the held-out block's inferred latents explains -81.1% (engaging) and -74.5% (observing) of the variance about the block's own mean, and 12.5% and 19.8% about the session mean (expected 84.7 +/- 3 and 67.2 +/- 2); the code's latent R2 on held-out blocks is negative in most mice; no mouse reaches 70%. The held-out latents are inferred from the held-out activity, so the score is a reconstruction, not a forecast. The random-frame folds were not run, as ssm's initialization fails with masked frames; the in-sample reconstruction, which no held-out reading of the neural R2 can be expected to exceed, explains 51.0% and 54.2% (rslds_fits.ipynb, best of four seeds the same), below both expected values. The bound does not hold for the sample code's latent R2, which in sample averages 0.84 for the seed-0 observation fits; the outcome stands on the contiguous-block reading. Changed from blocked (methods_underspecified) after verification round 1. How the paper computed its cvR2 is put to the authors under findings.",
+     "deviations": [
+      "Contiguous folds only; the held-out latents are inferred with the trained parameters fixed (ssm approximate_posterior, Laplace-EM, 50 iterations). For the neural R2, the random-frame reading is bounded by the in-sample reconstruction in rslds_fits.ipynb."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1m-achw-x1-longer",
+     "statement": "Neurons contributing to x1 have longer autocorrelation half-widths than those contributing to x2 in head-fixed observation.",
+     "source": "Figure 1l and 1m; Results, Line attractor for observing aggression, paragraph 4",
+     "quote": "Neurons contributing to the integration dimension displayed more persistence than those aligned with the faster dimension",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0078,
+       "n": "9 mice (45 x1 and 45 x2 neurons)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "Five strongest stored-weight neurons per dimension: per-mouse mean half-widths x1 34.9, 18.2, 10.9, 15.3, 45.0, 13.3, 8.1 s against x2 23.5, 8.9, 7.7, 8.9, 40.8, 4.1, 1.9 s; x1 longer in 7 of 7 (means 20.8 against 13.7 s). Paired signed-rank p = 0.016 (the smallest possible at n = 7); unpaired Mann-Whitney p = 0.16. With 3 or 10 neurons per dimension the same (signed-rank 0.016, Mann-Whitney 0.16 and 0.21). The outcome rests on the assumption stated under deviations; the open choice, the readings and what was assumed are put to the paper's authors under findings (methods_unavailable).",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "Assumed: the paired signed-rank test. The two readings the criterion names disagree; the paired test is adopted because both values come from the same mouse and the Methods use Mann-Whitney tests 'for binary paired samples', which only a paired test fits; the printed 0.0078 is an exact value of both tests at n = 9."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5e-motion-explains-little",
+     "statement": "Only a small fraction of neural activity is explained by the head-fixed observer's movements, and the variance explained does not differ between x1 and x2 neurons.",
+     "source": "Extended Data Fig. 5a-e; Results, Line attractor for observing aggression, paragraph 4",
+     "quote": "Importantly, only a small fraction of the neural activity could be explained by movements of the observer mouse",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.8125,
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No face video or motion SVDs are in the dandiset (13 files, ophys and behaviour annotations only). Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-x1-integration",
+     "statement": "Photostimulation of five x1 neurons with four pulses at 20 s ISI produces integration in the x1 dimension, with ISI activity rising with each pulse and not returning to baseline.",
+     "source": "Figure 2c and 2d; Results, Holographic activation shows integration, paragraph 2",
+     "quote": "optogenetic reactivation of cohorts of five individual x 1 neurons yielded robust integration of activity in the entire x 1 dimension-weighted population, as evidenced by progressively increasing peak activity during the 20 s ISI after each consecutive pulse",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0363,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0013,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0067,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "x1 projection, means over 7 mice for baseline and ISI1 to 4 (Wa) 0.18, 1.82, 2.62, 3.22, 2.91; Kruskal-Wallis p = 0.0001; Dunn against baseline p = 0.38, 0.0045, 0.0001, 0.0013 (Wb 0.32, 0.0031, 0.0001, 0.0023), three of four significant under Wa-Ca and Wb-Ca, as the paper's three printed values; under Cb no comparison is significant. ISI4 above baseline in 7 of 7 mice.",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "ISI windows Wa (end of the 2 s pulse to the next onset) and Wb (onset to onset), Dunn comparisons Ca (each ISI against baseline) and Cb (each against the one before), as the claims header names them; Dunn's correction taken as a Bonferroni adjustment of the Dunn z tests over the four comparisons, as GraphPad Prism (named in the Methods, Statistical analysis) applies it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2gh-x1-moves-along-attractor",
+     "statement": "x1 photostimulation moves the population activity vector progressively along the line attractor; the state-space distance from the initial point grows with each pulse, both at the end of stimulation and at the end of each ISI.",
+     "source": "Figure 2e-h; Results, Holographic activation shows integration, paragraph 3",
+     "quote": "This revealed that the x 1 perturbations resulted in progressive, stable on-manifold movement along the attractor with each consecutive stimulation, as measured by the increase in both metrics",
+     "statistics": [
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.061,
+       "n": "8 mice"
+      },
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.029,
+       "n": "8 mice"
+      },
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0018,
+       "n": "8 mice"
+      },
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0059,
+       "n": "8 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.1965,
+       "n": "8 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0082,
+       "n": "8 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0004,
+       "n": "8 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.016,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "t_initial the mean baseline state, comparison (a): stimulation-end distances 3.01, 4.29, 5.20, 3.24 against 0.92 for baseline frames, Dunn p = 0.076, 0.0028, 0.0001, 0.066 (two of four); ISI-end 2.15, 3.23, 2.80, 2.54, p = 0.17, 0.018, 0.0091, 0.034 (three of four). t_initial the last baseline frame, comparison (b): three stimulation-end comparisons significant, but the ISI-end distances fall (2.37 to 2.05) and none is significant. No reading meets three of four for both metrics; under the best reading both metrics rise and one meets the count, so the effect holds in part. Changed from not reproduced after verification round 1.",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "Comparisons (a) and (b) of the criterion; Dunn's correction taken as a Bonferroni adjustment of the Dunn z tests over the four comparisons, as GraphPad Prism (named in the Methods, Statistical analysis) applies it.",
+      "The last pulse's ISI-end frame is onset + 21 s (210 frames), as the criterion says; the earlier run used onset + 211 frames."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7f-activated-x1-natural-levels",
+     "statement": "Photoactivated x1 neurons reach peak activity comparable to their peak during observation of aggression.",
+     "source": "Extended Data Fig. 7d-f; Results, Holographic activation shows integration, paragraph 2",
+     "quote": "Activated x 1 neurons exhibited activity levels comparable to their response during observation of aggression",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "M70 is left out: its five listed x1 targets do not respond to the stimulation (-0.01 z, and -0.08 to 0.04 z with the indices shifted by -2 to +2), while the cells that do respond include four of its eight largest stored x1 weights. In the other 6 mice the mean peak z of the five targeted x1 neurons is 1.54 during observation and 2.04 during activation (difference +0.50 z), higher during activation in 6 of 6, Mann-Whitney p = 0.0043 (signed-rank variant 0.031), so the test finds a difference the paper's does not. With M70 kept, 1.65 against 1.96, p = 0.097. Changed from reproduced after verification round 1. The outcome rests on leaving M70 out (assumed).",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "Peak is the maximum z over the whole session for each neuron; the paper does not say over which window.",
+      "Assumed: M70 is left out, as its ActivatedNeurons list for the x1 sessions does not match the responding cells (data check of stored_weights_and_stimulation.ipynb), so the measure there is not of activated neurons. The result with M70 is shown as a variant (p = 0.097), and the outcome depends on the choice. M70 is kept in ed8gi-x1-stim-no-x2, which uses only its weights."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8a-x1-integration-8s",
+     "statement": "x1 activation with an 8 s ISI also produces integration in the x1 dimension.",
+     "source": "Extended Data Fig. 8a; Results, Holographic activation shows integration, paragraph 2",
+     "quote": "Similar results were obtained using an 8 s ISI",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.3,
+       "n": "7 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0012,
+       "n": "7 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0012,
+       "n": "7 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0192,
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "Six mice (paper 7): means 0.07, 1.86, 3.05, 3.23, 3.32 (Wa); Dunn against baseline p = 0.35, 0.0074, 0.0016, 0.0023 (Wb 0.38, 0.0059, 0.0020, 0.0020); three of four significant and a rise from ISI1 to ISI3.",
+     "deviations": [
+      "Six mice with an 8 s ISI x1 session, where the paper has 7.",
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "ISI windows Wa (end of the 2 s pulse to the next onset) and Wb (onset to onset), Dunn comparisons Ca (each ISI against baseline) and Cb (each against the one before), as the claims header names them; Dunn's correction taken as a Bonferroni adjustment of the Dunn z tests over the four comparisons, as GraphPad Prism (named in the Methods, Statistical analysis) applies it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8ef-x1-scales-with-power",
+     "statement": "x1 integration scales with laser power, being larger with 5 mW than with 1 mW per neuron.",
+     "source": "Extended Data Fig. 8e and 8f; Results, Holographic activation shows integration, paragraph 2",
+     "quote": "This activity also scaled with different laser powers",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0295,
+       "n": "8 mice"
+      },
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.0186,
+       "n": "8 mice"
+      },
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.045,
+       "n": "8 mice"
+      },
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.7,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No 1 mW sessions are in the dandiset; the x1 activation sessions are not labelled by power. Checked against the archive's file list and every file's contents.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8c-model-integrates",
+     "statement": "Given the same pulsed input, the rSLDS model fit to observation data also integrates along x1, as in the data.",
+     "source": "Extended Data Fig. 8c; Results, Holographic activation shows integration, paragraph 2",
+     "quote": "Providing the same (digital optogenetic) input to the fit rSLDS model also resulted in integration by the model along the x 1 dimension, similar to that observed in the data",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "rslds_fits.ipynb",
+     "notes": "Reading (b): the seed-0 observation model of each mouse, simulated without noise from the activation session's baseline state, with a kick along the slow eigenvector of the size of the first evoked latent x1 response at each pulse; simulated x1 at the ISI ends rises from ISI1 to ISI3 in 7 of 7 mice, as the criterion asks. The same simulation without kicks also rises in 7 of 7 mice, as the state moves from the baseline toward the model's fixed point (every simulated trajectory starts at 0; M70's is -5.90 at the end of ISI1 and -4.37 at the end of ISI3), so the criterion's rise is not specific to the pulses; the part due to the kicks (kick minus no kick) grows from ISI1 to ISI3 in 7 of 7, by 0.11 to 2.89. The simulations fit the data poorly (R2 of simulated against data x1 -14.3 to 0.14, median -1.32; the paper reports about 85%). Reading (a), possible for M70 only, gives a falling x1 (-0.49, -0.93, -1.28, -1.50). Changed from reproduced after verification round 1.",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed 0; the code's four seeds, kept by its own R2, are a variant. The Methods choose the number of states by fivefold cross-validation; that reading is in cross_validation.ipynb.",
+      "The data's latents are the activity mapped through the pseudo-inverse of C; discrete states follow the recurrent transitions' most likely state at each step (the paper does not say how the model was driven)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8gi-x1-stim-no-x2",
+     "statement": "x1 stimulation does not evoke appreciable activity in the x2 dimension.",
+     "source": "Extended Data Fig. 8g-i; Results, Holographic activation shows integration, paragraph 2",
+     "quote": "Importantly, x 1 stimulation did not evoke appreciable activity in x 2 dimension neurons",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "x2 projection during x1 activation, means 0.02, 0.70, 1.04, 0.42 against -0.09 at baseline (Wa); Dunn against baseline p = 1.0, 0.47, 0.036, 0.18 under Wa-Ca and 1.0, 0.45, 0.036, 0.23 under Wb-Ca, the readings under which fig2d is reproduced; Kruskal-Wallis p = 0.064 and 0.077. The third ISI is above baseline in 6 of 7 mice; M18R is negative in every ISI. The x2 response is about a third of the x1 response. The outcome rests on M70, whose x2 projection is 0.00 over frames 1 to 100 and -3.78 in the 5 s before the first onset (baseline mean -1.26): without M70 no comparison is significant (Dunn p = 1.0, 0.67, 0.080, 0.061 under Wa-Ca). M70 is kept (assumed), as its stored weights match its activity and the claims file gives no rule to drop a mouse.",
+     "deviations": [
+      "Assumed: M70 is kept. Only its stored weights enter this test, and the data check finds that they match its activity; its target list, which leads to leaving it out of ed7f-activated-x1-natural-levels, is not used here. Without M70 no comparison is significant, so the outcome depends on the choice; both results are shown.",
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "ISI windows Wa (end of the 2 s pulse to the next onset) and Wb (onset to onset), Dunn comparisons Ca (each ISI against baseline) and Cb (each against the one before), as the claims header names them; Dunn's correction taken as a Bonferroni adjustment of the Dunn z tests over the four comparisons, as GraphPad Prism (named in the Methods, Statistical analysis) applies it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2k-x2-no-integration",
+     "statement": "Photostimulation of five x2 neurons does not produce integration; x2 activity is transient and decays to baseline during each ISI.",
+     "source": "Figure 2i-k; Results, Holographic activation shows integration, paragraph 4",
+     "quote": "Importantly, activation of x 2 neurons did not lead to integration",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.99,
+       "p_relation": ">",
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "x2 projection during x2 activation, means 0.01, -0.47, -0.08, -0.14, 0.06 (Wa); Kruskal-Wallis p = 0.75 (Wb 0.84); all Dunn p = 1.0 under every reading.",
+     "deviations": [
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "ISI windows Wa (end of the 2 s pulse to the next onset) and Wb (onset to onset), Dunn comparisons Ca (each ISI against baseline) and Cb (each against the one before), as the claims header names them; Dunn's correction taken as a Bonferroni adjustment of the Dunn z tests over the four comparisons, as GraphPad Prism (named in the Methods, Statistical analysis) applies it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8b-x2-no-integration-8s",
+     "statement": "With an 8 s ISI, x2 activation also produces no integration in x2.",
+     "source": "Extended Data Fig. 8b; Results, Holographic activation shows integration, paragraph 4",
+     "quote": "we observed stimulus-locked transient activity in the x 2 dimension followed by a decay back to the baseline during the ISI period, across stimulation paradigms",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "Four mice with an 8 s ISI x2 session (paper 7). Means 0.10, 1.55, 1.62, 1.75, 1.74 (Wa), smallest Dunn p = 0.079; under Wb the fourth ISI differs from baseline (p = 0.041), so the readings of the window disagree. The x2 level does not rise from ISI to ISI, but it stays above baseline in every ISI (1.55 to 1.75 against 0.10), so the decay back to baseline the statement describes is not seen; with 4 mice the test has little power. Changed from reproduced (assumed window Wa) after verification round 1.",
+     "deviations": [
+      "Four mice where the paper has seven.",
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "ISI windows Wa (end of the 2 s pulse to the next onset) and Wb (onset to onset), Dunn comparisons Ca (each ISI against baseline) and Cb (each against the one before), as the claims header names them; Dunn's correction taken as a Bonferroni adjustment of the Dunn z tests over the four comparisons, as GraphPad Prism (named in the Methods, Statistical analysis) applies it."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8jl-x2-stim-little-x1",
+     "statement": "x2 activation has little effect on x1 activity; in the paper's test two of four comparisons are not significant (P = 0.276) and two are (P = 0.0072 and 0.03).",
+     "source": "Extended Data Fig. 8j-l; Results, Holographic activation shows integration, paragraph 4",
+     "quote": "with little to no effect on x 1 neurons",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.276,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.276,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0072,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.03,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "x1 projection during x2 activation, means 0.13, 0.38, 0.76, 0.89, 0.75 (Wa); no Dunn comparison significant (smallest p = 0.20), against two of four in the paper, within the criterion's at most two; below the x1 response to x1 activation in every ISI (1.82 to 3.22) under Wa and Wb. Seven mice, against the legend's 8.",
+     "deviations": [
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "ISI windows Wa (end of the 2 s pulse to the next onset) and Wb (onset to onset), Dunn comparisons Ca (each ISI against baseline) and Cb (each against the one before), as the claims header names them; Dunn's correction taken as a Bonferroni adjustment of the Dunn z tests over the four comparisons, as GraphPad Prism (named in the Methods, Statistical analysis) applies it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2no-x2-off-manifold",
+     "statement": "x2 activation moves the population vector transiently off the attractor during each pulse, after which it relaxes back near its initial location.",
+     "source": "Figure 2l-o; Results, Holographic activation shows integration, paragraph 4",
+     "quote": "we observed that x 2 neuron activation caused transient off-manifold movements of the PAV orthogonal to the attractor axis during each pulse ... After each stimulus, the PAV relaxed back into the attractor, near to the initial location that it occupied before the stimulus",
+     "statistics": [
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.1554,
+       "n": "7 mice"
+      },
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.042,
+       "n": "7 mice"
+      },
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.029,
+       "n": "7 mice"
+      },
+      {
+       "about": "distance at stimulation end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.029,
+       "n": "7 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "7 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.508,
+       "n": "7 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0508,
+       "n": "7 mice"
+      },
+      {
+       "about": "distance at ISI end",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0383,
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "Best reading (t_initial the mean baseline state, comparison a): stimulation-end distances 1.62, 2.56, 2.96, 2.00 against 0.80, Dunn p = 0.70, 0.036, 0.0025, 0.24, two of four; the criterion needs three. ISI-end distances smaller (mean 1.88 against 2.28) and one of four significant (p = 0.049, pulse 4), which matches the relaxation and the criterion's at most one; with the last baseline frame as t_initial they are larger (2.54 against 1.80). The relaxation holds and the off-manifold movement is weaker than required. Changed from not reproduced after verification round 1.",
+     "deviations": [
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "The last pulse's ISI-end frame is onset + 21 s (210 frames), as the criterion says; the earlier run used onset + 211 frames."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9d-attractor-finite",
+     "statement": "Integration of pulses saturates after the third pulse; a model with a finite attractor fits the x1 response better than an infinite one.",
+     "source": "Extended Data Fig. 9a-d; Results, Holographic activation shows integration, paragraph 3",
+     "quote": "we found that integration of optogenetic stimulation pulses saturated in the x 1 dimension after the third pulse, suggesting that the line attractor occupies a finite portion of the neural state space",
+     "statistics": [
+      {
+       "about": "whole trace",
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "8 mice"
+      },
+      {
+       "about": "after the third pulse",
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "stored_weights_and_stimulation.ipynb",
+     "notes": "Reading (a): the capped (finite) step model has lower error than the uncapped one in 7 of 7 mice, over the whole trace 0.95 against 1.81 (Mann-Whitney p = 0.038) and after the third pulse 1.14 against 1.56 (p = 0.26); the paper reports p < 0.001 for both. Reading (b): mean ISI2 2.62, ISI3 3.22, ISI4 2.91 (Wa), saturation in the mean, but the pattern holds in 2 of 7 mice. Saturation shows in the mean and the whole-trace fit, not after the third pulse or in most mice. The capped model contains the uncapped one (a cap of 4 steps is the uncapped model), so \"lower in 7 of 7\" holds by construction; the tests decide.",
+     "deviations": [
+      "Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.",
+      "Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb); the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').",
+      "The models are fit from the first onset; the cap is fitted between 0.5 and 4 pulse steps. The paper describes the two models only by their predictions."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9i-points-along-line-attractive",
+     "statement": "x2 stimulation after x1 has moved the system along the attractor perturbs it off the line, after which it relaxes to the position reached after x1 stimulation and not to baseline.",
+     "source": "Extended Data Fig. 9e-i; Results, Holographic activation shows integration, paragraph 4",
+     "quote": "This x 2 perturbation also resulted in transient off-manifold movements of the PAV orthogonal to the line attractor, followed by relaxation to the position occupied after the previous x 1 stimulation",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0025,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No session with x1 stimulation followed by x2 stimulation is in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9mn-random-neurons-no-effect",
+     "statement": "Activating randomly selected neurons that are not weighted by either dimension does not produce activity along x1 or x2.",
+     "source": "Extended Data Fig. 9j-n; Results, Holographic activation shows integration, paragraph 4",
+     "quote": "activation of randomly selected neurons that were not weighted by either dimension did not produce activity along either the x 1 or x 2 dimension",
+     "statistics": [
+      {
+       "about": "x1 dimension",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "5 mice"
+      },
+      {
+       "about": "x2 dimension",
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No random-neuron activation sessions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5hj-no-behaviour-change",
+     "statement": "Activating x1 or x2 ensembles does not change the head-fixed mouse's movements.",
+     "source": "Extended Data Fig. 5f-j; Results, Holographic activation shows integration, paragraph 4",
+     "quote": "Activation of either ensemble did not result in overt changes in the behaviour of the head-fixed mouse",
+     "statistics": [
+      {
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No face video or motion SVDs are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6k-no-spatial-clustering",
+     "statement": "x1 and x2 neurons are not spatially clustered; distances within and between the two groups do not differ.",
+     "source": "Extended Data Fig. 6i-k; Results, Holographic activation shows integration, paragraph 1",
+     "quote": "did not observe spatial clustering of x 1 or x 2 neurons",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No cell positions, ROI masks or images are in the two-photon files. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7bc-no-spatial-decoding",
+     "statement": "A linear SVM cannot separate x1 from x2 neurons by position better than shuffled labels.",
+     "source": "Extended Data Fig. 7a-c",
+     "quote": "Accuracy of SVM decoder trained on data versus shuffled control (n=10 mice, p=0.156",
+     "statistics": [
+      {
+       "about": "accuracy",
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.156,
+       "n": "10 mice"
+      },
+      {
+       "about": "classification width",
+       "test": "two-tailed Mann-Whitney U-test",
+       "p": 0.578,
+       "n": "10 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No cell positions, ROI masks or images are in the two-photon files. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6g-offtarget-15um",
+     "statement": "Photostimulation through the GRIN lens is spatially confined; the response of a reference cell is close to zero when the spiral is 15 um from its soma.",
+     "source": "Extended Data Fig. 6d-h",
+     "quote": "Note that at 15 \u00b5m the average response in the reference cells is close to zero",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The calibration recordings on 17 reference cells are not in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10c-followers-integrate",
+     "statement": "Non-targeted x1 neurons outside 50 um of the targeted cells integrate during group x1 activation.",
+     "source": "Extended Data Fig. 10a-c; Results, Line-attractor neurons form ensembles, paragraph 1",
+     "quote": "even after excluding the targeted x 1 neurons themselves as well as potentially off-target neurons located within a 50 \u00b5m radius of the targeted cell ... we observed integration in the remaining x 1 neurons",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The 50 um exclusion needs cell positions, which the two-photon files do not hold. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10g-follower-decoding",
+     "statement": "Integrated activity of targeted x1 neurons is decoded better from non-targeted x1 neurons (about 80% variance explained) than from non-targeted x2 or random neurons (about 40%).",
+     "source": "Extended Data Fig. 10d-g; Results, Line-attractor neurons form ensembles, paragraph 1",
+     "quote": "Decoding from non-targeted x 1 neurons can explain significantly more variance (80% versus 40%) than non-targeted x 2 or randomly selected neurons (n = 8 mice, *p = 0.01, ***p = 0.0003",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.01,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0003,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on ed10c-followers-integrate, which is blocked (no cell positions). The Results decode from \"follower\" x1 neurons, which the Methods (Terminology) define as \"neurons that responded to photostimulation and that were outside a 50 um radius around the targeted cell\", so the 50 um exclusion is part of the measure. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb). Whether the criterion should name follower x1 neurons, as the Results do, is asked of a reader (questions/vinograd-2024.yaml).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10hi-responses-mostly-positive",
+     "statement": "Responses of non-targeted neurons to single x1 neuron stimulation are mostly positive.",
+     "source": "Extended Data Fig. 10h and 10i; Results, Line-attractor neurons form ensembles, paragraph 2",
+     "quote": "These experiments revealed a slowly decaying elevation of activity during the ISI period in non-targeted x 1 neurons after each pulse of activation (Fig. 3b,d ) that was mostly positive",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary (single-neuron) stimulation sessions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10lm-distance-not-explaining",
+     "statement": "Putative follower x1 neurons lie on average 139 +/- 35 um from the targeted cell, 11% within 50 um, and their response is not positively correlated with distance.",
+     "source": "Extended Data Fig. 10j-n; Results, Line-attractor neurons form ensembles, paragraph 2",
+     "quote": "Notably, the strength of functional connectivity was not positively correlated with the distance from the targeted photostimulated cell",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary stimulation sessions and no cell positions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10p-exclusion-no-change",
+     "statement": "Excluding neurons within 50 um of the targeted cell does not change the follower response to single x1 neuron stimulation.",
+     "source": "Extended Data Fig. 10o and 10p; Results, Line-attractor neurons form ensembles, paragraph 2",
+     "quote": "was still observed even after excluding neurons in a 50 \u00b5m zone surrounding the targeted neuron",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary stimulation sessions and no cell positions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10r-scales-with-number",
+     "statement": "The response of non-targeted x1 neurons scales with the number of targeted x1 neurons, larger with five than with one.",
+     "source": "Extended Data Fig. 10q and 10r; Results, Line-attractor neurons form ensembles, paragraph 2",
+     "quote": "revealed that the response strength of the non-targeted x 1 neurons scaled with the number of targeted x 1 neurons",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0239,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0063,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0074,
+       "n": "8 mice"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0341,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary stimulation sessions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-single-x1-drives-x1",
+     "statement": "Stimulating single x1 neurons raises the activity of non-targeted x1 neurons, with a slowly decaying elevation during the ISI.",
+     "source": "Figure 3a, 3b and 3d; Results, Line-attractor neurons form ensembles, paragraph 2",
+     "quote": "These experiments revealed a slowly decaying elevation of activity during the ISI period in non-targeted x 1 neurons after each pulse of activation",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.16,
+       "n": "8 mice (25 targeted neurons)"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0037,
+       "n": "8 mice (25 targeted neurons)"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0005,
+       "n": "8 mice (25 targeted neurons)"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0016,
+       "n": "8 mice (25 targeted neurons)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary stimulation sessions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-single-x1-not-x2",
+     "statement": "Stimulating single x1 neurons does not raise activity in non-targeted x2 neurons.",
+     "source": "Figure 3c and 3e; Results, Line-attractor neurons form ensembles, paragraph 3",
+     "quote": "we observed little activity in non-targeted x 2 neurons after activation of unitary x 1 or x 2 neurons",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary stimulation sessions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3i-single-x2-not-x1",
+     "statement": "Stimulating single x2 neurons gives a trend toward rising activity in non-targeted x1 neurons that the text calls not statistically significant.",
+     "source": "Figure 3f-i; Results, Line-attractor neurons form ensembles, paragraph 3",
+     "quote": "While there was a trend to a gradual increase in activity in non-targeted x 1 neurons after repeated activation of unitary x 2 neurons (Fig. 3f\u2013h ), that increase was not statistically significant",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.999,
+       "n": "7 mice (18 targeted neurons)"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.31,
+       "n": "7 mice (18 targeted neurons)"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.09,
+       "n": "7 mice (18 targeted neurons)"
+      },
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.0316,
+       "n": "7 mice (18 targeted neurons)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary stimulation sessions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3j-single-x2-not-x2",
+     "statement": "Stimulating single x2 neurons does not raise activity in non-targeted x2 neurons.",
+     "source": "Figure 3g and 3j; Results, Line-attractor neurons form ensembles, paragraph 3",
+     "quote": "Quantification of activity in non-targeted x 2 neurons after targeting of single x 2 neurons (NS)",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis test with Dunn's correction",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No unitary stimulation sessions are in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-dense-x1-connectivity",
+     "statement": "About 36% of x1-to-x1 pairs have influence scores above the highest x1-to-x2 pair (a z-score of about 0.6), a relatively dense functional ensemble.",
+     "source": "Figure 4a; Results, Line-attractor neurons form ensembles, paragraph 4",
+     "quote": "we considered the percentage of x 1 \u2192 x 1 pairs that had influence scores higher than the highest x 1 \u2192 x 2 pair, which had a z score of around 0.6 ... The fraction of x 1 \u2192 x 1 pairs above this threshold was around 36%",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The influence scores come from unitary stimulation sessions, which are not in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ce-excitatory-network",
+     "statement": "In purely excitatory spiking networks, only relatively sparse integration subnetworks (around 8 to 12%) with slow synaptic time constants (around 20 s) give network time constants of 50 to 200 s; fast glutamatergic networks fail over the same densities.",
+     "source": "Figure 4c-f; Results, Line-attractor neurons form ensembles, paragraph 5",
+     "quote": "we found that only artificial networks based on relatively sparse connectivity (around 8\u201312%) and slow synaptic time constants (around 20 s) could yield network time constants ( \u03c4 n ) in the experimentally observed range (~50\u2013200 s; Fig. 4c,e (red shading)). By contrast, networks with fast glutamatergic connectivity failed to do so over the same range of connection densities",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "network_model.ipynb",
+     "notes": "Run under two readings of how the subnetwork weights enter the matrix (added to the background, or replacing it): the largest eigenvalue stays between 0.48 and 0.52 at every density from 0 to 20%, so at tau_s = 20 s tau_n is 39 to 41 s at every density (40.7 s at 8%, 41.1 s at 12%), never in 45 to 220 s, and no network is unstable; fast networks (tau_s up to 0.6 s) reach at most 1.3 s, as the claim says. The legend of Fig. 4c shows unstable networks in the same range, which the Methods' weights U(0, 1/N) and U(0, 1/N_p) cannot produce, so the networks behind the figure were scaled in a way the paper does not give. Question for the authors, under findings.",
+     "deviations": [
+      "Eigenvalues of three random networks per density on a 0.5% grid; no spiking simulation is needed for tau_n, which the Methods derive from lambda_max."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4hj-inhibition-slow-dense",
+     "statement": "With fast feedback inhibition, a network with slow transmission (20 s) and the measured 36% density integrates pulsed input like the data, while a fast glutamatergic network (100 ms) does not.",
+     "source": "Figure 4g-l; Results, Line-attractor neurons form ensembles, paragraph 6",
+     "quote": "networks simulated with a long \u03c4 s (20s) and dense \u03c3 (36%) could integrate digital optogenetic stimulation in a manner like that observed experimentally ... By contrast, purely glutamatergic networks ( \u03c4 s = 100 ms) were unable to integrate at the observed timescales given the measured connectivity density",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig4a-dense-x1-connectivity, which is blocked (no unitary stimulation sessions); the protocol blocks a claim that depends on a blocked claim. The simulation itself uses no recorded data, only the paper's printed 36% density, and was not run. It adds inhibition to the excitatory weights of fig4ce-excitatory-network, which network_model.ipynb finds do not produce the networks of Fig. 4c, so a run would rest on the same underspecified scaling.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5g-time-constant-vs-connectivity",
+     "statement": "Across mice, the x1 time constant during observation correlates strongly with the functional connectivity among x1 neurons measured as the AUC of non-targeted x1 neurons after the third pulse (R2 = 0.87).",
+     "source": "Figure 5g; Results, Attractor stability ties to connectivity, paragraph 2",
+     "quote": "The strength of this correlation was higher after the third stimulus ( r 2 = 0.87) compared with after the first stimulus ( r 2 = 0.59)",
+     "statistics": [
+      {
+       "test": "linear correlation",
+       "statistic": "R2 = 0.87",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The connectivity measure comes from unitary stimulation sessions, which are not in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed12-first-stimulus-weaker",
+     "statement": "The correlation is weaker after the first stimulus (R2 = 0.59) than after the third.",
+     "source": "Extended Data Fig. 12c and 12d; Results, Attractor stability ties to connectivity, paragraph 2",
+     "quote": "The strength of this correlation was higher after the third stimulus ( r 2 = 0.87) compared with after the first stimulus ( r 2 = 0.59)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The connectivity measure comes from unitary stimulation sessions, which are not in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-ramp-not-correlated",
+     "statement": "The rate of ramp-up along x1 does not correlate with functional connectivity among x1 neurons (r2 = 0.01).",
+     "source": "Figure 5f; Extended Data Fig. 12b-d; Results, Attractor stability ties to connectivity, paragraph 2",
+     "quote": "By contrast, there was no correlation between functional connectivity and the rate of ramp-up, suggesting that the latter might be driven by extrinsic inputs to the VMHvl",
+     "statistics": [
+      {
+       "test": "linear correlation",
+       "statistic": "r2 = 0.01",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The connectivity measure comes from unitary stimulation sessions, which are not in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed12eh-x1-to-x2-not-correlated",
+     "statement": "The time constant does not correlate with the influence of targeted x1 neurons on non-targeted x2 neurons, so the relation is specific to the x1 subnetwork.",
+     "source": "Extended Data Fig. 12e-h; Results, Attractor stability ties to connectivity, paragraph 2",
+     "quote": "the correlation between attractor stability and functional connectivity was specific to neurons in the integration ( x 1 ) subnetwork, and did not hold when rSLDS time constants were compared with the influence strength of targeted x 1 neurons on x 2 cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The connectivity measure comes from unitary stimulation sessions, which are not in the dandiset. Checked against the archive's file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds 7 two-photon mice (M70, M168, M174, M179, M18R, M79RL, M99RL) where the paper reports 9 for observation (Fig. 1) and 8 for x1 group activation; 8 s ISI sessions exist for 6 mice (x1) and 4 (x2) where the paper reports 7.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Not in the dandiset: the unitary (single-neuron) stimulation sessions behind Fig. 3, Fig. 4a, Fig. 5 and Extended Data Figs 10 and 12; the 1 mW, random-neuron and x1-then-x2 stimulation sessions; cell positions or ROI masks; the face video or motion SVDs; the photostimulation calibration recordings. 25 of the 54 claims are blocked as data missing, ed1m for a missing annotation and two through a blocked claim they depend on.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No rSLDS model is stored for the miniscope sessions and only the factor weights are stored for the two-photon sessions (no dynamics matrices, so no time constants); the miniscope files mark no x1 or x2 neurons. The paper's time constants, line attractor scores and miniscope x1 neurons can only be approached by new fits, which differ from seed to seed.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In sub-M70_ses-20230323_behavior.nwb the five neurons listed in ActivatedNeurons for activation_integration_neurons do not respond at the stimulation onsets (-0.01 z, against 0.27 to 0.80 z in the other six mice, and -0.08 to 0.04 z with the indices shifted by -2 to +2) and rank 33rd to 55th of 65 by the stored x1 weight. The cells that respond most are cells 1, 2, 3, 5 and 22, which rank 2nd, 4th, 1st, 8th and 64th by the stored x1 weight, so the weights match the activity and the M70 target list does not. The outcomes of ed7f-activated-x1-natural-levels (M70 left out) and ed8gi-x1-stim-no-x2 (M70 kept) depend on how M70 is treated.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "sub-M70/sub-M70_ses-None_behavior.nwb is the same recording as the observation session in sub-M70/sub-M70_ses-20230323_behavior.nwb (per-cell correlation median 0.965 over the first 3000 frames) with different factor weights; the later file stops the session at 300 s (3000 frames), during the second BALB/c visit, while the earlier file holds 4426 frames (443 s), with that visit ending at 350 s.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The miniscope sessions start 56 to 96 s before the first annotation and hold no 5 min solitary baseline, which the Methods say was recorded at the start of every session; the files do not say how they were cropped.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Sniffing of the SW mouse during observation is annotated only for M30L; the other miniscope files keep three of the original behaviour rows (Balb/c, SW, Watch_attack), so Extended Data Fig. 1m (4 mice) cannot be tested. Only M70 among the two-photon mice has BALB/c presence intervals for its observation session; the others hold one entry marker.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "That the cells of the engaging and observation sessions of a miniscope mouse are the same cells is not stated in the files, though the paper compares single-cell weights across the two (Extended Data Fig. 4). The files hold the same number of cells in both sessions and no masks; each cell's autocorrelation at a 5 s lag agrees across the sessions (Spearman r 0.35 to 0.61 over cells), which is consistent with matched cells.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebooks with the conclusion cells and the summaries removed (the result cells of rslds_fits.ipynb were left in by mistake, and the verifier set them aside), the helper module and the claims file, with the paper. The verifier checked the archive metadata for the blocked claims and tested dunn, periods, time_constants, merge_bouts and transients on synthetic inputs. Its report had no attempt record and gave its own outcome for each claim; 45 of 54 agree with the record as it then stood.",
+     "agreed": 45,
+     "of": 54,
+     "disagreements": [
+      {
+       "claim": "ed3h-decode-engaged-from-observed",
+       "outcome": "partially_reproduced",
+       "reason": "p = 0.0079 with seed 0 under both weight readings. With the code seeds p = 0.15 under both, because one mouse is below chance. The result depends on the fit."
+      },
+      {
+       "claim": "methods-cvr2",
+       "outcome": "not_reproduced",
+       "reason": "The criterion's contiguous-block reading ran. Neural R2 is \u221281% / \u221275% against the block mean, 12.5% / 19.8% against the session mean, and hugely negative for the latent R2, against 84.7 / 67.2%. The random-frame reading was not run. Separately, the held-out latents are inferred from the held-out activity itself, so the score is a reconstruction, not a prediction (problem 4)."
+      },
+      {
+       "claim": "fig2gh-x1-moves-along-attractor",
+       "outcome": "partially_reproduced",
+       "reason": "The rises hold, but no reading gives \u22653/4 significant comparisons for both metrics. Best reading (mean baseline, comparison a): 2/4 at stimulation end, 3/4 at ISI end. The last pulse's post-stimulation frame is taken at onset + 211, against onset + 209 for the others and onset + 210 in the criterion (problem 12)."
+      },
+      {
+       "claim": "ed7f-activated-x1-natural-levels",
+       "outcome": "not_reproduced",
+       "reason": "p = 0.097 with M70 included. M70's target list is shown invalid, and without M70 the printed values give p = 0.0043 with activation higher in 6/6 mice. A 0- versus 1-based offset in load_2p for M70 was never tested (problem 1)."
+      },
+      {
+       "claim": "ed8c-model-integrates",
+       "outcome": "partially_reproduced",
+       "reason": "The criterion is met nominally: rises in 7/7 mice under reading (b). But there is no no-pulse control, M70's \"rise\" is relaxation from \u22125.4, the fit to data has median R2 \u22121.32, and reading (a) falls. Reading (b) is close to circular, a weakness of the claims file (problem 2)."
+      },
+      {
+       "claim": "ed8b-x2-no-integration-8s",
+       "outcome": "partially_reproduced",
+       "reason": "No rise across ISIs, and 0/4 significant under Wa but 1/4 under Wb. Activity stays at 1.5 to 1.9 z against a 0.1 baseline in all 4 mice; n = 4."
+      },
+      {
+       "claim": "fig2no-x2-off-manifold",
+       "outcome": "partially_reproduced",
+       "reason": "Relaxation holds (0/4 significant at ISI end; ISI-end distance 1.86 < 2.28 at stimulation end). The off-manifold movement reaches only 2/4 at stimulation end, against the \u22653 required."
+      },
+      {
+       "claim": "ed10g-follower-decoding",
+       "outcome": "blocked",
+       "reason": "Its criterion needs no 50 \u00b5m exclusion. Non-targeted neurons are those not in ActivatedNeurons, which the files have. It is blocked on a reason its criterion does not contain (problem 3). (other: testable, not run)"
+      },
+      {
+       "claim": "fig4hj-inhibition-slow-dense",
+       "outcome": "blocked",
+       "reason": "The criterion uses the paper's printed 36% and no recorded data, so the dependency on fig4a does not block it (problem 3). (other: testable, not run)"
+      }
+     ]
+    },
+    {
+     "date": "2026-11-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebooks, the helper module, the attempt record and the claims file, with the paper. The verifier agreed with 51 of 54 outcomes as they stood, would change ed3h to reproduced (assumed on the seed-0 fits), asked for assumed: true on ed7f and ed8gi, and listed nine sentences the printed numbers did not support and one new check (cross-seed stability of the x1 neurons).",
+     "agreed": 53,
+     "of": 54,
+     "disagreements": [
+      {
+       "claim": "ed3h-decode-engaged-from-observed",
+       "outcome": "reproduced",
+       "reason": "The new four-seed run changes the picture. The observation-weights reading gives p = 0.0079 with seeds 0, 137 and 1337, and p = 0.15 with seed 1, the same pattern as ed3g, which is recorded as reproduced (assumed: seed 0). With seed 0, both readings the criterion names give p = 0.0079. Applying the ed3g rule gives reproduced (assumed: seed-0 fits), with the own-weights reading's fragility (1 of 4 seeds) in the notes. Otherwise the record should say why the two claims are treated differently."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The one proposed change of outcome, on ed3h-decode-engaged-from-observed, and the analysis behind it (the ed3h cell and the four-seed cell of rslds_fits.ipynb). Nothing else was reviewed.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors (methods-cvr2): how is the cross-validated R2 of 84.7% and 67.2% computed? Activity reconstructed from the inferred two-dimensional latents of held-out contiguous blocks explains -81% and -75% of the variance about each block's mean and 12.5% and 19.8% about the session mean, and even in sample the reconstruction explains 51% and 54%; which quantity, folds (contiguous or random frames) and baseline give the reported values?",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The excitatory network of the Methods (W_ij ~ U(0, 1/N), subnetwork W_ij ~ U(0, 1/N_p), N = 1000, N_p = 200) has a largest eigenvalue of 0.48 to 0.52 at every subnetwork density from 0 to 20%, so it is never unstable and gives tau_n of about 40 s at tau_s = 20 s, while Fig. 4c shows unstable networks and tau_n of 50 to 200 s at 8 to 12%. Question for the authors: how were the weights scaled (a gain, a density-dependent normalization)?",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors on choices the paper leaves open: the test behind Fig. 1m (paired or unpaired over mice; the paired test was adopted), the ISI window of Extended Data Fig. 8b (end of pulse to next onset, or onset to onset; the two disagree), and the seed or model selection of the rSLDS fits (seed 0 was adopted; the decoding results of Extended Data Fig. 3g,h depend on it, and with the engaging model's own weights Fig. 3h holds for one of four seeds). Also open: how transient amplitude is measured in Extended Data Fig. 4h (0.58 z is below the 1.5 SD detection threshold), and how the trials are balanced for the decoder.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The sample code's rslds() function ignores its num_iters argument and always runs 150 Laplace-EM iterations, while its miniscope notebooks pass 100; the fits here use 100 for the miniscope, as the notebooks state.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "vinograd-2024",
+   "type": "reproduction",
+   "title": "Line attractor dynamics and holographic perturbation in VMHvl (Vinograd, Nair et al. 2024)",
+   "description": "Tests the findings of Vinograd, Nair, Kim, Linderman and Anderson (2024) on dandiset 001037, which holds miniscope traces and behaviour annotations of 5 freely behaving mice engaging in and observing aggression, and two-photon observation and group photostimulation sessions of 7 head-fixed mice with stored rSLDS factor weights. It fits rSLDS models with the authors' sample-code settings, cross-validates them, tests integration under holographic activation of x1 and x2 neurons, and recomputes the excitatory network model of Figure 4. The unitary stimulation, 1 mW, random-neuron and combined sessions, cell positions and face video are not in the dandiset.",
+   "datasets": [
+    "dandi:001037"
+   ],
+   "papers": [
+    "10.1038/s41586-024-07915-x"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "stored_weights_and_stimulation.ipynb",
+     "title": "Stored rSLDS weights and holographic photostimulation",
+     "executed": null
+    },
+    {
+     "path": "rslds_fits.ipynb",
+     "title": "rSLDS fits to the miniscope and two-photon sessions",
+     "executed": null
+    },
+    {
+     "path": "cross_validation.ipynb",
+     "title": "Fivefold cross-validation of the rSLDS fits",
+     "executed": null
+    },
+    {
+     "path": "network_model.ipynb",
+     "title": "Network time constants of the excitatory model",
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 31,
+   "hashed": false
+  }
+ ],
+ "badge": null,
+ "badges": {
+  "reproduced": null,
+  "outcomes": "https://encorescience.org/badge/dandi/001037-outcomes.svg",
+  "card": "https://encorescience.org/badge/dandi/001037-card.svg"
+ }
+}
