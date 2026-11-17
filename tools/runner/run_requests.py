@@ -1,7 +1,8 @@
 """The run queue: requests for attempts, made as issues from the "Request a run" form (docs/queue.md).
 
     python tools/runner/run_requests.py check NUMBER          # validate a request and label its state
-    python tools/runner/run_requests.py sweep                 # check every open request that has no state yet
+    python tools/runner/run_requests.py sweep                 # check every open request that has no state yet,
+                                                              # and close those whose dataset was tested since
     python tools/runner/run_requests.py board                 # rewrite the queue-board issue
     python tools/runner/run_requests.py next                  # take the next request: "FOLDER [VERSION]"
     python tools/runner/run_requests.py finish FOLDER STATUS  # report a chain's last line on its request
@@ -178,12 +179,39 @@ def check(number: int) -> None:
         comment(number, "\n".join(notes))
 
 
+def settled(issue: dict) -> str | None:
+    """The attempt on main that has tested the request's dataset since the request was made, if one has: a request
+    is closed by its own chain's merge (finish), but a paper on several datasets is merged by whichever chain ran
+    it, and the requests for its other datasets stayed open, waiting on no one (CRCNS:hc-12, issue 560)."""
+    import paper_records
+    folder = request(issue["body"])[0]
+    if not folder:
+        return None
+    key = datasets.key_of_folder(folder)
+    paper = paper_records.paper_of_dataset(key)
+    for path in reversed(paper_records.attempt_paths(paper) if paper else []):
+        record = yaml.safe_load(path.read_text()) or {}
+        if (key in paper_records.record_dataset_keys(record) and not record.get("deprecated")
+                and str(record.get("date", "")) >= issue["createdAt"][:10]):
+            return record["id"]
+    return None
+
+
 def sweep() -> None:
     """Check every open request without a state label. The workflow's runs share one concurrency group, in which
-    GitHub keeps only one waiting run and cancels the rest, so requests opened together can miss their check."""
+    GitHub keeps only one waiting run and cancels the rest, so requests opened together can miss their check.
+    Then close every open request whose dataset an attempt on main has tested since it was made."""
     for issue in open_requests():
         if not {lab["name"] for lab in issue["labels"]} & set(STATES):
             check(issue["number"])
+    for issue in open_requests():
+        done = settled(issue)
+        if done:
+            have = {lab["name"] for lab in issue["labels"]} & {"running", "needs-you", "queued"}
+            if have:
+                gh("issue", "edit", str(issue["number"]), "--repo", REPO, *[x for h in have for x in ("--remove-label", h)])
+            gh("issue", "close", str(issue["number"]), "--repo", REPO, "--comment",
+               f"Done: attempt `{done}` on main tested this dataset after the request was made.")
 
 
 def board() -> None:
