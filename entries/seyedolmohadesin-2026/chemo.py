@@ -388,6 +388,15 @@ COOK_SHEETS = {COOK_SI3: ("herm chem synapse adjacency", "male chem synapse adja
                COOK_SI5: ("hermaphrodite chemical", "male chemical")}
 
 
+def cook_legend(cook_url: str) -> str:
+    """The legend sheet of a Cook et al. (2019) supplement."""
+    import io
+    import requests
+    xl = pd.ExcelFile(io.BytesIO(requests.get(cook_url, timeout=120).content))
+    sheet = next(n for n in xl.sheet_names if "legend" in n.lower())
+    return str(xl.parse(sheet, header=None).iloc[0, 0])
+
+
 def _sheet(content: bytes, sheet: str, pre_in_rows: bool) -> pd.DataFrame:
     import io
     x = pd.read_excel(io.BytesIO(content), sheet_name=sheet, header=None)

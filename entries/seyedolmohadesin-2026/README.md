@@ -47,8 +47,8 @@ connectomes of Cook et al. (2019) and Witvliet et al. (2021), as the paper's mer
 public. The layer of each class is read from the column groups of the paper's Figure 3A. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/seyedolmohadesin-2026-01.yaml`](../../attempts/seyedolmohadesin-2026-01.yaml).
 
-- `reproduce_seyedolmohadesin_2026.ipynb`: the analysis. It takes about seven minutes, nearly two of
-  them streaming the trace tables.
+- `reproduce_seyedolmohadesin_2026.ipynb`: the analysis. It takes about ten minutes, about one of
+  them loading the trace tables.
 - `chemo.py`: loading the traces and stimulus annotations, the responses, exclusion and class tests
   of the paper's methods and code, the band-passed correlations, and the connectomes. Other notebooks
   on this dandiset can import it.
