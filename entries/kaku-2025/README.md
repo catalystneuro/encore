@@ -12,11 +12,11 @@ tracing data are not in it.
 |---|---|
 | The dandiset holds the inputs of the paper's code (20,109 units pass its filter) | Reproduced |
 | 20,300 units, 5,700 cerebellum, 3,700 pons, 10,900 medulla, 339 insertions | Partially reproduced |
-| Spike rates of cerebellum, vestibular nuclei and medulla | Partially reproduced |
-| Lick and breath frequencies (Fig 1d) | Not reproduced |
+| Spike rates of cerebellum, vestibular nuclei and medulla | Not reproduced |
+| Lick and breath frequencies (Fig 1d) | Partially reproduced |
 | Inspiration never coincides with licking (Fig 1f) | Not reproduced |
 | Second lick delayed before a slow breath (Fig 1g) | Partially reproduced |
-| Licks added as breathing slows, fixed latency (Fig 1f) | Partially reproduced |
+| Licks added as breathing slows, fixed latency (Fig 1f) | Not reproduced |
 | Inspiration delayed before a slow lick (Fig 1i) | Reproduced |
 | Unidirectional oscillator models fail (Extended Data Fig 1d-i) | Reproduced |
 | Licking paused at swallows (Extended Data Fig 1b-c) | Not reproduced |
@@ -26,28 +26,32 @@ tracing data are not in it.
 | Inter-breath interval preserved; breath cycle prolonged by 48.0 ms (Fig 1n) | Reproduced (both) |
 | 3,551 licking, 1,015 breathing and 182 both-tuned units | Partially reproduced |
 | Swallow-modulated unit counts | Not reproduced |
-| Breathing units near preBotzinger and posterior ventral IRN (Fig 2f) | Reproduced |
+| Breathing units near preBotzinger and posterior ventral IRN (Fig 2f) | Reproduced, on an assumption |
 | Licking units in XII, V, IRN and pons (Fig 2g) | Reproduced |
-| Swallow units in V, IC, NLL, beside NTS and above AMB (Fig 2h) | Partially reproduced, on an assumption |
+| Swallow units in V, IC, NLL, beside NTS and above AMB (Fig 2h) | Blocked: methods underspecified |
 | Swallow activity leads in V and IRN, follows in IC and NLL (Extended Data Fig 6e) | Reproduced |
-| preBotzinger units fire at inspiration (Extended Data Fig 8b-c) | Not reproduced |
+| preBotzinger units fire at inspiration (Extended Data Fig 8b-c) | Reproduced, on an assumption |
 | Licking units active at full protrusion (Extended Data Fig 8e) | Reproduced |
 | Licking map robust to a 500 uV amplitude filter (Extended Data Fig 4c) | Reproduced |
-| Licking and breathing units anticipate the other rhythm (Fig 4e, f) | Reproduced (both), on an assumption |
-| 43 simultaneous licking and breathing oscillator recordings (Fig 4d) | Not reproduced |
+| Licking units anticipate the next breath (Fig 4e) | Reproduced |
+| Breathing units anticipate the next lick (Fig 4f) | Reproduced, on an assumption |
+| 43 simultaneous licking and breathing oscillator recordings (Fig 4d) | Blocked: data missing |
 | Lick direction tuning (Extended Data Fig 8i) | Blocked: metadata insufficient |
 | GLM (Extended Data Fig 7) | Blocked: too large |
-| Cross-correlation of oscillator pairs (Fig 4g, h; three claims) | Blocked: other |
-| Premotor regions (Fig 3a) | Blocked: other |
-| Autoencoder, rats, photostimulation, cued task, premotor overlap (15 claims) | Blocked: data missing |
+| Cross-correlation of oscillator pairs (Fig 4g, h; three claims) | Blocked: data missing |
+| Premotor regions and licking units inside them (Fig 3a, b) | Blocked: other (public source found, not analysed) |
+| Autoencoder, rats, photostimulation, cued task (14 claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The paper's analysis code (github.com/NuoLiLabBCM/KakuEtAl2025 at commit fbc0abe) is ported to the
 streamed NWB files. The files store the offset where each unit's spikes start, not where they end, so a
-standard NWB reader misassigns spikes; the helper reads them by the per-trial spike counts. The attempt
-record, with the reasons and the differences from the paper's method, is
+standard NWB reader misassigns spikes; the helper reads them by the per-trial spike counts. Regions
+the CCF does not label are built from the Allen CCFv3 annotation volume. The peak-difference measures
+of Figs 1g and 4e give a positive difference under a random split of the cycles, so their positive
+results carry little weight (see the notebook). The attempt
+record, with the reasons, the verifier's first report and the replies to it, and the differences from the paper's method, is
 [`attempts/kaku-2025-01.yaml`](../../attempts/kaku-2025-01.yaml).
 
 - `reproduce_kaku_2025.ipynb`: the analysis. It takes about 42 minutes, most of it streaming the

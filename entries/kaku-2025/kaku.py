@@ -151,6 +151,31 @@ def region_table(names, onto):
     return pd.DataFrame(rows)
 
 
+CCF_ANNOTATION_URL = ("https://download.alleninstitute.org/informatics-archive/current-release/"
+                      "mouse_ccf/annotation/ccf_2017/annotation_25.nrrd")
+
+
+def ccf_annotation():
+    """Allen CCFv3 (2017) annotation volume at 25 um, axes (AP, DV, ML) in voxels, read from the
+    NRRD file into memory (header, then gzip-compressed data with the first axis fastest)."""
+    import gzip
+    import urllib.request
+    raw = urllib.request.urlopen(CCF_ANNOTATION_URL).read()
+    head, data = raw.split(b"\n\n", 1)
+    h = dict(line.split(": ", 1) for line in head.decode().splitlines()[1:] if ": " in line and not line.startswith("#"))
+    sizes = tuple(int(x) for x in h["sizes"].split())
+    dtype = {"unsigned int": "<u4", "uint32": "<u4", "uint": "<u4"}.get(h["type"], h["type"])
+    vol = np.frombuffer(gzip.decompress(data) if h.get("encoding") == "gzip" else data, dtype=dtype)
+    return vol.reshape(sizes, order="F")
+
+
+def region_voxels(vol, ids, res=25.0, midline=5700.0):
+    """Positions (um) of the voxels of the given structure ids: AP, DV and distance from the
+    midline (|ML - midline|), both hemispheres pooled."""
+    ix = np.argwhere(np.isin(vol, list(ids)))
+    return pd.DataFrame({"ap": ix[:, 0] * res, "dv": ix[:, 1] * res, "ml": np.abs(ix[:, 2] * res - midline)})
+
+
 # ----------------------------------------------------------------------------- reading
 
 def read_probe_meta(url):
@@ -296,12 +321,32 @@ def read_session(url, probe_urls):
         "jaw_y": frames(side["jaw"], "y"),
         "trial_samples": idx,
     }
+    # Whether the 3D `idx` field counts trials as the DLC `trial` field does (verifier, round 1):
+    # per good trial (the first 60), the largest |correlation| between the bottom-camera DLC
+    # tongue x, y and the 3D tongue x, y, z over frames with the tongue visible, with 3D idx =
+    # trial + offset. The files differ (notebook), so each session's 3D tracks are read at the
+    # offset with the highest correlation.
+    bt = bottom["tongue"]
+    chk = {o: [] for o in (-1, 0, 1)}
+    for t in trials[:60]:
+        a = bt[bt["trial"] == t][:N_FRAMES]
+        for o in chk:
+            b = t3[t3["idx"] == t + o][:N_FRAMES]
+            n = min(len(a), len(b))
+            vis = a["likelihood"][:n] > 0.95
+            if vis.sum() < 20:
+                continue
+            m = np.corrcoef(np.stack([a["x"][:n][vis], a["y"][:n][vis], b["x"][:n][vis], b["y"][:n][vis], b["z"][:n][vis]]))
+            chk[o].append(np.nanmax(np.abs(m[:2, 2:])))
+    sess["idx3d_corr"] = {o: float(np.mean(v)) if v else np.nan for o, v in chk.items()}
+    off3d = max(chk, key=lambda o: np.nan_to_num(sess["idx3d_corr"][o], nan=-1))
+    sess["idx3d_offset"] = off3d
     # 3D tongue (bottom) and jaw (side) per good trial, for protrusion and lick angle
     t3d = np.full((len(trials), N_FRAMES, 3), np.nan)
     j3d = np.full((len(trials), N_FRAMES, 3), np.nan)
     for i, t in enumerate(trials):
         for rec, out in ((t3, t3d), (j3, j3d)):
-            sel = rec["idx"] == t
+            sel = rec["idx"] == t + off3d
             if sel.any():
                 v = np.stack([rec["x"][sel], rec["y"][sel], rec["z"][sel]], 1)[:N_FRAMES]
                 out[i, :len(v)] = v
@@ -489,9 +534,30 @@ def swallow_intervals(aligned, max_ili, min_ili=1 / 15, num_before=4, num_after=
     return df
 
 
-def peak_diff_lick_behv(mt, spikes=None, n_trial=None, unit=False):
+def _lick_peak_diff(licks, i1, i2):
+    """Second-lick peak difference (slow minus fast) of the code's get_peak_diff_lick_behv for the
+    cycles i1 (fast) and i2 (slow): lick PSTHs from -0.4 to 1 s in 20 ms bins, first peak in
+    0.12-0.32 s (fast) and 0.16-0.36 s (slow)."""
+    bins = np.arange(-0.4, 1, 0.02)
+    centres = bins[1:] - 0.01
+    p1 = np.mean([np.histogram(licks[i], bins)[0] for i in i1], 0) / 0.02
+    p2 = np.mean([np.histogram(licks[i], bins)[0] for i in i2], 0) / 0.02
+    pk1 = _peaks(p1, centres, 5, 0.14, (0.12, 0.32))
+    pk2 = _peaks(p2, centres, 5, 0.14, (0.16, 0.36))
+    return pk1, pk2, (pk2[0] - pk1[0]) if len(pk1) and len(pk2) else np.nan
+
+
+def random_split(i1, i2, rng):
+    """Null for the fast/slow split (verifier, round 1): the cycles of both groups pooled and
+    split at random into groups of the same sizes."""
+    pool = rng.permutation(np.r_[i1, i2])
+    return np.sort(pool[:len(i1)]), np.sort(pool[len(i1):])
+
+
+def peak_diff_lick_behv(mt, spikes=None, n_trial=None, unit=False, rng=None, n_null=20):
     """Code get_peak_diff_lick_behv (unit=False) and the event selection of
-    get_peak_diff_lick_unit. Returns the selection and the behavioural peaks."""
+    get_peak_diff_lick_unit. Returns the selection and the behavioural peaks. With rng, also
+    the same difference for n_null random splits of the two-lick cycles (diff_null)."""
     insp, ton = mt["inspir_onset"], mt["tongue_onset"]
     on, off = mt["bout_on"], mt["bout_off"]
     insp_l = np.hstack([insp[(insp > on[i] + 0.2) & (insp < off[i] - 0.2)] for i in range(len(on))]) if len(on) else np.array([])
@@ -529,25 +595,27 @@ def peak_diff_lick_behv(mt, spikes=None, n_trial=None, unit=False):
     i1 = np.where((ibi < d) & (nl == 2))[0]
     i2 = np.where((ibi > d) & (nl == 2))[0]
     out.update(i_fast=i1, i_slow=i2)
-    bins = np.arange(-0.4, 1, 0.02)
-    centres = bins[1:] - 0.01
     if len(i1) >= 40 and len(i2) >= 40:
-        p1 = np.mean([np.histogram(licks[i], bins)[0] for i in i1], 0) / 0.02
-        p2 = np.mean([np.histogram(licks[i], bins)[0] for i in i2], 0) / 0.02
-        pk1 = _peaks(p1, centres, 5, 0.14, (0.12, 0.32))
-        pk2 = _peaks(p2, centres, 5, 0.14, (0.16, 0.36))
-        out.update(peaks_fast=pk1, peaks_slow=pk2,
-                   diff=(pk2[0] - pk1[0]) if len(pk1) and len(pk2) else np.nan)
+        pk1, pk2, diff = _lick_peak_diff(licks, i1, i2)
+        out.update(peaks_fast=pk1, peaks_slow=pk2, diff=diff)
+        if rng is not None:
+            out["diff_null"] = np.array([_lick_peak_diff(licks, *random_split(i1, i2, rng))[2] for _ in range(n_null)])
     else:
         out["diff"] = np.nan
-    # unit version: 40 fastest and 40 slowest (code n_trial)
-    out["unit_fast"] = i1[:40]
-    out["unit_slow"] = i2[-40:]
+    # Unit version. Cycles are sorted longest first, so the 40 fastest are the last 40 of i1 and
+    # the 40 slowest the first 40 of i2, as the claims file's header says. The code
+    # (get_peak_diff_lick_unit) takes psth_1_i[:n_trial] and psth_2_i[-n_trial:], the 40 cycles
+    # nearest the median on each side; it is kept as a variant.
+    out["unit_fast"] = i1[-40:]
+    out["unit_slow"] = i2[:40]
+    out["unit_fast_code"] = i1[:40]
+    out["unit_slow_code"] = i2[-40:]
     return out
 
 
-def peak_diff_breath_behv(mt):
-    """Code get_peak_diff_breath_behv (and the event selection of get_peak_diff_breath_unit)."""
+def peak_diff_breath_behv(mt, rng=None, n_null=20):
+    """Code get_peak_diff_breath_behv (and the event selection of get_peak_diff_breath_unit).
+    With rng, also the difference for n_null random splits (diff_null)."""
     insp, ton = mt["inspir_onset"], mt["tongue_onset"]
     on, off = mt["bout_on"], mt["bout_off"]
     ton_l = np.hstack([ton[(ton > on[i] + 0.2) & (ton < off[i] - 0.2)] for i in range(len(on))]) if len(on) else np.array([])
@@ -571,18 +639,26 @@ def peak_diff_breath_behv(mt):
     i1 = np.where(ili < d)[0]
     i2 = np.where(ili > d)[0]
     out = {"t0": t0, "breaths": breaths, "ili": ili, "i_fast": i1, "i_slow": i2}
-    bins = np.arange(-0.1, 0.6, 0.02)
-    centres = bins[1:] - 0.01
     if len(i1) >= 100 and len(i2) >= 100:
-        p1 = np.mean([np.histogram(breaths[i], bins)[0] for i in i1], 0) / 0.02
-        p2 = np.mean([np.histogram(breaths[i], bins)[0] for i in i2], 0) / 0.02
-        pk1 = _peaks(p1, centres, 7, 0.24, (0, 0.22))
-        pk2 = _peaks(p2, centres, 7, 0.24, (0, 0.24))
-        out.update(peaks_fast=pk1, peaks_slow=pk2,
-                   diff=(pk2[0] - pk1[0]) if len(pk1) and len(pk2) else np.nan)
+        pk1, pk2, diff = _breath_peak_diff(breaths, i1, i2)
+        out.update(peaks_fast=pk1, peaks_slow=pk2, diff=diff)
+        if rng is not None:
+            out["diff_null"] = np.array([_breath_peak_diff(breaths, *random_split(i1, i2, rng))[2] for _ in range(n_null)])
     else:
         out["diff"] = np.nan
     return out
+
+
+def _breath_peak_diff(breaths, i1, i2):
+    """Inspiration peak difference of the code's get_peak_diff_breath_behv: PSTHs -0.1 to 0.6 s,
+    20 ms bins, first peak in 0-0.22 s (fast) and 0-0.24 s (slow)."""
+    bins = np.arange(-0.1, 0.6, 0.02)
+    centres = bins[1:] - 0.01
+    p1 = np.mean([np.histogram(breaths[i], bins)[0] for i in i1], 0) / 0.02
+    p2 = np.mean([np.histogram(breaths[i], bins)[0] for i in i2], 0) / 0.02
+    pk1 = _peaks(p1, centres, 7, 0.24, (0, 0.22))
+    pk2 = _peaks(p2, centres, 7, 0.24, (0, 0.24))
+    return pk1, pk2, (pk2[0] - pk1[0]) if len(pk1) and len(pk2) else np.nan
 
 
 def _peaks(psth, centres, min_height, dist_s, window):
@@ -838,6 +914,63 @@ def swallow_unit_stats(spikes_by_trial, swallows, fs, rng, n_boot=1000):
     return out
 
 
+# ----------------------------------------------------------------------------- GLM (ed7, timing only)
+
+GLM_BIN_FRAMES = 5  # Methods: 17 ms bins, five 3.4 ms frames
+
+
+def glm_design(sess, lag=0):
+    """Design of the Methods' GLM for one session and one lag (in 17 ms bins): 3D jaw and tongue
+    x, y, z (tongue set to 0 when its likelihood is below 0.05 in both views) and the airflow,
+    each z-scored, in 17 ms bins over the first 1470 frames of each good trial; every 5th trial
+    is held out. Returns X_train, X_test, train and test trial masks per bin."""
+    n_tr = len(sess["trials"])
+    nb = N_FRAMES // GLM_BIN_FRAMES
+    nf = nb * GLM_BIN_FRAMES
+
+    def binned(a):  # (trials, frames) -> (trials, bins)
+        return np.nanmean(a[:, :nf].reshape(n_tr, nb, GLM_BIN_FRAMES), 2)
+
+    lost = (sess["side_tongue_l"] < 0.05) & (sess["bottom_tongue_l"] < 0.05)
+    feats = []
+    for k in range(3):
+        feats.append(binned(sess["jaw3d"][:, :, k]))
+        feats.append(binned(np.where(lost, 0.0, sess["tongue3d"][:, :, k])))
+    br = sess["breath_move"]
+    w = br.shape[1] // nb
+    feats.append(br[:, :nb * w].reshape(n_tr, nb, w).mean(2))
+    F = np.stack([np.nan_to_num(f) for f in feats], 2)          # trials x bins x 7
+    F = (F - F.reshape(-1, 7).mean(0)) / (F.reshape(-1, 7).std(0) + 1e-12)
+    F = np.roll(F, lag, axis=1)
+    test = (np.arange(n_tr) % 5) == 4
+    X = np.concatenate([np.ones((n_tr, nb, 1)), F], 2)
+    return X[~test].reshape(-1, 8), X[test].reshape(-1, 8), ~test, test
+
+
+def glm_counts(spikes, trials_mask):
+    """Spike counts of each unit in the GLM's 17 ms bins: bins x units."""
+    nb = N_FRAMES // GLM_BIN_FRAMES
+    edges = np.arange(nb + 1) * GLM_BIN_FRAMES * FRAME_S
+    cols = []
+    for sp in spikes:
+        cols.append(np.concatenate([np.histogram(s, edges)[0] for s, m in zip(sp, trials_mask) if m]))
+    return np.stack(cols, 1).astype(float)
+
+
+def fit_poisson_batch(X, Y, n_iter=15):
+    """Unpenalised Poisson GLM (log link), O8 (a), fitted by Newton's method for all units of a
+    session at once: X bins x p, Y bins x units. Returns the weights p x units."""
+    p = X.shape[1]
+    B = np.zeros((p, Y.shape[1]))
+    B[0] = np.log(Y.mean(0) + 1e-6)
+    for _ in range(n_iter):
+        mu = np.exp(np.clip(X @ B, -20, 20))
+        g = X.T @ (Y - mu)
+        H = np.einsum("np,nq,nu->upq", X, X, mu) + 1e-6 * np.eye(p)[None]
+        B = B + np.linalg.solve(H, g.T[:, :, None])[:, :, 0].T
+    return B
+
+
 # ----------------------------------------------------------------------------- per session
 
 def process_session(args):
@@ -858,13 +991,33 @@ def process_session(args):
     out["expir_onset"] = np.argwhere((pb > np.pi) & (np.roll(pb, -1) < np.pi - 1))[:, 0] * FRAME_S
     out["swallows"] = sw
     out["swallow_times"] = np.hstack([i * sess["trial_len"] + np.asarray(e) / fs for i, e in enumerate(sw)]) if sw else np.array([])
-    pdl = peak_diff_lick_behv(mt)
-    pdb = peak_diff_breath_behv(mt)
+    rng_null = np.random.default_rng(seed + 100_000)  # random-split nulls (Figs 1g, 1i, 4e, 4f)
+    pdl = peak_diff_lick_behv(mt, rng=rng_null)
+    pdb = peak_diff_breath_behv(mt, rng=rng_null)
     out["pd_lick"] = None if pdl is None else {k: v for k, v in pdl.items() if k != "licks"}
     if pdl is not None:
         out["pd_lick"]["licks_fast"] = [pdl["licks"][i] for i in pdl.get("i_fast", [])]
         out["pd_lick"]["licks_slow"] = [pdl["licks"][i] for i in pdl.get("i_slow", [])]
     out["pd_breath"] = None if pdb is None else {k: v for k, v in pdb.items() if k != "breaths"}
+    out["idx3d_corr"] = sess["idx3d_corr"]
+    out["idx3d_offset"] = sess["idx3d_offset"]
+    # Airflow against tongue and jaw (verifier, round 1): cross-correlation of the z-scored 3.4 ms
+    # airflow with the tongue-visible indicator and with jaw_y over the concatenated good trials,
+    # lags -0.5 to 0.5 s (positive lag: airflow later).
+    gb = mt["breath_ds"]
+    vis = ((sess["side_tongue_l"] > 0.95) & (sess["bottom_tongue_l"] > 0.95)).astype(float).reshape(-1)[1:]
+    jy = sess["jaw_y"].reshape(-1)[1:]
+    jy = np.where(np.isnan(jy), np.nanmean(jy), jy)
+    nmin = min(len(gb), len(vis))
+    lag = 147
+    xc = {}
+    for name, x in (("tongue", vis[:nmin]), ("jaw", jy[:nmin])):
+        a = (gb[:nmin] - gb[:nmin].mean()) / gb[:nmin].std()
+        b = (x - x.mean()) / (x.std() or 1)
+        c = signal.correlate(a, b, mode="full", method="fft") / nmin
+        mid = nmin - 1
+        xc[name] = c[mid - lag:mid + lag + 1]
+    out["xcorr"] = xc
     # protrusion phase per lick (ed8e): frame of the largest 3D tongue distance from its onset
     # position, between tongue onset and offset, jaw phase there
     prot = {o: [] for o in FILTER_ORDERS}
@@ -931,16 +1084,23 @@ def process_session(args):
                 ons = np.array([la[0] * TRIAL_S + la[1] for la in lick_angles])
                 row["lick_counts"] = (np.searchsorted(train, ons + 0.1) - np.searchsorted(train, ons - 0.05)).astype(np.int16)
             # peak differences (Fig 4e-f)
+            # Each unit also gets one random split (verifier, round 1): for licking units 40 and 40
+            # two-lick cycles drawn at random from both halves; for breathing units both halves
+            # pooled and split at random into groups of the same sizes.
             if pdl is not None and len(pdl.get("unit_fast", [])) >= 40 and len(pdl.get("unit_slow", [])) >= 40:
-                row["pd_lick_unit"] = unit_peak_diffs(train, pdl["t0"], pdl["unit_fast"], pdl["unit_slow"],
-                                                      -0.4, 1, ((0.1, 0.3), (0.16, 0.36)), 0.14)
+                lw = (-0.4, 1, ((0.1, 0.3), (0.16, 0.36)), 0.14)
+                row["pd_lick_unit"] = unit_peak_diffs(train, pdl["t0"], pdl["unit_fast"], pdl["unit_slow"], *lw)
+                row["pd_lick_unit_code"] = unit_peak_diffs(train, pdl["t0"], pdl["unit_fast_code"], pdl["unit_slow_code"], *lw)
+                pool = rng_null.permutation(np.r_[pdl["i_fast"], pdl["i_slow"]])
+                row["pd_lick_unit_null"] = unit_peak_diffs(train, pdl["t0"], np.sort(pool[:40]), np.sort(pool[40:80]), *lw)
             else:
-                row["pd_lick_unit"] = np.nan
+                row["pd_lick_unit"] = row["pd_lick_unit_code"] = row["pd_lick_unit_null"] = np.nan
             if pdb is not None and len(pdb["i_fast"]) >= 100 and len(pdb["i_slow"]) >= 100:
-                row["pd_breath_unit"] = unit_peak_diffs(train, pdb["t0"], pdb["i_fast"], pdb["i_slow"],
-                                                        -0.1, 0.6, ((0, 0.24), (0.02, 0.26)), 0.24)
+                bw_ = (-0.1, 0.6, ((0, 0.24), (0.02, 0.26)), 0.24)
+                row["pd_breath_unit"] = unit_peak_diffs(train, pdb["t0"], pdb["i_fast"], pdb["i_slow"], *bw_)
+                row["pd_breath_unit_null"] = unit_peak_diffs(train, pdb["t0"], *random_split(pdb["i_fast"], pdb["i_slow"], rng_null), *bw_)
             else:
-                row["pd_breath_unit"] = np.nan
+                row["pd_breath_unit"] = row["pd_breath_unit_null"] = np.nan
             s = swallow_unit_stats(sp, sw, fs, rng)
             row["sw_n"] = s["n"]
             for k in ("mi", "mi_b", "peak_t"):
