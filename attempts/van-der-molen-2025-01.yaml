@@ -1,0 +1,478 @@
+schema_version: 3
+id: van-der-molen-2025-01
+datasets:
+- archive: dandi
+  id: "001603"
+  version: 0.260923.0623
+  doi: 10.48324/dandi.001603/0.260923.0623
+  relation: primary
+paper: doi:10.1038/s41593-025-02111-0
+date: 2026-11-17
+entry: van-der-molen-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44081723028
+outcomes:
+- claim: methods-burst-count
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:methods-burst-count
+  measured: 35.7
+  notes: Mean 35.7 bursts over the 31 recordings under the code's lengths (SE 6.2, range 0 to 156),
+    within 38 plus or minus 4. The mean matches but the recordings do not each hold about 40 bursts;
+    four murine organoids (MO2, MO4, MO5, MO6) have none under the stated detection and MO1 and MO7
+    have 113 and 156. With 800 ms minimum distance the mean is 35.5.
+  deviations:
+  - Matlab smoothdata replaced by scipy filters (moving mean; Gaussian with standard deviation one
+    fifth of the window, cut at the window), a standard choice.
+- claim: fig1c-example-burst-count
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig1c-example-burst-count
+  measured: 46
+  notes: HO1 has 46 bursts in its first 180 s with 700 ms and with 800 ms minimum peak distance (HO2
+    to HO4 have 31, 42 and 28). HO1 is the example organoid for the dependent claims.
+- claim: ed1c-lognormal-rates
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed1c-lognormal-rates
+  measured:
+  - 0.949
+  - 0.487
+  notes: Under reading (a) with all sorted units (the code's choice) the mean R squared is 0.949 for all
+    units and 0.487 for backbone units (seven organoids; HO7 has no backbone unit), both within
+    tolerance. The code's form of the density gives 0.944 and 0.442. With units of at least 30 spikes
+    the all-unit mean is 0.919, outside. Reading (b), the legend's normal fit to log rates, gives 0.60
+    and 0.36.
+  deviations:
+  - The fit follows plot_multi_rec_figs_backbone.m (two-parameter density, start values 1 and 0.25,
+    bins up to the last non-empty one), read from the paper's code at e9a79c4.
+- claim: fig1d-burst-duration
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig1d-burst-duration
+  notes: Median burst durations of HO1 to HO4 are 511, 628, 472 and 891.5 ms, all between 100 and
+    1000 ms. Over the 27 recordings with bursts the medians run from 104 ms (Pr4) to 2681 ms (MO3).
+- claim: fig1e-peaks-near-burst-peak
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig1e-peaks-near-burst-peak
+  notes: More than half of the values fall within the bound in 15 of 16 combinations of organoid,
+    quantity and bound (fractions 0.53 to 0.89). The exception is HO4, pooled unit-burst peak times
+    within 50 ms (0.481). The criterion asks for every reading.
+- claim: fig2-backbone-fraction
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig2-backbone-fraction
+  measured:
+  - 0.331
+  - 0.150
+  notes: With units of at least 30 spikes as the denominator (reading b), mean 0.331 and SD 0.150,
+    both within tolerance. With all sorted units, mean 0.258 (within) and SD 0.166 (outside 0.126 to
+    0.154). HO7 has no backbone unit here; HO1 to HO4 have 27, 26, 23 and 15, as the paper's
+    processed table single_unit.xlsx lists.
+- claim: fig2e-b2b-correlation
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig2e-b2b-correlation
+  measured: 507
+  notes: Backbone 0.796 against non-rigid 0.574 (effect 0.210, p 6e-36, 216 units) under the Methods'
+    30% rule, and 0.796 against 0.629 (p 2e-19, 150 units) under the code's 70% rule; higher in each
+    organoid. The measured value is the number of sorted units in HO1 to HO4, which equals the paper's
+    n of 507; the units that pass the unit rules and enter the test are 216 or 150.
+  deviations:
+  - Burst-only rates do not hold the inverse ISI across the gap between bursts (the code does, giving
+    rates below 1 Hz between bursts).
+  - Mixed models fitted by REML with a random intercept, tested with Wald z, where the paper uses
+    lmerTest.
+- claim: fig2g-variance-latency
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig2g-variance-latency
+  notes: Over 91 backbone units the peak-time variance rises with relative position, p 4e-4 for the
+    rank reading and 5e-5 for the rescaled median time (log variance, p 5e-7 and 2e-7); the rank
+    correlation is positive in each organoid (0.11 to 0.68).
+- claim: ed3f-burst-cluster-variability
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed3f-burst-cluster-variability
+  notes: Non-rigid units vary more between burst clusters than backbone units under both elbow readings
+    and both organoid sets (mean CV 0.70 to 1.31 against 0.07 to 0.31; p 5e-48 to 4e-94). The kneedle
+    rule picks 4 to 7 clusters, the silhouette 2 to 10.
+  deviations:
+  - k from 2 to 10 with 10 k-means++ seeds per k (the code's range of k is a parameter not given).
+- claim: ed4b-gabazine-more-bursts
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed4b-gabazine-more-bursts
+  notes: Burst rate rises with gabazine in each of the four organoids with a baseline (by 2.5 to 10.4
+    bursts per minute); mixed model 7.0 per minute, p 6e-6 (5 organoids, 9 recordings); paired t-test
+    over the four, p 0.023.
+  deviations:
+  - MO12 has no baseline sorted file; its gabazine recording enters the mixed model only.
+- claim: ed4b-nbqx-cpp-abolish-bursts
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed4b-nbqx-cpp-abolish-bursts
+  notes: The five NBQX with R-CPP recordings have 0, 0, 1 (MO12), 0 and 0 bursts against 81 to 116 at
+    baseline; burst rate falls by 10.3 per minute, p 3e-53.
+- claim: ed4c-gabazine-participation
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed4c-gabazine-participation
+  notes: Units pooled per condition (the dataset does not identify units across recordings), the
+    fraction of bursts with at least two spikes rises by 0.138 with gabazine, p 9e-4, in each of the
+    four organoids with a baseline. Treating units as matched in MO10, MO11 and MO14, whose unit
+    positions are identical across conditions, gives 0.150, p 1e-8.
+- claim: ed4d-gabazine-rank-order
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed4d-gabazine-rank-order
+  notes: The two normalisations the criterion names disagree. z-scored to the shuffles, gabazine is
+    higher by 2.0 (p printed as 0); as (A - B)/(A + B) per burst pair it is not (-1.14, p 0.6),
+    because the shuffled Spearman correlations average near 0 so A + B is near 0 for many pairs and
+    the ratio takes extreme values. The raw correlation rises in each organoid (medians 0.07 to 0.35
+    at baseline, 0.55 to 0.91 with gabazine). Question for the paper's authors, recorded as a
+    methods_unavailable finding, which normalisation was used and at which level (per burst pair or
+    per recording).
+- claim: supp2a-backbone-fraction-declines
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:supp2a-backbone-fraction-declines
+  notes: In HO2 and HO3 the backbone fraction is lower at 8 months than at 6 months on average and in
+    each organoid, with either denominator (all units 0.31 and 0.37 to 0.11 and 0.11). The murine part
+    cannot be tested, as the dandiset holds no longitudinal murine organoid recordings (all MO files
+    are P45D).
+- claim: supp2c-b2b-increases-with-age
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:supp2c-b2b-increases-with-age
+  notes: In HO2 and HO3 the burst-to-burst correlation rises with age (0.61, 0.69, 0.72 at 6, 7 and 8
+    months; age effect F 18.3, p 3e-8 with unit type as the second factor, F 12.8, p 5e-6 with
+    organoid), and backbone units are above non-rigid units at every age. The murine part cannot be
+    tested (no longitudinal murine organoid recordings).
+- claim: supp8-backbone-stable-4h
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 8-month and 8-month-plus-4-hour recordings of HO2 and HO3 are in the dandiset, but no
+    identifier links a unit across them. HO2 has 90 units in both with identical positions in the
+    same order, consistent with joint sorting; HO3 has 116 and 117 units, so its units cannot be
+    matched by order. The criterion requires both organoids.
+- claim: ed5-shuffle-reduces-b2b
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed5-shuffle-reduces-b2b
+  notes: Backbone units of HO1 to HO8 (255 with both values), real 0.617 against shuffled mean 0.513;
+    (a) 0.104 with a random intercept per organoid, p 9e-26, per unit p 2e-28; (b) normalised mean
+    0.076, one-sided p 0.007. HO8 goes the other way (-0.06).
+  deviations:
+  - 10 shuffles per recording, where the paper uses 100.
+- claim: fig3e-pairwise-correlation
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig3e-pairwise-correlation
+  measured: 34056
+  notes: Backbone pairs 0.70 against mixed 0.36 and non-rigid 0.23, both contrasts p below 1e-300, in
+    each organoid. The measured value is the number of pairs among all sorted units of HO1 to HO4,
+    which equals the paper's n; 9,648 pairs among units with at least 30 spikes enter the test.
+- claim: fig3f-backbone-pairs-in-tail
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig3f-backbone-pairs-in-tail
+  notes: The backbone-pair mean lies above the 75th percentile of all pairs in every organoid (87th to
+    95th percentile) and above the 90th in three of four (HO3 at the 87th). Skew 0.26 to 1.08; R
+    squared of a normal fit to the log correlations 0.28 to 0.80.
+- claim: fig4c-similarity-variance
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig4c-similarity-variance
+  notes: In HO1 the standard deviation of similarity over burst pairs is 0.142 inside against 0.191
+    outside (median burst edges) and 0.133 against 0.163 (backbone window); lower inside in every
+    organoid.
+- claim: fig4d-burst-similarity
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig4d-burst-similarity
+  notes: In HO1 backbone similarity exceeds non-rigid and shuffled similarity significantly at all 226
+    frames of the backbone window (Bonferroni). The same in HO2 to HO6; HO8 67% and 21% of frames.
+  deviations:
+  - Shuffled similarity averaged over 3 shuffles, where the paper uses 100.
+- claim: fig4e-similarity-rises-at-backbone-onset
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig4e-similarity-rises-at-backbone-onset
+  notes: In the seven organoids with backbone units the mean similarity over the backbone period
+    exceeds its value at the first frame (HO8 barely, 0.329 against 0.326). HO7 has no backbone unit
+    under the 100% rule, so no backbone period.
+- claim: supp13-top-correlated-units-similarity
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:supp13-top-correlated-units-similarity
+  notes: In HO1 the top 20% (19 units) give similarity 0.868 and the bottom 20% 0.056 against 0.453 for
+    all units, each significant at every frame of the window. Top minus bottom summed similarity falls
+    from 183.6 at 20% to 6.3 at 95%.
+- claim: fig4f-pca-variance
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig4f-pca-variance
+  measured:
+  - 75.4
+  - 17.4
+  notes: In HO1 the first two PCs explain 75.4% for backbone units (within 73 plus or minus 7.3) and
+    17.4% for non-rigid units (outside 25 plus or minus 2.5); no organoid matches both. In each of the
+    seven organoids with backbone units, backbone is above and non-rigid below all units; HO7 has no
+    backbone unit.
+- claim: supp18-hmm-likelihood-real-above-shuffled
+  outcome: reproduced
+  notebook: hmm_van_der_molen_2025.ipynb
+  output: claim:supp18-hmm-likelihood-real-above-shuffled
+  notes: Held-out log likelihood per entry is higher on real data than on the surrogate in all 120
+    fold, K and organoid combinations with 20% held out (smallest margin 0.009 nats per entry) and in
+    all 40 with 10% held out.
+  deviations:
+  - HMMs fitted with the entry's EM (hmm.py) in place of SSM; K = 10, 20 and 30 for the
+    cross-validation; folds refitted from scratch; entries held out at random, at 20% (Supplementary
+    Methods) and 10% (the code).
+- claim: fig5c-states-converge-at-peak
+  outcome: not_reproduced
+  notebook: hmm_van_der_molen_2025.ipynb
+  output: claim:fig5c-states-converge-at-peak
+  notes: The state entropy across bursts (averaged over K) has its minimum below both window ends in
+    seven organoids, within 90 ms of the peak in one (HO8), and within the backbone window in four
+    (HO1, HO5, HO6, HO8); in HO2, HO3 and HO4 it lies 120 to 510 ms before the peak. The criterion
+    needs 6 of 8 under both readings.
+  deviations:
+  - K = 10, 12, ..., 30 (11 models per recording) in place of every K from 10 to 30, at most 300 EM
+    iterations (34 of 341 models stopped there), with the entry's EM in place of SSM.
+- claim: fig5d-backbone-more-states
+  outcome: reproduced
+  notebook: hmm_van_der_molen_2025.ipynb
+  output: claim:fig5d-backbone-more-states
+  notes: Backbone units are consistent in more states (by 3.7) and have higher mean consistency (by
+    0.17) than non-rigid units, p printed as 0 for both, over 7 organoids and 11 K; higher in each
+    organoid. HO7 has no backbone unit.
+  deviations:
+  - K enters as a fixed factor, where the criterion names a random intercept for K.
+- claim: fig5f-svm-states-beat-rate
+  outcome: partially_reproduced
+  notebook: hmm_van_der_molen_2025.ipynb
+  output: claim:fig5f-svm-states-beat-rate
+  measured:
+  - 86.9
+  - 73.9
+  notes: State-feature accuracy 86.9% plus or minus 11.1 over all models is within 83.9 plus or minus
+    12.0; rate accuracy 73.9% plus or minus 23.2 over seven organoids is just above 63.2 plus or minus
+    10.4. States beat rate in neither test, (a) paired over organoids p 0.081, (b) per organoid
+    significant in four of seven; in HO2, HO3 and HO4 rate alone reaches 89% to 95%. HO7 has no
+    backbone unit to classify.
+- claim: fig6f-slice-b2b-correlation
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig6f-slice-b2b-correlation
+  measured: 959
+  notes: Backbone units have higher correlations at both thresholds and with a random intercept per
+    slice or per animal (effects 0.077 to 0.111, p 2e-9 to 1e-26; 715 units in the test). The measured
+    value is the number of sorted units in the six slices, which equals the paper's n.
+- claim: fig6g-slice-pairwise-correlation
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig6g-slice-pairwise-correlation
+  measured: 125607
+  notes: Backbone pairs exceed mixed and non-rigid pairs under every reading (contrasts 0.16 to 0.22,
+    p below 1e-300; 89,881 pairs among units with at least 30 spikes). The measured value is the number
+    of pairs among all sorted units of the slices, which equals the paper's n.
+- claim: fig7a-backbone-higher-rate
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7a-backbone-higher-rate
+  measured:
+  - 699
+  - 624
+  - 813
+  - 1744
+  notes: Backbone units fire faster in every model type (log10 differences 0.35 to 0.81, p below
+    1e-30) at both slice thresholds. Unit counts with at least 30 spikes (699, 624, 813, 1744) are
+    outside the legend's (1048, 1179, 786, 1048); all sorted units are 930, 1273, 959 and 2001. The
+    four murine organoids without bursts are left out.
+- claim: fig7a-primary-higher-rate
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7a-primary-higher-rate
+  notes: Five of six contrasts favour primary cultures with p below 0.05; primary backbone units do
+    not fire faster than murine organoid backbone units (0.04 log10 units, p 0.66 and 0.68).
+- claim: fig7b-normalized-b2b
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7b-normalized-b2b
+  notes: Backbone above non-rigid in human organoids (p 2e-8), murine organoids (p 7e-5) and slices (p
+    below 2e-9) under both normalisations and thresholds. Backbone units of these types do not exceed
+    primary backbone units with the ratio normalisation (p 0.11, 0.41, 0.22); with the difference
+    only human organoids do (p 0.025).
+- claim: fig7b-primary-no-b2b-difference
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7b-primary-no-b2b-difference
+  notes: Primary backbone minus non-rigid -0.003, p 0.76 (difference normalisation -0.004, p 0.70).
+- claim: fig7c-normalized-pairwise
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7c-normalized-pairwise
+  notes: On per-recording medians, backbone pairs exceed non-rigid pairs in human organoids (0.163, p
+    2e-4) and murine organoids (0.237, p 7e-6, five recordings with bursts) at both slice thresholds;
+    the difference normalisation and pair-level variants agree.
+  deviations:
+  - Shuffle means from 3 shuffles per recording, where the paper uses 100.
+- claim: fig7c-slices-primaries-no-pair-difference
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7c-slices-primaries-no-pair-difference
+  notes: Slices 0.057, p 0.24 (0.059, p 0.27 at 70%); primary cultures 0.031, p 0.46. The pair-level
+    variant finds both significant.
+- claim: fig7c-backbone-pairs-above-random
+  outcome: not_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7c-backbone-pairs-above-random
+  notes: Normalised backbone pairs are above 0 in human organoids (0.162, one-sided p 6e-9) but not in
+    murine organoids (0.008, p 0.35); slices 0.073, p 0.043 at 90% and 0.063, p 0.088 at 70%; primary
+    cultures are above 0 (0.043, p 0.004) where the paper finds no effect.
+- claim: fig7d-lag-times
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7d-lag-times
+  notes: Lags are longer in human (0.86 log10 units, p 1e-11) and murine organoids (0.70, p 4e-7) than
+    in primary cultures and human organoids differ from slices (p 7e-4), but not from murine organoids
+    (p 0.28); the same under both zero-lag readings.
+  deviations:
+  - The code's lag table (Processed_data/Figure7/lag_data.xlsx at e9a79c4) holds no zero lag, so
+    reading (a), dropping zero lags, is the code's.
+- claim: fig7d-murine-organoids-slices-same-lag
+  outcome: not_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7d-murine-organoids-slices-same-lag
+  notes: Under reading (a), the code's, murine organoid lags exceed slice lags (0.31 log10 units, p
+    0.035); with zero lags set to 1 ms, p 0.059. Slices against primary cultures, 0.39, p 0.004.
+- claim: fig7e-pca-backbone-variance
+  outcome: not_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:fig7e-pca-backbone-variance
+  notes: Backbone above non-rigid in human organoids (0.187, p 4e-11) but not murine organoids (-0.040,
+    p 0.23); against all units, human organoids again (p 1e-8), murine not (p 0.23), primary cultures
+    significant (p 0.046). Human organoid backbone units exceed slice (p 0.006) and primary (p 1e-4)
+    ones; murine organoid ones do not.
+- claim: fig7f-hmm-dimensionality
+  outcome: reproduced
+  notebook: hmm_van_der_molen_2025.ipynb
+  output: claim:fig7f-hmm-dimensionality
+  notes: Mean dimensionality at theta 0.75 is 1.72 in primary cultures against 2.84 in human (p 3e-6)
+    and 2.60 in murine organoids (p 0.003). Human organoids and slices do not differ (p 0.58).
+  deviations:
+  - A Poisson GEE with exchangeable correlation within recording in place of glmer with a random
+    intercept; K = 10, 12, ..., 30.
+- claim: supp24c-nonrigid-more-variable
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:supp24c-nonrigid-more-variable
+  notes: Non-rigid CV2 exceeds backbone CV2 in every model type, raw (p 1e-6 to 7e-40) and z-scored to
+    the shuffles (p 0.02 to 7e-55), at both slice thresholds.
+- claim: supp24d-backbone-non-poisson
+  outcome: reproduced
+  notebook: hmm_van_der_molen_2025.ipynb
+  output: claim:supp24d-backbone-non-poisson
+  notes: Median fraction of non-Poisson states is 0 or 0.001 for non-rigid units and 0.013 to 0.264 for
+    backbone units in every model type; backbone minus non-rigid 0.21 in the mixed model.
+- claim: supp10b-rank-order-by-model
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:supp10b-rank-order-by-model
+  notes: With z-scored rank-order correlations the model type matters (chi2(3) 10.5, p 0.015) and human
+    organoids exceed primary cultures (1.37, p 0.033); with the ratio normalisation neither (p 0.65 and
+    0.45), for the reason given under ed4d-gabazine-rank-order. The question is the same one.
+- claim: supp26-state-traversal
+  outcome: reproduced
+  notebook: hmm_van_der_molen_2025.ipynb
+  output: claim:supp26-state-traversal
+  notes: Primary cultures traverse more states per second than human organoids (20.2, p 3e-6) and
+    slices (11.7, p 0.0095); human and murine organoids do not differ (4.4, p 0.37). Primary cultures
+    also exceed murine organoids (p 3e-7), where the paper reports P 0.064.
+- claim: supp27-d2-near-critical
+  outcome: blocked
+  blocked_by: other
+  notes: Not run in this attempt. The run's time went to the other 49 claims; the d2 code of Sooter et
+    al. (figshare article 25927081, version 1, which the paper's r_download.sh fetches) was not fetched
+    or run, and the AR fit check that selects the preparations is not specified beyond "within one
+    order of magnitude". The spike data it needs are in the dandiset.
+- claim: ed2d-alam-el-din-rates
+  outcome: not_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed2d-alam-el-din-rates
+  notes: Backbone units fire faster in HO1 to HO4 (0.72 log10 units, p 1e-77) and also in HO5 to HO8
+    (0.12, p 0.0018), where the paper finds P 0.40.
+- claim: ed2e-alam-el-din-b2b
+  outcome: reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed2e-alam-el-din-b2b
+  notes: Normalised burst-to-burst correlations are higher for backbone units in HO1 to HO4 (0.040, p
+    0.005) and HO5 to HO8 (0.084, p 1e-5).
+- claim: ed2f-backbone-pairs-above-zero
+  outcome: partially_reproduced
+  notebook: reproduce_van_der_molen_2025.ipynb
+  output: claim:ed2f-backbone-pairs-above-zero
+  notes: Backbone pairs are above 0 in both sets (p 3e-6 and 8e-4) and non-rigid pairs are not; mixed
+    pairs are also above 0 in HO1 to HO4 (0.087, p 0.009), where the paper finds P 0.145.
+- claim: supp5-murine-organoid-forebrain-identity
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The PIPseq data are in GEO (GSE290330), not in the dandiset. The criterion itself says the
+    markers of Supplementary Fig. 5B are not listed in the text, so what counts as predominant forebrain
+    identity is open. The analysis also needs Seurat in R, which this entry's locked Python environment
+    does not include. Not fetched.
+findings:
+- kind: methods_unavailable
+  statement: Burst detection parameters for the murine organoids are not given. With the stated
+    detection (4 x RMS of the 20 ms and 100 ms smoothed population rate) MO2, MO4, MO5 and MO6 have no
+    burst and MO3 has four, because their tonic rate keeps the RMS near the burst peaks, yet the
+    paper's code lists backbone units for all nine. Question for the authors, which threshold, peak
+    distance and recording length were used for each murine organoid, and for which recordings the
+    minimum peak distance was raised towards 2000 ms.
+- kind: methods_unavailable
+  statement: Question for the authors on the rank-order normalisation (Extended Data Fig. 4D and
+    Supplementary Fig. 10B). The legend says z-scored and the Supplementary Methods say (A - B)/(A +
+    B); per burst pair, shuffled Spearman correlations average near 0, so the ratio is unstable and
+    the two give opposite conclusions here. Which was used, and was it applied per burst pair or per
+    recording?
+- kind: data_missing
+  statement: The baseline sorted recording of murine organoid MO12 is not in the dandiset (its
+    gabazine and NBQX with R-CPP sorted files are), and no longitudinal murine organoid recording
+    (Supplementary Fig. 2) is in it; every MO file has age P45D.
+- kind: identifier_missing
+  statement: Units have positions but no identifier linking them across recordings of one organoid
+    (0 h and 4 h, Supplementary Fig. 8; drug conditions, Extended Data Fig. 4). Positions are identical
+    in order for HO2 (0 h and 4 h) and MO10, MO11 and MO14, but not for HO3 (116 and 117 units), MO12
+    or MO13.
+- kind: other
+  statement: The HO2 and HO3 recordings at 6, 7, 8 months and 8 months plus 4 h are each deposited
+    twice under different session names, and the 7-month ones a third time as HO2_sorted.mat and
+    HO3_sorted.mat, with identical spike matrices.
+- kind: metadata_error
+  statement: The dandiset description says only spike-sorted data are included for the sourced human
+    organoids, but raw ecephys files are present for HO1 to HO4 (sixteen files). The slice files say
+    "Sorting/curation not specified".
+- kind: paper_inconsistency
+  statement: The n reported with several tests counts all sorted units or pairs (507 units and 34,056
+    pairs in HO1 to HO4, 959 units and 125,607 pairs in the slices), while the Methods and legends
+    restrict the tests to units with at least 30 spikes or units active in enough bursts. The Fig. 7A
+    legend's unit counts (1048, 1179, 786, 1048) match neither all units (930, 1273, 959, 2001) nor
+    units with at least 30 spikes here.
+- kind: paper_inconsistency
+  statement: Pr1 to Pr4 are cultures from E18 Wistar rat cortex (Methods; the files say Rattus
+    norvegicus), while the paper calls all primary cultures murine.
