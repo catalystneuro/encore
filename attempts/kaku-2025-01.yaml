@@ -44,7 +44,7 @@ outcomes:
   deviations:
   - The files are read directly; the code's nwb2mat converter (a Windows MATLAB executable) was not used.
 - claim: units-count
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_kaku_2025.ipynb
   output: claim:units-count
   measured:
@@ -59,15 +59,10 @@ outcomes:
     insertions, not 339. Cerebellum 4,157 (5,385 with the arbor vitae, within tolerance), pons 3,021 and medulla
     8,992, both below tolerance; 2,711 good units lie outside these regions, 1,222 of them in the arbor vitae and
     others in the cerebellar peduncles and the spinal tract of the trigeminal nerve. The criterion defines no partial
-    outcome; partially reproduced because the total, the mean per probe and the mice match and the division counts
-    do not. Whether fibre-tract units belong to a division is asked of a reader (questions/kaku-2025.yaml). With
-    the drift metric 16,957 units (CB 3,292, P 2,698, MY 7,626).
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion defines no partial outcome, and the insertions (335 against 339, an exact count), the pons
-      (3,021) and the medulla (8,992) are outside it, as is the cerebellum (4,157) unless the arbor vitae is counted.
-      region-spike-rates and fig1f-licking-mode-switch were changed to not reproduced after round 1 for the same
-      reason (verifier, round 2). The numbers are those of the notebook's units-count cell.
+    outcome, and the insertions, the pons and the medulla are outside it, so the outcome is not reproduced (changed
+    from partially reproduced after round 3); the total, the mean per probe and the mice match. Whether fibre-tract
+    units belong to a division is asked of a reader (questions/kaku-2025.yaml); it does not change the outcome, since
+    the insertion count fails. With the drift metric 16,957 units (CB 3,292, P 2,698, MY 7,626).
   deviations:
   - Regions are taken from the Allen structure tree (iblatlas copy, pinned) by the unit's region name; whether the
     paper counts the arbor vitae as cerebellum is not stated, and both counts are shown.
@@ -275,33 +270,26 @@ outcomes:
     readings give 262 to 355, 170 to 212 and 65 to 87. V4(b): 187 to 264, 98 to 126 and 62 to 84. No combination
     puts the three counts within tolerance of 427, 175 and 55.'
 - claim: fig2f-breathing-units-location
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_kaku_2025.ipynb
   output: claim:fig2f-breathing-units-location
-  notes: 'The preBotzinger complex is built from the CCF annotation as O3 words it: within 300 or 500 um below AMB,
-    inside the whole nucleus''s AP and ML extent (AP 11,350 to 12,575, |ML| 1,225 to 1,525, ventral edge DV 6,750
-    um). It holds 36 and 41 good units, 20 or 21 breathing-tuned (49% to 58%), against 4.4% to 6.7% of pons and
-    medulla units, Fisher p < 0.0001; posterior ventral IRN 88 to 109 of 517 (17% to 21%), p < 0.0001, under every
-    reading of tuning and distance. With AMB''s ML extent and ventral edge taken in each 100 um AP step (a variant),
-    12 or 15 units, 2 or 3 tuned, p 0.04 to 0.27, which would not reproduce. Round 1 built the box from 87 AMB-labelled
-    units (16 units, p 0.0004 to 0.0032). The box''s units come from 10 mice in 12 sessions (at most 10 or 12 from
-    DL009), its 21 tuned units (order 4, V3 a) from 7 mice (at most 6 from one); the per-step variant has 12 or
-    15 units in 5 mice.'
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The whole-nucleus box takes AMB's deepest point and full ML range across all its AP levels, so a unit
-      can count as within 300 um below AMB at an AP level where it lies further below the local nucleus. The per-AP-step
-      reading is as close to O3's wording and gives a different outcome (12 or 15 units, p 0.04 to 0.27, against
-      36 or 41, p < 0.0001), and the claims file's header blocks a claim whose readings of a region disagree. The
-      paper gives no numbers for the region, so neither choice has a better basis (verifier, round 2). Analysis in
-      the notebook's fig2f cell.
+  notes: 'The two readings of AMB''s extent in O3 give different outcomes, which the claims file''s header blocks
+    (changed from reproduced after round 3). The preBotzinger complex is built from the CCF annotation: within 300
+    or 500 um below AMB, inside the whole nucleus''s AP and ML extent (AP 11,350 to 12,575, |ML| 1,225 to 1,525, ventral
+    edge DV 6,750 um), it holds 36 and 41 good units, 20 or 21 breathing-tuned (49% to 58%), against 4.4% to 6.7%
+    of pons and medulla units, Fisher p < 0.0001. With AMB''s ML extent and ventral edge taken in each 100 um AP step,
+    it holds 12 or 15 units, 2 or 3 tuned, p 0.04 to 0.27, and 4 of the 10 combinations of tuning reading and distance
+    fail. The whole-nucleus box takes AMB''s deepest point and full ML range at every AP level, so a unit can count
+    as within 300 um below AMB where it lies further below the local nucleus; the paper gives no numbers for the
+    region. Posterior ventral IRN holds 88 to 109 of 517 tuned units (17% to 21%), p < 0.0001, under every reading.
+    Round 1 built the box from 87 AMB-labelled units (16 units, p 0.0004 to 0.0032). The box''s units come from 10
+    mice in 12 sessions (at most 10 or 12 from DL009), its 21 tuned units (order 4, V3 a) from 7 mice (at most 6 from
+    one); the per-step reading has 12 or 15 units in 5 mice.'
   deviations:
-  - 'Assumed: AMB''s "anterior-posterior and medial-lateral extent" in O3 is the extent of the whole nucleus in
-    the CCF annotation, as the claims file words it; the per-AP-step reading gives a different outcome and is shown.
-    Regions come from the Allen CCFv3 2017 annotation at 25 um (inputs), whose label at the unit''s position equals
-    the file''s region name for 96.3% of good units.'
-  assumed: true
+  - 'AMB''s "anterior-posterior and medial-lateral extent" in O3 is read both as the extent of the whole nucleus
+    in the CCF annotation and as its extent in each 100 um AP step. Regions come from the Allen CCFv3 2017 annotation
+    at 25 um (inputs), whose label at the unit''s position equals the file''s region name for 96.3% of good units.'
 - claim: fig2g-licking-units-location
   outcome: reproduced
   notebook: reproduce_kaku_2025.ipynb
@@ -351,28 +339,22 @@ outcomes:
   blocked_by: data_missing
   notes: Depends on ed7g-cae-better-than-features; the raw videos are not in the dandiset.
 - claim: ed8bc-prebotc-inspiration-phase
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_kaku_2025.ipynb
   output: claim:ed8bc-prebotc-inspiration-phase
-  notes: With the preBotzinger complex of fig2f (CCF annotation, AMB's whole extent), 18 or 19 breathing units with
-    MI > 0.9 lie near it under every reading of tuning and distance, and 14 prefer the inspiration half (74% to
-    78%), Rayleigh p < 0.0001. With AMB's extent per AP step (variant) 2 units remain, both in the inspiration half,
-    too few for the Rayleigh test (it cannot reach p < 0.05 with 2). Over all 265 breathing units with MI > 0.9
-    (order 4, V3 a) 40.8% prefer the inspiration half. Round 1, with the box built from AMB-labelled units, had
-    4 or 5 units and gave not reproduced; the change follows the region built from the annotation. The 18 or 19
-    units come from 6 mice in 6 sessions (DL009 6, DL016 4, DL014 3, DL018, DL023 and DL025 2 each); DL009 and DL014
-    hold all the units outside the inspiration half.
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: As for fig2f-breathing-units-location; the region's two readings give different outcomes (18 or 19 units,
-      Rayleigh p < 0.0001, against 2 units, too few for the test), and the header blocks such a claim (verifier,
-      round 2). Analysis in the notebook's ed8bc cell.
+  notes: The two readings of the preBotzinger complex of fig2f give different outcomes, which the claims file's header
+    blocks (changed from reproduced after round 3). With AMB's whole extent, 18 or 19 breathing units with MI > 0.9
+    lie near it under every reading of tuning and distance, and 14 prefer the inspiration half (74% to 78%), Rayleigh
+    p < 0.0001. With AMB's extent per AP step 2 units remain, both in the inspiration half, Rayleigh p 0.15 to 0.17,
+    so the criterion's p < 0.05 fails. Over all 265 breathing units with MI > 0.9 (order 4, V3 a) 40.8% prefer the
+    inspiration half. Round 1, with the box built from AMB-labelled units, had 4 or 5 units and gave not reproduced.
+    The 18 or 19 units come from 6 mice in 6 sessions (DL009 6, DL016 4, DL014 3, DL018, DL023 and DL025 2 each);
+    DL009 and DL014 hold all the units outside the inspiration half.
   deviations:
   - Inspiration onset is phase pi in the tuning phase (Hilbert angle plus pi, as the code), so the inspiration half
     is preferred phase minus pi in [0, pi).
-  - 'Assumed: the region construction of fig2f.'
-  assumed: true
+  - The region is built as in fig2f, under both readings.
 - claim: ed8e-licking-units-protrusion
   outcome: reproduced
   notebook: reproduce_kaku_2025.ipynb
@@ -1231,3 +1213,50 @@ verifications:
     outcome: blocked
     reason: I agree, with no comment. One of the 18 data_missing blocks.
     response: No change.
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3: the three proposed changes of outcome (units-count, fig2f-breathing-units-location and ed8bc-prebotc-inspiration-phase)
+    and the analysis behind them in the re-executed notebook, with the claims file and the attempt record. Report:
+    transcripts/kaku-2025/verifier-3-report.md. The verifier also noted that O3 does not say whether AMB''s extent
+    is the whole nucleus or the nucleus at each AP level, and that the paper does not say how fibre-tract units are
+    grouped; both are gaps in the claims file and change no outcome.'
+  results:
+  - claim: units-count
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 17 prints counts that come from the unit table and the files. The criterion lists tolerances and defines
+      no partial outcome. Insertions are counted exactly, and the dandiset has 335 files against 339. Under the code
+      filter, pons is 3,021 (tolerance 3,330 to 4,070) and medulla is 8,992 (9,810 to 11,990). Cerebellum is 4,157,
+      or 5,385 with the arbor vitae. With the drift metric, the total of 16,957 is also out of tolerance. The total
+      (20,109), the mean per probe (60.0) and the mice (31) match. The fibre-tract question does not change the outcome,
+      because the insertion count fails whatever region each unit is given. The proposal applies the criterion as written
+      and matches how region-spike-rates was treated.
+    response: Outcome changed to not reproduced and `proposed` removed; the notebook's conclusion and summary, the README
+      and the notes follow.
+  - claim: fig2f-breathing-units-location
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 49 builds both regions from the CCF annotation. The coordinates are consistent: the annotation label
+      equals the file''s region name for 96.3% of good units. The whole-nucleus box uses AMB''s deepest point (DV 6,750
+      um) and its full ML range at every AP level. The per-100 um-AP-step reading uses the local ventral edge and ML
+      range. Both read O3''s "within d um ventral of AMB, inside AMB''s anterior-posterior and medial-lateral extent".
+      They give 36 or 41 units (p < 0.0001) against 12 or 15 units (p 0.04 to 0.27). Under the per-step reading, 4
+      of the 10 tuning-by-distance combinations fail. The header says readings of a region named in a criterion must
+      all give the outcome, or the claim is blocked. Neither construction was picked to reach a result, and the proposal
+      moves away from a positive outcome. Posterior ventral IRN passes under every reading, but the criterion needs
+      both regions.'
+    response: Outcome changed to blocked, methods_underspecified, and `proposed` removed; the assumption flag is dropped,
+      since both readings are now reported as such. The notebook's conclusion and summary, the README and the notes
+      follow.
+  - claim: ed8bc-prebotc-inspiration-phase
+    agrees: true
+    outcome: blocked
+    reason: In cell 60, the whole-nucleus box gives 18 or 19 units, 14 of them in the inspiration half, with Rayleigh
+      p < 0.0001. The per-step reading gives 2 units, Rayleigh p 0.15 to 0.17, so the criterion's p < 0.05 fails. The
+      two readings of the region therefore disagree. The phase convention (preferred phase minus pi, inspiration onset
+      at 0) follows the criterion. The base rate of 40.8% across all 265 units is printed. Same rule and same reasoning
+      as fig2f.
+    response: Outcome changed to blocked, methods_underspecified, and `proposed` removed; the notes now give the per-step
+      Rayleigh p of 0.15 to 0.17 that cell 60 prints. The notebook's conclusion and summary, the README and the notes
+      follow.
