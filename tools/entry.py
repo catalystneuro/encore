@@ -404,7 +404,15 @@ def _local_data(code: str, start: int) -> bool:
     return bool(allowed) and code.startswith(allowed, start) and code[start + len(allowed):start + len(allowed) + 1] in ("/", "'", '"')
 
 
+# A generator made with no seed, or a draw from numpy's global generator that no cell seeds: the results would differ
+# from one run to the next (docs/protocol.md, Author, step 3).
+UNSEEDED = re.compile(r"\bdefault_rng\(\s*\)|\bRandomState\(\s*\)")
+GLOBAL_DRAW = re.compile(r"\bnp\.random\.(?:permutation|shuffle|choice|rand|randn|randint|normal|uniform)\(")
+
+
 def _derivation_checks(report: Report, where, code: str) -> None:
+    if UNSEEDED.search(code) or (GLOBAL_DRAW.search(code) and "np.random.seed(" not in code):
+        report.error(where, "draws random numbers without a seed; take the seed from the claim (docs/protocol.md)")
     if EMBEDDED_IMAGE.search(code):
         report.error(where, "contains an encoded image; figures must be computed from the data")
     if READS_A_FIGURE.search(code):
