@@ -207,6 +207,15 @@ def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
     assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in papers and "format('-{0}', inputs.replicate)" in papers
 
 
+def test_an_authors_large_scratch_files_are_left_out_of_its_changes():
+    # petersen-2020, 2026-11-15: two pickles of 1.4 and 2.6 GB in the entry made a patch git refused to apply. New
+    # files over 20 MB are removed before the changes are collected, with a warning.
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    drop = workflow.index('git ls-files --others --exclude-standard -z -- "${paths[@]}"')
+    assert '-gt 20000000' in workflow[drop:drop + 400] and "::warning::Left out of the changes" in workflow[drop:drop + 400]
+    assert drop < workflow.index('git add -A -- "${paths[@]}" && git diff --cached --binary')
+
+
 def test_the_claims_checkpoint_waits_when_it_would_drop_a_claim_the_attempt_on_main_records(tmp_path):
     # 2026-11-16: a new reading of tingley-2018 renamed a claim; put on main ahead of its attempt, it broke the check
     # of the attempt already there, and with it every attempt's pull request. The checkpoint runs this script in a
