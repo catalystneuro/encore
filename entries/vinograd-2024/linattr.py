@@ -509,7 +509,8 @@ def transients(y, rate=RATE, thr=TRANSIENT_SD):
 def decay_tau(y, peak_idx, rate=RATE, window_s=10.0):
     """Decay constant of the mean transient: an exponential a*exp(-t/tau)+c fit to the mean trace
     from the peak over 10 s (claims, ed4hi: 'an exponential fit to the mean transient from its
-    peak'; the 10 s window is a standard choice). NaN if there is no complete transient."""
+    peak'). The 10 s window is a choice the paper does not give and it can move the constants, so
+    rslds_fits.ipynb also shows 5 and 20 s. NaN if there is no complete transient."""
     from scipy.optimize import curve_fit
     n = int(window_s * rate)
     segs = [y[i:i + n] for i in peak_idx if i + n <= len(y)]

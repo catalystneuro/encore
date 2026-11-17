@@ -146,7 +146,15 @@ outcomes:
     reading gives p = 0.0079 with three seeds (0, 137, 1337) and 0.15 with seed 1; the own-weights reading gives p < 0.05
     with seed 0 only (0.15 to 0.69 with the others, accuracy as low as 0.12 in one mouse). The decoding holds for most fits
     under one reading and for one fit under the other, so it is partially reproduced. Changed from reproduced after verification
-    round 1.'
+    round 1. With the seed-0 fits, on which ed3g-decode-observed-attack is recorded as reproduced, both readings give p
+    = 0.0079; a change to reproduced is proposed below.'
+  proposed:
+    outcome: reproduced
+    reason: 'Verification round 2 found that ed3h is judged differently from ed3g although both rest on the same fits. With
+      the seed-0 fits, the assumption ed3g is recorded under (assumed: true), both readings the criterion names give p =
+      0.0079 (rslds_fits.ipynb, the cell that runs every seed). The observation-weights reading gives p = 0.0079 with three
+      of four seeds, the same pattern as ed3g. The proposed outcome is reproduced, assumed on the seed-0 fits as ed3g, with
+      the own-weights reading''s dependence on the seed (p < 0.05 with 1 of 4 seeds) kept in the notes.'
   deviations:
   - The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the
     sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed
@@ -169,7 +177,10 @@ outcomes:
     for the miniscope mice, so reading (b) does not exist; with five neurons in each set both denominators are the same.
     The outcome rests on the cells of the two sessions being the same cells in the same order, which the files do not state;
     each cell's autocorrelation at a 5 s lag agrees across the two sessions in every mouse (Spearman r 0.35 to 0.61, permutation
-    p <= 0.016; data check of rslds_fits.ipynb), which is consistent with matched cells but does not prove it.
+    p <= 0.016; data check of rslds_fits.ipynb), which is consistent with matched cells but does not prove it. The five
+    strongest x1 neurons are not stable from fit to fit; refits of one session with the four seeds share 47% of them on
+    average (13 to 90% by session, 70% or more in 4 of 10 sessions), while the two conditions share 7% over all 16 seed
+    pairs, the chance level. The overlap between conditions is lower than the variation between fits.
   deviations:
   - The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the
     sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed
@@ -191,7 +202,8 @@ outcomes:
     raw and absolute products. Code''s seeds 2 of 5, p = 0.55 and 0.69. The outcome rests on the cells of the two sessions
     being the same cells in the same order, which the files do not state; each cell''s autocorrelation at a 5 s lag agrees
     across the two sessions in every mouse (Spearman r 0.35 to 0.61, permutation p <= 0.016; data check of rslds_fits.ipynb),
-    which is consistent with matched cells but does not prove it.'
+    which is consistent with matched cells but does not prove it. Refits of one session with the four seeds give x1 vectors
+    with an absolute dot product of 0.75 on average (session means 0.40 to 0.99), above the engagement-observation products.'
   deviations:
   - The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the
     sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed
@@ -212,9 +224,9 @@ outcomes:
   - 1.68
   - 3.12
   notes: 'Seed 0, engaging baselines: 1.68 events per baseline in x1 neurons and 3.12 in x2 (Mann-Whitney p = 0.46, x2 higher
-    in 3 of 5); observation baselines 1.72 and 1.12 (p = 1.0); per minute and with the code''s seeds p = 0.40 to 1.0. The
-    x1 value of the engaging reading is within 1.6 +/- 0.2; the x2 value is not. The outcome rests on the baseline window
-    stated under deviations.'
+    in 3 of 5); observation baselines 1.72 and 1.12 (p = 1.0); per minute and with the code''s seeds p = 0.40 to 1.0. Counts
+    per baseline are not comparable with the paper''s 1.6 and 2.3 (see deviations), so the measured values are not compared
+    with the expected ones. The outcome rests on the baseline window stated under deviations.'
   deviations:
   - The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the
     sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed
@@ -241,8 +253,10 @@ outcomes:
     all p >= 0.125), as the paper finds. The values differ from the paper''s: peak amplitudes 1.76 and 1.96 z (seed 0, engaging;
     expected 0.58 and 0.71, values below the 1.5 SD detection threshold, so the paper measures amplitude another way), decay
     constants 29.9 and 21.8 s on average, single mice ranging from 0.05 s to the fit''s bound of 100 s. Some mice have no
-    transient in one set within the short baseline, so some tests use 3 or 4 mice. The outcome rests on the baseline window
-    stated under deviations.'
+    transient in one set within the short baseline, so some tests use 3 or 4 mice. The decay constants depend on the window
+    of the exponential fit: with 5 s instead of 10 s the observation sessions give x2 slower than x1 (48.5 against 2.0 s,
+    Mann-Whitney p = 0.029, signed-rank p = 0.125, 4 mice), with 20 s no test differs (p >= 0.70), and the engaging sessions
+    differ under no window (p >= 0.42). The outcome rests on the baseline window stated under deviations.'
   deviations:
   - The paper's models are not in the dandiset (only the two-photon factor weights), so the models are new fits with the
     sample code's settings (3 states for miniscope, 2 for two-photon; penalties, alpha and iterations as the code) and seed
@@ -256,7 +270,8 @@ outcomes:
     recording session"), which the files do not hold. Counts per baseline are therefore not comparable with the paper''s;
     counts per minute are.'
   - Amplitude is the peak z of each transient and the decay constant an exponential fit over 10 s from the peak of the mean
-    transient; the paper does not define either (claims criterion reading).
+    transient; the paper does not define either (claims criterion reading). The 10 s window is a choice; 5 and 20 s are
+    shown as variants.
   assumed: true
 - claim: fig1e-2p-x1-slower
   outcome: not_reproduced
@@ -318,12 +333,15 @@ outcomes:
     19.8% about the session mean (expected 84.7 +/- 3 and 67.2 +/- 2); the code''s latent R2 on held-out blocks is negative
     in most mice; no mouse reaches 70%. The held-out latents are inferred from the held-out activity, so the score is a
     reconstruction, not a forecast. The random-frame folds were not run, as ssm''s initialization fails with masked frames;
-    the in-sample reconstruction, which no held-out reading can be expected to exceed, explains 51.0% and 54.2% (rslds_fits.ipynb,
-    best of four seeds the same), below both expected values. Changed from blocked (methods_underspecified) after verification
+    the in-sample reconstruction, which no held-out reading of the neural R2 can be expected to exceed, explains 51.0% and
+    54.2% (rslds_fits.ipynb, best of four seeds the same), below both expected values. The bound does not hold for the sample
+    code''s latent R2, which in sample averages 0.84 for the seed-0 observation fits; the outcome stands on the contiguous-block
+    reading. Changed from blocked (methods_underspecified) after verification
     round 1. How the paper computed its cvR2 is put to the authors under findings.'
   deviations:
   - Contiguous folds only; the held-out latents are inferred with the trained parameters fixed (ssm approximate_posterior,
-    Laplace-EM, 50 iterations). The random-frame reading is bounded by the in-sample reconstruction in rslds_fits.ipynb.
+    Laplace-EM, 50 iterations). For the neural R2, the random-frame reading is bounded by the in-sample reconstruction in
+    rslds_fits.ipynb.
   measured:
   - -81.1
   - -74.5
@@ -390,12 +408,15 @@ outcomes:
     In the other 6 mice the mean peak z of the five targeted x1 neurons is 1.54 during observation and 2.04 during activation
     (difference +0.50 z), higher during activation in 6 of 6, Mann-Whitney p = 0.0043 (signed-rank variant 0.031), so the
     test finds a difference the paper''s does not. With M70 kept, 1.65 against 1.96, p = 0.097. Changed from reproduced
-    after verification round 1.'
+    after verification round 1. The outcome rests on leaving M70 out (assumed).'
+  assumed: true
   deviations:
   - Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.
   - Peak is the maximum z over the whole session for each neuron; the paper does not say over which window.
-  - M70 left out, as its ActivatedNeurons list for the x1 sessions does not match the responding cells (data check of stored_weights_and_stimulation.ipynb);
-    the result with M70 is shown as a variant.
+  - 'Assumed: M70 is left out, as its ActivatedNeurons list for the x1 sessions does not match the responding cells (data
+    check of stored_weights_and_stimulation.ipynb), so the measure there is not of activated neurons. The result with M70
+    is shown as a variant (p = 0.097), and the outcome depends on the choice. M70 is kept in ed8gi-x1-stim-no-x2, which
+    uses only its weights.'
 - claim: ed8a-x1-integration-8s
   outcome: reproduced
   notebook: stored_weights_and_stimulation.ipynb
@@ -422,7 +443,8 @@ outcomes:
   notes: 'Reading (b): the seed-0 observation model of each mouse, simulated without noise from the activation session''s
     baseline state, with a kick along the slow eigenvector of the size of the first evoked latent x1 response at each pulse;
     simulated x1 at the ISI ends rises from ISI1 to ISI3 in 7 of 7 mice, as the criterion asks. The same simulation without
-    kicks also rises in 7 of 7 mice, as the state relaxes from the baseline toward the model''s fixed point (M70 from -5.90),
+    kicks also rises in 7 of 7 mice, as the state moves from the baseline toward the model''s fixed point (every simulated
+    trajectory starts at 0; M70''s is -5.90 at the end of ISI1 and -4.37 at the end of ISI3),
     so the criterion''s rise is not specific to the pulses; the part due to the kicks (kick minus no kick) grows from ISI1
     to ISI3 in 7 of 7, by 0.11 to 2.89. The simulations fit the data poorly (R2 of simulated against data x1 -14.3 to 0.14,
     median -1.32; the paper reports about 85%). Reading (a), possible for M70 only, gives a falling x1 (-0.49, -0.93, -1.28,
@@ -442,11 +464,15 @@ outcomes:
   notes: 'x2 projection during x1 activation, means 0.02, 0.70, 1.04, 0.42 against -0.09 at baseline (Wa); Dunn against
     baseline p = 1.0, 0.47, 0.036, 0.18 under Wa-Ca and 1.0, 0.45, 0.036, 0.23 under Wb-Ca, the readings under which fig2d
     is reproduced; Kruskal-Wallis p = 0.064 and 0.077. The third ISI is above baseline in 6 of 7 mice; M18R is negative
-    in every ISI. The x2 response is about a third of the x1 response. The outcome rests on M70, whose x2 projection falls
-    from 0 over frames 1 to 100 to about -3.8 in the 5 s before the first onset (baseline mean -1.26): without M70 no comparison
-    is significant (Dunn p = 1.0, 0.67, 0.080, 0.061 under Wa-Ca). M70 is kept, as its stored weights match its activity
-    and the claims file gives no rule to drop a mouse.'
+    in every ISI. The x2 response is about a third of the x1 response. The outcome rests on M70, whose x2 projection is
+    0.00 over frames 1 to 100 and -3.78 in the 5 s before the first onset (baseline mean -1.26): without M70 no comparison
+    is significant (Dunn p = 1.0, 0.67, 0.080, 0.061 under Wa-Ca). M70 is kept (assumed), as its stored weights match its
+    activity and the claims file gives no rule to drop a mouse.'
+  assumed: true
   deviations:
+  - 'Assumed: M70 is kept. Only its stored weights enter this test, and the data check finds that they match its activity;
+    its target list, which leads to leaving it out of ed7f-activated-x1-natural-levels, is not used here. Without M70 no
+    comparison is significant, so the outcome depends on the choice; both results are shown.'
   - Seven two-photon mice are in the dandiset where the paper has nine for Fig. 1 and eight for x1 group activation.
   - Projections, baselines and stimulation frames as stored in the dandiset and computed by the sample code (compute_projection_from_simplified_nwb);
     the pulse length of 2 s is from the Methods ('holographic photostimulation (10 Hz, 2 s, 10 ms pulse width)').
@@ -566,10 +592,11 @@ outcomes:
 - claim: ed10g-follower-decoding
   outcome: blocked
   blocked_by: data_missing
-  notes: Depends on ed10c-followers-integrate, which is blocked (no cell positions). The legend decodes from "follower"
+  notes: Depends on ed10c-followers-integrate, which is blocked (no cell positions). The Results decode from "follower"
     x1 neurons, which the Methods (Terminology) define as "neurons that responded to photostimulation and that were outside
     a 50 um radius around the targeted cell", so the 50 um exclusion is part of the measure. Checked against the archive's
-    file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb).
+    file list and the contents of every file (data check of stored_weights_and_stimulation.ipynb). Whether the criterion
+    should name follower x1 neurons, as the Results do, is asked of a reader (questions/vinograd-2024.yaml).
 - claim: ed10hi-responses-mostly-positive
   outcome: blocked
   blocked_by: data_missing
@@ -675,14 +702,16 @@ findings:
   statement: In sub-M70_ses-20230323_behavior.nwb the five neurons listed in ActivatedNeurons for activation_integration_neurons
     do not respond at the stimulation onsets (-0.01 z, against 0.27 to 0.80 z in the other six mice, and -0.08 to 0.04 z
     with the indices shifted by -2 to +2) and rank 33rd to 55th of 65 by the stored x1 weight. The cells that respond most
-    are cells 1, 2, 3, 5 and 22, ranking 1st, 2nd, 4th, 8th and 64th by the stored x1 weight, so the weights match the activity
-    and the M70 target list does not.
+    are cells 1, 2, 3, 5 and 22, which rank 2nd, 4th, 1st, 8th and 64th by the stored x1 weight, so the weights match the
+    activity and the M70 target list does not. The outcomes of ed7f-activated-x1-natural-levels (M70 left out) and ed8gi-x1-stim-no-x2
+    (M70 kept) depend on how M70 is treated.
 - kind: other
   statement: sub-M70/sub-M70_ses-None_behavior.nwb is the same recording as the observation session in sub-M70/sub-M70_ses-20230323_behavior.nwb
     (per-cell correlation median 0.965 over the first 3000 frames) with different factor weights; the later file stops the
-    session at 300 s, during the second BALB/c visit, which the earlier file follows to 350 s (4426 frames).
+    session at 300 s (3000 frames), during the second BALB/c visit, while the earlier file holds 4426 frames (443 s), with
+    that visit ending at 350 s.
 - kind: metadata_insufficient
-  statement: The miniscope sessions start 56 to 152 s before the first annotation and hold no 5 min solitary baseline, which
+  statement: The miniscope sessions start 56 to 96 s before the first annotation and hold no 5 min solitary baseline, which
     the Methods say was recorded at the start of every session; the files do not say how they were cropped.
 - kind: metadata_insufficient
   statement: Sniffing of the SW mouse during observation is annotated only for M30L; the other miniscope files keep three
@@ -1050,3 +1079,331 @@ verifications:
     response: 'Kept blocked (data_missing), with the disagreement recorded: the claims file lists fig4a as a dependency
       and the protocol blocks a claim that depends on a blocked claim. The notes and network_model.ipynb now also say that
       the model adds inhibition to the excitatory weights that fig4ce finds do not produce the networks of Fig. 4c.'
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebooks, the helper module, the attempt record and the claims file, with the paper.
+    The verifier agreed with 51 of 54 outcomes as they stood, would change ed3h to reproduced (assumed on the seed-0 fits),
+    asked for assumed: true on ed7f and ed8gi, and listed nine sentences the printed numbers did not support and one new check
+    (cross-seed stability of the x1 neurons).'
+  results:
+  - claim: ed1n-engaging-x1-slower
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome as recorded (all ten not reproduced claims).
+    response: No change needed.
+  - claim: ed1p-observing-x1-slower
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome as recorded (all ten not reproduced claims).
+    response: No change needed.
+  - claim: ed1m-x1-observe-attack-vs-sniff
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed3c-x1-activity-observe-vs-engage
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as recorded (the reproduced claims).
+    response: No change needed.
+  - claim: ed3e-achw-full-session
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome as recorded (all ten not reproduced claims).
+    response: No change needed.
+  - claim: ed3f-achw-after-removal
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced.
+    response: No change needed.
+  - claim: ed3g-decode-observed-attack
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The seed-0 assumption is stated and reasonable.
+    response: No change needed.
+  - claim: ed3h-decode-engaged-from-observed
+    agrees: false
+    outcome: reproduced
+    reason: 'The new four-seed run changes the picture. The observation-weights reading gives p = 0.0079 with seeds 0, 137
+      and 1337, and p = 0.15 with seed 1, the same pattern as ed3g, which is recorded as reproduced (assumed: seed 0). With
+      seed 0, both readings the criterion names give p = 0.0079. Applying the ed3g rule gives reproduced (assumed: seed-0
+      fits), with the own-weights reading''s fragility (1 of 4 seeds) in the notes. Otherwise the record should say why the
+      two claims are treated differently.'
+    response: Outcome kept at partially_reproduced, as round 2 allows no change. A change to reproduced, assumed on the seed-0
+      fits as ed3g, is written under proposed for a third round, with the reason; the analysis is the existing four-seed cell
+      of rslds_fits.ipynb. The notebook's conclusion and summary say so.
+  - claim: ed4c-x1-neuron-overlap
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. The matched-cells assumption is stated and reasonable; the identical cell counts in the two sessions
+      of every mouse support it more than the autocorrelation check does. New point: nothing shows that the five strongest
+      x1 neurons are stable across seeds within one session. If they are not, the 4% cross-condition overlap says nothing
+      about the paper''s claim. A within-session, cross-seed overlap from the existing fits would settle it.'
+    response: 'Added the within-session, cross-seed check from the existing fits (rslds_fits.ipynb): refits of one session
+      share 47% of the five strongest x1 neurons on average (13 to 90% by session, 70% or more in 4 of 10), while the two
+      conditions share 7% over all 16 seed pairs, the chance level. The cross-condition overlap is below the variation between
+      fits, so it does bear on the claim; the outcome is kept, and the notebook and notes give these numbers.'
+  - claim: ed4d-weight-dot-product
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The matched-cells assumption is stated and reasonable. The cross-seed stability point raised for ed4c
+      applies to the five strongest x1 neurons of the same fits.
+    response: 'The same cell gives, for ed4d, the absolute dot product of the unit x1 vectors of two seeds of one session:
+      0.75 on average (session means 0.40 to 0.99), above the engagement-observation products. Notes updated; outcome kept.'
+  - claim: ed4g-x2-more-spontaneous
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The baseline-window assumption is stated and reasonable. The notes say the x1 value of the engaging reading
+      is within 1.6 +/- 0.2, but that 1.68 is a count per baseline, and the record's own deviation says counts per baseline
+      are not comparable with the paper's. The notebook says the first annotation comes 56 to 152 s after the start; the printed
+      first annotations are 56.3 to 95.9 s.
+    response: Removed the comparison with 1.6 +/- 0.2 from the notes. The annotation range is corrected to 56 to 96 s in rslds_fits.ipynb
+      and in the finding.
+  - claim: ed4hi-amplitude-tau-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced; the baseline-window assumption is stated and reasonable. decay_tau's 10 s fit
+      window is called a standard choice, but it can change the decay constants, several of which sit at the fit bounds; this
+      does not bear on a conclusion.
+    response: The 10 s window is now described as a choice in the helper and the deviation, and a cell runs 5 and 20 s. At
+      5 s the observation sessions give x2 slower than x1 (Mann-Whitney p = 0.029, signed-rank 0.125, 4 mice); at 10 and 20
+      s no test differs, nor in the engaging sessions under any window. The outcome stays partially reproduced; notes and
+      the conclusion say so.
+  - claim: fig1e-2p-x1-slower
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome as recorded (all ten not reproduced claims).
+    response: No change needed.
+  - claim: fig1f-line-attractor-score
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced.
+    response: No change needed.
+  - claim: x1-time-constant-range
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced.
+    response: No change needed.
+  - claim: methods-subspace-angle
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as recorded (the reproduced claims).
+    response: No change to the outcome. The data-check finding on the earlier M70 file mixed frames and seconds (4426 frames
+      is 443 s, and 350 s is the end of the BALB/c interval); the notebook and the finding now say so.
+  - claim: methods-cvr2
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The notes and CV cell 8 call the in-sample reconstruction a bound that no held-out reading can be expected
+      to exceed; this holds for the neural R2 only, as the sample code's latent R2 in sample averages 0.84 for observation
+      with seed 0. The outcome stands on the contiguous-block reading. The README says the cross-validation notebook takes
+      about 45 minutes; the output prints 255 fits in 28.0 min and a notebook run time of 30.2 min.
+    response: The bound is now stated for the neural R2 only, with the latent R2's in-sample 0.84, in both notebooks and the
+      notes. The README now says about 30 minutes, and entry.yaml gives the run times of this run (13 and 30 min).
+  - claim: fig1m-achw-x1-longer
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The paired-test assumption is stated and reasonable.
+    response: No change needed.
+  - claim: ed5e-motion-explains-little
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig2d-x1-integration
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Stored cell 20 says only the first comparison could be tested as significant; the output shows Cb p =
+      0.38, 0.45, 1.0 and 1.0, so it is unclear what this means.
+    response: 'Reworded: under Cb no comparison is significant (Wa: Dunn p = 0.38, 0.45, 1.0 and 1.0). Outcome kept.'
+  - claim: fig2gh-x1-moves-along-attractor
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced. The round-1 reason recorded for it now includes the onset + 211 detail, which
+      the verifier had marked as not affecting a conclusion.
+    response: No change needed.
+  - claim: ed7f-activated-x1-natural-levels
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with not reproduced, but the outcome depends on leaving M70 out: p = 0.0043 without M70, p = 0.097 with
+      it. The exclusion is reasoned well, but it is filed as a deviation without assumed: true, and should be flagged as assumed.
+      The M70 finding says cells 1, 2, 3, 5 and 22 rank 1st, 2nd, 4th, 8th and 64th, but cell 9 sorts cells and ranks separately,
+      so this pairing is not shown.'
+    response: 'Marked assumed: true, with a deviation saying what was assumed and why. Cell 9 now prints each responsive cell
+      with its own rank: cells 1, 2, 3, 5 and 22 rank 2nd, 4th, 1st, 8th and 64th; the finding is corrected and says that
+      ed7f and ed8gi depend on how M70 is treated.'
+  - claim: ed8a-x1-integration-8s
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as recorded (the reproduced claims).
+    response: No change needed.
+  - claim: ed8ef-x1-scales-with-power
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed8c-model-integrates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced. The notes and the conclusion say M70 from -5.90; the simulated trajectory starts
+      at 0 by construction, and -5.90 is its value at the end of ISI1.
+    response: 'Corrected: every simulated trajectory starts at 0, and M70''s no-kick x1 is -5.90 at the end of ISI1 and -4.37
+      at the end of ISI3. Outcome kept.'
+  - claim: ed8gi-x1-stim-no-x2
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with not reproduced, but here the outcome depends on keeping M70; without M70 the smallest Dunn p is 0.061.
+      The choice is stated and reasonable, but it should also be assumed: true. M70 is left out of ed7f and kept in ed8gi,
+      and each choice happens to give not reproduced, so marking both makes that visible. The value of about -3.8 in the 5
+      s before the first onset is not printed; only the baseline mean of -1.26 is.'
+    response: 'Marked assumed: true, with a deviation. The notebook now prints M70''s x2 projection before its first onset
+      (0.00 over frames 1 to 100, -3.78 in the 5 s before the onset, -1.26 over all frames before it), and the conclusion
+      says that M70 is left out of ed7f and kept here, each giving not reproduced.'
+  - claim: fig2k-x2-no-integration
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as recorded (the reproduced claims).
+    response: No change needed. The verifier notes, as not bearing on a conclusion, that M70, M18R and M79RL's x2 targets
+      respond more with shifted indices and that the negative x2 projections of M70 and M18R under x2 activation are unexplained;
+      no claim reads the x2 lists, and these are left as they are.
+  - claim: ed8b-x2-no-integration-8s
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced.
+    response: No change needed.
+  - claim: ed8jl-x2-stim-little-x1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as recorded (the reproduced claims).
+    response: No change needed.
+  - claim: fig2no-x2-off-manifold
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced.
+    response: No change needed.
+  - claim: ed9d-attractor-finite
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially reproduced. Reading (b) says the pattern holds across mice; the mean meets it (2.62, 3.22,
+      2.91) and 2 of 7 single mice do. Partially reproduced is a fair reading, but the criterion is ambiguous.
+    response: No change. The verifier does not report a misreading of the paper, so no question was added.
+  - claim: ed9i-points-along-line-attractive
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed9mn-random-neurons-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed5hj-no-behaviour-change
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed6k-no-spatial-clustering
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed7bc-no-spatial-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed6g-offtarget-15um
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed10c-followers-integrate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed10g-follower-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked. The criterion says non-targeted neurons, following the legend of ED Fig. 10g; the Results
+      decode from follower x1 neurons, which the Methods (Terminology) define with the 50 um exclusion. The criterion is looser
+      than the paper, and the record follows the paper. The round-1 point is withdrawn.
+    response: No change; the claim stays blocked through its dependency on ed10c. The difference between the criterion and the Results is put to a reader in questions/vinograd-2024.yaml.
+  - claim: ed10hi-responses-mostly-positive
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed10lm-distance-not-explaining
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed10p-exclusion-no-change
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed10r-scales-with-number
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig3d-single-x1-drives-x1
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig3e-single-x1-not-x2
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig3i-single-x2-not-x1
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig3j-single-x2-not-x2
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig4a-dense-x1-connectivity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig4ce-excitatory-network
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig4hj-inhibition-slow-dense
+    agrees: true
+    outcome: blocked
+    reason: Accepts it as blocked, because it would reuse the underspecified weights of fig4ce. Since it uses no recorded
+      data, methods_underspecified would label it more accurately than data_missing.
+    response: 'Kept data_missing: the claims file lists fig4a-dense-x1-connectivity under depends_on, and the protocol blocks
+      a claim that depends on a blocked claim for the same reason. The notes already say the run would rest on the underspecified
+      weights of fig4ce.'
+  - claim: fig5g-time-constant-vs-connectivity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed12-first-stimulus-weaker
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: fig5f-ramp-not-correlated
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
+  - claim: ed12eh-x1-to-x2-not-correlated
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (all 26 blocked claims).
+    response: No change needed.
