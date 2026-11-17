@@ -79,8 +79,9 @@ outcomes:
   output: claim:fig1e-peaks-near-burst-peak
   notes: More than half of the values fall within the bound in 15 of 16 combinations of organoid, quantity
     and bound (fractions 0.53 to 0.89). The exception is HO4, pooled unit-burst peak times within 50 ms
-    (0.481). The criterion names the readings and requires every one, so the claim holds in part; the
-    readings are not alternatives to choose between.
+    (0.481). The criterion names the readings and requires every one, and defines no partial outcome;
+    the effect is present and falls short in one reading of one organoid, so the claim holds in part (the
+    rule for partial outcomes is in the notebook's summary).
 - claim: fig2-backbone-fraction
   outcome: reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
@@ -90,8 +91,8 @@ outcomes:
   - 0.15
   notes: With units of at least 30 spikes as the denominator (reading b), mean 0.331 and SD 0.150, both
     within tolerance. With all sorted units, mean 0.258 (within) and SD 0.166 (outside 0.126 to 0.154).
-    HO7 has no backbone unit here; HO1 to HO4 have 27, 26, 23 and 15, as the paper's processed table single_unit.xlsx
-    lists.
+    HO7 has no backbone unit here (no unit fires twice in all 21 bursts); HO1 to HO4 have 27, 26, 23 and
+    15.
 - claim: fig2e-b2b-correlation
   outcome: reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
@@ -156,15 +157,27 @@ outcomes:
   notes: Raw rank-order correlations of backbone sequences rise with gabazine in every organoid (medians
     0.07 to 0.35 at baseline, 0.55 to 0.91 with gabazine; 0.381, p printed as 0), and z-scored to the
     shuffles gabazine is higher by 2.0 (p printed as 0). As (A - B)/(A + B) per burst pair it is not (-1.15,
-    p 0.6). That ratio is not usable on these values. The shuffled Spearman correlations are signed and
-    centred on 0 (median 0.009, 5th to 95th percentile -0.12 to 0.13), so A + B changes sign for 8.8%
-    of burst pairs and is below 0.1 in magnitude for 5.8%, and the ratio runs from -86,000 to 3,200. The
-    legend's z-score is adopted (assumed). Which normalisation was used, and at which level, is asked
-    of the authors (methods_unavailable finding).
+    p 0.6). Per burst pair the ratio is unstable (the shuffled Spearman correlations are centred on 0,
+    median 0.009, so A + B changes sign for 8.8% of burst pairs and the ratio runs from -86,000 to 3,200),
+    but its per-recording medians are stable (0.855 to 0.996) and rise with gabazine in MO10, MO11 and
+    MO13 and fall slightly in MO14 (0.959 to 0.953). The legend's z-score was adopted in round 1 (assumed);
+    a change to blocked is proposed, as the criterion requires both readings and they disagree. Which
+    normalisation was used, and at which level, is asked of the authors (methods_unavailable finding).
   deviations:
   - Assumption. The rank-order correlations are normalised by z-score to the shuffles, as the Extended
     Data Fig. 4D legend says, and not as (A - B)/(A + B), the Supplementary Methods' general normalisation,
     which is unstable on signed correlations whose shuffle mean is near 0. Both are shown.
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The criterion requires gabazine to be higher with p < 0.05 under both normalisation readings,
+      and the claims file reads the paper correctly (the Supplementary Methods name (A - B)/(A + B) for
+      this measure, the Extended Data Fig. 4D legend says z-scored). Under the z-score gabazine is higher
+      by 2.0 (p printed as 0); under the ratio it is not (-1.15, p 0.6). The ratio is unstable per burst
+      pair, but its per-recording medians are stable (0.855 to 0.996) and fall in MO14, so it has not
+      been shown to carry no information. The readings disagree and adopting the z-score overrides the
+      criterion, so the claim is methods_underspecified, as the verifier gave in rounds 1 and 2. Notebook,
+      cells of ed4d-gabazine-rank-order.
 - claim: supp2a-backbone-fraction-declines
   outcome: partially_reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
@@ -226,8 +239,9 @@ outcomes:
   output: claim:fig3f-backbone-pairs-in-tail
   notes: The backbone-pair mean lies above the 75th percentile of all pairs in every organoid (87th to
     95th percentile) and above the 90th in three of four (HO3 at the 87th). The criterion requires both
-    readings, so the claim holds in part. Skew 0.26 to 1.08; R squared of a normal fit to the log correlations
-    0.28 to 0.80.
+    readings and defines no partial outcome; the effect is present and falls short at the 90th percentile
+    in one organoid, so the claim holds in part (the rule for partial outcomes is in the notebook's summary).
+    Skew 0.26 to 1.08; R squared of a normal fit to the log correlations 0.28 to 0.80.
 - claim: fig4c-similarity-variance
   outcome: reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
@@ -314,7 +328,8 @@ outcomes:
     in four of seven; in HO2, HO3 and HO4 rate alone reaches 89% to 95%. The majority class is 54% to
     88% of units (mean 70.6%); rate-only accuracy is below it in HO5 and HO8. The paper states no chance
     level. HO7 has no backbone unit to classify. The criterion defines no partial outcome, and its central
-    comparison fails.
+    comparison, states against rate, fails under both readings, so the claim is not reproduced (the rule
+    for partial outcomes is in the notebook's summary).
 - claim: fig6f-slice-b2b-correlation
   outcome: reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
@@ -352,7 +367,9 @@ outcomes:
   output: claim:fig7a-primary-higher-rate
   notes: Five of six contrasts favour primary cultures with p below 0.05; primary backbone units do not
     fire faster than murine organoid backbone units (0.04 log10 units, p 0.66 and 0.67; 0.13, p 0.20 under
-    the second recording length).
+    the second recording length). Without MO3 (four bursts) -0.04, p 0.69. The murine organoid results
+    rest on five of nine recordings, with burst detection that the paper does not give for murine organoids,
+    and may come from that difference.
 - claim: fig7b-normalized-b2b
   outcome: not_reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
@@ -364,7 +381,12 @@ outcomes:
     not at 70% (p 0.11). The criterion's partial outcome needs the three within-type contrasts; the murine
     one fails. With the difference normalisation (variant) murine organoids are above (0.044, p 0.007).
     In round 1 the murine contrast was p 7e-5; it changed with the merged overlapping bursts (MO9), the
-    whole-recording 30-spike rule and the Satterthwaite tests.
+    whole-recording 30-spike rule and the Satterthwaite tests. Without MO3, which has four bursts under
+    the stated detection and 160 of 234 units as backbone, the murine contrast holds (0.075, p 1e-4) and
+    the criterion's partial outcome would apply, so MO3 decides this outcome; it is kept as tested on
+    the five murine organoids with bursts, as the paper's code lists backbone units for all nine. The
+    murine organoid results rest on five of nine recordings, with burst detection that the paper does
+    not give for murine organoids, and may come from that difference.
 - claim: fig7b-primary-no-b2b-difference
   outcome: reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
@@ -393,14 +415,19 @@ outcomes:
   notes: Normalised backbone pairs are above 0 in human organoids (0.164, one-sided p 6e-4) but not in
     murine organoids (0.008, p 0.36); slices 0.076, p 0.065 at 90% and 0.070, p 0.091 at 70% (under the
     second recording length p 0.10 and 0.038); primary cultures are above 0 (0.043, p 0.017) where the
-    paper finds no effect.
+    paper finds no effect. Without MO3 murine organoids are still not above 0 (0.020, p 0.23). The murine
+    organoid results rest on five of nine recordings, with burst detection that the paper does not give
+    for murine organoids, and may come from that difference.
 - claim: fig7d-lag-times
   outcome: partially_reproduced
   notebook: reproduce_van_der_molen_2025.ipynb
   output: claim:fig7d-lag-times
   notes: Lags are longer in human (0.86 log10 units, p 7e-7) and murine organoids (0.70, p 4e-5) than
     in primary cultures and human organoids differ from slices (p 0.002), but not from murine organoids
-    (p 0.29); the same under both zero-lag readings and both recording lengths.
+    (p 0.29); the same under both zero-lag readings and both recording lengths. Without MO3 human and
+    murine organoids still do not differ (0.23, p 0.13). The murine organoid results rest on five of nine
+    recordings, with burst detection that the paper does not give for murine organoids, and may come from
+    that difference.
   deviations:
   - The code's lag table (Processed_data/Figure7/lag_data.xlsx at e9a79c4) holds no zero lag, so reading
     (a), dropping zero lags, is the code's.
@@ -413,7 +440,10 @@ outcomes:
     log10 units, p 0.045); with zero lags set to 1 ms, p 0.07; under the second recording length with
     zero lags dropped, p 0.013. Slices against primary cultures differ under every reading (p 0.008, 0.006
     and 0.029) where the paper has 0.53. The readings of zero lags disagree on the first contrast; the
-    code's is adopted, and the second contrast fails under all.
+    code's is adopted, and the second contrast fails under all. Without MO3 murine organoid and slice
+    lags do not differ (0.24, p 0.14); the second contrast does not involve murine organoids, so the outcome
+    stays. The murine organoid results rest on five of nine recordings, with burst detection that the
+    paper does not give for murine organoids, and may come from that difference.
   deviations:
   - Assumption. Zero lags are dropped (reading a), because the code's lag table (Processed_data/Figure7/lag_data.xlsx
     at e9a79c4) holds no zero lag; setting them to 1 ms is shown.
@@ -424,7 +454,10 @@ outcomes:
   notes: Backbone above non-rigid in human organoids (0.188, p 1e-6) but not murine organoids (-0.040,
     p 0.25); against all units, human organoids again (p 1e-6), murine not (p 0.24), primary cultures
     p 0.053; the same pattern under the second recording length. Human organoid backbone units exceed
-    slice (p 0.014) and primary (p 8e-4) ones; murine organoid ones do not.
+    slice (p 0.014) and primary (p 8e-4) ones; murine organoid ones do not. Without MO3 murine organoids
+    are still not above (-0.064, p 0.095; 0.034, p 0.23). The murine organoid results rest on five of
+    nine recordings, with burst detection that the paper does not give for murine organoids, and may come
+    from that difference.
 - claim: fig7f-hmm-dimensionality
   outcome: reproduced
   notebook: hmm_van_der_molen_2025.ipynb
@@ -453,16 +486,28 @@ outcomes:
   output: claim:supp10b-rank-order-by-model
   notes: With z-scored rank-order correlations the model type matters (F 3.57 on 3 and 20.9 df, p 0.032)
     and human organoids exceed primary cultures (1.53, t 2.31 on 20.9 df, p 0.031), both weaker than the
-    paper's P 0.004 and 0.0004. With the ratio normalisation neither (p 0.66 and 0.49), but the ratio
-    is not usable on signed correlations centred on 0 (ed4d-gabazine-rank-order). Under the second recording
-    length (5 shuffles) the z-scored contrasts are not significant (p 0.064 and 0.099), so the outcome
-    also rests on the code's lengths. The question to the authors is the one of ed4d.
+    paper's P 0.004 and 0.0004. With the ratio normalisation neither (p 0.66 and 0.49). Under the second
+    recording length (5 shuffles) the z-scored contrasts are not significant (p 0.064 and 0.099), nor
+    the ratio ones (p 0.69 and 0.38). Without MO3 the z-scored contrasts are p 0.014 and 0.027. The z-score
+    and the code's lengths were adopted in round 1 (assumed); a change to blocked is proposed, as the
+    claim passes under one of the four combinations of readings only. The question to the authors is the
+    one of ed4d.
   deviations:
   - Assumption. z-score normalisation, as for ed4d-gabazine-rank-order.
   - Assumption. The code's recording lengths (KEEP_DURATION), used for every claim; under the second reading
     of the length the result is not significant.
   - Main effect as an F test on 3 and the smallest Satterthwaite df of the three contrasts with primary
     cultures.
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The criterion requires the main effect and the human organoid against primary culture contrast
+      with p < 0.05 under both normalisation readings, and the claims file runs both recording lengths
+      where the outcome could depend on them. The ratio reading fails under both lengths (p 0.66 and 0.49;
+      0.69 and 0.38), and the z reading passes under the code's lengths only (p 0.032 and 0.031; 0.064
+      and 0.099 under the second). The readings disagree, so the claim is methods_underspecified, as the
+      verifier gave in rounds 1 and 2. Notebook, cells of supp10b-rank-order-by-model and the second reading
+      of the recording length.
 - claim: supp26-state-traversal
   outcome: partially_reproduced
   notebook: hmm_van_der_molen_2025.ipynb
@@ -472,6 +517,9 @@ outcomes:
     0.056, not below 0.05. Primary cultures also exceed murine organoids (p 2.5e-5), where the paper reports
     P 0.064. p-values are not Tukey-adjusted; an adjustment would only raise them. In round 1 the slice
     contrast was p 0.0095 with Wald z; it is above 0.05 with Satterthwaite t, as lmerTest would give.
+    The criterion defines no partial outcome; two of its three contrasts hold and the third has the paper's
+    direction but falls short of 0.05, so the claim holds in part (the rule for partial outcomes is in
+    the notebook's summary).
 - claim: supp27-d2-near-critical
   outcome: partially_reproduced
   assumed: true
@@ -529,7 +577,9 @@ findings:
     (4 x RMS of the 20 ms and 100 ms smoothed population rate) MO2, MO4, MO5 and MO6 have no burst and
     MO3 has four: their highest peaks reach only 3.0 to 3.7 times the RMS, because their rate between
     bursts is high (median smoothed population rate 0.47 to 1.07 spikes per ms), yet the paper''s code
-    lists backbone units for all nine. Question for the authors, which threshold, peak distance and recording
+    lists backbone units for all nine. MO3''s four bursts make 160 of its 234 units backbone units; without
+    MO3 the murine organoid contrast of Fig. 7B holds and the murine organoid against slice lag contrast
+    of Fig. 7D is not significant. Question for the authors, which threshold, peak distance and recording
     length were used for each murine organoid, and for which recordings the minimum peak distance was
     raised towards 2000 ms (35 overlapping bursts in 13 recordings here, a peak in the tail of a longer
     burst, are merged in its place).'
@@ -546,8 +596,10 @@ findings:
   statement: Units have positions but no identifier linking them across recordings of one organoid (0
     h and 4 h, Supplementary Fig. 8; drug conditions, Extended Data Fig. 4). The ordered unit positions
     are identical for HO2 at 0 h and 4 h (90 units), for HO3 once the 4 h file's unit 24 is left out (116
-    units), and for MO10, MO11 and MO14 across conditions, which is consistent with joint sorting, but
-    not for MO12 or MO13. Positions alone are not unique (61 distinct positions for 90 HO2 units).
+    units), and for MO10, MO11 and MO14 between baseline and gabazine, which is consistent with joint
+    sorting, but not for MO13, nor between the NBQX with R-CPP recording and any other condition of an
+    organoid (printed with ed4c-gabazine-participation). Positions alone are not unique (61 distinct positions
+    for 90 HO2 units).
 - kind: other
   statement: The HO2 and HO3 recordings at 6, 7, 8 months and 8 months plus 4 h are each deposited twice
     under different session names, and the 7-month ones a third time as HO2_sorted.mat and HO3_sorted.mat,
@@ -671,9 +723,9 @@ verifications:
       does not flag it).'
     response: 'The notebook now prints the degeneracy: the shuffle means are centred on 0 (5th to 95th
       percentile -0.12 to 0.13), A + B changes sign for 8.8% of burst pairs, and the ratio runs from -86,000
-      to 3,200. As the verifier finds the ratio reading gives no information, the legend''s z-score is
-      adopted as an assumption, and the outcome changes from blocked to reproduced (assumed); the question
-      to the authors stays.'
+      to 3,200. As the ratio reading is degenerate per burst pair (the verifier''s problem 6), the legend''s
+      z-score was adopted as an assumption, and the outcome changes from blocked to reproduced (assumed);
+      the question to the authors stays.'
   - claim: supp2a-backbone-fraction-declines
     agrees: true
     outcome: partially_reproduced
@@ -934,3 +986,409 @@ verifications:
     response: 'Kept as blocked with methods_underspecified. The data are public in GEO (GSE290330), and
       the protocol blocks a data: elsewhere claim for the reason that applies, never data_missing; the
       markers that define the identity are not listed in the text.'
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks (reproduce_van_der_molen_2025.ipynb and hmm_van_der_molen_2025.ipynb)
+    of the round-1 revision, with their conclusions and summaries, the attempt record, the README, the
+    helper modules sequences.py and hmm.py, and the claims file, with the paper's full text.
+  results:
+  - claim: methods-burst-count
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the other 48. The other "Result" sentences, both Summary tables, the README
+      and the outcome notes in the record check against the outputs. Cell 10: "median coarse rate 0.47
+      to 1.07 against at most 0.6 elsewhere". Pr2''s median is 0.685 (cell 9). Cell 142, Summary: "Every
+      recording the paper analyses is in the dandiset as a sorted file". The next sentence says MO12''s
+      baseline and all murine longitudinal recordings are missing.'
+    response: Cell 10 now compares the median rate with the highest peaks of these organoids (0.47 to
+      1.07 against 4.1 to 6.8) and drops the comparison with other recordings. The Summary now says the
+      31 main recordings are in the dandiset. Outcome unchanged.
+  - claim: fig1c-example-burst-count
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: ed1c-lognormal-rates
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig1d-burst-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig1e-peaks-near-burst-peak
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I accept the author''s argument: the criteria require every reading, so my round-1 "blocked"
+      was wrong. The record''s rationale for fig5f is that "the criterion defines no partial outcome".
+      That applies equally to fig1e, fig3f and supp26, which are recorded as partial. The outcomes are
+      defensible on substance, but the record should state one rule and apply it to all four.'
+    response: 'One rule is now stated in the notebook''s summary and cited in the notes of fig1e, fig3f,
+      supp26 and fig5f. Where the criterion defines a partial outcome, it decides; where it does not,
+      a claim is partially reproduced when its effect is present but falls short in one reading, organoid
+      or contrast, and not reproduced when its central comparison fails or the data contradict a part
+      of it. No outcome changes. '
+  - claim: fig2-backbone-fraction
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the other 48. The other "Result" sentences, both Summary tables, the README
+      and the outcome notes in the record check against the outputs. Cell 29: "HO7 has no backbone unit
+      here (no unit fires twice in all 24 bursts)." HO7 has 21 bursts (cells 8 and 12). Cell 142 and the
+      fig2 notes: "the backbone units and burst counts of HO1 to HO4 equal the numbers in the paper''s
+      processed tables". The notebook prints the counts but never compares them with any processed table.'
+    response: Cell 29 and the notes now say 21 bursts. The comparison with the paper's processed tables
+      is removed from the notes, the Summary and the README, which now say only that HO1 has the 46 bursts
+      of Fig. 1C. Outcome unchanged.
+  - claim: fig2e-b2b-correlation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig2g-variance-latency
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: ed3f-burst-cluster-variability
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: ed4b-gabazine-more-bursts
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: ed4b-nbqx-cpp-abolish-bursts
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: ed4c-gabazine-participation
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the other 48. The other "Result" sentences, both Summary tables, the README
+      and the outcome notes in the record check against the outputs. Record finding identifier_missing,
+      and cell 49: these say unit positions are identical across conditions for MO10, MO11 and MO14 and
+      differ for MO13. No output shows this; it appears only as a label inside a print statement (cell
+      48).'
+    response: 'Cell 48 now prints, for each drug organoid, the unit counts and whether the ordered positions
+      are identical between each pair of conditions: identical between baseline and gabazine in MO10,
+      MO11 and MO14, not in MO13, and never between NBQX with R-CPP and another condition. Cell 49 and
+      the finding cite this output. Outcome unchanged.'
+  - claim: ed4d-gabazine-rank-order
+    agrees: false
+    outcome: blocked
+    reason: 'The criterion requires gabazine to be higher "under both readings". Under the ratio reading
+      it is not (-1.15, p 0.6; cell 51). The claims file reads the paper correctly here: the Supplementary
+      Methods name (A-B)/(A+B) for exactly this measure, while the Extended Data Fig. 4D legend says z-scored.
+      The case for dropping the ratio reading holds only for a mean-based model on ratios computed per
+      burst pair. Per-recording medians of the ratio are stable (0.855 to 0.996); they rise in three organoids
+      and fall in one (MO14, 0.959 to 0.953), so the ratio reading has not been shown to carry no information.
+      Under the claims file this should be blocked as methods_underspecified. The record says "As the
+      verifier finds the ratio reading gives no information, the legend''s z-score is adopted"; I called
+      the ratio reading degenerate, but I concluded blocked, and did not say the z-score should be adopted.'
+    response: 'Agreed. As outcomes may not change in round 2, the outcome stays reproduced (assumed) and
+      a change to blocked (methods_underspecified) is proposed under proposed, for round 3. The notebook''s
+      conclusion and the notes now give the per-recording medians of the ratio and say that the readings
+      disagree. The round-1 response misstated the verifier''s conclusion: the verifier concluded blocked
+      and did not recommend the z-score.'
+  - claim: supp2a-backbone-fraction-declines
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp2c-b2b-increases-with-age
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp8-backbone-stable-4h
+    agrees: true
+    outcome: reproduced
+    reason: The link by identical ordered positions is stated, reasonable, and shown alongside each recording's
+      own result.
+    response: No change.
+  - claim: ed5-shuffle-reduces-b2b
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig3e-pairwise-correlation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig3f-backbone-pairs-in-tail
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I accept the author''s argument: the criteria require every reading, so my round-1 "blocked"
+      was wrong. The record''s rationale for fig5f is that "the criterion defines no partial outcome".
+      That applies equally to fig1e, fig3f and supp26, which are recorded as partial. The outcomes are
+      defensible on substance, but the record should state one rule and apply it to all four.'
+    response: 'One rule is now stated in the notebook''s summary and cited in the notes of fig1e, fig3f,
+      supp26 and fig5f. Where the criterion defines a partial outcome, it decides; where it does not,
+      a claim is partially reproduced when its effect is present but falls short in one reading, organoid
+      or contrast, and not reproduced when its central comparison fails or the data contradict a part
+      of it. No outcome changes. '
+  - claim: fig4c-similarity-variance
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig4d-burst-similarity
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig4e-similarity-rises-at-backbone-onset
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp13-top-correlated-units-similarity
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig4f-pca-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp18-hmm-likelihood-real-above-shuffled
+    agrees: true
+    outcome: reproduced
+    reason: 'Round-1 point 3 is resolved: the HMM scoring is now symmetric. The smallest margin is 0.015
+      (HMM notebook, cell 6).'
+    response: No change.
+  - claim: fig5c-states-converge-at-peak
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig5d-backbone-more-states
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig5f-svm-states-beat-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with fig5f (not reproduced). The record's rationale for fig5f is that "the criterion
+      defines no partial outcome"; that applies equally to fig1e, fig3f and supp26, which are recorded
+      as partial. One rule should be stated and applied to all four.
+    response: 'One rule is now stated in the notebook''s summary and cited in the notes of fig1e, fig3f,
+      supp26 and fig5f. Where the criterion defines a partial outcome, it decides; where it does not,
+      a claim is partially reproduced when its effect is present but falls short in one reading, organoid
+      or contrast, and not reproduced when its central comparison fails or the data contradict a part
+      of it. No outcome changes. '
+  - claim: fig6f-slice-b2b-correlation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig6g-slice-pairwise-correlation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig7a-backbone-higher-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig7a-primary-higher-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Every murine organoid failure (fig7b, fig7e, fig7c-backbone-pairs-above-random) and the partial
+      results (fig7a-primary-higher-rate, fig7d) still rest on 5 of 9 recordings, under detection that
+      the paper evidently did not use for these organoids. MO3 is kept with 4 bursts, and 160 of its 234
+      units are backbone. No analysis without MO3 is printed. The notes should say that these failures
+      may come from the unstated murine detection parameters. A run without MO3 would show how much it
+      drives them.
+    response: A section of the notebook refits every judged contrast that involves murine organoids without
+      MO3, and the notes now say that the murine results may come from the murine detection parameters
+      the paper does not give. Without MO3 the primary against murine organoid backbone contrast is -0.04,
+      p 0.69. Outcome unchanged.
+  - claim: fig7b-normalized-b2b
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree under the claims file. It fails in the murine organoids, which rest on 5 of 9 recordings.
+      Cell 130: "The judged contrasts keep their direction and significance under (b), with these exceptions".
+      The fig7b murine organoid backbone-minus-non-rigid contrast changes sign (0.026 to -0.003; non-significant
+      both times). It is not listed. Every murine organoid failure (fig7b, fig7e, fig7c-backbone-pairs-above-random)
+      and the partial results (fig7a-primary-higher-rate, fig7d) still rest on 5 of 9 recordings, under
+      detection that the paper evidently did not use for these organoids. MO3 is kept with 4 bursts, and
+      160 of its 234 units are backbone. No analysis without MO3 is printed. The notes should say that
+      these failures may come from the unstated murine detection parameters. A run without MO3 would show
+      how much it drives them.'
+    response: A section of the notebook refits every judged contrast that involves murine organoids without
+      MO3, and the notes now say that the murine results may come from the murine detection parameters
+      the paper does not give. Without MO3 the murine contrast holds (0.075, p 1e-4) and the criterion's
+      partial outcome would apply, so MO3 decides this outcome; the outcome is kept as tested on the five
+      murine organoids with bursts, as the paper's code lists backbone units for all nine, and the notes
+      say so. Cell 130 now lists the sign change.
+  - claim: fig7b-primary-no-b2b-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig7c-normalized-pairwise
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig7c-slices-primaries-no-pair-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: fig7c-backbone-pairs-above-random
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the claims file. It fails in the murine organoids, which rest on 5 of 9 recordings.
+      Every murine organoid failure (fig7b, fig7e, fig7c-backbone-pairs-above-random) and the partial
+      results (fig7a-primary-higher-rate, fig7d) still rest on 5 of 9 recordings, under detection that
+      the paper evidently did not use for these organoids. MO3 is kept with 4 bursts, and 160 of its 234
+      units are backbone. No analysis without MO3 is printed. The notes should say that these failures
+      may come from the unstated murine detection parameters. A run without MO3 would show how much it
+      drives them.
+    response: A section of the notebook refits every judged contrast that involves murine organoids without
+      MO3, and the notes now say that the murine results may come from the murine detection parameters
+      the paper does not give. Without MO3 murine organoid backbone pairs are still not above 0 (0.020,
+      p 0.23). Outcome unchanged.
+  - claim: fig7d-lag-times
+    agrees: true
+    outcome: partially_reproduced
+    reason: Every murine organoid failure (fig7b, fig7e, fig7c-backbone-pairs-above-random) and the partial
+      results (fig7a-primary-higher-rate, fig7d) still rest on 5 of 9 recordings, under detection that
+      the paper evidently did not use for these organoids. MO3 is kept with 4 bursts, and 160 of its 234
+      units are backbone. No analysis without MO3 is printed. The notes should say that these failures
+      may come from the unstated murine detection parameters. A run without MO3 would show how much it
+      drives them.
+    response: A section of the notebook refits every judged contrast that involves murine organoids without
+      MO3, and the notes now say that the murine results may come from the murine detection parameters
+      the paper does not give. Without MO3 human and murine organoid lags still do not differ (0.23, p
+      0.13). Outcome unchanged.
+  - claim: fig7d-murine-organoids-slices-same-lag
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The assumption is stated and reasonable: the code''s lag table has no zero lags. The outcome
+      does not depend on it. The second contrast, which the criterion "judged the same way", fails under
+      every reading (p 0.008, 0.006, 0.029).'
+    response: Without MO3 murine organoid and slice lags do not differ (0.24, p 0.14); the second contrast
+      does not involve murine organoids, so the outcome stays. The notes say so.
+  - claim: fig7e-pca-backbone-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the claims file. It fails in the murine organoids, which rest on 5 of 9 recordings.
+      Every murine organoid failure (fig7b, fig7e, fig7c-backbone-pairs-above-random) and the partial
+      results (fig7a-primary-higher-rate, fig7d) still rest on 5 of 9 recordings, under detection that
+      the paper evidently did not use for these organoids. MO3 is kept with 4 bursts, and 160 of its 234
+      units are backbone. No analysis without MO3 is printed. The notes should say that these failures
+      may come from the unstated murine detection parameters. A run without MO3 would show how much it
+      drives them.
+    response: A section of the notebook refits every judged contrast that involves murine organoids without
+      MO3, and the notes now say that the murine results may come from the murine detection parameters
+      the paper does not give. Without MO3 murine organoids are still not above (-0.064, p 0.095; 0.034,
+      p 0.23). Outcome unchanged.
+  - claim: fig7f-hmm-dimensionality
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp24c-nonrigid-more-variable
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp24d-backbone-non-poisson
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp10b-rank-order-by-model
+    agrees: false
+    outcome: blocked
+    reason: It rests on two assumptions, and neither is consistent with the claims file. The ratio reading
+      fails under both recording lengths (p 0.66/0.49 and 0.69/0.38; cell 129). The z reading passes under
+      length (a) only (p 0.032/0.031). Under (b) it fails (0.064/0.099). The claims file says both lengths
+      "are run where the outcome could depend on it", and that disagreeing readings make a claim methods_underspecified.
+      The outcome should be blocked as methods_underspecified, not reproduced.
+    response: Agreed. As outcomes may not change in round 2, the outcome stays reproduced (assumed) and
+      a change to blocked (methods_underspecified) is proposed under proposed, for round 3. The notebook's
+      conclusion and the notes now give the ratio contrasts under both lengths. Without MO3 the z contrasts
+      are p 0.014 and 0.027, which does not bear on the proposal.
+  - claim: supp26-state-traversal
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree that it is not reproduced in full: PR > MS gives p 0.056, against the paper''s P
+      < 0.0001. The label question is the consistency point: the record''s rationale for fig5f, that "the
+      criterion defines no partial outcome", applies equally to fig1e, fig3f and supp26, which are recorded
+      as partial. One rule should be stated and applied to all four.'
+    response: 'One rule is now stated in the notebook''s summary and cited in the notes of fig1e, fig3f,
+      supp26 and fig5f. Where the criterion defines a partial outcome, it decides; where it does not,
+      a claim is partially reproduced when its effect is present but falls short in one reading, organoid
+      or contrast, and not reproduced when its central comparison fails or the data contradict a part
+      of it. No outcome changes. '
+  - claim: supp27-d2-near-critical
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated. The outcome is partial under both readings of the fit check, so
+      it does not change the outcome.
+    response: No change.
+  - claim: ed2d-alam-el-din-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: ed2e-alam-el-din-b2b
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: ed2f-backbone-pairs-above-zero
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the other 48. The other "Result" sentences, both Summary tables, the README and
+      the outcome notes in the record check against the outputs.
+    response: No change.
+  - claim: supp5-murine-organoid-forebrain-identity
+    agrees: true
+    outcome: blocked
+    reason: I agree. I accept the author's reading of the protocol for supp5.
+    response: No change.

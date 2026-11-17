@@ -8,14 +8,18 @@ recordings of two human organoids.
 
 Of the 50 claims, 31 are reproduced, 11 partially reproduced, 7 not reproduced and 1 blocked. The
 attempt record, with the reasons and the differences from the paper's method, is
-[`attempts/van-der-molen-2025-01.yaml`](../../attempts/van-der-molen-2025-01.yaml).
+[`attempts/van-der-molen-2025-01.yaml`](../../attempts/van-der-molen-2025-01.yaml). For
+ed4d-gabazine-rank-order and supp10b-rank-order-by-model, recorded as reproduced on an assumed
+normalisation, a change to blocked (methods_underspecified) is proposed for a third verification
+round.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-Burst detection as the Methods state it reproduces the paper's burst counts and backbone units for
-HO1 to HO4 exactly, but finds no burst in four of the nine murine organoids, so claims on murine
-organoids rest on the five that have bursts. The baseline sorted file of MO12 and the longitudinal
+Burst detection as the Methods state it gives HO1 the 46 bursts of Fig. 1C, but finds no burst in
+four of the nine murine organoids and four in MO3, so claims on murine organoids rest on the five
+that have bursts, and their failures may come from detection parameters the paper does not give
+for murine organoids. The baseline sorted file of MO12 and the longitudinal
 murine organoid recordings are not in the dandiset. Units have no identifier across recordings;
 the 0 h and 4 h recordings of HO2 and HO3 are linked here by their identical ordered unit
 positions.
