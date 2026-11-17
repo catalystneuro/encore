@@ -1369,7 +1369,11 @@ def bias_correlation(seq_k, seq_l, n_sur, rng):
     """Bias correlation of two sequences (arrays of cell ids in spike order) over the
     cells active in both; None when fewer than 3 are common (Methods). Surrogates
     shuffle the spike order of the second sequence (Methods); returns the
-    correlation and the proportion of surrogates at or above it."""
+    correlation, the proportion of surrogates at or above it, the mid-p (ties
+    with the correlation counted half; added after round 2 of verification, which
+    noted that with few spikes the surrogates take few values), and whether the
+    first surrogate, tested in the same way against the others, would count as
+    significant (c > 0 and p < 0.05), which estimates the procedure's chance level."""
     common = np.intersect1d(seq_k, seq_l)
     if len(common) < 3:
         return None
@@ -1387,4 +1391,10 @@ def bias_correlation(seq_k, seq_l, n_sur, rng):
             return np.where(den > 0, (Y @ x) / den, np.nan)
     rho = float(cos(Bk, Bl[None])[0])
     sur = cos(Bk, Bs)
-    return rho, float(np.mean(sur >= rho)) if np.isfinite(rho) else np.nan
+    if not np.isfinite(rho):
+        return rho, np.nan, np.nan, np.nan
+    tie = np.abs(sur - rho) <= 1e-12
+    p_mid = float(np.mean((sur > rho) & ~tie) + 0.5 * np.mean(tie))
+    s0, rest = sur[0], sur[1:]
+    null_sig = float(np.isfinite(s0) and s0 > 0 and np.mean(rest >= s0) < 0.05)
+    return rho, float(np.mean(sur >= rho)), p_mid, null_sig
