@@ -235,6 +235,16 @@ def test_the_claims_checkpoint_waits_when_it_would_drop_a_claim_the_attempt_on_m
     assert 'if [ -n "$dropped" ]; then' in script_file and "left for the attempt's merge" in script_file
 
 
+def test_the_reconcile_run_is_given_the_earlier_attempts_entry():
+    # It reads both attempts' code to say why an outcome differs; the earlier entry is copied from main, outside the
+    # folders whose changes are collected.
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    step = workflow[workflow.index("name: Put the earlier attempt's entry under earlier-entry/"):]
+    assert "if: inputs.role == 'reconcile'" in step[:200] and 'git archive FETCH_HEAD "entries/$FOLDER"' in step[:500]
+    assert "earlier-entry" not in workflow[workflow.index("paths=(attempts claims entries README.md)"):][:300]
+    assert "`earlier-entry/`" in (REPO / "docs" / "agents" / "reconcile.md").read_text()
+
+
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
     # docs/replicates.md: every reference to the chain's branch goes through $br, which a replicate sets to
     # replicate/<paper>/<rN>; its runs are found by the name <paper>/<rN>; it ends before the reconcile step and the
