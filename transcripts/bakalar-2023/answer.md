@@ -1,11 +1,11 @@
-# 001362 · answer · run 41482255772
+# bakalar-2023 · answer · run 44235013933
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  cat questions/001362.yaml; ls claims/001362/ paper/; grep -n -A30 '^## Reader\|Reader' docs/protocol.md | sed -n '1,80p'
+cat questions/bakalar-2023.yaml; echo ----; cat claims/bakalar-2023.yaml; ls paper/; grep -n -A30 '"Reader"\|### Reader\|Reader' docs/protocol.md | head -80
 ```
 
 Result: not kept, because it reads the paper's text.
@@ -13,82 +13,103 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-cd  ls questions/ | head; git status --short; find . -name '*001362*' -not -path './.git/*' | head -30; sed -n '70,200p' docs/protocol.md | grep -n -B3 -A25 '### 6'
+ls; ls questions* paper* 2>&1 | head; git status --short | head -50; find . -name '*bakalar*' -not -path './.git/*' | head
 ```
 
 ```
-000005.yaml
-000006.yaml
-000008.yaml
-000009.yaml
-000010.yaml
-000011.yaml
-000013.yaml
-000015.yaml
-000019.yaml
-000023.yaml
- M tools/runner/chain.sh
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-[... 36 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  git log --all --oneline -- questions/001362.yaml | head; ls transcripts/001362; grep -rn -i 'question' attempts/001362-bakalar-2023-01.yaml | head; grep -rln 'questions/001362' transcripts/001362 2>/dev/null | head
-```
-
-```
-author-report.md
-author.md
-claims-check-report.md
-claims-check.md
-claims-report.md
-claims.md
-95:    values of Table 4. BKY at alpha 0.1 changes no outcome. Question for the paper''s authors (recorded
-382:  statement: Question for the authors. Which FRST threshold was used for each hemisphere; which 19 of
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+node_modules
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+pyproject.toml
+questions
+queue
+schemas
+scripts
+[... 62 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n -i 'question\|reader\|misread' transcripts/001362/author-report.md | head -30; sed -n 85,100p attempts/001362-bakalar-2023-01.yaml; sed -n 375,395p attempts/001362-bakalar-2023-01.yaml
+ls -la questions/; git log --oneline -3 -- questions/; git log --all --oneline -- 'questions/bakalar-2023.yaml' | head; grep -rn "bakalar" questions/ | head
 ```
 
 ```
-15:## 2. The dataset, assumptions and questions
-36:- **Question for the paper's authors** (recorded as a `methods_unavailable` finding): which threshold was used per hemisphere, which 19 hemispheres were analysed, how the outlier rule was grouped, what region size the counts were divided by, which connectivity was used, and the list of 431 regions.
-37:- **Questions to a reader:** none.
-    DG-sg at 199.7% to 238.9% of PACAP fl/fl (ratio of means; paper 224.23%) and DG-po at 260.8% to 546.8%
-    (paper 325.82%). Raw p is 3.1e-06 to 6.2e-03 for DG-sg and 6.8e-06 to 3.7e-03 for DG-po (paper 2.65e-05
-    and 1.85e-04); U 93 to 120 and 80 to 120 against 88 and 85, as 22 hemispheres allow U up to 120. At
-    threshold 4000 every PACAPko mouse is above every PACAP fl/fl mouse in both regions. The statement''s
-    ''only two regions'' does not hold; under density and within-genotype outliers 11 to 38 regions have
-    adjusted p < 0.05. Variants. Counting every component (the rule of the dataset''s count tables) gives
-    15 readings with both, 2 with one and 3 with neither. The 13 hemispheres of the count tables give
-    neither region at adjusted p < 0.05 in any reading (raw p 0.0012 to 0.035). Over the 48 choices of
-    8 PACAP fl/fl hemispheres from 6 mice and 11 PACAPko from 6 mice (the paper''s numbers), 480 of 960
-    subset analyses give both, 128 one and 352 neither; in 150 DG-sg has U = 88 and raw p 2.65e-05, the
-    values of Table 4. BKY at alpha 0.1 changes no outcome. Question for the paper''s authors (recorded
-    as a methods_unavailable finding): which FRST threshold was used for each hemisphere, which 19 of
-    the 22 deposited hemispheres were analysed, whether the 1.5 IQR rule was applied within each genotype,
-    what region size the counts were divided by, and which 431 regions were tested. The readings differ
-    in outcome mainly through the outlier rule and the region size at thresholds of 8000 and above.'
-  deviations:
-    the label table has 561 la
-[... 12 more lines not kept]
+total 724
+drwxr-xr-x 22 runner runner 12288 Nov 18 04:06 .
+drwxr-xr-x 21 runner runner  4096 Nov 18 04:12 ..
+-rw-r--r--  1 runner runner   854 Nov 18 04:06 README.md
+-rw-r--r--  1 runner runner  6477 Nov 18 04:06 ashworth-2025.yaml
+-rw-r--r--  1 runner runner  2113 Nov 18 04:06 athalye-2023.yaml
+-rw-r--r--  1 runner runner  6284 Nov 18 04:06 bech-2026.yaml
+-rw-r--r--  1 runner runner  1708 Nov 18 04:06 bellvila-2026.yaml
+-rw-r--r--  1 runner runner  2923 Nov 18 04:06 bennett-2024.yaml
+-rw-r--r--  1 runner runner 15056 Nov 18 04:06 berg-2020.yaml
+-rw-r--r--  1 runner runner  3256 Nov 18 04:06 boran-2022.yaml
+-rw-r--r--  1 runner runner 11181 Nov 18 04:06 bouchard-2013.yaml
+-rw-r--r--  1 runner runner  2169 Nov 18 04:06 buccino-2024.yaml
+-rw-r--r--  1 runner runner  3954 Nov 18 04:06 chantranupong-2023.yaml
+-rw-r--r--  1 runner runner  8180 Nov 18 04:06 chartrand-2023.yaml
+-rw-r--r--  1 runner runner  1265 Nov 18 04:06 chaunsali-2025.yaml
+-rw-r--r--  1 runner runner  9078 Nov 18 04:06 chen-2017.yaml
+drwxr-xr-x  2 runner runner  4096 Nov 18 04:06 churchland-2010
+-rw-r--r--  1 runner runner  3441 Nov 18 04:06 claar-2023.yaml
+-rw-r--r--  1 runner runner  5292 Nov 18 04:06 daume-2024-phase.yaml
+[... 104 more lines not kept]
 ```
 
-**Agent**
+**Agent calls Bash**
 
+```bash
+cat questions/README.md; git branch -a | head; git log --all --oneline -- 'questions/bakalar*' | head; grep -n -i "question" attempts/bakalar-2023-01.yaml | head; ls entries/bakalar-2023 transcripts/bakalar-2023
+```
+
+```
+# Questions
+
+`<dandiset>.yaml` holds an attempt's questions to a reader: places where the author or a verifier
+believes the claims file misreads the paper (docs/protocol.md, "Author", step 1.6, and "Hand over for
+verification"), and the reader's answers ("Reader", step 6), which say whether the claims file was
+amended and why. Each question has `claim`, `question`, `passage`, `why` (how the misreading could
+change the outcome), and, once answered, `answer` and `answered` (a date). Method details the claims
+file lacks are not asked here: the author takes them from the paper, and a detail the paper does not
+settle is a question for the paper's authors, recorded in the claim's notes and as a
+`methods_unavailable` finding in the attempt. Files from before protocol `pilot-11` also hold
+questions about method details, asked under the earlier rule.
+* attempt/bakalar-2023
+  main
+  remotes/origin/attempt/bakalar-2023
+  remotes/origin/main
+103:    for time. Question for the paper''s authors (recorded as a methods_unavailable finding): which FRST threshold
+430:  statement: Question for the authors. Which FRST threshold was used for each hemisphere; which 19 of the 22
+entries/bakalar-2023:
+README.md
+entry.yaml
+[... 21 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+git fetch origin 2>&1 | tail -2; git log origin/attempt/bakalar-2023 --oneline -5; git ls-tree -r --name-only origin/attempt/bakalar-2023 | grep -i 'questions/bak'; git ls-tree -r --name-only origin/main | grep -i 'questions/bak'; cat transcripts/bakalar-2023/answer-report.md | head -60
+```
+
+```
+* [new tag]                 v2026.10.1              -> v2026.10.1
+ * [new tag]                 v2026.10.2              -> v2026.10.2
+dd793e57e5b Merge main into attempt/bakalar-2023
 There was nothing to answer, so I changed nothing.
 
 - **No questions file:** `questions/001362.yaml` does not exist in the working tree, and `git log --all` shows it never existed on any branch.
@@ -98,7 +119,34 @@ There was nothing to answer, so I changed nothing.
 The claims file `claims/001362/10.1111-jne.13286.yaml` is unchanged. With no amendments, I did not need to run `tools/claims_check.py`.
 
 If a verifier later files questions in `questions/001362.yaml`, this step can be run again.
+```
+
+**Agent calls Bash**
+
+```bash
+cd transcripts/bakalar-2023; grep -n -i "question\|reader\|misread" verifier-1-report.md author-revise-1-report.md author-answers-report.md | head -40
+```
+
+```
+verifier-1-report.md:45:8. **Claims file.** I found no misreading of the paper. The units (voxel 6.845e-08 mm³), the exact two-sided test, the PACAPko U, and `fdr_tsbky` at α = 0.05 and 0.1 all follow the claims file and the Supplemental Methods.
+author-revise-1-report.md:17:7. **Claims file:** the verifier found no misreading, so no question was added.
+author-answers-report.md:1:There were no questions to answer, so nothing changed and no claim was re-run.
+author-answers-report.md:3:**Questions:** `questions/001362.yaml` does not exist and never has. The author run raised no questions for a reader, and the answer run (`transcripts/001362/answer-report.md`) found nothing to answer. The claims file `claims/001362/10.1111-jne.13286.yaml` is the same as when the author run tested it; its last change is the commit "Claims for DANDI:001362, checked". The only open question is the one for the paper's authors, recorded in the attempt as a `methods_unavailable` finding. A reader cannot answer that one.
+```
+
+**Agent**
+
+There were no questions to answer, so I changed nothing in `claims/bakalar-2023.yaml`.
+
+- **No questions file:** `questions/bakalar-2023.yaml` does not exist. It is not on this branch, on `origin/attempt/bakalar-2023` or on `origin/main`, and `git log --all` shows it never existed.
+- **No one raised a question:**
+  - The verifier wrote "I found no misreading of the paper" (`transcripts/bakalar-2023/verifier-1-report.md:45`).
+  - The author's revision then added no question (`author-revise-1-report.md:17`).
+  - An earlier answer run and the author-answers run also found nothing to answer.
+- **The one open question is for the paper's authors:** it asks which FRST threshold was used for each hemisphere and which 19 of the 22 hemispheres were analysed. It is recorded as a `methods_unavailable` finding in `attempts/bakalar-2023-01.yaml`. It does not say the claims file misreads the paper, and only the paper's authors can answer it.
+
+Since nothing changed, I did not run `tools/claims_check.py`, and I did not commit or push anything.
 
 ## End of run
 
-5 turns, 0 minutes, $0.12 at API prices, result: success.
+7 turns, 2 minutes, $0.18 at API prices, result: success.
