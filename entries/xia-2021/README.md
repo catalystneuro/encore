@@ -8,7 +8,7 @@ images of a ganglion stained with BTX or the nanosensor.
 
 | Claim | Outcome |
 |---|---|
-| HPLC: nanosensors are 77% of the pHAb peak area (Fig. 2D) | Not reproduced |
+| HPLC: nanosensors are 77% of the pHAb peak area (Fig. 2D) | Partially reproduced (share holds under one baseline reading; volumes not testable) |
 | Native PAGE: several slower bands carrying pHAb and AF647 (Fig. 2E, S2C) | Reproduced |
 | BTX staining is punctate across the ganglion (Fig. S5) | Reproduced |
 | Nanosensor AF647 and pHAb puncta overlap on the somata (Fig. 3D) | Partially reproduced |
@@ -17,8 +17,11 @@ images of a ganglion stained with BTX or the nanosensor.
 | In vivo response of 3.7% at 3 V (Fig. 5B) | Not reproduced |
 | Vesamicol cuts the response by 77% (Fig. 6) | Partially reproduced |
 | The AF647 channel does not respond (Fig. S16) | Reproduced |
-| Conjugation ratios, AFM size, retention, stability, response time, unit calibration, pH, controls, voltage and pulse series, reversibility, two-photon (14 claims) | Blocked: data missing or metadata insufficient |
-| AQuA analyses (Fig. 7, S9, S12; 4 claims) | Blocked: not runnable |
+| Rostral-to-caudal spread at 8 V (Fig. 7A-B) | Partially reproduced (order holds, times do not; block onsets in place of AQuA) |
+| Responses peak 10 to 15 s after onset (Fig. 7A) | Reproduced (from each region's onset; block onsets in place of AQuA) |
+| Same direction and lower amplitude at 3 V (Fig. S12) | Partially reproduced (one mouse of three) |
+| Conjugation ratios, AFM size, retention, stability, response time, unit calibration, pH, controls, voltage and pulse series, reversibility, two-photon (16 claims) | Blocked: data missing or metadata insufficient |
+| AQuA against ROI dynamics (Fig. S9) | Blocked: not runnable (AQuA) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the
 differences from the paper's method.
@@ -29,6 +32,6 @@ recordings. Its recordings carry no channel labels, spatial scale or stimulation
 the reasons and the differences from the paper's method, is
 [`attempts/xia-2021-01.yaml`](../../attempts/xia-2021-01.yaml).
 
-- `reproduce_xia_2021.ipynb`: the analysis. It takes about two minutes, most of it streaming the files.
+- `reproduce_xia_2021.ipynb`: the analysis. It takes about two to three minutes, most of it streaming the files.
 - `xia2021.py`: reading the pinned versions from the SPARC bucket, the photobleaching correction, dF/F, initial
-  rates, the Michaelis-Menten fit, gel lanes and puncta. Other notebooks on these datasets can import it.
+  rates, the Michaelis-Menten fit, gel lanes, puncta and block onset maps. Other notebooks on these datasets can import it.

@@ -23,12 +23,26 @@ Where the parameters come from:
   frame 19 on the paper's 0.55 s clock (`STIM_FRAME`). The files do not record it.
 - Michaelis-Menten model V = Vmax [ACh] / (Km + [ACh]) (Fig. 4B legend).
 - Background for puncta: mean plus 3 SD of the background (claims file, fig3d-sensor-on-soma,
-  reading (b)). The background is taken here as the pixels at or below the image's median, a choice
-  made here as the paper defines none.
-- Cell-sized ROIs: square blocks of `BLOCK` pixels. The paper's ROIs are drawn by hand on one
-  ganglion cell (Fig. 5B legend) and their coordinates are not given; the block size is a choice
-  made here (about 17 um at an estimated 0.43 um per pixel, the size of an SMG cell body; the
-  files carry no spatial scale).
+  reading (b)). The paper defines no background. Rule 'reflected' (the default since round 1 of
+  verification): the background is the distribution of the pixels at or below the image's median,
+  reflected about the median, so its centre is the median and its SD the root mean square
+  deviation of those pixels from the median; the threshold is median + 3 SD. This is the usual
+  half-Gaussian estimate of a background that bright structures cover in part. Rule 'lower_half'
+  (the first version, kept as a variant): mean + 3 SD of the pixels at or below the median. The
+  lower half of a Gaussian has an SD of 0.6 of the whole and a mean 0.8 SD below its centre, so
+  that rule sets the threshold about 1 SD above the centre and passes about 16% of pure noise;
+  the verifier found it marked 32 to 48% of the field.
+- Cell-sized ROIs: square blocks of `BLOCK_PX` (40) pixels. The paper's ROIs are drawn by hand on
+  one ganglion cell (Fig. 5B legend) and their coordinates are not given; the block size is a
+  choice made here, about 17 um at an estimated 0.43 um per pixel, the size of an SMG cell body.
+  The estimate is 6.5 um camera pixels (the manufacturer's figure for the ORCA-Flash4.0 V2,
+  model C11440-22C, which the files name) times the binning of 4 (in the files) over the 60x
+  objective (Methods). It is not checked against the data: the files carry no spatial scale.
+- Onset and peak maps (fig7-rostral-caudal, fig7-peak-timing, figs12-3v-propagation): the paper
+  uses AQuA, which is not run (see the notebook). `block_onsets` is a substitute chosen here: the
+  onset of a block is the first frame after stimulation onset that begins a run of 3 frames above
+  the block's pre-onset mean + k SD of its photobleaching-corrected dF/F, and its peak the
+  maximum of the 3-frame running mean after onset.
 """
 
 from __future__ import annotations
@@ -188,9 +202,16 @@ def czi_sub5(planes: str = "all"):
     return mx, mid, names, scale, nz
 
 
-def background_threshold(img: np.ndarray, k: float = 3.0) -> float:
-    """Mean plus k SD of the background, the background being the pixels at or below the median."""
-    bg = img[img <= np.median(img)]
+def background_threshold(img: np.ndarray, k: float = 3.0, rule: str = "reflected") -> float:
+    """Mean plus k SD of the background (see the module docstring for the two rules).
+
+    'reflected': median + k * RMS deviation from the median of the pixels at or below the median.
+    'lower_half': mean + k * SD of the pixels at or below the median.
+    """
+    med = np.median(img)
+    bg = img[img <= med]
+    if rule == "reflected":
+        return float(med + k * np.sqrt(np.mean((bg - med) ** 2)))
     return float(bg.mean() + k * bg.std())
 
 
@@ -245,6 +266,40 @@ def blocks(frames: np.ndarray, mask: np.ndarray, size: int = BLOCK_PX, min_cover
                 tr.append(frames[:, y:y + size, x:x + size].reshape(n, -1).mean(1))
                 org.append((y, x))
     return np.array(tr), org
+
+
+def block_onsets(frames: np.ndarray, mask: np.ndarray, onset: int, size: int = 16, k: float = 3.0,
+                 fit_after_s: float | None = 120.0, dt: float = FRAME_S_FILE) -> np.ndarray:
+    """Onset and peak frame of each size x size block mostly (80%) in the mask, a substitute for AQuA's events.
+
+    Each block's mean trace is corrected for photobleaching (the curve fit to the frames before
+    `onset` and from `fit_after_s` after it, or to the whole trace when that is None) and turned
+    into dF/F against its pre-onset mean. Onset: the first frame from `onset` on that begins a run
+    of 3 frames above the pre-onset mean + k SD (-1 when there is none). Peak: the frame of the
+    largest 3-frame running mean from `onset` on. Returns rows (centre row, centre column, onset
+    frame, peak frame, peak dF/F %).
+    """
+    from scipy.ndimage import uniform_filter1d
+
+    n = len(frames)
+    rec = onset + int(round(fit_after_s / dt)) if fit_after_s is not None else n
+    fit_idx = np.r_[0:onset, rec:n] if rec < n - 5 else np.arange(n)
+    out = []
+    for y in range(0, frames.shape[1] - size + 1, size):
+        for x in range(0, frames.shape[2] - size + 1, size):
+            if mask[y:y + size, x:x + size].mean() < 0.8:
+                continue
+            tr = frames[:, y:y + size, x:x + size].reshape(n, -1).mean(1).astype(float)
+            corr, _ = bleach_correct(tr, fit_idx)
+            d = dff(corr, onset)
+            pre = d[:onset]
+            above = d > pre.mean() + k * pre.std()
+            run = above[onset:-2] & above[onset + 1:-1] & above[onset + 2:]
+            on = onset + int(np.argmax(run)) if run.any() else -1
+            ds = uniform_filter1d(d, 3)
+            pk = onset + int(np.argmax(ds[onset:]))
+            out.append((y + size / 2, x + size / 2, on, pk, ds[pk]))
+    return np.array(out, float)
 
 
 def mono_exp(t, a, k, c):
@@ -386,8 +441,8 @@ def bands(profile: np.ndarray, rel_prominence: float = 0.05) -> tuple[np.ndarray
 
 # ---------------------------------------------------------------- puncta
 
-def puncta(img: np.ndarray, px_um: float, min_um2: float = 0.1, max_um2: float = 25.0):
-    """Connected components above the background threshold (mean + 3 SD of the below-median pixels).
+def puncta(img: np.ndarray, px_um: float, min_um2: float = 0.1, max_um2: float = 25.0, rule: str = "reflected"):
+    """Connected components above the background threshold (`background_threshold`, rule as given).
 
     The area limits (0.1 to 25 um^2) keep spots and drop single-pixel noise and large structures;
     they are a choice made here, as the paper does not define a punctum. Returns (labels, kept
@@ -395,7 +450,7 @@ def puncta(img: np.ndarray, px_um: float, min_um2: float = 0.1, max_um2: float =
     """
     from scipy import ndimage as ndi
 
-    thr = background_threshold(img)
+    thr = background_threshold(img, rule=rule)
     lab, n = ndi.label(img > thr)
     area = np.bincount(lab.ravel())[1:] * px_um ** 2
     keep = np.flatnonzero((area >= min_um2) & (area <= max_um2)) + 1
@@ -405,8 +460,9 @@ def puncta(img: np.ndarray, px_um: float, min_um2: float = 0.1, max_um2: float =
 def soma_mask(gfp: np.ndarray, px_um: float, rule: str = "otsu", min_um2: float = 50.0) -> np.ndarray:
     """GFP-positive somata: Gaussian smoothing (1 um), a threshold, holes filled, objects of 50 um^2 or less removed.
 
-    rule 'otsu': Otsu's threshold; rule 'background': mean plus 3 SD of the background (as for the
-    puncta), which also takes in dim somata. Both are choices made here; the paper draws no mask.
+    rule 'otsu': Otsu's threshold; rule 'background': `background_threshold` (reflected rule) of
+    the smoothed image, which also takes in dim somata. Both are choices made here; the paper draws
+    no mask.
     """
     from scipy import ndimage as ndi
     from skimage.filters import threshold_otsu

@@ -27,24 +27,31 @@ provenance:
     url: https://github.com/catalystneuro/encore/actions/runs/44254141078
 outcomes:
 - claim: fig2d-hplc-yield
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_xia_2021.ipynb
   output: claim:fig2d-hplc-yield
-  measured:
-  - 66.6
-  - 7.58
-  notes: The pHAb chromatogram (HPLC_PHAB.csv) has two detectable peaks, at 15.16 and 18.05 min. With a flat baseline
-    at the pre-injection level and the limit at the minimum between the peaks (reading a), the first peak is 66.6%
-    of the area, below the tolerance of 69.3 to 84.7% (65.8% when a small peak at 37.27 min is also counted). Reading
-    (b), a linear baseline under each peak, gives a negative area for the overlapping second peak and no usable
-    share. At 0.5 mL/min the peaks are at 7.58 and 9.03 mL, within tolerance; the ratio of the retention times,
-    1.191, does not depend on the flow and is close to the paper's 1.213 to 1.227. The share fails under every reading,
-    so the outcome does not rest on the flow rate.
+  measured: 79.1
+  notes: The pHAb chromatogram (HPLC_PHAB.csv) has two detectable peaks, at 15.16 and 18.05 min. The share of the
+    first peak depends on the reading. With a flat baseline (reading a) it is 65.8 to 68.2% under every end of the
+    second peak, below the tolerance of 69.3 to 84.7%, and with a common line under both peaks and a drop at the
+    valley 66.2 to 69.1%. With a line under each peak (reading b, as the criterion writes it) it is 77.5 to 83.1%,
+    within tolerance, when the second peak ends where its own descent ends (20.53 min) or where it falls below 2%
+    of its height (20.94 min); when it ends where the signal returns to the pre-injection level (29.76 min) the
+    second area is negative and no share can be read. 4 of 18 readings are within tolerance. The retention volumes
+    are not tested, as the paper gives no flow rate; the ratio of the retention times, 1.191, is 1.8% below the
+    paper's 1.213 to 1.227. Partially reproduced, as the share holds under one reading of the criterion and the
+    volume part cannot be tested. Measured is the share under reading (b), the second peak ending at the end of
+    its descent, 1% detection rule.
   deviations:
-  - The HPLC files give time in minutes; the paper reports volumes and no flow rate. 0.5 mL/min is assumed to convert
-    them (0.75 mL/min shown); it affects only the retention volumes.
-  - '"Detectable" peaks taken as those with a prominence of at least 1% of the largest (0.5% as a variant), and
-    the outer peak limits where the signal returns to the pre-injection level plus 3 SD; neither is in the paper.'
+  - The paper gives no flow rate (Methods name the Superdex 200 increase 10/300 GL column and the Agilent Infinity
+    1260 HPLC only), and the files give time, so the main and second peak volumes are not tested. The first version
+    assumed 0.5 mL/min, chosen because it put the peaks at the paper's volumes, which made that test circular.
+  - '"Detectable" peaks taken as those with a prominence of at least 1% of the largest (0.5% as a variant), a choice
+    made here.'
+  - Assumed that the second peak ends where its own descent ends (slope below 1% of the steepest, 20.53 min), the
+    usual limit of a peak; ends where it falls below 2% of its height and where the signal returns to the pre-injection
+    level + 3 SD (29.76 min, the first version) are shown. The share under reading (b) depends on it.
+  assumed: true
 - claim: fig2g-conjugation-ratios
   outcome: blocked
   blocked_by: data_missing
@@ -80,13 +87,16 @@ outcomes:
   output: claim:figs5-btx-staining
   notes: Judged by eye on the maximum projections and brightest planes of the two BTX stacks of SPARC:75 (GFP and
     AF647 by the dye names in the LSM metadata). AF647 puncta cover every tile over the GFP mask in all four images
-    (13/13 to 38/38), at 18 to 64 puncta per 100 um^2, and lie along the borders of the somata. Nearness to GFP
-    beyond chance holds in the low-magnification projection (0.77 of puncta within 1 um of the background-rule GFP
-    mask against 0.51 of the field; 0.53 against 0.37 with Otsu) and not in the high-magnification projection (0.30
-    against 0.38). The high-magnification stack holds data in 12 of its 62 planes.
+    (5/5 to 29/29 with the Otsu mask), at 4.4 to 15.8 puncta per 100 um^2 with the background rule used since round
+    1 (17.8 to 64.4 with the first rule, which passed much of the noise), and lie along the borders of the somata.
+    Nearness to GFP beyond chance holds in three of the four images by at least one mask (low-magnification projection
+    0.82 of puncta within 1 um of the Otsu GFP mask against 0.37 of the field; its brightest plane 0.61 against
+    0.24 with the background-rule mask; high-magnification projection 0.18 against 0.15), and not in the brightest
+    high-magnification plane (0.10 against 0.11). The high-magnification stack holds data in 12 of its 62 planes.
   deviations:
-  - Puncta defined as components above the mean plus 3 SD of the below-median pixels, 0.1 to 25 um^2, and the GFP
-    mask by Otsu's threshold or the same background rule; the paper gives no quantification and these support, not
+  - Puncta defined as components above the median + 3 SD of the lower half of the pixels reflected about the median,
+    0.1 to 25 um^2, and the GFP mask by Otsu's threshold or the same background rule; the first rule (mean + 3 SD
+    of the below-median pixels) is shown as a variant. The paper gives no quantification, and these support, not
     replace, the judgement by eye the criterion asks for.
 - claim: fig3d-sensor-on-soma
   outcome: partially_reproduced
@@ -94,19 +104,26 @@ outcomes:
   notebook: reproduce_xia_2021.ipynb
   output: claim:fig3d-sensor-on-soma
   notes: SPARC:108 sub-5 (CZI; AF647, pHAb as AF532, EGFP; 27 planes, 17.41 um, as the Methods state) and the three
-    nanosensor images of SPARC:75. By eye, puncta appear in both channels with yellow spots where they coincide,
-    but much AF647 lines cell borders and the ganglion capsule, and most pHAb puncta lie inside somata without AF647.
-    Reading (b) fails in every image, as the share of AF647 puncta that overlap pHAb and lie in the soma mask is
-    0.16 to 0.38 (0.20 to 0.47 with a top-hat pHAb and a 1 um margin). The overlap itself, 84 to 98%, is at the
-    level of chance, 78 to 98% when the pHAb mask is shifted by 5 um, because the threshold marks 32 to 48% of the
-    field; 17 to 42% of AF647 puncta lie in an Otsu soma mask covering 23 to 42% of the field. In sub-5 the pHAb
+    nanosensor images of SPARC:75. By eye (merges and a full-resolution crop with each channel alone), puncta appear
+    in both channels with yellow spots where they coincide, but much AF647 lines cell borders and the ganglion capsule,
+    and the coinciding spots lie mostly between or at the edges of the somata. With the background rule used since
+    round 1, which marks 7 to 12% of the field as pHAb in four of five images (35% in sub-5 plane 13), 59 to 85%
+    of AF647 puncta overlap pHAb in those four, against 39 to 53% with the pHAb mask shifted by 5 um (top-hat pHAb
+    68 to 79% against 40 to 64%); in plane 13, 98% against 95%. The first rule marked 32 to 48% of the field and
+    gave 84 to 98% against 78 to 98%. 9 to 47% of AF647 puncta lie in an Otsu soma mask covering 23 to 42% of the
+    field, and 15 to 52% of the coinciding puncta lie within 1 um of it, against 27 to 48% of the field. Reading
+    (b) fails in every image (0.09 to 0.35; 0.13 to 0.40 with a top-hat pHAb and a 1 um margin). In sub-5 the pHAb
     channel correlates with GFP (r 0.43 and 0.53), a sign of GFP bleed-through at 514 nm. Partially reproduced,
-    as puncta and coinciding spots are there but the overlap and the soma localisation are not shown beyond chance.
+    as the puncta coincide beyond chance but their place on the somata is not shown.
   deviations:
   - Assumed that the by-eye reading (a) is judged together with chance references, a 5 um shift of the pHAb mask
     and the share of the field covered by the soma mask, as the paper gives no colocalisation measure; the shift,
     the punctum size limits (0.1 to 25 um^2) and the soma masks (Otsu, background rule, 1 um margin) are choices
     made here.
+  - The background of the claims file's mean + 3 SD threshold is not defined in the paper. Since round 1 it is the
+    lower half of the pixels reflected about the median (threshold median + 3 SD), the usual half-Gaussian estimate;
+    the first rule, mean + 3 SD of the below-median pixels, sets the threshold about 1 SD above the centre of a
+    Gaussian and marked a third or more of the field, and is shown as a variant.
   - SPARC:75's nanosensor images are single planes and are used with the sub-5 stack.
 - claim: fig3bc-retention
   outcome: blocked
@@ -144,9 +161,12 @@ outcomes:
     is 0.031 to 0.73 uM and Vmax 8.3 to 49.7 %/s, none within tolerance (49.24 +- 5.84 uM, 281.00 +- 7.14 %/s);
     R2 0.01 to 0.73. The first reading gives rates of 0.3 to 16.3 %/s with no steady rise in concentration (Spearman
     rho 0.54, p 0.168), with one-frame steps of 23.1% at 0.000714 uM, 19.8% at 0.714 uM, 41.9% at 7.14 uM and 38.4%
-    at 714 uM, none at 0.00714 and 0.0714 uM. Upper limit of detection of that fit 1.92 uM (88% of Vmax) or 0.96
-    uM (tangent within 5%); the paper's constants give 361.1 and 181.3 uM by the same rules. Measured values are
-    the first reading's Km, Vmax, R2 and reading (a) of the upper limit.
+    at 714 uM, none at 0.00714 and 0.0714 uM. In the six recordings with a step the signal drifts down by 1.5 to
+    15.5% before it, then jumps within one frame and stays high, so the steps may come in part from adding the solution;
+    the files cannot tell. With one onset (frame 7) for every recording, Km is 0.545 uM and Vmax 11.4 %/s. Upper
+    limit of detection of the first fit 1.92 uM (88% of Vmax) or 0.96 uM (tangent within 5%); the paper's constants
+    give 361.1 and 181.3 uM by the same rules. Measured values are the first reading's Km, Vmax, R2 and reading
+    (a) of the upper limit.
   deviations:
   - One of three mice and 8 of the paper's concentrations (to 714 uM, not 7.14 mM) are deposited; means over mice
     and all points are the same here.
@@ -176,7 +196,8 @@ outcomes:
     ratio of 0.40 or 0.61 at this noise; the fit of this mouse gives 0.01 to 0.02. Measured are the first reading's
     crossing (nM), noise (a) and signal-to-noise (a).
   deviations:
-  - Reading (c), the split of Figure 4B(ii), was not run, as it needs the figure's lines.
+  - Reading (c), the split of Figure 4B(ii), was not run, as it needs the figure's lines and the entry reads no
+    figures.
   - Rests on the rates and onset assumption of fig4b-michaelis-menten, one mouse of three.
 - claim: figs6b-unit-calibration
   outcome: blocked
@@ -203,26 +224,31 @@ outcomes:
   - 21.91
   - 1.794
   notes: Two 3 V, 100-pulse recordings of the ACh nanosensor are deposited, sub-2 and sub-6 after washout; which
-    recordings form the three mice of Figure 5B is not stated. Under 72 readings (frame interval, bleaching fit,
-    baseline, ROI, recording or their mean) the dF/F 15 s after onset is 17.1 to 37.3%, none within 3.33 to 4.07%;
-    the rate to the peak is 1.5 to 3.3 %/s, against 0.294 +- 0.116 %/s. Cell-sized 40 x 40 pixel blocks give 11.3
-    to 53.6% (sub-2) and 0.3 to 28.4% (sub-6); one of the 13 sub-6 blocks is within tolerance in both. Early-frame
-    rate readings fall within the rate tolerance in 28 readings because the rise starts 9 and 13 frames after onset.
-    At 120 s sub-2 is still 11 to 16% above baseline. Measured values are the mean of the two recordings under the
+    recordings form the three mice of Figure 5B is not stated. Under 144 readings (frame interval, three bleaching
+    fits, baseline, four ROIs including the tissue less the camera's dark level, recording or their mean) the dF/F
+    15 s after onset is 17.1 to 40.1%, none within 3.33 to 4.07%; the rate to the peak is 1.54 to 3.33 %/s, and
+    the rates over 2 to 5 frames from the frame where each trace leaves baseline (frames 25 to 29) -0.81 to 4.20
+    %/s, none within 0.294 +- 0.116 %/s. Rates over 2 to 5 frames from frame 19 fall within it in 54 readings, but
+    they cover baseline frames before the response and are not counted. Cell-sized 40 x 40 pixel blocks give 11.3
+    to 53.6% (sub-2) and 0.3 to 28.4% (sub-6); one of the 13 sub-6 blocks is within tolerance in both. At 120 s
+    sub-2 is still 9.4 to 16.4% above baseline. Subtracting the dark level raises dF/F slightly (mean of both, tissue,
+    20.8 to 23.2% without and 21.9 to 24.4% with). Measured values are the mean of the two recordings under the
     first reading (0.50 s, bleaching fit outside the response, mean baseline, tissue ROI).
   deviations:
   - Assumed that the deposited 3 V recordings stand for the three mice of Figure 5B; the deposit does not identify
     them, and sub-2 is the 3 V recording of the AQuA mouse.
   - The ROI is a hand-drawn ganglion cell in the paper (Fig. 5B legend) with no coordinates; tissue, whole frame,
-    tissue without saturating pixels and 40 x 40 pixel blocks were run.
+    tissue without saturating pixels, tissue less the camera's dark level and 40 x 40 pixel blocks were run.
   - Stimulation onset taken as 10.45 s, frame 19 on the paper's 0.55 s clock, from Fig. 6A ("Sti starts 10.45 s")
     and Fig. 7A ("Stim starts 10.45 s"); the files do not record it. The responses start 4 to 13 frames after it
     in sub-2, sub-3 and sub-6.
   - Frame interval run at 0.55 s (Results, Ex vivo calibration, "0.55 s, the minimum sampling time") and at 0.50
     s, the interval the per-frame timestamps of sub-2 and sub-3 record.
   - Photobleaching correction by a monoexponential curve, each value divided by the curve (Methods, Animal Preparation
-    and Imaging); the frames it is fit to are open, and both readings of the claims file (frames outside the response,
-    whole trace) were run.
+    and Imaging); the frames it is fit to are open, and the frames before onset with those from 120 s or from 180
+    s after it, and the whole trace, were run.
+  - Initial rate over k frames counted from the last frame before the trace leaves baseline (|z| > 5), as the responses
+    start 6 to 10 frames after the assumed stimulation onset; the rates from frame 19 are shown and not counted.
   - Channel taken as pHAb is the right half in sub-2 (the half that rises), the single channel in sub-6.
 - claim: fig5b-control-minimal
   outcome: blocked
@@ -271,13 +297,14 @@ outcomes:
   - 22.2
   notes: One experiment of four is deposited (sub-6, with drug then after washout, one field). Over 48 readings
     the peak with vesamicol is 11.3 to 29.9% of the washout peak, a reduction of 70.1 to 88.7%, within 76.59 +-
-    11.34% in 44; the paired t test over matched frames (reading b) gives p of 4.9e-11 or less in every reading.
-    The example's 17% is matched in 24 of 48 readings (tissue 17.5 to 22.3% with the mean baseline, whole frame
-    13.0 to 17.0%, tissue without saturating pixels 11.3 to 17.6%). 69% of the tissue pixels of the washout recording
-    saturate at some frame. The mean over four experiments and test (a) over them cannot be computed. Partially
-    reproduced, as the suppression holds in the one experiment, but three of four are not deposited and the example
-    ratio depends on the ROI. Measured values are this experiment's reduction and ratio under the first reading
-    (tissue, mean baseline).
+    11.34% in 44. The paired t test over matched frames (reading b) gives p of 4.9e-11 or less in every reading,
+    but the frames are not independent; over the means of twelve 10 s bins it gives p of 2.2e-06 to 0.14, below
+    0.01 in 37 of 48. The example's 17% is matched in 24 of 48 readings (tissue 17.5 to 22.3% with the mean baseline,
+    whole frame 13.0 to 17.0%, tissue without saturating pixels 11.3 to 17.6%), and in none of 13 cell-sized blocks
+    (median 36.8%). 69% of the tissue pixels of the washout recording saturate at some frame. The mean over four
+    experiments and test (a) over them cannot be computed. Partially reproduced, as the suppression holds in the
+    one experiment, but three of four are not deposited and the example ratio depends on the ROI. Measured values
+    are this experiment's reduction and ratio under the first reading (tissue, mean baseline).
   deviations:
   - One experiment of four; the reduction is that of this experiment, not a mean over four.
   - Assumed that sub-6 is the example of Figure 6A and 6B (it is the only one deposited).
@@ -290,33 +317,118 @@ outcomes:
     and Imaging); the frames it is fit to are open, and both readings of the claims file (frames outside the response,
     whole trace) were run.
   - A 3-frame median filter is shown as a variant, for two single low frames in each recording.
+  - The within-experiment paired t test is also run on the means of non-overlapping 10 s bins, as consecutive frames
+    are not independent.
 - claim: figs9-aqua-vs-roi
   outcome: blocked
   blocked_by: not_runnable
   notes: AQuA (Wang et al. 2019, the paper's ref. 32) is MATLAB software; it cannot be installed in the entry's
     locked Python environment, and the paper names its parameters (intensity threshold scaling factor, Gaussian
     smoothing, temporal cut threshold, super-event grouping) without values. The 8 V recording it needs (sub-3)
-    is deposited.
+    is deposited. The block-onset substitute used for Figure 7 cannot stand in here, as the claim compares AQuA's
+    own output with ROI traces.
 - claim: figs10-control-8v
   outcome: blocked
   blocked_by: data_missing
   notes: Needs 8 V recordings of the control nanosensor in three mice (Figure S10). None is deposited; the only
     8 V recording (sub-3) is of the ACh nanosensor.
 - claim: fig7-rostral-caudal
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: Needs AQuA event detection on the 8 V recording (sub-3, deposited, both channels, 488 frames at 0.50 s).
-    AQuA is MATLAB software that cannot be installed in the locked Python environment, and its parameters are not
-    given in the paper; no substitute was run, as the onsets and their order are defined by AQuA's events.
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig7-rostral-caudal
+  measured:
+  - 16.5
+  - 18.7
+  - 20.35
+  - 23.1
+  - 30.8
+  - 35.75
+  notes: 'sub-3, the 8 V recording of Figure 7, with block onsets in place of AQuA. The signal starts rostrally
+    and spreads caudally and then laterally: in all 18 variants the median onset of the rostral third precedes those
+    of the middle and caudal thirds, which precede the lateral region (frames 30, 34, 37 and 42 in the main variant),
+    and block onset rises with the rostro-caudal position (Spearman rho 0.62 to 0.68, p 0.00011 or less). The times
+    do not match. On the paper''s clock the region onsets are 15.95 to 16.50, 17.60 to 19.25, 19.80 to 20.90 and
+    22.00 to 23.65 s, against 13.20, 13.75, 15.40 and 15.95 s; the rostral peak is 30.25 to 34.10 s against 22.0
+    s and the caudal peak 35.75 to 36.30 s against 44.55 s; none of the six times is within tolerance in any of
+    the 36 variant and clock pairs. Part of the delay may come from the drop of both channels right after stimulation,
+    which a threshold has to clear. Partially reproduced, as the criterion says when the order holds but the times
+    do not. Measured are the main variant''s region 1 to 4 onsets, rostral peak and caudal peak (16 px blocks, 3
+    SD, fit a, 0.55 s clock).'
+  deviations:
+  - 'AQuA (Wang et al. 2019, the paper''s ref. 32; Methods, AQuA Analysis) is MATLAB software that cannot be installed
+    in the entry''s locked Python environment, and its parameters are not given. Assumed in its place: the onset
+    and peak of 16 x 16 pixel blocks of the pHAb tissue mask (`block_onsets`; onset the first frame from frame 19
+    that begins 3 frames above the pre-onset mean + 3 SD of the photobleaching-corrected dF/F, peak the largest
+    3-frame mean), with 32 pixel blocks, 2 and 5 SD and three photobleaching fits as variants. Block onsets measure
+    where and when the signal rises, as AQuA''s events do, but AQuA''s events and times may differ.'
+  - The paper's four AQuA areas cannot be located from its text. Regions drawn here from the axis of Figure 7B (rostral
+    up, caudal down, lateral to the left, as the criterion says; the files carry no orientation, and the frame is
+    taken as shown in Fig. 7A) are the rostral, middle and caudal thirds of the tissue's extent along the rows and,
+    for the lateral region, the blocks of the lower two thirds in the quarter of columns furthest to the left; a
+    region's onset and peak are the medians over its blocks.
+  - Stimulation onset taken as 10.45 s, frame 19 on the paper's 0.55 s clock, from Fig. 6A ("Sti starts 10.45 s")
+    and Fig. 7A ("Stim starts 10.45 s"); the files do not record it. The responses start 4 to 13 frames after it
+    in sub-2, sub-3 and sub-6.
+  - Times are frame x 0.55 s, the paper's clock; the 0.50 s of the files is shown.
 - claim: fig7-peak-timing
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: Depends on fig7-rostral-caudal, blocked as not runnable (AQuA).
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig7-peak-timing
+  notes: sub-3, with the four regions and block onsets of fig7-rostral-caudal in place of AQuA's events. Counted
+    from each region's onset (reading ii), the regions peak 11.8 to 18.1 s later; all four are within 9 to 16.5
+    s in 30 of 36 variants, all those with the bleaching curve fit outside the response on both clocks and the whole-trace
+    fit on the 0.50 s clock. The main variant gives 14.30, 14.85, 15.40 and 13.48 s, and 126 of 157 blocks peak
+    9 to 16.5 s after their own onset (median 13.8 s). Counted from stimulation onset (reading i) the regions peak
+    18.0 to 26.4 s after it and no block peaks within 16.5 s of it. Reproduced under reading (ii), which the criterion
+    allows.
+  deviations:
+  - 'AQuA (Wang et al. 2019, the paper''s ref. 32; Methods, AQuA Analysis) is MATLAB software that cannot be installed
+    in the entry''s locked Python environment, and its parameters are not given. Assumed in its place: the onset
+    and peak of 16 x 16 pixel blocks of the pHAb tissue mask (`block_onsets`; onset the first frame from frame 19
+    that begins 3 frames above the pre-onset mean + 3 SD of the photobleaching-corrected dF/F, peak the largest
+    3-frame mean), with 32 pixel blocks, 2 and 5 SD and three photobleaching fits as variants. Block onsets measure
+    where and when the signal rises, as AQuA''s events do, but AQuA''s events and times may differ.'
+  - The paper's four AQuA areas cannot be located from its text. Regions drawn here from the axis of Figure 7B (rostral
+    up, caudal down, lateral to the left, as the criterion says; the files carry no orientation, and the frame is
+    taken as shown in Fig. 7A) are the rostral, middle and caudal thirds of the tissue's extent along the rows and,
+    for the lateral region, the blocks of the lower two thirds in the quarter of columns furthest to the left; a
+    region's onset and peak are the medians over its blocks.
+  - Stimulation onset taken as 10.45 s, frame 19 on the paper's 0.55 s clock, from Fig. 6A ("Sti starts 10.45 s")
+    and Fig. 7A ("Stim starts 10.45 s"); the files do not record it. The responses start 4 to 13 frames after it
+    in sub-2, sub-3 and sub-6.
 - claim: figs12-3v-propagation
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: Depends on fig7-rostral-caudal (AQuA, not runnable). Of its three 3 V recordings only that of the mouse
-    also stimulated at 8 V (sub-2) is deposited; the two mice stimulated at 3 V only are not.
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:figs12-3v-propagation
+  notes: Only the mouse stimulated at 3 and 8 V is deposited (sub-2 and sub-3, one ganglion); the two mice stimulated
+    at 3 V only are not, so the criterion's count over three mice cannot be made. In this mouse the 3 V response
+    is lower than the 8 V one in all 6 readings (peak dF/F 27.1 to 29.0% against 46.9 to 54.0%) and in each region
+    (block medians 21.1 to 43.6% against 38.0 to 69.9%). At 3 V the rostral region's onset precedes the other three
+    in 12 of 18 variants, all those with the bleaching curve fit outside the response, and not with the whole-trace
+    fit, which takes in part of a response still 9.4 to 16.4% above baseline at 120 s; every earliest block lies
+    in the rostral third in 11 of 18. Partially reproduced, as the direction and the lower amplitude hold in the
+    one mouse that can be tested.
+  deviations:
+  - 'AQuA (Wang et al. 2019, the paper''s ref. 32; Methods, AQuA Analysis) is MATLAB software that cannot be installed
+    in the entry''s locked Python environment, and its parameters are not given. Assumed in its place: the onset
+    and peak of 16 x 16 pixel blocks of the pHAb tissue mask (`block_onsets`; onset the first frame from frame 19
+    that begins 3 frames above the pre-onset mean + 3 SD of the photobleaching-corrected dF/F, peak the largest
+    3-frame mean), with 32 pixel blocks, 2 and 5 SD and three photobleaching fits as variants. Block onsets measure
+    where and when the signal rises, as AQuA''s events do, but AQuA''s events and times may differ.'
+  - The paper's four AQuA areas cannot be located from its text. Regions drawn here from the axis of Figure 7B (rostral
+    up, caudal down, lateral to the left, as the criterion says; the files carry no orientation, and the frame is
+    taken as shown in Fig. 7A) are the rostral, middle and caudal thirds of the tissue's extent along the rows and,
+    for the lateral region, the blocks of the lower two thirds in the quarter of columns furthest to the left; a
+    region's onset and peak are the medians over its blocks.
+  - Stimulation onset taken as 10.45 s, frame 19 on the paper's 0.55 s clock, from Fig. 6A ("Sti starts 10.45 s")
+    and Fig. 7A ("Stim starts 10.45 s"); the files do not record it. The responses start 4 to 13 frames after it
+    in sub-2, sub-3 and sub-6.
+  - Two of the three 3 V mice are not deposited.
+  - Assumed that the bleaching curve is fit to frames outside the response (before onset and from 120 s or 180 s
+    after it); the whole-trace fit, under which the order fails, is shown.
 - claim: figs16-af647-stable
   outcome: reproduced
   assumed: true
@@ -410,7 +522,243 @@ findings:
     from Fig. 6A and 7A), with every rate window the claims file names. (2) Which ROI was used in Figures 5B and
     6B, and which deposited recordings are the three mice of Figure 5B? Here the tissue, the whole frame and cell-sized
     blocks were run, giving 17 to 37% against 3.7%. (3) Which frame interval applies, the 0.55 s of the paper or
-    the 0.50 s the files record? (4) Which flow rate was used for the HPLC (0.5 mL/min assumed), and how were the
-    peaks of Figure 2D integrated, given that the main peak and the second peak overlap? (5) Which frames was the
-    photobleaching curve fit to? (6) Which AQuA version and parameters were used for Figure 7 and Figures S9 to
-    S12?
+    the 0.50 s the files record? (4) Which flow rate was used for the HPLC (none is stated, so the retention volumes
+    could not be tested), and how were the peaks of Figure 2D integrated, given that the main peak and the second
+    peak overlap and that the share is 65.8 to 68.2% with a flat baseline and 77.5 to 83.1% with a line under each
+    peak? (5) Which frames was the photobleaching curve fit to? (6) Which AQuA version and parameters were used
+    for Figure 7 and Figures S9 to S12, and where are the four numbered areas of Figure 7A? Block onsets were used
+    in its place here. (7) How is the background of the puncta threshold of Figure 3D defined?
+verifications:
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text. The verifier read the archive's file list and metadata and tested
+    initial_rate, fit_mm, two_line_crossing, bleach_correct and dff on synthetic inputs. It found no place where
+    the claims file misreads the paper.
+  results:
+  - claim: fig2d-hplc-yield
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The main-peak share is 66.6% (flat baseline) or 65.8% (0.5% detection), outside the 69.3 to 84.7% tolerance.
+      Reading (b) gives a negative share (-367%), which means nothing. The 7.58 mL main peak comes from a flow rate
+      picked to match the paper, so the volume test is circular, as the paper gives the column but no flow rate
+      and only the retention ratio is tested (1.191 against 1.213 to 1.227). The share failure is marginal and depends
+      on where the outer peak limit is placed: the limit at 29.76 min gives a low tail to the second peak, ending
+      it at the end of its own descent (about 21 min) would move the share to roughly 69 to 70%, and no sensible
+      variant of (b) was run.'
+    response: Changed to partially_reproduced, assumed. The volumes are no longer tested (no flow rate in the paper);
+      the rate that would put the main peak at 7.5 mL is printed as information only. Three ends of the second peak
+      are now run (return to the pre-injection level, end of its descent, 2% of its height) under reading (a), reading
+      (b) with a line under each peak, and a common line with a drop at the valley, and the signal from 19 to 35
+      min is printed. Ending the peak where its descent ends gives 68.2% (a) and 69.1% (common line), still below
+      tolerance, but 79.1% under reading (b) as the criterion writes it (77.5 to 83.1% over the ends that leave
+      out the tail). As the criterion counts a match under one reading, the share holds, and the outcome is partial
+      because the volumes cannot be tested.
+  - claim: fig2g-conjugation-ratios
+    agrees: true
+    outcome: blocked
+    reason: Agree. The deposit has spectra of the sensor and the scaffold only, with no pure AChE or BTX spectra,
+      and the criterion says the claim is untestable without them.
+    response: No change.
+  - claim: fig2e-page-bands
+    agrees: true
+    outcome: reproduced
+    reason: Ethidium lane 3 has two bands (rows 511 and 593) above lane 1's scaffold band (row 878). Lane 3's fluorescent
+      bands at rows 783 and 861 carry AF647 at 8 and 10 SD above the gap between lanes. The lane order matches the
+      legends of Fig. 2E and S2C.
+    response: No change.
+  - claim: figs3-size
+    agrees: true
+    outcome: blocked
+    reason: Agree. The manifest has no AFM images, bare-DNA images, 0 h/5 h images, dialysis-fiber data or two-photon
+      files.
+    response: No change.
+  - claim: figs5-btx-staining
+    agrees: true
+    outcome: reproduced
+    reason: 'By eye, the render shows discrete AF647 puncta spread over the ganglion and on the rims of GFP+ somata
+      (low magnification). The supporting numbers are weak: puncta lie within 1 um of GFP at or below chance in
+      3 of 4 images, and the detector finds 2,122 to 26,603 puncta (up to 64 per 100 um^2 in one plane), which is
+      mostly noise, so the near-GFP shares do not test the claim and the by-eye judgement carries it.'
+    response: Outcome kept. The background of the puncta threshold is now the lower half of the pixels reflected
+      about the median (median + 3 SD), which passes far less noise (4.4 to 15.8 puncta per 100 um^2); the first
+      rule is shown as a variant. With it, nearness to GFP is above chance in three of the four images by at least
+      one mask (0.82 against 0.37 in the low-magnification projection).
+  - claim: fig3d-sensor-on-soma
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both channels show puncta, and pHAb puncta lie over the somata. But AF647/pHAb overlap is no better
+      than with the pHAb mask shifted by 5 um (0.84 vs 0.82, 0.98 vs 0.98, 0.85 vs 0.80). The share inside the soma
+      mask is at or below the mask's share of the field. Check (b) is below 0.5 in all 5 images (0.16 to 0.47).
+      In the render, yellow spots sit mostly between or at the edges of somata. Defining the background as the pixels
+      at or below the median puts 32 to 48% of the field above the pHAb threshold, so overlap is nearly guaranteed
+      and fig3d should not count as reproduced on the overlap numbers.
+    response: Outcome kept. The background rule was revised (median + 3 SD of the reflected lower half), which marks
+      7 to 12% of the field as pHAb in four of five images; overlap is then above its shifted null there (59 to
+      85% against 39 to 53%; top-hat 68 to 79% against 40 to 64%), and the top-hat overlap now has its own shifted
+      null. The soma localisation stays at chance and (b) fails (0.09 to 0.35). A full-resolution crop with each
+      channel alone was added; it shows the coinciding spots between or at the edges of the somata, as the verifier
+      saw.
+  - claim: fig3bc-retention
+    agrees: true
+    outcome: blocked
+    reason: Agree. The manifest has no AFM images, bare-DNA images, 0 h/5 h images, dialysis-fiber data or two-photon
+      files.
+    response: No change.
+  - claim: figs4-stability
+    agrees: true
+    outcome: blocked
+    reason: Agree. The manifest has no AFM images, bare-DNA images, 0 h/5 h images, dialysis-fiber data or two-photon
+      files.
+    response: No change.
+  - claim: figs6a-response-time
+    agrees: true
+    outcome: blocked
+    reason: Agree. sub-1 keeps only the first frame's timestamp and no addition time, and the criterion forbids
+      taking the onset from the response.
+    response: No change.
+  - claim: fig4b-michaelis-menten
+    agrees: true
+    outcome: not_reproduced
+    reason: None of 80 readings is within tolerance (Km 0.03 to 0.73 uM against 49.24 +- 5.84, Vmax 8.3 to 49.7
+      %/s against 281, R2 at most 0.73), and the rates do not rise steadily with concentration (Spearman p 0.17).
+      The onset is the frame before the largest one-frame rise, the inference the claims file calls circular for
+      figs6a; at 0.00714 and 0.0714 uM there is no step, so the onset is noise, and the 0.000714 uM recording rises
+      more in one frame than 0.714 uM, which suggests the steps may be artefacts of adding ACh. Km is off by more
+      than 60-fold under every reading, so the outcome stands, but it is weakly founded.
+    response: 'Outcome kept. Added a plot and a printout of each sub-1 trace with the inferred onset marked: in
+      the six recordings with a step the signal drifts down by 1.5 to 15.5% before it and then jumps within one
+      frame, which the conclusion now names as a possible artefact of adding the solution. A variant with one onset
+      (frame 7) for every recording gives Km 0.545 uM.'
+  - claim: fig4b-lod
+    agrees: true
+    outcome: not_reproduced
+    reason: None of 160 crossings falls in 205 to 251 nM. Baseline noise is 1.77 +- 2.34% (SD) or 1.17% (step),
+      against the paper's 0.088%; signal-to-noise at 228 nM is 0.40 or 0.61, against 8.18. LLOD reading (c), the
+      split shown in Fig. 4B(ii), was not run, though the claims file names it; the fitted rates make a crossing
+      near 228 nM unlikely.
+    response: Outcome kept. Reading (c) is still not run, as it needs the figure's lines and the entry reads no
+      figures; the conclusion and the deviation say so.
+  - claim: figs6b-unit-calibration
+    agrees: true
+    outcome: blocked
+    reason: Agree. sub-1 is one channel (509 x 255) with no AF647 and no AF647 calibration.
+    response: No change.
+  - claim: fig4c-control-ph
+    agrees: true
+    outcome: blocked
+    reason: Agree. None of the six subjects in SPARC:108's subjects.xlsx is a control-nanosensor or pH experiment.
+    response: No change.
+  - claim: fig5b-in-vivo-response
+    agrees: true
+    outcome: not_reproduced
+    reason: dF/F at 15 s is 17.1 to 37.3%, against 3.33 to 4.07%; none of 72 readings and none of 34 cell-sized
+      blocks fits on both dF/F and rate. sub-2 is still at 11 to 15% at 120 s. The 28 readings flagged rate_ok are
+      an artefact, as the k-frame windows start at frame 19 while the responses start at frames 23 to 34. Bleach
+      reading (a) treats frames from 120 s after onset as recovered, so the exponential fit absorbs part of the
+      response. No camera offset or background is subtracted. The paper's three mice are not identified in the deposit.
+    response: Outcome kept. The k-frame rates are now counted from the frame where each trace leaves baseline (frames
+      25 to 29); none is within the rate tolerance, and the rates from frame 19 are shown but not counted. A bleaching
+      fit from 180 s after onset and a ROI less the camera's dark level (printed per file) were added; dF/F at 15
+      s is 17.1 to 40.1% over 144 readings, and the dark level raises it slightly.
+  - claim: fig5b-control-minimal
+    agrees: true
+    outcome: blocked
+    reason: Agree. None of the six subjects in SPARC:108's subjects.xlsx is a control-nanosensor or pH experiment.
+    response: No change.
+  - claim: figs8-control-10v
+    agrees: true
+    outcome: blocked
+    reason: Agree. None of the six subjects in SPARC:108's subjects.xlsx is a control-nanosensor or pH experiment.
+    response: No change.
+  - claim: fig5c-voltage-dose
+    agrees: true
+    outcome: blocked
+    reason: Agree. There is no 5 V recording; 10 V (sub-4) is a different mouse. Whether sub-4 holds repeated stimulations
+      was not shown.
+    response: 'No change. The whole sub-4 trace is now printed and plotted: one response, peaking at frame 99.'
+  - claim: fig5c-ach-concentration
+    agrees: true
+    outcome: blocked
+    reason: Agree. sub-1 is one channel (509 x 255) with no AF647 and no AF647 calibration.
+    response: No change.
+  - claim: fig5d-pulse-dose
+    agrees: true
+    outcome: blocked
+    reason: Agree. No 10- or 50-pulse files are deposited.
+    response: No change.
+  - claim: fig5e-reversibility
+    agrees: true
+    outcome: blocked
+    reason: Agree. Whether sub-4 holds repeated stimulations was not shown; the full tissue trace of sub-4 would
+      decide whether any part of fig5e can be tested.
+    response: No change. The sub-4 trace now shows a single response (one peak of 8.7% at frame 99, |z| > 5 from
+      frame 78 to 210), so no part can be tested.
+  - claim: figs7b-in-vitro-reversibility
+    agrees: true
+    outcome: blocked
+    reason: Agree. The manifest has no AFM images, bare-DNA images, 0 h/5 h images, dialysis-fiber data or two-photon
+      files.
+    response: No change.
+  - claim: fig6-vesamicol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Only one of four experiments is deposited. In it the drug/washout ratio is 11.3 to 29.9% (24 of 48 readings
+      within 15.3 to 18.7%), and the reduction is within 65 to 88% in 44 of 48. Within-experiment paired t gives
+      p of 4.9e-11 or less, but over 219 to 241 autocorrelated frames it treats frames as independent replicates.
+      The four-experiment mean and test (a) cannot be computed. The example ratio depends on the ROI, and cell-sized
+      blocks give 0 of 13 within tolerance (median 36.8%).
+    response: Outcome kept. Added the paired t test over the means of twelve 10 s bins (p 2.2e-06 to 0.14, below
+      0.01 in 37 of 48), and the conclusion now names the block result and the dependence on the ROI.
+  - claim: figs9-aqua-vs-roi
+    agrees: true
+    outcome: blocked
+    reason: Agree that it is blocked, since the claim compares against AQuA by definition. The reason not_runnable
+      is not one of the allowed reasons; it should be other.
+    response: Kept as not_runnable. docs/protocol.md lists not_runnable among the blocked reasons ("the paper's
+      method cannot be run here, because its software cannot be installed in a locked environment") and the schema
+      accepts it; AQuA is MATLAB software, so this is the reason that applies.
+  - claim: figs10-control-8v
+    agrees: true
+    outcome: blocked
+    reason: Agree. None of the six subjects in SPARC:108's subjects.xlsx is a control-nanosensor or pH experiment.
+    response: No change.
+  - claim: fig7-rostral-caudal
+    agrees: false
+    outcome: blocked
+    reason: 'The 8 V recording (sub-3) is deposited, so part of the claim could be tested: block-wise onset and
+      peak times on sub-3 could test the onset order, though not with AQuA. The reason not_runnable is not allowed;
+      it should be other.'
+    response: Changed to partially_reproduced, assumed. Onset and peak maps of 16 x 16 pixel blocks (with variants)
+      stand in for AQuA, grouped into rostral, middle, caudal and lateral regions on the axis of Fig. 7B. The order
+      rostral, caudal, lateral holds in all 18 variants; none of the six times is within tolerance in any variant.
+  - claim: fig7-peak-timing
+    agrees: false
+    outcome: blocked
+    reason: Block-wise peak times on sub-3 could test the 10 to 15 s time to peak (9 to 16.5 s), though not with
+      AQuA. The reason should be other.
+    response: Changed to reproduced, assumed. From each region's onset the four regions peak in 11.8 to 18.1 s,
+      all within 9 to 16.5 s in 30 of 36 variants; from stimulation onset none is.
+  - claim: figs12-3v-propagation
+    agrees: false
+    outcome: blocked
+    reason: 'Part could be tested. The amplitude comparison in the mouse stimulated at both voltages is already
+      there: sub-2 at 3 V peaks at 27.1%, sub-3 at 8 V at 48.1%, so 3 V is lower. Propagation could only be checked
+      in sub-2; the two 3 V-only mice are not identified in the deposit.'
+    response: Changed to partially_reproduced, assumed. The amplitude part holds in all 6 readings and in each region;
+      at 3 V the rostral region starts first in the 12 of 18 variants with the bleaching curve fit outside the response.
+      The two 3 V-only mice are not deposited, so the count over three mice cannot be made.
+  - claim: figs16-af647-stable
+    agrees: true
+    outcome: reproduced
+    reason: In all 6 readings the AF647 maximum rise (0.38 to 3.70%) is within the pre-stimulus mean + 3 SD, and
+      the pHAb/AF647 rise ratio is 14 to 135, at least 5. This rests on the assumption that the left half is AF647;
+      it is not circular, because a rise in both halves would still fail the test.
+    response: No change.
+  - claim: figs13-two-photon
+    agrees: true
+    outcome: blocked
+    reason: Agree. The manifest has no AFM images, bare-DNA images, 0 h/5 h images, dialysis-fiber data or two-photon
+      files.
+    response: No change.
