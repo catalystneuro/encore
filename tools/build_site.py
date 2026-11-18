@@ -3354,12 +3354,12 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                 continue
             title = (f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
                      else e(nb["title"]))
-            # Beside the notebook's name: open it in Google Colab, from the copy tools/colab.py keeps on the `colab`
-            # branch, which fetches the entry's files and installs its pinned packages.
+            # Beside the notebook's name: Google's own "Open in Colab" badge (a copy in the site's assets, so the page
+            # loads nothing from another site), linked to the copy tools/colab.py keeps on the `colab` branch.
             colab = (f' <a class="colab" href="{COLAB_URL}/{e(a["entry"])}/{e(nb["path"])}" target="_blank" '
                      f'rel="noopener" title="Open and run this notebook in Google Colab. Its first cell fetches the '
-                     f'entry&rsquo;s files and installs its pinned packages."><span class="k">Open in</span>'
-                     f'<span class="v">Colab</span></a>') if not data["demo"] and a.get("entry") else ""
+                     f'entry&rsquo;s files and installs its pinned packages."><img src="{root}assets/colab-badge.svg" '
+                     f'alt="Open in Colab" width="117" height="20"></a>') if not data["demo"] and a.get("entry") else ""
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span>{colab}</h3>'
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
