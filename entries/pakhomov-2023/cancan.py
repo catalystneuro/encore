@@ -35,7 +35,8 @@ Where the parameters come from:
 - Background, reading O6 (b) of the claims file: the 1st percentile of the reduced image inside
   the electrode square, outside the footprints, a standard choice for a cell-free level.
 - The other readings (O2 to O9) are the claims file's and are applied with `group_values`.
-  `SUPPORTED` names the readings the paper or the claims file gives a basis for.
+  `SUPPORTED` names the readings used to decide a test when the readings disagree, and
+  `SUPPORTED_FIG5` adds both diagonals (O2 a) for Fig. 5, the one figure whose legend says.
 """
 
 from __future__ import annotations
@@ -476,11 +477,12 @@ def dish_values(prof, halves, o3, o4):
 READINGS = dict(o1=("a", "b"), w=("w1", "w2"), o2=("a", "d1", "d2"), o3=("a", "b"),
                 o4=("a", "b"), o5=("a", "b"), o6=("a", "b"), o7=("raw", "lo25", "lo75"))
 PRIMARY = dict(o1="a", w="w1", o2="a", o3="a", o4="a", o5="a", o6="a", o7="raw")
-# The readings the paper, or the claims file, gives a basis for, used to decide a test when the
-# readings disagree (the claims file's rule for readings). O1 and O4 have no basis and are
-# always varied.
+# The readings used to decide a test when the readings disagree (the claims file's rule for
+# readings). O1 and O4 have no basis and are always varied. O2 is varied too outside Fig. 5:
+# the claims file says that for Figs. 6 to 9 the paper does not say which diagonals were used,
+# and Methods 2.4 places the ROIs "along one or both diagonals".
 #   w   w1: the claims file calls square ROIs "a standard choice" and w2 "a check on sensitivity".
-#   o2  a: both diagonals averaged, the one layout the paper states (Fig. 5B legend).
+#   o2  a for Fig. 5 only (SUPPORTED_FIG5): both diagonals averaged, as the Fig. 5B legend says.
 #   o3  a: the ROI nearest the geometric centre; Methods 2.4 measures "from the geometrical
 #       center".
 #   o5  a: the claims file: "tests on normalized values use (a)".
@@ -489,7 +491,8 @@ PRIMARY = dict(o1="a", w="w1", o2="a", o3="a", o4="a", o5="a", o6="a", o7="raw")
 #   o7  raw: tests are on per-dish ROI means; the LOESS fits are drawn over group means.
 #   O8  paired: comparisons inside the same dishes (centre against trough or periphery) are
 #       paired, the standard test for two measures of one dish (set in the notebook).
-SUPPORTED = dict(w="w1", o2="a", o3="a", o5="a", o6="a", o7="raw")
+SUPPORTED = dict(w="w1", o3="a", o5="a", o6="a", o7="raw")
+SUPPORTED_FIG5 = dict(SUPPORTED, o2="a")
 
 
 def iter_readings(**fixed):

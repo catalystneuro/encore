@@ -119,8 +119,8 @@ outcomes:
     authors: how the ROIs were laid out (finding methods_unavailable).'
   deviations:
   - Where the readings of a test disagree, the outcome is the one all the readings with a basis in the
-    paper or the claims file give (ROI width w1, both diagonals, the ROI on the centre, per-dish normalization,
-    raw intensity, per-dish ROI means, paired tests inside a dish; cc.SUPPORTED), with the ROI count (O1)
+    paper or the claims file give (ROI width w1, a standard choice; both diagonals, from the Fig. 5B legend; the ROI on the centre, per-dish normalization,
+    raw intensity, per-dish ROI means, paired tests inside a dish, an assumption; cc.SUPPORTED_FIG5), with the ROI count (O1)
     and end ROI (O4) varied; where those disagree the claim is blocked as methods_underspecified.
   - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
   blocked_by: methods_underspecified
@@ -136,6 +136,7 @@ outcomes:
   blocked_by: methods_underspecified
 - claim: fig6a-more-packets-more-uptake
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_pakhomov_2023.ipynb
   output: claim:fig6a-more-packets-more-uptake
   notes: 000875 holds 3 dishes per treatment, all at 3.2 kV in the small array (O11). Uptake rises from
@@ -145,13 +146,18 @@ outcomes:
     p = 0.0024) but for 1Px4 in none (main p = 0.20) and for 5Px4 in 8% (p = 0.13); for every treatment
     in none, paired or unpaired. The criterion's partial outcome names only a rise at one or two places;
     here the rise holds at all three and the peak test fails for two treatments, which is read as partial.
-    This gap is asked of a reader (questions/pakhomov-2023.yaml).
+    This gap is asked of a reader (questions/pakhomov-2023.yaml). With the diagonals (O2) varied the peak
+    test still fails for every treatment in all 6 supported readings.
   deviations:
+  - The criterion gives no outcome for a rise at all three places with the peak test failing for some
+    treatments. It is read as partially reproduced, an assumption, since the rise holds and part of the
+    claim's statement does not.
   - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
-  - Where the readings of a test disagree, the outcome is the one all the readings with a basis in the
-    paper or the claims file give (ROI width w1, both diagonals, the ROI on the centre, per-dish normalization,
-    raw intensity, per-dish ROI means, paired tests inside a dish; cc.SUPPORTED), with the ROI count (O1)
-    and end ROI (O4) varied; where those disagree the claim is blocked as methods_underspecified.
+  - Where the readings of a test disagree, the outcome is the one all the supported readings give (ROI
+    width w1, a standard choice; the ROI on the centre; per-dish normalization; raw intensity; per-dish
+    ROI means; paired tests inside a dish, an assumption; cc.SUPPORTED), with the ROI count (O1), the end
+    ROI (O4) and, outside Fig. 5, the diagonals (O2) varied; where those disagree the claim is blocked
+    as methods_underspecified.
 - claim: fig6b-peak-relative-to-periphery
   outcome: partially_reproduced
   notebook: reproduce_pakhomov_2023.ipynb
@@ -185,21 +191,33 @@ outcomes:
 - claim: fig6-peak-narrower
   outcome: reproduced
   assumed: true
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The round-2 verifier found that the supported readings fixed both diagonals (O2 a) for Fig.
+      6, where the claims file says the paper does not state the diagonals. With O2 varied, the width at
+      half height falls 1Px4 > 5Px4 > 10Px4 in 4 of the 6 supported readings and is out of order for 5Px4
+      on the d1 diagonal in the other 2 (cell 40), so the supported readings give reproduced and partially
+      reproduced, and the paper gives no basis to choose the diagonal.
   notebook: reproduce_pakhomov_2023.ipynb
   output: claim:fig6-peak-narrower
   notes: Width at half height above the trough on the mean normalized profile falls from 0.657 mm (1Px4)
-    to 0.636 mm (5Px4) to 0.438 mm (10Px4) in the main reading, in 87% of 144 readings of this width and
-    in both supported readings (0.671, 0.568, 0.432 mm with O1 b). The distance between troughs falls
-    in order in 42% of its readings, in one of the two supported readings and not in the main reading
-    (1.471, 1.758, 1.614 mm).
+    to 0.636 mm (5Px4) to 0.438 mm (10Px4) in the main reading and in 87% of 144 readings of this width.
+    With both diagonals fixed, as verified in round 2, it falls in both supported readings (0.671, 0.568,
+    0.432 mm with O1 b). With the diagonals (O2) varied it falls in 4 of the 6 supported readings; on
+    the d1 diagonal 5Px4 is wider than 1Px4 under both ROI counts (0.658, 0.804, 0.249 mm and 0.697, 0.733,
+    0.396 mm), the partial outcome. 10Px4 is narrower than 1Px4 in all six. The distance between troughs
+    falls in order in 42% of its readings and in 2 of the 6 supported ones, not in the main reading (1.471,
+    1.758, 1.614 mm).
   deviations:
   - The paper defines no width, and the criterion's two readings disagree in part. The outcome rests on
     reading (a), the full width at half height above the trough, the criterion's first reading and the
-    usual measure of a peak's width, on the supported ROI readings.
-  - Where the readings of a test disagree, the outcome is the one all the readings with a basis in the
-    paper or the claims file give (ROI width w1, both diagonals, the ROI on the centre, per-dish normalization,
-    raw intensity, per-dish ROI means, paired tests inside a dish; cc.SUPPORTED), with the ROI count (O1)
-    and end ROI (O4) varied; where those disagree the claim is blocked as methods_underspecified.
+    usual measure of a peak's width.
+  - Where the readings of a test disagree, the outcome is the one all the supported readings give (ROI
+    width w1, a standard choice; the ROI on the centre; per-dish normalization; raw intensity; per-dish
+    ROI means; paired tests inside a dish, an assumption; cc.SUPPORTED), with the ROI count (O1), the end
+    ROI (O4) and, outside Fig. 5, the diagonals (O2) varied; where those disagree the claim is blocked
+    as methods_underspecified.
 - claim: fig7a-amplitude-scales-uptake
   outcome: partially_reproduced
   notebook: reproduce_pakhomov_2023.ipynb
@@ -221,48 +239,62 @@ outcomes:
   notebook: reproduce_pakhomov_2023.ipynb
   output: claim:fig7b-targeting-independent-of-amplitude
   notes: 'Tested; the readings disagree and no reading has a basis to be adopted. Voltages 2.4, 3.2, 4.0,
-    4.8 and 5.6 kV (4, 3, 3, 3, 3 dishes). Over 96 readings no pair differs in 27%. Of the four supported
-    readings (O1 x O4), only the main one finds no pair (20 tests, smallest p = 0.052, 2.4 against 4.8
-    kV at the centre); with O1 b two pairs differ (2.4 against 4.8 kV, p = 0.026; 2.4 against 5.6 kV,
-    p = 0.0051, both at the centre), and with O4 b two or three. Under both O1 readings the error-bar
+    4.8 and 5.6 kV (4, 3, 3, 3, 3 dishes). Over 96 readings no pair differs in 27%. Of the 12 supported
+    readings (O1 x O2 x O4), only the main one finds no pair (20 tests, smallest p = 0.052, 2.4 against
+    4.8 kV at the centre); with O1 b two pairs differ (2.4 against 4.8 kV, p = 0.026; 2.4 against 5.6
+    kV, p = 0.0051, both at the centre), and the others one to three. With raw intensity no pair differs
+    in 2% of readings. Under both O1 readings the error-bar
     rule finds 3 or 4 of 20 pairs different and a one-way ANOVA of per-dish normalized centres finds a
     voltage effect (p = 0.028 and 0.021); on each dish''s mean normalized profile it does not (p = 0.26
     and 0.12). The normalized centre at 4.8 kV is 229% (dishes 136, 232, 318%) against 117 to 129% at
     the other voltages. Leaving out any one of the four 2.4 kV dishes leaves the supported readings split
-    (1 of 4 with no pair differing). Open for the paper''s authors: the ROI layout and the end ROI (finding
-    methods_unavailable).'
+    (no pair differing in 25% of them). Open for the paper''s authors: the ROI layout, the diagonals and the end ROI
+    (finding methods_unavailable).'
   deviations:
   - 001025 holds 4 dishes at 2.4 kV where the Fig. 7 legend gives n = 3; all 4 are used, and each is left
     out in turn as a check.
-  - Where the readings of a test disagree, the outcome is the one all the readings with a basis in the
-    paper or the claims file give (ROI width w1, both diagonals, the ROI on the centre, per-dish normalization,
-    raw intensity, per-dish ROI means, paired tests inside a dish; cc.SUPPORTED), with the ROI count (O1)
-    and end ROI (O4) varied; where those disagree the claim is blocked as methods_underspecified.
+  - Where the readings of a test disagree, the outcome is the one all the supported readings give (ROI
+    width w1, a standard choice; the ROI on the centre; per-dish normalization; raw intensity; per-dish
+    ROI means; paired tests inside a dish, an assumption; cc.SUPPORTED), with the ROI count (O1), the end
+    ROI (O4) and, outside Fig. 5, the diagonals (O2) varied; where those disagree the claim is blocked
+    as methods_underspecified.
   - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
   blocked_by: methods_underspecified
 - claim: fig7cd-holds-for-large-array
   outcome: reproduced
   assumed: true
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The round-2 verifier found that the supported readings fixed both diagonals (O2 a) for Fig.
+      7, where the claims file says the paper does not state the diagonals, and that the readings with
+      a pair differing are all on d1. With O2 varied, 11 of the 12 supported readings find no pair differing
+      and one on d1 finds one (p = 0.037, cell 50). The supported readings disagree and the paper gives
+      no basis to choose the diagonal, the rule applied to fig7b-targeting-independent-of-amplitude.
   notebook: reproduce_pakhomov_2023.ipynb
   output: claim:fig7cd-holds-for-large-array
   notes: 'The dataset holds 10Px4 on the large array at 4.8 kV (2 dishes) and 6.4 kV (3 dishes). Normalized
     centres 204% and 198% (p = 0.95); half-way they differ by 53 percentage points (p = 0.14). No pair
-    differs in 96% of 96 readings and in all four supported readings; the error-bar rule finds none. The
+    differs in 96% of 96 readings and, with both diagonals fixed as verified in round 2, in all four
+    supported readings. With the diagonals (O2) varied, 11 of 12 supported readings find no pair and one,
+    on the d1 diagonal with 92 ROIs and the mean of the end ROIs, finds one (p = 0.037); every reading
+    with a pair differing is on d1. The error-bar rule finds none. The
     test has little power: with a pooled s.d. of 91 percentage points, a difference of about 353 points
     in the normalized centre would be needed for 80% power. Uptake in a.u. rises 3.39 times at the most
     peripheral ROI and 4.03 times in the centre from 4.8 to 6.4 kV.'
   deviations:
   - Two voltages only, with 2 dishes at 4.8 kV where the paper gives n = 3.
-  - Where the readings of a test disagree, the outcome is the one all the readings with a basis in the
-    paper or the claims file give (ROI width w1, both diagonals, the ROI on the centre, per-dish normalization,
-    raw intensity, per-dish ROI means, paired tests inside a dish; cc.SUPPORTED), with the ROI count (O1)
-    and end ROI (O4) varied; where those disagree the claim is blocked as methods_underspecified.
+  - Where the readings of a test disagree, the outcome is the one all the supported readings give (ROI
+    width w1, a standard choice; the ROI on the centre; per-dish normalization; raw intensity; per-dish
+    ROI means; paired tests inside a dish, an assumption; cc.SUPPORTED), with the ROI count (O1), the end
+    ROI (O4) and, outside Fig. 5, the diagonals (O2) varied; where those disagree the claim is blocked
+    as methods_underspecified.
 - claim: discussion-independent-of-array-size
   outcome: blocked
   notebook: reproduce_pakhomov_2023.ipynb
   output: claim:discussion-independent-of-array-size
   notes: Blocked because it depends on fig7b-targeting-independent-of-amplitude, blocked as methods_underspecified;
-    fig7cd-holds-for-large-array is reproduced on the supported readings. The normalized centres are 117
+    fig7cd-holds-for-large-array is reproduced as verified, with a change to blocked proposed. The normalized centres are 117
     to 229% on the small array (1Px4, by voltage) and 198 to 204% on the large array (10Px4); packet number
     and array size are confounded, as the criterion says.
   blocked_by: methods_underspecified
@@ -358,7 +390,8 @@ outcomes:
   output: claim:fig9c-restricted-to-center
   notes: By the paired test (O8) the centre is above the most peripheral ROI at 1 mm (p = 0.021) but not
     at 2 mm (p = 0.051) or 3 mm (p = 0.34) in the main reading; all three gaps hold in 8% of readings
-    and in none of the supported ones (25% unpaired). The centre is the highest point of the mean profile
+    and in none of the 12 supported ones with the diagonals varied (25% unpaired). At 2 mm alone the paired
+    test holds in 92% of readings. The centre is the highest point of the mean profile
     at all three gaps in none of 96 readings (main reading maximum at 0.44 mm at 2 mm). The 3 mm dishes
     have centre values of 660, 3782 and 592 a.u. Whether a strict maximum at ROI resolution is intended
     is asked of a reader.
@@ -388,8 +421,8 @@ findings:
     paper gives n = 3 for Fig. 7; which dishes the paper used is not stated.
 - kind: methods_unavailable
   statement: Questions for the paper's authors. (1) How were the 92 or 224 ROIs laid out (per diagonal
-    or split over both diagonals), and how wide were they? The outcomes of Fig. 5B and Fig. 7B depend
-    on it. (2) Was the most peripheral value the mean of the end ROIs of the averaged profile, or was
+    or split over both diagonals), how wide were they, and along which diagonals were Figs. 6 to 9
+    measured? The outcomes of Figs. 5B, 6 (peak width), 7B and 7C, D depend on it. (2) Was the most peripheral value the mean of the end ROIs of the averaged profile, or was
     each half-diagonal normalized to its own end? (3) How was the geometric centre located, especially
     with electrodes lifted 2 and 3 mm, where no footprint shows? (4) Was a background subtracted from
     the monolayer images, and are the a.u. values of the text (215 to 235 a.u. in the Fig. 8 centre) raw
@@ -488,7 +521,8 @@ verifications:
       centre-above-trough test fails for 1Px4 and 5Px4 (p about 0.15). The criterion has no rule for this
       combination (problem 10).
     response: 'No change of outcome. The gap in the criterion is asked of a reader in questions/pakhomov-2023.yaml.
-      With the paired test the peak test fails for every treatment in all readings. The trough bias of
+      With the paired test the peak test fails jointly, for all three treatments, in all readings; the
+      10Px4 peak alone holds in 83%. The trough bias of
       problem 7 is not corrected: O9 defines the trough this way, and the test it bears on fails.'
   - claim: fig6b-peak-relative-to-periphery
     agrees: true
@@ -600,4 +634,180 @@ verifications:
       to 0.73 mm. At 3 mm the centre above the periphery fails (p about 0.3). Problem 10: the highest-point
       rule is strict at ROI resolution under noise.'
     response: No change of outcome. The strictness is asked of a reader in questions/pakhomov-2023.yaml;
-      with the paired test the centre-above-periphery part also fails at 2 mm.
+      with the paired test the centre-above-periphery part also fails at 2 mm in the main reading (p = 0.051),
+      though at 2 mm alone it holds in 92% of readings.
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook after the round-1 revision, the helper module cancan.py,
+    the claims file, the attempt record and the paper''s full text. Also in reply, not tied to one claim:
+    cc.SUPPORTED no longer fixes both diagonals (O2 a) outside Fig. 5, where the claims file says the
+    paper does not say (cc.SUPPORTED_FIG5 keeps it for Fig. 5); the notebook now calls w1, O3 a and the
+    paired test standard choices or assumptions, not readings from the paper; the Summary no longer infers
+    that the paper''s a.u. scale differs (with background subtracted the Fig. 8 centres are 154 to 418
+    a.u.) and says it is asked of a reader; the README says 17 files hold a second channel; the cell 19
+    panel titles are no longer hidden; the round-1 responses on fig6a and fig9c are corrected. The trough
+    bias, the flat-field tiling and the figure-only values remain open, as the report says, with no bearing
+    on a conclusion.'
+  results:
+  - claim: fig3-field-simulation
+    agrees: true
+    outcome: blocked
+    reason: None of the datasets holds the field maps or the single-cell time lapse (cell 15).
+    response: No change.
+  - claim: fig4-sham-no-uptake
+    agrees: true
+    outcome: blocked
+    reason: None of the datasets holds the field maps or the single-cell time lapse (cell 15).
+    response: No change.
+  - claim: fig4-unipolar-strongest
+    agrees: true
+    outcome: blocked
+    reason: None of the datasets holds the field maps or the single-cell time lapse (cell 15).
+    response: No change.
+  - claim: fig4-bipolar-weaker
+    agrees: true
+    outcome: blocked
+    reason: None of the datasets holds the field maps or the single-cell time lapse (cell 15).
+    response: No change.
+  - claim: fig4-twenty-fold-cancellation
+    agrees: true
+    outcome: blocked
+    reason: None of the datasets holds the field maps or the single-cell time lapse (cell 15).
+    response: No change.
+  - claim: fig5a-trains-stronger
+    agrees: true
+    outcome: not_reproduced
+    reason: Trains are not above packets at the e3 end in any reading (0/16), and the criterion has no
+      partial outcome. The round-1 objection is met by cell 19, which shows every e3 ROI inside the image,
+      at 2.0 to 5.0 times the cell-free level, with no pixel at or below that level.
+    response: No change of outcome. The panel titles of the cell 19 figure are no longer hidden.
+  - claim: fig5a-packet-center-enhanced
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading (a) holds in 16/16 readings. "e1 end above centre" fails in 0/16.
+    response: No change.
+  - claim: fig5b-rotation-center-peak
+    agrees: true
+    outcome: blocked
+    reason: The two supported readings differ only in O1, void p = 0.055 with one count and 0.020 with
+      the other (cell 25). The claim would also be blocked with O8 varied, because 98% of readings hold
+      unpaired and 71% hold paired.
+    response: No change. Both diagonals stay fixed for Fig. 5 (cc.SUPPORTED_FIG5), whose legend gives them.
+  - claim: fig5c-normalized-contrast
+    agrees: true
+    outcome: blocked
+    reason: The claims file has depends_on fig5b. Its own test holds in 32/32 readings, and the record
+      says so.
+    response: No change.
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: partially_reproduced
+    reason: The criterion's partial rule does not cover "rise at all three places, peak test fails". Reading
+      that case as partial is an interpretation the outcome rests on. The notes state it and send it to
+      a reader, but the outcome has no assumed true. It should. The response that with the paired test
+      the peak test fails for every treatment in all readings is wrong; cell 31 shows the 10Px4 peak holds
+      by the paired test in 83% of readings, and only the joint test fails in all.
+    response: Added assumed true and a deviation that states the reading of the gap. Corrected the round-1
+      response (the joint test fails in all readings, the 10Px4 peak alone holds in 83%). With the diagonals
+      varied the joint peak test fails in all 6 supported readings, so the outcome is unchanged.
+  - claim: fig6b-peak-relative-to-periphery
+    agrees: true
+    outcome: partially_reproduced
+    reason: 6 of 576 readings meet the partial rule. It is a thin pass.
+    response: No change.
+  - claim: fig6-trough-half-of-center
+    agrees: true
+    outcome: partially_reproduced
+    reason: 114 of 288 readings meet the partial rule.
+    response: No change.
+  - claim: fig6-peak-narrower
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (half-height width) is stated and reasonable. It also rests on cc.SUPPORTED
+      fixing O2 = a, which is questioned. The notebook does not print the width result by diagonal, so
+      it cannot be told whether the one-diagonal readings agree.
+    response: 'Outcome kept as verified, with a change to blocked (methods_underspecified) proposed. Cell
+      40 now prints the width by diagonal: the width at half height falls in order in 90% of readings on
+      both diagonals, 83% on d1 and 88% on d2. With O2 varied in the supported readings it falls in 4 of
+      6; on d1 5Px4 is wider than 1Px4 under both ROI counts, the partial outcome, so the supported readings
+      disagree.'
+  - claim: fig7a-amplitude-scales-uptake
+    agrees: true
+    outcome: partially_reproduced
+    reason: 10 of 288 readings have one ratio within 10%. It meets the letter of the rule only.
+    response: No change.
+  - claim: fig7b-targeting-independent-of-amplitude
+    agrees: true
+    outcome: blocked
+    reason: The claims-file rule lets the author block when the best-supported readings disagree, and they
+      do, 1 of 4 supported readings finding no pair different. The record should still say how lopsided
+      the evidence is, with raw intensity only 2% of readings finding no pair differing (cell 47).
+    response: No change of outcome. The notes and the result now say that with raw intensity no pair differs
+      in 2% of readings. With the diagonals varied the supported readings are 12, and no pair differs in
+      1 of them (the main reading); with a 2.4 kV dish left out, in 25%.
+  - claim: fig7cd-holds-for-large-array
+    agrees: false
+    reason: Agrees only partly. The assumption and the low power are stated, but "supported" fixes O2 =
+      a, both diagonals, on the basis of the Fig. 5B legend, where the claims file says that for Figs. 6
+      to 9 "the paper does not say". The only readings where a pair differs are on the d1 diagonal (cell
+      50, d1 max 1 pair), so the agreement among the supported readings depends on a basis the claims file
+      does not give. If O2 has no basis outside Fig. 5 the supported readings may disagree, and the claim
+      could then be blocked rather than reproduced.
+    response: 'Outcome kept as reproduced, with a change to blocked (methods_underspecified) proposed for
+      a third round. The verifier gave no firm outcome, so none is recorded for it. O2 is now varied in the supported readings
+      outside Fig. 5. Of the 12 supported readings, 11 find no pair differing and one, on d1 with 92 ROIs
+      and the mean of the end ROIs, finds one (p = 0.037, cell 50), which now prints every reading with
+      a pair differing; all are on d1.'
+  - claim: discussion-independent-of-array-size
+    agrees: true
+    outcome: blocked
+    reason: It depends on fig7b (depends_on).
+    response: No change. The notes say fig7cd has a change to blocked proposed.
+  - claim: fig8a-equal-center-uptake
+    agrees: true
+    outcome: not_reproduced
+    reason: The values are in range in 0/576 readings. The labels are confirmed by the session descriptions
+      (cell 64). The Summary's inference that the paper's a.u. scale or background differs goes beyond the
+      numbers; with background subtracted the Fig. 8 centres are 154 to 418 a.u. (cell 56), which overlaps
+      the paper's 215 to 235, so a real difference in the data is not ruled out.
+    response: No change of outcome. The Summary now gives both ranges and says the scale is asked of a reader,
+      without inferring that it differs.
+  - claim: fig8a-more-uptake-near-electrodes
+    agrees: true
+    outcome: not_reproduced
+    reason: The values are in range in 0/576 readings. The labels are confirmed by the session descriptions
+      (cell 64).
+    response: No change.
+  - claim: fig8b-packet2-best-targeting
+    agrees: true
+    outcome: not_reproduced
+    reason: The values are in range in 0/576 readings. The labels are confirmed by the session descriptions
+      (cell 64).
+    response: No change.
+  - claim: fig8-cancellation-predicts-targeting
+    agrees: true
+    outcome: blocked
+    reason: None of the datasets holds the field maps or the single-cell time lapse (cell 15).
+    response: No change.
+  - claim: fig9a-gap-reduces-periphery-more
+    agrees: true
+    outcome: partially_reproduced
+    reason: At most 4 of 6 ratios are within 10%. The pattern holds in 88% of readings. Cell 9 shows the
+      needle marks at the upper needles; where the footprint fit is off by 1.2 to 1.6 mm (dishes 06, 09,
+      14), it is the footprint square that is visibly wrong, not the needle-mark square.
+    response: No change.
+  - claim: fig9b-gap-boosts-targeting
+    agrees: true
+    outcome: reproduced
+    reason: The 2-mm value is 541% in the main reading, inside the tolerance and the largest. The claims
+      file's "any reading" rule for expected values applies.
+    response: No change.
+  - claim: fig9c-restricted-to-center
+    agrees: true
+    outcome: not_reproduced
+    reason: The "highest point" part fails in 0/96 readings, so the outcome does not depend on the paired-test
+      assumption (cell 73). The response that with the paired test the centre-above-periphery part also
+      fails at 2 mm is true only in the main reading (p = 0.051); c>end 2 paired holds in 92% of readings.
+    response: No change of outcome. Corrected the round-1 response, the notes, the result and the question
+      to a reader. With the diagonals varied the joint paired test fails in all 12 supported readings.

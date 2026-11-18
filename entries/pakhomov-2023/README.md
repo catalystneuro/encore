@@ -7,7 +7,8 @@ on the five dandisets that hold its monolayer images:
 [001025](https://dandiarchive.org/dandiset/001025/0.240605.1826) (Fig. 7),
 [001027](https://dandiarchive.org/dandiset/001027/0.240605.1859) (Fig. 8) and
 [001028](https://dandiarchive.org/dandiset/001028/0.240605.1954) (Fig. 9). Each file holds one
-dish, a stitched image of YO-PRO-1 uptake. The files hold no ROI, pixel size or electrode
+dish, a stitched image of YO-PRO-1 uptake, and 17 files of 001025 and 001028 hold a second
+channel. The files hold no ROI, pixel size or electrode
 position, so the electrode square is found in each image and the ROIs of Methods 2.4 are rebuilt
 from it (`cancan.py`). The single-cell time lapse of Fig. 4 and the field simulations of Fig. 3
 are in none of the datasets.
@@ -22,10 +23,10 @@ are in none of the datasets.
 | 6A: more packets, more uptake, central peak for all | Partially reproduced |
 | 6B: centre about 200% for 1Px4, about 100% for 5Px4 and 10Px4 | Partially reproduced |
 | 6: trough about half the centre | Partially reproduced |
-| 6: peak narrower with more packets | Reproduced (assumption) |
+| 6: peak narrower with more packets | Reproduced (assumption); change to blocked (methods underspecified) proposed |
 | 7A: 15.5 to 16.8-fold rise from 2.4 to 5.6 kV | Partially reproduced |
 | 7B: normalized profiles independent of amplitude, small array | Blocked: methods underspecified (readings disagree) |
-| 7C, D: the same in the large array | Reproduced (assumption) |
+| 7C, D: the same in the large array | Reproduced (assumption); change to blocked (methods underspecified) proposed |
 | Discussion: targeting independent of amplitude and array size | Blocked: depends on 7B |
 | 8A: equal centre uptake for Packets 1 to 3 | Not reproduced |
 | 8A: more uptake near electrodes for Packets 1 and 3 | Not reproduced |
