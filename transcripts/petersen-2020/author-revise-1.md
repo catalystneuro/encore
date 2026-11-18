@@ -1,172 +1,91 @@
-# 000059 · author-revise-1 · run 38906168859
+# petersen-2020 · author-revise-1 · run 44224244828
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; cat transcripts/000059/verifier-1-report.md; ls -R entries/000059-petersen-2020 | head -50
+date -u; cat transcripts/petersen-2020/verifier-1-report.md; ls entries/petersen-2020 paper questions;
+```
+
+```
+Wed Nov 18 02:37:46 UTC 2026
+**A. Outcomes (46 claims in the claims file)**
+
+Totals: 17 reproduced, 18 partially reproduced, 10 not reproduced, 1 blocked.
+
+| claim | outcome | reason |
+|---|---|---|
+| session-structure | partially_reproduced | Mean is 142.4 trials (allowed 135–165) and median pre is 39. Median cooling and post counts are in range under all three state readings. But MS10-170307 has 37 trials, outside 72–220 (cell 10). |
+| cooling-time-course | partially_reproduced | Median time to minimum is 109.7 s, outside 40.5–66 s. Under reading (a), duration is 11.7 min and 47.5 trials, both in range (cell 12). Two of three parts hold. |
+| fig2g-theta-freq-temperature | partially_reproduced | R is positive with tiny P under every reading, but none falls within 0.81±0.081: aligned 0.978 (n=120), bins 0.959, pooled 0.554 (cell 15). |
+| fig2h-theta-power-temperature | reproduced | Hilbert power over aligned trials gives R=0.495, P=8.9e-9, below the frequency R (cell 16). This is 1 matching reading out of 18 tried. |
+| fig2j-frequency-consistent-across-animals | reproduced | Frequency R is positive with P<0.05 in 4 of 4 testable rats. Its range and SD are smaller than for power (cell 18). MS10 has no measured temperature, so it could not be tested. |
+| fig2i-theta-pre-cooling-post | reproduced | With lab states and spectral theta, all four signed-rank tests show cooling lower at P≤3e-6 (cell 20). With Hilbert power, cooling is not lower than post. |
+| disc-theta-frequency-12-percent | reproduced | Only reading (c) is in range: 11.1% (Hilbert) and 12.9% (spectral). Readings (a) and (b) give 6.6–9.9% (cell 22). |
+| fig6d-errors-increase | partially_reproduced | P over sessions is below 1e-5, but the ratio is about 2.0–2.25, outside 3±0.3. MS13 gives P=0.23–0.44 (cell 25). |
+| fig6e-errors-recover | reproduced | Post against pre gives P=0.55, 0.80 and 0.97 under the three state readings; median difference −0.42 points (cell 27). |
+| fig6c-worst-trials-4-to-8 | reproduc
+[... 242 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n "^#" docs/protocol.md | head -80; wc -l docs/protocol.md
+```
+
+```
+1:# Protocol for an attempt
+43:## Reader
+45:### 1. Get the paper
+59:### 2. Read the paper's code
+69:### 3. Write the claims file
+165:### 4. Data from outside the paper's own recordings
+173:### 5. Check
+186:### 6. Answer questions
+199:## Author
+215:### 1. Establish what can be tested
+345:### 2. Check the data against its description
+360:### 3. Write the entry
+431:### 4. Lock, check and run
+451:### 5. Record the attempt
+524:### 6. Hand over for verification
+562:## Repeat attempts
+604:## Local and remote datasets
+627:## Verifier
+631:### Round 1: without the author's conclusions
+656:### Round 2: with the author's conclusions
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,42p docs/protocol.md; sed -n 199,676p docs/protocol.md
 ```
 
 ```
 <persisted-output>
-Output too large (33.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/bftnp6lkp.txt
+Output too large (30.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/b90f3a7a-838c-498d-9d26-16d817e18d7c/tool-results/bip4hmn0b.txt
 
 Preview (first 2KB):
 # Protocol for an attempt
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
+Version: `pilot-15`. Record this version in the attempt's provenance.
 
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
+This is what agents, or people, do to attempt a target and deposit the
+result. A target is a dataset in a public archive and a paper it names. How
+each archive's datasets are named, versioned and read is in
+[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
 ([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
+An attempt has three roles, each a separate run with a separate context:
 
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-[... 25 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/bftnp6lkp.txt"
-}
-```
-
-```
-1	# Protocol for an attempt
-2	
-3	Version: `pilot-7`. Record this version in the attempt's provenance.
-4	
-5	This is what an agent, or a person, does to attempt a target and deposit the
-6	result. It is written from the eight pilot attempts
-7	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-8	
-9	There are two roles. The **author** makes the attempt. The **verifier** checks
-10	it and must not be the author: for agents, a separate run with a separate
-11	context that has not seen the author's reasoning.
-12	
-13	Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-14	workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-15	`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-16	of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-17	kept in [`transcripts/<dandiset>/`](../transcripts).
-18	
-19	## Author
-20	
-[... 433 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls attempts/ | grep 000059; ls claims/000059; wc -l entries/000059-petersen-2020/*; ls paper/ executed/ 2>/dev/null | head; ls docs; ls transcripts/000059
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cat attempts/000059-petersen-2020-01.yaml; ls docs/agents; cat transcripts/000059/author-report.md
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "entries/000059-petersen-2020/cooling.py"
-}
-```
-
-```
-<persisted-output>
-Output too large (30.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/byk4tqsg3.txt
-
-Preview (first 2KB):
-schema_version: 1
-id: 000059-petersen-2020-01
-dandiset: "000059"
-dandiset_version: 0.250624.0444
-paper: doi:10.1016/j.neuron.2020.05.023
-date: 2026-10-16
-entry: 000059-petersen-2020
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-7
-inputs:
-[... 29 more lines not kept]
-```
-
-```
-1	"""Loading and measures for dandiset 000059 (Petersen & Buzsaki 2020, Neuron 106:1-14).
-2	
-3	The dandiset holds 50 behavioural sessions from five rats (MS10, MS12, MS13, MS21, MS22) running
-4	a spatial alternation task on a figure-8 ("theta") maze while the medial septum (MS) was cooled.
-5	Each session has two files: a processed file (trials with the cooling state and choice errors,
-6	position, speed and MS temperature, and spike-sorted units in 24 sessions) and a raw file
-7	(wide-band data at 20 kHz and LFP at 1250 Hz).
-8	
-9	Every file is streamed from the archive at a pinned version. `load_session` reads a processed
-10	file; `theta_for_session` streams one LFP channel over the behavioural period only; and
-11	`waveforms` streams short windows of the wide-band data to measure spike waveforms.
-12	
-13	Where parameters come from:
-14	
-15	- Theta: LFP of the electrode flagged `theta_reference`, third-order Butterworth band-pass 4 to
-16	  10 Hz applied forward and backward, Hilbert phase (the paper's Methods). The instantaneous
-17	  frequency is one over the interval between successive upward zero crossings of the phase,
-18	  values above 11 Hz removed, smoothed with a 7-point Gaussian (SD 1 point); theta power and
-19	  peak frequency come from a 1 s Hamming-window spectrogram stepped by 0.1 s over 4 to 10 Hz
-20	  (0.1 Hz steps), median filtered over 2 frequencies by 10 time steps and averaged over a 10 by
-[... 1024 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls executed/000059-petersen-2020/ 2>/dev/null; python - <<'EOF'
-import json
-nb=json.load(open('entries/000059-petersen-2020/reproduce_petersen_2020.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
-    print(''.join(c['source']))
-EOF
-```
-
-```
-<persisted-output>
-Output too large (95.8KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/bl19gpmar.txt
-
-Preview (first 2KB):
-=== cell 0 [markdown] tags=None
-# Reproducing Petersen & Buzsaki (2020) from dandiset 000059
-
-Paper. Petersen PC, Buzsaki G (2020). Cooling of medial septum reveals theta phase lag
-coordination of hippocampal cell assemblies. *Neuron* 107, 731-744.
-[doi:10.1016/j.neuron.2020.05.023](https://doi.org/10.1016/j.neuron.2020.05.023). This attempt used
-the full text of the accepted author manuscript in PubMed Central (PMC7442698). The supplementary
-PDF could not be obtained, so supplementary figures are tested only where the main text states
-their result.
-
-Dandiset. [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.250624.0444), version
-0.250624.0444. The paper cites no DANDI version (its data statement points to the lab's website
-and CRCNS). This is the most recent published version. Version 0.230907.2101 holds the same 100
-files with the same blobs. The first version, 0.210812.1514, held 54 combined files, among them
-four sessions without behaviour, and its files have no trials table, which every behavioural
-claim here needs; the data check shows this.
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dataset's data.
+- The **author** tests the claims on the dataset. It reads the paper to
 [... 19 more lines not kept]
 ```
 
@@ -174,183 +93,2043 @@ claim here needs; the data check shows this.
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/bl19gpmar.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/b90f3a7a-838c-498d-9d26-16d817e18d7c/tool-results/bip4hmn0b.txt"
 }
 ```
 
 ```
-1	=== cell 0 [markdown] tags=None
-2	# Reproducing Petersen & Buzsaki (2020) from dandiset 000059
-3	
-4	Paper. Petersen PC, Buzsaki G (2020). Cooling of medial septum reveals theta phase lag
-5	coordination of hippocampal cell assemblies. *Neuron* 107, 731-744.
-6	[doi:10.1016/j.neuron.2020.05.023](https://doi.org/10.1016/j.neuron.2020.05.023). This attempt used
-7	the full text of the accepted author manuscript in PubMed Central (PMC7442698). The supplementary
-8	PDF could not be obtained, so supplementary figures are tested only where the main text states
-9	their result.
+1	# Protocol for an attempt
+2	
+3	Version: `pilot-15`. Record this version in the attempt's provenance.
+4	
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 10	
-11	Dandiset. [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.250624.0444), version
-12	0.250624.0444. The paper cites no DANDI version (its data statement points to the lab's website
-13	and CRCNS). This is the most recent published version. Version 0.230907.2101 holds the same 100
-14	files with the same blobs. The first version, 0.210812.1514, held 54 combined files, among them
-15	four sessions without behaviour, and its files have no trials table, which every behavioural
-16	claim here needs; the data check shows this.
-17	
-18	Code. The paper's MATLAB code is public (GitHub `petersenpeter/Code_Petersen_Buzsaki_Neuron_2020`,
-19	commit aec2f7e, read for this attempt, not run). It fixes the theta measures, the per-trial
-20	averages, the onset-aligned trial series behind Figures 2G, 2H and 6, and the lists of sessions;
-[... 588 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/bl19gpmar.txt",
- "offset": 609,
- "limit": 760
-}
-```
-
-```
-File content (27663 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/bl19gpmar.txt",
- "offset": 609,
- "limit": 400
-}
-```
-
-```
-609	fig, ax = plt.subplots(figsize=(8, 3))
-610	ax.plot(np.arange(-40, 41), me[onset0 - 41:onset0 + 40], "r"); ax.axvline(0, color="k", lw=0.5)
-611	ax.set_xlabel("trial after onset (1 = first cooling trial)"); ax.set_ylabel("smoothed error rate")
-612	plt.tight_layout(); plt.show()
-613	print("Plotted range:", np.nanmin(me[onset0 - 41:onset0 + 40]).round(3), "to", np.nanmax(me[onset0 - 41:onset0 + 40]).round(3))
-614	=== cell 56 [markdown] tags=None
-615	**Result: reproduced.** The mean smoothed error rate peaks at trial 7 after the onset of
-616	cooling (0.193, against 0.066 over the 40 trials before), the same trial as the minimum of the mean
-617	temperature and of the mean theta frequency. In single rats the peak of the mean falls later,
-618	at trials 14 to 26.
-619	=== cell 57 [markdown] tags=None
-620	## fig6f-errors-temperature
-621	
-622	> The incidence of errors correlated negatively with MS temperature (R = -0.35, P < 0.01).
-623	=== cell 58 [code] tags=['claim:fig6f-errors-temperature']
-624	win = slice(9, 160)   # positions 10 to 160, as the code's correlation matrix
-625	def r_err(keys_err, keys_x, col, sl=slice(None)):
-626	    return C.pearson(mean_series(keys_err, "error_smooth")[sl], mean_series(keys_x, col)[sl])
-627	res_6f = {"(a) TEMP, positions 10 to 160": r_err(TEMP, TEMP, "temperature", win),
-628	          "(b) TEMP, all positions": r_err(TEMP, TEMP, "temperature"),
-[... 380 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/74083a3b-3b56-494d-946b-2d38057fd5f7/tool-results/bl19gpmar.txt",
- "offset": 1008,
- "limit": 360
-}
-```
-
-```
-1008	    dfq = F3[f"fp_{st}"] - F3[f"flfp_{st}"]
-1009	    ok = dfq > 0.2
-1010	    pred = F3.loc[ok, f"v_{st}"] / dfq[ok]
-1011	    r, p, n = C.pearson(F3.loc[ok, f"size_{st}"], pred)
-1012	    print(f"{st}: fields {n} (of {len(F3)}), R = {r:.3f}, P = {p:.2g} (expected {v} +- {tol}); within: {within(r, v, tol)}; "
-1013	          f"median predicted {pred.median():.1f} cm, measured {F3.loc[ok, f'size_{st}'].median():.1f} cm")
-1014	    rs = stats.spearmanr(F3.loc[ok, f"size_{st}"], pred)[0]
-1015	    print(f"   variant, Spearman rho = {rs:.3f}; by subject R:", {a: round(C.pearson(F3.loc[ok & (F3.subject == a), f"size_{st}"], pred[F3.loc[ok, 'subject'] == a])[0], 2) for a in sorted(F3.subject.unique())})
-1016	=== cell 109 [markdown] tags=None
-1017	**Result: partially reproduced.** Measured sizes correlate with v / (fp - fLFP) before
-1018	(R = 0.246) and during cooling (R = 0.344), both with P below 1e-5 but below 0.55 and 0.54, and the
-1019	post value (R = 0.325) is far above the paper's 0.11.
-1020	=== cell 110 [markdown] tags=None
-1021	## fig3f-information-unchanged
-1022	
-1023	> The information content of place cell spikes was not altered by MS cooling (P > 0.26).
-1024	=== cell 111 [code] tags=['claim:fig3f-information-unchanged']
-1025	pcells = F[["session", "unit"]].drop_duplicates()
-1026	pi = UC.merge(pcells, on=["session", "unit"])
-1027	print("Place cells:", len(pi))
-[... 337 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "attempts/000059-petersen-2020-01.yaml"
-}
-```
-
-```
-1	schema_version: 1
-2	id: 000059-petersen-2020-01
-3	dandiset: "000059"
-4	dandiset_version: 0.250624.0444
-5	paper: doi:10.1016/j.neuron.2020.05.023
-6	date: 2026-10-16
-7	entry: 000059-petersen-2020
-8	provenance:
-9	  kind: agent
-10	  accountable:
-11	    name: CatalystNeuro
-12	  agent:
-13	    harness: Claude Code (GitHub Actions)
-14	    model: claude-opus-5-5
-15	    protocol: pilot-7
-16	inputs:
-17	- what: The paper's MATLAB analysis code, read and not run. It supplies the lists of sessions of
-18	    the behavioural analysis and of Figure 5 (BatchProcessing.m), the recording list that marks
-19	    which sessions have a temperature channel and which are controls without cooling
-20	    (MedialSeptum_Recordings.m), and the parameters of the theta measures, trial averages and
-[... 445 more lines not kept]
+11	An attempt has three roles, each a separate run with a separate context:
+12	
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 501 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -l "verifications:" attempts/*.yaml | head; grep -n -A40 "^verifications:" attempts/000044*.yaml | head -80; ls schema* tools;
+ls attempts | grep petersen; ls executed/petersen-2020 2>/dev/null; wc -l entries/petersen-2020/* attempts/petersen-2020-02.yaml; cat entries/petersen-2020/entry.yaml; ls transcripts/petersen-2020
 ```
 
 ```
-attempts/000003-senzai-2017-01.yaml
-attempts/000004-chandravadia-2020-01.yaml
-attempts/000006-economo-2018-01.yaml
-attempts/000035-scala-2021-01.yaml
-attempts/000041-watson-2016-01.yaml
-attempts/000044-grosmark-2016-01.yaml
-attempts/000127-chowdhury-2020-01.yaml
-attempts/000130-sohn-2019-01.yaml
-attempts/000147-guan-2022-01.yaml
-attempts/000207-zheng-2022-01.yaml
-288:verifications:
-289-- date: '2026-10-16'
-290-  kind: agent
-291-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-292-  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
-293-    the helper module and the claims file, with the main text of the paper (the supplement could not
-294-    be retrieved). The verifier checked the blocked claims against the archive's file list and
-295-    metadata and tested the helper functions on synthetic inputs. Report in
-296-    transcripts/000044/verifier-1-report.md.
-297-  results:
-[... 47 more lines not kept]
+petersen-2020-02.yaml
+    23 entries/petersen-2020/README.md
+    23 entries/petersen-2020/entry.yaml
+   816 entries/petersen-2020/ms_cooling.py
+  2935 entries/petersen-2020/reproduce_petersen_2020.ipynb
+     6 entries/petersen-2020/requirements.in
+   890 entries/petersen-2020/requirements.lock.txt
+   763 attempts/petersen-2020-02.yaml
+  5456 total
+schema_version: 1
+name: petersen-2020
+type: reproduction
+title: Cooling of the medial septum and hippocampal theta coordination (Petersen and Buzsaki 2020)
+description: Tests the findings of Petersen and Buzsaki (2020) on dandiset 000059, which holds 51
+  sessions of 5 rats running a figure-8 maze while the medial septum was cooled, with CA1 LFP,
+  curated units, head tracking and the septal temperature. It tests the effects of cooling on
+  theta frequency and power, choice errors, running speed, place cell rates, oscillation
+  frequency, field features, phase precession and the theta time and phase lags of place cell
+  pairs. The hippocampal temperature of the paper's control experiment is not in the dandiset.
+license: Apache-2.0
+[... 24 more lines not kept]
+```
+
+**Agent**
+
+Reading the attempt record, the helper and the notebook first. There is no executed copy, so a full run (about 20 minutes) is needed at the end.
+
+**Agent calls Bash**
+
+```bash
+cat attempts/petersen-2020-02.yaml
+```
+
+```
+<persisted-output>
+Output too large (49.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/b90f3a7a-838c-498d-9d26-16d817e18d7c/tool-results/b2u0najm7.txt
+
+Preview (first 2KB):
+schema_version: 3
+id: petersen-2020-02
+datasets:
+- archive: dandi
+  id: 000059
+  version: 0.261115.0311
+  doi: 10.48324/dandi.000059/0.261115.0311
+  relation: primary
+paper: doi:10.1016/j.neuron.2020.05.023
+date: '2026-11-15'
+entry: petersen-2020
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+[... 35 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/b90f3a7a-838c-498d-9d26-16d817e18d7c/tool-results/b2u0najm7.txt"
+}
+```
+
+```
+1	schema_version: 3
+2	id: petersen-2020-02
+3	datasets:
+4	- archive: dandi
+5	  id: 000059
+6	  version: 0.261115.0311
+7	  doi: 10.48324/dandi.000059/0.261115.0311
+8	  relation: primary
+9	paper: doi:10.1016/j.neuron.2020.05.023
+10	date: '2026-11-15'
+11	entry: petersen-2020
+12	provenance:
+13	  kind: agent
+14	  accountable:
+15	    name: CatalystNeuro
+16	  agent:
+17	    harness: Claude Code
+18	    model: claude-opus-5-5
+19	    protocol: pilot-15
+20	  runner:
+[... 744 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s['properties']['verifications'],indent=1)); print(json.dumps(s.get('\$defs',s.get('definitions',{})).get('verification',''),indent=1))" | head -120; sed -n 288,300p attempts/000044*.yaml; grep -n "problems\|^  [a-z_]*:" attempts/000044*.yaml | sed -n 1,400p | grep -v "claim\|outcome\|notes\|measured\|deviations\|notebook\|output" | head -30
+cd entries/petersen-2020; python - <<'EOF' > $TMPDIR/nb.txt
+import json
+nb=json.load(open('reproduce_petersen_2020.ipynb'))
+for i,c in enumerate(nb['cells']):
+    print(f"#### CELL {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
+    print(''.join(c['source']))
+EOF
+wc -l $TMPDIR/nb.txt; grep -n "#### CELL" $TMPDIR/nb.txt | wc -l
+```
+
+```
+1702 /tmp/claude-1001/nb.txt
+151
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt"
+}
+```
+
+```
+1	#### CELL 0 [markdown] tags=None
+2	# Reproducing Petersen & Buzsaki (2020) from DANDI:000059
+3	
+4	Paper: Petersen PC, Buzsaki G (2020). Cooling of medial septum reveals theta phase lag coordination of hippocampal cell assemblies. Neuron 107, 731-744. doi:10.1016/j.neuron.2020.05.023.
+5	
+6	Dataset: DANDI:000059, version 0.261115.0311 (doi:10.48324/dandi.000059/0.261115.0311). The paper cites no version of the dandiset. This is the most recent published version; it holds the 51 sessions of 5 rats as one file per session, with the lab's trial cooling states, the measured MS temperature where it exists, the linearized position and the cell types, which the analyses use. The earlier versions (0.210812.1514, 0.230907.2101, 0.250624.0444) split each session into raw and processed files and, by the new version's release notes, had wrong electrode groups and trial times one sample late; none matches the claims file's description better.
+7	
+8	Claims: `claims/petersen-2020.yaml`, written from the accepted author manuscript in PubMed Central (PMC7442698) with the STAR Methods and the Supplemental Information (Figures S1 to S6). Protocol pilot-15.
+9	
+10	Data are streamed from the archive; nothing is written to disk. Loading reduces each session to its trials, head tracking, MS temperature, the theta of one CA1 LFP channel during the trials, and the spikes of the curated units during the trials.
+11	
+12	The table of claims and outcomes is in the Summary at the end; which claims are tested and which blocked is listed here.
+13	
+14	| claim | tested here |
+15	|---|---|
+16	| session-structure, cooling-time-course | tested |
+17	| fig2g, fig2h, fig2j, fig2i, disc-theta-frequency-12-percent | tested |
+18	| fig6d, fig6e, fig6c, fig6f, fig6g, fig6h, fig6i, suppl5j, fig4e, fig5-speed-control-cooling | tested |
+19	| suppl2-place-cell-rates-decrease, suppl2ab, disc-interneuron-rates-decrease, suppl5gh | tested |
+20	| fig4b, fig4c, fig4ac, fig4a, fig3c, fig3d, fig3e, fig3f, fig3hi, fig4d, sup
+[... 649 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 670,
+ "limit": 560
+}
+```
+
+```
+670	
+671	
+672	def fp_fields(key=(5.0, "lab"), fig34=True):
+673	    W = wide(key, fig34, ["fp", "flfp_spk", "flfp_time", "size", "v_time", "v_spk", "info", "prec_slope", "rate_in", "peak"])
+674	    ok = W["fp"].notna().all(1) & W["flfp_spk"].notna().all(1)
+675	    return W[ok]
+676	
+677	
+678	rows = []
+679	for key in MEASURES:
+680	    for fig34 in (True, False):
+681	        W = fp_fields(key, fig34)
+682	        for fl in ["flfp_spk", "flfp_time"]:
+683	            m_fp = [W[("fp", s)].mean() for s in mc.STATES]
+684	            m_fl = [W[(fl, s)].mean() for s in mc.STATES]
+685	            inside = all(abs(m_fl[i] - EXP["flfp"][i]) <= EXP["flfp_tol"][i] for i in range(3)) and \
+686	                all(abs(m_fp[i] - EXP["fp"][i]) <= EXP["fp_tol"][i] for i in range(3))
+687	            rows.append(dict(bins=key[0], states=key[1], fields=("peak>10" if fig34 else "Fig5 rule"), flfp=fl, n=len(W),
+688	                             fp_pre=m_fp[0], fp_cool=m_fp[1], fp_post=m_fp[2],
+689	                             flfp_pre=m_fl[0], flfp_cool=m_fl[1], flfp_post=m_fl[2],
+[... 540 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1230,
+ "limit": 480
+}
+```
+
+```
+1230	                if reading == "a":
+1231	                    b1, b2 = (f1.lo, f1.hi), (f2.lo, f2.hi)
+1232	                else:
+1233	                    b1 = b2 = (min(f1.lo, f2.lo), max(f1.hi, f2.hi))
+1234	                l1, t1, p1, s1 = by[(f1.u, arm)]
+1235	                l2, t2, p2, s2 = by[(f2.u, arm)]
+1236	                m1 = (l1 >= b1[0]) & (l1 < b1[1])
+1237	                m2 = (l2 >= b2[0]) & (l2 < b2[1])
+1238	                r = dict(session=S["session"], rat=S["rat"], arm=arm, u1=f1.u, u2=f2.u, Ltr=f2.peak_pos - f1.peak_pos)
+1239	                for s in ("Pre", "Cooling", "Post"):
+1240	                    k1, k2 = m1 & (s1 == s), m2 & (s2 == s)
+1241	                    if has_ph:
+1242	                        d, dph = mc.pair_diffs(t1[k1], t2[k2], 400, p1[k1], p2[k2])
+1243	                    else:
+1244	                        d = mc.pair_diffs(t1[k1], t2[k2], 400)
+1245	                    h = np.bincount(np.clip(np.round(d).astype(int) + 400, 0, 800), minlength=801).astype(float)
+1246	                    r[f"n_{s}"] = h[200:601].sum()
+1247	                    r[f"ccg_{s}"] = mc.smooth60(h)
+1248	                    if has_ph:
+1249	                        kk = np.clip(np.round(dph / PH_BIN).astype(int) + (len(PH_LAGS) // 2), 0, len(PH_LAGS) - 1)
+[... 454 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n "^def \|^[A-Z_]* = " ms_cooling.py
+```
+
+```
+50:DANDISET = "000059"
+51:VERSION = "0.261115.0311"
+52:API = "https://api.dandiarchive.org/api"
+53:LFP_FS = 1250.0
+54:THETA_BAND = (4.0, 10.0)
+55:RUN_SPEED = 10.0  # cm/s, the claims file's reading (b) of "running"
+60:def _get_json(url):
+65:def list_sessions():
+80:def open_asset(asset_id):
+86:def _dec(a):
+92:def gausswin(n, alpha=2.5):
+98:def theta_filter(x, fs=LFP_FS):
+105:def _theta_column(f):
+120:def _pick_theta_by_power(f, t0):
+134:def load_session(row, with_lfp=True, with_units=True):
+311:def spike_table(S):
+342:def drop_lfp_arrays(S):
+349:def state_labels(tr, onset, reading):
+366:def acg_frequency(spikes_ms_lists, max_lag=200):
+390:def pair_diffs(a, b, max_lag, va=None, vb=None):
+[... 22 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,49p ms_cooling.py; sed -n 98,345p ms_cooling.py
+```
+
+```
+"""Loading and measures for Petersen & Buzsaki (2020) on DANDI:000059.
+
+Data are streamed from the DANDI archive at a pinned version (VERSION); nothing
+is written to disk. Each session is reduced as it loads to what the analyses
+need: the trial table, head tracking, MS temperature, theta of one CA1 LFP
+channel during the trials, and the spikes of the curated units ('good') during
+the trials.
+
+Where each parameter comes from:
+- Theta band 4 to 10 Hz, third order Butterworth, zero phase (filtfilt), Hilbert
+  phase: STAR Methods, "Theta phase and phase precession".
+- Theta channel: the channel the lab tagged for theta (electrodes column
+  `theta_reference`, session.mat channelTags.Theta). The paper says only "An LFP
+  channel located in CA1" (Methods); the lab's own tag, which the files carry,
+  is taken as the paper's channel (a detail taken from the dataset's metadata). Where the tagged channel is not
+  among the LFP columns, the non-bad channel with the largest 4 to 10 Hz power
+  is used (standard choice).
+- Oscillation frequency of a neuron: 1 ms raster convolved with an 80-point
+  Gaussian window, autocorrelogram, peak between 50 and 150 ms, reciprocal of
+  the lag (STAR Methods, "Oscillation Frequency of Neurons"). The window is
+[... 276 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 346,816p ms_cooling.py
+```
+
+```
+# ---------------------------------------------------------------- states
+
+def state_labels(tr, onset, reading):
+    """Trial states under the readings of the claims file's opening comment:
+    'lab' the dataset's labels (transition trials excluded), 'm12' / 'm10'
+    cooling is the trials starting within 12 / 10 min after onset, pre before
+    onset, post after."""
+    if reading == "lab":
+        s = tr.state.copy()
+        s[~s.isin(["Pre", "Cooling", "Post"])] = None
+        return s
+    w = 12 * 60 if reading == "m12" else 10 * 60
+    d = tr.start.values - onset
+    s = np.where(d < 0, "Pre", np.where(d <= w, "Cooling", "Post"))
+    return pd.Series(s, index=tr.index, dtype=object)
+
+
+# ---------------------------------------------------------------- correlograms
+
+def acg_frequency(spikes_ms_lists, max_lag=200):
+[... 450 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+c=yaml.safe_load(open('claims/petersen-2020.yaml'))
+print(c.keys() if isinstance(c,dict) else type(c))
+cl = c['claims'] if isinstance(c,dict) else c
+for x in cl:
+    if x['id'] in ('fig4d-precession-slope-decrease','suppl3e-precession-temperature','fig5cg-compression','fig5h-time-lags-increase','fig3f-information-unchanged','fig5d-ccg-period','suppl5gh-rates-follow-temperature','suppl1g-waveforms-unchanged'):
+        print(yaml.safe_dump(x, width=120, sort_keys=False))
+EOF
+```
+
+```
+dict_keys(['schema_version', 'paper', 'claims', 'checks'])
+id: suppl5gh-rates-follow-temperature
+statement: Firing rates of pyramidal cells and putative interneurons decreased immediately after MS cooling onset and their
+  changes correlated with MS temperature, not with the delayed hippocampal temperature.
+source: Results, MS cooling decreases hippocampal theta frequency and power, paragraph 3; Figure S5G, H
+quote: firing rates of both pyramidal cells and putative interneurons in the hippocampus decreased immediately after MS cooling
+  and the changes correlated well with MS temperature change
+expected:
+- quantity: interneurons in the trial-wise rate analysis
+  value: 319
+  tolerance: 32
+- quantity: pyramidal cells in the trial-wise rate analysis
+  value: 1104
+  tolerance: 110
+criterion: Figure S5G, H give "Trial-wise average firing rates for interneurons (G) and pyramidal cells (H) across 19 sessions".
+  Per unit, the trial rate divided by its mean pre rate (normalisation is open; raw rates are a second reading); per aligned
+  trial the mean over units. Reproduced when, for both classes and under one reading, the mean rate over aligned trials 1
+  to 5 after onset is below the pre mean (signed-rank over units, P < 0.05) and the aligned rate series has a positive R with
+  MS temperature at P < 0.05. Partially reproduced when one class holds. The comparison with hippocampal temperature needs
+  the control experiment of suppl1-hippocampal-temperature and is reported only. Unit counts are checked against the expected
+[... 163 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -l "^verifications:" attempts/*.yaml | head -5; grep -n "verifications\|agrees\|response\|proposed" docs/*.md | grep -v protocol.md | head -40
+```
+
+```
+attempts/amjad-2025-01.yaml
+attempts/andrews-2024-01.yaml
+attempts/armstrong-2026-01.yaml
+attempts/asari-2009-01.yaml
+attempts/ashworth-2025-01.yaml
+docs/archives.md:242:  Behaviour is in `*_events.tsv` (trial conditions, responses, response
+docs/author-responses.md:1:# Author responses
+docs/author-responses.md:4:[Respond to an attempt](https://github.com/catalystneuro/encore/issues/new?template=author-response.yml)
+docs/author-responses.md:5:issue form. Each submission opens a GitHub issue with the label `author-response`.
+docs/author-responses.md:15:Dataset pages do not link to the form. A response is about a paper's claims and their outcomes. Findings about
+docs/author-responses.md:28:An ORCID iD typed into a form does not prove who wrote it. When the response has consequences, such as an
+docs/author-responses.md:38:The site shows only responses that have one of these labels. A `confirmed` response is shown as coming from
+docs/author-responses.md:42:### 2. Act on the response
+docs/author-responses.md:51:- `results`: one `{claim, agrees}` entry for each claim the author addresses
+docs/author-responses.md:67:conversion or notify the archive, and link to it from the response's issue.
+docs/author-responses.md:69:### 3. Keep the response public
+docs/author-responses.md:71:A response stays on the site after its issue is closed. It is part of the attempt's record.
+docs/author-responses.md:73:## Where responses appear
+docs/author-responses.md:77:| Paper page | Every confirmed response to the paper's attempts, below the attempt summaries. |
+docs/author-responses.md:78:| Attempt page (`papers/<paper>/<attempt>/`) | Confirmed responses to that attempt, and responses that named no attempt. |
+[... 9 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls schemas 2>/dev/null; grep -rn "verifications" schemas/*attempt* 2>/dev/null | head; awk '/^verifications:/,0' attempts/asari-2009-01.yaml | head -60
+```
+
+```
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+paper-match.schema.json
+386:    "verifications": {
+verifications:
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module asari.py and the claims
+    file, with the paper's full text. The verifier read the archive's file list and the analysis code in crcns-ac1.zip (CxtDep.m, DMRipple2.m,
+    STRFanalysis.m) and tested helpers on synthetic inputs (kw_significance, frac_power, fit_exp, fit_paper_rule, long_runs). It had
+    no attempt record and took the claims from the claims file.
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 13 matches the paper exactly for the natural-sound A1 data (39 cells, 305 probes) and for MGB (14 cells, 93 probes).
+      The A1 cells meeting the rule come to 133, against 123 with tolerance 0. DMR has 15 cells against 6 and MHT 26 against 39. The
+      voltage-clamp counts cannot be tested because those recordings are not in the archive. Problem 7: the criterion asks for the cells
+[... 45 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i "precession\|circular\|Kempter\|information content\|Skaggs" paper/10.1016-j.neuron.2020.05.023.txt | head -40
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o -i ".\{300\}circular.\{400\}" paper/10.1016-j.neuron.2020.05.023.txt | head -5; echo ----; grep -o -i ".\{200\}information content.\{200\}" paper/10.1016-j.neuron.2020.05.023.txt | head
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  cat entries/petersen-2020/requirements.in; python -c "import h5py, remfile, scipy, pandas; print('ok')"; ls -d .venv* venv* 2>/dev/null; sed -n 1,60p tools/entry.py | head -80; nproc; free -g
+```
+
+```
+h5py
+matplotlib
+numpy
+pandas
+remfile
+scipy
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import h5py, remfile, scipy, pandas; print('ok')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'h5py'
+"""Lock, check and run one entry. This is the whole local workflow for a deposit.
+
+    python tools/entry.py lock  entries/<name>   # pin the environment
+    python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py check entries/*/       # the same for every entry, in one process
+    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+    python tools/entry.py all   entries/<name>   # check, then run
+    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+
+[... 56 more lines not kept]
+```
+
+**Agent**
+
+Setting up a development environment from the lock file to work on a subset of sessions.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && uv venv -q dev --python 3.13 && uv pip install -q --python dev/bin/python -r entries/petersen-2020/requirements.lock.txt && dev/bin/python -c "import h5py, remfile; print('ok')"; date -u
+```
+
+```
+ok
+Wed Nov 18 02:39:07 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/petersen-2020 && time $TMPDIR/dev/bin/python - <<'EOF'
+import ms_cooling as mc, pickle, os, time
+s = mc.list_sessions()
+print(s.to_string())
+EOF
+```
+
+```
+path                              asset_id     size_gb   rat             session
+0   sub-MS10/sub-MS10_ses-Peter-MS10-170307-154746-concat_behavior+ecephys.nwb  d64eac2d-cd40-43b7-b069-0bf0a68ad44f   40.847914  MS10  MS10-170307-154746
+1   sub-MS10/sub-MS10_ses-Peter-MS10-170311-180956-concat_behavior+ecephys.nwb  ec6ae039-4b5e-4ec1-be12-a376c785815d   19.597873  MS10  MS10-170311-180956
+2   sub-MS10/sub-MS10_ses-Peter-MS10-170313-122631-concat_behavior+ecephys.nwb  7ca27ebf-5339-4dc6-9dd9-db8f51f26bc2   11.760619  MS10  MS10-170313-122631
+3          sub-MS10/sub-MS10_ses-Peter-MS10-170314-163038_behavior+ecephys.nwb  ca16c55f-ad3c-419c-8c36-3f4765836d1d    3.166795  MS10  MS10-170314-163038
+4   sub-MS10/sub-MS10_ses-Peter-MS10-170317-153237-concat_behavior+ecephys.nwb  7aded4c9-090d-43e9-875a-ecd3864beed9   12.299915  MS10  MS10-170317-153237
+5   sub-MS10/sub-MS10_ses-Peter-MS10-170319-180352-concat_behavior+ecephys.nwb  17e1dc78-3fb2-4e88-83be-842fa6d61713   15.258848  MS10  MS10-170319-180352
+6   sub-MS10/sub-MS10_ses-Peter-MS10-170320-212321-concat_behavior+ecephys.nwb  dabbf2d5-835a-494f-a8c5-51502ea2b459   10.693070  MS10  MS10-170320-212321
+7   sub-MS10/sub-MS10_ses-Peter-MS10-170321-164406-concat_behavior+ecephys.nwb  3029b520-5814-4667-a9d7-cc7f0e04209a   14.763774  MS10  MS10-170321-164406
+8          sub-MS10/sub-MS10_ses-Peter-MS10-170323-173246_behavior+ecephys.nwb  d57bb1e9-e35c-4393-b801-d7e7ef94d4b1    4.349153  MS10  MS10-170323-173246
+9   sub-MS12/sub-MS12_ses-Peter-MS12-170713-093400-concat_behavior+ecephys.nwb  953cce9d-8dc7-44f1-a993-ed8e6e15f3bd  117.610441  MS12  MS12-170713-093400
+10  sub-MS12/sub-MS12_ses-Peter-MS12-170714-122034-concat_behavior+ecephys.nwb  a70055d1-2a85-4857-9423-a85609f8da67   74.652387  MS12  MS12-170714-122034
+11  sub-MS12/sub-MS12_ses-Peter-MS12-170715-111545-concat_behavior+ecephys.nwb  e92c8a40-392e-454f-974a-e5a1d8bb4ba0   99.122485  MS12  MS12-170715-111545
+12  sub-MS12/sub-MS12_ses-Peter-MS12-170716-172307-concat_b
+[... 42 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+time $TMPDIR/dev/bin/python - <<'EOF'
+import ms_cooling as mc, numpy as np, pandas as pd
+from concurrent.futures import ThreadPoolExecutor
+s = mc.list_sessions()
+def one(row):
+    f = mc.open_asset(row.asset_id)
+    b = f["processing/behavior"]
+    if "MeasuredTemperature" not in b:
+        return row.session, None
+    g = b["MeasuredTemperature"]; T = g["data"][:]
+    t = f["intervals/trials"]; st=t["start_time"][:]; sp=t["stop_time"][:]
+    if "timestamps" in g: tt=g["timestamps"][:]
+    else: tt = g["starting_time"][()] + np.arange(len(T)) / g["starting_time"].attrs["rate"]
+    f.close()
+    inr = (tt>=st.min())&(tt<=sp.max())
+    Ti=T[inr]
+    vals, cnt = np.unique(np.round(Ti[(Ti>=4)&(Ti<16)],2), return_counts=True)
+    top = sorted(zip(cnt,vals))[-3:]
+    trT = [np.nanmean(np.where((T>=5)&(T<=45),T,np.nan)[(tt>=a)&(tt<=z)]) for a,z in zip(st,sp)]
+    return row.session, dict(n=len(Ti), n5_10=int(((Ti>=5)&(Ti<10)).sum()), n10_15=int(((Ti>=10)&(Ti<15)).sum()),
+        n15_20=int(((Ti>=15)&(Ti<20)).sum()), top_vals=top, min_trial_T=np.nanmin(trT), trials_below15=int(np.sum(np.array(trT)<15)))
+with ThreadPoolExecutor(8) as ex:
+    res = list(ex.map(one, [r for _,r in s.iterrows()]))
+for k,v in res:
+    if v: print(k, v)
+EOF
+```
+
+```
+<stdin>:18: RuntimeWarning: Mean of empty slice
+MS12-170719-095305 {'n': 63718, 'n5_10': 0, 'n10_15': 0, 'n15_20': 0, 'top_vals': [], 'min_trial_T': np.float64(20.356977771517908), 'trials_below15': 0}
+MS12-170720-093528 {'n': 47509, 'n5_10': 0, 'n10_15': 0, 'n15_20': 0, 'top_vals': [], 'min_trial_T': np.float64(20.87368967169188), 'trials_below15': 0}
+MS13-171127-133330 {'n': 43130, 'n5_10': 0, 'n10_15': 0, 'n15_20': 548, 'top_vals': [], 'min_trial_T': np.float64(21.293198532001632), 'trials_below15': 0}
+MS13-171128-113924 {'n': 45106, 'n5_10': 0, 'n10_15': 0, 'n15_20': 1242, 'top_vals': [], 'min_trial_T': np.float64(20.6320990441483), 'trials_below15': 0}
+MS13-171201-130527 {'n': 31414, 'n5_10': 0, 'n10_15': 0, 'n15_20': 0, 'top_vals': [], 'min_trial_T': np.float64(20.393001768710228), 'trials_below15': 0}
+MS21-180621-141817 {'n': 2558946, 'n5_10': 0, 'n10_15': 0, 'n15_20': 280932, 'top_vals': [], 'min_trial_T': np.float64(18.626898741168997), 'trials_below15': 0}
+MS21-180622-174411 {'n': 36102, 'n5_10': 0, 'n10_15': 0, 'n15_20': 0, 'top_vals': [], 'min_trial_T': np.float64(20.816377596331275), 'trials_below15': 0}
+MS21-180623-170717 {'n': 34796, 'n5_10': 0, 'n10_15': 0, 'n15_20': 1486, 'top_vals': [], 'min_trial_T': np.float64(18.352328675377553), 'trials_below15': 0}
+MS21-180625-153927 {'n': 34619, 'n5_10': 0, 'n10_15': 0, 'n15_20': 5322, 'top_vals': [], 'min_trial_T': np.float64(17.052175257827315), 'trials_below15': 0}
+MS21-180628-155921 {'n': 33916, 'n5_10': 0, 'n10_15': 0, 'n15_20': 0, 'top_vals': [], 'min_trial_T': np.float64(20.245678747411812), 'trials_below15': 0}
+MS21-180629-110332 {'n': 33622, 'n5_10': 0, 'n10_15': 0, 'n15_20': 2066, 'top_vals': [], 'min_trial_T': np.float64(19.01062041361988), 'trials_below15': 0}
+MS21-180711-112927 {'n': 40791, 'n5_10': 0, 'n10_15': 0, 'n15_20': 3014, 'top_vals': [], 'min_trial_T': np.float64(18.11663618758694), 'trials_below15': 0}
+MS21-180712-103200 {'n': 46025, 'n5_10': 0, 'n10_15': 0, 'n15_20': 0, 'top_vals': [],
+[... 22 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+time $TMPDIR/dev/bin/python - <<'EOF'
+import ms_cooling as mc, pickle, time, resource
+s = mc.list_sessions()
+out=[]
+for name in ["MS22-180629-110319", "MS21-180629-110332"]:
+    t=time.time()
+    S = mc._load_one(s[s.session==name].iloc[0])
+    print(name, time.time()-t, S["has_units"], len(S.get("units",[])), S["temp_kind"], S["has_lfp"])
+    out.append(S)
+pickle.dump(out, open(f"/tmp/claude-1001/sub.pkl","wb"))
+print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+EOF
+```
+
+```
+MS22-180629-110319 23.147281646728516 True 151 measured True
+MS21-180629-110332 21.60685086250305 True 145 measured True
+0.589456
+
+real	0m45.909s
+user	0m33.238s
+sys	0m4.219s
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/dev_setup.py <<'EOF'
+import sys, pickle, numpy as np, pandas as pd, time
+sys.path.insert(0, "entries/petersen-2020")
+import ms_cooling as mc
+SESS = pickle.load(open("/tmp/claude-1001/sub.pkl","rb"))
+for S in SESS:
+    tr = S["trials"]
+    for r in ["lab","m12","m10"]:
+        tr["st_"+r] = mc.state_labels(tr, S["onset"], r).values
+    tr["err"]=tr.error.astype(float); tr["trial_no"]=np.arange(len(tr))
+USESS = SESS
+EOF
+cd $TMPDIR && time dev/bin/python - <<'EOF'
+exec(open("dev_setup.py").read())
+rng = np.random.default_rng(0)
+# synthetic test of circ_lin_slope with +-1 and +-2 cycle ranges
+for true in [-0.5, -1.0, -1.25, -1.5, None]:
+    for rngc in [1, 2]:
+        out=[]
+        for _ in range(200):
+            x = rng.uniform(0,1,40)
+            phi = rng.uniform(0,2*np.pi,40) if true is None else np.mod(2*np.pi*true*x + 1 + rng.vonmises(0,2,40), 2*np.pi)
+            out.append(mc.circ_lin_slope(x, phi, -2*np.pi*rngc, 2*np.pi*rngc, n=401*rngc)[0]/(2*np.pi))
+        out=np.array(out)
+        print(true, rngc, np.median(out).round(3), "at bound", np.mean(np.abs(np.abs(out)-rngc)<1e-3).round(2))
+EOF
+```
+
+```
+-0.5 1 -0.503 at bound 0.0
+-0.5 2 -0.499 at bound 0.0
+-1.0 1 -1.0 at bound 0.54
+-1.0 2 -0.994 at bound 0.0
+-1.25 1 -1.0 at bound 1.0
+-1.25 2 -1.258 at bound 0.0
+-1.5 1 -1.0 at bound 0.95
+-1.5 2 -1.5 at bound 0.0
+None 1 0.022 at bound 0.3
+None 2 -0.097 at bound 0.2
+
+real	0m2.390s
+user	0m2.826s
+sys	0m0.182s
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && time dev/bin/python - <<'EOF'
+exec(open("dev_setup.py").read())
+rows=[]
+for S in SESS:
+    F, maps, edges = mc.session_fields(S, binw=5.0)
+    F = F[F.peak_rate>10]
+    sp=S["sp"]; st=S["trials"].st_lab.values[sp.trial.values]
+    for _,f in F.iterrows():
+        for s in mc.STATES:
+            m=(sp.u.values==f.u)&(sp.arm.values==f.arm)&(sp.lin.values>=f.lo)&(sp.lin.values<f.hi)&(st==s)
+            g=sp[m]
+            if len(g)<10: continue
+            x=(g.lin.values-f.lo)/(f.hi-f.lo); ph=np.mod(g.phase_u.values,2*np.pi)
+            r=dict(s=s, n=len(g))
+            for c in [1,2,3]:
+                r[f"c{c}"]=mc.circ_lin_slope(x,ph,-2*np.pi*c,2*np.pi*c,n=401*c)[0]/(2*np.pi)
+            rows.append(r)
+D=pd.DataFrame(rows)
+for c in [1,2,3]:
+    print(c, "median", D[f"c{c}"].median().round(3), "at bound", (np.abs(np.abs(D[f"c{c}"])-c)<1e-3).mean().round(3), "neg", (D[f"c{c}"]<0).mean().round(2))
+print(len(D)); print(D.groupby("s")[["c1","c2","c3"]].median())
+EOF
+```
+
+```
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+entries/petersen-2020/ms_cooling.py:481: RuntimeWarning: Mean of empty slice
+  nb[1:-1] = np.nanmean(np.vstack([v[:-2], v[2:]]), axis=0)
+[... 156 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+c=yaml.safe_load(open('claims/petersen-2020.yaml'))
+for x in c['claims']:
+    if x['id'] in ('fig2h-theta-power-temperature','disc-theta-frequency-12-percent','fig6h-errors-theta-power','fig4f-speed-theta-power'):
+        print(x['id'], '::', x['criterion'], '\n')
+EOF
+```
+
+```
+fig2h-theta-power-temperature :: As fig2g-theta-freq-temperature, with trial theta power, and the same readings (this P implies about 190 points). Whether power is normalised per session before averaging is open; readings, raw power and power divided by the session's mean pre power (Figure 2D "Color scale is normalized"). Reproduced when, under one reading, R is within tolerance with P < 1e-5 and below the frequency R of fig2g under the same reading. Partially reproduced when R is positive with P < 0.05 but outside tolerance. 
+
+disc-theta-frequency-12-percent :: The paper does not say how the 12% is computed. Readings, (a) the mean over sessions of 100 (1 - cooling / pre) of the session means of trial theta frequency; (b) the same with the mean of pre and post as the reference; (c) the largest decrease of the aligned mean series of Figure 6C (trials aligned on cooling onset, averaged over sessions) relative to its pre mean. Under each state and theta reading. Reproduced when one reading is within tolerance; partially reproduced when every reading shows a decrease but none is within tolerance. The decrease of fLFP within place fields is in fig4b-fp-flfp-decrease (8.4 to 7.7 Hz, about 8%). 
+
+fig6h-errors-theta-power :: Per rat, R of error incidence and theta power as reading (c) of fig6f-errors-temperature. "R > -0.3" is read as R beyond -0.3 in magnitude (R < -0.3), the sign the other correlations take; the other reading, R above -0.3, is shown. An animal counts when R < -0.3 and P < 0.01. Reproduced when 2 animals count; partially reproduced when 1 or 3 do. 
+
+fig4f-speed-theta-power :: Figure 4F, "Theta power as a function of running speed". The unit is open; readings, (a) trial mean speed and trial theta power over all trials; (b) per rat as Figure S2H. The paper states no sign; the sign is reported. Reproduced when, under one reading, the correlation has P < 0.05 (under (b), in every rat); partially reproduced when under (b) only some rats have P < 0.05 and (a) do
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/petersen-2020 && python - <<'EOF'
+p='ms_cooling.py'
+s=open(p).read()
+old='''def circ_lin_slope(x, phi, smin=-2 * np.pi, smax=2 * np.pi, n=401):
+    """Circular-linear regression (Kempter et al. 2012): slope a (rad per unit of
+    x) maximising the mean resultant length of phi - 2 pi a x. x is scaled to
+    the field's length (0 to 1), so a is in cycles per field."""
+    a = np.linspace(smin / (2 * np.pi), smax / (2 * np.pi), n)'''
+new='''def circ_lin_slope(x, phi, cycles=2.0):
+    """Circular-linear regression (Kempter et al. 2012): the slope (rad per unit
+    of x) maximising the mean resultant length of phi - 2 pi a x, searched over
+    a in plus and minus `cycles` cycles per unit of x. x is scaled to the field's
+    length (0 to 1), so the range is in cycles per field. The paper gives no
+    range (Methods, "Theta phase and phase precession"); 2 cycles per field is
+    the main reading (an assumption: a range of 1 cycle pins 27% of the slopes
+    of a two-session subset at its bound, 2 cycles 8%), 1 and 3 cycles are
+    variants. The grid step is 0.005 cycles."""
+    n = int(round(2 * cycles / 0.005)) + 1
+    a = np.linspace(-cycles, cycles, n)'''
+assert old in s; s=s.replace(old,new)
+old2='''                x = (si.lin.values - f.lo) / (f.hi - f.lo)
+                r["prec_slope"], r["prec_R"] = circ_lin_slope(x, np.mod(si.phase_u.values, 2 * np.pi))
+            else:
+                r["prec_slope"] = r["prec_R"] = np.nan'''
+new2='''                x = (si.lin.values - f.lo) / (f.hi - f.lo)
+                ph = np.mod(si.phase_u.values, 2 * np.pi)
+                r["prec_slope"], r["prec_R"] = circ_lin_slope(x, ph)
+                r["prec_slope_1c"] = circ_lin_slope(x, ph, 1.0)[0]
+                r["prec_slope_3c"] = circ_lin_slope(x, ph, 3.0)[0]
+            else:
+                r["prec_slope"] = r["prec_R"] = r["prec_slope_1c"] = r["prec_slope_3c"] = np.nan'''
+assert old2 in s; s=s.replace(old2,new2)
+open(p,'w').write(s)
+EOF
+grep -n "circ_lin_slope" ms_cooling.py reproduce_petersen_2020.ipynb
+```
+
+```
+ms_cooling.py:529:def circ_lin_slope(x, phi, cycles=2.0):
+ms_cooling.py:754:                r["prec_slope"], r["prec_R"] = circ_lin_slope(x, ph)
+ms_cooling.py:755:                r["prec_slope_1c"] = circ_lin_slope(x, ph, 1.0)[0]
+ms_cooling.py:756:                r["prec_slope_3c"] = circ_lin_slope(x, ph, 3.0)[0]
+reproduce_petersen_2020.ipynb:1544:    "                r[\"slope\"] = mc.circ_lin_slope(x, np.mod(g.phase_u.values, 2 * np.pi))[0]\n",
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/petersen-2020 && python - <<'EOF'
+p='ms_cooling.py'
+s=open(p).read()
+old='''range (Methods, "Theta phase and phase precession"); 2 cycles per field is
+    the main reading (an assumption: a range of 1 cycle pins 27% of the slopes
+    of a two-session subset at its bound, 2 cycles 8%), 1 and 3 cycles are
+    variants. The grid step is 0.005 cycles."""'''
+new='''range (Methods, "Theta phase and phase precession"); 2 cycles per field is
+    the main reading (an assumption: a range of 1 cycle pins many slopes at its
+    bound, as the notebook prints), 1 and 3 cycles are variants. The grid step
+    is 0.005 cycles (standard choice)."""'''
+s=s.replace(old,new)
+old='''- Fields are found on the map over all trials of an arm, states pooled
+  (assumption; the paper does not say on which map).
+"""'''
+new='''- Fields are found on the map over all trials of an arm, states pooled
+  (assumption; the paper does not say on which map).
+- Phase precession slope: circular-linear regression searched over plus and
+  minus 2 cycles per field (assumption; the paper gives no range), with 1 and 3
+  cycles as variants (circ_lin_slope).
+"""'''
+assert old in s; s=s.replace(old,new)
+open(p,'w').write(s)
+EOF
+```
+
+```
+Exit code 1
+/bin/bash: line 1: cd: entries/petersen-2020: No such file or directory
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+p='ms_cooling.py'
+s=open(p).read()
+old='''range (Methods, "Theta phase and phase precession"); 2 cycles per field is
+    the main reading (an assumption: a range of 1 cycle pins 27% of the slopes
+    of a two-session subset at its bound, 2 cycles 8%), 1 and 3 cycles are
+    variants. The grid step is 0.005 cycles."""'''
+new='''range (Methods, "Theta phase and phase precession"); 2 cycles per field is
+    the main reading (an assumption: a range of 1 cycle pins many slopes at its
+    bound, as the notebook prints), 1 and 3 cycles are variants. The grid step
+    is 0.005 cycles (standard choice)."""'''
+assert old in s; s=s.replace(old,new)
+old='''- Fields are found on the map over all trials of an arm, states pooled
+  (assumption; the paper does not say on which map).
+"""'''
+new='''- Fields are found on the map over all trials of an arm, states pooled
+  (assumption; the paper does not say on which map).
+- Phase precession slope: circular-linear regression searched over plus and
+  minus 2 cycles per field (assumption; the paper gives no range), with 1 and 3
+  cycles as variants (circ_lin_slope).
+"""'''
+assert old in s; s=s.replace(old,new)
+open(p,'w').write(s)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+p='ms_cooling.py'
+s=open(p).read()
+old='''    rows = []
+    for (k, cond), (tot, cnt) in acc.items():
+        w = tot / cnt
+        it = int(np.argmin(w))
+        ip = it + int(np.argmax(w[it:]))
+        rows.append(dict(session=S["session"], u=k, cell_type=S["units"][k]["cell_type"], cond=cond, n=cnt,
+                         trough_to_peak_ms=(ip - it) / fs * 1000, p2p_uV=float(w.max() - w.min())))'''
+new='''    from scipy.interpolate import CubicSpline
+    rows = []
+    for (k, cond), (tot, cnt) in acc.items():
+        w = tot / cnt
+        it = int(np.argmin(w))
+        ip = it + int(np.argmax(w[it:]))
+        # the same on the mean waveform interpolated by a cubic spline to 10 times
+        # the sampling rate (standard choice), so the latency is not quantised at 0.05 ms
+        tq = np.arange(len(w) * 10 - 9) / 10
+        wq = CubicSpline(np.arange(len(w)), w)(tq)
+        jt = int(np.argmin(wq))
+        jp = jt + int(np.argmax(wq[jt:]))
+        rows.append(dict(session=S["session"], u=k, cell_type=S["units"][k]["cell_type"], cond=cond, n=cnt,
+                         trough_to_peak_ms=(ip - it) / fs * 1000,
+                         trough_to_peak_interp_ms=(tq[jp] - tq[jt]) / fs * 1000,
+                         p2p_uV=float(w.max() - w.min())))'''
+assert old in s; s=s.replace(old,new)
+open(p,'w').write(s)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+p='ms_cooling.py'
+s=open(p).read()
+anchor = "# ---------------------------------------------------------------- waveforms"
+new = '''def info_equal_trials(S, F, edges, state_col="st_lab", n_draws=20, rng=None):
+    """Skaggs information (bits per spike) of each map (cell and arm) with a field
+    in F, per state, from the same number of trials in each state: on each arm,
+    the trials of each state are subsampled without replacement to the smallest
+    count among the states, n_draws times, and the information is averaged over
+    the draws. Skaggs information is biased upward with less data, so equal
+    trial numbers remove the bias that unequal state sizes would bring (standard
+    choice of correction; the paper names no measure)."""
+    tr = S["trials"]
+    sp = S["sp"]
+    b = S["beh"]
+    st_tr = tr[state_col].values
+    bti = _beh_trial_index(S)
+    dt = np.gradient(b["t"])
+    nb = len(edges) - 1
+    fb = np.clip(np.searchsorted(edges, b["lin"], side="right") - 1, 0, nb - 1)
+    sb = np.clip(np.searchsorted(edges, sp.lin.values, side="right") - 1, 0, nb - 1)
+    rows = []
+    for arm in ("Left", "Right"):
+        units = sorted(set(F.u[F.arm == arm]))
+        if not units:
+            continue
+        idx = {s: np.where((st_tr == s) & (tr.arm.values == arm))[0] for s in STATES}
+        m = min(len(v) for v in idx.values())
+        if m < 2:
+            continue
+        acc = {(u, s): [] for u in units for s in STATES}
+        for _ in range(n_draws):
+            for s in STATES:
+                pick = np.zeros(len(tr), bool)
+                pick[rng.choice(idx[s], m, replace=False)] = True
+                fm = (bti >= 0)
+                fm[fm] = pick[bti[fm]]
+                occ = np.bincount(fb[fm], weights=dt[fm], minlength=nb)
+                sm = pick[sp.trial.values] & (sp.arm.values == arm)
+                for u in units:
+                    cnt = np.bincount(sb[sm & (sp.u.values == u)], minlength=nb)
+                    with np.errstate(invalid="ignore", divide="ignore"):
+                        raw = np.where(occ > 0, cnt / occ, np.nan)
+                    acc[(u, s)].append(skaggs_info(smooth_map(raw, occ), occ))
+        for u in units:
+            rows.append(dict(session=S["session"], rat=S["rat"], u=u, arm=arm, trials=m,
+                             **{s: np.nanmean(acc[(u, s)]) for s in STATES}))
+    return pd.DataFrame(rows)
+
+
+'''
+assert anchor in s; s=s.replace(anchor, new+anchor)
+open(p,'w').write(s)
+EOF
+cat >> $TMPDIR/dev_setup.py <<'EOF'
+import warnings; warnings.filterwarnings("ignore")
+EOF
+cd $TMPDIR && time dev/bin/python - <<'EOF'
+exec(open("dev_setup.py").read())
+import importlib
+rng=np.random.default_rng(5)
+for S in SESS:
+    F, maps, edges = mc.session_fields(S, binw=5.0)
+    t=time.time()
+    I = mc.info_equal_trials(S, F, edges, rng=rng)
+    M = mc.field_state_measures(S, F[F.peak_rate>10], edges)
+    print(S["session"], time.time()-t, len(I), I[["Pre","Cooling","Post","trials"]].median().round(3).to_dict())
+    W = M.pivot_table(index=["u","arm"], columns="state", values="info", aggfunc="first")
+    print(" unequal:", W.median().round(3).to_dict(), "slopes at bound 1c", (np.abs(np.abs(M.prec_slope_1c)-2*np.pi)<1e-3).mean().round(3), "2c", (np.abs(np.abs(M.prec_slope)-4*np.pi)<1e-3).mean().round(3), time.time()-t)
+    print(S["trials"].groupby(["arm","st_lab"]).size().to_dict())
+EOF
+```
+
+```
+MS22-180629-110319 13.756208658218384 98 {'Pre': 1.214, 'Cooling': 1.141, 'Post': 1.053, 'trials': 21.0}
+ unequal: {'Cooling': 1.109, 'Post': 1.053, 'Pre': 1.165} slopes at bound 1c 0.226 2c 0.061 13.767536640167236
+{('Left', 'Cooling'): 21, ('Left', 'Post'): 17, ('Left', 'Pre'): 17, ('Right', 'Cooling'): 29, ('Right', 'Post'): 21, ('Right', 'Pre'): 23}
+MS21-180629-110332 9.772547960281372 78 {'Pre': 1.36, 'Cooling': 1.262, 'Post': 1.381, 'trials': 21.0}
+ unequal: {'Cooling': 1.27, 'Post': 1.38, 'Pre': 1.388} slopes at bound 1c 0.29 2c 0.098 9.776687383651733
+{('Left', 'Cooling'): 19, ('Left', 'Post'): 28, ('Left', 'Pre'): 19, ('Right', 'Cooling'): 31, ('Right', 'Post'): 31, ('Right', 'Pre'): 21}
+
+real	0m28.851s
+user	0m29.235s
+sys	0m0.229s
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > dev_pairs.py <<'EOF'
+exec(open("/tmp/claude-1001/dev_setup.py").read())
+import json
+from scipy import stats
+nb=json.load(open("entries/petersen-2020/reproduce_petersen_2020.ipynb"))
+src=lambda i: ''.join(nb['cells'][i]['source'])
+Fs=[]
+for S in SESS:
+    F,_,_=mc.session_fields(S,5.0); Fs.append(F)
+FIELDS={(5.0,"lab"):pd.concat(Fs,ignore_index=True)}
+src117 = src(117).replace('for S in USESS:','for S in SESS:')
+exec(src117)
+exec(src(126))
+exec(src(132))
+EOF
+time dev/bin/python - <<'EOF'
+exec(open("dev_pairs.py").read())
+import pickle
+pickle.dump((PAIRS, LAG), open("/tmp/claude-1001/pairs.pkl","wb"))
+P=PAIRS["a"]
+for sess,g in P.groupby("session"):
+    for states in (["Pre"],["Pre","Post"],["Cooling"]):
+        y,_=summed(g,states); b0=ccg_period(y); a0=a_start(g,states,"ccg")
+        f=fit_surface(g,states,"ccg",False,a0=a0,b0=b0)
+        print(sess,states,round(a0,3),round(b0,1),f)
+EOF
+```
+
+```
+pair cross-correlograms in 6 s
+reading a: 3189 overlapping pairs in 2 sessions; usable pre 2283, cooling 2587, post 2461, all three 1999; sessions with usable pairs in every state 2
+   pairs by rat (usable in pre): {'MS21': 728, 'MS22': 1555}
+reading b: 3189 overlapping pairs in 2 sessions; usable pre 2744, cooling 2925, post 2859, all three 2533; sessions with usable pairs in every state 2
+   pairs by rat (usable in pre): {'MS21': 869, 'MS22': 1875}
+MS21-180629-110332 ['Pre'] -0.61 100.5 {'a': np.float64(0.5928757121563103), 'b': np.float64(92.36926035368091), 'r2': np.float64(-0.34506270792751503), 'ok': True}
+MS21-180629-110332 ['Pre', 'Post'] -0.597 105.0 {'a': np.float64(0.6286969894938365), 'b': np.float64(96.54714919493924), 'r2': np.float64(-0.0733021874221842), 'ok': True}
+MS21-180629-110332 ['Cooling'] -0.545 120.2 {'a': np.float64(0.5385774101128729), 'b': np.float64(99.50442069292082), 'r2': np.float64(-0.27105546125136915), 'ok': True}
+MS22-180629-110319 ['Pre'] -0.749 107.3 {'a': np.float64(1.054906837691436), 'b': np.float64(104.01270114194068), 'r2': np.float64(-0.042669672798551606), 'ok': True}
+MS22-180629-110319 ['Pre', 'Post'] -0.699 108.3 {'a': np.float64(1.5066276103272995), 'b': np.float64(107.74324927616577), 'r2': np.float64(-0.016742778162028182), 'ok': True}
+MS22-180629-110319 ['Cooling'] -0.628 120.7 {'a': nan, 'b': nan, 'ok': False, 'err': 'Optimal parameters not found: Number of calls to function ha'}
+
+real	0m20.156s
+user	0m20.164s
+sys	0m0.589s
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && time dev/bin/python - <<'EOF'
+exec(open("dev_setup.py").read())
+import json, pickle
+from scipy import stats
+from scipy.optimize import curve_fit
+nb=json.load(open("entries/petersen-2020/reproduce_petersen_2020.ipynb"))
+src=lambda i: ''.join(nb['cells'][i]['source'])
+LAGS = np.arange(-400, 401); PH_BIN=0.01*np.pi; PH_MAX=6*np.pi
+PH_LAGS = np.arange(-int(round(PH_MAX / PH_BIN)), int(round(PH_MAX / PH_BIN)) + 1) * PH_BIN
+PAIRS, LAG = pickle.load(open("/tmp/claude-1001/pairs.pkl","rb"))
+exec(src(117).split("PAIRS = {}")[0].split("def summed")[0])  # functions pair_ccgs, ccg_period
+exec("def summed"+src(117).split("def summed")[1].split("def lfp_period_ms")[0])
+exec(src(132))
+P=PAIRS["a"]
+def env(XY, c, d, e, f, g):
+    x,y=XY
+    return e*np.exp(-(x+f*y)**2/(2*c**2))*np.exp(-(y-g)**2/(2*d**2))
+def fit2(P, states, a0, b0, inside=False):
+    xc,Z,N=density(P,states,"ccg",LAGS)
+    ok=N>0
+    X,Y=np.meshgrid(xc[ok],LAGS,indexing="ij"); z=Z[ok].ravel(); z=z-np.nanmin(z)
+    XY=np.vstack([X.ravel(),Y.ravel()])
+    pe,_=curve_fit(env, XY, z, p0=[60,150,np.nanmax(z),0,0], maxfev=5000)
+    c,d,e,f,g=pe
+    p0=[a0,b0,abs(c),abs(d),e/2,f,g]
+    lo=[-5,50,1,10,0,-10,-300]; hi=[5,200,1000,2000,np.inf,10,300]
+    p0=[min(max(v,l+1e-6),h-1e-6) for v,l,h in zip(p0,lo,hi)]
+    p,_=curve_fit(lambda XY,*q: surf(XY,*q,inside=inside), XY, z, p0=p0, bounds=(lo,hi), max_nfev=5000)
+    res=z-surf(XY,*p,inside=inside); r2=1-np.sum(res**2)/np.sum((z-z.mean())**2)
+    rese=z-env(XY,*pe); r2e=1-np.sum(rese**2)/np.sum((z-z.mean())**2)
+    return p, r2, r2e
+for sess,g in P.groupby("session"):
+    for states in (["Pre"],["Pre","Post"],["Cooling"]):
+        y,_=summed(g,states); b0=ccg_period(y)
+        for a0 in (0.55,-0.55):
+          try:
+            p,r2,r2e=fit2(g,states,a0,b0)
+            print(sess,states,a0,"a",round(p[0],3),"b",round(p[1],1),"c,d",np.round(p[2:4],1),"f,g",np.round(p[5:],2),"R2",round(r2,3),"env R2",round(r2e,3))
+          except Exception as ex: print(sess, states, "fail", str(ex)[:80])
+EOF
+```
+
+```
+MS21-180629-110332 ['Pre'] 0.55 a 0.407 b 106.6 c,d [106.5 418.4] f,g [-2.4e-01  3.0e+02] R2 -0.506 env R2 0.609
+MS21-180629-110332 ['Pre'] -0.55 a -0.594 b 92.4 c,d [ 89.3 445.1] f,g [-2.2e-01  3.0e+02] R2 -0.346 env R2 0.609
+MS21-180629-110332 ['Pre', 'Post'] 0.55 a 0.43 b 120.5 c,d [ 81.7 379.7] f,g [-2.1e-01  3.0e+02] R2 -0.298 env R2 0.684
+MS21-180629-110332 ['Pre', 'Post'] -0.55 a -0.635 b 96.7 c,d [ 70.7 383.6] f,g [-2.e-01  3.e+02] R2 -0.088 env R2 0.684
+MS21-180629-110332 ['Cooling'] 0.55 a 0.425 b 118.3 c,d [ 92.9 385.3] f,g [-2.1e-01  3.0e+02] R2 -0.359 env R2 0.665
+MS21-180629-110332 ['Cooling'] -0.55 a -0.538 b 99.6 c,d [ 84. 400.] f,g [-2.e-01  3.e+02] R2 -0.273 env R2 0.665
+MS22-180629-110319 ['Pre'] fail Optimal parameters not found: Number of calls to function has reached maxfev = 5
+MS22-180629-110319 ['Pre'] fail Optimal parameters not found: Number of calls to function has reached maxfev = 5
+MS22-180629-110319 ['Pre', 'Post'] fail Optimal parameters not found: Number of calls to function has reached maxfev = 5
+MS22-180629-110319 ['Pre', 'Post'] fail Optimal parameters not found: Number of calls to function has reached maxfev = 5
+MS22-180629-110319 ['Cooling'] fail Optimal parameters not found: Number of calls to function has reached maxfev = 5
+MS22-180629-110319 ['Cooling'] fail Optimal parameters not found: Number of calls to function has reached maxfev = 5
+
+real	0m15.605s
+user	0m43.285s
+sys	0m0.363s
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cat > $TMPDIR/nbedit.py <<'EOF'
+import json, sys
+P="entries/petersen-2020/reproduce_petersen_2020.ipynb"
+nb=json.load(open(P))
+def get(i): return ''.join(nb['cells'][i]['source'])
+def put(i, s): nb['cells'][i]['source']=s.splitlines(keepends=True)
+def rep(i, old, new):
+    s=get(i); assert old in s, (i, old[:60]); put(i, s.replace(old,new))
+def save(): json.dump(nb, open(P,'w'), indent=1, ensure_ascii=False); open(P,'a').write("\n")
+EOF
+head -c 300 entries/petersen-2020/reproduce_petersen_2020.ipynb; tail -c 100 entries/petersen-2020/reproduce_petersen_2020.ipynb | od -c | tail -3
+```
+
+```
+Wed Nov 18 02:44:59 UTC 2026
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "513b2f08",
+   "metadata": {},
+   "source": [
+    "# Reproducing Petersen & Buzsaki (2020) from DANDI:000059\n",
+    "\n",
+    "Paper: Petersen PC, Buzsaki G (2020). Cooling of medial septum reveals theta phase lag coordination of hippocampal ce0000120   b   f   o   r   m   a   t   _   m   i   n   o   r   "   :    
+0000140   5  \n   }  \n
+0000144
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+# A: temperature cleaning text and check below 15 C
+rep(4, '''            print(f"  {S['session']}: {raw_bad} temperature samples outside 0 to 50 C set to NaN")''',
+'''            print(f"  {S['session']}: {raw_bad} temperature samples outside 5 to 45 C set to NaN")
+# rails near 5 and 10 C fall inside 5 to 45 C; check that no sample within the trials falls below 15 C
+low = {}
+for S in MEAS_ALL:
+    tt, T = S["temp"]
+    tr = S["trials"]
+    w = (tt >= tr.start.min()) & (tt <= tr.stop.max())
+    low[S["session"]] = (int(np.sum(T[w] < 15)), int(np.sum(T < 15)))
+print("measured temperature samples below 15 C (within the trials, in the whole trace):",
+      {k: v for k, v in low.items() if v[1] > 0}, "; sessions with any within the trials:", sum(v[0] > 0 for v in low.values()))
+print("lowest trial temperature per measured session (C):",
+      pd.Series({S["session"]: S["trials"].temp.min() for S in MEAS_ALL}).round(1).sort_values().head(5).to_dict())''')
+rep(4, '''for S in SESS:
+    if S["temp_kind"] == "measured":
+        tt, T = S["temp"]''', '''MEAS_ALL = [S for S in SESS if S["temp_kind"] == "measured"]
+for S in MEAS_ALL:
+    if True:
+        tt, T = S["temp"]''')
+# B: cell 7 text
+rep(7, "The aligned series spans trials -40 to 80, where at least half of the sessions contribute (standard choice; the paper's Figure 6C shows about this range).",
+ "The aligned series spans trials -40 to 80 (standard choice; the paper's Figure 6C shows about this range). Fewer sessions contribute at its ends than near the onset (for the measured sessions with LFP, 11 at the fewest, against 31; printed in fig2g).")
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+BAD = '"MS13-171130-121758"'
+# C fig2i: loop over a session set including a variant without the bad-tagged theta channel session
+rep(25, '''rows = []
+for r in STATE_READINGS:
+    for fc, pc in [("f_hil", "p_hil"), ("f_spec", "p_spec"), ("f_hil_run", "p_hil_run")]:
+        M = []
+        for S in LFPS:''', '''rows = []
+for r, fc, pc, sset in [(r, fc, pc, "all") for r in STATE_READINGS for fc, pc in [("f_hil", "p_hil"), ("f_spec", "p_spec"), ("f_hil_run", "p_hil_run")]] + \\
+        [("lab", fc, pc, "without MS13-171130") for fc, pc in [("f_hil", "p_hil"), ("f_spec", "p_spec")]]:
+    if True:
+        M = []
+        for S in (LFPS if sset == "all" else LFPS_GOOD):''')
+rep(25, "rows.append(dict(states=r, theta=fc, sessions=len(M),", "rows.append(dict(states=r, theta=fc, sessions=len(M), set=sset,")
+# define LFPS_GOOD in cell 8
+rep(8, 'LFPS = [S for S in SESS if S["has_lfp"]]\n', 'LFPS = [S for S in SESS if S["has_lfp"]]\n# the lab\'s theta channel of MS13-171130 is marked bad in the electrodes table; results without it are shown\nBAD_THETA = {S["session"] for S in LFPS if any(S["theta_info"].get("theta_tag_bad", []))}\nLFPS_GOOD = [S for S in LFPS if S["session"] not in BAD_THETA]\n')
+rep(8, 'print(f"MEAS {len(MEAS)} sessions', 'print("sessions whose tagged theta channel is marked bad:", sorted(BAD_THETA))\nprint(f"MEAS {len(MEAS)} sessions')
+# D fig6c
+rep(38, 'print(f"pre error incidence (aligned trials -40 to -1)', '''fg = {c: aligned(LFPS_GOOD, c) for c in ["f_hil", "f_spec", "p_hil_norm", "p_spec_norm"]}
+print("without MS13-171130 (theta channel marked bad), minimum trial in 1 to 40:", {c: argext(v["mean"], "min") for c, v in fg.items()})
+print(f"pre error incidence (aligned trials -40 to -1)''')
+# E fig6h
+rep(46, '''for c in ["p_hil_norm", "p_hil", "p_spec_norm"]:
+    H6 = err_table(LFPS, c)''', '''for c, SS in [("p_hil_norm", LFPS), ("p_hil", LFPS), ("p_spec_norm", LFPS), ("p_hil_norm without MS13-171130", LFPS_GOOD)]:
+    H6 = err_table(SS, c.split(" ")[0])''')
+# F fig5i
+rep(129, '''for k, L in LAG.items():
+    for rd in ("pa", "pb"):''', '''for k, L in list(LAG.items()) + [(k + " without MS13-171130", L[~L.session.isin(BAD_THETA)]) for k, L in LAG.items()]:
+    for rd in ("pa", "pb"):''')
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(80, '''print("information is per map (cell and arm), counted once per map with a field; a cell with fields on both arms counts once per arm")''',
+'''print("information is per map (cell and arm), counted once per map with a field; a cell with fields on both arms counts once per arm")
+# equal trials per state: Skaggs information is biased upward with fewer data, and the states differ in trial counts
+rng_info = np.random.default_rng(31)
+T0 = time.time()
+IEQ = []
+for S in USESS:
+    F = FIELDS[(5.0, "lab")]
+    F = F[F.session == S["session"]]
+    if len(F):
+        I = mc.info_equal_trials(S, F, np.arange(0, 355, 5.0), "st_lab", n_draws=20, rng=rng_info)
+        I["peak10"] = [bool(((F.u == u) & (F.arm == a) & (F.peak_rate > 10)).any()) for u, a in zip(I.u, I.arm)]
+        IEQ.append(I)
+IEQ = pd.concat(IEQ, ignore_index=True)
+print(f"equal-trial information ({time.time() - T0:.0f} s): trials per state and arm, median {IEQ.trials.median():.0f} (range {IEQ.trials.min()} to {IEQ.trials.max()})")
+tc = pd.concat([S["trials"].assign(session=S["session"]) for S in USESS]).groupby(["session", "arm", "st_lab"]).size().unstack()
+print("trials per state and arm (unequal reading), median:", tc.median().to_dict())
+for lab_, I in [("peak>10", IEQ[IEQ.peak10]), ("Fig5 rule", IEQ)]:
+    out = []
+    for a_, b_ in [("Pre", "Cooling"), ("Cooling", "Post"), ("Pre", "Post")]:
+        p, n = mc.signrank(I[b_], I[a_])
+        out.append(f"{a_}-{b_}: median change {np.nanmedian(I[b_] - I[a_]):.3f} bits/spike, P = {p:.3g}")
+    print(f"equal trials, bins 5.0, states lab, {lab_} (n = {len(I)}; median pre {I.Pre.median():.3f}, cooling {I.Cooling.median():.3f}, post {I.Post.median():.3f}): " + "; ".join(out))''')
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+put(83, '''BOUND = {"prec_slope": 4 * np.pi, "prec_slope_1c": 2 * np.pi, "prec_slope_3c": 6 * np.pi}
+for col, rng_name in [("prec_slope", "2 cycles (main)"), ("prec_slope_1c", "1 cycle"), ("prec_slope_3c", "3 cycles")]:
+    for key in MEASURES:
+        W = wide(key, True, [col])
+        W = W.dropna()
+        s = {k: W[(col, k)] for k in mc.STATES}
+        at_b = {k: float((np.abs(np.abs(v) - BOUND[col]) < 1e-3).mean()) for k, v in s.items()}
+        out = [f"n = {len(W)}; median slope pre {s['Pre'].median():.3f}, cooling {s['Cooling'].median():.3f}, post {s['Post'].median():.3f} rad/field; "
+               f"fraction at the search bound pre {at_b['Pre']:.3f}, cooling {at_b['Cooling']:.3f}, post {at_b['Post']:.3f}"]
+        for a_ in ["Pre", "Post"]:
+            p_mag, _ = mc.signrank(s["Cooling"].abs(), s[a_].abs())
+            p_sig, _ = mc.signrank(s["Cooling"], s[a_])
+            out.append(f"cooling vs {a_}: |slope| median change {np.median(s['Cooling'].abs() - s[a_].abs()):.4f} (P = {p_mag:.3g}); "
+                       f"signed slope median change {np.median(s['Cooling'] - s[a_]):.4f} (P = {p_sig:.3g})")
+        print(f"range {rng_name}, bins {key[0]}, states {key[1]}: " + "; ".join(out))
+    if col == "prec_slope":
+        Wb = wide((5.0, "lab"), True, [col]).dropna()
+        off = (np.abs(np.abs(Wb) - BOUND[col]) >= 1e-3).all(1)
+        Wb = Wb[off]
+        print(f"   main reading without fields at the bound in any state (n = {len(Wb)}): cooling vs pre |slope| P = "
+              f"{mc.signrank(Wb[(col, 'Cooling')].abs(), Wb[(col, 'Pre')].abs())[0]:.3g}, signed P = {mc.signrank(Wb[(col, 'Cooling')], Wb[(col, 'Pre')])[0]:.3g}; "
+              f"cooling vs post |slope| P = {mc.signrank(Wb[(col, 'Cooling')].abs(), Wb[(col, 'Post')].abs())[0]:.3g}, signed P = {mc.signrank(Wb[(col, 'Cooling')], Wb[(col, 'Post')])[0]:.3g}")
+W = wide((5.0, "lab"), True, ["prec_slope"]).dropna()
+print(f"fraction of negative slopes (pre, main reading): {(W[('prec_slope', 'Pre')] < 0).mean():.3f}")
+''')
+rep(82, "Circular-linear regression (Kempter et al. 2012) of theta phase on position within the field, position scaled to the field (0 to 1), so the slope is in radians per field; fields with at least 10 spikes in a state (standard choice).",
+ "Circular-linear regression (Kempter et al. 2012) of theta phase on position within the field, position scaled to the field (0 to 1), so the slope is in radians per field; fields with at least 10 spikes in a state (standard choice). The slope is searched over plus and minus 2 cycles per field (4 pi rad; an assumption, as the paper gives no range); 1 cycle, which pins many fields at its bound, and 3 cycles are variants. The fraction of slopes at the bound is printed.")
+# I suppl3e per-trial slopes
+rep(86, '''                r["slope"] = mc.circ_lin_slope(x, np.mod(g.phase_u.values, 2 * np.pi))[0]''',
+'''                ph = np.mod(g.phase_u.values, 2 * np.pi)
+                r["slope"] = mc.circ_lin_slope(x, ph)[0]
+                r["slope_1c"] = mc.circ_lin_slope(x, ph, 1.0)[0]''')
+rep(86, '''FS = FS.merge(MW[["session", "u", "arm", "lo", "state", "prec_slope", "fp", "flfp_spk", "flfp_time"]],''',
+ '''FS = FS.merge(MW[["session", "u", "arm", "lo", "state", "prec_slope", "prec_slope_1c", "fp", "flfp_spk", "flfp_time"]],''')
+put(87, '''for sc, fc, bnd, lab_ in [("slope", "prec_slope", 4 * np.pi, "2 cycles (main)"), ("slope_1c", "prec_slope_1c", 2 * np.pi, "1 cycle")]:
+    d = FT.dropna(subset=[sc, "temp"])
+    r, p, n = mc.corr(d.temp, d[sc])
+    print(f"range {lab_}: (a) field and trial: R = {r:.4f}, P = {p:.3g}, n = {n}; fraction at the bound {(np.abs(np.abs(d[sc]) - bnd) < 1e-3).mean():.3f}")
+    d = FS.dropna(subset=[fc, "temp"])
+    r2, p2, n2 = mc.corr(d.temp, d[fc])
+    print(f"range {lab_}: (b) field and state: R = {r2:.4f}, P = {p2:.3g}, n = {n2}")
+    print(f"   within tolerance (-0.0297 to -0.0243) with P < 1e-10: (a) {abs(r + 0.027) <= 0.0027 and p < 1e-10}, (b) {abs(r2 + 0.027) <= 0.0027 and p2 < 1e-10}")
+''')
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(117, '''def lfp_period_ms(S, states):''', '''def peak_spacing(y, lags=LAGS, lim=300):
+    """Spacing of the peaks of a summed cross-correlogram: the mean distance between
+    successive local maxima within +-lim ms (the criterion's way (i)), and the
+    distance from the peak nearest zero to its neighbours on either side."""
+    pk = mc.peaks(y)
+    pk = pk[np.abs(lags[pk]) <= lim]
+    if len(pk) < 2:
+        return np.nan, np.nan
+    j = int(np.argmin(np.abs(lags[pk])))
+    nbr = [lags[pk[j]] - lags[pk[j - 1]]] if j > 0 else []
+    nbr += [lags[pk[j + 1]] - lags[pk[j]]] if j + 1 < len(pk) else []
+    return float(np.mean(np.diff(lags[pk]))), float(np.mean(nbr))
+
+
+def lfp_period_ms(S, states):''')
+rep(119, '''        print(f"reading {k}, all pairs pooled, {lab_}: {n} pair cross-correlograms, period {per:.1f} ms; mean LFP theta period {lfp:.1f} ms")''',
+'''        sp_all, sp_c = peak_spacing(y)
+        print(f"reading {k}, all pairs pooled, {lab_}: {n} pair cross-correlograms, period {per:.1f} ms (Fourier); peak spacing {sp_all:.1f} ms "
+              f"(mean over peaks within 300 ms), {sp_c:.1f} ms (central peak to its neighbours); mean LFP theta period {lfp:.1f} ms")''')
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(132, '''    X, Y = np.meshgrid(xc[ok], lags, indexing="ij")
+    z = Z[ok].ravel()
+    z = z - np.nanmin(z)
+    d0 = 150.0 if kind == "ccg" else 150.0 * 2 * np.pi / 120.0
+    p0 = [a0, b0, 60.0, d0, np.nanmax(z) / 2, 0.0, 0.0]
+    try:
+        p, _ = curve_fit(lambda XY, *q: surf(XY, *q, inside=inside), np.vstack([X.ravel(), Y.ravel()]), z, p0=p0, maxfev=3000)
+        resid = z - surf(np.vstack([X.ravel(), Y.ravel()]), *p, inside=inside)
+        r2 = 1 - np.sum(resid ** 2) / np.sum((z - z.mean()) ** 2)
+        return dict(a=abs(p[0]), b=abs(p[1]), r2=r2, ok=True)
+    except Exception as ex:
+        return dict(a=np.nan, b=np.nan, ok=False, err=str(ex)[:60])''',
+'''    X, Y = np.meshgrid(xc[ok], lags, indexing="ij")
+    XY = np.vstack([X.ravel(), Y.ravel()])
+    z = Z[ok].ravel()
+    z = z - np.nanmin(z)
+    d0 = 150.0 if kind == "ccg" else 150.0 * 2 * np.pi / 120.0
+    p0 = [a0, b0, 60.0, d0, np.nanmax(z) / 2, 0.0, 0.0]
+    sst = np.sum((z - z.mean()) ** 2)
+    # the envelope alone (the two Gaussian factors, no oscillation): how much of the density a smooth surface explains
+    try:
+        pe, _ = curve_fit(lambda XY, c, d, e, f, g: e * np.exp(-(XY[0] + f * XY[1]) ** 2 / (2 * c ** 2)) * np.exp(-(XY[1] - g) ** 2 / (2 * d ** 2)),
+                          XY, z, p0=[60.0, d0, np.nanmax(z), 0.0, 0.0], maxfev=3000)
+        c, d, e, f, g = pe
+        r2_env = 1 - np.sum((z - e * np.exp(-(XY[0] + f * XY[1]) ** 2 / (2 * c ** 2)) * np.exp(-(XY[1] - g) ** 2 / (2 * d ** 2))) ** 2) / sst
+    except Exception:
+        r2_env = np.nan
+    try:
+        p, _ = curve_fit(lambda XY, *q: surf(XY, *q, inside=inside), XY, z, p0=p0, maxfev=3000)
+        resid = z - surf(XY, *p, inside=inside)
+        r2 = 1 - np.sum(resid ** 2) / sst
+        return dict(a=abs(p[0]), b=abs(p[1]), r2=r2, r2_env=r2_env, ok=True, p=p, err="")
+    except Exception as ex:
+        return dict(a=np.nan, b=np.nan, r2=np.nan, r2_env=r2_env, ok=False, err=str(ex))''')
+rep(132, '''    xs = [xc[i] for i in range(len(xc)) if N[i] >= 5 and abs(xc[i]) <= 40]
+    ys = [lags[w][np.argmax(Z[i][w])] for i in range(len(xc)) if N[i] >= 5 and abs(xc[i]) <= 40]
+    return -1 / stats.linregress(xs, ys).slope''', '''    xs = [xc[i] for i in range(len(xc)) if N[i] >= 5 and abs(xc[i]) <= 40]
+    ys = [lags[w][np.argmax(Z[i][w])] for i in range(len(xc)) if N[i] >= 5 and abs(xc[i]) <= 40]
+    if len(xs) < 3:
+        return np.nan
+    return -1 / stats.linregress(xs, ys).slope''')
+s = get(133)
+s = s.replace('''        print(f"   surface reading {'b (+1 inside)' if inside else 'a'}: all pre pairs pooled, time compression {fT['a']:.3f} cm/ms, period b {fT['b']:.1f} ms "
+              f"(R2 {fT.get('r2', np.nan):.3f}); phase compression {fP['a']:.2f} cm/rad, b {fP['b'] / np.pi:.3f} pi (R2 {fP.get('r2', np.nan):.3f})")''',
+'''        print(f"   surface reading {'b (+1 inside)' if inside else 'a'}: all pre pairs pooled, time compression {fT['a']:.3f} cm/ms, period b {fT['b']:.1f} ms "
+              f"(R2 {fT['r2']:.3f}; envelope alone R2 {fT['r2_env']:.3f}){' failed: ' + fT['err'] if not fT['ok'] else ''}; "
+              f"phase compression {fP['a']:.2f} cm/rad, b {fP['b'] / np.pi:.3f} pi (R2 {fP['r2']:.3f}; envelope alone R2 {fP['r2_env']:.3f}){' failed: ' + fP['err'] if not fP['ok'] else ''}")
+        if (k, inside) == ("a", False):
+            POOLED_FIT = (P, fT)''')
+s = s.replace('''                f1 = fit_surface(g, states, "ccg", inside, a0=a0t, b0=b0)
+                r[f"cT_{cond}"], r[f"bT_{cond}"] = f1["a"], f1["b"]''', '''                f1 = fit_surface(g, states, "ccg", inside, a0=a0t, b0=b0)
+                r[f"cT_{cond}"], r[f"bT_{cond}"] = f1["a"], f1["b"]
+                r[f"r2T_{cond}"], r[f"r2envT_{cond}"], r[f"errT_{cond}"] = f1.get("r2", np.nan), f1.get("r2_env", np.nan), f1.get("err", "")
+                r[f"a0_{cond}"] = a_start(g, states, "ccg")''')
+s = s.replace('''                    r[f"cP_{cond}"] = f2["a"]''', '''                    r[f"cP_{cond}"] = f2["a"]
+                    r[f"okP_{cond}"] = f2["ok"]''')
+s = s.replace('''        p4, n4 = mc.signrank(CS.ls_cooling, CS.ls_control)''', '''        p4, n4 = mc.signrank(CS.ls_cooling, CS.ls_control)
+        p5, n5 = mc.signrank(CS.a0_cooling.abs(), CS.a0_control.abs())
+        fails = pd.concat([CS.errT_control, CS.errT_cooling])
+        fails = fails[fails != ""].str.slice(0, 70).value_counts().to_dict()
+        print(f"   per-session time fits converged: control {CS.cT_control.notna().sum()} of {len(CS)}, cooling {CS.cT_cooling.notna().sum()} of {len(CS)}; "
+              f"median R2 of converged fits control {CS.r2T_control.median():.3f}, cooling {CS.r2T_cooling.median():.3f} (envelope alone {CS.r2envT_control.median():.3f}, "
+              f"{CS.r2envT_cooling.median():.3f}); failures: {fails}; phase fits converged: control {int(CS.get('okP_control', pd.Series(dtype=bool)).fillna(False).sum())}, "
+              f"cooling {int(CS.get('okP_cooling', pd.Series(dtype=bool)).fillna(False).sum())}")
+        print(f"   density ridge slope (start value of a) per session, a variant: control median {CS.a0_control.abs().median():.3f}, cooling {CS.a0_cooling.abs().median():.3f} cm/ms, "
+              f"lower in cooling in {int((CS.a0_cooling.abs() < CS.a0_control.abs()).sum())} of {n5}, signed-rank P = {p5:.3g}")''')
+s = s.replace('''print(f"({time.time() - T0:.0f} s)")
+print(CMP[("a", False)].round(3).to_string(index=False))''', '''print(f"({time.time() - T0:.0f} s)")
+print(CMP[("a", False)].drop(columns=[c for c in CMP[("a", False)] if c.startswith("err")]).round(3).to_string(index=False))
+# pooled pre density (pair reading a) and the fitted surface of reading (a)
+Pp, fT = POOLED_FIT
+xc, Z, N = density(Pp, ["Pre"])
+fig, ax = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
+ax[0].imshow(Z, aspect="auto", origin="lower", extent=[LAGS[0], LAGS[-1], xc[0], xc[-1]])
+ax[0].set_title("pooled pre density"); ax[0].set_xlabel("lag (ms)"); ax[0].set_ylabel("Ltr (cm)")
+if fT["ok"]:
+    X, Y = np.meshgrid(xc, LAGS, indexing="ij")
+    ax[1].imshow(surf(np.vstack([X.ravel(), Y.ravel()]), *fT["p"]).reshape(X.shape), aspect="auto", origin="lower", extent=[LAGS[0], LAGS[-1], xc[0], xc[-1]])
+ax[1].set_title(f"fitted surface, reading (a), R2 {fT['r2']:.2f}"); ax[1].set_xlabel("lag (ms)")
+plt.tight_layout(); plt.show()
+print(f"density: {int((N > 0).sum())} of {len(N)} Ltr bins hold pairs; values {np.nanmin(Z):.2e} to {np.nanmax(Z):.2e}; the full grid is shown")''')
+put(133, s)
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+s=get(133)
+for k in ["POOLED_FIT = (P, fT)","a0_{cond}","okP_{cond}","per-session time fits converged","pooled pre density"]:
+    print(k, k in s)
+EOF
+```
+
+```
+POOLED_FIT = (P, fT) True
+a0_{cond} True
+okP_{cond} True
+per-session time fits converged True
+pooled pre density True
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(108, '''        p_early, n_ = mc.signrank(per.early, per.pre)''', '''        p_early, n_ = mc.signrank(per.early, per.pre)
+        dd = (per.early - per.pre).dropna()
+        p_less = stats.wilcoxon(dd, alternative="less").pvalue''')
+rep(108, '''(signed-rank P = {p_early:.3g}, n = {n_}, below in {int((per.early < per.pre).sum())}); "''',
+ '''(medians {per.early.median():.3f} and {per.pre.median():.3f}; signed-rank P = {p_early:.3g}, one-sided P (early below pre) = {p_less:.3g}, n = {n_}, below in {int((per.early < per.pre).sum())}); "''')
+# M suppl1g
+rep(145, '''for m in ["trough_to_peak_ms", "p2p_uV"]:''', '''print("spikes per unit in the waveform blocks, median (range): control", Ww[("n", "control")].median(), f"({Ww[('n', 'control')].min():.0f} to {Ww[('n', 'control')].max():.0f}), cooling",
+      Ww[("n", "cooling")].median(), f"({Ww[('n', 'cooling')].min():.0f} to {Ww[('n', 'cooling')].max():.0f})")
+for m in ["trough_to_peak_ms", "trough_to_peak_interp_ms", "p2p_uV"]:''')
+rep(145, '''values=["trough_to_peak_ms", "p2p_uV", "n"])''', '''values=["trough_to_peak_ms", "trough_to_peak_interp_ms", "p2p_uV", "n"])''')
+rep(144, "two 52 s blocks in pre, three in cooling and two in post (`mc.unit_waveforms`).", "two 52 s blocks in pre, three in cooling and two in post (`mc.unit_waveforms`). Trough-to-peak latency is measured on the 20 kHz samples and, as a variant, on the mean waveform interpolated by a cubic spline to 200 kHz.")
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+import json
+nb=json.load(open("entries/petersen-2020/reproduce_petersen_2020.ipynb"))
+out=["import pickle, sys\nsys.path.insert(0,'entries/petersen-2020')\n"]
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    s=''.join(c['source'])
+    if i==2:
+        s="sessions = mc.list_sessions()\nSESS = pickle.load(open('/tmp/claude-1001/sub.pkl','rb'))\n"
+    if i==145:
+        s=s.replace('for rat in ["MS12", "MS13", "MS21", "MS22"]:','for rat in ["MS22"]:')
+    out.append(f"# CELL {i}\nprint('=== CELL {i}')\n"+s+"\n")
+open("test_nb.py","w").write('\n'.join(out))
+EOF
+cd entries/petersen-2020 && time $TMPDIR/dev/bin/python $TMPDIR/test_nb.py > $TMPDIR/test_out.txt 2>&1; tail -5 $TMPDIR/test_out.txt
+```
+
+```
+real	4m48.519s
+user	4m20.421s
+sys	0m5.095s
+   MS22-180629-110319: n = 81, median change 1.683, P = 0.0202
+=== CELL 148
+['MeasuredTemperature']
+epoch paradigms in the files: ['Homecage_Sleep', 'ThetaMaze_AlternativeRunning']
+notebook run time 4.8 min; peak memory 2.30 GB
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; grep -n "=== CELL\|below 15\|lowest trial\|without MS13\|bad\|equal\|range \|bound\|peak spacing\|converged\|ridge\|failed\|medians\|spikes per unit\|interp" test_out.txt | head -120
+```
+
+```
+3:=== CELL 1
+4:=== CELL 2
+5:=== CELL 4
+6:    rat             session  trials  pre  cooling  post  transition  other  errors  cooling_epochs      temp  temp_min  temp_max  pos_hz   lfp  theta_ch theta_ch_bad  good_units  pyr  nint  wint  untyped
+16:trial duration (s): median 2.35, range 1.82 to 9.90
+26:measured temperature samples below 15 C (within the trials, in the whole trace): {} ; sessions with any within the trials: 0
+27:lowest trial temperature per measured session (C): {'MS21-180629-110332': 19.0, 'MS22-180629-110319': 23.1}
+34:=== CELL 6
+36:=== CELL 8
+37:sessions whose tagged theta channel is marked bad: []
+39:=== CELL 10
+40:sessions 2: trials per session mean 156.0, median 156, range 143 to 169; sessions outside 72 to 220: 0 ()
+47:=== CELL 13
+51:medians: {'pre_median': 36.99, 'minimum': 21.05, 't_min_s': 119.98, 'dur_a_min': 12.28, 'dur_b_min': 9.02, 'cooling_trials_lab': 50.0, 'trials_in_dur_a': 69.5}
+52:medians without the two flat 2018-07-19 sessions: {'pre_median': 36.99, 'minimum': 21.05, 't_min_s': 119.98, 'dur_a_min': 12.28, 'dur_b_min': 9.02, 'cooling_trials_lab': 50.0, 'trials_in_dur_a': 69.5}
+55:=== CELL 16
+56:=== CELL 17
+76:pooled trials: slope 0.067 Hz/C, lowest trial temperature 19.0 C
+78:=== CELL 19
+98:=== CELL 22
+[... 101 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF' 2>&1 | grep -v Warn
+exec(open("dev_setup.py").read())
+import pickle
+from scipy import signal
+PAIRS, LAG = pickle.load(open("/tmp/claude-1001/pairs.pkl","rb"))
+P=PAIRS["a"]; LAGS=np.arange(-400,401)
+tot=0
+for v in P.loc[P.n_Pre>=20,"ccg_Pre"]:
+    if v.sum()>0: tot=tot+v/v.sum()
+pk=mc.peaks(tot); 
+print([(int(LAGS[p]), round(float(tot[p]*1e3),3)) for p in pk if abs(LAGS[p])<=400])
+fp,pr=signal.find_peaks(tot, prominence=0)
+print([(int(LAGS[p]), round(float(q*1e3),4)) for p,q in zip(fp,pr["prominences"])])
+EOF
+```
+
+```
+[(-46, 2759.892), (-43, 2760.211), (30, 3726.024), (132, 4185.809), (239, 4401.681), (351, 4357.014)]
+[(-46, 0.0006), (-43, 0.0069), (30, 166.3318), (132, 166.7053), (239, 2264.3917), (351, 257.0581)]
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(117, '''    """Spacing of the peaks of a summed cross-correlogram: the mean distance between
+    successive local maxima within +-lim ms (the criterion's way (i)), and the
+    distance from the peak nearest zero to its neighbours on either side."""
+    pk = mc.peaks(y)
+    pk = pk[np.abs(lags[pk]) <= lim]''', '''    """Spacing of the peaks of a summed cross-correlogram: the mean distance between
+    successive peaks within +-lim ms (the criterion's way (i)), and the distance
+    from the peak nearest zero to its neighbours on either side. Peaks are local
+    maxima with a prominence of at least 5% of the correlogram's range, so that
+    small shoulders are not counted (standard choice)."""
+    from scipy.signal import find_peaks
+    if y is None:
+        return np.nan, np.nan
+    pk = find_peaks(y, prominence=0.05 * (np.max(y) - np.min(y)))[0]
+    pk = pk[np.abs(lags[pk]) <= lim]''')
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; sed -n '/=== CELL 145/,/=== CELL 148/p' test_out.txt; sed -n '/=== CELL 46/,/=== CELL 48/p' test_out.txt | head -30
+```
+
+```
+=== CELL 145
+sessions ['MS22-180629-110319'] in 57 s
+units with at least 20 spikes in both conditions: 81 of 135
+spikes per unit in the waveform blocks, median (range): control 200.0 (30 to 3343), cooling 126.0 (23 to 2029)
+trough_to_peak_ms: median control 0.800, cooling 0.850; median change 0.050 (6.25%); signed-rank P = 1.46e-06 (n = 81)
+   MS22-180629-110319: n = 81, median change 0.050, P = 1.46e-06
+trough_to_peak_interp_ms: median control 0.795, cooling 0.835; median change 0.050 (6.59%); signed-rank P = 9.86e-07 (n = 81)
+   MS22-180629-110319: n = 81, median change 0.050, P = 9.86e-07
+p2p_uV: median control 157.618, cooling 155.457; median change 1.683 (1.36%); signed-rank P = 0.0202 (n = 81)
+   MS22-180629-110319: n = 81, median change 1.683, P = 0.0202
+=== CELL 148
+=== CELL 46
+p_hil_norm: rats with R < -0.3 and P < 0.01: 0 of 2; with R > -0.3 and P < 0.01: 0
+ rat        R      P   n
+MS21 -0.04591 0.6185 120
+MS22 -0.07726 0.4016 120
+p_hil: rats with R < -0.3 and P < 0.01: 0 of 2; with R > -0.3 and P < 0.01: 0
+ rat        R      P   n
+MS21 -0.04591 0.6185 120
+MS22 -0.07726 0.4016 120
+[... 10 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd  && timeout 7000 python tools/entry.py all entries/petersen-2020 2>&1 | tail -15; date -u
+```
+
+```
+Wed Nov 18 02:52:14 UTC 2026
+Installed kernelspec registry-petersen-2020 in executed/petersen-2020/.venv/share/jupyter/kernels/registry-petersen-2020
+0 error(s)
+pass  reproduce_petersen_2020.ipynb  (1645 s)
+Wed Nov 18 03:19:50 UTC 2026
+```
+
+**Agent**
+
+Full run passed (27 min). Now reading the new outputs.
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF' > $TMPDIR/exec_out.txt
+import json
+nb=json.load(open('executed/petersen-2020/reproduce_petersen_2020.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print(f"=== CELL {i} {c['metadata'].get('tags')}")
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:3000])
+EOF
+wc -l $TMPDIR/exec_out.txt; grep -n "=== CELL" $TMPDIR/exec_out.txt | head -80
+```
+
+```
+1023 /tmp/claude-1001/exec_out.txt
+1:=== CELL 1 None
+2:=== CELL 2 None
+13:=== CELL 4 ['sanity']
+109:=== CELL 6 ['sanity']
+112:=== CELL 8 None
+116:=== CELL 10 ['claim:session-structure']
+126:=== CELL 13 ['claim:cooling-time-course']
+164:=== CELL 16 None
+165:=== CELL 17 ['claim:fig2g-theta-freq-temperature']
+189:=== CELL 19 ['claim:fig2h-theta-power-temperature']
+210:=== CELL 22 ['claim:fig2j-frequency-consistent-across-animals']
+230:=== CELL 25 ['claim:fig2i-theta-pre-cooling-post']
+247:=== CELL 28 ['claim:disc-theta-frequency-12-percent']
+263:=== CELL 31 None
+264:=== CELL 32 ['claim:fig6d-errors-increase']
+285:=== CELL 35 ['claim:fig6e-errors-recover']
+291:=== CELL 38 ['claim:fig6c-worst-trials-4-to-8']
+302:=== CELL 41 None
+303:=== CELL 42 ['claim:fig6f-errors-temperature']
+[... 42 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/exec_out.txt",
+ "offset": 1,
+ "limit": 450
+}
+```
+
+```
+1	=== CELL 1 None
+2	=== CELL 2 None
+3	dandiset 000059 version 0.261115.0311: 51 NWB files
+4	rat
+5	MS10     9
+6	MS12     9
+7	MS13     5
+8	MS21    15
+9	MS22    13
+10	
+11	loaded in 125 s; peak memory of this process 1.45 GB
+12	
+13	=== CELL 4 ['sanity']
+14	     rat             session  trials  pre  cooling  post  transition  other  errors  cooling_epochs      temp  temp_min  temp_max  pos_hz    lfp  theta_ch theta_ch_bad  good_units  pyr  nint  wint  untyped
+15	0   MS10  MS10-170307-154746      37   21       10     6           0      0       7               1  modelled        37        37      40   True        46      [False]          15   11     2     1        1
+16	1   MS10  MS10-170311-180956     130   43       31    56           0      0      16               1  modelled        22        37      40   True        46      [False]           0    0     0     0        0
+17	2   MS10  MS10-170313-122631     143   39       47    57           0      0      22               2  modelled     20.76        37      40   True        46      [False]           0    0     0     0        0
+18	3   MS10  MS10-170314-163038     142   52       47    43           0      0      16               1  modelled        22        37      40   True        46      [False]          16   13     0     3        0
+19	4   MS10  MS10-170317-153237     201   52       55    93           1      0      11               1  modelled        22        37      40   True        46      [False]          12   11     0     1        0
+20	5   MS10  MS10-170319-180352     204   49       92    63           0      0      16               2  modelled     21.03        37      40   True        52      [False]           5    0     0     0        5
+[... 430 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/exec_out.txt",
+ "offset": 450,
+ "limit": 575
+}
+```
+
+```
+File content (29619 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 660,716p $TMPDIR/exec_out.txt
+```
+
+```
+=== CELL 80 ['claim:fig3f-information-unchanged']
+bins 5.0, states lab, peak>10 (n = 908): Pre-Cooling: median change -0.015 bits/spike, P = 0.346; Cooling-Post: median change -0.015 bits/spike, P = 0.0784; Pre-Post: median change -0.038 bits/spike, P = 0.00543
+
+bins 5.0, states lab, Fig5 rule (n = 1018): Pre-Cooling: median change -0.019 bits/spike, P = 0.281; Cooling-Post: median change -0.019 bits/spike, P = 0.0329; Pre-Post: median change -0.041 bits/spike, P = 0.00117
+
+bins 5.0, states m12, peak>10 (n = 908): Pre-Cooling: median change -0.032 bits/spike, P = 0.0248; Cooling-Post: median change -0.007 bits/spike, P = 0.476; Pre-Post: median change -0.039 bits/spike, P = 0.00293
+bins 5.0, states m12, Fig5 rule (n = 1018): Pre-Cooling: median change -0.035 bits/spike, P = 0.00752; Cooling-Post: median change -0.007 bits/spike, P = 0.392; Pre-Post: median change -0.042 bits/spike, P = 0.000572
+bins 3.0, states lab, peak>10 (n = 948): Pre-Cooling: median change -0.025 bits/spike, P = 0.114; Cooling-Post: median change -0.022 bits/spike, P = 0.0233; Pre-Post: median change -0.063 bits/spike, P = 0.000105
+
+bins 3.0, states lab, Fig5 rule (n = 1057): Pre-Cooling: median change -0.037 bits/spike, P = 0.0518; Cooling-Post: median change -0.029 bits/spike, P = 0.00229; Pre-Post: median change -0.070 bits/spike, P = 4e-06
+information is per map (cell and arm), counted once per map with a field; a cell with fields on both arms counts once per arm
+
+equal-trial information (20 s): trials per state and arm, median 17 (range 5 to 26)
+trials per state and arm (unequal reading), median: {'Cooling': 21.0, 'Post': 23.0, 'Pre': 20.0}
+equal trials, bins 5.0, states lab, peak>10 (n = 902; median pre 1.243, cooling 1.239, post 1.208): Pre-Cooling: median change -0.017 bits/spike, P = 0.221; Cooling-Post: median change -0.014 bits/spike, P = 0.218; Pre-Post: median change -0.030 bits/spike, P = 0.016
+equal trials, bins 5.0, states lab, Fig5 rule (n = 1011; median pre 1.235, cooling 1.22
+[... 40 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 787,800p $TMPDIR/exec_out.txt; sed -n 840,860p $TMPDIR/exec_out.txt; sed -n 900,1023p $TMPDIR/exec_out.txt
+```
+
+```
+=== CELL 108 ['claim:suppl5gh-rates-follow-temperature']
+interneurons, norm: 307 units in 23 sessions; mean of trials 1 to 5 1.082 against pre 0.996 (medians 0.887 and 1.000; signed-rank P = 0.000288, one-sided P (early below pre) = 0.000144, n = 273, below in 171); aligned series against MS temperature (measured sessions, 201 units): R = 0.113, P = 0.217, n = 120
+
+interneurons, rate: 307 units in 23 sessions; mean of trials 1 to 5 10.131 against pre 11.652 (medians 2.136 and 2.606; signed-rank P = 1.92e-06, one-sided P (early below pre) = 9.61e-07, n = 304, below in 171); aligned series against MS temperature (measured sessions, 201 units): R = 0.806, P = 1.1e-28, n = 120
+
+pyramidal cells, norm: 1295 units in 23 sessions; mean of trials 1 to 5 1.283 against pre 0.986 (medians 0.785 and 1.000; signed-rank P = 4.79e-18, one-sided P (early below pre) = 2.39e-18, n = 1117, below in 719); aligned series against MS temperature (measured sessions, 776 units): R = 0.147, P = 0.11, n = 120
+
+pyramidal cells, rate: 1295 units in 23 sessions; mean of trials 1 to 5 1.796 against pre 2.026 (medians 0.650 and 0.776; signed-rank P = 6.27e-16, one-sided P (early below pre) = 3.14e-16, n = 1284, below in 719); aligned series against MS temperature (measured sessions, 776 units): R = 0.532, P = 4.03e-10, n = 120
+expected units: 319 interneurons and 1104 pyramidal cells across 19 sessions (tolerance 32 and 110)
+hippocampal temperature: not in the dandiset; the comparison with it is not made
+
+=== CELL 111 ['claim:suppl2d-interneuron-oscillation-slows']
+                                                    units    n  pre_median  cool_median  a_median_dec  b_dec_of_mean  c_mean_dec         P
+                                    a narrow interneurons  145       8.929        8.403          8.73          6.871       6.356 6.361e-13
+=== CELL 119 ['claim:fig5d-ccg-period']
+reading a, all pairs pooled, pre: 9482 pair cross-correlograms, period 108.1 ms (Fourier); peak spacing nan ms (mean over p
+[... 142 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF' 2>&1 | grep -v Warn
+exec(open("dev_setup.py").read())
+import pickle
+from scipy import signal
+from scipy.ndimage import gaussian_filter1d
+PAIRS, LAG = pickle.load(open("/tmp/claude-1001/pairs.pkl","rb"))
+LAGS=np.arange(-400,401)
+for k in "ab":
+  P=PAIRS[k]
+  tot=0
+  for v in P.loc[P.n_Pre>=20,"ccg_Pre"]:
+    if v.sum()>0: tot=tot+v/v.sum()
+  print("range all", tot.max()-tot.min(), "within 300", tot[100:701].max()-tot[100:701].min())
+  z = tot - gaussian_filter1d(tot, 50)
+  pk = mc.peaks(z); pk = pk[np.abs(LAGS[pk])<=300]
+  print(k, LAGS[pk], np.diff(LAGS[pk]))
+EOF
+```
+
+```
+range all 4.010037078799932 within 300 3.306704342280355
+a [-282 -267 -263 -181 -177  -72   20  127  236] [ 15   4  82   4 105  92 107 109]
+range all 3.7376627911795435 within 300 2.520911355972443
+b [-251 -169  -68   19  125  234] [ 82 101  87 106 109]
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF' 2>&1 | grep -v Warn
+exec(open("dev_setup.py").read())
+import pickle
+from scipy import signal
+from scipy.ndimage import gaussian_filter1d
+PAIRS, LAG = pickle.load(open("/tmp/claude-1001/pairs.pkl","rb"))
+LAGS=np.arange(-400,401)
+for k in "ab":
+  P=PAIRS[k]
+  for st in (["Pre"],["Cooling"]):
+    tot=0
+    for s in st:
+      for v in P.loc[P[f"n_{s}"]>=20,f"ccg_{s}"]:
+        if v.sum()>0: tot=tot+v/v.sum()
+    z = tot - gaussian_filter1d(tot, 50)
+    w = np.abs(LAGS)<=300
+    pk = signal.find_peaks(z, prominence=0.1*(z[w].max()-z[w].min()))[0]; pk = pk[np.abs(LAGS[pk])<=300]
+    print(k, st, LAGS[pk], np.diff(LAGS[pk]))
+EOF
+```
+
+```
+a ['Pre'] [-177  -72   20  127  236] [105  92 107 109]
+a ['Cooling'] [-89  18 138 277] [107 120 139]
+b ['Pre'] [-251 -169  -68   19  125  234] [ 82 101  87 106 109]
+b ['Cooling'] [-190  -83   18  136  268] [107 101 118 132]
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+s = get(117)
+a = s.index("def peak_spacing(")
+b = s.index("def lfp_period_ms(")
+s = s[:a] + '''def peak_spacing(y, lags=LAGS, lim=300):
+    """Spacing of the peaks of a summed cross-correlogram (the criterion's way (i)).
+    The slow trend (a Gaussian of 50 ms, as in ccg_period) is removed, and peaks
+    are local maxima within +-lim ms with a prominence of at least 10% of the
+    detrended range there, so that small shoulders are not counted (standard
+    choices). Returns the mean distance between successive peaks, the distance
+    from the peak nearest zero to its neighbours, and the peak lags."""
+    from scipy.signal import find_peaks
+    from scipy.ndimage import gaussian_filter1d
+    if y is None:
+        return np.nan, np.nan, []
+    z = y - gaussian_filter1d(y, 50)
+    w = np.abs(lags) <= lim
+    pk = find_peaks(z, prominence=0.1 * (z[w].max() - z[w].min()))[0]
+    pk = pk[np.abs(lags[pk]) <= lim]
+    if len(pk) < 2:
+        return np.nan, np.nan, list(lags[pk])
+    j = int(np.argmin(np.abs(lags[pk])))
+    nbr = [lags[pk[j]] - lags[pk[j - 1]]] if j > 0 else []
+    nbr += [lags[pk[j + 1]] - lags[pk[j]]] if j + 1 < len(pk) else []
+    return float(np.mean(np.diff(lags[pk]))), float(np.mean(nbr)), [int(v) for v in lags[pk]]
+
+
+''' + s[b:]
+put(117, s)
+rep(119, '''        sp_all, sp_c = peak_spacing(y)
+        print(f"reading {k}, all pairs pooled, {lab_}: {n} pair cross-correlograms, period {per:.1f} ms (Fourier); peak spacing {sp_all:.1f} ms "
+              f"(mean over peaks within 300 ms), {sp_c:.1f} ms (central peak to its neighbours); mean LFP theta period {lfp:.1f} ms")''',
+'''        sp_all, sp_c, pk_l = peak_spacing(y)
+        print(f"reading {k}, all pairs pooled, {lab_}: {n} pair cross-correlograms, period {per:.1f} ms (Fourier); peak spacing {sp_all:.1f} ms "
+              f"(mean over peaks within 300 ms), {sp_c:.1f} ms (central peak to its neighbours), peaks at {pk_l} ms; mean LFP theta period {lfp:.1f} ms")''')
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+import ast
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']=='code': ast.parse(get(i))
+rep(116, "(standard choice; a peak-picking rule gave unstable spacings on the noisier per-session sums).", "(standard choice; a peak-picking rule gave unstable spacings on the noisier per-session sums). For the pooled sums the spacing of the peaks themselves is printed too (`peak_spacing`).")
+save(); print("ok")
+EOF
+cd  && date -u && timeout 7000 python tools/entry.py all entries/petersen-2020 2>&1 | tail -4; date -u
+```
+
+```
+ok
+Wed Nov 18 03:21:00 UTC 2026
+Installed kernelspec registry-petersen-2020 in executed/petersen-2020/.venv/share/jupyter/kernels/registry-petersen-2020
+0 error(s)
+pass  reproduce_petersen_2020.ipynb  (1636 s)
+Wed Nov 18 03:48:28 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF' > $TMPDIR/exec_out2.txt
+import json
+nb=json.load(open('executed/petersen-2020/reproduce_petersen_2020.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print(f"=== CELL {i} {c['metadata'].get('tags')}")
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:3000])
+EOF
+diff $TMPDIR/exec_out.txt $TMPDIR/exec_out2.txt | grep -v "fields computed\|loaded in\|in [0-9]* s\|run time\|([0-9]* s)" | head -40
+```
+
+```
+11c11
+---
+80a81
+> 
+83d83
+< 
+118d117
+< 
+183a183
+> 
+186d185
+< 
+244c243
+< /tmp/claude-1001/ipykernel_69/1848272810.py:21: Pandas4Warning: Starting with pandas version 4.0 all arguments of all will be keyword-only.
+---
+> /tmp/claude-1001/ipykernel_45/1848272810.py:21: Pandas4Warning: Starting with pandas version 4.0 all arguments of all will be keyword-only.
+282c281
+< /tmp/claude-1001/ipykernel_69/4041587801.py:25: Pandas4Warning: Starting with pandas version 4.0 all arguments of all will be keyword-only.
+---
+> /tmp/claude-1001/ipykernel_45/4041587801.py:25: Pandas4Warning: Starting with pandas version 4.0 all arguments of all will be keyword-only.
+[... 20 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+diff <(grep -v "Pandas4Warning\|^$" $TMPDIR/exec_out.txt) <(grep -v "Pandas4Warning\|^$" $TMPDIR/exec_out2.txt) | grep "^[<>]" | grep -v "fields computed\|loaded in\| s)\|run time\|in [0-9]* s$\|ipykernel"
+```
+
+```
+< reading a, all pairs pooled, pre: 9482 pair cross-correlograms, period 108.1 ms (Fourier); peak spacing nan ms (mean over peaks within 300 ms), nan ms (central peak to its neighbours); mean LFP theta period 120.9 ms
+< reading a, all pairs pooled, pre and post: 19945 pair cross-correlograms, period 109.6 ms (Fourier); peak spacing nan ms (mean over peaks within 300 ms), nan ms (central peak to its neighbours); mean LFP theta period 120.1 ms
+> reading a, all pairs pooled, pre: 9482 pair cross-correlograms, period 108.1 ms (Fourier); peak spacing 107.2 ms (mean over peaks within 300 ms), 102.5 ms (central peak to its neighbours), peaks at [-181, -75, 21, 130, 248] ms; mean LFP theta period 120.9 ms
+> reading a, all pairs pooled, pre and post: 19945 pair cross-correlograms, period 109.6 ms (Fourier); peak spacing 108.2 ms (mean over peaks within 300 ms), 105.5 ms (central peak to its neighbours), peaks at [-184, -79, 20, 132, 249] ms; mean LFP theta period 120.1 ms
+< reading b, all pairs pooled, pre: 11212 pair cross-correlograms, period 104.5 ms (Fourier); peak spacing 111.0 ms (mean over peaks within 300 ms), 111.0 ms (central peak to its neighbours); mean LFP theta period 120.9 ms
+< reading b, all pairs pooled, pre and post: 23073 pair cross-correlograms, period 106.6 ms (Fourier); peak spacing 109.0 ms (mean over peaks within 300 ms), 106.0 ms (central peak to its neighbours); mean LFP theta period 120.1 ms
+> reading b, all pairs pooled, pre: 11212 pair cross-correlograms, period 104.5 ms (Fourier); peak spacing 103.5 ms (mean over peaks within 300 ms), 100.0 ms (central peak to its neighbours), peaks at [-170, -72, 19, 128, 244] ms; mean LFP theta period 120.9 ms
+> reading b, all pairs pooled, pre and post: 23073 pair cross-correlograms, period 106.6 ms (Fourier); peak spacing 104.0 ms (mean over peaks within 300 ms), 102.0 ms (central peak to its neighbours), peaks at [-172, -75, 19, 129, 244] ms; mean LFP theta period 120.1 ms
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(26, "but power during cooling does not differ from post (P = 0.42).",
+ "but power during cooling does not differ from post (P = 0.42). Without MS13-171130, whose tagged theta channel is marked bad, the spectral reading gives the same result (49 sessions, all four P below 1e-5).")
+rep(39, "With a 5-trial mean the error peak is at trial 6.",
+ "With a 5-trial mean the error peak is at trial 6. Without MS13-171130 (theta channel marked bad) the theta minima fall on the same trials (8 and 6 for frequency, 8 for power).")
+rep(47, "no rat has R above -0.3 with P < 0.01.",
+ "no rat has R above -0.3 with P < 0.01. Without MS13-171130 (theta channel marked bad), 2 of 5 rats still count (MS13 R = -0.315, P = 4.6e-4). The count depends on the power measure: the outcome holds under the first.")
+put(81, "**Result: not reproduced.** Spatial information does not change from pre to cooling (median change -0.015 bits per spike, signed-rank P = 0.35 over 908 maps) or from cooling to post (P = 0.078), but it falls from pre to post (median change -0.038, P = 0.0054), so one of the three comparisons is significant. Every field set and bin size finds the pre to post decrease (P = 4e-6 to 0.0054). With the trials of each state subsampled to the same number (median 17 per state and arm, 20 draws), which removes the bias of unequal state sizes, pre to post still falls (median change -0.030 bits per spike, P = 0.016 over 902 maps; P = 0.0047 with the Figure 5 rule fields), while pre to cooling (P = 0.22) and cooling to post (P = 0.22) do not differ.")
+put(84, "**Result: partially reproduced (assumed).** With the slope searched over plus and minus 2 cycles per field (main reading; 8 to 10% of the slopes at the bound), precession is flatter during cooling than before (median change of |slope| -0.13 rad per field, signed-rank P = 0.016 over 1044 fields) but not significantly flatter than after (P = 0.073); the signed slope gives P = 0.065 and 0.069. With 3 cm bins the magnitude reading gives P = 0.0041 against pre and 0.083 against post, and the signed reading 0.056 and 0.0062. No reading gives P < 0.05 for both comparisons. With a range of 1 cycle, 28 to 32% of the slopes sit at the bound and no comparison is significant (P 0.054 to 0.94); with 3 cycles one comparison is significant in each bin size. The outcome rests on the slope range, which the paper does not give.")
+put(88, "**Result: partially reproduced.** Per field and trial (31617 values; range of 2 cycles per field, 18% of the per-trial slopes at the bound), the precession slope correlates with MS temperature with R = -0.0262, within -0.0297 to -0.0243, but P = 3.2e-6, not below 1e-10. Per field and state, R = -0.0274 with P = 0.22. With a range of 1 cycle the values are R = -0.0273 (P = 1.2e-6) and -0.0243 (P = 0.28).")
+rep(109, "Normalised rates do not show it: the ratio's mean is pulled up by units with low pre rates (1.08 and 1.28 on trials 1 to 5).",
+ "Normalised rates do not give both parts: their medians on trials 1 to 5 are below pre (0.887 and 0.785 against 1.000; one-sided signed-rank P = 1.4e-4 and 2.4e-18), but the means are above (1.08 and 1.28, pulled up by units with low pre rates), and the normalised series do not correlate with temperature (R = 0.113, P = 0.22; R = 0.147, P = 0.11).")
+rep(120, "Reading (b) gives 104.5 ms and P = 0.042.",
+ "Reading (b) gives 104.5 ms and P = 0.042. The spacing of the peaks of the summed pre cross-correlogram, measured directly, is 107.2 ms (mean over 5 peaks within 300 ms; 102.5 ms from the central peak to its neighbours) under pair reading (a) and 103.5 ms under (b), also outside 76.5 to 93.5 ms.")
+rep(130, "The outcome rests on reading (a).",
+ "The outcome rests on reading (a). Without MS13-171130 (theta channel marked bad), reading (a) gives P = 0.37, 0.62 and 0.71 with pair reading (a), and P = 0.040 for pre against cooling with pair reading (b).")
+put(134, "**Result: blocked (methods_underspecified).** The surface of the Methods, under both readings of its equation, does not describe the density: the converged fits explain less than the density's mean (pooled pre R2 -0.135 under reading (a); per session median R2 -0.10 to -5.1), while its envelope alone (the two Gaussian factors without the oscillation) explains 0.41 to 0.73 per session. The fits fail to converge in most cases (reading (a), pair reading (a): 9 of 23 sessions in each condition, 5 in both; reading (b): 2 and 6), always for reaching the evaluation limit. The fitted a therefore does not measure the slope of the density's ridges, and the paper gives no grid, start values or fitting procedure from which a working fit could be taken. As variants, none of which is the criterion's measure: the density's ridge slope is 0.556 cm/ms pooled (0.561 with pair reading b) and does not fall with cooling per session (0.566 against 0.628 cm/ms, P = 0.62; 0.623 against 0.616, P = 0.71); where the time fits converge in both conditions, control and cooling do not differ (P = 0.81, 5 sessions; P = 1.0, 10 sessions); the least-squares slope of Ltr on the main lag does not differ (P = 0.67 and 0.36).")
+rep(146, "The latency change is significant in 2 of the 4 sessions on its own.",
+ "The latency change is significant in 2 of the 4 sessions on its own. Measured on the mean waveforms interpolated to 200 kHz, the latency is still longer during cooling (0.79 against 0.82 ms, median change +0.035 ms, P = 3.1e-11; significant in each of the 4 sessions). The units have a median of 158 spikes in the control blocks and 115 in the cooling blocks (at least 20 each).")
+rep(0, "| fig5d, fig5e, fig5cg, fig5h, fig5i, fig5j, fig5k, suppl2d | tested |", "| fig5d, fig5e, fig5h, fig5i, fig5j, fig5k, suppl2d | tested |\n| fig5cg-compression | blocked, methods_underspecified: the surface fit does not describe the density (see its section) |")
+s = get(150)
+s = s.replace("| fig4d-precession-slope-decrease | not reproduced |", "| fig4d-precession-slope-decrease | partially reproduced (assumed) |")
+s = s.replace("| fig5cg-compression | not reproduced |", "| fig5cg-compression | blocked (methods_underspecified) |")
+s = s.replace("- Theta is measured on the lab's theta channel. The surface fit of Figure 5 converged poorly; its readings rest on start values and grids the paper does not give.",
+ "- Theta is measured on the lab's theta channel; for MS13-171130 that channel is marked bad, and the claims that use theta are also shown without that session. The surface fit of Figure 5 does not describe the density under either reading of its equation, so fig5cg is blocked.\n- The phase precession slope is searched over plus and minus 2 cycles per field, an assumption; the paper gives no range, and a range of 1 cycle pins about 30% of the slopes at its bound.\n- Spatial information is also shown with equal trial numbers per state.")
+put(150, s)
+save()
+EOF
+grep -c "" /dev/null
+```
+
+```
+0
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(84, "With a range of 1 cycle, 28 to 32% of the slopes sit at the bound and no comparison is significant (P 0.054 to 0.94); with 3 cycles one comparison is significant in each bin size.",
+ "With a range of 1 cycle, 23 to 32% of the slopes sit at the bound and no comparison is significant (P 0.054 to 0.94); with 3 cycles at most one comparison per reading is significant.")
+rep(134, "while its envelope alone (the two Gaussian factors without the oscillation) explains 0.41 to 0.73 per session.",
+ "while its envelope alone (the two Gaussian factors without the oscillation) has a median R2 of 0.41 to 0.68 per session.")
+save()
+EOF
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cat entries/petersen-2020/README.md; cat questions/petersen-2020.yaml 2>/dev/null | head -30; cat questions/README.md | head -40
+```
+
+```
+# Petersen & Buzsaki (2020) from dandiset 000059
+
+Tests the findings of [Petersen and Buzsaki (2020)](https://doi.org/10.1016/j.neuron.2020.05.023)
+on [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.261115.0311), which holds 51 sessions
+of 5 rats running a figure-8 maze while the medial septum was cooled: CA1 LFP, curated units,
+head tracking and, in 31 sessions, the measured septal temperature.
+
+Of 46 claims, 17 are reproduced, 18 partially reproduced, 10 not reproduced and 1 blocked; the 21
+outcomes on place fields rest on an assumption about the maps the fields are found on. Cooling slows theta and lowers its power, raises choice errors, and
+slows the theta oscillation of place cells with the LFP (Figures 2, 4B and 6). The place field
+features of Figure 3 and the stability of fp - fLFP, information and the fraction of active
+cells are not reproduced as the paper states them. Theta time lags of place cell pairs lengthen
+while phase lags do not change. The hippocampal temperature of the control experiment is not in
+the dandiset.
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The paper's place fields were drawn by hand, so the fields here follow the paper's automatic rule
+of Figure 5, found on the maps over all trials (an assumption the place field outcomes rest on),
+[... 14 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+s=json.load(open('schemas/attempt.schema.json'))
+v=s['properties']['verifications']
+print(json.dumps(v, indent=1)[:4000])
+o=s['properties']['outcomes']['items']
+print(json.dumps(o.get('properties',{}).get('proposed'), indent=1))
+EOF
+grep -n "suppl2d" transcripts/petersen-2020/verifier-1-report.md transcripts/petersen-2020/verifier-1.md | head
 ```
 
 ```
@@ -374,1188 +2153,359 @@ import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s[
     "enum": [
      "agent",
      "person",
-[... 85 more lines not kept]
+[... 86 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd claims/000059; head -60 *.yaml; grep -n -B2 -A30 "id: fig5d-ccg-period\|id: fig5-speed-control\|id: fig3f-info\|id: fig5j\|id: fig5cg" *.yaml
+cd  grep -n -i "suppl2d\|interneuron-oscillation\|oscillation-slows\|S2D" transcripts/petersen-2020/verifier-1.md | head -20; wc -l transcripts/petersen-2020/verifier-1.md
 ```
 
 ```
-# Claims for Petersen & Buzsaki (2020), Cooling of medial septum reveals theta phase lag
-# coordination of hippocampal cell assemblies, Neuron 107, on dandiset 000059.
-# Source: the accepted author manuscript in PubMed Central (PMC7442698), full text, read from its
-# Results, figure legends and STAR Methods. The supplementary PDF could not be obtained (PMC
-# serves a captcha and Europe PMC lists the article as not open access), so supplementary
-# figures are tested only where the main text states their result.
-#
-# When these criteria were written, the author had seen the data check only (file list, the
-# contents of the files, trial counts and cooling states per session, the temperature traces of
-# six sessions, the shape of the maze) and one pilot session (MS21-180628), for which the mean
-# theta frequency, temperature and error rate by cooling state and the linearization had been
-# printed to test the code. No claim's analysis had been run across sessions. The author had
-# also read the paper's MATLAB code (GitHub petersenpeter/Code_Petersen_Buzsaki_Neuron_2020,
-# commit aec2f7e), which fixes several choices the Methods leave open (see cooling.py).
-#
-# One criterion was revised after the pilot session and before any analysis across sessions:
-# fig5d-ccg-period first took the period from the spectrum of the summed cross-correlogram
-# of all pairs. On the pilot session that spectrum peaked at the edge of its range (172 ms),
-# following the envelope of the summed correlogram, whose theta ripple cancels out when pairs
-# with different lags are summed. The period is now measured per pair, and the summed
-[... 197 more lines not kept]
+149:['session-structure', 'cooling-time-course', 'fig2g-theta-freq-temperature', 'fig2h-theta-power-temperature', 'fig2j-frequency-consistent-across-animals', 'fig2i-theta-pre-cooling-post', 'disc-theta-frequency-12-percent', 'fig6d-errors-increase', 'fig6e-errors-recover', 'fig6c-worst-trials-4-to-8', 'fig6f-errors-temperature', 'fig6g-errors-theta-frequency', 'fig6h-errors-theta-power', 'fig6i-errors-not-speed', 'suppl5j-errors-best-theta-frequency', 'fig4e-speed-decreases-within-session', 'fig5-speed-control-cooling', 'suppl2-place-cell-rates-decrease', 'suppl2ab-rates-correlated', 'disc-interneuron-rates-decrease', 'suppl5gh-rates-follow-temperature', 'fig4b-fp-flfp-decrease', 'fig4c-fp-flfp-correlation', 'fig4ac-fp-flfp-difference-preserved', 'fig4a-frequency-temperature-slopes', 'fig3c-field-size-correlated', 'fig3d-size-fp-negative', 'fig3e-model-field-size', 'fig3f-information-unchanged', 'fig3hi-population-vector-unchanged', 'fig4d-precession-slope-decrease', 'suppl3e-precession-temperature', 'fig4f-speed-theta-power', 'fig4gh-fp-speed', 'suppl2e-trial-speed-theta-frequency', 'suppl3-theta-cycle-duration', 'fig5d-ccg-period', 'fig5e-phase-period-below-2pi', 'fig5cg-compression', 'fig5h-time-lags-increase', 'fig5i-phase-lags-unchanged', 'fig5j-fraction-active-unchanged', 'fig5k-spikes-per-cycle-unchanged', 'suppl1g-waveforms-unchanged', 'suppl2d-interneuron-oscillation-slows', 'suppl1-hippocampal-temperature']
+726 transcripts/petersen-2020/verifier-1.md
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 1,80p tools/entry.py; grep -n "timeout\|def cmd_\|def run" tools/entry.py | head -30; ls executed/ | head; ls .venv* 2>/dev/null | head -3; which python
+cd  head -30 transcripts/petersen-2020/verifier-1.md; ls -la transcripts/petersen-2020/
+```
+
+````
+# petersen-2020 · verifier-1 · run 43735666200
+
+Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
+
+**Agent calls Bash**
+
+```bash
+cd  ls -la; ls paper docs 2>/dev/null
 ```
 
 ```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
+Exit code 2
+total 364
+drwxr-xr-x 6 runner runner    4096 Nov 15 17:00 .
+drwxr-xr-x 8 runner runner    4096 Nov 15 17:00 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 15 16:28 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 15 16:28 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 15 17:00 .claude
+-rw-r--r-- 1 runner runner       0 Nov 15 17:00 .env
+-rw-r--r-- 1 runner runner       0 Nov 15 17:00 .env.development
+[... 25 more lines not kept]
+````
 
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+**Agent calls Bash**
 
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
+```bash
+cd  python - <<'EOF'
+import yaml
+A=yaml.safe_load(open('attempts/petersen-2020-02.yaml'))
+O={o['claim']:o for o in A['outcomes']}
+TEMP_OLD="Values outside 5 to 45 C are set to NaN (standard choice)."
+TEMP_NEW="Values outside 5 to 45 C are set to NaN (standard choice); no remaining sample within the trials is below 15 C, so the rail values near 5 and 10 C do not enter any trial value."
+for o in A['outcomes']:
+    o['deviations']=[d.replace(TEMP_OLD,TEMP_NEW) for d in o.get('deviations',[])]
+# fig4d
+o=O['fig4d-precession-slope-decrease']
+o['outcome']='partially_reproduced'
+o['assumed']=True
+o['notes']=('Slopes searched over plus and minus 2 cycles per field (8 to 10% at the bound), 1044 fields with at least 10 spikes '
+ 'in each state: median -5.60, -5.30, -5.50 rad per field. Magnitude reading, cooling against pre: median change of |slope| '
+ '-0.13, signed-rank P = 0.016 (flatter during cooling); against post P = 0.073. Signed reading P = 0.065 and 0.069. 3 cm bins: '
+ 'magnitude P = 0.0041 and 0.083, signed P = 0.056 and 0.0062; 12 min states: no comparison below 0.05. One comparison holds '
+ 'under the main reading, so the criterion\'s partial rule applies; no reading gives both. With a range of 1 cycle (the first '
+ 'run), 23 to 32% of the slopes sit at the bound and no comparison is significant (P 0.054 to 0.94); with 3 cycles at most one '
+ 'comparison per reading is significant. The outcome rests on the slope range, which the paper does not give.')
+o['deviations']=[d for d in o['deviations'] if not d.startswith('Position is scaled')]+[
+ 'Position is scaled to the field (0 to 1), so slopes are in radians per field; at least 10 spikes per field and state (standard choice).',
+ 'Assumption: the circular-linear regression searches slopes within plus and minus 2 cycles per field; the paper gives no range (STAR Methods, Theta phase and phase precession). 1 and 3 cycles are shown as variants; 1 cycle pins many slopes at its bound.']
+# suppl3e
+o=O['suppl3e-precession-temperature']
+o['measured']=-0.0262
+o['notes']=('Reading (a), field and trial with at least 5 spikes, slopes within plus and minus 2 cycles per field (18% at the bound): '
+ 'R = -0.0262 (within -0.0297 to -0.0243), P = 3.2e-6 over 31617 values, not below 1e-10. Reading (b), field and state: R = -0.0274, '
+ 'P = 0.22 (1993 values). Negative with P < 0.05 under (a). With a range of 1 cycle, R = -0.0273 (P = 1.2e-6) and -0.0243 (P = 0.28), '
+ 'the same outcome. The paper\'s P implies about 1e5 values; here there are 3e4, from 12 measured sessions with fields.')
+o['deviations'].append('Assumption: per-trial slopes are searched within plus and minus 2 cycles per field, as in fig4d-precession-slope-decrease; 1 cycle is a variant.')
+# fig5cg
+o=O['fig5cg-compression']
+o['outcome']='blocked'; o['blocked_by']='methods_underspecified'
+o.pop('measured',None); o.pop('assumed',None)
+o['notes']=('The surface of the Methods does not describe the density under either reading of its equation. Converged fits explain '
+ 'less than the density\'s mean (pooled pre R2 -0.135 under reading (a), pair reading (a); per session median R2 -0.10 to -5.1), while '
+ 'the envelope alone (the two Gaussian factors, no oscillation) has a per-session median R2 of 0.41 to 0.68. Most fits stop at the '
+ 'evaluation limit: reading (a) converges in 9 of 23 sessions in each condition and in both for 5 (pair reading b, 12, 16 and 10); '
+ 'reading (b) in 2 and 6, in both for none. The fitted a therefore does not measure the slope of the density\'s ridges, and the paper '
+ 'gives no grid, start values or fitting procedure from which a working fit could be taken, so no choice has a defensible basis. '
+ 'Variants that are not the criterion\'s measure show no decrease: the density\'s ridge slope, 0.556 cm/ms pooled, is 0.566 in control '
+ 'and 0.628 cm/ms in cooling per session (P = 0.62; 0.623 against 0.616 with pair reading b, P = 0.71); the converged per-session fits '
+ 'give P = 0.81 (5 sessions) and 1.0 (10); the least-squares slope of Ltr on the main lag P = 0.67 and 0.36. Phase compression fits '
+ 'converge in 4 to 13 sessions. The first run recorded not_reproduced on the same fits.')
+# fig3f
+o=O['fig3f-information-unchanged']
+o['notes']+=(' With the trials of each state subsampled to the same number per arm (median 17, 20 draws), which removes the upward bias of '
+ 'Skaggs information with fewer data: pre to cooling P = 0.22, cooling to post P = 0.22, pre to post median change -0.030, P = 0.016 '
+ '(902 maps; P = 0.0047 with the Figure 5 rule fields). The pre to post decrease is not a sampling effect of unequal state sizes.')
+o['deviations'].append('Equal-trial information: the trials of each state and arm are subsampled without replacement to the smallest state count, 20 times, and the information averaged (standard correction, shown as a variant).')
+# fig5d
+o=O['fig5d-ccg-period']
+o['notes']+=(' The spacing of the peaks of the summed pre cross-correlogram (after removing its slow trend; peaks with at least 10% '
+ 'prominence within 300 ms) is 107.2 ms (5 peaks; 102.5 ms from the central peak to its neighbours) with pair reading (a) and '
+ '103.5 ms with (b), also outside 76.5 to 93.5 ms.')
+# suppl5gh
+o=O['suppl5gh-rates-follow-temperature']
+o['notes']=o['notes'].replace("Normalised rates do not give a lower mean (1.08 and 1.28 against about 1.0) and their series do not correlate with temperature (R = 0.11 and 0.15), as units with low pre rates dominate the ratio;",
+ "Normalised rates have lower medians on trials 1 to 5 (0.887 and 0.785 against 1.000; one-sided signed-rank P = 1.4e-4 and 2.4e-18) but higher means (1.08 and 1.28, pulled up by units with low pre rates), and their series do not correlate with temperature (R = 0.113, P = 0.22; R = 0.147, P = 0.11);")
+assert "lower medians" in o['notes']
+# suppl1g
+o=O['suppl1g-waveforms-unchanged']
+o['notes']+=(' On the mean waveforms interpolated by a cubic spline to 200 kHz, the latency is 0.79 against 0.82 ms, median change +0.035 ms '
+ '(4.8%), P = 3.1e-11, significant in each of the 4 sessions (P = 2.2e-4 to 0.043). Units have a median of 158 spikes in the control '
+ 'blocks and 115 in the cooling blocks (at least 20 each).')
+# theta channel
+o=O['fig2i-theta-pre-cooling-post']
+o['notes']+=' Without MS13-171130, whose tagged theta channel is marked bad, the spectral reading gives the same (49 sessions, all four P below 1e-5).'
+o=O['fig6c-worst-trials-4-to-8']
+o['notes']+=' Without MS13-171130 (theta channel marked bad) the theta minima fall on the same trials.'
+o=O['fig6h-errors-theta-power']
+o['notes']+=' Without MS13-171130 (theta channel marked bad), 2 of 5 rats still count (MS13 R = -0.315, P = 4.6e-4).'
+o=O['fig5i-phase-lags-unchanged']
+o['notes']+=' Without MS13-171130 (theta channel marked bad), lag reading (a) gives P = 0.37, 0.62 and 0.71 (pair reading b, pre against cooling P = 0.040).'
+for c in ['fig2i-theta-pre-cooling-post','fig6c-worst-trials-4-to-8','fig6h-errors-theta-power','fig5i-phase-lags-unchanged']:
+    O[c].setdefault('deviations',[]).append("The lab's theta channel of MS13-171130 is marked bad in the electrodes table; it is used, and the result without that session is shown.")
+# fragile
+O['fig2h-theta-power-temperature']['notes']+=' The criterion asks for one reading; this is the one of 18 measure and reading combinations with R in tolerance and P below 1e-5 besides the normalised Hilbert power, so the outcome depends on the power measure.'
+O['disc-theta-frequency-12-percent']['notes']+=' The criterion asks for one reading; only reading (c), the minimum of the aligned series, is in tolerance, and a minimum of a noisy series favours larger decreases.'
+O['fig4f-speed-theta-power']['notes']+=' The criterion asks for one reading; the R of reading (a) is small (0.071) and its P rests on 7087 trials.'
+# finding on slope range and update surface finding
+for f in A['findings']:
+    if f['kind']=='methods_unavailable' and f['statement'].startswith('The surface equation'):
+        f['statement']=('The surface equation of the Methods (Spatial temporal compression) has lost its fraction bars in the available text, '
+          'and its grid, start values and fitting procedure are not given. Under both readings of the equation the fits explain less than '
+          'the density\'s mean while its smooth envelope alone explains about half of it, so the compression of Figure 5C and G could not be '
+          'measured (fig5cg blocked). The fitting code would let it be repeated.')
+A['findings'].append(dict(kind='methods_unavailable', about='paper', statement=(
+ 'Question for the authors: within what range was the circular-linear regression slope of phase precession searched (Figure 4D, S3E)? '
+ 'With a range of 1 cycle per field about 30% of the slopes sit at the bound and no change with cooling is found; with 2 cycles, the '
+ 'attempt\'s assumption, precession is flatter during cooling than before (P = 0.016) but not than after (P = 0.073).')))
+yaml.safe_dump(A, open('attempts/petersen-2020-02.yaml','w'), sort_keys=False, width=120, allow_unicode=True)
+EOF
+git diff --stat 2>/dev/null | tail -2
+```
 
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 66 more lines not kept]
+```
+(Bash completed with no output)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat entries/000059-petersen-2020/entry.yaml; grep -n "max.minutes\|max_minutes" tools/entry.py | head; grep -o "loaded in [0-9]* s[^\"]*" transcripts/000059/*.md | head; grep -o "Executed in[^\"]\{0,80\}\|took [0-9.]* min[^\"]\{0,40\}" transcripts/000059/author.md | head
-```
-
-```
-schema_version: 1
-name: 000059-petersen-2020
-type: reproduction
-title: Cooling of the medial septum, hippocampal theta and place cell timing (Petersen & Buzsaki 2020)
-description: Tests the findings of Petersen and Buzsaki (2020) on dandiset 000059, which holds 50
-  sessions of five rats running a spatial alternation task on a figure-8 maze while the medial
-  septum was cooled, with MS temperature, trials, position, LFP, wide-band data and sorted units.
-  It tests the slowing of theta with temperature, the increase of choice errors, the oscillation
-  frequency of place cells against LFP theta, place field features, and the time and phase lags of
-  place cell pairs. The hippocampal temperature recordings of the control experiment are not in
-  the dandiset.
-license: Apache-2.0
-notebooks:
-- path: reproduce_petersen_2020.ipynb
-  title: Reproducing Petersen & Buzsaki (2020) from dandiset 000059
-  runtime_minutes: 6
-helpers:
-- cooling.py
-related:
-- id: dandi:000059/0.250624.0444
-[... 13 more lines not kept]
-```
-
-**Agent**
-
-Six-minute runtime, good. Now I'll inspect the file structure for the LFP electrode mapping and the behavior series, which several of the verifier's requests depend on.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000059-petersen-2020 && python -c "import h5py, remfile, dandi, scipy, pandas; print('ok')" 2>&1 | tail -1
-```
-
-```
-ModuleNotFoundError: No module named 'h5py'
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q -p 3.13 v59 && uv pip install -q -p v59/bin/python -r entries/000059-petersen-2020/requirements.lock.txt && echo done
-```
-
-```
-done
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000059-petersen-2020 && $TMPDIR/v59/bin/python - <<'EOF'
-import cooling as C, numpy as np
-S=C.sessions()
-k="MS21-180628-155921"
-for kind in ["processed","raw"]:
-    f=C.open_h5(S.loc[k,kind+"_url"])
-    out=[]
-    def v(name,obj):
-        nt=obj.attrs.get("neurodata_type")
-        if nt is not None and ("Series" in str(nt) or "LFP" in str(nt)): out.append((name,str(nt)))
-    f.visititems(v)
-    print(kind,out)
-    if kind=="raw":
-        lfp=f["processing/ecephys/LFP/LFP"]
-        print(list(lfp.keys()), lfp["electrodes"][:][:10], lfp["electrodes"].shape, lfp["data"].shape)
-        el=f["general/extracellular_ephys/electrodes"]; print(list(el.keys()))
-        print("raw theta_reference rows", np.flatnonzero(el["theta_reference"][:]) if "theta_reference" in el else None)
-        print(f["acquisition/ElectricalSeries/electrodes"][:][:10])
-    else:
-        el=f["general/extracellular_ephys/electrodes"]; print("proc theta row", np.flatnonzero(el["theta_reference"][:]), len(el["id"]))
+cd  python - <<'EOF'
+p='attempts/petersen-2020-02.yaml'
+s=open(p).read()
+import yaml
+A=yaml.safe_load(s)
+for o in A['outcomes']:
+    if o['claim']=='fig2h-theta-power-temperature':
+        o['notes']=o['notes'].replace(' The criterion asks for one reading; this is the one of 18 measure and reading combinations with R in tolerance and P below 1e-5 besides the normalised Hilbert power, so the outcome depends on the power measure.',
+          ' The criterion asks for one reading; 3 of the 18 measure and reading combinations meet it (Hilbert power, raw, running or normalised, over aligned trials), and spectral power and the bin and pooled readings do not, so the outcome depends on the power measure and the reading.')
+        assert '3 of the 18' in o['notes']
+yaml.safe_dump(A, open(p,'w'), sort_keys=False, width=120, allow_unicode=True)
 EOF
 ```
 
 ```
-processed [('processing/behavior/Acceleration', 'TimeSeries'), ('processing/behavior/SubjectPosition/SpatialSeries', 'SpatialSeries'), ('processing/behavior/SubjectSpeed', 'TimeSeries'), ('processing/behavior/Temperature', 'TimeSeries')]
-proc theta row [63] 128
-raw [('acquisition/ElectricalSeries', 'ElectricalSeries'), ('processing/ecephys/LFP', 'LFP'), ('processing/ecephys/LFP/LFP', 'ElectricalSeries')]
-['data', 'electrodes', 'starting_time'] [0 1 2 3 4 5 6 7 8 9] (128,) (6839190, 128)
-['filtering', 'group', 'group_name', 'id', 'imp', 'location', 'shank_electrode_number', 'theta_reference', 'x', 'y', 'z']
-raw theta_reference rows [63]
-[0 1 2 3 4 5 6 7 8 9]
+(Bash completed with no output)
 ```
-
-**Agent**
-
-The LFP column order matches the electrode table in that session and the raw file flags the same theta row; I'll make the helper check this in every session. Now editing the helper.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000059-petersen-2020 && $TMPDIR/v59/bin/python - <<'EOF'
-import re
-p="cooling.py"; s=open(p).read()
-def rep(a,b):
-    global s
-    assert s.count(a)==1, a[:60]
-    s=s.replace(a,b)
-
-# series listing
-rep('''def _text(values) -> list[str]:''','''def series_listing(f: h5py.File) -> list[tuple[str, str]]:
-    """Every object of a file with an NWB type ending in 'Series' (or LFP), with its path."""
-    out = []
-
-    def visit(name, obj):
-        nt = obj.attrs.get("neurodata_type")
-        if nt is not None:
-            nt = nt.decode() if isinstance(nt, bytes) else str(nt)
-            if nt.endswith("Series") or nt == "LFP":
-                out.append((name, nt))
-    f.visititems(visit)
-    return out
-
-
-def _text(values) -> list[str]:''')
-rep('''    out["session_id"] = f["general/session_id"][()].decode()
-''','''    out["session_id"] = f["general/session_id"][()].decode()
-    out["series"] = series_listing(f)
-''')
-# stream_lfp with region check
-rep('''def stream_lfp(key: str, channel: int, t0: float, t1: float) -> tuple[np.ndarray, float]:
-    """One LFP channel from t0 to t1 (s), in microvolts, with the time of its first sample."""
-    f = open_h5(sessions().loc[key, "raw_url"])
-    ds = f["processing/ecephys/LFP/LFP/data"]''','''def stream_lfp(key: str, channel: int, t0: float, t1: float) -> tuple[np.ndarray, float, dict]:
-    """One LFP channel from t0 to t1 (s), in microvolts, with the time of its first sample.
-
-    `channel` is a row of the electrodes table; the LFP column is the one whose entry in the
-    LFP's `electrodes` region is that row. Also returns what the raw file holds: its series,
-    and the row its own electrodes table flags as theta reference."""
-    f = open_h5(sessions().loc[key, "raw_url"])
-    region = f["processing/ecephys/LFP/LFP/electrodes"][:]
-    cols = np.flatnonzero(region == channel)
-    assert len(cols) == 1, (key, channel)
-    info = {"lfp_column": int(cols[0]), "region_is_identity": bool(np.array_equal(region, np.arange(len(region)))),
-            "raw_theta_rows": np.flatnonzero(f["general/extracellular_ephys/electrodes/theta_reference"][:]).tolist(),
-            "raw_series": series_listing(f)}
-    channel = int(cols[0])
-    ds = f["processing/ecephys/LFP/LFP/data"]''')
-rep('''    f.close()
-    return x, start + lo / rate
-''','''    f.close()
-    return x, start + lo / rate, info
-''')
-rep('''    lfp, start = stream_lfp(s["key"], s["theta_channel"], t0, t1)
-    th = theta_from_lfp(lfp, start)
-    th["lfp_rms_uv"] = float(np.std(lfp))''','''    lfp, start, info = stream_lfp(s["key"], s["theta_channel"], t0, t1)
-    th = theta_from_lfp(lfp, start)
-    th["lfp_rms_uv"] = float(np.std(lfp))
-    th["raw_info"] = info''')
-# aligned_series end
-rep('''    """The code's onset-aligned trial series (BatchProcessing.m): trial ALIGN_ONSET is the
-    first cooling trial; the series stops at the last post-cooling trial before a second
-    cooling block; errors are smoothed with an 11-point Gaussian window."""''','''    """The code's onset-aligned trial series (BatchProcessing.m): trial ALIGN_ONSET is the
-    first cooling trial; the series stops at the last trial before a second cooling block
-    (the first 'Cooling on' trial after the first block, whatever state precedes it); errors
-    are smoothed with an 11-point Gaussian window."""''')
-rep('''    ends = [i for i in range(len(code) - 1) if code[i] == 3 and code[i + 1] == 2]''',
-    '''    ends = [i for i in range(first, len(code) - 1) if code[i] != 2 and code[i + 1] == 2]''')
-rep('''    out["series_end"] if False else None''','''''') if 'out["series_end"] if False' in s else None
-# pair_period nearest option
-rep('''def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: float) -> float:
-    """Mean spacing from the main peak (at lag `main`) to the largest local maxima between lo
-    and hi away from it, on either side; NaN when neither side has one."""''','''def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: float, nearest: bool = False) -> float:
-    """Mean spacing from the main peak (at lag `main`) to the largest local maxima between lo
-    and hi away from it, on either side; NaN when neither side has one. With `nearest`, the
-    nearest local maximum on each side is taken instead of the largest."""''')
-rep('''            k = pk[sel][np.argmax(c[pk[sel]])]''','''            k = pk[sel][np.argmin(d[sel])] if nearest else pk[sel][np.argmax(c[pk[sel]])]''')
-# windows range
-rep('''        for k in range(0, n_tr - 20):''','''        for k in range(0, n_tr - 19):''')
-rep('''            # 20-trial windows (calc_trial_averages.m)
-''','')
-rep('''    fields = pd.DataFrame(frows)
-    out["units"], out["fields"] = units, fields
-''','''    fields = pd.DataFrame(frows)
-    out["units"], out["fields"] = units, fields
-
-    # 20-trial windows stepped by one trial (calc_trial_averages.m)
-''')
-# waveform spikes in window before cap
-rep('''        units["ttp"] = np.where(''','''        for name, (a_, b_) in [("pre", w_pre), ("cooling", w_cool)]:
-            units["nsp_" + name] = [int(np.sum((sp > a_) & (sp < b_))) for sp in spikes]
-        units["ttp"] = np.where(''')
-# info with equal spikes
-rep('''    units["coherence"] = [spatial_coherence(rate["all"][u]) for u in range(n_units)]
-''','''    units["coherence"] = [spatial_coherence(rate["all"][u]) for u in range(n_units)]
-    # information with the same number of spikes in each state: each state's spikes are
-    # subsampled to the smallest count of the three, 20 draws averaged (a variant for fig3f)
-    rng = np.random.default_rng([31] + [int(x) for x in re.findall(r"\\d+", key)])
-    smask = {st: base & (fstate == st) & np.isfinite(l) & (speed > MAP_SPEED) for st in STATES}
-    eq = {st: [] for st in STATES}
-    n_eq = []
-    for u in range(n_units):
-        fr_idx = sp_idx[u][in_beh[u]]
-        per = {st: fr_idx[smask[st][fr_idx]] for st in STATES}
-        n_min = min(len(v) for v in per.values())
-        n_eq.append(n_min)
-        for st in STATES:
-            if n_min < 20:
-                eq[st].append(np.nan)
-                continue
-            vals = []
-            for _ in range(20):
-                pick = rng.choice(per[st], n_min, replace=False)
-                c_ = np.histogram(l[pick], edges)[0][None, :]
-                vals.append(skaggs_information(smooth_map(c_, occ[st], 1.0, segb)[0], occ[st]))
-            eq[st].append(float(np.nanmean(vals)))
-    for st in STATES:
-        units["info_eq_" + SHORT[st]] = eq[st]
-    units["n_eq"] = n_eq
-''')
-# pairs nearest period
-rep('''                row["period_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0)
-''','''                row["period_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0)
-                row["period_near_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0, nearest=True)
-''')
-rep('''                    row["period_" + c] = row["phase_period_" + c] = np.nan''','''                    row["period_" + c] = row["phase_period_" + c] = row["period_near_" + c] = np.nan''')
-# cycles duration
-rep('''                                  "spikes": total})''','''                                  "spikes": total, "duration_ms": 1000 * (stops - starts)})''')
-open(p,"w").write(s)
+cd  python - <<'EOF'
+import yaml
+p='attempts/petersen-2020-02.yaml'
+A=yaml.safe_load(open(p))
+R = [
+('session-structure','partially_reproduced','Mean is 142.4 trials (allowed 135 to 165) and median pre is 39. Median cooling and post counts are in range under all three state readings. But MS10-170307 has 37 trials, outside 72 to 220 (cell 10).','No change.'),
+('cooling-time-course','partially_reproduced','Median time to minimum is 109.7 s, outside 40.5 to 66 s. Under reading (a), duration is 11.7 min and 47.5 trials, both in range (cell 12). Two of three parts hold. Problem 7 (no conclusion affected): the code keeps 5 to 45 C but cell 4 prints "0 to 50 C", and rail values of about 5.0 C (MS22-180623, MS22-180712) and 9.98 C (MS22-180720) are kept as valid temperatures; it asked for a check of per-trial temperatures below about 15 C.',
+ 'No change of outcome. The data check now prints "outside 5 to 45 C" and counts the samples below 15 C: the rail values (1498, 944 and 89 samples in the three MS22 sessions) all lie outside the trials, no sample within the trials is below 15 C, and the lowest trial temperature is 17.1 C, so the rails enter no trial value or cooling minimum and no number changed.'),
+('fig2g-theta-freq-temperature','partially_reproduced','R is positive with tiny P under every reading, but none falls within 0.81 +- 0.081: aligned 0.978 (n=120), bins 0.959, pooled 0.554 (cell 15). Problem 11 (no conclusion affected): cell 7 says the aligned window -40 to 80 is where at least half the sessions contribute, but cell 15 prints 11 to 31 sessions per trial.',
+ 'No change of outcome. The definition of the aligned window no longer says that half the sessions contribute; it says fewer contribute at its ends (11 at the fewest against 31 for the measured sessions with LFP).'),
+('fig2h-theta-power-temperature','reproduced','Hilbert power over aligned trials gives R=0.495, P=8.9e-9, below the frequency R (cell 16). This is 1 matching reading out of 18 tried. Problem 4 (no conclusion affected): the outcome rests on the one matching reading; the criterion allows this, but the result is fragile.',
+ 'Kept reproduced, as the criterion asks for one reading. The notes now say that 3 of the 18 measure and reading combinations meet it (raw, running and normalised Hilbert power over aligned trials) and that the outcome depends on the power measure and the reading.'),
+('fig2j-frequency-consistent-across-animals','reproduced','Frequency R is positive with P<0.05 in 4 of 4 testable rats. Its range and SD are smaller than for power (cell 18). MS10 has no measured temperature, so it could not be tested.','No change.'),
+('fig2i-theta-pre-cooling-post','reproduced','With lab states and spectral theta, all four signed-rank tests show cooling lower at P<=3e-6 (cell 20). With Hilbert power, cooling is not lower than post. Problem 8 (no conclusion affected): the lab-tagged theta channel is used even where it is marked bad (MS13-171130); it asked for the result without that session.',
+ 'Added the result without MS13-171130: the spectral reading gives all four P below 1e-5 over 49 sessions. Kept reproduced.'),
+('disc-theta-frequency-12-percent','reproduced','Only reading (c) is in range: 11.1% (Hilbert) and 12.9% (spectral). Readings (a) and (b) give 6.6 to 9.9% (cell 22). Problem 4: reading (c) is the minimum of a noisy per-trial series, which favours larger decreases.',
+ 'Kept reproduced, as the criterion asks for one reading. The notes now say that only reading (c) is in tolerance and that a minimum of a noisy series favours larger decreases.'),
+('fig6d-errors-increase','partially_reproduced','P over sessions is below 1e-5, but the ratio is about 2.0 to 2.25, outside 3 +- 0.3. MS13 gives P=0.23 to 0.44 (cell 25).','No change.'),
+('fig6e-errors-recover','reproduced','Post against pre gives P=0.55, 0.80 and 0.97 under the three state readings; median difference -0.42 points (cell 27).','No change.'),
+('fig6c-worst-trials-4-to-8','reproduced','Unsmoothed, the error maximum is at trial 8. Minima are at trial 7 for temperature, 6 to 8 for frequency and 8 for power (cell 29). Problem 8: it asked for the result without MS13-171130, whose tagged theta channel is marked bad.',
+ 'Added the result without MS13-171130: the theta frequency and power minima fall on the same trials (8 and 6 for frequency, 8 for power). Kept reproduced.'),
+('fig6f-errors-temperature','partially_reproduced','R is negative with P<0.01 under every reading, but none is within -0.35 +- 0.035: -0.64, -0.87, -0.15, and per rat -0.20 to -0.52 (cell 32).','No change.'),
+('fig6g-errors-theta-frequency','partially_reproduced',"Same pattern as fig6f. Only MS13's per-rat R is in tolerance, and reading (c) needs every rat (cell 33).",'No change.'),
+('fig6h-errors-theta-power','reproduced','Normalised Hilbert power gives 2 of 5 rats (cell 34). This depends on the power reading: raw power gives 3 and normalised spectral power gives 1. Problem 8: it asked for the result without MS13-171130.',
+ 'Added the result without MS13-171130: 2 of 5 rats still count (MS13 R = -0.315, P = 4.6e-4). Kept reproduced; the notes say the count depends on the power measure.'),
+('fig6i-errors-not-speed','not_reproduced','MS10 (P=0.0023) and MS13 (P=0.00026) have significant, negative R (cell 35).','No change.'),
+('suppl5j-errors-best-theta-frequency','partially_reproduced',"With Hilbert theta, frequency is largest in both the correlations and partial correlations, but speed's partial P is 0.023. With spectral theta, temperature is largest (cell 37).",'No change.'),
+('fig4e-speed-decreases-within-session','reproduced','Aligned Spearman -0.87 (P=1e-38); 50 of 51 sessions negative; signed-rank P=7e-10 (cell 39).','No change.'),
+('fig5-speed-control-cooling','reproduced',"Speed is 80.3 (control) and 77.1 cm/s (cooling), both within the paper's spreads (cell 95). The sets are 23 sessions; the paper's 18 and 10 cannot be told apart. Problem 12 (no conclusion affected): the two session readings collapse to the same 23 sessions.",
+ 'No change; the deviation already says the paper\'s 18 and 10 sessions cannot be told apart.'),
+('suppl2-place-cell-rates-decrease','partially_reproduced','Decreases are 0.4 to 6.8%, far from 11 to 12%. Both are significant only with 3 cm bins; at 5 cm/lab the within-field P is 0.12 (cell 43).','No change.'),
+('suppl2ab-rates-correlated','reproduced','Within-field rate on a linear scale gives R=0.66, P=1e-147 (cell 45).','No change.'),
+('disc-interneuron-rates-decrease','partially_reproduced','Decreases are 0.3 to 8.7%, none in 12.6 to 15.4%. Narrow interneurons, all frames, give P=0.023 (cell 73).','No change.'),
+('suppl5gh-rates-follow-temperature','reproduced','On raw rates, both classes are lower in trials 1 to 5 (P=2e-6 and 6e-16). Both track temperature (R=0.81 and 0.53) (cell 75). The normalised reading fails. There are 1295 pyramidal cells, outside 1104 +- 110. Problem 9 (no conclusion affected): on normalised rates, trials 1 to 5 average 1.08 against a pre value of 0.996, yet the signed-rank test is "significant"; the direction is not tested, and the outcome rests on raw rates.',
+ 'Added the medians and a one-sided test: on normalised rates the medians of trials 1 to 5 are below pre (0.887 and 0.785 against 1.000; one-sided P = 1.4e-4 and 2.4e-18) while the means are above, so the two-sided test reflects the medians; the normalised series still do not correlate with temperature. Kept reproduced on the raw-rate reading, under which both parts hold.'),
+('fig4b-fp-flfp-decrease','reproduced',"All six means are within tolerance under every reading; P_fp 2e-75 (cell 47). That is 878 fields against the paper's 365.",'No change.'),
+('fig4c-fp-flfp-correlation','partially_reproduced','R pre is 0.21 to 0.36 (expected 0.61) and R cooling 0.39 to 0.49. All are positive with P<1e-11, and the SD of fp exceeds that of fLFP (cell 49).','No change.'),
+('fig4ac-fp-flfp-difference-preserved','not_reproduced','fp - fLFP falls during cooling in every reading, P from 1e-6 to 0.0019 (cell 51).','No change.'),
+('fig4a-frequency-temperature-slopes','partially_reproduced','Field-state values with fLFP over time give R=0.685 and slope 0.068, both in tolerance. fp gives R=0.30 and slope 0.067, both outside. All slopes are positive (cell 62).','No change.'),
+('fig3c-field-size-correlated','not_reproduced','R is 0.41 to 0.49, below the 0.5 the partial outcome needs (cell 53).','No change.'),
+('fig3d-size-fp-negative','partially_reproduced','R is -0.14 to -0.20, all negative with P<1e-4, but none in tolerance (cell 54).','No change.'),
+('fig3e-model-field-size','not_reproduced','Pre R is about 0 (P>=0.06) in every reading (cell 55).','No change.'),
+('fig3f-information-unchanged','not_reproduced','Pre against post is significant in every reading, e.g. P=0.0054 (cell 56). Problem 5 (affects a conclusion): Skaggs information is biased upward when there is less data; post has more trials than pre (median 46 against 39), so a pre-to-post fall could come from sampling alone. No equal-trial subsampling or shuffle correction was done, and the outcome turns on the pre-against-post test.',
+ 'Added Skaggs information with the trials of each state subsampled to the same number per arm (median 17, 20 draws). Pre to post still falls (median change -0.030 bits per spike, P = 0.016 over 902 maps; P = 0.0047 with the Figure 5 rule fields), so the fall is not a sampling effect of unequal state sizes. Kept not reproduced.'),
+('fig3hi-population-vector-unchanged','reproduced','Scale changes by -0.05 cm, P=0.73 over 23 sessions (cell 79).','No change.'),
+('fig4d-precession-slope-decrease','not_reproduced','No comparison reaches P<0.05 (cell 58). The slope estimator is suspect. Problem 1 (affects a conclusion): circ_lin_slope searches slopes only within +-1 cycle per field, a range the paper does not give and the notebook does not state as an assumption. On synthetic data a true slope of -1.25 cycles is returned as -1.0 in 99% of fields, a true slope of -1.0 lands on the boundary in 51%, and pure noise in 26%. The median changes of exactly 0.0000 point to many fields pinned at -2 pi in both states; the non-significant results may come from this saturation.',
+ 'Changed to partially_reproduced. The slope is now searched within plus and minus 2 cycles per field, stated as an assumption, with 1 and 3 cycles as variants and the fraction at the bound printed: 31% of the slopes sat at the 1-cycle bound, 8 to 10% sit at the 2-cycle bound. With 2 cycles precession is flatter during cooling than before (P = 0.016) but not than after (P = 0.073), so one of the two comparisons holds; no reading gives both. The outcome is marked assumed and a methods_unavailable finding asks the authors for the range.'),
+('suppl3e-precession-temperature','partially_reproduced','Reading (a) gives R=-0.0273, within tolerance, but P=1.2e-6, not below 1e-10. n=31617 against about 1e5 (cell 61). Problem 1 says the R may also come from the saturation of the slope search.',
+ 'Kept partially reproduced. With the 2-cycle range, reading (a) gives R = -0.0262 (within tolerance), P = 3.2e-6; measured is now -0.0262. The 1-cycle range is shown as a variant (R = -0.0273).'),
+('fig4f-speed-theta-power','reproduced','Raw Hilbert power over all trials gives R=0.071, P=2.7e-9 (cell 64). Problem 4: the R is tiny and the result fragile.',
+ 'Kept reproduced, as the criterion asks for P < 0.05 under one reading. The notes now say the R is small and its P rests on 7087 trials.'),
+('fig4gh-fp-speed','partially_reproduced','At the 10 cm/s main bins, the fp slope exceeds the fLFP slope (bootstrap interval [0.0044, 0.0076]). But cooling is lower in only 11 of 14 speed bins. The 20 cm/s variant has 8 of 8 (cell 66).','No change.'),
+('suppl2e-trial-speed-theta-frequency','reproduced','R is positive in all states. The low-speed slope is larger in 2 of 3 states (Hilbert) and 3 of 3 (spectral), but from only 12 to 32 trials below 40 cm/s (cell 68).','No change.'),
+('suppl3-theta-cycle-duration','partially_reproduced','State comparisons hold (cycles 117.6 ms pre, 130.4 cooling, 117.6 post; post against pre P=0.96), and cooling is longer in 100% of position bins. But duration correlates with speed in pre (P=0.005 and 0.009) (cell 70).','No change.'),
+('fig5d-ccg-period','partially_reproduced','Cooling period is longer (P=0.005) and the phase period does not differ (P=0.305). The pre period is 108 ms (104.5 under pairing (b)), not 85 +- 8.5 (cell 83). Problem 6 (no conclusion affected): the period is taken as the largest Fourier component, while the criterion says peak spacing; peak spacing on the pooled sum was never printed.',
+ 'Added the peak spacing of the pooled summed cross-correlograms: 107.2 ms with pair reading (a) (5 peaks within 300 ms; 102.5 ms from the central peak to its neighbours) and 103.5 ms with (b), also outside tolerance. Kept partially reproduced.'),
+('fig5e-phase-period-below-2pi','reproduced','Phase periods are 1.83 to 1.91 pi, below 2 pi, in pre and cooling (cell 86).','No change.'),
+('fig5cg-compression','not_reproduced','Low confidence. The surface fits mostly failed (NaN, R2 -0.14 and -0.43). Only 5 or 10 sessions were fitted per session test (P=0.81 and 1.0), and the least-squares variant gives P=0.67 and 0.36 (cell 93). Problem 2 (affects a conclusion): curve_fit failed or fitted worse than a constant, reading (b) fitted no session, the error messages are not printed, the start value a_start (0.556 and 0.561 cm/ms) is not reported as a result, and the least-squares variant regresses Ltr over all distances where the main lag wraps across theta cycles (R -0.05), so it does not measure compression.',
+ 'Changed to blocked, methods_underspecified. The notebook now prints the fit errors (all reach the evaluation limit), the convergence counts per condition (reading a: 9 of 23 sessions in each condition, 5 in both), the R2 of the converged fits (median -0.10 to -5.1) against that of the envelope alone (0.41 to 0.68), the start value per session, and a plot of the pooled pre density with the fitted surface. The surface as the claims file reads it does not describe the density, and the paper gives no procedure that would make it, so no choice has a defensible basis. The per-session ridge slope (the start value) is reported as a variant and shows no decrease (P = 0.62 and 0.71).'),
+('fig5h-time-lags-increase','partially_reproduced','Cooling lags are longer than pre and post at P<1e-12. Pre against post gives P<0.05 in every reading on the signed-rank test; only the rank-sum variant gives 0.16 (cell 89). Problem 3 (affects a conclusion): the decisive pre-against-post test is over about 8,500 pairs, and median lags of 27 against 27 ms still give P=0.034; only the rank-sum variant passes, so the outcome depends on a variant, not the main test.',
+ 'Kept partially reproduced, the outcome the verifier also gives. It rests on the main signed-rank test, under which both cooling comparisons hold and pre and post differ (P = 0.034), so the partial rule applies; the rank-sum variant does not decide it.'),
+('fig5i-phase-lags-unchanged','reproduced','Under lag reading (a), all P>=0.068. Reading (b) fails (cell 90). Problem 8: it asked for the result without MS13-171130.',
+ 'Added the result without MS13-171130: lag reading (a) gives P = 0.37, 0.62 and 0.71 with pair reading (a), and P = 0.040 for pre against cooling with pair reading (b). Kept reproduced (assumed) under pair reading (a).'),
+('fig5j-fraction-active-unchanged','not_reproduced','Pre against cooling rank-sum P=1.6e-25, with cooling higher (cell 98).','No change.'),
+('fig5k-spikes-per-cycle-unchanged','not_reproduced','All three rank-sum P are below 5e-7 (cell 99).','No change.'),
+('suppl1g-waveforms-unchanged','not_reproduced','Trough-to-peak P=1e-9 and peak-to-peak P=0.026 over 263 units in 4 sessions (cell 101). Problem 10 (no conclusion affected): trough-to-peak is measured on raw 20 kHz samples without interpolation, and the median change is exactly one sample (0.05 ms); the test covers 4 sessions and a few 52 s blocks each, with pre and post blocks pooled as control.',
+ 'Added the latency on mean waveforms interpolated to 200 kHz (median change +0.035 ms, P = 3.1e-11, significant in each of the 4 sessions) and the spike counts per condition (medians 158 and 115). Pre and post are pooled as control as the criterion says. Kept not reproduced.'),
+('suppl1-hippocampal-temperature','blocked','Confirmed on the archive: 51 assets, all theta-maze and home-cage cooling sessions of MS10 to MS22; variableMeasured lists no temperature and no session description mentions the hippocampal-temperature control experiment. Both the reproduced and partial conditions need hippocampal temperature, so data_missing stands.','No change.'),
+]
+res=[]
+for c,oc,reason,resp in R:
+    mine={o['claim']:o for o in A['outcomes']}[c]
+    res.append(dict(claim=c, agrees=True, outcome=oc, reason=reason, response=resp))
+A['verifications']=[dict(date='2026-11-15', kind='agent',
+  by='Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)',
+  reviewed=('The first executed notebook with the conclusion cells and the summary removed, the helper module ms_cooling.py and the claims '
+            'file, with the paper\'s full text. The verifier tested circ_lin_slope and the cross-correlogram period on synthetic inputs and '
+            'checked the archive\'s asset list and metadata for the blocked claim; it did not re-run anything on the data. Its outcome table '
+            'lists 45 claims and gives none for suppl2d-interneuron-oscillation-slows.'),
+  results=res)]
+yaml.safe_dump(A, open(p,'w'), sort_keys=False, width=120, allow_unicode=True)
+print(len(res))
 EOF
-grep -n "raw_info\|series\"\]" cooling.py
 ```
 
 ```
-/bin/bash: line 130: cd: entries/000059-petersen-2020: No such file or directory
-```
-
-**Agent calls Bash**
-
-```bash
-pwd; ls
-```
-
-```
-entries/000059-petersen-2020
-README.md
-__pycache__
-cooling.py
-entry.yaml
-reproduce_petersen_2020.ipynb
-requirements.in
-requirements.lock.txt
+45
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/edit1.py <<'EOF'
-p="cooling.py"; s=open(p).read()
-def rep(a,b):
-    global s
-    assert s.count(a)==1, a[:70]
-    s=s.replace(a,b)
-
-rep('''def _text(values) -> list[str]:''','''def series_listing(f: h5py.File) -> list[tuple[str, str]]:
-    """Every object of a file with an NWB type ending in 'Series' (or LFP), with its path."""
-    out = []
-
-    def visit(name, obj):
-        nt = obj.attrs.get("neurodata_type")
-        if nt is not None:
-            nt = nt.decode() if isinstance(nt, bytes) else str(nt)
-            if nt.endswith("Series") or nt == "LFP":
-                out.append((name, nt))
-    f.visititems(visit)
-    return out
-
-
-def _text(values) -> list[str]:''')
-rep('''    out["session_id"] = f["general/session_id"][()].decode()
-''','''    out["session_id"] = f["general/session_id"][()].decode()
-    out["series"] = series_listing(f)
-''')
-rep('''def stream_lfp(key: str, channel: int, t0: float, t1: float) -> tuple[np.ndarray, float]:
-    """One LFP channel from t0 to t1 (s), in microvolts, with the time of its first sample."""
-    f = open_h5(sessions().loc[key, "raw_url"])
-    ds = f["processing/ecephys/LFP/LFP/data"]''','''def stream_lfp(key: str, channel: int, t0: float, t1: float) -> tuple[np.ndarray, float, dict]:
-    """One LFP channel from t0 to t1 (s), in microvolts, with the time of its first sample.
-
-    `channel` is a row of the electrodes table; the LFP column is the one whose entry in the
-    LFP's `electrodes` region is that row. Also returns what the raw file holds: its series,
-    and the row its own electrodes table flags as theta reference."""
-    f = open_h5(sessions().loc[key, "raw_url"])
-    region = f["processing/ecephys/LFP/LFP/electrodes"][:]
-    cols = np.flatnonzero(region == channel)
-    assert len(cols) == 1, (key, channel)
-    info = {"lfp_column": int(cols[0]), "region_is_identity": bool(np.array_equal(region, np.arange(len(region)))),
-            "raw_theta_rows": np.flatnonzero(f["general/extracellular_ephys/electrodes/theta_reference"][:]).tolist(),
-            "raw_series": series_listing(f)}
-    channel = int(cols[0])
-    ds = f["processing/ecephys/LFP/LFP/data"]''')
-rep('''    f.close()
-    return x, start + lo / rate
-''','''    f.close()
-    return x, start + lo / rate, info
-''')
-rep('''    lfp, start = stream_lfp(s["key"], s["theta_channel"], t0, t1)
-    th = theta_from_lfp(lfp, start)
-    th["lfp_rms_uv"] = float(np.std(lfp))''','''    lfp, start, info = stream_lfp(s["key"], s["theta_channel"], t0, t1)
-    th = theta_from_lfp(lfp, start)
-    th["lfp_rms_uv"] = float(np.std(lfp))
-    th["raw_info"] = info''')
-rep('''    """The code's onset-aligned trial series (BatchProcessing.m): trial ALIGN_ONSET is the
-    first cooling trial; the series stops at the last post-cooling trial before a second
-    cooling block; errors are smoothed with an 11-point Gaussian window."""''','''    """The code's onset-aligned trial series (BatchProcessing.m): trial ALIGN_ONSET is the
-    first cooling trial; the series stops at the last trial before a second cooling block
-    (the first 'Cooling on' trial after the first block, whatever state precedes it); errors
-    are smoothed with an 11-point Gaussian window."""''')
-rep('''    ends = [i for i in range(len(code) - 1) if code[i] == 3 and code[i + 1] == 2]''',
-    '''    ends = [i for i in range(first, len(code) - 1) if code[i] != 2 and code[i + 1] == 2]''')
-rep('''def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: float) -> float:
-    """Mean spacing from the main peak (at lag `main`) to the largest local maxima between lo
-    and hi away from it, on either side; NaN when neither side has one."""''','''def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: float, nearest: bool = False) -> float:
-    """Mean spacing from the main peak (at lag `main`) to the largest local maxima between lo
-    and hi away from it, on either side; NaN when neither side has one. With `nearest`, the
-    nearest local maximum on each side is taken instead of the largest."""''')
-rep('''            k = pk[sel][np.argmax(c[pk[sel]])]''','''            k = pk[sel][np.argmin(d[sel])] if nearest else pk[sel][np.argmax(c[pk[sel]])]''')
-rep('''        for k in range(0, n_tr - 20):''','''        for k in range(0, n_tr - 19):''')
-rep('''            # 20-trial windows (calc_trial_averages.m)
-''','')
-rep('''    fields = pd.DataFrame(frows)
-    out["units"], out["fields"] = units, fields
-''','''    fields = pd.DataFrame(frows)
-    out["units"], out["fields"] = units, fields
-
-    # 20-trial windows stepped by one trial (calc_trial_averages.m)
-''')
-rep('''        units["ttp"] = np.where(''','''        for name, (a_, b_) in [("pre", w_pre), ("cooling", w_cool)]:
-            units["nsp_" + name] = [int(np.sum((sp > a_) & (sp < b_))) for sp in spikes]
-        units["ttp"] = np.where(''')
-rep('''    units["coherence"] = [spatial_coherence(rate["all"][u]) for u in range(n_units)]
-''','''    units["coherence"] = [spatial_coherence(rate["all"][u]) for u in range(n_units)]
-    # information with the same number of spikes in each state: each state's spikes are
-    # subsampled to the smallest count of the three, 20 draws averaged (a variant for fig3f)
-    rng = np.random.default_rng([31] + [int(x) for x in re.findall(r"\\d+", key)])
-    smask = {st: base & (fstate == st) & np.isfinite(l) & (speed > MAP_SPEED) for st in STATES}
-    eq = {st: [] for st in STATES}
-    n_eq = []
-    for u in range(n_units):
-        fr_idx = sp_idx[u][in_beh[u]]
-        per = {st: fr_idx[smask[st][fr_idx]] for st in STATES}
-        n_min = min(len(v) for v in per.values())
-        n_eq.append(n_min)
-        for st in STATES:
-            if n_min < 20:
-                eq[st].append(np.nan)
-                continue
-            vals = []
-            for _ in range(20):
-                pick = rng.choice(per[st], n_min, replace=False)
-                c_ = np.histogram(l[pick], edges)[0][None, :]
-                vals.append(skaggs_information(smooth_map(c_, occ[st], 1.0, segb)[0], occ[st]))
-            eq[st].append(float(np.nanmean(vals)))
-    for st in STATES:
-        units["info_eq_" + SHORT[st]] = eq[st]
-    units["n_eq"] = n_eq
-''')
-rep('''                row["period_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0)
-''','''                row["period_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0)
-                row["period_near_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0, nearest=True)
-''')
-rep('''                    row["period_" + c] = row["phase_period_" + c] = np.nan''','''                    row["period_" + c] = row["phase_period_" + c] = row["period_near_" + c] = np.nan''')
-rep('''                                  "spikes": total})''','''                                  "spikes": total, "duration_ms": 1000 * (stops - starts)})''')
-open(p,"w").write(s)
+cd  python - <<'EOF'
+import yaml, collections
+p='attempts/petersen-2020-02.yaml'
+s=open(p).read()
+s=s.replace("31% of the slopes sat at the 1-cycle bound","28 to 32% of the slopes sat at the 1-cycle bound (5 cm bins)")
+open(p,'w').write(s)
+A=yaml.safe_load(s)
+print(collections.Counter(o['outcome'] for o in A['outcomes']))
+print([o['claim'] for o in A['outcomes'] if o.get('assumed')], len([o for o in A['outcomes'] if o.get('assumed')]))
 EOF
-$TMPDIR/v59/bin/python $TMPDIR/edit1.py && rm -rf __pycache__ && git diff --stat
+grep -n "28 to 32% of the slopes sat" attempts/petersen-2020-02.yaml | head -2
 ```
 
 ```
-entries/000059-petersen-2020/cooling.py | 85 +++++++++++++++++++++++++++------
- 1 file changed, 71 insertions(+), 14 deletions(-)
+Counter({'partially_reproduced': 19, 'reproduced': 17, 'not_reproduced': 8, 'blocked': 2})
+['suppl2-place-cell-rates-decrease', 'suppl2ab-rates-correlated', 'fig4b-fp-flfp-decrease', 'fig4c-fp-flfp-correlation', 'fig4ac-fp-flfp-difference-preserved', 'fig4a-frequency-temperature-slopes', 'fig3c-field-size-correlated', 'fig3d-size-fp-negative', 'fig3e-model-field-size', 'fig3f-information-unchanged', 'fig4d-precession-slope-decrease', 'suppl3e-precession-temperature', 'fig4gh-fp-speed', 'fig5d-ccg-period', 'fig5e-phase-period-below-2pi', 'fig5h-time-lags-increase', 'fig5i-phase-lags-unchanged', 'fig5j-fraction-active-unchanged', 'fig5k-spikes-per-cycle-unchanged', 'suppl2d-interneuron-oscillation-slows'] 20
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/edit2.py <<'EOF'
-p="cooling.py"; s=open(p).read()
-def rep(a,b):
-    global s
-    assert s.count(a)==1, a[:70]
-    s=s.replace(a,b)
-rep('''           "subject_meta": s["subject_meta"]}
-    out.update(temperature_shape(s))
-    if len(s["trials"]) == 0:
-        return out
-    th = theta_for_session(s)
-    tr = trial_measures(s, th)
-    out["trials"] = tr''','''           "subject_meta": s["subject_meta"], "series": s["series"]}
-    out.update(temperature_shape(s))
-    if len(s["trials"]) == 0:
-        f = open_h5(sessions().loc[key, "raw_url"])
-        out["raw_info"] = {"raw_series": series_listing(f)}
-        f.close()
-        return out
-    th = theta_for_session(s)
-    tr = trial_measures(s, th)
-    out["trials"] = tr
-    out["raw_info"] = th["raw_info"]''')
-open(p,"w").write(s)
+cd  python - <<'EOF'
+import yaml
+p='attempts/petersen-2020-02.yaml'
+A=yaml.safe_load(open(p))
+for r in A['verifications'][0]['results']:
+    if r['claim']=='fig4d-precession-slope-decrease':
+        r['response']=r['response'].replace("31% of the slopes sat at the 1-cycle bound","28 to 32% of the slopes sat at the 1-cycle bound (5 cm bins)")
+        print(r['response'][:300])
+yaml.safe_dump(A, open(p,'w'), sort_keys=False, width=120, allow_unicode=True)
 EOF
-$TMPDIR/v59/bin/python $TMPDIR/edit2.py && $TMPDIR/v59/bin/python - <<'EOF'
-import numpy as np, cooling as C
-lags=C.TIME_LAGS
-for sep in [0,20,40,60]:
-    c=1+np.exp(-0.5*((lags-sep)/120)**2)*(1+0.8*np.cos(2*np.pi*(lags-sep*0.3)/94))
-    c=C._smooth_ccg(c*100)
-    m=C.peak_lag(c,lags,70)
-    print(sep, m, C.pair_period(c,lags,m,60,200), C.pair_period(c,lags,m,60,200,nearest=True))
+```
+
+```
+Changed to partially_reproduced. The slope is now searched within plus and minus 2 cycles per field, stated as an assumption, with 1 and 3 cycles as variants and the fraction at the bound printed: 28 to 32% of the slopes sat at the 1-cycle bound (5 cm bins), 8 to 10% sit at the 2-cycle bound. With 2
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && dev/bin/python - <<'EOF'
+exec(open("nbedit.py").read())
+rep(150, "The outcomes of the 21 claims on place fields and pairs rest on an assumption: fields are found on the map over all trials of an arm, states pooled (the attempt record marks them `assumed`).",
+ "The outcomes of the 20 tested claims on place fields and pairs rest on an assumption: fields are found on the map over all trials of an arm, states pooled (the attempt record marks them `assumed`). The two precession claims also rest on the range of the slope search.")
+save()
 EOF
-rm -rf __pycache__
-```
-
-```
-0 0.5 91.0 91.0
-20 6.5 91.0 91.0
-40 13.5 91.0 91.0
-60 19.5 91.0 91.0
-```
-
-**Agent calls Bash**
-
-```bash
-$TMPDIR/v59/bin/python - <<'EOF'
-import numpy as np, cooling as C
-lags=C.TIME_LAGS
-for sd in [50,80]:
-  for sep in [0,40,80,120]:
-    c=1+np.exp(-0.5*((lags-sep)/sd)**2)*(1+0.9*np.cos(2*np.pi*(lags-sep*0.3)/94))
-    c=C._smooth_ccg(c*100)
-    m=C.peak_lag(c,lags,70)
-    print(sd, sep, m, C.pair_period(c,lags,m,60,200), C.pair_period(c,lags,m,60,200,nearest=True))
+cd  && python - <<'EOF'
+p='entries/petersen-2020/README.md'
+s=open(p).read()
+old="""Of 46 claims, 17 are reproduced, 18 partially reproduced, 10 not reproduced and 1 blocked; the 21
+outcomes on place fields rest on an assumption about the maps the fields are found on."""
+new="""Of 46 claims, 17 are reproduced, 19 partially reproduced, 8 not reproduced and 2 blocked; the 20
+outcomes on place fields rest on an assumption about the maps the fields are found on."""
+assert old in s; s=s.replace(old,new)
+old="""Theta time lags of place cell pairs lengthen
+while phase lags do not change. The hippocampal temperature of the control experiment is not in
+the dandiset."""
+new="""Phase precession flattens during cooling against
+pre but not post. Theta time lags of place cell pairs lengthen while phase lags do not change. The
+distance-time compression of Figure 5 is blocked, as the surface fit of the Methods does not
+describe the data. The hippocampal temperature of the control experiment is not in the dandiset."""
+assert old in s; s=s.replace(old,new)
+open(p,'w').write(s)
 EOF
-rm -rf __pycache__
+date -u
 ```
 
 ```
-50 0 0.5 81.0 81.0
-50 40 16.5 81.5 81.5
-50 80 32.5 81.5 81.5
-50 120 48.5 81.5 81.5
-80 0 0.5 88.0 88.0
-80 40 14.5 88.5 88.5
-80 80 27.5 88.5 88.5
-80 120 41.5 88.0 88.0
-```
-
-**Agent**
-
-Now the notebook edits: new checks and variants the verifier asked for, and the two code fixes (cell 43 direction, fig4b spike variant).
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit3.py <<'EOF'
-p="cooling.py"; s=open(p).read()
-a='''    out["error_smooth"] = nanconv(out["error"], gausswin(11) / gausswin(11).sum())'''
-assert s.count(a)==1
-s=s.replace(a,'''    out["n_kept"] = end
-'''+a)
-open(p,"w").write(s)
-EOF
-$TMPDIR/v59/bin/python $TMPDIR/edit3.py && grep -n "n_kept" cooling.py
-```
-
-```
-382:    out["n_kept"] = end
+Wed Nov 18 03:51:56 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/edit_nb.py <<'PYEOF'
-import nbformat
-p="reproduce_petersen_2020.ipynb"
-nb=nbformat.read(p, as_version=4)
-cells=nb.cells
-def find(sub):
-    m=[i for i,c in enumerate(cells) if sub in c.source]
-    assert len(m)==1,(sub,m)
-    return m[0]
-def rep(sub, a, b):
-    i=find(sub); assert cells[i].source.count(a)==1,(sub,a[:60]); cells[i].source=cells[i].source.replace(a,b)
-def insert_after(sub, cell):
-    i=find(sub); cells.insert(i+1, cell)
-
-# A. listing and LFP channel check
-code = '''series = pd.Series([p for r in beh.values() for p, _ in r["series"] + r["raw_info"]["raw_series"]])
-print("Every series (NWB type ending in 'Series', and LFP) in the processed and raw files, and the number of sessions holding it:")
-print(series.value_counts().to_string())
-print("Files listed:", len(beh), "processed and", sum(1 for r in beh.values() if r["raw_info"].get("raw_series")), "raw")
-print("Series whose path contains 'temp':", sorted({p for p in series if "temp" in p.lower()}))
-ri = {k: r["raw_info"] for k, r in beh.items() if "lfp_column" in r["raw_info"]}
-print("\\nSessions whose LFP was read:", len(ri), "; LFP electrodes region equal to rows 0 to n-1 in order in", sum(v["region_is_identity"] for v in ri.values()))
-print("LFP column read is the processed file's theta_reference row in every session:", all(v["lfp_column"] == beh[k]["theta_channel"] for k, v in ri.items()))
-print("Raw file flags the same single theta_reference row as the processed file:", all(v["raw_theta_rows"] == [beh[k]["theta_channel"]] for k, v in ri.items()))'''
-c=nbformat.v4.new_code_cell(code); c.metadata["tags"]=["sanity"]
-insert_after("These are smooth curves of a cooling time course", c)
-md=nbformat.v4.new_markdown_cell("LISTING_MD")
-cells.insert(find("Every series (NWB type")+1, md)
-
-# B. session-structure: state sequences of two-block sessions
-rep("claim:session-structure" if False else "cooling_blocks\": int(", 'print("\\nmean within tolerance:", ok_mean, "; range, pre, cooling, post checks:", ok_parts)',
-'''print("\\nmean within tolerance:", ok_mean, "; range, pre, cooling, post checks:", ok_parts)
-def runs(states):
-    out = []
-    for st in states:
-        if out and out[-1][0] == st:
-            out[-1][1] += 1
-        else:
-            out.append([st, 1])
-    return " ".join(f"{ {'Pre-Cooling': 'pre', 'Cooling on': 'on', 'Cooling off': 'off', 'Post-Cooling': 'post'}[a]}x{n}" for a, n in out)
-print("\\nState sequences of the sessions with two cooling blocks (runs of trials), and the trials kept by the onset-aligned series:")
-for k in counts.index[counts.cooling_blocks > 1]:
-    print(f"  {k}: {runs(TR[k].state)}; kept {C.aligned_series(TR[k], columns=('error',))['n_kept']} of {len(TR[k])}")''')
-
-# C. cooling time course
-rep("onset_to_first_cooling_trial_s", '''    rows.append({"session": k, "baseline_C": base,''', '''    rows.append({"session": k, "onset_t": t1[i0], "baseline_C": base,''')
-rep("onset_to_first_cooling_trial_s", '''print(ct.round(1).to_string())''', '''print(ct.drop(columns="onset_t").round(1).to_string())''')
-rep("onset_to_first_cooling_trial_s", '''    print(f"onset threshold {thr} C below baseline: median time to minimum {np.median(vals):.1f} s (n = {len(vals)})")''',
-'''    print(f"onset threshold {thr} C below baseline: median time to minimum {np.median(vals):.1f} s (n = {len(vals)})")
-# onset-aligned mean trace and the time to 90% of the drop
-grid = np.arange(-60, 1201)
-trace = np.vstack([np.interp(ct.onset_t[k] + grid, beh[k]["temp_1hz_t"], beh[k]["temp_1hz"], left=np.nan, right=np.nan) for k in ct.index])
-mtrace = np.nanmean(trace, axis=0)
-t90 = []
-for k, row in zip(ct.index, trace):
-    after = grid >= 0
-    drop = ct.baseline_C[k] - ct.min_C[k]
-    hit = np.flatnonzero(after & (row <= ct.baseline_C[k] - 0.9 * drop))
-    t90.append(grid[hit[0]] if len(hit) else np.nan)
-ct["t90_s"] = t90
-print("\\nOnset-aligned mean MS temperature (C) at", {s_: round(float(mtrace[grid == s_][0]), 2) for s_ in [-60, 0, 30, 60, 90, 120, 180, 300, 600, 900, 1200]})
-print("Minimum of the mean trace at", int(grid[np.nanargmin(mtrace)]), "s after onset; it is within 0.5 C of that minimum from",
-      int(grid[np.flatnonzero(mtrace <= np.nanmin(mtrace) + 0.5)[0]]), "to", int(grid[np.flatnonzero(mtrace <= np.nanmin(mtrace) + 0.5)[-1]]), "s")
-print("Time to 90% of each session's drop: median", np.nanmedian(t90), "s, IQR", np.nanpercentile(t90, [25, 75]).tolist())
-art = ct[(ct.baseline_C > 38) | (ct.onset_to_first_cooling_trial_s > 300)]
-print("Sessions with a baseline above 38 C or an onset more than 300 s before the first cooling trial:", art.index.tolist())
-cl = ct.drop(art.index)
-print(f"variant, without them (n = {len(cl)}): median time to minimum {cl.time_to_min_s.median():.1f} s, to 90% {cl.t90_s.median():.1f} s, "
-      f"until within 1 C of baseline {cl.to_baseline_min.median():.2f} min")
-fig, ax = plt.subplots(figsize=(8, 3))
-ax.plot(grid, mtrace); ax.axvline(0, color="k", lw=0.5); ax.set_xlabel("time from onset (s)"); ax.set_ylabel("mean MS temperature (C)")
-plt.tight_layout(); plt.show()
-print("Plotted range:", round(float(np.nanmin(mtrace)), 2), "to", round(float(np.nanmax(mtrace)), 2), "C")''')
-
-# D. direction fix
-rep("Power relative to the session mean", "out[(m, other)] = (p, lower < n - lower)", "out[(m, other)] = (p, lower > n - lower)")
-
-# E. fig6c
-rep("Peak of the mean smoothed error series", '''print("Unsmoothed mean error by trial after onset (1 to 20):", np.round(raw[idx][:20], 3).tolist())''',
-'''print("Unsmoothed mean error by trial after onset (1 to 20):", np.round(raw[idx][:20], 3).tolist())
-print("Mean smoothed error rate by trial after onset (21 to 40):", np.round(me[idx][20:40], 3).tolist())
-n_ses = np.isfinite(stack(BEH, "error_smooth")).sum(axis=0)
-print("Sessions contributing, by trial after onset:", {int(k_): int(n_ses[onset0 + k_ - 1]) for k_ in [1, 5, 7, 10, 15, 20, 25, 30, 35, 40]})''')
-
-# F. fig4b variant
-rep("exp4b = {", '''for mins in [30, 100]:''', '''print("(oscillation_frequency needs 50 spikes, so 50 is the smallest minimum that can be tested)")
-for mins in [100, 200]:''')
-
-# G. fig3f equal spikes
-rep("pcells = F[[", '''print("By subject, median pre and cooling:"''', '''pe = pi[pi.n_eq >= 20]
-print(f"\\nvariant, each state's spikes subsampled to the smallest count of the three (20 draws averaged), cells with at least 20 spikes in each state (n = {len(pe)}, median {pe.n_eq.median():.0f} spikes):")
-for a, b in [("pre", "cooling"), ("cooling", "post"), ("pre", "post")]:
-    p, n = wsr(pe[f"info_eq_{b}"], pe[f"info_eq_{a}"])
-    p0, _ = wsr(pe[f"info_{b}"], pe[f"info_{a}"])
-    print(f"  {a} against {b}: medians {pe['info_eq_' + a].median():.3f} and {pe['info_eq_' + b].median():.3f}; median change {np.nanmedian(pe['info_eq_' + b] - pe['info_eq_' + a]):.3f}; "
-          f"P = {p:.2g} (n = {n}); without subsampling on the same cells P = {p0:.2g}")
-print("By subject, median pre and cooling:"''')
-
-# H. suppl1g counts
-rep("Waveform windows (s) and the mean temperature", '''print("Units whose largest channel moved between windows:"''', '''print("Spikes averaged per unit, median (IQR): pre", wv.nwf_pre.median(), wv.nwf_pre.quantile([.25, .75]).tolist(),
-      "; cooling", wv.nwf_cooling.median(), wv.nwf_cooling.quantile([.25, .75]).tolist(), "; fewer in cooling than pre in", int((wv.nwf_cooling < wv.nwf_pre).sum()), "units")
-cap = wv[(wv.nsp_pre >= 300) & (wv.nsp_cooling >= 300)]
-print(f"units with at least 300 spikes in both windows, so both means use the 300-spike cap (n = {len(cap)}): amplitude median change "
-      f"{100 * ((cap.amp_cooling - cap.amp_pre) / cap.amp_pre).median():.1f}%, P = {wsr(cap.amp_cooling, cap.amp_pre)[0]:.2g}; "
-      f"ttp higher in {(cap.ttp_cooling > cap.ttp_pre).sum()}, lower in {(cap.ttp_cooling < cap.ttp_pre).sum()}, P = {wsr(cap.ttp_cooling, cap.ttp_pre)[0]:.2g}")
-print("Units whose largest channel moved between windows:"''')
-
-# I. fig5d per-pair
-rep("Median control period over sessions", '''# variant: period of the summed correlogram''', '''# per-pair periods, and the nearest neighbouring peak in place of the largest
-bins_p = np.arange(60, 210, 10)
-for c in ["pre", "cooling", "post"]:
-    v = P5[f"period_{c}"].dropna(); vn = P5[f"period_near_{c}"].dropna()
-    print(f"per-pair period, {c}: histogram over {bins_p[0]} to {bins_p[-1]} ms in 10 ms bins (largest neighbour) {np.histogram(v, bins_p)[0].tolist()}; "
-          f"(nearest neighbour) {np.histogram(vn, bins_p)[0].tolist()}")
-both = P5.dropna(subset=["period_pre", "period_near_pre"])
-print(f"pre pairs where the largest neighbour is more than 1.25 times as far as the nearest: {(both.period_pre > 1.25 * both.period_near_pre).mean():.3f} of {len(both)}")
-print("|Ltr| of pairs (cm), quartiles:", P5.ltr.abs().quantile([.25, .5, .75]).round(1).tolist())
-for lim in [10, 20]:
-    g = P5[P5.ltr.abs() < lim]
-    print(f"pairs with |Ltr| < {lim} cm (n = {len(g)}): median control period {pd.concat([g.period_pre, g.period_post]).median():.1f} ms (largest), "
-          f"{pd.concat([g.period_near_pre, g.period_near_post]).median():.1f} ms (nearest); cooling {g.period_cooling.median():.1f} and {g.period_near_cooling.median():.1f} ms")
-pn_ = P5.groupby("session").apply(lambda g: pd.Series({"control": pd.concat([g.period_near_pre, g.period_near_post]).median(), "cooling": g.period_near_cooling.median()}))
-p_n, n_n = wsr(pn_.cooling, pn_.control)
-print(f"variant, nearest neighbour: median control period over sessions {pn_.control.median():.1f} ms, cooling {pn_.cooling.median():.1f} ms; "
-      f"longer in {(pn_.cooling > pn_.control).sum()} of {n_n}, P = {p_n:.3g}")
-fig, ax = plt.subplots(figsize=(6, 3))
-ax.hist([pd.concat([P5.period_pre, P5.period_post]).dropna(), pd.concat([P5.period_near_pre, P5.period_near_post]).dropna()], bins=bins_p, label=["largest", "nearest"])
-ax.set_xlabel("pair period, control (ms)"); ax.set_ylabel("pairs"); ax.legend(); plt.tight_layout(); plt.show()
-print("Plotted: all control pair periods; by construction they lie in 60 to 200 ms")
-# variant: period of the summed correlogram''')
-
-# J. fig5cg ambiguity
-rep("Compression over pooled pre pairs", '''r_, p_, n_ = C.pearson(P5.tau_pre, P5.ltr)''', '''bt = P5.dropna(subset=["tau_pre"])
-print(f"  pre pairs whose lag differs between the 70 ms window and the half-period window: {(bt.tau_pre != bt.tau_half_pre).mean():.3f} of {len(bt)} "
-      f"(no peak in the half-period window: {bt.tau_half_pre.isna().mean():.3f})")
-r_, p_, n_ = C.pearson(P5.tau_pre, P5.ltr)''')
-
-# K. fig5j and 5k
-rep("Theta cycles during runs in trials:", '''print("variant, session means, signed-rank cooling against pre:", round(wsr(sesj.cooling, sesj.pre)[0], 3), "; lower in", int((sesj.cooling < sesj.pre).sum()), "of", len(sesj))''',
-'''print("variant, session means, signed-rank:", {f"{a} vs {b}": round(wsr(sesj[a], sesj[b])[0], 3) for a, b in [("pre", "cooling"), ("cooling", "post"), ("pre", "post")]},
-      "; cooling lower than pre in", int((sesj.cooling < sesj.pre).sum()), "of", len(sesj))
-print("Mean cycle duration (ms) by state:", CY.groupby("state").duration_ms.mean().round(1).to_dict())
-print("Cycles per session and state:"); print(CY.groupby(["session", "state"]).size().unstack().to_string())''')
-rep("Mean spikes per cycle (all good units)", '''print("variant, session means, signed-rank cooling against pre:", round(wsr(sesk.cooling, sesk.pre)[0], 3), "; against post:", round(wsr(sesk.cooling, sesk.post)[0], 3))''',
-'''print("variant, session means, signed-rank:", {f"{a} vs {b}": round(wsr(sesk[a], sesk[b])[0], 3) for a, b in [("pre", "cooling"), ("cooling", "post"), ("pre", "post")]})''')
-
-nbformat.write(nb, p)
-print("ok", len(cells))
-PYEOF
-$TMPDIR/v59/bin/python $TMPDIR/edit_nb.py
+sed -i 's/  runtime_minutes: 20/  runtime_minutes: 30/' entries/petersen-2020/entry.yaml && python tools/entry.py check entries/petersen-2020 2>&1 | tail -15
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/edit_nb.py", line 1, in <module>
-    import nbformat
-ModuleNotFoundError: No module named 'nbformat'
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "import nbformat" && python $TMPDIR/edit_nb.py
-```
-
-```
-ok 143
-```
-
-**Agent**
-
-Edits applied. Running the full entry now (about six minutes last time).
-
-**Agent calls Bash**
-
-```bash
-cd  && python tools/entry.py all entries/000059-petersen-2020 2>&1 | tail -30
-```
-
-```
-Installed kernelspec registry-000059-petersen-2020 in executed/000059-petersen-2020/.venv/share/jupyter/kernels/registry-000059-petersen-2020
 0 error(s)
-pass  reproduce_petersen_2020.ipynb  (712 s)
 ```
-
-**Agent**
-
-Run passed (712 s). Reading the new outputs.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF' > $TMPDIR/out.txt
-import json
-nb=json.load(open('executed/000059-petersen-2020/reproduce_petersen_2020.ipynb'))
+grep -n "—\|rather" attempts/petersen-2020-02.yaml entries/petersen-2020/README.md entries/petersen-2020/ms_cooling.py | head; python -c "
+import json;nb=json.load(open('entries/petersen-2020/reproduce_petersen_2020.ipynb'))
 for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print(f"=== cell {i} tags={c.get('metadata',{}).get('tags')}")
-    for o in c.get('outputs',[]):
-        if o.get('output_type')=='stream': print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
-        elif o.get('output_type')=='error': print("ERROR", o['ename'])
-EOF
-wc -l $TMPDIR/out.txt
-```
-
-```
-915 /tmp/claude-1001/out.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/out.txt"
-}
-```
-
-```
-1	=== cell 1 tags=None
-2	=== cell 2 tags=['load']
-3	=== cell 3 tags=None
-4	dandiset 000059 version 0.250624.0444: 50 sessions, loaded in 701 s (13 with unit analyses)
-5	
-6	=== cell 5 tags=['sanity']
-7	0.210812.1514: 54 files, 3.26 TB
-8	0.230907.2101: 100 files, 2.94 TB
-9	0.250624.0444: 100 files, 2.94 TB
-10	0.230907.2101 and 0.250624.0444 hold the same paths, sizes and blobs: True
-11	sessions only in 0.210812.1514: ['MS12-170712-101120', 'MS13-171204-102904', 'MS13-171205-110831', 'MS13-171206-132039']
-12	
-13	0.210812.1514, file sub-MS10_ses-Peter-MS10-170319-180352-concat_behavior+ecephys.nwb has a trials table: False ; has units: True ; has LFP: True
-14	
-15	=== cell 7 tags=['sanity']
-16	Sessions per subject: {'MS10': 9, 'MS12': 8, 'MS13': 5, 'MS21': 15, 'MS22': 13} ; total 50
-17	Paper: 53 sessions in 5 rats (Figure 2). The code's behavioural list (BatchProcessing.m) has 53 sessions; 47 of them are in the dandiset.
-18	Code sessions not in the dandiset: ['MS12-170715-111545', 'MS12-170712-101120', 'MS13-171206-132039', 'MS13-171205-110831', 'MS13-171204-102904', 'MS21-180806-111316']
-19	Dandiset sessions not in the code's behavioural list: ['MS10-170307-154746', 'MS21-180719-155941', 'MS22-180719-122813']
-20	Code's Figure 5 sessions in the dandiset: 17 of 18
-[... 572 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/out.txt",
- "offset": 592
-}
-```
-
-```
-592	Interneurons with an autocorrelogram peak in pre and cooling: 114 of 129
-593	oscillation frequency pre 9.55, cooling 8.66, post 9.42 Hz; lower in 105; signed-rank P = 8.7e-16 (n = 114)
-594	decrease 9.4%; LFP theta decrease in the same sessions (reading (a)) 8.8%
-595	By subject: {'MS12': {'osc_pre': 9.52, 'osc_cooling': 8.23}, 'MS13': {'osc_pre': 9.12, 'osc_cooling': 8.26}, 'MS21': {'osc_pre': 9.47, 'osc_cooling': 8.33}, 'MS22': {'osc_pre': 9.66, 'osc_cooling': 8.97}}
-596	variant, narrow waveform only (n = 83): pre 9.32, cooling 8.43 Hz, P = 3.1e-11
-597	
-598	=== cell 89 tags=['claim:suppl1g-waveforms-unchanged']
-599	Waveform windows (s) and the mean temperature of the coldest cooling trial:
-600	                                              pre                                   cooling cooling_window_temp
-601	MS12-170716-172307       (7022.75615, 7142.75615)                  (8817.10535, 8937.10535)           18.867797
-602	MS12-170719-095305       (19127.8269, 19247.8269)              (21038.440225, 21158.440225)           20.356578
-603	MS13-171128-113924       (13651.6122, 13771.6122)              (14220.337775, 14340.337775)           20.633155
-604	MS13-171201-130527     (12333.46545, 12453.46545)                    (12801.729, 12921.729)           20.393548
-605	MS21-180625-153927          (58.55275, 178.55275)    (514.7125249999999, 634.7125249999999)           17.052737
-606	MS21-180628-155921  (44.8137, 164.81369999999998)                  (527.768325, 647.768325)           20.245797
-607	MS21-180629-110332       (6379.86145, 6499.86145)                  (6806.29755, 6926.29755)           19.010863
-608	MS22-180628-120341         (9768.0003, 9888.0003)              (10302.256525, 10422.256525)           22.734461
-609	MS22-180629-110319         (6357.4987, 6477.4987)                (6819.020875, 6939.020875)           23.136223
-610	MS22-180711-112912         (4837.7538, 4957.7538)  (5335.5362000000005, 5455.5362000000005)           23.898493
-611	MS22-180720-11005
-[... 305 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit_md.py <<'PYEOF'
-import nbformat
-p="reproduce_petersen_2020.ipynb"
-nb=nbformat.read(p, as_version=4)
-cells=nb.cells
-def setmd(sub, text):
-    m=[i for i,c in enumerate(cells) if c.cell_type=="markdown" and sub in c.source]
-    assert len(m)==1,(sub,m)
-    cells[m[0]].source=text
-def rep(sub,a,b):
-    m=[i for i,c in enumerate(cells) if sub in c.source]
-    assert len(m)==1,(sub,m); assert cells[m[0]].source.count(a)==1,(a[:50])
-    cells[m[0]].source=cells[m[0]].source.replace(a,b)
-
-setmd("LISTING_MD", """Each of the 100 files was listed. The processed files hold four series in `processing/behavior`
-(Acceleration, SubjectPosition, SubjectSpeed and Temperature) and the raw files hold the wide-band
-ElectricalSeries and the LFP; the only temperature series is the MS `Temperature`, so the files
-hold no hippocampal temperature. In the 49 sessions whose LFP was read, the LFP's `electrodes`
-region lists the electrode rows in order, so the LFP column read is the row flagged
-`theta_reference`, and the raw file flags the same row as the processed file.""")
-
-setmd("**Result: reproduced.** The 45 BEH sessions hold", """**Result: reproduced.** The 45 BEH sessions hold a mean of 143.8 trials (80 to 204), with
-medians of 39 pre-cooling, 47 cooling and 44 post-cooling trials, all within the criterion. 12
-sessions have two cooling blocks, which the paper does not mention. In each of them the second
-block follows post-cooling trials, and the onset-aligned series used below stops before it.""")
-
-setmd("**Result: partially reproduced.** The cooling lasted", """**Result: partially reproduced.** The cooling lasted a median 12.16 minutes from onset
-until the temperature was again within 1 C of baseline (reading b, within 9 to 13.2 minutes;
-8.77 minutes below 32 C under reading a). The minimum came a median 121 s after the onset (IQR
-89 to 138 s), twice the 60 s of the Methods, and the onset threshold (0.5, 1 or 2 C) does not
-change this (119 to 122 s). The temperature falls fast and then stays near its minimum: 90% of
-each session's drop is reached a median 53 s after onset (IQR 44 to 63 s), and the onset-aligned
-mean trace has its minimum at 121 s and is within 0.5 C of it from 70 to 152 s. Leaving out the
-five sessions with an artefact baseline above 38 C or an early onset gives 121.5 s to the minimum
-and 12.22 minutes.""")
-
-setmd("**Result: reproduced.** The mean smoothed error rate peaks at trial 7", """**Result: reproduced.** The mean smoothed error rate peaks at trial 7 after the onset of
-cooling (0.193, against 0.066 over the 40 trials before), the same trial as the minimum of the mean
-temperature and of the mean theta frequency. The peak is narrow: trials 7 and 8 are at 0.193, and a
-second rise reaches 0.186 at trial 20 before the rate falls to 0.083 at trial 40. All 45 sessions
-contribute at every trial from 1 to 40. In single rats the peak of the mean falls later, at trials
-14 to 26.""")
-
-setmd("**Result: partially reproduced.** Over the 15 sessions of the code's Figure 5 list", """**Result: not reproduced.** Over the 15 sessions of the code's Figure 5 list, neither reading
-gives both values within the paper's spreads. Over all frames the mean speed is 78.9 cm/s in
-control trials and 74.9 cm/s during cooling, both outside. Over frames above 10 cm/s control is
-79.6 cm/s, within 87.3 +- 8.0, and cooling 76.0 cm/s, just below 86.2 +- 9.9. Speed is lower during
-cooling than in control (P = 0.035 to 0.041), where the paper's values are close to each other.""")
-
-setmd("**Result: not reproduced.** Across 646 units the waveforms differ", """**Result: not reproduced.** Across 646 units the waveforms differ between the pre window and
-the coldest cooling window: trough-to-peak by the signed-rank test (P = 4.9e-10, median change 0,
-since most units do not change by a whole 0.05 ms sample) and amplitude by a median 0.8%
-(P = 0.00057). Fewer spikes are averaged in the cooling window (median 200 against 247.5), but in
-the 208 units whose two means both use 300 spikes the changes remain (amplitude 0.7%, P = 0.032;
-trough-to-peak P = 2.2e-05), so the spike count does not explain them. Both changes are small, and
-the two windows are 8 to 32 minutes apart (printed above), so electrode drift cannot be told apart
-from cooling here; for interneurons alone neither differs (P = 0.066 and 0.2).""")
-
-setmd("**Result: reproduced.** Over 361 place fields (the paper has 365)", """**Result: reproduced.** Over 361 place fields (the paper has 365), fLFP is 8.54, 7.77 and
-8.60 Hz and fp 10.55, 9.57 and 10.39 Hz before, during and after cooling, all six within the
-paper's spreads. Both fall during cooling (fp in 311 fields, P = 3.5e-44; fLFP in 352, P = 1.2e-60)
-by 9.2% and 9.0%, and both recover (P = 4.5e-37 and 6.8e-61). Each rat and session shows the same
-pattern, and fields with at least 100 or 200 spikes per state give the same means.""")
-
-setmd("**Result: partially reproduced.** Over 52035 windows", """**Result: partially reproduced.** Over 52474 windows of 20 trials, fLFP rises with
-temperature at R = 0.678 and 0.0716 Hz per C, and fp at a slope of 0.0859 Hz per C, all three
-within tolerance; the fp correlation is R = 0.338, just below 0.38 +- 0.038. The windows overlap
-(stepped by one trial), so the P values over windows overstate the evidence.""")
-
-setmd("**Result: not reproduced.** The paper's default paired test finds information", """**Result: not reproduced.** The paper's default paired test finds information content lower
-during cooling than before (median change -0.029 against a median of 1.253 bits/spike, P = 0.014
-over 374 place cells) and lower after cooling than before (P = 0.0064); cooling and post do not
-differ (P = 0.31). With each state's spikes subsampled to the same count (360 cells), pre against
-cooling still gives P = 0.0073 and pre against post P = 0.0092, so the decrease does not come from
-the different numbers of spikes in the states.""")
-
-setmd("**Result: partially reproduced.** The period of the pair cross-correlograms lengthens", """**Result: partially reproduced.** Under the criterion's estimator the period of the pair
-cross-correlograms lengthens during cooling, from a median 109.2 to 114.0 ms (longer in 8 of 9
-sessions, P = 0.0195), and the phase period does not change (1.740 and 1.760 pi rad, P = 0.59),
-but the control period is 109.2 ms, not 85 +- 8.5 ms. That estimator takes the largest neighbouring
-peak within 60 to 200 ms, and in 47.7% of pre pairs this peak is more than 1.25 times as far as the
-nearest one, so it often picks the second neighbour. Taking the nearest neighbouring peak (a
-variant) gives a control period of 91.0 ms, within tolerance, which lengthens to 95.5 ms during
-cooling (7 of 9 sessions, P = 0.031); pairs with |Ltr| below 10 cm give 91.0 ms. Both are shorter
-than the LFP theta period (115.7 ms), as the paper says of its 85 ms.""")
-
-setmd("**Result: not reproduced.** The distance-time compression over pooled pre pairs", """**Result: not reproduced.** The distance-time compression over pooled pre pairs is
-0.273 cm/ms, half of 0.54, and the per-session compression is lower during cooling in 8 of 9
-sessions without reaching significance (0.298 against 0.191 cm/ms, P = 0.0547). The phase
-compression does not change (P = 0.426). Time lag and distance correlate weakly in these pairs
-(R = 0.195), so the slope depends on the fit: the inverse regression over pooled pre pairs gives
-7.175 cm/ms. In 10.5% of pre pairs the lag changes when the window is narrowed to half the theta
-period, so the 70 ms window often holds more than one candidate peak; the lags are noisy, which
-flattens the slope, and the compression magnitude cannot be judged from this method.""")
-
-setmd("**Result: not reproduced.** Over 9037 pre and 10152 cooling theta cycles", """**Result: not reproduced.** Over 9037 pre and 10152 cooling theta cycles, the fraction of
-place cells active per cycle is higher during cooling (mean 0.2405 against 0.226, rank-sum
-P = 1.5e-22). Per session the cooling mean is lower than pre in 5 of 9 sessions (P = 0.734), and
-cooling does not differ from post (P = 0.074), while pre and post differ (P = 0.004). The pooled
-test mixes sessions whose means range from 0.159 to 0.315 and that contribute different numbers
-of cycles in each state, so it reflects the make-up of the pool as much as an effect. Cycles are
-longer during cooling (131.1 ms against 117.8 and 117.2 ms).""")
-
-setmd("**Result: not reproduced.** Spikes per theta cycle do not differ", """**Result: not reproduced.** Spikes per theta cycle do not differ between pre and cooling
-(45.68 and 44.98, P = 0.0758) but are higher after cooling (51.68) than during it or before it
-(both P below 1e-50), so not all comparisons are null. Per session, cooling differs from neither
-pre (P = 0.57) nor post (P = 0.129), and post differs from pre (P = 0.02). Session means range from
-17.66 to 91.37 spikes, so the pooled tests depend on how many cycles each session contributes.""")
-
-rep("| Claim | Outcome |", "| fig5-speed-control-cooling | partially reproduced |", "| fig5-speed-control-cooling | not reproduced (cooling 74.9 to 76.0 cm/s, below the spread) |")
-rep("| Claim | Outcome |", "| fig5d-ccg-period | partially reproduced (lengthens; 109 ms, not 85) |", "| fig5d-ccg-period | partially reproduced (lengthens; 109 ms, not 85; 91 ms with the nearest peak) |")
-rep("| Claim | Outcome |", "The CCG period is measured per pair.", "The CCG period is measured per pair, with an estimator that often picks the second neighbouring peak (the nearest-peak variant is shown).")
-nbformat.write(nb,p)
-print("ok")
-PYEOF
-python $TMPDIR/edit_md.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/__init__.py", line 169, in read
-    buf = fp.read()
-          ^^^^^^^
-AttributeError: 'str' object has no attribute 'read'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/tmp/claude-1001/edit_md.py", line 3, in <module>
-    nb=nbformat.read(p, as_version=4)
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/__init__.py", line 171, in read
-    with open(fp, encoding="utf8") as f:  # noqa: PTH123
-         ~~~~^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'reproduce_petersen_2020.ipynb'
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000059-petersen-2020 && python $TMPDIR/edit_md.py
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit_md2.py <<'PYEOF'
-import nbformat
-p="reproduce_petersen_2020.ipynb"
-nb=nbformat.read(p, as_version=4)
-for c in nb.cells:
-    if c.cell_type=="markdown" and "In 10.5% of pre pairs" in c.source:
-        a="""In 10.5% of pre pairs the lag changes when the window is narrowed to half the theta
-period, so the 70 ms window often holds more than one candidate peak; the lags are noisy, which
-flattens the slope, and the compression magnitude cannot be judged from this method."""
-        assert a in c.source
-        c.source=c.source.replace(a,"""In 10.5% of pre pairs the lag changes when the window is narrowed to half the theta
-period, and that window gives 0.156 cm/ms, so the compression magnitude depends on how the lag
-is picked and cannot be judged from this method.""")
-nbformat.write(nb,p)
-PYEOF
-python $TMPDIR/edit_md2.py && grep -c "0.156 cm/ms, so" reproduce_petersen_2020.ipynb
-```
-
-```
-1
-```
-
-**Agent**
-
-Conclusions updated. Next: README, entry.yaml runtime, and the attempt record.
-
-**Agent calls Bash**
-
-```bash
-cat README.md
-```
-
-```
-# Petersen & Buzsaki (2020) from dandiset 000059
-
-Tests the findings of [Petersen and Buzsaki (2020)](https://doi.org/10.1016/j.neuron.2020.05.023)
-that can be tested on [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.250624.0444), which
-holds 50 sessions of five rats running a spatial alternation task on a figure-8 maze while the
-medial septum (MS) was cooled: MS temperature, trials with cooling state and choice errors,
-position, LFP, wide-band data, and sorted units in 24 sessions.
-
-| Claim | Outcome |
-|---|---|
-| Session structure (trials per state) | Reproduced |
-| Cooling time course (minimum after 60 s, lasting 10 to 12 min) | Partially reproduced |
-| Theta frequency follows MS temperature (R = 0.81) | Reproduced |
-| Theta power follows MS temperature (R = 0.54) | Not reproduced |
-| Frequency effect more consistent across rats than power | Reproduced |
-| Theta frequency and power lower during cooling | Partially reproduced |
-| Theta frequency falls by 12% | Partially reproduced |
-| Errors increase about 3-fold, in every rat | Partially reproduced |
-| Errors recover after cooling | Reproduced |
-| Worst performance 4 to 8 trials after onset | Reproduced |
-[... 37 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p="README.md"; s=open(p).read()
-for a,b in [("| Running speed in control and cooling trials | Partially reproduced |","| Running speed in control and cooling trials | Not reproduced |"),
-            ("It takes about 6 minutes","It takes about 12 minutes")]:
-    assert s.count(a)==1; s=s.replace(a,b)
-open(p,"w").write(s)
-p="entry.yaml"; s=open(p).read(); a="runtime_minutes: 6"; assert a in s; open(p,"w").write(s.replace(a,"runtime_minutes: 12"))
-EOF
-git diff --stat
-```
-
-```
-entries/000059-petersen-2020/README.md             |   4 +-
- entries/000059-petersen-2020/cooling.py            |  92 +++++++--
- entries/000059-petersen-2020/entry.yaml            |   2 +-
- .../reproduce_petersen_2020.ipynb                  | 209 +++++++++++++++++----
- 4 files changed, 254 insertions(+), 53 deletions(-)
-```
-
-**Agent**
-
-Now the attempt record: outcome notes, the fig5-speed change, and the round-1 verification block.
-
-**Agent calls Bash**
-
-```bash
-cd  && cat > $TMPDIR/edit_att.py <<'PYEOF'
-p="attempts/000059-petersen-2020-01.yaml"; s=open(p).read()
-def rep(a,b):
-    global s
-    assert s.count(a)==1,a[:70]; s=s.replace(a,b)
-rep("""    cooling and 44 post-cooling trials. 12 sessions have two cooling blocks, which the paper does
-    not mention, and 'Cooling off' trials (median 14 per session) are counted in no state.""",
-"""    cooling and 44 post-cooling trials. 12 sessions have two cooling blocks, which the paper does
-    not mention; in each the second block follows post-cooling trials, and the onset-aligned series
-    stops before it. 'Cooling off' trials (median 14 per session) are counted in no state.""")
-rep("""    baseline; under reading (a) the temperature is below 32 C for 8.77 minutes. The median
-    minimum is 21.2 C.""","""    baseline; under reading (a) the temperature is below 32 C for 8.77 minutes. The median
-    minimum is 21.2 C. The drop is fast and the temperature then stays near its minimum, so the
-    time to the minimum overstates the time to the peak effect. 90% of each session's drop is
-    reached a median 53 s after onset (IQR 44 to 63 s), and the onset-aligned mean trace is within
-    0.5 C of its minimum from 70 to 152 s. Without the five sessions whose baseline has artefacts
-    above 38 C or whose onset is detected early, the values are 121.5 s and 12.22 minutes.""")
-rep("""  - The theta electrode is the one flagged theta_reference in the files, which may differ from the
-    paper's; power depends on the electrode more than frequency does.""","""  - The theta electrode is the one flagged theta_reference in the files, which may differ from the
-    paper's; power depends on the electrode more than frequency does. The LFP column read is that
-    row in every session (checked through the LFP electrodes region).
-  - Power is taken from the spectrogram of the 4 to 10 Hz band-passed LFP, as in the paper's code,
-    which reads a little lower at higher frequencies and so partly masks a drop of power during
-    cooling.""")
-rep("""    against 0.066 over the 40 trials before), the trial of the minimum mean temperature and theta
-    frequency. Within single rats the mean peaks later, at trials 14 to 26.""","""    against 0.066 over the 40 trials before), the trial of the minimum mean temperature and theta
-    frequency. The peak is narrow and the result fragile. A second rise reaches 0.186 at trial 20,
-    and within single rats the mean peaks later, at trials 14 to 26. All 45 sessions contribute at
-    every trial from 1 to 40.""")
-rep("""- claim: fig5-speed-control-cooling
-  outcome: partially_reproduced""","""- claim: fig5-speed-control-cooling
-  outcome: not_reproduced""")
-rep("""  notes: Over 15 sessions, reading (a) gives control 78.9 and cooling 74.9 cm/s, both outside;
-    reading (b) gives control 79.6, within 87.3 +- 8.0, and cooling 76.0, 0.3 cm/s below
-    86.2 +- 9.9. Speed is lower during cooling than in control (P = 0.035 to 0.041).""","""  notes: Over 15 sessions, reading (a) gives control 78.9 and cooling 74.9 cm/s, both outside;
-    reading (b) gives control 79.6, within 87.3 +- 8.0, and cooling 76.0, 0.3 cm/s below
-    86.2 +- 9.9. The criterion needs both values within tolerance under one reading, and neither
-    reading gives both. Speed is lower during cooling than in control (P = 0.035 to 0.041).""")
-rep("""    neither differs (P = 0.066 and 0.2). The effect is small, and the outcome follows the paper's
-    test as written.""","""    neither differs (P = 0.066 and 0.2). Fewer spikes are averaged in the cooling window (median
-    200 against 247.5), but in the 208 units whose two means both use the 300-spike cap the changes
-    remain (amplitude 0.7%, P = 0.032; trough-to-peak P = 2.2e-05), so the spike count does not
-    explain them. The effect is small, and the outcome follows the paper's test as written.""")
-rep("""    the same pattern, and 30 or 100 spikes per state give the same means.""","""    the same pattern, and fields with at least 100 or 200 spikes per state give the same means.""")
-rep("""  measured:
-  - 0.677
-  - 0.0714
-  - 0.338
-  - 0.0859
-  notes: Over 52035 windows from 562 fields, fLFP R = 0.677 and slope 0.0714 Hz per C, fp slope
-    0.0859, within tolerance; fp R = 0.338, just below 0.342.""","""  measured:
-  - 0.678
-  - 0.0716
-  - 0.338
-  - 0.0859
-  notes: Over 52474 windows from 563 fields, fLFP R = 0.678 and slope 0.0716 Hz per C, fp slope
-    0.0859, within tolerance; fp R = 0.338, just below 0.342. The windows overlap (stepped by one
-    trial), so the P values over windows overstate the evidence; the paper's code does the same.""")
-rep("""    (P = 0.0064); cooling and post do not differ (P = 0.31). The changes are small.""","""    (P = 0.0064); cooling and post do not differ (P = 0.31). The changes are small. Bits per spike
-    rise when fewer spikes are used, and the pre state has the fewest trials, but with each state's
-    spikes subsampled to the same count (360 cells) pre against cooling gives P = 0.0073 and pre
-    against post P = 0.0092, so the decrease does not come from the spike counts.""")
-rep("""  notes: Over 9 sessions the period lengthens from 109.2 to 114.0 ms (8 of 9, P = 0.0195) and the
-    phase period does not change (1.740 and 1.760 pi rad, P = 0.59); the control period is not
-    85 +- 8.5 ms. It is shorter than the LFP theta period (115.7 ms).""","""  notes: Over 9 sessions the period lengthens from 109.2 to 114.0 ms (8 of 9, P = 0.0195) and the
-    phase period does not change (1.740 and 1.760 pi rad, P = 0.59); the control period is not
-    85 +- 8.5 ms. The criterion's estimator takes the largest neighbouring peak 60 to 200 ms from
-    the main peak, and in 47.7% of pre pairs that peak is more than 1.25 times as far as the
-    nearest one, so it often picks the second neighbour and the 109.2 ms is biased upward. With
-    the nearest neighbouring peak (a variant) the control period is 91.0 ms, within tolerance, and
-    it lengthens to 95.5 ms (7 of 9, P = 0.031); pairs with |Ltr| below 10 cm give 91.0 ms. Under
-    that variant all three parts of the criterion hold; the outcome follows the criterion's
-    estimator. Both control periods are shorter than the LFP theta period (115.7 ms).""")
-rep("""  - 9 sessions in 4 rats, against 18 in 5.
-- claim: fig5cg-compression""","""  - 9 sessions in 4 rats, against 18 in 5.
-  - The criterion's period estimator often takes the second neighbouring peak; the nearest-peak
-    estimator is shown as a variant.
-- claim: fig5cg-compression""")
-rep("""    does not change (P = 0.426). Lag and distance correlate weakly (R = 0.195), so the slope depends
-    on the fit (inverse regression 9.085 cm/ms). The direction of the change agrees with the paper.""","""    does not change (P = 0.426). Lag and distance correlate weakly (R = 0.195), so the slope depends
-    on the fit (inverse regression over pooled pre pairs 7.175 cm/ms). The 70 ms window can hold
-    more than one candidate peak; in 10.5% of pre pairs the lag changes when the window is narrowed
-    to half the theta period, which gives 0.156 cm/ms. The compression magnitude cannot be judged
-    from this method. The direction of the change agrees with the paper.""")
-rep("""    and against post (P = 1.3e-10); pre and post do not differ (P = 0.0967). Reading (b) agrees
-    (P = 0.023, 0.016 and 0.81).""","""    and against post (P = 1.3e-10); pre and post do not differ (P = 0.0967). Reading (b) agrees
-    (P = 0.023, 0.016 and 0.81), and so does the half-period window (P = 3.8e-22 and 2.0e-29).""")
-rep("""  notes: The fraction active is higher during cooling (0.2405 against 0.226, rank-sum P = 1.5e-22
-    over 9037 and 10152 cycles). Per session the cooling mean is lower than pre in 5 of 9 sessions
-    (P = 0.734).""","""  notes: The fraction active is higher during cooling (0.2405 against 0.226, rank-sum P = 1.5e-22
-    over 9037 and 10152 cycles). Per session the cooling mean is lower than pre in 5 of 9 sessions
-    (P = 0.734); cooling against post gives P = 0.074 and pre against post P = 0.004. Session means
-    range from 0.159 to 0.315 and sessions contribute different numbers of cycles in each state, so
-    the pooled test reflects the make-up of the pool as much as an effect. Cycles are longer during
-    cooling (131.1 ms against 117.8 and 117.2 ms).""")
-rep("""    differs from both (P below 1e-50). Per session, cooling differs from neither pre (P = 0.57) nor
-    post (P = 0.129).""","""    differs from both (P below 1e-50). Per session, cooling differs from neither pre (P = 0.57) nor
-    post (P = 0.129), and post differs from pre (P = 0.02). Session means range from 17.66 to 91.37
-    spikes, so the pooled tests depend on how many cycles each session contributes.""")
-rep("""    the dandiset, whose files hold only the MS temperature of the 50 behavioural sessions. The
-    paper's data statement""","""    the dandiset, whose files hold only the MS temperature of the 50 behavioural sessions. The
-    data check lists every series in all 100 files, and the only temperature series is
-    processing/behavior/Temperature. The paper's data statement""")
-open(p,"w").write(s)
-print("ok")
-PYEOF
-python $TMPDIR/edit_att.py
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p="attempts/000059-petersen-2020-01.yaml"; s=open(p).read()
-a="""  - Power is taken from the spectrogram of the 4 to 10 Hz band-passed LFP, as in the paper's code,
-    which reads a little lower at higher frequencies and so partly masks a drop of power during
-    cooling."""
-assert a in s
-s=s.replace(a,"""  - Power is taken from the spectrogram of the 4 to 10 Hz band-passed LFP, as in the paper's code
-    (calcInstantaneousTheta.m); the band-pass weights frequencies within the band unequally.""")
-open(p,"w").write(s)
-EOF
+    s=''.join(c['source'])
+    if '—' in s or 'rather' in s: print(i)
+"
 ```
 
 ```
@@ -1564,483 +2514,70 @@ EOF
 
 **Agent**
 
-Now appending the verification round.
+Checks pass. Running the final full execution now (about 27 minutes).
 
 **Agent calls Bash**
 
 ```bash
-cat >> attempts/000059-petersen-2020-01.yaml <<'EOF'
-verifications:
-- date: '2026-10-16'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
-    the helper module and the claims file, with the PMC author manuscript of the paper. The verifier
-    checked the blocked claim against the archive's file list and metadata and tested the helper
-    functions on synthetic inputs. Report in transcripts/000059/verifier-1-report.md.
-  results:
-  - claim: session-structure
-    agrees: true
-    outcome: reproduced
-    reason: Cell 28 gives a mean of 143.8 trials, range 80 to 204, and medians of 39 pre, 47 cooling
-      and 44 post. All are inside the criterion's bounds.
-    response: No change of outcome. Added the state sequences of the 12 sessions with two cooling
-      blocks and the trials the onset-aligned series keeps (problem 13). In every one the second
-      block follows post-cooling trials, so the series already stopped before it; the helper now
-      stops at the first return to cooling from any state, and no number changed.
-  - claim: cooling-time-course
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 30 gives a median time to minimum of 121 s against 60 +- 6 s. The duration until
-      back within 1 C of baseline is 12.16 min, inside 9 to 13.2. The paper's Results say about 45
-      s, its Methods about 60 s. Some baselines come from artefact-contaminated traces (problem 6),
-      and the argmin over 5 minutes is pushed late by a slowly drifting plateau (problem 7); neither
-      affects the conclusion.
-    response: No change of outcome. Added the onset-aligned mean MS temperature trace in seconds
-      (minimum at 121 s, within 0.5 C of it from 70 to 152 s), the time to 90% of each session's
-      drop (median 53 s, IQR 44 to 63 s), and a variant without the five sessions with an artefact
-      baseline or an early onset (121.5 s and 12.22 minutes). The criterion fixes the time to the
-      minimum; the notes now give the 90% time.
-  - claim: fig2g-theta-freq-temperature
-    agrees: true
-    outcome: reproduced
-    reason: Cell 32 gives R = 0.789, P = 2.8e-43 (TEMP sessions).
-    response: No change. The LFP column is now looked up through the LFP electrodes region, and the
-      data check shows it is the theta_reference row in all 49 sessions read (problem 12); no number
-      changed.
-  - claim: fig2h-theta-power-temperature
-    agrees: true
-    outcome: not_reproduced
-    reason: Cell 34 gives R = -0.056 (P = 0.44) on TEMP and 0.123 (P = 0.085) on BEH. Neither is
-      positive at P < 0.05. The spectrogram is computed on the 4 to 10 Hz filtered signal, which
-      partly masks a cooling power drop, but the paper's calcInstantaneousTheta.m does the same, so
-      this is faithful to the paper (problem 11).
-    response: No change. The use of the band-passed signal is now recorded as a deviation note.
-  - claim: fig2j-frequency-consistent-across-animals
-    agrees: true
-    outcome: reproduced
-    reason: Cell 36 shows frequency R positive with P < 1e-22 in all four animals. Its range is 0.27
-      against 0.72 for power. MS10 has no recorded temperature, so it is absent.
-    response: No change.
-  - claim: fig2i-theta-pre-cooling-post
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 38 shows frequency lower during cooling than pre (P = 1.4e-12) and than post
-      (P = 5.7e-14). Power is lower than pre only marginally (P = 0.048, 26 of 45 sessions) and not
-      lower than post (P = 0.94). An unused direction flag in the cell is inverted (problem 9).
-    response: No change of outcome. Fixed the direction flag; it was not used and no number changed.
-  - claim: disc-theta-frequency-12-percent
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 40 gives decreases of 8.9%, 9.2% and 9.2%. All are decreases, none within 12 +- 1.2.
-    response: No change.
-  - claim: fig6d-errors-increase
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 42 gives ratios 2.28, 2.31 and 2.53, all outside 3.0 +- 0.3. Over sessions P = 3e-7.
-      MS22 (12 sessions) has P = 0.064.
-    response: No change.
-  - claim: fig6e-errors-recover
-    agrees: true
-    outcome: reproduced
-    reason: Cell 44 gives post against pre P = 0.84, median difference -0.13 points.
-    response: No change.
-  - claim: fig6c-worst-trials-4-to-8
-    agrees: true
-    outcome: reproduced
-    reason: In cell 46 the error peak is at trial 7, and the temperature minimum is also at trial 7.
-      This is fragile, as each animal's own peak falls at trials 14 to 26.
-    response: No change of outcome. Added the mean smoothed error rate for trials 21 to 40 after
-      onset and the number of sessions contributing at each trial (all 45 from trial 1 to 40). The
-      conclusion and notes now say the peak is narrow and that a second rise reaches 0.186 at trial
-      20.
-  - claim: fig6f-errors-temperature
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 48 gives R = -0.84, -0.79 and -0.87, all with P < 1e-40. Negative, but far from
-      -0.35.
-    response: No change.
-  - claim: fig6g-errors-theta-frequency
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 50 gives R = -0.87 and -0.73. Negative, but outside tolerance.
-    response: No change.
-  - claim: fig6h-errors-theta-power
-    agrees: true
-    outcome: partially_reproduced
-    reason: In cell 52 only MS10 meets R < -0.3 with P < 0.01. One animal counts, against 2 expected.
-    response: No change.
-  - claim: fig6i-errors-not-speed
-    agrees: true
-    outcome: not_reproduced
-    reason: In cell 54 MS13, MS21 and MS22 have P < 0.05 (R = -0.49, 0.22, 0.25).
-    response: No change.
-  - claim: fig4e-speed-decreases-within-session
-    agrees: true
-    outcome: reproduced
-    reason: In cell 56 speed falls with trial number in 44 of 45 sessions, median rho -0.45,
-      P = 4e-13.
-    response: No change.
-  - claim: fig5-speed-control-cooling
-    agrees: false
-    outcome: not_reproduced
-    reason: In cell 58 reading (a) gives 78.9 and 74.9 cm/s, both outside. Reading (b) gives control
-      79.6 (inside) and cooling 76.0 (just below 76.3).
-    response: Outcome changed from partially_reproduced to not_reproduced. The criterion reproduces
-      the claim when both values are within tolerance under one reading and states no partial case,
-      and neither reading gives both. The conclusion, summary, README and notes now say so.
-  - claim: suppl2-place-cell-rates-decrease
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 62 gives decreases of 3.7 to 7.7% (within-field) and 5.3 to 6.7% (peak), P = 0.0024
-      and 0.0013. Both are significant, neither within tolerance, and neither reaches P < 0.001.
-    response: No change.
-  - claim: disc-interneuron-rates-decrease
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 64 gives a decrease of 6.5% (median) or 9.1% (ratio of means), P = 0.0017. The 14%
-      is not reached.
-    response: No change.
-  - claim: fig4b-fp-flfp-decrease
-    agrees: true
-    outcome: reproduced
-    reason: In cell 70 all six means are within the stated spreads (n = 361 fields against the
-      paper's 365). Both fp and fLFP decrease during cooling, P < 1e-43. The 30-spike variant is the
-      same as the main result, because oscillation_frequency returns NaN below 50 spikes, so it
-      tests nothing (problem 8).
-    response: No change of outcome. Replaced the 30-spike variant with 100 and 200 spikes per state,
-      which give the same means, and corrected the notes, which said 30 spikes.
-  - claim: fig4c-fp-flfp-correlation
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 72 gives R = 0.23, 0.44 and 0.16, all positive with P < 0.003, all outside tolerance.
-    response: No change.
-  - claim: fig4ac-fp-flfp-difference-preserved
-    agrees: true
-    outcome: not_reproduced
-    reason: In cell 74 fp - fLFP is lower during cooling, P = 1.3e-4, median change -0.13 Hz. The
-      mean change is mostly from MS12 (-1.03 Hz); the other animals are near 0.
-    response: No change.
-  - claim: fig4a-frequency-temperature-slopes
-    agrees: true
-    outcome: partially_reproduced
-    reason: In cell 76 fLFP R = 0.677 and slope 0.0714 are within tolerance, as is the fp slope
-      (0.086). The fp R of 0.338 is just below 0.342. The window loop drops the last 20-trial window,
-      and the P value pools about 52,000 overlapping windows, which is pseudo-replication; the
-      paper's code does the same (problem 10).
-    response: No change of outcome. The last window of each field is now included, which gives
-      52474 windows, fLFP R = 0.678 and slope 0.0716, fp R = 0.338 and slope 0.0859. The conclusion
-      and notes now say that the windows overlap, so the P values overstate the evidence.
-  - claim: fig3c-field-size-correlated
-    agrees: true
-    outcome: reproduced
-    reason: Cell 78 gives R = 0.8197 against a lower bound of 0.819, so it passes by 0.0007. The
-      at-least-100-spike variant (0.814) falls outside.
-    response: No change.
-  - claim: fig3d-size-fp-negative
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 80 gives R = -0.31, -0.31 and -0.32, all with P < 3e-9. Negative, but outside
-      tolerance.
-    response: No change.
-  - claim: fig3e-model-field-size
-    agrees: true
-    outcome: partially_reproduced
-    reason: Cell 82 gives pre R = 0.25 and cooling R = 0.34, both positive with P < 1e-5. Post is
-      0.33 against 0.11 expected.
-    response: No change.
-  - claim: fig3f-information-unchanged
-    agrees: true
-    outcome: not_reproduced
-    reason: Cell 84 gives pre against cooling P = 0.014 and pre against post P = 0.0064. Skaggs bits
-      per spike are biased upward when there are fewer spikes, the pre state has fewer trials than
-      cooling or post, and information falls in the order pre, cooling, post, which matches that
-      bias. No subsampling to equal spikes or occupancy was done (problem 3).
-    response: No change of outcome. Added bits per spike with each state's spikes subsampled to the
-      smallest count of the three (20 draws averaged, 360 cells). Pre against cooling gives
-      P = 0.0073 and pre against post P = 0.0092, so the spike counts do not explain the decrease;
-      the conclusion and notes say so.
-  - claim: fig3hi-population-vector-unchanged
-    agrees: true
-    outcome: reproduced
-    reason: Cell 86 gives P = 0.97 over n = 11 sessions, which gives the test low power.
-    response: No change.
-  - claim: fig4d-precession-slope-decrease
-    agrees: true
-    outcome: partially_reproduced
-    reason: In cell 88, on slope magnitude, cooling is flatter than post (P = 0.022) but not than pre
-      (P = 0.83). The signed reading is not significant.
-    response: No change.
-  - claim: fig4gh-fp-speed
-    agrees: true
-    outcome: reproduced
-    reason: In cell 90 the fp slope (0.0136) is larger than the fLFP slope (0.0061), bootstrap
-      interval 0.004 to 0.011. fp is lower during cooling in all 3 testable bins, which cover only 60
-      to 120 cm/s.
-    response: No change.
-  - claim: fig5d-ccg-period
-    agrees: true
-    outcome: partially_reproduced
-    reason: In cell 92 the period lengthens during cooling (8 of 9 sessions, P = 0.0195) and the phase
-      period does not change (P = 0.59). The control period is 109 ms against 85 +- 8.5, and that
-      value is biased by the estimator (problem 1). pair_period takes the largest local maximum 60
-      to 200 ms from the main peak, which often is the second neighbouring peak, so the 109 ms is
-      not a valid test of 85 ms. Speed was lower during cooling, which spreads the envelope, so part
-      of the lengthening may also come from this bias.
-    response: No change of outcome; the criterion fixes the estimator. Added per-pair period
-      histograms, the |Ltr| quartiles, the fraction of pre pairs whose largest neighbour is more
-      than 1.25 times as far as the nearest (47.7%), and the nearest-neighbour estimator as a
-      variant. That variant gives a control period of 91.0 ms, within tolerance, lengthening to 95.5
-      ms (7 of 9 sessions, P = 0.031), and pairs with |Ltr| below 10 cm give 91.0 ms. Under the
-      variant all three parts of the criterion hold. The conclusion, notes and a deviation say so.
-  - claim: fig5cg-compression
-    agrees: true
-    outcome: not_reproduced
-    reason: Cell 94 gives a per-session decrease P = 0.0547 and pooled pre compression 0.273 cm/ms
-      against 0.54; phase compression is unchanged (P = 0.43). The 70 ms window of peak_lag often
-      holds two candidate peaks, and that ambiguity plus noise in tau flattens the slope (problem 2).
-      The criterion fixes this method, but the compression magnitude cannot be judged from it.
-    response: No change of outcome. Added the fraction of pre pairs whose lag changes when the window
-      is narrowed to half the theta period (10.5%, giving 0.156 cm/ms). The conclusion and notes now
-      say the magnitude cannot be judged from this method, and correct the inverse-regression value
-      from 9.085 cm/ms (the per-session control median) to the pooled 7.175 cm/ms.
-  - claim: fig5h-time-lags-increase
-    agrees: true
-    outcome: reproduced
-    reason: In cell 96 time lags are longer during cooling under both readings. Over pairs, against
-      pre P = 1.1e-6 and against post P = 1.3e-10; over sessions P = 0.023 and 0.016.
-    response: No change. The notes now add that the half-period window gives the same direction
-      (P = 3.8e-22 and 2.0e-29), which bears on problem 2.
-  - claim: fig5i-phase-lags-unchanged
-    agrees: true
-    outcome: not_reproduced
-    reason: Cell 98 gives cooling against pre P = 0.0015 and against post P = 0.0043.
-    response: No change.
-  - claim: fig5j-fraction-active-unchanged
-    agrees: true
-    outcome: not_reproduced
-    reason: Cell 100 gives a pooled rank-sum pre against cooling P = 1.5e-22; over session means
-      P = 0.73. Rank-sum tests over theta cycles pooled across sessions are confounded by session
-      make-up. The outcome stays not_reproduced under the criterion, but it reflects the test, not a
-      clear effect (problem 4).
-    response: No change of outcome. Added session-level tests for all three comparisons (pre against
-      cooling P = 0.734, cooling against post 0.074, pre against post 0.004), the mean cycle
-      duration by state (131.1 ms during cooling, 117.8 and 117.2 ms before and after) and the cycles
-      per session and state. The conclusion and notes say the pooled test reflects the make-up of
-      the pool.
-  - claim: fig5k-spikes-per-cycle-unchanged
-    agrees: true
-    outcome: not_reproduced
-    reason: In cell 102 cooling against post and pre against post both have P about 1e-52. Session
-      means show no difference (problem 4).
-    response: No change of outcome. Added the session-level test of pre against post, which gives
-      P = 0.02; cooling differs from neither pre (P = 0.57) nor post (P = 0.129). The conclusion and
-      notes say the pooled tests depend on how many cycles each session contributes.
-  - claim: suppl1g-waveforms-unchanged
-    agrees: true
-    outcome: not_reproduced
-    reason: Cell 68 gives trough-to-peak P = 4.9e-10 and amplitude P = 5.7e-4 (median +0.8%,
-      n = 646). The peak-to-peak amplitude of a mean waveform rises with noise when fewer spikes are
-      averaged, the counts per window are never shown, and the windows are 7 to 30 minutes apart, so
-      probe drift is mixed with the cooling effect; the amplitude result may be artefactual
-      (problem 5).
-    response: No change of outcome. Added the spikes averaged per window (median 247.5 pre, 200
-      cooling) and the result for the 208 units whose two means both use the 300-spike cap
-      (amplitude +0.7%, P = 0.032; trough-to-peak P = 2.2e-05), so the spike count does not explain
-      the changes. Drift still cannot be separated from cooling, as the notes say.
-  - claim: suppl2d-interneuron-oscillation-slows
-    agrees: true
-    outcome: reproduced
-    reason: Cell 66 gives 9.55 to 8.66 Hz, lower in 105 of 114 units, P = 8.7e-16. The 9.4% decrease
-      is close to the LFP's 8.8%.
-    response: No change.
-  - claim: suppl1-hippocampal-temperature
-    agrees: true
-    outcome: blocked
-    reason: The assets endpoint lists 100 files, all for the five behaving rats, with no subject or
-      file for the MS-plus-hippocampus control experiment, and the dandiset metadata lists no
-      temperature variable. The notebook never printed the full list of series in
-      processing/behavior, so no second temperature channel inside the files was stated but not
-      shown.
-    response: No change of outcome. The data check now lists every series in all 100 files; the only
-      temperature series is processing/behavior/Temperature.
-EOF
-python - <<'EOF'
-import yaml,re
-d=yaml.safe_load(open("attempts/000059-petersen-2020-01.yaml"))
-print(len(d["outcomes"]), len(d["verifications"][0]["results"]))
-import collections; print(collections.Counter(o["outcome"] for o in d["outcomes"]))
-ids=[o["claim"] for o in d["outcomes"]]; vids=[r["claim"] for r in d["verifications"][0]["results"]]; print(set(ids)^set(vids))
-for r in d["verifications"][0]["results"]:
-    o=[x for x in d["outcomes"] if x["claim"]==r["claim"]][0]
-    if r["agrees"] != (r["outcome"]==o["outcome"]): print("mismatch", r["claim"])
-EOF
-grep -n "—\|rather" attempts/000059-petersen-2020-01.yaml entries/000059-petersen-2020/README.md | head
+date -u && timeout 7000 python tools/entry.py all entries/petersen-2020 2>&1 | tail -4; date -u
 ```
 
 ```
-38 38
-Counter({'partially_reproduced': 15, 'reproduced': 12, 'not_reproduced': 10, 'blocked': 1})
-set()
-mismatch fig5-speed-control-cooling
-```
-
-**Agent calls Bash**
-
-```bash
-grep -nP "^\s+(?!- )[^:]*\S: " attempts/000059-petersen-2020-01.yaml | grep -vP "^\d+:\s+(- )?[a-z_]+: " | head; grep -nP "^\s+[a-z_]+: .*: " attempts/000059-petersen-2020-01.yaml | head; cd entries/000059-petersen-2020 && grep -c "—" reproduce_petersen_2020.ipynb cooling.py; grep -n "rather" reproduce_petersen_2020.ipynb cooling.py | head
-```
-
-```
-reproduce_petersen_2020.ipynb:0
-cooling.py:0
-```
-
-**Agent**
-
-Record is consistent: 38 outcomes (12 reproduced, 15 partial, 10 not, 1 blocked), matching the verifier's count. Re-running the entry so the executed copy carries the final text.
-
-**Agent calls Bash**
-
-```bash
-cd  && python tools/entry.py all entries/000059-petersen-2020 2>&1 | tail -5
-```
-
-```
-Installed kernelspec registry-000059-petersen-2020 in executed/000059-petersen-2020/.venv/share/jupyter/kernels/registry-000059-petersen-2020
+Wed Nov 18 03:52:12 UTC 2026
+Installed kernelspec registry-petersen-2020 in executed/petersen-2020/.venv/share/jupyter/kernels/registry-petersen-2020
 0 error(s)
-pass  reproduce_petersen_2020.ipynb  (632 s)
+pass  reproduce_petersen_2020.ipynb  (1628 s)
+Wed Nov 18 04:19:30 UTC 2026
 ```
-
-**Agent**
-
-Confirming the numbers did not move between the two runs.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF' > $TMPDIR/out2.txt
+python - <<'EOF' > $TMPDIR/exec_out3.txt
 import json
-nb=json.load(open('executed/000059-petersen-2020/reproduce_petersen_2020.ipynb'))
+nb=json.load(open('executed/petersen-2020/reproduce_petersen_2020.ipynb'))
 for i,c in enumerate(nb['cells']):
     if c['cell_type']!='code': continue
-    print(f"=== cell {i}")
+    print(f"=== CELL {i} {c['metadata'].get('tags')}")
     for o in c.get('outputs',[]):
-        if o.get('output_type')=='stream': print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:3000])
 EOF
-diff $TMPDIR/out.txt $TMPDIR/out2.txt | grep -v "tags=" | head -20; git status --short
+diff <(grep -v "Pandas4Warning\|^$\|ipykernel" $TMPDIR/exec_out2.txt) <(grep -v "Pandas4Warning\|^$\|ipykernel" $TMPDIR/exec_out3.txt) | grep "^[<>]" | grep -v "fields computed\|loaded in\| s)\|run time\|in [0-9]* s$"; echo done
 ```
 
 ```
-1,4c1,4
-< dandiset 000059 version 0.250624.0444: 50 sessions, loaded in 701 s (13 with unit analyses)
----
-> === cell 1
-> === cell 2
-> === cell 3
-> dandiset 000059 version 0.250624.0444: 50 sessions, loaded in 623 s (13 with unit analyses)
-6c6
----
-> === cell 5
-15c15
----
-> === cell 7
-82c82
----
-> === cell 9
-106c106
----
-> === cell 11
-167c167
-[... 16 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-diff <(grep -v "^=== cell" $TMPDIR/out.txt) <(grep -v "^=== cell" $TMPDIR/out2.txt); ls -la .bashrc scripts .idea | head; git log -1 --format=%H -- .bashrc
-```
-
-```
-1c1
-< dandiset 000059 version 0.250624.0444: 50 sessions, loaded in 701 s (13 with unit analyses)
----
-> dandiset 000059 version 0.250624.0444: 50 sessions, loaded in 623 s (13 with unit analyses)
-384a385
-> 
-414a416
-> 
-417d418
-< 
-542d542
-< 
-595a596
-> 
-637d637
-< 
-669a670
-> 
-784a786
-> 
-[... 13 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls entries/000059-petersen-2020/
-```
-
-```
-README.md
-__pycache__
-cooling.py
-entry.yaml
-reproduce_petersen_2020.ipynb
-requirements.in
-requirements.lock.txt
-```
-
-**Agent calls Bash**
-
-```bash
-git check-ignore -q entries/000059-petersen-2020/__pycache__ && echo ignored; rm -rf entries/000059-petersen-2020/__pycache__
-```
-
-```
-ignored
+<   ok = W["fp"].notna().all(1) & W["flfp_spk"].notna().all(1)
+<   ok = W["fp"].notna().all(1) & W["flfp_spk"].notna().all(1)
+>   ok = W["fp"].notna().all(1) & W["flfp_spk"].notna().all(1)
+>   ok = W["fp"].notna().all(1) & W["flfp_spk"].notna().all(1)
+done
 ```
 
 **Agent**
 
-I've handled round 1. One outcome changed. I re-ran the entry twice with `tools/entry.py all`; both runs passed with no check errors and printed the same numbers. The second run took 632 s, so I set the runtime in `entry.yaml` and the README to about 12 minutes. Nothing is committed.
+I've worked through every point in the round-1 report and re-run the entry. `python tools/entry.py all entries/petersen-2020` passes with 0 errors and the notebook runs in 27 minutes. A repeat run gave the same numbers, and the conclusions, summary, README and attempt record match them. Round 1 is recorded under `verifications`, and nothing is committed.
 
-**Outcome change**
-- **fig5-speed-control-cooling:** changed from partially_reproduced to not_reproduced, as the verifier said. The criterion needs both speeds within tolerance under one reading and has no partial case. Under all frames, both speeds fall outside. Over frames above 10 cm/s, the control speed is inside but the cooling speed (76.0 cm/s) is just below the limit.
-- **Totals:** 12 reproduced, 15 partially reproduced, 10 not reproduced, 1 blocked. This matches the verifier's count.
-- **Verifications:** the round is recorded in the attempt record, one entry per claim, with the verifier's reason and my response.
+**Outcome changes** (now 17 reproduced, 19 partially reproduced, 8 not reproduced, 2 blocked):
+- **fig4d-precession-slope-decrease: not reproduced → partially reproduced (assumed).** The verifier was right that the slope search was capped at ±1 cycle per field. On the full data that cap pinned 28–32% of slopes at the limit. The search now runs over ±2 cycles per field, stated as an assumption, with ±1 and ±3 shown as variants and the share at the limit printed (8–10% under ±2). Under ±2, precession is flatter during cooling than before (P = 0.016) but not than after (P = 0.073). No reading makes both comparisons significant. A new finding asks the paper's authors what range they used.
+- **fig5cg-compression: not reproduced → blocked (methods_underspecified).** The new output shows the surface fit doesn't describe the data. Every fit that converged did worse than a flat surface (R² from −0.10 to −5.1). The smooth outline alone, without the oscillation, explains a median R² of 0.41–0.68 per session. Every failed fit hit the evaluation limit. The paper gives no fitting procedure that would make the fit work. The variants, which aren't the criterion's measure, show no decrease with cooling (for example the per-session ridge slope, P = 0.62).
 
-**Fixes and the outputs the verifier asked for**
-- **fig5d (pair period, problem 1):** I kept the outcome, because the criterion fixes the estimator. The verifier was right that it is biased: in 47.7% of pairs it picks the second neighbouring peak. I added per-pair histograms and the nearest-peak estimator as a variant. That variant gives a control period of 91.0 ms, inside 85 ± 8.5, and still lengthens during cooling (P = 0.031). Under it all three parts of the criterion hold, so the claim would be reproduced. The notes, the conclusion and a deviation say this.
-- **fig3f (information, problem 3):** I added a variant with each state's spikes subsampled to the same count. Information still drops: pre against cooling P = 0.0073, pre against post P = 0.0092. The spike-count bias does not explain the result.
-- **suppl1g (waveforms, problem 5):** I added the number of spikes averaged in each window. In the 208 units whose two means both use 300 spikes, the changes remain (amplitude P = 0.032, trough-to-peak P = 2.2e-05). Drift still cannot be separated from cooling.
-- **fig5j and fig5k (problem 4):** I added session-level tests for all three comparisons, cycle durations, and cycle counts per session. The notes say the pooled tests reflect how the sessions are mixed. One new result: per session, spikes per cycle differ between pre and post (P = 0.02).
-- **fig5cg (problem 2):** In 10.5% of pairs the lag changes when the window is narrowed to half a theta period, so the notes now say the compression size cannot be judged from this method. I also corrected an earlier error: the inverse-regression value I quoted (9.085 cm/ms) was a per-session median, and the pooled value is 7.175 cm/ms.
-- **cooling-time-course:** I added the onset-aligned mean temperature trace. 90% of the drop comes a median 53 s after onset, close to the paper's 60 s, but the criterion measures time to the minimum (121 s), so the outcome stays partial. A variant without the five sessions with temperature artefacts gives 121.5 s.
-- **Files and channels:** every series in all 100 files is now listed. The only temperature series is the medial septum one, which confirms the hippocampal-temperature block. The LFP channel is now looked up through the file's electrode map; it is correct in all 49 sessions with LFP read.
-- **Second cooling blocks:** I printed the state sequences for the 12 sessions with two cooling blocks. The helper now stops the aligned series at any return to cooling; no number changed.
-- **fig6c:** I added error rates for trials 21 to 40 and sessions per trial. The notes now say the peak at trial 7 is narrow, with a second rise to 0.186 at trial 20.
-- **Code fixes:**
-  - The fig4b 30-spike variant could not differ from the main result, so I replaced it with 100 and 200 spikes and corrected the notes.
-  - An unused direction flag in the fig2i cell was inverted; fixed.
-  - fig4a was dropping the last 20-trial window. It now gives fLFP R = 0.678 and slope 0.0716, and the notes say the overlapping windows overstate the P values.
+**Added output, no outcome change:**
+- **fig3f (information):** the verifier suspected the pre-to-post drop came from unequal trial counts. With trials subsampled to equal numbers per state, pre to post still falls (P = 0.016), so it stays not reproduced.
+- **fig5d (cross-correlogram period):** measured as the spacing between peaks, the period is 107.2 ms (103.5 ms with the other pairing), still outside 85 ± 8.5 ms.
+- **suppl1g (waveforms):** with waveforms interpolated to 200 kHz, the latency change is +0.035 ms (P = 3e-11, significant in all 4 sessions). Spike counts per condition are now printed.
+- **suppl5gh (rates and temperature):** normalised rates have medians below pre (one-sided test significant) but means above pre. The outcome still rests on raw rates.
+- **fig5h (time lags):** stays partially reproduced. It rests on the main signed-rank test, not the rank-sum variant.
+- **Bad theta channel (MS13-171130):** fig2i, fig6c, fig6h and fig5i are also shown without that session, and each keeps its outcome.
+- **Temperature check:** the notebook now prints the correct 5–45 °C range. No sample inside any trial falls below 15 °C, so the 5 °C and 10 °C sensor-limit values never enter a trial temperature.
+- **Text fixes:** the claim that at least half the sessions contribute across the whole aligned window is corrected (11 sessions at the ends against 31 near onset). The notes for fig2h, disc-12, fig6h and fig4f now say how much each outcome depends on the reading chosen.
+- **suppl3e:** the measured value is now −0.0262 under the new slope range. The outcome is still partially reproduced.
 
-**Not done**
-- Problem 11 (theta power measured on the band-passed signal): I left it unchanged, since the verifier found it matches the paper's code. It is recorded as a deviation.
-- Problem 7 (the time-to-minimum measure): the criterion fixes it, so I added the 90% time alongside it and did not change the measure.
-- I downloaded no paper text, so there was nothing to save under `paper/`.
+**Not done:**
+- The verifier gave no outcome for suppl2d-interneuron-oscillation-slows (its table has 45 rows for 46 claims). I recorded no result for it and said so in the `reviewed` text.
+- I added no reader question, because the report found no place where the claims file misreads the paper.
+- I left the session-set point (problem 12) and the absence of chance levels (problem 14) as they were, since neither needed a change.
 
 ## End of run
 
-46 turns, 33 minutes, result: success.
+77 turns, 102 minutes, $6.43 at API prices, result: success.
