@@ -391,3 +391,30 @@ def nss(filt):
     """Normalized squared signal: the squared filtered LFP, z-scored over the recording."""
     sq = filt.astype(np.float64) ** 2
     return ((sq - sq.mean()) / sq.std()).astype(np.float32)
+
+
+def lock_units(spk_list, ph, mask, rng, n_null=10, min_spikes=50, fs=FS_LFP):
+    """Per unit: spikes inside the mask, Rayleigh p, resultant length and mean phase, and the Rayleigh p-values
+    under `n_null` circular shifts of the phase (STAR Methods, Phase locking analysis: 10 iterations); the shifts
+    are drawn from `rng` (the claim's seed)."""
+    n = len(ph)
+    shifts = rng.integers(int(fs * 1), n - int(fs * 1), n_null)
+    res = []
+    for sp in spk_list:
+        idx = np.rint(sp * fs).astype(np.int64)
+        idx = idx[(idx >= 0) & (idx < n)]
+        idx = idx[mask[idx]]
+        p, r, a = rayleigh(ph[idx].astype(np.float64))
+        pn = [rayleigh(ph[(idx + k) % n].astype(np.float64))[0] for k in shifts] if len(idx) > min_spikes else [np.nan] * n_null
+        res.append(dict(n=len(idx), p=p, r=r, angle=a, p_null=pn))
+    return res
+
+
+def lfp_columns(url: str):
+    """The LFP's electrode-table row of each column and the storage block width (channels per chunk)."""
+    f = open_nwb(url)
+    d = f["processing/ecephys/LFP/lfp/data"]
+    el = f["processing/ecephys/LFP/lfp/electrodes"][:]
+    cw = d.chunks[1]
+    f.close()
+    return el, cw
