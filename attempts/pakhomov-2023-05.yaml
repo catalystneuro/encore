@@ -425,6 +425,17 @@ findings:
   statement: In 001027 the dishes labelled Protocol3, which the session descriptions define as 8 phases
     with 5-us delays (Packet 3 of Methods 2.3), give the highest normalized centre of the three packets
     in every reading, where the paper reports the highest for Packet 2.
+- kind: metadata_error
+  found: on_prompt
+  statement: The assets summary of 001027 names the species "Cricetulus griseus - Cricetulus aureus" for
+    one cell line (CHO, NCBITaxon 10029, Chinese hamster), and each subject is a dish with age P1D, which
+    does not apply to a cell line. The ImageSeries description of dish 10 gives an unknown microscope,
+    detector and objective, where the other nine name the Hamamatsu ORCA-Flash4.0 and a 10x objective,
+    and its session starts on 18 March 2021 at 18:50, where the other Packet 2 and 3 dishes start on 17
+    March between 11:36 and 13:03. The files record no exposure or gain, and the background inside the
+    electrode footprints of the three Packet 1 dishes, imaged on 24 March 2021, is 308.9 a.u., 1.94 times
+    that of the other seven (161.1 and 150.0 a.u. on 17 and 18 March), so a.u. values may not be
+    comparable between imaging days.
 verifications:
 - date: '2026-11-18'
   kind: agent
@@ -839,3 +850,51 @@ verifications:
       say fig7cd is reproduced. The verifier's remark that the claims file's opening comment could be read
       as favouring both diagonals for Figs. 6 to 9 is not counted by it as a misreading, and O2 is applied
       as written.
+reconciliation:
+  earlier: pakhomov-2023-04
+  date: '2026-11-18'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: The single-cell time lapse of Fig. 4 is in none of the five dandisets (finding 1). The monolayer
+      experiments of Figs. 5, 6, 7 and 9 that the earlier finding did not find in 001027 are in 000686,
+      000875, 001025 and 001028, at versions published in May and June 2024, before the earlier attempt,
+      which used 001027 only; that part changed with the attempt's scope, not the data.
+  - finding: 2
+    status: still_present
+    now: 8
+    note: The same 001027 dishes labelled Protocol3 give the highest normalized centre of the three
+      packets in every reading, the targeting the paper reports for Packet 2 (finding 8). The dataset
+      version is the one the earlier attempt used.
+  - finding: 3
+    status: still_present
+    now: 2
+    note: Finding 2 reports the missing pixel size (resolution 96 in nine files of 001027 and 1.0 in dish
+      10), electrode positions and e1. The rest of the earlier finding is also still present, checked in
+      earlier_findings.ipynb and added to finding 9; no field names an exposure or gain, and the Packet
+      1 dishes of 24 March have a background of 308.9 a.u. against 161.1 and 150.0 a.u. on 17 and 18 March.
+  - finding: 4
+    status: still_present
+    now: 9
+    note: Checked in earlier_findings.ipynb. The assets summary still names "Cricetulus griseus -
+      Cricetulus aureus", every file gives age P1D, and the ImageSeries description of dish 10 gives an
+      unknown microscope, detector and objective, with its session starting on 18 March 2021 at 18:50.
+  outcomes:
+  - claim: fig6a-more-packets-more-uptake
+    earlier: blocked
+    note: The earlier attempt used 001027 only, which holds no Fig. 6 dishes, and blocked the claim as
+      data_missing. This attempt tested it on 000875, which was published before the earlier attempt.
+      The change comes from the protocol (pilot-14 files records by paper and uses every dataset the
+      paper rests on) and the claims file written under it, which names all five dandisets.
+  - claim: fig9b-gap-boosts-targeting
+    earlier: blocked
+    note: As for fig6a-more-packets-more-uptake, the earlier attempt had only 001027, which holds no Fig. 9
+      dishes. This attempt tested the claim on 001028 under pilot-14 and its claims file for the whole
+      paper; the dataset did not change.
+  protocol: Pilot-14 files records by paper. The paper gets one claims file and one attempt that uses as
+    many of its datasets as can be loaded, with any it cannot use listed under missing_datasets. The
+    earlier attempt, under pilot-13, tested dandiset 001027 alone with a claims file for that dandiset and
+    blocked 15 of its 18 claims as data_missing. This attempt used all five dandisets with a new claims
+    file of 24 claims, so the claims on Figs. 5, 6, 7 and 9 were tested and several claim ids changed.
