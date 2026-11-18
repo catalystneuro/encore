@@ -830,6 +830,40 @@ findings:
     (Figure 4D, S3E)? With a range of 1 cycle per field about 30% of the slopes sit at the bound and no change with cooling
     is found; with 2 cycles, the attempt''s assumption, precession is flatter during cooling than before (P = 0.016) but not
     than after (P = 0.073), and without the slopes at the bound neither comparison is significant.'
+- kind: data_missing
+  about: data
+  found: on_prompt
+  statement: Five of the paper's 53 behavioural sessions are not in the dandiset (MS12-170712, MS13-171204, MS13-171205, MS13-171206
+    and MS21-180806). The release notes of version 0.261115.0311 name the first four as not in the dandiset and do not mention
+    MS21-180806.
+- kind: other
+  about: data
+  found: on_prompt
+  statement: In MS21-180621 and MS22-180621 the good units carry no more spatial information than with their spikes shifted
+    by 60 s (median 0.170 and 0.119 bits/spike, against 0.214 and 0.152 shifted), while in MS21-180625 and MS22-180629 the
+    information falls from 0.842 and 1.037 to 0.061 and 0.083 bits/spike with the shift. The clock of spikes and position
+    could not be established in these two sessions.
+- kind: selection_undocumented
+  about: data
+  found: on_prompt
+  statement: The dandiset holds three sessions that are outside the paper's behavioural analysis (MS21-180719, MS22-180719
+    and MS10-170307) without saying so. The 2018-07-19 files say that the septum does not appear to have been cooled, and
+    MS10-170307 has Pre, Cooling and Post trials like the analysed sessions.
+- kind: other
+  about: data
+  found: on_prompt
+  statement: The Methods give position tracking at 120 Hz; six MS10 sessions are tracked at 40 Hz, one at 30 Hz and two at
+    119.8 Hz. The release notes say that MS10's 120 Hz OptiTrack files were not converted.
+- kind: paper_inconsistency
+  about: paper
+  found: on_prompt
+  statement: The legend of Figure 5H gives P = 8.0e-5 by a sign rank test with N = 10 sessions; an exact signed-rank test
+    over 10 sessions cannot give a P below 0.00195, so the test must be over pairs or the N refers to something else.
+- kind: paper_inconsistency
+  about: paper
+  found: on_prompt
+  statement: The Discussion gives a 12% decrease of LFP theta frequency during cooling, while the Results give within-field
+    LFP theta of 8.4 Hz before and 7.7 Hz during cooling, a decrease of 8.3%.
 verifications:
 - date: '2026-11-15'
   kind: agent
@@ -1494,3 +1528,159 @@ verifications:
     reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
       and the notes matches the outputs.
     response: No change.
+reconciliation:
+  earlier: petersen-2020-01
+  date: '2026-11-18'
+  blind: true
+  findings:
+  - finding: 1
+    status: partly_fixed
+    now: 3
+    note: The modelled series of the MS10 sessions are now stored as ModelledTemperature and described as not a measurement,
+      and the 2018-07-19 sessions hold a measured trace (earlier_findings.ipynb). MS10 still has no measured temperature,
+      which finding 3 reports.
+  - finding: 2
+    status: partly_fixed
+    now: 2
+    note: Both report that the 2018-07-19 sessions of MS21 and MS22 carry cooling labels and cooling trials although the septum
+      was not cooled. The files now say that the measured temperature stays flat through the labelled cooling and that the
+      lab's labels are kept (earlier_findings.ipynb).
+  - finding: 3
+    status: partly_fixed
+    now: 13
+    note: MS12-170715 has been added; MS12-170712, MS13-171204, MS13-171205, MS13-171206 and MS21-180806 are still not in
+      the dandiset (earlier_findings.ipynb). Finding 7 gives only the counts of 53 and 51 sessions, so this is recorded as
+      finding 13.
+  - finding: 4
+    status: fixed
+    note: MS21-180627 now has 179 trials with Pre, Cooling and Post states (one not labelled) and MS21-180712 has 127 trials
+      (earlier_findings.ipynb).
+  - finding: 5
+    status: partly_fixed
+    now: 4
+    note: The files now give cell types (some good unit has a type in 23 of the 30 files with units) and electrode locations
+      in 37 files, but 14 files of MS21 and MS22 still give every electrode as unknown and no file holds place fields (earlier_findings.ipynb).
+      Finding 4 reports the missing place fields and the units without a cell type.
+  - finding: 6
+    status: fixed
+    note: No trial has the state Cooling off; the trials between cooling and recovery are 'transition (excluded)', and the
+      cooling_state column describes which windows these are (earlier_findings.ipynb).
+  - finding: 7
+    status: partly_fixed
+    now: 4
+    note: Six of the seven MS10 sessions with units now have good units (2 to 16 each); MS10-170321 and MS12-170723 still
+      hold only unsorted units (earlier_findings.ipynb). Finding 4 counts them among the 23 sessions without curated units.
+  - finding: 8
+    status: still_present
+    now: 14
+    note: Median spatial information of the good units is 0.170 and 0.119 bits/spike in MS21-180621 and MS22-180621, against
+      0.214 and 0.152 with spikes shifted by 60 s, while two reference sessions fall from 0.842 and 1.037 to 0.061 and 0.083
+      (earlier_findings.ipynb).
+  - finding: 9
+    status: partly_fixed
+    now: 15
+    note: The cooling tables of the 2018-07-19 sessions now say that the septum does not appear to have been cooled, but neither
+      the dandiset description nor any file says that these sessions or MS10-170307 are outside the paper's analysis (earlier_findings.ipynb).
+  - finding: 10
+    status: not_checked
+    note: The finding is about the content of version 0.210812.1514, a published version that version 0.261115.0311 does not
+      change. All 51 files of version 0.261115.0311 have a trials table (earlier_findings.ipynb).
+  - finding: 11
+    status: still_present
+    now: 16
+    note: Six MS10 sessions are tracked at 40 Hz, one at 30 Hz and two at 119.8 Hz, as before, and the other 42 sessions at
+      119.8 Hz (earlier_findings.ipynb). The release notes say MS10's 120 Hz OptiTrack files were not converted.
+  - finding: 12
+    status: still_present
+    now: 17
+    note: The paper is unchanged; the smallest exact two-sided signed-rank P over 10 values is 0.00195, against the legend's
+      8.0e-5 (earlier_findings.ipynb). The claims file now reasons the same way in fig5h-time-lags-increase, but the blind
+      attempt did not record it as a finding.
+  - finding: 13
+    status: still_present
+    now: 18
+    note: The paper is unchanged; 8.4 to 7.7 Hz is a decrease of 8.3% (earlier_findings.ipynb). The blind attempt finds 6.6
+      to 9.9% for the mean per-session decrease and 11.1% only for the largest decrease of the aligned mean series (disc-theta-frequency-12-percent).
+  outcomes:
+  - claim: session-structure
+    earlier: reproduced
+    note: A change in the claims file and in the sessions. The earlier attempt used the 45 sessions of a list from the paper's
+      unlinked code, which leaves out MS10-170307; the rewritten claims file drops that list, and the blind attempt uses all
+      51 sessions, where MS10-170307 has 37 trials, outside 72 to 220. The mean (143.8 and 142.4) and the median pre trials
+      (39 in both) agree.
+  - claim: fig2g-theta-freq-temperature
+    earlier: reproduced
+    note: A difference in method. The earlier attempt used the code's aligned series of 198 positions over 37 sessions (R
+      = 0.789); the blind attempt averages trials -40 to 80 over 29 to 31 sessions (120 points), which smooths more and gives
+      R = 0.978, above the tolerance. The dataset also changed, as version 0.261115.0311 marks 11 series outside MS10 as modelled,
+      so the blind attempt uses 31 measured sessions where the earlier one used 37.
+  - claim: fig2h-theta-power-temperature
+    earlier: not_reproduced
+    note: A difference in the power measure, which the rewritten claims file leaves open with readings. The earlier attempt
+      took the code's spectrogram magnitude at frames above 30 cm/s minus each session's mean (R = -0.056); the blind attempt
+      takes the mean squared Hilbert amplitude over the trial (R = 0.495), and 3 of its 18 measure and reading combinations
+      meet the criterion.
+  - claim: fig2i-theta-pre-cooling-post
+    earlier: partially_reproduced
+    note: A difference in the power measure. Both find frequency lower during cooling than before and after; the earlier attempt
+      found power not lower than post (P = 0.94) with the code's spectrogram measure, and the blind attempt finds it lower
+      with the spectral peak power (P = 3.2e-6) but not with the Hilbert power (P = 0.42).
+  - claim: disc-theta-frequency-12-percent
+    earlier: partially_reproduced
+    note: A change in the claims file. Its reading (c) is now the largest decrease of the aligned mean series, which gives
+      11.1% in the blind attempt; under the mean per-session readings both attempts find about 9% (8.88 to 9.23% and 6.6 to
+      9.9%).
+  - claim: fig6h-errors-theta-power
+    earlier: partially_reproduced
+    note: A difference in the power measure. The earlier attempt used the code's spectrogram power and found one rat (MS10);
+      the blind attempt uses per-session normalised Hilbert power and finds MS13 and MS21, with 3 rats under raw Hilbert power
+      and 1 under spectral power.
+  - claim: fig5-speed-control-cooling
+    earlier: not_reproduced
+    note: A difference in the sessions. The earlier attempt used 15 of the code's 18 Figure 5 sessions, and its cooling speed
+      was 0.3 cm/s below the tolerance under reading (b); the blind attempt uses the 23 sessions with place cell pairs, which
+      the added curated units of version 0.261115.0311 make possible, and finds 80.3 and 77.1 cm/s, both within tolerance.
+  - claim: suppl2d-interneuron-oscillation-slows
+    earlier: reproduced
+    note: A change in the claims file, which now carries the 14% decrease of Figure S2D. Both attempts find a significant
+      decrease of interneuron oscillation frequency (9.4% earlier, 8.7% in the blind attempt), neither within 12.6 to 15.4%.
+  - claim: fig3c-field-size-correlated
+    earlier: reproduced
+    note: A difference in method. The earlier attempt measured size on each state's map within 4 bins of the field found on
+      running frames, over 635 fields, with R = 0.8197 at the edge of the tolerance; the blind attempt measures contiguous
+      bins above 10% of the state's peak on maps of all frames, over 1193 fields with cell types from the files, and finds
+      R = 0.465.
+  - claim: fig3e-model-field-size
+    earlier: partially_reproduced
+    note: A difference in method, the field and size definitions of fig3c-field-size-correlated. The earlier attempt found
+      R pre 0.246 (P = 4.7e-06); the blind attempt finds pre R between -0.032 and 0.059 under its readings.
+  - claim: fig4gh-fp-speed
+    earlier: reproduced
+    note: A change in the claims file, which now fixes 10 cm/s speed bins with 20 cm/s as a variant. The earlier attempt used
+      20 cm/s bins and found fp lower during cooling in every bin it could test; the blind attempt finds it lower in 11 of
+      14 bins of 10 cm/s and in 8 of 8 bins of 20 cm/s.
+  - claim: fig5cg-compression
+    earlier: not_reproduced
+    note: A change in the claims file, which now requires the surface fit of the Methods. The earlier attempt measured compression
+      by a regression of lag on distance (0.273 cm/ms); the blind attempt found that the surface fit does not fit the density
+      under either reading of the equation and blocked the claim as methods_underspecified.
+  - claim: fig5h-time-lags-increase
+    earlier: reproduced
+    note: A difference in the pairs. Both find cooling lags longer than pre and post; the blind attempt has 8506 pairs against
+      3136, from fields on maps over all trials and the added curated units of version 0.261115.0311, and with them pre and
+      post also differ (P = 0.034, earlier P = 0.0967).
+  - claim: fig5i-phase-lags-unchanged
+    earlier: not_reproduced
+    note: A difference in the pairs. Both take the largest peak within pi of zero and compare absolute lags; the earlier attempt
+      found cooling lags larger than pre (P = 0.0015), and the blind attempt, with 8451 pairs from fields on maps over all
+      trials and the cell types and added curated units of version 0.261115.0311, finds no change (P = 0.37). The blind attempt's
+      nearest-peak reading gives a change (P = 2.7e-8), so the outcome rests on how the lag is read.
+  protocol: pilot-8 to pilot-10 moved the writing of claims to a reader working from the paper's full text, with every method
+    cited from the paper and each open choice run as named readings, so that no method comes from the code or data the author
+    picks. The claims file of this paper was rewritten that way on 2026-11-15; it drops the session lists and thresholds the
+    earlier version took from the first author's unlinked code, adds eight claims, and fixes the surface fit for fig5cg-compression,
+    and it is the likeliest reason for most of the changed outcomes. pilot-12 made repeat attempts blind and added this reconciliation,
+    so the blind attempt's findings say nothing of the earlier ones. pilot-13 raised the notebook limit from 30 to 60 minutes;
+    the blind attempt's main notebook takes about 30. pilot-14 files records by paper and lists each dataset with its relation;
+    this paper rests on one dataset, so it changed the record's layout and not what was tested. pilot-8 also added quotes
+    and statistics to the claims. docs/pilot-notes.md has no section for pilot-11 or pilot-15.
