@@ -1,0 +1,377 @@
+schema_version: 3
+id: pakhomov-2023-05
+datasets:
+- archive: dandi
+  id: "000686"
+  version: 0.240515.1909
+  doi: 10.48324/dandi.000686/0.240515.1909
+  relation: primary
+- archive: dandi
+  id: "000875"
+  version: 0.240515.1925
+  doi: 10.48324/dandi.000875/0.240515.1925
+  relation: primary
+- archive: dandi
+  id: "001025"
+  version: 0.240605.1826
+  doi: 10.48324/dandi.001025/0.240605.1826
+  relation: primary
+- archive: dandi
+  id: "001027"
+  version: 0.240605.1859
+  doi: 10.48324/dandi.001027/0.240605.1859
+  relation: primary
+- archive: dandi
+  id: "001028"
+  version: 0.240605.1954
+  doi: 10.48324/dandi.001028/0.240605.1954
+  relation: primary
+paper: doi:10.1016/j.bioelechem.2023.108437
+date: 2026-11-18
+entry: pakhomov-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44321914094
+outcomes:
+- claim: fig3-field-simulation
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: blocked
+  notes: The claim needs the paper's Sim4Life field maps. None of the five dandisets holds them;
+    every file holds one or two still images of a monolayer (ImageSeries ScanningImaging, 70
+    files). The paper deposits no model output elsewhere and links no code or data.
+- claim: fig4-sham-no-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: blocked
+  notes: The single-cell time lapse of Fig. 4 (images every 10 s for 600 s, Methods 2.2) is in
+    none of the five dandisets, whose 70 files each hold one stitched monolayer image (two
+    channels in 17 of them) and no time series. The paper names no other location.
+- claim: fig4-unipolar-strongest
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: blocked
+  notes: As fig4-sham-no-uptake, the single-cell data of Fig. 4 are in none of the datasets.
+- claim: fig4-bipolar-weaker
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: blocked
+  notes: As fig4-sham-no-uptake, the single-cell data of Fig. 4 are in none of the datasets.
+- claim: fig4-twenty-fold-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: blocked
+  notes: Depends on fig4-unipolar-strongest and fig4-bipolar-weaker, whose single-cell data are
+    in none of the datasets.
+- claim: fig5a-trains-stronger
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5a-trains-stronger
+  notes: Along the e1 to e3 diagonal (4 packet and 4 train dishes, 000686), trains exceed packets
+    at the e1 end (3.03 times, p = 0.0093) and in the centre (2.02 times, p = 0.0034), and the
+    train profile falls from the e1 end to the centre (18094 against 7086 a.u., unpaired
+    p = 0.0015, paired p = 0.0076), in all 16 readings. At the e3 end the trains are 0.75 times
+    the packets (p = 0.40) in the main reading and not stronger in any reading, so the uptake is
+    not stronger throughout the array. The full train profile is shown.
+  deviations:
+  - The files do not say which needle is e1. e1 is taken as the needle whose outer quarter of
+    the half-diagonal is brightest in the train dishes (only e1 is energized with trains); it is
+    the upper right needle in all four train dishes and in all four packet dishes, and is used
+    for both groups.
+  - ROIs rebuilt from Methods 2.4 on electrode squares found in the images, at an assumed pixel
+    size of 0.65 um (10x objective, ORCA-Flash4 camera, Methods 2.4); the files give none.
+- claim: fig5a-packet-center-enhanced
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5a-packet-center-enhanced
+  notes: Reading (a) of the enhancement holds in all 16 readings, the packet centre being above
+    the trough on the e1 side (3512 against 1326 a.u. at 1.03 mm; p = 0.016 paired, 0.017
+    unpaired). Reading (b) does not hold (centre over e1 end 0.89 for packets against 0.40 for
+    trains, p = 0.10). The second part fails in every reading, the e1 end being above the centre
+    without significance (5968 against 3512 a.u., p = 0.39 unpaired, 0.47 paired); in 2 of the 4
+    dishes the centre is the brighter.
+  deviations:
+  - e1 as in fig5a-trains-stronger; ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
+- claim: fig5b-rotation-center-peak
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5b-rotation-center-peak
+  notes: The 1P x 40 centre is above its trough in all 48 readings (2526 against 1050 a.u. at
+    2.13 mm; p = 0.0028 unpaired, 0.016 paired; 5 dishes per group). The 1T x 40 void, read as
+    the centre below the most peripheral ROI (5376 against 11473 a.u.), holds by the unpaired
+    test in all readings (main p = 0.019) and by the paired test in 71% (main p = 0.055). The
+    centre ROI is the lowest point of the 1T x 40 profile in 8% of readings (main reading lowest
+    at 0.21 mm). With the paired test the claim holds in 79% of readings.
+  deviations:
+  - Assumed that comparisons inside the same dishes are unpaired (O8 b), because Methods 2.4
+    judges every comparison in the figures by the gap between the error bars of the compared
+    groups, which treats them as independent groups. The paired reading is shown.
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
+- claim: fig5c-normalized-contrast
+  outcome: reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5c-normalized-contrast
+  notes: Normalized centre 213% for 1P x 40 against 57% for 1T x 40 (Student p = 0.0088, Welch
+    p = 0.018). Significant in all 32 readings; the 1P x 40 centre is above 100% in all of them.
+  deviations:
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
+- claim: fig6a-more-packets-more-uptake
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6a-more-packets-more-uptake
+  notes: 000875 holds 3 dishes per treatment, all at 3.2 kV in the small array (O11). Uptake
+    rises from 4 to 20 to 40 packets at the most peripheral ROI (558, 3515, 9472 a.u.), the
+    trough (458, 1189, 1567) and the centre (726, 2366, 5800), and 40 exceed 4 at each place
+    (p = 0.0027, 0.0014, 0.00015), in all 48 readings. The centre is significantly above the
+    trough for 10Px4 (unpaired p = 0.00029) but not for 1Px4 (p = 0.16, significant in 10% of
+    unpaired readings) or 5Px4 (p = 0.14, 4%). The criterion's partial outcome names only a rise
+    at one or two places; here the rise holds at all three and the peak test fails for two
+    treatments, which is read as partial.
+  deviations:
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
+- claim: fig6b-peak-relative-to-periphery
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6b-peak-relative-to-periphery
+  measured:
+  - 128.4
+  - 70.2
+  - 64.1
+  notes: Main reading 128% (1Px4), 70% (5Px4) and 64% (10Px4). No reading of 576 puts all three
+    within tolerance. In 8 readings, all with background subtraction (O6 b) and one diagonal,
+    1Px4 is within tolerance (180 to 184%) and above both others, the criterion's partial
+    outcome. 1Px4 is the highest of the three in all readings. Over readings 1Px4 spans 123 to
+    184%, 5Px4 49 to 166%, 10Px4 45 to 116%.
+  deviations:
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel; background for O6 b is the 1st
+    percentile of the image inside the electrode square, a standard choice.
+- claim: fig6-trough-half-of-center
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6-trough-half-of-center
+  measured:
+  - 1.59
+  - 1.99
+  - 3.70
+  notes: Centre over trough in the main reading is 1.59 (1Px4), 1.99 (5Px4) and 3.70 (10Px4),
+    given as measured in that order. No reading of 288 puts all three in 1.8 to 2.2; 173 put one
+    or two in range with all above 1, the criterion's partial outcome. The ratio grows with the
+    number of packets in the main reading.
+  deviations:
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
+- claim: fig6-peak-narrower
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6-peak-narrower
+  notes: Width at half height above the trough on the mean normalized profile falls from 0.657 mm
+    (1Px4) to 0.636 mm (5Px4) to 0.438 mm (10Px4) in the main reading, and in order in 88% of 144
+    readings of this width. The distance between troughs falls in order in 62% of its readings
+    and not in the main reading (1.471, 1.758, 1.614 mm).
+  deviations:
+  - The paper defines no width, and the criterion's two readings disagree in part. The outcome
+    rests on reading (a), the full width at half height above the trough, the criterion's first
+    reading and the usual measure of a peak's width, with the main ROI readings.
+- claim: fig7a-amplitude-scales-uptake
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig7a-amplitude-scales-uptake
+  measured:
+  - 6.66
+  - 5.71
+  - 7.33
+  notes: Small array, 1Px4, 2.4 kV (4 dishes) against 5.6 kV (3 dishes). The main reading gives
+    6.66 at the most peripheral ROI, 5.71 half-way and 7.33 in the centre, less than half the
+    paper's 15.5, 16.2 and 16.8. Over 288 readings the ratios span 5.59 to 13.88, 4.82 to 15.47
+    and 6.94 to 15.25. No reading has all three within 10%; 8 readings, all background-subtracted
+    and on one diagonal, have one within 10%, the criterion's partial outcome.
+  deviations:
+  - 001025 holds 4 dishes at 2.4 kV where the paper gives n = 3; all 4 are used.
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
+- claim: fig7b-targeting-independent-of-amplitude
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig7b-targeting-independent-of-amplitude
+  notes: Voltages 2.4, 3.2, 4.0, 4.8 and 5.6 kV (4, 3, 3, 3, 3 dishes). In the main reading no
+    pair of voltages differs at the centre or half-way (20 tests, smallest p = 0.052, 2.4 against
+    4.8 kV at the centre). Over 96 readings no pair differs in 26%, in 2% without background
+    subtraction and 50% with it; the others find one to six pairs. The normalized centre at 4.8 kV
+    is 229% (dishes 136, 232, 318%) against 117 to 129% at the other voltages. Both variants find
+    a difference, a two-way ANOVA over all ROIs (voltage F = 27.85) and the error-bar rule (3 of
+    20 pairs). The outcome is fragile.
+  deviations:
+  - The readings disagree. The outcome rests on the main reading (92 or 224 ROIs per diagonal,
+    square ROIs, both diagonals, the ROI on the centre, the mean of the end ROIs, per-dish
+    normalization, raw intensity), each the first reading of the claims file and the one closest
+    to the text of Methods 2.4, which mentions no background for the monolayers.
+- claim: fig7cd-holds-for-large-array
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig7cd-holds-for-large-array
+  notes: The dataset holds 10Px4 on the large array at 4.8 kV (2 dishes) and 6.4 kV (3 dishes).
+    Normalized centres 204% and 198% (p = 0.95); half-way they differ by 53 percentage points
+    (p = 0.14). No pair differs in the main reading and in 96% of 96 readings; the error-bar rule
+    finds none. Uptake in a.u. rises 3.39 times at the most peripheral ROI and 4.03 times in the
+    centre from 4.8 to 6.4 kV.
+  deviations:
+  - Two voltages only, with 2 dishes at 4.8 kV where the paper gives n = 3.
+  - Outcome rests on the main reading, as in fig7b-targeting-independent-of-amplitude.
+- claim: discussion-independent-of-array-size
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:discussion-independent-of-array-size
+  notes: Both claims it rests on are reproduced under their main readings. The normalized centres
+    of the two arrays are 117 to 229% (small array, 1Px4, by voltage) and 198 to 204% (large
+    array, 10Px4); packet number and array size are confounded, as the criterion says.
+  deviations:
+  - Rests on the assumptions of fig7b-targeting-independent-of-amplitude and
+    fig7cd-holds-for-large-array.
+- claim: fig8a-equal-center-uptake
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig8a-equal-center-uptake
+  measured:
+  - 691.5
+  - 377.6
+  - 401.0
+  notes: Centres of Packets 1, 2 and 3 (3, 4, 3 dishes at 4 kV, small array) are 692, 378 and 401
+    a.u. in the main reading, given as measured in that order; no reading puts all three in 193.5
+    to 258.5 a.u. Packet 1 differs from Packet 2 (p = 0.0009) and Packet 3 (p = 0.0074), and some
+    pair differs in all 192 readings on dish means. The files' a.u. may not be the paper's scale.
+  deviations:
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel; packets read from the session
+    descriptions (Protocol1, 2, 3).
+- claim: fig8a-more-uptake-near-electrodes
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig8a-more-uptake-near-electrodes
+  measured:
+  - 809.8
+  - 284.4
+  - 525.0
+  notes: Most peripheral ROI, main reading, Packet 1 810, Packet 3 284 and Packet 2 525 a.u.
+    (measured in that order, Packets 1 and 3 for the first expected value, then Packet 2). No
+    reading puts the values in range. Packet 3 is below Packet 2 (p = 0.0015), and Packet 1 above
+    it at p = 0.025, above 0.01; both tests hold in none of 192 readings.
+  deviations:
+  - The text's "~120 a.u. for packet 1" is read as Packet 2, as the claims file does.
+- claim: fig8b-packet2-best-targeting
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig8b-packet2-best-targeting
+  measured:
+  - 73.1
+  - 140.8
+  - 88.3
+  notes: Normalized centre in the main reading, Packet 2 73%, Packet 3 141%, Packet 1 88%
+    (measured in the claim's order). No reading puts all three within 10%, and Packet 3 has the
+    highest normalized centre in every reading. With the Protocol 2 and Protocol 3 labels
+    exchanged (variant only), Packet 2 is highest in every reading and 15 of 576 readings put all
+    three within 10% of 183, 83 and 74%; the a.u. values of fig8a still do not match under the
+    exchange.
+  deviations:
+  - ROIs rebuilt from Methods 2.4 at an assumed 0.65 um pixel.
+- claim: fig8-cancellation-predicts-targeting
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: blocked
+  notes: Depends on fig4-twenty-fold-cancellation, whose single-cell data of Fig. 4 are in none of
+    the datasets. On the Fig. 8 side alone, Packet 3 (not Packet 2) gives the highest normalized
+    centre in every reading (fig8b-packet2-best-targeting).
+- claim: fig9a-gap-reduces-periphery-more
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig9a-gap-reduces-periphery-more
+  measured:
+  - 2.38
+  - 4.68
+  - 8.20
+  - 1.06
+  - 1.91
+  - 4.07
+  notes: 3 dishes per gap. Main reading, near the electrodes 2.38, 4.68 and 8.20 times with 1, 2
+    and 3 mm (paper 2.4, 6.4, 9), in the centre 1.06, 1.91 and 4.07 (paper 1.02, 1.4, 3.8). No
+    reading has all six within 10% (at most 5). The near-electrode ratio exceeds the centre ratio
+    at every gap in 99% of 576 readings.
+  deviations:
+  - For the 2 and 3 mm gaps the electrodes leave no footprint in the YO-PRO-1 image; the square
+    is completed from two needle marks in the second channel. Where both methods apply (9 dishes
+    with clear footprints) their centres differ by 0.09 mm (median), at most 0.23 mm.
+- claim: fig9b-gap-boosts-targeting
+  outcome: reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig9b-gap-boosts-targeting
+  measured: 541
+  notes: Normalized centre in the main reading 198, 466, 541 and 382% at 0, 1, 2 and 3 mm; the 2 mm
+    value is within 540 to 660% and the largest. This holds in 202 of 576 readings.
+  deviations:
+  - Square for the 2 and 3 mm dishes from the needle marks, as in fig9a-gap-reduces-periphery-more.
+- claim: fig9c-restricted-to-center
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig9c-restricted-to-center
+  notes: In the main reading the centre is above the most peripheral ROI at 1 mm (unpaired
+    p = 0.0030) and 2 mm (p = 0.0096) but not at 3 mm (p = 0.30); all three gaps hold in 25% of
+    unpaired and 8% of paired readings. The centre is the highest point of the mean profile at all
+    three gaps in none of 96 readings (main reading maximum at 0.44 mm at 2 mm). The 3 mm dishes
+    have centre values of 660, 3782 and 592 a.u.
+  deviations:
+  - Square for the 2 and 3 mm dishes from the needle marks, as in fig9a-gap-reduces-periphery-more.
+findings:
+- kind: data_missing
+  statement: None of the five dandisets holds the single-cell time-lapse images of Fig. 4 (Methods
+    2.2) or the electric field simulations of Fig. 3, so six of the paper's claims cannot be
+    tested.
+- kind: metadata_insufficient
+  statement: The files give no pixel size (ImageSeries resolution is -1 in 000686 and 000875 and
+    1 or 96 in the other three, with no field of view), no electrode positions, no ROIs, no array size
+    and no position of electrode e1. All have to be inferred from the images. An assumed 0.65 um
+    pixel gives a large-array diagonal of 8.25 mm between needle edges (paper 8.4 mm).
+- kind: metadata_insufficient
+  statement: 17 files of 001025 and 001028 hold a second frame (described as Channels FITC, DAPI)
+    that no description explains. It shows dark marks at the upper needles.
+- kind: metadata_error
+  statement: The subject species of 000686 and 000875 is NCBITaxon 9913 (Bos taurus) for CHO
+    cells, which are Chinese hamster (NCBITaxon 10029, as given in the other three dandisets).
+- kind: metadata_error
+  statement: In 001027 the dishes labelled Protocol 3 (Packet 3) give the highest normalized centre
+    of the three packets in every reading, the targeting the paper reports for Packet 2. With the
+    Protocol 2 and Protocol 3 labels exchanged, Packet 2 is highest and the paper's 183, 83 and
+    74% are matched within 10% under 15 readings. The labels of these two packets may be
+    exchanged; this is a possibility the images support, not a proof.
+- kind: other
+  statement: Six dishes are deposited twice with identical pixel data, in two dandisets each
+    (000875 dishes 23, 24, 25 as 001025 sub-23, sub-24, sub-25 obj-1of0oop; 001025 sub-04, 07, 11
+    as 001028 sub-04, 07, 11), consistent with their use in two figures. No dandiset holds a
+    duplicate inside itself.
+- kind: selection_undocumented
+  statement: 001025 holds 4 small-array dishes at 2.4 kV and 2 large-array dishes at 4.8 kV, where
+    the paper gives n = 3 for Fig. 7; which dishes the paper used is not stated.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) How were the 92 or 224 ROIs laid out (per
+    diagonal or split over both diagonals), and how wide were they? (2) How was the geometric
+    centre located, especially with electrodes lifted 2 and 3 mm, where no footprint shows? (3)
+    Was a background subtracted from the monolayer images, and are the a.u. values of the text
+    (215 to 235 a.u. in the Fig. 8 centre) raw pixel values of the deposited images? (4) Were
+    comparisons within the same dishes (centre against periphery or trough) paired or unpaired?
+    (5) Which needle in the images is e1? (6) Were values in the text read from ROI means or from
+    the LOESS fits, and with what span? The attempt ran every reading the claims file lists and
+    took the first of each as the main reading.
