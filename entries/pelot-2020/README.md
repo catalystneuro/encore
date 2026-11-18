@@ -11,8 +11,8 @@ and traces), and the literature values of the paper's Supplement 4.
 
 | Outcome | Claims |
 |---|---|
-| Reproduced (29) | Rat sample set, nerve and fascicle diameters, multifascicular samples and their tissue proportions, the three mixed model ANOVAs and their Tukey comparisons, tissue proportions, level ratios, variability, the perineurium fits, their order and trends, the Sunderland refit, pig IF against MT. Six rest on an assumption, among them the nerve diameter ANOVA (JMP's unbounded variance components) and the cervical against subdiaphragmatic fascicle comparison (the mixed model test). For that comparison a change to partially reproduced is proposed for a third verification round: under the test that gives the paper's F and p, the pig difference has p = 0.055 |
-| Partially reproduced (3) | The two literature comparisons; the counts of peanut fascicles (pig cervical 24, not 25) |
+| Reproduced (28) | Rat sample set, nerve and fascicle diameters, multifascicular samples and their tissue proportions, the three mixed model ANOVAs and their Tukey comparisons, tissue proportions, level ratios, variability, the perineurium fits, their order and trends, the Sunderland refit, pig IF against MT. Five rest on an assumption, among them the nerve diameter ANOVA (JMP's unbounded variance components) |
+| Partially reproduced (4) | The two literature comparisons; the counts of peanut fascicles (pig cervical 24, not 25); cervical against subdiaphragmatic fascicles, larger in all three species but with the pig difference at p = 0.055 under the mixed model test that gives the paper's F and p |
 | Not reproduced (2) | No level difference in the perineurium relationship; no trend with age |
 | Blocked (1) | Bundles of the rat carotid sheath: the micrographs are in the dataset, but only the vagus is traced |
 

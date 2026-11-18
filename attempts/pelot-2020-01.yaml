@@ -305,14 +305,15 @@ outcomes:
     which differs in R22-1 and R23-1; the code's values, which Supplement 4's summaries show the paper
     used, are run as a variant.
 - claim: fascicles-larger-cervical
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_pelot_2020.ipynb
   output: claim:fascicles-larger-cervical
   notes: Cervical larger in each species. With Kenward-Roger on the observed information, the test that
     gives the paper's F and p, Tukey p human 0.00002, pig 0.055, rat 0.045 (paper < 0.0001, 0.0009, 0.0234),
     two of three species; with the code's rat values human 0.00003, pig 0.060, rat 0.0093, again two.
-    The verified outcome rested on Kenward-Roger on the expected information, human 0.000001, pig 0.012,
-    rat 0.044 (code's rat values pig 0.013, rat 0.0089). Of the ten combinations of test and rat values
+    The outcome verified in rounds 1 and 2, reproduced, rested on Kenward-Roger on the expected information,
+    human 0.000001, pig 0.012, rat 0.044 (code's rat values pig 0.013, rat 0.0089); round 3 agreed with
+    the change to partially reproduced. Of the ten combinations of test and rat values
     printed, six give three species and four give two (the observed-information test with either rat rule,
     Satterthwaite with the code's rat values, pig p = 0.053, and subjects minus parameters with the largest
     fascicle, rat p = 0.068). The pig contrast has 3.74 degrees of freedom on the observed information
@@ -339,17 +340,10 @@ outcomes:
   - The outcome rests on the choice of test. In round 2 Kenward-Roger on the expected information was
     the assumption; the verifier showed the paper's degrees of freedom do not support it, and the test
     on the observed information, which reproduces the paper's F and p, is adopted in its place. Under
-    it the outcome would be partially reproduced, proposed below.
+    it the outcome is partially reproduced, proposed after round 2 and agreed in round 3. This test does
+    not give the paper's within-species level contrasts (pig p 0.055 against 0.0009, rat 0.045 against
+    0.0234), the one set of the paper's Tukey p values it misses.
   assumed: true
-  proposed:
-    outcome: partially_reproduced
-    reason: Under Kenward-Roger on the observed REML information, the test that gives the paper's F and
-      p for all nine effects it reports and degrees of freedom within 1 of those the paper's F and p imply,
-      the pig contrast has Tukey p = 0.055 (0.060 with the code's rat values), human and rat below 0.05,
-      so two of three species hold, the criterion's partially reproduced. The verified outcome rested on
-      Kenward-Roger on the expected information (pig p = 0.012), whose degrees of freedom are up to twice
-      the paper's. Shown in the notebook under "Which test the paper's F and p come from" and
-      fascicles-larger-cervical.
 - claim: rat-diameter-like-fascicle
   outcome: reproduced
   notebook: reproduce_pelot_2020.ipynb
@@ -1218,3 +1212,32 @@ verifications:
     response: The contradiction is added to questions/pelot-2020.yaml as a question for a reader, and the notes
       say so; the claim is not changed. The Summary now says only the nine cervical micrographs were opened and
       drawn with their traces. Outcome unchanged.
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome on fascicles-larger-cervical, the one claim with a proposal,
+    and the analysis behind it in the full executed notebook of the round-2 revision (cells 18, 38, 53, 54, 56,
+    59 and 62), with the claims file and the attempt record. Nothing else was reviewed.
+  results:
+  - claim: fascicles-larger-cervical
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 62 gives, under Kenward-Roger on the observed REML information, Tukey p human 0.000021, pig 0.0552
+      and rat 0.0445 (code''s rat values 0.000032, 0.0599 and 0.0093), two of three species below 0.05 either way,
+      the criterion''s partially reproduced. Cells 53 and 54 show this test reproduces the paper''s F within 0.38%
+      and its p to the digits printed for all nine effects, with degrees of freedom within 1 of those the paper''s
+      (F, p) pairs imply, where Kenward-Roger on the expected information is up to 5.1% off in F with degrees of freedom
+      up to twice the paper''s; cell 18 checks the code on a balanced split-plot design. The test was chosen because
+      it reproduces the paper''s omnibus F and p, independently of this claim, and it makes this claim''s outcome
+      worse; it also gives the paper''s other Tukey p values closely (cells 38, 56 and 59). This addresses the round-2
+      objection. Caveats that do not change the agreement: the within-species level contrasts are the one set of
+      the paper''s Tukey p values the test does not reproduce (pig 3.74 degrees of freedom, where the paper''s p
+      = 0.0009 would need 24.6; rat 0.045 or 0.0093 against 0.0234), so the pig p of 0.055 sits close to the threshold
+      and four of the ten combinations of test and rat values give two species and six give three, which assumed
+      already records; the verifier did not recompute the studentized-range p, scipy not being available to it;
+      and the claims file''s criterion follows the Methods (largest fascicle) where the paper''s statistics use
+      the code''s first-trace rule, with the same outcome under both.'
+    response: The outcome is changed to partially_reproduced and the proposal removed. The notebook's result and
+      summary, the README and the claim's notes and deviations now say so; the deviation adds that this test does
+      not give the paper's within-species level contrasts. The question of how the paper obtained its pig p of 0.0009
+      stays in the methods_unavailable finding.
