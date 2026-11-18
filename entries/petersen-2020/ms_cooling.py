@@ -34,6 +34,9 @@ Where each parameter comes from:
   stated by the paper.
 - Fields are found on the map over all trials of an arm, states pooled
   (assumption; the paper does not say on which map).
+- Phase precession slope: circular-linear regression searched over plus and
+  minus 2 cycles per field (assumption; the paper gives no range), with 1 and 3
+  cycles as variants (circ_lin_slope).
 """
 
 import io
@@ -526,11 +529,17 @@ def skaggs_info(rate, occ):
     return float(np.sum(t))
 
 
-def circ_lin_slope(x, phi, smin=-2 * np.pi, smax=2 * np.pi, n=401):
-    """Circular-linear regression (Kempter et al. 2012): slope a (rad per unit of
-    x) maximising the mean resultant length of phi - 2 pi a x. x is scaled to
-    the field's length (0 to 1), so a is in cycles per field."""
-    a = np.linspace(smin / (2 * np.pi), smax / (2 * np.pi), n)
+def circ_lin_slope(x, phi, cycles=2.0):
+    """Circular-linear regression (Kempter et al. 2012): the slope (rad per unit
+    of x) maximising the mean resultant length of phi - 2 pi a x, searched over
+    a in plus and minus `cycles` cycles per unit of x. x is scaled to the field's
+    length (0 to 1), so the range is in cycles per field. The paper gives no
+    range (Methods, "Theta phase and phase precession"); 2 cycles per field is
+    the main reading (an assumption: a range of 1 cycle pins many slopes at its
+    bound, as the notebook prints), 1 and 3 cycles are variants. The grid step
+    is 0.005 cycles (standard choice)."""
+    n = int(round(2 * cycles / 0.005)) + 1
+    a = np.linspace(-cycles, cycles, n)
     R = np.abs(np.exp(1j * (phi[None, :] - 2 * np.pi * a[:, None] * x[None, :])).mean(1))
     j = int(np.argmax(R))
     # refine around the best grid point
@@ -744,10 +753,59 @@ def field_state_measures(S, F, edges, state_col="st_lab", min_spikes=1):
             # phase precession: circular-linear regression of phase on position in the field
             if "phase_u" in si and len(si) >= 10:
                 x = (si.lin.values - f.lo) / (f.hi - f.lo)
-                r["prec_slope"], r["prec_R"] = circ_lin_slope(x, np.mod(si.phase_u.values, 2 * np.pi))
+                ph = np.mod(si.phase_u.values, 2 * np.pi)
+                r["prec_slope"], r["prec_R"] = circ_lin_slope(x, ph)
+                r["prec_slope_1c"] = circ_lin_slope(x, ph, 1.0)[0]
+                r["prec_slope_3c"] = circ_lin_slope(x, ph, 3.0)[0]
             else:
-                r["prec_slope"] = r["prec_R"] = np.nan
+                r["prec_slope"] = r["prec_R"] = r["prec_slope_1c"] = r["prec_slope_3c"] = np.nan
             rows.append(r)
+    return pd.DataFrame(rows)
+
+
+def info_equal_trials(S, F, edges, state_col="st_lab", n_draws=20, rng=None):
+    """Skaggs information (bits per spike) of each map (cell and arm) with a field
+    in F, per state, from the same number of trials in each state: on each arm,
+    the trials of each state are subsampled without replacement to the smallest
+    count among the states, n_draws times, and the information is averaged over
+    the draws. Skaggs information is biased upward with less data, so equal
+    trial numbers remove the bias that unequal state sizes would bring (standard
+    choice of correction; the paper names no measure)."""
+    tr = S["trials"]
+    sp = S["sp"]
+    b = S["beh"]
+    st_tr = tr[state_col].values
+    bti = _beh_trial_index(S)
+    dt = np.gradient(b["t"])
+    nb = len(edges) - 1
+    fb = np.clip(np.searchsorted(edges, b["lin"], side="right") - 1, 0, nb - 1)
+    sb = np.clip(np.searchsorted(edges, sp.lin.values, side="right") - 1, 0, nb - 1)
+    rows = []
+    for arm in ("Left", "Right"):
+        units = sorted(set(F.u[F.arm == arm]))
+        if not units:
+            continue
+        idx = {s: np.where((st_tr == s) & (tr.arm.values == arm))[0] for s in STATES}
+        m = min(len(v) for v in idx.values())
+        if m < 2:
+            continue
+        acc = {(u, s): [] for u in units for s in STATES}
+        for _ in range(n_draws):
+            for s in STATES:
+                pick = np.zeros(len(tr), bool)
+                pick[rng.choice(idx[s], m, replace=False)] = True
+                fm = (bti >= 0)
+                fm[fm] = pick[bti[fm]]
+                occ = np.bincount(fb[fm], weights=dt[fm], minlength=nb)
+                sm = pick[sp.trial.values] & (sp.arm.values == arm)
+                for u in units:
+                    cnt = np.bincount(sb[sm & (sp.u.values == u)], minlength=nb)
+                    with np.errstate(invalid="ignore", divide="ignore"):
+                        raw = np.where(occ > 0, cnt / occ, np.nan)
+                    acc[(u, s)].append(skaggs_info(smooth_map(raw, occ), occ))
+        for u in units:
+            rows.append(dict(session=S["session"], rat=S["rat"], u=u, arm=arm, trials=m,
+                             **{s: np.nanmean(acc[(u, s)]) for s in STATES}))
     return pd.DataFrame(rows)
 
 
@@ -806,11 +864,20 @@ def unit_waveforms(S, n_chunks=(2, 3, 2), pre_ms=1.0, post_ms=2.0):
                     tot, cnt = acc.get(key, (0, 0))
                     acc[key] = (tot + W.sum(0), cnt + len(j))
     f.close()
+    from scipy.interpolate import CubicSpline
     rows = []
     for (k, cond), (tot, cnt) in acc.items():
         w = tot / cnt
         it = int(np.argmin(w))
         ip = it + int(np.argmax(w[it:]))
+        # the same on the mean waveform interpolated by a cubic spline to 10 times
+        # the sampling rate (standard choice), so the latency is not quantised at 0.05 ms
+        tq = np.arange(len(w) * 10 - 9) / 10
+        wq = CubicSpline(np.arange(len(w)), w)(tq)
+        jt = int(np.argmin(wq))
+        jp = jt + int(np.argmax(wq[jt:]))
         rows.append(dict(session=S["session"], u=k, cell_type=S["units"][k]["cell_type"], cond=cond, n=cnt,
-                         trough_to_peak_ms=(ip - it) / fs * 1000, p2p_uV=float(w.max() - w.min())))
+                         trough_to_peak_ms=(ip - it) / fs * 1000,
+                         trough_to_peak_interp_ms=(tq[jp] - tq[jt]) / fs * 1000,
+                         p2p_uV=float(w.max() - w.min())))
     return pd.DataFrame(rows)

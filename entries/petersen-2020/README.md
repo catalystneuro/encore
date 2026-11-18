@@ -5,13 +5,14 @@ on [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.261115.0311), which
 of 5 rats running a figure-8 maze while the medial septum was cooled: CA1 LFP, curated units,
 head tracking and, in 31 sessions, the measured septal temperature.
 
-Of 46 claims, 17 are reproduced, 18 partially reproduced, 10 not reproduced and 1 blocked; the 21
+Of 46 claims, 17 are reproduced, 19 partially reproduced, 8 not reproduced and 2 blocked; the 20
 outcomes on place fields rest on an assumption about the maps the fields are found on. Cooling slows theta and lowers its power, raises choice errors, and
 slows the theta oscillation of place cells with the LFP (Figures 2, 4B and 6). The place field
 features of Figure 3 and the stability of fp - fLFP, information and the fraction of active
-cells are not reproduced as the paper states them. Theta time lags of place cell pairs lengthen
-while phase lags do not change. The hippocampal temperature of the control experiment is not in
-the dandiset.
+cells are not reproduced as the paper states them. Phase precession flattens during cooling against
+pre but not post. Theta time lags of place cell pairs lengthen while phase lags do not change. The
+distance-time compression of Figure 5 is blocked, as the surface fit of the Methods does not
+describe the data. The hippocampal temperature of the control experiment is not in the dandiset.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
