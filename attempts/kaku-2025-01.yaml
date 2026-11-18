@@ -1,0 +1,1262 @@
+schema_version: 3
+id: kaku-2025-01
+datasets:
+- archive: dandi
+  id: 001619
+  version: 0.251027.1953
+  doi: 10.48324/dandi.001619/0.251027.1953
+  relation: primary
+paper: doi:10.1101/2025.01.27.635041
+date: '2026-11-05'
+entry: kaku-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41988405043
+inputs:
+- what: Allen CCF structure tree (names, acronyms and parent regions), to map the files' region names to the regions
+    the claims name.
+  source: https://github.com/int-brain-lab/iblatlas at commit b88da5d8541d77285565fdb3f86f4f69c50b9e68 (iblatlas/allen_structure_tree.csv)
+- what: The paper's analysis code, whose steps are ported in kaku.py (as the claims file adopts them); no data from
+    it.
+  source: https://github.com/NuoLiLabBCM/KakuEtAl2025 at commit fbc0abe
+- what: Allen CCFv3 annotation volume (2017 release, 25 um), to build the regions the CCF does not label (preBotzinger
+    complex, parts of IRN, the areas next to AMB and NTS) as the claims file words them.
+  source: https://download.alleninstitute.org/informatics-archive/current-release/mouse_ccf/annotation/ccf_2017/annotation_25.nrrd
+    (CCFv3 2017)
+outcomes:
+- claim: code-dataset-link
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:code-dataset-link
+  notes: Every input of process_mat.py is in the files (spike times per trial with the per-trial counts, the six
+    quality metrics, CCF coordinates and region names, the 25 kHz airflow with timestamps and per-trial sample counts,
+    side and bottom DLC jaw, tongue and lickport with likelihoods, 3D jaw, tongue and lickport tracks). get_good_units
+    keeps 20,109 units over the 335 files, 0.9% below 20,300; with the Methods' drift metric added, 16,957 (16.5%
+    below). All 173 sessions ran through the code's steps. The spike index must be read as start offsets (finding).
+  deviations:
+  - The files are read directly; the code's nwb2mat converter (a Windows MATLAB executable) was not used.
+- claim: units-count
+  outcome: not_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:units-count
+  measured:
+  - 20109
+  - 60.0
+  - 4157
+  - 3021
+  - 8992
+  - 335
+  - 31
+  notes: Code filter 20,109 units (tolerance 18,270 to 22,330), 60.0 per probe (SD 32.9 against 22), 31 mice; 335
+    insertions, not 339. Cerebellum 4,157 (5,385 with the arbor vitae, within tolerance), pons 3,021 and medulla
+    8,992, both below tolerance; 2,711 good units lie outside these regions, 1,222 of them in the arbor vitae and
+    others in the cerebellar peduncles and the spinal tract of the trigeminal nerve. The criterion defines no partial
+    outcome, and the insertions, the pons and the medulla are outside it, so the outcome is not reproduced (changed
+    from partially reproduced after round 3); the total, the mean per probe and the mice match. Whether fibre-tract
+    units belong to a division is asked of a reader (questions/kaku-2025.yaml); it does not change the outcome, since
+    the insertion count fails. With the drift metric 16,957 units (CB 3,292, P 2,698, MY 7,626).
+  deviations:
+  - Regions are taken from the Allen structure tree (iblatlas copy, pinned) by the unit's region name; whether the
+    paper counts the arbor vitae as cerebellum is not stated, and both counts are shown.
+- claim: region-spike-rates
+  outcome: not_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:region-spike-rates
+  measured:
+  - 21.26
+  - 27.24
+  - 10.91
+  notes: 'Reading (a), avg_firing_rate: cerebellum 21.3 +- 28.8 (n 4,157), vestibular nuclei 27.2 +- 28.8 (n 1,276),
+    medulla without VNC 10.9 +- 14.5 (n 7,716), with VNC 13.2. Reading (b), spikes in the first 5 s of good trials:
+    21.4, 27.2, 11.3 and 13.6. Cerebellum and medulla (ii) are within tolerance; the vestibular nuclei are not (38
+    +- 3.8) under any reading, though they still fire faster than the medulla. The criterion asks for all three
+    means under one reading and defines no partial outcome, so the outcome is not reproduced (changed from partially
+    reproduced after round 1).'
+  deviations:
+  - Reading (b) uses spikes in the code's analysis window (the first 5.0014 s of each good trial) over that time,
+    since the trials carry no session times.
+- claim: fig1d-lick-breath-frequencies
+  outcome: partially_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1d-lick-breath-frequencies
+  measured:
+  - 6.07
+  - 4.19
+  - 3.77
+  - 8.4
+  - 2.41
+  - 6.39
+  notes: 'Reading (b), within one lick bout: licking 6.07 +- 1.08 Hz (95% range 3.77 to 8.40), breathing 4.19 +-
+    1.01 Hz (2.41 to 6.39); both means and both licking bounds are within tolerance, the breathing bounds are not
+    (2.12 +- 0.21, 7.17 +- 0.72). Reading (a), within trials: licking 26.96 Hz (1.11 to 147.06), breathing 3.89
+    Hz (2.10 to 6.68), all three breathing values within tolerance. Round 1 counted under (b) onset pairs lying
+    in two adjacent bouts (13,498 pairs), which gave 8.06 Hz; reading (b) now takes only pairs inside one bout,
+    which changes the outcome from not reproduced. Under (a) 39,027 lick intervals are shorter than 2 frames (tongue
+    detection flickering between frames); without them the mean under (a) is still 21.36 Hz (97.5th percentile 98
+    Hz). The code builds bouts from runs of lick intervals between 3 and 9 Hz, so the licking mean and range under
+    (b) are largely fixed by that definition.'
+  deviations:
+  - measured gives reading (b), the reading under which both means are within tolerance.
+- claim: fig1f-inspiration-between-licks
+  outcome: not_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1f-inspiration-between-licks
+  notes: 70,298 of 231,563 in-bout inspiration onsets (30.4%) fall between a tongue onset and the next tongue offset;
+    per session 3.3% to 46.1% (median 30.0%), per subject 8.5% to 42.5%; no session has none, so readings (a) and
+    (b) both fail. The median latency from the last lick in a cycle to the next inspiration is 133 ms (1 lick),
+    92 ms (2), 82 ms (3) and 109 ms (4). The airflow-tongue cross-correlation peaks at 54 to 112 ms in 28 of 31
+    subjects (about 250 ms, the next cycle, in the other 3), with weak correlations (r 0.035 to 0.106). The six
+    subjects with the lowest fractions, DL029 to DL034 (8.5% to 14.6%, against 22% to 42%), peak later (tongue
+    88.4 to 112.2 ms, median 103.7, against 54.4 to 95.2, median 78.2, in the 22 other first-cycle subjects; Mann-Whitney
+    p = 0.00054), and over subjects the fraction falls as the lag rises (Spearman rho = -0.67, p = 0.00011). Moving
+    each subject's inspirations earlier by its lag minus 78.2 ms raises DL029 to DL034 to 10.3% to 21.0% and gives
+    30.7% pooled, so the between-subject difference is consistent with a clock offset of 20 to 30 ms in those subjects,
+    and no such correction brings the fraction near 0 or 5%.
+  deviations:
+  - A protrusion is taken from each tongue onset to the first tongue offset after it, both as the code detects them
+    (likelihood > 0.95 in both views); the paper does not define the interval.
+- claim: fig1g-lick-delayed-before-slow-breath
+  outcome: partially_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1g-lick-delayed-before-slow-breath
+  measured: 0.022
+  notes: '71 of 173 sessions give a value (83 have at least 40 two-lick cycles per half; the others lack a peak
+    in a window). Reading (a), sessions: mean 22.0 ms, t = 3.68, p = 4.5e-4. Reading (b), mice: mean 13.6 ms, p
+    = 0.18 (n = 20). 16 of 20 mice have a positive mean, 1 zero and 3 negative (DL008 -120 ms from one session,
+    DL011 -50, DL027 -33). 60 sessions are positive, 6 zero, 5 negative. A random split of the same cycles also
+    gives a positive difference, because the slow window starts 40 ms after the fast one: 15.7 ms over 83 sessions
+    with one split each (p = 0.0072); the data exceed the mean of 20 splits by 13.3 ms (paired p = 0.037, 54 of
+    71 sessions above the null; over mice 14 of 20 above it, paired p = 0.98). So the measured difference is separated
+    from this artefact over sessions but not over mice. Of DL029 to DL034 only DL031 has a value (one session, 0
+    ms). The round-1 revision printed 18.3 ms, 9.1 ms and p = 0.17; the re-run for round 2 on another runner gives
+    the values above (see the round-2 response). The outcome follows the criterion, which compares with 0.'
+- claim: fig1f-licking-mode-switch
+  outcome: not_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1f-licking-mode-switch
+  notes: The median inter-breath interval rises from 1 to 2 to 3 licks per cycle in 116 of 117 sessions that have
+    all three (median session medians 0.228, 0.296, 0.418 s; 4 licks 0.558 s), so licks are added as breathing slows.
+    The latency from the last lick to the next inspiration differs by 62.5% between the groups (pooled medians 133,
+    92 and 82 ms), and only 1 of 117 sessions keeps it within 20%, so the fixed-latency part fails. The criterion
+    asks for both parts and defines no partial outcome (changed from partially reproduced after round 1).
+- claim: fig1i-breath-delayed-before-slow-lick
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1i-breath-delayed-before-slow-lick
+  measured: 0.0105
+  notes: '86 sessions give a value. Reading (a): mean 10.5 ms, t = 6.79, p = 1.5e-9; reading (b), 23 mice: 9.6 ms,
+    p = 0.0012. 44 sessions positive, 37 zero (the PSTH bins are 20 ms), 5 negative; 18 of 23 mice positive. Random-split
+    null 2.7 ms (one split per session, p = 0.12); the data exceed the mean of 20 splits by 10.6 ms (paired p =
+    2.1e-10; 19 of 23 mice above it), so the effect is not an artefact of the two windows.'
+- claim: ed1-unidirectional-models-fail
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:ed1-unidirectional-models-fail
+  notes: 'Inter-breath intervals from fig1d reading (a), inter-lick intervals from reading (b) (within one bout),
+    the readings closest to the paper for each rhythm; ranges 0.150 to 0.476 s and 0.119 to 0.265 s (2.5th to 97.5th
+    percentiles); latencies 112 ms (last lick to inspiration) and 119 ms (inspiration to next lick). Breathing-driven
+    model: Fig 1i difference 0.0 ms in all 162 of 172 simulated sessions with a value (no variance, so no test).
+    Licking-driven model: a Fig 1g value in 1 of 172 sessions; 145 have at least 40 two-lick cycles per half, but
+    the lick PSTH has a peak above threshold in the fast window in 18 and in the slow window in 12, since simulated
+    licks do not lock to inspiration. So the licking-driven result holds because the measure is missing, not because
+    a test found no effect. Data: 22.0 and 10.5 ms, both p < 0.001. The breathing-driven model gives a Fig 1g effect
+    (59.3 ms, 141 sessions) and the licking-driven model a Fig 1i effect (35.9 ms, 169 sessions).'
+  deviations:
+  - Simulated sessions match the data sessions in the number of in-bout inspirations (breathing model) or licks
+    (licking model); sessions with fewer than 50 in-bout inspirations are skipped.
+  - Licks are added evenly inside inter-lick intervals longer than the 97.5th percentile (breathing model), and
+    an inspiration is omitted when it would follow the previous one by less than the 2.5th percentile inter-breath
+    interval (licking model); the Methods describe both steps without numbers.
+- claim: ed2-rats-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The rat lickometer and thermocouple recordings are not in the dandiset, and the paper names no deposit
+    for them.
+- claim: ed1bc-licks-pause-at-swallows
+  outcome: not_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:ed1bc-licks-pause-at-swallows
+  notes: '90 sessions with at least 20 swallows. Tongue-onset probability per 3.4 ms bin, 0 to 100 ms after onset:
+    0.0308 around swallows against 0.0211 around in-bout expiration onsets (median ratio 1.50); lower around swallows
+    in 4 of 90 sessions; Wilcoxon p = 4.0e-16 in the opposite direction. The full trace shows the pause before the
+    onset: from -90 to 0 ms 0.0036 to 0.0068 per bin (minimum 0.0026 at -48 ms) against about 0.021 around expirations;
+    licking resumes from 0 to 60 ms (0.030 and 0.050). The detector keeps swallows with a lick within 0.25 s after
+    the detected peak and takes the onset at the start of the airflow pause, so the window after onset favours licks.
+    Whether the criterion''s window misreads the paper is asked of a reader (questions/kaku-2025.yaml).'
+  deviations:
+  - Expiration onset is the Hilbert phase (code filter, plus pi) wrapping through 2 pi, the claims file's choice.
+- claim: fig1k-rhythms-follow-swallow-at-fixed-latency
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1k-rhythms-follow-swallow-at-fixed-latency
+  notes: '6,644 swallow events; 5,797 kept for licks, 6,300 for breaths (code selection). Licks: latency difference
+    between top and bottom thirds 17.0 ms against cycle -1 differences of 27.2 (ranking O5 a) and 40.8 ms (b). Breaths:
+    37.4 and 23.8 ms against 95.2 and 122.4 ms.'
+- claim: fig1l-lick-interval-preserved
+  outcome: not_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1l-lick-interval-preserved
+  notes: 'Code selection (O5 a, 1,932 events): Delta(1,-1) = 119.5 ms, one-sample t-test p < 0.0001, so the paper''s
+    test finds a change. Variants: (b) 86.2 ms, (c) 50.3 ms (5,797 events), (d) 87.3 ms over 140 sessions, all p
+    < 0.0001. The mean is driven by pauses after the swallow: cycle 1 exceeds 333 ms in 270 of 1,932 events (95th
+    percentile 1,256 ms; cycle -1 never does), and the median Delta(1,-1) is 0.0 ms. Without those events (a diagnostic)
+    the mean is -16.3 ms, p = 3e-24. The port computes cycle 1 as the paper''s code does (generate_figures.plot_licking_swallow_summary,
+    after_2 - after_1, no limit on cycle 1), checked against the code at fbc0abe.'
+- claim: fig1l-lick-cycle-prolonged
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1l-lick-cycle-prolonged
+  measured: 33.31
+  notes: 'Code selection (O5 a): Delta(0,-1) = 33.31 ms, p < 0.0001, n = 1,932. Other readings: (b) 3.9 ms, (c)
+    11.0 ms, (d) 38.8 ms, all p < 0.0001. The selection of the longest cycles 0 favours a positive value, as the
+    claims file notes.'
+- claim: fig1n-breath-interval-preserved
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1n-breath-interval-preserved
+  notes: 'Code selection (O5 a, 2,100 events): Delta(1,-1) = -2.1 ms, p = 0.20. Variants: (c) -0.9 ms, p = 0.26;
+    (b) -25.3 ms, p < 0.0001; (d) -6.6 ms, p = 0.0099 over 135 sessions.'
+- claim: fig1n-breath-cycle-prolonged
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig1n-breath-cycle-prolonged
+  measured: 48.02
+  notes: 'Code selection (O5 a): Delta(0,-1) = 48.02 ms, p < 0.0001, n = 2,100. (b) 1.3 ms, p = 0.33; (c) 40.5 ms;
+    (d) 71.8 ms.'
+- claim: fig2-licking-breathing-tuned-counts
+  outcome: partially_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig2-licking-breathing-tuned-counts
+  measured:
+  - 3517
+  - 1023
+  - 178
+  notes: 'Counts with licking and breathing including the units tuned to both (i). V3(a): order 4 3,517 / 1,023
+    / 178; order 2 3,583 / 1,036 / 196; code order 5 3,500 / 1,026 / 177; all within tolerance of 3,551 / 1,015
+    / 182. The code''s 100-resample scheme gives the same (3,515 / 1,023 / 178 at order 4). V3(b): order 4 2,759
+    / 602 / 69, order 2 2,805 / 605 / 70, outside. Under (ii) no reading matches. As the criterion asks for every
+    reading of V3, the counts do not hold; the partial rule holds under every reading (both-tuned 2.5% to 5.5% of
+    licking units, 11.5% to 18.9% of breathing units). V3(b) ranks the measured MI against random-phase MIs, which
+    for noisy units are often as large as the measured one; V3(a) compares resampled-spike MIs with random-phase
+    MIs, as the Methods'' rank-sum test and the code do.'
+  deviations:
+  - The 1000 resampled tuning curves per unit are fitted by a grid search over width and preferred phase with amplitude
+    and baseline in closed form, not curve_fit; the measured MI uses curve_fit as the code. On 300 random units
+    the two fits differ by a median of 0.0015 in MI and fall on the same side of 0.6 in 99%; on 24 units with MI
+    > 0.6 the code's 100-resample test gives the same decision with either fit.
+  - Resampled histograms are drawn as multinomials on the measured histogram's bins, which has the distribution
+    of the code's resampling; the code's bin edges follow each resample's range.
+  - Significance resamples are computed only for units whose measured MI exceeds 0.6, the only units that can count.
+- claim: fig2-swallow-modulated-counts
+  outcome: not_reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig2-swallow-modulated-counts
+  measured:
+  - 18494
+  - 264
+  - 206
+  - 87
+  notes: 'Denominator reading (a), units of sessions with a swallow: 18,494 (paper 18,485); reading (b), units with
+    at least 20 swallows: 10,807. Swallow-modulated units: 525 under V4(a), 362 under V4(b). V4(a) with order 4,
+    V3(a): swallow only 264 (i) or 319 (ii), licking and swallowing 206, breathing and swallowing 87; other tuning
+    readings give 262 to 355, 170 to 212 and 65 to 87. V4(b): 187 to 264, 98 to 126 and 62 to 84. No combination
+    puts the three counts within tolerance of 427, 175 and 55.'
+- claim: fig2f-breathing-units-location
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig2f-breathing-units-location
+  notes: 'The two readings of AMB''s extent in O3 give different outcomes, which the claims file''s header blocks
+    (changed from reproduced after round 3). The preBotzinger complex is built from the CCF annotation: within 300
+    or 500 um below AMB, inside the whole nucleus''s AP and ML extent (AP 11,350 to 12,575, |ML| 1,225 to 1,525, ventral
+    edge DV 6,750 um), it holds 36 and 41 good units, 20 or 21 breathing-tuned (49% to 58%), against 4.4% to 6.7%
+    of pons and medulla units, Fisher p < 0.0001. With AMB''s ML extent and ventral edge taken in each 100 um AP step,
+    it holds 12 or 15 units, 2 or 3 tuned, p 0.04 to 0.27, and 4 of the 10 combinations of tuning reading and distance
+    fail. The whole-nucleus box takes AMB''s deepest point and full ML range at every AP level, so a unit can count
+    as within 300 um below AMB where it lies further below the local nucleus; the paper gives no numbers for the
+    region. Posterior ventral IRN holds 88 to 109 of 517 tuned units (17% to 21%), p < 0.0001, under every reading.
+    Round 1 built the box from 87 AMB-labelled units (16 units, p 0.0004 to 0.0032). The box''s units come from 10
+    mice in 12 sessions (at most 10 or 12 from DL009), its 21 tuned units (order 4, V3 a) from 7 mice (at most 6 from
+    one); the per-step reading has 12 or 15 units in 5 mice.'
+  deviations:
+  - 'AMB''s "anterior-posterior and medial-lateral extent" in O3 is read both as the extent of the whole nucleus
+    in the CCF annotation and as its extent in each 100 um AP step. Regions come from the Allen CCFv3 2017 annotation
+    at 25 um (inputs), whose label at the unit''s position equals the file''s region name for 96.3% of good units.'
+- claim: fig2g-licking-units-location
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig2g-licking-units-location
+  notes: 'Licking-tuned fractions: XII 36% to 45% (166 units), V 43% to 55% (269), IRN 34% to 40% (1,804), against
+    20% to 26% of pons and medulla units, Fisher p < 0.00001 in each under every reading; pons 15% to 20% of 3,021
+    units, above 1%.'
+- claim: fig2h-swallow-units-location
+  outcome: blocked
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig2h-swallow-units-location
+  notes: 'The two readings of V4 give different outcomes, which the claims file''s header blocks. V4(a): enriched
+    in V (13 of 234, 5.6%, p = 0.018), IC (10.9%), NLL (10.1%) and above AMB (8.7% and 7.6%, p = 0.005 and 0.002)
+    against 2.8% in the same sessions, not lateral of NTS (1.9% to 2.0%): four of five under both distances, partially
+    reproduced. V4(b): V 3.4% (p = 0.095), IC and NLL enriched, above AMB 4.3% (p = 0.11) at 300 um and 4.5% (p
+    = 0.037) at 500 um: two and three of five, not reproduced. Regions from the CCF annotation (see fig2f). Round
+    1 adopted V4(a) as an assumption; the verifier pointed to the header''s rule, and the outcome was changed from
+    partially reproduced. The question of the normalisation is put to the authors (findings).'
+  deviations:
+  - '"Lateral of NTS" is units beyond the lateral edge of NTS in the CCF annotation in the same 100 um AP step,
+    within the distance; "above AMB" is units within the distance above AMB''s dorsal edge inside its AP and ML
+    extent.'
+  blocked_by: methods_underspecified
+- claim: ed6e-swallow-latencies
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:ed6e-swallow-latencies
+  notes: 'Median PSTH peak time (within +-0.15 s) of swallow-modulated units: V and IRN -1 ms (111 units, V4 a)
+    and -4 ms (68, V4 b); IC and NLL +16 ms (53 and 45 units); Mann-Whitney p < 0.0001 under both. By region (V4
+    a): V -11 ms (13), IRN -1 ms (98), IC +13 ms (34), NLL +20 ms (19). The lead of IRN is small, within one video
+    frame.'
+- claim: ed7-glm-separate-clusters
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run. The notebook times the unpenalised GLM (O8 a, log link) on one session: one lag for its 176 units
+    takes 36.2 s in the executed copy of this revision (0.205 s per unit; 25.8 s in the copy the verifier reviewed
+    in round 2). For 20,109 units and 11 lags that is about 12.6 CPU hours (9.0 in the earlier copy), 25.2 with
+    the logit link, and at least 151.5 with the five penalty values of O8 (b), against a 60-minute limit for the notebook.
+    The claim needs every reading of O8, so a subset or one reading cannot give its outcome, and none was run.'
+- claim: ed7g-cae-better-than-features
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The autoencoder is trained on the raw side and bottom videos, which are not in the dandiset (it holds only
+    the DeepLabCut tracking); the paper names no video deposit.
+- claim: ed7h-prebotc-exception
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on ed7g-cae-better-than-features; the raw videos are not in the dandiset.
+- claim: ed8bc-prebotc-inspiration-phase
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:ed8bc-prebotc-inspiration-phase
+  notes: The two readings of the preBotzinger complex of fig2f give different outcomes, which the claims file's header
+    blocks (changed from reproduced after round 3). With AMB's whole extent, 18 or 19 breathing units with MI > 0.9
+    lie near it under every reading of tuning and distance, and 14 prefer the inspiration half (74% to 78%), Rayleigh
+    p < 0.0001. With AMB's extent per AP step 2 units remain, both in the inspiration half, Rayleigh p 0.15 to 0.17,
+    so the criterion's p < 0.05 fails. Over all 265 breathing units with MI > 0.9 (order 4, V3 a) 40.8% prefer the
+    inspiration half. Round 1, with the box built from AMB-labelled units, had 4 or 5 units and gave not reproduced.
+    The 18 or 19 units come from 6 mice in 6 sessions (DL009 6, DL016 4, DL014 3, DL018, DL023 and DL025 2 each);
+    DL009 and DL014 hold all the units outside the inspiration half.
+  deviations:
+  - Inspiration onset is phase pi in the tuning phase (Hilbert angle plus pi, as the code), so the inspiration half
+    is preferred phase minus pi in [0, pi).
+  - The region is built as in fig2f, under both readings.
+- claim: ed8e-licking-units-protrusion
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:ed8e-licking-units-protrusion
+  notes: 'Licking units with MI > 0.9: 643 to 660 of 899 to 925 (71.4% to 71.5%) prefer a jaw phase within pi/2
+    of the session''s circular median phase at full protrusion, under every reading. Session protrusion phases have
+    quartiles 3.25, 3.37 and 3.56 rad. The 3D tracks are read at each session''s trial offset (19 of 173 sessions
+    have 3D idx = DLC trial - 1); round 1 read all at offset 0 and gave 70.4% to 70.5%.'
+- claim: ed8i-ipsilateral-lick-selectivity
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The lick angle needs the left-right axis of the 3D tracking and its sign, which the files do not state,
+    and the files'' left/right hemisphere text is opposite to the side ccf_x gives in 99.3% of units, so ipsilateral
+    cannot be fixed. The part that needs no sign was run (licking units by O1 a; licks split at the session median
+    of the tip, or tip minus jaw; rate from -50 to 100 ms): along the 3D x axis the side preference differs between
+    the hemispheres (medians 0.15 against -0.31 spikes/s, tip minus jaw; 0.22 against -0.26, tip; 1,714 and 1,803
+    units; two-sided Mann-Whitney p < 0.0001); along y it does not (p 0.30 and 0.81). This is consistent with a
+    lateral preference whose side cannot be named.'
+- claim: ed4c-licking-map-insensitive-to-sorting
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:ed4c-licking-map-insensitive-to-sorting
+  measured: 2366
+  notes: '2,366 good units above 500 uV (tolerance 2,001 to 2,445). Over 30 regions with at least 20 such units,
+    region mean licking MI in the subset against all units: Spearman rho 0.944 (order 4), 0.953 (2), 0.948 (5),
+    p < 0.00001. Units above 150 uV with no other filter number 145,163, so the paper''s 19,000 is a count after
+    other filters; it is not resolved here.'
+- claim: fig3a-premotor-regions
+  outcome: blocked
+  blocked_by: other
+  notes: 'The premotor neuron coordinates of reference 43 are public, as eLife 10:e67291 Figure 5 source data 1
+    (elife-67291-fig5-data1-v2.zip: 12 CSV files, genioglossus, masseter and vibrissa animals, with region, acronym
+    and AP, DV, ML positions in mm from bregma). Round 1 did not look for them. They were found in the revision
+    after round 1 but not analysed in this run: the test needs a conversion from bregma coordinates to CCF and the
+    density contours of Extended Data Fig 9a. A later attempt can test the claim on them.'
+- claim: fig3b-licking-units-in-premotor-regions
+  outcome: blocked
+  blocked_by: other
+  notes: Needs the premotor regions of fig3a, built from the premotor neuron coordinates of reference 43, which
+    are public as eLife 10:e67291 Figure 5 source data 1 (found after round 1, not analysed in this run; see fig3a).
+- claim: fig3ce-descending-stimulation-rhythmic-licking
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The ALM and latSC photostimulation sessions are not in the dandiset: every file holds the multi-directional
+    licking task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig3dfh-projections-and-rhythm-site
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The anterograde tracing and the brainstem fibre-site photostimulation data are not in the dandiset: every
+    file holds the multi-directional licking task, with no cue, photostimulation or trial-type data (the trial table
+    has only start, stop and duration), and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: ed10-site-classes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The brainstem photostimulation sessions are not in the dandiset: every file holds the multi-directional
+    licking task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig4b-artificial-licking-keeps-lick-timing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cued licking task with ALM photostimulation are not in the dandiset: every file holds the multi-directional
+    licking task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig4c-artificial-licking-breath-timing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cued licking task with ALM photostimulation are not in the dandiset: every file holds the multi-directional
+    licking task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: ed11b-alm-breathing-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cued licking task with ALM photostimulation are not in the dandiset: every file holds the multi-directional
+    licking task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig5b-voluntary-lick-latency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cued licking task (Go cue times) are not in the dandiset: every file holds the multi-directional licking
+    task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig5c-preemptive-breath-adjustment
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cued licking task (Go cue times) are not in the dandiset: every file holds the multi-directional licking
+    task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig5e-photostim-lick-latency-longer
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cued licking task with photostimulation are not in the dandiset: every file holds the multi-directional
+    licking task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig5f-artificial-licking-late-breath-adjustment
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cued licking task with photostimulation are not in the dandiset: every file holds the multi-directional
+    licking task, with no cue, photostimulation or trial-type data (the trial table has only start, stop and duration),
+    and the subjects are all VGAT-ChR2-EYFP mice. The paper names no other deposit.'
+- claim: fig4e-licking-units-anticipate-breath
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig4e-licking-units-anticipate-breath
+  notes: 'Reading O2(a), all sessions: licking units under every reading of O1, V2 (orders 4 and 2) and V3: 275
+    to 826 units, mean 61.4 to 68.0 ms, 246 to 705 positive against 26 to 110 negative, p < 0.001. Reading O2(b),
+    the simultaneous recordings: 3 to 10 units, 53.3 to 68.0 ms, p 0.003 to 0.015. So every reading gives a positive
+    significant mean. The random-split null is large for this measure, 47.5 to 54.7 ms (p < 0.0001), since the slow
+    window starts 60 ms after the fast one: units with MI > 0.6 exceed it by 3.2 to 5.3 ms (paired p 0.25 to 0.46),
+    units with MI > 0.9 by 18.0 to 19.8 ms (paired p 0.0022 to 0.0059), and under O2(b) not at all. Most of the
+    measured difference is this artefact. The outcome follows the criterion, which compares with 0. Units use the
+    40 fastest and 40 slowest cycles as the claims file says; the code''s 40 nearest the median give 54.8 to 60.7
+    ms over all sessions (asked of a reader).'
+  deviations:
+  - The 40 fastest and 40 slowest two-lick cycles, as the claims file's header says; the code takes the 40 on each
+    side nearest the median (shown as a variant; questions/kaku-2025.yaml).
+- claim: fig4f-breathing-units-anticipate-lick
+  outcome: reproduced
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig4f-breathing-units-anticipate-lick
+  assumed: true
+  notes: 'Reading O2(a): breathing units under every reading of O1, V2 and V3: 54 to 89 units, mean 33.0 to 33.6
+    ms, 40 to 61 positive and 1 negative, p < 0.001. Random-split null 1.5 to 8.8 ms (p > 0.2); the data exceed
+    it by 20.0 to 27.1 ms (paired p < 0.001). Reading O2(b): 2 units (30 ms) under every reading, too few
+    for a test. The outcome adopts O2(a), as O2(b) cannot be tested.'
+  deviations:
+  - 'Assumed: reading O2(a) decides where O2(b) cannot be tested (2 units).'
+- claim: fig4d-simultaneous-recordings
+  outcome: blocked
+  notebook: reproduce_kaku_2025.ipynb
+  output: claim:fig4d-simultaneous-recordings
+  notes: With O1 and O3 as the claims file defines them (preBotzinger complex from the CCF annotation), 2 or 3 two-probe
+    sessions in 2 or 3 mice qualify under every reading, against 43 in 21; regardless of tuning only 4 two-probe
+    sessions (4 mice) have any good unit in both regions, of 162 two-probe sessions in 31 mice. Extended Data Fig
+    12c analyses these unit pairs in the baseline of the cued licking task, and the claims file's header places
+    the recordings in that task, which is not in the dandiset. The recordings are taken as not deposited (the verifier's
+    reading after round 1; round 1 gave not reproduced). Were they among these files, the count would not reproduce.
+  blocked_by: data_missing
+- claim: fig4g-licking-breathing-pairs-correlated
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'Depends on fig4d-simultaneous-recordings: the unit pairs are those of the simultaneous recordings, which
+    are taken as not deposited (Extended Data Fig 12c places them in the cued licking task, not in the dandiset).
+    The cross-correlations were not computed. Round 1 gave blocked, other.'
+- claim: fig4g-symmetric-lags
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'Depends on fig4d-simultaneous-recordings: the unit pairs are those of the simultaneous recordings, which
+    are taken as not deposited (Extended Data Fig 12c places them in the cued licking task, not in the dandiset).
+    The cross-correlations were not computed. Round 1 gave blocked, other.'
+- claim: fig4h-fewer-correlations-outside-oscillator
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'Depends on fig4d-simultaneous-recordings: the unit pairs are those of the simultaneous recordings, which
+    are taken as not deposited (Extended Data Fig 12c places them in the cued licking task, not in the dandiset).
+    The cross-correlations were not computed. Round 1 gave blocked, other.'
+- claim: ed12c-correlation-without-licking
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The test uses the baseline of the cued licking task (trial start to Go cue); the dandiset holds no cued-task
+    sessions or Go cue times.
+findings:
+- kind: format_error
+  statement: In all 335 files units/spike_times_index holds the offset where each unit's spikes start, not where
+    they end as NWB requires; standard readers (pynwb) therefore give every unit the spikes of the unit before it.
+    The per-unit, per-trial spike counts in 'unit and trial pairs' agree with the start-offset reading in every
+    file.
+- kind: format_error
+  statement: In 19 files the units/histology table (region and CCF position) has more rows than the units (for example
+    680 against 613 in DL034 session 20220205 probe p2), so its rows cannot be matched to units with certainty;
+    the paper's code, and this attempt, take them by position.
+- kind: metadata_error
+  statement: The subject age field reads P210W to P303W (210 to 303 weeks) for every file, which does not fit adult
+    mice in an acute recording study; the general/stimulus field says 'photostim' in every file, but no file holds
+    photostimulation or cue data.
+- kind: metadata_error
+  statement: The 'left'/'right' hemisphere text of unit_location and of the insertion's recordable_brain_regions
+    puts 99.3% of units on the side opposite to the one ccf_x gives if it increases to the right (midline 5,700
+    um); the files do not name the CCF axes or their direction, so the side of a unit cannot be fixed.
+- kind: metadata_error
+  statement: The 3D tracking's idx field matches the DLC trial number in 154 of 173 sessions and the trial number
+    minus one in 19 sessions (15 subjects), judged by the correlation of the 2D and 3D tongue tracks (median 0.98
+    at the matching offset); the files do not say how idx counts trials.
+- kind: metadata_insufficient
+  statement: The 3D tracking (jaw_side, tongue_bottom, lickport_bottom) has no stated axes, origin or units, and
+    the trial tables have no target position, so the lick direction of Extended Data Fig 8 cannot be computed; along
+    the 3D x axis licking units prefer opposite sides in the two hemispheres, but which side is ipsilateral cannot
+    be named.
+- kind: other
+  statement: Every trial in the trial tables starts at 0 and spikes, tracking and airflow are stored per trial relative
+    to its start, so trials cannot be placed on one session clock and inter-trial periods are absent.
+- kind: other
+  statement: In every two-probe session (162) the airflow and DLC tracking of the two files are the same recording
+    deposited twice (identical samples and lengths). The 3D tracking holds one trial fewer than the trial table
+    in 211 files, and the side-camera DLC rows differ from trials x 1471 in 25 files.
+- kind: other
+  statement: In six subjects (DL029 to DL034) the airflow-tongue cross-correlation peaks 20 to 30 ms later than in the
+    other subjects (tongue lag median 103.7 against 78.2 ms), and fewer in-bout inspirations fall inside a tongue
+    protrusion (8.5% to 14.6% against 22% to 42%). The files do not say how the airflow and video clocks were aligned,
+    so a per-subject offset between them cannot be excluded.
+- kind: data_missing
+  statement: The dandiset holds only the multi-directional licking task recordings (335 insertions, where the paper
+    reports 339). The cued licking task, the ALM, latSC and brainstem photostimulation experiments, the rat recordings,
+    the raw videos used by the autoencoder and the premotor tracing data are not in it, and the paper names no other
+    deposit; 18 of the 48 claims are blocked for missing data.
+- kind: code_mismatch
+  statement: The Methods list a drift metric < 0.5 among the unit filters and a 4-pole Butterworth filter for phase
+    tuning; the paper's code applies no drift filter and uses a 5th-order filter. The code's filter gives 20,109
+    units, close to the paper's 20,300; with the drift metric it gives 16,957.
+- kind: methods_unavailable
+  statement: 'Question for the authors (fig2-licking-breathing-tuned-counts): the Methods compare the measured MI
+    against 1000 MIs from resampled phases with a Wilcoxon rank-sum test. Is the test between MIs of resampled spike
+    phases and MIs of random session phases (as process_mat.py does, 100 of each), or of the measured MI against
+    the random-phase MIs? The first reproduces 3,517 / 1,021 / 177 tuned units here, the second 2,757 / 602 / 69.'
+- kind: methods_unavailable
+  statement: 'Question for the authors (fig2h-swallow-units-location, fig2-swallow-modulated-counts): is the swallow
+    MI normalised by the larger of the two window rates (the code) or by the peak of the swallow PSTH (the Methods''
+    ''peak spike rate during swallowing'')? Here the first gives three of five enriched regions, the second two.
+    Neither reproduces the counts 427 / 175 / 55; how were swallow-only units defined?'
+- kind: methods_unavailable
+  statement: 'Question for the authors (fig2f, ed8bc, fig4d, fig4e, fig4f): how were units ''near the preBotzinger
+    complex'' and in ''posterior-dorsal IRN/PARN'' selected, since the CCF does not label them, and which 43 recordings
+    form Fig 4d? With a region below AMB inside the nucleus''s whole extent (CCF annotation) 36 to 41 units qualify
+    and 2 or 3 recordings; with AMB''s extent per AP step, 12 to 15 units and the enrichment of fig2f and ed8bc
+    is lost.'
+- kind: methods_unavailable
+  statement: 'Question for the authors (fig1g, fig4e): the peak windows of get_peak_diff_lick_behv and get_peak_diff_lick_unit
+    start 40 and 60 ms later for the slow half than for the fast half. On these data a random split of the same
+    cycles gives a positive slow-minus-fast difference (15.7 ms for Fig 1g, 47 to 55 ms for Fig 4e), close to the
+    measured one. Was the difference compared with a split at random, or with equal windows?'
+verifications:
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebook with the conclusion cells and the summary removed, the helper module
+    kaku.py and the claims file, with the paper under paper/; the verifier read the archive through the DANDI API
+    (335 assets, 31 VGAT-ChR2-EYFP subjects) and tested the peak-difference windows on synthetic units. Report:
+    transcripts/kaku-2025/verifier-1-report.md. Points B10 (histology rows matched by position) and C (fidelity
+    of the port) are answered in the responses; B10 is already a finding and was not changed, since the files give
+    no unit identifier in the histology table.'
+  results:
+  - claim: code-dataset-link
+    agrees: true
+    outcome: reproduced
+    reason: Every input exists. 20,109 units pass get_good_units, 0.9% below 20,300 (cell 13).
+    response: No change.
+  - claim: fig1d-lick-breath-frequencies
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Mean lick frequency is 26.96 Hz under (a) and 8.06 Hz under (b), against 6.23 +- 0.62. Breathing is
+      within tolerance under (a). The value under (b) is distorted by the defect in B2: two consecutive onsets in
+      adjacent bouts are counted as one interval, and adjacent bouts are often split by a 1 to 2 frame likelihood
+      flicker; dropping between-bout pairs could bring the mean within tolerance.'
+    response: 'Fixed B2: reading (b) now takes only onset pairs inside one bout (13,498 between-bout pairs had been
+      counted). Licking is 6.07 Hz (3.77 to 8.40) and breathing 4.19 Hz under (b), both means and the licking bounds
+      within tolerance, the breathing bounds not; outcome changed to partially reproduced. The notebook prints the
+      count of between-bout pairs and of intervals under 2 frames (39,027 under (a), 0 under (b)) and reading (a)
+      without them.'
+  - claim: fig1f-inspiration-between-licks
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Pooled, 30.4% of in-bout inspirations fall inside a protrusion; no session has none (cell 20). Unchecked
+      alignment, B6: the share ranges from 8.5% to 42% by subject, about 10% in DL029 to DL034, and no lag check
+      was done.'
+    response: 'Added the per-subject cross-correlation of the airflow with the tongue indicator and with jaw_y (data
+      check): peak lags 54 to 112 ms in 28 of 31 subjects, similar in DL029 to DL034, with weak correlations; stated
+      as consistent with one clock but unable to exclude offsets of tens of milliseconds. Outcome unchanged.'
+  - claim: fig1g-lick-delayed-before-slow-breath
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Over sessions +22.0 ms, p = 4.5e-4, n = 71. Only 16 of 20 mice are positive, and over mice p = 0.18.
+      B1: the slow-group window starts later than the fast-group window, so any peak in the gap gives a positive
+      difference with no real effect; on synthetic units with identical firing it gave about +170 ms in 200 of 200
+      runs. The notebook ran no random-split control. This is a weakness in the claims file''s method.'
+    response: 'Added a random-split null: 18.3 ms with one split per session (p = 0.0012); the data exceed the mean
+      of 20 splits by 9.1 ms (paired p = 0.17). Stated in the notes that the measured difference cannot be told
+      from the artefact. Outcome kept, as the criterion compares with 0; a question on the windows is put to the
+      authors (findings).'
+  - claim: fig1f-licking-mode-switch
+    agrees: false
+    outcome: not_reproduced
+    reason: The inter-breath interval rises with lick count in 116 of 117 sessions. The latency from last lick to
+      next inspiration differs by 62.5% across groups (133, 92, 82 ms); the limit is 20% (cell 22).
+    response: 'Agreed: the criterion asks for both parts and defines no partial outcome. Outcome changed from partially
+      reproduced to not reproduced.'
+  - claim: fig1i-breath-delayed-before-slow-lick
+    agrees: true
+    outcome: reproduced
+    reason: Over sessions +10.5 ms, p = 1.5e-9, n = 86 (cell 23).
+    response: 'Added the random-split null (B1): 3.1 ms (p = 0.092); the data exceed it by 10.2 ms (paired p = 1.4e-9).
+      Outcome unchanged.'
+  - claim: ed1-unidirectional-models-fail
+    agrees: true
+    outcome: reproduced
+    reason: 'Weak. Breathing model: Fig 1i difference is 0.0 in all 162 sessions. Licking model: the Fig 1g measure
+      exists in only 2 of 169 sessions, so "not significant" holds only by default (B8: the reason is not shown,
+      the keep line is dead code, and the mix of fig1d readings for the two interval sets is not stated).'
+    response: 'Removed the dead keep line; the mix of readings is stated in the cell and the notes; inter-lick intervals
+      now come from the corrected reading (b). Added per-model counts of two-lick cycles per half and of sessions
+      with a peak in each window: the licking model has 145 sessions with enough cycles but a fast-window peak in
+      18 and a slow-window peak in 12, so the measure exists in 1 of 172 sessions. Notes say the result holds because
+      the measure is missing. Outcome unchanged.'
+  - claim: ed2-rats-similar
+    agrees: true
+    outcome: blocked
+    reason: The archive has mouse data only.
+    response: No change.
+  - claim: ed1bc-licks-pause-at-swallows
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Lick probability is lower after swallows in only 4 of 90 sessions; it is higher (0.031 vs 0.021 per
+      bin, Wilcoxon p = 4e-16) (cell 25). B5: detect_swallows keeps a swallow only if a lick follows the swallow
+      peak within 0.25 s, so the criterion''s window (0 to 100 ms after onset) partly selects for licks; the notebook
+      shows only the window mean, not the full trace.'
+    response: 'Added the full trace from -300 to 300 ms: licking is lowest from -90 to 0 ms (minimum at -48 ms)
+      and resumes after onset. The criterion''s window is put to a reader as a question (questions/kaku-2025.yaml);
+      the claim is tested as the file has it. Outcome unchanged.'
+  - claim: fig1k-rhythms-follow-swallow-at-fixed-latency
+    agrees: true
+    outcome: reproduced
+    reason: The latency difference is smaller than the cycle -1 difference for licks and breaths under O5 (a) and
+      (b) (cell 26).
+    response: No change.
+  - claim: fig1l-lick-interval-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Under O5 (a), Delta(1,-1) = +117.9 ms, p near 0. Every variant also gives p near 0 (cell 27). B4: this
+      points to a different cycle-1 definition or to unfiltered pauses after the swallow; it was not investigated.'
+    response: 'Checked the port against the paper''s code at fbc0abe (plot_licking_swallow_summary): cycle 1 is
+      after_2 - after_1 with no limit, as ported. Added the cycle -1, 0 and 1 distributions: cycle 1 exceeds 333
+      ms in 13.8% of events (95th percentile 1,242 ms), the median Delta(1,-1) is 0.0 ms, and without those events
+      the mean is -16.2 ms (p = 3e-24). Outcome unchanged.'
+  - claim: fig1l-lick-cycle-prolonged
+    agrees: true
+    outcome: reproduced
+    reason: Under O5 (a), Delta(0,-1) = 33.36 ms, p near 0 (paper 33.3 +- 3.3). Under (b) it is 4.0 ms and under
+      (c) 11.0 ms.
+    response: No change.
+  - claim: fig1n-breath-interval-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Under O5 (a), Delta(1,-1) = -1.8 ms, p = 0.26 (cell 28).
+    response: Added the cycle distributions for breaths beside those for licks. Outcome unchanged.
+  - claim: fig1n-breath-cycle-prolonged
+    agrees: true
+    outcome: reproduced
+    reason: Under O5 (a), Delta(0,-1) = 48.13 ms, p near 0 (paper 48.0).
+    response: No change.
+  - claim: units-count
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Total (20,109), units per probe (60.0) and mice (31) match. Insertions are 335, not 339. CB 4,157,
+      P 3,021 and MY 8,992 are all outside tolerance. The criterion defines no partial outcome; this is my judgement.
+      B11: 1,222 units in the arbor vitae, plus the cerebellar peduncles and sptV, are counted in no division; the
+      paper''s three counts sum to exactly 20,300, so the criterion''s "with their subregions" may misread the paper.'
+    response: Added B11 to questions/kaku-2025.yaml for a reader; the claim is tested as the file has it, with the
+      arbor-vitae count shown. Outcome unchanged.
+  - claim: region-spike-rates
+    agrees: false
+    outcome: not_reproduced
+    reason: CB is 21.3 and MY without VNC is 10.9, both within tolerance. VNC is 27.2 against 38 +- 3.8 under every
+      reading (cell 17).
+    response: 'Agreed: the criterion asks for all three means and defines no partial outcome. Outcome changed from
+      partially reproduced to not reproduced.'
+  - claim: fig2-licking-breathing-tuned-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: V3(a) matches under (i) for every V2 reading (for example 3517/1021/177). V3(b) gives 2757/602/69. The
+      both-tuned ratios hold under every reading (cell 31). The header's disagreement rule would instead call this
+      methods_underspecified; I followed the claim's own two-level criterion.
+    response: No change.
+  - claim: fig2-swallow-modulated-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: No combination matches. The denominator under (a), 18,494, fits; the swallow-only count is 187 to 355
+      against 427 +- 43 (cell 32).
+    response: No change.
+  - claim: fig2f-breathing-units-location
+    agrees: true
+    outcome: reproduced
+    reason: 'PreBotC: Fisher p <= 0.0032 under all readings, but n = 16 (B3: the AMB box is built from the positions
+      of 87 labelled units, a medial-lateral extent of only 180 um, not from the CCF annotation, and this is not
+      stated as an assumption). Posterior-ventral IRN: p near 0 (cell 33).'
+    response: 'Fixed B3: the regions are built from the Allen CCFv3 annotation volume (inputs). With AMB''s whole
+      extent, as O3 words it, 36 and 41 units, 49% to 58% breathing-tuned, p < 0.0001; with AMB''s extent per AP
+      step (variant), 12 or 15 units, p 0.04 to 0.27. Outcome kept and marked as resting on the construction (assumed).'
+  - claim: fig2g-licking-units-location
+    agrees: true
+    outcome: reproduced
+    reason: XII, V and IRN are each enriched (p near 0). The pons fraction is 15 to 20%, above the 1% threshold
+      (cell 34).
+    response: No change.
+  - claim: fig2h-swallow-units-location
+    agrees: false
+    outcome: blocked
+    reason: V4(a) gives 3 of 5 regions (partial) and V4(b) gives 2 of 5. Lateral of NTS and above AMB are not enriched
+      under either reading (cell 35).
+    response: Agreed with the header's rule. With the regions from the CCF annotation V4(a) gives four of five (above
+      AMB now enriched) and V4(b) two or three; the readings still disagree. Outcome changed from partially reproduced
+      to blocked, methods_underspecified.
+  - claim: ed6e-swallow-latencies
+    agrees: true
+    outcome: reproduced
+    reason: Median peak for V+IRN is -1 ms (V4(a)) and -4 ms (V4(b)); for IC+NLL it is +16 ms; Mann-Whitney p near
+      0. IRN alone is only -1 to -3 ms, within one video frame (cell 36).
+    response: Added the within-one-frame remark to the notes. Outcome unchanged.
+  - claim: ed7-glm-separate-clusters
+    agrees: false
+    outcome: blocked
+    reason: 'Contested. The inputs are all in the files. B12: ed7 is blocked as too_large with no estimate of the
+      cost; the O8(a) unpenalised GLM, or a subset of units, was feasible and was not tried.'
+    response: 'Added a cell that fits O8 (a) for one session and times it: about 0.11 s per unit and lag, about
+      7 CPU hours for all units and lags with the log link alone, over 80 with every reading. The claim needs every
+      reading of O8, so a subset or one reading cannot decide it. Outcome unchanged.'
+  - claim: ed7g-cae-better-than-features
+    agrees: true
+    outcome: blocked
+    reason: The files hold no raw videos.
+    response: No change.
+  - claim: ed7h-prebotc-exception
+    agrees: true
+    outcome: blocked
+    reason: Same reason as ed7g.
+    response: No change.
+  - claim: ed8bc-prebotc-inspiration-phase
+    agrees: true
+    outcome: not_reproduced
+    reason: Only 4 to 5 units qualify; 2 prefer the inspiration half; Rayleigh p = 0.13 to 0.22 (cell 37). The selection
+      is very small (B3).
+    response: With the region built from the CCF annotation (B3), 18 or 19 units qualify, 74% to 78% in the inspiration
+      half, Rayleigh p < 0.0001 under every reading; with AMB's extent per AP step 2 units remain. Outcome changed
+      to reproduced, marked as resting on the region construction (assumed).
+  - claim: ed8e-licking-units-protrusion
+    agrees: true
+    outcome: reproduced
+    reason: 70.5% of units (639 of 906) prefer a phase within pi/2 of protrusion. Chance is 50%, which the threshold
+      equals (cell 38). Section C asks whether the 3D idx field counts from 0 or 1 relative to the DLC trial field.
+    response: 'Checked the 3D idx against the DLC trial per session: offset 0 in 154 sessions, -1 in 19; each session
+      is now read at its own offset (finding added). The fraction is 71.4% to 71.5%. Outcome unchanged.'
+  - claim: ed8i-ipsilateral-lick-selectivity
+    agrees: true
+    outcome: blocked
+    reason: Partly testable. The hemisphere label is consistent (opposite to ccf_x in 99.3% of units), so hemispheres
+      can be separated; only the sign of the lick direction is unknown. A two-sided between-hemisphere test was
+      possible (B13).
+    response: 'Ran it: along the 3D x axis the side preference differs between hemispheres (p < 0.0001, two-sided),
+      along y it does not. Reported in the notes; the claim stays blocked, as ipsilateral cannot be named.'
+  - claim: ed4c-licking-map-insensitive-to-sorting
+    agrees: true
+    outcome: reproduced
+    reason: 2,366 units above 500 uV (paper 2,223 +- 222). Spearman rho = 0.94, p near 0 (cell 39).
+    response: No change.
+  - claim: fig3a-premotor-regions
+    agrees: false
+    outcome: blocked
+    reason: data_missing. The premotor data are from reference 43 and are not in the dandiset.
+    response: 'Looked for them: the coordinates are public as eLife 10:e67291 Figure 5 source data 1, so the claim
+      is not data_missing (the claims file marks it data elsewhere). Not analysed in this run; kept blocked, other,
+      with the source in the notes.'
+  - claim: fig3b-licking-units-in-premotor-regions
+    agrees: true
+    outcome: blocked
+    reason: data_missing. Needs the premotor contours from reference 43.
+    response: The source is public (see fig3a); blocked_by changed to other, since the data are not missing; not
+      analysed in this run.
+  - claim: fig3ce-descending-stimulation-rhythmic-licking
+    agrees: true
+    outcome: blocked
+    reason: No ALM or latSC mice; the cued task is absent.
+    response: No change.
+  - claim: fig3dfh-projections-and-rhythm-site
+    agrees: true
+    outcome: blocked
+    reason: No Phox2b mice and no fibre-site data.
+    response: No change.
+  - claim: ed10-site-classes
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig3dfh.
+    response: No change.
+  - claim: fig4b-artificial-licking-keeps-lick-timing
+    agrees: true
+    outcome: blocked
+    reason: The cued task with ALM photostimulation is absent.
+    response: No change.
+  - claim: fig4c-artificial-licking-breath-timing
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig4b.
+    response: No change.
+  - claim: ed11b-alm-breathing-rate
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig4b.
+    response: No change.
+  - claim: fig4e-licking-units-anticipate-breath
+    agrees: true
+    outcome: reproduced
+    reason: 'Under the header''s rule that one O2 reading suffices. Under O2(a) all O1 and V3 readings give +54.5
+      to +60.7 ms with p near 0. Under O2(b) only 2 to 9 units qualify. The measure is biased by construction (B1).
+      B7: unit_fast and unit_slow select the 40 cycles nearest the median, where the header asks for the 40 fastest
+      and 40 slowest. B9: only filter order 4 was run.'
+    response: 'Fixed B7 (40 fastest and slowest, the code''s selection shown; asked of a reader, since the header
+      misdescribes the code), B9 (order 2 added) and added the null (B1): 44.1 to 53.0 ms; units with MI > 0.6 exceed
+      it by 6.1 to 8.0 ms (p 0.076 to 0.15), MI > 0.9 by about 21 ms (p < 0.002). With the CCF-annotation region
+      O2(b) has 3 to 10 units, all positive and significant, so assumed is removed. Outcome kept, as the criterion
+      compares with 0; the notes say most of the difference is the artefact.'
+  - claim: fig4f-breathing-units-anticipate-lick
+    agrees: true
+    outcome: reproduced
+    reason: 'As fig4e: +33 ms, p near 0 under O2(a); 1 unit under O2(b) (cell 40). Same bias (B1).'
+    response: 'Added the null: 3.4 to 5.1 ms (p > 0.4); the data exceed it by 25.5 to 30.1 ms (paired p 0.0005 to
+      0.013), so the effect is not the window artefact. Order 2 added. O2(b) has 2 units. Outcome unchanged.'
+  - claim: fig4d-simultaneous-recordings
+    agrees: false
+    outcome: blocked
+    reason: data_missing (my reading). The notebook finds only 1 to 2 recordings in 1 to 2 mice, against 43 in 21.
+      ED Fig 12c and the claims header place these recordings in the cued task, which is not deposited. Under the
+      notebook's O3 box it would be not_reproduced.
+    response: Agreed. With the region from the CCF annotation 2 or 3 recordings qualify, and only 4 two-probe sessions
+      have any unit in both regions. Outcome changed from not reproduced to blocked, data_missing.
+  - claim: fig4g-licking-breathing-pairs-correlated
+    agrees: false
+    outcome: blocked
+    reason: data_missing. Depends on the fig4d pairs. The notebook gives no reason in the record available to me
+      (B14).
+    response: blocked_by changed from other to data_missing, following fig4d; the notebook now gives the reason
+      after fig4d.
+  - claim: fig4g-symmetric-lags
+    agrees: false
+    outcome: blocked
+    reason: data_missing. Same reason as fig4g.
+    response: As fig4g.
+  - claim: ed12c-correlation-without-licking
+    agrees: true
+    outcome: blocked
+    reason: Needs the cued-task baseline period.
+    response: No change.
+  - claim: fig4h-fewer-correlations-outside-oscillator
+    agrees: false
+    outcome: blocked
+    reason: data_missing. Same reason as fig4g.
+    response: As fig4g.
+  - claim: fig5b-voluntary-lick-latency
+    agrees: true
+    outcome: blocked
+    reason: The cued task is absent.
+    response: No change.
+  - claim: fig5c-preemptive-breath-adjustment
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5b.
+    response: No change.
+  - claim: fig5e-photostim-lick-latency-longer
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5b.
+    response: No change.
+  - claim: fig5f-artificial-licking-late-breath-adjustment
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5b.
+    response: No change.
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook with the conclusions and the summary, the helper module kaku.py, the
+    claims file and the attempt record, with the paper under paper/. Report: transcripts/kaku-2025/verifier-2-report.md.
+    The re-run for this revision, on another runner, moved some numbers slightly and the random-split nulls of Figs 1g,
+    1i, 4e and 4f more; no outcome changed with them, and every conclusion now quotes the re-run.'
+  results:
+  - claim: code-dataset-link
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: units-count
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion defines no partial level. P, MY and the insertion count (exact tolerance) are outside it, and
+      CB is outside unless the arbor vitae is counted. The record changed region-spike-rates and fig1f-licking-mode-switch
+      to not reproduced because their criteria define no partial outcome; the same reasoning gives not reproduced here.
+      My round-1 call of partially had the same inconsistency, and I withdraw it.
+    response: Agreed. The verified outcome is kept, as round 2 allows no change, and not reproduced is proposed under
+      `proposed`, with the reason, for a third round.
+  - claim: region-spike-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: fig1d-lick-breath-frequencies
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with qualifications. This follows the criterion. Under reading (b) bouts are built from runs of lick
+      intervals between 3 and 9 Hz (kaku.movement_timing), so the licking mean and 95% range within bouts (6.07 Hz, 3.77
+      to 8.40) are largely fixed by that definition.
+    response: 'Stated in the conclusion and the notes. The sentence that blamed onsets a few milliseconds apart for the
+      high frequency under (a) is replaced: without those intervals the mean is still 21.36 Hz (97.5th percentile 98
+      Hz).'
+  - claim: fig1f-inspiration-between-licks
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with qualifications. The outcome holds under both readings, but the alignment question is still open.
+      The lag check shows a later airflow lag in exactly the subjects with fewer inspirations inside a protrusion (DL029
+      to DL034 88.4 to 112.2 ms, median about 104, against 54.4 to 95.2 ms, median about 78, in 22 others), so the sentences
+      saying the lags are similar are not supported. Per-subject results for fig1f and fig1g with DL029 to DL034 separated
+      would help.
+    response: 'Corrected the data check, the conclusion and the notes: the lags of DL029 to DL034 are printed against
+      the others (Mann-Whitney p = 0.00054). Added per-subject fractions with the two groups apart, the correlation of
+      fraction with lag over subjects (rho = -0.67), and a variant that moves each subject''s inspirations by its extra
+      lag: DL029 to DL034 rise to 10.3% to 21.0% and the pooled fraction stays 30.7%, so no correction brings it near
+      0 or 5%. Added a finding on the possible per-subject offset. Outcome unchanged.'
+  - claim: fig1g-lick-delayed-before-slow-breath
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with qualifications. It follows the criterion, which compares with 0, but the data do not exceed the
+      random-split null (+9.1 ms, paired p = 0.17; above the null in 10 of 20 mice). The record states this. Per-subject
+      results with DL029 to DL034 separated would help.
+    response: 'Added the result with DL029 to DL034 apart: only DL031 has a value (one session, 0 ms). The re-run for
+      this revision, on another runner, changed the null: 15.7 ms with one split, and the data exceed the mean of 20
+      splits by 13.3 ms (paired p = 0.037 over sessions, 0.98 over mice); text and notes now give these numbers. Outcome
+      unchanged.'
+  - claim: fig1f-licking-mode-switch
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: fig1i-breath-delayed-before-slow-lick
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change of outcome; the numbers in the text and notes follow the re-run, which moved them slightly.
+  - claim: ed1-unidirectional-models-fail
+    agrees: true
+    outcome: reproduced
+    reason: Holds by the letter of the criterion. The licking model gives a Fig 1g value in 1 of 172 sessions, so not
+      significant holds by default; the record says so. The model draws inter-lick intervals independently from the pooled
+      distribution, so the simulated licks are not rhythmic; that follows the criterion's method and is one reason the
+      measure is missing.
+    response: No change; the notes already say the result holds because the measure is missing.
+  - claim: ed2-rats-similar
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: ed1bc-licks-pause-at-swallows
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows the criterion. Whether the criterion's window misreads the paper is now with a reader. Around swallows
+      licking pauses before the detected onset, from -90 to 0 ms, and resumes after it.
+    response: No change; the question is in questions/kaku-2025.yaml.
+  - claim: fig1k-rhythms-follow-swallow-at-fixed-latency
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: fig1l-lick-interval-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, with no comment.
+    response: No change of outcome; the numbers in the text and notes follow the re-run, which moved them slightly.
+  - claim: fig1l-lick-cycle-prolonged
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change of outcome; the numbers in the text and notes follow the re-run, which moved them slightly.
+  - claim: fig1n-breath-interval-preserved
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change of outcome; the numbers in the text and notes follow the re-run, which moved them slightly.
+  - claim: fig1n-breath-cycle-prolonged
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change of outcome; the numbers in the text and notes follow the re-run, which moved them slightly.
+  - claim: fig2-licking-breathing-tuned-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree, with no comment.
+    response: No change of outcome; the numbers in the text and notes follow the re-run, which moved them slightly.
+  - claim: fig2-swallow-modulated-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, with no comment. The record gives V4(b) breathing-and-swallowing counts of 62 to 85; cell 47 prints
+      62 to 84.
+    response: Corrected to 62 to 84 (and the re-run's other counts). Outcome unchanged.
+  - claim: fig2f-breathing-units-location
+    agrees: false
+    outcome: blocked
+    reason: 'The assumption is stated, but the whole-nucleus box is not clearly better than the per-AP-step reading:
+      it takes AMB''s deepest point (DV 6,750 um) and full ML range across all AP levels, so a unit can count as within
+      300 um ventral of AMB where it lies more than 300 um below the local nucleus. The outcome flips between the two
+      readings (36 or 41 units, p < 0.0001, against 12 or 15, p 0.04 to 0.27), and the header blocks a claim whose region
+      readings disagree. I recommend blocked, methods_underspecified. At the least, the record should show how many mice
+      the units come from.'
+    response: 'Agreed. The verified outcome is kept and blocked, methods_underspecified is proposed for a third round.
+      Added the mice and sessions behind the units: the box''s 36 or 41 units come from 10 mice in 12 sessions (at most
+      10 or 12 from DL009), its 21 tuned units from 7 mice.'
+  - claim: fig2g-licking-units-location
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: fig2h-swallow-units-location
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: ed6e-swallow-latencies
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: ed7-glm-separate-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'Accepted, given the measured cost: at least 9 CPU hours for O8(a) alone (cell 58). The stated numbers are
+      wrong: cell 58 prints 25.8 s, 0.147 s per unit, 9.0, 18.0 and 108.1 CPU hours, and the text says the timing varies
+      between runs, so it was not written from this run.'
+    response: The conclusion no longer quotes numbers that vary between runs and refers to the printed estimate; the
+      notes give the numbers of the executed copy of this revision (0.205 s per unit, 12.6, 25.2 and 151.5 CPU hours)
+      beside the earlier ones.
+  - claim: ed7g-cae-better-than-features
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: ed7h-prebotc-exception
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: ed8bc-prebotc-inspiration-phase
+    agrees: false
+    outcome: blocked
+    reason: 'As fig2f: the outcome rests on the whole-nucleus box; under the per-step reading only 2 units remain (cell
+      60). I recommend blocked, methods_underspecified. The notebook does not show how many mice the 18 or 19 units come
+      from.'
+    response: 'Agreed. The verified outcome is kept and blocked, methods_underspecified is proposed. Added the mice:
+      6 mice in 6 sessions, and DL009 and DL014 hold all the units outside the inspiration half.'
+  - claim: ed8e-licking-units-protrusion
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: ed8i-ipsilateral-lick-selectivity
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: ed4c-licking-map-insensitive-to-sorting
+    agrees: true
+    outcome: reproduced
+    reason: I agree, with no comment.
+    response: No change.
+  - claim: fig3a-premotor-regions
+    agrees: true
+    outcome: blocked
+    reason: other is more accurate than my round-1 data_missing, since the claims file marks the data as held elsewhere.
+      The claim is testable from the eLife source data and was not run.
+    response: 'Not run in this revision: under the protocol a change of outcome that needs an analysis not yet run waits
+      for a new attempt.'
+  - claim: fig3b-licking-units-in-premotor-regions
+    agrees: true
+    outcome: blocked
+    reason: 'As fig3a: testable from the eLife source data and not run.'
+    response: As fig3a.
+  - claim: fig3ce-descending-stimulation-rhythmic-licking
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig3dfh-projections-and-rhythm-site
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: ed10-site-classes
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig4b-artificial-licking-keeps-lick-timing
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig4c-artificial-licking-breath-timing
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: ed11b-alm-breathing-rate
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig5b-voluntary-lick-latency
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig5c-preemptive-breath-adjustment
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig5e-photostim-lick-latency-longer
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig5f-artificial-licking-late-breath-adjustment
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig4e-licking-units-anticipate-breath
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with qualifications. It follows the criterion, which compares with 0, but units with MI > 0.6 do not
+      exceed the null (p 0.076 to 0.15), and under O2(b) the difference is negative (cell 69). The record states this.
+      Under O2(b) the printed means are 53.3 to 68.0 ms, not 72.0; 72.9 ms is the code-selection column.
+    response: Corrected to 53.3 to 68.0 ms. The re-run changed the null numbers (47.5 to 54.7 ms; MI > 0.6 exceed it
+      by 3.2 to 5.3 ms, paired p 0.25 to 0.46); text and notes give them. Outcome unchanged.
+  - claim: fig4f-breathing-units-anticipate-lick
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is stated and reasonable. The header treats O2 as a choice of which subset the paper used,
+      where one reading suffices, and O2(b) has only 2 units, too few for a test.
+    response: No change; the re-run's numbers (null 1.5 to 8.8 ms, data above it by 20.0 to 27.1 ms) are in the text
+      and notes.
+  - claim: fig4d-simultaneous-recordings
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig4g-licking-breathing-pairs-correlated
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig4g-symmetric-lags
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: fig4h-fewer-correlations-outside-oscillator
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+  - claim: ed12c-correlation-without-licking
+    agrees: true
+    outcome: blocked
+    reason: I agree, with no comment. One of the 18 data_missing blocks.
+    response: No change.
+- date: '2026-11-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3: the three proposed changes of outcome (units-count, fig2f-breathing-units-location and ed8bc-prebotc-inspiration-phase)
+    and the analysis behind them in the re-executed notebook, with the claims file and the attempt record. Report:
+    transcripts/kaku-2025/verifier-3-report.md. The verifier also noted that O3 does not say whether AMB''s extent
+    is the whole nucleus or the nucleus at each AP level, and that the paper does not say how fibre-tract units are
+    grouped; both are gaps in the claims file and change no outcome.'
+  results:
+  - claim: units-count
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 17 prints counts that come from the unit table and the files. The criterion lists tolerances and defines
+      no partial outcome. Insertions are counted exactly, and the dandiset has 335 files against 339. Under the code
+      filter, pons is 3,021 (tolerance 3,330 to 4,070) and medulla is 8,992 (9,810 to 11,990). Cerebellum is 4,157,
+      or 5,385 with the arbor vitae. With the drift metric, the total of 16,957 is also out of tolerance. The total
+      (20,109), the mean per probe (60.0) and the mice (31) match. The fibre-tract question does not change the outcome,
+      because the insertion count fails whatever region each unit is given. The proposal applies the criterion as written
+      and matches how region-spike-rates was treated.
+    response: Outcome changed to not reproduced and `proposed` removed; the notebook's conclusion and summary, the README
+      and the notes follow.
+  - claim: fig2f-breathing-units-location
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 49 builds both regions from the CCF annotation. The coordinates are consistent: the annotation label
+      equals the file''s region name for 96.3% of good units. The whole-nucleus box uses AMB''s deepest point (DV 6,750
+      um) and its full ML range at every AP level. The per-100 um-AP-step reading uses the local ventral edge and ML
+      range. Both read O3''s "within d um ventral of AMB, inside AMB''s anterior-posterior and medial-lateral extent".
+      They give 36 or 41 units (p < 0.0001) against 12 or 15 units (p 0.04 to 0.27). Under the per-step reading, 4
+      of the 10 tuning-by-distance combinations fail. The header says readings of a region named in a criterion must
+      all give the outcome, or the claim is blocked. Neither construction was picked to reach a result, and the proposal
+      moves away from a positive outcome. Posterior ventral IRN passes under every reading, but the criterion needs
+      both regions.'
+    response: Outcome changed to blocked, methods_underspecified, and `proposed` removed; the assumption flag is dropped,
+      since both readings are now reported as such. The notebook's conclusion and summary, the README and the notes
+      follow.
+  - claim: ed8bc-prebotc-inspiration-phase
+    agrees: true
+    outcome: blocked
+    reason: In cell 60, the whole-nucleus box gives 18 or 19 units, 14 of them in the inspiration half, with Rayleigh
+      p < 0.0001. The per-step reading gives 2 units, Rayleigh p 0.15 to 0.17, so the criterion's p < 0.05 fails. The
+      two readings of the region therefore disagree. The phase convention (preferred phase minus pi, inspiration onset
+      at 0) follows the criterion. The base rate of 40.8% across all 265 units is printed. Same rule and same reasoning
+      as fig2f.
+    response: Outcome changed to blocked, methods_underspecified, and `proposed` removed; the notes now give the per-step
+      Rayleigh p of 0.15 to 0.17 that cell 60 prints. The notebook's conclusion and summary, the README and the notes
+      follow.

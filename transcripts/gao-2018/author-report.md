@@ -1,67 +1,47 @@
-I finished steps 1 to 5 and ran `handover`. Of the 45 claims, 18 were tested and 27 are blocked. The entry check passes with 0 errors and the notebook runs from a clean environment in 465 s (about 7.8 min). Nothing is committed.
+I've written the new entry at `entries/gao-2018`, the record at `attempts/gao-2018-02.yaml`, and built the handover in `executed/gao-2018/handover/`. The entry check gives 0 errors and the notebook runs from a clean environment in about 20 minutes. I did not verify my own work, commit or push. I did not come across any earlier attempt's results.
 
-## 1. Outcomes
+**1. Outcomes (46 claims: 14 reproduced, 7 partially reproduced, 1 not reproduced, 24 blocked)**
 
-| claim | outcome |
+| Claim | Outcome |
 |---|---|
-| fig1g-fastigial-activation-early-sample-no-effect | reproduced |
-| fig1g-fastigial-activation-delay-errors | reproduced (0.873 to 0.630, p < 0.0001) |
-| fig1h-fastigial-activation-delay-bias | reproduced (reading a; 2 mice biased contra, 3 ipsi) |
-| fig1g-dentate-activation-little-effect | reproduced (p = 0.108; 3 of the paper's 8 mice) |
-| fig1k-inhibition-delay-bias | partially reproduced (CD12 and CD13 are biased the same way) |
-| fig2-alm-selective-fraction | reproduced (0.739 and 0.753, at the edge of the tolerance) |
-| fig2cd-selectivity-emerges-gradually | blocked, methods_underspecified |
-| fig3d-alm-altered-by-cn-inhibition | partially reproduced (fraction 0.395 matches; latency 15 to 23 ms against 7.1) |
-| fig3e-alm-mean-rate-unchanged | partially reproduced (rates 22% below the paper's; paired and unpaired tests disagree) |
-| fig3e-alm-increase-decrease | reproduced (increase fraction 0.592) |
-| fig3f-alm-selectivity-abolished-by-cn-inhibition | reproduced, `assumed` |
-| fig4-fastigial-activation-alm-latency | partially reproduced (latency 2.1 to 5.6 ms matches; fraction modulated 0.29 against 0.51) |
-| fig4e-fastigial-activation-abolishes-alm-selectivity | reproduced |
-| fig4f-fastigial-effect-persists | reproduced |
-| fig4g-dentate-effect-recovers | not reproduced (3.4% to 5.3% of neurons stay significant more than 1 s after offset) |
-| fig4i-cd-control-separation | reproduced |
-| fig4i-fastigial-collapses-cd | reproduced (reading b) |
-| cd-captures-selectivity | reproduced, `assumed` |
-| ed10d-fastigial-endpoints-no-prediction | not reproduced (slope 0.42, p = 0.005) |
-| 26 others: lesions, CN recordings, licking, other stimulation epochs, VGAT-ChR2 mice, anatomy | blocked, data_missing |
+| fig1g early-sample no effect; fig1g delay errors; ed10b; fig1h delay bias; fig1g dentate little effect; fig1k delay bias | reproduced (all from the behavior in the recording sessions) |
+| fig2-alm-selective-fraction (856/1084 = 0.79) | reproduced |
+| fig2-preparatory-more-in-alm (ALM only, 0.563) | reproduced (the CN comparison is untested) |
+| fig2-peri-movement-equal; fig2cd-selectivity-emerges-gradually | partially reproduced (ALM half holds; CN not deposited) |
+| fig3d ALM altered by CN inhibition (fraction 0.469 matches; latency 15 to 32 ms, not 7.1) | partially reproduced, assumed |
+| fig3e mean rate unchanged (4.03 vs 4.21 spikes/s, p = 0.51) | reproduced |
+| fig3e increase/decrease (fraction 0.535) | reproduced, assumed |
+| fig3f selectivity abolished by CN inhibition (falls 73%, but its interval stays above zero) | partially reproduced |
+| fig4 fastigial latency (3.6 ms matches; 177 modulated neurons against 227) | partially reproduced, assumed |
+| fig4e (n = 328 exactly, as the paper); fig4f persistence | reproduced |
+| fig4g dentate recovers (late fraction still above baseline) | partially reproduced, assumed |
+| fig4i control separation | reproduced |
+| fig4i fastigial collapse (dentate also drops 14%, interval excludes zero) | partially reproduced |
+| cd-captures-selectivity (66.3% and 28.4%) | reproduced, assumed |
+| ed10d: projection no longer predicts licking (slope still significant, p = 0.003) | not reproduced |
+| 24 claims on lesions, CN recordings, licks, behavior-only sessions, VGAT mice, anatomy | blocked, data_missing |
 
-## 2. The dataset, assumptions and questions
+**2. What I found about the datasets**
+- **Same recordings in both:** the two datasets hold the same 54 sessions of 13 mice, and every unit's spike times are identical. I analysed the CRCNS copy and checked DANDI against it.
+- **DANDI gaps:** DANDI lacks 26 trials in one session and 268 of 302 in another. Its trial start times are rounded, and its event times are described as relative to the trial start when they are in session time.
+- **Laterality:** for mice CD12, CD13 and CD14, both datasets put the fastigial fiber on the same side as the recorded ALM. This contradicts the paper's contralateral design. Both side assignments were run; fig1k reproduces either way.
+- **Laser traces:**
+  - Several 2015 sessions disagree with their trial codes: one has 1.3 s of light instead of 500 ms, one has varying durations, one has almost no light.
+  - In one 2017 session, many delay-coded trials are lit at sample onset.
+  - The photo-inhibition power values match neither of the 1.5 and 4.5 mW the Methods state.
+- **More units than the paper reports:** 1084 pyramidal neurons in the photo-activation mice against the paper's 912, and 682 in the photo-inhibition mice against 454.
+- **Analysis code:** CRCNS:alm-4 holds the lab's analysis scripts, which the paper's reporting summary says would be deposited there. The claims file says the paper links no code. I took the method details the Methods leave open from these scripts and cited each one.
+- **Assumptions:** latency bins labelled by start (fastigial) or centre (dentate); counts compared by fraction where the files hold more neurons; for the cd fractions, squared ratios on held-out trials with single-trial variance.
+- **Questions for the paper's authors** (recorded as `methods_unavailable` findings): how latency bins are placed in time; how the cd fractions are computed; the neuron and session selection.
+- **Questions to a reader:** none.
 
-**What the dataset holds.**
-- I pinned 0.220126.1903. The paper cites no version, and this is the only published one; the draft has the same assets.
-- It holds 54 ALM sessions in the 13 ALM-recorded mice of Supplemental Table 1. No recording appears twice.
-- It has no CN recordings, no lick times, no behaviour-only sessions and no anatomy.
+**3. Where the protocol was unclear**
+1. When a claim compares ALM with CN and only ALM can be tested, it is unclear whether the outcome is partial or blocked. I followed the criterion where it allows ALM alone, and used partially reproduced elsewhere, explaining why in the notes.
+2. Several count criteria fall back to a fraction "where the dataset holds fewer neurons", but here the files hold more. I used the fraction as an assumption.
+3. `measured` has no slot for an expected value that cannot be computed (the CN fractions). I recorded the ALM value alone.
+4. The CRCNS data are gzip tar archives, which cannot be opened in place as `archives.md` assumes for zips. I read each archive once as a stream and reduced it in memory (12.8 GB, about 12 minutes).
+5. Any edit to the entry, even the README, forces a full re-run. I re-ran (20 minutes) after fixing the claim count in the README from 45 to 46.
 
-**Findings about the data.**
-- `photo_stim_id` is undocumented. I read the codes from the timing of the ALM response: 1 and 3 are early-sample photo-activation, 2 and 4 early-delay photo-activation, 5 and 6 delay photo-inhibition.
-- The event-time columns are described as relative to trial start but are on the session clock.
-- The hemispheres in the files disagree with Supplemental Table 1 for CD12, CD13 and CD14.
-- The anm subjects cannot all be matched to the paper's AN105 to AN109.
-- The files' `cell_type` labels 60 narrow-waveform units "pyramidal".
-- The files hold more units than the paper reports (1082 against 912, and 676 against 454), and nothing says what the paper left out.
-- In 5 sessions I could not show that spikes share the trial clock.
-
-**Assumptions** (each is a deviation with `assumed: true`):
-- fig3f: the 10 preference trials are 10 in all, the literal reading of the Methods.
-- cd-captures-selectivity: measured on trials independent of those that estimated the cd, with single-trial variance. Only 1 of 8 combinations of these choices matches both numbers.
-
-**Questions for the paper's authors** (`methods_unavailable` findings):
-- Which epoch, and how many trials, fix each neuron's preferred trial type (E3)?
-- How is a latency bin labelled, and is a pre-onset baseline subtracted?
-- How is the fraction captured by the cd computed?
-
-**Questions to a reader:** none.
-
-## 3. Where the protocol was unclear
-
-1. **Partial testability.** fig2cd covers ALM and CN, and only ALM is in the dataset. The protocol does not say how to judge a claim only half of whose data exist. Its method question decided the outcome, so this did not matter here.
-2. **"Count, or the fraction where the dataset holds fewer neurons."** Here the dataset holds more neurons. I judged the fraction and recorded it as a deviation.
-3. **Reading rules.** Readings the criterion lists count if any of them matches; readings of a method detail must all agree. A shared method (E3) that names a detail as open falls between the two. I applied the method-detail rule.
-4. **Inferring undocumented codes from the data.** Link claims cover only outside data, so the protocol has no form for this. I made it a deviation on each claim and a finding.
-5. **Behaviour claims tested on recording sessions.** The protocol does not say whether these may stand in for the paper's behaviour sessions. I tested them and recorded it as a deviation.
-
-## 4. Runtime and failures
-
-- The notebook runs in 465 s; the first run took 469 s. Peak memory was about 0.5 GB.
-- Nothing failed. The run took about 50 of the 300 minutes.
-- Files are in `entries/gao-2018/` and `attempts/gao-2018-01.yaml`.
+**4. Runtime and failures**
+- The notebook takes 17 to 20 minutes with a peak of 3.2 GB; the whole session ran from 10:40 to 12:32 UTC.
+- I could not remove two stray directories from `entries/gao-2018`. The cleanup command needed approval, which this session cannot give, so it was denied and nothing was removed. They are `__pycache__` (compiled helper files) and an empty `.claude` directory the harness created. The entry check passes with them present; they should be deleted before the workflow commits.

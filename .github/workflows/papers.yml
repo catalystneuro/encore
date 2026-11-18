@@ -1,5 +1,5 @@
 name: Paper run
-run-name: "Paper run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
+run-name: "Paper run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('/{0}', inputs.replicate) || '' }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
 
 # One reader run on a target (docs/protocol.md, "Reader"): writing the claims file from the
 # paper (`claims`), checking it against the paper (`claims-check`), or answering an attempt's
@@ -48,6 +48,9 @@ on:
         type: choice
         options: [verified, unverified, api]
         default: verified
+      replicate:
+        description: "For a replicate's answer run (docs/replicates.md): its name, r1, r2, ... Empty otherwise"
+        default: ""
   # Called by attempt-sequence.yml, before the author.
   workflow_call:
     inputs:
@@ -69,6 +72,9 @@ on:
       account:
         type: string
         default: verified
+      replicate:
+        type: string
+        default: ""
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
@@ -81,7 +87,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}
+  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}${{ inputs.replicate && format('-{0}', inputs.replicate) || '' }}
   cancel-in-progress: false
 
 env:
@@ -90,6 +96,7 @@ env:
   ROLE: ${{ inputs.role }}
   MODEL: ${{ inputs.model }}
   ACCOUNT: ${{ inputs.account || 'verified' }}
+  REPLICATE: ${{ inputs.replicate }}
   CLAUDE_CODE_VERSION: 2.1.284
   # The tools the agent may use without asking. With CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set, Claude
   # Code forces permission mode `default`, so this list and --permission-prompts none decide what
@@ -128,6 +135,11 @@ jobs:
             TDIR=$FOLDER
           fi
           BRANCH="attempt/$FOLDER"
+          # A replicate's questions are answered on its own branch (docs/replicates.md); only the answer role runs there.
+          if [ -n "$REPLICATE" ]; then
+            [[ "$REPLICATE" =~ ^r[0-9]+$ ]] && [ "$ROLE" = answer ] || { echo "::error::A replicate takes a name r1, r2, ... and only the answer role"; exit 1; }
+            BRANCH="replicate/$FOLDER/$REPLICATE"
+          fi
           { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; echo "TDIR=$TDIR"; } >> "$GITHUB_ENV"
           echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
@@ -326,7 +338,7 @@ jobs:
       contents: write
     env:
       FOLDER: ${{ needs.run.outputs.folder }}
-      BRANCH: attempt/${{ needs.run.outputs.folder }}
+      BRANCH: ${{ inputs.replicate && format('replicate/{0}/{1}', needs.run.outputs.folder, inputs.replicate) || format('attempt/{0}', needs.run.outputs.folder) }}
     steps:
       - uses: actions/checkout@v4
         with:

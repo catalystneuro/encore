@@ -107,10 +107,19 @@ def test_a_helper_may_name_the_dandiset(repo):
     ('"000001"\nsrc = "data:image/png;base64,AAAA"', "encoded image"),
     ('"000001"\nf = h5py.File("/Users/me/sub-01.nwb")', "local path"),
     ('"000001"\nf = h5py.File("~/data/sub-01.nwb")', "local path"),
+    ('"000001"\nrng = np.random.default_rng()', "without a seed"),
+    ('"000001"\nx = np.random.permutation(10)', "without a seed"),
 ])
 def test_results_must_be_computed_from_the_data(repo, code, message):
     nbformat.write(notebook(code), repo / "entries" / "demo" / "analysis.ipynb")
     assert any(message in e for e in errors(repo))
+
+
+def test_a_seeded_generator_is_no_error(repo):
+    # docs/protocol.md, Author, step 3: the seed is the claim's, never chosen and never left out.
+    code = '"000001"\nimport zlib\nrng = np.random.default_rng(zlib.crc32(b"demo/fig1"))\nnp.random.seed(3); np.random.permutation(4)'
+    nbformat.write(notebook(code), repo / "entries" / "demo" / "analysis.ipynb")
+    assert not any("without a seed" in e for e in errors(repo))
 
 
 def test_an_unlocked_requirement_is_an_error(repo):
@@ -125,6 +134,21 @@ def test_an_attempt_must_point_at_a_known_claim_and_a_tagged_cell(repo):
     found = errors(repo)
     assert any("claim 'fig9' is not in the claims file" in e for e in found)
     assert any("no cell tagged 'claim:fig9'" in e for e in found)
+
+
+def test_only_the_latest_attempt_is_held_to_the_claims_file_and_the_entry_as_they_are_now(repo):
+    # A repeat attempt writes a new entry in the earlier one's place, and a new reading of the paper may rename a
+    # claim: the earlier attempt's claim and cell are then gone, which is no error (tingley-2018, 2026-11-16).
+    earlier = {**ATTEMPT, "outcomes": [
+        {"claim": "fig9", "outcome": "reproduced", "notebook": "gone.ipynb", "output": "claim:fig9"}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(earlier))
+    (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**ATTEMPT, "id": "demo-02"}))
+    assert not any("fig9" in e or "gone.ipynb" in e for e in errors(repo))
+    # The latest attempt still is.
+    (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**earlier, "id": "demo-02"}))
+    found = errors(repo)
+    assert any("claim 'fig9' is not in the claims file" in e for e in found)
+    assert any("notebook 'gone.ipynb' is not in the entry" in e for e in found)
 
 
 def test_a_blocked_outcome_needs_a_reason(repo):

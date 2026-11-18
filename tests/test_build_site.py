@@ -537,6 +537,23 @@ def test_the_overview_shows_the_dashboard(built):
         assert (out / "assets" / "progress.js").is_file()
 
 
+def test_the_overviews_outcomes_give_each_ones_share_of_the_claims(built):
+    # Each outcome's count and its share, in whole percent that add up to 100; the compact legends have no shares.
+    data, out = built
+    page = (out / "index.html").read_text()
+    panel = page[page.index("claims that rest on the dataset alone"):page.index("</ul>", page.index("claims that rest"))]
+    found = re.findall(r"<strong>([0-9,]+)</strong> ([A-Za-z ]+) <span class=\"pct\">(<?[0-9]+)%</span>", panel)
+    assert [label for _, label, _ in found] == [v[0] for v in site.OUTCOMES.values()]
+    counts = [int(n.replace(",", "")) for n, _, _ in found]
+    if "<1" not in [p for *_, p in found]:
+        assert sum(int(p) for *_, p in found) == 100
+    assert all(abs(int(p) - 100 * n / sum(counts)) < 1 for (_, _, p), n in zip(found, counts) if p != "<1")
+    assert site.shares({"r": 2716, "p": 1044, "n": 1167, "b": 3096}) == {"r": "34", "p": "13", "n": "14", "b": "39"}
+    assert site.shares({"r": 1, "b": 400}) == {"r": "<1", "b": "100"} and site.shares({"r": 0}) == {"r": "0"}
+    assert 'class="pct"' not in site.legend({"reproduced": 3, "partially_reproduced": 0, "not_reproduced": 1,
+                                              "blocked": 0}, compact=True)
+
+
 def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
     data, out = built
     page = (out / "index.html").read_text()
@@ -546,6 +563,19 @@ def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
     order = [page.index('class="lede"'), page.index('class="home-search"'), page.index("claims that rest on the dataset alone"),
              page.index('id="caution"'), page.index('class="progress"' if 'class="progress"' in page else 'class="tiles"')]
     assert order == sorted(order)
+
+
+def test_each_notebook_on_the_claims_panel_has_an_open_in_colab_badge(built):
+    # Beside the notebook's name over its claims: a link to the copy of it on the `colab` branch.
+    data, out = built
+    page = (out / "papers" / "senzai-2017" / "index.html").read_text()
+    panel = page[page.index('id="claims"'):page.index('id="notebooks"')]
+    href = f'{site.COLAB_URL}/senzai-2017/reproduce_senzai_2017.ipynb'
+    assert f'<a class="colab" href="{href}" target="_blank" rel="noopener"' in panel
+    assert panel.count('class="colab"') == panel.count('<div class="claim-group"><h3')
+    # Google's own badge, from the site's assets: the page loads nothing from another site.
+    assert '<img src="../../assets/colab-badge.svg" alt="Open in Colab"' in panel
+    assert (out / "assets" / "colab-badge.svg").read_text().startswith("<svg ") and "colab.research.google.com/assets" not in page
 
 
 def test_view_on_dandi_opens_a_new_window(built):
@@ -1577,3 +1607,22 @@ def test_the_authors_list_sorts_by_findings_reproduced(built):
         assert r["counts"] == (total if sum(total.values()) else None)
     js = (site.ASSETS / "list.js").read_text()
     assert "miniBar(r.counts)" in js and "r.papers.slice(0, SHOWN)" in js and "and ${r.papers.length - SHOWN} more" in js
+
+
+def test_summaries_start_with_a_bold_label():
+    one = site.summary_block([{"summary": "It held up.", "paper": "doi:10.1/x"}])
+    assert '<p class="lede"><strong>Summary:</strong> It held up.</p>' in one
+    two = site.summary_block([{"summary": "A.", "paper": "p1", "paper_title": "First"},
+                                    {"summary": "B.", "paper": "p2", "paper_title": "Second"}])
+    assert two.count("<strong>Summary, <em>") == 2 and "<strong>Summary, <em>Second</em>:</strong> B." in two
+
+
+def test_summaries_hold_no_agent_chatter():
+    # A recorder that could not write its file answered with the paragraph and a note around it ("Here is the
+    # paragraph to save...", "I couldn't create ..."); only the paragraph belongs in summaries/.
+    import backfill_summaries
+
+    chatter = backfill_summaries.META
+    found = [p.name for p in (Path(site.ROOT) / "summaries").glob("*.md")
+             if p.name != "README.md" and chatter.search(p.read_text())]
+    assert found == []

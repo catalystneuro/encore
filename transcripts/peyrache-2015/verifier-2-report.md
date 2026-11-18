@@ -1,55 +1,67 @@
-**1. Outcomes**
+**Round 2 verification: Peyrache et al. 2015 on DANDI:000056 (version 0.261106.1949)**
 
-The claims file has 21 claims: 8 tested and 13 blocked (metadata_insufficient). The attempt record has 21 outcomes, and they match the claims file one to one. I agree with all 21.
+Counts are taken from the claims file (35 claims) and the attempt record (35 outcomes: 34 tested, 1 blocked). The notebook has been renumbered since round 1, so cell indices below are for the round-2 `reproduce_peyrache_2015.ipynb` (R) and `glm_peyrache_2015.ipynb` (G).
 
-- **hd-cell-fraction: partially_reproduced.** I agree, because the criterion counts the sessions as deposited. As deposited, the count is 378. With Mouse12-120808 realigned it becomes 391, or 390 with a constant shift (cell 26). Both are above 388.3, so the outcome would drop to not_reproduced. The record now says this match is fragile.
-- **fig2f-sws-tenfold-faster: partially_reproduced.** I agree under the criterion. The calibration (cell 40) also shows the estimator cannot measure the fold. For a known tenfold it returns 4.99 (quartiles 2.76 to 7.02). Scaled by that, the data's 8.33 becomes 16.69 (printed in cell 40). The data are consistent with a ratio at, above or below 10, so the magnitude of the result does not inform.
-- **The other six tested claims: reproduced.** I agree: fig2a, fig2b, fig3a, fig2f-rem, fig4b and decoding-tracks-hd.
-- **The 13 blocked claims.** I agree. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry only "shankN electrodes" with location "unknown".
+### 1. Outcomes and assumptions
 
-**2. Text against outputs**
+I agree with 33 of the 35 outcomes. The two exceptions:
 
-Sentences the numbers do not support:
+- **fig5e-readout-windows, blocked (too_large): I disagree.** The block rests on the GLM run taking "21.1 minutes", with the longest session at 952 s. G cell 2 prints "analysed 26 sessions in 12.2 min", and G cell 4 gives 561 s as the longest session. At the record's own factor of 3.3, the denser grid would take about 40 minutes, which is under the 60-minute limit. The printed outputs do not support the block.
+- **fig4d-ole-near-bayesian, not_reproduced: I agree only provisionally.** The first part now holds in ADn (25 of 25 ensembles, p = 6.0e-8). In PoS all 5 ensembles also favour the covariance OLE, but p = 0.0625, which is the lowest p a test on 5 pairs can give. This is because only hd-a ensembles were decoded. Under hd-b, 11 PoS sessions would qualify (R cell 58), and that could make the outcome partially_reproduced.
 
-- **Cell 45:** "REM is slightly but consistently slower than waking by the cross-correlogram method". The numbers show a median shift, not consistency. Cell 44 has REM faster in 581 of 1509 pairs (39%). Mouse20 has a ratio of 1.07 (cell 38), and the decoder variant gives 1.05 (cell 41).
-- **Cell 10, and the record's hd-cell-fraction notes:** "none of them is an HD cell (shown with the HD cells below)" and "No HD cell is among the units whose spike times were unsorted". Cell 22 checks units with more than 2^20 spikes, which are not the unsorted units.
-  - Cell 9 shows up to 8 such units in a file that has one unsorted unit.
-  - Mouse20-130516 has a unit over 2^20 spikes but is not flagged unsorted.
-  - Mouse25-140124 is flagged unsorted but has no unit over 2^20.
-  - `hd.py:250-256` keeps no per-unit flag.
-  - Cell 10's "These units fire at tens of Hz on average" is not shown either, since cell 9 prints only the highest rate in each file.
-- **Record finding format_error:** the claim that the unsorted units are two runs joined at k × 65536 − 1 has no printed output. Cell 10 says it was examined "not run here".
-- **Cell 18:** "at 10 s in 10 others". Cell 17 shows 9 of those sessions at −10 s and 1 at +10 s.
-- **README:** "about nine minutes, five of them streaming". Cell 53 prints 6.5 min and cell 1 prints 182 s for loading.
-- **Omission in cell 42, the record's fig2f notes and the README:** they say the shortfall "can come from the estimator". None of them reports the printed 16.69 (cell 40), which shows the calibration points just as much to a ratio above tenfold.
+Changes from round 1 that I now accept:
 
-Everything else checks against the outputs:
-- the other "**Result:" cells: 27, 30, 33, 36, 48 and 51;
-- the Summary (cell 52), including its claim count, which is now 13;
-- the remaining README lines;
-- the rest of the record's notes and findings.
+- **fig2e-decoded-speed, partially_reproduced: I now agree.** The criterion allows "one of the two holds" per structure. The PoS REM ratio is 0.93 under (a, w-a) and also 1.00 under (b, w-a), and the (b, w-a) reading does not need the sub-degree interpolation. It rests on 4 ensembles.
+- **ensemble-sizes, partially_reproduced: I agree.** It follows the criterion, but it is fragile: the PoS mean of 5.22 depends on Mouse20's 3 PoS sessions, which have no HD cells. Without them the mean is 6.00 and falls outside tolerance. The record states this.
 
-**My round-1 reasons in the record.** These are stated faithfully, mostly in close paraphrase, with one exception: the fig4b reason. The record says the bias is "about +3.6 Hz2 at 0 degrees … about a tenth of the observed relative value". My point was +0.08 against +0.81 on the relative scale. +3.6 Hz² is about half of the observed 7.84 Hz², so the record attaches "a tenth" to the wrong number.
+Outcomes marked `assumed: true`:
 
-**3. Round-1 points**
+- **fig6a-fast-oscillation and fig6b-adn-synchrony (analytic jitter null):** stated, and reasonable.
+- **fig7c-adn-triggered-pos-lfp (one 14-minute LFP chunk per session):** stated, and reasonable.
+- **fig4d-ole-near-bayesian and fig4e-ole-covariance (the OLE estimator):** stated, but the reading now adopted is the less reasonable of the two. In the main reading the signal Q comes entirely from the tuning curves, with no noise variance on its diagonal (`ole_fit`, diag="signal"). The resulting signal decoder errs by up to 99 to 103° in some ensembles, worse than the 90° expected by chance (R cell 58), with a median of 46°. It is close to a non-working decoder, so the fig4e ratio of 0.25 measures that failure rather than the paper's gain. The variant, which puts the observed variances on the diagonal (independent neurons), is the usual signal-only OLE. Under it the ratio is 0.99, so both outcomes are still not_reproduced.
 
-Resolved:
+Possible misreadings in the claims file (reported, not corrected):
 
-| Point | How |
-|---|---|
-| B1 | Realigned count shown: 391 / 390 |
-| B2 | Unit ids, electrode groups and rates inspected; the extra rows cannot be identified from the files |
-| B4 | Reading (b) shown for fig2f, fig2f-rem and fig4b |
-| B5 | Lags now use only bins where head direction is known at both times; bias measured on surrogates: +0.64 / −0.37 Hz² |
-| B6 | Selection on the training half only: 11.7° |
-| B7 | Stated in the notes |
-| B9 | The opening table now says 13 |
-| Section C items | Ensemble sizes, fit R², and the surrogate bias for fig4b, all shown |
+- **fig4d:** it takes the signal Q "from the tuning curves read at the head direction". The paper says "tuning curve covariances (i.e., signal correlation only)", which excludes noise correlations, not the cells' own variances. This wording invited the reading that does not work.
+- **recording-sample:** the criterion defines only "reproduced", so partially_reproduced is the author's judgement. It is reasonable.
 
-B3 is addressed but not resolved. The calibration confirms my concern, and that bias matters more than I estimated in round 1: the estimator compresses a true 10× to about 5×.
+### 2. Statements the printed numbers do not support
 
-What remains that bears on a conclusion:
+- **The GLM timing:** "about 21 minutes" in G cell 0, G cell 11 and the README; "took 21.1 minutes … longest session Mouse28-140313 at 952 s" in the record's fig5e-readout-windows notes; "about 70 minutes" in R cell 85 and G cell 11. The printed figures are 12.2 min (G cell 2) and 561 s (G cell 4).
+- **R cell 15:** "the 8 of 10 needed is out of reach by at most one count". Under hd-b, 5 of the 9 testable counts are within tolerance. Even if Mouse32 passed, that would be 6, so 2 more would be needed. The sentence is wrong as written; the record's own wording ("the outcome would be the same with Mouse32 left out") is correct.
+- **R cell 86 (Summary):** "Recorded unit counts match Supplementary Table 1 in the thalamus-only mice and in PoS". Mouse20 has 48 against 49 (R cell 14).
+- **R cell 76:** "The direction holds: binomial p = 0.064 (17 of 24 against one half)". At 0.064 the first binomial reading fails; only the second reading (p = 0.0009) holds.
+- **Record, fig6b-adn-synchrony:** `measured: 1320` is the all-pairs waking count. The deciding sample is the pairs on different shanks: 492 per state, 1476 pooled (R cell 72).
+- **Record notes for fig2f-sws-tenfold-faster and fig2f-rem-similar-to-wake, and R cells 39 and 43:** "no fitted speed is 0" is true only literally. Every state has fits at 1.5e-14 deg/s (R cell 38), which are effectively 0. The medians are not affected.
+- **R cell 46 and the record's fig3a-packet-60-degrees notes:** "Under rate-a the PoS-PoS tests reach only p = 5.5e-6 to 7.2e-5". This holds only under hd-a; under hd-b rate-a all 9 tests pass. With the cosine of the offset, p reaches 1.3e-4.
 
-1. **fig2f-sws-tenfold-faster.** The estimator does not recover a known ratio, so 8.33 says nothing about whether the speed-up is about tenfold. The conclusion should report the scaled 16.69 alongside "the shortfall can come from the estimator", and should say the fold is not determined.
-2. **hd-cell-fraction.** The count passes only because of the session with the clock fault. The denominators (1731 against 1077) cannot be reconciled, so the count match may be coincidental.
-3. **fig2f-rem-similar-to-wake.** The word "consistently" in cell 45 overstates the result and should be removed. The outcome does not change.
+Every other "**Result:**" sentence, the rest of the Summary, the README and the record's notes match the printed outputs. That includes the 34 tested and 1 blocked counts, and the 1007 of 1064 cells on which the file's HD labels agree with hd-a.
+
+The record states my round-1 reasons faithfully in its own wording, with small omissions. For example, my fig3b-packet-coherence reason in the record leaves out the qualifier "with the mean summary and every reference and distance".
+
+### 3. Round-1 points
+
+**Resolved:**
+
+- 1: ensemble-sizes under hd-b.
+- 3: fig2e reading (a), now located below the 1° grid.
+- 4: the plain signal-OLE reading has been run.
+- 5: Mouse20 now follows the files' labels throughout.
+- 6: Mouse32 is reported as untestable.
+- 7: the supfig5 grouping.
+- 8: infinite and zero speeds.
+- 9: the coherence shuffle control.
+- 10: the monotonicity column, the 4765-pair maximum and Mouse28-140314.
+- 11: fig5d-adn-predicts-pos-reliably and fig5e-adn-predicts-pos are now tested.
+- The open checks: the wake/open-field overlap (0.9998 to 1), the Mouse20 electrode groups, the speed-fit quality, the fig7 pairs per session and the GLM per-session timing.
+
+**Remaining, and bearing on a conclusion:**
+
+- **Round-1 point 2 (decoding uses hd-a ensembles only):** in round 1 I marked this as not affecting a conclusion. It now does. With 5 PoS ensembles, the fig4d PoS test cannot reach p < 0.05, and the fig4e Mann-Whitney test has little power. Decoding the hd-b ensembles (27 ADn, 11 PoS) could change fig4d, and possibly fig4e, to partially_reproduced.
+- **fig5e-readout-windows:** the block as too_large is contradicted by the printed timing. It should be run with the denser window grid, or the block justified with timing the notebook actually prints.
+- **fig4d and fig4e:** the adopted signal OLE performs at or worse than chance in some ensembles. Under the observed-variance variant (the usual signal-only OLE), the ADn part of fig4d fails (p = 0.156). The outcome should be described as resting on that variant, not on the degenerate decoder.
+- **Borderline results:**
+  - adn-pos-hd-information: the PoS mean is 1.004 against a lower bound of 0.999.
+  - fig7e-driven-pos-hd-information: p = 0.040 with the Methods' baseline, 0.075 with the jitter baseline.
+  - fig4d-ole-near-bayesian: covariance/Bayes is 1.264 against the 1.25 margin.
+  - ensemble-sizes: the PoS mean depends on Mouse20's sessions.
