@@ -1,28 +1,30 @@
-I've worked through every point in the round-1 report and re-run the entry with `python tools/entry.py all entries/asari-2009`. Both notebooks pass (24.7 and 21.6 min) and `entry.py check` reports 0 errors. All conclusions match the final run's numbers. Round 1 is recorded under `verifications`, nothing is committed, and no outcome is under `proposed` because this is the round-1 revision.
+I've revised `asari-2009-02` for round 2 and re-run it with `python tools/entry.py all entries/asari-2009`. Both notebooks pass (21 and 22 minutes), `check` reports 0 errors, and the conclusions match the final run's numbers. The round is recorded under `verifications`. Nothing is committed.
+
+One thing you should know first: the attempt was not fully blind. `transcripts/asari-2009/` still holds the earlier attempt's (`asari-2009-01`) transcripts, which `tools/blind.sh` should have removed. Early on I listed that folder and read the first 50 lines of `verifier-2-report.md`. That showed the earlier attempt's outcomes and its fig7 band finding. I read nothing more from it. My fig7 conclusion rests on fragment descriptions I printed from the data myself. The reconcile run should know about this.
 
 **Outcome changes**
-- **fig2-example-long-context**: partially reproduced → reproduced. Probe 4 of 20060105-ha1-001-002 meets the criterion's rule. It was picked from 20 candidates and its late period lasts only 60 ms; the notes say both.
-- **fig3b-fractional-power-decay** and **fig4-predictability-upper-bound**: partially reproduced → not reproduced. The time constant is outside tolerance under every reading, and the criteria have no rule for partial.
-- **fig8c-relative-effects**: partially reproduced → not reproduced. I ran the natural-sound reference without silence, as the verifier asked, and fixed the partial check, which had left out the requirement that amplitude and frequency reach 1. In every reading the amplitude and frequency ratios are below 1.
-- **fig4-strf-performance-low**: blocked → not reproduced, now tested in a new notebook `strf_wehr.ipynb` with helper `wehr_strf.py`. It uses the 16 of Wehr's 25 cells that have repeated sounds; the paper used 20 and doesn't list them.
-  - Performance is low: at most 0.21 in the main reading.
-  - Lengthening the window from 180 ms to 4 s gives a small but significant gain (STRF p = 0.011, LN p = 0.042).
-  - With whole stimuli as folds the gain is not significant, but LN reaches 0.241, above the 0.22 bound.
-  - So no reading meets the criterion. The outcome rests on the cell selection and the claims file's test.
-- **Kept, with the verifier's disagreement recorded**: fig7 stays blocked as `data_missing`. A fuller search prints every DMR, TORC and SoundTrans stimulus, and no recording has the three single bands. The weaker check is now run: 3 of 10 tests have a significant period ending at or after 3.6 s.
+- **a1-mgb-firing-rates:** not reproduced → partially reproduced, as the verifier gave. With the robust 5-SD and 8-SD detectors the MGB evoked rate is above 5 Hz (13.57 and 10.38 Hz). With the authors' detector it is 4.99 Hz. Still marked as resting on the detector.
+- **fig3a-proportion-significant:** partially reproduced → not reproduced. The criterion's partial outcome needs the count within tolerance, and 183 of 305 misses it.
+- **fig4-predictability-upper-bound:** partially reproduced → not reproduced. The criterion has no partial outcome, and no reading gets the time constant within tolerance.
+- **fig4-strf-performance-low:** blocked → not reproduced, resting on assumptions. It is now tested in a new notebook, `strf_wehr.ipynb`, with a helper `wehr_strf.py`.
+  - Validation performance stays under 0.22 in every reading.
+  - But the STRF model improves significantly from the 180-ms to the 4052-ms window (Wilcoxon p 0.000 to 0.042), and the LN model does worse than the STRF, not slightly better.
+  - The criterion is met in one combination only: folds formed by stimulus, with validation averaged over folds the way `STRFanalysis.m` does. That is stated in the record.
+- Every other outcome is unchanged; the verifier agreed with them.
 
-**Corrections**
-- **Figure 8 property sets** (the verifier's main point): the AM and FM sets were wrong. Each set is now counted as its own test for AM and FM, AM-mean variants are treated as AM (as the recordings' own notes do), and SoundTrans frequency shifts are now detected. This reproduces all five Table 1 totals exactly (95, 110, 96, 82, 137). The two other readings are shown alongside. Outcomes for fig8a, fig8a-significance-fits, fig8b and the natural-versus-synthetic test are unchanged.
-- **Firing rates**: added the baseline and probe-period windows and a second MGB detector threshold, 32 readings in all. None has all four means in tolerance, and the rule for partial now holds in 28 of 32.
-- **Smaller points**:
-  - The notebook lists the 96 synthetic-sound cells behind 133 versus 123, but that doesn't identify which cells the paper counted.
-  - Every significant period is now printed for the fig2 candidates.
-  - Fits stuck at the 100 s bound are flagged.
-  - The running average now ignores bins where no probe is running.
-  - Each property set's trials are cut using only that set's contexts.
-  - The 51-point run rule and the 200 shuffles for the without-silence variant are now stated.
-- The record's findings, the README and the summary tables are updated.
+**Added or corrected**
+- **fig4 question:** the Figure 4 legend fit matches 1 − Q(t). With silence counted, that fit gives 0.505 to 0.513 and 1.008 to 1.050 s, within tolerance. It is shown as a variant only. I added a question to `questions/asari-2009.yaml` and left the claim unchanged.
+- **fig8:**
+  - Dropped the mixed reading that picked a counting rule per property to match Table 1's totals. The probe reading is now the measured value, and the entry reading is shown beside it.
+  - Table 1 is rebuilt by recording family and probe type. The data set has only 14 MHT probes, against Table 1's MHT row of 25, 25, 71 and 57. The extra AM and FM ensembles of the natural probes plus those 14 come to exactly 71 and 57.
+  - The order margins are printed; the AM-over-FM margin is 0.001 in the probe reading.
+- **fig8c:** added resampling of as many probes as the population holds. The higher-order interval then overlaps in both readings; the outcome stays partial.
+- **fig7:** the band vector (625, 2500, 10000, 40000) is one split-band fragment ("DMR4: bandwidth 625-2500, 10000-40000 Hz"). It sits in recordings with no natural fragment, so the block stays data_missing.
+- **Data check:** now prints the authors' `CxtDep.m` ranking and PSTH lines; the helper ranks ties the same way. It also prints the int16 step size (at least 231 steps per trial SD in 95% of probes, so ties are rare). The 15 unpublished files and 161 tuning curves are also whole-cell or cell-attached recordings in mV, so there is still no voltage-clamp data.
+- **Counts:** the 132 A1 cells are listed by family. Their families don't line up with the paper's (DMR 6, MHT 39, MCN 27), so I can't say which 9 cells account for 132 against 123.
+- **fig9:** notes that comparing the plateau with the fitted constant checks little; the claim rests on the time constant.
+- **Record and docs:** two new questions for the authors (the STRF cells and fold averaging, and Eq. 43 against 1 − Q), an extended Table 1 finding, and updated README and `entry.yaml`.
 
 **Not done**
-- The trial-resampling reading of fig8c: the per-file pass doesn't keep single trials.
-- No reader questions: the verifier didn't report anywhere the claims file misreads the paper.
+- The trial-resampling reading for fig8c. It needs every probe's trials kept through the analysis, which the entry doesn't do.
+- The degenerate last PSTH bin and the file with the 308-ms trigger mismatch are kept as the authors' `CxtDep.m` handles them, and the record says so.

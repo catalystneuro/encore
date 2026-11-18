@@ -1,269 +1,317 @@
-"""STRF and LN models of Wehr's recordings (Machens et al. 2004) in CRCNS ac-1, as Asari & Zador
-(2009) fit them for Figure 4 (Methods, Neural encoding models; Model performance).
+"""STRF and LN model performance on Wehr's recordings in CRCNS ac-1 (claim fig4-strf-performance-low).
 
-Where the parameters come from (paper = Methods of Asari & Zador 2009; criterion = the claim
-fig4-strf-performance-low; code = wehr/Tools/STRFanalysis.m in crcns-ac1.zip):
+Asari H, Zador AM (2009), Methods, Neural encoding models and Model performance (Eqs. 46-53),
+reanalysed "the recording data (20 cells) from the previous work (Machens et al. 2004)". The data
+set holds those recordings under `wehr/` (25 cells, `wehr/Summary.mat`), one file per trial, with
+the stimuli under `wehr/Stimuli/`, and the authors' `wehr/Tools/STRFanalysis.m`, `ridgesvd1.m`,
+`logspectrogram.m`, `ViewResponse.m` and `GetEvoked.m`. The archive is read with `asari.Archive`.
 
-- Spectrogram (Eq. 47): short-time Fourier transform with a Hann window h(t) of 10 ms (main) or
-  20 ms (criterion readings), in dB, 3 bins per octave from 0.40 kHz (paper: 17 frequency bins;
-  the band edges are 400 * 2^(k/3) Hz, k = 0..17, up to 20.3 kHz). Power is floored 100 dB below
-  the cell's largest value before the logarithm, and each frequency channel is centred over the
-  cell's stimuli (STRFanalysis.m centres it per stimulus; a standard choice). The sound before
-  stimulus onset is silence.
-- Time bins of 4 ms, the finest bin of the model (criterion reading); responses are the membrane
-  potential with spikes clipped by a 10-ms median filter (ViewResponse.m default), averaged in
-  4-ms bins and centred per trial.
-- Windows: 45 bins of 2^k ms, k = 2..10, split as [45, 0, ...], [9, 36, 0, ...], ...,
-  [9, 8, ..., 1] (paper), so windows of 180 to 4052 ms and 765 parameters.
-- Ridge regression (Eq. 50) with 10-fold cross-validation; the ridge parameter is the one with
-  the best mean validation performance over folds (STRFanalysis.m), from a grid of 17 values
-  spanning 10^-7 to 10 times the largest eigenvalue of S'S (a standard choice, checked to be
-  interior). Folds are contiguous blocks of the concatenated data (main) or whole stimuli
-  (criterion reading).
-- Static nonlinearity (Eq. 51): robust lowess of the mean response on the linear estimate over
-  the training set, 5% span, five robustness iterations (paper), evaluated on 60 points of the
-  estimate and interpolated (a standard approximation), then applied to the validation set.
-- Performance (Eq. 53) with the predictable power of Eq. 52 over the time points of each set,
-  each time point with its own number of trials; stimuli with fewer than two trials are left out,
-  as Eq. 52 cannot use them.
+Where the parameters come from:
+
+- Time bins of 2^k ms for k = 2..10, 45 bins split as the Methods list ([45], [9, 36], ...,
+  [9, 8, ..., 1]), giving windows of 180 to 4052 ms; 3 frequency bins per octave from 0.40 kHz,
+  17 bins (Methods, Neural encoding models; claim criterion). The 17 centre frequencies are
+  400 * 2^(k/3) Hz, k = 0..16 (to 16 kHz): the Methods give "0.40 to 22 kHz; 17 frequency bins"
+  and `STRFanalysis.m` fmax = 22100 Hz, which at 3 bins per octave gives 17 or 18 bins depending on
+  rounding; the first 17 are used (a standard choice).
+- Spectrogram (Eq. 47): magnitude in dB of the short-time Fourier transform at those
+  frequencies, Hann window of 10 ms (main) or 20 ms (claim criterion readings), one frame per
+  4-ms response bin, centred on the bin, each frequency centred on its mean over the stimulus
+  (`STRFanalysis.m`, S - mean(S, 2)). The 20-ms ramp of `MakeRamp.m` (hann, applied by
+  `ViewResponse.m`) is applied to the stimulus.
+- Response: membrane potential with the 10-ms median filter (`ViewResponse.m` default
+  `smooth = 10`, `GetEvoked.m`), the stimulus period of each trial, averaged in 4-ms bins (the
+  finest time bin; criterion reading), each trial centred on its mean (`STRFanalysis.m`).
+- Ridge regression (Eq. 50) on the trial mean, on a log grid of ridge values scaled to the mean
+  eigenvalue of S'S (1e-3 to 1e4; a standard choice, the grid edges are reported), the value chosen
+  by the validation performance (Methods). 10-fold cross-validation with contiguous folds
+  (`STRFanalysis.m`, ncol) or folds formed by stimulus (criterion reading).
+- Model performance (Eq. 53): (total power - error power) / predictable power (Eq. 52), with
+  the predictable power of a stimulus heard once taken as half its total power, as
+  `STRFanalysis.m` does (`Ppred = 0.5 * Ptotal` when n = 1). Validation performance is pooled
+  over the validation folds (Eq. 53 averages over time); the mean over folds of the per-fold
+  ratios (`STRFanalysis.m`) is a variant.
+- Static nonlinearity: robust lowess (Cleveland 1979) of the actual against the estimated
+  response on the training set, 5% span, 5 robustness iterations (Methods, Static
+  nonlinearities), evaluated on a grid of 200 points and interpolated (as the `delta` option of
+  common lowess implementations does), applied to the validation set.
+- Samples: every window is scored on the same response bins, those at least 4052 ms after
+  stimulus onset (main), so that every lag has stimulus history; the variant drops only each
+  window's own length (`STRFanalysis.m` drops the first `nbin` bins).
 """
 
 from __future__ import annotations
 
-import io
 import re
-from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
+from scipy import ndimage
 
-import asari
-
-DATASET = "crcns:ac-1/unversioned"   # CRCNS does not version data sets
-DT_MS = 4
-SF_RESP = 4000
-F_EDGES = 400.0 * 2 ** (np.arange(18) / 3)
-BIN_MS = 2 ** np.arange(2, 11)
-WINDOWS = [[9, 8, 7, 6, 5, 4, 3, 2, 1][:j] + [45 - sum([9, 8, 7, 6, 5, 4, 3, 2, 1][:j])] + [0] * (8 - j) for j in range(9)]
-WINDOW_MS = [int(np.dot(w, BIN_MS)) for w in WINDOWS]
-PAD_S = 4.2
-N_FOLD = 10
-
-
-def summary():
-    z = asari.open_zip(asari.MAIN_ZIP)
-    m = asari.loadmat(io.BytesIO(z.read("wehr/Summary.mat")))
-    rows = []
-    for gi, ex in enumerate(np.atleast_1d(m["experiment"])):
-        for c in np.atleast_1d(ex.cell):
-            files = [str(f) for f in np.atleast_1d(c.file)]
-            descs = [" ".join(str(d).split()) for d in np.atleast_1d(c.description)]
-            for f, d in zip(files, descs):
-                rows.append({"group": gi, "cell": f.split("/")[1], "file": f, "description": d,
-                             "stimulus": re.sub(r":\s*Trial No.*", "", d)})
-    return rows
+DT = 0.004                                      # s, response bin and spectrogram hop
+FREQS = 400.0 * 2 ** (np.arange(17) / 3)        # Hz
+COUNTS = [[45], [9, 36], [9, 8, 28], [9, 8, 7, 21], [9, 8, 7, 6, 15], [9, 8, 7, 6, 5, 10],
+          [9, 8, 7, 6, 5, 4, 6], [9, 8, 7, 6, 5, 4, 3, 3], [9, 8, 7, 6, 5, 4, 3, 2, 1]]
+WIDTHS = [2 ** k for k in range(9)]             # bin widths in 4-ms frames (4 ms to 1024 ms)
+WINDOWS_MS = [int(sum(c * w * 4 for c, w in zip(cs, WIDTHS))) for cs in COUNTS]
+MAX_LAG = max(sum(c * w for c, w in zip(cs, WIDTHS)) for cs in COUNTS)   # 1013 frames
+RIDGE_REL = 10.0 ** np.arange(-3, 4.01, 0.5)
+MEDIAN_MS = 10
+SKIP = {"tuning curve", "silence", "white noise"}   # ViewResponse.m: not natural sound stimuli
 
 
-def is_natural(desc):
-    d = desc.lower()
-    return not any(k in d for k in ("tuning curve", "silence", "white noise"))
-
-
-def load_trial(path):
-    """One trial file: the response over the stimulus, spikes clipped, in 4-ms bins, centred."""
-    z = asari.open_zip(asari.MAIN_ZIP)
-    m = asari.loadmat(io.BytesIO(z.read("wehr/" + path)))
-    r, t = m["response"], m["triggers"]
-    sf = int(r.sf)
-    x = r.trace.astype(np.float64) * float(r.scale)
-    a = int(t.time) - 1
-    n = int(round(float(t.param.duration) / 1000 * sf))
-    x = asari.median_clip(x, 10, sf=sf)[a:a + n]
-    k = int(DT_MS * sf / 1000)
-    y = x[:len(x) // k * k].reshape(-1, k).mean(1)
-    return {"stim_file": str(t.file), "sf": sf, "y": y - y.mean()}
-
-
-def load_stimulus(name):
-    z = asari.open_zip(asari.MAIN_ZIP)
-    m = asari.loadmat(io.BytesIO(z.read("wehr/Stimuli/" + name)))
-    return np.asarray(m["stimulus"].samples, float), int(m["stimulus"].param.sf)
-
-
-def band_power(s, sf, n_frames, win_ms):
-    """Power in the 17 third-octave bands at frames every 4 ms (frame i centred at (i + 0.5) * 4 ms
-    after onset), with PAD_S of silence before onset (frames counted from the start of the pad)."""
-    pad = int(round(PAD_S * sf))
-    s = np.concatenate([np.zeros(pad), s, np.zeros(int(sf))])
-    w = int(round(win_ms / 1000 * sf))
-    h = np.hanning(w)
-    nfft = 1 << int(np.ceil(np.log2(w)))
-    n_pad = int(round(PAD_S * 1000 / DT_MS))
-    total = n_pad + n_frames
-    centres = np.round((np.arange(total) + 0.5) * DT_MS / 1000 * sf).astype(int)
-    idx = centres[:, None] - w // 2 + np.arange(w)[None, :]
-    idx = np.clip(idx, 0, len(s) - 1)
-    out = np.zeros((total, 17))
-    f = np.fft.rfftfreq(nfft, 1 / sf)
-    band = np.searchsorted(F_EDGES, f, side="right") - 1
-    ok = (band >= 0) & (band < 17)
-    for i0 in range(0, total, 2000):
-        seg = s[idx[i0:i0 + 2000]] * h
-        P = np.abs(np.fft.rfft(seg, nfft, axis=1)) ** 2
-        out[i0:i0 + 2000] = np.stack([P[:, ok & (band == b)].sum(1) for b in range(17)], 1)
-    return out, n_pad
-
-
-def load_cell(rows, threads=6):
-    """Trials of the natural sounds of one cell, grouped by stimulus; stimuli with >= 2 trials."""
-    paths = [r["file"] for r in rows if is_natural(r["description"])]
-    with ThreadPoolExecutor(threads) as ex:
-        trials = list(ex.map(load_trial, paths))
-    by = {}
-    for t in trials:
-        by.setdefault(t["stim_file"], []).append(t["y"])
-    out = {}
-    for k, ys in by.items():
-        if len(ys) >= 2:
-            n = min(len(y) for y in ys)
-            out[k] = np.stack([y[:n] for y in ys])
-    return out, {k: len(v) for k, v in by.items()}
-
-
-def design(spec, n_pad, window):
-    """Lagged spectrogram features for one stimulus: frames x 765 (bin means, nearest bin first)."""
-    C = np.concatenate([np.zeros((1, spec.shape[1])), np.cumsum(spec, 0)])
-    T = spec.shape[0] - n_pad
-    t = n_pad + np.arange(T)
-    cols, a = [], 0
-    for n_k, size_ms in zip(window, BIN_MS):
-        s = int(size_ms // DT_MS)
-        for _ in range(n_k):
-            lo = np.maximum(t - a - s + 1, 0)
-            cols.append((C[t - a + 1] - C[lo]) / s)
-            a += s
-    return np.concatenate(cols, 1).astype(np.float32)
-
-
-def perf_terms(R):
-    """Per time point: sum of trials, sum of squares, number of trials (Eqs. 52 and 53)."""
-    return R.sum(0), (R ** 2).sum(0), np.full(R.shape[1], R.shape[0], float)
-
-
-def performance(rhat, S1, S2, m):
-    tot = np.mean(S2 / m)
-    err = np.mean(S2 / m - 2 * rhat * S1 / m + rhat ** 2)
-    pred = np.mean((S1 ** 2 / m - S2 / m) / (m - 1))
-    return (tot - err) / pred
-
-
-def lowess_fit(x, y, frac=0.05, it=5, n_grid=60):
-    """Robust lowess (tricube, local linear, bisquare robustness), evaluated on n_grid quantiles of x."""
-    o = np.argsort(x)
-    xs, ys = x[o], y[o]
-    N = len(xs)
-    k = max(int(np.ceil(frac * N)), 10)
-    grid = np.quantile(xs, np.linspace(0, 1, n_grid))
-    rw = np.ones(N)
-    for _ in range(it + 1):
-        g = np.empty(n_grid)
-        for j, x0 in enumerate(grid):
-            i = int(np.searchsorted(xs, x0))
-            lo = int(np.clip(i - k // 2, 0, N - k))
-            xx, yy, ww = xs[lo:lo + k], ys[lo:lo + k], rw[lo:lo + k]
-            d = np.abs(xx - x0)
-            dm = d.max() if d.max() > 0 else 1.0
-            w = (1 - (d / dm) ** 3) ** 3 * ww
-            sw = w.sum()
-            if sw <= 0:
-                g[j] = yy.mean()
-                continue
-            mx, my = (w * xx).sum() / sw, (w * yy).sum() / sw
-            vx = (w * (xx - mx) ** 2).sum()
-            b = (w * (xx - mx) * (yy - my)).sum() / vx if vx > 0 else 0.0
-            g[j] = my + b * (x0 - mx)
-        res = ys - np.interp(xs, grid, g)
-        s = np.median(np.abs(res))
-        u = res / (6 * s) if s > 0 else np.zeros_like(res)
-        rw = np.where(np.abs(u) < 1, (1 - u ** 2) ** 2, 0.0)
-    return grid, g
-
-
-def fit_cell(stims, specs, n_pads, schemes=("contiguous", "stimulus")):
-    """Per fold scheme and window: ridge path over the folds; best ridge by mean validation
-    performance; lower and upper performance of the STRF and the LN model, and whether the best
-    ridge is interior. The STRF performances come from S'S and S'r of each set (Eq. 53 needs only
-    the means of rhat^2 and rhat*rbar over time), so the folds share one pass over the data."""
-    names = sorted(stims)
-    ybar = [stims[k].mean(0) for k in names]
-    terms = [perf_terms(stims[k]) for k in names]
-    lens = [len(v) for v in ybar]
-    N = sum(lens)
-    edges = np.linspace(0, N, N_FOLD + 1).astype(int)
-    fold_c = np.searchsorted(edges, np.arange(N), side="right") - 1
-    stim_of = np.concatenate([np.full(L, i) for i, L in enumerate(lens)])
-    fold_s = stim_of % min(N_FOLD, len(names))
-    seg = stim_of * N_FOLD + fold_c
-    useg = np.unique(seg)
-    y = np.concatenate(ybar)
-    S1 = np.concatenate([t[0] for t in terms]); S2 = np.concatenate([t[1] for t in terms]); M = np.concatenate([t[2] for t in terms])
-    pp = (S1 ** 2 / M - S2 / M) / (M - 1)
+def wehr_cells(archive) -> list[dict]:
+    """Cells of wehr/Summary.mat, each with its natural sound stimuli and their trial files."""
+    m = archive.loadmat("wehr/Summary.mat")
     out = []
-    for w_ms, window in zip(WINDOW_MS, WINDOWS):
-        X = np.concatenate([design(specs[k], n_pads[k], window)[:L] for k, L in zip(names, lens)])
-        G = {}
-        for sg in useg:
-            Xs = X[seg == sg].astype(np.float64)
-            G[sg] = (Xs.T @ Xs, Xs.T @ y[seg == sg], int((seg == sg).sum()), pp[seg == sg].sum())
-        A = sum(g[0] for g in G.values()); b = sum(g[1] for g in G.values())
-        lams = np.linalg.eigvalsh(A)[-1] * 10.0 ** np.linspace(-7, 1, 17)
-        for scheme in schemes:
-            fold_of = fold_c if scheme == "contiguous" else fold_s
-            nf = int(fold_of.max()) + 1
-            seg_fold = {sg: int(fold_of[seg == sg][0]) for sg in useg}
-            pv = np.zeros((nf, len(lams))); pt = np.zeros((nf, len(lams))); betas = []
-            for f in range(nf):
-                parts = [G[sg] for sg in useg if seg_fold[sg] == f]
-                Av = sum(p[0] for p in parts); bv = sum(p[1] for p in parts)
-                nv = sum(p[2] for p in parts); qv = sum(p[3] for p in parts)
-                At, bt, nt, qt = A - Av, b - bv, N - nv, pp.sum() - qv
-                e, V = np.linalg.eigh(At)
-                B = V @ ((V.T @ bt)[:, None] / (e[:, None] + lams[None, :]))
-                betas.append(B)
-                for j in range(len(lams)):
-                    be = B[:, j]
-                    pv[f, j] = (2 * be @ bv - be @ Av @ be) / qv
-                    pt[f, j] = (2 * be @ bt - be @ At @ be) / qt
-            jb = int(np.argmax(pv.mean(0)))
-            ln_v, ln_t = [], []
-            for f in range(nf):
-                va, tr = fold_of == f, fold_of != f
-                rh = X @ betas[f][:, jb].astype(np.float32)
-                grid, g = lowess_fit(rh[tr].astype(float), y[tr])
-                ln_t.append(performance(np.interp(rh[tr], grid, g), S1[tr], S2[tr], M[tr]))
-                ln_v.append(performance(np.interp(rh[va], grid, g), S1[va], S2[va], M[va]))
-            out.append({"folds": scheme, "window_ms": w_ms, "strf_lower": pv[:, jb].mean(), "strf_upper": pt[:, jb].mean(),
-                        "ln_lower": float(np.mean(ln_v)), "ln_upper": float(np.mean(ln_t)),
-                        "ridge_index": jb, "ridge_interior": 0 < jb < len(lams) - 1, "n_points": N, "n_folds": nf})
-        del X
+    for ei, e in enumerate(np.atleast_1d(m["experiment"])):
+        for c in np.atleast_1d(e.cell):
+            files = [str(f) for f in np.atleast_1d(c.file)]
+            descs = [str(d) for d in np.atleast_1d(c.description)]
+            stim = {}
+            for f, d in zip(files, descs):
+                name = re.sub(r": Trial No.*", "", d).strip()
+                if name not in SKIP:
+                    stim.setdefault(name, []).append("wehr/" + f)
+            out.append(dict(cell=files[0].split("/")[1], experiment=ei,
+                            experiment_description=str(e.description).strip(), stimuli=stim))
     return out
 
 
-_POWER = {}
+def _hann(n):
+    return 0.5 - 0.5 * np.cos(2 * np.pi * np.arange(n) / n)
 
 
-def cell_specs(stims, win_ms):
-    """dB spectrograms of a cell's stimuli (power floored 100 dB below the cell's largest value),
-    each channel centred over the cell's in-stimulus frames."""
-    raw, n_pads = {}, {}
-    for k, R in stims.items():
-        key = (k, win_ms)
-        if key not in _POWER:
-            s, sf = load_stimulus(k)
-            n_frames = int(np.ceil(len(s) / sf * 1000 / DT_MS))
-            _POWER[key] = band_power(s, sf, n_frames, win_ms)
-        P, n_pad = _POWER[key]
-        raw[k], n_pads[k] = P[:n_pad + R.shape[1]], n_pad
-    top = max(P.max() for P in raw.values())
-    db = {k: 10 * np.log10(P + top * 1e-10) for k, P in raw.items()}
-    mu = np.concatenate([db[k][n_pads[k]:] for k in db]).mean(0)
-    return {k: v - mu for k, v in db.items()}, n_pads
+def spectrogram(samples: np.ndarray, sf: float, n_frames: int, win_s: float) -> np.ndarray:
+    """Eq. 47 at FREQS: dB magnitude of the STFT, Hann window `win_s`, frame k centred at
+    (k + 0.5) * DT; frequencies x frames, each frequency centred on its mean."""
+    nw = int(round(win_s * sf))
+    w = _hann(nw)
+    centres = np.round((np.arange(n_frames) + 0.5) * DT * sf).astype(int)
+    pad = np.concatenate([np.zeros(nw), samples, np.zeros(nw)])
+    idx = centres[:, None] + nw - nw // 2 + np.arange(nw)[None, :]
+    E = np.exp(-2j * np.pi * np.outer(np.arange(nw) / sf, FREQS)) * w[:, None]
+    out = np.empty((len(FREQS), n_frames))
+    for a in range(0, n_frames, 2000):
+        seg = pad[idx[a:a + 2000]]
+        out[:, a:a + 2000] = (20 * np.log10(np.abs(seg @ E) + 1e-12)).T
+    return out - out.mean(1, keepdims=True)
+
+
+def load_stimulus(archive, rel: str, ramp_ms: float):
+    s = archive.loadmat("wehr/Stimuli/" + rel)["stimulus"]
+    x = np.asarray(s.samples, float).ravel().copy()
+    sf = float(s.param.sf)
+    a = int(round(ramp_ms * sf / 1000))
+    if a >= 1:                              # MakeRamp.m
+        w = np.hanning(2 * a)               # MATLAB window(@hann, 2a)
+        x[:a] *= w[:a]
+        x[-a:] *= w[a:]
+    return x, sf
+
+
+def load_cell(archive, cell: dict, win_s=(0.010, 0.020)) -> list[dict]:
+    """Per stimulus: trials x bins response (mV, 4-ms means, each trial centred) and the
+    spectrogram for each window length."""
+    out = []
+    for name, files in cell["stimuli"].items():
+        R, trig0, rtype = [], None, set()
+        for f in files:
+            d = archive.loadmat(f)
+            rtype.add(str(d["param"].recording.type))
+            r = d["response"]
+            sf = int(r.sf)
+            x = r.trace.astype(float) * float(r.scale)
+            mu = x.mean()
+            x = ndimage.median_filter(x - mu, size=int(round(MEDIAN_MS / 1000 * sf)), mode="constant") + mu
+            t = [tt for tt in np.atleast_1d(d["triggers"]) if "pulse" not in str(tt.type)][0]
+            trig0 = trig0 or t
+            t0 = int(t.time)                # GetEvoked.m: evoked from sample `time`
+            n = int(round(float(t.param.duration) / 1000 * sf))
+            seg = x[t0 - 1:t0 - 1 + n]
+            per = int(round(DT * sf))
+            nb = len(seg) // per
+            R.append(seg[:nb * per].reshape(nb, per).mean(1))
+        nb = min(len(v) for v in R)
+        R = np.array([v[:nb] for v in R])
+        R = R - R.mean(1, keepdims=True)
+        stim, ssf = load_stimulus(archive, str(trig0.file), float(getattr(trig0.param, "ramp", 0)))
+        specs = {w: spectrogram(stim, ssf, nb, w) for w in win_s}
+        out.append(dict(name=name, R=R, n_trials=len(R), specs=specs, stim_file=str(trig0.file),
+                        recording_type=sorted(rtype), sf=sf, stim_sf=ssf))
+    return out
+
+
+def design(spec: np.ndarray, counts: list[int]) -> np.ndarray:
+    """Pseudo-logarithmic lag bins: for each response bin, the mean spectrogram over each lag
+    bin (bin j of width WIDTHS[j], repeated counts[j] times, from the present into the past);
+    frames before stimulus onset are 0 (the centred mean). Returns bins x (17 * 45)."""
+    F, T = spec.shape
+    cs = np.concatenate([np.zeros((F, MAX_LAG + 1)), spec], axis=1).cumsum(1)
+    cs = np.concatenate([np.zeros((F, 1)), cs], axis=1)
+    t = np.arange(T) + MAX_LAG + 1          # index in the padded series (one past the frame)
+    cols, lag = [], 0
+    for c, w in zip(counts, WIDTHS):
+        for _ in range(c):
+            hi, lo = t - lag, t - lag - w   # frames [lo, hi) in padded indices
+            cols.append((cs[:, hi] - cs[:, lo]) / w)
+            lag += w
+    return np.concatenate(cols, axis=0).T
+
+
+def lowess(x, y, frac=0.05, it=5, n_grid=200):
+    """Robust lowess (Cleveland 1979): local linear fits with tricube weights over the nearest
+    `frac` of the points, `it` robustness iterations with bisquare weights; evaluated on a grid
+    and interpolated. Returns (grid, fitted values)."""
+    o = np.argsort(x)
+    x, y = x[o], y[o]
+    n = len(x)
+    k = max(int(np.ceil(frac * n)), 3)
+    grid = np.unique(np.quantile(x, np.linspace(0, 1, n_grid)))
+    rw = np.ones(n)
+    for i in range(it + 1):
+        fit = np.empty(len(grid))
+        for g, x0 in enumerate(grid):
+            j = np.searchsorted(x, x0)
+            lo, hi = max(0, j - k), min(n, j + k)
+            d = np.abs(x[lo:hi] - x0)
+            sel = np.argsort(d)[:k]
+            xs, ys, ds = x[lo:hi][sel], y[lo:hi][sel], d[sel]
+            h = ds.max() if ds.max() > 0 else 1.0
+            w = (1 - (ds / h) ** 3) ** 3 * rw[lo:hi][sel]
+            sw = w.sum()
+            if sw <= 0:
+                fit[g] = ys.mean()
+                continue
+            mx = (w * xs).sum() / sw
+            my = (w * ys).sum() / sw
+            vx = (w * (xs - mx) ** 2).sum()
+            b = (w * (xs - mx) * (ys - my)).sum() / vx if vx > 0 else 0.0
+            fit[g] = my + b * (x0 - mx)
+        if i == it:
+            break
+        res = y - np.interp(x, grid, fit)
+        s = np.median(np.abs(res))
+        u = res / (6 * s) if s > 0 else np.zeros(n)
+        rw = np.where(np.abs(u) < 1, (1 - u ** 2) ** 2, 0.0)
+    return grid, fit
+
+
+def bin_powers(R: np.ndarray):
+    """Per response bin: total power and predictable power (Eq. 52, per bin as in
+    STRFanalysis.m LNperformance; half the total power for a stimulus heard once)."""
+    n = len(R)
+    pt = (R ** 2).mean(0)
+    pp = (n * R.mean(0) ** 2 - pt) / (n - 1) if n > 1 else 0.5 * pt
+    return pt, pp
+
+
+def performance(P, r, pp, mask):
+    """Eq. 53 over the bins in `mask`: (total - error power) / predictable power. With the
+    error power of bin t, mean_j (R_j - p)^2 = total - 2 p rbar + p^2, the numerator is
+    sum(2 p rbar - p^2). `P` may hold one prediction per row."""
+    P = np.atleast_2d(P)
+    return ((2 * P[:, mask] * r[mask] - P[:, mask] ** 2).sum(1)) / pp[mask].sum()
+
+
+def cell_performance(stims: list[dict], win_s: float, folds: str = "contiguous", samples: str = "common",
+                     n_folds: int = 10, ln: bool = True) -> list[dict]:
+    """STRF and LN performance of one cell for each of the nine windows: validation pooled over
+    the validation folds (main) and the mean over folds of per-fold values (STRFanalysis.m),
+    training as the mean over folds."""
+    out = []
+    for wi, counts in enumerate(COUNTS):
+        start = MAX_LAG if samples == "common" else sum(c * w for c, w in zip(counts, WIDTHS))
+        Xs, rs, pps, sid = [], [], [], []
+        for k, s in enumerate(stims):
+            Xs.append(design(s["specs"][win_s], counts)[start:])
+            R = s["R"][:, start:]
+            _, pp = bin_powers(R)
+            rs.append(R.mean(0))
+            pps.append(pp)
+            sid.append(np.full(R.shape[1], k))
+        X = np.concatenate(Xs)
+        r = np.concatenate(rs)
+        pp = np.concatenate(pps)
+        stim_of = np.concatenate(sid)
+        m = len(r)
+        if folds == "contiguous":           # STRFanalysis.m: ncol = round(m / xval), contiguous
+            size = int(round(m / n_folds))
+            fold = np.minimum(np.arange(m) // size, n_folds - 1)
+        else:                               # by stimulus, at most n_folds groups
+            fold = stim_of % n_folds
+        nf = int(fold.max()) + 1
+        G = X.T @ X
+        b = X.T @ r
+        lam = RIDGE_REL * np.trace(G) / G.shape[0]
+        pred = np.zeros((len(lam), m))      # cross-validated predictions
+        train = np.zeros((len(lam), nf))
+        fvalid = np.zeros((len(lam), nf))
+        W_all = []
+        for f in range(nf):
+            v = fold == f
+            e, V = np.linalg.eigh(G - X[v].T @ X[v])
+            Vb = V.T @ (b - X[v].T @ r[v])
+            W = V @ (Vb[:, None] / (e[:, None] + lam[None, :]))
+            P = (X @ W).T
+            pred[:, v] = P[:, v]
+            W_all.append(W)
+            train[:, f] = performance(P, r, pp, ~v)
+            fvalid[:, f] = performance(P, r, pp, v)
+        pooled = performance(pred, r, pp, np.ones(m, bool))
+        best = int(np.argmax(pooled))
+        bestf = int(np.argmax(fvalid.mean(1)))
+        row = dict(window_ms=WINDOWS_MS[wi], ridge_index=best, ridge_at_edge=best in (0, len(lam) - 1),
+                   strf_valid=float(pooled[best]), strf_train=float(train[best].mean()),
+                   strf_valid_foldmean=float(fvalid[bestf].mean()), strf_train_foldmean=float(train[bestf].mean()),
+                   n_bins=m, n_folds=nf)
+        if ln:
+            ln_pred = np.zeros(m)
+            ln_train, ln_fvalid = [], []
+            for f in range(nf):
+                v = fold == f
+                P = X @ W_all[f][:, best]
+                gx, gy = lowess(P[~v], r[~v])
+                yh = np.interp(P, gx, gy)
+                ln_pred[v] = yh[v]
+                ln_train.append(performance(yh, r, pp, ~v)[0])
+                ln_fvalid.append(performance(yh, r, pp, v)[0])
+            row.update(ln_valid=float(performance(ln_pred, r, pp, np.ones(m, bool))[0]),
+                       ln_train=float(np.mean(ln_train)), ln_valid_foldmean=float(np.mean(ln_fvalid)))
+        out.append(row)
+    return out
+
+
+CONFIGS = {"main": (0.010, "contiguous", "common"), "window 20 ms": (0.020, "contiguous", "common"),
+           "folds by stimulus": (0.010, "stimulus", "common"), "own samples": (0.010, "contiguous", "own")}
+
+
+def run_cell(cell: dict) -> dict:
+    """One cell, for use in a process pool: loads it, then the performance under the main
+    configuration for both cell readings ('repeated': only stimuli heard at least twice;
+    'code': every stimulus, with STRFanalysis.m's rule for a single trial) and under the
+    variants for the 'repeated' reading."""
+    import os
+    import asari
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    A = asari.Archive()
+    stims = load_cell(A, cell)
+    rep = [s for s in stims if s["n_trials"] >= 2]
+    rows = []
+    info = dict(cell=cell["cell"], n_stimuli=len(stims), n_repeated=len(rep),
+                trials=[s["n_trials"] for s in stims],
+                recording_types=sorted({t for s in stims for t in s["recording_type"]}),
+                sf=sorted({s["sf"] for s in stims}), stim_sf=sorted({s["stim_sf"] for s in stims}), seconds=[s["R"].shape[1] * DT for s in stims],
+                spec_range=(float(min(s["specs"][0.010].min() for s in stims)),
+                            float(max(s["specs"][0.010].max() for s in stims))),
+                resp_range=(float(min(s["R"].min() for s in stims)), float(max(s["R"].max() for s in stims))),
+                reliability=float(sum(bin_powers(s["R"])[1].sum() for s in rep) /
+                                  sum(bin_powers(s["R"])[0].sum() for s in rep)) if rep else np.nan)
+    for name, (w, folds, samples) in CONFIGS.items():
+        readings = ["repeated", "code"] if name == "main" else ["repeated"]
+        for reading in readings:
+            use = rep if reading == "repeated" else stims
+            if not use or (reading == "code" and len(use) == len(rep) and rep):
+                continue
+            for r in cell_performance(use, w, folds=folds, samples=samples):
+                rows.append(dict(cell=cell["cell"], config=name, reading=reading, **r))
+    return dict(info=info, rows=rows)
