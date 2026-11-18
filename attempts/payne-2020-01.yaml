@@ -2,8 +2,8 @@ schema_version: 3
 id: payne-2020-01
 datasets:
 - archive: sparc
-  id: "206"
-  version: "1"
+  id: '206'
+  version: '1'
   doi: 10.26275/kkmb-vun5
   relation: primary
 paper: doi:10.3389/fnins.2020.619275
@@ -21,9 +21,9 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/44204457264
 inputs:
-- what: The Wiedmann et al. (2020) means and 95% CIs for relative threshold pressure, relative
-    peak pressure, contraction duration and inter-void interval, as printed in Table 1 of the
-    paper and quoted in the claim's criterion; used only by table1-comparable-to-published.
+- what: The Wiedmann et al. (2020) means and 95% CIs for relative threshold pressure, relative peak pressure, contraction
+    duration and inter-void interval, as printed in Table 1 of the paper and quoted in the claim's criterion; used
+    only by table1-comparable-to-published.
   source: doi:10.3389/fnins.2020.619275
 outcomes:
 - claim: anes-ecap-recorded
@@ -32,46 +32,49 @@ outcomes:
   notebook: reproduce_payne_2020.ipynb
   output: claim:anes-ecap-recorded
   measured: 5
-  notes: In all five acute rats (12-005, 12-006, 12-007, 12-008, 12-010) at least one detected
-    positive peak after the artefact end reaches 0.05 uV in both recordings at some current and
-    is below 0.05 uV at the lowest current, under both artefact-end readings (5 of 5 each). The
-    top-current amplitudes of these peaks range from 0.07 to 15.7 uV. The RMS of the 1.2 to 6 ms
+  notes: Under the main peak rule, in all five acute rats (12-005, 12-006, 12-007, 12-008, 12-010) at least one
+    detected positive peak after the artefact end reaches 0.05 uV in both recordings at some current and is below
+    0.05 uV at the lowest current, under both artefact-end readings (5 of 5 each). The largest-peaks and inverted
+    rules also give 5 of 5; the window rule gives 2 of 5, as it finds a triple inside the paper's ranges in two
+    rats only. The top-current amplitudes of these peaks range from 0.07 to 15.7 uV. The RMS of the 1.2 to 6 ms
     window rises with current in every acute file (Spearman rho 0.84 to 0.998).
   deviations:
-  - The acute files have no 0 mA traces; the lowest current (0.0175 mA in four rats, 0.107 mA in
-    12-007) stands for 0 mA.
-  - The peaks come from a detection rule the paper does not give (assumption; see
-    anes-ecap-latencies).
+  - Assumption. The acute files have no 0 mA traces; the lowest current (0.0175 mA in four rats, 0.107 mA in 12-007)
+    stands for 0 mA, as the nearest the data allow.
+  - The peaks come from identification rules the paper does not give (assumption; see anes-ecap-latencies).
 - claim: anes-ecap-latencies
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_payne_2020.ipynb
   output: claim:anes-ecap-latencies
   measured:
-  - 1.60
-  - 2.50
+  - 1.6
+  - 2.5
   - 4.19
-  notes: None of the 72 combinations of readings (central value, time origin, stimulus level,
-    artefact end, detection margin 2, 3 or 5 noise SD) puts all three central latencies within
-    10%. Main reading (artefact end 1 ms, margin 3 SD, highest current, onset origin, median over
-    4 rats) gives 1.60, 2.50 and 4.19 ms against 1.80, 3.48 and 3.77; the closest combination
-    (mean over 5 rats, margin 2 SD) gives 1.61, 2.98 and 4.18 ms, at worst 14.5% off. 12-008 has
-    two peaks under the main reading. Per rat, P2 (2.42 to 3.25 ms) and P3 (3.84 to 4.63 ms) lie
-    within the paper's ranges widened by 10% in 4 of 4 rats, P1 (1.12 to 2.33 ms) in 2 of 4. The
-    question for the paper's authors is under the methods_unavailable finding on peak detection.
+  notes: None of the 288 combinations of readings (central value, time origin, stimulus level, artefact end, detection
+    margin 2, 3 or 5 noise SD, and four peak rules) puts all three central latencies within 10%. Main reading (first-three
+    rule, artefact end 1 ms, margin 3 SD, highest current, onset origin, median over 4 rats) gives 1.60, 2.50 and
+    4.19 ms against 1.80, 3.48 and 3.77; the closest combination over all rules (three largest peaks, margin 5 SD,
+    mean over 3 rats) gives 1.79, 3.24 and 4.22 ms, 11.9% off at worst, and the closest under the main rule 1.61,
+    2.98 and 4.18 ms (14.5%). 12-008 has two peaks under the main reading. Per rat, P2 (2.42 to 3.25 ms) and P3
+    (3.84 to 4.63 ms) lie within the paper's ranges widened by 10% in 4 of 4 rats, P1 (1.12 to 2.33 ms) in 2 of
+    4. The outcome is the same under every peak rule. The question for the paper's authors is under the methods_unavailable
+    finding on peak identification.
   deviations:
-  - Assumption. The paper does not say how P1 to P3 were identified. P1 to P3 are taken as the
-    first three positive local maxima after the artefact end, in the mean of the two recordings
-    at the highest current, with prominence at least 3 noise SD and amplitude at least 0.05 uV;
-    margins of 2 and 5 SD are also run. This follows the Results' description of three positive
-    peaks distinguished by latency (Results, Electrically Evoked Compound Action Potentials,
-    paragraph 1); the margin is a standard detection choice.
-  - The traces start 0.6 ms after pulse onset, so the baseline is the median from 7 to 8.6 ms,
-    not a pre-stimulus segment (assumption).
-  - The acute files reach 1.6 mA in logarithmic steps, where the Methods give 0 to 2 mA in
-    0.1 mA steps; the highest-current reading uses 1.6 mA.
-  - Recordings at 200 kHz with a 500 to 3000 Hz filter, where the Methods give 100 kHz and 300
-    to 5000 Hz; the data are used as they are.
+  - 'Assumption. The paper does not say how P1 to P3 were identified. P1 to P3 are assigned among the positive peaks
+    above k noise SD (k = 2, 3, 5) after the artefact end at the highest current by four rules, all run: the first
+    three in time (main rule), the three largest, the triple inside the paper''s P1 to P3 ranges widened by 10%
+    with the largest summed amplitude, and the first three of the inverted traces. The main rule follows the Results''
+    description of three positive peaks distinguished by latency (Results, Electrically Evoked Compound Action Potentials,
+    paragraph 1); the margin is a standard detection choice. The window rule uses the paper''s own ranges.'
+  - The traces start 0.6 ms after pulse onset, so the baseline is the median from 7 to 8.6 ms, not a pre-stimulus
+    segment (assumption). Neither the files nor the deposited schema define time zero or a gain.
+  - Stimulus-level reading (b) is the lowest current at which all three peaks pass in both recordings, and reading
+    (c) the mean over currents at or above the P3 threshold.
+  - The acute files reach 1.6 mA in logarithmic steps, where the Methods give 0 to 2 mA in 0.1 mA steps; the highest-current
+    reading uses 1.6 mA.
+  - Recordings at 200 kHz with a 500 to 3000 Hz filter, where the Methods give 100 kHz and 300 to 5000 Hz; the data
+    are used as they are.
 - claim: anes-conduction-velocity
   outcome: not_reproduced
   assumed: true
@@ -81,13 +84,14 @@ outcomes:
   - 1.82
   - 1.14
   - 0.68
-  notes: None of 216 combinations (latency readings by distance 2.85, 2.10 or 3.60 mm by median
-    or mean) puts all three velocities within 10% of 1.60, 0.82 and 0.78 m/s. With 2.85 mm and
-    the main latency reading the medians are 1.82, 1.14 and 0.68 m/s. The part of the statement
-    on fibre classes holds; P1 lies in the A-fibre range (1.6 to 21 m/s) and P2 and P3 in the
-    C-fibre range (0.5 to 1.6 m/s) given in the Discussion.
+  notes: None of 864 combinations (latency readings under four peak rules by distance 2.85, 2.10 or 3.60 mm by median
+    or mean) puts all three velocities within 10% of 1.60, 0.82 and 0.78 m/s. With 2.85 mm and the main latency
+    reading the medians are 1.82, 1.14 and 0.68 m/s; the closest combination (three largest peaks, margin 5 SD,
+    mean over 3 rats) gives 1.57, 0.93 and 0.68 m/s, 13.1% off. The part of the statement on fibre classes holds
+    under the main reading; P1 lies in the A-fibre range (1.6 to 21 m/s) and P2 and P3 in the C-fibre range (0.5
+    to 1.6 m/s) given in the Discussion.
   deviations:
-  - Rests on the peak detection assumed for anes-ecap-latencies.
+  - Rests on the peak identification assumed for anes-ecap-latencies.
 - claim: anes-threshold-order
   outcome: not_reproduced
   assumed: true
@@ -97,54 +101,60 @@ outcomes:
   - 62
   - 221
   - 280
-  notes: No combination of readings (0 of 96; amplitude above baseline or above the preceding
-    trough, lowest passing current or interpolated, first passing or sustained, median or mean,
-    artefact end, margin) gives rising thresholds with Friedman P below 0.05, and none puts the
-    three values within 10% of 377, 648 and 930 uA. Main reading, medians over four rats 62, 221
-    and 280 uA, rising, Friedman chi2 = 4.5, P = 0.105. Per rat (uA) 12-005 648, 541, 1335;
-    12-006 18, 128, 183; 12-007 107, 315, 377; 12-010 18, 107, 74; 12-008 has no third peak. The
-    0.05 uV level lies below three noise SDs in all five rats (noise SD 0.024 to 0.234 uV), so
-    several thresholds equal the lowest current. With the pass level raised to three noise SDs
-    (variant) thresholds rise from P1 to P3 in 12-005, 12-006 and 12-010 but not in 12-007 (107,
-    776 and 452 uA).
+  notes: 'Under the criterion''s threshold (lowest passing current), no combination of readings under any of the
+    four peak rules (0 of 192; amplitude above baseline or above the preceding trough, lowest passing current or
+    interpolated, median or mean, artefact end, margin) gives rising thresholds with Friedman P below 0.05, and
+    none puts the three values within 10% of 377, 648 and 930 uA. Main reading, medians over four rats 62, 221 and
+    280 uA, rising, Friedman chi2 = 4.5, P = 0.105. Per rat (uA) 12-005 648, 541, 1335; 12-006 18, 128, 183; 12-007
+    107, 315, 377; 12-010 18, 107, 74; 12-008 has no third peak. Twelve of 384 combinations meet the criterion,
+    all under a further sustained reading (lowest current from which every higher current passes) that is not the
+    criterion''s definition (largest-peaks rule with artefact end b and margin 3, Friedman P = 0.022 and 0.039;
+    window rule with margin 2, P = 0.039); none is within tolerance. Band-passed noise alone passes the two-recording
+    test in 24 to 28% of current steps at 0.05 uV SD and 63 to 77% at 0.2 to 0.7 uV SD (five seeds), and the noise
+    SD of the files is 0.02 to 0.7 uV, so several thresholds equal the lowest current. Variants outside the criterion:
+    with the pass level at three noise SDs the main rule gives medians 107, 498 and 691 uA, rising, Friedman chi2
+    = 6.5, P = 0.039 (n = 4), outside tolerance; with 5 uV (the stored values read as carrying the 10^2 gain) at
+    most one rat has three thresholds.'
   deviations:
-  - Rests on the peak detection assumed for anes-ecap-latencies.
-  - The files' currents are logarithmic steps (0.074 to 1.6 mA, and 0.0175 mA), so reading (a)
-    of the step is the lowest passing file current, not a 0.1 mA step.
-  - A peak's amplitude at a lower current is that of the local maximum nearest its latency
-    within 0.3 ms (a choice; the paper gives no window).
-  - A further reading of threshold, the lowest current from which every higher current passes,
-    is shown; it does not change the outcome.
+  - Rests on the peak identification assumed for anes-ecap-latencies.
+  - The files' currents are logarithmic steps (0.074 to 1.6 mA, and 0.0175 mA), so reading (a) of the step is the
+    lowest passing file current, not a 0.1 mA step.
+  - A peak's amplitude at a lower current is that of the local maximum nearest its latency within 0.3 ms (a choice;
+    the paper gives no window).
+  - A further reading of threshold, the lowest current from which every higher current passes, is shown; it is not
+    the criterion's definition, and the only combinations that meet the criterion use it.
 - claim: fig2c-p3-above-p1
   outcome: reproduced
   assumed: true
   notebook: reproduce_payne_2020.ipynb
   output: claim:fig2c-p3-above-p1
   measured: 0.034
-  notes: Main threshold reading, Dunn's test on the Friedman mean ranks, P3 above P1, z = 2.12,
-    unadjusted P = 0.034 (n = 4 rats); Bonferroni-adjusted over three pairs P = 0.10. Over the 48
-    combinations of readings, 4 give P3 higher with unadjusted P below 0.05 and none with the
-    adjusted P. The Friedman main effect in the same reading is P = 0.105, so the post hoc
-    difference comes without a significant main effect. The criterion asks for P below 0.05
-    under one reading, and the outcome rests on the unadjusted reading and on the assumed peak
-    detection; the question of the adjustment is put to the paper's authors (finding below).
+  notes: Main threshold reading, Dunn's test on the Friedman mean ranks, P3 above P1, z = 2.12, unadjusted P = 0.034
+    (n = 4 rats); Bonferroni-adjusted over three pairs P = 0.10. Of 48 readings per peak rule, P3 is higher with
+    unadjusted P below 0.05 in 4 (first-three rule), 4 (largest), 8 (window) and 9 (inverted), and with the Bonferroni
+    P in 0, 2, 4 and 0, these last all under the sustained reading. With all five rats in the test (margin 2 SD)
+    the smallest unadjusted P is 0.082. The Friedman main effect in the main reading is P = 0.105, so the post hoc
+    difference comes without a significant main effect; with the pass level at three noise SDs (variant) Friedman
+    P = 0.039 and Dunn P = 0.013. The pass is narrow; it rests on the unadjusted reading, n = 4, and the assumed
+    peak identification. The question of the adjustment is put to the paper's authors (finding below).
   deviations:
-  - Rests on the peak detection assumed for anes-ecap-latencies; n = 4 rats where the paper has 5.
-  - Assumption. The unadjusted reading of Dunn's P is the one that matches; the Statistics
-    section names Dunn's test without saying whether its P is adjusted.
+  - Rests on the peak identification assumed for anes-ecap-latencies; n = 4 rats where the paper has 5.
+  - Assumption. The unadjusted reading of Dunn's P is the one that matches; the Statistics section names Dunn's
+    test without saying whether its P is adjusted.
 - claim: fig2ab-one-rat-p2-below-p1
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_payne_2020.ipynb
   output: claim:fig2ab-one-rat-p2-below-p1
   measured: 3
-  notes: No reading (0 of 48) gives four of five rats with P1 lowest and one with P1 above P2.
-    Main reading, three of four rats have P1 below P2 and P3, and one (12-005) has P1 above P2
-    (648 against 541 uA); 12-008 has no third peak. With a 2 SD margin (five rats) three have P1
-    lowest and two have P1 above P2. Measured is the count of rats with P1 lowest under the main
-    reading.
+  notes: Under the criterion's threshold no reading under any peak rule (0 of 96) gives four of five rats with P1
+    lowest and one with P1 above P2. Main reading, three of four rats have P1 below P2 and P3, and one (12-005)
+    has P1 above P2 (648 against 541 uA); 12-008 has no third peak. Two of 192 rows meet the counts, both under
+    the largest-peaks rule, artefact end b, margin 2 SD and the sustained reading, which is not the criterion's
+    definition of threshold; the raised pass levels give 0 of 8. Measured is the count of rats with P1 lowest under
+    the main reading.
   deviations:
-  - Rests on the peak detection assumed for anes-ecap-latencies.
+  - Rests on the peak identification assumed for anes-ecap-latencies.
 - claim: awake-ecap-latencies
   outcome: not_reproduced
   assumed: true
@@ -152,34 +162,34 @@ outcomes:
   output: claim:awake-ecap-latencies
   measured:
   - 1.94
-  - 3.30
+  - 3.3
   - 4.65
   - 1.67
   - 0.95
   - 0.64
-  notes: The seven awake files are 12-050, 12-051, 12-052 and 12-056 at day 0 and 12-053, 12-055
-    and 12-057 at day 7. Three peaks are found in at most 5 of 7 recordings (margin 2 SD) and in
-    2 of 7 under the main margin; 12-057 shows none. No combination of readings puts all six
-    values within tolerance (0 of 216). Measured values are reading (a), all recordings with
-    three peaks, margin 2 SD, highest current, onset origin, 2.85 mm (mean latencies 1.94, 3.30
-    and 4.65 ms; velocities 1.67, 0.95 and 0.64 m/s). With 2.10 mm the velocities are 1.23, 0.70
-    and 0.47 m/s, within tolerance, while the latencies are not. Noise SD is 0.21 to 0.71 uV in
-    six of seven files.
+  notes: The seven awake files are 12-050, 12-051, 12-052 and 12-056 at day 0 and 12-053, 12-055 and 12-057 at day
+    7. Three peaks are found in at most 5 of 7 recordings under any peak rule and margin, and in 2 of 7 under the
+    main reading; 12-057 shows none under any rule. No combination of readings puts all six values within tolerance
+    (0 of 792). Measured values are reading (a), first-three rule, all recordings with three peaks, margin 2 SD,
+    highest current, onset origin, 2.85 mm (mean latencies 1.94, 3.30 and 4.65 ms; velocities 1.67, 0.95 and 0.64
+    m/s). Under the largest-peaks rule with margin 2 SD the mean latencies of the five recordings with three peaks
+    (2.14, 3.70 and 5.28 ms) are within tolerance and the velocities (1.59, 0.88 and 0.57 m/s) are not; 9 rows have
+    the latencies within tolerance and 23 the velocities, none both. Noise SD is 0.21 to 0.71 uV in six of seven
+    files.
   deviations:
   - Rests on the peak detection assumed for anes-ecap-latencies.
-  - Reading (b) of the criterion (each rat's two-week mean) cannot be run, as no day-7 file is
-    linked to a day-0 file.
-  - Stimulation is on E3-E4 with recording on E1-E2 in 12-050, 12-053 and 12-056; the same
-    distances are used.
+  - Reading (b) of the criterion (each rat's two-week mean) cannot be run, as no day-7 file is linked to a day-0
+    file.
+  - Stimulation is on E3-E4 with recording on E1-E2 in 12-050, 12-053 and 12-056; the same distances are used.
 - claim: awake-threshold-increase
   outcome: blocked
   blocked_by: metadata_insufficient
   notebook: reproduce_payne_2020.ipynb
-  notes: Every reading of the criterion's Friedman test uses rat as a block, and the dataset
-    gives the awake recordings as seven subjects, four at day 0 and three at day 7, with nothing
-    that links a day-7 recording to a rat recorded at day 0. Per-file thresholds are printed for
-    reference; most equal the lowest current under the 0.05 uV level, as the noise SD of these
-    files is 0.21 to 0.71 uV. The claim also depends on awake-ecap-latencies.
+  notes: 'Every reading of the criterion''s Friedman test uses rat as a block, and the dataset gives the awake recordings
+    as seven subjects, four at day 0 and three at day 7, with nothing that links a day-7 recording to a rat recorded
+    at day 0: pool_id is empty for every subject and no experimental log file is named for these rats. Per-file
+    thresholds are printed for reference; most equal the lowest current under the 0.05 uV level, as the noise SD
+    of these files is 0.21 to 0.71 uV. The claim also depends on awake-ecap-latencies.'
 - claim: impedance-increase
   outcome: partially_reproduced
   notebook: reproduce_payne_2020.ipynb
@@ -188,27 +198,26 @@ outcomes:
   - 4.19
   - 7.25
   - 12.04
-  notes: From the derivative chronic-impedances.pzfx, one value per array, the means are 4.192
-    kOhm (SEM 0.166, 12 arrays), 7.245 (SEM 0.793, 12) and 12.044 (SEM 1.149, 10), the paper's
-    values and spreads, with ranges 3.16 to 5.03, 4.54 to 15.18 and 6.24 to 18.32 kOhm equal to
-    the printed ones. The 8-week value (13.1 kOhm) cannot be tested; no impedance file belongs to
-    the 8-week rats (15-759, 15-760). The per-electrode CSVs of eight rats give 3.89 (32
-    electrodes), 7.02 (28) and 20.2 kOhm (32, the last row per array, including one electrode at
-    252 kOhm). The paper's spreads are SEMs over arrays, and its n of 38 electrodes in 10 arrays
-    does not match the 12 arrays averaged.
+  notes: From the derivative chronic-impedances.pzfx, one value per array, the means are 4.192 kOhm (SEM 0.166,
+    12 arrays), 7.245 (SEM 0.793, 12) and 12.044 (SEM 1.149, 10), the paper's values and spreads, with ranges 3.16
+    to 5.03, 4.54 to 15.18 and 6.24 to 18.32 kOhm equal to the printed ones. The 8-week value (13.1 kOhm) cannot
+    be tested; no impedance file belongs to the 8-week rats (15-759, 15-760). The per-electrode CSVs of eight rats
+    give 3.89 (32 electrodes), 7.02 (28) and 20.2 kOhm (32, the last row per array, including one electrode at 252
+    kOhm). The paper's spreads are SEMs over arrays, and its n of 38 electrodes in 10 arrays does not match the
+    12 arrays averaged.
   deviations:
   - The 8-week time point is not in the dataset.
 - claim: electrode-failures
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_payne_2020.ipynb
-  notes: Per-electrode impedances are in the dataset for 8 arrays (32 electrodes), not the 40
-    electrodes the claim counts, and the per-array derivative cannot show single electrodes. In
-    the 32, one electrode (18-273 E3) reads 252270 Ohm on three days from day 14 (an open
-    circuit, within about 2 weeks), and three others have a single high value (49 to 95 kOhm);
-    in 18-262 E1 and 18-294 E3 it returns to the array's level at the next measurement, and in
-    18-208 E1 it is the last measurement. The lowest value is 1230 Ohm (18-294 before
-    implantation), so no short circuit is seen.
+  notes: Per-electrode impedances are in the dataset for 8 arrays (32 electrodes), not the 40 electrodes the claim
+    counts, and the per-array derivative cannot show single electrodes. In the 32, one electrode (18-273 E3) reads
+    252270 Ohm on three days from day 14 (an open circuit, within about 2 weeks), and three others have a single
+    high value (49 to 95 kOhm); in 18-262 E1 and 18-294 E3 it returns to the array's level at the next measurement,
+    and in 18-208 E1 it is the last measurement. The lowest value is 1230 Ohm (18-294 before implantation), so no
+    short circuit is seen. As a partial result on the 32 electrodes deposited, one open circuit within about 2 weeks
+    and no short is seen, against 2 opens of 40.
 - claim: colonic-pressure
   outcome: not_reproduced
   notebook: reproduce_payne_2020.ipynb
@@ -216,133 +225,161 @@ outcomes:
   measured:
   - 1.44
   - 1
-  notes: Reading (a), peak during the train minus the mean before, three of three rats respond
-    (5.68, 4.26 and 0.25 mmHg; one-sided P 0.019, 0.006, 0.0002), but the same measure between
-    trains is 5.48, 2.51 and 0.56 mmHg. Reading (b), mean during minus mean before, one rat
-    responds, 12-020, with 1.44 mmHg (SEM 0.70, 14 trains), against 2.6 (SEM 0.1, 13 responses).
-    In 15-758 the response comes in the 10 s before each recorded time; with the train placed
-    there (variant), reading (b) gives one responder, 15-758, with 0.64 mmHg (SEM 0.09, 33
-    trains). No reading gives a responder near 2.6 mmHg. Measured is reading (b).
+  notes: Reading (a), peak during the train minus the mean before, three of three rats respond (5.68, 4.26 and 0.25
+    mmHg; one-sided P 0.019, 0.006, 0.0002), but the same measure between trains is 5.48, 2.51 and 0.56 mmHg. Reading
+    (b), mean during minus mean before, one rat responds, 12-020, with 1.44 mmHg (SEM 0.70, 14 trains), against
+    2.6 (SEM 0.1, 13 responses). In 15-758 the response comes in the 10 s before each recorded time; with the train
+    placed there (variant), reading (b) gives one responder, 15-758, with 0.64 mmHg (SEM 0.09, 33 trains). Against
+    the same measure taken halfway between trains (Welch one-sided, a variant), no rat responds under either reading.
+    No reading gives a responder near 2.6 mmHg, and no rat has 13 trains. Measured is reading (b).
   deviations:
-  - The colonic stimulation in the files (1.114 mA, 200 us, 10 Hz, 4 or 5 s trains in 12-019
-    and 12-020; 0.541 mA, 25 us, 15 Hz, 10 s in 15-758) differs from the Methods (1 mA, 100 us,
-    10 Hz).
-  - Each entry of the stimulus table is taken as a train of the file's StimDuration; in 12-019
-    and 12-020 the entries come in pairs about 4 s apart.
+  - The colonic stimulation in the files (1.114 mA, 200 us, 10 Hz, 4 or 5 s trains in 12-019 and 12-020; 0.541 mA,
+    25 us, 15 Hz, 10 s in 15-758) differs from the Methods (1 mA, 100 us, 10 Hz).
+  - Each entry of the stimulus table is taken as a train of the file's StimDuration; in 12-019 and 12-020 the entries
+    come in pairs about 4 s apart.
   - The responder test is the claims file's choice; it is run one-sided, for an increase.
 - claim: no-fecal-expulsion-or-erection
   outcome: blocked
   blocked_by: data_missing
-  notes: The dataset holds no observation notes, video or annotation of faecal pellets or
-    erection; the manifest lists none.
+  notes: The dataset holds no observation notes, video or annotation of faecal pellets or erection; the manifest
+    lists none.
 - claim: table1-minimum-pressure
   outcome: reproduced
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-minimum-pressure
   measured: 11.74
-  notes: From the derivative cystometry-dataset.xlsx, the mean of 9 rat means is 11.74 mmHg
-    (95% CI 8.47 to 15.01), inside the printed CI (7.4 to 13.2); pooled over 27 cycles also
-    11.74. It differs from the printed 10.3 by 1.44 mmHg. The dataset's own R notebook output
-    gives the same 11.741.
+  notes: From the derivative cystometry-dataset.xlsx, the mean of 9 rat means is 11.74 mmHg (95% CI 8.47 to 15.01),
+    inside the printed CI (7.4 to 13.2); pooled over 27 cycles also 11.74. It differs from the printed 10.3 by 1.44
+    mmHg. The dataset's own R notebook output gives the same 11.741. Recomputed from the pressure traces (the authors'
+    /Voids onsets, rat means), the lowest 1 s mean pressure before the next void gives 6.26 mmHg (outside the CI)
+    and the lowest within 60 s of the peak 8.00 mmHg (inside).
   deviations:
-  - Tested on the authors' derivative table, not recomputed from the pressure traces; its
-    values differ from the primary /Voids tables of the same rats.
+  - Tested on the authors' derivative table, not recomputed from the pressure traces; its values differ from the
+    primary /Voids tables of the same rats.
+  - The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10%
+    return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here.
 - claim: table1-threshold-pressure
   outcome: reproduced
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-threshold-pressure
   measured: 6.96
-  notes: Mean of 9 rat means 6.96 mmHg (95% CI 5.15 to 8.77), inside the printed CI 4.7 to 8.4
-    under every reading. Relative pressures in the table equal absolute minus minimum to 1e-14.
+  notes: Mean of 9 rat means 6.96 mmHg (95% CI 5.15 to 8.77), inside the printed CI 4.7 to 8.4 under every reading.
+    Relative pressures in the table equal absolute minus minimum to 1e-14. Recomputed from the traces, threshold
+    at onset gives 8.64 mmHg against the lowest pressure before the next void (outside the CI) and 6.90 against
+    the lowest within 60 s of the peak (inside); threshold at the start of the HFPOs, the proxy here for urine release,
+    gives 16.07 and 13.98 mmHg (outside).
   deviations:
-  - Threshold pressure as the derivative defines it (mmhg_init); the criterion's two readings
-    of its definition cannot be told apart from the table.
+  - Threshold pressure as the derivative defines it (mmhg_init); the criterion's two readings of its definition
+    cannot be told apart from the table.
+  - The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10%
+    return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here.
 - claim: table1-peak-pressure
   outcome: reproduced
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-peak-pressure
   measured: 46.59
-  notes: Mean of 9 rat means 46.59 mmHg (95% CI 33.79 to 59.39), inside the printed CI 39.5 to
-    63.0 under every reading; 4.6 mmHg below the printed 51.2.
+  notes: Mean of 9 rat means 46.59 mmHg (95% CI 33.79 to 59.39), inside the printed CI 39.5 to 63.0 under every
+    reading; 4.6 mmHg below the printed 51.2. Recomputed from the traces it is 46.33 or 44.59 mmHg, inside the CI
+    under every reading.
   deviations:
   - Tested on the authors' derivative table.
+  - The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10%
+    return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here.
 - claim: table1-contraction-duration
   outcome: reproduced
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-contraction-duration
   measured: 32.19
-  notes: Mean of 9 rat means 32.19 s (95% CI 16.04 to 48.33), with 18-273's mean over its two
-    complete cycles; 26.06 s (16.96 to 35.17, 8 rats) with that rat left out, as the dataset's R
-    code does; 30.30 s over 26 pooled cycles. All inside the printed CI 17.1 to 37.5. One cycle
-    of 18-273 lasts 134.2 s and one of 18-243 96.2 s.
+  notes: Mean of 9 rat means 32.19 s (95% CI 16.04 to 48.33), with 18-273's mean over its two complete cycles; 26.06
+    s (16.96 to 35.17, 8 rats) with that rat left out, as the dataset's R code does; 30.30 s over 26 pooled cycles.
+    All inside the printed CI 17.1 to 37.5. One cycle of 18-273 lasts 134.2 s and one of 18-243 96.2 s. Recomputed
+    from the traces, the time above threshold (reading b) gives 32.08 s (inside the CI) and onset to the return
+    within 10% of the minimum (reading a) 48.05 s (outside).
   deviations:
   - Contraction duration as the derivative defines it; one cycle of 18-273 has none.
+  - The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10%
+    return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here.
 - claim: table1-intervoid-interval
   outcome: reproduced
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-intervoid-interval
   measured: 6.66
-  notes: Mean of 9 rat means 6.66 min (95% CI 5.74 to 7.59), inside the printed CI 5.9 to 9.4
-    under every reading; 0.94 min below the printed 7.6.
+  notes: Mean of 9 rat means 6.66 min (95% CI 5.74 to 7.59), inside the printed CI 5.9 to 9.4 under every reading;
+    0.94 min below the printed 7.6. Recomputed from the traces (onset to onset within one wave) it is 6.66 min (7
+    rats, before stimulation) or 6.23 min (first three marked voids, 9 rats), inside the CI.
   deviations:
   - Tested on the authors' derivative table.
+  - The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10%
+    return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here.
 - claim: table1-hfpo-frequency
   outcome: reproduced
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-hfpo-frequency
   measured: 9.82
-  notes: Mean of 7 rat means 9.82 Hz (95% CI 7.21 to 12.43), inside the printed CI 8.3 to 13.0.
-    The derivative has no HFPO frequency for 12-081 and 12-083, so n is 7, not the 9 Table 1
-    states. 18-273 has 16.0 Hz, the others 7.8 to 9.7 Hz.
+  notes: Mean of 7 rat means 9.82 Hz (95% CI 7.21 to 12.43), inside the printed CI 8.3 to 13.0. The derivative has
+    no HFPO frequency for 12-081 and 12-083, so n is 7, not the 9 Table 1 states. 18-273 has 16.0 Hz, the others
+    7.8 to 9.7 Hz. Recomputed from the traces, the spectrum peak gives 8.05 Hz (9 rats) and the count of oscillation
+    peaks 7.11 Hz (7 rats), both below the CI; these use a band-pass and an HFPO period chosen here, so the derivative,
+    from the authors' own method, decides the outcome.
   deviations:
-  - HFPO frequency as the derivative gives it; the criterion's two readings of how it is
-    estimated cannot be run from the table, and the pressure traces of 12-081 and 12-083 are
-    sampled at 100 Hz.
+  - HFPO frequency as the derivative gives it; the criterion's two readings of how it is estimated cannot be run
+    from the table, and the pressure traces of 12-081 and 12-083 are sampled at 100 Hz.
   - 7 rats, not 9.
+  - The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10%
+    return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here.
 - claim: table1-comparable-to-published
   outcome: reproduced
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-comparable-to-published
   measured: 4
-  notes: The 95% CIs computed here overlap the Wiedmann et al. (2020) CIs printed in Table 1 for
-    all four parameters under both readings (relative threshold 5.15 to 8.77 against 1.8 to 7.3
-    mmHg; relative peak 33.79 to 59.39 against 15.3 to 74.0 mmHg; contraction duration 16.04 to
-    48.33, or 16.96 to 35.17, against 25.1 to 49.3 s; inter-void interval 5.74 to 7.59 against
-    5.3 to 10.6 min). The Wiedmann values are those printed in the paper; no data of Wiedmann
-    et al. were read, so the outside side of the comparison is the paper's own table.
+  notes: The 95% CIs computed here overlap the Wiedmann et al. (2020) CIs printed in Table 1 for all four parameters
+    under both readings (relative threshold 5.15 to 8.77 against 1.8 to 7.3 mmHg; relative peak 33.79 to 59.39 against
+    15.3 to 74.0 mmHg; contraction duration 16.04 to 48.33, or 16.96 to 35.17, against 25.1 to 49.3 s; inter-void
+    interval 5.74 to 7.59 against 5.3 to 10.6 min). The Wiedmann values are those printed in the paper; no data
+    of Wiedmann et al. were read, so the outside side of the comparison is the paper's own table.
+  deviations: []
 - claim: stim-evoked-voiding
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_payne_2020.ipynb
-  notes: The classification needs whether urine was released after each train, which no file
-    records. Stimulation trains are in four cystometry files only (18-196, 18-243, 18-262,
-    18-294; 1, 1, 2 and 5 trains), against eight stimulated rats in the paper. The voids the
-    authors marked in /Voids begin 0.8 to 157.5 s after these trains; they do not say whether
-    a void was evoked.
+  notes: 'The classification needs whether urine was released after each train, which no file records. Stimulation
+    trains are in four cystometry files only (18-196, 18-243, 18-262, 18-294; 1, 1, 2 and 5 trains), against eight
+    stimulated rats in the paper. The voids the authors marked in /Voids begin 0.8 to 157.5 s after these trains;
+    they do not say whether a void was evoked. Partial result, reading each /Voids entry as a marked void: all four
+    rats with trains have a marked void starting within 30 s of a train''s onset and of its end (4 of 9 trains);
+    none has such voids after 3 to 6 trains. The deposited schema lists the /Voids columns with units only and does
+    not say whether a void means urine release.'
 - claim: stim-void-trials
   outcome: blocked
   blocked_by: data_missing
-  notes: Same data as stim-evoked-voiding, on which it depends. The dataset holds 9 stimulation
-    trains in four rats, against 27 trials with voids in eight rats.
+  notes: 'Same data as stim-evoked-voiding, on which it depends. The dataset holds 9 stimulation trains in four
+    rats, against 27 trials with voids in eight rats. Partial result: 4 of the 9 deposited trains are followed by
+    a marked void within 30 s of their onset or end.'
 - claim: stim-early-void
   outcome: blocked
   blocked_by: data_missing
-  notes: Depends on stim-evoked-voiding, blocked for missing data.
+  notes: 'Depends on stim-evoked-voiding, blocked for missing data. Partial result on the four rats: no train is
+    followed by a marked void earlier than half the rat''s mean interval between voids (0 rats under either reading).'
 - claim: stim-nonvoiding
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs the urine-release classification of each train in eight rats; the dataset has
-    trains in four rats and no classification. Reading (a) of the criterion, from pressure, would
-    give a count over four rats, not of eight.
+  notes: 'Needs the urine-release classification of each train in eight rats; the dataset has trains in four rats
+    and no classification. Reading (a) of the criterion, from pressure, would give a count over four rats, not of
+    eight. Partial result under reading (a) on the four rats: no train gives a pressure rise above the rat''s relative
+    threshold pressure without a marked void within 30 s (0 of 4 rats; rises without a void 1.2 to 7.8 mmHg).'
 - claim: stim-voiding-to-nonvoiding
   outcome: blocked
   blocked_by: data_missing
-  notes: Depends on stim-evoked-voiding and stim-nonvoiding, both blocked for missing data.
+  notes: Depends on stim-evoked-voiding and stim-nonvoiding, both blocked for missing data. Only 18-294 has more
+    than two trains.
 - claim: fig3e-eight-week-responses
   outcome: blocked
   blocked_by: data_missing
-  notes: The two long-term rats (15-759, recorded at day 64, and 15-760, day 48) have
-    cystometry and marked voids but no stimulation trains and no classification of responses.
+  notes: 'The two long-term rats (15-759, recorded at day 64, and 15-760, day 48) have cystometry and marked voids
+    but no stimulation trains and no classification of responses. Partial result on the half about parameters: recomputed
+    from the traces of their first three marked voids, the mean parameters of 15-759 and 15-760 lie inside the widened
+    range of the short-term rats'' means for 5 and 6 of six parameters under the (a) definitions, and 3 and 4 under
+    the (b) ones.'
 - claim: fig4-atf3-rare
   outcome: blocked
   blocked_by: data_missing
@@ -354,9 +391,8 @@ outcomes:
 - claim: fig5-cfos-distribution
   outcome: blocked
   blocked_by: data_missing
-  notes: No c-Fos counts are in the dataset, although files/README.txt lists summary derived
-    data from c-Fos activation mapping; the derivative folder holds only the impedance and
-    cystometry files.
+  notes: No c-Fos counts are in the dataset, although files/README.txt lists summary derived data from c-Fos activation
+    mapping; the derivative folder holds only the impedance and cystometry files.
 - claim: fig5-cfos-no-side-difference
   outcome: blocked
   blocked_by: data_missing
@@ -372,73 +408,296 @@ outcomes:
 findings:
 - kind: data_missing
   about: data
-  statement: The dataset holds none of the histology (ATF3, CGRP, synaptophysin), c-Fos counts,
-    post-mortem notes or behavioural observations behind Figures 4 and 5 and the safety claims.
-    files/README.txt lists summary derived data from c-Fos activation mapping, which no file
-    holds. Stimulation trains are deposited for four rats (9 trains), where the paper stimulated
-    eight, and no file records whether urine was released after a train; the 8-week rats have no
-    stimulation. Twelve of the claims cannot be tested.
+  statement: The dataset holds none of the histology (ATF3, CGRP, synaptophysin), c-Fos counts, post-mortem notes
+    or behavioural observations behind Figures 4 and 5 and the safety claims. files/README.txt lists summary derived
+    data from c-Fos activation mapping, which no file holds. Stimulation trains are deposited for four rats (9 trains),
+    where the paper stimulated eight, and no file records whether urine was released after a train; the 8-week rats
+    have no stimulation. Twelve of the claims cannot be tested.
 - kind: other
   about: data
-  statement: The ECAP files are sampled at 200 kHz and carry a 500 to 3000 Hz filter, where the
-    Methods give 100 kHz and 300 to 5000 Hz. The acute files step the current on a logarithmic
-    scale up to 1.6 mA (CL 80 to 250, and CL0 at 0.0175 mA), not 0 to 2 mA in 0.1 mA steps, and
-    have no 0 mA trace. Several files stimulate E3-E4 and record E1-E2 (12-008, 12-050, 12-053,
-    12-056) or stimulate E2 to E1 (12-006, 12-007), where the Methods give stimulation on E1-E2.
+  statement: The ECAP files are sampled at 200 kHz and carry a 500 to 3000 Hz filter, where the Methods give 100
+    kHz and 300 to 5000 Hz. The acute files step the current on a logarithmic scale up to 1.6 mA (CL 80 to 250,
+    and CL0 at 0.0175 mA), not 0 to 2 mA in 0.1 mA steps, and have no 0 mA trace. Several files stimulate E3-E4
+    and record E1-E2 (12-008, 12-050, 12-053, 12-056) or stimulate E2 to E1 (12-006, 12-007), where the Methods
+    give stimulation on E1-E2.
 - kind: metadata_insufficient
   about: data
-  statement: The seven awake ECAP recordings are seven subject identifiers (four at day 0, three
-    at day 7) with nothing linking a day-7 recording to the rat recorded at day 0, so the week 0
-    to week 1 comparison of the paper (n = 4) cannot be made. The Methods give three awake rats
-    and the Results four.
+  statement: The seven awake ECAP recordings are seven subject identifiers (four at day 0, three at day 7) with
+    nothing linking a day-7 recording to the rat recorded at day 0, so the week 0 to week 1 comparison of the paper
+    (n = 4) cannot be made. The pool_id column of subjects.xlsx is empty. The Methods give three awake rats and
+    the Results four.
 - kind: other
   about: data
-  statement: In the colonic recording of 15-758 the pressure rises by about 0.65 mmHg during the
-    10 s before each recorded stimulus time and returns to baseline at that time, over 33 trains,
-    so the recorded times are 10 s (one train) after the response. The files do not say whether
-    the times mark the end of each train. The colonic stimulation in all three files (1.114 mA,
-    200 us, 4 or 5 s; 0.541 mA, 25 us, 15 Hz, 10 s) differs from the Methods (1 mA, 100 us, 10
-    Hz).
+  statement: In the colonic recording of 15-758 the pressure rises by about 0.65 mmHg during the 10 s before each
+    recorded stimulus time and returns to baseline at that time, over 33 trains, so the recorded times are 10 s
+    (one train) after the response. The files do not say whether the times mark the end of each train. The colonic
+    stimulation in all three files (1.114 mA, 200 us, 4 or 5 s; 0.541 mA, 25 us, 15 Hz, 10 s) differs from the Methods
+    (1 mA, 100 us, 10 Hz).
 - kind: other
   about: data
-  statement: The derivative cystometry-dataset.xlsx and the /Voids tables of the same rats give
-    different values for most cycles (peak pressure agrees within 0.5 mmHg in 4 of 27 cycles),
-    and neither the files nor the manifests say how either was computed. The derivative, and the
-    dataset's own R notebook output from it, do not give Table 1's means (minimum pressure 11.74
-    against 10.3 mmHg; inter-void interval 6.66 against 7.6 min), though each lies within Table
-    1's CI, and it has HFPO frequencies for 7 of the 9 rats.
+  statement: The derivative cystometry-dataset.xlsx and the /Voids tables of the same rats give different values
+    for most cycles (peak pressure agrees within 0.5 mmHg in 4 of 27 cycles), and neither the files nor the manifests
+    say how either was computed. The derivative, and the dataset's own R notebook output from it, do not give Table
+    1's means (minimum pressure 11.74 against 10.3 mmHg; inter-void interval 6.66 against 7.6 min), though each
+    lies within Table 1's CI, and it has HFPO frequencies for 7 of the 9 rats.
 - kind: metadata_insufficient
   about: data
-  statement: The manifests of the derivative, code, docs and protocol folders have no
-    descriptions, and the columns of the /Voids group (for example ContractionDuration,
-    RelaxationTimeConstant, PostBaselinePressure) and the CL scale of the ECAP stimuli are not
-    defined. Some cystometry waves carry an AppliedOffset attribute with no description.
+  statement: The manifests of the derivative, code, docs and protocol folders have no descriptions, and the columns
+    of the /Voids group (for example ContractionDuration, RelaxationTimeConstant, PostBaselinePressure) and the
+    CL scale of the ECAP stimuli are not defined. Some cystometry waves carry an AppliedOffset attribute with no
+    description. Neither the ECAP files nor the ECAP schema give the amplifier gain (the Methods give 10^2) or define
+    time zero, and the schema gives TimeUnits s where the files have ms.
 - kind: other
   about: data
   statement: The dataset lists 29 subjects, where the paper reports 24 rats in all.
 - kind: other
   about: data
-  statement: The per-array impedance file reproduces the paper's impedance means, spreads and
-    ranges exactly, from 12, 12 and 10 arrays; the paper describes them as 38 electrodes in 10
-    arrays, and its spreads are SEMs over arrays. Per-electrode impedances are deposited for 8
-    arrays only.
+  statement: The per-array impedance file reproduces the paper's impedance means, spreads and ranges exactly, from
+    12, 12 and 10 arrays; the paper describes them as 38 electrodes in 10 arrays, and its spreads are SEMs over
+    arrays. Per-electrode impedances are deposited for 8 arrays only.
 - kind: methods_unavailable
   about: paper
-  statement: The paper does not say how the three ECAP peaks were identified in each recording
-    (which local maxima count, from what time after the artefact, at which current), nor where
-    latency is measured from or at which current. Question for the authors, how were P1, P2 and
-    P3 picked, and at which stimulus level and time origin were their latencies read? This
-    attempt took the first three positive peaks above three noise SDs after 1 ms at the highest
-    current; under it the anaesthetised medians are 1.60, 2.50 and 4.19 ms.
+  statement: The paper does not say how the three ECAP peaks were identified in each recording (which local maxima
+    count, from what time after the artefact, at which current), nor where latency is measured from or at which
+    current. Question for the authors, how were P1, P2 and P3 picked, and at which stimulus level and time origin
+    were their latencies read? This attempt ran four rules (first three peaks, three largest, the triple inside
+    the paper's ranges, first three of the inverted traces); under the first, the anaesthetised medians are 1.60,
+    2.50 and 4.19 ms, and no rule gives the printed latencies.
 - kind: methods_unavailable
   about: paper
-  statement: The ECAP threshold is defined as a response of at least 0.05 uV in both recordings,
-    which lies below three noise SDs in most deposited files (noise SD 0.02 to 0.7 uV), and the
-    paper does not say how the response amplitude was measured. Question for the authors, was
-    the amplitude measured from baseline or peak to trough, was the 0.05 uV level applied to the
-    deposited traces in their units, and is Dunn's P (0.034) adjusted for multiple comparisons?
+  statement: The ECAP threshold is defined as a response of at least 0.05 uV in both recordings, which lies below
+    three noise SDs in most deposited files (noise SD 0.02 to 0.7 uV), and the paper does not say how the response
+    amplitude was measured. Question for the authors, was the amplitude measured from baseline or peak to trough,
+    was the 0.05 uV level applied to the deposited traces in their units, and is Dunn's P (0.034) adjusted for multiple
+    comparisons?
 - kind: methods_unavailable
   about: paper
-  statement: The paper does not define the colonic pressure increase or a response, and the
-    deposited trains differ from the Methods. Question for the authors, which rat and which 13
-    responses give 2.6 mmHg, and how was the increase measured?
+  statement: The paper does not define the colonic pressure increase or a response, and the deposited trains differ
+    from the Methods. Question for the authors, which rat and which 13 responses give 2.6 mmHg, and how was the
+    increase measured?
+verifications:
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text. The verifier checked the archive's file list and subject metadata
+    through the SPARC API and tested the threshold rule on synthetic noise. It saw no place where the claims file
+    misreads the paper. Its points on the time origin, gain and polarity of the ECAP files are answered by printing
+    the ECAP schema and every trace attribute (neither gives a gain or time zero), a 5 uV pass level as a gain variant,
+    and the inverted-trace peak rule.
+  results:
+  - claim: anes-ecap-recorded
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 31: under both artefact-end readings, all 5 rats have a peak passing 0.05 uV that is below it
+      at the lowest current. Top-current peaks are 0.15 to 15.7 uV. The files have no 0 mA trace, so the lowest
+      current (17.5 uA, or 106.5 uA in 12-007) stands in for 0 mA. Problem 4: the criterion''s "absent at 0 mA"
+      is replaced by the lowest current in the file without saying so as an assumption.'
+    response: Stated in the notebook and the record as an assumption. The test now runs under four peak rules; the
+      first-three, largest and inverted rules give 5 of 5, the window rule 2 of 5. Outcome unchanged.
+  - claim: anes-ecap-latencies
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 33: 0 of 72 combinations have all three latencies within 10%. P2 is always about 2.1 to 3.0 ms
+      against 3.48 ms. This rests on the notebook''s own peak-identification rule (problem 1): it is the only identification
+      rule run, and other rules, for example the three largest peaks or matching to the paper''s latency windows,
+      were not tried. Problem 5: latencies_at reading (b) takes the first current at or above the largest first-pass
+      threshold, where all three peaks need not pass.'
+    response: Added three peak rules (three largest, the triple inside the paper's ranges, first three of the inverted
+      traces) through every latency, threshold and awake analysis, and a figure of the peaks each rule picks on
+      the mean traces. Reading (b) now takes the lowest current at which all three peaks pass in both recordings,
+      and (c) uses the P3 threshold. 0 of 288 combinations match; the closest is 11.9% off. Outcome unchanged.
+  - claim: anes-conduction-velocity
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 35: 0 of 216 combinations. Follows from the latencies.'
+    response: 'Rerun under the four peak rules: 0 of 864 combinations. Outcome unchanged.'
+  - claim: anes-threshold-order
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 37: 0 of 96 combinations have rising central values with Friedman P < 0.05; none is within tolerance.
+      The lowest is P = 0.105 (n = 4). Problem 2: the 0.05 uV pass level sits inside the noise in 8 of 12 files;
+      band-passed noise of 0.2 uV SD passes the two-recording test 65% of the time, so the not_reproduced outcomes
+      reflect noise while following the criterion. The 3x noise variant was never put through the Friedman test;
+      by hand its 4 rats give chi2 = 6.5, P = 0.039, medians 107/498/691 uA, still outside tolerance.'
+    response: Added the synthetic noise test in the notebook (24 to 28% false passes at 0.05 uV SD, 63 to 77% at
+      0.2 to 0.7 uV, five seeds), put the three-noise-SD and a 5 uV (gain 100) variant through the Friedman and
+      Dunn tests (chi2 = 6.5, P = 0.039 under the first-three rule, as the verifier found), and ran the four peak
+      rules. Under the criterion's threshold 0 of 192 combinations meet; 12 of 384 meet only under the sustained
+      reading, which is not the criterion's definition. Outcome unchanged.
+  - claim: fig2c-p3-above-p1
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41: unadjusted Dunn P3 vs P1 gives P = 0.0339 with P3 higher (paper: 0.034), meeting the criterion''s
+      reading (a). Only 4 of 48 readings pass and 0 after Bonferroni. In those same readings the omnibus Friedman
+      P is 0.105 and n = 4, not 5 (weak). Problem 3: the pass rests on dropping 12-008, which has only two peaks
+      at k = 3; with all 5 rats (k = 2), Dunn P is 0.11.'
+    response: Notes and conclusion now state that the pass is narrow, rests on n = 4 and the unadjusted reading,
+      and give the smallest P with all five rats (0.082 over all rules). Under the other peak rules 4 to 9 of 48
+      readings pass unadjusted. Outcome unchanged.
+  - claim: fig2ab-one-rat-p2-below-p1
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 43: 0 of 48 readings give 4 rats with P1 lowest plus 1 rat with P1 above P2.'
+    response: 'Rerun under the four peak rules and the raised pass levels: 0 of 96 under the criterion''s threshold;
+      2 of 192 rows meet only under the sustained reading. Outcome unchanged.'
+  - claim: awake-ecap-latencies
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 45: three peaks are found in at most 5 of 7 recordings (12-057 never has any), so "three peaks
+      in every rat at both weeks" fails. 0 of 216 rows have all six values within tolerance.'
+    response: 'Rerun under the four peak rules: at most 5 of 7 recordings with three peaks, 12-057 none under any
+      rule, 0 of 792 rows with all six values; under the largest-peaks rule the latencies alone are within tolerance.
+      Outcome unchanged.'
+  - claim: awake-threshold-increase
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. The archive''s animal_subject metadata (checked via the API) has no link between the day-0
+      and day-7 IDs, and every Friedman reading needs rat as block. Problem 9: cell 3 does not print the pool_id
+      or experimental log file name columns of subjects.xlsx, which might link the day-0 and day-7 files.'
+    response: The data check now prints every column of subjects.xlsx; pool_id is empty for every subject and no
+      log file is named for the ECAP rats. Outcome unchanged.
+  - claim: impedance-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 49: the pzfx gives 4.192 +- 0.166, 7.245 +- 0.793 and 12.044 +- 1.149 kOhm, matching the paper
+      to rounding (the printed spread is the SEM), and so do the ranges. There is no 8-week value: the archive has
+      no impedance file for 15-759 or 15-760. The notebook lists this claim as plain "tested". Problem 10: the pzfx
+      has 12 values per stage before implantation and on day 1, not 38 electrodes in 10 arrays; the notebook does
+      not comment on the n mismatch.'
+    response: The conclusion now comments on the n mismatch. The header table lists each claim as tested or blocked,
+      so "tested" is kept there; the outcome is in the summary. Outcome unchanged.
+  - claim: electrode-failures
+    agrees: true
+    outcome: blocked
+    reason: 'I agree for 40 electrodes. A subset is testable: of the 32 CSV electrodes, R18-273 E3 reads 252 kOhm
+      on three dates 14 to 16 days after surgery (an open), and nothing looks like a short (cell 51). The notebook
+      did not state this as a partial result.'
+    response: The notes now state the partial result on 32 electrodes (one open within about 2 weeks, no short).
+      Outcome unchanged.
+  - claim: colonic-pressure
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cells 53 and 55: 3 of 3 rats respond under reading (a), 1 of 3 under (b). The one (b) responder, 12-020,
+      has 1.44 +- 0.70 mmHg; under the shifted-time variant it is 15-758 with 0.64 +- 0.09. Neither is within 2.6
+      +- 0.1, and no rat has 13 trains. Problem 8: reading (a) is biased upward; in 12-019 the null mean (5.48)
+      is about the observed mean (5.68), so 3 of 3 under (a) is an artefact of the measure; the response rule ignores
+      the null (a choice from the claims file).'
+    response: Added a variant that tests each rat's increases against the same measure between trains; no rat responds
+      under either reading. Outcome unchanged.
+  - claim: no-fecal-expulsion-or-erection
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed from the archive file list (91 files): there are no observation notes.'
+    response: No change.
+  - claim: table1-minimum-pressure
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 60: 11.74 mmHg, inside 7.4 to 13.2 under every reading. Problem 7: Table 1 cells use the authors''
+      derivative table, whose values do not equal Table 1 and whose peak pressure matches the primary /Voids table
+      in only 4 of 27 cycles; the criterion''s definitional readings were not recomputed from the pressure traces,
+      so which criterion reading the derivative''s definitions match is unverified.'
+    response: Added a recomputation of all six parameters from the primary pressure traces under the criterion's
+      readings (pelvic.void_params). The minimum is 6.26 mmHg as the lowest pressure before the next void (outside
+      the CI) and 8.00 within 60 s of the peak (inside). Outcome unchanged, on the derivative.
+  - claim: table1-threshold-pressure
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 62: 6.96, inside 4.7 to 8.4.'
+    response: 'Recomputed from the traces: threshold at onset is 6.90 mmHg against the minimum within 60 s of the
+      peak (inside) and 8.64 against the lowest before the next void (outside); at the HFPO start, the proxy for
+      urine release, 13.98 to 16.07 (outside). Outcome unchanged.'
+  - claim: table1-peak-pressure
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 64: 46.59, inside 39.5 to 63.0.'
+    response: Recomputed from the traces it is 44.59 to 47.45 mmHg, inside the CI. Outcome unchanged.
+  - claim: table1-contraction-duration
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 66: 32.19 (a1), 26.06 (a2), 30.30 (pooled), all inside 17.1 to 37.5.'
+    response: Recomputed from the traces, the time above threshold gives 32.08 s (inside) and onset to return 48.05
+      s (outside). Outcome unchanged.
+  - claim: table1-intervoid-interval
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 68: 6.66, inside 5.9 to 9.4.'
+    response: Recomputed from the traces it is 6.23 to 6.66 min, inside the CI. Outcome unchanged.
+  - claim: table1-hfpo-frequency
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 70: 9.82, inside 8.3 to 13.0, but from 7 rats, not 9 (12-081 and 12-083 have no HFPO values).'
+    response: Recomputed from the traces with a band-pass and HFPO period chosen here, 7.1 to 8.0 Hz, below the
+      CI; recorded in the notes, the derivative decides. Outcome unchanged.
+  - claim: table1-comparable-to-published
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 72: all 4 CIs overlap the Wiedmann CIs, under both a1 and a2.'
+    response: No change.
+  - claim: stim-evoked-voiding
+    agrees: true
+    outcome: blocked
+    reason: 'Agree for the full claim: only 4 of the 8 stimulated 18-* rats have trains. A partial test was possible
+      (problem 6). Cell 74 already shows a marked void within 30 s of train onset in all 4 rats (4 of 9 trains).
+      The notebook never shows whether /Voids means urine release (from hdf5_cystometry_schema.json).'
+    response: 'The notebook prints the /Voids part of the schema (columns and units only, nothing on urine release)
+      and runs the partial test: 4 of 4 rats, 4 of 9 trains, no rat with 3 to 6 such trains. Outcome unchanged.'
+  - claim: stim-void-trials
+    agrees: true
+    outcome: blocked
+    reason: 'Agree: only 9 trains are deposited, against the paper''s 27 trials.'
+    response: Partial count (4 of 9 trains) added to the notes. Outcome unchanged.
+  - claim: stim-early-void
+    agrees: true
+    outcome: blocked
+    reason: Agree for the full claim. A partial test on 4 rats from the /Voids times was possible.
+    response: 'Partial test added: 0 rats under either reading. Outcome unchanged.'
+  - claim: stim-nonvoiding
+    agrees: true
+    outcome: blocked
+    reason: Mostly agree, but the criterion's reading (a) uses pressure alone and could have been run for the 4
+      rats with trains.
+    response: 'Reading (a) is now run on the four rats: 0 of 4 show a non-voiding response. Outcome unchanged, as
+      the count is of eight rats.'
+  - claim: stim-voiding-to-nonvoiding
+    agrees: true
+    outcome: blocked
+    reason: Agree. Only 18-294 has more than 2 trains.
+    response: No change.
+  - claim: fig3e-eight-week-responses
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: there is no stimulation or stimuli file for 15-759 or 15-760. The "parameters similar" half
+      could be tested from their /Voids tables.'
+    response: 'That half is now tested from the traces: 5 and 6 of six parameters inside the widened short-term
+      range under the (a) definitions, 3 and 4 under (b). Outcome unchanged, as the stimulation half cannot be tested.'
+  - claim: fig4-atf3-rare
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed from the archive file list: no histology images.'
+    response: No change.
+  - claim: fig4ef-axons-intact
+    agrees: true
+    outcome: blocked
+    reason: Same as above.
+    response: No change.
+  - claim: fig5-cfos-distribution
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the README promises a c-Fos summary, but no such file exists.'
+    response: No change.
+  - claim: fig5-cfos-no-side-difference
+    agrees: true
+    outcome: blocked
+    reason: Same as above.
+    response: No change.
+  - claim: fig5-no-lamina1
+    agrees: true
+    outcome: blocked
+    reason: Same as above.
+    response: No change.
+  - claim: macroscopic-no-pathology
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no post-mortem notes.'
+    response: No change.

@@ -29,6 +29,6 @@ the observation notes and the urine-release annotations of the stimulation trial
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The paper does not say how its ECAP peaks were found, so every ECAP outcome rests on a detection
-rule assumed here. The attempt record, with the reasons and the differences from the paper's
+The paper does not say how its ECAP peaks were found, so every ECAP outcome rests on peak
+rules assumed here (four are run; the outcomes are the same under each). The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/payne-2020-01.yaml`](../../attempts/payne-2020-01.yaml).
