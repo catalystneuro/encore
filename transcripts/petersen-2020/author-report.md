@@ -1,67 +1,54 @@
-The attempt on dandiset 000059 is finished up to the handover. The entry, claims file and attempt record are written, and `tools/entry.py all` passes (0 errors, notebook runs in 366 s). The verifier package is in `executed/000059-petersen-2020/handover/`. Nothing was committed. I used the paper's full text (the PMC7442698 author manuscript, from NCBI efetch, saved under `paper/`), but not the supplement, which could not be downloaded. The pinned version is 0.250624.0444: the paper cites no version; this is the latest, and it has the same blobs as 0.230907.2101, while the first version (0.210812.1514) has no trials table.
+I've written the entry at `entries/petersen-2020/` and the record at `attempts/petersen-2020-02.yaml`, and built the handover in `executed/petersen-2020/handover/`. The entry passes `check` and its clean run (`all`) with 0 errors. Of the 46 claims, 17 are reproduced, 18 partially reproduced, 10 not reproduced and 1 blocked. Nothing is committed.
 
-**1. Outcomes (38 claims: 12 reproduced, 16 partially, 9 not reproduced, 1 blocked)**
+**I saw part of an earlier attempt's results by accident.** I didn't search for any earlier attempt. But the release notes of the pinned version (0.261115.0311, which I read with the dandiset's metadata) say the conversion "fixes problems found by a reproduction attempt (issue #78)". They list what was fixed: electrode groups, trial times one sample late, cooling-state labels, measured versus modelled temperature, unit labels, and known gaps. I didn't open the issue. My findings come from the data, but I knew those topics before I looked.
 
-| Claim | Outcome |
+### 1. Outcomes
+
+| Outcome | Claims |
 |---|---|
-| session-structure | reproduced |
-| cooling-time-course | partially (minimum after 121 s, not 60 s) |
-| fig2g theta frequency vs temperature | reproduced (R = 0.789) |
-| fig2h theta power vs temperature | not reproduced (R = −0.056) |
-| fig2j frequency more consistent across rats than power | reproduced |
-| fig2i theta lower during cooling | partially (power lower than pre only) |
-| 12% theta decrease | partially (8.9 to 9.2%) |
-| fig6d errors about 3-fold | partially (2.3-fold, P = 3e-7; MS22 P = 0.064) |
-| fig6e errors recover | reproduced |
-| fig6c worst performance 4 to 8 trials after onset | reproduced (trial 7) |
-| fig6f, fig6g errors vs temperature, vs theta | partially (R ≈ −0.84 and −0.87, stronger than −0.35) |
-| fig6h errors vs theta power | partially (1 rat, not 2) |
-| fig6i errors not related to speed | not reproduced (3 of 5 rats correlate) |
-| fig4e speed falls within session | reproduced |
-| fig5 speed, control vs cooling | partially |
-| place cell rates fall 11 to 12%; interneuron rates fall 14% | partially (about 7 to 9%) |
-| interneuron oscillation frequency slows | reproduced |
-| suppl1g waveforms unchanged | not reproduced (small changes; drift not excluded) |
-| fig4b fp and fLFP fall and recover | reproduced (all six means; 361 fields vs the paper's 365) |
-| fig4c, fig4a, fig3d, fig3e correlations | partially (weaker R, or 3 of 4 values) |
-| fig4ac fp − fLFP preserved | not reproduced (falls 0.13 Hz; ratio is preserved) |
-| fig3c field size correlated | reproduced (R = 0.8197, at the 0.819 edge) |
-| fig3f information unchanged | not reproduced (small drop, P = 0.014) |
-| fig3hi population vector scale unchanged | reproduced |
-| fig4d precession slope decreases | partially |
-| fig4gh fp depends on speed more than fLFP | reproduced |
-| fig5d pair correlogram period lengthens | partially (lengthens; 109 ms, not 85) |
-| fig5cg compression falls | not reproduced (0.27 cm/ms; P = 0.055) |
-| fig5h time lags increase | reproduced |
-| fig5i phase lags, fig5j fraction active, fig5k spikes per cycle unchanged | not reproduced (all three) |
-| hippocampal temperature | blocked: data missing |
+| Reproduced (17) | fig2h, fig2j (4 of 5 rats testable), fig2i, disc-theta-12%, fig6e, fig6c, fig6h, fig4e, fig5-speed, suppl2ab, suppl5gh, fig4b, fig3hi, fig4f, suppl2e, fig5e, fig5i (rests on an assumption) |
+| Partially reproduced (18) | session-structure, cooling-time-course, fig2g, fig6d, fig6f, fig6g, suppl5j, suppl2, disc-interneuron, fig4c, fig4a, fig3d, suppl3e, fig4gh, suppl3, fig5d, fig5h, suppl2d |
+| Not reproduced (10) | fig6i, fig4ac, fig3c, fig3e, fig3f, fig4d, fig5cg, fig5j, fig5k, suppl1g (waveforms, measured on 4 sessions) |
+| Blocked (1) | suppl1-hippocampal-temperature (`data_missing`) |
 
-**2. What was found about the dandiset**
-- **Temperature not recorded:** in the 9 MS10 sessions and the 2 control sessions of 2018-07-19, the temperature is a smooth curve from exactly 17 to 37 °C (one is a constant 37 °C). The paper's code lists no thermocouple for these sessions. Nothing in the files says the curve is modelled.
-- **Controls labelled as cooled:** the two 180719 sessions, which the code calls controls without cooling, carry cooling-state labels. Their theta slows by −0.20 and +0.44 Hz against a median of −0.82 Hz in cooled sessions.
-- **Missing or incomplete sessions:** 6 of the paper's 53 sessions are missing. MS21-180627 has no cooling-state column and MS21-180712 has no trials.
-- **Missing metadata:**
-  - No cell types, no place fields, and every electrode location is "unknown".
-  - In 7 sessions every unit is "unsorted".
-  - The trial state "Cooling off" is not described anywhere.
-- **Spike–position clock:** in MS21-180621 and MS22-180621 spikes carry no spatial information, so the shared clock could not be established and I left them out of the unit claims.
-- **Paper inconsistencies:** the Figure 5H legend gives P = 8e-5 by a sign-rank test with n = 10 sessions, which an exact test cannot produce (minimum about 0.002). The Discussion's 12% theta decrease does not match the Results' 8.4 to 7.7 Hz (about 8%).
+The 21 outcomes on place fields and pairs are marked `assumed`. fig5cg is weakly supported: the surface fit converges poorly (pooled fit R² is −0.14, and only 5 to 10 of 23 sessions converge).
 
-**3. Where the protocol was unclear, wrong or missing something**
-1. **Criterion revised after a pilot:** a one-session pilot showed the fig5d method measured the correlogram's envelope, not theta. I revised the criterion before any cross-session run and recorded it in the claims header and the deviations.
-2. **Sessions the paper's code excludes:** the protocol does not say whether to use sessions the paper's code leaves out, or modelled data. I followed the code's session lists and showed the other sessions as variants.
-3. **Clock check fails after claims are written:** the protocol says to name such sessions, not whether to exclude them. I excluded the two 180621 sessions at the data check and amended the set definition in the claims file.
-4. **Outside code that only selects sessions:** none of `with_labels` or `with_inputs` fits code that only picks sessions and parameters. I kept `data: dandiset` and listed the code repository and commit under `inputs`.
-5. **Tolerance from a stated spread:** using the paper's SD across fields as the tolerance on a mean is very loose (fig4b, fig5-speed). I followed the rule as written.
-6. **No partial rule in a criterion:** for fig5-speed I applied the protocol's general definition of partially reproduced.
-7. **Absence claims with no named test:** I used the paper's stated default tests. Rank-sum tests over about 10,000 theta cycles are nearly always significant, so I showed per-session tests as variants.
-8. **Per-rat tests that cannot reach 0.05:** an exact signed-rank test with 5 sessions cannot reach P < 0.05. The fig6d criterion judges only rats with at least 6 sessions.
-9. **Continuous value on the tolerance edge:** fig3c is reported as reproduced and flagged with its variants.
-10. **Full text without the supplement:** the protocol covers full text or abstract only. I tested supplementary results only where the main text states them.
-11. **`measured` when no reading matches:** the protocol is silent. I recorded the first reading.
-12. **Format conflict:** the example entry and the protocol's notebook outline use bold labels, which conflicts with your instruction. I removed them.
+### 2. The dataset, assumptions and questions
 
-**4. Runtime and failures**
-- **Runtime:** the notebook takes about 6 minutes (366 s) in CI, streaming in parallel. I ran it three times, and the outputs were identical apart from the session's own run time.
-- **Paper downloads:** Europe PMC full-text XML returned HTTP 500, PMC pages returned a captcha, and the supplement could not be retrieved anywhere. NCBI efetch worked for the main text.
-- **Untracked files:** `git status` lists dotfiles such as `.bashrc`, `.idea` and `scripts`. They are `/dev/null` devices the sandbox mounts over masked paths, not files from this run, and the commit should leave them out.
+**Pinned version:** 0.261115.0311, the latest published one; the paper cites no version. It has 51 sessions from 5 rats; the paper reports 53.
+
+**What the data show against their description:**
+- The tracking descriptions say 40 Hz in every session, but the timestamps give about 120 Hz in 44 sessions, 40 Hz in 6 and 30 Hz in 1.
+- Only 31 sessions have a measured MS temperature; the other 20 hold the lab's modelled curve, so MS10 has none at all.
+- The measured traces contain artefacts, from −1751 to 1354 °C and runs at the 0 and 50 °C rails.
+- The two 2018-07-19 sessions are labelled as cooled, but their temperature doesn't fall.
+- 13 sessions have two cooling epochs, two of them with cooling intervals that run far past the last trial.
+- The lab's theta channel in MS13-171130 is marked bad, and some theta-maze epochs are labelled with a linear-track environment.
+- The dandiset holds no hippocampal temperature, no unit waveforms and no place fields. 23 sessions have no curated units.
+
+**Assumptions:**
+- Place fields are found on the rate map over all trials of an arm, so each field has the same boundaries in every state.
+- For fig5i, a pair's phase lag is the largest peak within π of zero. Under the other reading (nearest peak) the claim fails.
+
+**Questions for the authors** (recorded as `methods_unavailable` findings):
+- Which rate map were the fields found on?
+- Which peak defines a pair's phase lag?
+- What was the surface-fit procedure, since its equation is garbled in the text?
+- Can the hand-drawn fields of Figures 3 and 4 be released?
+
+I asked a reader no questions.
+
+### 3. Where the protocol was unclear or missing something
+1. **Too many reading combinations.** Running every reading for every claim multiplies out. For place fields I ran 5 and 3 cm bins with the lab states, plus the 12-minute states at 5 cm only, and maps from all trial frames only. The notebook says so.
+2. **Absence claims and measure readings conflict.** The rule "absence is judged on the paper's test alone, readings do not apply" clashes with step 1.6 when the measure itself has readings (fig5i). I took the best-supported reading as an assumption and showed both.
+3. **Release notes can unblind a repeat attempt.** Nothing in the blind rules covers archive metadata that summarises an earlier attempt's findings. I reported it above.
+4. **Default tests on large samples break the absence claims.** Signed-rank or rank-sum over hundreds of fields or tens of thousands of cycles (fig4ac, fig3f, fig5j, fig5k) detects very small effects. I followed the criteria and showed per-session variants.
+5. **No block reason for "out of run time".** It's unclear whether to use `too_large` or `not_runnable`. It didn't matter in the end: I measured the waveform claim on a subset instead of blocking it.
+6. **Prep-only checks can't go in the record.** A check run outside the notebook showed many precession slopes at the ±2π search limit. The protocol forbids outside numbers in the record, so I removed them and left a qualitative note on fig4d.
+7. **The entry directory didn't exist.** The prompt said it was empty; I created it.
+
+### 4. Runtime and failures
+- The notebook runs in about 16.4 min, peaking at 4.7 GB of memory. This session ran from 13:21 to 16:08 UTC.
+- An early pair cross-correlogram version took 27 minutes, and the first surface-fit version took 20. I vectorised the pair code (it now takes 18 s) and capped the fit evaluations.
+- My first record failed the schema check because assumed outcomes need deviations; I fixed it.
+- One Result cell (fig3f) went stale after a code change. I caught it, corrected it and re-ran the notebook.

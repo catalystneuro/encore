@@ -1,24 +1,26 @@
-No outcome changed and I proposed none. The verifier agreed with all 38 outcomes (12 reproduced, 15 partially reproduced, 10 not reproduced, 1 blocked). I re-ran the entry twice with `python tools/entry.py all`, and both runs passed with 0 errors (640 s and 586 s) and gave the same numbers. `tools/entry.py check` passes. The commit is left to the workflow.
+I answered every point in the round-2 report. No outcome changed and I proposed no changes. The entry re-ran cleanly with `python tools/entry.py all entries/petersen-2020` (passed, 1365 s), and `check` reports 0 errors.
 
-**New outputs**
-- **fig5i (phase lags):** the verifier asked for a half-width phase window, so I added a variant that picks the lag within ±π/2 (helper columns `phase_half_*`, cell 134).
-  - 43.3% of pre pairs get a different lag or none (293 have no peak in the window).
-  - Cooling is still above pre (0.025 rad, P = 0.0196), but no longer above post (P = 0.162).
-  - The increase over pre stays, so not_reproduced stands under the paper's test. The conclusion and notes now say part of the increase may come from how the lag is picked.
-- **fig5d (correlogram period):** I added a phase period from the nearest peak (`phase_period_near_*`, cell 125). It is 1.285π in both states (P = 0.367), so the third part of the criterion now holds under that variant.
-  - Following the verifier, the notes also say the nearest-peak estimator is biased downward: 211 of 3499 pre pairs fall at 60 to 70 ms, the floor of the search window. Its 91.0 ms is therefore not a clean test of the paper's 85 ms.
+**Outcomes:** all 46 stay as the verifier agreed: 17 reproduced, 19 partially reproduced, 8 not reproduced, 2 blocked.
 
-**Text corrected to match the outputs**
-- **fig4gh:** the bootstrap interval is 0.0040 to 0.0112.
-- **fig4b:** cell 93 no longer says every session shows the same pattern. It names MS22-180720-110055, where fp does not recover.
-- **suppl1g:** the windows start 7.1 to 31.8 min apart (5.1 to 29.8 min from the end of the pre window). The notes now say the outcome does not show that cooling changes the waveforms.
-- **fig5cg:** the direction of the change agrees with the paper only under the criterion's fit. The inverse-slope fit goes the other way.
-- **Temperature finding (cell 12, Summary):** the MS10 and control traces run from 17 to 37 C exactly in nine of the ten sessions; MS10-170313 reaches 16.98 C.
-- **Summary row for fig6d:** it now says neither MS13 nor MS22 is significant.
-- **Round-1 record:** I put the verifier's own wording back into its round-1 reason for suppl1-hippocampal-temperature, which the verifier said was garbled.
+**Outputs the verifier asked for:**
+- **fig5cg:** I added a bounded least-squares fit. It holds b within 30% of the summed period and starts from the envelope's own fit and from several values of a. It does no better than before: pooled R2 is -0.14 to -5.8 against 0.57 to 0.80 for the envelope alone, and none of the 46 per-session fits reaches the envelope. The density's theta modulation is small (4 to 7% of its level), while the equation's oscillation term takes the density to zero between ridges. The claim stays blocked as `methods_underspecified`. The reason now says the fit fails, and that the paper does not say how the density was prepared for the fit.
+- **fig3f:** I added information with equal spike counts per state and a shuffle-corrected version.
+  - With equal spikes, pre to post still falls (P = 0.032).
+  - Shuffle-corrected, no comparison is significant (P = 0.085).
+  - The outcome stays not reproduced, because the claims file names uncorrected Skaggs information. The notes now say that part of the fall is a difference in bias between states.
+- **fig5h, fig5j, fig5k:** I added tests over sessions as variants.
+  - fig5h: under lag reading (a), cooling lags are longer than pre and post (P = 0.014 and 0.012) and pre and post do not differ (P = 0.98).
+  - fig5j: pre against cooling gives P = 1.0.
+  - fig5k: still fails per session (P = 0.0047 and 0.0059).
+  - The outcomes stand because the claims file fixes the test over pairs and over cycles.
+- **fig4d:** The conclusion, notes, README, Summary and finding now say the result depends on the slopes at the search bound. Without those slopes no comparison is significant, and with a 3-cycle range the significant comparison is against post, not pre.
 
-Round 2 is recorded under `verifications` for all 38 claims: each is marked as agreed, with the verifier's reason and my response.
+**Corrections:**
+- **Tracking rate:** I withdrew this `metadata_error` finding. Printed per session, each behaviour description matches its timestamps (120, 40 or 30 Hz).
+- **Temperature finding:** It now cites the raw values printed in the data check (-1751 to 1354 C, 11 sessions).
+- **Numbers now printed:** the theta values of the 2018-07-19 sessions and the second cooling intervals of MS12-170717 and MS12-170718.
+- **Sentences fixed:** the ones the verifier quoted in cells 26, 60, 77 and 93, the suppl1g P range, the fig5h notes, and the README sentences on Figure 3 and on phase lags.
+- **Round-1 record:** I moved problem 12 from fig5-speed-control-cooling to fig5d, where it belongs.
+- **Round 2 record:** Recorded under `verifications` for all 46 claims, with the verifier's reasons in its own words and my responses.
 
-**Not done**
-- The suppl1g drift point is acknowledged but not fixed. These recordings cannot separate electrode drift from cooling, so I added no analysis; the notes say so.
-- I did not download the paper this round. The verifier did not re-read it either, and none of the changes needed it.
+**Not done:** I added nothing to `questions/petersen-2020.yaml`, because the report names no place where the claims file misreads the paper. Its points about the fig5d session readings and the fig5i lag reading are about the analysis, not the claims file. Nothing is committed or pushed.

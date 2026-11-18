@@ -1,165 +1,248 @@
-# 000059 · verifier-2 · run 38910509753
+# petersen-2020 · verifier-2 · run 44236640825
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-ls -la && ls paper docs 2>/dev/null; cat round-1-report.md
+cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
 ```
 
 ```
-total 1064
-drwxr-xr-x 5 runner runner    4096 Oct 16 13:58 .
-drwxr-xr-x 7 runner runner    4096 Oct 16 13:58 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 13:40 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 13:40 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 16 13:58 .claude
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env.development
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env.local
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env.production
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env.test
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .env.test.local
-drwx------ 2 runner runner    4096 Oct 16 13:58 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 13:40 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 13:40 .github
--rw-r--r-- 1 runner runner       0 Oct 16 13:58 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 13:40 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 13:40 .mcp.json
-[... 107 more lines not kept]
+total 516
+drwxr-xr-x 6 runner runner    4096 Nov 18 04:56 .
+drwxr-xr-x 8 runner runner    4096 Nov 18 04:56 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 04:18 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 04:18 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 18 04:56 .claude
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .env.test.local
+drwx------ 2 runner runner    4096 Nov 18 04:56 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 04:18 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 04:18 .github
+-rw-r--r-- 1 runner runner       0 Nov 18 04:56 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 04:18 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 04:18 .mcp.json
+[... 111 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat README.md; echo ======; cat 000059-petersen-2020-01.yaml
+cd  cat README.md; head -60 petersen-2020.yaml; echo ======; head -80 petersen-2020-02.yaml; grep -c "" *.yaml
+```
+
+```
+# Petersen & Buzsaki (2020) from dandiset 000059
+
+Tests the findings of [Petersen and Buzsaki (2020)](https://doi.org/10.1016/j.neuron.2020.05.023)
+on [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.261115.0311), which holds 51 sessions
+of 5 rats running a figure-8 maze while the medial septum was cooled: CA1 LFP, curated units,
+head tracking and, in 31 sessions, the measured septal temperature.
+
+Of 46 claims, 17 are reproduced, 19 partially reproduced, 8 not reproduced and 2 blocked; the 20
+outcomes on place fields rest on an assumption about the maps the fields are found on. Cooling slows theta and lowers its power, raises choice errors, and
+slows the theta oscillation of place cells with the LFP (Figures 2, 4B and 6). The place field
+features of Figure 3 and the stability of fp - fLFP, information and the fraction of active
+cells are not reproduced as the paper states them. Phase precession flattens during cooling against
+pre but not post. Theta time lags of place cell pairs lengthen while phase lags do not change. The
+distance-time compression of Figure 5 is blocked, as the surface fit of the Methods does not
+describe the data. The hippocampal temperature of the control experiment is not in the dandiset.
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The paper's place fields were drawn by hand, so the fields here follow the paper's automatic rule
+[... 148 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 60,600p petersen-2020-02.yaml
 ```
 
 ```
 <persisted-output>
-Output too large (47.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/a917c53f-ba22-45f6-9010-69407ca9d0a4/tool-results/bb37bc78d.txt
+Output too large (38.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/089d3478-dfc9-4e8d-a257-aa0aa20f7ba8/tool-results/be1smdftj.txt
 
 Preview (first 2KB):
-# Petersen & Buzsaki (2020) from dandiset 000059
+  measured: 0.978
+  notes: 'Reading (a), aligned trials -40 to 80 averaged over 29 to 31 measured sessions: R = 0.978 (Hilbert; P = 4.3e-82,
+    120 points), 0.935 (spectral). Reading (b), 1 C bins: 0.959 and 0.929 (26 bins). Reading (c), pooled trials: 0.554 and
+    0.481 (4313 trials). Every reading is positive with P below 1e-10 and none is within 0.729 to 0.891. The pooled slope
+    is 0.063 Hz per C; the lowest trial temperature is 17.1 C. The two flat 2018-07-19 sessions change R by at most 0.03.'
+  deviations:
+  - Temperature analyses use the 31 sessions with a measured MS temperature; the other 20 hold the lab's modelled curve, described
+    in the files as not a measurement. Values outside 5 to 45 C are set to NaN (standard choice); no remaining sample within
+    the trials is below 15 C, so the rail values near 5 and 10 C do not enter any trial value.
+  - Theta is taken on the lab's theta channel (electrodes column theta_reference); the Methods say only 'An LFP channel located
+    in CA1' (Theta phase and phase precession).
+  - The aligned series spans trials -40 to 80 (standard choice; the paper does not say).
+- claim: fig2h-theta-power-temperature
+  outcome: reproduced
+  notebook: reproduce_petersen_2020.ipynb
+  output: claim:fig2h-theta-power-temperature
+[... 10 more lines not kept]
+```
 
-Tests the findings of [Petersen and Buzsaki (2020)](https://doi.org/10.1016/j.neuron.2020.05.023)
-that can be tested on [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.250624.0444), which
-holds 50 sessions of five rats running a spatial alternation task on a figure-8 maze while the
-medial septum (MS) was cooled: MS temperature, trials with cooling state and choice errors,
-position, LFP, wide-band data, and sorted units in 24 sessions.
+**Agent calls Bash**
 
-| Claim | Outcome |
-|---|---|
-| Session structure (trials per state) | Reproduced |
-| Cooling time course (minimum after 60 s, lasting 10 to 12 min) | Partially reproduced |
-| Theta frequency follows MS temperature (R = 0.81) | Reproduced |
-| Theta power follows MS temperature (R = 0.54) | Not reproduced |
-| Frequency effect more consistent across rats than power | Reproduced |
-| Theta frequency and power lower during cooling | Partially reproduced |
-[... 17 more lines not kept]
+```bash
+cd  sed -n 600,1122p petersen-2020-02.yaml
+```
+
+```
+<persisted-output>
+Output too large (34.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/089d3478-dfc9-4e8d-a257-aa0aa20f7ba8/tool-results/b4iabgqm0.txt
+
+Preview (first 2KB):
+  - Fields follow the Figure 5 rule (peak above 8 Hz); they are drawn on the map over all trials of an arm, states pooled,
+    so that a field has the same boundaries in every state (assumption; the paper does not say on which map). Rate maps use
+    all frames of the trials and a Gaussian smoothing of 1 bin SD (standard choice).
+  - A pair is used in a state when its cross-correlogram holds at least 20 spike pairs within 200 ms; each pair's cross-correlogram
+    is scaled to unit sum before summing; the period is that of the largest Fourier component of the detrended sum (standard
+    choices; the paper gives none). 12834 overlapping pairs in 23 sessions against the paper's 2948 in 18 sessions.
+- claim: fig5e-phase-period-below-2pi
+  outcome: reproduced
+  notebook: reproduce_petersen_2020.ipynb
+  output: claim:fig5e-phase-period-below-2pi
+  assumed: true
+  notes: 'Summed phase cross-correlogram period, pair reading (a): 1.87 pi pre (9291 pairs) and 1.91 pi cooling; reading (b):
+    1.83 and 1.86 pi. All below 2 pi.'
+  deviations:
+  - Phase cross-correlograms use the unwrapped Hilbert phase of the theta channel, for spike pairs within 400 ms.
+  - 'Assumption: fields are found on the map over all trials of an arm, states pooled, so that a field has the same boundaries
+[... 10 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/a917c53f-ba22-45f6-9010-69407ca9d0a4/tool-results/bb37bc78d.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/089d3478-dfc9-4e8d-a257-aa0aa20f7ba8/tool-results/be1smdftj.txt"
 }
 ```
 
 ```
-1	# Petersen & Buzsaki (2020) from dandiset 000059
-2	
-3	Tests the findings of [Petersen and Buzsaki (2020)](https://doi.org/10.1016/j.neuron.2020.05.023)
-4	that can be tested on [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.250624.0444), which
-5	holds 50 sessions of five rats running a spatial alternation task on a figure-8 maze while the
-6	medial septum (MS) was cooled: MS temperature, trials with cooling state and choice errors,
-7	position, LFP, wide-band data, and sorted units in 24 sessions.
-8	
-9	| Claim | Outcome |
-10	|---|---|
-11	| Session structure (trials per state) | Reproduced |
-12	| Cooling time course (minimum after 60 s, lasting 10 to 12 min) | Partially reproduced |
-13	| Theta frequency follows MS temperature (R = 0.81) | Reproduced |
-14	| Theta power follows MS temperature (R = 0.54) | Not reproduced |
-15	| Frequency effect more consistent across rats than power | Reproduced |
-16	| Theta frequency and power lower during cooling | Partially reproduced |
-17	| Theta frequency falls by 12% | Partially reproduced |
-18	| Errors increase about 3-fold, in every rat | Partially reproduced |
-19	| Errors recover after cooling | Reproduced |
-20	| Worst performance 4 to 8 trials after onset | Reproduced |
-[... 830 more lines not kept]
+1	  measured: 0.978
+2	  notes: 'Reading (a), aligned trials -40 to 80 averaged over 29 to 31 measured sessions: R = 0.978 (Hilbert; P = 4.3e-82,
+3	    120 points), 0.935 (spectral). Reading (b), 1 C bins: 0.959 and 0.929 (26 bins). Reading (c), pooled trials: 0.554 and
+4	    0.481 (4313 trials). Every reading is positive with P below 1e-10 and none is within 0.729 to 0.891. The pooled slope
+5	    is 0.063 Hz per C; the lowest trial temperature is 17.1 C. The two flat 2018-07-19 sessions change R by at most 0.03.'
+6	  deviations:
+7	  - Temperature analyses use the 31 sessions with a measured MS temperature; the other 20 hold the lab's modelled curve, described
+8	    in the files as not a measurement. Values outside 5 to 45 C are set to NaN (standard choice); no remaining sample within
+9	    the trials is below 15 C, so the rail values near 5 and 10 C do not enter any trial value.
+10	  - Theta is taken on the lab's theta channel (electrodes column theta_reference); the Methods say only 'An LFP channel located
+11	    in CA1' (Theta phase and phase precession).
+12	  - The aligned series spans trials -40 to 80 (standard choice; the paper does not say).
+13	- claim: fig2h-theta-power-temperature
+14	  outcome: reproduced
+15	  notebook: reproduce_petersen_2020.ipynb
+16	  output: claim:fig2h-theta-power-temperature
+17	  measured: 0.495
+18	  notes: 'Reading (a) with the mean squared Hilbert amplitude: R = 0.495, P = 8.9e-9 over 120 aligned trials, within 0.486
+19	    to 0.594 and below the frequency R (0.978) of the same reading. Power normalised by the session''s pre mean gives 0.489.
+20	    The spectral peak power gives R = 0.761 (0.811 normalised); pooled trials give R of 0.05 to 0.28. The criterion asks for
+[... 522 more lines not kept]
 ```
-
-**Agent calls Bash**
-
-```bash
-grep -nE "^\s*- id:|^\s*id:" 10.1016-j.neuron.2020.05.023.yaml | head -60; grep -c "^- claim:" 000059-petersen-2020-01.yaml; grep -E "^  outcome:" 000059-petersen-2020-01.yaml | sort | uniq -c
-```
-
-```
-46:- id: session-structure
-59:- id: cooling-time-course
-74:- id: fig2g-theta-freq-temperature
-90:- id: fig2h-theta-power-temperature
-104:- id: fig2j-frequency-consistent-across-animals
-112:- id: fig2i-theta-pre-cooling-post
-120:- id: disc-theta-frequency-12-percent
-134:- id: fig6d-errors-increase
-151:- id: fig6e-errors-recover
-158:- id: fig6c-worst-trials-4-to-8
-167:- id: fig6f-errors-temperature
-182:- id: fig6g-errors-theta-frequency
-192:- id: fig6h-errors-theta-power
-204:- id: fig6i-errors-not-speed
-212:- id: fig4e-speed-decreases-within-session
-219:- id: fig5-speed-control-cooling
-236:- id: suppl2-place-cell-rates-decrease
-257:- id: disc-interneuron-rates-decrease
-270:- id: fig4b-fp-flfp-decrease
-307:- id: fig4c-fp-flfp-correlation
-[... 23 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-mkdir -p $TMPDIR/v && python3 - <<'EOF'
-import json,os
-nb=json.load(open('reproduce_petersen_2020.ipynb'))
-out=open(os.environ['TMPDIR']+'/v/nb.txt','w')
-for i,c in enumerate(nb['cells']):
-    out.write(f"\n######## CELL {i} [{c['cell_type']}]\n")
-    out.write(''.join(c['source'])+"\n")
-    if c['cell_type']=='code':
-        for o in c.get('outputs',[]):
-            if 'text' in o: out.write("--OUT--\n"+''.join(o['text']))
-            elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']:
-                out.write("--OUT--\n"+''.join(o['data']['text/plain']))
-            elif o.get('output_type')=='error': out.write("--ERR--\n"+o['ename']+o['evalue'])
-print(len(nb['cells']))
-EOF
-wc -l $TMPDIR/v/nb.txt; grep -n "######## CELL" $TMPDIR/v/nb.txt | wc -l
-```
-
-```
-143
-2491 /tmp/claude-1001/v/nb.txt
-143
-```
-
-**Agent**
-
-Claims and outcome counts match (38 claims; 12/15/10/1). Reading the notebook text now.
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/v/nb.txt",
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/089d3478-dfc9-4e8d-a257-aa0aa20f7ba8/tool-results/b4iabgqm0.txt"
+}
+```
+
+```
+1	  - Fields follow the Figure 5 rule (peak above 8 Hz); they are drawn on the map over all trials of an arm, states pooled,
+2	    so that a field has the same boundaries in every state (assumption; the paper does not say on which map). Rate maps use
+3	    all frames of the trials and a Gaussian smoothing of 1 bin SD (standard choice).
+4	  - A pair is used in a state when its cross-correlogram holds at least 20 spike pairs within 200 ms; each pair's cross-correlogram
+5	    is scaled to unit sum before summing; the period is that of the largest Fourier component of the detrended sum (standard
+6	    choices; the paper gives none). 12834 overlapping pairs in 23 sessions against the paper's 2948 in 18 sessions.
+7	- claim: fig5e-phase-period-below-2pi
+8	  outcome: reproduced
+9	  notebook: reproduce_petersen_2020.ipynb
+10	  output: claim:fig5e-phase-period-below-2pi
+11	  assumed: true
+12	  notes: 'Summed phase cross-correlogram period, pair reading (a): 1.87 pi pre (9291 pairs) and 1.91 pi cooling; reading (b):
+13	    1.83 and 1.86 pi. All below 2 pi.'
+14	  deviations:
+15	  - Phase cross-correlograms use the unwrapped Hilbert phase of the theta channel, for spike pairs within 400 ms.
+16	  - 'Assumption: fields are found on the map over all trials of an arm, states pooled, so that a field has the same boundaries
+17	    in every state; the paper does not say on which map (STAR Methods, Place cell analysis).'
+18	- claim: fig5cg-compression
+19	  outcome: blocked
+20	  notebook: reproduce_petersen_2020.ipynb
+[... 504 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E'
+import yaml,collections
+c=yaml.safe_load(open('petersen-2020.yaml'))
+print(type(c), c.keys() if isinstance(c,dict) else None)
+cl=c['claims'] if isinstance(c,dict) else c
+ids=[x['id'] for x in cl]; print(len(ids))
+a=yaml.safe_load(open('petersen-2020-02.yaml'))
+oc=[o['claim'] for o in a['outcomes']]; print(len(oc), set(ids)^set(oc), len(set(oc)))
+print(collections.Counter(o['outcome'] for o in a['outcomes']))
+print([o['claim'] for o in a['outcomes'] if o.get('assumed')], sum(1 for o in a['outcomes'] if o.get('assumed')))
+print(len(a['verifications'][0]['results']))
+E
+```
+
+```
+<class 'dict'> dict_keys(['schema_version', 'paper', 'claims', 'checks'])
+46
+46 set() 46
+Counter({'partially_reproduced': 19, 'reproduced': 17, 'not_reproduced': 8, 'blocked': 2})
+['suppl2-place-cell-rates-decrease', 'suppl2ab-rates-correlated', 'fig4b-fp-flfp-decrease', 'fig4c-fp-flfp-correlation', 'fig4ac-fp-flfp-difference-preserved', 'fig4a-frequency-temperature-slopes', 'fig3c-field-size-correlated', 'fig3d-size-fp-negative', 'fig3e-model-field-size', 'fig3f-information-unchanged', 'fig4d-precession-slope-decrease', 'suppl3e-precession-temperature', 'fig4gh-fp-speed', 'fig5d-ccg-period', 'fig5e-phase-period-below-2pi', 'fig5h-time-lags-increase', 'fig5i-phase-lags-unchanged', 'fig5j-fraction-active-unchanged', 'fig5k-spikes-per-cycle-unchanged', 'suppl2d-interneuron-oscillation-slows'] 20
+45
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E' > $TMPDIR/nb.txt
+import json
+nb=json.load(open('reproduce_petersen_2020.ipynb'))
+for i,c in enumerate(nb['cells']):
+    print(f"\n######## CELL {i} [{c['cell_type']}]")
+    src=''.join(c['source'])
+    print(src)
+    for o in c.get('outputs',[]):
+        if 'text' in o: print('--OUT--'); print(''.join(o['text']))
+        elif 'data' in o:
+            d=o['data']
+            if 'text/plain' in d: print('--OUT--'); print(''.join(d['text/plain'])[:3000])
+            if 'image/png' in d: print('[image]')
+        elif o.get('output_type')=='error': print('--ERR--', o['ename'], o['evalue'])
+E
+wc -l $TMPDIR/nb.txt; grep -c "######## CELL" $TMPDIR/nb.txt
+```
+
+```
+3033 /tmp/claude-1001/nb.txt
+151
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
  "limit": 700
 }
 ```
@@ -167,24 +250,24 @@ Claims and outcome counts match (38 claims; 12/15/10/1). Reading the notebook te
 ```
 1	
 2	######## CELL 0 [markdown]
-3	# Reproducing Petersen & Buzsaki (2020) from dandiset 000059
+3	# Reproducing Petersen & Buzsaki (2020) from DANDI:000059
 4	
-5	Paper. Petersen PC, Buzsaki G (2020). Cooling of medial septum reveals theta phase lag
-6	coordination of hippocampal cell assemblies. *Neuron* 107, 731-744.
-7	[doi:10.1016/j.neuron.2020.05.023](https://doi.org/10.1016/j.neuron.2020.05.023). This attempt used
-8	the full text of the accepted author manuscript in PubMed Central (PMC7442698). The supplementary
-9	PDF could not be obtained, so supplementary figures are tested only where the main text states
-10	their result.
-11	
-12	Dandiset. [DANDI:000059](https://dandiarchive.org/dandiset/000059/0.250624.0444), version
-13	0.250624.0444. The paper cites no DANDI version (its data statement points to the lab's website
-14	and CRCNS). This is the most recent published version. Version 0.230907.2101 holds the same 100
-15	files with the same blobs. The first version, 0.210812.1514, held 54 combined files, among them
-16	four sessions without behaviour, and its files have no trials table, which every behavioural
-17	claim here needs; the data check shows this.
-18	
-19	Code. The paper's MATLAB code is public (GitHub `petersenpeter/Code_Petersen_Buzsaki_Neuron_2020`,
-20	commit aec2f7e, read for this attempt, not run). It fixes the theta measures, the per-trial
+5	Paper: Petersen PC, Buzsaki G (2020). Cooling of medial septum reveals theta phase lag coordination of hippocampal cell assemblies. Neuron 107, 731-744. doi:10.1016/j.neuron.2020.05.023.
+6	
+7	Dataset: DANDI:000059, version 0.261115.0311 (doi:10.48324/dandi.000059/0.261115.0311). The paper cites no version of the dandiset. This is the most recent published version; it holds the 51 sessions of 5 rats as one file per session, with the lab's trial cooling states, the measured MS temperature where it exists, the linearized position and the cell types, which the analyses use. The earlier versions (0.210812.1514, 0.230907.2101, 0.250624.0444) split each session into raw and processed files and, by the new version's release notes, had wrong electrode groups and trial times one sample late; none matches the claims file's description better.
+8	
+9	Claims: `claims/petersen-2020.yaml`, written from the accepted author manuscript in PubMed Central (PMC7442698) with the STAR Methods and the Supplemental Information (Figures S1 to S6). Protocol pilot-15.
+10	
+11	Data are streamed from the archive; nothing is written to disk. Loading reduces each session to its trials, head tracking, MS temperature, the theta of one CA1 LFP channel during the trials, and the spikes of the curated units during the trials.
+12	
+13	The table of claims and outcomes is in the Summary at the end; which claims are tested and which blocked is listed here.
+14	
+15	| claim | tested here |
+16	|---|---|
+17	| session-structure, cooling-time-course | tested |
+18	| fig2g, fig2h, fig2j, fig2i, disc-theta-frequency-12-percent | tested |
+19	| fig6d, fig6e, fig6c, fig6f, fig6g, fig6h, fig6i, suppl5j, fig4e, fig5-speed-control-cooling | tested |
+20	| suppl2-place-cell-rates-decrease, suppl2ab, disc-interneuron-rates-decrease, suppl5gh | tested |
 [... 680 more lines not kept]
 ```
 
@@ -192,315 +275,325 @@ Claims and outcome counts match (38 claims; 12/15/10/1). Reading the notebook te
 
 ```json
 {
- "file_path": "/tmp/claude-1001/v/nb.txt",
+ "file_path": "/tmp/claude-1001/nb.txt",
  "offset": 700,
- "limit": 900
+ "limit": 700
 }
 ```
 
 ```
-File content (30166 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/v/nb.txt",
- "offset": 1600,
- "limit": 900
-}
-```
-
-```
-File content (30623 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/v/nb.txt",
- "offset": 700,
- "limit": 600
-}
-```
-
-```
-700	mean within tolerance: True ; range, pre, cooling, post checks: [np.True_, np.True_, np.True_, np.True_]
-701	
-702	State sequences of the sessions with two cooling blocks (runs of trials), and the trials kept by the onset-aligned series:
-703	  MS10-170313-122631: prex39 onx28 postx52 onx19 postx5; kept 119 of 143
-704	  MS10-170319-180352: prex49 onx49 postx63 onx43; kept 161 of 204
-705	  MS12-170713-093400: prex32 onx27 offx13 postx19 onx24; kept 91 of 115
-706	  MS12-170714-122034: prex39 onx36 offx12 postx18 onx21 offx7 postx18; kept 105 of 151
-707	  MS12-170716-172307: prex41 onx25 offx17 postx36 onx27; kept 119 of 146
-708	  MS12-170717-111614: prex39 onx31 offx15 postx26 onx23; kept 111 of 134
-709	  MS12-170718-101720: prex38 onx35 offx10 postx17 onx25; kept 100 of 125
-710	  MS12-170719-095305: prex35 onx20 offx15 postx22 onx27 offx11 postx19; kept 92 of 149
-711	  MS13-171127-133330: prex42 onx10 offx17 postx15 onx25 offx17 postx34; kept 84 of 160
-712	  MS13-171128-113924: prex62 onx25 offx17 postx50 onx5; kept 154 of 159
-713	  MS13-171130-121758: prex33 onx31 offx15 postx39 onx21 offx15 postx20; kept 118 of 174
-714	  MS22-180621-131028: prex31 onx7 offx9 postx38 onx18 offx8 postx4; kept 85 of 115
-715	
-716	######## CELL 31 [markdown]
-717	**Result: reproduced.** The 45 BEH sessions hold a mean of 143.8 trials (80 to 204), with
-718	medians of 39 pre-cooling, 47 cooling and 44 post-cooling trials, all within the criterion. 12
-719	sessions have two cooling blocks, which the paper does not mention. In each of them the second
-[... 580 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/v/nb.txt",
- "offset": 1299,
- "limit": 450
-}
-```
-
-```
-1299	n_sig = int(((pw.R < -0.3) & (pw.P < 0.01)).sum())
-1300	print("\nAnimals with errors and theta power at R < -0.3 and P < 0.01:", n_sig, pw[(pw.R < -0.3) & (pw.P < 0.01)].animal.tolist())
-1301	for thr in [0.0, -0.2, -0.3]:
-1302	    print(f"  with R < {thr} and P < 0.01: {int(((pw.R < thr) & (pw.P < 0.01)).sum())}")
-1303	--OUT--
-1304	measure  speed  temperature  theta_freq  theta_power
-1305	animal                                              
-1306	MS10     0.073          NaN      -0.641       -0.425
-1307	MS12    -0.055       -0.303      -0.307       -0.038
-1308	MS13    -0.493       -0.525      -0.590        0.063
-1309	MS21     0.216       -0.833      -0.802       -0.202
-1310	MS22     0.247       -0.550      -0.524        0.325
-1311	measure  speed  temperature  theta_freq  theta_power
-1312	animal                                              
-1313	MS10      0.32          NaN     2.9e-23      1.1e-09
-1314	MS12      0.49      0.00011     9.3e-05         0.64
-1315	MS13     8e-11      2.9e-12       8e-16         0.44
-1316	MS21    0.0034      7.9e-48     6.3e-42       0.0063
-1317	MS22     0.001      3.7e-15     1.2e-13      1.2e-05
-1318	
-[... 430 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/v/nb.txt",
- "offset": 1748,
- "limit": 400
-}
-```
-
-```
-1748	W = pd.concat([units[k]["windows"].assign(session=k) for k in UNIT if len(units[k]["windows"])], ignore_index=True)
-1749	print("20-trial windows with more than 50 in-field spikes:", len(W), "from", W.groupby(["session", "unit", "field"]).ngroups, "fields")
-1750	out4a = {}
-1751	for m in ["flfp", "fp"]:
-1752	    g = W.dropna(subset=[m, "temp"])
-1753	    r, p, n = C.pearson(g.temp, g[m])
-1754	    slope = np.polyfit(g.temp, g[m], 1)[0]
-1755	    out4a[m] = (r, slope, p)
-1756	    print(f"{m}: R = {r:.3f}, slope {slope:.4f} Hz/C, P = {p:.2g}, windows = {n}")
-1757	print("Expected fLFP R 0.66 +- 0.066 and slope 0.071 +- 0.0071; fp R 0.38 +- 0.038 and slope 0.09 +- 0.009")
-1758	print("within:", within(out4a["flfp"][0], 0.66, 0.066), within(out4a["flfp"][1], 0.071, 0.0071), within(out4a["fp"][0], 0.38, 0.038), within(out4a["fp"][1], 0.09, 0.009))
-1759	print("Temperature range of windows:", round(W.temp.min(), 1), "to", round(W.temp.max(), 1), "C")
-1760	print("By subject (R, slope):", {a: {m: (round(C.pearson(g.dropna(subset=[m]).temp, g.dropna(subset=[m])[m])[0], 3), round(np.polyfit(g.dropna(subset=[m]).temp, g.dropna(subset=[m])[m], 1)[0], 4)) for m in ["flfp", "fp"]}
-1761	                                  for a, g in W.groupby(W.session.map(subj))})
-1762	gm = W.groupby(["session", "unit", "field"])
-1763	wc = W.assign(temp_c=W.temp - gm.temp.transform("mean"), flfp_c=W.flfp - gm.flfp.transform("mean"), fp_c=W.fp - gm.fp.transform("mean"))
-1764	for m in ["flfp", "fp"]:
-1765	    g = wc.dropna(subset=[m + "_c"])
-1766	    print(f"variant, within-field (each field's mean removed), {m}: R = {C.pearson(g.temp_c, g[m + '_c'])[0]:.3f}, slope {np.polyfit(g.temp_c, g[m + '_c'], 1)[0]:.4f}")
-1767	fig, ax = plt.subplots(1, 2, figsize=(10, 3.5))
-[... 380 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/v/nb.txt",
- "offset": 2147,
- "limit": 350
-}
-```
-
-```
-2147	--OUT--
-2148	Plotted: all control pair periods; by construction they lie in 60 to 200 ms
-2149	variant, summed correlogram spectral period MS12-170716-172307: control 119.8, cooling 118.7 ms
-2150	variant, summed correlogram spectral period MS12-170719-095305: control 111.6, cooling 122.3 ms
-2151	variant, summed correlogram spectral period MS13-171128-113924: control 108.3, cooling 100.4 ms
-2152	variant, summed correlogram spectral period MS21-180625-153927: control 112.8, cooling 143.1 ms
-2153	variant, summed correlogram spectral period MS21-180628-155921: control 145.6, cooling 166.8 ms
-2154	variant, summed correlogram spectral period MS21-180629-110332: control 114.6, cooling 128.8 ms
-2155	variant, summed correlogram spectral period MS22-180628-120341: control 114.2, cooling 99.0 ms
-2156	variant, summed correlogram spectral period MS22-180629-110319: control 127.3, cooling 149.6 ms
-2157	variant, summed correlogram spectral period MS22-180711-112912: control 199.8, cooling 123.0 ms
-2158	
-2159	######## CELL 126 [markdown]
-2160	**Result: partially reproduced.** Under the criterion's estimator the period of the pair
-2161	cross-correlograms lengthens during cooling, from a median 109.2 to 114.0 ms (longer in 8 of 9
-2162	sessions, P = 0.0195), and the phase period does not change (1.740 and 1.760 pi rad, P = 0.59),
-2163	but the control period is 109.2 ms, not 85 +- 8.5 ms. That estimator takes the largest neighbouring
-2164	peak within 60 to 200 ms, and in 47.7% of pre pairs this peak is more than 1.25 times as far as the
-2165	nearest one, so it often picks the second neighbour. Taking the nearest neighbouring peak (a
-2166	variant) gives a control period of 91.0 ms, within tolerance, which lengthens to 95.5 ms during
-[... 326 more lines not kept]
+700	        ok = E[ctrl] > 0
+701	        ratio_ii = np.nanmedian(E.cool[ok] / E[ctrl][ok])
+702	        p_all = mc.signrank(E.cool, E[ctrl])[0]
+703	        per_rat = {}
+704	        for rat, g in E.groupby("rat"):
+705	            if len(g) >= 6:
+706	                per_rat[rat] = mc.signrank(g.cool, g[ctrl])[0]
+707	            else:
+708	                tr = pd.concat([S["trials"] for S in SESS if S["rat"] == rat])
+709	                s = tr["st_" + r]
+710	                c = tr.err[s == "Cooling"]
+711	                k = tr.err[s.isin(["Pre"] if ctrl == "pre" else ["Pre", "Post"])]
+712	                per_rat[rat] = mc.ranksum(c, k)
+713	        rows.append(dict(states=r, control=ctrl, mean_cool=E.cool.mean(), mean_ctrl=E[ctrl].mean(),
+714	                         ratio_i=ratio_i, ratio_ii=ratio_ii, P_sessions=p_all, n=len(E),
+715	                         **{f"P_{k}": v for k, v in per_rat.items()}))
+716	D6 = pd.DataFrame(rows)
+717	D6["ratio_in_tol"] = ((D6.ratio_i - 3).abs() <= 0.3) | ((D6.ratio_ii - 3).abs() <= 0.3)
+718	D6["P<1e-5"] = D6.P_sessions < 1e-5
+719	D6["all_rats_P<0.05"] = (D6[[c for c in D6 if c.startswith("P_MS")]] < 0.05).all(1)
+[... 680 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 1,45p 10.1016-j.neuron.2020.05.023.yaml; sed -n 219,236p 10.1016-j.neuron.2020.05.023.yaml; sed -n 450,560p 10.1016-j.neuron.2020.05.023.yaml
+cd $TMPDIR; grep -v -e "Pandas4Warning" -e 'ok = W\["fp"\]' -e "^  W\[" nb.txt > nb2.txt; grep -n "######## CELL 68" nb2.txt
 ```
 
 ```
-# Claims for Petersen & Buzsaki (2020), Cooling of medial septum reveals theta phase lag
-# coordination of hippocampal cell assemblies, Neuron 107, on dandiset 000059.
-# Source: the accepted author manuscript in PubMed Central (PMC7442698), full text, read from its
-# Results, figure legends and STAR Methods. The supplementary PDF could not be obtained (PMC
-# serves a captcha and Europe PMC lists the article as not open access), so supplementary
-# figures are tested only where the main text states their result.
-#
-# When these criteria were written, the author had seen the data check only (file list, the
-# contents of the files, trial counts and cooling states per session, the temperature traces of
-# six sessions, the shape of the maze) and one pilot session (MS21-180628), for which the mean
-# theta frequency, temperature and error rate by cooling state and the linearization had been
-# printed to test the code. No claim's analysis had been run across sessions. The author had
-# also read the paper's MATLAB code (GitHub petersenpeter/Code_Petersen_Buzsaki_Neuron_2020,
-# commit aec2f7e), which fixes several choices the Methods leave open (see cooling.py).
-#
-# One criterion was revised after the pilot session and before any analysis across sessions:
-# fig5d-ccg-period first took the period from the spectrum of the summed cross-correlogram
-# of all pairs. On the pilot session that spectrum peaked at the edge of its range (172 ms),
-# following the envelope of the summed correlogram, whose theta ripple cancels out when pairs
-# with different lags are summed. The period is now measured per pair, and the summed
-[... 148 more lines not kept]
+1319:######## CELL 68 [code]
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb2.txt",
+ "offset": 1340,
+ "limit": 650
+}
+```
+
+```
+1340	    5    lab Fig5 rule flfp_time  993 0.3639 1.866e-32      0.427  2.822e-45  0.2841 6.819e-20                    True       False
+1341	    5    m12   peak>10  flfp_spk  886 0.2568 8.227e-15     0.4795  3.848e-52  0.3472 1.685e-26                    True       False
+1342	    5    m12   peak>10 flfp_time  886 0.3605 1.402e-28      0.494  1.058e-55  0.4091 4.439e-37                    True       False
+1343	    5    m12 Fig5 rule  flfp_spk 1007 0.2606 4.286e-17     0.4616  2.769e-54  0.3292  6.98e-27                    True       False
+1344	    5    m12 Fig5 rule flfp_time 1007  0.363 9.881e-33      0.476  4.382e-58  0.3899 6.561e-38                    True       False
+1345	    3    lab   peak>10  flfp_spk  938 0.2266  2.19e-12     0.4166  1.125e-40  0.2308 8.349e-13                    True       False
+1346	    3    lab   peak>10 flfp_time  938 0.3227 3.566e-24     0.4352   1.24e-44  0.2593  7.11e-16                    True       False
+1347	    3    lab Fig5 rule  flfp_spk 1039 0.2083 1.191e-11     0.3858  3.261e-38  0.2121 4.896e-12                    True       False
+1348	    3    lab Fig5 rule flfp_time 1039 0.3124 5.965e-25     0.4111  1.255e-43  0.2363 1.174e-14                    True       False
+1349	
+1350	--OUT--
+1351	
+1352	
+1353	######## CELL 69 [markdown]
+1354	**Result: partially reproduced.** fp and fLFP correlate positively in every state with P below 1e-11 under every reading, and fp spreads more than fLFP (SD 1.21 against 0.67 Hz pre, 1.03 against 0.53 Hz cooling), but R is lower than the paper's: 0.25, 0.43 and 0.24 at the spikes and 0.36, 0.44 and 0.31 over the time in the field, against 0.61, 0.59 and 0.36.
+1355	
+1356	######## CELL 70 [markdown]
+1357	## fig4ac-fp-flfp-difference-preserved
+1358	
+1359	> During MS cooling fp and fLFP decreased in parallel, so the difference fp - fLFP remained constant.
+[... 630 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb2.txt",
+ "offset": 1989,
+ "limit": 700
+}
+```
+
+```
+1989	
+1990	######## CELL 109 [markdown]
+1991	**Result: reproduced.** Under the raw-rate reading, interneurons (307 units, 23 sessions) and pyramidal cells (1295 units) fire less on aligned trials 1 to 5 than before onset (signed-rank P = 1.9e-6 and 6.3e-16), and the aligned rate series correlate positively with MS temperature (R = 0.806, P = 1.1e-28; R = 0.532, P = 4.0e-10). Normalised rates do not give both parts: their medians on trials 1 to 5 are below pre (0.887 and 0.785 against 1.000; one-sided signed-rank P = 1.4e-4 and 2.4e-18), but the means are above (1.08 and 1.28, pulled up by units with low pre rates), and the normalised series do not correlate with temperature (R = 0.113, P = 0.22; R = 0.147, P = 0.11). The interneuron count is within 287 to 351; the pyramidal count, 1295 over 23 sessions, is above 994 to 1214.
+1992	
+1993	######## CELL 110 [markdown]
+1994	## suppl2d-interneuron-oscillation-slows
+1995	
+1996	> The theta oscillation frequency of putative fast spiking interneurons decreased with MS cooling, as did that of pyramidal cells, by about 14% on average, and pyramidal cells oscillated faster than interneurons.
+1997	
+1998	Spikes during running (above 10 cm/s, Figure S2D "during running"): within place fields for pyramidal cells (fields of the Figure 3 and 4 set), across the whole maze (all trial spikes) for interneurons.
+1999	
+2000	######## CELL 111 [code]
+2001	rows = []
+2002	for S in SESS:
+2003	    if not S["has_units"]:
+2004	        continue
+2005	    sp = S["sp"]
+2006	    st = S["trials"].st_lab.values[sp.trial.values]
+2007	    run = sp.speed.values > mc.RUN_SPEED
+2008	    for k, U in enumerate(S["units"]):
+[... 680 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb2.txt",
+ "offset": 2575,
+ "limit": 500
+}
+```
+
+```
+2575	    for inside in (False, True):
+2576	        fT = fit_surface(P, ["Pre"], "ccg", inside, a0=a0t, b0=b0)
+2577	        fP = fit_surface(P[P.session.map(lambda s_: SBYNAME[s_]["has_lfp"])], ["Pre"], "pccg", inside, a0=a0p, b0=b0p)
+2578	        print(f"   surface reading {'b (+1 inside)' if inside else 'a'}: all pre pairs pooled, time compression {fT['a']:.3f} cm/ms, period b {fT['b']:.1f} ms "
+2579	              f"(R2 {fT['r2']:.3f}; envelope alone R2 {fT['r2_env']:.3f}){' failed: ' + fT['err'] if not fT['ok'] else ''}; "
+2580	              f"phase compression {fP['a']:.2f} cm/rad, b {fP['b'] / np.pi:.3f} pi (R2 {fP['r2']:.3f}; envelope alone R2 {fP['r2_env']:.3f}){' failed: ' + fP['err'] if not fP['ok'] else ''}")
+2581	        if (k, inside) == ("a", False):
+2582	            POOLED_FIT = (P, fT)
+2583	        rows = []
+2584	        for sess, g in P.groupby("session"):
+2585	            has_lfp = SBYNAME[sess]["has_lfp"]
+2586	            r = dict(session=sess)
+2587	            for cond, states in [("control", ["Pre", "Post"]), ("cooling", ["Cooling"])]:
+2588	                f1 = fit_surface(g, states, "ccg", inside, a0=a0t, b0=b0)
+2589	                r[f"cT_{cond}"], r[f"bT_{cond}"] = f1["a"], f1["b"]
+2590	                r[f"r2T_{cond}"], r[f"r2envT_{cond}"], r[f"errT_{cond}"] = f1.get("r2", np.nan), f1.get("r2_env", np.nan), f1.get("err", "")
+2591	                r[f"a0_{cond}"] = a_start(g, states, "ccg")
+2592	                if has_lfp:
+2593	                    f2 = fit_surface(g, states, "pccg", inside, a0=a0p, b0=b0p)
+2594	                    r[f"cP_{cond}"] = f2["a"]
+[... 348 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 -c "
-w={'a':(7022.75615,8817.10535),'b':(19127.8269,21038.440225),'c':(13651.6122,14220.337775),'d':(12333.46545,12801.729),'e':(58.55275,514.712525),'f':(44.8137,527.768325),'g':(6379.86145,6806.29755),'h':(9768.0003,10302.256525),'i':(6357.4987,6819.020875),'j':(4837.7538,5335.5362),'k':(13596.84975,14212.535875)}
-s=[(b-a)/60 for a,b in w.values()]; print('start-to-start',min(s),max(s)); print('end-to-start',min(s)-2,max(s)-2); print('end-to-end/mid same as start',)"
+cd  python3 - <<'E'
+import yaml
+c=yaml.safe_load(open('petersen-2020.yaml'))
+for x in c['claims']:
+    if x['id'] in ('fig5h-time-lags-increase','fig5cg-compression','fig4d-precession-slope-decrease','fig3f-information-unchanged','fig5i-phase-lags-unchanged','suppl2d-interneuron-oscillation-slows'):
+        print(yaml.safe_dump(x, width=130, sort_keys=False)); print('-----')
+print(c.get('checks'))
+E
 ```
 
 ```
-start-to-start 7.107268333333332 31.84355541666664
-end-to-start 5.107268333333332 29.84355541666664
-end-to-end/mid same as start
-```
+id: fig3f-information-unchanged
+statement: The information content of place cell spikes was not altered by MS cooling (P > 0.26).
+source: Results, Effect of MS cooling on place field features, paragraph 2; Figure 3F
+quote: Information content of place cell spikes was also left unaltered by MS cooling (P > 0.26; Fig. 3f ).
+statistics:
+- p: 0.26
+  p_relation: '>'
+criterion: A claim of absence. "None of the comparisons are significantly different" (Figure 3F). The measure is not defined; spatial
+  information in bits per spike (Skaggs), the standard measure of a spike's information content, is used. The test is not named; the
+  default paired test, Wilcoxon signed-rank over place cells, for pre against cooling, cooling against post and pre against post, at
+  0.05. Reproduced when all three give P >= 0.05; not reproduced when any gives P < 0.05. Median changes are given.
 
-**Agent calls Bash**
-
-```bash
-grep -n "def aligned_series" -A40 cooling.py | head -60; grep -n "def pair_period\|period_near\|def peak_lag" cooling.py | head
-```
-
-```
-360:def aligned_series(tr: pd.DataFrame, columns=("error", "temperature", "speed", "theta_freq", "theta_power")) -> dict:
-361-    """The code's onset-aligned trial series (BatchProcessing.m): trial ALIGN_ONSET is the
-362-    first cooling trial; the series stops at the last trial before a second cooling block
-363-    (the first 'Cooling on' trial after the first block, whatever state precedes it); errors
-364-    are smoothed with an 11-point Gaussian window."""
-365-    code = tr.code.values
-366-    first = int(np.flatnonzero(code == 2)[0])            # 0-based
-367-    offset = ALIGN_ONSET - 1 - first
-368-    ends = [i for i in range(first, len(code) - 1) if code[i] != 2 and code[i + 1] == 2]
-369-    end = ends[0] + 1 if ends else len(code)             # number of trials kept (MATLAB 1:trial_end)
-370-    out = {}
-371-    for col in columns:
-372-        row = np.full(ALIGN_LENGTH, np.nan)
-373-        vals = tr[col].values[:end].astype(float)
-374-        if col == "error":
-375-            # the code marks errors with index < trial_end
-376-            vals = vals.copy()
-377-            vals[end - 1] = 0.0
-378-        pos = np.arange(end) + offset
-379-        ok = (pos >= 0) & (pos < ALIGN_LENGTH)
-[... 25 more lines not kept]
+-----
+id: fig4d-precession-slope-decrease
+statement: The phase precession slope decreased slightly but significantly during MS cooling (P < 0.007 and P < 0.0003).
+source: Results, Effects of MS cooling on single neuron properties, paragraph 2; Figure 4D
+quote: decreased slightly, but nevertheless significantly, during MS cooling ( Fig. 4d ).
+statistics:
+- about: comparison marked ** in Figure 4D
+  p: 0.007
+[... 113 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 760,800p cooling.py; sed -n 1020,1050p cooling.py
+cd  grep -n -e "1354" -e "1751" -e "-1751" $TMPDIR/nb2.txt | head; grep -n "beh_desc" ms_cooling.py | head; grep -n "def info_equal_trials" -A40 ms_cooling.py | head -60
 ```
 
 ```
-continue
-        sse = np.sum((model(x, *p) - y) ** 2)
-        if best is None or sse < best[0]:
-            best = (sse, p)
-    return float(best[1][-1]) if best is not None else np.nan
+1551:range 2 cycles (main), bins 3.0, states lab: n = 1152; median slope pre -5.005, cooling -4.747, post -4.979 rad/field; fraction at the search bound pre 0.072, cooling 0.067, post 0.078; cooling vs Pre: |slope| median change -0.1354 (P = 0.00408); signed slope median change 0.1096 (P = 0.0563); cooling vs Post: |slope| median change -0.0195 (P = 0.0833); signed slope median change 0.0701 (P = 0.00616)
+2938:- Measured MS temperature traces hold artefacts, values from -1751 C to 1354 C and runs at the 0 and 50 C rails, in at least six sessions.
+167:    S["beh_desc"] = b["SubjectSpeed"].attrs["description"]
+766:def info_equal_trials(S, F, edges, state_col="st_lab", n_draws=20, rng=None):
+767-    """Skaggs information (bits per spike) of each map (cell and arm) with a field
+768-    in F, per state, from the same number of trials in each state: on each arm,
+769-    the trials of each state are subsampled without replacement to the smallest
+770-    count among the states, n_draws times, and the information is averaged over
+771-    the draws. Skaggs information is biased upward with less data, so equal
+772-    trial numbers remove the bias that unequal state sizes would bring (standard
+773-    choice of correction; the paper names no measure)."""
+774-    tr = S["trials"]
+775-    sp = S["sp"]
+776-    b = S["beh"]
+777-    st_tr = tr[state_col].values
+778-    bti = _beh_trial_index(S)
+779-    dt = np.gradient(b["t"])
+780-    nb = len(edges) - 1
+781-    fb = np.clip(np.searchsorted(edges, b["lin"], side="right") - 1, 0, nb - 1)
+782-    sb = np.clip(np.searchsorted(edges, sp.lin.values, side="right") - 1, 0, nb - 1)
+[... 24 more lines not kept]
+```
 
+**Agent calls Bash**
 
-def peak_lag(c: np.ndarray, lags: np.ndarray, half_width: float) -> float:
-    """Lag of the largest local maximum of c within half_width of zero; NaN if none."""
-    w = np.flatnonzero(np.abs(lags) <= half_width)
-    seg = c[w]
-    pk, _ = signal.find_peaks(seg)
-    if len(pk) == 0:
-        return np.nan
-    return float(lags[w][pk[np.argmax(seg[pk])]])
+```bash
+cd  python3 - <<'E'
+import yaml
+c=yaml.safe_load(open('petersen-2020.yaml'))
+for x in c['claims']:
+    if x['id'] in ('fig6h-errors-theta-power','fig5j-fraction-active-unchanged','fig3d-size-fp-negative','fig5d-ccg-period','suppl1g-waveforms-unchanged','fig2h-theta-power-temperature'):
+        print(x['id']); print(x['criterion']); print(x.get('expected')); print('-----')
+E
+```
 
+```
+fig2h-theta-power-temperature
+As fig2g-theta-freq-temperature, with trial theta power, and the same readings (this P implies about 190 points). Whether power is normalised per session before averaging is open; readings, raw power and power divided by the session's mean pre power (Figure 2D "Color scale is normalized"). Reproduced when, under one reading, R is within tolerance with P < 1e-5 and below the frequency R of fig2g under the same reading. Partially reproduced when R is positive with P < 0.05 but outside tolerance.
+[{'quantity': 'R of theta power and MS temperature', 'value': 0.54, 'tolerance': 0.054}]
+-----
+fig6h-errors-theta-power
+Per rat, R of error incidence and theta power as reading (c) of fig6f-errors-temperature. "R > -0.3" is read as R beyond -0.3 in magnitude (R < -0.3), the sign the other correlations take; the other reading, R above -0.3, is shown. An animal counts when R < -0.3 and P < 0.01. Reproduced when 2 animals count; partially reproduced when 1 or 3 do.
+[{'quantity': 'animals with a significant correlation of errors and theta power', 'value': 2, 'tolerance': 0}]
+-----
+fig3d-size-fp-negative
+R over the fields of fig4b-fp-flfp-decrease of the state's field size (readings of fig3c) and fp. The Results add "similar slopes, even though the intercept of the regression line during cooling slightly decreased"; the least-squares slopes and intercepts are reported. Reproduced when all three R are within tolerance with P < 1e-9; partially reproduced when all three are negative with P < 0.05.
+[{'quantity': 'R pre', 'value': -0.49, 'tolerance': 0.049}, {'quantity': 'R cooling', 'value': -0.4, 'tolerance': 0.04}, {'quantity': 'R post', 'value': -0.4, 'tolerance': 0.04}]
+-----
+fig5d-ccg-period
+Fields by the Figure 5 rule of the opening comment. Pairs are overlapping fields of different cells (Methods, "individual overlapping fields"). Spikes as the animal passes through the fields; readings, (a) each cell's spikes within its own field; (b) both cells' s
+[... 10 more lines not kept]
+```
 
-def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: float, nearest: bool = False) -> float:
-    """Mean spacing from the main peak (at lag `main`) to the largest local maxima between lo
-    and hi away from it, on either side; NaN when neither side has one. With `nearest`, the
-[... 52 more lines not kept]
+**Agent calls Bash**
+
+```bash
+cd  grep -n -e "8\.68" -e "8\.13 " -e "7\.53" -e "25683" -e "28409" -e "no-cooling" $TMPDIR/nb2.txt | head; grep -n "SubjectSpeed\|pos_dt" ms_cooling.py | head
+```
+
+```
+766:states m10: post - pre median 0.18 percentage points, mean pre 7.05%, post 7.53%, signed-rank P = 0.969 (n = 50)
+1417:bins 5.0, states m12, n = 886: Pre: R -0.186 (P = 2.7e-08), slope -7.82 cm/Hz, intercept 158.0 cm; Cooling: R -0.177 (P = 1.2e-07), slope -9.68 cm/Hz, intercept 177.5 cm; Post: R -0.173 (P = 2.3e-07), slope -8.68 cm/Hz, intercept 167.0 cm
+2674:   per session (0): time compression control median 0.457, cooling 0.484 cm/ms, lower in 0, P = nan; phase compression control 11.81, cooling 8.68 cm/rad, P = nan (n = 0); fitted period b control 97.7, cooling 115.6 ms, P = nan; least-squares slope control -0.123, cooling -0.113, P = 0.36
+164:    spd = b["SubjectSpeed/data"][:]
+165:    spd_ts = b["SubjectSpeed/timestamps"][:]
+166:    S["pos_dt"] = float(np.median(np.diff(ts)))
+167:    S["beh_desc"] = b["SubjectSpeed"].attrs["description"]
 ```
 
 **Agent**
 
-**Verifier report, round 2: Petersen & Buzsaki 2020 on dandiset 000059 (0.250624.0444)**
+**Verifier report, round 2: Petersen & Buzsáki (2020), attempt petersen-2020-02**
 
-The claims file has 38 claims. The attempt record gives 38 outcomes: 12 reproduced, 15 partially reproduced, 10 not reproduced and 1 blocked (data_missing). I did not re-read the paper text this round, so nothing was downloaded to `paper/`.
+**1. Outcomes**
 
-### 1. Outcomes
+The claims file has 46 claims and the attempt record has 46 outcomes, one per claim: 17 reproduced, 19 partially reproduced, 8 not reproduced, 2 blocked. Twenty outcomes are marked `assumed: true`.
 
-I agree with all 38 stated outcomes. Each one follows from the claims-file criterion and the printed output, and they match my round-1 outcomes. For fig5-speed-control-cooling, the record marks round 1 as `agrees: false` and has since changed the outcome to not_reproduced, which is the outcome I gave.
+In round 1 my table left out suppl2d-interneuron-oscillation-slows, as the record says. I agree with its partially_reproduced. Interneuron frequency falls (P = 6.4e-13) and pyramidal cells oscillate faster before cooling (10.42 against 8.93 Hz). The decrease is 5.8 to 8.7%, outside 12.6 to 15.4% (cell 111).
 
-### 2. Sentences the outputs do not support
+I agree with every other stated outcome, with two caveats:
+- **fig4d-precession-slope-decrease (partial, assumed).** The partial rule is met only by cooling against pre, P = 0.016, at 2 cycles and 5 cm. That result depends on the 8 to 10% of fields at the slope bound. Without them, the P values are 0.090 and 0.20 (signed 0.077 and 0.080), and with 3 cycles the magnitude test against pre gives 0.149 (cell 83). The outcome holds under the criterion, but it is weak.
+- **fig5cg-compression (blocked, methods_underspecified).** I agree the claim cannot be decided from these fits. I do not agree with the stated reason (see section 2).
 
-- **Cell 123, and the fig4gh-fp-speed notes:** "bootstrap interval 0.0036 to 0.0111". Cell 122 prints "0.0040 to 0.0112". The conclusion is not affected.
-- **Cell 93:** "Each rat and session shows the same pattern". In cell 92, MS22-180720-110055 has fp post 9.92 Hz, below fp cooling 10.15 Hz, so fp does not recover in that session. The record's notes say "each rat", which holds.
-- **Cell 90, and the suppl1g notes:** "the two windows are 8 to 32 minutes apart (printed above)". From the windows in cell 89, start to start is 7.1 to 31.8 min (MS21-180629 is 7.1). From the end of the pre window to the start of the cooling window it is 5.1 to 29.8 min.
-- **fig5cg-compression notes:** "The direction of the change agrees with the paper." This holds only for the criterion's fit. The inverse-slope variant in cell 128 goes the other way (control 9.085, cooling 10.420 cm/ms; cooling lower in only 1 of 9).
-- **fig5d-ccg-period notes and round-1 response:** "Under that variant all three parts of the criterion hold." The phase period was computed only with the largest-neighbour estimator (`pair_period(pc, …)` has no nearest version). So the third part is not shown under the variant. Cell 126 does not make this claim.
-- **Summary (cell 142)** says "runs from exactly 17 to 37 C", and the record's first finding says "ten of them run from exactly 17.0 to 37.0 C". Cell 11 gives T_min 16.9777 for MS10-170313, so this is exact in nine of the ten.
-- **Summary row for fig6d:** "(2.3-fold; MS22 not significant)". MS13 is not significant either (P = 0.0625, cell 51). Cell 52 says so; the Summary row leaves it out.
+The assumptions:
+- **Field map** (fields found on the map over all trials, states pooled): stated in all 20 assumed outcomes, reasonable, and the record asks the authors about it.
+- **Slope range of ±2 cycles** (fig4d, suppl3e): stated and reasonable. suppl3e has the same outcome under 1 cycle.
+- **Phase lag as the largest peak within π** (fig5i): stated. It is a claims-file reading, but it is the one that favours this claim of absence. Lag reading (b) gives P = 2.7e-8. With pair reading (b) and without MS13-171130, reading (a) also fails (P = 0.040, cell 129).
+- **fig5cg** lists the field-map assumption in its deviations but has no `assumed` flag. This does not matter while it is blocked.
 
-Every other "Result:" sentence, Summary row, README row and note matches the printed outputs. The README covers all 38 claims with the right outcomes, and its "sorted units in 24 sessions" matches cell 7 (17 curated plus 7 all-unsorted).
+**2. Sentences the printed numbers do not support**
 
-**My round-1 reasons in the record:** 37 of the 38 are stated in my own words. The suppl1-hippocampal-temperature reason ends "so no second temperature channel inside the files was stated but not shown". That garbles my point: the notebook said there was no second channel (cell 8) but did not show it. As written it reads as if "no channel" was what went unstated.
+- **Cell 5, Summary ("What was found"), and the record's tracking-rate metadata_error.** They say every behaviour description gives 40 Hz. Cell 4 prints the rates the descriptions give as `['120', '30', '40']`, so the descriptions differ between sessions and may match the timestamps. As stated, the finding is not supported.
+- **Summary, "values from -1751 C to 1354 C".** These values are not printed anywhere; cell 4 prints only counts of samples outside 5 to 45 C. The same applies to some values in the findings: 8.68 to 8.27 Hz, 7.53 to 8.13 Hz, and 25683 s / 28409 s.
+- **Cell 60 and the suppl2 notes, "no P is below 1e-6".** Cell 59 prints 6.24e-07 (3 cm bins, Figure 5 rule fields, peak rate). The outcome does not change.
+- **Cell 77, "P above 1e-9 in two states".** All three are above 1e-9; cooling is 1.1e-9 (cell 76).
+- **Cell 93, "MS10 never does".** With normalised spectral power, MS10 has P = 7.2e-6 at R = −0.123 (cell 92). That also means the "4 of 5" for spectral power includes one negative R.
+- **Cell 26, "over 50 sessions … under each of the three state readings".** The 12 and 10 min readings have 49 sessions (cell 25).
+- **suppl1g notes, "P = 2.2e-4 to 0.043".** The per-session interpolated P values run from 9.9e-7 to 0.043 (cell 145).
+- **fig4d: cell 84, the notes and the README** leave out the result without bound fields printed in cell 83 (no comparison significant). The README's "flattens during cooling against pre but not post" holds only at 2 cycles. At 3 cycles the significant comparison is the signed slope against post (P = 0.037), and pre gives 0.149 (cell 83).
+- **fig5cg: cell 134, the notes, the README and the finding** say the surface "does not describe the density". The numbers do not show this. In both readings, as b grows without limit the oscillation term becomes constant and the surface becomes the envelope alone. The envelope alone fits with a per-session median R2 of 0.41 to 0.68 (cell 133). So converged fits with R2 of −0.10 to −5.1 are stuck short of the best fit; they do not show what the best surface fit would give. The outputs show that the fit failed.
+- **README, "phase lags do not change".** This holds only under lag reading (a) (cell 129).
+- **README, "The place field features of Figure 3 … are not reproduced".** fig3d is partially reproduced (cell 77) and fig3hi is reproduced (cell 115).
+- **fig5h notes, "Both cooling comparisons hold under every reading".** Under lag reading (b) with pair reading (a), post and cooling medians are both 16 ms, with rank-sum P = 0.85 (cell 127). The tests are significant, but a longer cooling lag is not shown there.
 
-### 3. Round-1 points
+Everything else I checked in the conclusions, the Summary, the README and the notes matches the outputs. The README totals match the attempt record.
 
-**Resolved:**
-- Problem 3 (fig3f): with spikes subsampled to equal counts, P = 0.0073 and 0.0092 (cell 113).
-- Problem 4 (fig5j and fig5k): session-level tests and cycle durations added (cells 137 and 140).
-- Problem 5, spike-count part (suppl1g): the change holds in the 208 units at the 300-spike cap (cell 89).
-- Problems 6 and 7 (cooling-time-course): the 90% time, the mean trace and a variant without the artefact sessions are added (cell 33).
-- Problem 8 (fig4b): the 100- and 200-spike variants are added (cell 92).
-- Problem 9 (fig2i): the direction flag is fixed (cell 45).
-- Problem 10 (fig4a): the last window is included and the overlap of windows is stated (cells 101 and 102).
-- Problem 11 (theta power): recorded as a deviation.
-- Problem 12 (theta channel): the LFP electrodes region is checked in 49 sessions (cell 13).
-- Problem 13 (second cooling blocks): state sequences printed, and the helper now stops at any return to cooling (cell 30).
-- Blocked claim: every series in the 100 files is listed (cell 13).
-- All items under C of my round-1 report.
+The record states my round-1 reasons in my own words, close to verbatim, and correctly says my round-1 table had 45 rows. One small misfiling: my problem 12, which was about the fig5d session readings, is filed under fig5-speed-control-cooling instead of fig5d.
 
-**Remaining, bearing on a conclusion:**
-- **fig5d (problem 1):** the nearest-peak variant has its own downward bias. 211 pre pairs fall at 60 to 70 ms, below any plausible theta period, and the floor of the search window is 60 ms (cell 125). Its 91.0 ms is therefore not a clean test of 85 ms either. The outcome follows the criterion's estimator and is unaffected. The notes' "all three parts hold" should go (see section 2).
-- **fig5i (problem 2):** the half-period window check was run for time lags (fig5cg, fig5h) but not for phase lags. The phase window of ±π spans about 1.15 periods of the phase correlogram (period 1.74π, cell 125), so it can hold two candidate peaks. In 10.5% of pairs the time lag changes with the window. The phase-lag effect is 0.05 rad, so lag picking could produce it. A half-width phase window would settle it.
-- **suppl1g (problem 5, drift):** drift still cannot be separated from cooling, as the notes say. The not_reproduced outcome stands under the criterion, but it does not show that cooling changes the waveforms.
+**3. Round-1 points**
+
+Resolved:
+- Problem 6: peak spacing is now printed, 107.2 and 103.5 ms.
+- Problem 7: no in-trial sample below 15 C; the lowest trial temperature is 17.1 C.
+- Problem 8: results without MS13-171130 are shown for fig2i, fig6c, fig6h and fig5i.
+- Problem 9: medians and a one-sided test are added.
+- Problem 10: interpolated latency and spike counts are added.
+- Problems 11, 12 and 13.
+- Problem 4: now stated in the notes.
+
+Partly resolved:
+- **Problem 1.** The slope range is now ±2 cycles, stated as an assumption, with the fraction at the bound printed. The fig4d result still depends on the fields at the bound.
+- **Problem 2.** Fit errors, convergence counts, start values and a plot are now printed. The change to "blocked" brings in the overstated reason above.
+- **Problem 5.** Information is now computed with equal trials per state. Equal trials do not mean equal data: speed falls within sessions (cell 54), so later trials hold more time and spikes, and the remaining pre-to-post fall (−0.030 bits per spike, P = 0.016) could still be a sampling effect.
+
+Unchanged: problem 3. Under the criterion, partial is correct.
+
+What remains that bears on a conclusion, and the output that would settle it:
+- **fig4d.** Either state the bound-field dependence in the conclusion, or treat the outcome as unsettled until the authors give the slope range.
+- **fig5cg.** A bounded or multi-start fit, for example with b held near the summed period of 104 to 109 ms, or started from the envelope solution. That would show whether the surface fits the density. Until then, the reason for "blocked" should say the fit failed.
+- **fig3f.** Skaggs information with an equal number of spikes or equal occupancy time per state, or a shuffle-corrected version.
+- **fig5h** (pre against post P = 0.034 at equal medians) **and fig5j/fig5k** (pooled-cycle rank-sum P = 1.6e-25 and 4.9e-7, against per-session P = 1.0 and 0.80). These tests count pairs or cycles that share cells and sessions as independent. A per-session or session-stratified test would show whether these outcomes reflect cooling or the sample size. The criteria fix the tests used, so the stated outcomes stand.
 
 ## End of run
 
-17 turns, 3 minutes, result: success.
+19 turns, 4 minutes, $2.41 at API prices, result: success.

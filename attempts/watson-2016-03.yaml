@@ -1,0 +1,2031 @@
+schema_version: 3
+id: watson-2016-03
+datasets:
+- archive: dandi
+  id: '000041'
+  version: 0.261104.0300
+  doi: 10.48324/dandi.000041/0.261104.0300
+  relation: primary
+- archive: crcns
+  id: fcx-1
+  version: unversioned
+  doi: 10.6080/K02N506Q
+  relation: primary
+paper: doi:10.1016/j.neuron.2016.03.036
+date: '2026-11-15'
+entry: watson-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43679156757
+outcomes:
+- claim: table1-dataset-counts
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:table1-dataset-counts
+  measured:
+  - 11
+  - 27
+  - 995
+  - 126
+  - 1121
+  - 36.85
+  notes: On CRCNS:fcx-1 every count matches, 11 rats, 27 sessions, 1121 stable units, 995 pE (36.85 per session, range 10
+    to 104), 126 pI (4.67, range 0 to 13), and 1360 clustered units in `_SAll`; the per-rat sessions and units equal Table
+    S1. On DANDI:000041 there are 10 rats, 22 sessions, 945 units, 850 pE and 95 pI, rat B22 (3 sessions) and the two Dino
+    ACC sessions are absent, so DANDI holds part of the data set.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - DANDI:000041 holds 22 of the 27 sessions (no B22, no Dino ACC probes).
+- claim: wake-sleep-cycles
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:wake-sleep-cycles
+  measured:
+  - 51
+  - 1.89
+  notes: CRCNS, reading a (deposited cycles), 51 cycles, 1.89 per session, every session has one; both within tolerance
+    (54 +- 5.4, 2.0 +- 0.2). DANDI, reading b (cycles built from `sleep_states`), 47 cycles, 2.14 per session, and Dino-072114
+    has none. On CRCNS, cycles built by the same rules from the deposited packets and REM give 47, so the DANDI shortfall
+    comes from rebuilding the intervals.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: tables1-state-durations
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:tables1-state-durations
+  measured:
+  - 1192
+  - 2421
+  - 297
+  - 98
+  - 647
+  notes: CRCNS, WAKE 1192 s, SLEEP 2421 s, nonREM episode 297 s, REM episode 98 s, REM latency 647 s, each equal to Table
+    S1. DANDI, 1281, 2396, 277, 64 and 616 s, four of five within tolerance (REM episode 64 s against 98 +- 9.8). The median
+    WAKE-SLEEP duration is 4214 s on CRCNS (Table S1 prints 5918 s), not one of the values judged.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - REM episodes are REMEpisode intervals on CRCNS; on DANDI, REM epochs joined across Awake gaps up to 40 s.
+- claim: ma-statistics
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:ma-statistics
+  measured:
+  - 434
+  - 11.0
+  - 0.184
+  - 3.7
+  notes: CRCNS, 434 MAs in the SLEEP of cycles (790 expected), median 11.0 s (reading a) or 11.5 s (reading b), 0.184 per
+    minute, 3.7% of SLEEP; none of the four within tolerance. Of the 2130 deposited MAs, 434 lie in the SLEEP of a cycle,
+    none in another scored SLEEP, 26 in a scored WAKE and 1670 in neither (medians 11.0, 10.5 and 11.0 s); 264 lie between
+    two packets. No subset gives 790, and every group has a median near 11 s against 15.9 s. DANDI, 181 MAs, 19.0 s, 0.072
+    per minute, 2.6%; none within tolerance.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: ma-fraction-over-nrem-episodes
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:ma-fraction-over-nrem-episodes
+  notes: CRCNS, reading c (50 bins averaged over episodes), R = -0.840, p = 2.4e-14, within the paper's sign and bound;
+    over SLEEP the same correlation is R = -0.332, p = 0.018, a significant change, so the absence fails. DANDI, R = -0.482,
+    p = 3.9e-4 over episodes and R = -0.160, p = 0.27 over SLEEP.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Time readings c (50 bins averaged over episodes) and b (10 s bins) are run; a (per packet) has no MA fraction and is
+    not run.
+  - In normalized-time bins each second of the 1 s grid goes to the bin that holds its centre (round 1 kept only seconds
+    wholly inside a bin, which left many bins under 2 s empty).
+- claim: packet-duration
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:packet-duration
+  measured: 111
+  notes: CRCNS, median packet 111 s over 701 packets in cycles, within 111 +- 11.1; range 14 to 735 s (ratio 52, about 1.7
+    orders of magnitude), and the shortest packet is below Table S1's 20 s minimum. DANDI, median 144 s in cycles (127 s
+    over all 964 packets), outside the tolerance.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig2a-median-rates
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-median-rates
+  measured:
+  - 0.76
+  - 0.69
+  - 0.91
+  - 5.59
+  - 4.69
+  - 5.8
+  notes: CRCNS, reading b, pE 0.76, 0.69 and 0.91 Hz and pI 5.59, 4.69 and 5.80 Hz (WAKE, nonREM, REM); five of six within
+    tolerance, the pI REM median (4.25 expected) is not. No reading puts all six within tolerance on either dataset (DANDI, best reading c, five of six, pI REM 6.00 Hz misses; readings a and b, four of six). Per-rat medians vary about threefold (pE WAKE 0.40 to 1.23 Hz on CRCNS). Measured values
+    are CRCNS reading b.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig2a-skewed-wide-distribution
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-skewed-wide-distribution
+  notes: Rates over all states pooled are positively skewed (skewness 2.57 on CRCNS and 2.29 on DANDI, reading b), with
+    a negative skewness of log10 rate (-1.10 and -1.31), a longer low tail than a lognormal. No percentile range matches
+    0.05 to 5 Hz within 10% at both ends, CRCNS 5-95% 0.070 to 3.26 Hz, 1-99% 0.013 to 5.69, 2.5-97.5% 0.032 to 4.17. The
+    shape holds and the range does not.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig2a-fraction-above-2hz
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-fraction-above-2hz
+  measured:
+  - 19.2
+  - 19.7
+  - 8.7
+  notes: CRCNS, reading b, 19.2% (WAKE), 19.7% (REM) and 8.7% (nonREM) above 2 Hz, chi-square p = 2.7e-11 (nonREM against
+    WAKE) and 5.1e-12 (against REM), all within the claim. DANDI, reading b, 17.5%, 18.1% and 8.6%, within tolerance, with
+    p = 8.2e-8 and 1.4e-8, above the 1e-10 bound.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig2b-wake-nrem-slope
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2b-wake-nrem-slope
+  measured:
+  - 0.685
+  - 0.82
+  notes: CRCNS, log10 rates, slope 0.685 [0.655, 0.715] (reading b) and 0.684 (reading a), R = 0.820, p < 1e-10, all within
+    tolerance. DANDI, slope 0.711 [0.679, 0.744] (b) and 0.718 (a), just outside 0.685 +- 0.025, R = 0.832. The reverse
+    slopes (WAKE on nonREM) are 0.94 to 0.98, so the slope below 1 is partly the regression of one noisy rate on another.
+    Measured values are CRCNS, M1 reading b, log10 rates.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Cells with a zero rate in either state are left out of the log fit (3 to 15 cells).
+- claim: burst-index-by-state
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:burst-index-by-state
+  measured:
+  - 11.5
+  - 4.6
+  - 6.5
+  notes: ISIs are now counted from spike times. On both datasets and every reading nonREM > REM > WAKE, the Kruskal-Wallis
+    p is below 1e-37 and REM exceeds WAKE (CRCNS Dunn p = 1.3e-6, 7.7e-6 and 4.9e-6 under readings a, b and c). No reading
+    puts the three medians within tolerance, CRCNS (a) 2.4/6.3/3.6%, (b) 2.2/6.0/3.0%, (c) 4.6/11.5/6.5% (WAKE/nonREM/REM,
+    against 4.0/11.8/5.5); reading c has nonREM within tolerance and WAKE and REM above it. Round 1's grid, which kept only
+    ISIs within one second, gave 5.2/14.3/6.7% on CRCNS, so it inflated the index. Measured values are CRCNS reading c (nonREM,
+    WAKE, REM), the reading closest to the paper; none matches.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - ISIs are counted from spike times, and an ISI counts when both of its spikes lie in one interval of the state (the criterion's
+    standard choice); round 1 kept only ISIs within one second of the grid, which inflated the index.
+- claim: fig2c-acg-peaks
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2c-acg-peaks
+  measured:
+  - 9.5
+  - 113.5
+  notes: The mean normalized autocorrelogram of pE cells in nonREM peaks in the bin [9, 10) ms on both datasets, whose centre,
+    9.5 ms, is outside 8 +- 0.8 ms; with bins centred on whole milliseconds the peak is at 10 ms on both. Only labelling
+    the bin by its start (9 ms) puts it inside. The largest local maximum between 60 and 250 ms is at 113.5 ms in REM and
+    134.5 ms in WAKE on both, within 125 +- 12.5 ms; with bins centred on whole ms it is at 114 ms in REM and 99 ms in WAKE
+    on CRCNS (113 and 99 ms on DANDI). Taking the bin centre, the theta part holds and the nonREM part does not. Measured
+    values are the CRCNS nonREM peak bin, by its centre, and the REM theta maximum (WAKE 134.5 ms).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Assumed that a bin's lag is its centre, the usual reading of a histogram bin, so the [9, 10) ms bin is at 9.5 ms; the
+    criterion's '7 to 9 ms in whole bins' does not say how a bin is named. Named by its start the nonREM peak (9 ms) is
+    within tolerance and the claim would be reproduced; with bins centred on whole ms the peak is at 10 ms and the WAKE
+    theta maximum at 99 ms, and it would not be reproduced. Asked of a reader (questions/watson-2016.yaml).
+- claim: fig2c-acg-decay
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2c-acg-decay
+  measured:
+  - -1.52
+  - -0.67
+  - -0.58
+  notes: Under every reading the nonREM exponent is the most negative and Kruskal-Wallis p < 1e-24 on both datasets. The
+    medians do not match under any reading, the exponential fit (c) gives -0.67, -1.52 and -0.58 on CRCNS (WAKE, nonREM,
+    REM; -0.83, -1.35, -0.80 expected), the power laws (a, b) give -0.37/-0.58/-0.34 and -0.19/-0.33/-0.14. Measured values
+    are CRCNS reading c (nonREM, WAKE, REM).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Bins with a zero count are left out of the log fits.
+- claim: synchrony-skew
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:synchrony-skew
+  measured:
+  - 62.9
+  - 0.0
+  notes: Over all cycle time, 62.9% (CRCNS) and 64.7% (DANDI) of pE cells fire with another pE cell in at most 4% of the
+    50 ms windows, and 0.0% in at least half; the per-cell measure is right-skewed (2.31 and 2.25). Both are beyond the
+    paper's bounds in the stated direction, as the criterion asks, under readings a and b and in each state; the share of
+    rarely synchronous cells is four times the paper's 15%, so the measure is unlikely to be the paper's (a question to
+    a reader is filed).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: updown-durations
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:updown-durations
+  measured:
+  - 0.188
+  - 0.473
+  - 43230
+  - 86839
+  notes: CRCNS, deposited detections (reading a), 43230 UP and 86839 DOWN states, medians 0.473 s and 0.188 s, both right-skewed
+    (2.56 and 2.15), Table S1 exactly. DANDI, new detection (reading b), medians 0.471 s and 0.193 s, skewness 2.58 and
+    3.37, within tolerance; the counts (59450 and 113340) are outside it.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+- claim: fig1e-up-state-dynamics
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig1e-up-state-dynamics
+  notes: On CRCNS, across 10 bins of normalized UP time, the pI rate (R = -0.983), the pE rate (R = -0.293) and pE synchrony
+    (R = -0.447) have negative R and are lower in the last bin than in the first; E/(E+I) has positive R (0.470). In the
+    UP-onset-triggered power (UP states of at least 1 s), sigma peaks in the 0.0 s window and gamma in the 0.1 s window,
+    so gamma does not precede sigma at this resolution. Three of four measures decrease. DANDI gives the same pattern (R
+    = -0.971, -0.719, -0.794 and +0.375).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+  - Power within UP states from 200 ms windows every 100 ms (sigma 9-25 Hz, the same 10, 15, 20 and 25 Hz bins as 10-25
+    Hz at this 5 Hz resolution; gamma 40-100 Hz); the paper gives no window for its UP-state spectrograms, so this is assumed.
+  - UP states within the SLEEP of cycles; E/(E+I) only in sessions with pI cells.
+- claim: fig2de-fast-before-slow
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2de-fast-before-slow
+  notes: Per-cell first-spike latencies in the first and second halves of SLEEP correlate (CRCNS R = 0.616, reading a; 0.559
+    with session halves), and latency correlates negatively with log10 rate (WAKE rate R = -0.129, nonREM rate R = -0.226,
+    both p < 1e-4). DANDI agrees (R = 0.597, -0.081, -0.199).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+  - First-spike latency within 200 ms of UP onset and within the UP state.
+- claim: fig2f-rate-group-correlations
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2f-rate-group-correlations
+  notes: Fastest-fastest pairs have the largest mean correlation of the 21 group pairs (0.0329 CRCNS, 0.0323 DANDI) and
+    slowest-slowest pairs are positive (0.0063, 0.0072), but fastest-slowest pairs are positive too (0.0064, p = 1.7e-12,
+    on CRCNS; 0.0049 on DANDI), not negative; the same with nonREM-rate groups.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: fig3ab-population-rate-declines
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3ab-population-rate-declines
+  notes: The mean pE rate over normalized SLEEP (nonREM only) declines under every reading, per packet R = -0.283, p = 2.4e-14
+    on CRCNS (paper R = -0.11, p < 1e-3), R = -0.178, p = 1.1e-4 on DANDI. By rat (per packet), R is negative in 11 of 11
+    rats on CRCNS (p < 0.05 in 5).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: first-last-packet-mean-rate
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:first-last-packet-mean-rate
+  measured:
+  - 1.03
+  - 0.9
+  notes: CRCNS, reading a, 1.03 +- 1.09 Hz in the first and 0.90 +- 0.94 Hz in the last packet, signed-rank p = 1.0e-18
+    (reading b 1.05 and 0.88 Hz, p = 1.9e-20), within tolerance. The rank-sum test gives p = 0.0025. By rat, the last-packet
+    mean is lower in 10 of 11 rats on CRCNS (not BWRat20). DANDI agrees (0.99 to 0.91 Hz, p = 2.8e-7). Measured values are
+    CRCNS reading a (one entry per cell and SLEEP).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: post-sleep-wake-lower
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:post-sleep-wake-lower
+  notes: CRCNS, with the arousal that ends SLEEP as the WAKE after (reading ii), pE rates fall from 1.261 to 1.135 Hz (signed-rank
+    p = 3.1e-11 by cell and cycle; 1.7e-6 two-sided, 8.3e-7 one-sided by cell), below the 1e-6 bound by cell and cycle;
+    with the next scored WAKE (reading i) p = 0.018. DANDI, the decrease holds under every reading with two-sided signed-rank
+    p between 2.4e-5 and 1.1e-3, not below 1e-6. Rank-sum tests are weaker, the one-sided rank-sum p is 0.027 on CRCNS under reading ii with one entry per cell and cycle, and 0.055 to 0.51 under the other readings on both datasets.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Reading ii takes the time from the end of SLEEP to the next packet or REM, kept when over 120 s, and its first 5 min.
+- claim: fig3d-first-last-packet-slope
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3d-first-last-packet-slope
+  measured: 0.872
+  notes: CRCNS, reading b, log slope 0.872 [0.840, 0.904], within 0.8535 +- 0.0265 (reading a 0.788). DANDI, 0.825 [0.791,
+    0.858] (b), just outside. The reverse regressions, first on last packet, are also below 1 (CRCNS 0.860 and 0.807), as
+    regression to the mean alone would make them, so the slope below 1 does not by itself show that the rate distribution
+    narrowed. Measured value is CRCNS reading b.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig3b-sextile-changes
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3b-sextile-changes
+  notes: Over normalized SLEEP the top sextile declines (CRCNS per packet R = -0.368, p = 1.3e-19) and the bottom sextile
+    increases (R = 0.102, p = 0.012), under both sextile readings and all three time readings. DANDI agrees (R = -0.275
+    and 0.185).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: cv-decreases-over-sleep
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:cv-decreases-over-sleep
+  notes: The CV of pE rates over normalized SLEEP decreases under reading a (per packet, CRCNS R = -0.116, p = 0.0022),
+    below p < 0.01, and under reading c (R = -0.485, p = 3.6e-4); under reading b (10 s bins) R is negative but p = 0.19.
+    DANDI, a R = -0.166, p = 3.1e-4; b p = 0.034; c R = -0.476.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sessions with fewer than 3 pE cells are left out.
+- claim: fig3c-spindles-over-sleep
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3c-spindles-over-sleep
+  measured:
+  - 2.85
+  - 0.524
+  - 13.93
+  - 203.3
+  notes: CRCNS, deposited spindles, duration 0.524 s, frequency 13.93 Hz and amplitude 203.3 uV (medians) match; incidence
+    is 2.85 per minute of nonREM (2.95 median over sessions), which matches Table S1 (2.94) and not the Results value of
+    1.94 the claim is judged on. Spindle incidence does not decrease significantly over SLEEP under any reading (per packet
+    R = -0.022, p = 0.56; p = 0.19 and 0.57 under b and c), so the main part fails. DANDI, new detection, 6.6 per minute,
+    0.381 s, 13.3 Hz, 203 uV, incidence change R = -0.026, p = 0.012 (10 s bins).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, spindles are detected here (10-20 Hz, Hilbert envelope above 2 SD within nonREM, joined within 30 ms, 200-3000
+    ms, merged within 300 ms, high-voltage spindles at 6-9 Hz and 7 SD removed); CRCNS uses the deposited _Spindles.
+  - Spindle frequency is from zero crossings on DANDI; amplitudes are the envelope peak in uV.
+- claim: fig3c-updown-over-sleep
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3c-updown-over-sleep
+  notes: CRCNS, DOWN duration increases over SLEEP (R = 0.165, p = 1.3e-5 per packet) and UP duration does not change under
+    readings b and c (p = 0.19 and 0.31), but UP and DOWN incidence do not decrease (p >= 0.05) and the fraction of 'other'
+    time does not increase (R <= 0). Two of five parts hold. DANDI also has two of five.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+- claim: fig3f-within-up-changes
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3f-within-up-changes
+  notes: The within-UP pE rate declines over SLEEP (10 s bins, CRCNS R = -0.089, p = 1.6e-16), below the 1e-8 bound. From
+    first to last packet, the top sextile (-0.430 Hz) and pI (-0.672 Hz) decrease and the bottom sextile increases (+0.077
+    Hz; signed-rank p = 0.48, the claim is judged by sign). DANDI agrees (R = -0.092; -0.268, -1.155 and +0.086 Hz).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: figs3a-first-last-rem-ma-slopes
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs3a-first-last-rem-ma-slopes
+  measured:
+  - 0.807
+  - 0.656
+  - 0.82
+  notes: With one point per cell (M1 b) and the arousal that ends SLEEP as WAKE after, CRCNS slopes REM 0.807, MA 0.656,
+    WAKE 0.820; DANDI 0.791, 0.651, 0.822; all within tolerance. With one point per cell and cycle (M1 a), REM and the WAKE
+    slopes fall below tolerance on both. The reverse slopes are also below 1 and close to the forward ones (CRCNS M1 b,
+    REM 0.840, MA 0.627, WAKE 0.838), so these slopes measure how well first and last rates agree as much as any change.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig3e-wake-before-after-sextiles
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3e-wake-before-after-sextiles
+  notes: With the arousal that ends SLEEP as WAKE after (reading ii) and one entry per cell and cycle (M1 a), on CRCNS the
+    top three sextiles decrease (one-sided p = 2.7e-13, 3.3e-6, 0.039) and the lowest increases (p = 0.0025). With sextiles
+    ranked on WAKE without the two test windows the same four hold (p = 7.2e-12, 1.0e-5, 0.021, 0.011), so the result does
+    not come from ranking on the windows tested. With one entry per cell (M1 b) the fourth sextile misses (p = 0.077, and 0.055 with the held-out ranking), so under M1 b the claim would be partial; the criterion allows M1 a. With
+    the next scored WAKE (reading i) the fourth sextile fails. DANDI, reading ii, M1 a, all four hold (1.1e-5, 0.017, 0.017;
+    0.019).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+  - Sextiles ranked on WAKE without the two test windows are shown as a variant (a check on regression to the mean), with
+    M1 readings a and b.
+- claim: fig4i-band-power-within-nrem
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4i-band-power-within-nrem
+  notes: CRCNS, reading c, over episodes delta (R = 0.622) and sigma (0.893) rise and gamma falls (R = -0.308, p = 0.030);
+    over packets delta (0.370, p = 0.0081) and sigma (0.859) rise and gamma does not change (R = 0.241, p = 0.092). Under
+    reading b gamma over packets changes (p = 0.0011). DANDI, reading b, the same six hold (gamma over packets R = -0.008,
+    p = 0.45). With delta 1 to 4 Hz the results are the same.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - Band power from 2 s Hann windows every 1 s on the lab's spindle/good channel, log power z-scored over the session's
+    nonREM (a standard choice); a 10 s window is taken as the mean of the 2 s windows in it.
+  - In normalized-time bins each second of the 1 s grid goes to the bin that holds its centre (round 1 kept only seconds
+    wholly inside a bin, which left many bins under 2 s empty).
+- claim: fig4-delta-packet-length
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-delta-packet-length
+  notes: Normalized packet delta power correlates with packet duration, CRCNS R = 0.166, p = 1e-5; DANDI R = 0.253, p =
+    4.4e-8 (delta 1 to 4 Hz, 0.405 and 0.426). Paper R = 0.31.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - Band power from 2 s Hann windows every 1 s on the lab's spindle/good channel, log power z-scored over the session's
+    nonREM (a standard choice); a 10 s window is taken as the mean of the 2 s windows in it.
+- claim: fig4-late-packet-sigma-delta
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-late-packet-sigma-delta
+  notes: CRCNS, reading a (last 20 s), sigma rises (+0.148 SD, p = 6.5e-13) and delta falls (-0.338 SD, p = 1.8e-34) against
+    the preceding 20 s, but the delta-sigma correlation is higher in the final portion (0.162) than in the rest (0.129).
+    Reading b gives no sigma rise. On DANDI sigma falls under both readings (-0.163 and -0.216 SD).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - Band power from 2 s Hann windows every 1 s on the lab's spindle/good channel, log power z-scored over the session's
+    nonREM (a standard choice); a 10 s window is taken as the mean of the 2 s windows in it.
+- claim: fig4-updown-within-packets
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-updown-within-packets
+  notes: CRCNS, reading b, UP incidence (R = 0.042, p = 1.3e-5) and DOWN incidence (0.168) increase, UP duration decreases
+    (-0.101) and DOWN duration increases (0.190), and the UP/DOWN duration ratio falls (-0.157), all five hold at their
+    bounds. DANDI, four hold; UP incidence rises with p = 0.0034, above its 1e-3 bound.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+  - Time readings b and c are run; a (one point per packet) is not defined for packets.
+- claim: fig4-spindles-within-nrem
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-spindles-within-nrem
+  measured:
+  - 0.597
+  - 0.65
+  - 0.603
+  - 0.651
+  notes: Spindle incidence and duration increase within episodes and packets (CRCNS reading b, incidence R = 0.096 and 0.142,
+    duration 0.079 and 0.090, each below its bound), and the durations in the first and last tenth (0.597 to 0.650 s in
+    episodes, 0.603 to 0.651 s in packets) are within tolerance. Frequency changes over packets (CRCNS p = 0.011 under b,
+    0.026 under c), so that absence fails under every reading. Measured values are CRCNS, first and last tenth.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, spindles are detected here (10-20 Hz, Hilbert envelope above 2 SD within nonREM, joined within 30 ms, 200-3000
+    ms, merged within 300 ms, high-voltage spindles at 6-9 Hz and 7 SD removed); CRCNS uses the deposited _Spindles.
+- claim: fig4e-late-packet-sigma
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4e-late-packet-sigma
+  notes: UP states in the last third of packets have more sigma power than in the first third, CRCNS mean z 0.086 against
+    -0.095 (reading a, rank-sum p below 1e-300), and 0.161 against -0.066 under reading b (p = 3.2e-33). In the coarse S4B
+    map (5 bins of UP time, two bands), sigma is higher late in every bin (t = 9.3 to 14.2) and gamma in four of five. DANDI
+    agrees (p = 1.3e-33 and 1.9e-15).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+  - Power within UP states from 200 ms windows every 100 ms (sigma 9-25 Hz, the same 10, 15, 20 and 25 Hz bins as 10-25
+    Hz at this 5 Hz resolution; gamma 40-100 Hz); the paper gives no window for its UP-state spectrograms, so this is assumed.
+  - The S4B per-pixel map is shown coarse, 5 bins of normalized UP time by the two short-window bands, a Welch t-test of
+    last-third against first-third UP states per pixel, since 200 ms windows give no finer spectrum.
+- claim: fig4iv-sextiles-within-nrem
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4iv-sextiles-within-nrem
+  notes: Reading b (10 s bins), the top sextile decreases and the bottom increases within episodes (CRCNS R = -0.136 and
+    0.038) and within packets (-0.146 and 0.044), all p < 1e-3. DANDI agrees (-0.107 and 0.069; -0.109 and 0.079).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: fig4v-cv-within-nrem
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4v-cv-within-nrem
+  notes: The normalized CV decreases within episodes (CRCNS R = -0.113, p = 6.8e-35) and packets (R = -0.139, p = 6.6e-47),
+    below 1e-10. DANDI agrees (R = -0.079 and -0.081, p < 1e-13).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig4vi-burst-within-nrem
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4vi-burst-within-nrem
+  notes: With ISIs counted from spike times, the normalized burst ratio (mean over pE cells per 10 s bin) increases within
+    episodes (CRCNS R = 0.081, p = 1.7e-18) and packets (R = 0.079, p = 5.1e-16), below 1e-10; pooling the spikes of all
+    cells gives R = 0.100 and 0.104. DANDI, R = 0.060 (p = 3.4e-9) and 0.047 (p = 8.3e-6), positive but above the bound.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Reading b (each cell and bin a point) is replaced by the burst ratio of all pE spikes pooled per bin, shown as a variant.
+  - ISIs are counted from spike times, and an ISI counts when both of its spikes lie in one interval of the state (the criterion's
+    standard choice); round 1 kept only ISIs within one second of the grid, which inflated the index.
+- claim: fig4cd-packet-rate-lfp-correlations
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4cd-packet-rate-lfp-correlations
+  notes: On CRCNS all six correlations have the paper's sign at p < 0.05, but only DOWN duration (R = -0.365, p = 4.5e-19),
+    DOWN incidence (-0.316, 1.5e-14) and UP duration (0.203, 1.3e-6) meet their bounds; delta (R = -0.144, p = 6e-4 against
+    1e-10), gamma (0.257, 5.7e-10 against 1e-10) and bottom-sextile late sigma (0.183, 5.6e-6 against 1e-10) do not. A correlation
+    holds when it meets M4's reproduced level (sign and bound), so three of six hold, fewer than the four needed for partial.
+    The four absences hold. Counting a correlation at p < 0.05 as holding, all six would hold and the claim would be reproduced.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+  - Band power from 2 s Hann windows every 1 s on the lab's spindle/good channel, log power z-scored over the session's
+    nonREM (a standard choice); a 10 s window is taken as the mean of the 2 s windows in it.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+  - Assumed that a part 'holds' when it meets M4's reproduced level, the reported sign and bound, since the paper gives
+    each part its own bound; M4's partial level (p < 0.05) is a partial result for that part. The criterion does not define
+    'hold'; the result counting p < 0.05 is stated in the notes, and the question is put to a reader (questions/watson-2016.yaml).
+- claim: fig4e-within-up-sextiles
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4e-within-up-sextiles
+  notes: CRCNS, per UP state, the top sextile drops (reading a, 3.427 to 3.374 Hz, p = 8.2e-6; reading b, p = 0.0016), never
+    below its 1e-8 bound; pI rises (13.12 to 13.66 Hz, p = 9.6e-4, below its 1e-3 bound; p = 5.0e-5 under b); the slowest
+    sextile rises under every reading (0.291 to 0.314 and 0.334 Hz), opposite to the claim. With a group holding at M4's
+    reproduced level, one of three holds. Counting p < 0.05 as holding, two would hold and the claim would be partial. DANDI, pI and the slowest sextile rise under every reading, as on CRCNS; the top sextile falls under reading b (2.789 to 2.719 Hz, p = 0.0051) and under a(ii) (p = 0.051), and rises slightly under a(i) (2.789 to 2.808 Hz, p = 0.64).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI, UP and DOWN states are detected here by the Supplemental Experimental Procedures rules, with an assumed 100-400
+    Hz band, 25 ms smoothing and log power for the LowGammaPower epochs (on linear power the 0.5 SD rule never triggers),
+    within nonREM packets; CRCNS uses the deposited _UPDOWNINtervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+  - Assumed that a part 'holds' when it meets M4's reproduced level, the reported sign and bound, since the paper gives
+    each part its own bound; M4's partial level (p < 0.05) is a partial result for that part. The criterion does not define
+    'hold'; the result counting p < 0.05 is stated in the notes, and the question is put to a reader (questions/watson-2016.yaml).
+- claim: figs5-within-wake-rem
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs5-within-wake-rem
+  notes: REM, rates from exact spike times in 50 bins, of the five sextiles other than the fourth, two have a significant
+    positive R on CRCNS (sextiles 3 and 5, R = 0.365 and 0.391); on the 1 s grid the same two. WAKE, reading a gives significant
+    positive R for sextiles 2, 3 and 5 and negative for 6 on CRCNS; reading b (entry change) gives sextile 1 an increase
+    (+0.346 Hz, p = 4.5e-4) and sextile 2 no change (p = 0.15), and the lowest two both decrease; ranking the sextiles on
+    WAKE without the test windows gives the same (sextile 2 p = 0.39). Neither part holds. DANDI, REM two sextiles (4 and
+    5), WAKE b sextile 2 p = 0.14.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+  - WAKE reading b compares the first tenth of each cycle's WAKE with the quarter-length before it.
+  - REM reading c uses rates from exact spike times in each of the 50 bins; the 1 s grid, with each second in the bin that
+    holds its centre, is shown as a variant.
+  - WAKE reading b is also run with sextiles ranked on WAKE without the first tenth of each cycle's WAKE and the period
+    before it (a check on regression to the mean).
+- claim: fig5b-ma-nrem-ma
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-ma-nrem-ma
+  notes: Across 172 (CRCNS) MA-packet-MA triplets, the top two sextiles do not decrease significantly (signed-rank p = 0.175
+    and 0.243), and the per-cell log change does not correlate with WAKE rate (R = 0.009, p = 0.79). DANDI agrees (65 triplets,
+    p = 0.134 and 0.72, R = 0.009). These triplets use the deposited MAs, whose count and durations differ from the paper's
+    (ma-statistics).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: figs5d-rem-nrem-rem
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs5d-rem-nrem-rem
+  notes: CRCNS, R = -0.183, p = 0.11 over 78 cells (35 REM-packet-REM triplets); DANDI R = 0.047, p = 0.22 over 697 cells.
+    Neither reaches p < 1e-5.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - REM n and REM n+1 are consecutive REM intervals of one SLEEP with only packets and MAs between them.
+- claim: fig5c-sigma-ma-change
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-sigma-ma-change
+  notes: Lowest-sextile change from MA to MA against late-packet sigma, CRCNS R = -0.034, p = 0.68 (152 triplets); DANDI
+    R = -0.247, p = 0.053 (62). The sign is opposite to the paper's R = 0.181.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Band power from 2 s Hann windows every 1 s on the lab's spindle/good channel, log power z-scored over the session's
+    nonREM (a standard choice); a 10 s window is taken as the mean of the 2 s windows in it.
+- claim: fig5b-wake-between-packets
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-wake-between-packets
+  measured: 24
+  notes: Reading a (a scored WAKE between the last packet of one SLEEP and the first of the next), 24 triplets on CRCNS,
+    within 24 +- 2.4. The top sextile increases (+0.149 Hz, signed-rank p = 0.017), the lowest does not change (p = 0.33),
+    and the S5E correlation is not significant (R = -0.010, p = 0.82). Sextiles 2 and 4 also increase (p = 0.015 and 5.7e-4).
+    Reading b (arousals of 40 to 120 s) gives no top-sextile increase. DANDI agrees under reading a (26 triplets, p = 0.024,
+    0.13, R = -0.011).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+  - Reading a pairs the last packet of one cycle's SLEEP with the first of the next, across the next cycle's WAKE; reading
+    b uses WAKE interruptions of 40-120 s.
+- claim: fig5c-wake-movement
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-wake-movement
+  notes: CRCNS, reading a, 19 of the 24 triplets lie in sessions with a top-sextile pE cell and all 19 have motion samples;
+    the other 5 are in sessions without a top-sextile cell. The top sextile's change does not correlate with movement during
+    WAKE (mean motion R = 0.222, p = 0.36; fraction above threshold R = -0.139, p = 0.57; reading b R = -0.079 and 0.008).
+    Mean EMG, the criterion's reading for a dataset without motion, gives R = 0.550, p = 0.015 on these 19, a variant on
+    CRCNS, which has motion. DANDI holds neither motion nor EMG, and its only ElectricalSeries is the 1250 Hz LFP, so the
+    claim could not be tested there.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - Tested on CRCNS only, DANDI:000041 holds no motion or EMG signal, so readings a to c cannot be run there.
+  - Motion is the deposited per-second z-scored _Motion signal; its threshold is 5 SD above its nonREM mean.
+  - Of the 24 reading a triplets, 5 lie in sessions with no top-sextile pE cell and are left out; mean EMG (_EMGCorr), the
+    criterion's reading for a dataset without motion, is shown as a variant.
+- claim: fig5b-ma-between-packets
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-ma-between-packets
+  notes: The lowest sextile increases across MAs between packets (CRCNS +0.007 Hz, signed-rank p = 0.012), and the log change
+    correlates negatively with WAKE rate (R = -0.178, p = 2.3e-8, above the 1e-10 bound). The top sextile decreases significantly
+    (p = 3.4e-9), against the claim that fast cells are unaffected. DANDI, +0.006 Hz (p = 0.005), R = -0.222 (p = 9.5e-11),
+    top p = 7.3e-5.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: fig5b-rem-between-packets
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-rem-between-packets
+  notes: Across 191 (CRCNS) packet-REM-packet triplets, only the second-lowest sextile decreases significantly (p = 0.0014);
+    the top two sextiles rise (+0.050 and +0.039 Hz). The S5F correlation is R = 0.035, p = 0.29. DANDI, 171 triplets, only
+    the second-lowest decreases (p = 4.1e-4).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: fig5c-rem-duration
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-rem-duration
+  notes: REM duration does not correlate with the rate change across REM under any reading, CRCNS R = -0.036, 0.074 and
+    -0.007 (p >= 0.3); DANDI R = -0.059, 0.007 and -0.002.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: fig5c-rem-theta
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-rem-theta
+  notes: With the theta ratio, the slowest sextile has R = -0.149, p = 0.060 on CRCNS and R = -0.056, p = 0.48 on DANDI;
+    with 5 to 10 Hz power the only significant sextile is the fastest on CRCNS (R = -0.200, p = 0.018).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - Band power from 2 s Hann windows every 1 s on the lab's spindle/good channel, log power z-scored over the session's
+    nonREM (a standard choice); a 10 s window is taken as the mean of the 2 s windows in it.
+  - The theta ratio is from the lab's theta channel where it differs from the good channel.
+- claim: fig5c-delta-change-slow-cells
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-delta-change-slow-cells
+  notes: The slowest sextile's change between consecutive packets does not correlate positively with the delta change, CRCNS
+    R = -0.033, p = 0.43; DANDI R = -0.115, p = 0.022 (negative).
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - Band power from 2 s Hann windows every 1 s on the lab's spindle/good channel, log power z-scored over the session's
+    nonREM (a standard choice); a 10 s window is taken as the mean of the 2 s windows in it.
+  - Sextiles of pE cells by WAKE rate over all scored WAKE of the session, over each whole dataset (M2 reading a; reading
+    b shown where named).
+- claim: figs2d-interneurons-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs2d-interneurons-unchanged
+  measured: 0.836
+  notes: The pI log slope from first to last packet is below 1 with its 95% interval excluding 1, CRCNS 0.836 [0.766, 0.906]
+    (reading a) and 0.888 [0.802, 0.973] (b). The reverse slope is also below 1 (0.892 and 0.876) and pI rates fall from
+    first to last packet (mean log10 change -0.054, signed-rank p = 6.7e-4), so the interval excludes 1 partly by regression
+    to the mean and partly by a decrease. DANDI, 0.917 [0.838, 0.995] and 0.790 [0.660, 0.920]. Measured value is CRCNS
+    reading a.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+  - On DANDI the paper's intervals are built from the Awake, Non-REM and REM epochs by the rules of Table S1 (packets are
+    Non-REM epochs of 20 s or more, MAs Awake epochs under 40 s between Non-REM epochs, SLEEP 20+ min with no Awake epoch
+    over 120 s, WAKE 7+ min); assumed that a WAKE ends where a SLEEP begins and that epochs less than 2 s apart are adjacent.
+    CRCNS uses the deposited _WSRestrictedIntervals.
+- claim: sleep-homogenizes-rates
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:sleep-homogenizes-rates
+  notes: The three claims this rests on, fig3d-first-last-packet-slope (slope 0.872 on CRCNS), fig3e-wake-before-after-sextiles
+    and cv-decreases-over-sleep, are reproduced. The sub-state claims are mixed, fig5b-ma-between-packets partly, fig5b-rem-between-packets
+    not. The reverse slopes of fig3d are also below 1, so of the three the CV decrease and the sextile changes carry the
+    claim.
+  deviations:
+  - The outcome is judged on CRCNS:fcx-1, which holds all 27 sessions, the lab's cell classification and its own state intervals
+    and detections; the DANDI:000041 result is given in the notes. A choice of this attempt, the claims file sets no rule
+    for two datasets.
+verifications:
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims
+    file, with the paper's full text (PMC4873379) and its supplements. The verifier tested prepare() and norm_points on
+    synthetic inputs and read the DANDI version's metadata through the API. It had no attempt record and took the claims
+    from the claims file.
+  results:
+  - claim: table1-dataset-counts
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS, 11 rats, 27 sessions, 1121 stable units of 1360 clustered, 995 pE, 126 pI, 36.85 pE per session; per-rat
+      Table S1 matches. DANDI is a subset (10 rats, 850 pE). Problem 3, cell 0 states an outcome rule not in the claims
+      file (partial when a claim holds on one dataset), which would downgrade claims that hold on CRCNS, as DANDI is a subset
+      with rebuilt states and different labels.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes.
+  - claim: wake-sleep-cycles
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS deposited cycles, 51 (tolerance 48.6–59.4), 1.89 per session, no session without one. DANDI has 47 and
+      Dino-072114 has none. Problem 3, cell 0 states an outcome rule not in the claims file (partial when a claim holds
+      on one dataset), which would downgrade claims that hold on CRCNS, as DANDI is a subset with rebuilt states and different
+      labels.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes.
+  - claim: tables1-state-durations
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS medians 1192, 2421, 297, 98 and 647 s, all exact. DANDI fits 4 of 5 (REM 64 s misses). WAKE-SLEEP median
+      is 4214 s against the 5918 s the paper prints. Problem 3, cell 0 states an outcome rule not in the claims file (partial
+      when a claim holds on one dataset), which would downgrade claims that hold on CRCNS, as DANDI is a subset with rebuilt
+      states and different labels.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes.
+  - claim: ma-statistics
+    agrees: true
+    outcome: not_reproduced
+    reason: CRCNS, 434 MAs inside SLEEP (paper 790), median 11.0 s (15.9), 0.184/min (0.32), 3.7% (9.1). All four miss,
+      on both datasets. Problem 4, the deposited MAs disagree with the paper on count, duration and fraction of SLEEP, and
+      the notebook never checks where the other 1696 lie or whether this variable is the paper's MA.
+    response: No change. Added a per-session table of where the deposited MAs lie (problem 4, section C), 434 in cycle SLEEP,
+      none in other SLEEP, 26 in WAKE and 1670 in neither, with medians near 11 s in every group; no subset gives 790. The
+      finding is updated.
+  - claim: ma-fraction-over-nrem-episodes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Episode decrease holds (reading c R=-0.816, p=5.3e-13), but the SLEEP correlation is significant (c, R=-0.331,
+      p=0.019), so the stated absence fails. Problem 2, reading c uses whole grid seconds only, so bins under about 2 s keep 0 or 1 second, which hits every packet-level reading c. Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
+    response: No change. Reading c now gives each grid second to the bin that holds its centre (problem 2); R = -0.840 over
+      episodes and -0.332, p = 0.018, over SLEEP.
+  - claim: packet-duration
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS median 111 s; longest/shortest ratio is only 52, and the shortest packet is 14 s, below Table S1's 20
+      s minimum. DANDI 144 s misses. Problem 3, cell 0 states an outcome rule not in the claims file (partial when a claim
+      holds on one dataset), which would downgrade claims that hold on CRCNS, as DANDI is a subset with rebuilt states and
+      different labels.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes.
+  - claim: fig2a-median-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of 6 medians within tolerance (reading b); pI REM is 5.80 Hz against 4.25 under every reading.
+    response: No change.
+  - claim: fig2a-skewed-wide-distribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: Skewness is positive (2.57) and log skewness negative, but no percentile reading covers 0.05–5 Hz within 10%
+      (e.g. 5–95% is 0.070–3.26 Hz).
+    response: No change.
+  - claim: fig2a-fraction-above-2hz
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS reading b, WAKE 19.2%, REM 19.7%, nonREM 8.7%; chi-square p 2.7e-11 and 5.1e-12. DANDI p is only about
+      1e-8. Problem 3, cell 0 states an outcome rule not in the claims file (partial when a claim holds on one dataset),
+      which would downgrade claims that hold on CRCNS, as DANDI is a subset with rebuilt states and different labels. Problem
+      7, the chi-square treats paired per-cell rates as independent (the paper's test).
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes. The chi-square
+      on paired rates is the paper's test (problem 7) and is kept.
+  - claim: fig2b-wake-nrem-slope
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS reading b, slope 0.685 [0.655, 0.715], R=0.820. DANDI 0.711 is just outside tolerance. Problem 3, cell
+      0 states an outcome rule not in the claims file (partial when a claim holds on one dataset), which would downgrade
+      claims that hold on CRCNS, as DANDI is a subset with rebuilt states and different labels.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes.
+  - claim: burst-index-by-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: Order nonREM > REM > WAKE holds, Kruskal-Wallis p is tiny and REM > WAKE at p<0.05. No reading has all three
+      medians in tolerance (b, 4.3/13.4/6.0; c, 4.5/11.3/6.4). Readings a and b are biased (B1). Problem 1, prepare() drops
+      every ISI that crosses a 1-s grid boundary, not only those spanning two state intervals; on synthetic Poisson trains
+      with 10% bursts the true short-ISI fraction of 0.104 becomes 0.602 at 0.2 Hz, which invalidates readings a and b.
+    response: No change of outcome. Fixed problem 1, ISIs are now counted from spike times and kept when both spikes lie
+      in one state interval, in readings a, b and c. CRCNS medians are now 2.4/6.3/3.6% (a), 2.2/6.0/3.0% (b) and 4.6/11.5/6.5%
+      (c), beside round 1's grid values (5.2/14.3/6.7%), printed for comparison. The order and the tests still hold and
+      no reading has the three medians within tolerance.
+  - claim: fig2c-acg-peaks
+    agrees: false
+    outcome: partially_reproduced
+    reason: Theta local maxima at 134.5 ms (WAKE) and 113.5 ms (REM) are within tolerance; the nonREM peak bin is 9–10 ms
+      (centre 9.5 ms), outside 8±0.8 ms. Problem 8, '7 to 9 ms in whole bins' is ambiguous for the bin [9, 10) ms.
+    response: Changed to partially reproduced, as the verifier gives. A bin is now named by its centre (an assumption, stated),
+      so the nonREM peak is at 9.5 ms, outside 8 +- 0.8 ms; bins centred on whole ms are shown as a variant (peak at 10
+      ms). The meaning of '7 to 9 ms in whole bins' is asked of a reader (problem 8).
+  - claim: fig2c-acg-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading c medians −0.67/−1.52/−0.58 (WAKE/nonREM/REM) have the right order with Kruskal-Wallis p=4e-73, but
+      all three are just outside tolerance.
+    response: No change.
+  - claim: synchrony-skew
+    agrees: true
+    outcome: reproduced
+    reason: 62.9% of cells at ≤4% of windows and 0.0% at ≥50%; this meets the criterion's direction-only test, but the values
+      are far from the paper's. Problem 8, the direction-only criterion passes 63% against the paper's 15%.
+    response: No change. The direction-only reading of the criterion is asked of a reader (problem 8).
+  - claim: updown-durations
+    agrees: true
+    outcome: reproduced
+    reason: Deposited medians, DOWN 0.188 s, UP 0.473 s, both right-skewed; counts 43230 and 86839 exact. DANDI detections
+      also within tolerance.
+    response: No change. The assumed mark is removed, as the outcome rests on the deposited CRCNS UP/DOWN states, not on
+      the DANDI detection.
+  - claim: fig1e-up-state-dynamics
+    agrees: true
+    outcome: partially_reproduced
+    reason: pE rate, pI rate and synchrony decrease, but E/(E+I) rises (R=+0.47, last bin above first); sigma peaks at 0.0
+      s, before gamma at 0.1 s. Problem 6, SHORT_WIN is an assumption and the lag-0 window straddles the DOWN state, so
+      the gamma/sigma order cannot be resolved; fig1e is partial either way.
+    response: No change. The 200 ms window stays a stated assumption; as the verifier notes, the claim is partial either
+      way (problem 6).
+  - claim: fig2de-fast-before-slow
+    agrees: true
+    outcome: reproduced
+    reason: Latency in first vs second half R=0.616; latency against log rate R=−0.13 (WAKE rate) and −0.23 (nonREM rate),
+      both significant.
+    response: No change.
+  - claim: fig2f-rate-group-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Fastest–slowest correlation is positive (0.0064, p=1.7e-12) under both sextile readings and on both datasets.
+    response: No change.
+  - claim: fig3ab-population-rate-declines
+    agrees: true
+    outcome: reproduced
+    reason: Reading a R=−0.283, p=2.4e-14; readings b and c agree.
+    response: No change.
+  - claim: first-last-packet-mean-rate
+    agrees: true
+    outcome: reproduced
+    reason: 1.03 → 0.90 Hz, signed-rank p≈1e-18; DANDI 0.99 → 0.91 Hz also passes.
+    response: No change.
+  - claim: post-sleep-wake-lower
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS WAKE-after reading ii, signed-rank p=3e-11 (by cell and cycle) and 8e-7 one-sided (by cell). DANDI best
+      is 1.2e-5, which would be partial. Problem 3, cell 0 states an outcome rule not in the claims file (partial when a
+      claim holds on one dataset), which would downgrade claims that hold on CRCNS, as DANDI is a subset with rebuilt states
+      and different labels.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes.
+  - claim: fig3d-first-last-packet-slope
+    agrees: false
+    outcome: reproduced
+    reason: CRCNS reading b slope 0.872 [0.840, 0.904]. The reverse slope is 0.860 (problem 5). DANDI 0.825 is just outside tolerance.
+      Problem 3, cell 0 states an outcome rule not in the claims file (partial when a claim holds on one dataset), which
+      would downgrade claims that hold on CRCNS, as DANDI is a subset with rebuilt states and different labels. Problem
+      5, the reverse slope roughly equals the forward slope, as regression to the mean alone predicts.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes. The reverse
+      slope (0.860) is now discussed in the notes as what regression to the mean alone predicts (problem 5).
+  - claim: fig3b-sextile-changes
+    agrees: true
+    outcome: reproduced
+    reason: Top sextile R=−0.368, p=1e-19; bottom sextile R=+0.10 (reading a), on both datasets.
+    response: No change.
+  - claim: cv-decreases-over-sleep
+    agrees: true
+    outcome: reproduced
+    reason: Reading a (per packet) R=−0.116, p=0.0022; reading b fails (p=0.19).
+    response: No change.
+  - claim: fig3c-spindles-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: No incidence decrease under any reading (p 0.19–0.56). Incidence is 2.85–2.95/min, it matches Table S1 (2.94),
+      not the Results value of 1.94 used by the claims file. Problem 8, the claim is judged on 1.94/min, though the deposited
+      data match Table S1's 2.94/min exactly.
+    response: No change. Whether 1.94 or Table S1's 2.94 per minute is meant is asked of a reader (problem 8); the incidence
+      decrease fails either way.
+  - claim: fig3c-updown-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: Only DOWN duration increase and UP duration absence hold (2 of 5); UP and DOWN incidence do not fall and "other"
+      time does not rise.
+    response: No change. The assumed mark is removed, as the outcome rests on the deposited CRCNS UP/DOWN states, not on
+      the DANDI detection.
+  - claim: fig3f-within-up-changes
+    agrees: true
+    outcome: reproduced
+    reason: S3C reading b R=−0.089, p=1.6e-16; mean changes top −0.43, pI −0.67, bottom +0.077 Hz.
+    response: No change. The assumed mark is removed, as the outcome rests on the deposited CRCNS UP/DOWN states, not on
+      the DANDI detection.
+  - claim: figs3a-first-last-rem-ma-slopes
+    agrees: true
+    outcome: reproduced
+    reason: Reading b with WAKE ii, REM 0.807, MA 0.656, WAKE 0.820, all within tolerance (same on DANDI). Problem 5, no
+      reverse slope is shown.
+    response: No change of outcome. The MA table added to ma-statistics (problem 4) shows that the deposited MAs used here,
+      those within the SLEEP of cycles, have a median of 11 s against the paper's 15.9 s; the claims are tested on them
+      as deposited. Reverse slopes are added (problem 5); they are close to the forward ones (REM 0.840, MA 0.627, WAKE
+      0.838), which the notes say.
+  - claim: fig3e-wake-before-after-sextiles
+    agrees: true
+    outcome: reproduced
+    reason: Reading ii, S1 increases (p=0.0025); S4, S5, S6 decrease (p 0.039, 3e-6, 3e-13); same on DANDI. See problem 5. Problem
+      5, the sextiles are ranked on all WAKE of the session, which includes the 5 min pre-sleep window, a bias that produces
+      the claimed pattern, and no variant ranked on held-out WAKE is shown; problem 7, only M1 reading a is run.
+    response: No change of outcome. Added M1 reading b and a variant with sextiles ranked on WAKE without the two test windows
+      (problems 5 and 7). With M1 a the four sextiles hold under the held-out ranking (p = 7.2e-12, 1.0e-5, 0.021, 0.011);
+      with M1 b the fourth sextile misses (p = 0.077), stated in the notes.
+  - claim: fig4i-band-power-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: Reading c, delta and sigma rise over episodes and packets, gamma falls over episodes (p=0.011) and not over
+      packets (p=0.29). Problem 2, reading c uses whole grid seconds only, so bins under about 2 s keep 0 or 1 second, which hits every packet-level reading c.
+    response: No change. Reading c now uses centre-assigned seconds (problem 2); gamma falls over episodes (p = 0.030) and
+      does not change over packets (p = 0.092). The DANDI LFP starting_time is printed (0 in every file) and added to window
+      times, and a check that delta power is higher in nonREM than in WAKE, lost when the intervals are shifted by 1800
+      s, is added for the LFP clock (section C).
+  - claim: fig4-delta-packet-length
+    agrees: true
+    outcome: reproduced
+    reason: R=0.166, p=1e-5 (DANDI R=0.253).
+    response: No change.
+  - claim: fig4-late-packet-sigma-delta
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading a, sigma rises (+0.148 SD, p=6e-13) and delta falls; but the delta–sigma correlation is higher in the
+      final portion (0.162 against 0.129), not lower.
+    response: No change.
+  - claim: fig4-updown-within-packets
+    agrees: false
+    outcome: reproduced
+    reason: Reading b, all five changes hold at their bounds (UP incidence p=1.3e-5; UP/DOWN duration ratio R=−0.157). Problem
+      3, cell 0 states an outcome rule not in the claims file (partial when a claim holds on one dataset), which would downgrade
+      claims that hold on CRCNS, as DANDI is a subset with rebuilt states and different labels.
+    response: Changed to reproduced. Outcomes are now judged on CRCNS:fcx-1, which holds the whole data set with the lab's
+      intervals and detections (problem 3), and the criterion holds there; the DANDI result is given in the notes. All five
+      parts meet their bounds on CRCNS. The assumed mark is removed, as the outcome rests on the deposited UP/DOWN states.
+  - claim: fig4-spindles-within-nrem
+    agrees: true
+    outcome: partially_reproduced
+    reason: All four increases and all four durations hold, but frequency changes (packets b p=0.011; episodes c p=0.011),
+      so the absence fails under either reading.
+    response: No change.
+  - claim: fig4e-late-packet-sigma
+    agrees: true
+    outcome: reproduced
+    reason: Last third above first third, rank-sum p≈0 (reading a), on both datasets. Problem 7, sigma is 10-25 Hz instead
+      of 9-25 Hz, and the S4B per-pixel map the criterion asks for is not shown.
+    response: No change. The sigma band is now 9-25 Hz, which at the 5 Hz resolution of 200 ms windows holds the same bins
+      as 10-25 Hz, so no number changed; a coarse S4B map is added (problem 7), with sigma higher late in every bin.
+  - claim: fig4iv-sextiles-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: Reading b, top sextile negative and bottom positive, p<1e-4, in both episodes and packets.
+    response: No change.
+  - claim: fig4v-cv-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: Reading b, R=−0.113 (episodes) and −0.139 (packets), p<1e-34.
+    response: No change.
+  - claim: fig4vi-burst-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: R=0.12 and 0.116, p<1e-32; the burst grid bias (B1) is unquantified here. Problem 1, every reading uses the
+      1-s grid that drops ISIs crossing a second boundary, so the trend may partly come from within-packet rate changes.
+    response: No change of outcome. The burst ratio is recomputed from spike times (problem 1); on CRCNS R = 0.081 within
+      episodes and 0.079 within packets, p < 1e-15.
+  - claim: fig4cd-packet-rate-lfp-correlations
+    agrees: false
+    outcome: not_reproduced
+    reason: All six have the reported sign at p<1e-3 and the four absences hold, but only 3 of 6 meet their p bound (delta
+      6e-4, gamma 5.7e-10, late sigma 5.6e-6 miss), below the "at least four hold" needed for partial. Problem 8, 'hold'
+      is undefined against M4's three levels.
+    response: Changed to not reproduced, as the verifier gives. A correlation now holds when it meets its reported bound
+      (M4's reproduced level, an assumption, stated); three of six do. The lenient reading (all six at p < 0.05) is stated
+      in the notes and asked of a reader (problem 8).
+  - claim: fig4e-within-up-sextiles
+    agrees: false
+    outcome: not_reproduced
+    reason: The slowest sextile increases under every reading; the top-sextile drop never reaches p<1e-8.
+    response: Changed to not reproduced, as the verifier gives. A group now holds when it meets its reported bound (as for
+      fig4cd, an assumption, stated); only pI does, and the slowest sextile rises under every reading. The lenient reading
+      is stated in the notes and asked of a reader.
+  - claim: figs5-within-wake-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: REM, only one sextile significant. WAKE reading b, sextile 2 does not increase (p=0.16). Problem 2, reading
+      c uses whole grid seconds, so bins under about 2 s keep 0 or 1 second, which hits the REM part (REM episodes median
+      98 s on CRCNS); problem 5, WAKE reading b ranks sextiles on WAKE that includes the first tenth.
+    response: No change. REM reading c now uses exact spike times (problem 2 and section C), with the 1 s grid, now centre-assigned,
+      as a variant; two of five sextiles are positive and significant on CRCNS either way. WAKE reading b is also run with
+      sextiles ranked on WAKE without the test windows (problem 5); sextile 2 still does not increase (p = 0.39).
+  - claim: fig5b-ma-nrem-ma
+    agrees: true
+    outcome: not_reproduced
+    reason: Top two sextiles p=0.18 and 0.24; S5C R=0.009. Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
+    response: No change of outcome. The MA table added to ma-statistics (problem 4) shows that the deposited MAs used here,
+      those within the SLEEP of cycles, have a median of 11 s against the paper's 15.9 s; the claims are tested on them
+      as deposited.
+  - claim: figs5d-rem-nrem-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: R=−0.183, p=0.11, n=78 cells (DANDI R=+0.047).
+    response: No change.
+  - claim: fig5c-sigma-ma-change
+    agrees: true
+    outcome: not_reproduced
+    reason: R=−0.034, p=0.68 (DANDI R=−0.247). Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
+    response: No change of outcome. The MA table added to ma-statistics (problem 4) shows that the deposited MAs used here,
+      those within the SLEEP of cycles, have a median of 11 s against the paper's 15.9 s; the claims are tested on them
+      as deposited.
+  - claim: fig5b-wake-between-packets
+    agrees: true
+    outcome: reproduced
+    reason: Reading a, 24 triplets exactly; S6 increases p=0.017; S1 p=0.33 and S5E p=0.82, both not significant. DANDI
+      also passes (26 triplets).
+    response: No change.
+  - claim: fig5c-wake-movement
+    agrees: true
+    outcome: not_reproduced
+    reason: CRCNS R=0.222, p=0.36 (n=19); fraction of time moving R=−0.14. DANDI has no motion signal (see C). Problem 7,
+      5 of the 24 WAKE triplets drop out for lack of motion data, without explanation; section C, the notebook does not
+      mark DANDI blocked, and only an ElectricalSeries rate would show whether EMG could be derived.
+    response: No change. The 5 triplets left out are now explained, they lie in sessions with no top-sextile pE cell, and
+      all 19 tested have motion; mean EMG is shown as a variant (R = 0.550, p = 0.015 on CRCNS, where the criterion's motion
+      readings apply). The DANDI files hold no motion or EMG and their only ElectricalSeries is the 1250 Hz LFP, now printed
+      (problem 7, section C); the claim is judged on CRCNS.
+  - claim: fig5b-ma-between-packets
+    agrees: true
+    outcome: partially_reproduced
+    reason: Lowest sextile increases (p=0.012), but the top sextile falls (p=3e-9) and S5G p=2.3e-8 misses the 1e-10 bound. Problem 4, the deposited CRCNS MAs disagree with the paper on count, duration and fraction of SLEEP, and the notebook never checks where the other 1696 lie or whether this variable is the paper's MA; every MA-based claim inherits this.
+    response: No change of outcome. The MA table added to ma-statistics (problem 4) shows that the deposited MAs used here,
+      those within the SLEEP of cycles, have a median of 11 s against the paper's 15.9 s; the claims are tested on them
+      as deposited.
+  - claim: fig5b-rem-between-packets
+    agrees: true
+    outcome: not_reproduced
+    reason: Only sextile 2 decreases; sextile 5 increases (p=0.02).
+    response: No change.
+  - claim: fig5c-rem-duration
+    agrees: true
+    outcome: not_reproduced
+    reason: '|R| < 0.08 and p > 0.3 under all three readings.'
+    response: No change.
+  - claim: fig5c-rem-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: Slowest sextile R=−0.149, p=0.06 (reading a) and R=+0.03 (reading b).
+    response: No change.
+  - claim: fig5c-delta-change-slow-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Slowest sextile R=−0.033, p=0.43 (negative on DANDI).
+    response: No change.
+  - claim: figs2d-interneurons-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 95% intervals exclude 1, [0.766, 0.906] and [0.802, 0.973]. Problem 5, no reverse slope is shown; problem 8,
+      an interval of 0.996-1.005 is implausibly narrow for about 126 cells.
+    response: No change. The reverse slope (0.892) and the mean log change (-0.054, p = 6.7e-4) are added (problem 5). The
+      narrow interval of the legend is asked of a reader (problem 8).
+  - claim: sleep-homogenizes-rates
+    agrees: false
+    outcome: reproduced
+    reason: The three claims it depends on (fig3d, fig3e, cv) are reproduced on CRCNS. Problem 3, cell 0 states an outcome
+      rule not in the claims file (partial when a claim holds on one dataset), which would downgrade claims that hold on
+      CRCNS, as DANDI is a subset with rebuilt states and different labels.
+    response: Changed to reproduced. The three claims it rests on are now reproduced (fig3d under the CRCNS rule of problem
+      3); the notes say that the fig3d slope alone does not show narrowing, since its reverse slope is also below 1.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The second executed notebook in full, with its conclusion cells and summary, the helper module, the claims file
+    and the attempt record, with the paper. The verifier agreed with all 53 outcomes (27 reproduced, 10 partially reproduced,
+    16 not reproduced). It also reported, outside any one claim, that the README says the notebook peaks near 10 GB of memory
+    while the only figure printed is 1.98 GB (cell 1), that the 90 GB streamed is not printed, and that loading alone took
+    19.5 minutes, so 20 minutes in total cannot be checked; and that problem 6 is unchanged and does not affect a conclusion.
+    In reply a cell before the summary now prints the CRCNS bytes streamed (88.9 GB), the time since loading began (25.1 min)
+    and the peak memory of the notebook process (2.62 GB) and of the largest loading worker (5.13 GB), and the README states
+    those printed figures.
+  results:
+  - claim: table1-dataset-counts
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: wake-sleep-cycles
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: tables1-state-durations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded. The Summary (cell 172) says the deposited intervals and detections reproduce Table S1, except the microarousals;
+      it leaves out the WAKE-SLEEP duration, 4214 s on CRCNS against the 5918 s Table S1 prints, which cell 17 reports and
+      the record files as a paper_inconsistency finding.
+    response: The Summary now names the WAKE-SLEEP duration (median 4214 s against 5918 s) as a second exception, beside the
+      microarousals.
+  - claim: ma-statistics
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. Problem 4 is still open, and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP
+      of cycles, 26 in WAKE and 1670 in neither, with medians near 11 s, and no subset gives 790; which MAs the paper used
+      is still unknown, and it is filed as a question for the authors. This outcome rests on an MA set that does not match
+      the paper.
+    response: No change; the MA set is tested as deposited, and the question stays with the paper's authors (selection_undocumented
+      finding).
+  - claim: ma-fraction-over-nrem-episodes
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it stays partial, over SLEEP p = 0.018 (cell 22). The round-1 reason does not cite problems 2 and 4,
+      though the responses address them. Problem 4 is still open, and bearing on a conclusion. The deposited MAs are now located,
+      434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither, with medians near 11 s, and no subset gives 790; which MAs
+      the paper used is still unknown, and it is filed as a question for the authors. This outcome rests on an MA set that
+      does not match the paper.
+    response: The round-1 reason now cites problems 2 and 4. No change; the MA set is tested as deposited, and the question
+      stays with the paper's authors (selection_undocumented finding).
+  - claim: packet-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: fig2a-median-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record. Cell 29 and the notes say no reading puts all six within tolerance
+      on either dataset (DANDI, best reading a, four of six); DANDI reading c is the best reading, with five of six inside
+      tolerance (0.72, 0.66, 0.82, 5.23 and 4.78 Hz in; only pI REM, 6.00 Hz, misses). They say per-rat medians vary about
+      twofold (pE WAKE 0.40 to 1.23 Hz); that range is about threefold. The outcome is unaffected.
+    response: Corrected in cell 29 and the notes, DANDI best reading c with five of six (pI REM 6.00 Hz misses), readings
+      a and b four of six, and per-rat medians varying about threefold.
+  - claim: fig2a-skewed-wide-distribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig2a-fraction-above-2hz
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: fig2b-wake-nrem-slope
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: burst-index-by-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it stays partial (cell 40). Under every reading the order is nonREM > REM > WAKE, Kruskal-Wallis p <
+      1e-37 and Dunn p ≤ 7.7e-6, but no reading has all three medians within tolerance. Under reading c, nonREM (11.5%) is
+      inside and WAKE (4.6%) and REM (6.5%) are above.
+    response: No change.
+  - claim: fig2c-acg-peaks
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it is now partial, the outcome I gave in round 1. The assumption that a bin is named by its centre is
+      stated, reasonable, the alternatives are shown, and it is referred to a reader. It would be reproduced if a bin is named
+      by its start.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: fig2c-acg-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: synchrony-skew
+    agrees: true
+    outcome: reproduced
+    reason: I agree. It passes the criterion's direction-only test at 63% of cells, against the paper's 15%; the reading is
+      referred to a reader and the outcome depends on the answer.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: updown-durations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig1e-up-state-dynamics
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. The assumption of 200 ms windows within UP states is stated and reasonable; fig1e is partial either way.
+    response: No change.
+  - claim: fig2de-fast-before-slow
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome, but its assumed mark does not match a stated assumption. Its only text that says assumed
+      is the DANDI UP/DOWN detection; on the same grounds the author removed the mark from updown-durations, fig3c-updown-over-sleep,
+      fig3f-within-up-changes and fig4-updown-within-packets, because their outcomes rest on the deposited CRCNS states. The
+      200 ms latency window comes from the criterion itself. Either the mark should go, or the assumption it stands for should
+      be named.
+    response: The assumed mark is removed. The outcome rests on the deposited CRCNS UP states and the criterion's 200 ms window,
+      and no assumption of this attempt bears on it; the DANDI detection is a deviation for the DANDI result only.
+  - claim: fig2f-rate-group-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig3ab-population-rate-declines
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: first-last-packet-mean-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: post-sleep-wake-lower
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded. Cell 71 and the notes say rank-sum tests are not significant; for CRCNS reading ii with M1 a the one-sided
+      rank-sum p is 0.027 (cell 70), and the criterion allows a one-sided test.
+    response: Corrected in cell 71 and the notes, the one-sided rank-sum p is 0.027 on CRCNS under reading ii with M1 a, and
+      0.055 to 0.51 under the other readings on both datasets. The outcome rests on the signed-rank test and does not change.
+  - claim: fig3d-first-last-packet-slope
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded. The round-1 reason says (B4), my own mis-numbering; it should point to problem 5.
+    response: The round-1 reason now points to problem 5.
+  - claim: fig3b-sextile-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: cv-decreases-over-sleep
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig3c-spindles-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. It uses 1.94 against 2.94 spindles per minute, a claims-file reading referred to a reader; the claim
+      fails either way.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: fig3c-updown-over-sleep
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig3f-within-up-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: figs3a-first-last-rem-ma-slopes
+    agrees: true
+    outcome: reproduced
+    reason: I agree. Reverse slopes are added (problem 5 resolved). Problem 4 is still open, and bearing on a conclusion.
+      The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither, with medians near 11
+      s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question for the authors.
+      The MA slope of this claim rests on an MA set that does not match the paper.
+    response: No change; the MA set is tested as deposited, and the question stays with the paper's authors (selection_undocumented
+      finding).
+  - claim: fig3e-wake-before-after-sextiles
+    agrees: true
+    outcome: reproduced
+    reason: I agree; it stays reproduced under M1 reading a, both as before and with sextiles ranked on held-out WAKE (cell
+      94). It rests on M1 reading a, which enters a cell once per cycle; under M1 reading b (one entry per cell) the fourth
+      sextile misses, p = 0.077, and 0.055 with held-out ranking. The criterion allows reading a, but under reading b the
+      claim would be partial. The round-1 reason says See B3, my own mis-numbering; it should point to problem 5.
+    response: Outcome kept, as the criterion allows M1 a and the verifier agrees with it. The notes now give p = 0.055 with
+      the held-out ranking under M1 b and say that under M1 b the claim would be partial. The round-1 reason now points to
+      problem 5.
+  - claim: fig4i-band-power-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree; it stays reproduced under reading c, gamma falls over episodes (p = 0.030) and does not change over packets
+      (p = 0.092) (cell 99). The round-1 reason does not cite problem 2, though the response addresses it.
+    response: The round-1 reason now cites problem 2.
+  - claim: fig4-delta-packet-length
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4-late-packet-sigma-delta
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4-updown-within-packets
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+  - claim: fig4-spindles-within-nrem
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it stays partial, spindle frequency changes over packets, p = 0.011 and 0.026 (cell 111).
+    response: No change.
+  - claim: fig4e-late-packet-sigma
+    agrees: true
+    outcome: reproduced
+    reason: I agree. The assumption of 200 ms windows within UP states is stated and reasonable.
+    response: No change.
+  - claim: fig4iv-sextiles-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4v-cv-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig4vi-burst-within-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree; it stays reproduced with spike-time ISIs, R = 0.081 and 0.079, p < 1e-15 (cell 123).
+    response: No change.
+  - claim: fig4cd-packet-rate-lfp-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree; it is now not reproduced, the outcome I gave in round 1. The assumption that a part holds at M4's reproduced
+      level is stated and reasonable (the stricter reading), the lenient result is given, and it is referred to a reader.
+      It would be reproduced if hold means p < 0.05.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: fig4e-within-up-sextiles
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree; it is now not reproduced, the outcome I gave in round 1. The assumption that a part holds at M4's reproduced
+      level is stated and reasonable, the lenient result is given, and it is referred to a reader; it would be partial if
+      hold means p < 0.05. Cell 130 and the notes say DANDI, the same directions; under DANDI reading a(i) the top sextile
+      rises, from 2.789 to 2.808 Hz (cell 129).
+    response: Corrected in cell 130 and the notes, on DANDI pI and the slowest sextile rise under every reading, and the top
+      sextile falls under reading b (p = 0.0051) and a(ii) (p = 0.051) and rises slightly under a(i) (2.789 to 2.808 Hz, p
+      = 0.64). The outcome is judged on CRCNS and does not change.
+  - claim: figs5-within-wake-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The REM part now uses exact spike times and a held-out WAKE ranking is added (problems 2 and 5 resolved);
+      the result is unchanged, 2 of 5 sextiles significant.
+    response: No change.
+  - claim: fig5b-ma-nrem-ma
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The round-1 reason does not cite problem 4, though the response addresses it. Problem 4 is still open,
+      and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither,
+      with medians near 11 s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question
+      for the authors. This outcome rests on an MA set that does not match the paper.
+    response: The round-1 reason now cites problem 4. No change; the MA set is tested as deposited, and the question stays
+      with the paper's authors (selection_undocumented finding).
+  - claim: figs5d-rem-nrem-rem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-sigma-ma-change
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The round-1 reason does not cite problem 4, though the response addresses it. Problem 4 is still open,
+      and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither,
+      with medians near 11 s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question
+      for the authors. This outcome rests on an MA set that does not match the paper.
+    response: The round-1 reason now cites problem 4. No change; the MA set is tested as deposited, and the question stays
+      with the paper's authors (selection_undocumented finding).
+  - claim: fig5b-wake-between-packets
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-wake-movement
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record. Cell 0 says every claim lists both datasets and each is tested
+      on each; the table in the same cell, and cell 150, say fig5c-wake-movement is tested on CRCNS only.
+    response: Cell 0 now says fig5c-wake-movement is tested on CRCNS only, as DANDI holds no motion or EMG signal.
+  - claim: fig5b-ma-between-packets
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. The round-1 reason does not cite problem 4, though the response addresses it. Problem 4 is still open,
+      and bearing on a conclusion. The deposited MAs are now located, 434 in the SLEEP of cycles, 26 in WAKE and 1670 in neither,
+      with medians near 11 s, and no subset gives 790; which MAs the paper used is still unknown, and it is filed as a question
+      for the authors. This outcome rests on an MA set that does not match the paper.
+    response: The round-1 reason now cites problem 4. No change; the MA set is tested as deposited, and the question stays
+      with the paper's authors (selection_undocumented finding).
+  - claim: fig5b-rem-between-packets
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-rem-duration
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-rem-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: fig5c-delta-change-slow-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome in the attempt record.
+    response: No change.
+  - claim: figs2d-interneurons-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. Reverse slopes are added (problem 5 resolved). It has an implausibly narrow interval in the legend; the
+      reading is referred to a reader and the outcome depends on the answer.
+    response: No change; the question is in questions/watson-2016.yaml.
+  - claim: sleep-homogenizes-rates
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome in the attempt record. Judging on CRCNS restores the claims that problem 3 would have
+      downgraded.
+    response: No change.
+findings:
+- kind: data_missing
+  datasets:
+  - '000041'
+  statement: DANDI:000041 holds 22 of the paper's 27 sessions. The three sessions of rat B22 (CRCNS 20140526_277um, 20140527_421um,
+    20140528_565um) and the ACC probes of Dino 061914 and 062014 (52 and 24 units) are not in it, so it holds 10 of 11 rats,
+    850 of 995 pE and 95 of 126 pI cells.
+- kind: data_missing
+  datasets:
+  - '000041'
+  statement: Dino-061914 in DANDI:000041 has no LFP; the release notes say the lab's source file does not divide into whole
+    channels at 128. The CRCNS .eeg of both Dino 061914 folders divides into 142 channels, which the .xml gives and the
+    stream's own autocorrelation confirms.
+- kind: data_missing
+  datasets:
+  - '000041'
+  statement: DANDI:000041 holds only Awake, Non-REM and REM epochs. The paper's analysis units (WAKE, SLEEP and WAKE-SLEEP
+    cycles, packets, MAs, WAKE interruptions, nonREM and REM episodes), its UP/DOWN states and spindles, and the motion
+    and EMG signals, all in CRCNS:fcx-1, are not in it, and its only ElectricalSeries is the 1250 Hz LFP, so no EMG can
+    be derived from a wideband signal. Built here from the epochs by Table S1's rules they differ from the lab's, 47 cycles
+    against 51, one session without a cycle, 181 MAs in cycles against 434, median packet 144 s against 111 s, median REM
+    episode 64 s against 98 s.
+- kind: metadata_error
+  datasets:
+  - '000041'
+  statement: In 7 DANDI sessions whose spike trains are identical, train for train, to the CRCNS stable units, the cell_type
+    labels differ from the lab's _CellIDs (EAll and IAll), for example BWRat20-101513 with 63 pE and 3 pI against 60 and
+    6. The CRCNS labels give the paper's 995 and 126; the DANDI labels describe cells the paper classed otherwise.
+- kind: metadata_insufficient
+  datasets:
+  - '000041'
+  statement: The DANDI unit tables of Dino-072314 and Dino-072414 hold 10 and 15 units more than the CRCNS stable set (26
+    against 16, 61 against 46), Dino-061814 one more, and Dino-072114 16 units of which 13 match the 18 CRCNS units. No
+    column marks which units are the paper's stable units, so the paper's cell set cannot be selected from DANDI alone.
+- kind: other
+  about: data
+  datasets:
+  - crcns-fcx-1
+  statement: The ACC and mPFC folders of Dino 061914 and of Dino 062014 each hold an .eeg of the same size (6219440250 and
+    7938936000 bytes) with different good channels and no shared spike train, consistent with one recording of two probes
+    deposited in both folders; the paper counts them as separate sessions (Table S1, 8 Dino sessions), and so does this
+    attempt.
+- kind: selection_undocumented
+  about: paper
+  statement: The paper reports 790 MAs (median 15.9 s, 0.32 per minute, 9.1% of SLEEP). The deposited _WSRestrictedIntervals
+    hold 2130 MAs, of which 434 lie within the SLEEP of the 51 WAKE-SLEEP cycles (median 11.0 s, 0.18 per minute, 3.7% of
+    SLEEP), none in another scored SLEEP, 26 in a scored WAKE and 1670 outside any scored SLEEP or WAKE (BWRat21_121613
+    alone has 349 of these); 264 lie between two packets. Every group has a median near 11 s and none counts 790. Which
+    MAs the paper counted is not stated. Question for the paper's authors.
+- kind: paper_inconsistency
+  statement: Spindle incidence is 1.94 per minute in the Results and 0.049 Hz (2.94 per minute) in Table S1; the deposited
+    spindles give 2.85 per minute of nonREM pooled and 2.95 as the median over sessions, which agrees with Table S1. The
+    deposited spindles also match Table S1's count (5203), duration, frequency and amplitude.
+- kind: paper_inconsistency
+  statement: Table S1 gives a WAKE-SLEEP episode duration of 5918 +- 125 s; the deposited cycles give a median of 4214 s,
+    while every other duration in Table S1 (WAKE 1192, SLEEP 2421, nonREM episode 297, REM episode 98, REM latency 647 s)
+    is matched exactly by the same intervals.
+- kind: methods_unavailable
+  statement: The UP/DOWN detection's LowGammaPower epochs are 'power in the 100 Hz+ range below 0.5 SD below the mean'.
+    On the LFP's linear power that level is almost never reached (the 5th percentile is -0.40 SD in BWRat17-121912), so
+    the band, smoothing and transform must differ from a plain reading. This attempt used log power of 100-400 Hz, smoothed
+    over 25 ms; with it the medians match (0.471 and 0.193 s) but the counts exceed Table S1 by 37% and 31%. Question for
+    the paper's authors, the band, smoothing and scale of this rule.
+- kind: methods_unavailable
+  statement: The sampling unit of the correlations against normalized time (per packet, per 10 s bin, or bins averaged over
+    episodes) is not stated, and outcomes depend on it, the CV over SLEEP decreases with p = 0.0022 per packet but p = 0.19
+    in 10 s bins on CRCNS, and spindle and UP/DOWN incidence trends differ between readings. Question for the paper's authors,
+    which unit Figures 3 and 4 use.
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    The files hold 51 WAKE-SLEEP cycles (WakeSleepTimePairFormat of _WSRestrictedIntervals over the 27 sessions), where
+    the paper reports 54; the Wake and Sleep intervals are the same 51 pairs, with none unpaired.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    345 WakeInterruption intervals within the SLEEP of the cycles are shorter than the 40 s minimum the data description
+    gives for them (40-120 s). None lies between two packets (123 lie between two REM intervals, 80 between a REM interval
+    and the packet after it, 25 between a packet and the REM after it), so they are not MAs by the paper's definition
+    either; counted with the 434 MAs they give 779 events. One nonREM packet, in BWRat17_121912, lasts 14 s, under the 20
+    s minimum of Table S1.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    In Rizzo_022715 and Splinter_020515 a WAKE-SLEEP cycle's WAKE starts before the previous cycle's SLEEP ends (WAKE
+    9919-14394 s against SLEEP 5655-10010 s; WAKE 5335-7210 s against SLEEP 3543-5455 s), so the cycles overlap.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    The data description says the motion field of _Motion.mat is z-scored motion for each second. It is non-negative in
+    every session, with per-session means from 0.553 to 4076 in the sessions without NaN, and BWRat19_032513 holds 158
+    NaN values in its 3928 seconds.
+  found: on_prompt
+- kind: metadata_error
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    RecordingFileIntervals in _BasicMetaData.mat is [0, inf] in the three sessions of rat B22 (20140526_277um,
+    20140527_421um, 20140528_565um), and the UP/DOWN file of every session is named _UPDOWNINtervals.mat, where the data
+    description gives _UPDOWNInts.mat and _UPDOWNIntervals.mat.
+  found: on_prompt
+- kind: metadata_insufficient
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    Scored WAKE exists only as the WAKE of a WAKE-SLEEP cycle, so a scored WAKE follows the SLEEP of only 23 of the 51
+    cycles, within 1 s in 6 of them and 166 to 10344 s later in the others. The paper's 5 min post-sleep WAKE windows
+    cannot be located from the scored intervals for most cycles.
+  found: on_prompt
+- kind: other
+  about: data
+  datasets:
+  - crcns-fcx-1
+  statement: >-
+    Each session is one tar.gz of 0.94 to 6.12 GB (88.9 GB in all), and the order of members differs between files. In 18
+    of the 27 the LFP .eeg comes before at least one of the spike, cell or state files (_SStable, _CellIDs,
+    _WSRestrictedIntervals, _BasicMetaData), so reading those small files needs the whole archive streamed. Reading all 27
+    took 488 s from the bucket with four at a time.
+  found: on_prompt
+- kind: methods_unavailable
+  statement: >-
+    Questions for the paper's authors. (1) Whether the burst index is the proportion of ISIs of 15 ms or less
+    (Supplemental Experimental Procedures) or the fraction of spikes with such an ISI (Results). (2) The model and fit
+    range of the autocorrelogram decay exponent. (3) How triplets are formed, which WAKE counts between two packets, and
+    whether REM-packet-REM triplets allow an arousal after the first REM. (4) Whether the motion signal was z-scored before
+    the movement correlation, and which measure of movement was used. (5) How the WAKE sextiles are computed for cells
+    recorded over several cycles, from the session's WAKE or from each cycle's WAKE.
+  found: on_prompt
+reconciliation:
+  earlier: watson-2016-02
+  date: 2026-11-15
+  blind: false
+  blind_note: >-
+    The author run and the two author-revise runs show nothing of watson-2016-02; the audit lines in author.md are the
+    repository's README and the code that wrote this attempt's record. The author-answers run, after the outcomes were
+    recorded, printed transcripts/watson-2016/answer-report.md, which quotes one line of watson-2016-02's record, that the
+    response there for claim post-sleep-wake-lower left the question of the post-sleep WAKE window "with a reader
+    (questions file)", and a file search in that run listed the path of the earlier entry's entry.yaml
+    (entries/watson-2016-crcns-fcx-1) without opening it. It saw no outcome, value or finding of the earlier attempt, and
+    it changed no outcome, note, finding or file of this attempt.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 12
+    note: >-
+      earlier_findings.ipynb counts 51 WakeSleep pairs, with the 51 Wake and 51 Sleep intervals all paired, against the
+      paper's 54. The blind attempt gives the 51 in its wake-sleep-cycles outcome, within that claim's tolerance, but
+      reports no finding on it.
+  - finding: 2
+    status: still_present
+    now: 7
+    note: >-
+      Finding 7 reports the same 434 of 2130 MAs within SLEEP against the paper's 790. The parts it does not report are
+      still there in earlier_findings.ipynb (345 WakeInterruptions under 40 s, none between two packets, and the 14 s
+      packet of BWRat17_121912) and are added as finding 13.
+  - finding: 3
+    status: still_present
+    now: 14
+    note: >-
+      earlier_findings.ipynb finds the same two overlapping pairs of cycles, WAKE 9919-14394 s against SLEEP 5655-10010 s
+      in Rizzo_022715 and WAKE 5335-7210 s against SLEEP 3543-5455 s in Splinter_020515, and no other.
+  - finding: 4
+    status: still_present
+    now: 6
+    note: >-
+      Finding 6 reports the same ACC and mPFC folders of Dino 061914 and 062014 as one recording deposited twice and
+      counted as two sessions. earlier_findings.ipynb shows the two scorings of Dino_062014 still differ (mean SLEEP per
+      cycle 59.5 and 27.1 min, 41 and 17 packets), while those of Dino_061914 agree within 1 s.
+  - finding: 5
+    status: still_present
+    now: 15
+    note: >-
+      The data description still calls the motion field z-scored, and earlier_findings.ipynb finds no negative value,
+      per-session means of 0.553 to 4076 and 158 NaN values in BWRat19_032513. The earlier range of 0.55 to 4076 is the
+      same, as it left out that session, whose mean is NaN.
+  - finding: 6
+    status: still_present
+    now: 16
+    note: >-
+      earlier_findings.ipynb finds RecordingFileIntervals [0, inf] in the three 2014052x sessions and finite in the other
+      24, and the file _UPDOWNINtervals.mat in all 27 tars, while the description names _UPDOWNInts.mat and
+      _UPDOWNIntervals.mat.
+  - finding: 7
+    status: still_present
+    now: 8
+    note: >-
+      Both report 1.94 per minute in the Results against 0.049 Hz (2.94 per minute) in Table S1, with the deposited
+      spindles at 2.85 per minute, agreeing with Table S1.
+  - finding: 8
+    status: still_present
+    now: 17
+    note: >-
+      earlier_findings.ipynb finds every Wake interval to be a cycle's WAKE and a later scored WAKE for 23 of 51 cycles, 6
+      within 1 s and the others 166 to 10344 s after SLEEP ends. The new claims file adds a reading of the WAKE after
+      SLEEP as the arousal that ends it (reading ii), which the blind attempt uses; the scored WAKE is unchanged.
+  - finding: 9
+    status: still_present
+    now: 18
+    note: >-
+      earlier_findings.ipynb finds tars of 0.94 to 6.12 GB, the .eeg before a spike, cell or state file in 18 of 27, and
+      a full read of 488 s with four at a time, within the earlier 7 to 9 minutes.
+  - finding: 10
+    status: still_present
+    now: 11
+    note: >-
+      Finding 11 asks the same question (1), the sampling unit of the correlations against normalized time; the earlier
+      question on the SLEEP clock is settled in the new claims file (M3, nonREM time only, from the Fig. 3B legend).
+      Questions (2) to (6) concern the paper's text, which is the same, and the new claims file states each as open and
+      tests it as readings (burst-index-by-state, fig2c-acg-decay, M6, fig5c-wake-movement, M2), so they are added as
+      finding 19.
+  outcomes:
+  - claim: table1-dataset-counts
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file. The earlier claim included the 54 WAKE-SLEEP episodes, and the 51 in the files made
+      it partial; the new file moved that count to wake-sleep-cycles and added the 1121 stable units, so every count it
+      judges matches on the same data.
+  - claim: ma-statistics
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file. Both attempts measure the same 434 MAs, 11.0 s, 0.184 per minute and 3.7%, none within
+      tolerance; the earlier attempt gave partial because the trends over episodes held, and the new file moved those
+      trends to ma-fraction-over-nrem-episodes and gives partial only when three of the four values hold.
+  - claim: fig1e-up-state-dynamics
+    earlier: not_reproduced
+    note: >-
+      A change in the claims file. Both attempts get the same R values (pE -0.293, pI -0.983, synchrony -0.447, E/(E+I)
+      +0.470) and a spectral order that fails; the earlier criterion compared the last bin with the first two, where the
+      pE rate did not fall, and the new one compares it with the first, where it does, so three of four measures decrease.
+  - claim: post-sleep-wake-lower
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file. The earlier file read the WAKE after SLEEP only as the next scored WAKE, which gives
+      signed-rank p = 0.018 in both attempts; the new file adds the arousal that ends SLEEP (reading ii) and one-sided
+      tests, and under reading ii the blind attempt gets p = 3.1e-11, below the 1e-6 bound.
+  - claim: cv-decreases-over-sleep
+    earlier: not_reproduced
+    note: >-
+      A change in the claims file. The earlier file judged only 10 s bins (p = 0.73), and its per-packet result (R =
+      -0.101, p = 0.0073) was a variant; the new file adds one point per packet as a reading, and the blind attempt gets
+      p = 0.0022 there. In 10 s bins the two notebooks also differ (p = 0.73 and 0.19), from how each builds the bins.
+  - claim: fig3c-spindles-over-sleep
+    earlier: partially_reproduced
+    note: >-
+      A difference in method together with the claims file. The earlier notebook found a decrease in 10 s bins on the
+      period's clock (R = -0.021, p = 0.03), partial by M4, where the blind notebook finds none under any reading (p =
+      0.19 in 10 s bins); the new file judges on the Results' 1.94 per minute and gives partial only when the decrease
+      holds.
+  - claim: figs3a-first-last-rem-ma-slopes
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file, through post-sleep-wake-lower. The REM and MA slopes are the same in both (0.807 and
+      0.656); the WAKE slope is 0.687 with the next scored WAKE in the earlier attempt and 0.820, within 0.83 +- 0.03, with
+      the arousal that ends SLEEP (reading ii), which the new file adds.
+  - claim: fig3e-wake-before-after-sextiles
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file, through post-sleep-wake-lower. With the next scored WAKE neither attempt has the four
+      sextile changes; with the arousal that ends SLEEP (reading ii), which the new file adds, and one entry per cell and
+      cycle, the blind attempt has all four.
+  - claim: fig4-spindles-within-nrem
+    earlier: reproduced
+    note: >-
+      A change in the claims file. Both attempts find the four increases, the same durations (0.597 to 0.650 s and 0.603
+      to 0.651 s) and a change in frequency within packets (p = 0.0096 and 0.011); the new criterion requires the two
+      absences for reproduced, where the earlier one did not judge them.
+  - claim: fig4cd-packet-rate-lfp-correlations
+    earlier: partially_reproduced
+    note: >-
+      A difference in method. Both count a correlation as holding at its bound, but the band power differs, 10 s
+      spectrogram windows in the earlier notebook and 2 s Hann windows in the blind one, and delta (R = -0.200 and -0.144)
+      and gamma (0.358 and 0.257) differ with it; gamma then misses its 1e-10 bound (p = 5.7e-10), leaving three of six,
+      under the four needed for partial.
+  - claim: figs5d-rem-nrem-rem
+    earlier: partially_reproduced
+    note: >-
+      A difference in method, the triplet rule. The earlier notebook allowed an MA or WakeInterruption between REM n and
+      the packet (80 triplets, 660 cells, p = 0.015); the blind one takes consecutive REM intervals with only packets and
+      MAs between them (35 triplets, 78 cells, p = 0.11).
+  - claim: fig5b-wake-between-packets
+    earlier: partially_reproduced
+    note: >-
+      A change in the claims file and a difference in method. The new statement drops the movement correlation, now
+      fig5c-wake-movement, and judges the number of triplets; and the blind notebook pairs the last packet of one cycle's
+      SLEEP with the first of the next across the next cycle's WAKE, which gives 24 triplets and a top-sextile increase (p
+      = 0.017), where the earlier reading a gave 8 triplets and p = 0.21.
+  - claim: sleep-homogenizes-rates
+    earlier: partially_reproduced
+    note: >-
+      It follows the claims it rests on. fig3d-first-last-packet-slope is reproduced in both, and
+      fig3e-wake-before-after-sextiles and cv-decreases-over-sleep, partial and not reproduced in the earlier attempt,
+      are reproduced in the blind one for the claims file changes given for them.
+  protocol: >-
+    watson-2016-02 was made under pilot-13 and watson-2016-03 under pilot-15. docs/pilot-notes.md has a section for
+    pilot-14 and none for pilot-15. Pilot-13 itself, the 60-minute limit on a notebook, was already in force for the
+    earlier attempt. Pilot-14 files records by paper, with one claims file for the paper and one attempt on every dataset
+    it rests on. That is why the blind attempt used DANDI:000041 as well as CRCNS:fcx-1 (judging its outcomes on CRCNS, a
+    choice of its own), under the new claims/watson-2016.yaml with 53 claims, which replaced the per-dataset file of 41
+    the earlier attempt used, merging and splitting some ids and changing criteria. Those changes account for most of
+    the outcome differences above. tools/entry.py names one rule as the protocol's from pilot-15, that a finding of kind
+    other or selection_undocumented says whether it is about the data or the paper and that a finding about the data
+    names its datasets when an attempt uses several; the blind attempt's findings follow it. It changes where findings
+    are shown and no outcome.

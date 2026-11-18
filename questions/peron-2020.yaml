@@ -1,0 +1,123 @@
+# Questions from attempt peron-2020-01 (author-revise-1, 2026-11-14) about the claims file
+# claims/peron-2020.yaml. Raised by the round-1 verifier (transcripts/peron-2020/verifier-1-report.md,
+# problems 2 and 10, and the outcome table) and asked under docs/protocol.md, "Hand over for
+# verification"; the claims are tested as written.
+questions:
+- claim: touch-ablation-size
+  asked: 2026-11-14
+  question: >-
+    The criterion defines the percentile as "the rank of its pre-ablation Rtouch among the
+    included touch neurons' pre-ablation Rtouch of its mouse" and cites ablation_summ_stats.m for
+    it. The code's rule is not a rank: it takes the position of the first included neuron whose
+    score exceeds the ablated neuron's, over the number included, so an ablated neuron that scores
+    above every included neuron (or has no score) gets 1/N, not 1. Should the criterion give the
+    code's rule, which the paper's "70th ± 35th percentile" follows, or the rank it states?
+  passage: >-
+    Results, paragraph 7, "Ablating a small proportion of strong touch cells (16.8 ± 12.8 neurons, 6%
+    of touch neurons in the barrel column of the spared whisker, n = 9 mice; touch score, 70th ±
+    35th percentile)". The paper gives no rule for the percentile; the claims file takes it from
+    ablation_summ_stats.m.
+  why: >-
+    It changes the outcome. The rank rule gives 79.3 ± 27.1 (outside 70 ± 7 and 35 ± 3.5) and the
+    code's rule 70.3 ± 35.0, the paper's values; 9 of the 151 ablated neurons score above every
+    included neuron and 6 have no score. The claim is partially reproduced under the rank rule and
+    would be reproduced under the code's.
+- claim: whisking-ablation-size
+  asked: 2026-11-14
+  question: >-
+    Two points. (1) The expected percentage is 4 ± 0.4 from the paper's "approximately 4%", but
+    the paper's own mean count gives 12.7 / 287 = 4.4%, so the rounded value with a 10% tolerance
+    excludes the paper's own number. Should the expected value be 4.4, or the tolerance cover the
+    rounding? (2) The percentile carries the same rank rule as touch-ablation-size; the code's rule
+    gives the paper's 66 ± 37.
+  passage: >-
+    Results, paragraph 9, "ablating a subset of strong whisking neurons (12.7 ± 5.7 neurons,
+    approximately 4% of whisking neurons in the barrel column of the spared whisker, n = 7 mice;
+    whisking score: 66th ± 37th percentile)"; Methods, Multiphoton ablation, 287 neurons per
+    representation.
+  why: >-
+    It changes the outcome. The count (12.71 ± 5.68) matches; the percentage is 4.43%, outside 4 ±
+    0.4 and inside 4.4 ± 0.44; the percentile is 75.4 ± 31.8 under the rank rule and 68.8 ± 36.2
+    (Methods reading) or 65.9 ± 36.5 (code reading) under the code's rule. The claim is partially
+    reproduced as written and would be reproduced with the paper's own percentage and the code's
+    percentile rule.
+- claim: per-mouse-table
+  asked: 2026-11-14
+  question: >-
+    The criterion reads the table's touch and whisking counts as in representation-sizes, (a)
+    score above 0.1 or (b) the Methods membership rule. The table's counts are neither: they equal
+    the neurons that enter the medians (the union of pre and post members, shuffle test applied,
+    ablated and nearby neurons left out) under the code's proximity rule, in 21 and 22 of 24 rows.
+    Should the criterion name that count as a reading? The same rows also match the changes only
+    under the code's proximity rule (24 of 24) and not the Methods cylinder (23 of 24).
+  passage: >-
+    Extended Data Table 1, "Touch and whisking neuron counts are for the 0.1 encoding score
+    criteria"; Methods, Multiphoton ablation, the cylinder of 60 um height.
+  why: >-
+    The counts are reported, not judged, so they do not change the outcome; the proximity rule
+    does (partially reproduced with the Methods cylinder, reproduced with the code's).
+- claim: touch-ablation-reduces-touch
+  asked: 2026-11-14
+  question: >-
+    The neuron counts printed with the grand medians (8,392 here; 6,975, 5,866, 6,161, 7,110 and
+    7,684 in touch-ablation-whisking-unchanged, whisking-ablation-no-effect-touch,
+    whisking-ablation-no-effect-whisking, silent-ablation-no-effect-touch and
+    silent-ablation-no-effect-whisking) equal, in every case, the sum over mice of the
+    pre-ablation count of neurons with score above 0.1, not the number of neurons that enter the
+    medians (7,121, 5,389, 4,605, 4,960, 6,339 and 5,436). The expected values take them as the
+    neurons included. Should their quantity read "neurons with score above 0.1 before ablation,
+    summed over mice"?
+  passage: >-
+    Results, paragraph 7, "from 0.123 to 0.100 (grand median ... n = 9 mice, 8,392 neurons)"; the
+    other counts in paragraphs 8 and 9.
+  why: >-
+    It does not change these outcomes, whose criteria judge the medians and the tests; it decides
+    whether the count matches (it does exactly as the sum, and is 15 to 30% lower as the members).
+- claim: whisking-ablation-no-effect-touch
+  asked: 2026-11-14
+  question: >-
+    The paper's grand medians for whisking ablations (Rtouch 0.112 to 0.095, Rwhisking 0.108 to
+    0.107) and silent ablations (Rtouch 0.115 to 0.107, Rwhisking 0.115 to 0.114), and their ±
+    values, are reproduced only by the medians of ablation_summ_stats.m over a matrix of all 24
+    ablation rows (with the 8 silent rows still zero for the whisking block), not by medians over
+    the mice of each type. The expected values take them as medians over those mice. Should the
+    claims of whisking-ablation-no-effect-touch, whisking-ablation-no-effect-whisking,
+    silent-ablation-no-effect-touch and silent-ablation-no-effect-whisking note that the printed
+    medians are not over the stated mice?
+  passage: >-
+    Results, paragraphs 8 and 9, "(Rtouch, 0.112 ± 0.081 to 0.095 ± 0.069, n = 7 mice, 5,866
+    neurons ...)", "(0.115 ± 0.021 to 0.107 ± 0.023, n = 8 mice ...)".
+  why: >-
+    It does not change these outcomes, which are claims of absence judged on the test. It decides
+    whether the medians count as matched (over the 7 whisking mice Rtouch goes 0.113 to 0.106,
+    outside the tolerance of 0.095).
+- claim: behaviour-unchanged
+  asked: 2026-11-14
+  question: >-
+    The criterion takes the Wilcoxon signed-rank test paired by mouse, as the legend names it, and
+    makes the code's rank-sum test a variant. The paper's printed P values (0.863, 0.065, 0.710,
+    0.620 exactly) are those of the unpaired rank-sum test of ablation_figure_beh.m. Should the
+    criterion judge the claim on the test the paper actually ran?
+  passage: >-
+    Extended Data Fig. 6 legend, "Wilcoxon signed-rank test, paired by mouse"; P values printed in
+    the figure.
+  why: >-
+    It changes the outcome. With the paired test the claim is not reproduced (fraction correct
+    after silent ablations p = 0.008, touches per trial after whisking ablations p = 0.047); with
+    the rank-sum test no p is below 0.05.
+- claim: response-similarity-touch-ablation
+  asked: 2026-11-14
+  question: >-
+    The paper's Fig. 3 numbers (touch slopes p = 0.039 with 2,768 neurons, whisking p = 0.508 with
+    1,085, and the example slope -0.44 of response-similarity-example) come out only with the
+    code's trial average, which writes the correct-left and correct-right averages into the same
+    rows and so keeps the right-trial average alone. The criterion uses the Methods'
+    concatenation. Should the claims say that the published values rest on the right-trial
+    average, or take it as a reading?
+  passage: >-
+    Methods, Response similarity (correct left and right trial-averaged responses); Fig. 3e-g and
+    legend; ablation_figure_correlation.m at commit 74b7321.
+  why: >-
+    It changes the outcomes of response-similarity-touch-ablation and response-similarity-example:
+    with the Methods' average the touch sign test gives p = 0.180 and the example slope -0.393 (not
+    reproduced); with the code's, p = 0.039 and -0.433 (within tolerance).
