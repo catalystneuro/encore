@@ -10,7 +10,7 @@ of Figure 8. It holds no optical maps or traces.
 |---|---|
 | SNS raises heart rate in rabbit and mouse (Fig. 1A, 1D) | Reproduced |
 | Rabbit APD and CaTD shorten, CaT amplitude rises; mouse APD prolongs (Fig. 1) | Reproduced, on the first 20 s of the Fig. 2 series; rabbit APD80 only on the majority reading (falls in 4 of 4 hearts, paired p = 0.13) |
-| Rabbit HR, APD and CaTD change monotonically over 60 s (Fig. 2A) | Partially reproduced; not reproduced is proposed for a third verification round |
+| Rabbit HR, APD and CaTD change monotonically over 60 s (Fig. 2A) | Not reproduced: heart rate peaks at 20 s and is not monotonic, and CaTD80 is monotonic under one reading only; under that reading the result rests on one unadjusted step test of heart rate (p = 0.047) |
 | Mouse APD is biphasic, 50.9, 60.6 and 46.5 ms at 0, 15 and 60 s (Fig. 2D) | Reproduced |
 | CaT amplitude rises similarly in both species (Fig. 2C, 2F) | Reproduced |
 | Tyramine and noradrenaline mimic SNS (Fig. 3B, 3C) | Reproduced; for noradrenaline under one reading of "monotonic" |

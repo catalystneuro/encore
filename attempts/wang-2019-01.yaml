@@ -73,7 +73,7 @@ outcomes:
   - As fig1bc-rabbit-ap-cat-response, tested on the first 20 s of the Figure 2 series, as the Figure 1
     values are not in the dataset.
 - claim: fig2a-rabbit-monotonic
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_wang_2019.ipynb
   output: claim:fig2a-rabbit-monotonic
   notes: 4 rabbit hearts, 10 time points (0 to 60 s). At 60 s all three differ from time 0 in the stated
@@ -86,20 +86,13 @@ outcomes:
     monotonic under either; its mean peaks at 20 s (206.5 bpm) and falls to 194.75 at 60 s, and the 50
     to 60 s fall is significant (paired t-test p = 0.047). CaTD80 is monotonic under reading (b) but not
     (a); its mean is lowest at 25 s (159.75 ms) and rises to 165.65 at 60 s. No combination of readings
-    makes all three monotonic and significant at 60 s, so the criterion is not met. The outcome was
-    recorded as partial on the ground that the changes from time 0 hold for all three variables under
-    every significance reading; that is wrong for APD80 under reading (ii). What holds is the direction
-    of the change at 60 s for all three under reading (i) and the monotonic fall of APD80. The
-    verified outcome is kept, and not_reproduced is proposed (see proposed).
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion names a single condition for reproduced, all three variables monotonic and
-      significant at 60 s under some combination of readings, and no partial result, unlike the
-      criteria of fig2d, fig2cf and fig3abc. No combination meets it (notebook, claim fig2a cell with
-      the table of readings). The ground given for partial, that the changes from time 0 hold for all
-      three variables under every significance reading, is false for APD80 under reading (ii)
-      (Holm-Sidak p = 0.18). Heart rate, the central variable of the claim, peaks at 20 s and falls
-      significantly from 50 to 60 s (p = 0.047), the opposite of a monotonic increase.
+    makes all three monotonic and significant at 60 s, and the criterion names no partial result, so
+    the claim is not reproduced. Under reading (b) heart rate fails only on one unadjusted step test of
+    9, at p = 0.047; were that step not significant, reading (b) with (i) would hold for all three
+    variables. Under reading (a) heart rate fails whatever the tests, as 5 of 9 steps of the mean go
+    the wrong way. What holds is the direction of the change at 60 s for all three variables under
+    reading (i) and the monotonic fall of APD80. Recorded as partially_reproduced until the third
+    verification round, which agreed with not_reproduced.
   deviations:
   - The comparisons against time 0 after a repeated measures ANOVA are not named in the paper, which
     names no software; Holm-Sidak adjusted paired t-tests were used (a standard choice), and as a
@@ -716,3 +709,36 @@ verifications:
     outcome: blocked
     reason: As fig8e; blocked yes, the reason is not established.
     response: As fig8e-rabbit-sim-apd-shortening-cat.
+- date: 2026-11-18
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome for fig2a-rabbit-monotonic and the analysis behind
+    it (cells 22 to 25 of the executed notebook of the final revision), with the helper module sns.py,
+    the claims file and the paper's full text.
+  results:
+  - claim: fig2a-rabbit-monotonic
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 23 computes the numbers from the per-heart Fig2 rabbit table (4 hearts, 10 time points)
+      with sns.monotonic and sns.against_time0, which apply readings (a) and (b) as the claims file
+      words them. Heart rate peaks at 206.5 bpm at 20 s and falls at every later step to 194.75 bpm at
+      60 s, the 50 to 60 s fall is significant (paired t-test p = 0.0469), and no heart rises at every
+      step, so heart rate fails monotonicity under both (a) and (b). CaTD80 is monotonic under (b) but
+      not (a). APD80 is monotonic under both readings, significant at 60 s under (i) (p = 0.021) and the
+      pooled-error variant but not under (ii) (Holm-Sidak p = 0.1766). All six combinations of readings
+      fail (cell 24). The choices were not made to reach the result; the outcome does not depend on the
+      significance reading. Under reading (b) heart rate fails only because of one unadjusted step test
+      among 9, at p = 0.0469; if that step were not significant, (b, i) would hold for all three
+      variables. The criterion specifies unadjusted paired t-tests at p < 0.05, so the analysis applies
+      it as written; reading (a) fails for heart rate regardless (5 of 9 steps go against, and the mean
+      drops 11.75 bpm after 20 s). The not_reproduced outcome is correct on the criterion's terms, but
+      under reading (b) it hinges on a borderline test, and the notes should say so. The criterion has
+      no partial clause, unlike fig2d, fig2cf and fig3abc, and no combination meets it. The claims file
+      does not misread the paper here (Fig. 2A legend and Results state "monotonically"). The Summary's
+      "HR and CaTD do not change monotonically" should name heart rate under both readings and CaTD80
+      under reading (a) only, and the README row needs updating to not_reproduced.
+    response: Changed from partially_reproduced to not_reproduced and removed proposed. The notes, cell
+      25 and the README now say that under reading (b) the outcome rests on one unadjusted step test at
+      p = 0.047, and that reading (a) fails for heart rate regardless. The Summary row now names heart
+      rate under both readings and CaTD80 under reading (a) only, and the README row gives
+      not_reproduced.
