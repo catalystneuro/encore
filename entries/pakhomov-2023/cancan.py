@@ -34,8 +34,8 @@ Where the parameters come from:
   choice and a check of sensitivity.
 - Background, reading O6 (b) of the claims file: the 1st percentile of the reduced image inside
   the electrode square, outside the footprints, a standard choice for a cell-free level.
-- The other readings (O2 to O9) are the claims file's and are applied in the notebook with
-  `summarize`.
+- The other readings (O2 to O9) are the claims file's and are applied with `group_values`.
+  `SUPPORTED` names the readings the paper or the claims file gives a basis for.
 """
 
 from __future__ import annotations
@@ -349,17 +349,22 @@ OPPOSITE = {"TL": "BR", "BR": "TL", "TR": "BL", "BL": "TR"}
 
 # ---------------------------------------------------------------- ROI measures
 
-def _roi_means(frame, c, u, dists, w, step):
-    """Mean of square ROIs of side w (reduced pixels) centred at c + d u, oriented along u."""
+def roi_samples(frame, c, u, d, w, step):
+    """Pixel values of a square ROI of side w (reduced pixels) centred at c + d u, along u."""
     n = max(int(np.ceil(w / step)), 1)
     g = (np.arange(n) + 0.5) / n * w - w / 2
     a, b = np.meshgrid(g, g, indexing="ij")
     vperp = np.array([-u[1], u[0]])
+    xy = c[None, None, :] + (d + a)[..., None] * u + b[..., None] * vperp
+    return ndi.map_coordinates(frame, [xy[..., 1].ravel(), xy[..., 0].ravel()], order=1,
+                               mode="constant", cval=0.0)
+
+
+def _roi_means(frame, c, u, dists, w, step):
+    """Mean of square ROIs; an ROI with more than 20% of its area outside the image is dropped."""
     out = np.empty(len(dists))
     for i, d in enumerate(dists):
-        xy = c[None, None, :] + (d + a)[..., None] * u + b[..., None] * vperp
-        vals = ndi.map_coordinates(frame, [xy[..., 1].ravel(), xy[..., 0].ravel()], order=1,
-                                   mode="constant", cval=0.0)
+        vals = roi_samples(frame, c, u, d, w, step)
         out[i] = np.nan if (vals <= 0).mean() > 0.2 else vals[vals > 0].mean()
     return out
 
@@ -379,10 +384,11 @@ def background(frame, geom):
 def dish_profiles(frame, geom, array):
     """ROI values along the four half-diagonals, for each layout (O1, width) and O6.
 
-    Returns {(o1, w, o6): dict(d=distances in mm, halves={corner: values}, centre_a, centre_b)}.
+    Returns {(o1, w, o6): dict(d=distances in mm, halves={corner: values}, centre_a)}.
     The ROIs of a diagonal are centred at -R + (i + 1/2) s, i = 0 .. n - 1 (s = 2R / n), so each
     half holds n / 2 ROIs at (j + 1/2) s from the centre; `centre_a` is one more ROI centred on
-    the centre (O3 a), `centre_b` the mean of the two ROIs on either side of it (O3 b).
+    the centre (O3 a). O3 (b), the mean of the ROIs on either side of the centre, is taken from
+    the first ROI of the half-diagonals in use (`centre_value`).
     """
     R_mm = HALF_RANGE_MM[array]
     corners = corner_names(geom["P"])
@@ -401,11 +407,10 @@ def dish_profiles(frame, geom, array):
                 halves[name] = _roi_means(frame, c, u, d_mm * 1000 / UM_PER_PX, w_px, step)
             u0 = (corners["TR"] - c) / np.linalg.norm(corners["TR"] - c)
             ca = _roi_means(frame, c, u0, [0.0], w_px, step)[0]
-            cb = np.nanmean([h[0] for h in halves.values()])
             for o6, sub in (("a", 0.0), ("b", bg)):
                 out[(o1, wname, o6)] = dict(
                     d=d_mm, s=s_mm, halves={k: v - sub for k, v in halves.items()},
-                    centre_a=ca - sub, centre_b=cb - sub, background=bg)
+                    centre_a=ca - sub, background=bg)
     return out
 
 
@@ -421,15 +426,28 @@ def geometry_mm(geom):
 # ---------------------------------------------------------------- readings
 
 def lowess_profile(d, y, frac):
-    """O7 (b): LOWESS of a profile against distance (statsmodels), returned at d."""
+    """O7 (b): LOWESS of a profile against distance (statsmodels), returned at d.
+
+    `d` starts at the centre (0). The fit is made on the profile mirrored about the centre, from
+    -R to R, as the paper's figures fit a whole diagonal (Figs. 5 to 9, "LOESS fits"); a fit of
+    the half-profile alone would put the edge of the fit, where LOESS is biased, at the centre.
+    """
     from statsmodels.nonparametric.smoothers_lowess import lowess
-    ok = np.isfinite(y)
-    return np.interp(d, *lowess(y[ok], d[ok], frac=frac, return_sorted=True).T)
+    x, yy = np.r_[-d[:0:-1], d], np.r_[y[:0:-1], y]
+    ok = np.isfinite(yy)
+    return np.interp(d, *lowess(yy[ok], x[ok], frac=frac, return_sorted=True).T)
 
 
 def half_set(o2):
     """O2: (a) both diagonals; (d1) the TL-BR diagonal; (d2) the TR-BL diagonal."""
     return {"a": ["TL", "TR", "BR", "BL"], "d1": ["TL", "BR"], "d2": ["TR", "BL"]}[o2]
+
+
+def centre_value(prof, halves, o3):
+    """O3: (a) the ROI on the centre; (b) the mean of the first ROIs of the half-diagonals used."""
+    if o3 == "a":
+        return prof["centre_a"]
+    return float(np.nanmean([prof["halves"][h][0] for h in halves]))
 
 
 def dish_values(prof, halves, o3, o4):
@@ -438,7 +456,7 @@ def dish_values(prof, halves, o3, o4):
     The profile includes the centre at distance 0 (O3 a or b) followed by the ROIs.
     """
     H = np.array([prof["halves"][h] for h in halves])
-    centre = prof["centre_a"] if o3 == "a" else prof["centre_b"]
+    centre = centre_value(prof, halves, o3)
     d = np.r_[0.0, prof["d"]]
     mean_prof = np.r_[centre, np.nanmean(H, 0)]
     ends = H[:, -1]
@@ -458,6 +476,20 @@ def dish_values(prof, halves, o3, o4):
 READINGS = dict(o1=("a", "b"), w=("w1", "w2"), o2=("a", "d1", "d2"), o3=("a", "b"),
                 o4=("a", "b"), o5=("a", "b"), o6=("a", "b"), o7=("raw", "lo25", "lo75"))
 PRIMARY = dict(o1="a", w="w1", o2="a", o3="a", o4="a", o5="a", o6="a", o7="raw")
+# The readings the paper, or the claims file, gives a basis for, used to decide a test when the
+# readings disagree (the claims file's rule for readings). O1 and O4 have no basis and are
+# always varied.
+#   w   w1: the claims file calls square ROIs "a standard choice" and w2 "a check on sensitivity".
+#   o2  a: both diagonals averaged, the one layout the paper states (Fig. 5B legend).
+#   o3  a: the ROI nearest the geometric centre; Methods 2.4 measures "from the geometrical
+#       center".
+#   o5  a: the claims file: "tests on normalized values use (a)".
+#   o6  a: raw intensity; Methods 2.4 names no background for the monolayers, where Methods 2.2
+#       states the subtraction of F0 for the single cells.
+#   o7  raw: tests are on per-dish ROI means; the LOESS fits are drawn over group means.
+#   O8  paired: comparisons inside the same dishes (centre against trough or periphery) are
+#       paired, the standard test for two measures of one dish (set in the notebook).
+SUPPORTED = dict(w="w1", o2="a", o3="a", o5="a", o6="a", o7="raw")
 
 
 def iter_readings(**fixed):
@@ -495,7 +527,7 @@ def group_values(dishes, r, halves=None):
         sp = []
         for dd in dishes:
             pr = dd["prof"][(r["o1"], r["w"], r["o6"])]
-            c = pr["centre_a"] if r["o3"] == "a" else pr["centre_b"]
+            c = centre_value(pr, hs, r["o3"])
             sp.append(np.r_[c, pr["halves"][h]])
         side.append(np.nanmean(sp, 0))
     if r["o7"] != "raw":

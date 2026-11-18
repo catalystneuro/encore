@@ -15,18 +15,18 @@ are in none of the datasets.
 | Claim | Outcome |
 |---|---|
 | Fig. 3 field simulation; Fig. 4 single-cell cancellation (four claims); cancellation predicts targeting | Blocked: data missing |
-| 5A: trains stronger than packets throughout the array | Partially reproduced |
+| 5A: trains stronger than packets throughout the array | Not reproduced |
 | 5A: packets enhance the centre, near e1 still stronger | Partially reproduced |
-| 5B: rotated packets give a central peak, rotated trains a central void | Reproduced (assumption) |
-| 5C: normalized centre higher for packets than trains | Reproduced |
+| 5B: rotated packets give a central peak, rotated trains a central void | Blocked: methods underspecified (readings disagree) |
+| 5C: normalized centre higher for packets than trains | Blocked: depends on 5B (its own test holds) |
 | 6A: more packets, more uptake, central peak for all | Partially reproduced |
 | 6B: centre about 200% for 1Px4, about 100% for 5Px4 and 10Px4 | Partially reproduced |
 | 6: trough about half the centre | Partially reproduced |
 | 6: peak narrower with more packets | Reproduced (assumption) |
 | 7A: 15.5 to 16.8-fold rise from 2.4 to 5.6 kV | Partially reproduced |
-| 7B: normalized profiles independent of amplitude, small array | Reproduced (assumption) |
+| 7B: normalized profiles independent of amplitude, small array | Blocked: methods underspecified (readings disagree) |
 | 7C, D: the same in the large array | Reproduced (assumption) |
-| Discussion: targeting independent of amplitude and array size | Reproduced (assumption) |
+| Discussion: targeting independent of amplitude and array size | Blocked: depends on 7B |
 | 8A: equal centre uptake for Packets 1 to 3 | Not reproduced |
 | 8A: more uptake near electrodes for Packets 1 and 3 | Not reproduced |
 | 8B: normalized centre 183% for Packet 2, 83% and 74% for 3 and 1 | Not reproduced |
