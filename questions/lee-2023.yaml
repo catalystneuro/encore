@@ -1,0 +1,25 @@
+dandiset: "000636"
+paper: doi:10.1126/science.adf6484
+questions:
+- claim: figs2d-seven-channel-genes
+  asked: 2026-11-18
+  question: >-
+    The criterion says the p-values of the condition term are "adjusted with R's p.adjust default
+    (Holm, though the code comment says FDR)", which reads as an adjustment across genes. In the
+    code's chunk "linear model gene expression WFDC2" (read at 5eb357a), lm_pval is built by
+    apply(datPatch[keepGenes3,kpPatch], 1, lm_pval_apply), so its rows are the three model terms and
+    its columns the genes, and apply(lm_pval, 2, p.adjust) applies Holm to each gene's three term
+    p-values, not across genes. Should the criterion name this per-gene adjustment, as the code does,
+    or an adjustment across genes, as the code's comment "FDR corrected" suggests?
+  passage: >-
+    "We examined 114 voltage-gated ion-channel genes and found only seven that were different in
+    culture versus acute paradigm" (Results, Morphological, electrophysiological, and transcriptomic
+    features in the slice culture paradigm, paragraph 3); the code's lines "lm_pval <-
+    apply(datPatch[keepGenes3,kpPatch],1,lm_pval_apply)" and "lm_pval_adjust <-
+    apply(lm_pval,2,p.adjust)  # FDR corrected".
+  why: >-
+    The count of channel genes depends on the adjustment: without the code's keepGenes filter, 22
+    channel genes pass with the per-gene Holm adjustment, 1 with Holm across genes and 12 with BH
+    across genes. The claim is blocked in this attempt because the keepGenes filter needs data the
+    repository does not hold, so the answer does not change its outcome here, but it decides which
+    count a later attempt compares with 7. Raised by the round-1 verifier.

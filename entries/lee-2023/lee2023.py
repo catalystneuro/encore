@@ -44,6 +44,16 @@ VERSION = "0.241120.0510"
 API = "https://api.dandiarchive.org/api"
 CODE_REPO = "AllenInstitute/human_patchseq_gaba"
 CODE_COMMIT = "5eb357a1cea246c7c847b5608a8fc7e87ea95b58"
+# Mouse comparison data (claims fig6c, fig6e, figs8b, figs9; claims file header: "Mouse comparison
+# data are the VISp Patch-seq GABAergic cells of Gouwens et al. 2020 (ref. 16)"). The recordings
+# are dandiset 000020; the per-cell t-types are the Allen Institute's specimen table
+# 20200711_patchseq_metadata_mouse.csv, read from a public copy pinned at a commit, as the Allen
+# portal's own URL has no version. Its ephys_session_id is matched to the NWB session id.
+MOUSE_DANDISET = "000020"
+MOUSE_VERSION = "0.210913.1639"
+MOUSE_LABELS = ("https://raw.githubusercontent.com/ewesteinde/patchseq_models/"
+                "547d11ea2339d51402484a84538c32d64ff162e9/20200711_patchseq_metadata_mouse.csv")
+MOUSE_LABELS_SHA256 = "2eb2a02ee1dd275b457055d6d4d57f2942d8c6d3cf329e820002010c7943c142"
 
 # The 9 chirp columns of LeeDalley_ephys_fx.csv; the other 84 are the paper's 84 features
 # (claims file, header, reading a).
@@ -62,9 +72,10 @@ SPIKE_FEATURES = ["upstroke_downstroke_ratio", "threshold_v", "width", "upstroke
 
 # --- archive -------------------------------------------------------------------------------
 
-def assets():
-    """All assets of the pinned version, with path, size, asset_id and the session id."""
-    out, url = [], f"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/?page_size=1000"
+def assets(dandiset=DANDISET, version=VERSION):
+    """All assets of a pinned version (default the human dandiset), with path, size, asset_id and
+    the session id."""
+    out, url = [], f"{API}/dandisets/{dandiset}/versions/{version}/assets/?page_size=1000"
     while url:
         r = requests.get(url, timeout=60)
         r.raise_for_status()
@@ -94,6 +105,18 @@ def code_table(name):
     r = requests.get(url, timeout=120)
     r.raise_for_status()
     return pd.read_csv(io.StringIO(r.text))
+
+
+def mouse_labels():
+    """The mouse specimen table (t-type per cell), checked against its pinned sha256."""
+    import hashlib
+    r = requests.get(MOUSE_LABELS, timeout=120)
+    r.raise_for_status()
+    assert hashlib.sha256(r.content).hexdigest() == MOUSE_LABELS_SHA256, "mouse label table changed"
+    m = pd.read_csv(io.BytesIO(r.content))
+    m["ttype"] = m["T-type Label"].astype(str).str.strip()
+    m["session"] = m.ephys_session_id.astype("Int64").astype(str)
+    return m
 
 
 def metadata_table():
@@ -142,6 +165,8 @@ def read_cell(asset_id):
     meta = {k: txt(p) for k, p in [("session_id", "general/session_id"),
                                    ("subject_id", "general/subject/subject_id"),
                                    ("species", "general/subject/species"),
+                                   ("genotype", "general/subject/genotype"),
+                                   ("sex", "general/subject/sex"),
                                    ("institution", "general/institution"),
                                    ("session_start_time", "session_start_time")]}
     meta["general_fields"] = ",".join(sorted(f["general"].keys()))
@@ -481,11 +506,15 @@ def neighbour_fraction(X, labels, k, same=True, among=None, query=None):
     return qidx, out
 
 
-def zscore_impute(F):
+def zscore_impute(F, ref=None):
+    """Missing values set to the feature median and z-scored; with `ref` (a boolean mask of rows)
+    the median, mean and sd are taken over those rows only and applied to all."""
     F = F.astype(float)
-    F = F.fillna(F.median())
-    sd = F.std(ddof=0).replace(0, np.nan)
-    return ((F - F.mean()) / sd).fillna(0.0)
+    R = F if ref is None else F[np.asarray(ref)]
+    F = F.fillna(R.median())
+    R = F if ref is None else F[np.asarray(ref)]
+    sd = R.std(ddof=0).replace(0, np.nan)
+    return ((F - R.mean()) / sd).fillna(0.0)
 
 
 def umap_embed(Z, seed):
