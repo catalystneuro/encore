@@ -300,6 +300,10 @@
             "description": "True when the outcome rests on an assumption about a method the paper leaves open: a choice the paper best supports, stated in a deviation that says what was assumed and why (docs/protocol.md, Author, step 1.6).",
             "type": "boolean"
           },
+          "seed_sensitive": {
+            "type": "boolean",
+            "description": "True when the outcome is not the same under all five seeds the protocol asks for (docs/protocol.md, Author, step 3)."
+          },
           "proposed": {
             "description": "A change of outcome found after the last verification round, held until a further round agrees with it.",
             "type": "object",
@@ -570,7 +574,7 @@
           }
         },
         "outcomes": {
-          "description": "The claims tested by both attempts whose outcome differs.",
+          "description": "The claims tested by both attempts whose outcome differs, each with why.",
           "type": "array",
           "items": {
             "type": "object",
@@ -595,6 +599,50 @@
               "note": {
                 "type": "string",
                 "minLength": 1
+              },
+              "cause": {
+                "description": "The main reason the two outcomes differ (docs/protocol.md, \"Repeat attempts\").",
+                "enum": [
+                  "dataset_changed",
+                  "protocol_changed",
+                  "claims_changed",
+                  "reading",
+                  "error",
+                  "label",
+                  "random",
+                  "data_used",
+                  "unclear"
+                ]
+              },
+              "error_in": {
+                "description": "For `error`: which attempt's code or record has the mistake.",
+                "enum": [
+                  "this",
+                  "earlier",
+                  "both"
+                ]
+              },
+              "choice": {
+                "description": "For `reading`: the method choice the paper or the criterion leaves open, and what each attempt chose.",
+                "type": "string",
+                "minLength": 1
+              },
+              "supports": {
+                "description": "The outcome the evidence best supports, when it supports one.",
+                "enum": [
+                  "reproduced",
+                  "partially_reproduced",
+                  "not_reproduced",
+                  "blocked"
+                ]
+              },
+              "confidence": {
+                "description": "How sure the diagnosis is.",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
               }
             }
           }

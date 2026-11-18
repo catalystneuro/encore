@@ -7,7 +7,14 @@ You reconcile a repeat attempt in the reproduction registry, checked out in the 
    - `not_checked`, when it cannot be checked on this version, with why.
    Give every one a `note` of one or two sentences with the evidence. A finding of `{attempt}` that no earlier finding points at is new; it needs nothing.
 3. Leave `found` unset on the blind attempt's own findings (it means `blind`), and add `found: blind` nowhere.
-4. For each claim tested by both attempts (the same `claim` id) whose outcome differs, add an item under `outcomes`, with the earlier outcome and a `note` on the likeliest reason: a change in the dataset, in the protocol, in the claims file, or a difference in method between the two notebooks (name it). Do not change either outcome.
+4. For each claim tested by both attempts (the same `claim` id) whose outcome differs, find out why, and add an item under `outcomes` with the earlier outcome. You are a diagnostician here, not a judge of the paper, and you do not vote: two attempts that agree can both be wrong. Read the claim's criterion; each attempt's outcome, measured value, notes and deviations; and the code each used for it (the cell tagged `claim:<id>` and the helper functions it calls; the earlier attempt's notebooks and helpers are in `earlier-entry/`, a copy that is not committed). Diagnose from the code, the recorded numbers and the reports; run a small check only when the diagnosis needs one. Give each item:
+   - `cause`, the main reason, one of: `dataset_changed` (the two attempts tested different versions and the files differ where it matters); `protocol_changed` or `claims_changed` (the rule or the criterion applied differs); `reading` (the paper or the criterion leaves a method choice open, the attempts made different defensible choices, and the numbers differ because of it); `error` (an attempt's code or record has a mistake: a bug, a wrong column, a misapplied formula, a data problem it did not handle, a number the code does not support); `label` (essentially the same numbers, with the criterion applied differently); `random` (random draws); `data_used` (different sessions, units, files or exclusions of the same version); `unclear`.
+   - `note`: one to three sentences on what exactly differs, with the numbers, and for an error the file and cell or line.
+   - `choice`, for `reading`: the open choice and what each attempt chose, in one sentence a reader of the paper could answer.
+   - `error_in`, for `error`: `this`, `earlier` or `both`.
+   - `supports`: the outcome the evidence best supports, only when it supports one; leave it out when it cannot be said.
+   - `confidence`: `high`, `medium` or `low`.
+   Do not change either outcome.
 5. {protocol_note}
 6. Set `earlier: {earlier}` and `date` in the block, and check the record with `python tools/entry.py check entries/{entry}`. Do not commit or push: the workflow commits your changes.
 
