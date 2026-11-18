@@ -2994,6 +2994,13 @@ def responses_block(data: dict, paper: dict, attempt: dict | None = None, root: 
             f'<a href="{REPO_URL}/blob/main/docs/author-responses.md">How responses are handled</a>.</p></div>')
 
 
+def summary_para(text: str, label: str | None = None) -> str:
+    """One recorder summary as a paragraph that starts with a bold "Summary:", or "Summary, <label>:" when the page
+    shows several (label is html)."""
+    head = f"Summary, <em>{label}</em>:" if label else "Summary:"
+    return f'<p class="lede"><strong>{head}</strong> {e(text)}</p>'
+
+
 def summary_block(atts: list[dict], name=None) -> str:
     """The recorder's summary of each attempt shown, at the top of the page, with who wrote it. Several are told
     apart by their paper, or by what `name` gives for an attempt (html)."""
@@ -3001,8 +3008,7 @@ def summary_block(atts: list[dict], name=None) -> str:
     if not shown:
         return ""
     name = name or (lambda a: e(a.get("paper_title") or a["paper"]))
-    paras = "".join((f'<p class="lede"><em>{name(a)}:</em> ' if len(shown) > 1 else '<p class="lede">')
-                    + f'{e(a["summary"])}</p>' for a in shown)
+    paras = "".join(summary_para(a["summary"], name(a) if len(shown) > 1 else None) for a in shown)
     return (f'<div class="attempt-summary">{paras}<p class="sub small">Summary written by the agent that recorded the attempt, '
             f'from its claims and the agents&rsquo; reports. A failure to reproduce may be a failure of the agent.</p></div>')
 
@@ -3259,8 +3265,8 @@ def page_paper(data: dict, p: dict) -> str:
         shown = [a for a in p["live"] if a.get("summary")]
         if shown:
             paras = "".join(
-                (f'<p class="lede"><em>{e(", ".join(dataset_label(k) for k in a.get("datasets") or [a["key"]]))}:</em> '
-                 if len(shown) > 1 else '<p class="lede">') + f'{e(a["summary"])}</p>' for a in shown)
+                summary_para(a["summary"], e(", ".join(dataset_label(k) for k in a.get("datasets") or [a["key"]]))
+                             if len(shown) > 1 else None) for a in shown)
             parts.append(f'<div class="attempt-summary">{paras}<p class="sub small">Summary written by the agent that '
                          f'recorded the attempt, from its claims and the agents&rsquo; reports. A failure to reproduce '
                          f'may be a failure of the agent.</p></div>')
@@ -3348,8 +3354,14 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                 continue
             title = (f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
                      else e(nb["title"]))
+            # Beside the notebook's name: Google's own "Open in Colab" badge (a copy in the site's assets, so the page
+            # loads nothing from another site), linked to the copy tools/colab.py keeps on the `colab` branch.
+            colab = (f' <a class="colab" href="{COLAB_URL}/{e(a["entry"])}/{e(nb["path"])}" target="_blank" '
+                     f'rel="noopener" title="Open and run this notebook in Google Colab. Its first cell fetches the '
+                     f'entry&rsquo;s files and installs its pinned packages."><img src="{root}assets/colab-badge.svg" '
+                     f'alt="Open in Colab" width="117" height="20"></a>') if not data["demo"] and a.get("entry") else ""
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
-                            f'<span class="count">{len(mine)}</span></h3>'
+                            f'<span class="count">{len(mine)}</span>{colab}</h3>'
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
                             f'</p>{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
@@ -3710,7 +3722,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   <div class="phead-main">
   <div class="result"><p class="result-head">Outcomes of {n} claims</p>{bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
-  {summary_block(atts, name=lambda a: "On " + ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
+  {summary_block(atts, name=lambda a: ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
   {responses_block(data, paper, one, root)}
   {superseded}
   <p class="actions">{" ".join(actions)}</p>

@@ -565,6 +565,19 @@ def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
     assert order == sorted(order)
 
 
+def test_each_notebook_on_the_claims_panel_has_an_open_in_colab_badge(built):
+    # Beside the notebook's name over its claims: a link to the copy of it on the `colab` branch.
+    data, out = built
+    page = (out / "papers" / "senzai-2017" / "index.html").read_text()
+    panel = page[page.index('id="claims"'):page.index('id="notebooks"')]
+    href = f'{site.COLAB_URL}/senzai-2017/reproduce_senzai_2017.ipynb'
+    assert f'<a class="colab" href="{href}" target="_blank" rel="noopener"' in panel
+    assert panel.count('class="colab"') == panel.count('<div class="claim-group"><h3')
+    # Google's own badge, from the site's assets: the page loads nothing from another site.
+    assert '<img src="../../assets/colab-badge.svg" alt="Open in Colab"' in panel
+    assert (out / "assets" / "colab-badge.svg").read_text().startswith("<svg ") and "colab.research.google.com/assets" not in page
+
+
 def test_view_on_dandi_opens_a_new_window(built):
     data, out = built
     dandiset = next(iter(site.current_attempts(data)))
@@ -1594,3 +1607,22 @@ def test_the_authors_list_sorts_by_findings_reproduced(built):
         assert r["counts"] == (total if sum(total.values()) else None)
     js = (site.ASSETS / "list.js").read_text()
     assert "miniBar(r.counts)" in js and "r.papers.slice(0, SHOWN)" in js and "and ${r.papers.length - SHOWN} more" in js
+
+
+def test_summaries_start_with_a_bold_label():
+    one = site.summary_block([{"summary": "It held up.", "paper": "doi:10.1/x"}])
+    assert '<p class="lede"><strong>Summary:</strong> It held up.</p>' in one
+    two = site.summary_block([{"summary": "A.", "paper": "p1", "paper_title": "First"},
+                                    {"summary": "B.", "paper": "p2", "paper_title": "Second"}])
+    assert two.count("<strong>Summary, <em>") == 2 and "<strong>Summary, <em>Second</em>:</strong> B." in two
+
+
+def test_summaries_hold_no_agent_chatter():
+    # A recorder that could not write its file answered with the paragraph and a note around it ("Here is the
+    # paragraph to save...", "I couldn't create ..."); only the paragraph belongs in summaries/.
+    import backfill_summaries
+
+    chatter = backfill_summaries.META
+    found = [p.name for p in (Path(site.ROOT) / "summaries").glob("*.md")
+             if p.name != "README.md" and chatter.search(p.read_text())]
+    assert found == []

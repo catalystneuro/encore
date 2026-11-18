@@ -1,68 +1,74 @@
-**Round 2 verification: Tingley & Buzsáki 2018 on dandiset 000213 (0.250624.0438)**
+**Verifier report, round 2: Tingley & Buzsáki 2018 on DANDI:000213 (0.261109.2219)**
 
-The claims file holds 25 claims, and the attempt record gives an outcome for each:
+I counted from the files. The claims file has 32 claims and the attempt record has 32 outcomes: 8 reproduced, 9 partially_reproduced, 12 not_reproduced and 3 blocked. Cell 0 now has a "tested" table, not an outcome table, so round-1 point B15 is resolved.
 
-| Outcome | Count |
-|---|---|
-| Reproduced | 3 |
-| Partially reproduced | 8 |
-| Not reproduced | 9 |
-| Blocked | 5 |
+### 1. Outcomes and assumptions
 
-I saved the paper text (PMC6605060) under `paper/`. I also read three source files at the commits the notebook cites: `bz_firingMap1D.m` and `bz_getPlaceFields1D.m` (buzcode e615663), and `scratch_07_11_17_spatialBinnedMaxCorr.m` and `scratch_07_25_17_calc_firingMaps.m` (scratch 2f80453).
+| claim | agree? | note |
+|---|---|---|
+| ls-neuron-count, hpc-unit-count, ls-active-neurons | yes | |
+| fig2-ls-phase-vs-shuffle | yes (assumed) | aa1 0.405; the four "undefined = 0" readings give 0.394–0.499. Cell 19 shows the test is not calibrated under either treatment of undefined phase: shifted phases pass 0.380 against 0.405 real. So the fraction does not measure phase coding, and the record says so. |
+| fig2-ls-phase-beats-rate, fig2e, fig2fg | yes (assumed) | Under "undefined = 0" phase is never better than rate. Under the left-out variant the shifted-phase null matches the real data (cells 22, 25, 28). |
+| fig1i-hpc-rate-phase-equivalent | yes (assumed) | Judged on the adopted aa1, where both KS tests give p < 0.05. Note that ab1 with fields (b) gives p = 0.066 and 0.82, and "ties to lowest bin" with fields (b) gives 0.18 and 0.82; both of those pass (cell 31). The criterion has no "under one reading" clause, so using the adopted reading for a claim of absence is reasonable. But see point 3c on consistency. |
+| ls-lower-peak-info, ls-few-place-fields, hpc-place-field-properties, ls-place-fields-unstable, speed-independent | yes | |
+| fig1e-phase-info-smaller-scale | yes (assumed) | Partial by the criterion's wording. Shifted phases give the same smaller scale (null medians 12.5–21, cell 44). |
+| fig1g-phase-more-info-fine-scale | yes, by the criterion's wording only (assumed) | Holds under 1 of 4 field × level readings: fields a, equal-count levels, KS test, 37/44 = 0.841. The t-test version (35/44 = 0.795) and box fields (0.750/0.795) fail. The fine-scale excess is the same with shifted phases (0.695 against 0.684, cell 47). Under phase = 0, a bin with no nearby spike becomes cos = 1, so at 2–3 bins the "phase" information measures whether a spike is near, not its phase. The assumption itself produces the match. The record says the match does not show phase information; it should also say that the phase-0 fill causes it. |
+| fig3-ls-phase-reliable | yes | |
+| fig4d-depth-gradient | yes, by the criterion's wording only (assumed) | Holds in 1 of 24 combinations (decoder reading × depth × site direction): bb1, first depth, sites deepening. The per-animal r are all negative but small (DT9 −0.14). Pooled r = −0.209, p = 0.11. Within sessions 26/47 are negative, which is no more than chance. The adopted aa1 fails (cell 56). bb1 has no shifted-phase null (`NULL_READINGS` covers only aa1, ba1, aa0, ba0). Both assumptions (LS depth, site direction) are stated, and the record calls the result a bare majority. |
+| fig4e-onset-depth | yes (assumed) | |
+| fig4e-onset-mediolateral | yes (assumed) | The between-animal difference holds: Watson-Williams p < 1e-5 under every reading, which the criterion allows; Kruskal-Wallis p = 0.040 under bb1. \|r\| ≥ 0.8 is reached only under the ba0 variant. |
+| fig5-assemblies | yes (assumed) | Fraction 0.266 or 0.075; median timescale 4/9 or 20/41 ms. The assumptions (7 % sample, fit per trial, trials cut to the shorter in shuffles, zero-lag rule dropped) are stated. |
+| fig5g-assembly-neurons-stronger-phase | yes (assumed) | Weak test: under the Methods rule only 13 neuron-conditions are outside an assembly. |
+| figs5-assembly-independent-of-locking | yes, by the criterion's wording (assumed) | Fragile. The assembly set does not reproduce fig5 (0.266 against 0.185). Under rule (b) Pearson p = 0.056 and 0.081, and Spearman is significant (0.019, 0.036). |
+| **fig6-session-counts** | **no → not_reproduced** | The criterion has no partial rule ("Reproduced when all three counts are within tolerance"). The LS-with-CA1 count is 25 or 33 against 63 ± 6.3. The 57 from flagged CA1 channels is a variant, not the criterion's reading, because the claim is about CA1 *neurons*. The record applies this same logic to figs1f but not here. I agreed with partial in round 1; that was my error. |
+| fig6c-ca3-coherence-increases, fig6d-cfc-stronger-ca3 | yes | |
+| fig6e-assembly-position | yes (assumed) | The partial rule needs only the signs. The signs hold under fields (a) with assembly pairs; the curve correlation turns positive under fields (b) with the session reading (cell 86). |
+| figs7-ensemble-ls-phase-best | yes (assumed) | The ensemble decoder leaves undefined phase out, unlike the adopted phase 0. That is stated, and it would favour LS, which still loses. |
+| figs2-rate-phase-independent, figs1f-trial-counts | yes | |
+| figs3, figs6, fig7 (blocked) | yes | |
 
-### 1. Agreement with the stated outcomes
+On the main assumption (undefined phase set to 0): it is stated and backed by the calibration, so it is reasonable. But neither treatment gives a working hippocampal phase decoder. Under aa1, real phase MSE is 6,573 against 6,641 for shifted phases and 6,707 for chance (cells 4 and 16). The decoding outcomes therefore show what this decoder does, not what the paper's data contain. The finding addressed to the authors covers this.
 
-I agree with 23 of the 25 outcomes as the criteria are written. Several of them carry a caveat.
+I found no place where the claims file misreads the paper.
 
-- **ls-neuron-count, hpc-unit-count, ls-active-neurons, fig2-ls-phase-vs-shuffle, fig2-ls-phase-beats-rate, fig2e, fig2fg, fig1e, fig1g, fig6c, fig6d, figs7, speed-independent, figs6, fig7:** I agree with all of these.
-- **fig1i (not reproduced):** I agree, but the result is fragile.
-  - The fields test gives KS p = 0.044 over 531 fields, which is 29% of the paper's 1,820.
-  - The sessions test gives p = 0.61.
-  - The box-map variant gives p = 0.097 (cell 36).
-- **ls-few-place-fields and hpc-place-field-properties (partial):** I agree. The hippocampal field fraction is still a third of the paper's.
-- **ls-place-fields-unstable (not reproduced):** I agree.
-- **fig4d (partial) and fig4e (not reproduced):** I agree, on the condition that the first depth in the session name is the LS depth (problem 6).
-- **fig5-assemblies (not reproduced):** I agree as computed. The GLM covariate coding biases the result downward, as described in section 3.
-- **ls-information-lower (partial):** I agree. Only the direction of the comparison is meaningful, because the scale is uncertain.
-- **fig5g and fig6e (blocked as not_runnable): I accept these with a reservation.** Both could be tested by sampling neurons and running all of their pairs, in place of sampling pairs:
-  - 70,898 pair-conditions over 793 LS neurons is about 89 per neuron. At 1.17 s per pair (cell 72), 100 LS neurons take about 3 process-hours.
-  - I cannot check whether `not_runnable` is on the protocol's list of reasons.
+### 2. Statements the printed numbers do not support
 
-### 2. Sentences the printed outputs do not support
+- **README:** "It runs in about 40 minutes on 4 CPUs." Cell 97 prints 50.4 min.
+- **Record, fig5-assemblies notes:** "The fits took 1,071 s on 4 CPUs." Cell 68 prints 1227 s. The verification response's "about 0.5 s per pair" does not match either: 1227 s × 4 CPUs / 7,098 pairs ≈ 0.69 CPU-s per pair.
+- **Cell 63 and record, fig4e-onset-mediolateral:** "0.075 to 0.739". Cell 62 prints 0.074 to 0.740. "p = 0.13 to 0.69" should be 0.13 to 0.68 (largest printed value 0.678574).
+- **Record, fig2fg notes:** "the hippocampal ones (-859 to -2,305) are larger in magnitude". This holds only for conditions. For ba0 sessions, LS −1,804 is larger than hippocampal −1,448 and −1,603 (cell 28). Cell 29 correctly says "at the condition level". The outcome does not change.
+- **Record, finding on undefined phase:** "Set to phase 0, the shifted-phase check is near its nominal rate." Shifted phases beat rate in 0.028–0.059 of conditions, 3–6 times the nominal 1 % (cell 16).
+- **Record, fig6-session-counts:** "accounts for much of the shortfall". Cell 78 says "part". Adding all 17 DT8 sessions would still leave 42 or 50, short of 63.
+- **Record, speed-independent:** "fewer than five trials with five or more spikes". The threshold is not printed; cell 65 only says "too few trials of 5+ spikes".
 
-- **Cell 73, and the fig5-assemblies notes:** "The real gain beats all ten shuffles in 35.4% of the pairs, where 9.1% would without coupling, so hippocampal spikes predict LS spikes beyond the shuffles in many pairs."
-  - The 9.1% (1/11) is hard-coded in cell 72; it is not computed.
-  - It also assumes the real fit and the shuffles are exchangeable. They are not: the window is chosen to maximise the real fit, and the shuffles run only at that window (`_pair_strength`). The no-coupling rate is therefore above 1/11, and the comparison overstates the evidence.
-- **fig1g notes in the attempt record:** "at 3 bins too (+0.006, p = 0.16)". Cell 54 shows that difference is not significant.
-- **fig1g deviation:** "Spans of 3 and 4 bins give the same smoothing, as MATLAB smooth reduces even spans by one." That holds for rate only. For phase the cause is circ_smoothTS's 2·ceil(w/2)+1. Spans 5 and 6 are also identical (cell 54).
-- **Figures from the first run that this notebook does not print:**
-  - ls-place-fields-unstable: "box map … reading (b) gave LS higher (88.7% against 84.6%, p = 3.4e-04)".
-  - hpc-place-field-properties: "In the first version … 14.6% and the peak 12.5 Hz". The variant printed now is 0.147 (cell 45).
-  - Cells 36 and 37 call the box variant "before revision", but it now gives 318 fields and p = 0.097. The first run gave 315 fields and p = 0.115.
-- **README:** "holds 67 sessions of simultaneous hippocampal and lateral septum (LS) recordings". Only 62 sessions hold LS units (cell 18). One file has no hippocampal channel (cell 11), and 19 files have no hippocampal units (cell 63).
-- **fig5 deviation:** "the paper may count each pair once". The Methods say "Each neuron pair has a single assembly strength value, determined by all spikes that occur during a single block of trials", which supports counting per condition, as done here.
-- **Cell 70 and the figs7 notes:** at 25 units the claim reads "LS phase beats hippocampal phase … one-sided p = 0.0075". This rests on 3 conditions. Cell 69 pools the ensemble draws within a condition as independent samples, so the p values are pseudo-replicated. The conclusion is unaffected because the direction is wrong at 15 and 20 units.
+All other sentences I checked in the conclusions, the Summary, the README and the record notes match the outputs.
 
-Every other sentence I checked matches the printed outputs, including all the per-rat figures, counts and p values. That covers the "**Result:" cells, the Summary, the README table and the other notes.
-
-**My round-1 reasons are recorded faithfully,** in close to my own words. Some reasons have my numbered problems folded in (for example problems 4 and 5 under fig2-ls-phase-vs-shuffle, and problem 9 under hpc-place-field-properties), and nothing is misstated. Problems 8 and 10 are not attached to any claim, which is reasonable. For fig5, "agrees: true" is right for the outcome (blocked), but I disputed the reason.
+The record's verification entries put my round-1 reasons in my own words, adding the relevant B items. That is accurate. Every `agrees` flag matches the round-1 outcome against the earlier record.
 
 ### 3. Round-1 points
 
-**Resolved**
+**Resolved:**
+- B1: phase 0 adopted, and the synthetic and real-data nulls were run.
+- B2: the samples-split leak is disclosed.
+- B4: MATLAB-style smoothing now used for the best scale.
+- B5: ties broken at random; `chance_rate` printed.
+- B6: all decoder readings run for fig4d/fig4e.
+- B7: Watson-Williams run.
+- B8: both depths and both site directions shown, with a metadata finding.
+- B9: fig5 run on a sample.
+- B10 to B15.
 
-1. **Problem 1:** fixed. `rate_map` and `place_fields` now match `bz_firingMap1D` `rateMaps` (FMAToolbox Smooth, tau = round(nBins/50)) and `bz_getPlaceFields1D` (fastrms peak, and the mean < SD exclusion). I checked these against the source.
-2. **Problems 2, 3 and 9:** resolved.
-3. **Problem 4 for the fig2 claims:** resolved. The theta-ratio > 1 variant changes nothing material.
-4. **Problem 5:** resolved. I confirmed `rr = randperm(length(r))` over the pooled trial-by-bin samples in scratch_07_11_17_spatialBinnedMaxCorr.m.
-5. **Problem 7:** resolved. It matches the paper's code (`rateMaps_box` with `smooth`, and `circ_smoothTS`).
-6. **Problem 8:** resolved. Cell 14 now states the clock check is weak.
-7. **Problem 10:** resolved.
-
-**What remains that bears on a conclusion**
-
-- **Hippocampal place-field yield.** Now that the place-field code matches the paper's, the gap of 10.5% against 31.7% of maps (and 22.9% against 49.9% of neurons) is unexplained. It most likely comes from the rebuilt linearization: about one position sample per bin makes the mean < SD rule strict. This affects ls-few-place-fields, hpc-place-field-properties, ls-place-fields-unstable, fig1i, fig1e, fig1g and the hippocampal part of fig2fg. fig1i is the most exposed, because its outcome turns on p = 0.044.
-- **Problem 6 (depth assumption) is still unresolved.** fig4d holds with either depth, but fig4e and fig4d both depend on the assumption. For fig4e there is also a confound: in DT9 the theta reference switches to a ca3 channel in exactly the deepest sessions (828–900 µm), and DT5 alternates between hpc and ca3 references. Shifts in the reference phase between sessions can mask, or create, an onset-depth correlation.
-- **fig5 GLM covariates.** Position enters `_assemblies` as a single linear term in bin index, and theta phase as a linear angle. Shared spatial tuning is therefore not regressed out. Trial shuffles within a condition keep that shared tuning, which raises the null maximum and lowers the strength, so the 5.2% is biased downward. Coding position as bin indicators or splines would fix this, and so would running the shuffles at every window and taking each shuffle's best.
-- **fig5g and fig6e** could be tested on a sample of neurons with all of their pairs, as described in section 1.
+**Remaining that bears on a conclusion:**
+1. **fig6-session-counts** should be not_reproduced (no partial rule).
+2. **B3 is disclosed but not fixed.** The information measure under phase 0 still produces the fig1g match and the fig1e phase scale, with the null equal to the real values. There is no shuffle-subtracted information and no minimum sample count. fig1g's "reproduced" rests on this, and on one passing reading out of four.
+3. **Readings are chosen inconsistently.**
+   - fig4d is reproduced on whichever of six decoder readings passes (bb1).
+   - fig1i is judged on the adopted aa1 only, though ab1 with fields (b) passes both tests.
+   - The record should apply one rule to both, and run the shifted-phase null under ab1/bb1 if bb1 carries a conclusion.
+4. **The decoder is weak.** Hippocampal rate MSE is 6,329 against 6,733 for uniform guessing. Recorded positions beat positions 1 s later in only 30 of 47 sessions (cell 4). This bounds every decoding outcome. It is disclosed in the Summary but not in the notes of the decoding claims.
+5. **fig5 cluster:**
+   - The zero-lag rule was not applied.
+   - 874 of 7,098 pairs have their best window at 1 ms.
+   - The assemblies match neither the paper's fraction nor its timescale.
+   
+   So figs5 "reproduced" (absence) and fig6e "partial" are tested on assemblies that do not reproduce the paper's. Their notes should say so.

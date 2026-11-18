@@ -1,0 +1,60 @@
+paper: doi:10.1101/2025.01.27.635041
+dandiset: "001619"
+questions:
+- claim: units-count
+  asked: 2026-11-17
+  question: >-
+    The criterion counts cerebellum, pons and medulla as CB, P and MY "with their subregions" of
+    the Allen structure tree. The paper's three counts (5,700, 3,700 and 10,900) sum to exactly its
+    total of 20,300, so the paper seems to have assigned every unit to one of the three. Under the
+    criterion 2,711 good units fall in none, among them 1,222 in the arbor vitae and others in the
+    cerebellar peduncles and the spinal tract of the trigeminal nerve, which are fibre tracts, not
+    subregions of CB, P or MY in the tree. Should the criterion assign fibre-tract units to the
+    division they lie in (for example the arbor vitae to the cerebellum)?
+  passage: >-
+    "we obtained 20,300 clear single units, including 5,700 units in the cerebellum, 3,700 units
+    in the pons, and 10,900 units in the medulla" (Results, Brainstem activity maps of orofacial
+    rhythms, paragraph 2).
+  why: >-
+    With the arbor vitae counted in the cerebellum, the cerebellum count is 5,385, within
+    tolerance of 5,700, where it is 4,157 under the criterion. The pons (3,021) and medulla (8,992)
+    counts would also change if the peduncles and tracts were assigned. Raised by the verifier
+    (round 1, point B11).
+- claim: ed1bc-licks-pause-at-swallows
+  asked: 2026-11-17
+  question: >-
+    The criterion compares lick probability from 0 to 100 ms after swallow onset with that after
+    expirations. The swallow detector it adopts (code detect_swallows) keeps a swallow only if a
+    lick follows the detected peak within 0.25 s, and takes the onset at the start of the airflow
+    pause, so the window after onset partly selects for licks. On these data the lick probability
+    is lowest from about -90 to 0 ms (minimum at -48 ms) and rises from 0 to 60 ms. Does the
+    paper's "Licking was paused during swallowing" refer to the pause around the detected event, so
+    that the window should cover the swallow itself (for example the 100 ms before onset, or a
+    window centred on it)?
+  passage: >-
+    "Example session. Top, lick timing aligned to the detected swallow events ... Licking was
+    paused during swallowing. Bottom, lick timing aligned to all expirations as a control. Lick
+    was not paused during expiration." (Extended Data Figure 1b legend); "c. Lick probably aligned
+    to swallowing across all sessions." (Extended Data Figure 1c legend).
+  why: >-
+    In the criterion's window the lick probability is higher around swallows than around
+    expirations in 86 of 90 sessions (0.0308 against 0.0211 per 3.4 ms bin), so the claim is not
+    reproduced; from -90 to 0 ms it is 0.0036 to 0.0068 against about 0.021, which would reproduce
+    it. Raised by the verifier (round 1, point B5).
+- claim: fig4e-licking-units-anticipate-breath
+  asked: 2026-11-17
+  question: >-
+    The header (Unit versions, Fig 4e-f) says the code uses "the 40 fastest and 40 slowest
+    two-lick cycles". get_peak_diff_lick_unit sorts the cycles longest first and takes
+    psth_1_i[:n_trial] and psth_2_i[-n_trial:], which are the 40 cycles on each side nearest the
+    median, not the fastest and slowest. Which selection should the criterion use?
+  passage: >-
+    process_mat.py at commit fbc0abe, get_peak_diff_lick_unit: "sorted_indexes=np.argsort(ibi);
+    sorted_indexes=sorted_indexes[::-1]; ... psth_1_i= np.where((ibi<d_bound) & (n_licks==2))[0];
+    psth_2_i= np.where((ibi>d_bound) & (n_licks==2))[0]; if len(psth_1_i)>n_trial:
+    psth_1_i=psth_1_i[:n_trial]; if len(psth_2_i)>n_trial: psth_2_i=psth_2_i[-n_trial:]".
+  why: >-
+    The attempt uses the header's 40 fastest and 40 slowest (mean 61.8 to 68.3 ms over all
+    sessions) and shows the code's selection beside it (54.5 to 61.3 ms); both are positive with p
+    < 0.001, so the outcome does not change here, but the numbers do. Raised by the verifier
+    (round 1, point B7).

@@ -199,6 +199,10 @@ def _fill(role: str, target_name: str, model: str, version: str | None = None, r
                    "claims on all of them.")
         elif version in (None, earlier_version) and earlier_protocol != protocol_version():
             why = f"The data are unchanged; the protocol has changed since, and this attempt applies {protocol_version()}."
+        elif version in (None, earlier_version):
+            # The same data and the same protocol: a second independent attempt (docs/protocol.md, "Repeat attempts").
+            why = ("The paper is tested again from the same claims and the same data, independently of the earlier "
+                   "attempts; the two are then compared, to find where independent attempts differ and why.")
         else:
             why = "The data have changed since, and this attempt tests what they hold now."
         details.update(entry=key, why=why, next_attempt=f"{key}-{n:02d}")
