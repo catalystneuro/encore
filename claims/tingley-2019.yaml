@@ -119,9 +119,9 @@ claims:
     randomly selected times per recording, with bounds of +-3 SEM across neurons (Figure 1C
     legend). The bin and window of the triggered histogram are not given; 1 ms bins over +-100
     ms are a standard plotting choice, and the comparison is made at the bin of the event time
-    and the +-5 ms around it. Per animal, the median instantaneous frequency of its LS HFOs lies
-    in 120 to 180 Hz, and the mean triggered probability at the event exceeds the random-time
-    mean by more than 3 SEM. Reproduced when this holds in all 6 animals, partially reproduced in
+    and the +-5 ms around it (a window set here). Per animal, the median instantaneous frequency
+    of its LS HFOs lies in 120 to 180 Hz (a test set here), and the mean triggered probability at
+    the event exceeds the random-time mean by more than 3 SEM. Reproduced when this holds in all 6 animals, partially reproduced in
     3 to 5, not reproduced in fewer.
 - id: fig1c-post-burst-suppression
   statement: LS HFOs are accompanied by a suppression of LS firing immediately after the
@@ -176,11 +176,6 @@ claims:
   quote: Across entire recordings, the vast majority of LS neurons (1840 of 1989; 92%) were
     significantly phase-locked to the 120–200 Hz frequency band, with a strong unimodal phase
     preference for the trough of each cycle (Figure 1D, E)
-  statistics:
-  - test: Rayleigh test
-    p: 0.05
-    p_relation: "<"
-    n: 1989 LS neurons, 6 animals
   expected:
     quantity: fraction of LS neurons significantly phase-locked
     value: 0.925
@@ -279,7 +274,8 @@ claims:
     +-25 ms of the LS HFO times, divided by its mean at random times (the window and the random
     baseline are set here; the paper gives neither). Reproduced when, in every such recording,
     the median ratio over LS sites exceeds the median ratio of the sites of every non-hippocampal
-    structure and those sites' ratios are below 1.5 (a site without HFOs); partially reproduced
+    structure and those sites' ratios are below 1.5 (a site without HFOs; a bound set here, the
+    paper gives none); partially reproduced
     when this holds in most such recordings. The hippocampus is left out, as it has its own
     ripples.
 - id: fig2ef-intermediate-ls
@@ -348,7 +344,9 @@ claims:
     value: 7172
     tolerance: 717.2
   criterion: A claim of absence, judged on the paper's test, a rank-sum test of PRE against POST
-    excess correlations over all pairs, at p < 0.05. From the Methods and Results. Pairs of LS
+    excess correlations over all pairs, at p < 0.05 (the paper states no level for this test;
+    0.05 is the level of its Figure 7 and Figure S2 tests, and the stricter of the two levels it
+    uses). From the Methods and Results. Pairs of LS
     neurons on different shanks; three CCGs per pair from spikes during LS HFOs in PRE, during
     maze traversal (BEHAV) and during LS HFOs in POST; 1 ms bins over +-200 ms; each CCG
     convolved with a 5 ms and a 200 ms Gaussian, and the excess correlation is the 5 ms version
@@ -423,7 +421,8 @@ claims:
     n: 53 recordings
   depends_on:
   - fig4b-pre-post-unchanged
-  criterion: A claim of absence, judged on the paper's test at p < 0.05. From the Methods, the
+  criterion: A claim of absence, judged on the paper's test at p < 0.05 (the paper states no
+    level; read as for fig4b-pre-post-unchanged). From the Methods, the
     temporal bias of a pair in an epoch is the CCG summed over 0 to +200 ms minus that over -200
     to 0 ms, for pairs across different shanks; per recording, the correlation over pairs of the
     PRE with the BEHAV biases and of the BEHAV with the POST biases. Open details. The
@@ -448,6 +447,10 @@ claims:
   - about: PRE against POST, every compression factor
     p: 0.01
     p_relation: ">"
+  expected:
+    quantity: largest compression factor at which PRE and POST correlations exceed chance
+    value: 20
+    tolerance: 2
   depends_on:
   - fig4b-pre-post-unchanged
   criterion: From the Methods. CCGs with 1 ms bins; the BEHAV CCG over +-120 ms; the HFO CCG
@@ -457,11 +460,11 @@ claims:
     between 1 and 50 are not listed; every integer from 1 to 50 is used. The interpolation is
     linear (a standard choice). The correlation is Pearson. The tests are not named; readings for
     actual against chance over pairs are a Wilcoxon signed-rank and a rank-sum test, and for PRE
-    against POST a rank-sum test. Pairs as in fig4b-pre-post-unchanged. Reproduced when PRE and
-    POST each exceed chance at p < 0.01 at every factor up to 15 and PRE and POST do not differ
-    at p < 0.01 at any factor; the largest factor with p < 0.01 is reported and compared with
-    "~20". Partially reproduced when they exceed chance up to at least 5 and one of the other
-    parts fails.
+    against POST a rank-sum test. Pairs as in fig4b-pre-post-unchanged. The largest factor up to
+    which PRE and POST each exceed chance at p < 0.01 at every factor is compared with the
+    paper's "~20" (10% tolerance). Reproduced when it is within tolerance for both and PRE and
+    POST do not differ at p < 0.01 at any factor; partially reproduced when PRE and POST exceed
+    chance at factor 1 and one of the other two parts fails.
 - id: figs3d-hpc-compression-post
   statement: For hippocampal cell pairs, compression of behavioural spike patterns during CA1
     ripples is higher after than before the behavioural session, for compression factors 1 to 7;
@@ -524,8 +527,8 @@ claims:
     it holds for LS-LS pairs only. The increase of EV over REV with 1 s bins, which the Methods
     report for every pair set, is shown.
 - id: fig5b-nrem-and-rates
-  statement: LS HFOs occur primarily during NREM sleep, and their rates are lower than those of
-    hippocampal SPW-Rs.
+  statement: LS HFOs occur primarily during NREM sleep, and their rates are significantly lower
+    than those of hippocampal SPW-Rs.
   source: Results, paragraph 6; Figure 5A, B and legend
   quote: Across recordings with sleep and behavioral sessions, we primarily observed HFO events
     during NREM sleep ( Figure 5A ). While this is similar to the state-dependent occurrence of
@@ -536,7 +539,8 @@ claims:
     test. Readings for "lower" are (a) a rank-sum test of the 89 LS against the 53 CA1 rates, (b)
     a signed-rank test over the recordings with both, at p < 0.05, in NREM and over all time.
     "Primarily during NREM" holds when more than half of all LS HFOs fall in NREM and the NREM
-    rate exceeds the WAKE rate in most recordings (signed-rank p < 0.05). Reproduced when both
+    rate exceeds the WAKE rate in most recordings (signed-rank p < 0.05); these bounds are set
+    here, the paper gives none. Reproduced when both
     parts hold under one reading; partially reproduced when one does.
 - id: fig5d-lag
   statement: LS HFOs are reliably coupled to CA1 ripples, with a median peak-to-peak lag of
@@ -595,8 +599,9 @@ claims:
     bins over +-200 ms, normalized by the number of CA1 ripples, are a standard choice. The
     per-bin test of Figure 5E is a two-sided t-test over recordings, Bonferroni corrected over
     bins; paired by recording and two-sample are both run. The inset fraction is (a) the mean
-    over recordings, (b) all HFOs pooled. WAKE is read as in the opening comment. Reproduced when
-    some bins within +-25 ms differ at corrected p < 0.001 with NREM higher, the NREM fraction is
+    over recordings, (b) all HFOs pooled. WAKE is read as in the opening comment. The legend
+    does not say which bins differ; the +-25 ms window for them is taken from the inset and set
+    here. Reproduced when some bins within +-25 ms differ at corrected p < 0.001 with NREM higher, the NREM fraction is
     higher at p < 6.6e-6, and both fractions are within tolerance under one reading; partially
     reproduced when the NREM fraction is higher at p < 0.001 but the bins, the p bound or a
     value fails.
@@ -644,7 +649,7 @@ claims:
     spikes) is applied with the 120-200 Hz phase of the CA1 ripple channel, inside CA1 ripples
     (reading a) or inside the Methods' high-power epochs on that channel (reading b). Reproduced
     when the fraction of LS neurons significantly locked is not above the 5% expected by chance
-    (one-sided binomial test, p < 0.05); not reproduced when it is. The fraction and the mean
+    (one-sided binomial test, p < 0.05; a test set here); not reproduced when it is. The fraction and the mean
     resultant length are reported either way, beside those of fig1d-phase-locking.
   depends_on:
   - fig1d-phase-locking
@@ -848,7 +853,8 @@ claims:
   - fig7e-seqnmf
   criterion: Per feature, a rank-sum test of the neurons' actual-against-shuffled values (black
     points, in SD of the shuffled MSE distribution) against their shuffle-against-shuffled values
-    (red points), at p < 0.05 (Results and Figure 7E legend). The seven content-independent
+    (red points), a rank-sum test as the Results name it. The level is not stated; p < 0.05,
+    the level the Figure 7E legend uses for single neurons, is the reading. The seven content-independent
     columns are not all named in the text; it names hippocampal spike count, ripple depth,
     brain state and duration, and the Methods define inter-ripple interval (mean of the intervals
     before and after) and condition (PRE, BEHAV or POST); the seventh could not be read, as the
@@ -915,3 +921,19 @@ claims:
     ANOVA of the counts over the 200 runs gives p > 0.05. Reproduced when both hold; partially
     reproduced when one does. The scrambled order uses one permutation per run (the notebook's
     seed is not fixed; a standard choice).
+checks:
+- date: 2026-11-18
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1d-phase-locking, removed the Rayleigh p < 0.05 statistic; it is the threshold used to count the 1840 phase-locked neurons (Figure 1D legend), a method and not a result.
+  - fig4d-compression, replaced the cutoff of factor 15 and the partial bound of 5, which the paper does not give, with the paper's "~20" (Results) as an expected value with the 10% tolerance.
+  - fig5b-nrem-and-rates, statement now says "significantly lower", as the Results do; the NREM thresholds of the criterion are marked as set here.
+  - fig4b-pre-post-unchanged and fig4c-temporal-bias, the p < 0.05 level was presented as the paper's; the paper states none, and the criterion now says so.
+  - fig7e-content-independent, the p < 0.05 level for the rank-sum test was attributed to the Results and the Figure 7E legend; the legend's level is for single-neuron t-tests, so it is now named as a reading.
+  - fig1c-hfo-each-animal, fig2-confined-to-ls, fig5e-state-coupling, ls-spikes-not-locked-to-ca1-ripples, windows, bounds and tests not given in the paper are now marked as set here.
+  - Open, dataset-composition, the Methods sentence with 62 recordings (37 CA1, 25 CA3) names Figure 6, the optogenetic figure; the file reads it as the Figure 7 dataset, which the content supports, but the paper does not settle it.
+  - Open, fig7e-content-independent, the seventh content-independent feature of Figure 7E is not named in the text and could not be read (main figures not available).
+  - Open, figs2-post-rate-increase, the order of the N values on Figure S2A (1754, 2315, 1373 for LS, CA1, CA3) is inferred from the supplement's extracted text.
+  - Open, the code commits named in the opening comment (DavidTingley/papers 9f4cd48, buzcode e615663) were not re-read in this check.
