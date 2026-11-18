@@ -6,12 +6,12 @@ spike trains of 8 human organoids, 9 murine organoids, 6 neonatal mouse cortical
 primary cultures, murine organoids recorded with gabazine and with NBQX and R-CPP, and longitudinal
 recordings of two human organoids.
 
-Of the 50 claims, 31 are reproduced, 11 partially reproduced, 7 not reproduced and 1 blocked. The
+Of the 50 claims, 29 are reproduced, 11 partially reproduced, 7 not reproduced and 3 blocked. The
 attempt record, with the reasons and the differences from the paper's method, is
-[`attempts/van-der-molen-2025-01.yaml`](../../attempts/van-der-molen-2025-01.yaml). For
-ed4d-gabazine-rank-order and supp10b-rank-order-by-model, recorded as reproduced on an assumed
-normalisation, a change to blocked (methods_underspecified) is proposed for a third verification
-round.
+[`attempts/van-der-molen-2025-01.yaml`](../../attempts/van-der-molen-2025-01.yaml).
+ed4d-gabazine-rank-order and supp10b-rank-order-by-model are blocked (methods_underspecified):
+the paper gives two normalisations of the rank-order correlations, and the results under them
+disagree.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
