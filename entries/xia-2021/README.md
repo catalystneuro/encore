@@ -19,8 +19,7 @@ images of a ganglion stained with BTX or the nanosensor.
 | The AF647 channel does not respond (Fig. S16) | Reproduced |
 | Rostral-to-caudal spread at 8 V (Fig. 7A-B) | Partially reproduced (order holds, times do not; block onsets in place of AQuA; the direction rests on the frame being rostral up) |
 | Responses peak 10 to 15 s after onset (Fig. 7A) | Reproduced (from each region's onset, not from stimulation onset; block onsets in place of AQuA; the reading is asked of a reader) |
-| Same direction and lower amplitude at 3 V (Fig. S12) | Partially reproduced (one mouse of three); proposed: blocked, data missing |
-| Conjugation ratios, AFM size, retention, stability, response time, unit calibration, pH, controls, voltage and pulse series, reversibility, two-photon (16 claims) | Blocked: data missing or metadata insufficient |
+| Conjugation ratios, AFM size, retention, stability, response time, unit calibration, pH, controls, voltage and pulse series, reversibility, 3 V propagation (one mouse of three), two-photon (17 claims) | Blocked: data missing or metadata insufficient |
 | AQuA against ROI dynamics (Fig. S9) | Blocked: not runnable (AQuA) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the
