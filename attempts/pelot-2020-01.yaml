@@ -1,0 +1,583 @@
+schema_version: 3
+id: pelot-2020-01
+datasets:
+- archive: sparc
+  id: '60'
+  version: '5'
+  doi: 10.26275/lg3c-1kjf
+  relation: primary
+paper: doi:10.3389/fnins.2020.601479
+date: '2026-11-18'
+entry: pelot-2020
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44222423626
+inputs:
+- what: Human anti-claudin-1 IHC traces (PeriInnerMask, PeriExtMask, NerveMask, ScaleMask, ScaleLength)
+    of the 18 samples, the code's output file CadaverVNMorphology_OutputMetrics.mat (sample list and check
+    values), subjects and samples sheets, and the Sunderland and Bradley (1952) table Sunderland1984.mat.
+    SPARC:65, 'Quantified morphology of the human vagus nerve with anti-claudin-1', version 6, the version
+    the paper's supplement cites as Pelot et al. (2020a); it lists the paper as IsDescribedBy.
+  source: doi:10.26275/nluu-1ews
+- what: Pig Masson's trichrome per-sample nerve diameters and per-fascicle diameters (files/code/PigVNMorphology_OutputMetrics.mat)
+    and the subjects sheet. SPARC:64, 'Quantified morphology of the pig vagus nerve', version 4; the paper's
+    Pelot et al. (2020f) by its title.
+  source: doi:10.26275/maq2-eii4
+- what: Pig anti-fibronectin IF non-peanut fascicle diameters, perineurium thicknesses and tissue proportions
+    (files/code/PigIFMorphology.mat), the IF traces for trace counts, SegmentationAnalysis_v2.m and the
+    samples sheet. SPARC:89, 'Quantified morphology of the pig vagus nerve with anti-fibronectin', version
+    1, the version the paper's supplement cites as Pelot et al. (2020b).
+  source: doi:10.26275/8pc2-rhu2
+- what: Supplement 4 of the paper, 'Vagus nerve morphology, summary statistics and literature review'
+    (Data_Sheet_2.xlsx, SHA-256 2e8f9c6428c14df171dd97a2e378561848060beb0a0a7e3b347288495ef3a6a2), the
+    literature values for the two literature claims, from the supplementary files of the version of record
+    in Europe PMC (PMC7672126). The supplementary PDF (Data_Sheet_1.pdf) was read for Supplement 6 and
+    the references to the SPARC datasets.
+  source: doi:10.3389/fnins.2020.601479
+outcomes:
+- claim: rat-sample-set
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-sample-set
+  notes: Nine cervical and nine subdiaphragmatic samples, 4F and 5M at each level, from 10 Sprague-Dawley
+    rats (5M, 5F), aged 75 to 268 days, body mass 381.1 +/- 118.4 g (SD, n = 10), as the Methods give.
+    Cervical samples are all left. The subdiaphragmatic samples are described in samples.xlsx without
+    the side, which only the readme gives as anterior. R18 has only a cervical sample (R18-1) and R26
+    only a subdiaphragmatic one, as the Methods describe. No right cervical or posterior samples are deposited
+    (the code's lists for them are empty). The 18 PeriMask arrays are all distinct. The readme gives ages
+    65 to 268 days, subjects.xlsx 75 to 268.
+- claim: nerve-diameter-anova
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:nerve-diameter-anova
+  notes: Unbounded REML (subject variance -0.052, residual 0.127) gives species F = 599.6 (p < 0.0001),
+    level F = 11.05 (p = 0.0029) and interaction F = 2.455 (p = 0.107), against the paper's 577.1, 11.01
+    (p = 0.0030) and 2.445 (p = 0.1085). With the residual or the subject-based degrees of freedom the
+    interaction p is 0.097 or 0.104. With the subject variance bounded at zero (statsmodels REML) the
+    interaction is significant (F = 3.71, p = 0.024), which would make the claim partially reproduced;
+    an ordinary ANOVA gives p = 0.035. The human data are measured here from the traces of SPARC:65 (version
+    6) with the paper's method, and match its code's output file exactly; the pig MT values come from
+    the per-fascicle output file of SPARC:64 (version 4, files/code/PigVNMorphology_OutputMetrics.mat),
+    not from its traces.
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+  - Human from SPARC:65 and pig from SPARC:64, the paper's Pelot et al. (2020a and f) by their titles;
+    the claims file gives no identifiers.
+  assumed: true
+- claim: human-pig-nerve-diameter-similar
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:human-pig-nerve-diameter-similar
+  measured:
+  - 1.922
+  - 2.195
+  - 1.677
+  - 1.638
+  notes: Human 1.922 +/- 0.460 and pig 2.195 +/- 0.195 mm cervically, 1.677 +/- 0.316 and 1.638 +/- 0.161
+    mm subdiaphragmatically. Tukey on the species means, human against pig p = 0.157 (paper 0.1830); with
+    subject-based degrees of freedom 0.143; per level 0.135 and 0.988; bounded fit 0.343. The human minus
+    pig difference is 0.32 pooled SDs. The human data are measured here from the traces of SPARC:65 (version
+    6) with the paper's method, and match its code's output file exactly; the pig MT values come from
+    the per-fascicle output file of SPARC:64 (version 4, files/code/PigVNMorphology_OutputMetrics.mat),
+    not from its traces.
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+  - Tukey p from the studentized range with the Satterthwaite degrees of freedom of each difference.
+- claim: rat-nerve-diameter
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-nerve-diameter
+  measured:
+  - 0.2577
+  - 0.0249
+  - 0.1352
+  - 0.0148
+  notes: Cervical 0.2577 mm (SD 0.0249) and subdiaphragmatic 0.1352 mm (SD 0.0148), the largest fascicle's
+    outer perineurium as nerve boundary; both means and SDs within tolerance, and every sample's value
+    equals the paper's code output file (files/code/RatVNMorphology_OutputMetrics.mat) to the last digit.
+    With the connective tissue boundary for R16-1, R22-1 and R23-1 the subdiaphragmatic mean is 0.1748
+    mm (SD 0.0660).
+- claim: rat-ten-times-smaller
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-ten-times-smaller
+  notes: Tukey rat against human p = 4.1e-14 and rat against pig p = 2.6e-12; per level all four contrasts
+    p < 1e-11. Ratios of the rat mean to the human and pig means 0.134 and 0.117 cervically, 0.081 and
+    0.082 subdiaphragmatically, all within 0.05 to 0.2.
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+- claim: nerve-cervical-larger
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:nerve-cervical-larger
+  notes: Level effect p = 0.0029, cervical least squares mean 1.425 mm against 1.131 mm. Relative difference
+    of means 0.127 (human), 0.254 (pig), 0.475 (rat), larger for pig and rat than for human. The rat part
+    alone holds (0.258 against 0.135 mm).
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+  - The relative difference of means is the claims file's reading of the paper's qualitative 'clearest'.
+  assumed: true
+- claim: fascicle-number-human-pig
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:fascicle-number-human-pig
+  measured:
+  - 46.89
+  - 38.22
+  - 6.667
+  - 4.889
+  notes: Pig 46.89 +/- 10.3 and 38.22 +/- 7.08, human 6.667 +/- 4.5 and 4.889 +/- 3.95 fascicles. Species
+    F = 216.7 (p < 0.0001), level F = 5.79 (p = 0.026), interaction F = 2.61 (p = 0.123), against 213.8,
+    5.486 (p = 0.0300) and 2.481 (p = 0.1322). The bounded fit gives the same conclusions (interaction
+    p = 0.108). Pigs have 7.0 and 7.8 times the human mean, the paper's 'almost ten times'.
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+- claim: rat-subdiaphragmatic-multifascicular
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-subdiaphragmatic-multifascicular
+  notes: All nine cervical samples have one inner perineurium trace; R16-1 (2), R22-1 (3) and R23-1 (2)
+    are the only multifascicular subdiaphragmatic samples. R17-1 has one fascicle but also a NerveMask,
+    which the code does not use.
+- claim: rat-multifascicular-proportions
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-multifascicular-proportions
+  measured:
+  - 58.0
+  - 3.82
+  - 38.2
+  - 55.1
+  - 4.19
+  - 40.7
+  - 63.4
+  - 3.62
+  - 33.0
+  notes: Epineurium, perineurium and endoneurium 58.0, 3.82 and 38.2% for R16-1, 55.1, 4.19 and 40.7%
+    for R23-1, 63.4, 3.62 and 33.0% for R22-1; all nine within 10%.
+- claim: fascicle-diameter-anova
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:fascicle-diameter-anova
+  notes: log10 of 60 + 44 human, 422 + 344 pig and 9 + 9 rat fascicle diameters. Species F = 9.74 (p =
+    0.0011), level F = 48.0 (p < 0.0001), interaction F = 5.46 (p = 0.0085); paper 8.989 (p = 0.0015),
+    51.88, 5.273 (p = 0.0121). With the code's rat values F = 9.13 (p = 0.0015), 53.6 and 5.79 (p = 0.0069).
+    The bounded fit agrees.
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+  - The rat largest fascicle is the largest by endoneurial area, as the Methods say (Imaging and Image
+    Analysis, paragraph 2). The paper's code (DataPlotting_v4.m) takes the first inner trace in its order,
+    which differs in R22-1 and R23-1; the code's values, which Supplement 4's summaries show the paper
+    used, are run as a variant.
+- claim: rat-fascicle-diameter
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-fascicle-diameter
+  measured:
+  - 0.2486
+  - 0.1291
+  notes: Largest fascicle 0.2486 mm (SD 0.0243) cervically and 0.1291 mm (SD 0.0140) subdiaphragmatically,
+    within 0.249 +/- 0.024 and 0.121 +/- 0.032. With the code's first inner trace (39.35 against 105.76
+    um in R22-1, 142.15 against 147.47 um in R23-1) the subdiaphragmatic value is 0.1211 mm (SD 0.0323),
+    the paper's numbers. Geometric means 0.2475 and 0.1284 mm.
+  deviations:
+  - The rat largest fascicle is the largest by endoneurial area, as the Methods say (Imaging and Image
+    Analysis, paragraph 2). The paper's code (DataPlotting_v4.m) takes the first inner trace in its order,
+    which differs in R22-1 and R23-1; the code's values, which Supplement 4's summaries show the paper
+    used, are run as a variant.
+- claim: cervical-fascicle-diameter-species
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:cervical-fascicle-diameter-species
+  measured:
+  - 0.3548
+  - 0.1545
+  notes: Human 0.3548 +/- 0.226 mm over 60 fascicles and pig 0.1545 +/- 0.0579 mm over 422. Tukey on the
+    cells, human against pig p = 0.00024 with human larger (paper 0.0002), rat against human 0.716 (0.7270),
+    rat against pig 0.137 (0.1707); with subject-based degrees of freedom 0.00009, 0.716 and 0.155; with
+    the code's rat values 0.00033, 0.721 and 0.147. Means of sample means 0.419 (human) and 0.156 mm (pig),
+    also within the SDs.
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+  - The rat largest fascicle is the largest by endoneurial area, as the Methods say (Imaging and Image
+    Analysis, paragraph 2). The paper's code (DataPlotting_v4.m) takes the first inner trace in its order,
+    which differs in R22-1 and R23-1; the code's values, which Supplement 4's summaries show the paper
+    used, are run as a variant.
+- claim: subdiaphragmatic-fascicle-diameter-comparable
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:subdiaphragmatic-fascicle-diameter-comparable
+  measured:
+  - 0.1635
+  - 0.1101
+  notes: 'Human 0.1635 +/- 0.146 and pig 0.1101 +/- 0.0438 mm. No pair differs: human against pig p =
+    0.283, human against rat 0.995, pig against rat 0.883 (paper 0.3049, 0.8960, 0.9947); with the code''s
+    rat values 0.289, 0.896 and 0.995. Differences of log10 means 0.146, 0.049 and -0.097, human against
+    pig the largest.'
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+  - The rat largest fascicle is the largest by endoneurial area, as the Methods say (Imaging and Image
+    Analysis, paragraph 2). The paper's code (DataPlotting_v4.m) takes the first inner trace in its order,
+    which differs in R22-1 and R23-1; the code's values, which Supplement 4's summaries show the paper
+    used, are run as a variant.
+- claim: fascicles-larger-cervical
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:fascicles-larger-cervical
+  notes: Cervical larger in each species; Tukey p with Satterthwaite degrees of freedom human 0.00001,
+    pig 0.048, rat 0.044 (paper < 0.0001, 0.0009, 0.0234). The pig and rat p depend on the degrees of
+    freedom; residual df pig 0.00001 and rat 0.043, subjects minus parameters pig 0.00036 and rat 0.068
+    (two of three species, partially reproduced), bounded fit pig 0.00001 and rat 0.043. The pig contrast's
+    Satterthwaite df is 3.7, poorly determined. With the code's rat values the rat p is 0.0091 (0.021
+    with subject df). The rat-only mixed model gives p < 0.0001.
+  deviations:
+  - The Methods fit the mixed models in JMP Pro 14.3.0 and do not give its settings. The fit here is REML
+    with unbounded variance components, JMP's default, which statsmodels does not offer, written in vagus.py;
+    effects are tested by Wald F with Satterthwaite denominator degrees of freedom in place of JMP's Kenward-Roger.
+    This is an assumption about the paper's settings.
+  - The rat largest fascicle is the largest by endoneurial area, as the Methods say (Imaging and Image
+    Analysis, paragraph 2). The paper's code (DataPlotting_v4.m) takes the first inner trace in its order,
+    which differs in R22-1 and R23-1; the code's values, which Supplement 4's summaries show the paper
+    used, are run as a variant.
+  - The outcome rests on the choice of denominator degrees of freedom.
+  assumed: true
+- claim: rat-diameter-like-fascicle
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-diameter-like-fascicle
+  notes: Reading (a) the rat mean nerve diameter lies between the pig and human mean fascicle diameters
+    at both levels (257.7 between 154.5 and 354.8 um; 135.2 between 110.1 and 163.5 um); reading (b) within
+    the range of their fascicles at both levels.
+- claim: human-pig-tissue-proportions
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:human-pig-tissue-proportions
+  measured:
+  - 32.23
+  - 8.831
+  - 26.63
+  - 20.29
+  - 8.867
+  - 3.422
+  - 5.065
+  - 4.003
+  notes: Endoneurium human 32.23 +/- 7.9 and 8.83 +/- 5.3%, pig MT 26.63 +/- 5.27 and 20.29 +/- 3.98%;
+    perineurium human 8.87 +/- 2.47 and 3.42 +/- 1.59%, pig IF 5.07 +/- 1.75 and 4.00 +/- 0.52%; all eight
+    within the stated SDs. Pig IF endoneurium 24.9 and 18.1%, about 2 points below MT as the paper says.
+  deviations:
+  - Pig MT endoneurium from the per-fascicle diameters of SPARC:64's output file (sum of circle areas
+    over the nerve's circle area, equal to the traces' areas); pig IF perineurium from the per-sample
+    proportions of SPARC:89's PigIFMorphology.mat, not recomputed from its traces.
+- claim: rat-level-ratios
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-level-ratios
+  measured:
+  - 0.317
+  - 0.678
+  notes: Reading (b), all segmented fascicles and the connective tissue boundary for the three multifascicular
+    samples, gives 0.317 and 0.678, within 10% of 0.32 and 0.68. Reading (a), the largest fascicle as
+    in the statistics, gives 0.270 and 0.525, both outside; the Results' means give 0.519. So the Discussion's
+    rat ratios use a different tissue boundary than the Results' rat statistics. Supplement 4's rat subdiaphragmatic
+    endoneurial area (0.0155 mm2) is also the all-fascicle area, though its note says rat data are for
+    the largest fascicle.
+  deviations:
+  - The claim holds under one of the two readings the criterion lists; measured gives reading (b), the
+    only one that matches.
+- claim: human-pig-level-ratios
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:human-pig-level-ratios
+  measured:
+  - 0.198
+  - 0.421
+  - 0.873
+  - 0.746
+  notes: Endoneurial area ratios 0.198 (human) and 0.421 (pig), nerve diameter ratios 0.873 and 0.746,
+    all within 10%.
+- claim: human-variability
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:human-variability
+  notes: Coefficient of variation of nerve diameter human 0.239, pig 0.089, rat 0.097 cervically and 0.189,
+    0.099, 0.110 subdiaphragmatically; of per-sample mean fascicle diameter 0.314, 0.077, 0.098 and 0.662,
+    0.141, 0.109. Human exceeds pig and rat on both measures at both levels (reading a), and pig under
+    reading (b) (fascicle range CV 0.500 against 0.166, 0.853 against 0.192).
+  deviations:
+  - The coefficient of variation is the claims file's reading of the paper's qualitative comparison.
+  assumed: true
+- claim: literature-comparison-human-pig
+  outcome: partially_reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:literature-comparison-human-pig
+  notes: Literature values from Supplement 4 (Data_Sheet_2.xlsx), whose summaries of this paper's data
+    equal the values measured here. 9 of 11 parts hold. Human cervical fascicles 6.67 +/- 4.5 contain
+    all seven published means (5.0 to 9.14); human cervical nerve area 3.05 mm2 and diameter 1.92 mm are
+    below every published mean (3.20 to 8.45 mm2, 2.02 to 3.28 mm) and below 3.0 mm; the human anterior
+    subdiaphragmatic area and diameter contain the anterior published means; 4.89 subdiaphragmatic fascicles
+    against the posterior study's 16; pig fascicles contain the published 46 and 43; pig diameters 2.20
+    and 1.64 mm are below the published 2.93 and 2.09 mm. Two parts fail; the human cervical endoneurial
+    area 0.922 +/- 0.337 mm2 does not contain Seki et al.'s 1.32 and 1.84 mm2 (it contains Verlinden et
+    al.'s 0.75 and 1.09), and the human cervical nerve area range (0.83 to 5.09 mm2) does not reach Verlinden
+    et al.'s right-side spread (6.0 to 10.9 mm2).
+  deviations:
+  - Supplement 4 was not under paper/; it is read from Europe PMC's supplementary files of the version
+    of record (PMC7672126) and checked by SHA-256.
+  - Each published mean is judged against this paper's mean +/- SD, the claims file's reading of Figure
+    7; the overlap of ranges uses the published spreads where Supplement 4 gives one.
+  assumed: true
+- claim: rat-literature-comparison
+  outcome: partially_reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-literature-comparison
+  notes: Rat subdiaphragmatic nerves are larger than every published value (diameter 0.135 mm against
+    0.086 to 0.109 mm, area 0.0145 against 0.0058 to 0.0093 mm2, Prechtl and Powley 1985). The cervical
+    part fails the claims file's rule; one of four published diameter means (0.281 mm) and one of four
+    area means lie within the rat mean +/- SD (0.258 +/- 0.025 mm, 0.0526 +/- 0.0102 mm2); the others
+    are 0.226, 0.284 and 0.299 mm. Three of four lie within the range of the nine samples.
+  deviations:
+  - Literature values from Supplement 4, read from Europe PMC (PMC7672126).
+  - The judgement rules are the claims file's reading of Figure 7.
+  assumed: true
+- claim: perineurium-species-order
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:perineurium-species-order
+  notes: Over the diameters common to the three species (32.0 to 284.1 um) the human fit lies above the
+    pig fit (by at least 7.43 um) and the pig above the rat (by at least 2.47 um); at 250 um 19.76, 9.81
+    and 4.60 um. Measured thicknesses of 200 to 300 um fascicles have medians 19.64 (human), 9.93 (pig)
+    and 4.54 um (rat).
+  deviations:
+  - Pig IF thicknesses from SPARC:89's PigIFMorphology.mat, not recomputed from its traces.
+- claim: perineurium-ratio-decreases
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:perineurium-ratio-decreases
+  notes: The fitted ratio decreases over each species' range (human 1.58 to 0.047, pig 0.265 to 0.037,
+    rat 0.056 to 0.018); Spearman correlation of the ratio with diameter human -0.919, pig -0.601, rat
+    -0.779.
+- claim: human-perineurium-fit
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:human-perineurium-fit
+  measured:
+  - 73
+  - 0.7488
+  notes: 73 human non-peanut fascicles; thickness = 0.03702 d + 10.505 um, R2 = 0.749. Through zero R2
+    = 0.168, quadratic 0.787.
+  deviations:
+  - 'The fit form is the paper''s code''s: DataPlotting_v4.m fits fittype(''poly1'') to the rat and human
+    data (the human block is commented out but the same).'
+- claim: pig-perineurium-fit
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:pig-perineurium-fit
+  measured:
+  - 284
+  - 0.2984
+  notes: 284 pig non-peanut IF fascicles; thickness = 0.02547 d + 3.440 um, R2 = 0.298, the value SPARC:89's
+    PigIFMorphology.mat stores for its own fit (0.2984, 282 residual degrees of freedom).
+  deviations:
+  - Diameters and thicknesses from PigIFMorphology.mat, not recomputed from the IF traces (the IF folders
+    have no ScaleLength file; SegmentationAnalysis_v2.m sets 500 um).
+- claim: rat-perineurium-fit
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-perineurium-fit
+  measured:
+  - 22
+  - 0.7652
+  notes: All 22 rat fascicles with a thickness (reading a), fitted as the paper's code does (DataPlotting_v4.m,
+    fittype('poly1') on both levels pooled), give thickness = 0.01292 d + 1.367 um with R2 = 0.765. With
+    the 18 largest fascicles R2 = 0.664; through zero 0.510; quadratic 0.767.
+  deviations:
+  - The fascicle set and fit form, open in the claims file, are taken from DataPlotting_v4.m ('Fit rat
+    perineurium data'), which is in the dataset.
+- claim: perineurium-thicker-larger-fascicles
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:perineurium-thicker-larger-fascicles
+  notes: Fitted slopes positive, human 0.0370 (95% CI 0.0320 to 0.0421) and pig 0.0255 (0.0209 to 0.0300);
+    Spearman correlations 0.918 and 0.545. Rats too (0.0129, rho 0.864).
+- claim: perineurium-no-level-difference
+  outcome: not_reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:perineurium-no-level-difference
+  notes: Reading (a) the 95% bounds of the level-wise fits do not overlap for the human slope (0.0318
+    [0.0248, 0.0388] cervical against 0.0558 [0.0494, 0.0622] subdiaphragmatic) nor for the pig intercept
+    (5.26 [4.14, 6.39] against 3.16 [2.67, 3.65] um); both rat coefficients overlap. Reading (b) agrees,
+    human p = 2.4e-07, pig p = 3.1e-09, rat p = 0.87. The rat part, testable on the dataset alone, holds.
+  deviations:
+  - The paper names no test for 'did not suggest a difference'; the tests are the claims file's.
+  assumed: true
+- claim: sunderland-reanalysis
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:sunderland-reanalysis
+  measured:
+  - 2.7503
+  - 0.5097
+  - 777
+  notes: The 777 fascicles of files/code/Sunderland1984.mat in SPARC:65 give a zero-intercept slope of
+    2.750% with R2 = 0.510 (about the mean, as MATLAB's fit computes it); the uncentred R2 is 0.853.
+  deviations:
+  - The Sunderland and Bradley (1952) table is taken from the paper's own transcription in SPARC:65's
+    code folder, not from the 1952 paper.
+- claim: rat-perineurium-near-3-percent
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-perineurium-near-3-percent
+  notes: Against the 3% line the rat fit over the line runs from 1.856 at 32.0 um to 0.591 at 284.1 um,
+    within a factor of two, above the line for small fascicles and below for large ones (crossing at 80.1
+    um). Against 2.75% the ratio reaches 2.024 at the smallest diameter, just outside; the claim holds
+    under the 3% reading.
+  deviations:
+  - '''Similar'' as within a factor of two is the claims file''s reading.'
+  assumed: true
+- claim: human-pig-perineurium-thicker
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:human-pig-perineurium-thicker
+  notes: Median ratio of thickness to diameter 0.0948 (human) and 0.0527 (pig), above 0.03; median excess
+    below the species' median diameter 0.1061 and 0.0329, above it 0.0379 and 0.0160. Rats are below the
+    line (0.0214).
+  deviations:
+  - The measure is the claims file's reading of Figure 9B.
+  assumed: true
+- claim: pig-if-mt-consistent
+  outcome: reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:pig-if-mt-consistent
+  measured:
+  - 123.3
+  - 123.1
+  - 134.6
+  - 129.5
+  notes: IF non-peanut (284) 14.4 to 302.8 um, mean 123.3, median 123.1, interquartile range 88.1 to 152.5;
+    MT (766) 23.7 to 399.1 um, mean 134.6, median 129.5, interquartile range 95.7 to 167.7. All within
+    the criterion. The MT minimum is 23.7 um, where the paper gives 5 um; SPARC:64's output file has no
+    fascicle below 23.7 um.
+  deviations:
+  - Interquartile range by linear interpolation (numpy default), a standard choice; MATLAB's prctile method
+    gives 88.0 to 152.6 and 95.6 to 167.7.
+- claim: peanut-fascicle-counts
+  outcome: partially_reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:peanut-fascicle-counts
+  measured:
+  - 60
+  - 44
+  - 210
+  - 179
+  notes: Human traces (SPARC:65) give 60 cervical inner traces with 27 bundles in 10 peanut fascicles
+    and 44 subdiaphragmatic with 4 in 2, as the legend says. Pig IF traces (SPARC:89), counted as its
+    SegmentationAnalysis_v2.m counts them (hole boundaries included), give 210 cervical with 57 bundles
+    in 24 peanut fascicles, where the legend says 25, and 179 subdiaphragmatic with 48 in 19. 11 of 12
+    counts match. Counting objects only, the subdiaphragmatic pig traces give 178 (one inner mask has
+    a hole). Non-peanut sums 73 and 284, the fits' counts.
+  deviations:
+  - The pig counts follow SPARC:89's code, which counts hole boundaries of the masks as traces.
+- claim: no-age-trend
+  outcome: not_reproduced
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:no-age-trend
+  notes: Of 26 per-species, per-level correlations with age, three have Pearson p < 0.05 (reading a),
+    all in pigs; cervical endoneurium proportion r = -0.72 (p = 0.029), subdiaphragmatic nerve diameter
+    r = 0.75 (p = 0.019), subdiaphragmatic mean fascicle diameter r = 0.69 (p = 0.039). Spearman (reading
+    b) finds one, human subdiaphragmatic mean fascicle diameter (rho = -0.69, p = 0.041). 1.3 would be
+    expected by chance; the tests are uncorrected and the pig ages take four values (10.5 to 15 weeks).
+    The rat part shows no trend.
+  deviations:
+  - Supplement 6 (Europe PMC supplementary PDF) is a figure with no test, so the paper's judgement is
+    visual; the tests are the claims file's.
+  - Human ages '90+ years' entered as 99, as DataExtraction_v3.m does.
+  assumed: true
+- claim: rat-carotid-sheath-bundles
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pelot_2020.ipynb
+  output: claim:rat-carotid-sheath-bundles
+  notes: Each cervical PeriMask holds one outer and one inner trace, the vagus only; the other bundles
+    of the carotid sheath are not traced. The derivative folder has the micrographs as JPEG 2000, but
+    counting their bundles would need a segmentation the dataset does not hold.
+findings:
+- kind: metadata_error
+  statement: files/derivative/RatVNMorphology_OutputMetrics.mat, described in the derivative manifest
+    as the rat morphology output metrics, is an older output (written 2020-03-03) that holds 54 samples
+    of all three species (human C, pig P and rat R). Its rat values are not those of the primary traces
+    or of the paper; cervical nerve diameters are up to 8.5 um larger (R22-3, 245.2 against 236.7 um)
+    and the multifascicular samples use the connective tissue boundary. The code folder's file of the
+    same name (2020-09-05) matches the traces and the paper.
+- kind: other
+  about: data
+  statement: The code folder's RatVNMorphology_OutputMetrics.mat keeps only 7 of the 22 rat perineurium
+    thicknesses (thkperi_um is overwritten per sex and level category in DataPlotting_v4.m), so the thicknesses
+    behind the rat perineurium fit are recoverable only by re-measuring the traces.
+- kind: metadata_error
+  statement: The readme gives the rats' ages as 65 to 268 days; subjects.xlsx and the paper give 75 to
+    268 days.
+- kind: metadata_insufficient
+  statement: samples.xlsx describes the subdiaphragmatic samples as 'subdiaphragmatic vagus nerve' without
+    saying they are the anterior trunk, which only the readme and the code's file names give. R17-1 has
+    a NerveMask although it is monofascicular, and nothing says whether it is meant to be used.
+- kind: code_mismatch
+  about: paper
+  statement: The Methods use 'only the largest fascicle in each rat sample' for all statistics, but DataPlotting_v4.m
+    takes the first inner perineurium trace in its order as the rat fascicle diameter (it sorts only the
+    outer diameters). In R22-1 that trace is 39.35 um against a largest fascicle of 105.76 um, and in
+    R23-1 142.15 against 147.47 um. The paper's rat subdiaphragmatic fascicle diameter, 0.121 +/- 0.032
+    mm, and its rat cervical against subdiaphragmatic p = 0.0234 rest on these values; with the largest
+    fascicles they are 0.129 +/- 0.014 mm and p = 0.044 (Satterthwaite) to 0.068.
+- kind: paper_inconsistency
+  statement: The Discussion's rat ratios of subdiaphragmatic to cervical means (endoneurial area 0.32,
+    nerve diameter 0.68) are reproduced only with all segmented fascicles and the connective tissue boundary
+    of the multifascicular samples (0.317 and 0.678), while the Methods say all rat statistics use the
+    largest fascicle; with it the ratios are 0.270 and 0.525, and the Results' own means give 0.52.
+- kind: methods_unavailable
+  statement: Question for the authors. Which JMP settings were used for the mixed models? The nerve diameter
+    F values (577.1, 11.01, 2.445) are matched (599.6, 11.05, 2.455) only with unbounded variance components
+    (the subject variance estimate is negative, -0.052); with the variance bounded at zero the interaction
+    becomes significant (p = 0.024). Was Kenward-Roger used for the degrees of freedom? The rat and pig
+    cervical against subdiaphragmatic fascicle comparisons change side of 0.05 with the degrees of freedom.
+- kind: methods_unavailable
+  statement: Question for the authors. What test supports 'the data did not suggest a difference in the
+    relationship between perineurium thickness and fascicle diameter for cervical versus subdiaphragmatic
+    nerves'? Fitting each level separately, the 95% bounds of the human slope (0.032 against 0.056) and
+    of the pig intercept (5.3 against 3.2 um) do not overlap, and an F test of level terms gives p < 1e-6
+    for both; only the rat fits agree.
+- kind: methods_unavailable
+  statement: Question for the authors. What test is behind 'our morphology metrics did not show trends
+    with age' ? Supplement 6 shows the metrics against age without a test. Uncorrected Pearson correlations
+    per species and level find 3 of 26 with p < 0.05, all in pigs, whose ages take four values.
