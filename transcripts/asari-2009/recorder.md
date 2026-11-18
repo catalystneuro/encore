@@ -1,23 +1,23 @@
-# asari-2009 · recorder · run 43543232116
+# asari-2009 · recorder · run 44223043504
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  git log --diff-filter=A --name-only --format= -- docs/pilot-notes | head -n 5; python tools/readme_row.py asari-2009; ls transcripts/asari-2009/; cat attempts/asari-2009-01.yaml; cat claims/asari-2009.yaml
+cd  git log --diff-filter=A --name-only --format= -- docs/pilot-notes | head -n 5; python tools/readme_row.py asari-2009; ls transcripts/asari-2009/; cat attempts/asari-2009-02.yaml; cat claims/asari-2009.yaml; grep -n -i -B3 -A15 'ac-1' targets/dandisets.json
 ```
 
 ```
 <persisted-output>
-Output too large (113.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/f4b0881f-1bf3-4ec2-8964-35f5bca647a7/tool-results/bdcybn6ue.txt
+Output too large (125.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/61c0adb7-93e2-47c7-aaea-a3331434caf2/tool-results/b3o5mzpmi.txt
 
 Preview (first 2KB):
 docs/pilot-notes/amjad-2025-01.md
 docs/pilot-notes/andrews-2024-01.md
 docs/pilot-notes/armstrong-2026-01.md
+docs/pilot-notes/asari-2009-01.md
 docs/pilot-notes/ashworth-2025-01.md
-docs/pilot-notes/athalye-2023-01.md
 | [CRCNS:ac-1](http://crcns.org/data-sets/ac/ac-1) | [Asari et al. 2009](https://doi.org/10.1152/jn.00577.2009) | 8 | 5 | 5 | 3 | [`asari-2009`](entries/asari-2009) |
 answer-report.md
 answer.md
@@ -28,187 +28,192 @@ author-revise-1-report.md
 author-revise-1.md
 author-revise-2-report.md
 author-revise-2.md
-author.md
-[... 49 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/f4b0881f-1bf3-4ec2-8964-35f5bca647a7/tool-results/bdcybn6ue.txt"
-}
-```
-
-```
-1	docs/pilot-notes/amjad-2025-01.md
-2	docs/pilot-notes/andrews-2024-01.md
-3	docs/pilot-notes/armstrong-2026-01.md
-4	docs/pilot-notes/ashworth-2025-01.md
-5	docs/pilot-notes/athalye-2023-01.md
-6	| [CRCNS:ac-1](http://crcns.org/data-sets/ac/ac-1) | [Asari et al. 2009](https://doi.org/10.1152/jn.00577.2009) | 8 | 5 | 5 | 3 | [`asari-2009`](entries/asari-2009) |
-7	answer-report.md
-8	answer.md
-9	author-answers-report.md
-10	author-answers.md
-11	author-report.md
-12	author-revise-1-report.md
-13	author-revise-1.md
-14	author-revise-2-report.md
-15	author-revise-2.md
-16	author.md
-17	claims-check-report.md
-18	claims-check.md
-19	claims-report.md
-20	claims.md
-[... 753 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/f4b0881f-1bf3-4ec2-8964-35f5bca647a7/tool-results/bdcybn6ue.txt",
- "offset": 774,
- "limit": 300
-}
-```
-
-```
-774	- date: '2026-11-14'
-775	  kind: agent
-776	  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-777	  reviewed: The full re-executed notebooks reproduce_asari_2009.ipynb and strf_wehr.ipynb with their conclusions and summaries, the
-778	    helper modules asari.py and wehr_strf.py, the README, the claims file and the attempt record, with the paper's full text. The
-779	    verifier checked every outcome, every Result cell, the Summary sections and the record's notes against the printed outputs.
-780	  results:
-781	  - claim: methods-recording-counts
-782	    agrees: true
-783	    outcome: partially_reproduced
-784	    reason: Cell 13.
-785	    response: No change.
-786	  - claim: a1-mgb-firing-rates
-787	    agrees: true
-788	    outcome: partially_reproduced
-789	    reason: 'Cell 16: 0 of 32 readings have all four means in tolerance, and the partial rule holds in 28 of 32. With the code''s own
-790	      MGB detector the margin over 5 Hz is still only 0.03-0.07 Hz. The rule is comfortably met only at half that detector''s threshold
-791	      (7.1 Hz), which is an ad hoc choice.'
-792	    response: No change of outcome. The notes now say that with the code's own detector the partial rule rests on a margin of 0.03
-793	      to 0.07 Hz (and 2 of its 8 readings give 4.99 Hz), and that it is met by a wide margin only with half its threshold, a choice
-[... 280 more lines not kept]
+author-revise-3-report.md
+[... 50 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "^| Data" -A1 README.md | head; for f in amjad-2025-01 andrews-2024-01 armstrong-2026-01 ashworth-2025-01 athalye-2023-01; do echo "=== $f"; cat docs/pilot-notes/$f.md; done; ls summaries | head -3; cat summaries/$(ls summaries | head -1); grep -n "ac-1" -B3 -A12 targets/dandisets.json
+cd  cat attempts/asari-2009-02.yaml; grep -n -m3 '^| Dataset\|^| Data' README.md; for f in amjad-2025-01 andrews-2024-01 armstrong-2026-01 asari-2009-01 ashworth-2025-01; do echo "=== $f"; cat docs/pilot-notes/$f.md; done; cat docs/pilot-notes/knierim-2000-02.md | head -3
 ```
 
 ```
 <persisted-output>
-Output too large (39.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/f4b0881f-1bf3-4ec2-8964-35f5bca647a7/tool-results/bpvlzy9vf.txt
+Output too large (119KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/61c0adb7-93e2-47c7-aaea-a3331434caf2/tool-results/bb2sd151q.txt
 
 Preview (first 2KB):
-=== amjad-2025-01
-# 002013, Amjad et al. 2025
-
-Seven claims reproduced, one partially and five blocked on the dandiset,
-plus one claim linking the dandiset to the paper's Zenodo deposit,
-reproduced (trial lists agree for 99.8 to 100% of trials); both rounds
-agreed with every outcome. The paper describes microinvasive probes for
-recording dopamine and electrical activity in monkeys; the beta burst,
-reward and unit isolation claims reproduce, the dopamine reward effect
-weakly (p = 0.023, and not in the stored trial-aligned `da`).
-
-The dandiset was converted by CatalystNeuro (catalystneuro/schwerdt-lab-to-nwb,
-the same conversion as 002014), and many findings are the same: each event
-is stored about five times, once per overlapping trial window; trial
-conditions are not in the trials table; the FSCV table columns carry no
-units and the raw FSCV current is labelled amperes with values in the
-[... 18 more lines not kept]
+schema_version: 3
+id: asari-2009-02
+datasets:
+- archive: crcns
+  id: ac-1
+  version: unversioned
+  doi: 10.6080/K0KW5CXR
+  relation: primary
+paper: doi:10.1152/jn.00577.2009
+date: '2026-11-14'
+entry: asari-2009
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+[... 27 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/f4b0881f-1bf3-4ec2-8964-35f5bca647a7/tool-results/bpvlzy9vf.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/61c0adb7-93e2-47c7-aaea-a3331434caf2/tool-results/bb2sd151q.txt"
 }
 ```
 
 ```
-1	=== amjad-2025-01
-2	# 002013, Amjad et al. 2025
-3	
-4	Seven claims reproduced, one partially and five blocked on the dandiset,
-5	plus one claim linking the dandiset to the paper's Zenodo deposit,
-6	reproduced (trial lists agree for 99.8 to 100% of trials); both rounds
-7	agreed with every outcome. The paper describes microinvasive probes for
-8	recording dopamine and electrical activity in monkeys; the beta burst,
-9	reward and unit isolation claims reproduce, the dopamine reward effect
-10	weakly (p = 0.023, and not in the stored trial-aligned `da`).
-11	
-12	The dandiset was converted by CatalystNeuro (catalystneuro/schwerdt-lab-to-nwb,
-13	the same conversion as 002014), and many findings are the same: each event
-14	is stored about five times, once per overlapping trial window; trial
-15	conditions are not in the trials table; the FSCV table columns carry no
-16	units and the raw FSCV current is labelled amperes with values in the
-17	thousands; the bipolar LFP is stored in volts with a conversion factor that
-18	makes it picovolts; and the raw ephys of one session and the spike times of
-19	Monkey P are on different clocks from the rest of the file, by 9831.35 s and
-20	6800.666 s, with nothing saying so. In addition, one session's trial-aligned
-[... 536 more lines not kept]
+1	schema_version: 3
+2	id: asari-2009-02
+3	datasets:
+4	- archive: crcns
+5	  id: ac-1
+6	  version: unversioned
+7	  doi: 10.6080/K0KW5CXR
+8	  relation: primary
+9	paper: doi:10.1152/jn.00577.2009
+10	date: '2026-11-14'
+11	entry: asari-2009
+12	provenance:
+13	  kind: agent
+14	  accountable:
+15	    name: CatalystNeuro
+16	  agent:
+17	    harness: Claude Code
+18	    model: claude-opus-5-5
+19	    protocol: pilot-15
+20	  runner:
+[... 762 more lines not kept]
 ```
 
-**Agent**
+**Agent calls Read**
 
-Read the five most recent notes and the attempt record. Next: the run's reports, the dataset entry and the column meanings.
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/61c0adb7-93e2-47c7-aaea-a3331434caf2/tool-results/bb2sd151q.txt",
+ "offset": 783,
+ "limit": 700
+}
+```
+
+```
+783	      and FM intervals lie below. The higher-order interval [0.637, 0.826] overlaps the frequency
+784	      lower bound of 0.792. The point estimates are ordered as claimed. All interval conditions pass
+785	      only under the notebook''s entry population, which is not the criterion''s. Problem 5: the
+786	      resampling follows the paper''s 1000 samples literally, about 10 times the number of probes,
+787	      so the intervals are roughly 3 times narrower than an n-sized resample would give; the entry
+788	      population also counts one probe''s response several times; the trial-resampling reading was
+789	      not run.'
+790	    response: 'Outcome kept. An n-sized resampling is added as a variant: the higher-order upper
+791	      bound then passes the amplitude and frequency lower bounds in both readings. The trial reading
+792	      is still not run; the record says why.'
+793	  - claim: fig8-natural-synthetic-probes-alike
+794	    agrees: true
+795	    outcome: reproduced
+796	    reason: 'Cell 42, Bonferroni p is 0.80 to 1 for all four testable properties. FM has no
+797	      synthetic probes, so it was not tested.'
+798	    response: 'No change.'
+799	  - claim: fig9-mgb-fast-decay
+800	    agrees: true
+801	    outcome: reproduced
+802	    reason: 'Cell 44, tau1 is 0.060 to 0.090 s under every reading. The plateau matches the fitted
+[... 680 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/61c0adb7-93e2-47c7-aaea-a3331434caf2/tool-results/bb2sd151q.txt",
+ "offset": 1483,
+ "limit": 260
+}
+```
+
+```
+1483	say which reason to give when a claim lacks two things or its dependencies are
+1484	blocked for different reasons, and one was given under `blocked_by` and the
+1485	other in the notes; the rule for `measured` covers only several matching
+1486	readings, and when none matched a reading was picked and named; readings too
+1487	slow to run are not covered, and the GDDM was fitted on 4 of 16 readings as a
+1488	deviation; corrupted table rows are not covered, and they were excluded with a
+1489	`format_error` finding; and reaction times at the window edge, which made PyDDM
+1490	fail, were dropped as a standard choice (2 to 5 of 249 trials).
+1491	=== asari-2009-01
+1492	# asari-2009, Asari et al. 2009
+1493	
+1494	Eight claims reproduced, five partially, five not reproduced and three
+1495	blocked, all three for missing data; six outcomes, the five Figure 8 claims
+1496	and `fig4-strf-performance-low`, rest on an assumption. The first
+1497	verification round agreed with 15 of the 21 outcomes as they stood and the
+1498	second with all 21; nothing was proposed after the second, so there was no
+1499	third round. CRCNS data sets carry no version, so the record gives
+1500	`unversioned` and the notebook prints the MD5 sums of `checksums.md5`. The
+1501	paper, Asari and Zador in the Journal of Neurophysiology (102:2638-2656),
+1502	records the membrane potential of A1 neurons in anesthetized rats by in vivo
+[... 235 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "Reproduced\|Partial" README.md | head -5; grep -n "crcns\|ac-1\|asari" targets/dandisets.json | head; python - <<'E'
-import json;d=json.load(open('targets/dandisets.json'))
-it = d if isinstance(d,list) else d.get('dandisets', d)
-for x in (it if isinstance(it,list) else it.values()):
-    s=json.dumps(x)
-    if 'ac-1' in s or 'asari' in s.lower(): print(json.dumps(x,indent=1))
+cd  head -5 docs/pilot-notes/knierim-2000-02.md; ls docs/pilot-notes | grep -- '-02'; for f in $(ls docs/pilot-notes/*-02.md); do head -1 $f; done; grep -n -m2 'Reproduced\|Paper |' README.md | head; python - <<'E'
+import json
+d=json.load(open('targets/dandisets.json'))
+items = d if isinstance(d,list) else d.get('targets', d)
+for x in (items if isinstance(items,list) else items.values()):
+    if 'ac-1' in json.dumps(x) or 'asari' in json.dumps(x).lower(): print(json.dumps(x,indent=1))
 E
-cat summaries/amjad-2025-01.md; echo; cat summaries/athalye-2023-01.md 2>/dev/null; wc -c transcripts/asari-2009/*-report.md
 ```
 
 ```
-The paragraph is below, ready to save. Most of the paper's neural findings held in this data, while its insertion and imaging claims could not be tested. Dopamine was higher after large-reward cues, but weakly (p = 0.023), and beta power was lower after large-reward cues and after left cues. A clean sorted unit was found in monkey P. Insertion yields, days of implantation and the two-channel dopamine increase could not be tested without implant records or the second channel; the redox colour plot and monkey P's reward-modulated firing could not be tested because raw FSCV timing does not fit the trials and that file has no events. Recording parameters matched, except a lowest voltage of -0.347 V.
+# 001754 again, on the fixed draft (2026-10-15)
 
-Most of the main findings held in this data. Different population activity issuing the same command across conditions reproduced, as did invariant linear dynamics predicting that activity and the next command, each against shuffled controls. The simulations showing that dynamics reduce the input needed also held, except Monkey J's decoder-null result, which differed from the paper. The low-dimensional, decaying structure of the dynamics did not reproduce, as eigenvalue counts and Monkey G's frequencies fell outside the reported ranges. The nonlinear model comparison could not be run because its package would not install, and the files lack decoder matrices, so the decoders were recovered from the data.
-  879 transcripts/asari-2009/answer-report.md
- 2701 transcripts/asari-2009/author-answers-report.md
- 5158 transcripts/asari-2009/author-report.md
- 3564 transcripts/asari-2009/author-revise-1-report.md
- 2964 transcripts/asari-2009/author-revise-2-report.md
- 3350 transcripts/asari-2009/claims-check-report.md
- 3803 transcripts/asari-2009/claims-report.md
-10834 transcripts/asari-2009/verifier-1-report.md
- 7874 transcripts/asari-2009/verifier-2-report.md
-41127 total
+The first repeat attempt, under the rules added for it (docs/agents/author-again.md).
+The conversion was redone (`mcnaughton2000-to-nwb` at commit `7346882`) and
+the draft re-uploaded on 2026-10-14, and the attempt pins `draft`. Three
+chen-2026-02.md
+churchland-2010-02.md
+economo-2018-02.md
+fujimoto-2026-02.md
+fujisawa-2008-02.md
+gao-2018-02.md
+gao-2025-02.md
+gillon-2023-02.md
+girardeau-2017-02.md
+kauvar-2025-02.md
+kim-2022-02.md
+kim-2023-02.md
+knierim-2000-02.md
+li-2015-02.md
+li-2016-02.md
+[... 45 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  head -c 1500 targets/dandisets.json; echo; grep -c . targets/dandisets.json; grep -n "| Dataset\|| Data " README.md | head -3; grep -rn "ac-1\|crcns" targets/ | head; cat docs/pilot-notes/knierim-2000-02.md | head -20
+cd  grep -n -B3 'asari-2009' README.md | head -20; grep -n -i 'ac-1\|asari' targets/dandisets.json | head; head -c 600 targets/dandisets.json
 ```
 
 ```
 {
  "schema_version": 1,
- "generated": "2026-11-11T14:22:56+00:00",
+ "generated": "2026-11-17T15:59:44+00:00",
  "source": "https://api.dandiarchive.org/api",
  "counts": {
-  "public_dandisets": 675,
-  "with_a_paper": 295,
-  "with_a_published_version": 254,
-  "papers": 312,
+  "public_dandisets": 678,
+  "with_a_paper": 298,
+  "with_a_published_version": 256,
+  "papers": 316,
   "converted_by_catalystneuro": 51
  },
  "targets": [
@@ -220,13 +225,13 @@ cd  head -c 1500 targets/dandisets.json; echo; grep -c . targets/dandisets.json;
    "size_gb": 1922.23,
    "data_standards": [
     "Neurodata Without Borders (NWB)"
-[... 69 more lines not kept]
+[... 3 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "readme_row\|^| " README.md | head -5; sed -n 1,40p tools/readme_row.py; ls docs/pilot-notes | grep -i -E "crcns|2009|200[0-9]" ; cat transcripts/asari-2009/author-report.md
+cd  sed -n 1,60p tools/readme_row.py; grep -n 'Reproduced |\|| Partial' README.md | head -3
 ```
 
 ```
@@ -250,135 +255,176 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-[... 94 more lines not kept]
+[... 40 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cd transcripts/asari-2009; for f in claims-report claims-check-report answer-report author-answers-report author-revise-1-report verifier-1-report; do echo "=== $f"; cat $f.md; done
+cd transcripts/asari-2009; wc -w *-report.md; git log --format='%h %ad %s' --date=iso -- . | head -30
 ```
 
 ```
-=== claims-report
-I wrote `claims/asari-2009.yaml`, and the quote checker passes it: 21 claims, 19 quotes, 2 statistical values, 0 problems. Nothing is committed.
-
-**Text read**
-- **Version:** the version of record (J Neurophysiol 102:2638–2656), as a text extraction of the PDF, with its Methods and figure legends.
-- **Garbled symbols:** the extraction breaks Greek letters, <, >, ~, = and ± into a replacement character. I read them from context and cut quotes around them. The PDF pages could not be rendered here because no rendering tool is installed, so I could not check them against the page images. Every value in the file is printed in the text or a legend.
-- **Supplement:** Supplemental Figs. S1–S10 were not supplied and I did not read them. The main findings rest on main-text Figs. 2–9, so I went ahead. The one finding that comes from the supplement (`figs1-silence-probe`, effects after the silent gaps between sequences) is quoted from the Methods only.
-- **Code:** the paper links none; it only says the analysis was done in MATLAB.
-
-**Claims**
-- **Quotes:** 19 claims have quotes. The other 2 are marked `inferred`: the fit values that appear only in the Fig. 3A and Fig. 8A legends.
-- **Statistics:** 2 claims have them. They are the per-time-point Kruskal–Wallis tests (P < 0.01 for at least 5 ms) for the example cells of Figs. 2 and 7. The paper reports almost no tests as results. The 95% intervals of Fig. 8C exist only in the figure.
-- **Criteria:** all 21 claims have one.
-
-**Details the paper leaves open, with the readings named**
-- **Silence as a context:** whether it counts among the contexts in Figs. 3 and 4. Readings are counted (the main one, since Fig. 2B uses it) and not counted.
-- **Population average at time t:** whether it is over all probes or only those still running at t.
-- **Exponential fits:** the fit range (0–4 s, 0–4.72 s or 0–6 s). Start values are a standard choice.
-- **Trial correlation:** mean over all pairs of trials, or each trial against
-[... 191 more lines not kept]
+262 answer-report.md
+  510 author-answers-report.md
+  944 author-report.md
+  715 author-revise-1-report.md
+  598 author-revise-2-report.md
+  314 author-revise-3-report.md
+  538 claims-check-report.md
+  644 claims-report.md
+  686 reconcile-report.md
+ 1312 recorder-report.md
+ 1777 verifier-1-report.md
+ 1336 verifier-2-report.md
+  619 verifier-3-report.md
+10255 total
+d886046 2026-11-17 21:24:33 -0500 Merge main into attempt/asari-2009
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd transcripts/asari-2009; cat author-revise-2-report.md verifier-2-report.md; cd  sed -n 1,40p docs/pilot-notes/ito-2009-01.md
+cd transcripts/asari-2009; for f in author-report answer-report author-answers-report verifier-1-report author-revise-1-report verifier-2-report author-revise-2-report verifier-3-report author-revise-3-report recorder-report reconcile-report; do echo "=== $f"; cat $f.md; done
 ```
 
 ```
-No outcomes changed and none are proposed for change. The verifier agreed with all 21 outcomes in round 2. I re-ran the entry twice with `python tools/entry.py all entries/asari-2009`; the second run executed the final text. Checks reported 0 errors and both notebooks passed. Every number that was already in the record came out the same.
+<persisted-output>
+Output too large (54.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/61c0adb7-93e2-47c7-aaea-a3331434caf2/tool-results/brk1c8xv2.txt
 
-**Added in reply to the report**
-- **fig2-example-long-context (point A):** the notebook now prints the reliability of each probe of 20051222-ha1-001-002. Probe 4 is the 0.737 probe, so it is most likely the paper's Figure 2 example, and it fails the strict 2 to 4 s test by a run that starts 30 ms before 4 s. The outcome stays reproduced under the criterion as written. The notes, Result cell, README and summary now say the passing probe is not from the paper's example cell. The gap in the claims file is a new question for a reader in `questions/asari-2009.yaml`.
-- **fig8c (point C):** the trial-resampling reading now runs, computed in the pass with its own random generator so the existing numbers stay the same.
-  - Its amplitude and frequency intervals lie above 1.
-  - The higher-order upper bound is 1.003 to 1.078, so no reading meets the rule for reproduced.
-  - Its resampled areas are biased upwards (natural sounds 1.69 s against a measured 0.752 s), because a trial drawn twice adds noise to Eq. 17.
-  - The point estimates do not change, so the rule for partial is still not met. The outcome stays not reproduced.
-- **fig7:** the notebook now prints a checksum of each DMR's modulation parameters. Each of the 5 recordings with frequency variants has a single checksum, so the record's sentence about shared modulation parameters is now backed by printed output.
-- **fig4-strf (point B):** the STRF notebook now prints the results without cell 20020602-mw-001. Without that cell:
-  - LN beats STRF by 0.025 on average.
-  - Mean validation performance reaches 0.222 (STRF) and 0.253 (LN), above 0.22.
-  - The longer window still helps signif
-[... 142 more lines not kept]
+Preview (first 2KB):
+=== author-report
+I ran steps 1 to 5 of the Author section and step 6 (`python tools/entry.py handover entries/asari-2009`). The entry passes `check` and ran from a clean environment in 22 min. I did not verify my own work and committed nothing.
+
+The entry is `entries/asari-2009/` (notebook, `asari.py`, README, lock file) and the record is `attempts/asari-2009-02.yaml`. I did not see any earlier attempt's results.
+
+## 1. Outcomes
+
+| claim | outcome |
+|---|---|
+| methods-recording-counts | partially reproduced: 305 natural-sound probes in 39 cells and 93 MGB probes in 14 cells match exactly; 132 A1 cells against 123; no voltage-clamp data |
+| a1-mgb-firing-rates | not reproduced, assumed (spike detectors); MGB evoked rate 4.99 Hz against 11.4 |
+| fig2-example-reliability | reproduced (0.310 over cells; candidate example cell 0.611 and 0.737) |
+| fig2-example-long-context | reproduced (one significant period starts at 3.97 s, 30 ms inside the "none in 2 to 4 s" window; stated in the notes) |
+| fig3a-proportion-significant | partially reproduced (183 against 204, just outside tolerance; late fraction 0.225 to 0.237; peak 4.718 s against 4.72 s) |
+| fig3a-significance-decay | partially reproduced, assumed (decay sizes kept non-negative) |
+| fig3b-fractional-power-decay | reproduced, assumed (silence counted as a context): 0.49 and 1.01 to 1.05 s |
+[... 9 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/61c0adb7-93e2-47c7-aaea-a3331434caf2/tool-results/brk1c8xv2.txt"
+}
+```
+
+```
+1	=== author-report
+2	I ran steps 1 to 5 of the Author section and step 6 (`python tools/entry.py handover entries/asari-2009`). The entry passes `check` and ran from a clean environment in 22 min. I did not verify my own work and committed nothing.
+3	
+4	The entry is `entries/asari-2009/` (notebook, `asari.py`, README, lock file) and the record is `attempts/asari-2009-02.yaml`. I did not see any earlier attempt's results.
+5	
+6	## 1. Outcomes
+7	
+8	| claim | outcome |
+9	|---|---|
+10	| methods-recording-counts | partially reproduced: 305 natural-sound probes in 39 cells and 93 MGB probes in 14 cells match exactly; 132 A1 cells against 123; no voltage-clamp data |
+11	| a1-mgb-firing-rates | not reproduced, assumed (spike detectors); MGB evoked rate 4.99 Hz against 11.4 |
+12	| fig2-example-reliability | reproduced (0.310 over cells; candidate example cell 0.611 and 0.737) |
+13	| fig2-example-long-context | reproduced (one significant period starts at 3.97 s, 30 ms inside the "none in 2 to 4 s" window; stated in the notes) |
+14	| fig3a-proportion-significant | partially reproduced (183 against 204, just outside tolerance; late fraction 0.225 to 0.237; peak 4.718 s against 4.72 s) |
+15	| fig3a-significance-decay | partially reproduced, assumed (decay sizes kept non-negative) |
+16	| fig3b-fractional-power-decay | reproduced, assumed (silence counted as a context): 0.49 and 1.01 to 1.05 s |
+17	| timescale-longer-than-membrane | reproduced (1/e lags of 71 and 77 ms) |
+18	| fig4-predictability-upper-bound | partially reproduced (about half near onset; time constant 1.2 to 2.3 s against 1.04 s) |
+19	| fig4-strf-performance-low | blocked (`other`): not finished in time |
+20	| fig5-example-conductances, fig6-conductance-decay | blocked: data missing (no voltage-clamp recordings) |
+[... 396 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python -c "
-import yaml;d=yaml.safe_load(open('claims/asari-2009.yaml'))
-for c in d['claims']: print(c['id'],'|',c['source'],'|',c['statement'],'\n')
-"; cat questions/asari-2009.yaml 2>/dev/null | head -30
+cd  head -40 claims/asari-2009.yaml; grep -n -A3 '^- id:\|^  - id:' claims/asari-2009.yaml | grep -v criterion | head -120
 ```
 
 ```
-methods-recording-counts | Methods, Electrophysiology, paragraphs 2 and 3; Table 1 | Of 194 A1 cells recorded in current clamp, 123 met the analysis criterion (39 tested with natural sounds, 14 with TORCs, 6 with DMRs, 39 with modulated harmonic tones, 27 with modulated colored noise); 14 of 42 voltage-clamped cells and 14 of 16 MGB cells were analysed. 
-
-a1-mgb-firing-rates | Methods, Analysis, paragraphs 2 and 3; Results, Context dependence, paragraph 1; Results, Subcortical contribution to context dependence, paragraph 2 | Firing rates were low in A1 (spontaneous 0.47 +/- 0.61 Hz, evoked 0.57 +/- 0.77 Hz, mean +/- SD, 194 cells) and high in MGB (spontaneous 0.78 +/- 1.25 Hz, evoked 11.4 +/- 16.9 Hz, 16 cells). 
-
-fig2-example-reliability | Results, Context dependence, paragraph 2; Figure 2A legend | The example A1 neuron of Figure 2 had high trial-to-trial reliability (correlation across trials 0.74 +/- 0.08 for the shown probe and 0.61 +/- 0.07 over the seven natural sound fragments tested), and the mean correlation over the population was 0.31 +/- 0.09. 
-
-fig2-example-long-context | Figure 2B and 2D; Results, Context dependence, paragraph 3 | In an example A1 neuron, changing the conditioning stimulus changed the response to the probe for about 4 s; responses did not differ between 2 and 4 s after probe onset and diverged again after about 4 s. 
-
-fig3a-proportion-significant | Results, Context dependence, paragraph 6; Figure 3A | Of 305 natural sound probes tested in 39 A1 cells with typically five to eight natural sound contexts, 204 (66.9%) showed significant context dependence, and about a quarter (23.7%) of the significant events occurred more than 1 s after probe onset. 
-
-fig3a-significance-decay | Figure 3A legend, bottom panel; Results, Context dependence, paragraph 7 | The proportion of probes with significant context dependence decays after probe onset as the sum of two exponentials (sizes 0.17 and 0.09, decay constants 0.20 and 0.90 s), above a noise f
-[... 52 more lines not kept]
+# Claims for Asari & Zador (2009), J Neurophysiol 102:2638-2656, on CRCNS ac-1.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md. The writer did not look at the dataset's data or
+# files; only its description on crcns.org (paper/ac-1.data-description.txt) was read.
+#
+# Text read: the version of record, as a text extraction of the publisher's PDF (PyMuPDF), with
+# the PDF. The extraction garbles some symbols (Greek letters, "<", ">", "~", "=" and "+/-" print
+# as a replacement glyph); they were read from context, and quotes are cut around them. The PDF
+# pages could not be rendered in this run, so figure axes were not read; every value used here is
+# printed in the text or a legend. The online supplement (Supplemental Figures S1 to S10) was not
+# supplied and was not read. The main findings rest on the main-text Figures 2 to 9 and their
+# legends; the supplement holds example traces (S2 to S10) and the "silence probe" analysis (S1),
+# whose one claim (figs1-silence-probe) is quoted from the Methods only.
+#
+# Code read: none. The paper links no code; it says all analysis was done in MATLAB.
+#
+# Data the paper used. Long-Evans rats, 20 to 28 days old, anesthetized with ketamine and
+# medetomidine; in vivo blind patch recordings sampled at 10 kHz.
+# - A1 current clamp (whole cell): 194 cells in 139 animals, of which 123 met the analysis
+#   criterion (at least 4 repeats of a probe tested with at least 2 conditioning stimuli). By
+[... 123 more lines not kept]
 ```
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "docs/pilot-notes/asari-2009-01.md",
- "content": "# asari-2009, Asari et al. 2009\n\nEight claims reproduced, five partially, five not reproduced and three\nblocked, all three for missing data; six outcomes, the five Figure 8 claims\nand `fig4-strf-performance-low`, rest on an assumption. The first\nverification round agreed with 15 of the 21 outcomes as they stood and the\nsecond with all 21; nothing was proposed after the second, so there was no\nthird round. CRCNS data sets carry no version, so the record gives\n`unversioned` and the notebook prints the MD5 sums of `checksums.md5`. The\npaper, Asari and Zador in the Journal of Neurophysiology (102:2638-2656),\nrecords the membrane potential of A1 neurons in anesthetized rats by in vivo\nwhole-cell patch and MGB spikes in cell-attached mode while sequences of\nsound fragments play, each fragment a probe for the one before it, and\nreports that the response to a probe depends on its context for up to about\n4 s, longer than the noise autocorrelation, that this cannot be captured by\nmodels with short windows, that synaptic conductances show it too, that\namplitude and frequency changes act longer than AM, FM and higher-order\nchanges, and that in MGB it decays within about 80 ms. The claims were\nwritten from a text extraction of the version of record, without the\nsupplement or rendered figures; the paper links no code, but its MATLAB\nanalysis code ships in the data set (`asari/Tools/CxtDep.m`), and the\nattempt follows it where the Methods leave a step open. Reproduced are the\nproportion of significant probes (186 of 305, late fraction 0.252 against\n0.237), the population and example reliability (0.310 +/- 0.092; 0.611 and\n0.737 in 20051222-ha1-001-002), the noise and spontaneous autocorrelations\n(1/e at 73 and 78 ms), the MGB decay (tau 0.080 s, with sizes below the\npaper's), the MGB example, the silence probes and the natural against\nsynthetic test, which has little power for AM and none for FM. The Figure 2\nlong-context example reproduces under the criterion as written by one of 20\ncandidate probes, from a cell with mean reliability 0.309 that is not the\npaper's example cell; that cell's 0.737 probe misses the 2 to 4 s test by a\nrun starting 30 ms before 4 s, and this went to a reader in\n`questions/asari-2009.yaml`. Not reproduced are the decay of the\ncontext-dependent power (size 0.467 within tolerance, time constant 1.74 to\n1.78 s against 1.04 s), the predictability bound (about half near onset,\ntime constant outside tolerance in every reading), the STRF claim, the\nFigure 8A fits and the Figure 8C relative effects, where amplitude and\nfrequency stay below natural sounds. Partial are the recording counts, the\nfiring rates (with the code's own MGB detector the rule holds by 0.03 to\n0.07 Hz over 5 Hz), the two-exponential decay of Figure 3A (only the slow\nconstant within tolerance), the Figure 8A proportions (every count outside\ntolerance, the order kept) and the Figure 8B time constants. The conductance\nclaims of Figures 5 and 6 and the Figure 7 example are blocked. The author's\nfirst run gave 7 reproduced, 9 partially, 1 not reproduced and 4 blocked,\nwith the STRF claim blocked as not attempted in the time limit. Round 1\nfound the Wehr recordings and the STRF code in the archive, wrong AM and FM\nproperty sets, the without-silence reference of Figure 8C not run and an\nincomplete Figure 7 search; in reply the STRF claim was tested in a second\nnotebook on 16 of Wehr's 25 cells, the property sets were rebuilt to give\nTable 1's five totals, and fig2-example-long-context moved to reproduced and\nfig3b, fig4-predictability-upper-bound and fig8c to not reproduced. Round 2\nasked that the record say the passing Figure 2 probe is not from the\npaper's example cell and that two STRF statements rest on one cell,\n20020602-mw-001, which were added, and the trial-resampling reading of\nFigure 8C was run. The author asked a reader nothing at first, so the answer\nand author-answers runs changed nothing. The author's run took about 2 h\n15 min (17:16 to 19:30 UTC) and no run failed; the notebook ran in 23.4 min\nat first, with peak memory 2.9 GB, and the two notebooks in 29 and 22 min\nat the end.\n\nThe data set holds no voltage-clamp recording: every one of Asari's 346\nfiles is whole-cell current clamp in mV or cell-attached, so the 29 probes\nin 14 voltage-clamped cells and the conductance findings cannot be tested.\nIt holds 145 A1 whole-cell cells and 14 MGB cells against the 194 and 16\nrecorded; its natural sound and MGB groups hold exactly the paper's 39 cells\nwith 305 probes and 14 cells with 93 probes, but with the synthetic sound\ngroup 133 cells meet the paper's rule against its 123, and the ensembles\nsplit differently (DMR 15 cells against 6, MHT 26 against 39, and 14 cells\nwith SoundTrans variants of natural sounds). The Figure 7 example is not in\nit: no recording has DMR contexts in 0.625-2.5, 2.5-10 and 10-40 kHz, and\nthe DMR frequency variants are 2-octave bands from 0.25 to 32 kHz in\n1-octave steps. Which conditioning stimuli vary which property is listed\nonly in the notes of the 19-stimulus MHT recordings, so the sets behind\nTable 1 and Figure 8 were rebuilt from the stimulus parameters; they give\nthe five totals, but 82 of the 96 AM tests and all 82 FM tests have a\nnatural sound probe, where Table 1 gives 71 and 57 MHT-probe tests.\nSummary.mat lists two cells, 20060314-ha1-001 and 20060320-ha3-003, in both\nthe natural and the synthetic group. CxtDep.m centres each trial on its own\nmean before the fractional powers and counts silence as a context, which\nthe Methods do not say, and the paper prints 73 of 110 as 64.6%, where\n73/110 is 66.4%. Wehr's recordings of Machens et al. (2004) are in the\narchive, but the paper's 20 cells are not listed. Three questions are put to\nthe paper's authors: how the population curves treat times after a probe\nhas ended, which stimuli form each property set, and how A1 spikes were\ndetected and which periods count as spontaneous and evoked.\n\nThe author's points on the protocol: `measured` needs a value for an\nexpected value that cannot be measured, and 0 was recorded for the\nvoltage-clamp counts; some criteria define only reproduced, and partial was\nused where the result held in part; no block reason fits a claim not\nattempted for lack of time, and `other` was used; analysis code shipped in\nthe data set while the paper links none was treated as the paper's code;\nthe protocol gives no tolerance for a criterion's time-window boundary,\nwhich was applied strictly; and the per-animal breakdown is hard to apply\nto every claim, so it was given for the main A1 and MGB results.\n"
+ "file_path": "docs/pilot-notes/asari-2009-02.md",
+ "content": "# asari-2009, Asari et al. 2009, second attempt\n\nEight claims reproduced, five partially, five not reproduced and three\nblocked, all three for missing data; nine outcomes rest on an assumption.\nThe first verification round agreed with 17 of the 21 outcomes as they\nstood and the second with 20; it disagreed on\n`fig8a-proportion-by-property`, a change to not reproduced was proposed,\nand a third round reviewed that one claim and agreed. CRCNS data sets carry\nno version, so the record gives `unversioned` and the notebook prints the\nMD5 sums of `checksums.md5`. The paper, Asari and Zador in the Journal of\nNeurophysiology (102:2638-2656), records the membrane potential of A1\nneurons in anesthetized rats by in vivo whole-cell patch and MGB spikes in\ncell-attached mode while sequences of sound fragments play, each fragment a\nprobe for the one before it, and reports that context changes the response\nto a probe for seconds in A1 and for less than about 100 ms in MGB. The\nclaims were written from a text extraction of the version of record,\nwithout the supplement or rendered figures; the paper links no code, but\nthe authors' MATLAB scripts ship in the data set (`asari/Tools/CxtDep.m`,\n`GetSpikes.m`, `STRFanalysis.m`), and the attempt follows them where the\nMethods leave a step open. Reproduced are the population and example\nreliability (0.310 +/- 0.092 over 39 cells; 0.611 and 0.737 in\n20051222-ha1-001), the Figure 2 long-context example on that probe, the\ndecay of the context-dependent power (size 0.487 to 0.495, time constant\n1.008 to 1.050 s against 1.04 s, with silence counted as a context), the\nnoise and spontaneous autocorrelations (1/e at 71 and 77 ms), the MGB decay\n(0.060 s), the MGB example, the silence probes and the natural against\nsynthetic test. Partial are the recording counts, the firing rates (the MGB\nevoked rate is above 5 Hz only with robust thresholds, 4.99 Hz with the\nauthors' detector), the two-exponential decay of Figure 3A (only the slow\nconstant within tolerance, with sizes kept non-negative), the Figure 8B\ntime constants and the Figure 8C relative effects. Not reproduced are the\nproportion of significant probes (183 of 305 against 204, outside\ntolerance, with the late fraction and the 4.718 s peak matching), the\npredictability bound (time constants 1.70 to 2.33 s smoothed and 1.20 to\n1.24 s unsmoothed against 1.04 s), the STRF claim (the STRF improves\nsignificantly from 180 to 4052 ms, Wilcoxon p 0.000 to 0.042), the Figure\n8A proportions (AM 0.427 and FM 0.354 both below higher-order 0.489) and\nthe Figure 8A fits. The conductance claims of Figures 5 and 6 and the\nFigure 7 example are blocked. The author's first run gave 8 reproduced, 7\npartially, 2 not reproduced and 4 blocked; the STRF analysis was started,\ngave validation performance up to 7.1 and a negative LN performance on\nthree cells, and was removed and blocked as `other` for lack of time. The\nauthor asked a reader nothing; the questions file, added on main after the\nbranch was cut, asked whether the Figure 2 legend identifies the example,\nand the answer amended the criterion to the probe matching the legend's\nreliabilities, with 10% on the time windows, which the same probe meets\n(marked assumed, as it is matched on the mean correlations). Round 1 found\nthe Wehr recordings and `STRFanalysis.m` in the archive, property\npopulations that do not follow Table 1, an incomplete Figure 7 search and a\nFigure 4 legend fit consistent with 1 - Q(t); in reply the STRF claim was\ntested in a second notebook, the firing rates moved to partial,\nfig3a-proportion-significant and fig4-predictability-upper-bound to not\nreproduced, and the 1 - Q fit (0.505 to 0.513 and 1.008 to 1.050 s) was\nshown as a variant and put to a reader in `questions/asari-2009.yaml`.\nRound 2 asked that the record state where the STRF reading departs from\n`STRFanalysis.m` and found sentences the outputs did not support, which\nwere corrected, and the trial-resampling reading of Figure 8C was run. The\nattempt was not blind: in its first revision run the author listed\n`transcripts/asari-2009/`, which still held the transcripts of\n`asari-2009-01`, and printed the first 50 lines of that attempt's round-2\nreport, which it reported itself. The reconciliation traces the outcomes\nthat differ from `asari-2009-01` (fig3a-proportion-significant,\nfig3b-fractional-power-decay and fig8c-relative-effects) to the corrected\nfragment lists of 20051108-ha1-001, and fig8a-proportion-by-property to\ndifferently built ensembles. The notebook ran in 22 min at first, with peak\nmemory 2.2 GB, and the two notebooks in 1578 s and 2426 s at the end.\n\nThe data set holds no voltage-clamp recording: the 172 files read are 151\nwhole-cell current clamp and 21 cell-attached, and the 15 files of the\nunpublished experiment and the 161 tuning curves are whole-cell or\ncell-attached in mV, so the paper's 14 voltage-clamped cells (29 probes)\nand the conductance findings cannot be tested. In two cells the fragment\nlists of the cell's two recordings are swapped, 20051108-ha1-001-002 and\n-003 (A1) and 20071010-ha2-005-002 and -003 (MGB); cut with the stored\nlists, the Figure 3B fit gives 0.46 to 0.47 and 1.74 to 1.78 s, and 0.49\nand 1.01 to 1.05 s when they are corrected. The Figure 7 recording is not\nin the data set: no DMR recording stores the bands 0.625-2.5, 2.5-10 and\n10-40 kHz. The data set does not say which cells the paper used; it holds\n133 of the 194 A1 cells and 14 of the 16 MGB cells, 132 A1 cells meet the\npaper's rule against its 123, the cells per stimulus family (TORC 14, DMR\n15, MHT 26, MCN 26, natural-sound variants 14) do not map onto the paper's\n(14, 6, 39, 27), and the 20 of Wehr's 25 cells the paper reanalysed are not\nnamed. The ensembles behind Table 1 and Figure 8 had to be rebuilt from\nthe stored stimulus parameters; the data set holds 14 MHT probes with\nproperty ensembles (AM, 2 cells) against the MHT row of 25, 25, 71 and 57.\nIn 20061201-ha2-001-002 every sequence trigger is 308 ms longer than its\nseven stored fragments, 20061231-ha2-001-002 states 4 effective repeats\nwhile one sequence is presented 3 times, five TORC bandwidth-variant\nrecordings store no frequency band, and Summary.mat lists two cells,\n20060314-ha1-001 and 20060320-ha3-003, in both the natural-sound and the\nsynthetic-sound group. `CxtDep.m` counts the preceding silence as a context\nand centres each trial on its mean over the probe window, which the Methods\ndo not say, and the paper prints 73 of 110 as 64.6%, where 73/110 is 66.4%.\nQuestions are put to the paper's authors: how A1 spikes were detected and\nwhich periods count as spontaneous and evoked; the bounds and fit range of\nthe exponential fits; how the property ensembles were formed and counted;\nwhether silence was a context in Figures 3 and 4; whether the matched probe\nis the Figure 2 example; which Wehr cells were used and how validation\nperformance was averaged; whether Figure 4 plots Eq. 43 or 1 - Q(t); and\nhow the population curves treat times after a probe has ended.\n\nThe author's points on the protocol: the authors' scripts ship in the data\nset while the paper links none, and they were treated as the paper's code;\nthe claims file's partial rules do not cover the patterns found for three\nclaims, and the protocol's general definition was used; `measured` must be\nnumbers, and 0 was first recorded for the voltage-clamp counts; \"trust the\ndata\" does not say whether a mislabelled file may be repaired, and each\nswapped fragment list was taken from its sibling; no block reason fits a\nclaim not finished in time, and `other` was used; and open details beyond\nthe criterion's readings were handled by running every reading and marking\nthe outcomes that depend on them as assumed.\n"
 }
 ```
 
 ```
-File created successfully at: docs/pilot-notes/asari-2009-01.md (file state is current in your context — no need to Read it back)
+File created successfully at: docs/pilot-notes/asari-2009-02.md (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "docs/pilot-notes/asari-2009-02.md",
+ "old_string": "to a probe for seconds in A1 and for less than about 100 ms in MGB. The",
+ "new_string": "to a probe for seconds in A1, longer than the noise autocorrelation and\nthan short-window models capture, more for amplitude and frequency changes\nthan for AM, FM and higher-order changes, and that in MGB it decays with a\ntime constant of about 80 ms. The"
+}
+```
+
+```
+The file docs/pilot-notes/asari-2009-02.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "summaries/asari-2009-01.md",
- "content": "The paper's central finding, that sounds shape A1 responses to later sounds for seconds, held in this data: 186 of 305 natural sound probes showed context dependence, and its fast decay in the thalamus (MGB) also held. The timescale of the effect did not match, decaying over about 1.8 s where the paper gives 1.04 s, and the predictability bound and STRF results did not reproduce. Effects of amplitude and frequency changes outlasted those of modulation and higher-order changes, but stayed smaller than natural sound contexts, on property sets rebuilt because the paper does not list them. The synaptic conductance findings could not be tested, as the data set holds no voltage-clamp recordings.\n"
+ "file_path": "summaries/asari-2009-02.md",
+ "content": "The paper's central finding held in this data: A1 responses depend on the preceding sound for seconds, with the context-dependent power decaying with a time constant of about 1 s as reported, while in the thalamus (MGB) the effect fades fast. Several findings around it did not hold: fewer probes showed significant context dependence than reported, the bound on what short-window models can predict rose more slowly, and longer STRF windows did improve predictions, on a fold averaging the paper does not describe. Amplitude and frequency changes outlasted modulation and higher-order changes, but the proportions and their order did not match, on stimulus groupings rebuilt because the paper does not list them. The synaptic conductance findings could not be tested, as the data set holds no voltage-clamp recordings.\n"
 }
 ```
 
 ```
-File created successfully at: summaries/asari-2009-01.md (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "summaries/asari-2009-01.md",
- "content": "The paper's central finding held in this data: A1 responses depend on the preceding sounds for seconds, while in the thalamus (MGB) the effect fades fast. Its timescale did not match, as the context-dependent power decays with a time constant of 1.74 to 1.78 s against the paper's 1.04 s, so the predictability bound failed too, and the STRF result failed because a longer window gave a small significant gain. Amplitude and frequency changes outlasted modulation and higher-order changes, but gave smaller effects than natural sounds, on property sets rebuilt because the paper does not list them. The synaptic conductance findings could not be tested, as the data set holds no voltage-clamp recordings.\n"
-}
-```
-
-```
-The file summaries/asari-2009-01.md has been updated successfully. (file state is current in your context — no need to Read it back)
+File created successfully at: summaries/asari-2009-02.md (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  wc -w summaries/asari-2009-01.md; grep -c "—\|rather" summaries/asari-2009-01.md docs/pilot-notes/asari-2009-01.md; git status --short
+cd  wc -w summaries/asari-2009-02.md; grep -c -i 'rather\|—' docs/pilot-notes/asari-2009-02.md summaries/asari-2009-02.md; git status --short
 ```
 
 ```
-113 summaries/asari-2009-01.md
-summaries/asari-2009-01.md:0
-docs/pilot-notes/asari-2009-01.md:0
+128 summaries/asari-2009-02.md
+docs/pilot-notes/asari-2009-02.md:0
+summaries/asari-2009-02.md:0
 ?? .bash_profile
 ?? .bashrc
 ?? .gitconfig
@@ -389,9 +435,52 @@ docs/pilot-notes/asari-2009-01.md:0
 ?? .vscode
 ?? .zprofile
 ?? .zshrc
-?? docs/pilot-notes/asari-2009-01.md
+?? docs/pilot-notes/asari-2009-02.md
 ?? scripts
-?? summaries/asari-2009-01.md
+?? summaries/asari-2009-02.md
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "summaries/asari-2009-02.md",
+ "content": "The paper's central finding held in this data: A1 responses depend on the preceding sound for seconds, the context-dependent power decaying with a time constant of about 1 s as reported, while in the thalamus (MGB) the effect fades fast. Fewer probes showed significant context dependence than reported, the bound on short-window models rose more slowly, and longer STRF windows did improve predictions, under a fold averaging the paper does not describe. Amplitude and frequency changes outlasted modulation and higher-order changes, but the proportions did not match, on stimulus groupings rebuilt because the paper does not list them. The synaptic conductance findings could not be tested, as the data set holds no voltage-clamp recordings.\n"
+}
+```
+
+```
+The file summaries/asari-2009-02.md has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  wc -w summaries/asari-2009-02.md; cat docs/pilot-notes/asari-2009-02.md
+```
+
+```
+114 summaries/asari-2009-02.md
+# asari-2009, Asari et al. 2009, second attempt
+
+Eight claims reproduced, five partially, five not reproduced and three
+blocked, all three for missing data; nine outcomes rest on an assumption.
+The first verification round agreed with 17 of the 21 outcomes as they
+stood and the second with 20; it disagreed on
+`fig8a-proportion-by-property`, a change to not reproduced was proposed,
+and a third round reviewed that one claim and agreed. CRCNS data sets carry
+no version, so the record gives `unversioned` and the notebook prints the
+MD5 sums of `checksums.md5`. The paper, Asari and Zador in the Journal of
+Neurophysiology (102:2638-2656), records the membrane potential of A1
+neurons in anesthetized rats by in vivo whole-cell patch and MGB spikes in
+cell-attached mode while sequences of sound fragments play, each fragment a
+probe for the one before it, and reports that context changes the response
+to a probe for seconds in A1, longer than the noise autocorrelation and
+than short-window models capture, more for amplitude and frequency changes
+than for AM, FM and higher-order changes, and that in MGB it decays with a
+time constant of about 80 ms. The
+claims were written from a text extraction of the version of record,
+[... 95 more lines not kept]
 ```
 
 **Agent calls Edit**
@@ -399,36 +488,30 @@ docs/pilot-notes/asari-2009-01.md:0
 ```json
 {
  "replace_all": false,
- "file_path": "summaries/asari-2009-01.md",
- "old_string": "against the paper's 1.04 s, so the predictability bound failed too, and the STRF result failed because a longer window gave a small significant gain.",
- "new_string": "against the paper's 1.04 s; the predictability bound missed on its time constant too, and the STRF result failed because a longer window gave a small significant gain."
+ "file_path": "docs/pilot-notes/asari-2009-02.md",
+ "old_string": "time constant of about 80 ms. The\nclaims were written from a text extraction of the version of record,",
+ "new_string": "time constant of about 80 ms. The claims were written from a text\nextraction of the version of record,"
 }
 ```
 
 ```
-The file summaries/asari-2009-01.md has been updated successfully. (file state is current in your context — no need to Read it back)
+The file docs/pilot-notes/asari-2009-02.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
 **Agent**
 
-I wrote `docs/pilot-notes/asari-2009-01.md` and `summaries/asari-2009-01.md` and changed no other file. Nothing is committed.
+# asari-2009, Asari et al. 2009, second attempt
 
-ac-1 is a CRCNS dataset, so it has no entry in `targets/dandisets.json`. That means there is no `catalystneuro` field, and the notes do not open with a conversion sentence. The working tree also shows untracked files I did not create (`.bashrc`, `.idea`, `scripts` and others); I left them alone.
+Eight claims reproduced, five partially, five not reproduced and three blocked, all three for missing data; nine outcomes rest on an assumption. The first verification round agreed with 17 of the 21 outcomes as they stood and the second with 20; it disagreed on `fig8a-proportion-by-property`, a change to not reproduced was proposed, and a third round reviewed that one claim and agreed. CRCNS data sets carry no version, so the record gives `unversioned` and the notebook prints the MD5 sums of `checksums.md5`. The paper, Asari and Zador in the Journal of Neurophysiology (102:2638-2656), records the membrane potential of A1 neurons in anesthetized rats by in vivo whole-cell patch and MGB spikes in cell-attached mode while sequences of sound fragments play, each fragment a probe for the one before it. It reports that context changes the response to a probe for seconds in A1, which is longer than the noise autocorrelation and longer than short-window models capture. It also reports that the effect is larger for amplitude and frequency changes than for AM, FM and higher-order changes, and that in MGB it decays with a time constant of about 80 ms. The claims were written from a text extraction of the version of record, without the supplement or rendered figures; the paper links no code, but the authors' MATLAB scripts ship in the data set (`asari/Tools/CxtDep.m`, `GetSpikes.m`, `STRFanalysis.m`), and the attempt follows them where the Methods leave a step open. Reproduced are the population and example reliability (0.310 +/- 0.092 over 39 cells; 0.611 and 0.737 in 20051222-ha1-001), the Figure 2 long-context example on that probe, the decay of the context-dependent power (size 0.487 to 0.495, time constant 1.008 to 1.050 s against 1.04 s, with silence counted as a context), the noise and spontaneous autocorrelations (1/e at 71 and 77 ms), the MGB decay (0.060 s), the MGB example, the silence probes and the natural against synthetic test. Partial are the recording counts, the firing rates (the MGB evoked rate is above 5 Hz only with robust thresholds, 4.99 Hz with the authors' detector), the two-exponential decay of Figure 3A (only the slow constant within tolerance, with sizes kept non-negative), the Figure 8B time constants and the Figure 8C relative effects. Not reproduced are the proportion of significant probes (183 of 305 against 204, outside tolerance, with the late fraction and the 4.718 s peak matching), the predictability bound (time constants 1.70 to 2.33 s smoothed and 1.20 to 1.24 s unsmoothed against 1.04 s), the STRF claim (the STRF improves significantly from 180 to 4052 ms, Wilcoxon p 0.000 to 0.042), the Figure 8A proportions (AM 0.427 and FM 0.354 both below higher-order 0.489) and the Figure 8A fits. The conductance claims of Figures 5 and 6 and the Figure 7 example are blocked. The author's first run gave 8 reproduced, 7 partially, 2 not reproduced and 4 blocked. In that run the STRF analysis was started and gave validation performance up to 7.1 and a negative LN performance on three cells; it was removed, and the claim was blocked as `other` for lack of time. The author asked a reader nothing; the questions file, added on main after the branch was cut, asked whether the Figure 2 legend identifies the example. The answer amended the criterion to the probe matching the legend's reliabilities, with 10% on the time windows, and the same probe meets it (marked assumed, as it is matched on the mean correlations). Round 1 found the Wehr recordings and `STRFanalysis.m` in the archive, property populations that do not follow Table 1, an incomplete Figure 7 search and a Figure 4 legend fit consistent with 1 - Q(t). In reply the STRF claim was tested in a second notebook, the firing rates moved to partial, and fig3a-proportion-significant and fig4-predictability-upper-bound moved to not reproduced. The 1 - Q fit (0.505 to 0.513 and 1.008 to 1.050 s) was shown as a variant and put to a reader in `questions/asari-2009.yaml`. Round 2 asked that the record state where the STRF reading departs from `STRFanalysis.m` and found sentences the outputs did not support, which were corrected, and the trial-resampling reading of Figure 8C was run. The attempt was not blind: in its first revision run the author listed `transcripts/asari-2009/`, which still held the transcripts of `asari-2009-01`, and printed the first 50 lines of that attempt's round-2 report, which it reported itself. The reconciliation traces the outcomes that differ from `asari-2009-01` (fig3a-proportion-significant, fig3b-fractional-power-decay and fig8c-relative-effects) to the corrected fragment lists of 20051108-ha1-001, and fig8a-proportion-by-property to differently built ensembles. The notebook ran in 22 min at first, with peak memory 2.2 GB, and the two notebooks in 1578 s and 2426 s at the end.
 
-**Notes, `docs/pilot-notes/asari-2009-01.md`**
+The data set holds no voltage-clamp recording: the 172 files read are 151 whole-cell current clamp and 21 cell-attached, and the 15 files of the unpublished experiment and the 161 tuning curves are whole-cell or cell-attached in mV, so the paper's 14 voltage-clamped cells (29 probes) and the conductance findings cannot be tested. In two cells the fragment lists of the cell's two recordings are swapped, 20051108-ha1-001-002 and -003 (A1) and 20071010-ha2-005-002 and -003 (MGB). Cut with the stored lists, the Figure 3B fit gives 0.46 to 0.47 and 1.74 to 1.78 s; with the lists corrected it gives 0.49 and 1.01 to 1.05 s. The Figure 7 recording is not in the data set: no DMR recording stores the bands 0.625-2.5, 2.5-10 and 10-40 kHz. The data set does not say which cells the paper used. It holds 133 of the 194 A1 cells and 14 of the 16 MGB cells, and 132 A1 cells meet the paper's rule against its 123. The cells per stimulus family (TORC 14, DMR 15, MHT 26, MCN 26, natural-sound variants 14) do not map onto the paper's (14, 6, 39, 27), and the 20 of Wehr's 25 cells the paper reanalysed are not named. The ensembles behind Table 1 and Figure 8 had to be rebuilt from the stored stimulus parameters; the data set holds 14 MHT probes with property ensembles (AM, 2 cells) against the MHT row of 25, 25, 71 and 57. In 20061201-ha2-001-002 every sequence trigger is 308 ms longer than its seven stored fragments, and 20061231-ha2-001-002 states 4 effective repeats while one sequence is presented 3 times. Five TORC bandwidth-variant recordings store no frequency band, and Summary.mat lists two cells, 20060314-ha1-001 and 20060320-ha3-003, in both the natural-sound and the synthetic-sound group. `CxtDep.m` counts the preceding silence as a context and centres each trial on its mean over the probe window, which the Methods do not say, and the paper prints 73 of 110 as 64.6%, where 73/110 is 66.4%. Questions are put to the paper's authors: how A1 spikes were detected and which periods count as spontaneous and evoked; the bounds and fit range of the exponential fits; how the property ensembles were formed and counted; whether silence was a context in Figures 3 and 4; whether the matched probe is the Figure 2 example; which Wehr cells were used and how validation performance was averaged; whether Figure 4 plots Eq. 43 or 1 - Q(t); and how the population curves treat times after a probe has ended.
 
-# asari-2009, Asari et al. 2009
+The author's points on the protocol: the authors' scripts ship in the data set while the paper links none, and they were treated as the paper's code; the claims file's partial rules do not cover the patterns found for three claims, and the protocol's general definition was used; `measured` must be numbers, and 0 was first recorded for the voltage-clamp counts; "trust the data" does not say whether a mislabelled file may be repaired, and each swapped fragment list was taken from its sibling; no block reason fits a claim not finished in time, and `other` was used; and open details beyond the criterion's readings were handled by running every reading and marking the outcomes that depend on them as assumed.
 
-Eight claims reproduced, five partially, five not reproduced and three blocked, all three for missing data; six outcomes, the five Figure 8 claims and `fig4-strf-performance-low`, rest on an assumption. The first verification round agreed with 15 of the 21 outcomes as they stood and the second with all 21; nothing was proposed after the second, so there was no third round. CRCNS data sets carry no version, so the record gives `unversioned` and the notebook prints the MD5 sums of `checksums.md5`. The paper, Asari and Zador in the Journal of Neurophysiology (102:2638-2656), records the membrane potential of A1 neurons in anesthetized rats by in vivo whole-cell patch and MGB spikes in cell-attached mode while sequences of sound fragments play, each fragment a probe for the one before it, and reports that the response to a probe depends on its context for up to about 4 s, longer than the noise autocorrelation, that this cannot be captured by models with short windows, that synaptic conductances show it too, that amplitude and frequency changes act longer than AM, FM and higher-order changes, and that in MGB it decays within about 80 ms. The claims were written from a text extraction of the version of record, without the supplement or rendered figures; the paper links no code, but its MATLAB analysis code ships in the data set (`asari/Tools/CxtDep.m`), and the attempt follows it where the Methods leave a step open. Reproduced are the proportion of significant probes (186 of 305, late fraction 0.252 against 0.237), the population and example reliability (0.310 +/- 0.092; 0.611 and 0.737 in 20051222-ha1-001-002), the noise and spontaneous autocorrelations (1/e at 73 and 78 ms), the MGB decay (tau 0.080 s, with sizes below the paper's), the MGB example, the silence probes and the natural against synthetic test, which has little power for AM and none for FM. The Figure 2 long-context example reproduces under the criterion as written by one of 20 candidate probes, from a cell with mean reliability 0.309 that is not the paper's example cell; that cell's 0.737 probe misses the 2 to 4 s test by a run starting 30 ms before 4 s, and this went to a reader in `questions/asari-2009.yaml`. Not reproduced are the decay of the context-dependent power (size 0.467 within tolerance, time constant 1.74 to 1.78 s against 1.04 s), the predictability bound (about half near onset, time constant outside tolerance in every reading), the STRF claim, the Figure 8A fits and the Figure 8C relative effects, where amplitude and frequency stay below natural sounds. Partial are the recording counts, the firing rates (with the code's own MGB detector the rule holds by 0.03 to 0.07 Hz over 5 Hz), the two-exponential decay of Figure 3A (only the slow constant within tolerance), the Figure 8A proportions (every count outside tolerance, the order kept) and the Figure 8B time constants. The conductance claims of Figures 5 and 6 and the Figure 7 example are blocked. The author's first run gave 7 reproduced, 9 partially, 1 not reproduced and 4 blocked, with the STRF claim blocked as not attempted in the time limit. Round 1 found the Wehr recordings and the STRF code in the archive, wrong AM and FM property sets, the without-silence reference of Figure 8C not run and an incomplete Figure 7 search; in reply the STRF claim was tested in a second notebook on 16 of Wehr's 25 cells, the property sets were rebuilt to give Table 1's five totals, and fig2-example-long-context moved to reproduced and fig3b, fig4-predictability-upper-bound and fig8c to not reproduced. Round 2 asked that the record say the passing Figure 2 probe is not from the paper's example cell and that two STRF statements rest on one cell, 20020602-mw-001, which were added, and the trial-resampling reading of Figure 8C was run. The author asked a reader nothing at first, so the answer and author-answers runs changed nothing. The author's run took about 2 h 15 min (17:16 to 19:30 UTC) and no run failed; the notebook ran in 23.4 min at first, with peak memory 2.9 GB, and the two notebooks in 29 and 22 min at the end.
+---
 
-The data set holds no voltage-clamp recording: every one of Asari's 346 files is whole-cell current clamp in mV or cell-attached, so the 29 probes in 14 voltage-clamped cells and the conductance findings cannot be tested. It holds 145 A1 whole-cell cells and 14 MGB cells against the 194 and 16 recorded; its natural sound and MGB groups hold exactly the paper's 39 cells with 305 probes and 14 cells with 93 probes, but with the synthetic sound group 133 cells meet the paper's rule against its 123, and the ensembles split differently (DMR 15 cells against 6, MHT 26 against 39, and 14 cells with SoundTrans variants of natural sounds). The Figure 7 example is not in it: no recording has DMR contexts in 0.625-2.5, 2.5-10 and 10-40 kHz, and the DMR frequency variants are 2-octave bands from 0.25 to 32 kHz in 1-octave steps. Which conditioning stimuli vary which property is listed only in the notes of the 19-stimulus MHT recordings, so the sets behind Table 1 and Figure 8 were rebuilt from the stimulus parameters; they give the five totals, but 82 of the 96 AM tests and all 82 FM tests have a natural sound probe, where Table 1 gives 71 and 57 MHT-probe tests. Summary.mat lists two cells, 20060314-ha1-001 and 20060320-ha3-003, in both the natural and the synthetic group. CxtDep.m centres each trial on its own mean before the fractional powers and counts silence as a context, which the Methods do not say, and the paper prints 73 of 110 as 64.6%, where 73/110 is 66.4%. Wehr's recordings of Machens et al. (2004) are in the archive, but the paper's 20 cells are not listed. Three questions are put to the paper's authors: how the population curves treat times after a probe has ended, which stimuli form each property set, and how A1 spikes were detected and which periods count as spontaneous and evoked.
-
-The author's points on the protocol: `measured` needs a value for an expected value that cannot be measured, and 0 was recorded for the voltage-clamp counts; some criteria define only reproduced, and partial was used where the result held in part; no block reason fits a claim not attempted for lack of time, and `other` was used; analysis code shipped in the data set while the paper links none was treated as the paper's code; the protocol gives no tolerance for a criterion's time-window boundary, which was applied strictly; and the per-animal breakdown is hard to apply to every claim, so it was given for the main A1 and MGB results.
-
-**Summary, `summaries/asari-2009-01.md`**
-
-The paper's central finding held in this data: A1 responses depend on the preceding sounds for seconds, while in the thalamus (MGB) the effect fades fast. Its timescale did not match, as the context-dependent power decays with a time constant of 1.74 to 1.78 s against the paper's 1.04 s; the predictability bound missed on its time constant too, and the STRF result failed because a longer window gave a small significant gain. Amplitude and frequency changes outlasted modulation and higher-order changes, but gave smaller effects than natural sounds, on property sets rebuilt because the paper does not list them. The synaptic conductance findings could not be tested, as the data set holds no voltage-clamp recordings.
+The paper's central finding held in this data: A1 responses depend on the preceding sound for seconds, the context-dependent power decaying with a time constant of about 1 s as reported, while in the thalamus (MGB) the effect fades fast. Fewer probes showed significant context dependence than reported, the bound on short-window models rose more slowly, and longer STRF windows did improve predictions, under a fold averaging the paper does not describe. Amplitude and frequency changes outlasted modulation and higher-order changes, but the proportions did not match, on stimulus groupings rebuilt because the paper does not list them. The synaptic conductance findings could not be tested, as the data set holds no voltage-clamp recordings.
 
 ## End of run
 
-17 turns, 2 minutes, $1.18 at API prices, result: success.
+20 turns, 2 minutes, $1.40 at API prices, result: success.
