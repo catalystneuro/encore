@@ -11,7 +11,7 @@ and traces), and the literature values of the paper's Supplement 4.
 
 | Outcome | Claims |
 |---|---|
-| Reproduced (29) | Rat sample set, nerve and fascicle diameters, multifascicular samples and their tissue proportions, the three mixed model ANOVAs and their Tukey comparisons, tissue proportions, level ratios, variability, the perineurium fits, their order and trends, the Sunderland refit, pig IF against MT. Six rest on an assumption, among them the nerve diameter ANOVA (JMP's unbounded variance components) and the cervical against subdiaphragmatic fascicle comparison (Kenward-Roger degrees of freedom) |
+| Reproduced (29) | Rat sample set, nerve and fascicle diameters, multifascicular samples and their tissue proportions, the three mixed model ANOVAs and their Tukey comparisons, tissue proportions, level ratios, variability, the perineurium fits, their order and trends, the Sunderland refit, pig IF against MT. Six rest on an assumption, among them the nerve diameter ANOVA (JMP's unbounded variance components) and the cervical against subdiaphragmatic fascicle comparison (the mixed model test). For that comparison a change to partially reproduced is proposed for a third verification round: under the test that gives the paper's F and p, the pig difference has p = 0.055 |
 | Partially reproduced (3) | The two literature comparisons; the counts of peanut fascicles (pig cervical 24, not 25) |
 | Not reproduced (2) | No level difference in the perineurium relationship; no trend with age |
 | Blocked (1) | Bundles of the rat carotid sheath: the micrographs are in the dataset, but only the vagus is traced |
@@ -22,5 +22,6 @@ reasoning and the differences from the paper's method.
 The paper's code takes the first inner trace as the "largest" rat fascicle, which is not the
 largest in two samples; the paper's rat subdiaphragmatic fascicle numbers rest on it. The
 derivative folder's output file is an older version that holds all three species and does not
-match the traces. The attempt record, with the reasons and the differences from the paper's
+match the traces. The mixed models are tested with Kenward-Roger F tests on the observed
+REML information, which give the paper's F and p for all nine effects it reports. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/pelot-2020-01.yaml`](../../attempts/pelot-2020-01.yaml).

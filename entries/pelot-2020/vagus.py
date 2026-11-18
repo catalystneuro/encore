@@ -422,8 +422,9 @@ def tukey(fit, df, pairs, which, factors=("species", "level")):
     with k means and dfres degrees of freedom, or, when fit["satt"] is set, the
     Satterthwaite degrees of freedom of each difference. When fit["use_kr"] is set, the SE
     comes from the Kenward-Roger adjusted covariance and the degrees of freedom are the
-    Kenward-Roger ones of each difference (JMP's Tukey HSD on the least squares means of a
-    REML fit; assumption, as the paper gives no settings)."""
+    Kenward-Roger ones of each difference, on the observed information when it is "obs"
+    (the main test here, the one that gives the paper's F and p) and on the expected
+    information otherwise (assumption, as the paper gives no settings)."""
     from scipy import stats
     import patsy
     a, b = factors
@@ -442,8 +443,9 @@ def tukey(fit, df, pairs, which, factors=("species", "level")):
         c = L[p] - L[q]
         est = float(c @ beta)
         if fit.get("use_kr"):
-            se = float(np.sqrt(c @ fit["kr"]["PhiA"] @ c))
-            dfp = kr_test(fit["kr"], c)["ddf"]
+            krs = fit["kr_obs"] if fit["use_kr"] == "obs" else fit["kr"]
+            se = float(np.sqrt(c @ krs["PhiA"] @ c))
+            dfp = kr_test(krs, c)["ddf"]
         else:
             se = float(np.sqrt(c @ cov @ c))
             dfp = satterthwaite_df(fit, c) if fit.get("satt") else fit["dfres"]
@@ -510,8 +512,10 @@ def reml_unbounded(df, y, groups, factors=("species", "level"), nested=None, x0=
     (Fit Model, "Unbounded Variance Components"), which statsmodels does not offer; this
     is the replacement. Fixed effects by generalised least squares; each effect is tested
     with a Wald F (type III, sum-to-zero coding). Returns the fixed-effect table and the
-    variance components. Each effect is tested with the Kenward-Roger F (F_kr, ddf_kr,
-    p_kr), JMP's test for REML fits and the main result; as variants, the Wald F with
+    variance components. Each effect is tested with the Kenward-Roger F on the observed
+    information (F_kr_obs, ddf_kr_obs, p_kr_obs), the main result, which gives the paper's F
+    and p; as variants, the Kenward-Roger F on the expected information (F_kr, ddf_kr,
+    p_kr), the Wald F with
     Satterthwaite degrees of freedom from the observed REML information (as lmerTest),
     with the residual degrees of freedom (n minus the number of fixed parameters), and with
     the number of subjects minus the number of fixed parameters, an ad hoc conservative
@@ -603,18 +607,24 @@ def reml_unbounded(df, y, groups, factors=("species", "level"), nested=None, x0=
     if nested:
         G.append((nest[:, None] == nest[None, :]).astype(float))
     fit["kr"] = kr_setup(Xv, yv, G, np.r_[np.exp(th[0]), th[1:]])
+    # the same with the observed information (the Hessian H, mapped from theta to the linear
+    # parameters), the information the Satterthwaite degrees of freedom use
+    J = np.diag(np.r_[np.exp(th[0]), np.ones(k - 1)])
+    fit["kr_obs"] = kr_setup(Xv, yv, G, np.r_[np.exp(th[0]), th[1:]], W=J @ np.linalg.inv(H) @ J)
     for row in out:
         idx = [i for i, n in enumerate(names) if (row["term"] == a and n.startswith(f"C({a}") and ":" not in n)
                or (row["term"] == b and n.startswith(f"C({b}") and ":" not in n) or (":" in row["term"] and ":" in n)]
         Lm = np.eye(p)[idx]
         kr = kr_test(fit["kr"], Lm)
         row["F_kr"], row["ddf_kr"], row["p_kr"] = kr["F"], kr["ddf"], kr["p"]
+        kro = kr_test(fit["kr_obs"], Lm)
+        row["F_kr_obs"], row["ddf_kr_obs"], row["p_kr_obs"] = kro["F"], kro["ddf"], kro["p"]
         row["df_satt"] = satterthwaite_multi_df(fit, Lm)
         row["p_satt"] = float(stats.f.sf(row["F"], len(idx), row["df_satt"]))
     return pd.DataFrame(out), vc, fit
 
 
-def kr_setup(X, y, G, lin):
+def kr_setup(X, y, G, lin, W=None):
     """The quantities of Kenward and Roger (1997) for a REML fit whose covariance is
     linear in its parameters, V = sum_i lin_i G_i (here residual, subject and sample):
     Phi = (X'V^-1X)^-1, P_i = -X'V^-1 G_i V^-1 X, Q_ij = X'V^-1 G_i V^-1 G_j V^-1 X, and W
@@ -622,14 +632,16 @@ def kr_setup(X, y, G, lin):
     The bias-adjusted covariance is Phi_A = Phi + 2 Phi (sum_ij W_ij (Q_ij - P_i Phi P_j)) Phi
     (R_ij = 0, as V is linear in lin). JMP's REML reports Kenward-Roger tests (JMP Fit Model
     documentation, "Restricted Maximum Likelihood (REML) Method"), the reason for using it;
-    it is computed here with dense matrices."""
+    it is computed here with dense matrices. W may be given in place of the expected
+    information's inverse, for the variant on the observed information."""
     Vi = np.linalg.inv(sum(l * Gi for l, Gi in zip(lin, G)))
     Phi = np.linalg.inv(X.T @ Vi @ X)
     beta = Phi @ X.T @ Vi @ y
     Pr = Vi - Vi @ X @ Phi @ X.T @ Vi
     k = len(G)
     PG = [Pr @ Gi for Gi in G]
-    W = np.linalg.inv(np.array([[0.5 * np.sum(PG[i] * PG[j].T) for j in range(k)] for i in range(k)]))
+    if W is None:
+        W = np.linalg.inv(np.array([[0.5 * np.sum(PG[i] * PG[j].T) for j in range(k)] for i in range(k)]))
     ViG = [Vi @ Gi for Gi in G]
     Pm = [-X.T @ ViG[i] @ Vi @ X for i in range(k)]
     Lam = sum(W[i, j] * (X.T @ ViG[i] @ ViG[j] @ Vi @ X - Pm[i] @ Phi @ Pm[j]) for i in range(k) for j in range(k))
