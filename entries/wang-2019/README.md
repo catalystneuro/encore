@@ -13,7 +13,7 @@ of Figure 8. It holds no optical maps or traces.
 | Rabbit HR, APD and CaTD change monotonically over 60 s (Fig. 2A) | Partially reproduced |
 | Mouse APD is biphasic, 50.9, 60.6 and 46.5 ms at 0, 15 and 60 s (Fig. 2D) | Reproduced |
 | CaT amplitude rises similarly in both species (Fig. 2C, 2F) | Reproduced |
-| Tyramine and noradrenaline mimic SNS (Fig. 3B, 3C) | Partially reproduced |
+| Tyramine and noradrenaline mimic SNS (Fig. 3B, 3C) | Reproduced; for noradrenaline under one reading of "monotonic" |
 | Propranolol abolishes the SNS response (Fig. 3D) | Not reproduced |
 | Rate steps give a biphasic APD, exaggerated by SNS (Fig. 3E) | Reproduced |
 | At constant pacing SNS prolongs APD without a biphasic response (Fig. 3F) | Reproduced, resting on an assumption |

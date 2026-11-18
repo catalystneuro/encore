@@ -17,6 +17,10 @@ Where the parameters come from:
   they are paired t-tests against time 0 with the Holm-Sidak adjustment over the time points, the
   default comparison against a control after a one-way repeated measures ANOVA in SigmaPlot; this
   is an assumption, stated in the attempt record. Unadjusted paired t-tests are reading (i).
+  SigmaPlot's own Holm-Sidak test after a repeated measures ANOVA uses the ANOVA's pooled residual
+  mean square (t = difference of means / sqrt(2 MS_residual / n), on the residual degrees of
+  freedom), not separate paired t-tests; it is computed too, as a variant (`p_rm_pooled_holm_sidak`).
+  Neither applies a sphericity correction.
 - Hearts with a missing value are left out of the repeated measures ANOVA (it needs complete
   data) and out of a paired t-test only for the pair that is missing. This is a standard choice.
 """
@@ -206,10 +210,24 @@ def against_time0(w: pd.DataFrame) -> pd.DataFrame:
         out.attrs["anova_p"] = float(res["Pr > F"].iloc[0])
         p = [paired(complete.loc[t0], complete.loc[t])["p"] for t in out.index]
         out["p_rm_holm_sidak"] = multipletests(p, method="holm-sidak")[1]
+        out["p_rm_pooled_holm_sidak"] = multipletests(pooled_vs_time0(complete), method="holm-sidak")[1]
     else:
         out.attrs["anova_p"] = np.nan
         out["p_rm_holm_sidak"] = np.nan
+        out["p_rm_pooled_holm_sidak"] = np.nan
     return out
+
+
+def pooled_vs_time0(complete: pd.DataFrame) -> list[float]:
+    """Unadjusted two-sided p of each later time against time 0 on the repeated measures ANOVA's
+    pooled residual mean square (time points as rows, hearts as columns, no missing values)."""
+    x = complete.values.astype(float)
+    k, n = x.shape
+    resid = x - x.mean(axis=1, keepdims=True) - x.mean(axis=0, keepdims=True) + x.mean()
+    df = (k - 1) * (n - 1)
+    se = np.sqrt(2 * (resid ** 2).sum() / df / n)
+    t = (x[1:].mean(axis=1) - x[0].mean()) / se
+    return list(2 * stats.t.sf(np.abs(t), df))
 
 
 def anova_line(res: pd.DataFrame) -> str:
