@@ -3354,8 +3354,14 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                 continue
             title = (f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
                      else e(nb["title"]))
+            # Beside the notebook's name: open it in Google Colab, from the copy tools/colab.py keeps on the `colab`
+            # branch, which fetches the entry's files and installs its pinned packages.
+            colab = (f' <a class="colab" href="{COLAB_URL}/{e(a["entry"])}/{e(nb["path"])}" target="_blank" '
+                     f'rel="noopener" title="Open and run this notebook in Google Colab. Its first cell fetches the '
+                     f'entry&rsquo;s files and installs its pinned packages."><span class="k">Open in</span>'
+                     f'<span class="v">Colab</span></a>') if not data["demo"] and a.get("entry") else ""
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
-                            f'<span class="count">{len(mine)}</span></h3>'
+                            f'<span class="count">{len(mine)}</span>{colab}</h3>'
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
                             f'</p>{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}

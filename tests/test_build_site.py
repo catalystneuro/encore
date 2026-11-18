@@ -565,6 +565,17 @@ def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
     assert order == sorted(order)
 
 
+def test_each_notebook_on_the_claims_panel_has_an_open_in_colab_badge(built):
+    # Beside the notebook's name over its claims: a link to the copy of it on the `colab` branch.
+    data, out = built
+    page = (out / "papers" / "senzai-2017" / "index.html").read_text()
+    panel = page[page.index('id="claims"'):page.index('id="notebooks"')]
+    href = f'{site.COLAB_URL}/senzai-2017/reproduce_senzai_2017.ipynb'
+    assert f'<a class="colab" href="{href}" target="_blank" rel="noopener"' in panel
+    assert panel.count('class="colab"') == panel.count('<div class="claim-group"><h3')
+    assert "a.colab{" in (site.ASSETS / "app.css").read_text()
+
+
 def test_view_on_dandi_opens_a_new_window(built):
     data, out = built
     dandiset = next(iter(site.current_attempts(data)))
