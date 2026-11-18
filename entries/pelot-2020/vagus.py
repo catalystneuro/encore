@@ -101,10 +101,31 @@ def supplement4():
             ref = r[7]
         if section is None or species is None:
             continue
+        notes = r[15] if isinstance(r[15], str) else ""
+        # A row with a mean but no reference, laterality or n continues the study above it:
+        # its notes say it is that study's mean converted between diameter and area
+        # ("Calculated mean(d_nerve) from mean(A_nerve)"), a second value for the same nerves.
+        derived = not isinstance(r[7], str) and pd.isna(r[10]) and pd.isna(r[11]) and notes.startswith("Calculated mean(")
+        lat = rows[-1]["laterality"] if derived and rows else r[10]
         rows.append(dict(section=section, species=species, level=level, ours_mean=ours["mean"], ours_sd=ours["sd"],
                          ours_min=ours["min"], ours_max=ours["max"], reference=ref, strain=r[8], sex=r[9],
-                         laterality=r[10], n=r[11], lit_mean=r[12], lit_var=r[13], var_kind=r[14]))
+                         laterality=lat, n=r[11], lit_mean=r[12], lit_var=r[13], var_kind=r[14],
+                         derived=derived, notes=notes))
     return pd.DataFrame(rows)
+
+
+def supplement_zip():
+    """The supplementary files of the version of record (Europe PMC, PMC7672126): the
+    zip's file list and the text of Data_Sheet_1.pdf (the supplement), page by page."""
+    import requests
+    import zipfile
+    from pypdf import PdfReader
+    z = zipfile.ZipFile(io.BytesIO(requests.get(SUPPLEMENT_URL, timeout=300).content))
+    listing = [(i.filename, i.file_size) for i in z.infolist()]
+    b = z.read("Data_Sheet_1.pdf")
+    READ[("PMC7672126", "Data_Sheet_1.pdf")] = hashlib.sha256(b).hexdigest()
+    pages = [p.extract_text() for p in PdfReader(io.BytesIO(b)).pages]
+    return listing, pages
 
 
 def excel(ds, path, **kw):
@@ -399,7 +420,10 @@ def tukey(fit, df, pairs, which, factors=("species", "level")):
     of the second) or "cell" for the species by level cells. Each pair's t is the
     difference over its SE from the fixed-effect covariance; p from the studentized range
     with k means and dfres degrees of freedom, or, when fit["satt"] is set, the
-    Satterthwaite degrees of freedom of each difference."""
+    Satterthwaite degrees of freedom of each difference. When fit["use_kr"] is set, the SE
+    comes from the Kenward-Roger adjusted covariance and the degrees of freedom are the
+    Kenward-Roger ones of each difference (JMP's Tukey HSD on the least squares means of a
+    REML fit; assumption, as the paper gives no settings)."""
     from scipy import stats
     import patsy
     a, b = factors
@@ -417,9 +441,13 @@ def tukey(fit, df, pairs, which, factors=("species", "level")):
     for p, q in pairs:
         c = L[p] - L[q]
         est = float(c @ beta)
-        se = float(np.sqrt(c @ cov @ c))
+        if fit.get("use_kr"):
+            se = float(np.sqrt(c @ fit["kr"]["PhiA"] @ c))
+            dfp = kr_test(fit["kr"], c)["ddf"]
+        else:
+            se = float(np.sqrt(c @ cov @ c))
+            dfp = satterthwaite_df(fit, c) if fit.get("satt") else fit["dfres"]
         t = est / se
-        dfp = satterthwaite_df(fit, c) if fit.get("satt") else fit["dfres"]
         pv = float(stats.studentized_range.sf(abs(t) * np.sqrt(2), k, dfp))
         out.append(dict(pair=f"{p} - {q}", diff=est, se=se, t=t, df=dfp, p_tukey=pv))
     means = {key: float(v @ beta) for key, v in L.items()}
@@ -482,10 +510,12 @@ def reml_unbounded(df, y, groups, factors=("species", "level"), nested=None, x0=
     (Fit Model, "Unbounded Variance Components"), which statsmodels does not offer; this
     is the replacement. Fixed effects by generalised least squares; each effect is tested
     with a Wald F (type III, sum-to-zero coding). Returns the fixed-effect table and the
-    variance components. Denominator degrees of freedom are not computed (JMP uses
-    Kenward-Roger); p is given from F with the residual degrees of freedom (n minus the
-    number of fixed parameters), the most liberal choice, and from F with the number of
-    subjects minus the number of fixed parameters, a conservative one."""
+    variance components. Each effect is tested with the Kenward-Roger F (F_kr, ddf_kr,
+    p_kr), JMP's test for REML fits and the main result; as variants, the Wald F with
+    Satterthwaite degrees of freedom from the observed REML information (as lmerTest),
+    with the residual degrees of freedom (n minus the number of fixed parameters), and with
+    the number of subjects minus the number of fixed parameters, an ad hoc conservative
+    bound."""
     import patsy
     from scipy import optimize, stats
     a, b = factors
@@ -569,22 +599,110 @@ def reml_unbounded(df, y, groups, factors=("species", "level"), nested=None, x0=
             H[i, j] = (negll(th + ei + ej) - negll(th + ei - ej) - negll(th - ei + ej) + negll(th - ei - ej)) / (4 * h[i] * h[j])
     fit = dict(beta=pd.Series(beta, names), cov=cov, converged=bool(opt.success),
                dfres=nobs - p, dfsub=len(blocks) - p, theta=th, cov_at=cov_at, H=H, h=h)
+    G = [np.eye(nobs), (g[:, None] == g[None, :]).astype(float)]
+    if nested:
+        G.append((nest[:, None] == nest[None, :]).astype(float))
+    fit["kr"] = kr_setup(Xv, yv, G, np.r_[np.exp(th[0]), th[1:]])
     for row in out:
         idx = [i for i, n in enumerate(names) if (row["term"] == a and n.startswith(f"C({a}") and ":" not in n)
                or (row["term"] == b and n.startswith(f"C({b}") and ":" not in n) or (":" in row["term"] and ":" in n)]
-        if len(idx) == 1:
-            c = np.zeros(p); c[idx[0]] = 1
-            row["df_satt"] = satterthwaite_df(fit, c)
-            row["p_satt"] = float(stats.f.sf(row["F"], 1, row["df_satt"]))
-        else:
-            # multi-df effect: mean of the Satterthwaite df of the effect's contrasts
-            dfs = []
-            for i in idx:
-                c = np.zeros(p); c[i] = 1
-                dfs.append(satterthwaite_df(fit, c))
-            row["df_satt"] = float(np.mean(dfs))
-            row["p_satt"] = float(stats.f.sf(row["F"], len(idx), row["df_satt"]))
+        Lm = np.eye(p)[idx]
+        kr = kr_test(fit["kr"], Lm)
+        row["F_kr"], row["ddf_kr"], row["p_kr"] = kr["F"], kr["ddf"], kr["p"]
+        row["df_satt"] = satterthwaite_multi_df(fit, Lm)
+        row["p_satt"] = float(stats.f.sf(row["F"], len(idx), row["df_satt"]))
     return pd.DataFrame(out), vc, fit
+
+
+def kr_setup(X, y, G, lin):
+    """The quantities of Kenward and Roger (1997) for a REML fit whose covariance is
+    linear in its parameters, V = sum_i lin_i G_i (here residual, subject and sample):
+    Phi = (X'V^-1X)^-1, P_i = -X'V^-1 G_i V^-1 X, Q_ij = X'V^-1 G_i V^-1 G_j V^-1 X, and W
+    the inverse of the expected REML information 0.5 tr(P G_i P G_j) (P the REML projection).
+    The bias-adjusted covariance is Phi_A = Phi + 2 Phi (sum_ij W_ij (Q_ij - P_i Phi P_j)) Phi
+    (R_ij = 0, as V is linear in lin). JMP's REML reports Kenward-Roger tests (JMP Fit Model
+    documentation, "Restricted Maximum Likelihood (REML) Method"), the reason for using it;
+    it is computed here with dense matrices."""
+    Vi = np.linalg.inv(sum(l * Gi for l, Gi in zip(lin, G)))
+    Phi = np.linalg.inv(X.T @ Vi @ X)
+    beta = Phi @ X.T @ Vi @ y
+    Pr = Vi - Vi @ X @ Phi @ X.T @ Vi
+    k = len(G)
+    PG = [Pr @ Gi for Gi in G]
+    W = np.linalg.inv(np.array([[0.5 * np.sum(PG[i] * PG[j].T) for j in range(k)] for i in range(k)]))
+    ViG = [Vi @ Gi for Gi in G]
+    Pm = [-X.T @ ViG[i] @ Vi @ X for i in range(k)]
+    Lam = sum(W[i, j] * (X.T @ ViG[i] @ ViG[j] @ Vi @ X - Pm[i] @ Phi @ Pm[j]) for i in range(k) for j in range(k))
+    return dict(beta=beta, Phi=Phi, PhiA=Phi + 2 * Phi @ Lam @ Phi, W=W, Pm=Pm, lin=lin)
+
+
+def kr_test(s, L):
+    """Kenward-Roger F test of L beta = 0 (Kenward and Roger, 1997, section 4, as pbkrtest
+    computes it): the Wald F on the adjusted covariance, scaled by lambda, with m
+    denominator degrees of freedom. Checked in the notebook on a balanced split-plot
+    design, where it gives the exact F tests."""
+    from scipy import stats
+    L = np.atleast_2d(L)
+    q = L.shape[0]
+    Phi, W, Pm = s["Phi"], s["W"], s["Pm"]
+    k = len(Pm)
+    Th = L.T @ np.linalg.solve(L @ Phi @ L.T, L)
+    M = [Th @ Phi @ Pm[i] @ Phi for i in range(k)]
+    A1 = sum(W[i, j] * np.trace(M[i]) * np.trace(M[j]) for i in range(k) for j in range(k))
+    A2 = sum(W[i, j] * np.trace(M[i] @ M[j]) for i in range(k) for j in range(k))
+    B = (A1 + 6 * A2) / (2 * q)
+    gg = ((q + 1) * A1 - (q + 4) * A2) / ((q + 2) * A2)
+    den = 3 * q + 2 * (1 - gg)
+    c1, c2, c3 = gg / den, (q - gg) / den, (q + 2 - gg) / den
+    E = 1 / (1 - A2 / q)
+    V = 2 / q * (1 + c1 * B) / ((1 - c2 * B) ** 2 * (1 - c3 * B))
+    rho = V / (2 * E ** 2)
+    m = 4 + (q + 2) / (q * rho - 1)
+    lam = m / (E * (m - 2))
+    b = s["beta"]
+    F = lam * float(b @ L.T @ np.linalg.solve(L @ s["PhiA"] @ L.T, L @ b)) / q
+    return dict(F=float(F), ddf=float(m), p=float(stats.f.sf(F, q, m)), lam=float(lam))
+
+
+def satterthwaite_multi_df(fit, L):
+    """Denominator degrees of freedom of a q-df Satterthwaite F test, as lmerTest computes
+    it (Fai and Cornelius, 1996): the 1-df Satterthwaite df nu_m of the q orthogonal
+    contrasts from the eigen-decomposition of L C L', E = sum nu_m / (nu_m - 2) over
+    nu_m > 2, df = 2E / (E - q) when E > q."""
+    L = np.atleast_2d(L)
+    q = L.shape[0]
+    if q == 1:
+        return satterthwaite_df(fit, L[0])
+    d, U = np.linalg.eigh(L @ fit["cov"] @ L.T)
+    nus = [satterthwaite_df(fit, (U[:, m] @ L) / np.sqrt(d[m])) for m in range(q)]
+    E = sum(nu / (nu - 2) for nu in nus if nu > 2)
+    return float(2 * E / (E - q)) if E > q else float("nan")
+
+
+def reml_dense(X, y, G, x0):
+    """REML fit of y = X beta + e with covariance sum_i lin_i G_i, lin_0 (residual) kept
+    positive through its log and the others unbounded as long as the covariance stays
+    positive definite (as reml_unbounded, for small data with dense matrices). Returns
+    kr_setup's quantities at the optimum, for kr_test."""
+    from scipy import optimize
+
+    def negll(t):
+        lin = np.r_[np.exp(t[0]), t[1:]]
+        V = sum(l * Gi for l, Gi in zip(lin, G))
+        try:
+            L = np.linalg.cholesky(V)
+        except np.linalg.LinAlgError:
+            return 1e12
+        Xi, yi = np.linalg.solve(L, X), np.linalg.solve(L, y)
+        A = Xi.T @ Xi
+        b = np.linalg.solve(A, Xi.T @ yi)
+        r = yi - Xi @ b
+        return 0.5 * (2 * np.log(np.diag(L)).sum() + np.linalg.slogdet(A)[1] + r @ r)
+
+    opt = optimize.minimize(negll, x0, method="Nelder-Mead", options=dict(xatol=1e-10, fatol=1e-12, maxiter=20000))
+    s = kr_setup(X, y, G, np.r_[np.exp(opt.x[0]), opt.x[1:]])
+    s["converged"] = bool(opt.success)
+    return s
 
 
 def satterthwaite_df(fit, c):
