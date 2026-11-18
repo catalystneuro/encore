@@ -1,33 +1,38 @@
-No outcome changed: all 21 match what the verifier gave in round 1. The entry passes `check` and ran from a clean environment in 541 s, and the final numbers match the run before it except for timings.
+I've revised the attempt for every point in the verifier's round-1 report, re-run both notebooks from a clean environment, and recorded the round under `verifications`. Both notebooks pass `python tools/entry.py all` with 0 errors, in 21.0 and 21.1 minutes. Nothing is committed.
 
-**What I added or corrected, by verifier point**
-- **B1, Mouse12-120808 clock (hd-cell-fraction):** I re-ran that session with position realigned by the best shift of each quarter, which gives 13 HD cells. One constant shift of -2.6 s gives 12. The total becomes 391 (or 390), above the 388.3 bound. I kept partially reproduced, because the criterion counts the sessions as deposited. The conclusion and notes now say the count match is fragile.
-- **B2/C, extra unit rows and electrode groups:** I added a data check of the unit rows:
-  - Unit ids are 0 to N-1 with no shank or cluster number.
-  - Every electrode group says only "shankN electrodes" with location "unknown".
-  - 1826 rows fire at 0.05 Hz or more and 1526 at 0.5 Hz or more, so the paper's 1077 cells cannot be recovered from the files.
-  
-  The finding about the unit selection was updated to say this.
-- **B3/B4, fig2f-sws-tenfold-faster:** I added three outputs:
-  - **Reading (b):** median ratio 8.02.
-  - **Fit quality:** median R² is 0.84 in waking, 0.55 in REM and 0.78 in SWS. Keeping only pairs with R² of at least 0.25 or 0.5 gives 8.46 and 8.56.
-  - **Known-speed check:** Poisson surrogates driven by the measured head direction. The estimator returns 0.37 of the true waking speed, and for the trajectory played ten times faster it gives a median ratio of 4.99.
-  
-  So my estimator compresses ratios, and the 8.33 shortfall from tenfold may come from it. I kept partially reproduced, as the criterion decides on the data's ratio, and the text now says this. For the REM claim, reading (b) gives 0.85.
-- **B5/B4, fig4b-noise-correlations:**
-  - The lagged products now use only times where head direction is known at both ends of the lag. The main numbers barely moved.
-  - Reading (b) gives the same signs.
-  - Poisson surrogates, with tuning curves re-estimated from their own spikes, show a bias of +0.64 Hz² at 0° and -0.37 Hz² at 60°. That is about a tenth of the observed effect. The data still exceed the surrogates in 110 of 118 pairs at 0° and fall below them in 223 of 256 at 60°.
-- **B6, decoding-tracks-hd:** Selecting HD cells on the training half alone keeps the same 28 sessions and the same 11.7° pooled median error.
-- **B7, fig3a-packet-60-degrees:** The text now also says the reading (b) waking crossing, 54.1°, falls just outside the tolerance.
-- **B9, blocked count:** Corrected to 13 blocked of 21 claims in the notebook, README, summary and findings.
-- **ensemble-sizes:** I added HD cells per session by mouse group: 7.4 ± 6.2 in the mice that appear thalamus only, against the ADn's 8.4 ± 5.1. The claim stays blocked because the mouse assignment is not shown by the files.
-- **Other:** The header now says which sections use random numbers, each with a fixed seed. The README runtime is now about nine minutes. The verification round is recorded in the attempt record for all 21 claims.
+**Outcome changes.** Of 35 claims, 34 are now tested: 22 reproduced, 7 partially reproduced, 5 not reproduced, 1 blocked.
+- **recording-sample**: reproduced → partially reproduced, as the verifier said. The data give 7 mice and 41 sessions, both within tolerance. By the units' own labels, though, 24 sessions in 4 mice hold both structures, against 21 in 3. Mouse20's PoS units sit on electrode groups the lab labelled 'postsub', on a device the files call the post-subicular probe. I now follow the files' labels everywhere, which also fixes the inconsistency the verifier found between cells.
+- **ensemble-sizes**: not reproduced → partially reproduced. Under the second HD-cell reading (hd-b), both means are within tolerance (ADn 8.00, PoS 5.22) and both s.d.s are not (4.42, 4.11). The PoS mean depends on counting Mouse20's 3 PoS sessions: without them it is 6.00, outside.
+- **fig5d-adn-predicts-pos-reliably** and **fig5e-adn-predicts-pos**: blocked → reproduced. The GLM now runs in its own notebook, `glm_peyrache_2015.ipynb`, with 7 readout windows and the first 20 minutes of each state.
+  - ADn assemblies predict PoS cells in every state (Wilcoxon p 2.7e-18 to 9.2e-22).
+  - The reverse prediction is weaker in every state (p 0.0095, 6.3e-11, 0.020), with the gap largest in SWS.
+- **fig5e-readout-windows** stays blocked as too large. Its criterion needs about 23 windows, roughly 70 minutes against the 60-minute limit.
+- **fig2e-decoded-speed**: I kept partially reproduced and recorded the verifier's not reproduced as a disagreement. I now locate the decoded angle below the 1-degree grid, so the 10 ms reading can be tested (ADn SWS/wake ratio 5.11, still not 10). The REM part does hold in the PoS ensembles (0.93 and 1.00), which the criterion counts as partial; the verifier's reasons cite ADn only.
 
-**Not done, and why**
-- **fig3b-packet-coherence, pooled version:** Not run. The Methods do not say how the actual and expected packets are compared, or how the probability is formed from the 5,000 random waking vectors.
-- **fig6b-adn-synchrony in the thalamus-only mice:** Not run. Without shanks, same-shank pairs cannot be removed, and spike sorting distorts their 1 to 5 ms synchrony. The mouse assignment is also unverified.
+**Fixes and added outputs**
+- **OLE (fig4d,e)**: the verifier called my signal estimator my own assumption. I now use the plain reading, with Q taken entirely from the tuning curves, and keep my earlier version as a variant. Both readings give not reproduced:
+  - fig4d: the covariance estimator wins in all 5 PoS ensembles, but 5 ensembles cannot reach p < 0.05 (the floor is 0.0625), and its error is 1.26 times the Bayesian decoder's, beyond the 25% margin.
+  - fig4e: the ADn ratio is 0.25, not 0.5 or 0.67.
+- **fig3b**: added a shuffled-angle control. It shows the 0.05 threshold cannot fail with random references, or with actual-HD references and the mean summary. The outcome now rests on the decoded-HD references with the median summary, where the control gives 0.000 in ADn.
+- **supfig5**: the rate groups now use the right peak rate and the rates of the state tested. It is still not reproduced, now in 0 of 96 readings.
+- **fig7**: connections now run on every session with both structures, including Mouse28-140314, for 4765 pairs. That is every such pair the dandiset holds, so the paper's 6960 cannot be reached. Pairs per session are printed.
+- **Other outputs added**:
+  - the scored wake interval coincides with the open-field epoch (overlap 0.9998 to 1);
+  - speed-fit quality and pairs at the grid ends, per state;
+  - pairs with a zero or infinite speed are left out before the tests;
+  - Mouse32's count is reported as untestable, not as a miss;
+  - the non-monotonic fall in fig6b is noted;
+  - the two borderline results (adn-pos-hd-information, fig7e-driven-pos-hd-information) are described as marginal or fragile.
 
-The record notes give both reasons.
+**Not done**
+- I did not decode ensembles under hd-b. The verifier said it would not change a conclusion and it would cost a large share of the run; I print how many sessions would qualify (27 ADn, 11 PoS).
+- The GLM covers only the readings where assemblies and targets are HD cells; the all-cell readings were not run, for time.
+- I added no reader questions, as the verifier reported no misreading of the claims file. No claim was changed.
 
-The paper text I downloaded is in `paper/`. Nothing is committed. The stray untracked dotfiles at the repo root (.bashrc, .idea, `scripts` and others) were there before this run and are not mine.
+Files changed:
+- `entries/peyrache-2015/hd.py`
+- `entries/peyrache-2015/reproduce_peyrache_2015.ipynb`
+- `entries/peyrache-2015/glm_peyrache_2015.ipynb` (new)
+- `entries/peyrache-2015/entry.yaml`
+- `entries/peyrache-2015/README.md`
+- `attempts/peyrache-2015-02.yaml`

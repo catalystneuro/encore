@@ -1,0 +1,99 @@
+# mcguire-2016, McGuire et al. 2016
+
+Twenty-two claims reproduced on the data set, ten partially, two not
+reproduced and none blocked, plus three claims on the paper's S1 and S2
+Data (`data: elsewhere`), all reproduced and counted apart; ten outcomes
+rest on an assumption. The first verification round agreed with 36 of the
+37 outcomes as they stood and would have given `fig7de-medium-suppressed`
+not reproduced; the second agreed with all 37, withdrew that objection, and
+nothing was proposed after it, so there was no third round. CRCNS data sets
+carry no version, so the record gives `unversioned`. The paper, McGuire,
+Telian, Laboy-Juarez, Miyashita, Lee, Smith and Feldman in PLoS Biology
+(14(8) e1002549), trains rats to sort three-impulse whisker sequences
+(FFF, FMS, SMF, SSS) by choosing a right or left port, records units across
+the layers of S1 in five of them, classes the units by the integration
+window of a regression on panel speed (Fast, Medium, Slow Positive, Slow
+Negative), and reports that rats judge the sequences by mean speed and
+treat FMS and SMF alike, that Fast units encode impulse velocity and adapt,
+that L5 Slow Positive units carry the rat's choice, and that decoders read
+the sequence from Fast and Medium units and the choice from Slow units. The
+claims were written from the Europe PMC full text (PMC5004814) with the
+legends of the supporting information, without a PDF, so no figure was
+read, and with Table 1 garbled; the paper links no code. Reproduced are,
+among others, the choice following mean speed in all five recorded rats
+(r 0.967 to 0.998), the unit counts (330 single units and 176 multi-unit
+clusters over 80 sessions), the 310 temporally modulated units, the unit
+classes (160 Fast, 52 Medium, 51 Slow Positive, 47 Slow Negative) and their
+laminar pattern, the Fast units' velocity tuning and FFF adaptation, the
+choice divergence of L5 Slow Positive units from 120 ms, and the stimulus
+decoder (86.9%). Not reproduced are `fig4d-gradual-decrease`, as L5a also
+falls (-0.94 Hz per 100 ms), and `fig9f-choice-decoder`, where Slow units
+predict choice at 80.8% and 92.9% and Fast and Medium units at 71.3% and
+81.9%, where the paper has 65% and chance. Partial are, among others, the
+behaviour claims that need the three rats not deposited, the baseline
+rates (RS maximum 11.40 Hz), the latencies (15 to 22 ms in every layer
+against 9.8 to 16.1 ms) and the Slow decoder at 33.9%, above chance. The
+author's first run gave 22 reproduced, 12 partially, 2 not reproduced and
+1 blocked, with `fig2d-fixed-panel-impairs` blocked for missing data; the
+author asked a reader whether it should be tested on S2 Data, the answer
+made it `data: elsewhere` with a criterion of a lower fixed-panel value in
+at least five of six rats, and the author-answers run gave reproduced (all
+six lower, p = 0.0120 against the paper's 0.012). Round 1 found that the
+recomputed modulated units matched the data set's stored set for only 73%
+of units, that the impulse t test selected 34 Fast RS units against the
+paper's 61, that near-zero denominators gave per-unit ratios of about
+1e13, that latency ties were read at their first sample and that the s5
+impulse speeds came from a ramp on Table 1 where the criterion names the S1
+Fig profiles; in reply every claim that depends on modulation moved to the
+stored set, with the recomputed set as a variant, fig7-fff-adaptation took
+all 62 Fast RS units as an assumption, and eight outcomes changed. Round 2
+found text that did not match the printouts (the fig9f cross-validated
+values, the latency `measured`, the fig8d-fast-medium times, a fig9d value
+from the earlier run, a missing baseline deviation), all corrected; the
+cross-validated choice decoders change by 0.1 point between runs with the
+same seeds, which was reported and not traced. The author's run took about
+1 h 10 min (16:54 to about 18:03 UTC) and nothing failed in the final run;
+the two notebooks ran in 106 s and 925 s.
+
+The data set's descriptor says units in columns A1 and B2 must not be used
+in stimulus analyses and gives the column of each electrode as
+`AllRats(expt).MapPosition`, but `AllRats.mat` has no such field and no
+field gives the recorded column, so the file's 506 units (330 single, 176
+multi-unit) cannot be cut to the paper's 473 (306 single, 167 multi-unit),
+and every unit analysis uses all 506; by the paper's S1 Table the extra
+units are in L2/3 (4), L4 (8), L5a (15) and L5b (6), none in L6, a likely
+source of the higher L5a baseline. The stored temporal-modulation p-values
+(TempSig) were computed over -50 to 300 ms in 10-ms bins, where the Methods
+give 0 to 180 ms after nose poke entry, and no recomputation reproduces
+them: the Methods' test marks the same 310 units but agrees for 73.1%, the
+stored window gives 363 (81.6%) and a null that shuffles each trial's 10-ms
+bins 365 (82.0%); seven outcomes change between the stored and the
+recomputed set. The data set holds only the five recorded rats; the
+fixed-panel sessions and the behaviour of 62SC, 107Si and 62SS are not
+deposited, and the paper's S1 and S2 Data give only per-rat and
+per-session summaries. The stored regression inputs (StimReg Yval) equal
+spike counts summed over completed trials, while the descriptor says
+trials with nose poke duration over 250 ms, a set that also holds 129
+trials without a choice; the stored R2 and p reproduce exactly. For 18FB
+the per-rat right-choice fractions differ by up to 0.026 from S1 Data,
+while the other four rats match. In S1 Data the Figure 2A sheet is
+labelled "Rat 107ST", but its values are those of 107Si. No recording is
+deposited twice, and spikes and trials share one clock (impulse-2 timing
+contrast, 61 of 80 sessions, weak in 18Ro). Four questions are put to the
+paper's authors: which window and statistic the modulation test used,
+which test selected the 61 Fast RS units, how the choice decoder's 65% was
+obtained, and how the peak latency and evoked modulation of Figure 4D were
+computed.
+
+The author's points on the protocol: `archives.md` describes CRCNS data
+sets as zip files while this one is a single MATLAB file, streamed into
+`scipy.io.loadmat`; it does not say whether the author may treat a claim's
+`data` field as part of the claim, so fig2d was blocked and a reader
+asked; it is silent on whether the data set's stored analysis results or a
+recomputation should select units for dependent claims, and on which
+reading of an upstream claim feeds the claims that depend on it; `measured`
+is defined for a reading that matches and not for one that does not, so
+the closest reading was recorded; it does not say whether an expensive
+reading may run with fewer repeats, and the cross-validated decoders ran
+with 5 to 10 repeats in place of 300; and the suggested clock check did not
+fit, so a contrast of impulse-2 onset times between sequences was used.

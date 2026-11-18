@@ -1,0 +1,53 @@
+# Questions from attempt niknam-2019-01 (author, round-1 revision, 2026-11-11) about the claims file
+# claims/niknam-2019.yaml. The question was raised by the round-1 verifier and is asked under
+# docs/protocol.md, "Hand over for verification"; the claims are tested as written.
+dataset: CRCNS:mt-3
+paper: doi:10.1371/journal.pcbi.1007275
+questions:
+- claim: fig1d-st-remapping
+  also: [fig1c-ff-remapping, fig1e-ff-and-st-remapping]
+  asked: 2026-11-11
+  question: >-
+    O1 lets two pairings decide the signed-rank test of D2, (a) per trial and (b) per condition.
+    In these data (a) has no pairs at all, since no trial shows a probe in both the fixation and
+    the perisaccadic window, so every Figure 1 outcome rests on (b). Should O1 also hold a pairing
+    over the 1 ms bins of the response window (mean count per bin, perisaccadic against fixation),
+    which the Methods' wording "during the same stimulus-aligned window" also allows? Should a
+    test on the smoothed response curves be counted at all, given that the Methods say the
+    statistics use spike counts and not firing-rate estimates?
+  passage: >-
+    "In all three cases, the statistical significance was tested by comparing the perisaccadic and
+    fixation spike counts (during the same stimulus-aligned window) using the Wilcoxon one-sided
+    signed-rank test" and "Note that all statistical analyses were performed on spike counts between
+    windows of the same duration (not estimates of firing rate)." (Methods, Statistical analysis of
+    perisaccadic responses, paragraphs 1 and 2)
+  why: >-
+    Under (b) the counts are 8, 8, 11 and 6 against the paper's 8, 23, 37 and 22, and fig1c, fig1d
+    and fig1e are not reproduced. Pairing over time bins of mean counts gives 13, 10, 16 and 9 with
+    onsets, which leaves those outcomes unchanged (13, 17, 29 and 17 with every-ms presentations,
+    which do not decide).
+    Pairing over time bins of the smoothed curves gives 15, 19, 34 and 19 with onsets: fig1d would
+    then be reproduced (34 neurons, 0.815 to 1.365) and fig1c and fig1e partially reproduced; fig1b
+    stays reproduced under (b). That pairing also agrees best with the code's undocumented
+    nuron_list (ST for 36 of 41 neurons, against 15 for (b)). The example neurons point away from
+    (b) as well: their perisaccadic means equal the paper's, but their (b) p values are 0.017 and
+    0.0059 where the paper gives p < 0.001. The smoothed-bin pairing treats the 71 smoothed,
+    autocorrelated 1 ms bins of a window as independent pairs, so it is anti-conservative; several of
+    its p values are about 1e-13. Besides the Methods' exclusion of firing-rate estimates, this is a
+    second reason it may not be what the paper did.
+- claim: fig1-example-neurons
+  asked: 2026-11-11
+  question: >-
+    The statement and the statistics block give p < 0.001 for each example neuron, while the
+    criterion asks only for "a significant change by D2", that is p < 0.05. Should the criterion
+    require the paper's p < 0.001 for each example?
+  passage: >-
+    "For the example neuron, the average late response to an FF stimulus increased from 7.90 ±
+    1.02 (mean ± SE) spk/s during fixation to 18.42 ± 3.56 (mean ± SE) spk/s perisaccadically
+    (example neuron, p < 0.001)." The RF, ST and both-effects examples are given in the same form,
+    each with "p < 0.001". (Results, Saccades modulate the responses of MT neurons, paragraph 1)
+  why: >-
+    Raised by the round-2 verifier. Under pairing (b) three of the four examples match on values
+    with p < 0.05, and the outcome is partially reproduced. Only the example with both effects
+    reaches p < 0.001 (0.00063 and 0.00037); the FF example gives 0.017 and the ST example 0.0059.
+    With the paper's p, one of four examples would match, and the outcome would be not reproduced.

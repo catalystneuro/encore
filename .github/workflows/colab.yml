@@ -1,0 +1,77 @@
+name: Colab copies
+
+# Keeps the `colab` branch: a copy of each entry that opens and runs in Google Colab (tools/colab.py). A push to
+# main rebuilds the entries it changed, and removes those it removed or renamed; run by hand to rebuild them all
+# (after adding a Python version to COLAB_PYTHONS, say).
+
+on:
+  push:
+    branches: [main]
+    paths: ["entries/**", "tools/colab.py"]
+  workflow_dispatch:
+    inputs:
+      entries:
+        description: "Entries to rebuild, separated by spaces; empty for all"
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: colab
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install the tools
+        run: pip install --no-cache-dir uv pyyaml nbformat jsonschema
+
+      - name: Which entries
+        id: which
+        run: |
+          if [ '${{ github.event_name }}' = workflow_dispatch ]; then
+            names='${{ inputs.entries }}'
+          elif git cat-file -e "origin/colab:README.md" 2>/dev/null; then
+            # The entries changed since the last push, and those removed or renamed (their old names).
+            before='${{ github.event.before }}'
+            git cat-file -e "$before^{commit}" 2>/dev/null || before=HEAD~1
+            names=$(python tools/changed_entries.py "$before" HEAD | tr '\n' ' ')
+            names="$names $(git diff --name-only --diff-filter=DR "$before" HEAD -- entries | cut -d/ -f2 | sort -u | tr '\n' ' ')"
+          else
+            names=''   # no colab branch yet: build every entry
+          fi
+          echo "names=$names" >> "$GITHUB_OUTPUT"
+          echo "Entries: ${names:-all}"
+
+      - name: Build and commit to the colab branch
+        env:
+          NAMES: ${{ steps.which.outputs.names }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/colab"
+          if git ls-remote --exit-code --heads origin colab >/dev/null; then
+            git worktree add -q "$out" origin/colab && git -C "$out" checkout -q -B colab
+          else
+            git worktree add -q --detach "$out" && git -C "$out" checkout -q --orphan colab && git -C "$out" rm -rfq --cached . && git -C "$out" clean -fdxq
+          fi
+          # Names only from tools/changed_entries.py or the input, but checked all the same.
+          for n in $NAMES; do [[ "$n" =~ ^[a-z0-9-]+$ ]] || { echo "::error::Not an entry name: $n"; exit 1; }; done
+          # shellcheck disable=SC2086
+          python tools/colab.py build "$out" $NAMES
+          cd "$out"
+          git add -A
+          if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
+          git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
+            commit -q -m "Colab copies from ${GITHUB_SHA::9}" -m "${NAMES:-every entry}"
+          git push -q origin colab

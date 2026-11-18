@@ -1,0 +1,833 @@
+# Claims for See, Atencio, Sohal & Schreiner (2018), eLife 7, e35587, on CRCNS ac-3.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-11,
+# protocol pilot-14 as stated in docs/protocol.md. The writer did not look at the dataset's data or
+# files; only its description on crcns.org (paper/ac-3.data-description.txt) was read, for what
+# the dataset is meant to hold.
+#
+# Text read: the version of record (PMC6017807, Europe PMC full-text XML, flattened), with its
+# figure legends, figure supplement legends and Materials and methods; and Supplementary file 1
+# (elife-35587-supp1-v2.xlsx, the table of statistical tests with test, N and exact p for each
+# panel), which the text file reproduces at its end. No PDF was supplied; every value used here is
+# printed in the text, a legend or Supplementary file 1. Figure axes were not read.
+#
+# Code read: the paper links one repository, the dichotomized Gaussian (DG) implementation of
+# Macke et al., https://github.com/mackelab/CorBinian, read at commit 8ebb12d (2021-07-26; the
+# paper cites the 2017 state, which is not pinned). It holds the DG fit (findLatentGaussian01.m)
+# and sampler (sampleDichGauss01.m) for binary vectors with given means and covariances. The
+# paper's own analysis code (MATLAB) is not linked; the PCA/ICA code was supplied privately by
+# Lopes-dos-Santos (Acknowledgements). The dataset's sample STRF code is the dataset's, not the
+# paper's, and was not read.
+#
+# Data the paper used. Female Sprague-Dawley rats, 2 to 3 months, ketamine/xylazine anesthesia.
+# Right primary auditory cortex (AI), penetrations perpendicular to the surface.
+# - 16 columnar penetrations with a 32-channel probe (NeuroNexus a1x32-poly3, to about 800 um),
+#   20 kHz, Bayesian spike sorting; 655 single units in total. Stimulus a 10-min continuous
+#   dynamic moving ripple (DMR) or ripple noise (RN, the sum of 16 DMRs), 500 Hz to 40 kHz. Each
+#   penetration used one of the two stimuli. These give Figures 1 to 7, 9, 10 and 11C to F.
+# - 5-s frozen segments of DMR or RN, repeated 50 times with 0.5 s silence (Figures 9 and its
+#   supplements; 330 cNE and neuron pairs in Figure 9C).
+# - 15 repetitions of the 10-min RN stimulus, from which 24 units with stable rates were kept
+#   (Figure 11A, B; also the 'repeat' CR of Figure 11E, F).
+# - 8 recordings with a 64-channel probe (Cambridge NeuroTech H3, to about 1400 um), MountainSort,
+#   with contiguous epochs of spontaneous activity and DMR-evoked activity (Figure 8).
+# Measured variables are spike times per unit, the channel position and depth of each unit, the
+# stimulus envelopes and the triggers. The dataset descriptor (version 0.6, March 2018) lists unit
+# spike times with channel, depth and position, triggers, and the rn1 and rn16 stimulus matrices;
+# which of the experiments above it holds is the author's to find.
+#
+# The cNE detection used throughout ("cNE detection" in the criteria), from Materials and methods,
+# Detection of coordinated neuronal ensembles, and Results, Identification of cNEs. Spikes binned
+# at 10 ms, each unit's binned train z-scored; PCA of the correlation matrix; eigenvalues above
+# the upper Marcenko-Pastur bound are significant and their number is the number of cNEs; fastICA
+# (negentropy) on the significant eigenvectors gives one IC per cNE; cNE activity is the
+# projection of the IC onto the z-scored spike matrix. Membership is an IC weight beyond 1.5 SD
+# above or below the mean of the distribution of IC weights from 100 independently circularly
+# shuffled spike matrices (ICA run on the N largest eigenvectors of each, N the number found in
+# the real data). A cNE is active where its activity exceeds the 99.9th percentile of the
+# activity of the real ICs projected onto the shuffled matrices.
+# Details of the detection the paper does not fix, with the readings it allows.
+# - The Marcenko-Pastur upper bound is taken as (1 + sqrt(n/T))^2 for n units and T bins, the
+#   standard bound of Lopes-dos-Santos et al. (2013) for z-scored data; the paper names only the
+#   distribution.
+# - IC scale and sign are open. Readings (a) each IC scaled to unit length and its sign set so the
+#   largest absolute weight is positive, as in Lopes-dos-Santos et al. (2013); (b) ICs as fastICA
+#   returns them, unit length, sign unchanged. The sign matters for the negative-weight count.
+# - The activity projection is open. Readings (a) the quadratic form z(t)' P z(t) with P the outer
+#   product of the IC and its diagonal set to zero, as in Lopes-dos-Santos et al. (2013); (b) the
+#   linear projection w . z(t).
+# - fastICA settings (nonlinearity, initial values, iterations) and the shuffle seeds are standard
+#   choices; the paper names only fastICA based on negentropy.
+# - What a cNE event is, once activity crosses threshold, is open. Readings (a) every 10-ms bin
+#   above threshold; (b) one event per contiguous run of bins above threshold, at its peak.
+schema_version: 2
+paper: doi:10.7554/elife.35587
+claims:
+- id: fig2bd-pwc-measures-covary
+  statement: Across all penetrations, the sharpness and peak delay of pairwise correlation (PWC)
+    functions covaried with the pairs' spike train correlation coefficients, accounting for about
+    50% of the variance.
+  source: Results, Heterogeneous functional connectivity between columnar AI neurons, paragraph 2;
+    Figure 2B to D
+  quote: Across all penetrations, PWCs were fairly heterogeneous but sharpness and delay covaried
+    with correlation coefficients, accounting for ~50% of the variance
+  expected:
+  - quantity: R2 of PWC sharpness against spike train correlation coefficient
+    value: 0.5
+    tolerance: 0.05
+  - quantity: R2 of PWC peak delay against spike train correlation coefficient
+    value: 0.5
+    tolerance: 0.05
+  criterion: All pairs of simultaneously recorded units in the 16 penetrations. The correlation
+    coefficient is Pearson's correlation of the spike trains binned at 10 ms (Results, same
+    paragraph). Peak delay is the absolute lag of the PWC maximum; sharpness is the half-count
+    width of the PWC folded around its peak (Results, Synchrony between cNE members, paragraph
+    2; Figure 6G to I legend). R2 is that of a least-squares line. Open, as the paper does not
+    fix them, are the PWC lag bin and lag range, and the axes of the fit. Readings (a) 1-ms lag
+    bins over plus or minus 50 ms; (b) 1-ms bins over plus or minus 100 ms; each with the fit on
+    linear axes and on log axes. Reproduced when, under one reading, both R2 values are within
+    tolerance; partially reproduced when one is.
+- id: fig2eg-distance-weak
+  statement: The correlation between the pairwise synchrony measures (sharpness, peak delay,
+    correlation coefficient) and the distance between the pair's channels explained only about
+    10 to 30% of the variance.
+  source: Results, Heterogeneous functional connectivity between columnar AI neurons, paragraph
+    3; Figure 2E to G
+  quote: We observed similar trends in columnar recordings, although the correlation between these
+    synchrony aspects and pairwise distance only explained ~10–30% of the total variance
+  depends_on:
+  - fig2bd-pwc-measures-covary
+  expected:
+    quantity: R2 of each synchrony measure against pairwise distance (range)
+    value: 0.21
+    tolerance: 0.12
+  criterion: The three measures of fig2bd-pwc-measures-covary, each regressed on the pairwise
+    distance across all pairs of the 16 penetrations. The claim is a range, so it holds when each
+    R2 lies within 0.09 to 0.33 (10 to 30%, each bound widened by 10%); the expected entry above
+    records the centre and half-width of that interval. Pairwise distance is open. Readings (a)
+    the difference in depth ('position') between the two units' channels; (b) the Euclidean
+    distance between the channels on the three-column probe layout. Under each PWC reading of
+    fig2bd-pwc-measures-covary. Reproduced when all three R2 lie in the interval under one
+    reading; partially reproduced when one or two do.
+- id: fig4-example-nine-cnes
+  statement: In an example columnar recording with 38 isolated neurons, the cNE detection found
+    nine cNEs, with 2 to 6 member neurons each.
+  source: Results, Identification of coordinated neuronal ensembles (cNEs), paragraph 2; Figure 4B
+  quote: Applying this cNE detection algorithm to an actual AI columnar recording with 38 isolated
+    neurons ( Figure 4D ), we identified nine separate cNEs ( Figure 4B ) with significantly
+    contributing members ranging from 2 to 6 neurons
+  expected:
+  - quantity: number of cNEs in the 38-neuron penetration
+    value: 9
+    tolerance: 1
+  - quantity: smallest cNE size
+    value: 2
+    tolerance: 0
+  - quantity: largest cNE size
+    value: 6
+    tolerance: 1
+  criterion: The penetration with 38 units, with cNE detection as in the opening comment. The
+    tolerance on counts is one, 10% of a small integer rounded up; the smallest size of 2 is the
+    least a cNE can have. If more than one penetration has 38 units, each is reported and the
+    claim holds when one matches. Under each reading of IC scale and sign.
+- id: fig4s2-interleaved-halves-stable
+  statement: cNEs detected independently in two interleaved halves of a recording were the same,
+    with about 96% of the ICs of one half having a significant match in the other.
+  source: Results, Identification of coordinated neuronal ensembles (cNEs), paragraph 4; Figure
+    4-figure supplement 2
+  quote: Approximately 96% of independent components had significant matches ( Figure 4-figure
+    supplement 2D and E ), indicating that the two interleaved parts of the recording contained
+    the same independent components
+  expected:
+    quantity: percentage of ICs (of both halves) with a significant match
+    value: 96
+    tolerance: 9.6
+    unit: '%'
+  criterion: Each of the 16 recordings split into 10 equal parts, the odd parts forming half A and
+    the even parts half B; cNE detection on each. IC A against IC B by the absolute correlation of
+    their weights. The null distribution comes from spike trains circularly shuffled and run
+    through the detection, its ICs correlated; the threshold is its 99th percentile, per
+    penetration (Results, same paragraph; legend). Open, the paper does not fix them, are the
+    number of shuffles, which ICs the shuffled ones are correlated with, and what counts as a
+    match. Readings (a) 100 shuffles, as for membership, shuffled ICs of one half correlated with
+    shuffled ICs of the other; (b) 100 shuffles, real ICs of one half correlated with shuffled
+    ICs of the other; with a match being, for each IC, its largest absolute correlation with any
+    IC of the other half above the threshold. The percentage pools IC As and IC Bs over all
+    penetrations (legend E). Reproduced when one reading is within tolerance.
+- id: fig4s3-train-test-83pct
+  statement: cNEs detected in the first half of a recording predicted cNE activity in the second
+    half; of 102 training cNEs, about 83% had significant matches to test cNE activity.
+  source: Results, Identification of coordinated neuronal ensembles (cNEs), paragraph 5; Figure
+    4-figure supplement 3E
+  quote: Across all penetrations, approximately 83% of training cNE activity had significant
+    matches to test cNE activity
+  expected:
+  - quantity: number of training cNEs, all penetrations
+    value: 102
+    tolerance: 10.2
+  - quantity: percentage of training cNEs with a significant match
+    value: 83
+    tolerance: 8.3
+    unit: '%'
+  criterion: Each recording split into a first half (training) and second half (test); cNE
+    detection on each; both sets of ICs projected onto the test half to give training and test
+    activities, which are correlated pairwise. For each training cNE the largest correlation is
+    its matched correlation; all other correlations of all penetrations pooled form the null, and
+    its 95th percentile is the threshold (Results, same paragraph; legend C). Under each reading
+    of the activity projection. Reproduced when both values are within tolerance under one
+    reading; partially reproduced when the percentage is and the count is not.
+- id: fig5a-mi-peaks-10-15ms
+  statement: The mutual information between cNE STRFs and the stimulus peaked at bin sizes of
+    about 10 to 15 ms.
+  source: Results, cNE identity is dependent on time bin size, paragraph 2; Figure 5A
+  quote: Receptive field information peaked at bin sizes of approximately 10–15 ms ( Figure 5A )
+  criterion: Method from Materials and methods, STRF mutual information. cNE detection at bin
+    sizes 2, 5, 8, 10, 15, 20, 35 and 50 ms; activity interpolated to 1 ms; per cNE a threshold
+    giving 5000 events; STRF by event-triggered average; MI between STRF projections and events,
+    from P(x|event) and P(x) of the projections z-scored, extrapolated to infinite data by a line
+    through the means of 20 subsamples at 90, 95, 97.5, 99 and 100% of events against the
+    inverse fraction. Open are the STRF time window, the number of projection bins, and how MI
+    is summarised over cNEs at a bin size. Readings for the summary (a) mean over all cNEs; (b)
+    median over all cNEs; the window and bins are taken as standard choices and stated.
+    Reproduced when, under one summary reading, the largest value falls at 10 or 15 ms.
+- id: fig5b-number-decreases-with-bin
+  statement: The number of detected cNEs decreased as the bin size increased.
+  source: Results, cNE identity is dependent on time bin size, paragraph 3; Figure 5B
+  quote: we found that as the spike train temporal bin size increased, the number of recovered
+    cNEs decreased ( Figure 5B )
+  criterion: cNE detection on the 16 penetrations at the bin sizes of fig5a-mi-peaks-10-15ms. The
+    paper reports no test. Read as a trend, the number of cNEs (mean over penetrations) has a
+    negative Spearman correlation with bin size over the eight sizes and is lower at 50 ms than
+    at 2 ms; this test is a reading of "decreased", not the paper's.
+- id: fig5c-size-increases-with-bin
+  statement: The mean number of member neurons per cNE increased as the bin size increased.
+  source: Results, cNE identity is dependent on time bin size, paragraph 3; Figure 5C
+  quote: the number of member neurons in each cNE increased ( Figure 5C )
+  criterion: As fig5b-number-decreases-with-bin, for the mean cNE size (mean over penetrations of
+    the mean size per penetration), with the signs reversed. The test is a reading of
+    "increased", not the paper's.
+- id: fig6c-spike-pwc-narrower-than-strf-pwc
+  statement: For pairs of neurons in the same cNE, spike train PWCs were much narrower than the
+    PWCs of their STRFs' temporal profiles, while for pairs not in the same cNE the spike train
+    PWCs were often as wide as the STRF PWCs.
+  source: Results, Synchrony between cNE members cannot be fully explained by receptive field
+    overlap, paragraph 1; Figure 6A to F
+  quote: Comparing STRF PWCs to spike train PWCs ( Figure 6A–6F ) revealed that the spike train
+    PWCs ( Figure 6C , histogram) were much narrower than the STRF PWCs ( Figure 6C , solid line)
+    for neuronal pairs within the same cNE. In contrast, for non-cNE pairs, the spike train PWCs
+    were often as wide as the STRF PWCs
+  depends_on:
+  - fig6j-sharpness-cne-pairs
+  criterion: The paper shows one example of each kind and reports no population test. The STRF
+    temporal profile is the STRF averaged over frequency at each delay (Figure 6B, E legend); the
+    STRF PWC is the cross-correlation of the two profiles; its sharpness is measured as for spike
+    PWCs. Read over all pairs of the 16 penetrations, the claim holds when the spike PWC is
+    sharper than the STRF PWC for more than half of cNE pairs, and the ratio of spike to STRF PWC
+    sharpness is lower for cNE pairs than for non-cNE pairs (Mann-Whitney U, p < 0.05, the test
+    of Figure 6J). "Most" and the ratio comparison are readings of "much narrower" and "often as
+    wide", not the paper's.
+- id: fig6j-sharpness-cne-pairs
+  statement: In every penetration, spike train PWCs were significantly sharper (narrower) for
+    pairs of neurons in the same cNE than for pairs not in the same cNE.
+  source: Results, Synchrony between cNE members cannot be fully explained by receptive field
+    overlap, paragraph 2; Figure 6J; Figure 6-figure supplement 1; Supplementary file 1
+  quote: The PWCs were significantly narrower for cNE pairs than for non-cNE pairs (p < 0.001,
+    Mann-Whitney U test; Figure 6J ; see Figure 6-figure supplement 1 for each of the other
+    penetrations)
+  statistics:
+  - about: example penetration, Figure 6J
+    test: Mann-Whitney U test
+    p: 1.69e-23
+    n: 73 cNE pairs and 331 non-cNE pairs
+  - about: other penetration 1, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 3.34e-23
+    n: 137 cNE pairs and 630 non-cNE pairs
+  - about: other penetration 2, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 2.46e-13
+    n: 123 cNE pairs and 362 non-cNE pairs
+  - about: other penetration 3, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 5.03e-49
+    n: 244 cNE pairs and 936 non-cNE pairs
+  - about: other penetration 4, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 3.18e-30
+    n: 162 cNE pairs and 664 non-cNE pairs
+  - about: other penetration 5, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 1.48e-5
+    n: 10 cNE pairs and 104 non-cNE pairs
+  - about: other penetration 6, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 1.68e-50
+    n: 283 cNE pairs and 931 non-cNE pairs
+  - about: other penetration 7, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 4.49e-10
+    n: 60 cNE pairs and 156 non-cNE pairs
+  - about: other penetration 8, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 5.44e-12
+    n: 180 cNE pairs and 550 non-cNE pairs
+  - about: other penetration 9, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 2.06e-16
+    n: 63 cNE pairs and 416 non-cNE pairs
+  - about: other penetration 10, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 1.54e-13
+    n: 170 cNE pairs and 554 non-cNE pairs
+  - about: other penetration 11, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 1.73e-18
+    n: 365 cNE pairs and 295 non-cNE pairs
+  - about: other penetration 12, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 6.89e-17
+    n: 269 cNE pairs and 523 non-cNE pairs
+  - about: other penetration 13, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 1.05e-18
+    n: 266 cNE pairs and 534 non-cNE pairs
+  - about: other penetration 14, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 1.15e-11
+    n: 50 cNE pairs and 262 non-cNE pairs
+  - about: other penetration 15, Figure 6-figure supplement 1
+    test: Mann-Whitney U test
+    p: 1.15e-23
+    n: 212 cNE pairs and 601 non-cNE pairs
+  criterion: Sharpness as in fig2bd-pwc-measures-covary (half-count width of the PWC folded at its
+    peak), under each of its lag readings. A cNE pair is two members of the same cNE; a non-cNE
+    pair is two units of the penetration that share no cNE. Per penetration, a two-sided
+    Mann-Whitney U test. Reproduced when cNE pairs are sharper with p < 0.001 in all 16
+    penetrations under one reading; partially reproduced when in at least 12.
+- id: fig6-member-pwc-sharpness-delay
+  statement: PWCs between members of the same cNE are sharp, with a median sharpness of about 2 ms,
+    a mean sharpness of 3.39 +/- 1.21 ms and a mean absolute peak delay of 0.76 +/- 1.74 ms.
+  source: Results, Synchrony between cNE members cannot be fully explained by receptive field
+    overlap, paragraph 2; Results, cNE events are not fully accounted for by stimulus
+    synchronization, paragraph 5
+  quote: The median PWC sharpness for member neurons was ~2 ms ... since PWCs between pairs of
+    neurons in the same cNE are sharp, with mean sharpness values of 3.39 ± 1.21 ms ( Figure
+    6G–6J , Figure 6-figure supplement 1 ), and mean absolute peak delays of 0.76 ± 1.74 ms
+  depends_on:
+  - fig6j-sharpness-cne-pairs
+  expected:
+  - quantity: median sharpness of cNE pair PWCs
+    value: 2
+    tolerance: 0.2
+    unit: ms
+  - quantity: mean sharpness of cNE pair PWCs
+    value: 3.39
+    tolerance: 1.21
+    unit: ms
+  - quantity: mean absolute peak delay of cNE pair PWCs
+    value: 0.76
+    tolerance: 1.74
+    unit: ms
+  criterion: The tolerances of the means are the paper's stated spread. Whether the values pool
+    all cNE pairs or average per penetration is open. Readings (a) over all cNE pairs pooled; (b)
+    mean over penetrations of the per-penetration mean (or median). Under each lag reading of
+    fig2bd-pwc-measures-covary. Reproduced when all three are within tolerance under one reading;
+    partially reproduced when two are.
+- id: fig7-totals
+  statement: Across 16 penetrations, 104 cNEs were identified from 655 isolated neurons, an average
+    of 6.5 +/- 2.0 cNEs per penetration.
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1
+  quote: Across 16 penetrations, we identified a total of 104 cNEs ... The average number of cNEs
+    per penetration was 6.5 ± 2.0
+  expected:
+  - quantity: penetrations
+    value: 16
+    tolerance: 0
+  - quantity: isolated neurons
+    value: 655
+    tolerance: 0
+  - quantity: cNEs in total
+    value: 104
+    tolerance: 10.4
+  - quantity: cNEs per penetration, mean
+    value: 6.5
+    tolerance: 2.0
+  criterion: Penetration and neuron counts are a check that the 16 recordings are the ones the
+    paper used (tolerance zero). If a penetration was recorded with both DMR and RN, which file
+    the paper used is open; readings are each file, choosing the set whose unit counts sum to
+    655. cNE detection as in the opening comment. The tolerance of the mean is the paper's SD.
+- id: fig7a-number-vs-neurons
+  statement: The number of cNEs per penetration increased with the number of isolated neurons
+    (R2 = 0.74), and was about 15% of the number of recorded neurons.
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1; Figure 7A;
+    Supplementary file 1
+  quote: For each penetration, the number of cNEs was ~15% of the recorded number of neurons ...
+    the covariance between the number of identified cNEs and the number of isolated neurons (
+    Figure 7A ; R 2 = 0.74)
+  depends_on:
+  - fig7-totals
+  statistics:
+  - test: F-test
+    p: 1.68e-5
+    n: 16 penetrations
+  expected:
+  - quantity: R2 of number of cNEs on number of neurons
+    value: 0.74
+    tolerance: 0.074
+  - quantity: number of cNEs as a fraction of neurons
+    value: 15
+    tolerance: 1.5
+    unit: '%'
+  criterion: Least-squares line of number of cNEs on number of units over the 16 penetrations,
+    F-test of the fit. The fraction is open; readings (a) the mean over penetrations of
+    cNEs/neurons; (b) the slope of the line; (c) total cNEs over total neurons. Reproduced when R2
+    is within tolerance, p < 0.05 with positive slope, and the fraction is within tolerance under
+    one reading; partially reproduced when the fit holds and the fraction does not.
+- id: fig7b-size-vs-neurons
+  statement: The mean cNE size was 7.4 +/- 2.5 neurons, about 17% of the recorded neurons, and
+    increased with the number of isolated neurons, more weakly than the number of cNEs (R2 =
+    0.33).
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1; Figure 7B;
+    Supplementary file 1
+  quote: The mean number of neurons in cNEs was 7.4 ± 2.5 neurons. This again depended on the
+    number of isolated neurons ( Figure 7B ), with mean cNE size ~17% of the total number of
+    recorded neurons in the column. However, the covariance between mean cNE size and the number
+    of isolated neurons ( Figure 7B ; R 2 = 0.33) was not as strong
+  depends_on:
+  - fig7-totals
+  statistics:
+  - test: F-test
+    p: 0.02
+    n: 16 penetrations
+  expected:
+  - quantity: mean cNE size
+    value: 7.4
+    tolerance: 2.5
+    unit: neurons
+  - quantity: R2 of mean cNE size on number of neurons
+    value: 0.33
+    tolerance: 0.033
+  - quantity: mean cNE size as a fraction of neurons
+    value: 17
+    tolerance: 1.7
+    unit: '%'
+  criterion: Mean cNE size per penetration regressed on number of units, F-test of the fit. The
+    tolerance of the mean size is the paper's SD. Open is the averaging; readings (a) over all
+    cNEs pooled; (b) over penetrations of the per-penetration mean; the same two for the
+    fraction. Reproduced when R2 is within tolerance, p < 0.05 with positive slope and the mean
+    size within tolerance under one reading; partially reproduced when two of the three hold.
+- id: fig7-negative-weights
+  statement: The IC weights of almost all cNE members were positive; 9 cNEs (8.3%) had at least
+    one member with a negative weight.
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1
+  quote: The IC weight of the vast majority of cNE member neurons was positive ... However, 9 cNEs
+    (8.3%) also contained at least one neuron with a negative weight
+  depends_on:
+  - fig7-totals
+  expected:
+    quantity: cNEs with a negative-weight member
+    value: 9
+    tolerance: 1
+  criterion: A negative-weight member is one whose weight is below the lower membership threshold.
+    The count tolerance is one, 10% of 9 rounded up. The 8.3% does not equal 9 of 104 (8.7%); the
+    count is judged and the percentage reported. Rests on the IC sign reading (a) of the opening
+    comment, under which a sign is defined; reading (b) is shown as a variant. Reproduced when
+    the count is within tolerance and more than 90% of member weights are positive; the 90% is a
+    reading of "vast majority", not the paper's.
+- id: fig7c-membership
+  statement: Of the 655 isolated neurons, about 68% belonged to a single cNE, about 9% to none and
+    about 23% to more than one.
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1; Figure 7C
+  quote: Of the 655 neurons that were isolated, a majority (~68%) belonged to a single cNE, ~9% did
+    not belong to any cNE, and ~23% belonged to multiple cNEs
+  depends_on:
+  - fig7-totals
+  expected:
+  - quantity: neurons in exactly one cNE
+    value: 68
+    tolerance: 6.8
+    unit: '%'
+  - quantity: neurons in no cNE
+    value: 9
+    tolerance: 0.9
+    unit: '%'
+  - quantity: neurons in more than one cNE
+    value: 23
+    tolerance: 2.3
+    unit: '%'
+  criterion: Under each reading of IC scale and sign. Reproduced when all three are within
+    tolerance under one reading; partially reproduced when two are.
+- id: fig7d-pairs-within-200um
+  statement: About 82% of pairs of neurons in the same cNE were recorded on channels less than 200
+    um apart, so cNEs are mostly spatially confined.
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1; Figure 7D
+  quote: A majority of pairs of neurons within the same cNE (~82%) tended to be recorded from
+    channels separated by <200 µm ( Figure 7D ), indicating that cNEs are mostly spatially
+    confined
+  depends_on:
+  - fig7-totals
+  expected:
+    quantity: cNE pairs less than 200 um apart
+    value: 82
+    tolerance: 8.2
+    unit: '%'
+  criterion: All pairs of members of each cNE, pooled over cNEs and penetrations. Distance has the
+    two readings of fig2eg-distance-weak (depth difference; Euclidean distance on the probe).
+    Whether a pair in two cNEs counts once or once per cNE is open; both are shown. Reproduced
+    when one reading is within tolerance.
+- id: fig7e-no-depth-bias
+  statement: cNEs and their member neurons were found across the whole explored depth with no bias
+    to any depth; the depths of cNE members and of all recorded neurons were similarly
+    distributed.
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1; Figure 7E
+    legend
+  quote: There was no depth bias for cNE neurons, that is the distributions of the depth of cNE
+    members and that of all recorded neurons were similar
+  depends_on:
+  - fig7-totals
+  criterion: A claim of absence for which the paper names no test. Depth of a unit is its channel
+    'position' depth; the depth of a cNE is the median depth of its members (legend E). Readings
+    (a) two-sample Kolmogorov-Smirnov test, members (units in at least one cNE) against all
+    units; (b) Mann-Whitney U on the same; at alpha 0.05. Neither test is the paper's, so the
+    outcome rests on an assumption. Not reproduced when a test finds a difference; the
+    difference in median depth is given either way.
+- id: fig7f-span-200um
+  statement: Most cNEs (about 70%) spanned 200 um of cortical depth or less, though a few spanned
+    most of the recorded column.
+  source: Results, cNEs are not depth-biased and reflect local circuitry, paragraph 1; Figure 7F
+  quote: Most isolated cNEs (~70%) spanned a depth range of 200 µm or less of the cortical column
+  depends_on:
+  - fig7-totals
+  expected:
+    quantity: cNEs with a span of 200 um or less
+    value: 70
+    tolerance: 7
+    unit: '%'
+  criterion: Span is the maximum minus the minimum depth of a cNE's members (legend F), over the
+    104 cNEs.
+- id: fig8-spont-evoked-72pct
+  statement: cNEs detected separately in contiguous epochs of spontaneous and DMR-evoked activity
+    were largely the same; across eight recordings about 72% of spontaneous and evoked cNEs had
+    significant matches.
+  source: Results, cNEs persist across epochs of spontaneous and evoked activity; Figure 8E
+  quote: Across all eight recordings comprising contiguous epochs of spontaneous and evoked
+    activity we found significant matches for ~72% of spontaneous and evoked cNEs
+  expected:
+    quantity: spontaneous and evoked cNEs with a significant match
+    value: 72
+    tolerance: 7.2
+    unit: '%'
+  criterion: The eight 64-channel recordings. cNE detection on the spontaneous epoch and on the
+    evoked epoch separately; absolute correlation of IC weights; the null and the 99th-percentile
+    threshold per recording as in fig4s2-interleaved-halves-stable, under its readings. The
+    percentage pools spontaneous and evoked cNEs (legend E). Reproduced when one reading is
+    within tolerance.
+- id: fig9c-cne-events-more-mi
+  statement: Over 50 repeats of a 5-s stimulus, cNE events carried about 10% more mutual
+    information than the spikes of each member neuron; the median cNE/neuron MI ratio was 1.11
+    +/- 0.13 (median absolute deviation), significantly above 1.
+  source: Results, cNEs show enhanced information processing, paragraph 1; Figure 9C, D;
+    Supplementary file 1
+  quote: the MI conveyed by cNE events was, accordingly, ~10% higher than the MI of each member
+    neuron (p < 0.001, Wilcoxon signed-rank test; Figure 9C ). Correspondingly, the ratio of the
+    MIs (cNE/neuron) was significantly larger than 1 (median ± median absolute deviation = 1.11 ±
+    0.13; p < 0.001, Wilcoxon signed-rank test
+  statistics:
+  - about: cNE MI against member neuron MI, and the MI ratio against 1
+    test: Wilcoxon signed-rank test
+    p: 1.84e-26
+    n: 330 cNE and member neuron pairs
+  expected:
+  - quantity: median MI ratio, cNE over neuron
+    value: 1.11
+    tolerance: 0.13
+  - quantity: cNE and member neuron pairs
+    value: 330
+    tolerance: 33
+  criterion: Method from Materials and methods, MI analysis on 5-s repeats. Trials by 10-ms bins;
+    MI from the PSTH r(t) and its mean (Brenner et al., 2000), extrapolated to infinite data by a
+    line through the means of 20 random subsamples at each of 90, 95, 97.5, 99 and 100% of the
+    time bins against the inverse fraction, the intercept being the MI; the larger of cNE events and neuron spikes randomly
+    subsampled to equal counts. Open is how cNE events on the repeats are obtained; readings (a)
+    ICs and activity threshold from the 10-min recording of the penetration, the ICs projected
+    onto the repeat spike trains; (b) cNE detection on the repeat data; each with both event
+    readings of the opening comment. The tolerance of the ratio is the paper's MAD. Reproduced
+    when, under one reading, the median ratio is within tolerance and the signed-rank test gives
+    p < 0.001 with cNE MI higher.
+- id: fig9s1-cne-mi-above-random-groups
+  statement: The MI of the summed spikes of cNE members exceeded that of random groups of neurons
+    of the same size, and the uniqueness index distribution was skewed towards 0, unlike the
+    uniform distribution expected for random membership.
+  source: Results, cNEs show enhanced information processing, paragraph 2; Figure 9-figure
+    supplement 1D; Supplementary file 1
+  quote: We found that the MI of spikes from cNE members was significantly higher than the MI of
+    spikes from random groups of neurons (p < 0.001, Wilcoxon signed-rank test ... The
+    distribution of UI values was significantly skewed towards 0 and was significantly different
+    from an expected uniform distribution
+  statistics:
+  - about: cNE MI against median random group MI
+    test: Wilcoxon signed-rank test
+    p: 2.03e-8
+    n: 96 cNEs
+  - about: UI distribution against uniform
+    test: Kolmogorov–Smirnov test
+    p: 0.001
+    p_relation: <
+  depends_on:
+  - fig9c-cne-events-more-mi
+  criterion: Random groups as in Materials and methods, MI comparisons between cNE and random
+    groups (one member of the cNE plus non-members, at most one member of any other cNE, raised
+    stepwise until 500 unique groups exist); spikes summed; all subsampled to the fewest spikes;
+    sets under 200 spikes excluded; MI as in fig9c-cne-events-more-mi. UI is the share of the 501
+    values at or above the cNE value. Reproduced when the signed-rank test gives p < 0.001 with
+    cNE MI higher and the one-sample KS test against uniform on [0, 1] gives p < 0.001 with UI
+    below the uniform median.
+- id: fig9s2-noise-correlations
+  statement: Pairs of neurons in the same cNE had higher noise correlations than pairs not in the
+    same cNE, in each of the 16 recordings and across them.
+  source: Results, cNEs show enhanced information processing, paragraph 3; Figure 9-figure
+    supplement 2; Supplementary file 1
+  quote: Over the 16 columnar recordings, pairs of neurons that were members of the same cNE had
+    significantly higher noise correlations than pairs of neurons not within the same cNE
+  statistics:
+  - about: per-recording medians, cNE pairs against non-cNE pairs, 16 recordings
+    test: paired t-test
+    p: 1.73e-5
+    n: 16 recordings
+  - about: example recording 1 (Figure 9-figure supplement 2B), cNE against non-cNE pairs
+    test: Mann-Whitney U-test
+    p: 5.24e-14
+    n: 204 and 261 pairs
+  - about: example recording 2 (Figure 9-figure supplement 2B), cNE against non-cNE pairs
+    test: Mann-Whitney U-test
+    p: 2.75e-49
+    n: 237 and 583 pairs
+  - about: example recording 3 (Figure 9-figure supplement 2B), cNE against non-cNE pairs
+    test: Mann-Whitney U-test
+    p: 3.26e-43
+    n: 329 and 337 pairs
+  criterion: Noise correlation is Pearson's R between two neurons' spike rates over the 50 trials
+    of the 5-s repeat (legend A). Open is the rate; readings (a) spike count over the whole 5-s
+    trial; (b) the rate in each 10-ms bin minus its PSTH, correlated over trials and bins.
+    The per-recording medians of cNE and non-cNE pairs go into the paired t-test (legend C). Per
+    recording, a Mann-Whitney U test of cNE against non-cNE pairs (legend B) gives the number of
+    the 16 recordings where cNE pairs are higher with p < 0.001, for the statement's "in each".
+    Reproduced when, under one reading, the paired t-test over recordings gives p < 0.001 with
+    cNE pairs higher and all 16 per-recording tests do; partially reproduced when only the
+    paired t-test does, or it gives only p < 0.05.
+- id: fig10b-ptd-higher
+  statement: cNE STRFs had stronger excitatory and inhibitory subfields than those of their member
+    neurons, with a higher peak-trough difference.
+  source: Results, cNEs show enhanced information processing, paragraph 4; Figure 10B;
+    Supplementary file 1
+  quote: Compared to neuronal STRFs, cNE STRFs had higher peak-trough differences (PTD; p < 0.001,
+    Wilcoxon signed-rank test; Figure 10B )
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 1.62e-37
+    n: 703 cNE and member neuron pairs
+  criterion: STRFs by event- or spike-triggered average of the 10-min stimulus, after subsampling
+    the larger train to equal counts; PTD is the highest minus the lowest STRF value divided by
+    the number of spikes or events (legend B). The STRF window and the subsampling seed are
+    standard choices, stated. Under both event readings. Reproduced when p < 0.001 with cNE PTD
+    higher under one reading; the number of pairs is reported against 703.
+- id: fig10c-strf-mi-higher
+  statement: cNEs had higher mutual information between their STRFs and single events than member
+    neurons had between their STRFs and single spikes.
+  source: Results, cNEs show enhanced information processing, paragraph 4; Figure 10C;
+    Supplementary file 1
+  quote: and MI (p < 0.001, Wilcoxon signed-rank test; Figure 10C )
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 1.60e-59
+    n: 703 cNE and member neuron pairs
+  depends_on:
+  - fig10b-ptd-higher
+  criterion: STRF MI as in fig5a-mi-peaks-10-15ms (projection distributions, extrapolation over
+    90 to 100% of events, 20 iterations), on the equal-count trains of fig10b-ptd-higher.
+    Reproduced when p < 0.001 with cNE MI higher under one event reading.
+- id: fig10s1-random-group-strfs
+  statement: Multi-unit STRFs of cNE members had higher PTD and higher STRF MI than those of random
+    groups of neurons of the same size, with uniqueness indices skewed towards 0.
+  source: Results, cNEs show enhanced information processing, paragraph 5; Figure 10-figure
+    supplement 1C, E; Supplementary file 1
+  quote: Across the entire population, the STRF PTD for cNE members was significantly higher than
+    that of the STRF PTD for random groups of neurons (p < 0.001, Wilcoxon signed-rank test ...
+    The STRF MI of cNE member neurons was also significantly higher than that of random groups
+    of neurons (p < 0.001, Wilcoxon signed-rank test
+  statistics:
+  - about: PTD, cNE against median random group
+    test: Wilcoxon signed-rank test
+    p: 1.39e-6
+    n: 103 cNEs
+  - about: STRF MI, cNE against median random group
+    test: Wilcoxon signed-rank test
+    p: 8.70e-12
+    n: 103 cNEs
+  - about: UI distributions against uniform, PTD and MI
+    test: Kolmogorov–Smirnov test
+    p: 0.001
+    p_relation: <
+  criterion: Random groups, summed spikes and equal-count subsampling as in
+    fig9s1-cne-mi-above-random-groups; PTD and MI as in fig10b-ptd-higher and
+    fig10c-strf-mi-higher. Reproduced when both signed-rank tests give p < 0.001 with cNEs higher
+    and both KS tests give p < 0.001; partially reproduced when the PTD or the MI part holds alone.
+- id: fig11ab-real-vs-surrogate
+  statement: Spike matrices built from simultaneous spike trains ('real') gave more cNEs, and
+    larger ones, than matrices built from different presentations of the same stimulus
+    ('surrogate'), so stimulus-driven synchronization is not the main source of cNE synchrony.
+  source: Results, cNE events are not fully accounted for by stimulus synchronization, paragraph 1;
+    Figure 11A, B; Supplementary file 1
+  quote: We found, however, that the ‘surrogate’ spike train matrices had fewer cNEs ( Figure 11A )
+    and that the detected cNEs had fewer member neurons ( Figure 11B )
+  statistics:
+  - about: number of cNEs, real against surrogate
+    test: paired t-test
+    p: 6.15e-38
+    n: 100 combinations of 15 neurons
+  - about: mean cNE size, real against surrogate
+    test: paired t-test
+    p: 2.79e-57
+    n: 100 combinations of 15 neurons
+  criterion: Method from Materials and methods, Constructing repeat ('surrogate') spike matrices.
+    Units responding to all 15 presentations of the 10-min RN with rates varying by less than 30%
+    between adjacent presentations (24 in the paper); 100 unique random 15-unit combinations; per
+    combination 15 real and 15 surrogate matrices (the shuffled order shifted circularly by one
+    each time); cNE detection on each, averaged over the 15. How the 30% is computed is open;
+    readings (a) the absolute rate difference over the mean of the two; (b) over the earlier
+    presentation. Reproduced when both paired t-tests give p < 0.001 with real higher; the number
+    of units passing is reported against 24.
+- id: fig11c-models-number
+  statement: Surrogate spike trains from the 'shuffled' and 'preserved receptive field' (PR)
+    models gave fewer cNEs than the real data, while the dichotomized Gaussian (DG) model gave
+    more.
+  source: Results, cNE events are not fully accounted for by stimulus synchronization, paragraph 6;
+    Figure 11C; Supplementary file 1
+  quote: Surrogate spike trains from the ‘shuffled’ and ‘PR’ models had significantly fewer cNEs (
+    Figure 11C ) than the real data. On the other hand, the ‘DG’ model overestimates the number of
+    detected cNEs
+  statistics:
+  - about: shuffled against real
+    test: paired t-test with Bonferroni correction
+    p: 4.87e-9
+    corrected: Bonferroni
+    n: 16 penetrations
+  - about: PR against real
+    test: paired t-test with Bonferroni correction
+    p: 4.62e-8
+    corrected: Bonferroni
+    n: 16 penetrations
+  - about: DG against real
+    test: paired t-test with Bonferroni correction
+    p: 7.98e-6
+    corrected: Bonferroni
+    n: 16 penetrations
+  criterion: Models from Materials and methods, Simulated spike trains. Shuffled, each unit's
+    binned train shifted circularly by a random number of bins. PR, the full range of each unit's
+    STRF projection values split into 15 equal bins, and spikes moved at random to time bins of
+    the same projection bin. DG, binary 5-ms trains fitted for means and covariances and sampled
+    with CorBinian (findLatentGaussian01, sampleDichGauss01), then rebinned to 10 ms. 200
+    iterations per model and penetration, mean number of cNEs per penetration. Open are the bin
+    width of the PR shuffle and the STRF used for it; readings (a) 10-ms bins; (b) 5-ms bins;
+    with the STRF of the same recording. Bonferroni over the three model comparisons of the
+    panel, a reading, as the paper does not name the family (Figure 11 legend; Supplementary
+    file 1 lists three comparisons per panel). Reproduced
+    when, under one reading, all three corrected p < 0.05 with shuffled and PR fewer and DG more;
+    partially reproduced when two of the three hold.
+- id: fig11d-models-size
+  statement: All three models, including the DG model, gave cNEs with fewer member neurons than
+    the real data.
+  source: Results, cNE events are not fully accounted for by stimulus synchronization, paragraph 6;
+    Figure 11D; Supplementary file 1
+  quote: all three models, including the ‘DG’ model, resulted in cNEs that were smaller in size
+    (i.e., fewer member neurons, Figure 11D ) than the real data (n = 16 penetrations
+  depends_on:
+  - fig11c-models-number
+  statistics:
+  - about: shuffled against real
+    test: paired t-test with Bonferroni correction
+    p: 1.23e-7
+    corrected: Bonferroni
+    n: 16 penetrations
+  - about: PR against real
+    test: paired t-test with Bonferroni correction
+    p: 0.04
+    corrected: Bonferroni
+    n: 16 penetrations
+  - about: DG against real
+    test: paired t-test with Bonferroni correction
+    p: 7.2e-3
+    corrected: Bonferroni
+    n: 16 penetrations
+  criterion: The model runs of fig11c-models-number, mean cNE size per penetration. A model run
+    that yields no cNE has no size; whether such runs are left out or count as zero is open, and
+    both are shown. Reproduced when all three corrected p < 0.05 with the models smaller;
+    partially reproduced when two hold.
+- id: fig11ef-coincidence-ratios
+  statement: Normalized to the real data, the coincidence ratios of groups of 2 and 3 cNE members
+    were significantly below one for the 'repeat' data and the shuffled, PR and DG models.
+  source: Results, cNE events are not fully accounted for by stimulus synchronization, paragraph 7;
+    Figure 11E, F; Supplementary file 1
+  quote: The normalized CR for the repeated stimulus data (‘repeat’), ‘shuffled’, ‘PR’ and ‘DG’
+    models were significantly less than one for all groups ( Figure 11E and F )
+  depends_on:
+  - fig11c-models-number
+  statistics:
+  - about: each of shuffled, PR, repeat and DG against real, pairs (Figure 11E)
+    test: paired t-test with Bonferroni correction
+    p: 1.0e-100
+    p_relation: <
+    corrected: Bonferroni
+    n: 400 groups
+  - about: each of shuffled, PR, repeat and DG against real, triplets (Figure 11F)
+    test: paired t-test with Bonferroni correction
+    p: 1.0e-100
+    p_relation: <
+    corrected: Bonferroni
+    n: 400 groups
+  criterion: Method from Materials and methods, Calculation of coincidence ratios. CR is the
+    number of bins in which all units of the group spike over the number in which its
+    lowest-rate unit spikes; 400 unique groups of 2 and of 3 members of the same cNE; one real
+    CR, one repeat CR (trains from different presentations), and the median of 1000 iterations
+    of each model; all divided by the real CR. The CR bin is open; 10 ms, the detection bin, is
+    taken as the paper names no other, and stated as an assumption. Which recordings the groups
+    come from is open; the Methods take real and repeat CRs from presentations of one stimulus,
+    which fits the 15 repeats of the 10-min RN, while the models are defined on the 16
+    recordings. Readings (a) groups from cNEs detected on the repeated RN data, all CRs there;
+    (b) groups from cNEs of the 16 recordings for real and model CRs, repeat CRs from the
+    repeated RN data. The repeat CR needs the repeated 10-min RN data; without it the claim is
+    judged on the three models. Reproduced when every comparison gives corrected p < 0.001 with
+    the normalized CR below one; partially reproduced when the models hold and repeat cannot be
+    run.
+- id: fig11s3b-pr-strf-similarity
+  statement: The PR model preserved the neurons' STRFs (median STRF similarity with the real
+    spike trains about 0.74), while the shuffled and DG models gave STRF similarities close to
+    zero.
+  source: Results, cNE events are not fully accounted for by stimulus synchronization, paragraph
+    5; Figure 11-figure supplement 3B
+  quote: the ‘PR’ model had a high median correlation value (~0.74) while the ‘shuffled’ and ‘DG’
+    models had values close to zero
+  depends_on:
+  - fig11c-models-number
+  expected:
+    quantity: median STRF similarity, PR model against real
+    value: 0.74
+    tolerance: 0.074
+  criterion: STRF similarity is the correlation of a unit's model STRF with its real STRF, by
+    spike-triggered average; median over all units and iterations. "Close to zero" is read as an
+    absolute median below 0.1, a reading not fixed by the paper. Reproduced when the PR median is
+    within tolerance and both other medians are below 0.1 in absolute value.
+checks:
+- date: '2026-11-11'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - "fig2eg-distance-weak: expected value 0.2 with tolerance 0.13 gave 0.07 to 0.33, not the 0.09 to 0.33 the criterion states (10 to 30% widened by 10% of each bound); now 0.21 with tolerance 0.12."
+  - "fig6j-sharpness-cne-pairs: the 15 other penetrations were one entry with the legend's bound p < 0.001; replaced by one entry per test with the exact p and the pair counts of Supplementary file 1, as the protocol asks one entry per test."
+  - "fig9s2-noise-correlations: the three example recordings were one entry with p < 0.001; replaced by one entry each with the exact p and pair counts of Supplementary file 1. The criterion tested only the paired t-test, while the statement says cNE pairs were higher in each of the 16 recordings (legend B, 'All recordings'); a per-recording Mann-Whitney U test from legend B is added."
+  - "fig9c-cne-events-more-mi: the extrapolation was given as 20 subsamples at 90 to 100% of the bins; now the Methods' 20 iterations at each of 90, 95, 97.5, 99 and 100% of time bins with a line against the inverse fraction (Materials and methods, MI analysis on 5-s repeats)."
+  - "fig7-negative-weights: the 90% bound for 'vast majority' is now labelled a reading, as the paper gives none."
+  - "fig11c-models-number: the Bonferroni family (three comparisons per panel) is now labelled a reading, as the paper does not name it."
+  - "fig11ef-coincidence-ratios: the 10-ms CR bin is now stated as an assumption; added that the recordings the groups come from are open (the Methods take real and repeat CRs from presentations of one stimulus, which fits the 15 repeats of the 10-min RN, while the models are run on the 16 recordings), with two readings."
+  - "Open, not settled: tools/claims_check.py reports fig10s1-random-group-strfs p 8.70e-12 as not found; it is printed in Supplementary file 1 (10 - figure supplement 1E, '8.70 x 10-12'); the checker drops the trailing zero. 1.60e-59 passes only through a spurious match, but is also printed there (10C)."
+  - "Open, not settled: the PWC lag bin and range (fig2bd-pwc-measures-covary and the claims that use its sharpness) are not fixed by the paper; the Results name a 10-ms resolution for the correlation analysis, which cannot give the reported ~2 ms median sharpness, so the 1-ms readings rest on an assumption."

@@ -39,6 +39,24 @@ def test_proposals_are_found_from_the_record():
     assert tool.proposals("001453") == []
 
 
+def test_the_reconcile_run_is_asked_why_each_outcome_differs():
+    # docs/protocol.md, "Repeat attempts": the reconcile run names the cause of each differing outcome from both
+    # attempts' code, and does not vote. The record's schema takes the same causes.
+    import json
+    text = tool.fill("reconcile", "park-2019", "m")
+    causes = json.loads((REPO / "schemas" / "attempt.schema.json").read_text())[
+        "properties"]["reconciliation"]["properties"]["outcomes"]["items"]["properties"]["cause"]["enum"]
+    assert all(f"`{c}`" in text for c in causes) and "you do not vote" in text
+    assert "park-2019-01" in text and "{" not in text.split("4. For each claim")[1].split("5. ")[0]
+
+
+def test_a_replicate_author_is_told_why_the_paper_is_tested_again():
+    # A replicate (docs/replicates.md) is neither new data nor a new protocol: the prompt says what it is for.
+    key = next(k for k in ("asari-2009", "senzai-2017") if tool.attempt_of(k))
+    text = tool.fill("author", key, "m", replicate=True)
+    assert "to measure how much separate attempts agree" in text and "The data have changed" not in text
+
+
 def test_an_author_on_a_dandiset_with_an_attempt_gets_the_blind_repeat_prompt():
     latest = tool.attempt_of("001754")[0]["id"]
     n = int(latest.rsplit("-", 1)[1])
