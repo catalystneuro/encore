@@ -1,0 +1,557 @@
+schema_version: 3
+id: lee-2023-01
+datasets:
+- archive: dandi
+  id: "000636"
+  version: 0.241120.0510
+  doi: 10.48324/dandi.000636/0.241120.0510
+  relation: primary
+paper: doi:10.1126/science.adf6484
+date: 2026-11-18
+entry: lee-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44273539492
+inputs:
+- what: Per-cell labels (LeeDalley_manuscript_metadata_v2.csv; t-type, subclass, condition, days in
+    culture, lobe, virus, qualitative morphology type, nwb_id), the paper's electrophysiology
+    feature table (LeeDalley_ephys_fx.csv, used only to check the features computed here and as
+    labelled variants) and the DBC calls (dbc_calb1_ADGRG6.csv).
+  source: https://github.com/AllenInstitute/human_patchseq_gaba at commit
+    5eb357a1cea246c7c847b5608a8fc7e87ea95b58
+- what: Patch-seq transcriptomes (complete_patchseq_data_sets1.RData and
+    complete_patchseq_data_sets2.RData, log2(CPM + 1) of 50281 genes in 778 cells, with metaPatch)
+    and the curated voltage-gated ion channel list (vgic_genes.csv), for the data elsewhere claims on
+    gene expression.
+  source: https://github.com/AllenInstitute/human_patchseq_gaba at commit
+    5eb357a1cea246c7c847b5608a8fc7e87ea95b58
+- what: Morphology feature table of the 140 reconstructions (LeeDalley_morpho_features.csv), for the
+    data elsewhere claims on morphology. The reconstructions themselves (Brain Image Library,
+    doi 10.35077/g.892) were not read.
+  source: https://github.com/AllenInstitute/human_patchseq_gaba at commit
+    5eb357a1cea246c7c847b5608a8fc7e87ea95b58
+outcomes:
+- claim: cell-metadata-link
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:cell-metadata-link
+  notes: Files are matched to metadata rows by nwb_id, which equals the NWB session id. 684 of the
+    704 unique rows with Has_ephys (97.2%) have a file; 14 of these rows have no nwb_id and 6 have
+    one that is not in the dandiset. 16 files have no metadata row, and 6 rows without Has_ephys
+    have a file. Of the cells with values on both sides, rheobase_i agrees within 10% for 92.2%
+    (650 cells), input_resistance 94.5%, sag 97.8% and width_rheo 98.8% (586 cells); the median
+    relative difference is 0 for all four. All four agree together for 90.6% of 586 cells, a
+    stricter reading shown only. Over the 65 features computed, a median of 93.6% of cells agree
+    within 10%. Seven features agree for less than 80% of cells (fi_fit_slope 41%, isi_cv_mean 46%,
+    adapt_mean 58%, isi_norm_sq_var_mean 60%, isi_norm_sq_var_max 71%, adapt_max 77%,
+    isi_adapt_ratio 27%), because their definitions here (assumptions in the helper) are not the
+    paper's.
+  deviations:
+  - The criterion is read per feature (each of the four features within 10% for at least 90% of
+    the cells with both values), as "the cells with both values" suggests; the joint reading
+    (90.6%) also passes.
+  - Cell-level QC (seal and access resistance) is not recomputed; the Methods' sweep QC is
+    applied (bridge balance, bias current, noise), which may explain part of the rheobase
+    disagreement.
+- claim: dataset-composition
+  outcome: partially_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:dataset-composition
+  measured:
+  - 778
+  - 44
+  - 64
+  - 101
+  - 158
+  - 363
+  notes: The metadata table holds 778 unique neurons in 44 t-types, as the paper says. Over the 686
+    labelled files with a QC-passing long square sweep, reading (a), Revised_subclass_label, gives
+    LAMP5/PAX6 64, VIP 101, SST 158 and PVALB 363; three are within tolerance and LAMP5/PAX6 is not
+    (64 against 75, tolerance 7.5). Reading (b), subclass_label, gives 69, 96, 231 and 290, two
+    within tolerance. The 675 cells with a rheobase computed here equal the paper's total (75 + 99
+    + 149 + 352), but split 63, 99, 155 and 358. All 704 rows with Has_ephys give 67, 111, 156 and
+    370 under reading (a), so the paper's 75 LAMP5/PAX6 cannot be counted from its own table either.
+    The metadata table lists layers 1 and 5_6 for some cells as well as 2 to 6.
+  deviations:
+  - Cell-level inclusion criteria (seal, access resistance) are not recomputed from the test
+    pulses; a cell counts when it has at least one long square sweep passing the Methods' sweep QC.
+- claim: fig1b-more-genes-in-culture
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig1b-more-genes-in-culture
+  notes: Genes above 0 in the expression matrix, culture median 12203 (n = 467) against acute 11259
+    (n = 311), two-sided Mann-Whitney p = 4.3e-10. With the Genes_Detected column of the metadata,
+    7318 against 6802, p = 1.6e-05. Both are below p = 0.0001.
+  deviations:
+  - The matrix count of genes above 0 does not equal the Genes_Detected column for any cell
+    (median difference 4394 genes); both are shown, and the test holds for both.
+- claim: figs1-microglial-signature
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The criterion is the Seurat V4 clustering of the code's notebook (FindVariableFeatures,
+    ScaleData, RunPCA, RunUMAP, FindNeighbors and FindClusters at resolutions 0.001 and 0.1). Seurat
+    is an R package and cannot be installed in the entry's locked Python environment, and a Python
+    re-implementation would not be the paper's clustering. The paper's own calls are in the
+    metadata (condition2), 181 culture and 130 acute cells called microglial (metaPatch has 180
+    culture_immune), but testing them would only restate the labels.
+- claim: fig1c-marker-expression-correlated
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig1c-marker-expression-correlated
+  notes: Every reading run holds. Per subclass, Pearson r is 0.81 to 0.95 on log2(CPM + 1) and 0.82
+    to 0.97 on CPM, Spearman 0.75 to 0.94, all p < 1e-4 with 25 genes; pooled over 100 genes, r =
+    0.87 to 0.92. Cells per subclass, acute and culture, are 57 and 25 (LAMP5/PAX6), 145 and 258
+    (PVALB), 30 and 141 (SST), 79 and 43 (VIP).
+  deviations:
+  - The genes are the 25 with the largest difference in mean log2(CPM + 1) between a subclass's
+    Patch-seq cells and the other cells, a standard choice. The criterion's other reading, the
+    snRNA-seq ranking, could not be run, as the code repository does not hold the dissociated
+    nuclei data its notebook loads (complete_facs_data_sets.RData). The outcome rests on the
+    Patch-seq readings, an assumption.
+- claim: fig1d-nms-no-difference
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig1d-nms-no-difference
+  notes: marker_sum_norm_label, acute median 0.962 (n = 311) and culture 0.962 (n = 467), two-sided
+    Mann-Whitney p = 0.38, rank-biserial -0.037.
+  deviations:
+  - The NMS values are the paper's own column; they were not recomputed from the expression data.
+- claim: fig1g-wfdc2-morphology-unchanged
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig1g-wfdc2-morphology-unchanged
+  notes: The feature table has 16 acute and 10 culture PVALB WFDC2 reconstructions, not the paper's
+    10 and 9. No feature differs at FDR p < 0.05 under any reading. (a) All 26 cells, smallest FDR p
+    0.117 (smallest raw p 0.0029, soma_surface). (b) The 9 and 9 cells inside the depth range both
+    groups share, smallest FDR p 0.202. (c) Each culture cell with its nearest-depth acute cell, 10
+    and 10, smallest FDR p 0.090. Culture somas are shallower (median 535 against 837 um).
+  deviations:
+  - Tested on the paper's morphology feature table, not on features recomputed from the
+    reconstructions.
+  - The 50 features are the table's 51 columns less soma depth, which the matching uses. How the
+    paper depth-matched its 9 and 10 cells is not given; two matchings were run, and all readings
+    give the same outcome.
+- claim: figs2b-wfdc2-ephys-43-of-84
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs2b-wfdc2-ephys-43-of-84
+  notes: 19 of the 84 features (width_suprathresh, postap_slope, sag_area, sag_peak_t, sag_tau,
+    sag_depol, ahp_delay_ratio, trough_slowdeltav and adp_v_last features) are not computed by
+    public IPFX; the Methods say "custom code used for chirps and some high-level features will be
+    released in a future version of IPFX". Over the 65 features computed, 41 differ between 65
+    acute and 82 culture PVALB WFDC2 cells at BH-FDR p < 0.05 (63%, the paper 51%). Counting the 19
+    missing features as all non-significant or all significant bounds the count over 84 between 39
+    and 61, which contains the whole tolerance (38.7 to 47.3), so the outcome cannot be decided. As
+    variants, the paper's own table gives 47 of 84 for the same cells (53 of 93), and the computed
+    features with the paper's values for the missing 19 give 50. With culture restricted to cells
+    without (with) the microglial signature, 37 (30) of 65 differ.
+- claim: fig1l-width-sag-differ
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig1l-width-sag-differ
+  notes: The readings give different outcomes, so the claim is blocked as its criterion says. Sag is
+    higher in culture (median 0.284 against 0.110, FDR p = 1.2e-14). AP width is wider in culture
+    at FDR p < 1e-4 for the rheobase (FDR p = 5.6e-05), hero (6.6e-06) and short square (7.7e-05)
+    sweeps; the ramp gives FDR p = 0.0077. Input resistance does not differ (FDR p = 0.81). The ISI
+    of the hero sweep does not differ (FDR p = 0.75), but that of the rheobase sweep does (FDR p =
+    0.016, 74 cells with two or more spikes at rheobase). Five of the eight readings fail (the four
+    with the rheobase ISI, and the ramp width with the hero ISI); under the hero ISI with
+    rheobase, hero or short square width the claim holds. FDR is taken over the 65
+    features computed, not the paper's 84. Open question for the authors, which sweep's ISI and
+    width Fig. 1L plots.
+  deviations:
+  - BH-FDR across the 65 computed features, as the 84 cannot all be computed.
+- claim: figs2c-no-change-with-days
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs2c-no-change-with-days
+  notes: It depends on fig1l-width-sag-differ, which is blocked, and its own width readings disagree.
+    Over 82 culture PVALB WFDC2 cells, sag does not correlate with days in culture (r = 0.07, FDR p
+    0.51 to 0.70). Width does not for the rheobase, hero and ramp sweeps (r -0.05 to 0.08) but does
+    for the short square (r = 0.37, FDR p = 0.0015). The one 2 DIC PVALB WFDC2 cell has sag 0.379
+    and width 0.54 to 0.61 ms, above the acute medians (0.110, 0.41 to 0.49 ms) as the culture
+    group is. Of the 41 features that differ, 4 correlate with days in culture at BH p < 0.05.
+- claim: fig1i-wfdc2-ephys-umap-overlap
+  outcome: not_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig1i-wfdc2-ephys-umap-overlap
+  notes: In feature space, culture PVALB WFDC2 cells have a mean of 0.191 acute cells among their 15
+    nearest PVALB WFDC2 neighbours, against a shuffle median of 0.446 (ratio 0.43, under the
+    criterion's 0.5); acute cells 0.408 against 0.563 (0.72). In the UMAP embedding the ratios are
+    0.69 to 0.78 under all five seeds, which passes. With 10 and 30 neighbours the feature-space
+    culture ratio is 0.36 and 0.48. The feature-space result does not depend on the seed beyond the
+    shuffle (0.43 under all five). Culture cells sit apart in the full feature space, consistent with
+    the 41 differing features.
+  deviations:
+  - The 65 computed features in place of 84.
+- claim: figs2d-seven-channel-genes
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs2d-seven-channel-genes
+  notes: The code's linear model (condition + isImmune + interaction, Holm over each gene's three
+    term p-values as apply(lm_pval, 2, p.adjust) does) was run on 168 PVALB WFDC2 transcriptomes and
+    the 40551 genes with mean > 0.01. The code also keeps only its keepGenes, which it builds from
+    the dissociated-nuclei data (complete_facs_data_sets.RData) and sex and mitochondrial gene
+    lists, none of which is in the repository. Without that filter 142 channel genes are tested,
+    against the paper's 114, so the procedure is not the paper's; 22 of them have adjusted p <=
+    0.01 (Holm across genes 1, BH across genes 12, unadjusted 34). The count is not judged against 7.
+- claim: fig2b-ephys-umap-subclasses
+  outcome: not_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig2b-ephys-umap-subclasses
+  notes: PVALB has the highest same-subclass fraction among 15 neighbours (0.844 in feature space,
+    0.870 to 0.879 in UMAP). In feature space the VIP fraction (0.341) exceeds its share (0.147) by
+    0.193, under the criterion's 0.2; the other three exceed by 0.22 to 0.34. In UMAP all four
+    exceed 0.2 under the claim's seed (smallest SST 0.218) and under three of the other four seeds
+    (SST 0.199 under +2000). The outcome is set by the feature space, which does not depend on the
+    seed, and misses by 0.007. 686 cells, PVALB 363, SST 158, VIP 101, LAMP5/PAX6 64.
+  deviations:
+  - The 65 computed features in place of 84.
+- claim: fig2c-morph-umap-subclasses
+  outcome: not_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig2c-morph-umap-subclasses
+  notes: Over 140 reconstructions, PVALB has the highest same-subclass fraction (0.78 in feature
+    space, 0.73 in UMAP under the claim's seed). In feature space LAMP5/PAX6 (13 cells) exceed their
+    share by 0.10 and VIP by 0.19, under 0.2. In UMAP SST exceeds by 0.175 under the claim's seed
+    and 0.14 to 0.21 over the five seeds (all four pass under one seed, +2000); the feature space
+    fails under all.
+  deviations:
+  - Tested on the paper's morphology feature table, all 51 columns, z-scored.
+- claim: fig2e-lamp5-shortest-extent
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig2e-lamp5-shortest-extent
+  notes: LAMP5/PAX6 (13 cells) have the lowest median axon_max_euclidean_distance (434 um; PVALB
+    639, VIP 707, SST 920) and basal_dendrite_max_euclidean_distance (171 um; SST 300, VIP 345,
+    PVALB 348). Kruskal-Wallis p = 4.6e-06 and 2.4e-04. Dunn's FDR p of LAMP5/PAX6 against the others
+    is 1.6e-06 to 7.9e-04 for the axon, and 3.5e-04 to 0.053 for the dendrite (SST 0.053).
+  deviations:
+  - Tested on the paper's morphology feature table.
+- claim: fig2f-ap-kinetics
+  outcome: partially_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig2f-ap-kinetics
+  notes: Both readings agree. PVALB has the narrowest AP (short square median 0.48 ms against 0.66
+    to 0.74; rheobase 0.52 against 0.74 to 0.80) and the lowest upstroke/downstroke ratio (1.81
+    against 2.25 to 2.38; 1.68 against 2.32 to 2.52), with Dunn's FDR p <= 7.1e-14 against every
+    subclass. LAMP5/PAX6 has the highest median peak (71.9 mV short square, 70.6 mV rheobase), but
+    not significantly against all others, VIP p = 0.08 for the short square and SST p = 0.061 for
+    the rheobase sweep, so the peak part fails the criterion. The kinetics part holds and the peak
+    part holds by medians only.
+- claim: fig2g-sag-by-subclass
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig2g-sag-by-subclass
+  notes: Median sag LAMP5/PAX6 0.100 and VIP 0.153 against PVALB 0.241 and SST 0.300; the four pairs
+    differ at Dunn's FDR p 8.7e-13 to 1.9e-06; Kruskal-Wallis p = 8.1e-18. By condition the
+    LAMP5/PAX6 median is 0.059 acute and 0.256 culture, near the PVALB culture median of 0.283.
+- claim: fig2h-several-features-distinct
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig2h-several-features-distinct
+  notes: 59 of 65 features differ across subclasses at BH-FDR p < 0.05 (Kruskal-Wallis); 44 are
+    outside width, upstroke/downstroke ratio, peak and sag, and 43 of these have a Dunn pair at p <
+    0.05. The strongest are tau, downstroke and input resistance.
+  deviations:
+  - The 65 computed features in place of 84.
+- claim: fig3c-frzb-ephys-with-pvalb
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig3c-frzb-ephys-with-pvalb
+  notes: 72 of 73 SST FRZB cells have a PVALB majority among their 15 nearest SST or PVALB
+    neighbours in feature space (mean PVALB fraction 0.85, PVALB share of the reference 0.65), and
+    71 to 73 in UMAP over the five seeds.
+  deviations:
+  - The 65 computed features in place of 84.
+- claim: fig3e-frzb-ap-like-pvalb
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig3e-frzb-ap-like-pvalb
+  notes: Under the rheobase, short square and hero sweeps, SST FRZB (68 to 72 cells) differs from SST
+    in width (Dunn's FDR p 2e-12 to 7.2e-09) and upstroke/downstroke ratio (1.1e-19 to 6.4e-11), with
+    medians nearer PVALB (ratio 1.69 against PVALB 1.68 and SST 2.32 at rheobase; width 0.60 against
+    0.52 and 0.80 ms). SST FRZB still differs from PVALB in width (p 7.8e-05 to 0.0011) but not in
+    the ratio (p 0.067 to 0.88).
+- claim: figs6-sst-features-acute-culture
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs6-sst-features-acute-culture
+  notes: Acute against culture SST cells (17 to 25 acute, 117 to 199 culture), with and without SST
+    FRZB, under three sweep readings, smallest FDR p 0.22. Culture widths are slightly lower (median
+    0.72 against 0.80 ms at rheobase with FRZB); rank-biserial -0.23 to 0.07.
+- claim: fig3-frzb-transcriptome-intermediate
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The criterion needs the snRNA-seq reference (its top 20 DE genes, the SST FRZB nuclei) and
+    the Seurat integration of the code's notebook. The snRNA-seq data are on the Allen portal
+    without a pinned version, and Seurat cannot run in the locked Python environment.
+- claim: fig3g-frzb-morphology-like-pvalb
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig3g-frzb-morphology-like-pvalb
+  notes: SST FRZB (14 cells) median axon_extent_x 855 um (PVALB 910, SST 436) and
+    axon_emd_with_basal_dendrite 15.7 (PVALB 15.8, SST 43.9); SST against SST FRZB Dunn's FDR p =
+    0.0008 and 0.0006, SST FRZB against PVALB 0.72 and 0.88. In co-clustering cut at six clusters,
+    12 of 14 SST FRZB cells fall in PVALB-dominated clusters and 2 in SST-dominated ones, for 10 and
+    20 neighbours and all five seeds.
+  deviations:
+  - Tested on the paper's morphology feature table. The co-clustering's open parts (all columns as
+    features, the cut at six clusters, 10 and 20 neighbours) follow the criterion; dominance is
+    taken from the cells other than SST FRZB.
+- claim: fig4a-calb1-morphology-types
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Two of the criterion's four tests need axon length by layer (in L1, below the soma layer),
+    which the feature table does not hold; they need the layer-aligned reconstructions at the Brain
+    Image Library (doi 10.35077/g.892), which were not processed within the run's time. The
+    metadata lists 4 MC, 7 DBC (SST CALB1), 1 basket and 4 sparse SST cells in SST CALB1.
+- claim: fig4c-calb1-ephys-by-morphology
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig4c-calb1-ephys-by-morphology
+  notes: 14 SST CALB1 cells with a file (6 DBC, 3 MC, 4 sparse SST, 1 basket). Sparse SST median sag
+    0.300 against DBC 0.473 and MC 0.509; isi_adapt_ratio 1.75 against 1.14 and 1.37; latency at
+    rheobase 0.187 s against 0.070 and 0.079, at the hero sweep 0.030 against 0.019 and 0.022. MC
+    peak is highest (84.0 mV at rheobase, 83.1 at the hero sweep). All four statements hold under
+    every reading, by medians as the criterion says; Kruskal-Wallis p is 0.029 (sag), 0.16
+    (adaptation), 0.11 (latency) and 0.032 (peak). The adaptation index (adapt_hero) also puts
+    sparse SST highest.
+  deviations:
+  - The ISI adaptation ratio is computed as the second ISI over the first on the lowest sweep with
+    four or more spikes (an assumption, Methods "a ratio of the spike features between the first and
+    third spike"). It agrees with the paper's table for only 27% of cells. The paper's own values
+    for these cells order the types the same way (sparse SST 3.84, MC 1.93, DBC 1.39).
+- claim: fig4d-calb1-genes-by-morphology
+  outcome: not_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig4d-calb1-genes-by-morphology
+  measured: 2
+  notes: Under the Methods (pairwise Welch t tests, Bonferroni over 50281 genes, adjusted p < 0.05),
+    2 genes differ between the 7 DBC, 3 MC and 5 sparse SST cells of SST CALB1, and none among the
+    10 culture microglial ones (3, 3, 4; the legend's "10"). The code's one-against-rest variant
+    (culture microglial cells, genes of median >= 1, p < 0.01) gives 431 genes, or 451 rows as
+    FindAllMarkers counts them; neither is within 228 to 278. Its gene filters (keepGenes and the
+    immune genes) need data not in the repository. Clusters cannot be built on 2 genes. On the
+    variant genes three clusters form, but under every one of the five seeds MC and sparse SST cells
+    have their majority in the same cluster, and DBCs are split (largest share 0.43 to 0.57).
+  deviations:
+  - Seurat's FindMarkers is run as Welch t tests in Python on the stored log2(CPM + 1); the UMAP
+    and clusters use umap-learn and the Louvain method of networkx, not Seurat.
+- claim: fig5a-dbc-two-ttypes
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig5a-dbc-two-ttypes
+  notes: The 11 DBCs of dbc_calb1_ADGRG6.csv are 7 SST CALB1 and 4 SST ADGRG6, and their t-types
+    agree with Tree_first_cl of metaPatch and the metadata table for all 11.
+  deviations:
+  - The tree mapping is not re-run (it needs the MTG reference taxonomy); its stored result is
+    compared.
+- claim: fig5b-merfish-layers
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file marks this claim data elsewhere, and the registry's check does not allow
+    data_missing for it, so it is blocked as other. The MERFISH data are not public at any location the paper gives (its Methods point only to
+    https://github.com/AllenInstitute/), and none was found in the dandiset or the code repository.
+    The axon part needs the layer-aligned reconstructions, not processed here. The Patch-seq soma
+    layers are in the metadata (Cortical_layer) but were not tabulated.
+- claim: figs7a-dbc-regions
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs7a-dbc-regions
+  measured:
+  - 6
+  - 7
+  - 3
+  - 4
+  notes: From the lobe column, 6 of 7 SST CALB1 DBCs are temporal (one occipital) and 3 of 4 SST
+    ADGRG6 DBCs frontal (one temporal). The NWB files carry no region. Over the 9 DBCs with a file in
+    the dandiset, 5 of 6 and 2 of 3.
+- claim: figs7a-dbc-markers
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs7a-dbc-markers
+  notes: Of 11 DBCs, 7 have CALB1 log2(CPM + 1) above 5 (values 1.8 to 9.1; 10 above 3), one has
+    CALB2 (an SST ADGRG6 DBC, 3.1), 10 have SST above 0 (one SST ADGRG6 DBC has none), and TAC1, NOS1
+    and NPY are detected in 7, 9 and 10.
+- claim: fig5c-dbc-higher-sag
+  outcome: partially_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig5c-dbc-higher-sag
+  notes: 8 of 11 DBCs have a file and a sag value (median 0.473). Reading (a), the other 73 SST CALB1
+    and SST ADGRG6 cells, median 0.389; 6 of 8 DBCs are above it; Mann-Whitney p = 0.028. Reading
+    (b), the 7 MC and sparse SST cells, median 0.358; all 8 DBCs are above it; p = 0.072. The median
+    is higher under both readings, but some DBCs fall below under (a).
+- claim: fig5d-dbc-ephys-intermingled
+  outcome: not_reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig5d-dbc-ephys-intermingled
+  notes: Among the SST subclass cells, the 9 DBCs with a file have a mean of 0.133 DBCs among their
+    10 nearest SST neighbours in feature space, 3.4 times their share (0.039). In UMAP the ratio is
+    2.6 under the claim's seed and 2.3 to 3.7 over the five seeds, above the criterion's 2. With 9
+    DBCs one shared neighbour moves the mean by 0.011, so the measure is coarse.
+  deviations:
+  - The 65 computed features in place of 84.
+- claim: fig5e-bouton-density
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Bouton density needs the 63x image stacks at the Brain Image Library and a counting method
+    the text read does not give (the fig. S7B legend is missing). Neither was available here.
+- claim: fig6b-species-morphology
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs mouse reconstructions of Gouwens et al. 2020, whose location the paper does not give,
+    and features recomputed with skeleton_keys for both species; not attempted within the run's
+    time.
+- claim: fig6c-species-ephys-umap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The mouse recordings of Gouwens et al. 2020 are public (DANDI 000020, version 0.210913.1639,
+    4435 files, 142 GB), but selecting the mouse t-types of Pvalb 2 and Sst 5 needs the per-cell
+    mouse t-type labels, for which neither the paper nor this run found a pinned public source (a
+    DOI or a repository at a commit). Without them the cells cannot be selected, and no link claim
+    could be tested.
+- claim: fig6e-species-sag-rheobase-width
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig6c-species-ephys-umap; the mouse t-type labels have no pinned public source. The human
+    side can be computed here (PVALB WFDC2, L4-6 PVALB SULF1 and SST CALB1 cells).
+- claim: figs8b-firing-differs-pvalb2-only
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig6e-species-sag-rheobase-width, which is blocked for lack of pinned mouse
+    labels.
+- claim: figs9-species-differences-not-culture
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig6e-species-sag-rheobase-width and figs8b-firing-differs-pvalb2-only, blocked
+    for lack of pinned mouse labels.
+- claim: figs5-vip-enhancer-enrichment
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs5-vip-enhancer-enrichment
+  notes: 19 of 30 CN2039 cells are VIP (0.63); the other 11 are PVALB 8, SST 2 and LAMP5/PAX6 1. The
+    VIP fraction is 0.138 in all other cells (odds ratio 10.8, Fisher p = 1.7e-09) and 0.053 in
+    CN1390 cells (odds ratio 30.9, p = 1e-14). All 30 CN2039 cells have a file in the dandiset; over
+    cells with a file the comparison fractions are 0.126 and 0.054. More than half of CN2039 cells
+    are VIP.
+- claim: figs1a-genes-across-days
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:figs1a-genes-across-days
+  notes: The median of genes above 0 is above the acute median (11259) at every day sampled, 2 to 16
+    (11300 to 15551; day 12 and day 16 have one cell each). Pearson r = 0.029, p = 0.54, n = 467
+    (Spearman rho = -0.017, p = 0.71).
+- claim: fig1e-wfdc2-transcriptome-overlap
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The space is the Seurat integration of the Methods and the code's notebook (anchors on the
+    tree-mapping markers, 30 PCs), which cannot run in the locked Python environment.
+- claim: fig1h-wfdc2-morph-umap-overlap
+  outcome: reproduced
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig1h-wfdc2-morph-umap-overlap
+  notes: Over all 140 reconstructions, the 26 PVALB WFDC2 cells (and the 18 in the shared depth
+    range) have cross-condition fractions among 5 neighbours of 0.30 to 0.72, against shuffled 0.40
+    to 0.66, above half the shuffle in both spaces and all seeds; at least 88% of cells of each group
+    have a PVALB majority among their 5 nearest neighbours.
+  deviations:
+  - Tested on the paper's morphology feature table; the depth-matched set is the shared depth range
+    of fig1g-wfdc2-morphology-unchanged.
+- claim: figs1de-mapping-unaffected
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Both spaces are built with Seurat (integration, and the code's "no data integration" chunk),
+    which cannot run in the locked Python environment, and the four groups depend on the microglial
+    calls of figs1-microglial-signature.
+- claim: fig2a-patchseq-overlaps-snrnaseq
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs the human MTG snRNA-seq data (Allen portal, no pinned version) and the Seurat
+    integration, which cannot run in the locked Python environment.
+- claim: fig5d-dbc-morph-umap
+  outcome: reproduced
+  seed_sensitive: true
+  notebook: reproduce_lee_2023.ipynb
+  output: claim:fig5d-dbc-morph-umap
+  notes: Among 49 SST reconstructions with 11 DBCs (share 0.224), DBCs have a mean of 0.78 DBCs among
+    their 5 nearest SST neighbours in feature space (ratio 3.48). In UMAP the ratio is 2.02 under
+    the claim's seed, and 1.54 to 2.59 over the five seeds (+2000 1.54, +4000 1.62, under 2). Among
+    a DBC's DBC neighbours, 0.45 to 0.60 share its t-type.
+  deviations:
+  - Tested on the paper's morphology feature table.
+findings:
+- kind: metadata_insufficient
+  statement: The NWB files hold no cell type, subclass, brain region, cortical layer, slice condition
+    (acute or culture), days in culture or virus; their electrode location is empty. Every label
+    the paper's analyses need comes from the code repository's metadata table, linked by its nwb_id
+    column.
+- kind: identifier_missing
+  statement: 16 of the 706 files have no row in the paper's metadata table (sessions 567737666,
+    567773605, 569870997, 571674350, 591326867, 591342850, 595591210, 595597605, 595715586,
+    601916346, 611610562, 611822740, 611901143, 847874997, 847908770, 855354224), so they cannot be
+    labelled. 20 metadata rows with Has_ephys have no file (14 without nwb_id, 6 whose nwb_id is
+    not in the dandiset).
+- kind: metadata_error
+  statement: The dandiset's assetsSummary gives numberOfCells 616, but the version holds 706 files of
+    one cell each.
+- kind: other
+  about: data
+  statement: 79 files have sweeps sampled at 200 kHz (all recorded in 2020 and 2021), where the Methods
+    state that data were digitized at 50 kHz; two files mix rates (25 and 50 kHz, 50 and 200 kHz).
+- kind: metadata_error
+  statement: The subject species is written "Homo Sapiens" in 581 files and "Homo sapiens" in 125.
+- kind: other
+  about: paper
+  statement: The paper's metadata table (LeeDalley_manuscript_metadata_v2.csv) repeats one row
+    (specimen 819133824), giving 779 rows for 778 cells. Its condition2 column calls 181 culture
+    cells microglial where metaPatch, stored with the transcriptomes, calls 180.
+- kind: methods_unavailable
+  statement: 19 of the paper's 84 electrophysiology features (width_suprathresh, postap_slope,
+    sag_area, sag_peak_t, sag_tau, the depolarizing sag features, ahp_delay_ratio, trough_slowdeltav
+    and adp_v_last) are computed by code the paper says "will be released in a future version of
+    IPFX"; public IPFX 2.1.2 does not compute them, so counts over 84 features (43 of 84 differ
+    between acute and culture) cannot be repeated. The definitions of the adaptation ratios and of
+    the mean and maximum ISI summaries are not given precisely enough to match the paper's table
+    (isi_adapt_ratio agrees for 27% of cells).
+- kind: methods_unavailable
+  statement: Which sweep stands for the interspike interval and AP width in Fig. 1L is not given. With
+    the rheobase-sweep ISI, the ISI differs between acute and culture PVALB WFDC2 cells (FDR p =
+    0.016), and with the hero-sweep ISI it does not (0.75). Could the authors say which sweeps
+    Fig. 1L and fig. S2C use?
+- kind: methods_unavailable
+  statement: The code's gene filter for the ion-channel and morphology-type gene analyses (keepGenes)
+    is built from dissociated-nuclei data (complete_facs_data_sets.RData) and sex and mitochondrial
+    gene lists that the repository does not hold, so figs. S2D (7 of 114 channel genes) and the
+    253 genes of Fig. 4D cannot be repeated from the repository.
+- kind: code_mismatch
+  statement: In the code's ion-channel analysis, apply(lm_pval, 2, p.adjust) adjusts each gene's three
+    term p-values with Holm, not across genes, and its comment calls this FDR correction.
+- kind: other
+  about: data
+  statement: The code repository's Genes_Detected column does not equal the number of genes above 0
+    in its own expression matrices for any of the 778 cells (median difference 4394 genes), and no
+    threshold on the stored log2(CPM + 1) reproduces it; how it was counted is not documented.
+- kind: data_missing
+  statement: The MERFISH data of Fig. 5B are not in the dandiset and the paper gives no public
+    location for them.
+- kind: other
+  about: paper
+  statement: The paper reports 75 LAMP5/PAX6, 99 VIP, 149 SST and 352 PVALB neurons with
+    electrophysiology. Its own metadata table gives 67, 111, 156 and 370 for the rows with Has_ephys
+    under the revised subclasses, and 675 cells with a rheobase here split 63, 99, 155 and 358, so
+    the selection behind the paper's counts is not documented.
