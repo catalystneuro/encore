@@ -1092,3 +1092,112 @@ findings:
 - kind: paper_inconsistency
   statement: The Results give 73/110 frequency probes as 64.6%; 73/110 is 66.4%, and 64.6% is the AM figure
     (62/96).
+- kind: metadata_error
+  statement: Summary.mat lists two cells, 20060314-ha1-001 and 20060320-ha3-003, in both the natural-sound
+    group and the synthetic-sound group, and lists their tuning-curve file (-001) under each, so a count
+    over the groups counts these cells and files twice. Their sequence recordings differ between the groups
+    (natural -004 and -003; synthetic -002 and -003, and -002).
+  found: on_prompt
+- kind: methods_unavailable
+  statement: 'Probes last 1.98 to 6.06 s (of the 305 natural-sound probes, 304 still run at 2 s, 214 at
+    4 s and 24 at 6 s), and the paper does not say how the population curves of Figures 3, 4, 8 and 9D
+    treat times after a probe has ended. The late fraction of Figure 3A is 0.225 with ended probes counted
+    as not significant and 0.237 over the probes still running (paper 0.237). Question for the authors:
+    is the average at time t over all probes, an ended probe counting as zero, or over the probes still
+    running?'
+  found: on_prompt
+- kind: code_mismatch
+  statement: The authors' CxtDep.m (FracPow, line 346) centres each trial on its own mean over the probe
+    window before computing the fractional powers, with a whole-trace centring commented out (line 347);
+    the Methods (Analysis, paragraph 1) centre the response over time without saying over which window.
+    This attempt follows the script.
+  found: on_prompt
+reconciliation:
+  earlier: asari-2009-01
+  date: '2026-11-18'
+  blind: false
+  blind_note: In its first revision run (author-revise-1) the author listed transcripts/asari-2009/, which
+    still held the transcripts of asari-2009-01, and printed the first 50 lines of that attempt's verifier-2-report.md;
+    its report says these showed the earlier outcomes and the earlier Figure 7 finding, and that it read
+    nothing more of them. The transcript does not keep that output. The first author run did not see them,
+    and its record already blocked fig7-example-frequency-context with the Figure 7 finding.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Finding 1 of asari-2009-02 reports the same absence of voltage-clamp recordings, with Summary.mat
+      listing no voltage-clamp experiment.
+  - finding: 2
+    status: still_present
+    now: 7
+    note: 'Finding 7 of asari-2009-02 reports the same missing Figure 7 recording: no DMR recording stores
+      the bands 0.625-2.5, 2.5-10 and 10-40 kHz.'
+  - finding: 3
+    status: still_present
+    now: 6
+    note: Finding 6 of asari-2009-02 reports the same mismatch between the cells in the data set and the
+      paper's counts (96 synthetic-sound cells, DMR 15 against 6, MHT 26 against 39). It counts 132 cells
+      meeting the rule against the earlier 133, as it finds 95 of the 96 synthetic cells meet it.
+  - finding: 4
+    status: still_present
+    now: 10
+    note: 'Finding 10 of asari-2009-02 reports the same gap: the ensembles of each property have to be
+      rebuilt from the stored stimulus parameters, and the split by probe type does not match Table 1
+      (14 MHT-probe AM entries in 2 cells against 71 and 57).'
+  - finding: 5
+    status: still_present
+    now: 16
+    note: earlier_findings.ipynb finds 20060314-ha1-001 and 20060320-ha3-003 in groups 0 and 2 of Summary.mat,
+      with their tuning-curve files listed in both.
+  - finding: 6
+    status: still_present
+    now: 17
+    note: earlier_findings.ipynb gives a late fraction of 0.225 with ended probes counted and 0.237 over
+      the probes still running; the paper still does not say which. Both readings are now within tolerance,
+      so the earlier remark that only the first matches does not hold with the corrected fragment lists.
+  - finding: 7
+    status: still_present
+    now: 10
+    note: Finding 10 of asari-2009-02 asks the same question, which stimuli form each property's ensemble
+      and whether a probe counts once per ensemble, with the same totals (95, 110, 96, 82) and MHT counts
+      (71, 57).
+  - finding: 8
+    status: still_present
+    now: 8
+    note: Finding 8 of asari-2009-02 asks the same question on the A1 spike detector and the spontaneous
+      and evoked windows, noting that GetSpikes.m extracts whole-cell spikes by hand.
+  - finding: 9
+    status: still_present
+    now: 15
+    note: 'Finding 15 of asari-2009-02 reports the same error: 73/110 is 66.4%, and 64.6% is the AM figure
+      (62/96).'
+  - finding: 10
+    status: still_present
+    now: 18
+    note: earlier_findings.ipynb prints CxtDep.m line 346, which centres each trial over the probe window,
+      and lines 112 and 139 to 141, which add the preceding silence as a context. The silence part is
+      finding 11 of asari-2009-02; the centring part is finding 18.
+  outcomes:
+  - claim: fig3a-proportion-significant
+    earlier: reproduced
+    note: A difference in method. asari-2009-02 cuts the probes of 20051108-ha1-001 with the fragment
+      lists that fit its triggers (its finding 2), asari-2009-01 with the stored, swapped lists. In earlier_findings.ipynb
+      the asari-2009-02 code with the stored lists gives 186 significant probes and a late fraction of
+      0.252, the earlier values, against 183 and 0.225; 183 is outside the count tolerance.
+  - claim: fig3b-fractional-power-decay
+    earlier: not_reproduced
+    note: A difference in method, the same correction of the swapped fragment lists of 20051108-ha1-001.
+      asari-2009-02 records that with the stored lists its fit gives 0.464 to 0.468 and 1.74 to 1.78 s,
+      the earlier values, against 1.008 to 1.050 s with the corrected lists.
+  - claim: fig8a-proportion-by-property
+    earlier: partially_reproduced
+    note: A difference in method, in how the two notebooks rebuild the property ensembles. With its ensembles
+      asari-2009-01 finds 45 of 137 higher-order probes significant (0.328), so AM > FM > higher-order
+      holds; asari-2009-02 finds 64 of 131 (0.489) in the Table 1 reading it adopted after its verification
+      rounds, above AM (0.427) and FM (0.354), so the partial rule fails.
+  - claim: fig8c-relative-effects
+    earlier: not_reproduced
+    note: Mostly the correction of the swapped fragment lists. The ratios divide by the natural-sound
+      area under Q(t) from 0 to 4 s, which earlier_findings.ipynb gives as 0.762 s with the stored lists
+      (asari-2009-01 0.752 s) and 0.525 s with the corrected ones, so the amplitude and frequency ratios
+      rise from 0.72 and 0.65 to 0.974 and 0.919 (entries). The ensembles also differ between the notebooks.
