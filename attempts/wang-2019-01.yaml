@@ -78,23 +78,34 @@ outcomes:
   output: claim:fig2a-rabbit-monotonic
   notes: 4 rabbit hearts, 10 time points (0 to 60 s). At 60 s all three differ from time 0 in the stated
     direction by paired t-test (HR +65.75 bpm, p = 0.0004; APD80 -31.3 ms, p = 0.021; CaTD80 -33.75 ms,
-    p = 0.0028); after the repeated measures ANOVA with Holm-Sidak comparisons HR and CaTD80 hold (p =
-    0.0015 and 0.025) and APD80 does not (p = 0.18); with the ANOVA's pooled error (SigmaPlot's
-    Holm-Sidak) all three hold at 60 s (APD80 p = 6e-5). APD80 is monotonic under both readings. Heart rate
-    is not monotonic under either; its mean peaks at 20 s (206.5 bpm) and falls to 194.75 at 60 s, and
-    the 50 to 60 s fall is significant (paired t-test p = 0.047). CaTD80 is monotonic under reading (b)
-    but not (a); its mean is lowest at 25 s (159.75 ms) and rises to 165.65 at 60 s. No combination of
-    readings makes all three monotonic and significant at 60 s, so the criterion is not met. The
-    criterion has no rule for a partial result; by the protocol's definition (holds only in part) the
-    outcome is partial, because the increase in heart rate and the shortening of APD and CaTD from
-    time 0 hold under every significance reading and APD80 is monotonic. The verifier would give
-    not_reproduced; the disagreement is recorded under verifications.
+    p = 0.0028); after the repeated measures ANOVA with Holm-Sidak adjusted paired t-tests HR and CaTD80
+    hold (p = 0.0015 and 0.025) and APD80 does not (p = 0.18); with Holm-Sidak comparisons on the
+    ANOVA's pooled error, a variant, all three hold at 60 s (APD80 p < 0.0001). With the
+    Greenhouse-Geisser correction the APD80 ANOVA is not significant (p = 0.066), the HR and CaTD80
+    ANOVAs are (p = 0.0005 and 0.020). APD80 is monotonic under both readings. Heart rate is not
+    monotonic under either; its mean peaks at 20 s (206.5 bpm) and falls to 194.75 at 60 s, and the 50
+    to 60 s fall is significant (paired t-test p = 0.047). CaTD80 is monotonic under reading (b) but not
+    (a); its mean is lowest at 25 s (159.75 ms) and rises to 165.65 at 60 s. No combination of readings
+    makes all three monotonic and significant at 60 s, so the criterion is not met. The outcome was
+    recorded as partial on the ground that the changes from time 0 hold for all three variables under
+    every significance reading; that is wrong for APD80 under reading (ii). What holds is the direction
+    of the change at 60 s for all three under reading (i) and the monotonic fall of APD80. The
+    verified outcome is kept, and not_reproduced is proposed (see proposed).
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion names a single condition for reproduced, all three variables monotonic and
+      significant at 60 s under some combination of readings, and no partial result, unlike the
+      criteria of fig2d, fig2cf and fig3abc. No combination meets it (notebook, claim fig2a cell with
+      the table of readings). The ground given for partial, that the changes from time 0 hold for all
+      three variables under every significance reading, is false for APD80 under reading (ii)
+      (Holm-Sidak p = 0.18). Heart rate, the central variable of the claim, peaks at 20 s and falls
+      significantly from 50 to 60 s (p = 0.047), the opposite of a monotonic increase.
   deviations:
-  - The comparisons against time 0 after a repeated measures ANOVA are not named in the paper; Holm-Sidak
-    adjusted paired t-tests were used (a standard choice, after SigmaPlot's default comparison against a
-    control), and as a variant Holm-Sidak comparisons on the ANOVA's pooled residual mean square, as
-    SigmaPlot computes them. Neither corrects for sphericity. The outcome does not depend on the
-    choice, as heart rate fails monotonicity under both readings.
+  - The comparisons against time 0 after a repeated measures ANOVA are not named in the paper, which
+    names no software; Holm-Sidak adjusted paired t-tests were used (a standard choice), and as a
+    variant Holm-Sidak comparisons on the ANOVA's pooled residual mean square, as SigmaPlot computes
+    them. Neither corrects for sphericity; the ANOVA's Greenhouse-Geisser corrected p is printed beside
+    it. The outcome does not depend on the choice, as heart rate fails monotonicity under both readings.
 - claim: fig2d-mouse-biphasic-apd
   outcome: reproduced
   notebook: reproduce_wang_2019.ipynb
@@ -133,9 +144,9 @@ outcomes:
     -3.20 ms at 59.75 s, p = 0.046) and CaTD80 falls at every step, but heart rate falls from 29.75 to
     59.75 s in all 4 hearts (mean -26.75 bpm), so it is not monotonic under reading (a); under reading
     (b) the fall is not significant and the pattern holds. The criterion's "both agents" is met under
-    reading (b) and only tyramine under reading (a). The claims file counts a claim reproduced when
-    it holds under any reading, so the outcome is reproduced (it was partially_reproduced before the
-    first verification). Reading (b) has little power with 3 or 4 hearts; the noradrenaline heart
+    reading (b) and only tyramine under reading (a). The criterion asks for "HR rising", and the
+    noradrenaline heart rate stays above time 0 throughout, so the outcome is reproduced (it was
+    partially_reproduced before the first verification). Reading (b) has little power with 3 or 4 hearts; the noradrenaline heart
     rate at 59.75 s is still 82.5 bpm above time 0 (p = 0.023), but it is not sustained as with SNS.
   deviations:
   - The time points are those of the table (mean times across hearts, 6.25 to 59.75 s), not round
@@ -145,17 +156,18 @@ outcomes:
   notebook: reproduce_wang_2019.ipynb
   output: claim:fig3d-propranolol-abolishes
   notes: 3 hearts. A claim of absence judged by the claims file's rule (any time point, either test).
-    By unadjusted paired t-tests APD80 differs from time 0 at 10 s (+1.43 ms, p = 0.010); no other time
-    point of any variable reaches p < 0.05. The repeated measures ANOVA is significant for heart rate
-    (p = 0.031) and not for APD80 (p = 0.11) or CaTD80 (p = 0.28), and after it no Holm-Sidak comparison
-    against time 0 reaches p < 0.05 (smallest 0.088). With Holm-Sidak comparisons on the ANOVA's
-    pooled error, as SigmaPlot computes them, heart rate differs from time 0 at 30 to 60 s (smallest
-    p = 0.0048, at 60 s) and APD80 at 25 s (p = 0.036). The largest mean changes are +16.7 bpm heart rate
+    By unadjusted paired t-tests (reading i) APD80 differs from time 0 at 10 s (+1.43 ms, p = 0.010;
+    per heart +1.2, +1.4 and +1.7 ms); no other time point of any variable reaches p < 0.05. The outcome
+    rests on this test. It is one of 27 tests on 3 hearts (chance of at least one p < 0.05 with no
+    effect 0.75 if independent). The repeated measures ANOVA is significant for heart rate (p = 0.031)
+    and not for APD80 (p = 0.11) or CaTD80 (p = 0.28); with the Greenhouse-Geisser correction none is
+    (heart rate p = 0.23). After the ANOVA no Holm-Sidak adjusted paired t-test against time 0 reaches
+    p < 0.05 (smallest 0.088). Holm-Sidak comparisons on the ANOVA's pooled error, a variant, follow only
+    the significant heart rate ANOVA; they find heart rate above time 0 at 30 to 60 s (smallest
+    p = 0.0048, at 60 s), on the uncorrected ANOVA, with heart rate rising from time 0 to 60 s in 2 of
+    the 3 hearts (+32 and +20 bpm; the third -2 bpm). The largest mean changes are +16.7 bpm heart rate
     (+6.2%), +3.5 ms APD80 (+9.4%) and -0.73 ms CaTD80, against +87.4 bpm, +10.7 ms and -7.2 ms with SNS
-    alone (Figure 2D table). The unadjusted result is one of 27 tests on 3 hearts (chance of at least
-    one p < 0.05 with no effect 0.75 if independent), but the pooled-error comparisons find a slow
-    rise in heart rate as well, so the outcome does not rest on one test. The responses are much
-    smaller than without propranolol.
+    alone (Figure 2D table). The responses are much smaller than without propranolol.
 - claim: fig3e-rate-step-biphasic
   outcome: reproduced
   notebook: reproduce_wang_2019.ipynb
@@ -256,9 +268,13 @@ outcomes:
     itself (files/code/rabbit, with instructions for Figure 8) as well as on the Bers lab page. MATLAB
     cannot be installed in the entry's locked Python environment, and porting the model (about 100 kB
     of ODE code over six files) to Python is a new implementation, not the paper's method. GNU Octave
-    might run the code, but it is not on the machine (the notebook checks the PATH for matlab and
-    octave and finds neither), it cannot be installed without root here, and the entry's environment
-    is built from a Python lock file, which cannot hold it. The notebook prints the code files and
+    is not on the machine that runs the notebook (the notebook checks the PATH for matlab and octave
+    and finds neither). It can be installed without root from conda-forge, but the entry's
+    environment is a Python virtual environment built from a pip lock file (tools/entry.py), which
+    cannot hold it, so the simulations cannot run as part of the entry. A trial outside the notebook,
+    not part of the entry and not deciding the outcome, found that the mouse model starts under Octave
+    after a one-line change to its ode15s call and runs far slower than real time, so its 70 s
+    simulations would likely not fit the notebook's time limit. The notebook prints the code files and
     the instructions, which cover the Figure 8 AP-clamp (APD fixed, mouse-like or rabbit-like) and
     current-clamp simulations. The claims file marks the claim as data elsewhere; that the code is
     in the dataset is asked of a reader in questions/wang-2019.yaml.
@@ -314,12 +330,13 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. The paper uses "Repeated measures ANOVA or paired t-tests" but
     does not say which test gives each "*p<0.05 vs. time 0" or which comparison follows the ANOVA. This
-    attempt runs both, with Holm-Sidak comparisons after the ANOVA, on paired t-tests and on the
-    ANOVA's pooled error (as SigmaPlot computes them). For the propranolol claim (Figure 3D) they
-    disagree; an unadjusted paired t-test finds APD80 at 10 s above time 0 (p = 0.010), Holm-Sidak on
-    paired t-tests finds nothing, and Holm-Sidak on the pooled error finds heart rate above time 0 at
-    30 to 60 s (smallest p = 0.0048). The claims file's rule (either test) makes the claim not
-    reproduced. Which test and comparison were used, with what software?
+    attempt runs both, with Holm-Sidak comparisons after the ANOVA, on paired t-tests and, as a
+    variant, on the ANOVA's pooled error. For the propranolol claim (Figure 3D) they disagree; an
+    unadjusted paired t-test finds APD80 at 10 s above time 0 (p = 0.010), Holm-Sidak on paired
+    t-tests finds nothing, and Holm-Sidak on the pooled error, after the heart rate ANOVA (p = 0.031,
+    0.23 with the Greenhouse-Geisser correction), finds heart rate above time 0 at 30 to 60 s
+    (smallest p = 0.0048). The claims file's rule (either test) makes the claim not reproduced. Which
+    test and comparison were used, with what software, and was sphericity corrected for?
 - kind: methods_unavailable
   statement: Question for the authors. Are the columns of the Figure 3F no-SNS and SNS tables the same
     hearts in the same order, and why is the second no-SNS column empty? The test of SNS against no SNS
@@ -411,7 +428,9 @@ verifications:
       comparison is significant (min Holm-Sidak p = 0.0875). The rule means 27 uncorrected paired tests
       on n = 3, so at least one false positive is likely with no effect, and the outcome flips on a
       single test with a tiny SD. Holm-Sidak is applied to separate paired t-tests, not the pooled
-      RM ANOVA error term that SigmaPlot's post hoc uses.
+      RM ANOVA error term that SigmaPlot's post hoc uses, and there is no sphericity correction. It
+      changes reading (ii) for rabbit APD80 at 60 s (paired p = 0.021 against Holm-Sidak 0.18), but
+      fig2a fails on HR regardless.
     response: Added Holm-Sidak comparisons on the ANOVA's pooled error. They find heart rate above time
       0 at 30 to 60 s (smallest p = 0.0048) and APD80 at 25 s (p = 0.036), so the outcome no longer
       rests on one unadjusted test. The notebook also prints the chance of at least one false positive
@@ -497,7 +516,7 @@ verifications:
   - claim: fig8e-rabbit-sim-apd-shortening-cat
     agrees: false
     outcome: blocked
-    reason: Blocked, but questionable. The claims file marks the simulation claims as data elsewhere
+    reason: Blocked, other (questionable). The claims file marks the simulation claims as data elsewhere
       behind a registration form, but the dataset holds the code in files/code/{mouse,rabbit}, with the
       masterCompute and ODE files, exp_APc_data_5Hz.mat, AP_2Hz.mat and instructions labelled "for
       reproducing paper results (Figure 8)", a misreading of the dataset by the claims file. MATLAB
@@ -526,3 +545,174 @@ verifications:
     reason: As fig8e. Fig9 (total ICaL) is not obviously among the instructed outputs.
     response: As fig8e-rabbit-sim-apd-shortening-cat; the notes now say that the instructions do not
       name Figure 9 or total ICaL.
+- date: 2026-11-18
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the first revision, with its conclusions and
+    summary, the helper module sns.py, the claims file, the attempt record and the entry README, with
+    the paper's full text.
+  results:
+  - claim: fig1a-rabbit-hr-increase
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig1d-mouse-hr-increase
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig1bc-rabbit-ap-cat-response
+    agrees: true
+    outcome: reproduced
+    reason: The assumption, that the first 20 s of the Fig. 2 series stand in for the Fig. 1 hearts, is
+      stated and reasonable. The notes now say that rabbit APD80 passes only on the majority reading
+      (cell 18, p=0.13). The README row leaves out that rabbit APD80 holds only on the majority reading.
+    response: The README row now says that rabbit APD80 holds only on the majority reading (4 of 4
+      hearts, paired p = 0.13). No change of outcome.
+  - claim: fig1ef-mouse-ap-cat-response
+    agrees: true
+    outcome: reproduced
+    reason: Same assumption, stated.
+    response: No change.
+  - claim: fig2a-rabbit-monotonic
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion is "reproduced when ... all three monotonic ... and significant at 60 s" and
+      has no partial rule, unlike fig2d, fig2cf and fig3abc. Partial is arguable under the protocol's
+      general definition, but the reason given for it is false. The sentence that heart rate rises and
+      APD80 and CaTD80 shorten significantly from time 0 at 60 s under every significance reading is
+      contradicted by cells 23 and 24 (APD80 at 60 s Holm-Sidak p=0.1766, "60 s sig (ii)" False), by the
+      first sentence of cell 25 and by the record's own "APD80 does not (p = 0.18)". Cell 25 also has
+      the typo "APD80 APD80 falls". "SigmaPlot's pooled-error Holm-Sidak" should read as a variant, as the
+      paper names no software.
+    response: The false sentence is removed from the notebook and the notes, which now say what holds
+      (the direction of the change at 60 s for all three variables under reading (i), and the monotonic
+      fall of APD80) and that the ground given for partial was wrong for APD80 under reading (ii). The
+      typo is fixed, and the pooled-error comparisons are called a variant, with the paper naming no
+      software. The ANOVA's Greenhouse-Geisser corrected p is now printed (APD80 0.066). As no outcome
+      may change in this round, the verified outcome partially_reproduced is kept and not_reproduced is
+      proposed under proposed, for a third round.
+  - claim: fig2d-mouse-biphasic-apd
+    agrees: true
+    outcome: reproduced
+    reason: Cell 29 says "The 60 s SD (4.89 ms) is about half of the Abstract's 9.1"; cells 12, 27 and 28
+      print 4.94. The record has the correct value.
+    response: Cell 29 now gives 4.94 ms. No change of outcome.
+  - claim: fig2cf-cat-amplitude-similar
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig3abc-tyramine-na-mimic-sns
+    agrees: true
+    outcome: reproduced
+    reason: The criterion asks for "HR rising", which noradrenaline meets; HR stays above time 0
+      throughout (cell 34, 82.5 bpm at 59.75 s, p=0.023). The record's general rule ("counts a claim
+      reproduced when it holds under any reading") is not in this criterion's text. The outcome stands
+      anyway.
+    response: The notes and the notebook's conclusion now give the criterion's "HR rising", with the
+      noradrenaline heart rate above time 0 throughout, as the basis of the outcome, in place of the
+      general rule. No change of outcome.
+  - claim: fig3d-propranolol-abolishes
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced by the criterion's rule; it rests on reading (i), APD80 at 10 s p=0.0101
+      (cell 38). The pooled-error support is weaker than stated. The APD80 repeated measures ANOVA is
+      not significant (p=0.109), so under reading (ii) no post hoc comparison follows, as cell 24 gates
+      it for fig2a; drop the APD80 25 s pooled result. Only the heart-rate comparisons (ANOVA p=0.031)
+      qualify; heart rate rises in 2 of 3 hearts (heart 1 goes from 226 to 224 bpm) and the paired p at
+      60 s is 0.24. "The result does not rest on the one unadjusted test" leans on a pooled error with
+      n=3 and no sphericity correction.
+    response: The APD80 25 s pooled result is dropped; the notebook now counts pooled-error comparisons
+      only after a significant ANOVA. The notebook and notes now say that the outcome rests on the
+      unadjusted test, give the per-heart heart rate at 0 and 60 s (2 of 3 hearts rise, -2, +32 and +20
+      bpm), and print the Greenhouse-Geisser corrected ANOVA, under which heart rate is not significant
+      (p = 0.23). The finding that asks the authors about the test now asks about sphericity too.
+      Outcome unchanged.
+  - claim: fig3e-rate-step-biphasic
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig3f-constant-pacing-sns-prolongs
+    agrees: true
+    outcome: reproduced
+    reason: Yes on the letter of reading (a). The column pairing is stated and is the more plausible
+      choice (4th of 120 assignments, cell 44). The whole effect is present at time 0 (+2.69 ms,
+      p=0.036), and the change from time 0 does not differ at any time (p 0.18 to 0.94); the notes and
+      cell 45 say this plainly. The criterion does not exclude a difference already present at time
+      0, which is the only difference the data show.
+    response: No change; the notes already give the gap at time 0 and the change-from-time-0 variant.
+  - claim: fig4ab-rabbit-paced-shortening
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig4cd-activation-unchanged
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig4e-rabbit-repolarization-reversal
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig4g-5f-rabbit-base-apex
+    agrees: true
+    outcome: reproduced
+    reason: Borderline (p=0.0482, cell 47). Cell 13 says that in both species the whole-field change
+      lies in the range spanned by the base and apex changes; one rabbit heart, at -6.6 ms, lies outside
+      both the base and the apex ranges (cell 12).
+    response: Cell 13 now says that this holds for every mouse heart and three of the four rabbit
+      hearts, and that the fourth (-6.6 ms) is smaller than every base and apex change. No change of
+      outcome.
+  - claim: fig5c-rabbit-free-rate-reversal
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig6ab-mouse-paced-apd-prolong
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig6e-mouse-repolarization-unchanged
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig6fh-mouse-cat-ap-uncoupled
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig7c-mouse-repolarization-late-shift
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig7f-mouse-base-apex
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig8e-rabbit-sim-apd-shortening-cat
+    agrees: true
+    outcome: blocked
+    reason: Blocked yes; the reason is not established. "Octave cannot be installed without root" is
+      untested; conda-forge ships Octave as a user-space install, and Octave has ode15s. "A Python lock
+      file cannot hold it" describes a choice about the environment, not a property of the code. The
+      claims file's "data elsewhere / registration form" still misreads the dataset; the record has
+      passed this to a reader.
+    response: The verifier is right that Octave installs without root; this was tried and the claim is
+      removed from the notes and the notebook. The block now rests on the entry's environment, a Python
+      virtual environment built from a pip lock file (tools/entry.py), which cannot hold Octave, so
+      the simulations cannot run as part of the entry. A trial outside the notebook, which does not
+      decide the outcome, found that the mouse model starts under Octave after a one-line change to its
+      ode15s call and runs far slower than real time, so the 70 s simulations would likely not fit the
+      notebook's time limit. The question to a reader stays in questions/wang-2019.yaml. Outcome
+      unchanged.
+  - claim: fig8f-mouse-sim-transient-prolongation-cat
+    agrees: true
+    outcome: blocked
+    reason: As fig8e; blocked yes, the reason is not established.
+    response: As fig8e-rabbit-sim-apd-shortening-cat.
+  - claim: fig8ij-current-clamp
+    agrees: true
+    outcome: blocked
+    reason: As fig8e; blocked yes, the reason is not established.
+    response: As fig8e-rabbit-sim-apd-shortening-cat.
+  - claim: fig9-ical-mechanism
+    agrees: true
+    outcome: blocked
+    reason: As fig8e; blocked yes, the reason is not established.
+    response: As fig8e-rabbit-sim-apd-shortening-cat.

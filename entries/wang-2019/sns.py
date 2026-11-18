@@ -17,10 +17,13 @@ Where the parameters come from:
   they are paired t-tests against time 0 with the Holm-Sidak adjustment over the time points, the
   default comparison against a control after a one-way repeated measures ANOVA in SigmaPlot; this
   is an assumption, stated in the attempt record. Unadjusted paired t-tests are reading (i).
-  SigmaPlot's own Holm-Sidak test after a repeated measures ANOVA uses the ANOVA's pooled residual
-  mean square (t = difference of means / sqrt(2 MS_residual / n), on the residual degrees of
-  freedom), not separate paired t-tests; it is computed too, as a variant (`p_rm_pooled_holm_sidak`).
-  Neither applies a sphericity correction.
+  The paper names no software. A variant uses the ANOVA's pooled residual mean square, as
+  SigmaPlot's Holm-Sidak test after a repeated measures ANOVA does (t = difference of means /
+  sqrt(2 MS_residual / n), on the residual degrees of freedom), in place of separate paired t-tests
+  (`p_rm_pooled_holm_sidak`).
+  Neither applies a sphericity correction. The ANOVA's p with the Greenhouse-Geisser correction is
+  also given (`anova_p_gg`), a standard correction, shown so that the reliance on sphericity can be
+  seen; the comparisons after the ANOVA are not changed by it.
 - Hearts with a missing value are left out of the repeated measures ANOVA (it needs complete
   data) and out of a paired t-test only for the pair that is missing. This is a standard choice.
 """
@@ -208,6 +211,10 @@ def against_time0(w: pd.DataFrame) -> pd.DataFrame:
         out.attrs["anova_F"] = float(res["F Value"].iloc[0])
         out.attrs["anova_df"] = (float(res["Num DF"].iloc[0]), float(res["Den DF"].iloc[0]))
         out.attrs["anova_p"] = float(res["Pr > F"].iloc[0])
+        out.attrs["anova_gg_epsilon"] = gg_epsilon(complete)
+        a, b = out.attrs["anova_df"]
+        e = out.attrs["anova_gg_epsilon"]
+        out.attrs["anova_p_gg"] = float(stats.f.sf(out.attrs["anova_F"], a * e, b * e))
         p = [paired(complete.loc[t0], complete.loc[t])["p"] for t in out.index]
         out["p_rm_holm_sidak"] = multipletests(p, method="holm-sidak")[1]
         out["p_rm_pooled_holm_sidak"] = multipletests(pooled_vs_time0(complete), method="holm-sidak")[1]
@@ -230,12 +237,24 @@ def pooled_vs_time0(complete: pd.DataFrame) -> list[float]:
     return list(2 * stats.t.sf(np.abs(t), df))
 
 
+def gg_epsilon(complete: pd.DataFrame) -> float:
+    """Greenhouse-Geisser epsilon of a one-way repeated measures design (time points as rows, hearts
+    as columns): the double-centred covariance of the time points, (trace)^2 / ((k - 1) sum of squares)."""
+    x = complete.values.astype(float).T
+    k = x.shape[1]
+    s = np.cov(x, rowvar=False)
+    h = np.eye(k) - 1 / k
+    c = h @ s @ h
+    return float(np.trace(c) ** 2 / ((k - 1) * (c ** 2).sum()))
+
+
 def anova_line(res: pd.DataFrame) -> str:
     if np.isnan(res.attrs.get("anova_p", np.nan)):
         return f"repeated measures ANOVA not run ({res.attrs['anova_hearts']} hearts with complete data)"
     a, b = res.attrs["anova_df"]
     return (f"repeated measures ANOVA over {res.attrs['anova_hearts']} hearts: F({a:.0f}, {b:.0f}) = "
-            f"{res.attrs['anova_F']:.2f}, p = {res.attrs['anova_p']:.3g}")
+            f"{res.attrs['anova_F']:.2f}, p = {res.attrs['anova_p']:.3g}; Greenhouse-Geisser epsilon "
+            f"{res.attrs['anova_gg_epsilon']:.2f}, corrected p = {res.attrs['anova_p_gg']:.3g}")
 
 
 def monotonic(w: pd.DataFrame, direction: int) -> dict:
