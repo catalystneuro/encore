@@ -1,0 +1,416 @@
+schema_version: 3
+id: xia-2021-01
+datasets:
+- archive: sparc
+  id: '108'
+  version: '1'
+  doi: 10.26275/w027-cisv
+  relation: primary
+- archive: sparc
+  id: '75'
+  version: '1'
+  doi: 10.26275/prjd-jhoc
+  relation: primary
+paper: doi:10.1073/pnas.2023807118
+date: '2026-11-18'
+entry: xia-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44254141078
+outcomes:
+- claim: fig2d-hplc-yield
+  outcome: not_reproduced
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig2d-hplc-yield
+  measured:
+  - 66.6
+  - 7.58
+  notes: The pHAb chromatogram (HPLC_PHAB.csv) has two detectable peaks, at 15.16 and 18.05 min. With a flat baseline
+    at the pre-injection level and the limit at the minimum between the peaks (reading a), the first peak is 66.6%
+    of the area, below the tolerance of 69.3 to 84.7% (65.8% when a small peak at 37.27 min is also counted). Reading
+    (b), a linear baseline under each peak, gives a negative area for the overlapping second peak and no usable
+    share. At 0.5 mL/min the peaks are at 7.58 and 9.03 mL, within tolerance; the ratio of the retention times,
+    1.191, does not depend on the flow and is close to the paper's 1.213 to 1.227. The share fails under every reading,
+    so the outcome does not rest on the flow rate.
+  deviations:
+  - The HPLC files give time in minutes; the paper reports volumes and no flow rate. 0.5 mL/min is assumed to convert
+    them (0.75 mL/min shown); it affects only the retention volumes.
+  - '"Detectable" peaks taken as those with a prominence of at least 1% of the largest (0.5% as a variant), and
+    the outer peak limits where the signal returns to the pre-injection level plus 3 SD; neither is in the paper.'
+- claim: fig2g-conjugation-ratios
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion needs the absorbance spectra of pure DNA scaffold, AChE and BTX to estimate the extinction
+    coefficients of Equations 1 and 2. The deposit holds UV-Vis spectra of the nanosensor (eight repeats, a reblank
+    and water, 2019-08-09_sensor.xml) and of the DNA scaffold (2019-08-09_dna_scaffold.xml) only; there are no spectra
+    of AChE or BTX. The SPARC:108 version 1 manifest holds HPLC, UV-Vis and gel files, eight ex vivo calibration
+    recordings of sub-1, in vivo recordings of sub-2 (3 V), sub-3 (8 V), sub-4 (10 V), the confocal stack of sub-5
+    and the vesamicol pair of sub-6; SPARC:75 holds six confocal LSM images.
+- claim: fig2e-page-bands
+  outcome: reproduced
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig2e-page-bands
+  notes: Ethidium image, lane 3 (main peak) has two bands (rows 511 and 593) between the well and the scaffold band
+    of lane 1 (row 878). In the registered pHAb and AF647 images lane 3 has pHAb bands at rows 783 and 861, above
+    the pHAb-labelled scaffold band of lane 1 (row 1119), and AF647 bands at rows 783 and 859, 8 and 10 SD above
+    the gel between lanes. Lane 1 of the fluorescence images has a single pHAb band and no AF647 band above background,
+    as for a scaffold without BTX, which fits Figure 2E's label of lane 1 and not Figure S2C's.
+  deviations:
+  - Lanes found as runs of columns with signal and bands as lane-profile peaks with a prominence of at least 5%
+    of the profile range, choices made here as the paper gives no quantification. The ethidium image is framed differently
+    from the fluorescence pair, so band positions are compared within each.
+- claim: figs3-size
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim rests on the AFM images of Figure S3B. No AFM file is in either dataset. The SPARC:108 version
+    1 manifest holds HPLC, UV-Vis and gel files, eight ex vivo calibration recordings of sub-1, in vivo recordings
+    of sub-2 (3 V), sub-3 (8 V), sub-4 (10 V), the confocal stack of sub-5 and the vesamicol pair of sub-6; SPARC:75
+    holds six confocal LSM images.
+- claim: figs5-btx-staining
+  outcome: reproduced
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:figs5-btx-staining
+  notes: Judged by eye on the maximum projections and brightest planes of the two BTX stacks of SPARC:75 (GFP and
+    AF647 by the dye names in the LSM metadata). AF647 puncta cover every tile over the GFP mask in all four images
+    (13/13 to 38/38), at 18 to 64 puncta per 100 um^2, and lie along the borders of the somata. Nearness to GFP
+    beyond chance holds in the low-magnification projection (0.77 of puncta within 1 um of the background-rule GFP
+    mask against 0.51 of the field; 0.53 against 0.37 with Otsu) and not in the high-magnification projection (0.30
+    against 0.38). The high-magnification stack holds data in 12 of its 62 planes.
+  deviations:
+  - Puncta defined as components above the mean plus 3 SD of the below-median pixels, 0.1 to 25 um^2, and the GFP
+    mask by Otsu's threshold or the same background rule; the paper gives no quantification and these support, not
+    replace, the judgement by eye the criterion asks for.
+- claim: fig3d-sensor-on-soma
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig3d-sensor-on-soma
+  notes: SPARC:108 sub-5 (CZI; AF647, pHAb as AF532, EGFP; 27 planes, 17.41 um, as the Methods state) and the three
+    nanosensor images of SPARC:75. By eye, puncta appear in both channels with yellow spots where they coincide,
+    but much AF647 lines cell borders and the ganglion capsule, and most pHAb puncta lie inside somata without AF647.
+    Reading (b) fails in every image, as the share of AF647 puncta that overlap pHAb and lie in the soma mask is
+    0.16 to 0.38 (0.20 to 0.47 with a top-hat pHAb and a 1 um margin). The overlap itself, 84 to 98%, is at the
+    level of chance, 78 to 98% when the pHAb mask is shifted by 5 um, because the threshold marks 32 to 48% of the
+    field; 17 to 42% of AF647 puncta lie in an Otsu soma mask covering 23 to 42% of the field. In sub-5 the pHAb
+    channel correlates with GFP (r 0.43 and 0.53), a sign of GFP bleed-through at 514 nm. Partially reproduced,
+    as puncta and coinciding spots are there but the overlap and the soma localisation are not shown beyond chance.
+  deviations:
+  - Assumed that the by-eye reading (a) is judged together with chance references, a 5 um shift of the pHAb mask
+    and the share of the field covered by the soma mask, as the paper gives no colocalisation measure; the shift,
+    the punctum size limits (0.1 to 25 um^2) and the soma masks (Otsu, background rule, 1 um margin) are choices
+    made here.
+  - SPARC:75's nanosensor images are single planes and are used with the sub-5 stack.
+- claim: fig3bc-retention
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs widefield images of the SMG after washing for the nanosensor (Fig. 3B) and for bare DNA structures
+    (Fig. 3C). Neither dataset has them. The SPARC:108 version 1 manifest holds HPLC, UV-Vis and gel files, eight
+    ex vivo calibration recordings of sub-1, in vivo recordings of sub-2 (3 V), sub-3 (8 V), sub-4 (10 V), the confocal
+    stack of sub-5 and the vesamicol pair of sub-6; SPARC:75 holds six confocal LSM images.
+- claim: figs4-stability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the confocal images at 0 h and 5 h after harvesting and the ACh test of Figure S4D to F. Not in either
+    dataset. The SPARC:108 version 1 manifest holds HPLC, UV-Vis and gel files, eight ex vivo calibration recordings
+    of sub-1, in vivo recordings of sub-2 (3 V), sub-3 (8 V), sub-4 (10 V), the confocal stack of sub-5 and the
+    vesamicol pair of sub-6; SPARC:75 holds six confocal LSM images.
+- claim: figs6a-response-time
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The ex vivo calibration recordings (sub-1) are in the dataset, but the time of ACh addition is not recorded,
+    and the files, resaved in ImageJ, keep only the first frame's timestamp. Six of the eight rise by 19.8 to 58.4%
+    within one frame, at frame 7 to 9; as the criterion says, taking the onset from the response would make the
+    test circular.
+- claim: fig4b-michaelis-menten
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig4b-michaelis-menten
+  measured:
+  - 0.2618
+  - 8.65
+  - 0.373
+  - 1.92
+  notes: One mouse (sub-1) of the paper's three, 8 concentrations from 0.000714 to 714 uM. Over 80 readings (ROI
+    tissue or whole frame, 0.55 or 0.50 s frames, two photobleaching fits, two baselines, five rate windows) Km
+    is 0.031 to 0.73 uM and Vmax 8.3 to 49.7 %/s, none within tolerance (49.24 +- 5.84 uM, 281.00 +- 7.14 %/s);
+    R2 0.01 to 0.73. The first reading gives rates of 0.3 to 16.3 %/s with no steady rise in concentration (Spearman
+    rho 0.54, p 0.168), with one-frame steps of 23.1% at 0.000714 uM, 19.8% at 0.714 uM, 41.9% at 7.14 uM and 38.4%
+    at 714 uM, none at 0.00714 and 0.0714 uM. Upper limit of detection of that fit 1.92 uM (88% of Vmax) or 0.96
+    uM (tangent within 5%); the paper's constants give 361.1 and 181.3 uM by the same rules. Measured values are
+    the first reading's Km, Vmax, R2 and reading (a) of the upper limit.
+  deviations:
+  - One of three mice and 8 of the paper's concentrations (to 714 uM, not 7.14 mM) are deposited; means over mice
+    and all points are the same here.
+  - Assumed that ACh was added just before the largest one-frame rise of each recording, as the addition time is
+    not recorded; at 0.00714 and 0.0714 uM there is no clear step, so this onset is noise there.
+  - The ROI is not given; the stained tissue (Otsu mask of the first frame) and the whole frame were run.
+  - Frame interval run at 0.55 s (Results, Ex vivo calibration, "0.55 s, the minimum sampling time") and at 0.50
+    s, the interval the per-frame timestamps of sub-2 and sub-3 record.
+  - Photobleaching correction by a monoexponential curve, each value divided by the curve (Methods, Animal Preparation
+    and Imaging); the frames it is fit to are open, and both readings of the claims file (frames outside the response,
+    whole trace) were run.
+  - Rate reading (a) fits from the last frame before the response to the peak, so that a rise within one frame is
+    included; reading (b) over the first 2 to 5 frames.
+- claim: fig4b-lod
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig4b-lod
+  measured:
+  - 0.977
+  - 1.772
+  - 0.01
+  notes: Five deposited concentrations up to 14.28 uM (0.000714 to 7.14 uM). None of 160 crossings (80 rate readings
+    by linear and log concentration) is within 205.2 to 250.8 nM; medians -140 nM (linear) and 3.11 nM (log); the
+    first reading gives 0.977 nM. Baseline noise 1.77 +- 2.34% by SD and 1.17 +- 0.95% by frame-to-frame change,
+    against the paper's 0.088%. The paper's own response at 228 nM (0.712% per 0.55 s) would have a signal-to-noise
+    ratio of 0.40 or 0.61 at this noise; the fit of this mouse gives 0.01 to 0.02. Measured are the first reading's
+    crossing (nM), noise (a) and signal-to-noise (a).
+  deviations:
+  - Reading (c), the split of Figure 4B(ii), was not run, as it needs the figure's lines.
+  - Rests on the rates and onset assumption of fig4b-michaelis-menten, one mouse of three.
+- claim: figs6b-unit-calibration
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the AF647 intensity of each calibration ROI and the AF647 calibration on nanosensors of known concentration.
+    The sub-1 recordings hold one channel (509 x 255 pixels, half of the camera frame) and no calibration series
+    is deposited. The SPARC:108 version 1 manifest holds HPLC, UV-Vis and gel files, eight ex vivo calibration recordings
+    of sub-1, in vivo recordings of sub-2 (3 V), sub-3 (8 V), sub-4 (10 V), the confocal stack of sub-5 and the
+    vesamicol pair of sub-6; SPARC:75 holds six confocal LSM images.
+- claim: fig4c-control-ph
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the ex vivo recordings of control nanosensors under buffers of pH 3.5 to 9 and the free pHAb curve
+    of Figure S7A. Neither dataset holds pH data or control nanosensor recordings. The SPARC:108 version 1 manifest
+    holds HPLC, UV-Vis and gel files, eight ex vivo calibration recordings of sub-1, in vivo recordings of sub-2
+    (3 V), sub-3 (8 V), sub-4 (10 V), the confocal stack of sub-5 and the vesamicol pair of sub-6; SPARC:75 holds
+    six confocal LSM images.
+- claim: fig5b-in-vivo-response
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig5b-in-vivo-response
+  measured:
+  - 21.91
+  - 1.794
+  notes: Two 3 V, 100-pulse recordings of the ACh nanosensor are deposited, sub-2 and sub-6 after washout; which
+    recordings form the three mice of Figure 5B is not stated. Under 72 readings (frame interval, bleaching fit,
+    baseline, ROI, recording or their mean) the dF/F 15 s after onset is 17.1 to 37.3%, none within 3.33 to 4.07%;
+    the rate to the peak is 1.5 to 3.3 %/s, against 0.294 +- 0.116 %/s. Cell-sized 40 x 40 pixel blocks give 11.3
+    to 53.6% (sub-2) and 0.3 to 28.4% (sub-6); one of the 13 sub-6 blocks is within tolerance in both. Early-frame
+    rate readings fall within the rate tolerance in 28 readings because the rise starts 9 and 13 frames after onset.
+    At 120 s sub-2 is still 11 to 16% above baseline. Measured values are the mean of the two recordings under the
+    first reading (0.50 s, bleaching fit outside the response, mean baseline, tissue ROI).
+  deviations:
+  - Assumed that the deposited 3 V recordings stand for the three mice of Figure 5B; the deposit does not identify
+    them, and sub-2 is the 3 V recording of the AQuA mouse.
+  - The ROI is a hand-drawn ganglion cell in the paper (Fig. 5B legend) with no coordinates; tissue, whole frame,
+    tissue without saturating pixels and 40 x 40 pixel blocks were run.
+  - Stimulation onset taken as 10.45 s, frame 19 on the paper's 0.55 s clock, from Fig. 6A ("Sti starts 10.45 s")
+    and Fig. 7A ("Stim starts 10.45 s"); the files do not record it. The responses start 4 to 13 frames after it
+    in sub-2, sub-3 and sub-6.
+  - Frame interval run at 0.55 s (Results, Ex vivo calibration, "0.55 s, the minimum sampling time") and at 0.50
+    s, the interval the per-frame timestamps of sub-2 and sub-3 record.
+  - Photobleaching correction by a monoexponential curve, each value divided by the curve (Methods, Animal Preparation
+    and Imaging); the frames it is fit to are open, and both readings of the claims file (frames outside the response,
+    whole trace) were run.
+  - Channel taken as pHAb is the right half in sub-2 (the half that rises), the single channel in sub-6.
+- claim: fig5b-control-minimal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs in vivo recordings of the control nanosensor at 3 V. Every in vivo recording in SPARC:108 is of the
+    ACh nanosensor (subjects sheet and manifest descriptions); no control recording is deposited.
+- claim: figs8-control-10v
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs paired 10 V recordings of the ACh and control nanosensors (Figure S8). Only one 10 V recording, of
+    the ACh nanosensor (sub-4), is deposited.
+- claim: fig5c-voltage-dose
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs 3, 5 and 10 V recordings in the same ROI of one animal. The deposit has 3 V and 8 V in one ganglion
+    (sub-2, sub-3) and 10 V in another mouse recorded in July 2019 (sub-4); there is no 5 V recording.
+- claim: fig5c-ach-concentration
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5c-voltage-dose and figs6b-unit-calibration, both blocked for missing data; the AF647 calibration
+    is not deposited.
+- claim: fig5d-pulse-dose
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs recordings with 10, 50 and 100 pulses at 3 V in one ROI. All deposited 3 V recordings are single
+    stimulations, and none is labelled with another pulse number.
+- claim: fig5e-reversibility
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs one recording with three repeated 10 V, 10-pulse stimulations. The only 10 V recording (sub-4, 509
+    frames) shows a single response.
+- claim: figs7b-in-vitro-reversibility
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the confocal recording of nanosensors in a dialysis fiber with five ACh injections. Not in either
+    dataset. The SPARC:108 version 1 manifest holds HPLC, UV-Vis and gel files, eight ex vivo calibration recordings
+    of sub-1, in vivo recordings of sub-2 (3 V), sub-3 (8 V), sub-4 (10 V), the confocal stack of sub-5 and the
+    vesamicol pair of sub-6; SPARC:75 holds six confocal LSM images.
+- claim: fig6-vesamicol
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:fig6-vesamicol
+  measured:
+  - 77.8
+  - 22.2
+  notes: One experiment of four is deposited (sub-6, with drug then after washout, one field). Over 48 readings
+    the peak with vesamicol is 11.3 to 29.9% of the washout peak, a reduction of 70.1 to 88.7%, within 76.59 +-
+    11.34% in 44; the paired t test over matched frames (reading b) gives p of 4.9e-11 or less in every reading.
+    The example's 17% is matched in 24 of 48 readings (tissue 17.5 to 22.3% with the mean baseline, whole frame
+    13.0 to 17.0%, tissue without saturating pixels 11.3 to 17.6%). 69% of the tissue pixels of the washout recording
+    saturate at some frame. The mean over four experiments and test (a) over them cannot be computed. Partially
+    reproduced, as the suppression holds in the one experiment, but three of four are not deposited and the example
+    ratio depends on the ROI. Measured values are this experiment's reduction and ratio under the first reading
+    (tissue, mean baseline).
+  deviations:
+  - One experiment of four; the reduction is that of this experiment, not a mean over four.
+  - Assumed that sub-6 is the example of Figure 6A and 6B (it is the only one deposited).
+  - The ROI of Figure 6A is not given; tissue, whole frame, tissue without saturating pixels and 40 x 40 blocks
+    were run. Peak taken from onset to 120 s after it, the end of the response by the paper's "within 2 min".
+  - Stimulation onset taken as 10.45 s, frame 19 on the paper's 0.55 s clock, from Fig. 6A ("Sti starts 10.45 s")
+    and Fig. 7A ("Stim starts 10.45 s"); the files do not record it. The responses start 4 to 13 frames after it
+    in sub-2, sub-3 and sub-6.
+  - Photobleaching correction by a monoexponential curve, each value divided by the curve (Methods, Animal Preparation
+    and Imaging); the frames it is fit to are open, and both readings of the claims file (frames outside the response,
+    whole trace) were run.
+  - A 3-frame median filter is shown as a variant, for two single low frames in each recording.
+- claim: figs9-aqua-vs-roi
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: AQuA (Wang et al. 2019, the paper's ref. 32) is MATLAB software; it cannot be installed in the entry's
+    locked Python environment, and the paper names its parameters (intensity threshold scaling factor, Gaussian
+    smoothing, temporal cut threshold, super-event grouping) without values. The 8 V recording it needs (sub-3)
+    is deposited.
+- claim: figs10-control-8v
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs 8 V recordings of the control nanosensor in three mice (Figure S10). None is deposited; the only
+    8 V recording (sub-3) is of the ACh nanosensor.
+- claim: fig7-rostral-caudal
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs AQuA event detection on the 8 V recording (sub-3, deposited, both channels, 488 frames at 0.50 s).
+    AQuA is MATLAB software that cannot be installed in the locked Python environment, and its parameters are not
+    given in the paper; no substitute was run, as the onsets and their order are defined by AQuA's events.
+- claim: fig7-peak-timing
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Depends on fig7-rostral-caudal, blocked as not runnable (AQuA).
+- claim: figs12-3v-propagation
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Depends on fig7-rostral-caudal (AQuA, not runnable). Of its three 3 V recordings only that of the mouse
+    also stimulated at 8 V (sub-2) is deposited; the two mice stimulated at 3 V only are not.
+- claim: figs16-af647-stable
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_xia_2021.ipynb
+  output: claim:figs16-af647-stable
+  notes: sub-3, the 8 V recording of Figure 7. Under six readings (two bleaching fits, three ROIs) the AF647 half
+    rises by at most 0.4 to 3.7% after onset, within its pre-stimulus mean plus 3 SD (1.9 to 4.1%), while the pHAb
+    half rises by 46.9 to 54.0%, 14 to 135 times more. The AF647 channel drops by 13 to 15% after stimulation and
+    recovers by 11.1 to 16.5% from that minimum without passing its pre-stimulus level.
+  deviations:
+  - Assumed that the left half of the W-VIEW GEMINI frame is AF647 and the right half pHAb; the files carry no channel
+    labels, and the right half is the one that rises. The test then shows that one channel stays flat while the
+    other rises.
+  - Whole SMG read as each channel's tissue mask, the whole half-frame, and the pHAb tissue mask applied to the
+    AF647 half; onset as in fig5b (frame 19).
+- claim: figs13-two-photon
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the two-photon images of Figure S13 (pHAb oligos at several wavelengths and an SMG at 837 nm). Not
+    in either dataset. The SPARC:108 version 1 manifest holds HPLC, UV-Vis and gel files, eight ex vivo calibration
+    recordings of sub-1, in vivo recordings of sub-2 (3 V), sub-3 (8 V), sub-4 (10 V), the confocal stack of sub-5
+    and the vesamicol pair of sub-6; SPARC:75 holds six confocal LSM images.
+findings:
+- kind: data_missing
+  datasets:
+  - sparc-108
+  statement: SPARC:108 holds only part of the data the paper reports. Deposited are one of three ex vivo calibration
+    mice (8 concentrations, none above 714 uM), one of four vesamicol experiments, the 3 V and 8 V recordings of
+    the AQuA mouse, one 10 V recording, the nanosensor HPLC, UV-Vis and gel files and one confocal stack. Not deposited
+    are every control nanosensor recording (Fig. 4C, 5B, S8, S10), the pH calibrations (Fig. 4C, S7A), the 5 V,
+    pulse-number and repeated stimulations (Fig. 5C to E), the AF647 concentration calibration (Fig. S6B), the AFM
+    images (Fig. S3), the spectra of pure AChE and BTX (Fig. 2G), the retention, stability, fiber and two-photon
+    images (Fig. 3B-C, S4, S7B, S13) and two of the three 3 V AQuA mice (Fig. S12). Fifteen of the 29 claims are
+    blocked for missing data and one for missing metadata.
+- kind: metadata_insufficient
+  datasets:
+  - sparc-108
+  statement: The imaging recordings lack what is needed to analyse them. No file says which half of the W-VIEW GEMINI
+    frame is pHAb and which AF647; no file gives a spatial scale (the camera calibration is in pixels); the stimulation
+    onset and the time of ACh addition are not recorded; and the files resaved in ImageJ (sub-1, sub-4, sub-6) keep
+    only the first frame's timestamp, so their frame interval is unknown. The paper gives the onset only as 10.45
+    s in two figures, and sub-4 does not follow it (its response starts near frame 55 or later).
+- kind: metadata_error
+  datasets:
+  - sparc-108
+  statement: The primary manifest.xlsx of SPARC:108 describes its files under names that are not in the dataset
+    (40 of 50 differ, for example sub-1/0.000714_uM.tif for sub-1/sub-1_0.000714 uM); seven of the eight calibration
+    files lack the .tif extension; and the sheet describes the sub-1 calibration recordings, made with added ACh,
+    as "ACh release by electrical stimulation".
+- kind: metadata_error
+  datasets:
+  - sparc-108
+  statement: subjects.xlsx lists sub-2 (3 V) and sub-3 (8 V) as two mice, but their recordings were made 14 minutes
+    apart on one day and show the same field (mean images r = 0.93 with no shift, against 0.06 to 0.47 between other
+    recordings), as the paper's one mouse stimulated at 3 and 8 V (Methods, AQuA Analysis).
+- kind: other
+  about: data
+  datasets:
+  - sparc-108
+  statement: The per-frame timestamps of the in vivo recordings that keep them (sub-2, sub-3) give an interval of
+    0.50 s, while the paper states 0.55 s as its sampling interval and its Figure 7 times are multiples of 0.55
+    s. Rates in %/s differ by 10% between the two.
+- kind: other
+  about: data
+  datasets:
+  - sparc-108
+  statement: Many pixels saturate at 65535 in the sub-6 vesamicol recordings (19.6% of tissue pixels at some frame
+    with the drug, 69.0% after washout) and in the pHAb half of sub-2 and sub-3 (11.5% and 16.4%), which clips the
+    responses the paper's Figure 6 ratio is computed from.
+- kind: other
+  about: data
+  datasets:
+  - sparc-75
+  statement: In SPARC:75 the high-magnification BTX z-stack is described by its metadata as 62 planes of 0.1 um,
+    but 50 of the 62 planes are all zero; the stack holds about 1.2 um of tissue.
+- kind: metadata_insufficient
+  datasets:
+  - sparc-108
+  - sparc-75
+  statement: Neither dataset names the PNAS paper. SPARC:108's dataset_description gives the bioRxiv preprint (10.1101/2020.07.06.189696)
+    as its originating article, and SPARC:75 gives none, so its link to the paper (Figure S5 and the nanosensor
+    staining) rests on its content.
+- kind: paper_inconsistency
+  statement: Figure S2C calls itself the same gel as Figure 2E but labels lane 1 as unpurified ACh nanosensor, where
+    Figure 2E has the DNA scaffold. In the deposited gel, lane 1 has a single pHAb band and no AF647 band, as a
+    scaffold without BTX would, so Figure S2C's label looks wrong.
+- kind: methods_unavailable
+  statement: Questions for the authors. (1) Over which frames is the initial rate (Vsensor) taken, from which onset,
+    and against which baseline; and when was ACh added in each calibration recording and the stimulation started
+    in each in vivo recording? Assumed here, onset at the largest one-frame rise (ex vivo) and at 10.45 s (in vivo,
+    from Fig. 6A and 7A), with every rate window the claims file names. (2) Which ROI was used in Figures 5B and
+    6B, and which deposited recordings are the three mice of Figure 5B? Here the tissue, the whole frame and cell-sized
+    blocks were run, giving 17 to 37% against 3.7%. (3) Which frame interval applies, the 0.55 s of the paper or
+    the 0.50 s the files record? (4) Which flow rate was used for the HPLC (0.5 mL/min assumed), and how were the
+    peaks of Figure 2D integrated, given that the main peak and the second peak overlap? (5) Which frames was the
+    photobleaching curve fit to? (6) Which AQuA version and parameters were used for Figure 7 and Figures S9 to
+    S12?
