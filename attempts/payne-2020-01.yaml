@@ -173,9 +173,13 @@ outcomes:
     (0 of 792). Measured values are reading (a), first-three rule, all recordings with three peaks, margin 2 SD,
     highest current, onset origin, 2.85 mm (mean latencies 1.94, 3.30 and 4.65 ms; velocities 1.67, 0.95 and 0.64
     m/s). Under the largest-peaks rule with margin 2 SD the mean latencies of the five recordings with three peaks
-    (2.14, 3.70 and 5.28 ms) are within tolerance and the velocities (1.59, 0.88 and 0.57 m/s) are not; 9 rows have
-    the latencies within tolerance and 23 the velocities, none both. Noise SD is 0.21 to 0.71 uV in six of seven
-    files.
+    (2.14, 3.70 and 5.28 ms) are within tolerance and the velocities (1.59, 0.88 and 0.57 m/s, the mean of each
+    recording's velocity) are not; 9 rows have the latencies within tolerance and 23 the velocities, none both. That
+    result depends on how velocity is averaged. Taken as 2.85 mm over the mean latency, as the paper's printed
+    velocities are, the same latencies give 1.33, 0.77 and 0.54 m/s, within tolerance, and 3 of 792 rows (rule largest,
+    margin 2 SD, reading (a), each stimulus level, onset origin, 5 of 7 recordings) have all six values within
+    tolerance. The outcome does not change, as those rows rest on 5 of 7 recordings and the criterion needs three
+    peaks in every rat. Noise SD is 0.21 to 0.71 uV in six of seven files.
   deviations:
   - Rests on the peak detection assumed for anes-ecap-latencies.
   - Reading (b) of the criterion (each rat's two-week mean) cannot be run, as no day-7 file is linked to a day-0
@@ -313,15 +317,21 @@ outcomes:
     return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here.
 - claim: table1-hfpo-frequency
   outcome: reproduced
+  assumed: true
   notebook: reproduce_payne_2020.ipynb
   output: claim:table1-hfpo-frequency
   measured: 9.82
   notes: Mean of 7 rat means 9.82 Hz (95% CI 7.21 to 12.43), inside the printed CI 8.3 to 13.0. The derivative has
     no HFPO frequency for 12-081 and 12-083, so n is 7, not the 9 Table 1 states. 18-273 has 16.0 Hz, the others
     7.8 to 9.7 Hz. Recomputed from the traces, the spectrum peak gives 8.05 Hz (9 rats) and the count of oscillation
-    peaks 7.11 Hz (7 rats), both below the CI; these use a band-pass and an HFPO period chosen here, so the derivative,
-    from the authors' own method, decides the outcome.
+    peaks 7.11 Hz (7 rats), both below the CI; these use a band-pass and an HFPO period chosen here, so the derivative
+    decides the outcome. The pass rests only on the derivative's value, from 7 rats, whose method is unstated; the
+    dataset's R notebook output gives the same 9.817 Hz (n = 7) and computes no HFPO frequency itself.
   deviations:
+  - Assumption. The derivative's HFPO frequency (eus_freq) is taken to match one of the criterion's readings of the
+    centre frequency. Neither the paper (Methods, Bladder Pressure Responses, paragraph 3, says only that HFPOs were
+    analysed to estimate the centre frequency) nor the dataset says how it was computed, and neither reading
+    recomputed from the traces here lies inside the CI.
   - HFPO frequency as the derivative gives it; the criterion's two readings of how it is estimated cannot be run
     from the table, and the pressure traces of 12-081 and 12-083 are sampled at 100 Hz.
   - 7 rats, not 9.
@@ -412,7 +422,8 @@ findings:
     or behavioural observations behind Figures 4 and 5 and the safety claims. files/README.txt lists summary derived
     data from c-Fos activation mapping, which no file holds. Stimulation trains are deposited for four rats (9 trains),
     where the paper stimulated eight, and no file records whether urine was released after a train; the 8-week rats
-    have no stimulation. Twelve of the claims cannot be tested.
+    have no stimulation. Thirteen claims cannot be tested for these reasons; with electrode-failures, which lacks
+    per-electrode impedances for 2 of the 10 arrays, 14 are blocked as data_missing.
 - kind: other
   about: data
   statement: The ECAP files are sampled at 200 kHz and carry a 500 to 3000 Hz filter, where the Methods give 100
@@ -700,4 +711,200 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 'Confirmed: no post-mortem notes.'
+    response: No change.
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusion cells and summary, the helper
+    module, the claims file, the attempt record and the README, with the paper's full text. The verifier agreed
+    with all 31 outcomes and saw no place where the claims file misreads the paper. It corrected its round-1 count
+    to 16 tested and 15 blocked. It found five places where the text did not match the outputs (README on the peak
+    rules, the count of untestable claims, statements resting on the dataset's R notebook that was never printed,
+    the Summary on threshold pressure, and the awake velocities) and asked that table1-hfpo-frequency be marked
+    assumed. In reply the notebook prints the R code's summary chunk and the summary table of its output, adds the
+    awake velocities taken as distance over the mean latency, and the text is corrected; no outcome changed.
+  results:
+  - claim: anes-ecap-recorded
+    agrees: true
+    outcome: reproduced
+    reason: 'Both assumptions are stated and reasonable: the lowest current stands in for 0 mA, and the peak rule
+      is the record''s own. This is the only ECAP outcome that changes with the peak rule; the window rule gives
+      2 of 5 rats (cell 34). The README''s "four are run; the outcomes are the same under each" is false for this
+      claim.'
+    response: The README now says the outcome holds in 5 of 5 rats under three rules and 2 of 5 under the window
+      rule, and lists the outcomes that are the same under all four. Outcome unchanged.
+  - claim: anes-ecap-latencies
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 288 combinations meet the criterion under four peak rules. The assumption is stated.
+    response: No change.
+  - claim: anes-conduction-velocity
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 864 combinations meet the criterion under four peak rules. The assumption is stated.
+    response: No change.
+  - claim: anes-threshold-order
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees under the criterion''s definition, 0 of 192 combinations. The outcome excludes the "sustained"
+      reading, under which 12 of 384 combinations meet the criterion (cell 43), and applies a pass level that noise
+      alone passes in 63 to 77% of current steps (cell 47); both are stated. The not-reproduced outcome therefore
+      says little about the paper.'
+    response: No change; both points are stated in the notes and the conclusion.
+  - claim: fig2c-p3-above-p1
+    agrees: true
+    outcome: reproduced
+    reason: 'It is narrow: unadjusted Dunn P = 0.034, n = 4, with a non-significant Friedman test (P = 0.105). All
+      of this is stated.'
+    response: No change.
+  - claim: fig2ab-one-rat-p2-below-p1
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree.
+    response: No change.
+  - claim: awake-ecap-latencies
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion needs three peaks in every rat; only 5 of 7 recordings have them at best, and 12-057 has
+      none under any rule (cell 56). The "none both" result in cell 57 and the notes depends on averaging the velocity
+      of each recording: computed as 2.85 mm over the cell 56 mean latencies 2.142, 3.699 and 5.283 ms, the velocities
+      are 1.33, 0.77 and 0.54 m/s, all within tolerance, so all six values pass in that row. The outcome does not
+      change, because the three-peaks condition still fails.'
+    response: The notebook now also takes velocity as distance over the mean latency; 3 of 792 rows (rule largest,
+      margin 2 SD, 5 of 7 recordings) then have all six values within tolerance. The conclusion and notes say that
+      the earlier "none both" depends on how velocity is averaged. Outcome unchanged, as the criterion's three peaks
+      in every rat are not found.
+  - claim: awake-threshold-increase
+    agrees: true
+    outcome: blocked
+    reason: I agree. pool_id is empty for every subject (cell 3).
+    response: No change.
+  - claim: impedance-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. The 8-week value is untestable, not out of tolerance.
+    response: No change.
+  - claim: electrode-failures
+    agrees: true
+    outcome: blocked
+    reason: I agree. The partial result on 32 electrodes is now stated.
+    response: No change.
+  - claim: colonic-pressure
+    agrees: true
+    outcome: not_reproduced
+    reason: The outcome does not depend on the claims file's t-test rule for a responder. No rat's mean is within
+      2.6 +- 0.1 under any reading; the nearest are 2.17 and 2.88 (cells 66 and 68). So no assumed flag is needed.
+    response: No change.
+  - claim: no-fecal-expulsion-or-erection
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: table1-minimum-pressure
+    agrees: true
+    outcome: reproduced
+    reason: 'Read from the derivative table, with at least one reading recomputed from the traces inside the CI.
+      The notes say "The dataset''s own R notebook output gives the same 11.741" and the derivative finding cites
+      the R notebook output, but cystometry-analysis.nb.html is never read or printed.'
+    response: The notebook now prints the R code's summary chunk and the summary table of its output, which gives
+      11.741 (8.473 to 15.009, n = 9); the conclusion cites it. Outcome unchanged.
+  - claim: table1-threshold-pressure
+    agrees: true
+    outcome: reproduced
+    reason: 'Read from the derivative table, with at least one reading recomputed from the traces inside the CI.
+      The Summary''s "minimum and threshold pressure depend on how the minimum is taken" holds only for threshold
+      reading (a); reading (b), threshold at the start of the HFPOs, is outside the CI under both ways of taking
+      the minimum, 16.07 and 13.98 mmHg (cell 79).'
+    response: The Summary now says that threshold at onset depends on how the minimum is taken and threshold at the
+      start of the HFPOs is above the CI under both. Outcome unchanged.
+  - claim: table1-peak-pressure
+    agrees: true
+    outcome: reproduced
+    reason: Read from the derivative table, with at least one reading recomputed from the traces inside the CI.
+    response: No change.
+  - claim: table1-contraction-duration
+    agrees: true
+    outcome: reproduced
+    reason: 'Read from the derivative table, with at least one reading recomputed from the traces inside the CI.
+      "As the dataset''s R code does" (cell 71 and the notes) rests on cystometry-analysis.rmd, which is not printed.'
+    response: The R code's summary chunk is now printed (mean(value) per rat, no removal of missing values), and its
+      output gives 26.064 s from n = 8, the value of reading a2. Outcome unchanged.
+  - claim: table1-intervoid-interval
+    agrees: true
+    outcome: reproduced
+    reason: Read from the derivative table, with at least one reading recomputed from the traces inside the CI.
+    response: No change.
+  - claim: table1-hfpo-frequency
+    agrees: true
+    outcome: reproduced
+    reason: 'Should be marked assumed: true. It is the only Table 1 claim with no independent support: both readings
+      recomputed from the traces fall below the CI (8.05 and 7.11 Hz, cell 91), and its n is 7, not 9. The outcome
+      rests entirely on assuming that the derivative''s HFPO frequency, whose method is unstated, matches one of
+      the criterion''s readings.'
+    response: Marked assumed, with a deviation that states the assumption; the conclusion, the Summary and the README
+      say the pass rests on the derivative alone, from 7 rats. Outcome unchanged.
+  - claim: table1-comparable-to-published
+    agrees: true
+    outcome: reproduced
+    reason: I agree.
+    response: No change.
+  - claim: stim-evoked-voiding
+    agrees: true
+    outcome: blocked
+    reason: I agree. The partial results on 4 rats are stated, and the cell 99 numbers support them.
+    response: No change.
+  - claim: stim-void-trials
+    agrees: true
+    outcome: blocked
+    reason: I agree. The partial results on 4 rats are stated.
+    response: No change.
+  - claim: stim-early-void
+    agrees: true
+    outcome: blocked
+    reason: I agree. The partial results on 4 rats are stated.
+    response: No change.
+  - claim: stim-nonvoiding
+    agrees: true
+    outcome: blocked
+    reason: I agree. The partial results on 4 rats are stated.
+    response: No change.
+  - claim: stim-voiding-to-nonvoiding
+    agrees: true
+    outcome: blocked
+    reason: I agree. The partial results on 4 rats are stated.
+    response: No change.
+  - claim: fig3e-eight-week-responses
+    agrees: true
+    outcome: blocked
+    reason: I agree. The partial results on 4 rats are stated.
+    response: No change.
+  - claim: fig4-atf3-rare
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig4ef-axons-intact
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig5-cfos-distribution
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig5-cfos-no-side-difference
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig5-no-lamina1
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: macroscopic-no-pathology
+    agrees: true
+    outcome: blocked
+    reason: I agree.
     response: No change.

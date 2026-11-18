@@ -21,7 +21,7 @@ the observation notes and the urine-release annotations of the stimulation trial
 | 2 of 40 electrodes open | Blocked: data missing |
 | Colonic pressure rises in 1 of 3 rats by 2.6 mmHg | Not reproduced |
 | No faecal expulsion or erection | Blocked: data missing |
-| Table 1 void parameters (six claims) | Reproduced |
+| Table 1 void parameters (six claims) | Reproduced (HFPO frequency on the authors' table alone, assumed) |
 | Table 1 comparable to Wiedmann et al. (2020) | Reproduced |
 | Stimulus-evoked voiding and non-voiding responses (six claims) | Blocked: data missing |
 | Histology, c-Fos and post-mortem (six claims) | Blocked: data missing |
@@ -30,5 +30,7 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The paper does not say how its ECAP peaks were found, so every ECAP outcome rests on peak
-rules assumed here (four are run; the outcomes are the same under each). The attempt record, with the reasons and the differences from the paper's
+rules assumed here. Four are run; the latency, velocity, threshold-order, one-rat and awake
+outcomes are the same under each, and anes-ecap-recorded holds in 5 of 5 rats under three rules
+and 2 of 5 under the fourth (the triple inside the paper's ranges). The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/payne-2020-01.yaml`](../../attempts/payne-2020-01.yaml).
