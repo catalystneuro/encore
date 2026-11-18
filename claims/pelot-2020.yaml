@@ -159,10 +159,12 @@ claims:
     value: 1.6
     tolerance: 0.2
     unit: mm
-  criterion: Means within the stated SDs, and the human against pig Tukey comparison from the
-    model of nerve-diameter-anova with p >= 0.05. The paper prints one p for the comparison;
-    it can be read as (a) the species main-effect contrast human against pig or (b) human
-    against pig at each level in the species by level Tukey; the absence holds under either.
+  criterion: A claim of absence, judged on the paper's test, Tukey's HSD after the model of
+    nerve-diameter-anova. Reproduced when the means are within the stated SDs and the human
+    against pig comparison has p >= 0.05. The paper prints one p for both levels, and the model
+    has no detected interaction, so the test is read as the species main-effect contrast human
+    against pig; human against pig at each level in the species by level Tukey is shown as a
+    variant. The effect size is reported either way.
 - id: rat-nerve-diameter
   statement: Rat vagus nerves have effective diameters of 0.260 +/- 0.025 mm at the cervical
     level and 0.135 +/- 0.015 mm at the subdiaphragmatic level.
@@ -195,7 +197,7 @@ claims:
     multifascicular samples is shown as a variant.
 - id: rat-ten-times-smaller
   statement: Rat vagus nerves are about ten times smaller in diameter than human and pig nerves,
-    significantly so at both levels.
+    significantly smaller than each of the two larger species.
   source: Results, paragraph 3; Discussion, paragraph 3
   quote: while the rat nerves were approximately ten times smaller (0.260 ± 0.025 mm at the
     cervical level and 0.135 ± 0.015 mm at the subdiaphragmatic level; p < 0.0001, for both
@@ -208,11 +210,14 @@ claims:
   data: with_inputs
   depends_on:
   - nerve-diameter-anova
-  criterion: Tukey's HSD after the model of nerve-diameter-anova. Reproduced when rat against
-    human and rat against pig both have p < 0.0001 with rat smaller, and the ratio of the rat
-    mean to each larger species' mean is between 0.05 and 0.2 at each level (a factor of
-    about ten, read as 5 to 20; 0.260/2.2 and 0.135/1.6 from the paper's means give 0.12 and
-    0.08). Partially reproduced when p < 0.05 but not below 0.0001.
+  criterion: Tukey's HSD after the model of nerve-diameter-anova. The paper's "both comparisons
+    of rat to larger species" are rat against human and rat against pig, one p for both
+    levels, read as the species main-effect contrasts; the same contrasts at each level are
+    shown as a variant. Reproduced when rat against human and rat against pig both have p <
+    0.0001 with rat smaller, and the ratio of the rat mean to each larger species' mean is
+    between 0.05 and 0.2 at each level ("approximately ten times" read as a factor of 5 to 20,
+    a choice of this file; 0.260/2.2 and 0.135/1.6 from the paper's means give 0.12 and 0.08).
+    Partially reproduced when p < 0.05 but not below 0.0001.
 - id: nerve-cervical-larger
   statement: Cervical vagus nerves are larger than subdiaphragmatic nerves, a trend clearest in
     pigs and rats.
@@ -228,7 +233,9 @@ claims:
   - nerve-diameter-anova
   criterion: Reproduced when the level effect of nerve-diameter-anova has p < 0.05 with the
     cervical least squares mean larger, and the relative difference of means (cervical minus
-    subdiaphragmatic over cervical) is larger for pig and for rat than for human. The rat part
+    subdiaphragmatic over cervical) is larger for pig and for rat than for human. The paper
+    judges "clearest" qualitatively; the relative difference is this file's reading of it, and
+    the outcome of that part rests on that assumption. The rat part
     alone (cervical mean above subdiaphragmatic) is testable on the dataset and is reported
     apart.
 - id: fascicle-number-human-pig
@@ -280,7 +287,7 @@ claims:
 - id: rat-subdiaphragmatic-multifascicular
   statement: Rat vagus nerves are generally monofascicular; three of the nine rat
     subdiaphragmatic samples (R16-1, R22-1 and R23-1) are multifascicular.
-  source: Figure 6 legend; Results, paragraph 6
+  source: Figure 6 legend; Results, paragraph 6; Discussion, paragraph 9
   quote: The three rat samples with asterisks are multifascicular
   criterion: Count, per rat sample, the fascicles segmented (inner perineurium traces).
     Reproduced when all nine cervical samples have one fascicle and exactly three
@@ -576,7 +583,9 @@ claims:
     humans and 0.42 in pigs, and the ratio of mean nerve diameters is 0.87 and 0.75.
   source: Discussion, paragraph 3
   quote: The ratios of the mean endoneurial area of the subdiaphragmatic VN to the cervical VN were
-    0.20, 0.42, and 0.32 for human, pig, and rat, respectively
+    0.20, 0.42, and 0.32 for human, pig, and rat, respectively ... where the ratios of the mean
+    diameter of the subdiaphragmatic VN to the cervical VN were 0.87, 0.75, and 0.68 for human,
+    pig, and rat, respectively.
   data: elsewhere
   where: SPARC Portal, Pelot et al. (2020a) for human and (2020f) for pig MT; identifiers not in
     the text read
@@ -600,12 +609,15 @@ claims:
   quote: Qualitatively, the nerve and fascicle diameters were more consistent across samples for
     the pig nerves than for the humans nerves ( Figure 6 )
   data: with_inputs
-  criterion: The paper judges this qualitatively from Figure 6. Readings (a) the coefficient of
-    variation across samples of effective nerve diameter and of per-sample mean fascicle
-    diameter; (b) the SDs reported in the Results relative to the means. Reproduced when, at
-    both levels, the human value exceeds the pig value for both measures under either reading;
-    the rat values are reported against the Discussion's statement that pig and rat ranges were
-    more consistent than human.
+  criterion: The paper judges this qualitatively from Figure 6 and names no measure. Readings
+    (a) the coefficient of variation across samples of effective nerve diameter and of
+    per-sample mean fascicle diameter; (b) for fascicles, the Discussion's "ranges of fascicle
+    diameters", the coefficient of variation across samples of each sample's fascicle diameter
+    range (human and pig only, as rat statistics use one fascicle per sample). Reproduced
+    when, at both levels, the human value exceeds the pig value and the rat value for both
+    measures under either reading; partially reproduced when human exceeds pig but not rat.
+    The SDs over means from the paper's Results (nerve diameter, human 0.26 and 0.18, pig 0.09
+    and 0.13, rat 0.10 and 0.11) are reported for comparison.
 - id: literature-comparison-human-pig
   statement: Human cervical fascicle numbers and endoneurial areas match prior reports while the
     nerve areas and diameters are generally smaller; human subdiaphragmatic sizes match prior
@@ -619,10 +631,12 @@ claims:
     text read)
   criterion: Judged as Figure 7 shows it, the paper's mean +/- SD against each literature mean.
     The Discussion gives the literature human cervical diameter as 3.0 mm (left and right,
-    three studies) and 2.0 mm (Stakenborg et al., 2020); reproduced when the human cervical mean
-    nerve diameter is below 3.0 mm and its range overlaps 3.0 mm. The other parts need the
-    literature values of Supplement 4, which was not supplied, and are not decidable from the
-    text read.
+    three studies) and 2.0 mm (Stakenborg et al., 2020); that part is reproduced when the human
+    cervical mean nerve diameter is below 3.0 mm. The "overlapping ranges" are those of the
+    paper's samples against the literature spreads, which are in Supplement 4 (the paper's own
+    1.9 +/- 0.5 mm does not reach 3.0 mm, so the overlap is not with the literature mean). That
+    part and the other parts need the literature values of Supplement 4, which was not
+    supplied, and are not decidable from the text read.
 - id: rat-literature-comparison
   statement: Rat cervical nerve diameters and areas agree with published data, while the rat
     subdiaphragmatic nerves are slightly larger than prior data.
@@ -636,7 +650,10 @@ claims:
     Licursi de Alcântara et al., 2008, cervical; Prechtl and Powley, 1985, subdiaphragmatic),
     none of them in the text read. With those values as inputs, reproduced when each published
     cervical mean lies within the rat cervical mean +/- SD and the rat subdiaphragmatic mean
-    exceeds each published subdiaphragmatic mean. Without them the claim cannot be decided.
+    exceeds each published subdiaphragmatic mean ("compared well" and "slightly larger", the
+    Discussion's "trended larger", are judged by the paper as Figure 7 shows them; these rules
+    are this file's reading of that figure, and the outcome rests on them). Without the values
+    the claim cannot be decided.
 - id: perineurium-species-order
   statement: For a given fascicle diameter, human fascicles have the thickest perineurium and
     rat fascicles the thinnest.
@@ -725,6 +742,20 @@ claims:
     one combination, the count is 22 and R2 is within tolerance; partially reproduced when the
     count matches and R2 is outside. The coefficients are reported for comparison with Eq. 3
     once it is read from the PDF.
+- id: perineurium-thicker-larger-fascicles
+  statement: In the human and pig vagus nerves, larger fascicles have thicker perineurium.
+  source: Introduction, paragraph 3; Results, paragraph 10; Figure 9A
+  quote: our data also showed thicker perineurium for larger fascicles, as well as thicker
+    perineurium as a proportion of fascicle diameter for smaller fascicles.
+  data: elsewhere
+  where: SPARC Portal, Pelot et al. (2020a) for human and (2020b) for pig IF; identifiers not in
+    the text read
+  criterion: Non-peanut fascicles (Figure 9 legend), thickness and diameter as in
+    rat-perineurium-fit, the species' fits of Eqs. 1 and 2 (fit form open, readings as in
+    rat-perineurium-fit). The paper shows this in Figure 9A without a test. Readings (a) the
+    fitted thickness increases over the species' range of diameters; (b) Spearman correlation
+    of thickness with diameter is positive. Reproduced when human and pig both show the
+    increase under either reading; the rat result is reported, not required.
 - id: perineurium-no-level-difference
   statement: The relationship between perineurium thickness and fascicle diameter does not
     differ between cervical and subdiaphragmatic nerves in any of the three species.
@@ -741,7 +772,9 @@ claims:
     MATLAB fit reports them) overlap between levels; (b) an F-test of a level term (intercept
     and slope by level) in the pooled linear model at p < 0.05. Reproduced when no species shows
     a difference under reading (a); reading (b) is shown as a variant, and any species where
-    the two disagree is recorded. The rat part is testable on the dataset alone.
+    the two disagree is recorded. Both tests are choices of this file, as the paper's "did
+    not suggest" names none, so the outcome rests on an assumption. The rat part is testable
+    on the dataset alone.
 - id: sunderland-reanalysis
   statement: Refitting all 777 fascicles of Sunderland and Bradley (1952) gives a zero-intercept
     slope of 2.75% of fascicle diameter for perineurium thickness, with R2 = 0.51.
@@ -789,9 +822,11 @@ claims:
   data: elsewhere
   where: SPARC Portal, Pelot et al. (2020a) for human and (2020b) for pig IF; identifiers not in
     the text read
-  criterion: For non-peanut fascicles, the ratio of thickness to diameter. Reproduced when, for
-    both species, the median ratio exceeds 0.03 and the ratio's excess over 0.03 is larger for
-    fascicles below the species' median diameter than above it.
+  criterion: For non-peanut fascicles (Figure 9 legend), the ratio of thickness to diameter
+    against the 3% line of Figure 9. The paper judges this from Figure 9B and names no
+    measure; this file reads it as follows, and the outcome rests on that reading. Reproduced
+    when, for both species, the median ratio exceeds 0.03 and the median excess over 0.03 is
+    larger for fascicles below the species' median diameter than above it.
 - id: pig-if-mt-consistent
   statement: Pig fascicle diameters from anti-fibronectin IF (14 to 303 um, mean 123, median 123,
     interquartile range 91 to 155 um) are consistent with those from MT (5 to 399 um, mean 135,
@@ -821,7 +856,8 @@ claims:
     value: 130
     tolerance: 13
     unit: um
-  criterion: The IF values are over the 284 non-peanut fascicles of Figure 9A and B. Reproduced
+  criterion: The IF values are over the 284 non-peanut fascicles of Figure 9A and B; the MT
+    values over all inner perineurium traces of the 18 pig MT samples (Figure 6). Reproduced
     when the four values are within 10% and the ranges and interquartile ranges are within the
     reported ones widened by 10% of each bound.
 - id: peanut-fascicle-counts
@@ -875,3 +911,22 @@ claims:
     bundles in the sheath. Reproduced when the largest cervical bundle per sample is the one
     segmented as the vagus and no sample has more than six bundles, with at least one sample
     having more than one. Not testable when only the vagus is traced.
+checks:
+- date: 2026-11-18
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - rat-ten-times-smaller, statement said significant "at both levels"; the paper's "both comparisons of rat to larger species" are rat against human and rat against pig, so the statement and criterion now say that, with per-level contrasts as a variant, and the 5 to 20 factor is marked as this file's choice.
+  - human-pig-nerve-diameter-similar, a claim of absence was judged under two readings; the paper prints one p for both levels with no detected interaction, so the species main-effect contrast is the test and the per-level contrast a variant, as the protocol's rule for absence asks.
+  - human-pig-level-ratios, the quote held only the endoneurial ratios; extended to the sentence with the diameter ratios 0.87 and 0.75 that the statement also gives.
+  - literature-comparison-human-pig, the criterion required the paper's human cervical range to overlap 3.0 mm, which its own 1.9 +/- 0.5 mm fails; the "overlapping ranges" are against the literature spreads in Supplement 4, so that part is now undecidable without it.
+  - human-variability, the statement and the Discussion include rats but the criterion only reported them; rats are now part of the judgement (partial when only human against pig holds), and the Discussion's "ranges of fascicle diameters" is added as a reading.
+  - nerve-cervical-larger, rat-literature-comparison, perineurium-no-level-difference, human-pig-perineurium-thicker, measures not named by the paper were presented as given; each now says it is this file's reading and that the outcome rests on it.
+  - rat-subdiaphragmatic-multifascicular, source adds Discussion paragraph 9, which states "generally monofascicular".
+  - pig-if-mt-consistent, criterion now says the MT values are over all inner perineurium traces of the 18 pig MT samples.
+  - perineurium-thicker-larger-fascicles, added; the Introduction and abstract state that larger fascicles have thicker perineurium, a main finding no claim covered.
+  - Open, Eqs. 1 to 4 are missing from the text read, so the perineurium fit form and coefficients stay open (readings named in rat-perineurium-fit); the PDF would settle them.
+  - Open, Supplements 4 and 6 are not under paper/, so literature-comparison-human-pig, rat-literature-comparison and no-age-trend cannot be fully decided or rest on assumed tests.
+  - Open, the Discussion's rat diameter ratio 0.68 disagrees with the Results means (0.52); rat-level-ratios names readings but the paper does not settle which tissue enters it.
+  - Open, the SPARC identifiers of Pelot et al. (2020a to g) are not in the text read, as the reference list is empty.
