@@ -703,6 +703,9 @@ claims:
   source: Figure 5b; Results, Reducing state uncertainty did not change trial initiation times,
     paragraph 3; Methods, Pre-initiation cue task
   quote: Their trial initiation times became sensitive to the offered reward (Fig. 5b ).
+  data: with_labels
+  depends_on:
+  - pre-cue-session-link
   criterion: The 16 pre-cue rats (Figure5.m names them); for the 12 that switched, sessions after 30
     pre-cue sessions (Methods; Figure5.m starts at a dated switch per rat and the 30-session offset
     is not visible in it, so both are run) and their original-task sessions; for the 4 others all
@@ -729,7 +732,9 @@ claims:
   - quantity: rats with p < 0.05
     value: 13
     tolerance: 1
+  data: with_labels
   depends_on:
+  - pre-cue-session-link
   - fig2k-initiation-sensitive-to-previous-offer
   - fig5b-pre-cue-initiation-sensitive-to-offer
   criterion: Pre-cue sessions as in fig5b-pre-cue-initiation-sensitive-to-offer; per rat and at
@@ -744,7 +749,9 @@ claims:
     paragraph 3
   quote: Moreover, how quickly they initiated trials in mixed blocks continued to depend on the
     previous block identity (Fig. 5d ).
+  data: with_labels
   depends_on:
+  - pre-cue-session-link
   - fig2a-wait-time-converges-in-mixed-blocks
   - fig5b-pre-cue-initiation-sensitive-to-offer
   criterion: Pre-cue sessions as in fig5b-pre-cue-initiation-sensitive-to-offer; initiation time
@@ -793,6 +800,25 @@ claims:
     "qualitatively similar"), and the population mean wait time is longer unthresholded than
     thresholded at every offer in every block. That the low block curve is flatter is shown, not
     judged.
+
+- id: pre-cue-session-link
+  kind: link
+  statement: The rats and switch dates that the paper's Figure5.m lists mark which of the dandiset's
+    sessions were run on the pre-initiation cue task, which nothing in the files marks.
+  source: Methods, Pre-initiation cue task; Figure5.m (github.com/constantinoplelab/published at
+    b7b68ca8c107, rat_behavior/Figures/Figure5.m, ratListAll and startDates)
+  quote: To modulate the subjective uncertainty in the rat’s estimate of state (block) before trial
+    initiation time, we ran a subset of rats on a variation of the task where we cued reward offer
+    before rats initiated a trial ( N = 16).
+  data: with_labels
+  criterion: Added by the author (protocol, Author, step 1.4). Sessions of the 16 rats of Figure5.m
+    dated on or after the rat's start date (the code pairs startDates(rr) with rat rr, so the first
+    16 of its 20 dates are used) are labelled pre-cue. Per rat, z-scored initiation time in mixed
+    blocks by current offer, post-violation trials left out (iti_by_reward.m), before and after the
+    date. A rat is linked when after the date the one-way ANOVA over offers has p < 0.05 and the
+    slope over log2 offer is more negative than before (below 0 for rats with no earlier
+    sessions). Reproduced when all 16 rats are linked, partially reproduced when most are. Written
+    after a first look at the same check.
 
 checks:
 - date: 2026-11-10
