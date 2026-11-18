@@ -5,8 +5,9 @@
 Reads Claude Code's stream-json output (and its stderr, if given). A run is flagged when a request
 was refused (`stop_reason: refusal`, which in -p ends the turn), when a request was answered by a
 model other than the one asked for (a flagged subagent is re-run on a fallback model, such as Opus 5
-for a biology flag; small models a subagent uses on purpose are allowed), or when a message says it
-was flagged in the words Claude Code uses (code.claude.com/docs/en/errors). The exit code is not
+for a biology flag; small models a subagent uses on purpose are allowed), when a message says it
+was flagged in the words Claude Code uses (code.claude.com/docs/en/errors), or when Claude Code tells the agent
+that a safety classifier stopped its response: the rest of that response, and the tool calls in it, did not run. The exit code is not
 used: a refusal can end a run that exits 0. Prints the reason and exits 1 when flagged, else 0.
 Used by the workflows on the unverified account (docs/pipeline.md, "Accounts").
 """
@@ -22,6 +23,12 @@ from pathlib import Path
 # The messages Claude Code gives when a request is flagged (code.claude.com/docs/en/errors).
 FLAG_TEXT = re.compile(r"safeguards flagged|content filtering policy|violate our usage policy|"
                        r"can't help with this\. start a new session|refused by the safety safeguard", re.I)
+
+
+# What Claude Code puts in the conversation, as a prompt of its own, when a classifier stops a response midway. The
+# run goes on and can end as a success with its work unwritten: on 2026-11-18 the reader of wang-2019 was stopped as
+# it wrote the claims file, and the chain then stopped for a person with "the reader wrote no claims file".
+CLASSIFIER_STOP = re.compile(r"^\s*Your response above was stopped by a safety classifier", re.I)
 
 
 def other_model(served: str, model: str) -> bool:
@@ -48,6 +55,13 @@ def reasons(lines: list[str], stderr: str, model: str) -> list[str]:
             text = " ".join(c.get("text", "") for c in body.get("content") or [] if isinstance(c, dict))
             if FLAG_TEXT.search(text):
                 found.append(f"the conversation says: {' '.join(text.split())[:200]}")
+        elif msg.get("type") == "user":
+            # Only a prompt in plain text: a tool's result can quote the same words (a transcript that was read).
+            content = (msg.get("message") or {}).get("content")
+            texts = [content] if isinstance(content, str) else [
+                c.get("text", "") for c in content or [] if isinstance(c, dict) and c.get("type") == "text"]
+            if any(CLASSIFIER_STOP.match(t) for t in texts):
+                found.append("a safety classifier stopped a response, and its tool calls did not run")
         elif msg.get("type") == "result":
             if msg.get("stop_reason") == "refusal":
                 found.append("the run ended on a refusal")
