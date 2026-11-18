@@ -106,7 +106,7 @@ outcomes:
   output: claim:fig2i-theta-pre-cooling-post
   notes: 'Spectral theta reading, lab states, 50 sessions: frequency 8.40, 7.59 and 8.45 Hz (cooling against pre P = 8.1e-11,
     against post P = 3.6e-15), power cooling/pre 0.82 and cooling/post 0.87 (P = 2.5e-7 and 3.2e-6); the same holds under
-    the 12 and 10 min states. With the Hilbert measures frequency falls (P below 1e-9) and power falls against pre (P = 0.004)
+    the 12 and 10 min states (49 sessions). With the Hilbert measures frequency falls (P below 1e-9) and power falls against pre (P = 0.004)
     but not against post (P = 0.42, ratio 1.05). Without MS13-171130, whose tagged theta channel is marked bad, the spectral
     reading gives the same (49 sessions, all four P below 1e-5).'
   deviations:
@@ -259,7 +259,8 @@ outcomes:
   assumed: true
   notes: '5 cm bins, fields above 10 Hz (1186 fields): within-field rate decrease 0.4% (median), 4.0% (of the mean), P = 0.12;
     peak rate 2.9% and 5.6%, P = 7.1e-4. With 3 cm bins both are significant (within-field 1.2% and 4.7%, P = 0.039; peak
-    4.4% and 5.5%, P = 1.7e-4). No reading puts either near 11 or 12%, and no P is below 1e-6. The mean of per-field decreases
+    4.4% and 5.5%, P = 1.7e-4). No reading puts either near 11 or 12%. One P is below 1e-6, the peak rate with 3 cm bins and the Figure 5 rule fields
+    (P = 6.2e-7). The mean of per-field decreases
     is negative (-73 to -287%), driven by fields with near-zero pre rates. By rat the decrease of the mean ranges from -11%
     (MS12) to 25% (MS10).'
   deviations:
@@ -429,7 +430,7 @@ outcomes:
   assumed: true
   notes: 'R of size and fp over 878 fields: pre -0.181 (P = 7.0e-8), cooling -0.204 (P = 1.1e-9), post -0.141 (P = 2.8e-5);
     slopes -7.6, -9.9 and -7.1 cm per Hz, intercepts 156, 173 and 153 cm (the cooling intercept is higher). All negative with
-    P < 0.05; none within tolerance; 3 cm bins give -0.15 to -0.18.'
+    P < 0.05; none within tolerance; P is above 1e-9 in all three states (cooling 1.1e-9); 3 cm bins give -0.15 to -0.18.'
   deviations:
   - Place fields of Figures 3 and 4 follow the claims file's reading (b), the Figure 5 rule of the Methods (Place cell analysis)
     with a peak above 10 Hz, as the paper's fields were drawn by hand and the dandiset holds none; fields are drawn on the
@@ -465,7 +466,14 @@ outcomes:
     sets and bins give pre to post P = 4e-6 to 0.0054 and pre to cooling P = 0.0075 to 0.35. With the trials of each state
     subsampled to the same number per arm (median 17, 20 draws), which removes the upward bias of Skaggs information with
     fewer data: pre to cooling P = 0.22, cooling to post P = 0.22, pre to post median change -0.030, P = 0.016 (902 maps;
-    P = 0.0047 with the Figure 5 rule fields). The pre to post decrease is not a sampling effect of unequal state sizes.'
+    P = 0.0047 with the Figure 5 rule fields). Equal trials do not mean equal data, as speed falls within sessions (median occupancy per arm 58 s pre, 72 s cooling
+    and post). With the spikes of each state subsampled to the same number (median 171; 848 maps with at least 20 spikes
+    in every state, fields above 10 Hz), pre to post still falls (median change -0.025, P = 0.032; 0.024 with the Figure
+    5 rule fields). With the information corrected by subtracting that of a uniform-rate map with the same spikes and occupancy
+    (estimated bias, median 0.056 bits per spike pre, 0.049 cooling, 0.040 post), no comparison is significant (pre to post
+    median change -0.022, P = 0.085 and 0.074; pre to cooling P = 0.75 and 0.70; cooling to post P = 0.18 and 0.12). The
+    outcome follows the criterion''s measure, Skaggs information without correction; part of the pre to post decrease is
+    the difference in estimated bias (medians 0.056 against 0.040), and what remains is not significant.'
   deviations:
   - Place fields of Figures 3 and 4 follow the claims file's reading (b), the Figure 5 rule of the Methods (Place cell analysis)
     with a peak above 10 Hz, as the paper's fields were drawn by hand and the dandiset holds none; fields are drawn on the
@@ -475,6 +483,9 @@ outcomes:
   - Information is computed on the arm's map of each cell with a field, once per map.
   - 'Equal-trial information: the trials of each state and arm are subsampled without replacement to the smallest state count,
     20 times, and the information averaged (standard correction, shown as a variant).'
+  - 'Equal-spike and shuffle-corrected information (variants): the spikes of each state are subsampled to the smallest state
+    count, 20 times; and the information minus the mean of 20 maps with the same spike count placed in proportion to the
+    occupancy. Maps with fewer than 20 spikes in a state are left out (standard choices).'
 - claim: fig3hi-population-vector-unchanged
   outcome: reproduced
   notebook: reproduce_petersen_2020.ipynb
@@ -496,7 +507,11 @@ outcomes:
     bins: magnitude P = 0.0041 and 0.083, signed P = 0.056 and 0.0062; 12 min states: no comparison below 0.05. One comparison
     holds under the main reading, so the criterion''s partial rule applies; no reading gives both. With a range of 1 cycle
     (the first run), 23 to 32% of the slopes sit at the bound and no comparison is significant (P 0.054 to 0.94); with 3 cycles
-    at most one comparison per reading is significant. The outcome rests on the slope range, which the paper does not give.'
+    at most one comparison per reading is significant. The outcome rests on the slope range, which the paper does not give,
+    and on the 8 to 10% of fields whose slope sits at the 2-cycle bound: without them (840 fields) no comparison is significant
+    (cooling against pre P = 0.090 for |slope|, 0.077 signed; against post 0.20 and 0.080). With 3 cycles the significant
+    comparison is the signed slope against post (P = 0.037), while against pre |slope| gives P = 0.149. The flattening against
+    pre is weak evidence.'
   deviations:
   - Place fields of Figures 3 and 4 follow the claims file's reading (b), the Figure 5 rule of the Methods (Place cell analysis)
     with a peak above 10 Hz, as the paper's fields were drawn by hand and the dandiset holds none; fields are drawn on the
@@ -537,7 +552,9 @@ outcomes:
   output: claim:fig4f-speed-theta-power
   notes: 'Reading (a), all 7087 trials: mean speed against raw Hilbert theta power R = 0.071 (P = 2.7e-9); normalised power
     R = 0.023 (P = 0.049); normalised spectral power R = 0.004 (P = 0.73). Reading (b), per rat: 3 of 5 rats (raw), 4 of 5
-    (normalised Hilbert or spectral) with P < 0.05; MS10 is negative or not significant. The sign is positive. The criterion
+    (normalised Hilbert or spectral) with P < 0.05; MS10 is not significant with
+    raw or normalised Hilbert power and negative with normalised spectral power (R = -0.123, P = 7.2e-6), so with that
+    measure 3 of the 4 significant rats are positive. The sign is positive. The criterion
     asks for one reading; the R of reading (a) is small (0.071) and its P rests on 7087 trials.'
   deviations:
   - Theta is taken on the lab's theta channel (electrodes column theta_reference); the Methods say only 'An LFP channel located
@@ -618,20 +635,29 @@ outcomes:
   outcome: blocked
   notebook: reproduce_petersen_2020.ipynb
   output: claim:fig5cg-compression
-  notes: 'The surface of the Methods does not describe the density under either reading of its equation. Converged fits explain
-    less than the density''s mean (pooled pre R2 -0.135 under reading (a), pair reading (a); per session median R2 -0.10 to
-    -5.1), while the envelope alone (the two Gaussian factors, no oscillation) has a per-session median R2 of 0.41 to 0.68.
-    Most fits stop at the evaluation limit: reading (a) converges in 9 of 23 sessions in each condition and in both for 5
-    (pair reading b, 12, 16 and 10); reading (b) in 2 and 6, in both for none. The fitted a therefore does not measure the
-    slope of the density''s ridges, and the paper gives no grid, start values or fitting procedure from which a working fit
-    could be taken, so no choice has a defensible basis. Variants that are not the criterion''s measure show no decrease:
-    the density''s ridge slope, 0.556 cm/ms pooled, is 0.566 in control and 0.628 cm/ms in cooling per session (P = 0.62;
-    0.623 against 0.616 with pair reading b, P = 0.71); the converged per-session fits give P = 0.81 (5 sessions) and 1.0
-    (10); the least-squares slope of Ltr on the main lag P = 0.67 and 0.36. Phase compression fits converge in 4 to 13 sessions.
-    The first run recorded not_reproduced on the same fits.'
+  notes: 'The surface fit of the Methods fails on this density under both readings of its equation. With curve_fit, most
+    fits stop at the evaluation limit: reading (a) converges in 9 of 23 sessions in each condition and in both for 5 (pair
+    reading b, 12, 16 and 10); reading (b) in 2 and 6, in both for none. Converged fits explain less than the density''s mean
+    (pooled pre R2 -0.135 under reading (a), pair reading (a); per session median R2 -0.10 to -5.1), while the envelope
+    alone (the two Gaussian factors, no oscillation), which the surface nests, has a per-session median R2 of 0.41 to 0.68;
+    these fits are stuck short of the best fit. A bounded fit with several starts, b held within 30% of the summed period
+    and started from the envelope''s own fit, does no better: pooled pre R2 -0.138 and -2.58 (readings a and b, pair reading
+    a), -1.46 and -5.84 (pair reading b), against 0.80 and 0.57 for the envelope; per session (reading a, pair reading a)
+    none of 46 fits reaches the envelope and 9 exceed R2 0. The equation''s oscillation term takes the density to zero between
+    its ridges, while the density''s theta modulation is small: half its peak-to-trough range is 6.7% of the trend at zero
+    lag (4.3% with pair reading b; 1.5 to 19% per distance bin). The paper does not say how the density was prepared for
+    the fit (a detrending or a baseline would change this) nor give the grid, start values or procedure, so no choice has
+    a defensible basis. Variants that are not the criterion''s measure show no decrease: the density''s ridge slope, 0.556
+    cm/ms pooled, is 0.566 in control and 0.628 cm/ms in cooling per session (P = 0.62; 0.623 against 0.616 with pair reading
+    b, P = 0.71); the converged curve_fit per-session fits give P = 0.81 (5 sessions) and 1.0 (10); the bounded per-session
+    fits give a median a of 0.981 against 0.674 cm/ms (P = 0.052), from fits below the envelope; the least-squares slope of
+    Ltr on the main lag P = 0.67 and 0.36. The first run recorded not_reproduced on the curve_fit fits.'
   deviations:
   - The grid (5 cm by 1 ms over 100 cm and 400 ms) and start values (ridge slope of the density, summed period, c 60 cm, d
     150 ms) are standard choices the paper does not give; curve_fit is limited to 3000 evaluations.
+  - 'Bounded variant: least squares with bounds (b within 30% of the summed pre period, |a| from 0.01 to 50), started from
+    the envelope''s own fit and from a = 0.3, 0.55 and 1.0 cm/ms of either sign (5, 10 and 20 cm/rad on the phase axis),
+    keeping the best start (standard choices).'
   - The equation's fraction bars are lost in the extracted text; the claims file's two readings are run.
   - 'Assumption: fields are found on the map over all trials of an arm, states pooled, so that a field has the same boundaries
     in every state; the paper does not say on which map (STAR Methods, Place cell analysis).'
@@ -643,9 +669,14 @@ outcomes:
   assumed: true
   notes: 'Lag reading (a), pair reading (a): |lag| 27 ms pre, 30 ms cooling, 27 ms post; cooling against pre P = 1.9e-31 (8506
     pairs), against post P = 9.3e-45; pre against post P = 0.034. Pair reading (b): P = 2.5e-37, 3.2e-61 and 0.0082. Lag reading
-    (b), nearest peak: pre against cooling P = 1.6e-13, post against cooling 5.5e-4, pre against post 6.9e-5. Both cooling
-    comparisons hold under every reading but pre and post also differ. The rank-sum variant gives pre against post P = 0.16
-    (pair reading a).'
+    (b), nearest peak: pre against cooling P = 1.6e-13, post against cooling 5.5e-4, pre against post 6.9e-5. Under every reading
+    the signed-rank tests of both cooling comparisons are significant and pre and post also differ; under lag reading (b)
+    the median lag is 16 ms in both post and cooling (pair reading a, rank-sum P = 0.85), so a longer cooling lag is not
+    shown there. The rank-sum variant gives pre against post P = 0.16 (pair reading a). Pairs share cells and sessions;
+    over sessions (median |lag| per session and state, 23 sessions, a variant), lag reading (a) gives cooling longer than
+    pre (27 against 30 ms, 16 of 23, P = 0.014) and post (P = 0.012) and pre against post P = 0.98 (pair reading b, 0.016,
+    0.014 and 0.79); lag reading (b) gives 0.23, 0.040 (cooling shorter than post) and 0.95. The criterion fixes the test
+    over pairs, so the outcome stays partial.'
   deviations:
   - The test is the signed-rank over pairs, as the claims file reasons from P below 0.002 with 10 sessions.
   - 'Assumption: fields are found on the map over all trials of an arm, states pooled, so that a field has the same boundaries
@@ -676,8 +707,10 @@ outcomes:
   assumed: true
   notes: 'Over 82574 theta cycles of 22 sessions with pairs and LFP: fraction of place cells active per cycle 0.189 pre, 0.200
     cooling, 0.205 post; rank-sum pre against cooling P = 1.6e-25 (effect +0.011, +5.7%); post against cooling P = 6.6e-10;
-    pre against post P = 4.1e-65. The fraction of all units gives P = 2.2e-38. Per-session means do not differ (median change
-    -0.0007, signed-rank P = 1.0), a variant.'
+    pre against post P = 4.1e-65. The fraction of all units gives P = 2.2e-38. Cycles share cells and sessions; per-session
+    means (a variant) do not differ from pre to cooling (median change -0.0007, higher in cooling in 9 of 22, signed-rank P
+    = 1.0), the comparison the criterion judges, while post is higher than cooling (P = 0.0029) and pre (P = 0.00059). The
+    criterion fixes the rank-sum over cycles, so the outcome stands; under the per-session variant it would be reproduced.'
   deviations:
   - Place cells are the cells with a Figure 5 field in the session.
   - 'Assumption: fields are found on the map over all trials of an arm, states pooled, so that a field has the same boundaries
@@ -688,8 +721,9 @@ outcomes:
   output: claim:fig5k-spikes-per-cycle-unchanged
   assumed: true
   notes: 'Spikes of all curated units per cycle: 30.8 pre, 31.1 cooling, 35.2 post; rank-sum pre against cooling P = 4.9e-7,
-    cooling against post P = 1.8e-39, pre against post P = 5.8e-65. Per-session means do not differ from pre to cooling (median
-    change -0.26, signed-rank P = 0.80), a variant.'
+    cooling against post P = 1.8e-39, pre against post P = 5.8e-65. Per-session means (a variant) do not differ from pre to cooling (median
+    change -0.26, signed-rank P = 0.80) but differ from cooling to post (P = 0.0047) and pre to post (P = 0.0059), so the claim
+    of absence fails per session too.'
   deviations:
   - 'Assumption: fields are found on the map over all trials of an arm, states pooled, so that a field has the same boundaries
     in every state; the paper does not say on which map (STAR Methods, Place cell analysis).'
@@ -702,7 +736,7 @@ outcomes:
     (2 of 4 sessions significant on their own); peak-to-peak amplitude 144.7 against 146.5 uV, median change +0.65 uV (0.7%),
     P = 0.026. Latency is quantised at 0.05 ms (20 kHz), so the change is one sample. On the mean waveforms interpolated by
     a cubic spline to 200 kHz, the latency is 0.79 against 0.82 ms, median change +0.035 ms (4.8%), P = 3.1e-11, significant
-    in each of the 4 sessions (P = 2.2e-4 to 0.043). Units have a median of 158 spikes in the control blocks and 115 in the
+    in each of the 4 sessions (P = 9.9e-7 to 0.043). Units have a median of 158 spikes in the control blocks and 115 in the
     cooling blocks (at least 20 each).'
   deviations:
   - The dandiset holds no unit waveforms; mean waveforms are measured from the 20 kHz wide-band signal, high-pass 300 Hz,
@@ -736,16 +770,12 @@ outcomes:
     It is not public elsewhere as far as the paper says (no other repository is named).'
   deviations: []
 findings:
-- kind: metadata_error
-  about: data
-  statement: Every behaviour description (SubjectPosition, SubjectSpeed, LinearizedPosition, Acceleration) says OptiTrack
-    head tracking at 40 Hz, but the timestamps give about 120 Hz in 44 of the 51 sessions, 40 Hz in 6 and 30 Hz in 1 (MS10-170320);
-    the paper says 120 Hz.
 - kind: format_error
   about: data
-  statement: 'Measured MS temperature traces hold artefacts far outside any brain temperature: values up to 1354 C and down
-    to -1751 C and runs at 0 and 50 C in MS21-180625, MS21-180720, MS21-180803, MS22-180623, MS22-180712 and MS22-180720 (and
-    readings near 50 C in others), with no description of them.'
+  statement: 'Measured MS temperature traces hold artefacts far outside any brain temperature, with no description of them:
+    raw values up to 1354 C (MS21-180625), 1276 C (MS22-180720) and 801 C (MS21-180803) and down to -1751 C (MS22-180712)
+    and -257 C (MS22-180623); 11 of the 31 measured traces hold values outside 5 to 45 C, and three MS22 traces hold values
+    near 5 and 10 C outside the trials.'
 - kind: metadata_error
   about: data
   statement: The 2018-07-19 sessions of MS21 and MS22 are labelled as cooled (cooling intervals and Cooling trials), but their
@@ -781,9 +811,10 @@ findings:
 - kind: methods_unavailable
   about: paper
   statement: The surface equation of the Methods (Spatial temporal compression) has lost its fraction bars in the available
-    text, and its grid, start values and fitting procedure are not given. Under both readings of the equation the fits explain
-    less than the density's mean while its smooth envelope alone explains about half of it, so the compression of Figure 5C
-    and G could not be measured (fig5cg blocked). The fitting code would let it be repeated.
+    text, and the preparation of the density, the grid, start values and fitting procedure are not given. Under both readings
+    the equation's oscillation term takes the density to zero between ridges, while the density's theta modulation is about
+    4 to 7% of its level, and the fits, also bounded and from several starts, explain less than the density's mean, so the
+    compression of Figure 5C and G could not be measured (fig5cg blocked). The fitting code would let it be repeated.
 - kind: methods_unavailable
   about: paper
   statement: 'Question for the authors: on which rate map were the place fields of Figure 5 found by the automatic rule (the
@@ -798,7 +829,7 @@ findings:
   statement: 'Question for the authors: within what range was the circular-linear regression slope of phase precession searched
     (Figure 4D, S3E)? With a range of 1 cycle per field about 30% of the slopes sit at the bound and no change with cooling
     is found; with 2 cycles, the attempt''s assumption, precession is flatter during cooling than before (P = 0.016) but not
-    than after (P = 0.073).'
+    than after (P = 0.073), and without the slopes at the bound neither comparison is significant.'
 verifications:
 - date: '2026-11-15'
   kind: agent
@@ -921,9 +952,8 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: 'Speed is 80.3 (control) and 77.1 cm/s (cooling), both within the paper''s spreads (cell 95). The sets are 23
-      sessions; the paper''s 18 and 10 cannot be told apart. Problem 12 (no conclusion affected): the two session readings
-      collapse to the same 23 sessions.'
-    response: No change; the deviation already says the paper's 18 and 10 sessions cannot be told apart.
+      sessions; the paper''s 18 and 10 cannot be told apart.'
+    response: No change.
   - claim: suppl2-place-cell-rates-decrease
     agrees: true
     outcome: partially_reproduced
@@ -1054,8 +1084,11 @@ verifications:
     outcome: partially_reproduced
     reason: 'Cooling period is longer (P=0.005) and the phase period does not differ (P=0.305). The pre period is 108 ms (104.5
       under pairing (b)), not 85 +- 8.5 (cell 83). Problem 6 (no conclusion affected): the period is taken as the largest
-      Fourier component, while the criterion says peak spacing; peak spacing on the pooled sum was never printed.'
-    response: 'Added the peak spacing of the pooled summed cross-correlograms: 107.2 ms with pair reading (a) (5 peaks within
+      Fourier component, while the criterion says peak spacing; peak spacing on the pooled sum was never printed.
+      Problem 12 (no conclusion affected): the two session readings collapse to the
+      same 23 sessions.'
+    response: 'The deviation already says the paper''s 18 and 10 sessions cannot be told apart (problem 12; this point was
+      filed under fig5-speed-control-cooling until round 2). Added the peak spacing of the pooled summed cross-correlograms: 107.2 ms with pair reading (a) (5 peaks within
       300 ms; 102.5 ms from the central peak to its neighbours) and 103.5 ms with (b), also outside tolerance. Kept partially
       reproduced.'
   - claim: fig5e-phase-period-below-2pi
@@ -1119,4 +1152,345 @@ verifications:
     reason: 'Confirmed on the archive: 51 assets, all theta-maze and home-cage cooling sessions of MS10 to MS22; variableMeasured
       lists no temperature and no session description mentions the hippocampal-temperature control experiment. Both the reproduced
       and partial conditions need hippocampal temperature, so data_missing stands.'
+    response: No change.
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the revision after round 1, with its conclusions and Summary, the helper
+    module, the README, the attempt record and the claims file, with the paper. Its report is transcripts/petersen-2020/verifier-2-report.md.
+    It agreed with all 46 outcomes. Its points on the data check and the Summary, which concern no single claim, were answered
+    as follows: the behaviour descriptions give 120, 40 or 30 Hz and match the timestamps in every session (now printed per
+    session), so the tracking-rate metadata_error is withdrawn and cell 5 and the Summary corrected; the raw temperature range
+    (-1751 to 1354 C), the theta frequencies of the 2018-07-19 sessions and the end of the second cooling interval of MS12-170717
+    and MS12-170718 are now printed in the data check.'
+  results:
+  - claim: session-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: cooling-time-course
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Problem 7 is resolved: no in-trial sample is below 15 C; the lowest trial temperature is 17.1 C.'
+    response: No change.
+  - claim: fig2g-theta-freq-temperature
+    agrees: true
+    outcome: partially_reproduced
+    reason: Problem 11 is resolved. I agree with every other stated outcome. Everything else I checked in the conclusions,
+      the Summary, the README and the notes matches the outputs.
+    response: No change.
+  - claim: fig2h-theta-power-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Problem 4 is now stated in the notes. I agree with every other stated outcome. Everything else I checked in the
+      conclusions, the Summary, the README and the notes matches the outputs.
+    response: No change.
+  - claim: fig2j-frequency-consistent-across-animals
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig2i-theta-pre-cooling-post
+    agrees: true
+    outcome: reproduced
+    reason: Cell 26 says "over 50 sessions ... under each of the three state readings", but the 12 and 10 min readings have
+      49 sessions (cell 25).
+    response: Cell 26 now gives 50 sessions with the lab states and 49 with the 12 and 10 min readings, and the notes say
+      49 for those readings.
+  - claim: disc-theta-frequency-12-percent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig6d-errors-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig6e-errors-recover
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig6c-worst-trials-4-to-8
+    agrees: true
+    outcome: reproduced
+    reason: 'Problem 8 is resolved: results without MS13-171130 are shown for fig2i, fig6c, fig6h and fig5i. I agree with
+      every other stated outcome. Everything else I checked in the conclusions, the Summary, the README and the notes matches
+      the outputs.'
+    response: No change.
+  - claim: fig6f-errors-temperature
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig6g-errors-theta-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig6h-errors-theta-power
+    agrees: true
+    outcome: reproduced
+    reason: 'Problem 8 is resolved: results without MS13-171130 are shown for fig2i, fig6c, fig6h and fig5i. I agree with
+      every other stated outcome. Everything else I checked in the conclusions, the Summary, the README and the notes matches
+      the outputs.'
+    response: No change.
+  - claim: fig6i-errors-not-speed
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: suppl5j-errors-best-theta-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig4e-speed-decreases-within-session
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig5-speed-control-cooling
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs. My round-1 problem 12, about the fig5d session readings, was misfiled here.
+    response: Problem 12 is now filed under fig5d in the round-1 record.
+  - claim: suppl2-place-cell-rates-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 60 and the notes say "no P is below 1e-6", but cell 59 prints 6.24e-07 (3 cm bins, Figure 5 rule fields,
+      peak rate). The outcome does not change.
+    response: Cell 60 and the notes now name that one P below 1e-6 (P = 6.2e-7, peak rate, 3 cm bins, Figure 5 rule fields).
+  - claim: suppl2ab-rates-correlated
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: disc-interneuron-rates-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: suppl5gh-rates-follow-temperature
+    agrees: true
+    outcome: reproduced
+    reason: 'Problem 9 is resolved: medians and a one-sided test are added. I agree with every other stated outcome. Everything
+      else I checked in the conclusions, the Summary, the README and the notes matches the outputs.'
+    response: No change.
+  - claim: fig4b-fp-flfp-decrease
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig4c-fp-flfp-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig4ac-fp-flfp-difference-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig4a-frequency-temperature-slopes
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig3c-field-size-correlated
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig3d-size-fp-negative
+    agrees: true
+    outcome: partially_reproduced
+    reason: The field map assumption (fields found on the map over all trials, states pooled) is stated in all 20 assumed
+      outcomes, reasonable, and the record asks the authors about it. Cell 77 says "P above 1e-9 in two states", but all three
+      are above 1e-9; cooling is 1.1e-9 (cell 76). The README says the place field features of Figure 3 are not reproduced,
+      but fig3d is partially reproduced (cell 77).
+    response: Cell 77 and the notes now say P is above 1e-9 in all three states (cooling 1.1e-9). The README now names the
+      Figure 3 outcomes one by one (fig3c, fig3e and fig3f not reproduced, fig3d partially reproduced, fig3hi reproduced).
+  - claim: fig3e-model-field-size
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig3f-information-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The field map assumption (fields found on the map over all trials, states pooled) is stated in all 20 assumed
+      outcomes, reasonable, and the record asks the authors about it. Problem 5 is partly resolved: information is now computed
+      with equal trials per state, but equal trials do not mean equal data. Speed falls within sessions (cell 54), so later
+      trials hold more time and spikes, and the remaining pre-to-post fall (-0.030 bits per spike, P = 0.016) could still
+      be a sampling effect. Skaggs information with an equal number of spikes or equal occupancy time per state, or a shuffle-corrected
+      version, would settle it.'
+    response: Added Skaggs information with the spikes of each state subsampled to the same number (median 171, 20 draws)
+      and a shuffle-corrected version (information minus that of 20 maps with the same spikes placed in proportion to the
+      occupancy), with the occupancy per state printed (median 58 s pre, 72 s cooling and post). With equal spikes pre to
+      post still falls (P = 0.032; 0.024 with the Figure 5 rule fields); shuffle-corrected, no comparison is significant (pre
+      to post P = 0.085 and 0.074). Kept not reproduced, as the criterion names Skaggs information without correction; cell
+      81 and the notes say that part of the fall is the difference in bias and that the corrected fall is not significant.
+  - claim: fig3hi-population-vector-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: The README says the place field features of Figure 3 are not reproduced, but fig3hi is reproduced (cell 115).
+    response: The README now names the Figure 3 outcomes one by one.
+  - claim: fig4d-precession-slope-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partial is agreed, with a caveat: the partial rule is met only by cooling against pre, P = 0.016, at 2 cycles
+      and 5 cm. That result depends on the 8 to 10% of fields at the slope bound. Without them, the P values are 0.090 and
+      0.20 (signed 0.077 and 0.080), and with 3 cycles the magnitude test against pre gives 0.149 (cell 83). The outcome holds
+      under the criterion, but it is weak. The slope range of +-2 cycles is stated and reasonable. Cell 84, the notes and
+      the README leave out the result without bound fields printed in cell 83 (no comparison significant). The README''s "flattens
+      during cooling against pre but not post" holds only at 2 cycles; at 3 cycles the significant comparison is the signed
+      slope against post (P = 0.037), and pre gives 0.149. Problem 1 is partly resolved: the fig4d result still depends on
+      the fields at the bound. Either state the bound-field dependence in the conclusion, or treat the outcome as unsettled
+      until the authors give the slope range.'
+    response: 'Kept partially reproduced (assumed) and stated the dependence: cell 84, the notes, the Summary, the README
+      and the methods_unavailable finding on the slope range now give the result without the bound fields (no comparison significant)
+      and the 3-cycle result (signed slope against post P = 0.037, against pre 0.149), and call the flattening against pre
+      weak evidence.'
+  - claim: suppl3e-precession-temperature
+    agrees: true
+    outcome: partially_reproduced
+    reason: The slope range of +-2 cycles is stated and reasonable. suppl3e has the same outcome under 1 cycle.
+    response: No change.
+  - claim: fig4f-speed-theta-power
+    agrees: true
+    outcome: reproduced
+    reason: Cell 93 says "MS10 never does", but with normalised spectral power MS10 has P = 7.2e-6 at R = -0.123 (cell 92).
+      That also means the "4 of 5" for spectral power includes one negative R.
+    response: Cell 93 and the notes now say MS10 reaches P < 0.05 only with normalised spectral power, with a negative R (-0.123,
+      P = 7.2e-6), so with that measure 3 of the 4 significant rats are positive. Outcome kept, as it rests on reading (a).
+  - claim: fig4gh-fp-speed
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: suppl2e-trial-speed-theta-frequency
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: suppl3-theta-cycle-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig5d-ccg-period
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Problem 6 is resolved: peak spacing is now printed, 107.2 and 103.5 ms. Problems 11, 12 and 13 are resolved.
+      My problem 12, which was about the fig5d session readings, is filed under fig5-speed-control-cooling instead of fig5d.'
+    response: Moved problem 12 and its response in the round-1 record from fig5-speed-control-cooling to fig5d.
+  - claim: fig5e-phase-period-below-2pi
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
+    response: No change.
+  - claim: fig5cg-compression
+    agrees: true
+    outcome: blocked
+    reason: I agree the claim cannot be decided from these fits. I do not agree with the stated reason. Cell 134, the notes,
+      the README and the finding say the surface "does not describe the density". The numbers do not show this. In both readings,
+      as b grows without limit the oscillation term becomes constant and the surface becomes the envelope alone. The envelope
+      alone fits with a per-session median R2 of 0.41 to 0.68 (cell 133). So converged fits with R2 of -0.10 to -5.1 are stuck
+      short of the best fit; they do not show what the best surface fit would give. The outputs show that the fit failed.
+      Problem 2 is partly resolved. A bounded or multi-start fit, for example with b held near the summed period of 104 to
+      109 ms, or started from the envelope solution, would show whether the surface fits the density; until then, the reason
+      for blocked should say the fit failed. fig5cg lists the field-map assumption in its deviations but has no assumed flag,
+      which does not matter while it is blocked.
+    response: 'Kept blocked (methods_underspecified) and restated the reason as a failed fit. Added a bounded least-squares
+      fit with b held within 30% of the summed period, started from the envelope''s own fit and from three values of a of
+      either sign. It does no better: pooled pre R2 -0.138 and -2.58 (pair reading a), -1.46 and -5.84 (pair reading b), against
+      0.80 and 0.57 for the envelope; per session none of 46 fits reaches the envelope. Added the theta modulation of the
+      density (half the peak-to-trough range is 6.7% of the trend at zero lag, 4.3% with pair reading b), which shows why:
+      the equation''s oscillation term takes the density to zero between ridges. Cell 135, the notes, the README, the Summary
+      and the finding now say the fit fails, and that the paper does not say how the density was prepared for the fit.'
+  - claim: fig5h-time-lags-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: The fig5h notes say "Both cooling comparisons hold under every reading". Under lag reading (b) with pair reading
+      (a), post and cooling medians are both 16 ms, with rank-sum P = 0.85 (cell 127). The tests are significant, but a longer
+      cooling lag is not shown there. Problem 3 is unchanged; under the criterion, partial is correct. The pre against post
+      P = 0.034 at equal medians comes from a test that counts pairs sharing cells and sessions as independent; a per-session
+      or session-stratified test would show whether the outcome reflects cooling or the sample size. The criteria fix the
+      tests used, so the stated outcome stands.
+    response: 'The notes now say the signed-rank tests are significant under every reading but that under lag reading (b)
+      the post and cooling medians are both 16 ms (rank-sum P = 0.85). Added a per-session test (median |lag| per session
+      and state, 23 sessions): under lag reading (a) cooling lags are longer than pre (P = 0.014) and post (P = 0.012) and
+      pre and post do not differ (P = 0.98); under lag reading (b) P = 0.23, 0.040 (cooling shorter) and 0.95. Kept partially
+      reproduced, as the criterion fixes the test over pairs.'
+  - claim: fig5i-phase-lags-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Problem 8 is resolved for fig5i. The phase lag as the largest peak within pi is stated. It is a claims-file reading,
+      but it is the one that favours this claim of absence. Lag reading (b) gives P = 2.7e-8. With pair reading (b) and without
+      MS13-171130, reading (a) also fails (P = 0.040, cell 129). The README's "phase lags do not change" holds only under
+      lag reading (a) (cell 129).
+    response: The README now says phase lags do not change when the lag is read as the largest peak within pi of zero, and
+      do when it is read as the peak nearest zero. Outcome kept, marked assumed; the notes already give the other readings.
+  - claim: fig5j-fraction-active-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: The pooled-cycle rank-sum P = 1.6e-25, against per-session P = 1.0, counts cycles that share cells and sessions
+      as independent. A per-session or session-stratified test would show whether the outcome reflects cooling or the sample
+      size. The criteria fix the tests used, so the stated outcome stands.
+    response: 'Added per-session tests for all three comparisons: pre against cooling P = 1.0 (higher in cooling in 9 of 22
+      sessions), post against cooling P = 0.0029, pre against post P = 0.00059. Cell 142 and the notes say that under this
+      variant the comparison the criterion judges would hold. Kept not reproduced, as the criterion fixes the rank-sum over
+      cycles.'
+  - claim: fig5k-spikes-per-cycle-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: The pooled-cycle rank-sum P = 4.9e-7, against per-session P = 0.80, counts cycles that share cells and sessions
+      as independent. A per-session or session-stratified test would show whether the outcome reflects cooling or the sample
+      size. The criteria fix the tests used, so the stated outcome stands.
+    response: 'Added per-session tests for all three comparisons: pre against cooling P = 0.80, cooling against post P = 0.0047,
+      pre against post P = 0.0059, so the claim of absence fails per session too. Kept not reproduced.'
+  - claim: suppl1g-waveforms-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Problem 10 is resolved. The suppl1g notes say "P = 2.2e-4 to 0.043", but the per-session interpolated P values
+      run from 9.9e-7 to 0.043 (cell 145).
+    response: The notes now give 9.9e-7 to 0.043.
+  - claim: suppl2d-interneuron-oscillation-slows
+    agrees: true
+    outcome: partially_reproduced
+    reason: In round 1 my table left out this claim. I agree with its partially_reproduced. Interneuron frequency falls (P
+      = 6.4e-13) and pyramidal cells oscillate faster before cooling (10.42 against 8.93 Hz). The decrease is 5.8 to 8.7%,
+      outside 12.6 to 15.4% (cell 111).
+    response: No change.
+  - claim: suppl1-hippocampal-temperature
+    agrees: true
+    outcome: blocked
+    reason: I agree with every other stated outcome. Everything else I checked in the conclusions, the Summary, the README
+      and the notes matches the outputs.
     response: No change.

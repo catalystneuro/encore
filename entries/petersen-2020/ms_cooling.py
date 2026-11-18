@@ -179,7 +179,7 @@ def load_session(row, with_lfp=True, with_units=True):
             tt = g["starting_time"][()] + np.arange(len(T)) / g["starting_time"].attrs["rate"]
         S["temp_kind"] = "measured"
         # the measured traces hold artefacts far outside any brain temperature
-        # (up to 1354 C, down to -1751 C, and runs at the 0 and 50 C rails);
+        # (up to 1354 C, down to -1751 C, and runs at 50 C);
         # values outside 5 to 45 C are set to NaN (standard choice)
         S["temp_raw_range"] = (float(np.nanmin(T)), float(np.nanmax(T)))
         T = np.where((T >= 5) & (T <= 45), T, np.nan)
@@ -806,6 +806,56 @@ def info_equal_trials(S, F, edges, state_col="st_lab", n_draws=20, rng=None):
         for u in units:
             rows.append(dict(session=S["session"], rat=S["rat"], u=u, arm=arm, trials=m,
                              **{s: np.nanmean(acc[(u, s)]) for s in STATES}))
+    return pd.DataFrame(rows)
+
+
+def info_equal_spikes(S, F, edges, state_col="st_lab", n_draws=20, rng=None, min_spikes=20):
+    """Skaggs information (bits per spike) of each map (cell and arm) with a field
+    in F, per state, corrected for the amount of data in two ways (standard
+    choices; the paper names no correction). (i) Equal spikes: the spikes of each
+    state are subsampled without replacement to the smallest count among the
+    states, n_draws times, on the state's full occupancy, and the information is
+    averaged over the draws. (ii) Shuffle-corrected: the information on all
+    spikes minus the mean information of n_draws maps whose spikes are placed at
+    random in proportion to the occupancy (a spatially uniform rate with the same
+    spike count and occupancy), which estimates the upward bias. Maps with fewer
+    than min_spikes spikes in a state are left out."""
+    tr = S["trials"]
+    sp = S["sp"]
+    st_tr = tr[state_col].values
+    st_sp = st_tr[sp.trial.values]
+    nb = len(edges) - 1
+    rows = []
+    for arm in ("Left", "Right"):
+        units = sorted(set(F.u[F.arm == arm]))
+        if not units:
+            continue
+        occ = {s: occupancy(S, arm, edges, st_tr == s) for s in STATES}
+        p_occ = {s: occ[s] / occ[s].sum() if occ[s].sum() > 0 else None for s in STATES}
+        for u in units:
+            bins = {}
+            for s in STATES:
+                lin = sp.lin.values[(sp.u.values == u) & (sp.arm.values == arm) & (st_sp == s)]
+                b_ = np.searchsorted(edges, lin, side="right") - 1
+                bins[s] = b_[(b_ >= 0) & (b_ < nb)]
+            n = {s: len(bins[s]) for s in STATES}
+            m = min(n.values())
+            if m < min_spikes or any(p_occ[s] is None for s in STATES):
+                continue
+            r = dict(session=S["session"], rat=S["rat"], u=u, arm=arm, spikes=m)
+
+            def info(cnt, s):
+                with np.errstate(invalid="ignore", divide="ignore"):
+                    raw = np.where(occ[s] > 0, cnt / occ[s], np.nan)
+                return skaggs_info(smooth_map(raw, occ[s]), occ[s])
+            for s in STATES:
+                eq = [info(np.bincount(rng.choice(bins[s], m, replace=False), minlength=nb), s) for _ in range(n_draws)]
+                null = [info(rng.multinomial(n[s], p_occ[s]).astype(float), s) for _ in range(n_draws)]
+                full = info(np.bincount(bins[s], minlength=nb).astype(float), s)
+                r[f"eq_{s}"] = np.nanmean(eq)
+                r[f"corr_{s}"] = full - np.nanmean(null)
+                r[f"bias_{s}"] = np.nanmean(null)
+            rows.append(r)
     return pd.DataFrame(rows)
 
 
