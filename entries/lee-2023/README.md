@@ -13,7 +13,7 @@ and the differences from the paper's method.
 
 The attempt record, with the outcome of each claim, the reasons and the differences from the
 paper's method, is [`attempts/lee-2023-01.yaml`](../../attempts/lee-2023-01.yaml).
-`reproduce_lee_2023.ipynb` streams every file of dandiset 000636 and takes about 30 minutes.
+`reproduce_lee_2023.ipynb` streams every file of dandiset 000636 and takes about 40 minutes.
 `species_lee_2023.ipynb` tests the comparison with mouse on the recordings of
 [DANDI:000020](https://dandiarchive.org/dandiset/000020/0.210913.1639), labelled with the Allen
-Institute's mouse specimen table, and takes about 20 minutes.
+Institute's mouse specimen table, and takes about 35 minutes.
