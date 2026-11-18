@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-15`. Record this version in the attempt's provenance.
+Version: `pilot-16`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -368,8 +368,20 @@ module.
   paths.
 - **Compute every result from the data.** No embedded numbers, arrays or
   images, and no figures read from files.
-- **Fix every random seed**, and give each claim's section its own generator,
-  so that adding a cell earlier does not change its numbers.
+- **Take every random seed from the claim.** Do not choose one. The seed of a
+  claim's generator is `zlib.crc32(b"<paper key>/<claim id>")`, for example
+  `np.random.default_rng(zlib.crc32(b"sohn-2019/initial-speed-biased"))`. A
+  second generator for the same claim adds 1 to the seed, a third adds 2. Two
+  attempts on a claim then start from the same seed, and each claim's section
+  has its own generator, so that adding a cell earlier does not change its
+  numbers. Never make a generator without a seed.
+- **Say how much the seed matters.** A result that depends on random draws (a
+  shuffle or permutation test, a bootstrap, a random split, a random start)
+  is computed under the claim's seed and under four more: the seed plus 1000,
+  2000, 3000 and 4000. Give the range of the measured value over the five in
+  the notes. The outcome is the one under the claim's own seed: the criterion
+  is applied as it is written. When the five do not all give that outcome,
+  set `seed_sensitive: true` on the outcome (step 5).
 - **Put loading and reusable measures in a helper module**, so later notebooks
   on the dataset can import it. Say in its docstring where a parameter comes
   from: the claim's criterion (which cites the paper or its code), the
@@ -489,6 +501,8 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
 - **`measured`**: the value obtained, or one per expected value in the same
   order. When several readings match, record the first reading the criterion
   lists.
+- **`seed_sensitive`**: `true` on an outcome that is not the same under all
+  five seeds (step 3). The notes give the measured value under each.
 - **`proposed`**: on an outcome, a change of outcome found after the last
   verification round, with its `reason` (see "Hand over for verification").
 - **`inputs`**: everything used that is not in the dataset, each with where
@@ -586,15 +600,38 @@ check of the one before it.
   directly, in its own notebook `earlier_findings.ipynb` in the entry: fixed,
   still present (added to the record's findings with `found: on_prompt`, so it
   is never counted as found blind), or not checked. A finding no earlier one
-  points at is new. For each claim whose outcome differs from the earlier one,
-  it gives the likeliest reason. It changes no outcome or statement of the
-  blind attempt.
+  points at is new. It changes no outcome or statement of the blind attempt.
+- **Why outcomes differ.** For each claim whose outcome differs from the
+  earlier one, the reconcile run reads both attempts' code and records and
+  names the main `cause`. It does not vote: two attempts that agree can both
+  be wrong, and on three claims of asari-2009 one attempt of four was the one
+  that was right. The causes are:
+
+  | `cause` | Meaning |
+  |---|---|
+  | `dataset_changed` | The attempts tested different versions, and the files differ where it matters. |
+  | `protocol_changed`, `claims_changed` | The rule or the criterion applied differs. |
+  | `reading` | The paper or the criterion leaves a method choice open, and the attempts chose differently. `choice` names it. |
+  | `error` | An attempt's code or record has a mistake. `error_in` says which: `this`, `earlier` or `both`. |
+  | `label` | The numbers are essentially the same, and the criterion was applied differently. |
+  | `random` | Random draws. |
+  | `data_used` | Different sessions, units, files or exclusions of the same version. |
+  | `unclear` | It could not be told. |
+
+  Each item also gives a `note` with what exactly differs, how sure the
+  diagnosis is (`confidence`), and the outcome the evidence best supports
+  (`supports`) when it supports one.
 
 This keeps two things apart that a repeat attempt used to mix: the dataset's
 owners still get the list of what is fixed and what is not, and the attempt's
 own outcomes and findings are a second independent reading, so two attempts
 on the same version measure how far the registry's results repeat. The
 earlier record stays as it was.
+
+A paper can also be attempted again with nothing changed, as a second
+independent attempt: the reconcile run then says where the two differ and
+why (`docs/replicates.md` has the first results). The author is told that
+this is the reason.
 
 A draft can be used when the fixes are not yet published, with its
 modification time recorded under `dataset: modified`, since a draft can

@@ -1,0 +1,111 @@
+I wrote both files, `docs/pilot-notes/drieu-2018-01.md` and `summaries/drieu-2018-01.md`, and changed nothing else. `targets/dandisets.json` has no entry for CRCNS hc-18, so the notes say nothing about a CatalystNeuro conversion. The repository root also has some untracked files I did not create, such as `.bashrc`, `.idea` and `scripts`; I left them alone.
+
+# drieu-2018, Drieu et al. 2018
+
+Fourteen claims reproduced, nine partially, twelve not reproduced and none
+blocked; eleven outcomes rest on an assumption. The first verification
+round agreed with 24 of the 35 outcomes as they stood and the second with
+32, disagreeing on the three cell-count, firing-rate and lap controls
+(figs7, figs8 and figs10). After the second round the author proposed four
+changes of outcome, so a third round reviewed those four and agreed with
+all of them: `fig1d-no-remapping-p1-active` moved from partially reproduced
+to reproduced and the three controls to not reproduced. CRCNS data sets
+carry no version, so the record gives `unversioned` and the notebooks print
+MD5 sums. The paper, Drieu, Todorova and Zugaro in Science (362, 675-679),
+records CA1 units, LFP and head position in five rats carried around an
+obround track on a model train with a treadmill, off in Passive 1 and
+Passive 2 and on in Active, each travel followed by sleep, and reports that
+place fields do not remap between conditions, that in passive travel theta
+power and asymmetry fall and phase precession and theta sequences degrade,
+and that replay in the following sleep is improved and forward-biased after
+Active. The claims were written from the version of record and the author
+manuscript (HAL hal-02330673v1) for its Methods, the Fig. 4 legend and the
+supplementary figures, with FMAToolbox at commit 6bbb366; the paper's own
+scripts are in the archive's code.zip. Every claim could be tested.
+Reproduced are, among others, the lower peak rates in Passive 1, the
+reduced theta power (on one value per 2-s window, ANOVA P = 2.1 x 10^-4;
+with one value per rat P = 0.044 to 0.17) and asymmetry, the theta
+sequence scores, slopes and quadrant scores, the per-rat reconstructions,
+the high-score, high-slope events in theta and replay, and the forward
+replay after Active (517 against 401, P = 1.4 x 10^-4). `fig1d` rests on a
+field reading (c), the Methods' 4.5 cm kernel with the size and spike
+limits of BatchPlaceFields.m, which the claims file does not list, and on
+cells with a field in both conditions. Not reproduced are, among others,
+the similar travel durations (P = 0.023), the similar field sizes, the
+faster-than-theta spike bursts, whose spectral modes sit at 1.000 cycle^-1,
+the steeper replay slopes after Active (against Passive 2 KS P = 0.19), the
+increase of replay after Passive 2, the ripple-restricted replay, the
+self-consistency of theta sequences and their correlation with later
+replay, and the three controls; figs10 is not reproduced only under the
+assumed reading in which each lap is decoded with its own firing curves,
+and under the other reading every test its criterion names passes. The
+author's first run gave 9 reproduced, 11 partially, 10 not reproduced and
+5 blocked as too large. Round 1 found that the in-field spikes for phase
+precession were taken from the wrong track bins, that the forward-replay
+test counted zero-slope events, that almost every pyramidal cell became a
+place cell, that rat 272's theta channel had reversed theta and that the
+five blocked claims could be run; in reply the bugs were fixed, reversed
+channels were left out, field reading (c) was adopted and the blocked
+claims ran in a third notebook on samples of pairs, 10 cell subsets and
+100 shuffles. Round 2 found the polarity of rats 292 and 314 open and
+several sentences the outputs did not support, which were corrected. In
+the second revision the decoding notebook ran over the 60-minute limit (65
+min, and 62 on a rerun), so the run was recorded as failed; the full run
+took over 2 hours, longer than one command may last, so its steps were run
+separately, and in the third revision `result.json` and the run stamp were
+written by hand, with the travel and sleep notebook's time (1880 s)
+estimated from file times. The notebooks ran in 31 and 37 min at first,
+with peak memory 6.4 GB, and the decoding and controls notebooks in 3586
+and 3442 s at the end.
+
+The LFP channels the analyses used are not in the data set: the scripts in
+code.zip take them from batch files that are not included, and the xml
+files do not mark the pyramidal-layer or theta channels. The place cells,
+theta cycles and candidate events the scripts load, and the linearization
+and decoding functions, are not in the data set or code.zip either, so the
+selections cannot be compared with the paper's; the place-cell counts
+obtained here are 207, 203 and 228 under the Methods' definition and 138,
+158 and 171 with the limits of BatchPlaceFields.m, against the paper's 94,
+150 and 135. Theta phase of pyramidal-cell spikes differs between channels
+and rats: four of rat 272's twelve channels with isolated pyramidal cells
+have reversed theta, and in rats 292 and 314 spikes fall at -5 to -51 deg
+on every channel, which fits an inverted signal polarity the data set does
+not mention; with their LFP inverted, quadrant score medians become
+-0.000, -0.015 and -0.005 and Active against Passive 1 slopes give KS P =
+0.073, so the theta-sequence slope and quadrant outcomes rest on the
+recorded sign. The paper's code differs from its Methods:
+DiscriminateUnits.m clusters on two features, not three, and its 5 Hz rate
+exclusion never applies; ClusterIsolation.m assigns L-ratios to the wrong
+units after a skipped cluster; and BatchPlaceFields.m smooths with 12 cm
+and limits field size and spike count, which changes the place-cell counts
+to 61, 104 and 100. Rats 292 and 314 were recorded at 20 kHz and the
+others at 32552 Hz, which the descriptor does not say. The head-tracking
+LED is lost for 40.6% of samples in rat 292 and 22.8% in rat 314, 98.7%
+and 99.7% of them in sleep, and the track perimeter traced by the head is
+656 to 706 cm, against the 6 m the paper uses. The sleep LFP reaches the
+16-bit limit in 2.4% of theta-channel samples in rat 261, 0.39% in rat 272
+and 0.04% in rat 242. The Methods describe three rats with tetrodes and
+three with octrodes, while the paper reports five rats. The five rats are
+distinct, so no recording is counted twice. Six questions are put to the
+paper's authors: the field limits and kernel, the spectrogram windows for
+burst frequency, the LFP channel and polarity, the SWS detection settings,
+whether fig. S10 decoded each lap with its own firing curves, and whether
+the fig. S9 decoding errors were cross-validated.
+
+The author's points on the protocol: archives.md covers zip files only, and
+each rat's tar.gz was streamed with parallel range requests; "do not
+download to disk" does not say whether reduced arrays may be cached during
+development, and pickled reductions were kept in `$TMPDIR` for that only;
+the tar member order varies, so a second partial pass reads the LFP of rats
+272 and 314; the suggested clock check cannot detect an offset when the
+train runs at near-constant speed on a closed track, and the clock was
+recorded as consistent, not shown; for claims of absence it does not say
+whether judging on the paper's test alone also overrides method readings,
+and the best-supported reading was adopted as an assumption; several
+criteria lack a partial clause; it has no rule for reducing shuffle counts,
+and 200 were used where the paper uses 5000; and the 60-minute notebook
+limit forced separate notebooks that each stream the whole data set again.
+
+---
+
+In this data the paper's contrast between active and passive travel holds for most waking measures and only in part for sleep. Place fields stay stable, and passive travel weakens theta power, theta asymmetry and theta sequences, though the sequence effects depend on keeping the recorded sign of two rats' LFP, which may be inverted. Replay improves after active travel but not after the second passive travel, and steeper replay slopes after active travel, the self-consistency of theta sequences and their correlation with later replay do not reproduce. Faster-than-theta spike bursts in active travel were not found; the paper does not give its spectrogram windows. Three supplementary controls of the theta-sequence result did not hold.

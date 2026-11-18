@@ -153,6 +153,19 @@ jobs:
           fi
           git log --oneline -1
 
+      # The reconcile run compares this attempt's code with the earlier attempt's (docs/protocol.md, "Repeat
+      # attempts"). The new entry replaced the earlier one on the branch, and the checkout has no history, so the
+      # earlier entry is copied from main, where it stays until this attempt is merged. It is outside the folders
+      # whose changes are collected, so it is never committed.
+      - name: Put the earlier attempt's entry under earlier-entry/, for the reconcile run
+        if: inputs.role == 'reconcile'
+        run: |
+          mkdir -p earlier-entry
+          git fetch --depth 1 origin main
+          git archive FETCH_HEAD "entries/$FOLDER" | tar -x --strip-components=2 -C earlier-entry \
+            || echo "::warning::main has no entries/$FOLDER; the reconcile run has only the earlier record"
+          ls earlier-entry
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -440,6 +453,14 @@ jobs:
             # Only the registry's own files: the sandbox leaves placeholder files for the paths it
             # protects (.bashrc, .gitconfig, ...) in the working directory.
             paths=(attempts claims entries README.md); [ ! -d questions ] || paths+=(questions)
+            # A new file over 20 MB is the author's scratch (a cache of loaded data), not part of an entry: on
+            # 2026-11-15 two pickles of 1.4 and 2.6 GB left in entries/petersen-2020 made a patch git could not
+            # apply ("patch too large"), and the role's work was lost. They are left out, and the log says so.
+            git ls-files --others --exclude-standard -z -- "${paths[@]}" | while IFS= read -r -d '' f; do
+              if [ "$(stat -c %s "$f")" -gt 20000000 ]; then
+                echo "::warning::Left out of the changes, over 20 MB: $f ($(stat -c %s "$f") bytes)"; rm -f "$f"
+              fi
+            done
             git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           elif [ "$ROLE" = recorder ]; then
