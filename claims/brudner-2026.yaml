@@ -1,0 +1,694 @@
+# Claims for Brudner, Zhou, Jayaram, Madeira Santana, Crimaldi, Clark & Emonet, "Fly navigational
+# responses exploit plume-specific odor motion and gradient cues", PNAS 123(29) e2608896123 (2026),
+# doi:10.1073/pnas.2608896123, on dandiset 001871.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-12,
+# under docs/protocol.md version pilot-14 (Reader, steps 1 to 4). Nobody had analysed the dataset's
+# data when these criteria were written; the reader saw only the dandiset's title and description.
+#
+# Text read: the version of record (PDF supplied by a person, published 14 July 2026), as extracted
+# to paper/10.1073-pnas.2608896123.txt, with the SI Appendix (pnas.2608896123.sapp.pdf, appended to
+# the same text file): Supplementary Methods, the legends of Figures S1 to S5 and of Movies S1 and S2.
+# The main Methods section is a short summary that refers to the SI Appendix for every detail. PDF
+# pages were opened to read the bar heights of Figures 2, 4 and 5 and the panels of Figure S5, and
+# the upwind-turn formula of the SI agent simulations, which the text garbles. It reads
+# P_upwind = 1 / (1 + exp(-(-0.49 + 1.5 R sin^2 theta))).
+#
+# Code read. The paper links github.com/emonetlab/GradientMotionMultiplePlumes; read at commit
+# effc7b0317f6d3b62136c2a07bcba3e80e778575 (2026-07-14). It holds
+#   - the Fig. 5E, 5F and S5D-E analysis (src/gradient_motion_panels/summary_tables.py,
+#     scripts/generate_published_summary_tables.py, metadata/published_panel_params.json), written
+#     to run on the behavior NWB files of dandiset 001871 version 0.260630.1657, and the published
+#     panel tables it produced (data/published_panel_tables/fig5e_*.csv and fig5f_s5_*.csv);
+#   - the Fig. 1 cue maps (plume_fields.py, generate_figure1_summary.py), the Fig. 2 logistic models
+#     (centerline_models.py, generate_figure2_summary.py) with the plotted values hard-coded from the
+#     preprint notebook (data/published_panel_tables/fig2_glm_summary.csv), and a re-implementation of
+#     the Fig. 3 network training and probes (figure3_training.py, figure3_models.py), with
+#     REPRODUCE_FIGURES_1_3.md, which says the legacy training arrays, threshold masks and
+#     checkpoints of Figs. 2 and 3 were not deposited and names where the code and the SI disagree;
+#   - nothing for the agent simulations (Fig. 4, Fig. S4, Fig. S5F-H) or for Fig. S1.
+# Where the SI leaves a choice open and the code settles it, the criteria follow the code and say
+# so; where they disagree, the SI Methods give the main reading and the code a named variant.
+#
+# The data the paper used.
+#   Behavior (Fig. 5, Fig. S5A-E). Adult female Drosophila, Orco-GAL4 > 20XUAS-CsChrimson, all
+#   blinded by GMR-hid, starved 3 days and fed all-trans-retinal, run in cohorts of 10 to 30 flies
+#   from one vial in a 270 x 170 x 10 mm arena with 100 mm/s laminar air, filmed at 60 fps under IR.
+#   A projector delivered to-scale movies of the smooth or the complex plume (2 min trials, 1 min
+#   rest, 8 trials per cohort, projection flipped across the centerline between trials); each cohort
+#   saw one plume type only. Tracked with SLEAP; per fly trajectory, position, heading, velocity and
+#   the gradient, motion and intensity signals at the antennae; saccade-like turn events. The paper
+#   reports no count of cohorts, flies, trajectories or turns. The code selects the behavior files
+#   by path, smooth files containing "nagel-smoke" and complex files containing "smoke-2a".
+#   Plume movies (Figs. 1 to 4, Fig. S1). The complex plume is a 60 Hz smoke movie (smoke_1a_orig),
+#   frames 300 to 1799 used, 1088 x 1728 pixels of 0.153 mm, centerline at row 590; the dandiset
+#   holds that 1500-frame window. The smooth plume is from Alvarez-Salvado et al. 2018 (Connor et al.
+#   2018 measurements), Dryad doi:10.5061/dryad.g27mq71, file 10302017_10cms_bounded_2.h5, dataset
+#   /dataset2, 15 Hz, which the paper rescaled to the complex plume's time and space resolution
+#   (1088 x 1696, centerline at row 544); it is not in the dandiset. Three freestream plumes (Connor
+#   et al. 2018; 5, 10 and 20 cm/s per the dandiset's description) are in the dandiset as 1500-frame
+#   windows, with a compact asset of the Fig. S1 freestream panel inputs.
+#   The paper also deposited plume recordings, behavioral tracking data and processed datasets in
+#   the Yale Dataverse, doi:10.60600/YU/590UBV (ref. 83).
+#
+# Missing from the paper and its code, as needed by claims below. The agent simulation code
+# (Fig. 4, Fig. S4, Fig. S5F-H) and the trained networks; the training and test arrays of Figs. 2
+# and 3 and the threshold that defined the valid sampling regions; the code of Fig. S1; the numbers
+# of flies, trajectories and turns behind Fig. 5. The log-likelihood levels plotted in Fig. S5D and
+# S5E (about -0.596 and -0.685 for the full models) differ from the code's published table
+# (-0.576 and -0.676), while the cue dominance of Fig. 5F matches the table.
+schema_version: 2
+paper: doi:10.1073/pnas.2608896123
+claims:
+- id: fig1eh-snapshot-organization
+  statement: In single snapshots, the crosswind gradient feature has opposite signs on the two sides
+    of the centerline in the smooth plume but not in the complex plume, while the motion feature is
+    organized antisymmetrically in the complex plume but not in the smooth plume.
+  source: Results, Directional Odor Features Have Plume-Specific, Antisymmetric Organization Around
+    the Centerline, paragraph 2; Figure 1E to 1H
+  quote: In the smooth plume, the gradient feature had opposite signs on opposite sides of the
+    centerline while in the complex plume, it did not exhibit this antisymmetric organization across
+    the centerline ... In summary, the gradient and motion features exhibited complementary
+    distributions, with each organized antisymmetrically around the centerline in one plume type but
+    not the other
+  data: with_inputs
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71 (10302017_10cms_bounded_2.h5); complex
+    plume in the dandiset
+  criterion: Shown on one snapshot per plume and judged by eye in the paper; no measure is given.
+    The features are the crosswind centered difference dI/dy and -(dI/dy)(dI/dt) with centered
+    one-frame differences (Results, paragraph 2, and the code's plume_fields.py). The code's
+    snapshot frames are 601 (smooth) and 2900 (complex), cue maps centered one frame later, with
+    Gaussian smoothing of sigma 1.5 pixels for the cue panels; complex frame 2900 lies outside the
+    deposited window (code, REPRODUCE_FIGURES_1_3.md), so the complex snapshot cannot be the
+    published one. The claim is reported as a description of frames of the analysed window, and its
+    outcome is that of fig1il-zscore-reliability and figs1-antisymmetry-index, which test the same
+    organization on time averages.
+  depends_on:
+  - fig1il-zscore-reliability
+  - figs1-antisymmetry-index
+- id: fig1il-zscore-reliability
+  statement: Averaged over time and divided by its SD at each location, the gradient feature has
+    higher z-scores in the smooth plume than in the complex plume, and the motion feature has higher
+    z-scores in the complex plume than in the smooth plume.
+  source: Results, Directional Odor Features Have Plume-Specific, Antisymmetric Organization Around
+    the Centerline, paragraph 3; Figure 1I to 1L
+  quote: However, the odor gradients have higher z-scores in the smooth plume than in the complex
+    one, while the odor motion has higher z-scores in the complex plume than in the smooth one
+  data: with_inputs
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71 (10302017_10cms_bounded_2.h5, /dataset2);
+    complex plume in the dandiset
+  criterion: Per pixel, the temporal mean of each feature divided by its temporal SD (Results,
+    paragraph 3; the code's safe_standardized_mean, which divides by 1 where the SD is 0). Gradient is
+    the crosswind centered difference dI/dy over all 1500 frames, motion -(dI/dy)(dI/dt) with
+    centered one-frame differences over the 1498 frames with both neighbours, no spatial smoothing
+    (code, metadata/figures_1_3.json). Complex frames 300 to 1799, the dandiset's window, used as
+    stored (the code says they are already on a 0 to 255 scale; the z-score does not depend on the
+    intensity scale). Smooth plume resampled from 15 Hz to 60 Hz and to the 0.153 mm grid (SI, Plume
+    movies); the code keeps two timing profiles, notebook_legacy and corrected, and both are run.
+    The SI gives the 1500-frame window for the complex plume only. For the smooth plume, readings
+    (a) frames 300 to 1799 after resampling (attributed to the code), (b) the first 1500 frames. How the maps are compared is not stated (the paper shows them). Readings,
+    (a) mean absolute z-score over the pixels of the Otsu plume mask of the SI (Plume movies);
+    (b) mean absolute z-score over the whole analysed frame; (c) the 95th percentile of the absolute
+    z-score over the mask. Reproduced when the smooth gradient value exceeds the complex one and the
+    complex motion value exceeds the smooth one; the outcome is the one all readings give.
+- id: figs1-antisymmetry-index
+  statement: The cue antisymmetry index (log ratio of motion to gradient antisymmetric organization)
+    increases monotonically with wind speed across the freestream plumes; the smooth plume lies near
+    the low end of that range and the complex plume has the highest index.
+  source: Figure S1, column v, legend; Results, Directional Odor Features Have Plume-Specific,
+    Antisymmetric Organization Around the Centerline, paragraph 1
+  quote: Across the freestream plumes the index increases monotonically with wind speed. The smooth
+    plume index falls near the low end of this range and the complex plume index is the highest
+    measured
+  data: with_inputs
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71; freestream and complex plumes in the
+    dandiset
+  criterion: As the SI (Plume movies) defines it. For each plume and cue, the time-averaged map M
+    (Fig. S1 columns iii and iv, the plain temporal mean of the features of
+    fig1il-zscore-reliability, not divided by the SD; the panels are titled <dI/dy>_t and
+    <-dI/dy dI/dt>_t with colour bars in raw units), its antisymmetric component A(x, y) = M(x, y) - M(x, -y) about the centerline, the score s as the mean of |A| over
+    the Otsu mask, and the index log2(s_motion / s_gradient) (the legend's log2 scale bar). The
+    Otsu mask is Otsu's method on the mean intensity map with a morphology radius of 9 pixels and a
+    bias of 55 (48 for the complex plume). Open, with readings named. What the bias does is not
+    stated, (a) subtracted from the Otsu threshold in 0 to 255 intensity units, (b) a percentage of
+    the Otsu threshold; the morphology operation is taken as a binary opening then closing with a
+    disk of radius 9 (a standard choice). Intensity rescaling to the 1st and 99th percentiles is
+    stated for the freestream plumes; the index is not invariant to intensity scale, so readings
+    (i) all five movies rescaled to 0 to 1 between their 1st and 99th percentiles, (ii) only the
+    three freestream movies so rescaled, smooth and complex as used elsewhere. Freestream movies are
+    interpolated to 60 Hz as the smooth one (SI). The centerline row of the three freestream plumes
+    is not stated; read as the row of the source, the row of maximum mean intensity at the upwind
+    edge. Reproduced when the index rises from 5 to 10 to 20 cm/s, the smooth index lies below the
+    10 cm/s value (Fig. S1v places it between the 5 and 10 cm/s points), and the complex index is
+    the highest of the five; the outcome is the one all readings give. s_gradient and s_motion are
+    reported per plume for the Results sentence that gradient antisymmetry stays roughly invariant
+    while motion antisymmetry grows with wind speed.
+- id: figs1-temporal-statistics
+  statement: The smooth plume has odor encounter frequency and intermittency like the slow
+    freestream plumes; the fast freestream plume has lower intermittency and higher frequency; the
+    complex plume has the highest encounter frequencies.
+  source: Figure S1, column ii, legend
+  quote: The distribution of frequency and intermittency values at slow freestream speeds was similar
+    to the distribution of values in the smooth plume. In the fast freestream plume, intermittency
+    was relatively lower and frequency relatively higher. In the complex plume we observed the
+    highest arrival frequencies
+  data: with_inputs
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71; freestream and complex plumes in the
+    dandiset
+  criterion: Per pixel, intensities binarized at 40% of that pixel's maximum; frequency is the rate
+    of onsets in the binary series and intermittency the fraction of time above threshold, within
+    the Otsu mask of figs1-antisymmetry-index (SI, Plume movies). The distributions are compared by
+    eye in the paper, which gives no measure of similarity; here by their medians over masked
+    pixels, and the 10% widening below is this file's reading of similar. Reproduced when the complex plume
+    has the highest median frequency of the five, the 20 cm/s freestream plume has a higher median
+    frequency and lower median intermittency than the 5 cm/s plume, and the smooth plume's medians
+    lie within the span of the 5 and 10 cm/s plumes widened by 10% of each bound.
+- id: figs1fg-resolution-robustness
+  statement: The spatial organization of the gradient and motion cues in the complex plume stays
+    consistent when sensor spacing is increased from 3 to 12 pixels or the motion delay is lengthened
+    to about 150 ms, changing only when sampled more coarsely than the smooth plume.
+  source: Results, Directional Odor Features Have Plume-Specific, Antisymmetric Organization Around
+    the Centerline, paragraph 3; Discussion, paragraph 2; Figure S1F and S1G
+  quote: Relatedly, the complex plume's cue organization was robust to reduced sampling resolution,
+    only changing when sampled more coarsely than the smooth plume
+  criterion: Pearson correlation between time-averaged crosswind cue maps of the complex plume
+    (Fig. S1F, G legend), gradient over sensor spacings of 3 to 12 pixels, motion over the same
+    spacings (3, 6, 9 and 12 pixels, the four points of Fig. S1F) and delays of 1, 2, 4, 8 and 15
+    frames. The reference map is the 3-pixel map for the gradient and the 3-pixel, 1-frame map for
+    motion (Fig. S1F axis "Pearson r vs baseline"; the outlined baseline cell of Fig. S1G). The
+    legend and the figure label the delays 33 to 500 ms, which is 30 Hz, while the movie is 60 Hz
+    (17 to 250 ms); delays are run in frames. In Fig. S1G the motion r is near 1 for 1, 2 and 4
+    frames at every spacing and drops to about 0.65 at 8 and about 0.35 at 15 frames; Fig. S1F gives
+    a gradient r of about 0.89 at 12 pixels. The Discussion's "about 150 ms" matches the 133 ms
+    label of 4 frames, and the smooth plume's 15 Hz sampling is 4 frames at 60 Hz. No threshold for
+    consistent is given; read as r >= 0.8, below every robust value the figure shows. Reproduced when
+    the gradient r is at least 0.8 at every spacing, the motion r is at least 0.8 at every spacing
+    for delays of 1, 2 and 4 frames, and the motion r at 8 and 15 frames is below its 4-frame value
+    at every spacing; every correlation is reported.
+- id: fig2b-smooth-auc
+  statement: In the smooth plume, a logistic model on the odor gradient feature predicts the side of
+    the centerline better (ROC AUC about 0.85) than one on the motion feature (about 0.54), and the
+    odor sum has no predictive power (AUC 0.5).
+  source: Results, Plume-Specific Features Predict Centerline Direction, paragraph 2; Figure 2B; SI
+    Figure S2A
+  quote: Models that used odor gradient to predict the smooth plume centerline direction had higher
+    AUCs than models that used odor motion for the same task ... In both plume conditions, the
+    bilateral sum ROC AUC values were 0.5
+  data: elsewhere
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71, or as rescaled by the paper if its Yale
+    Dataverse deposit (doi:10.60600/YU/590UBV) holds it; the paper's training and test arrays were
+    not deposited (code, REPRODUCE_FIGURES_1_3.md)
+  expected:
+  - quantity: test AUC, gradient only, smooth plume
+    value: 0.846
+    tolerance: 0.008
+  - quantity: test AUC, motion only, smooth plume
+    value: 0.541
+    tolerance: 0.003
+  - quantity: test AUC, sum only, smooth plume
+    value: 0.5
+    tolerance: 0.05
+  criterion: Values are the bar heights of Fig. 2B as hard-coded in the code's fig2_glm_summary.csv,
+    with tolerances the SD over 100 repeats from that table (0 for the sum, so the default 10%).
+    Samples per SI (Plume movies, Logistic regression models) and code (centerline_models.py). 1000
+    locations drawn uniformly in regions whose averaged intensity passes a threshold, two antennae 3
+    pixels apart facing upwind, each antenna's signal filtered by a 2D Gaussian of SD 1.5 pixels,
+    30-frame (0.5 s) histories, label the side of the centerline (row 544); 2,400,000 training and
+    600,000 test samples per repeat, 100 repeats. Code, nan_to_num then log(1 + max(I - 5, 0)),
+    features 0.5 mean(R + L), mean(R - L) and the delay-1 correlation, standardized with training
+    statistics, unpenalized logistic regression; test AUC. Open, with readings named. The region
+    threshold, (a) mean intensity above 5, the code's noise floor, (b) the Otsu mask of the SI. How
+    the samples are drawn from 1000 locations and split, (a) random windows split at random,
+    (b) split by location. Reproduced when gradient AUC exceeds motion AUC, the sum AUC is within
+    tolerance, and the gradient and motion AUCs are within tolerance under one reading; partially
+    reproduced when the ordering and the sum hold but the values do not.
+- id: fig2c-complex-auc
+  statement: In the complex plume, a logistic model on the odor motion feature predicts the side of
+    the centerline better (ROC AUC about 0.62) than one on the gradient feature (about 0.54), and
+    the odor sum has no predictive power.
+  source: Results, Plume-Specific Features Predict Centerline Direction, paragraph 2; Figure 2C; SI
+    Figure S2B
+  quote: In the complex plume, the opposite was true, so that odor motion was more predictive than
+    odor gradients in determining the centerline direction ... In both plume conditions, the
+    bilateral sum ROC AUC values were 0.5
+  expected:
+  - quantity: test AUC, motion only, complex plume
+    value: 0.618
+    tolerance: 0.005
+  - quantity: test AUC, gradient only, complex plume
+    value: 0.537
+    tolerance: 0.012
+  - quantity: test AUC, sum only, complex plume
+    value: 0.5
+    tolerance: 0.05
+  criterion: As fig2b-smooth-auc, on the dandiset's complex plume window (frames 300 to 1799, the
+    frames the SI uses), centerline at row 590, values and SDs from the code's fig2_glm_summary.csv
+    (the code notes the plotted complex error bars were hard-coded and differ from the SDs of its
+    result arrays). Reproduced when motion AUC exceeds gradient AUC, the sum is within tolerance and
+    the two AUCs are within tolerance under one reading; partially reproduced when the ordering and
+    the sum hold but the values do not.
+- id: figs2c-one-frame-delay
+  statement: In both plumes, the motion feature with a one-frame delay gives higher ROC AUC than
+    motion features with longer delays.
+  source: Results, Plume-Specific Features Predict Centerline Direction, paragraph 2; SI Figure S2C
+  quote: In both plume types, odor motion features with one-frame delays had higher ROC AUC values
+    than motion features using longer delays
+  data: with_inputs
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71; complex plume in the dandiset
+  criterion: Motion-only models of fig2b-smooth-auc and fig2c-complex-auc refitted with delays tau
+    of 1 to 15 frames (SI, Logistic regression models). In the smooth plume Fig. S2C shows the AUC
+    almost flat (about 0.541 at tau 1 to 3, about 0.528 at 15), so a strict ordering at tau 2 is
+    within noise. Reproduced when, in each plume, no tau from 2 to 15 has a mean test AUC above that
+    at tau = 1 by more than the SD over repeats, and the AUC at tau = 15 is below that at tau = 1 by
+    more than that SD; partially reproduced in one plume only. The strict reading (tau = 1 above every
+    other tau) is reported as well.
+- id: fig2d-smooth-weights
+  statement: Fitted on all three z-scored features together in the smooth plume, the logistic model
+    gives the gradient a much larger weight (about 2.6) than motion (about 0.06), and the sum a
+    weight of 0; the combined model reaches a test AUC of 0.847.
+  source: Results, Plume-Specific Features Predict Centerline Direction, paragraph 3; Figure 2D; SI
+    Figure S2D
+  quote: The model trained in the smooth plume learned a larger weight for the odor gradient feature
+    than for the odor motion feature ... In both plumes, the weights for the odor sum feature were 0,
+    as expected
+  data: elsewhere
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71, or as rescaled by the paper if its Yale
+    Dataverse deposit (doi:10.60600/YU/590UBV) holds it
+  expected:
+  - quantity: gradient weight, smooth plume
+    value: 2.614
+    tolerance: 0.184
+  - quantity: motion weight, smooth plume
+    value: 0.061
+    tolerance: 0.006
+  - quantity: combined-model test AUC, smooth plume
+    value: 0.847
+    tolerance: 0.085
+  criterion: As fig2b-smooth-auc, one logistic model on the three standardized features (code,
+    centerline_models.py). Weights and SDs from the code's fig2_glm_summary.csv (Fig. 2D bars); AUC
+    from the Fig. S2D legend with the default 10%. Weights are compared in absolute value, as their
+    signs depend on the left and right convention (the code uses R - L, opposite to the formula
+    printed in the paper). Reproduced when |gradient| exceeds |motion|, |sum| is below 0.01 and the
+    values are within tolerance under one reading; partially reproduced when the ordering holds
+    only.
+- id: fig2e-complex-weights
+  statement: Fitted on all three features together in the complex plume, the logistic model gives
+    motion a larger weight (about 0.40) than the gradient (about 0.10), and the sum a weight of 0;
+    the combined model reaches a test AUC of 0.612.
+  source: Results, Plume-Specific Features Predict Centerline Direction, paragraph 3; Figure 2E; SI
+    Figure S2D
+  quote: Conversely, the model trained in the complex plume learned a larger weight for the odor
+    motion feature than for the odor gradient feature ... In both plumes, the weights for the odor
+    sum feature were 0, as expected
+  expected:
+  - quantity: motion weight, complex plume
+    value: 0.403
+    tolerance: 0.034
+  - quantity: gradient weight, complex plume
+    value: 0.098
+    tolerance: 0.041
+  - quantity: combined-model test AUC, complex plume
+    value: 0.612
+    tolerance: 0.061
+  criterion: As fig2d-smooth-weights, on the dandiset's complex plume window. Reproduced when
+    |motion| exceeds |gradient|, |sum| is below 0.01 and the values are within tolerance under one
+    reading; partially reproduced when the ordering holds only.
+- id: fig3bc-mnm-filters
+  statement: A minimal opponent network trained to find the centerline learns gradient-detector
+    filters (opposite signs on the two antennae) in the smooth plume, and in the complex plume
+    filters with a delayed negative lobe in f1 like a motion detector; test AUCs are 0.726 (smooth)
+    and 0.517 (complex).
+  source: Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor
+    Features, paragraph 3; Figure 3B and 3C; SI Figure S3D and S3E
+  quote: For models trained in the smooth plume, the filters acted like a gradient detector ... The
+    opposite signs of the filters suggest that they are also sensitive to gradients, but the
+    delayed, negative lobe in
+  data: with_inputs
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71; complex plume in the dandiset; the
+    paper's training arrays and checkpoints were not deposited
+  expected:
+  - quantity: MNM test AUC, smooth plume
+    value: 0.726
+    tolerance: 0.073
+  - quantity: MNM test AUC, complex plume
+    value: 0.517
+    tolerance: 0.052
+  criterion: Training samples as fig2b-smooth-auc but with heading under a Wiener process whose RMS
+    change over 0.5 s is pi, facing upwind at the last sample (SI, Plume movies); MNM
+    sigma[ReLU(f1*L + f2*R + b) - ReLU(f1*R + f2*L + b)] with 30-sample filters, cross-entropy (SI,
+    Artificial neural network model); inputs log(1 + max(I - 5, 0)) (code). The SI gives learning
+    rate 1e-4 (garbled in the text extraction, 10^-4 on the PDF page), batch 500 and 500 epochs; the code's archived-source profile used
+    300 epochs, batch 100 and 1e-5 for the MNM; the SI values are the main reading and the code's
+    the variant. Filter shapes are judged as the paper describes them. Reproduced when the smooth
+    filters have opposite signs over the last 0.1 s with similar time courses, the complex f1 has a
+    negative lobe within the last 0.1 s at a longer lag than its weight at the most recent sample,
+    which is positive (delayed, Fig. S3D shows the lobe near -0.02 s), and both AUCs are
+    within tolerance; partially reproduced when the shapes hold and an AUC does not.
+- id: fig3d-mnm-gradient-response
+  statement: The minimal network trained in the smooth plume responds more strongly to synthetic
+    gradient signals than the one trained in the complex plume.
+  source: Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor
+    Features, paragraph 4; Figure 3D
+  quote: The model trained in the smooth plume responded more strongly to the gradient signals than
+    the model trained in the complex plume
+  data: with_inputs
+  where: as fig3bc-mnm-filters
+  depends_on:
+  - fig3bc-mnm-filters
+  criterion: Gradient probes are constant left and right signals with difference -0.5 to 0.5 and
+    mean 0.25 (SI, Testing trained models; code gradient_probe, 11 values); response is the model's
+    output probability (code). The code used a second trained MNM (R2) for the probe panels. How
+    response strength is compared is not stated, readings (a) the slope of the response against the
+    difference by least squares, (b) the mean of |response - 0.5| over the probes. Reproduced when
+    the smooth model's value exceeds the complex model's under both readings.
+- id: fig3e-mnm-motion-response
+  statement: Minimal networks trained in either plume respond strongly to synthetic motion signals,
+    and the smooth-trained model's motion response disappears when its filters are made exactly
+    symmetric.
+  source: Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor
+    Features, paragraph 4; Figure 3E; SI Figure S3H
+  quote: Interestingly, the models trained in the complex and smooth plumes both responded strongly
+    to the motion signals with various delays ... Responses to the motion signals disappear if
+    exactly symmetrical filters are used
+  data: with_inputs
+  where: as fig3bc-mnm-filters
+  depends_on:
+  - fig3bc-mnm-filters
+  criterion: Motion probes are random binary left signals and a right signal shifted by -6 to 6
+    frames (SI, Testing trained models); response is the output probability averaged over 100,000
+    samples per shift (code iter_motion_probes). Symmetrized filters are not defined; read as
+    f1 and f2 replaced by their mean over the two antennae with opposite signs kept (so that the
+    model is a pure difference detector), a reading, with the average of the time-reversed pair
+    shown as a variant. No threshold for strongly is given. Fig. 3E shows the responses largest at
+    shifts of +1 and -1 frame (about 0.545 and 0.455 smooth, 0.565 and 0.44 complex) and back near
+    0.5 by +/-6 frames, so a test at every shift would fail on the paper's own curves. Reproduced
+    when, for both models, the responses at shifts +1 and -1 lie on opposite sides of 0.5, and the
+    smooth model with symmetrized filters stays within 0.01 of 0.5 at every shift (Fig. S3H is flat
+    at 0.50); the +1 minus -1 difference is reported for each model against the figure's values.
+- id: fig3ij-dnm-specialization
+  statement: Dense networks are more specialized than minimal ones; the smooth-trained dense network
+    is more sensitive to gradient signals and the complex-trained one responds more strongly to
+    motion signals; dense networks perform modestly better than the minimal ones (test AUC 0.735
+    smooth, 0.543 complex).
+  source: Results, Optimized Bilateral Computation for Centerline-Finding Recovers Plume-Specific Odor
+    Features, paragraphs 5 and 6; Figure 3I and 3J; SI Figure S3K
+  quote: When tested on the gradient signals, the model trained in the smooth plume was more
+    sensitive to gradient signals compared to the model trained in the complex plume ... the DNM
+    trained in the complex plumes responded more strongly to the motion signals than the one trained
+    in the smooth plumes
+  data: with_inputs
+  where: as fig3bc-mnm-filters
+  expected:
+  - quantity: DNM test AUC, smooth plume
+    value: 0.735
+    tolerance: 0.074
+  - quantity: DNM test AUC, complex plume
+    value: 0.543
+    tolerance: 0.054
+  criterion: Dense network of two hidden layers of 20 units on the 60 concatenated inputs, opponent
+    structure (output minus output on the swapped inputs, code), trained as fig3bc-mnm-filters (SI
+    values main; the code's archived dense profile, 500 epochs, batch 500, learning rate 1e-5 smooth
+    and 1e-4 complex, a variant). Probes and the two readings of response strength as
+    fig3d-mnm-gradient-response, and for motion (a) the mean over shifts of |response - 0.5|,
+    (b) the difference between the mean responses at shifts +1 and -1. Reproduced when the smooth
+    DNM's gradient sensitivity exceeds the complex DNM's, the complex DNM's motion response exceeds
+    the smooth DNM's under both readings, and the AUCs are within tolerance; partially reproduced
+    when the sensitivities hold and an AUC does not. Whether each DNM's AUC exceeds the MNM's of
+    fig3bc-mnm-filters (modestly better) is reported.
+- id: fig4ef-agent-success
+  statement: Navigating agents that add a centerline-predicting dense network to a wind-only strategy
+    find the source more often than wind-only agents when the network was trained in the plume they
+    navigate, and less often when it was trained in the other plume; the wind-only agents perform
+    similarly in the two plumes.
+  source: Results, Sensitivity to Plume-Appropriate Directional Features Enhances Agent Navigation,
+    paragraphs 2 to 4; Figure 4E and 4F
+  quote: In the smooth-plume, agents using the augmented strategy with the smooth plume-trained dense
+    network significantly outperformed agents using the wind-only strategy ... However, agents using
+    the augmented strategy with plume-inappropriate computations ... performed worse than agents
+    using the wind-only strategy
+  statistics:
+  - about: every pairwise comparison of success rate within each plume
+    test: z-test of proportions
+    p: 0.001
+    p_relation: "<"
+    n: 10,000 trajectories per condition
+  data: with_inputs
+  where: smooth plume from Dryad doi:10.5061/dryad.g27mq71; complex plume in the dandiset; the
+    simulation code and trained networks are not in the paper's repository
+  depends_on:
+  - fig3ij-dnm-specialization
+  expected:
+  - quantity: success rate, smooth plume, wind only
+    value: 0.176
+    tolerance: 0.018
+  - quantity: success rate, smooth plume, smooth-trained network
+    value: 0.195
+    tolerance: 0.020
+  - quantity: success rate, smooth plume, complex-trained network
+    value: 0.153
+    tolerance: 0.015
+  - quantity: success rate, complex plume, wind only
+    value: 0.187
+    tolerance: 0.019
+  - quantity: success rate, complex plume, smooth-trained network
+    value: 0.117
+    tolerance: 0.012
+  - quantity: success rate, complex plume, complex-trained network
+    value: 0.22
+    tolerance: 0.022
+  criterion: Values read from the bar heights of Fig. 4E and 4F (no sentence states them), default
+    tolerance. Agents per SI (Agent simulations). Start uniformly in a box 200 to 250 mm downwind of
+    the source with random heading; 10 mm/s forward at each movie step; turns by a Poisson process at
+    4/3 Hz, magnitude normal with mean 30 and SD 8 degrees; antennae 306 um apart; reflecting walls
+    at x = 270, y = 160 and y = 0 mm, x = 0 terminates; success on entering a 10 mm circle at
+    (0, 85) smooth or (0, 90) complex within 90 s; passing upwind of the goal fails. Wind-only
+    agents average the two antennae, binarize at 5 AU, set R to 1 above threshold and let it decay
+    with a 0.97 s time scale below, and turn upwind with P = 1/(1 + exp(-(-0.49 + 1.5 R sin^2
+    theta))). Network agents feed 500 ms histories to the dense network and turn right when its
+    P(left) < 0.4, left when > 0.6, else as wind-only. Open, with readings named. The box width,
+    (a) 112 mm (Fig. 4 legend), (b) +/- 83 mm about the centerline (SI). Whether the 1500-frame
+    complex movie is looped over the 90 s, (a) looped, as in the fly experiments, (b) the run ends
+    with the movie. Reproduced when, in each plume, the plume-matched network beats wind only and
+    wind only beats the mismatched network by two-sided z-tests at p < 0.001 under one reading;
+    the rates are reported against the expected values, and the wind-only rates of the two plumes
+    differing by less than 0.02 is reported for the similarity.
+- id: discussion-ten-percent-gain
+  statement: Adding bilateral detection to the wind-only agent improves success by about 10% of the
+    baseline level.
+  source: Discussion, paragraph 4
+  quote: improved performance by ~10% of baseline levels
+  data: with_inputs
+  where: as fig4ef-agent-success
+  depends_on:
+  - fig4ef-agent-success
+  expected:
+  - quantity: relative gain in success rate of the plume-matched network agent over wind only
+    value: 0.10
+    tolerance: 0.05
+  criterion: The gain is (matched - wind only) / wind only from fig4ef-agent-success, per plume.
+    The paper gives one figure for both plumes; its own Fig. 4 bars give about 11% (smooth) and 18%
+    (complex), so a per-plume test would fail the complex plume on the paper's own numbers. The
+    tested value is the mean of the two plumes' gains (about 14% on the paper's bars). Tolerance 5
+    percentage points, wider than the default, as the paper writes "~10%". Reproduced when the mean
+    gain is within tolerance and both gains are positive; partially reproduced when both are positive
+    and the mean is outside tolerance. Each plume's gain is reported.
+- id: figs4-threshold-robustness
+  statement: Across a range of thresholds on the strength of bilateral evidence, agents using
+    plume-consistent features (networks or feature-based GLMs trained in the same plume) outperform
+    agents using inconsistent ones.
+  source: SI Figure S4E and S4F, legend
+  quote: Although these thresholds affect absolute performance levels, across thresholds agents using
+    consistent features ... outperformed agents using inconsistent features
+  data: with_inputs
+  where: as fig4ef-agent-success
+  depends_on:
+  - fig4ef-agent-success
+  - fig2d-smooth-weights
+  - fig2e-complex-weights
+  criterion: Agents as fig4ef-agent-success, with the symmetric thresholds on P(left) varied. The
+    thresholds are not listed in the text; Fig. S4E and S4F plot 11, at 0.05, 0.1 and 0.2 to 0.9 in
+    steps of 0.1, on an axis "Bilateral Evidence Threshold", with the Fig. 4 models (P(left)
+    outside 0.4 to 0.6) marked at 0.2. The threshold is therefore read as t on |2 P(left) - 1|, the
+    baseline strategy used when |2 P(left) - 1| <= t. The feature GLM agents use the Fig. 2 combined
+    models. The paper's own Fig. S4F does not bear out "across thresholds" for the GLM agents, as the
+    smooth-plume consistent GLM is below the inconsistent one at 0.05, 0.1 and 0.2 and the
+    complex-plume consistent GLM is at or below the inconsistent one at 0.7 to 0.9; Fig. S4E shows
+    the network agents consistent above inconsistent at every threshold in both plumes. Reproduced
+    when the consistent network agent beats the inconsistent one at every threshold in both plumes,
+    and the consistent GLM agent beats the inconsistent one at a majority of thresholds in each plume;
+    partially reproduced when the network part holds at a majority of thresholds only. The GLM
+    thresholds where the order reverses are reported against those of Fig. S4F.
+- id: fig5e-cue-betas
+  statement: For upwind-facing flies in the bulk of the plume, the gradient cue 50 ms before a turn
+    significantly predicts turn direction in the smooth plume while motion does not, and the motion
+    cue does in the complex plume while the gradient does not.
+  source: Results, Different Directional Odor Cues Predict Fly Crosswind Turning in Different Plume
+    Types, paragraph 3; Figure 5E
+  quote: In the smooth plume, the gradient cue but not the motion cue was a significant predictor ...
+    conversely, in the complex plume the motion cue was a significant predictor, but the gradient
+    cue was not
+  statistics:
+  - about: gradient coefficient, smooth plume
+    test: logistic regression with cluster-robust (trajectory-level) SE
+    p: 0.005
+    p_relation: "<"
+  - about: motion coefficient, complex plume
+    test: logistic regression with cluster-robust (trajectory-level) SE
+    p: 0.01
+    p_relation: "<"
+  expected:
+  - quantity: fitted gradient coefficient, smooth plume
+    value: -0.1181
+    tolerance: 0.0331
+  - quantity: fitted motion coefficient, smooth plume
+    value: -0.0074
+    tolerance: 0.0114
+  - quantity: fitted motion coefficient, complex plume
+    value: 0.0441
+    tolerance: 0.0159
+  - quantity: fitted gradient coefficient, complex plume
+    value: 0.0185
+    tolerance: 0.0161
+  criterion: Coefficients as fitted, from the code's fig5e_cue_beta tables (the figure plots the
+    gradient coefficient times -1, metadata/published_panel_params.json); tolerance 1 cluster-robust
+    SE, the paper's error bars. Turns are the dataset's saccade-like turn events (SI, Behavioral
+    Analysis). Kept turns (SI, Behavioral Analysis, and code filter_published_turns), heading at the
+    turn 160 to 200 degrees; walking upwind, the trajectory's vx low-passed by a fourth-order
+    Butterworth filter at 0.2 Hz run forward and backward (code) pointing upwind (the code tests
+    vx < 0; the SI's positive horizontal velocity is the same in the upwind frame); turn position
+    30 <= x <= 220 mm and 67 <= y <= 97 mm (code values of the SI's 3 cm < x < 22 cm and 3 cm band
+    about the centerline). Predictors are the dataset's per-frame gradient, motion and intensity
+    signals, each smoothed by a causal exponential filter with a 200 ms time constant (SI and code),
+    taken at the last frame at or before 50 ms before turn onset, within one frame (code). Onset is
+    the time turn speed crosses 20% of the peak height on the rising edge (SI, Behavioral Analysis);
+    if the dataset's turn event start is defined otherwise, onset is computed from the rotational
+    velocity by that rule. The 200 ms gray boxes of the Fig. 5D legend are read as the 200 ms time
+    constant of the cue smoothing (the panel is labelled tau = 200 ms), not a window average. One logistic regression per plume of turn direction (code maps a positive
+    direction to 1) on the three predictors and an intercept, cluster-robust SE grouped by
+    trajectory (statsmodels Logit). Open, with readings named. Heading window in the complex
+    plume, (a) 160 to 200 degrees (SI, main), (b) 150 to 210 degrees (code, which produced the
+    figure). The code also drops turns within 15 mm of the arena bounds (1st and 99th percentiles of
+    the plume's positions), which the SI does not list, (a) not applied (main), (b) applied (code).
+    Z-scoring, which the SI states and the code does not perform, (a) the signals as stored (code),
+    (b) z-scored over all frames of the plume's trajectories, (c) z-scored per trajectory; (b) only
+    rescales the coefficients. Not significant is not defined, (a) p >= 0.05, (b) p >= 0.01, the
+    lowest level the legend marks. Reproduced when the smooth gradient coefficient has p < 0.005,
+    the complex motion coefficient p < 0.01, and the smooth motion and complex gradient
+    coefficients are not significant; the outcome is the one all readings give, and the values are
+    compared with the expected ones under the code's readings.
+- id: fig5f-cue-dominance
+  statement: Cue dominance, the gradient-minus-motion log-likelihood difference relative to the total
+    bilateral contribution, is near 1 in the smooth plume (gradient dominates) and negative in the
+    complex plume (motion dominates).
+  source: Results, Different Directional Odor Cues Predict Fly Crosswind Turning in Different Plume
+    Types, paragraph 4; Figure 5F; SI Figure S5D and S5E
+  quote: This measure indicates that the gradient cue dominated in the smooth plume, while the motion
+    cue dominated in the complex plume
+  depends_on:
+  - fig5e-cue-betas
+  expected:
+  - quantity: cue dominance, smooth plume
+    value: 0.946
+    tolerance: 0.095
+  - quantity: cue dominance, complex plume
+    value: -0.662
+    tolerance: 0.066
+  criterion: Values computed from the mean log-likelihoods of the code's fig5f_s5 tables, matching
+    the bar heights of Fig. 5F (about 0.95 and -0.65); default tolerance. On the turns of
+    fig5e-cue-betas, four logistic models per plume with cluster-robust SE (SI, Behavioral Analysis;
+    code VARIANT_FORMULAS), full (gradient, motion, intensity), gradient (gradient, intensity),
+    motion (motion, intensity) and base (intensity only); dominance is (LL_gradient - LL_motion) /
+    (LL_full - LL_base), with LL the log-likelihood per turn (code). Readings as fig5e-cue-betas.
+    Reproduced when the smooth value is positive and the complex value negative, with both within
+    tolerance under one reading; partially reproduced when the signs hold only.
+- id: methods-intensity-right-bias
+  statement: Upwind-facing flies show a bias for rightward turns, toward the projector mount, that
+    grows with the overall projected light intensity.
+  source: SI, Supplementary Methods, Behavioral Analysis, paragraph 3
+  quote: Intensity was included to account for an observed bias exhibited by upwind-facing animals
+    for rightward turns, towards the projector mount location, with increased overall projected
+    light intensity
+  depends_on:
+  - fig5e-cue-betas
+  criterion: The paper gives no test or number. In the full models of fig5e-cue-betas, the
+    intensity coefficient is read in the direction of right turns (the dataset's coding of turn
+    direction decides which sign is right). Reproduced when it favours right turns with p < 0.05
+    (cluster-robust Wald test) in at least one plume and does not significantly favour left turns in
+    the other; its value and p are reported for both plumes.
+- id: figs5c-turn-angles
+  statement: The detected saccade-like turns reorient flies by about 30 degrees, with median angular
+    displacements of -34.2 and +33.8 degrees for the two turn directions.
+  source: SI Figure S5C, legend; Results, Different Directional Odor Cues Predict Fly Crosswind
+    Turning in Different Plume Types, paragraph 2
+  quote: Median values (dashed lines; -34.2°, +33.8°) are similar to turn displacements reported in
+    flies navigating plumes of smoke
+  expected:
+  - quantity: median angular displacement, negative-velocity turns
+    value: -34.2
+    tolerance: 3.42
+    unit: degrees
+  - quantity: median angular displacement, positive-velocity turns
+    value: 33.8
+    tolerance: 3.38
+    unit: degrees
+  criterion: Turns are the dataset's detected turn events, split by the sign of the rotational
+    velocity at the peak (Fig. S5C legend). Open, with readings named. Which turns, (a) all detected
+    turns of both plumes pooled, (b) only the turns kept in fig5e-cue-betas. The displacement,
+    (a) the heading change from the event's start to its end, (b) the integral of rotational
+    velocity over the event. Reproduced when both medians are within tolerance under one reading.
+- id: figs5fh-smoothing-agent
+  statement: Agents using one fixed rule on time-smoothed gradient and motion cues produce turns for
+    which a logistic regression on the local cues weights the gradient more in the smooth than in the
+    complex plume and motion more in the complex than in the smooth plume, and, within each plume,
+    weights the gradient above motion in the smooth plume and motion above the gradient in the
+    complex plume, so time integration could account for the flies' pattern.
+  source: Results, Different Directional Odor Cues Predict Fly Crosswind Turning in Different Plume
+    Types, paragraph 5; SI Figure S5F to S5H, legend
+  quote: We found that gradient cues were weighted more strongly in the smooth than in the complex
+    plume; conversely, motion cues were weighted more strongly in the complex than in the smooth
+    plume
+  statistics:
+  - about: within-plume difference of gradient and motion weights, each plume
+    test: logistic regression weights compared
+    p: 0.005
+    p_relation: "<"
+  data: with_inputs
+  where: as fig4ef-agent-success
+  criterion: Agents as fig4ef-agent-success with P(left) the logistic of 2.65 times the smoothed
+    gradient plus 0.07 times the smoothed motion, each raw cue smoothed by a causal exponential filter
+    with a 0.85 s half-life (SI, Agent simulations); turns of upwind-facing agents regressed on the
+    local gradient and motion at decision time. Open, with readings named. How the raw cues are
+    computed for agents, (a) the Fig. 2 features over the antenna histories, the main reading, as
+    the SI says "as described above" and the fixed weights 2.65 and 0.07 are close to the smooth
+    combined-model weights of Fig. 2D, (b) the gradient and motion of the fly analysis (slice slope
+    and cross-correlation offset); the upwind window, 160 to 200 degrees as for the flies; predictors
+    z-scored per plume as in the fly analysis; the test of the weight difference is not named, read
+    as a Wald test of the difference of the two coefficients. Fig. S5G gives about 0.22 and 0.04
+    (gradient, motion) in the smooth plume and 0.13 and 0.22 in the complex plume. Reproduced when
+    the gradient weight is larger in the smooth than in the complex plume and the motion weight larger
+    in the complex than in the smooth plume (Results, Fig. S5G), and the gradient weight exceeds the
+    motion weight in the smooth plume and the motion weight exceeds the gradient weight in the
+    complex plume, each within-plume difference with p < 0.005 (Fig. S5H), under one reading;
+    partially reproduced when only one of the two comparisons holds.
+checks:
+- date: 2026-11-12
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1eh-snapshot-organization, added figs1-antisymmetry-index to depends_on, as the criterion takes its outcome from that claim too.
+  - fig1il-zscore-reliability, the smooth-plume window of frames 300 to 1799 is not in the SI (which gives the window for the complex plume only); named it as open, with the first 1500 frames as the other reading.
+  - figs1-antisymmetry-index, M is the plain temporal mean (Fig. S1 columns iii and iv are titled <dI/dy>_t and <-dI/dy dI/dt>_t, with raw-unit colour bars), not the z-score of fig1il; said so. Named the freestream centerline as open, as the paper does not give it. Added reporting of s_gradient and s_motion for the Results sentence on how each changes with wind speed.
+  - figs1-temporal-statistics, marked the medians and the 10% widening as this file's reading of similar, since the paper gives no measure.
+  - figs1fg-resolution-robustness, the reference map is fixed by Fig. S1F ("Pearson r vs baseline") and the outlined baseline cell of Fig. S1G, so the previous-spacing reading was dropped. The old rule asked for r of at least 0.8 up to 8 frames, but Fig. S1G shows the motion r near 0.65 at 8 frames and 0.35 at 15. Rule now asks for robustness to 4 frames (the Discussion's about 150 ms is the 133 ms label of 4 frames) and a drop at 8 and 15 frames, which is past the smooth plume's 15 Hz sampling. Statement now gives the delay range.
+  - figs2c-one-frame-delay, Fig. S2C shows the smooth AUC almost flat over tau 1 to 3, so a strict ordering at tau 2 is within noise. The rule now uses the SD over repeats; the strict reading is still reported.
+  - fig3bc-mnm-filters, checked the learning rate on the PDF page (10^-4, garbled only in the extraction). Reworded the delayed negative lobe of f1 as a longer lag than the positive most-recent weight, since "follows its positive peak" could be read either way.
+  - fig3e-mnm-motion-response, Fig. 3E responses return to about 0.5 by +/-6 frames, so "opposite sides of 0.5 at positive and negative shifts" read over every shift would fail on the paper's own curves. The rule is now set at shifts +1 and -1, with the figure's values given.
+  - fig3ij-dnm-specialization, added reporting of whether the DNM AUCs exceed the MNM AUCs, for "modestly better".
+  - discussion-ten-percent-gain, the paper's own Fig. 4 bars give gains of about 11% and 18%, so the per-plume rule would fail the complex plume on the paper's numbers. It now tests the mean of the two gains (about 14% on the bars) and needs both gains positive.
+  - figs4-threshold-robustness, read the thresholds off Fig. S4 (0.05, 0.1, 0.2 to 0.9; Fig. 4 models marked at 0.2, so t applies to |2P - 1|). Fig. S4F itself shows the GLM consistent agent below the inconsistent one in the smooth plume at 0.05 to 0.2, and at or below it in the complex plume at 0.7 to 0.9, against the legend's "across thresholds". Rule now asks for every threshold for networks and a majority for GLMs.
+  - fig5e-cue-betas, defined turn onset as the SI does (20% of the peak turn speed on the rising edge), not as the dataset's event start. Read the 200 ms gray boxes of Fig. 5D as the smoothing time constant.
+  - figs5fh-smoothing-agent, the Results sentence quoted is a cross-plume comparison (Fig. S5G), and the old criterion tested only the within-plume difference (Fig. S5H). Statement and rule now cover both, with the Fig. S5G values. Made the Fig. 2 features the main reading of the agents' cues, since the weights 2.65 and 0.07 match the Fig. 2D smooth weights. Named per-plume z-scoring as a reading.
+  - fig2b-smooth-auc and fig2d-smooth-weights, added the paper's own Yale Dataverse deposit as a possible source of the rescaled smooth plume.
+  - Checked against the PDF figures and found consistent with the recorded values (no change); Fig. 2B to 2E bars, Fig. 4E and 4F bars and stars, Fig. 5E bars and stars (complex gradient plotted negative, consistent with the plotted sign flip), Fig. 5F, Fig. S5C and S5D-E, Fig. S3E, S3H and S3K, the SI P_upwind formula.
+  - Open, not settled from the paper. The code-derived details (frame numbers, filters, turn and position filters, published tables) could not be checked here, as the repository was not read in this check. The Discussion's fivefold spatial range does not match the 3 to 12 pixels (fourfold) of Fig. S1F. The Fig. 4 legend (112 mm) and SI (+/- 83 mm) box widths still conflict. Not given claims, as qualitative and hedged in the paper; the DNM filter shapes of Fig. 3G and 3H, and the S5F success rates of the cue-smoothing agent.

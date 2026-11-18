@@ -1,0 +1,339 @@
+# Claims for Zhong, Katkov & Tsodyks (2026), "Synaptic Theory of Chunking in Working Memory",
+# eLife, doi:10.7554/elife.109538, tested on DANDI:000207.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. paper/10.7554-elife.109538.txt, fetched from eLife's site. Its header says
+# "version of record", but the page it holds is the eLife Reviewed Preprint version 1
+# (doi:10.7554/eLife.109538.1, 9 January 2026, "Not revised"). It holds the main text, the
+# Methods (sections A to E), the legends of Figures 1 to 4 and of the supplementary Figures S1
+# to S3, and the Data availability statement. No PDF was supplied. The equations (1) to (15)
+# and the values of Table I (simulation parameters) did not survive extraction; Eq. (1) is
+# known from the text as M* = 2^(C-1) ("M ∗ = 24−1 = 8" for C = 4, and "M ∗ = 2C−1" in the
+# Figure 4 legend, superscripts lost). Figure axes and plotted values could not be read.
+#
+# Code. The paper links none. Data availability says "The code for simulation will be made
+# available in a Github repository at a later stage"; no analysis code for Figure 3 or Figure 4
+# is named. No repository or commit was read.
+#
+# Data the paper used.
+# - Figures 1, 2 and S1, S2 are numerical simulations of the rate model of Methods A, with the
+#   parameters of Table I (not in the text read) and the input timings of Methods C. No
+#   recorded data.
+# - Figure 3 and S3 reanalyse the single-neuron recordings of Zheng et al. 2022 (ref. [41],
+#   Nat Neurosci 25:358), downloaded from DANDI at dandiset 000207 version 0.220216.0323
+#   (Methods E). Drug-resistant epilepsy patients with depth electrodes in the medial temporal
+#   lobe watched movie clips, each made of two episodes separated by a cut in the middle. Cuts
+#   are soft boundaries (change of camera position) or hard boundaries (change of movie
+#   content); this paper pools neurons coding either as "boundary neurons". "Onset neurons"
+#   respond to clip onset. Of the 18 subjects in [41], 4 were left out (no onset-responsive or no
+#   cut-responsive neuron detected), so 14 are analysed. Measured variables are spike times of
+#   sorted units, clip onset times and cut times. Subject IDs named in Fig. S3 include P64CS and
+#   TWH120.
+# - Figure 4 uses behavioural recall data extracted from Miller and Selfridge 1950 (ref. [42],
+#   Am J Psychol 63:176) and its Danish (ref. [46], Maher and Skovengaard 1988) and Hindi
+#   (ref. [47], Sharma and Sen 1977) replications. Variables are the fraction of words
+#   recalled f, the passage length L in words, and the order n of the approximation to the
+#   language. These are published tables, not in any archive and not in DANDI:000207.
+#
+# Method details the paper fixes for Figure 3 (Methods E, Fig. 3 legend, Results paragraph on
+# Fig. 3). Soft and hard boundary neurons are pooled as boundary neurons; all other detected
+# neurons are non-boundary neurons; raw firing rates of all boundary (or non-boundary)
+# neurons of a subject are pooled, then z-scored and averaged across subjects; time zero is the
+# cut (Fig. 3a, b) or the clip onset (Fig. 3c); the shade is one standard deviation; 4 of 18
+# subjects are excluded by the rule above. Details the paper leaves open are named in each
+# criterion (how boundary and onset neurons are selected, bin width and smoothing, the plotted
+# window, the z-score reference, and how a dip and a ramp are judged). The paper reports no
+# statistical test for any finding.
+schema_version: 2
+paper: doi:10.7554/elife.109538
+claims:
+- id: fig1d-basic-capacity-four
+  statement: In the network model with no chunking, after six items are presented at a uniform
+    pace, four clusters stay active as periodic population spikes and two drop out of working
+    memory, a basic capacity C of 4 for the chosen parameters.
+  source: Results, Chunking increases working memory capacity, paragraph 2; Figure 1D top
+  quote: At the end of the presentation, 4 of the corresponding clusters remain active in the
+    form of periodic population spikes while two other clusters drop out of WM, corresponding to
+    a WM capacity of 4 for the chosen values of parameters
+  expected:
+  - quantity: clusters active after presentation of six items, no chunking
+    value: 4
+    tolerance: 0
+    unit: clusters
+  criterion: A simulation result, not a finding on recorded data; DANDI:000207 cannot test it.
+    It needs the model of Methods A (Eqs. 2 to 8, lost in the text read), the parameters of
+    Table I (values not in the text read) and the timings of Methods C (stimuli from t = 1 s,
+    0.025 s long, every 0.45 s, input 750 Hz, background 10 Hz). The tolerance is 0 because the
+    value is a count of clusters and 10% of it is under one cluster.
+- id: fig1d-chunking-retrieves-six
+  statement: With slight pauses after the third and sixth items activating chunking clusters,
+    the network retrieves all six items chunk by chunk, while never holding more than four
+    active clusters at once.
+  source: Results, Chunking increases working memory capacity, paragraphs 2 and 3; Figure 1D
+    bottom and Figure S1
+  quote: This chunking scenario allows the retrieval of all six memory items while at any given
+    moment in time, the network maintains no more than four active clusters, not exceeding basic
+    WM capacity.
+  expected:
+  - quantity: items retrieved with chunking
+    value: 6
+    tolerance: 0
+    unit: items
+  - quantity: largest number of clusters active at once
+    value: 4
+    tolerance: 0
+    unit: clusters
+  criterion: A simulation result; DANDI:000207 cannot test it. Same model and gaps as
+    fig1d-basic-capacity-four, with the timings of Methods C for the bottom panel (chunking
+    clusters loaded for 0.025 s at 0.3 s intervals, background switching between 10 and -10 Hz
+    for 1.35 s during retrieval) and the chunking inhibition of Eq. (8). Tolerances are 0, as
+    counts.
+- id: eq1-new-magic-number
+  statement: With hierarchical chunking the largest number of items that can be held and
+    retrieved is M* = 2^(C-1), with C the basic capacity; for C = 4 this is 8, reached by a
+    binary tree of three levels (four chunks of two in two meta-chunks).
+  source: Results, Hierarchical chunking predicts a new capacity, paragraphs 1 to 3; Methods B
+  quote: Let us consider the example corresponding to C = 4, with a capacity of M ∗ = 24−1 = 8.
+    In this case, the optimal chunking structure is a binary tree with three levels
+  expected:
+  - quantity: M* for C = 4
+    value: 8
+    tolerance: 0
+    unit: items
+  criterion: A derivation (Methods B), not a finding on data; DANDI:000207 cannot test it.
+    It holds when maximising the number of stimulus clusters in a tree of K levels with integer
+    branching ratios c_k, subject to c_K plus the sum over k < K of (c_k - 1) being at most C,
+    gives 2^(C-1), and 8 for C = 4 with c = 2 at every level. Equations (9) to (14) are lost in
+    the text read; the constraint is taken from the words of Methods B. Tolerance 0, as a count.
+- id: fig2b-hierarchical-retrieval
+  statement: In simulation, eight items loaded as four chunks of two, grouped into two
+    meta-chunks by longer pauses, are maintained as two top-level chunking clusters and are
+    retrieved chunk by chunk with at most four clusters active.
+  source: Results, Hierarchical chunking predicts a new capacity, paragraphs 4 to 6; Figure 2B
+  quote: Eight memories are loaded as four chunks of two into the working memory network ...
+    Now, the first chunk has been retrieved, and the working memory maintains four clusters
+  expected:
+  - quantity: items loaded and retrieved
+    value: 8
+    tolerance: 0
+    unit: items
+  - quantity: clusters active while the first chunk is retrieved
+    value: 4
+    tolerance: 0
+    unit: clusters
+  criterion: A simulation result; DANDI:000207 cannot test it. Needs Table I (not in the text
+    read) and the timings of Methods C for Fig. 2(b) (stimuli from t = 1 s, 0.15 s long, every
+    0.45 s; chunking clusters 0.01 s long at 0.2 s intervals; background switching between 10
+    and -10 Hz for 0.8 s during retrieval), with Eq. (8) extended so that level-k chunking
+    clusters inhibit all lower-level clusters presented before them (Methods A). Methods C
+    writes "k = 2, 3 level chunking clusters", but the Results put chunking clusters at
+    k = 1, 2 and stimulus clusters at k = 3, so the 0.01 s timing is read as that of the
+    chunking clusters. Tolerances are 0, as counts.
+- id: figs2-delayed-hebbian-binding
+  statement: Replacing the imposed chunking inhibition (Eq. 8) by a time-delayed Hebbian
+    strengthening of chunk-to-stimulus inhibitory synapses approximates the activity of
+    Figures 1D and 2B, but needs fine-tuning of the presentation time, the integration window
+    and the threshold.
+  source: Methods D, paragraphs 3 and 4; Figure S2
+  quote: We find that Eq. (6)-(3) with Eq. (15), instead of Eq. (8), is able to approximate the
+    activity traces as in Fig. 1(d) and Fig. 2(b) (see Fig. S2). However, it requires
+    fine-tuning between the presentation time and the integration window τs, as well as the
+    threshold θ0.
+  criterion: A simulation result; DANDI:000207 cannot test it. Methods D gives the extra
+    parameters (tau_J = 75 s, J_min = 0, J_max = 10, kappa_J = 1 Hz; tau_s = 1.8 s and theta_0
+    = 7000 Hz for Fig. S2a, b; for Fig. S2c theta_0 = 25600 Hz, one fifth of it for level 1 to
+    2, tau_s = 1.9 s for adjacent and 3.1 s for skip levels), but Eq. (15) itself and Table I
+    are lost in the text read. "Approximate" has no measure in the paper.
+- id: methods-subjects-included
+  statement: Four of the eighteen subjects of Zheng et al. 2022 are left out of the Figure 3
+    analysis, because no onset-responsive or no cut-responsive neuron was detected in them,
+    leaving 14.
+  source: Methods E, paragraph 1
+  quote: We have excluded four subjects out of eighteen in [41] from our analysis, because in
+    those subjects either no neurons responding to the onset of the movie were detected, or no
+    neurons responding to the onset of the cut were detected.
+  data: dataset
+  expected:
+  - quantity: subjects in the dataset's encoding sessions
+    value: 18
+    tolerance: 0
+    unit: subjects
+  - quantity: subjects included after the exclusion
+    value: 14
+    tolerance: 0
+    unit: subjects
+  criterion: Subjects of DANDI:000207 version 0.220216.0323 with movie-watching (encoding)
+    data. A subject is excluded when the selection of fig3a-dip-after-boundary finds no
+    boundary neuron in it, or the selection of fig3c-onset-control finds no onset neuron. The
+    selection rules are open (see those claims); the count is reported under each reading.
+    Reproduced when, under one reading, 18 subjects are found and 14 kept. Counts are exact
+    (tolerance 0). Whether the 14 kept include P64CS and TWH120 (shown in Fig. S3) is
+    reported.
+- id: fig3a-dip-after-boundary
+  statement: Aligned to movie cuts and averaged over subjects and trials, the firing of
+    non-boundary neurons dips about 130 ms after the peak of boundary-neuron firing, then
+    ramps up continuously, as the chunking model predicts.
+  source: Results, Experimental evidence for the existence of chunking clusters, paragraph 2;
+    Figure 3A
+  quote: we find that after the peak in the firing rate of boundary neurons (top panel of Fig. 3
+    (a)), about ~ 130 ms later, there is a dip in the average activities of the rest of the
+    recorded neurons (bottom panel of Fig. 3 (a)). Further-more, there is a continuous ramp-up
+    of activities following the dip.
+  data: dataset
+  depends_on:
+  - methods-subjects-included
+  expected:
+  - quantity: lag from the boundary-neuron peak to the non-boundary dip
+    value: 130
+    tolerance: 13
+    unit: ms
+  criterion: From the paper (Methods E, Fig. 3 legend). The 14 included subjects; trials
+    aligned to the cut (time zero); soft and hard boundary neurons pooled as boundary neurons
+    and all other detected neurons as non-boundary; per subject, the raw firing rates of all
+    boundary (or non-boundary) neurons pooled over neurons and trials, z-scored, and averaged
+    across subjects; the mean is the trace, one standard deviation the shade. Open, with the
+    readings run. (1) Boundary-neuron selection, which the paper takes from [41] without
+    giving the test; (a) the classification of [41] where the dataset or [41] gives it, (b)
+    re-selection by the method in the Methods of [41], cuts of either type. (2) Trials; clips
+    with a cut (soft and hard) only, the reading the text supports ("each consisting of two
+    episodes separated by a cut"). (3) Bins and smoothing; 10 ms and 25 ms bins, each with no
+    smoothing and with a Gaussian kernel of 50 ms SD. (4) Window, -1 to 2 s around the cut, a
+    standard choice. (5) Z-score reference; (a) the subject's whole trace in the window, (b)
+    its pre-cut part (-1 to 0 s). Measures fixed here as the paper gives none. Boundary peak
+    is the time of the maximum of the boundary trace after time zero; the dip is the minimum of
+    the non-boundary trace from that peak to 500 ms after it; the lag is the dip time minus
+    the peak time. A dip is present when its value is below the mean of the non-boundary trace
+    from -1 to 0 s; a ramp is present when a line fitted to the non-boundary trace from the dip
+    to 1 s after the cut has positive slope. Reproduced when the dip and the ramp are present
+    and the lag is within tolerance; partially reproduced when dip and ramp are present but the
+    lag is outside it. Tolerance is 10% of 130 ms, widened to one bin when the bin is wider,
+    since the lag cannot be resolved finer than a bin. The paper's "about ~" marks the value
+    as approximate.
+- id: fig3b-individual-subjects
+  statement: The dip-then-ramp of non-boundary neurons after a cut is seen in most individual
+    subjects, though not all (P64CS has no ramp and TWH120 has no dip).
+  source: Results, Experimental evidence for the existence of chunking clusters, paragraph 2;
+    Figure 3B; Figure S3 legend
+  quote: While some subjects do not exhibit the qualitative trend as predicted (e.g., the firing
+    rate of subject P64CS does not have a ramp, and TWH120 does not have a dip), most of the
+    subjects’ firing rates follow the same qualitative trend as observed in the average plot in
+    Fig. 3(a).
+  data: dataset
+  depends_on:
+  - methods-subjects-included
+  - fig3a-dip-after-boundary
+  criterion: Per included subject, the non-boundary trace of fig3a-dip-after-boundary
+    (that subject's pooled neurons, all its cut trials), with the dip and ramp tests of that
+    claim and its readings, the boundary peak being that subject's own (the red dashed line of
+    Fig. S3). "Most" is read as more than half of the 14 subjects (8 or more). Reproduced
+    when, under one reading, 8 or more subjects show both a dip and a ramp, P64CS shows no
+    ramp and TWH120 shows no dip; partially reproduced when 8 or more show both under a
+    reading but under no reading do both named exceptions hold. Not reproduced when fewer than
+    8 show both under every reading. The count, and the subjects sorted by dip time as in
+    Fig. 3(b), are reported.
+- id: fig3c-onset-control
+  statement: Aligned to movie onset, onset-responsive neurons show a peak, but the remaining
+    neurons (boundary neurons included) show no dip-then-ramp, so the pattern is specific to
+    boundary neurons.
+  source: Results, Experimental evidence for the existence of chunking clusters, paragraph 2;
+    Figure 3C
+  quote: Aligning firing rates to the movie onset, we observe a peak in the on-set neurons as
+    reported in [41]; however, unlike Fig. 3 (a), the remaining neurons (including boundary
+    neurons) do not exhibit the dip-then-ramp pattern (Fig. 3 (c)).
+  data: dataset
+  depends_on:
+  - methods-subjects-included
+  - fig3a-dip-after-boundary
+  criterion: A claim of absence; the paper uses no test, only the traces. The same pooling,
+    z-scoring, bins and window as fig3a-dip-after-boundary, aligned to clip onset; onset
+    neurons against all other neurons. Onset-neuron selection is open; (a) the onset cells of
+    [41] where the dataset or [41] gives them, (b) re-selection by the method in the Methods
+    of [41] for clip-onset responses. Reproduced when the onset trace peaks after time zero
+    and the non-onset trace fails the dip-and-ramp test of fig3a-dip-after-boundary (taken
+    from the onset peak); not reproduced when it passes. The non-onset dip depth and ramp slope
+    are reported either way.
+- id: fig4a-universal-slope
+  statement: Plotted against log2 of passage length, the fraction of recalled words for each
+    order of approximation to English falls on a straight line, and all lines collapse onto one
+    common line by shifting their intercepts.
+  source: Results, Experimental tests of the new magic number, paragraph 2; Figure 4A
+  quote: we replotted the data from [42] in a semi-log plot (with f as a function of log2 L) and
+    observed that all the different n-gram curves are well approximated by straight lines. We
+    hence collapsed all the curves into a common line by adjusting the individual intercepts
+  data: elsewhere
+  where: Miller and Selfridge 1950, Am J Psychol 63:176, doi:10.2307/1418920 (published
+    recall table); not in any data archive
+  criterion: Not testable on DANDI:000207. On the data of [42], f against log2 L per order n
+    and for natural text (the black curve of Fig. 4a), one common slope with a separate
+    intercept per curve. The fitting method is open; (a) least
+    squares with a shared slope, (b) the mean of the separate slopes. No measure of "well
+    approximated" is given.
+- id: fig4b-plateau-near-eight
+  statement: The critical length Lc of perfect recall, found by extrapolating each curve to f = 1
+    with the common slope, increases with the order of approximation and plateaus from about
+    n = 4 at roughly 8 words, the predicted M* for C = 4.
+  source: Results, Experimental tests of the new magic number, paragraph 2; Figure 4B
+  quote: Lc increases with n as expected but starts to plateau around n = 4, saturating at
+    roughly the predicted value of 8.
+  data: elsewhere
+  where: Miller and Selfridge 1950, Am J Psychol 63:176, doi:10.2307/1418920 (published
+    recall table); not in any data archive
+  depends_on:
+  - fig4a-universal-slope
+  expected:
+  - quantity: Lc at the plateau
+    value: 8
+    tolerance: 0.8
+    unit: words
+  criterion: Not testable on DANDI:000207. Lc per n is the L at which the fitted line of
+    fig4a-universal-slope reaches f = 1 (Fig. 4 legend). Reproduced when Lc rises with n up to
+    n = 4 and the values from n = 4 on are within tolerance of 8.
+- id: fig4b-three-languages
+  statement: Danish and Hindi replications of the Miller-Selfridge experiment give the same
+    trend, and in all three languages Lc saturates in the region predicted by M* = 2^(C-1) with
+    C = 4.
+  source: Results, Experimental tests of the new magic number, paragraphs 2 and 3; Figure 4B
+  quote: The same analysis of two replicates of the Miller-Selfridge experiment in Danish and
+    Hindi [46, 47] reveals similar trends. ... Notably, in Fig. 4(b) for all three languages, Lc
+    saturates within the region predicted by M ∗ = 2C−1, when substituting for C = 4 [4].
+  data: elsewhere
+  where: Maher and Skovengaard 1988, Scand J Psychol 29:194,
+    doi:10.1111/j.1467-9450.1988.tb00791.x; Sharma and Sen 1977, Indian J Psychol, no DOI or
+    volume given in the paper (published recall tables); not in any data archive
+  depends_on:
+  - fig4b-plateau-near-eight
+  criterion: Not testable on DANDI:000207. The analysis of fig4a-universal-slope and
+    fig4b-plateau-near-eight applied to each replication. "Within the region predicted" is
+    open; (a) the plateau within 10% of 8, (b) the plateau at or below 8, M* being stated as
+    a limit beyond which perfect retrieval is impossible. Reproduced when in each replication
+    Lc rises with n and then plateaus (the "similar trends") and, under one reading, the
+    plateau of all three languages is in the region.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3b-individual-subjects, criterion rewritten so the outcomes do not overlap. The old
+    wording made a result with a majority and a failed exception both reproduced and partially
+    reproduced; the statement includes the two exceptions of the Fig. S3 legend, so reproduced
+    now needs them, and "more than half of 14" is made explicit as 8 or more.
+  - fig2b-hierarchical-retrieval, criterion notes that Methods C names the 0.01 s clusters
+    "k = 2, 3 level chunking clusters" while the Results put chunking clusters at k = 1, 2, and
+    gives the reason for the 0 tolerances.
+  - fig4a-universal-slope, criterion adds the natural-text curve, which the Fig. 4a legend
+    includes ("Black color represents natural text").
+  - fig4a-universal-slope, fig4b-plateau-near-eight, fig4b-three-languages, `where` now give
+    the DOIs the paper's reference list holds for refs. [42] and [46].
+  - fig4b-three-languages, criterion states when the claim is reproduced, including the
+    "similar trends" of the Results, and why reading (b) is allowed (Eq. 1 as a limit).
+  - Open, the Hindi replication (ref. [47]) has no DOI or volume in the paper, so the author
+    may not be able to pin it; fig4b-three-languages may then be blocked on that part.
+  - Open, fig3a-dip-after-boundary and fig3c-onset-control rest on measures the paper does not
+    give (bins, smoothing, window, z-score reference, how a dip, a ramp and a peak are judged,
+    how boundary and onset neurons are selected); the criteria name them as open and fix
+    readings, which the outcome will rest on as assumptions.
+  - Open, whether "all trials" in the Fig. 3 legend includes clips of [41] without a cut is
+    not said; the text ("each consisting of two episodes separated by a cut") supports cut
+    clips only, the reading the criterion takes.

@@ -1,0 +1,1073 @@
+schema_version: 3
+id: dana-2016-01
+datasets:
+- archive: crcns
+  id: cai-2
+  version: unversioned
+  doi: 10.6080/K0W37T87
+  relation: primary
+paper: doi:10.7554/elife.12727
+date: '2026-11-13'
+entry: dana-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-15
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43422113748
+inputs:
+- what: Supplementary file 1 of the paper (RCaMP1h variant screen), streamed from https://cdn.elifesciences.org/articles/12727/elife-12727-supp1-v2.xlsx,
+    for screen-single-mutations-improved and culture-jrcamp1-sensitivity.
+  source: doi:10.7554/eLife.12727.030
+- what: Supplementary file 2 of the paper (R-GECO1 variant screen), streamed from https://cdn.elifesciences.org/articles/12727/elife-12727-supp2-v2.xlsx,
+    for screen-single-mutations-improved and culture-jrgeco1a-sensitivity.
+  source: doi:10.7554/eLife.12727.031
+- what: Supplementary Tables 1 and 3 of Chen et al. (2013b), Nature 499:295, from the Supplementary Information PDF of
+    the author manuscript in the PMC open-access bucket (https://pmc-oa-opendata.s3.amazonaws.com/PMC3777791.1/NIHMS489004-supplement-supp_info_2_revised_20130705.pdf,
+    MD5 910abc8b19fb27ef2584cb59f2e04a19), for the GCaMP6f and GCaMP6s values of fig4g-kinetics-like-gcamp6.
+  source: doi:10.1038/nature12354
+outcomes:
+- claim: screen-single-mutations-improved
+  outcome: not_reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:screen-single-mutations-improved
+  measured:
+  - 230
+  - 934
+  - 58
+  - 692
+  notes: Supplementary file 1 holds 934 single-mutation RCaMP1h variants and file 2 holds 692 single-mutation R-GECO1
+    variants, within tolerance of 934 and 689. By the criterion's rule (1 AP ratio above 1, 1 AP p below 0.01) 230 RCaMP1h
+    and 58 R-GECO1 variants are improved, against 353 and 187. No other rule gives both counts (ratio above 1 alone 637
+    and 207; ratio above 1 with p below 0.05, 334 and 91; any of 1, 3, 10 or 160 AP, 307 and 66; all variant rows, 334
+    and 122). For RCaMP1h, 334 is within 353 ± 35.3; for R-GECO1 no rule is within 187 ± 18.7 (207 is just above 205.7).
+    The claims check had found the same counts before the analysis.
+  deviations:
+  - The parent's own row, whose mutation column reads 'base', is not counted as a single mutation.
+- claim: culture-jrgeco1a-sensitivity
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:culture-jrgeco1a-sensitivity
+  measured: 8.57
+  notes: The jRGECO1a row of Supplementary file 2 gives a 1 AP ratio of 8.57 against R-GECO1 (p 2.3e-09), a 10 AP half
+    decay time ratio of 1.05 (p 0.32) and a 160 AP dF/F0 ratio of 1.10 (p 0.47), both inside 0.8 to 1.25 and both with
+    p at or above 0.01. The faster rise time in the statement is not in the table and is not tested.
+  deviations:
+  - Tested on the paper's supplementary table, not on recordings; the culture recordings are not deposited.
+- claim: culture-jrcamp1-sensitivity
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:culture-jrcamp1-sensitivity
+  measured:
+  - 24.02
+  - 12.96
+  notes: Supplementary file 1 gives 1 AP ratios of 24.02 for jRCaMP1a and 12.96 for jRCaMP1b against RCaMP1h; jRCaMP1a
+    has the larger 1 AP ratio and the larger 10 AP half decay ratio (3.13 against 1.15).
+  deviations:
+  - Tested on the paper's supplementary table, not on recordings; the culture recordings are not deposited.
+- claim: fig4-recorded-cells
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4-recorded-cells
+  measured:
+  - 11
+  - 6
+  - 10
+  - 5
+  notes: The file names give 11 jRGECO1a cells on 6 recording dates (27 files, 7 of them parts of three recordings) and
+    10 jRCaMP1a cells on 5 dates (20 files, one a duplicate). The data set names no animals, so a mouse is a recording
+    date, as the criterion allows; that each date is one mouse is not shown by the files.
+  deviations:
+  - Mice are counted as recording dates; the data set has no animal identifier.
+- claim: fig4d-event-counts
+  outcome: not_reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4d-event-counts
+  measured:
+  - 191
+  - 62
+  - 28
+  - 30
+  - 36
+  - 20
+  - 12
+  - 17
+  - 158
+  - 83
+  - 79
+  - 58
+  - 38
+  - 24
+  - 16
+  - 11
+  - 320
+  - 246
+  notes: 'Under the main reading (isolation (a), more than 1 s on each side as the Methods say, with the script''s noise
+    traces) 6 of the 18 counts are within tolerance, the best of the six combined readings of the claim (0 to 6): jRGECO1a
+    191, 62, 28, 30, 36, 20, 12, 17 events (1, 3, 5 and 6 AP within) and 320 noise traces (within); jRCaMP1a 158, 83,
+    79, 58, 38, 24, 16, 11 (only 8 AP within) and 246 noise traces against 274. The data set''s script, with 0.8 s isolation
+    after the event, gives all nine jRGECO1a counts exactly (199, 70, 29, 34, 35, 22, 14, 21 and 320) and 11 of 18 in
+    all, but that isolation disagrees with the Methods and is not a reading of the claim. Reading (b) gives far more events.
+    A sweep of jRCaMP1a isolation intervals (1 to 2 s before, 0.8 to 2 s after) matches at most 7 of the 8 event counts,
+    and the script''s noise rule gives 246 jRCaMP1a noise traces against 274; with a 4 s bin, which is not the legend''s
+    5 s for jRCaMP1a, it gives 296, and with the duplicate file counted twice 258, both within 274 ± 27.4. Counting the
+    duplicate jRCaMP1a file twice raises the counts. Before verification this outcome was partially_reproduced, on the
+    script''s isolation as the main reading; it was changed after round 1 (see verifications).'
+  deviations:
+  - Events are isolated by reading (a), more than 1 s before the first and after the last spike, as the Methods say ("isolated
+    from other APs by >1 s"). The script's isolation (1 s before, 0.8 s after, a spike needed on each side, events past
+    sample 3.15e6 dropped) disagrees with the Methods and with its own comment (">1000ms after the last spike"); the claims
+    file makes the Methods the main reading where they and the script disagree, so it is shown as a variant.
+  - The noise traces of the main reading are the script's (find_no_event.m, one per gap between spikes longer than the
+    bin, at its midpoint), with the jRCaMP1a 5 s bin of the Figure 4e legend; the script uses 4 s (interval_pre*4) for
+    jRGECO1a.
+  - The duplicate jRCaMP1a recording data_20150526_cell2_002.mat is counted once (protocol, author step 1.2).
+  - Under readings (a) and (b) the start and end of a recording count as spikes for the isolation, a standard choice.
+- claim: fig4e-jrgeco1a-1ap-detection
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4e-jrgeco1a-1ap-detection
+  measured: 84.3
+  notes: Under the main reading (isolation (a), the script's noise traces and frame window, template from all events,
+    95th percentile threshold) 84.3% of 191 single spikes are detected against 319 noise traces. The script's isolation
+    gives 82.4% of 199. Leave-one-out templates give 84.3%, balanced accuracy 89.6%, the script's 99th percentile 60.7%.
+    Of the 36 combinations of the claim's named segment readings (a), (b), (c) with isolation (a) or (b), the noise and
+    the template readings, 1 is within tolerance (isolation a, noise ii, segment b, 76.3%), and it is among the 16 whose
+    noise traces cannot hold a spike transient. By recording date the main rate is 78.3 to 91.1% on the five dates with
+    23 or more events (one event on 20150708). With the script's event times the rate is 84.8% under isolation (a) and
+    82.9% under the script's isolation; the script's 99th percentile under the script's isolation gives 60.8%.
+  deviations:
+  - Events are isolated by reading (a), more than 1 s before the first and after the last spike, as the Methods say ("isolated
+    from other APs by >1 s"). The script's isolation (1 s before, 0.8 s after, a spike needed on each side, events past
+    sample 3.15e6 dropped) disagrees with the Methods and with its own comment (">1000ms after the last spike"); the claims
+    file makes the Methods the main reading where they and the script disagree, so it is shown as a variant.
+  - Noise traces and the projected frame window of the main reading are those of the data set's script data_analysis_for_CRCNS_jRGECO1a.m
+    with find_no_event.m (one noise trace per spike-free gap longer than the bin, at its midpoint; 10 frames before to
+    20 frames after the frame nearest the event, interpolated ten-fold, F0 from the 10 frames before, noise traces with
+    |dF/F0| >= 0.3 dropped), printed in the notebook. The Methods (Simultaneous electrophysiology and functional imaging
+    in V1, paragraph 2) do not give them, and the claims file names the script's reading as the main one where it settles
+    a detail the Methods leave open.
+  - The detection threshold is the 95th percentile of the noise projections, the 5% false-positive rate the Results and
+    the criterion state; the script uses the 99th (prctile(proj_noise,99), '1% false positive'), shown as a variant. The
+    Methods come before the code (protocol, reader step 2).
+  - Segments of the named readings use the nominal 30 Hz frame rate for their length (120 frames for 4 s, 30 for 1 s),
+    a standard choice; the recordings run at 29.6 to 30.0 Hz.
+  - In the script segment each event is placed at its ephys time stamp, which the clock check supports (peak at lag 0
+    in 41 of 46 recordings). The script places it at sample index / fs plus the first frame time (ind_isolate(n)/fs+time(1)),
+    about 16 ms later at 30 Hz, 33 ms later at 15 Hz and 0.286 s later in data_20150804_cell5_002.mat. The script's times
+    are shown as a variant and give the same outcome.
+- claim: fig4e-jrgeco1a-2ap-detection
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4e-jrgeco1a-2ap-detection
+  measured: 100.0
+  notes: Under the main reading all 62 two-spike events are detected (100%, inside 92 to 100%); the script's isolation
+    gives 100% of 70. The script's 99th percentile gives 96.8%, balanced accuracy 97.5%. 10 of the 36 named-reading combinations
+    with isolation (a) or (b) are within tolerance (6 of the 16 clean ones). Every recording date detects all of its events.
+    With the script's event times the rate is 95.2% under isolation (a) and 95.7% under the script's isolation.
+  deviations:
+  - Events are isolated by reading (a), more than 1 s before the first and after the last spike, as the Methods say ("isolated
+    from other APs by >1 s"). The script's isolation (1 s before, 0.8 s after, a spike needed on each side, events past
+    sample 3.15e6 dropped) disagrees with the Methods and with its own comment (">1000ms after the last spike"); the claims
+    file makes the Methods the main reading where they and the script disagree, so it is shown as a variant.
+  - Noise traces and the projected frame window of the main reading are those of the data set's script data_analysis_for_CRCNS_jRGECO1a.m
+    with find_no_event.m (one noise trace per spike-free gap longer than the bin, at its midpoint; 10 frames before to
+    20 frames after the frame nearest the event, interpolated ten-fold, F0 from the 10 frames before, noise traces with
+    |dF/F0| >= 0.3 dropped), printed in the notebook. The Methods (Simultaneous electrophysiology and functional imaging
+    in V1, paragraph 2) do not give them, and the claims file names the script's reading as the main one where it settles
+    a detail the Methods leave open.
+  - The detection threshold is the 95th percentile of the noise projections, the 5% false-positive rate the Results and
+    the criterion state; the script uses the 99th (prctile(proj_noise,99), '1% false positive'), shown as a variant. The
+    Methods come before the code (protocol, reader step 2).
+  - In the script segment each event is placed at its ephys time stamp, which the clock check supports (peak at lag 0
+    in 41 of 46 recordings). The script places it at sample index / fs plus the first frame time (ind_isolate(n)/fs+time(1)),
+    about 16 ms later at 30 Hz, 33 ms later at 15 Hz and 0.286 s later in data_20150804_cell5_002.mat. The script's times
+    are shown as a variant and give the same outcome.
+- claim: fig4e-jrcamp1a-detection
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4e-jrcamp1a-detection
+  measured:
+  - 63.3
+  - 80.7
+  notes: Under the main reading the 1 AP and 2 AP detection rates are 63.3% (158 events) and 80.7% (83 events) against
+    242 noise traces, both within tolerance; the event counts are above the paper's 135 and 65 (fig4d-event-counts). The
+    script's isolation gives 63.0% and 75.3%. Leave-one-out gives 62.0% and 79.5%, the 99th percentile 41.1% and 67.5%.
+    With the script's event times (sample index / fs plus the first frame time) the main reading gives 63.3% and 80.7%,
+    and the script's isolation 59.9% and 75.3%. The outcome rests on two assumptions, and under the main reading each
+    is needed for it. The first is the script's frame window; under the claim's named segment readings with isolation
+    (a) or (b) no combination puts the 1 AP rate within tolerance (at most 41.6%) and 7 of 36 put the 2 AP rate within
+    it. The second is keeping data_20150707_cell1_001.mat, whose fluorescence shows no relation to its spikes in the clock
+    check. Without it the main reading gives 74.6% (130 events) and 87.3% (71), the 1 AP rate outside tolerance, as under
+    isolation (a) and the script's isolation with either event times (73.1 to 74.8%) and under isolation (b) with the
+    ephys times (71.7%). The 1 AP rate is then within tolerance only under isolation (b) with the script's event times
+    (69.4%, with 82.8% for 2 AP) and in 2 of the 36 combinations of the claim's named readings (isolation b, script noise,
+    segment b, 70.9% and 65.9% with 83.5%), neither of them clean; the 16 clean combinations give at most 57.0%. Without
+    the recording 9 cells remain where the paper reports 10, but the event counts, 130 and 71, are nearer the paper's
+    135 and 65 than 158 and 83 with it, so the printed counts point both ways. By date the 1 AP rate is 80.5% on 20150605
+    (82 events) and 40.0% on 20150707 (55). Open for the paper's authors (see findings) is which window, isolation, noise
+    traces and recordings the jRCaMP1a analysis used.
+  deviations:
+  - Events are isolated by reading (a), more than 1 s before the first and after the last spike, as the Methods say ("isolated
+    from other APs by >1 s"). The script's isolation (1 s before, 0.8 s after, a spike needed on each side, events past
+    sample 3.15e6 dropped) disagrees with the Methods and with its own comment (">1000ms after the last spike"); the claims
+    file makes the Methods the main reading where they and the script disagree, so it is shown as a variant.
+  - Noise traces and the projected frame window of the main reading are those of the data set's script data_analysis_for_CRCNS_jRGECO1a.m
+    with find_no_event.m (one noise trace per spike-free gap longer than the bin, at its midpoint; 10 frames before to
+    20 frames after the frame nearest the event, interpolated ten-fold, F0 from the 10 frames before, noise traces with
+    |dF/F0| >= 0.3 dropped), printed in the notebook. The Methods (Simultaneous electrophysiology and functional imaging
+    in V1, paragraph 2) do not give them, and the claims file names the script's reading as the main one where it settles
+    a detail the Methods leave open.
+  - The detection threshold is the 95th percentile of the noise projections, the 5% false-positive rate the Results and
+    the criterion state; the script uses the 99th (prctile(proj_noise,99), '1% false positive'), shown as a variant. The
+    Methods come before the code (protocol, reader step 2).
+  - Assumed, that the jRCaMP1a analysis used the jRGECO1a script's frame window (10 frames before to 20 after), which
+    at 15 Hz is 0.67 s before to 1.33 s after the event. The paper's only analysis code is written for jRGECO1a; using
+    the same code for the second indicator is the reading best supported by the data description, which presents it as
+    the code for Figure 4. The Methods do not give the window, and the claim's named readings give 1 AP rates of 1.9 to
+    41.6%.
+  - Assumed, that the paper's jRCaMP1a analysis included data_20150707_cell1_001.mat, although its shared clock could
+    not be established (no relation of fluorescence to spikes above a shifted-spike null). It is the only recording of
+    cell 20150707_cell1, and the data set gives the paper's 10 jRCaMP1a cells only with it. Against this, the 1 AP and
+    2 AP event counts without it (130 and 71) are nearer the paper's 135 and 65 than with it (158 and 83). The outcome
+    depends on this choice; the rates without the recording are in the notes, and the question is put to the paper's authors
+    (findings).
+  - In the script segment each event is placed at its ephys time stamp, which the clock check supports (peak at lag 0
+    in 41 of 46 recordings). The script places it at sample index / fs plus the first frame time (ind_isolate(n)/fs+time(1)),
+    about 16 ms later at 30 Hz, 33 ms later at 15 Hz and 0.286 s later in data_20150804_cell5_002.mat. The script's times
+    are shown as a variant and give the same outcome.
+- claim: fig4df-jrgeco1a-better-than-jrcamp1a
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4df-jrgeco1a-better-than-jrcamp1a
+  notes: Under the main reading jRGECO1a has the higher median peak dF/F0 (1 s window and segment window) and the higher
+    d-prime (both formulas) for all 8 values of n; at 1 AP the median peak is 0.211 against 0.107 and d-prime (i) 2.37
+    against 1.26, at 8 AP 1.168 against 0.375 and 3.76 against 2.23. Of the 192 combined readings with the claim's isolation
+    readings, 94 give all 8 and 56 give 6 or 7; of the 96 whose noise traces cannot hold a spike transient, 66 give all
+    8 and 18 give 6 or 7, including readings that use only the claim's named segments. The paper reports no test and none
+    is made.
+  deviations:
+  - Events are isolated by reading (a), more than 1 s before the first and after the last spike, as the Methods say ("isolated
+    from other APs by >1 s"). The script's isolation (1 s before, 0.8 s after, a spike needed on each side, events past
+    sample 3.15e6 dropped) disagrees with the Methods and with its own comment (">1000ms after the last spike"); the claims
+    file makes the Methods the main reading where they and the script disagree, so it is shown as a variant.
+  - Noise traces and the projected frame window of the main reading are those of the data set's script data_analysis_for_CRCNS_jRGECO1a.m
+    with find_no_event.m (one noise trace per spike-free gap longer than the bin, at its midpoint; 10 frames before to
+    20 frames after the frame nearest the event, interpolated ten-fold, F0 from the 10 frames before, noise traces with
+    |dF/F0| >= 0.3 dropped), printed in the notebook. The Methods (Simultaneous electrophysiology and functional imaging
+    in V1, paragraph 2) do not give them, and the claims file names the script's reading as the main one where it settles
+    a detail the Methods leave open.
+  - Peak dF/F0 of the script segment is the maximum over its samples after the event (frames 0 to 20); the script's own
+    amplitude, the maximum of the median trace, is printed as a variant.
+  - In the script segment each event is placed at its ephys time stamp, which the clock check supports (peak at lag 0
+    in 41 of 46 recordings). The script places it at sample index / fs plus the first frame time (ind_isolate(n)/fs+time(1)),
+    about 16 ms later at 30 Hz, 33 ms later at 15 Hz and 0.286 s later in data_20150804_cell5_002.mat. The script's times
+    were not run as a variant for this claim.
+- claim: fig4g-jrgeco1a-faster
+  outcome: reproduced
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4g-jrgeco1a-faster
+  notes: With 2 AP events preceded by 2 s without spikes and the 16 best-fitted traces, under isolation (a), the main
+    reading, jRGECO1a has the shorter mean half rise (15 against 47 ms), fitted half decay (225 against 2300 ms) and trace
+    half decay (155 against 312 ms); the script's isolation gives the same (19 against 50, 172 against 969, 135 against
+    176 ms). Under reading (b) the half rise is longer for jRGECO1a (262 against 129 ms) and both decays are shorter.
+    Fitting to 2 s after the first spike, all three measures are shorter for jRGECO1a under every reading. 32 to 84 jRGECO1a
+    and 54 to 86 jRCaMP1a events were fitted, depending on the reading. Half rise times under one frame rest on interpolation
+    with the frame before the spike. The fitted jRCaMP1a decay is unstable (s.e.m. up to 1115 ms), as the fit ends 1 s
+    after the event; on the trace the slowest jRCaMP1a traces never reach half peak (15 of 16 measured under reading (a)),
+    which works against the claim. Ranking by RMS residual relative to the peak gives the same order under readings (a)
+    and script.
+  deviations:
+  - The fit ends at the first spike plus the 2 AP bin plus the post-event isolation (1 s, or 0.8 s for the script reading),
+    a standard choice the paper leaves open; a 2 s window is shown as a variant and gives the same result.
+  - The script's fitting function fit_dynamic_fitting is not in the data set, so the fit, the fit-error rule and the half
+    rise of the paper's code could not be followed; the claim's readings are used.
+- claim: fig4g-kinetics-like-gcamp6
+  outcome: not_reproduced
+  notes: Chen et al. (2013b) Supplementary Table 3 (V1 in vivo, cell-attached) gives GCaMP6f a 1 AP half decay of 142
+    ms and rise time to peak of 45 ms, GCaMP6s 550 and 179 ms. Under the main reading (isolation (a), the 16 best fitted
+    2 AP traces, half rise, fitted half decay) none of the four times is within 25% of the matching value (jRGECO1a 15
+    and 225 ms, jRCaMP1a 47 and 2300 ms). With the trace half decay, jRGECO1a's 155 ms is within 9% of GCaMP6f but jRCaMP1a's
+    312 ms is 43% short of GCaMP6s. None of the 8 readings of the claim, and none of 24 combinations including the time
+    to peak of the same traces (77 and 285 ms) and the culture values of Chen et al.'s Supplementary Table 1, has all
+    four pass; at most 2 do. Chen et al. give 1 AP time to peak, not 2 AP half rise; this is asked of a reader (questions/dana-2016.yaml).
+    Before verification this claim was blocked (other), as the values had not been entered.
+  notebook: reproduce_dana_2016.ipynb
+  output: claim:fig4g-kinetics-like-gcamp6
+  deviations:
+  - The GCaMP6 values are those of Chen et al. (2013b) Supplementary Table 3, mouse V1 in vivo, the preparation of Figure
+    4; the Results passage cites Chen et al. without naming a table. The culture values of their Supplementary Table 1
+    (10 AP) are shown as a variant and give the same outcome.
+  - Chen et al. report a rise time to peak and no half rise, so the claim's half rise is compared with it. This is a choice,
+    as the criterion says only to compare with the values Chen et al. report; the measure is asked of a reader, and the
+    time to peak of the same traces is shown as a variant and gives the same outcome.
+- claim: culture-jrcamp1-dynamic-range
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The cultured neuron and purified protein measurements (Figure 2c and Figure 2, source data 1) are not in cai-2,
+    which holds only the Figure 4 recordings, and the paper names no other deposit for them. Looked in the paper's data
+    statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and
+    in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+    Figure 2, source data 1 (elife-12727-fig2-data1-v2.docx, doi:10.7554/eLife.12727.005) is public on the eLife site
+    and holds the purified protein dynamic range (Fmax/Fmin) per sensor; the claim is marked data dataset in the claims
+    file, so it was not tried, and whether it should be data elsewhere is asked of a reader (questions/dana-2016.yaml).
+- claim: culture-jrcamp1-brighter
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The purified protein brightness measurements (Figure 2, figure supplement 2b) are not in cai-2 and the paper
+    names no deposit for them. Looked in the paper's data statement (Materials and methods, Reagent distribution, which
+    names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom
+    et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: photoswitching
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The purified protein droplet and cultured neuron photoswitching recordings (Figure 2, figure supplements 3 and
+    4) are not in cai-2 and the paper names no deposit for them. Looked in the paper's data statement (Materials and methods,
+    Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS bucket (cai-1 holds the
+    Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: v1-half-decay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 drifting grating imaging (Figure 3) is not in cai-2, whose description says the visual stimulus is not
+    included even for the Figure 4 recordings; the paper deposits only the cell-attached data. Looked in the paper's data
+    statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and
+    in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: v1-fraction-responsive-jrcamp1
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging of Figure 3e is not in cai-2 and not deposited elsewhere. Looked in the paper's data statement
+    (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS
+    bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: v1-fraction-responsive-jrgeco1a
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging of Figure 3e is not in cai-2 and not deposited elsewhere. Looked in the paper's data statement
+    (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS
+    bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: v1-response-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging of Figure 3f is not in cai-2 and not deposited elsewhere. Looked in the paper's data statement
+    (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS
+    bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: v1-orientation-tuning-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The V1 grating imaging (Figure 3, figure supplement 1) is not in cai-2 and not deposited elsewhere. Looked in
+    the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: v1-long-term-stable
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The long-term expression imaging and images (Figure 3, figure supplement 2) are not in cai-2 and not deposited
+    elsewhere. Looked in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS
+    doi:10.6080/K0W37T87 for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012
+    GCaMP recordings, cai-3 another study).
+- claim: lysosome-punctae
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The fixed tissue images and the punctae ROI traces (Figure 4, figure supplement 1) are not in cai-2; its files
+    hold one soma ROI and one neuropil trace per recording. Looked in the paper's data statement (Materials and methods,
+    Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and in the CRCNS bucket (cai-1 holds the
+    Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+- claim: red-gecis-900nm
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The L4 imaging at 900 and 1040 nm (Figure 4, figure supplement 2) is not in cai-2 and not deposited elsewhere.
+    Looked in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: green-species-lower-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 900 and 1040 nm imaging of Figure 4, figure supplement 3 is not in cai-2 and not deposited elsewhere. Looked
+    in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: depth-decay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The depth stacks of L5 apical dendrites (Figure 5b) are not in cai-2 and not deposited elsewhere. Looked in the
+    paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for
+    data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another
+    study).
+- claim: l6-imaging
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The NTSR1-cre L6 imaging (Figure 5c and 5d) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data)
+    and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another
+    study).
+- claim: dual-color-imaging
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dual-color L1 recordings (Figure 6, Videos 1 and 2) are not in cai-2 and not deposited elsewhere. Looked
+    in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study).
+- claim: fly-improved-over-parents
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7) is not in cai-2; the paper deposits fly lines at Bloomington, not data.
+    Looked in the paper's data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87
+    for data) and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3
+    another study). Figure 7, source data 1 to 3 (elife-12727-fig7-data1-v2.xlsx to -data3-, doi:10.7554/eLife.12727.022
+    to .024), summary tables of mean and s.e.m. per construct and stimulus frequency, are public on the eLife site; the
+    claim is marked data dataset in the claims file, so they were not tried, and whether it should be data elsewhere is
+    asked of a reader (questions/dana-2016.yaml).
+- claim: fly-single-ap-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7) is not in cai-2 and not deposited elsewhere. Looked in the paper's data
+    statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and
+    in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+    Figure 7, source data 1 to 3 (elife-12727-fig7-data1-v2.xlsx to -data3-, doi:10.7554/eLife.12727.022 to .024), summary
+    tables of mean and s.e.m. per construct and stimulus frequency, are public on the eLife site; the claim is marked
+    data dataset in the claims file, so they were not tried, and whether it should be data elsewhere is asked of a reader
+    (questions/dana-2016.yaml).
+- claim: fly-decay-like-gcamp6f
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7d) is not in cai-2 and not deposited elsewhere. Looked in the paper's data
+    statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and
+    in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+    Figure 7, source data 1 to 3 (elife-12727-fig7-data1-v2.xlsx to -data3-, doi:10.7554/eLife.12727.022 to .024), summary
+    tables of mean and s.e.m. per construct and stimulus frequency, are public on the eLife site; the claim is marked
+    data dataset in the claims file, so they were not tried, and whether it should be data elsewhere is asked of a reader
+    (questions/dana-2016.yaml).
+- claim: fig7b-5hz-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7b) is not in cai-2 and not deposited elsewhere. Looked in the paper's data
+    statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and
+    in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+    Figure 7, source data 1 to 3 (elife-12727-fig7-data1-v2.xlsx to -data3-, doi:10.7554/eLife.12727.022 to .024), summary
+    tables of mean and s.e.m. per construct and stimulus frequency, are public on the eLife site; the claim is marked
+    data dataset in the claims file, so they were not tried, and whether it should be data elsewhere is asked of a reader
+    (questions/dana-2016.yaml).
+- claim: fig7c-frequency-tuning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Drosophila NMJ imaging (Figure 7c) is not in cai-2 and not deposited elsewhere. Looked in the paper's data
+    statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data) and
+    in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another study).
+    Figure 7, source data 1 to 3 (elife-12727-fig7-data1-v2.xlsx to -data3-, doi:10.7554/eLife.12727.022 to .024), summary
+    tables of mean and s.e.m. per construct and stimulus frequency, are public on the eLife site; the claim is marked
+    data dataset in the claims file, so they were not tried, and whether it should be data elsewhere is asked of a reader
+    (questions/dana-2016.yaml).
+- claim: zebrafish-jrgeco1a-most-sensitive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The zebrafish trigeminal imaging (Figure 8) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data)
+    and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another
+    study).
+- claim: fig8b-zebrafish-improvement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The zebrafish trigeminal imaging (Figure 8) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data)
+    and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another
+    study).
+- claim: worm-ash
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The C. elegans ASH imaging (Figure 9b and 9c) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data)
+    and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another
+    study).
+- claim: worm-awc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The C. elegans AWC imaging (Figure 9d to 9f) is not in cai-2 and not deposited elsewhere. Looked in the paper's
+    data statement (Materials and methods, Reagent distribution, which names only CRCNS doi:10.6080/K0W37T87 for data)
+    and in the CRCNS bucket (cai-1 holds the Chen et al. 2013 and Akerboom et al. 2012 GCaMP recordings, cai-3 another
+    study).
+findings:
+- kind: other
+  about: data
+  statement: Two jRCaMP1a files, data_20150526_cell2_001.mat and data_20150526_cell2_002.mat, hold the same recording,
+    with identical soma fluorescence and raw ephys, the same 75 spikes. Counted twice it adds 7 one-spike events and 12
+    noise traces to the jRCaMP1a analysis.
+- kind: identifier_missing
+  statement: The files name the cell and the recording date but not the animal. The paper reports 6 and 5 mice, which
+    match the number of recording dates, but that each date is one mouse cannot be checked.
+- kind: other
+  about: data
+  statement: In data_20150707_cell1_001.mat (jRCaMP1a, 304 spikes) the corrected soma fluorescence shows no relation to
+    the spikes (peak correlation of spike counts with the fluorescence rise 0.028 at a lag of 14 frames, below the 0.050
+    of shifted spike trains), and in data_20150605_cell7_003.mat (15 spikes) it falls just below it (0.047 against 0.048).
+    The shared clock of spikes and frames could not be established for these two; all other 44 recordings peak at lags
+    of -1 to +1 frame, above the null. The first contributes 31 of the 162 jRCaMP1a one-spike events.
+- kind: other
+  about: data
+  statement: The analysis script data_analysis_for_CRCNS_jRGECO1a.m calls rawf2df_f and fit_dynamic_fitting, which are
+    not in the data set, so it cannot run as deposited; and there is no script for the jRCaMP1a files.
+- kind: code_mismatch
+  statement: The data set's Figure 4 script differs from the paper's Methods and Results in three places. Its detection
+    threshold is the 99th percentile of the noise projections (1% false positives) where the paper reports rates at 5%;
+    its events need more than 0.8 s without spikes after the last spike (interval_post=800*fs/1000) where the Methods,
+    and the script's own comment (">1000ms after the last spike"), say more than 1 s; and its noise traces are one per
+    spike-free gap longer than 4 s, taken at the gap's midpoint and dropped if any |dF/F0| reaches 0.3, which the Methods
+    do not say. The script's 0.8 s gives the paper's jRGECO1a event counts exactly (199, 70, 29, 34, 35, 22, 14, 21),
+    the Methods' 1 s does not (191, 62, 28, 30, 36, 20, 12, 17), so the published counts appear to come from the script.
+    With the script's isolation and its own threshold the jRGECO1a single-spike rate is 60.8% (60.7% under the Methods'
+    isolation), not the 82% reported; with the script's isolation and the 5% threshold it is 82.4%.
+- kind: methods_unavailable
+  statement: For the paper's authors, on the jRCaMP1a analysis of Figure 4. Which isolation intervals, noise rule and
+    frame window were used? The jRGECO1a script reproduces the paper's jRGECO1a event and noise counts exactly, but the
+    same rule on the jRCaMP1a files gives 162, 89, 86, 62, 44, 26, 15 and 11 events and 246 noise traces, and the Methods'
+    1 s isolation 158, 83, 79, 58, 38, 24, 16 and 11, against the reported 135, 65, 71, 52, 33, 20, 14, 11 and 274. This
+    attempt assumed the script's 30-frame window for jRCaMP1a, which gives detection rates of 63.3% and 80.7% (reported
+    65% and 80%); the windows the Methods allow (4 or 5 s after the event, or 1 s) give at most 41.6% for one spike. Was
+    data_20150707_cell1_001.mat, whose fluorescence does not follow its spikes, included? This attempt assumed it was,
+    and the jRCaMP1a detection outcome depends on it.
+- kind: methods_unavailable
+  statement: For the paper's authors, on Figure 4g. How was the exponential fitted (from the peak or from the spike, over
+    what window), which fitting error selected the 16 traces, and how was the half rise time defined? The function the
+    script calls for this, fit_dynamic_fitting, is not in the data set. This attempt fitted from the peak to the end of
+    the isolation interval, kept the 16 traces with the smallest RMS residual, and measured the half rise from the first
+    spike by linear interpolation; jRGECO1a is faster under these and under a 2 s window.
+- kind: paper_inconsistency
+  statement: The Results say 353 of 934 single RCaMP1h mutations and 187 of 689 single R-GECO1 mutations improved the
+    1 AP response (p < 0.01, Wilcoxon rank sum), citing Supplementary files 1 and 2. Those tables list 934 and 692 single
+    mutants, but only 230 and 58 with a 1 AP ratio above 1 and a 1 AP p-value below 0.01, and no other rule tried (p <
+    0.05, any stimulus, all variants) gives both. For RCaMP1h, p < 0.05 and all variant rows give 334, within 10% of 353;
+    for R-GECO1 none comes within 10% of 187 (a ratio above 1 alone gives 207).
+- kind: data_missing
+  statement: cai-2 holds only the simultaneous imaging and cell-attached recordings of Figure 4, as its description says,
+    and not the visual stimulus of those recordings. The cultured neuron screen recordings, the purified protein data,
+    the V1 grating imaging (Figures 3, 5, 6 and the Figure 4 supplements), and the Drosophila, zebrafish and C. elegans
+    imaging are not in it, and the paper names no other deposit of them; the eLife site holds only summary tables (Figure
+    2, source data 1; Figure 7, source data 1 to 3). 24 of the paper's 35 claims are blocked as data missing.
+verifications:
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text and Supplementary files 1 and 2 under paper/. The verifier
+    queried the S3 listing and filelist.txt, recounted the screen from the local xlsx files and tested the event, noise
+    and kinetics helpers on synthetic inputs. Its report gave its own outcome for each claim; all 35 agree with the record
+    as it then stood. It reported problems 1 to 3 as affecting a conclusion and 4 to 8 as not. Problem 8 (script fidelity)
+    is answered by a new cell that prints the three .m files; problem 7 (claims file) by two questions for a reader. Report
+    in transcripts/dana-2016/verifier-1-report.md.
+  results:
+  - claim: screen-single-mutations-improved
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 12 counts 230 improved single mutants against 353 ± 35.3 for RCaMP1h, and 58 against 187 ± 18.7 for R-GECO1.
+      The totals match (934, and 692 against 689). I got the same 230 and 58 from the local xlsx files. None of the looser
+      rules gives 187 for R-GECO1; "ratio > 1" alone gives 207.
+    response: No change.
+  - claim: culture-jrgeco1a-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14. The 1 AP ratio is 8.57 (tolerance 8.5 ± 0.85). The decay ratio is 1.053 (p = 0.32) and the 160 AP
+      ratio is 1.098 (p = 0.47), both inside the "similar" bound.
+    response: No change.
+  - claim: culture-jrcamp1-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: Cell 16. The 1 AP ratios are 24.02 and 12.96. jRCaMP1a has both the larger 1 AP ratio and the larger decay
+      ratio (3.13 against 1.15).
+    response: No change.
+  - claim: fig4-recorded-cells
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18. 11 cells on 6 dates for jRGECO1a and 10 cells on 5 dates for jRCaMP1a. The criterion counts a mouse
+      as a recording date, so all four counts match. Whether two recording dates came from one mouse cannot be checked,
+      since the data set does not name animals.
+    response: No change.
+  - claim: fig4d-event-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under the script's isolation and noise readings, 11 of 18 counts are within tolerance. All 8 jRGECO1a event
+      counts and its 320 noise events match exactly. Six of eight jRCaMP1a event counts, and its noise count (246 against
+      274), are outside. Under the claim's readings (a) and (b), at most 6 of 18 are within, which would be not_reproduced.
+      The main isolation reading takes the script's 0.8 s after the event; the Methods say "isolated from other APs by
+      >1 s", and the claims-file header says the Methods win where they and the script disagree (problem 1).
+    response: Outcome changed to not_reproduced. Isolation reading (a), more than 1 s on each side, is now the main reading,
+      as the claims-file header directs where the Methods and the script disagree; the script's own comment also says
+      1000 ms. Under it 6 of 18 counts are within tolerance, the best of the six readings of the claim. The script's isolation
+      is kept as a variant and reported (11 of 18, jRGECO1a exact); the combined table now labels which combinations are
+      readings of the claim. The three .m files are printed in a new cell, and the code_mismatch finding notes that the
+      published jRGECO1a counts appear to come from the script's 0.8 s.
+  - claim: fig4e-jrgeco1a-1ap-detection
+    agrees: true
+    outcome: reproduced
+    reason: 82.4% under the main reading. The result holds with leave-one-out templates and with isolation (a), at 84.3%.
+      It depends on the script's segment; under the claim's own segments (a) to (c), only 1 of 54 combinations is within
+      tolerance (problem 2).
+    response: 'Outcome unchanged; measured is now 84.3% (191 events), under isolation (a) as the main reading, with the
+      script''s isolation (82.4%) as a variant. The script segment stays the main reading for this indicator: the Methods
+      do not give the segment and the claims-file header makes the script''s reading the main one where it settles an
+      open detail. The notebook now also counts the named-segment combinations with the claim''s isolation readings only
+      (1 of 36) and those whose noise traces cannot hold a spike transient (1 of 16); the one combination within tolerance
+      is in both.'
+  - claim: fig4e-jrgeco1a-2ap-detection
+    agrees: true
+    outcome: reproduced
+    reason: Cell 29. 100% under the main reading; the tolerance range is 92 to 100%.
+    response: Outcome unchanged; 100% of 62 events under isolation (a), 100% of 70 under the script's isolation.
+  - claim: fig4e-jrcamp1a-detection
+    agrees: true
+    outcome: reproduced
+    reason: 63.0% for 1 AP and 75.3% for 2 AP, both within tolerance, but fragile. This rests on three weak points (problems
+      2 and 3). The script's segment is applied to jRCaMP1a, for which no script was deposited. The event set is not the
+      paper's (162 against 135, 89 against 65). The 1 AP rate goes to 75.4%, outside tolerance, if one recording with
+      no spike-fluorescence relation is dropped. The notebook keeps it and never discusses the result.
+    response: 'Outcome unchanged, still marked assumed; measured is now 63.3% and 80.7% under isolation (a). A new cell
+      gives the jRCaMP1a counts and rates under each isolation reading with all recordings, without data_20150707_cell1_001.mat
+      and without both recordings that failed the clock check: without it the 1 AP rate is 71.7 to 75.4%, outside tolerance,
+      under every reading. The recording is kept, as it is the only one of cell 20150707_cell1 and without it 9 cells
+      remain where the paper reports 10; the conclusion, notes and deviations now say that the outcome depends on it,
+      and the methods_unavailable finding asks the paper''s authors whether it was included.'
+  - claim: fig4df-jrgeco1a-better-than-jrcamp1a
+    agrees: true
+    outcome: reproduced
+    reason: Cell 36. Under the main reading jRGECO1a is higher for 8 of 8 values of n, for both peak windows and both
+      d' formulas. Across all combinations, 152 of 288 give 8 of 8.
+    response: Outcome unchanged; under isolation (a) all 8 values of n still favour jRGECO1a for both windows and formulas.
+      The tallies are now also given over the claim's isolation readings (94 of 192 give all 8) and over the clean combinations
+      (66 of 96), as problem 4 asked.
+  - claim: fig4g-jrgeco1a-faster
+    agrees: true
+    outcome: reproduced
+    reason: Cell 39 (script isolation). Half rise 19 against 50 ms; decay from the fit 172 against 969 ms; decay measured
+      on the trace 135 against 176 ms. Isolation (a) gives the same direction.
+    response: Outcome unchanged; isolation (a) is now the main reading (15 against 47, 225 against 2300, 155 against 312
+      ms). The conclusion now says that the short fit window leaves the jRCaMP1a decay poorly constrained and that the
+      trace measure drops the slowest jRCaMP1a traces (problem 5), and gives the relative-RMS ranking (problem 6).
+  - claim: fig4g-kinetics-like-gcamp6
+    agrees: true
+    outcome: blocked
+    reason: The GCaMP6 values from Chen et al. (2013b) were never entered. The jRGECO1a and jRCaMP1a half-times this claim
+      needs are already computed (cell 39), so the claim becomes testable once the published values are typed in.
+    response: Tested; outcome changed to not_reproduced. The notebook reads Chen et al.'s Supplementary Tables 3 and 1
+      from the PMC open-access copy of their Supplementary Information (recorded under inputs). Under the main reading
+      none of the four times is within 25% of the matching GCaMP6 value, and no combination of readings and variants has
+      all four. Chen et al. give 1 AP time to peak, not a 2 AP half rise, which is asked of a reader.
+  - claim: culture-jrcamp1-dynamic-range
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims. The claims-file header says no claim rests on a number found only
+      in Figure 2, source data 1, yet this claim rests on it, and that eLife source-data file may be downloadable from
+      eLife. It is marked data dataset, not elsewhere, so it was not tried (problem 7).
+    response: Outcome unchanged, as the claims file marks the claim data dataset. The eLife file exists (elife-12727-fig2-data1-v2.docx,
+      with a dynamic range column per sensor); whether the claim should be data elsewhere is added to questions/dana-2016.yaml
+      for a reader, and the notes say so.
+  - claim: culture-jrcamp1-brighter
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: photoswitching
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: v1-half-decay
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: v1-fraction-responsive-jrcamp1
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: v1-fraction-responsive-jrgeco1a
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: v1-response-amplitude
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: v1-orientation-tuning-similar
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: v1-long-term-stable
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: lysosome-punctae
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: red-gecis-900nm
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: green-species-lower-response
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: depth-decay
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: l6-imaging
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: dual-color-imaging
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: fly-improved-over-parents
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims. Figure 7, source data 1 to 3 for the fly claims may be downloadable
+      from eLife. Those claims are marked data dataset, not elsewhere, so they were not tried (problem 7).
+    response: Outcome unchanged, as the claims file marks the claim data dataset. The eLife files exist (elife-12727-fig7-data1-v2.xlsx
+      to -data3-, summary tables per construct and frequency); whether the fly claims should be data elsewhere is added
+      to questions/dana-2016.yaml for a reader, and the notes say so.
+  - claim: fly-single-ap-amplitude
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims. Figure 7, source data 1 to 3 for the fly claims may be downloadable
+      from eLife. Those claims are marked data dataset, not elsewhere, so they were not tried (problem 7).
+    response: Outcome unchanged, as the claims file marks the claim data dataset. The eLife files exist (elife-12727-fig7-data1-v2.xlsx
+      to -data3-, summary tables per construct and frequency); whether the fly claims should be data elsewhere is added
+      to questions/dana-2016.yaml for a reader, and the notes say so.
+  - claim: fly-decay-like-gcamp6f
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims. Figure 7, source data 1 to 3 for the fly claims may be downloadable
+      from eLife. Those claims are marked data dataset, not elsewhere, so they were not tried (problem 7).
+    response: Outcome unchanged, as the claims file marks the claim data dataset. The eLife files exist (elife-12727-fig7-data1-v2.xlsx
+      to -data3-, summary tables per construct and frequency); whether the fly claims should be data elsewhere is added
+      to questions/dana-2016.yaml for a reader, and the notes say so.
+  - claim: fig7b-5hz-amplitude
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims. Figure 7, source data 1 to 3 for the fly claims may be downloadable
+      from eLife. Those claims are marked data dataset, not elsewhere, so they were not tried (problem 7).
+    response: Outcome unchanged, as the claims file marks the claim data dataset. The eLife files exist (elife-12727-fig7-data1-v2.xlsx
+      to -data3-, summary tables per construct and frequency); whether the fly claims should be data elsewhere is added
+      to questions/dana-2016.yaml for a reader, and the notes say so.
+  - claim: fig7c-frequency-tuning
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims. Figure 7, source data 1 to 3 for the fly claims may be downloadable
+      from eLife. Those claims are marked data dataset, not elsewhere, so they were not tried (problem 7).
+    response: Outcome unchanged, as the claims file marks the claim data dataset. The eLife files exist (elife-12727-fig7-data1-v2.xlsx
+      to -data3-, summary tables per construct and frequency); whether the fly claims should be data elsewhere is added
+      to questions/dana-2016.yaml for a reader, and the notes say so.
+  - claim: zebrafish-jrgeco1a-most-sensitive
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: fig8b-zebrafish-improvement
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: worm-ash
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+  - claim: worm-awc
+    agrees: true
+    outcome: blocked
+    reason: I confirmed the full S3 listing (not truncated) and filelist.txt. The archive holds only two tar.gz files,
+      the three .m scripts and the docs. Cell 4 shows the tar files contain only the 27 + 20 Figure 4 .mat files. Nothing
+      in the archive can test any part of these claims.
+    response: No change.
+- date: '2026-11-13'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run, the helper module, the claims file, the README and
+    the attempt record, with the paper. The verifier agreed with all 35 outcomes (8 reproduced, 3 not_reproduced, 24 blocked)
+    and with the assumption fig4e-jrcamp1a-detection rests on, and found a second choice that outcome depends on, keeping
+    data_20150707_cell1_001.mat, which is now marked as assumed. It quoted sentences the numbers do not support in cells
+    13, 44, 53 and 55, the fig4d notes, the README and the code_mismatch finding; each is corrected. It found that the
+    script segment places events at their ephys times where the script places them later; this is now stated, and the
+    script's times are run as a variant for the three detection claims, with the same outcomes. It reported no new misreading
+    of the paper in the claims file. No outcome changes and none is proposed. Report in transcripts/dana-2016/verifier-2-report.md.
+  results:
+  - claim: screen-single-mutations-improved
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. Cell 12 gives 230 and 58 improved, against 353 and 187.
+    response: Outcome unchanged. Cell 13, the notes and the paper_inconsistency finding no longer say that no variant
+      rule reaches the paper's counts. They say that RCaMP1h 334 (ratio above 1 with p below 0.05, and over all rows)
+      is within 353 ± 35.3, that no rule is within tolerance for R-GECO1 (207 is just above 205.7), and that no rule gives
+      both.
+  - claim: culture-jrgeco1a-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 15 gives a ratio of 8.57; decay 1.053 and 160 AP 1.098, both with p ≥ 0.01.
+    response: No change.
+  - claim: culture-jrcamp1-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 18 gives 24.02 and 12.96; jRCaMP1a decays more slowly (3.13 against 1.15).
+    response: No change.
+  - claim: fig4-recorded-cells
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 21 gives 11/6 and 10/5.
+    response: No change.
+  - claim: fig4d-event-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, now not_reproduced. Cell 26 makes isolation (a) the main reading, as the claims-file header requires.
+      The best reading of the claim gives 6 of 18, below the 10 needed for partial. Treating the script's noise rule as
+      a reading of the claim stretches the criterion, which names only (i) and (ii), but nothing depends on it, as a/i
+      and a/ii give 5 each. In the notes, "no noise rule tried gives 274" is not supported, since in cell 28 the 4 s bin
+      gives 296, within 274 ± 27.4, though 4 s is not the legend's jRCaMP1a bin, and counting the duplicate file gives
+      258, also within.
+    response: Outcome unchanged. The script's noise rule stays the main noise reading, as the claims-file header makes
+      the script's reading the main one where it settles a detail the Methods leave open; the outcome is the same without
+      it (a/i and a/ii give 5 of 18). The notes now give the 4 s bin (296) and the duplicate file counted twice (258),
+      both within 274 ± 27.4, in place of the unsupported sentence.
+  - claim: fig4e-jrgeco1a-1ap-detection
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 33 gives 84.3% of 191. It no longer depends on the script segment, since under "one reading" the
+      claim's named readings alone also pass (a/ii/b, 76.3%, a clean combination). The code_mismatch finding's 60.8% is
+      printed in no cell; cell 33 prints 60.7%, under isolation (a), not the script's isolation. The script segment aligns
+      events on the ephys time stamps, where the script places them later (about 16 ms for jRGECO1a), and this is not
+      stated.
+    response: Outcome unchanged. Cell 33 now prints the script's 99th percentile under the script's isolation (60.8%),
+      and the finding cites 60.8% under the script's isolation and 60.7% under isolation (a). The script's event times
+      are added as a variant (cai2.script_time) and stated in cell 30, the helper and a deviation; they give 84.8% under
+      isolation (a) and 82.9% under the script's isolation.
+  - claim: fig4e-jrgeco1a-2ap-detection
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 37 gives 100% of 62. 10 of the 36 named-reading combinations also pass.
+    response: Outcome unchanged. The script's event times are added as a variant; they give 95.2% under isolation (a)
+      and 95.7% under the script's isolation.
+  - claim: fig4e-jrcamp1a-detection
+    agrees: true
+    outcome: reproduced
+    reason: Agree, as recorded (reproduced, assumed). Cells 41 and 43 give 63.3% and 80.7%. This rests on two choices,
+      and each one moves the rate into tolerance. The jRGECO1a script's frame window applied at 15 Hz is stated as the
+      assumption and is weakly supported, because the script's rules do not give the paper's jRCaMP1a counts; under the
+      named readings no 1 AP rate passes (at most 41.6%), so the result would be partially_reproduced. data_20150707_cell1_001.mat
+      is kept; without it the 1 AP rate is 71.7 to 75.4% under every isolation reading, which also gives partially_reproduced.
+      That choice is stated as a deviation but not marked as an assumption. Its justification is weak, and the event counts
+      point the other way, as 130 and 71 without the recording are nearer the paper's 135 and 65 than 158 and 83 with
+      it. The cell 44 sentence that the paper's analysis included it is not supported by the cell count. The script segment
+      aligns events on the ephys time stamps where the script places them about 33 ms (half a frame) later for jRCaMP1a,
+      and its effect on the 63.3% (against a lower bound of 58.5) is not shown.
+    response: Outcome unchanged, still assumed, and no change is proposed. Keeping the recording is now marked as a second
+      assumption, with the evidence on both sides (the 10 cells, and the event counts that point the other way), and the
+      cell 44 sentence is corrected. A new cell gives the claim's named readings without the recording and the rates with
+      the script's event times. With the script's times the main reading gives the same 63.3% and 80.7%. Without the recording
+      the 1 AP rate is outside tolerance under the main reading (74.6%) but within under isolation (b) with the script's
+      times (69.4%, 2 AP 82.8%) and in 2 of 36 named-reading combinations (isolation b, script noise, segment b, 65.9
+      and 70.9%), neither clean. As a reading of the claim still passes without the recording, dropping it does not give
+      one outcome, so the verified outcome is kept, resting on both assumptions. The methods_unavailable finding asks
+      the paper's authors which recordings were used.
+  - claim: fig4df-jrgeco1a-better-than-jrcamp1a
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 46 gives 8 of 8 under the main reading. Clean named-only readings (a/ii/c) also give 8.
+    response: No change. The event alignment is stated in a deviation; the script's event times were not run for this
+      claim.
+  - claim: fig4g-jrgeco1a-faster
+    agrees: true
+    outcome: reproduced
+    reason: Agree. Cell 50 gives 15 against 47 ms, 225 against 2300 ms and 155 against 312 ms under isolation (a); the
+      script isolation gives the same direction.
+    response: No change.
+  - claim: fig4g-kinetics-like-gcamp6
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, now not_reproduced. Cell 54 has 0 of 4 times pass under the main reading, and at most 2 of 4 in any
+      of the 24 combinations. The Chen Table 3 values (142/45 and 550/179 ms) match the published table as the verifier
+      recalls it. The sentence that the claim's half rise is compared with their time to peak "as the criterion directs"
+      is not supported, since the criterion only says to compare with the values Chen et al. report and does not name
+      time to peak.
+    response: Outcome unchanged. Cell 54 and the deviation now say that comparing the half rise with the time to peak
+      is a choice, as Chen et al. give no half rise, and that the measure is asked of a reader.
+  - claim: culture-jrcamp1-dynamic-range
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: culture-jrcamp1-brighter
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: photoswitching
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: v1-half-decay
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: v1-fraction-responsive-jrcamp1
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: v1-fraction-responsive-jrgeco1a
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: v1-response-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: v1-orientation-tuning-similar
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: v1-long-term-stable
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: lysosome-punctae
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: red-gecis-900nm
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: green-species-lower-response
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: depth-decay
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: l6-imaging
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: dual-color-imaging
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: fly-improved-over-parents
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: fly-single-ap-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: fly-decay-like-gcamp6f
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: fig7b-5hz-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: fig7c-frequency-tuning
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: zebrafish-jrgeco1a-most-sensitive
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: fig8b-zebrafish-improvement
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: worm-ash
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.
+  - claim: worm-awc
+    agrees: true
+    outcome: blocked
+    reason: Agree. No change; the questions about the eLife source-data files are passed to a reader.
+    response: No change.

@@ -1,0 +1,988 @@
+schema_version: 3
+id: mohebi-2019-01
+datasets:
+- archive: crcns
+  id: vta-2
+  version: unversioned
+  doi: 10.6080/K0VQ30V9
+  relation: primary
+paper: doi:10.1038/s41586-019-1235-y
+date: '2026-11-11'
+entry: mohebi-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42978521460
+outcomes:
+- claim: fig1b-latency-scales-with-reward-rate
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig1b-latency-scales-with-reward-rate
+  notes: 21 distinct bandit sessions (29 units; units of one session share identical events and are counted once),
+    6189 trials with a latency. Pearson r of the leaky-integrator reward rate at Light-On with log(latency) is negative
+    in 21 of 21 sessions, mean -0.307 (one-sample t = -12.50, p = 6.6e-11), range -0.496 to -0.136; best tau 12
+    to 295 s, median 58 s, none at the grid's edge. Because tau is chosen to make r negative, a null was computed
+    by repeating the choice of tau on latencies shuffled within the session (200 shuffles); 19 of 21 sessions have
+    r below the null's 1st percentile. With one tau of 58 s for every session, r is negative in 21 of 21 (mean -0.291).
+    The paper's statement covers its photometry and microdialysis rats too; only the electrophysiology sessions
+    are in the data set.
+  deviations:
+  - Only the 21 electrophysiology bandit sessions are in the data set; the criterion names the photometry and microdialysis
+    sessions as further readings where available.
+  - A reward is counted at the rewarded Side-In, when the Results say the food hopper clicks; the Methods say only
+    that reward rate is incremented each time a reward was received. A standard choice; no Light-On falls between
+    Side-In and Food-Port-In.
+  - Latency is Center-In minus Light-On from the event table, as the claims file defines it; the CNIlatency field
+    is clipped at 65535 ms and not used. One trial with no latency (IM-1002_170118) is left out.
+  - tau searched on a 1 s grid from 1 to 1200 s (Extended Data Fig. 1 legend gives the range); the shuffled-latency
+    null uses 76 log-spaced values to keep the run short.
+- claim: ed1b-latency-depends-on-recent-outcomes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only spike times of the 29 tagged dopamine cells and their behaviour; it has no microdialysis
+    data. The files listed on the bucket (vta-2/live) are data_and_code.zip, its checksums, file list and data description,
+    and the zip holds VTA_data.mat and three MATLAB scripts. The paper says all data would be available through
+    CRCNS; no other CRCNS data set or archive named by the paper holds them. The claim is on the 26 microdialysis
+    sessions (7113 trials, 12 rats); the bandit sessions of the electrophysiology rats are different sessions and
+    were not used in its place.
+- claim: fig1cd-nac-core-dopamine-reward-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only spike times of the 29 tagged dopamine cells and their behaviour; it has no microdialysis
+    data. The files listed on the bucket (vta-2/live) are data_and_code.zip, its checksums, file list and data description,
+    and the zip holds VTA_data.mat and three MATLAB scripts. The paper says all data would be available through
+    CRCNS; no other CRCNS data set or archive named by the paper holds them.
+- claim: fig1ce-ventral-prelimbic-dopamine-reward-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only spike times of the 29 tagged dopamine cells and their behaviour; it has no microdialysis
+    data. The files listed on the bucket (vta-2/live) are data_and_code.zip, its checksums, file list and data description,
+    and the zip holds VTA_data.mat and three MATLAB scripts. The paper says all data would be available through
+    CRCNS; no other CRCNS data set or archive named by the paper holds them. It also depends on fig1cd-nac-core-dopamine-reward-rate.
+- claim: ed1-behavior-similar-across-subregions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only spike times of the 29 tagged dopamine cells and their behaviour; it has no microdialysis
+    data. The files listed on the bucket (vta-2/live) are data_and_code.zip, its checksums, file list and data description,
+    and the zip holds VTA_data.mat and three MATLAB scripts. The paper says all data would be available through
+    CRCNS; no other CRCNS data set or archive named by the paper holds them. The behaviour of the 51 microdialysis
+    sample series, with their subregions, is not deposited.
+- claim: fig2-tagged-dopamine-cells
+  outcome: partially_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig2-tagged-dopamine-cells
+  measured:
+  - 23
+  - 2
+  notes: Only the 29 cells the paper selected are deposited, so the test is whether each passes the paper's criteria.
+    SALT (Kvitsiani et al. 2013 defaults) on the 5 and 10 ms trains at 2 Hz gives p < 0.001 for 26 of the 27 VTA-l
+    cells and both IM-1078 cells; none of the 29 passes with sham pulse times 250 ms later. IM1003170321t01c has
+    p = 0.087 (5 ms) and 0.05 (10 ms), though p < 0.001 for two of its 1 ms trains. The correlation of the light-evoked
+    with the session-wide waveform exceeds 0.9 for 23 of 27 VTA-l cells and 2 of 2 IM-1078 cells on the largest
+    wire, and for 18 and 1 with the four wires concatenated, where the Methods say all light-evoked units exceeded
+    0.9. Cells meeting both criteria are 23 and 2 (largest wire, given as measured) or 18 and 1 (four wires); 23
+    is outside 27 +- 2.7, and 2 matches. By rat the data hold IM657 1, IM1002 3, IM1003 15, IM1037 8, IM-1078 2;
+    the Methods give IM1037 9. Counting the two units with no 5 or 10 ms pulses as failing, instead of testing their
+    1 ms trains, gives 24 light-responsive VTA-l cells and 22 (largest wire) or 17 (four wires) passing both criteria;
+    no reading brings the VTA-l total within tolerance.
+  deviations:
+  - The selection cannot be repeated from all recorded units, which are not deposited; only the deposited cells
+    are tested against the criteria.
+  - Units IM657160613t11a and IM1002170114t05b received no 5 or 10 ms pulses (their longest pulses are 1 ms, by
+    the pulseWidth field); their 1 ms trains at 2 Hz are tested instead. This substitution is this attempt's choice,
+    not the criterion's; counting both units as failing is shown and gives 22 (largest wire) and 17 (four wires).
+  - SALT's baseline is the 400 ms before each pulse, with the test's published 10 ms window and 1 ms bins (claims
+    file criterion); the baseline length is a standard choice. With 40 baseline windows the null has 780 distances,
+    so the smallest nonzero p is 0.0013 and p < 0.001 means p = 0.
+  - The waveforms are the deposited meanWave and meanLightEvoked; which wires the paper correlated is not given,
+    and both readings are shown.
+- claim: fig2d-dopamine-firing-rates
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig2d-dopamine-firing-rates
+  measured:
+  - 7.77
+  - 3.77
+  - 12.93
+  notes: Bandit-task rates (spikes between the first Light-On and the last Side-Out) of the 27 VTA-l cells have
+    mean 7.77 Hz, minimum 3.77 and maximum 12.93 Hz, all within tolerance of 7.7, 3.7 and 12.9; the 29 cells give
+    mean 7.72 Hz with the same range. Over all segments (bandit, Pavlovian, laser, sleep) the mean 7.41 and minimum
+    3.59 Hz match and the maximum 11.60 Hz does not. The descriptor's FR field gives 7.36, 3.62 and 11.73 Hz, within
+    tolerance. Every cell fires throughout the task (ISI coefficient of variation 0.48 to 1.31).
+  deviations:
+  - The segment over which the session-wide rate is taken is not given; the bandit task (first reading in the criterion)
+    matches, the whole recording matches for the mean and minimum only.
+- claim: fig2d-dopamine-lower-rate-than-other-vta
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only the 29 tagged dopamine cells (the Unit structure has 29 elements, all tagged);
+    the untagged VTA-l units recorded in the same sessions are not deposited anywhere the paper names.
+- claim: fig2d-dopamine-longer-waveforms
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only the 29 tagged dopamine cells (the Unit structure has 29 elements, all tagged);
+    the untagged VTA-l units recorded in the same sessions are not deposited anywhere the paper names.
+- claim: fig2d-non-dopamine-cluster
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only the 29 tagged dopamine cells (the Unit structure has 29 elements, all tagged);
+    the untagged VTA-l units recorded in the same sessions are not deposited anywhere the paper names. None of the
+    38 non-dopamine cells is deposited.
+- claim: ed5-pavlovian-dopamine-click-responses
+  outcome: partially_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:ed5-pavlovian-dopamine-click-responses
+  measured:
+  - 8
+  - 19
+  notes: Peak spike density (20 ms SD) in the 0.5 s after the click, rewarded trials. Means over the 27 cells are
+    unpredicted 47.3, medium 42.3, high 37.5 Hz, ordered as the claim states (50 ms bins 46.5, 41.8, 37.1; 29 cells
+    48.9, 43.9, 39.1), and 16 of 27 cells show the order individually. The per-cell one-way ANOVA has p < 0.05 in
+    12 of 27 cells (10 with 50 ms bins, 13 of 29), not more than half, so that part of the criterion fails. The
+    data hold 8 VTA-l cells with 75/25% tones and 19 with 100/50%; 19 is within 18 +- 1.8 and 8 is outside 9 +-
+    0.9. The click times are the FoodDrop events, 3.136 s after trial onset. With the SD 4.5 ms kernel (the claims
+    file's primary reading of variance 20 ms) the means are 112.6, 104.7 and 101.3 Hz, still ordered, and the ANOVA
+    has p < 0.05 in 7 of 27. The tone-set count of 8 against 9 follows from the data holding 8 IM-1037 cells where
+    the Methods give 9.
+  deviations:
+  - Peak firing read from the spike density with the 20 ms SD of the authors' getFiringRate.m as called by Fig5_replicate.m
+    (the Methods say a Gaussian kernel with variance 20 ms, which the claims file reads as SD 4.5 ms); the SD 4.5
+    ms kernel and 50 ms bins are shown as variants and give the same outcome.
+- claim: ed5-pavlovian-dopamine-cue-responses
+  outcome: partially_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:ed5-pavlovian-dopamine-cue-responses
+  notes: 'Peak spike density in the 0.5 s after cue onset. Means over the 27 cells are zero 29.6, medium 31.8, high
+    36.3 Hz, ordered as the claim states in both tone sets (100/50/0: 30.8, 33.0, 36.8; 75/25/0: 26.7, 29.0, 35.1),
+    and 16 of 27 cells show the order individually. The per-cell ANOVA has p < 0.05 in 10 of 27 (11 of 29), not
+    more than half. With the SD 4.5 ms kernel the means are 94.1, 95.8 and 101.3 Hz, still ordered, and the ANOVA
+    has p < 0.05 in 4 of 27.'
+  deviations:
+  - Peak firing read from the spike density with the 20 ms SD of the authors' getFiringRate.m; the SD 4.5 ms kernel
+    of the claims file's primary reading is shown and gives the same outcome (see ed5-pavlovian-dopamine-click-responses).
+- claim: ed5a-pavlovian-behavior
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:ed5a-pavlovian-behavior
+  notes: 'Seven distinct sessions with 75/25/0% tones (IM-1037 and IM-1078). Fraction of 0.3 to 3 s after cue onset
+    at the food port, one-way ANOVA across the three tones per session: the 75% cue is highest with p < 0.05 in
+    5 of 7 sessions, all 5 with p < 1.2e-6 (largest F 55.6, smallest p 1.1e-17); whether the rat entered the port
+    at any time in the epoch gives the same counts (largest F 76.6). In the 14 sessions with 100/50/0% tones the
+    high cue is highest in 11 but p < 0.05 in only 2 (fraction) or 5 (any entry).'
+  deviations:
+  - The food-port status (portStatus) is taken as aligned on trial onset from 2 s before to 10 s after (its Win
+    field), at 30 kHz (360000 samples over 12 s); neither is documented, and occupancy rising after the click on
+    unpredicted trials is consistent with it. Kept at 1 kHz.
+- claim: fig2efgh-tonic-firing-indifferent-to-reward-rate
+  outcome: partially_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig2efgh-tonic-firing-indifferent-to-reward-rate
+  notes: 'Blocks split per session at the median of block-mean reward rate (high blocks have a mean reward rate
+    2.10 rewards higher on the integrator''s scale). The two readings disagree. Reading (b), rank-sum of block-mean
+    rates: 2 of 27 cells differ at p < 0.05 with the median block dropped, 0 with it put low (binomial p = 0.394
+    for 2 of 27). The 6 cells with 2 blocks a side cannot reach p < 0.05 even with complete separation (smallest
+    p 0.121), and the 6 with 3 a side only just can (0.0495), so this reading has little power; 2 of the 21 cells
+    that can reach p < 0.05 do.
+    Reading (a), rank-sum of 1 min bin rates: 18 of 27 cells differ (19 with the median block put low), against
+    1.35 expected (binomial p = 1.2e-17); regressing bin rates on block type and time in session, 16 of 27; against
+    circular shifts of the bins'' high/low labels, which keep the bins'' serial dependence, 9 of 27 (7 with the
+    median block put low; binomial p = 4.0e-6). Across cells firing is higher in high-reward blocks by a median
+    0.50 Hz (range -0.63 to 1.38 Hz; signed-rank p = 0.0006). Tonic firing changes little, about 0.5 Hz on a mean
+    near 7.7 Hz, as the paper describes, but individual cells change under the tests on 1 min bins, where the
+    claim says none did; reading (b) finds no more cells than chance, with little power. The question of the test is put to the authors (findings).'
+  deviations:
+  - The test of Fig. 2f is in the unread legend; the claims file names two readings, both run. Reading (a) is also
+    run against circular shifts of the high/low labels of the 1 min bins (shifts of 10 or more bins), because the
+    bins are not independent; the minimum shift is a standard choice.
+  - With an odd number of blocks the median block is dropped (a standard choice); putting it with the low blocks
+    is shown as a variant.
+  - 1 min bins are laid from the session's first Light-On, and a bin counts for a block when it lies wholly inside
+    it; block limits run from a block's first attempt to the next block's first attempt.
+- claim: fig2fh-non-dopamine-no-tonic-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only the 29 tagged dopamine cells (the Unit structure has 29 elements, all tagged);
+    the untagged VTA-l units recorded in the same sessions are not deposited anywhere the paper names. The claim
+    is on the 38 non-dopamine and other VTA-l units.
+- claim: fig2i-burst-rate-no-change
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig2i-burst-rate-no-change
+  notes: Bursts by the 80/160 ms template, per minute in high and low blocks for the 27 VTA-l cells (medians 60.5
+    and 61.0 bursts/min). High minus low median 1.28 bursts/min, range -12.4 to 17.7; Wilcoxon signed-rank p = 0.645,
+    paired t p = 0.491. With the median block put low p = 0.714 and 0.549; with 29 cells Wilcoxon p = 0.536.
+  deviations:
+  - The population test is in the unread Fig. 2 legend; both readings the criterion names agree.
+- claim: fig2i-no-inactive-states
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig2i-no-inactive-states
+  notes: Share of bandit-task time in inter-spike intervals longer than 0.5, 1 and 2 s, median over the 27 cells
+    4.7%, 0.13% and 0% (maximum 46.2%, 18.1% and 2.4%), below the 5% read as very low. High against low blocks the
+    medians differ by -0.02, 0 and 0 percentage points; Wilcoxon p 0.551, 0.356, 0.463; paired t p 0.637, 0.166,
+    0.382. At 0.5 s the median (4.7%) is close to the 5% bound. The statement that no cell switched between active
+    and inactive states is not quantified by the criterion.
+  deviations:
+  - The long-ISI threshold and the 5% bound are readings in the claims file, not from the paper; all three thresholds
+    agree.
+- claim: ed3-ctb-retrograde-labelling
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds no histology; the CTb tracing counts are not deposited.
+- claim: retro-tagged-cells-resemble-others
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:retro-tagged-cells-resemble-others
+  notes: The two IM-1078 cells fire at 7.85 and 6.17 Hz in the bandit task (7.90 and 6.22 over all segments), inside
+    3.33 to 14.19 Hz. Under reading (b) of the tonic test neither differs (p = 0.076 and 0.75), and with 5 or 6
+    blocks a side that test could reach p = 0.009 and 0.004. Reading (a) against circular shifts of the labels also
+    finds no change (p = 0.27 and 0.85). The plain rank-sum of 1 min bins finds a change in IM1078180827t14a (0.67
+    Hz higher in high blocks, p = 5.8e-5), but it treats serially dependent bins as independent. Their event responses
+    lie within the range of the 27 cells (peak after rewarded Side-In 27.8 and 17.6 Hz against 8.4 to 45.8; Light-On
+    peak 18.5 and 14.0 against 6.5 to 18.5).
+  deviations:
+  - 'Assumed: the per-cell tonic test is one that has power for these cells and allows for serial dependence, reading
+    (b) or reading (a) against circular shifts; both find no change. The plain rank-sum of 1 min bins (reading a
+    as written) finds a change in one cell and is set aside because its bins are not independent (fig2efgh-tonic-firing-indifferent-to-reward-rate).'
+  assumed: true
+- claim: fig3a-dlight-specific
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The in vitro HEK293T imaging of dLight1.3b is not in the data set and not deposited anywhere the paper
+    names.
+- claim: ed5-dlight-pavlovian-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: fig3cd-dlight-reward-rate-minutes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: fig3fh-dlight-tracks-state-value
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: fig3g-dlight-lag
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: fig4ac-dopamine-cue-responses
+  outcome: partially_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig4ac-dopamine-cue-responses
+  notes: 'Time-to-cue-response shuffle test (40 ms bins in 20 ms steps, 10,000 paired shuffles against the 250 ms
+    before the event, p < 0.01 Bonferroni over the bins). With the 0.5 s window: Go cue 27 of 27, rewarded Side-In
+    24 of 27, Light-On 16 of 27 (59%), so two events reach the 75% read as a great majority and Light-On exceeds
+    half only. With the 1 s window: 27, 25 and 13 of 27 (Light-On 48%). Without the correction 22 of 27 respond
+    to Light-On (0.5 s window). With events shifted 5 s earlier no cell responds. Median first significant bin 0.12
+    s (Light-On), 0.04 s (Go), 0.06 s (Side-In). On trials with latency over 0.5 s only, so that no Center-In falls
+    in the 0.5 s window, 11 of 27 respond to Light-On (median 258 of 298 trials kept), so leaving Center-In out
+    of the window does not bring the count nearer the 75% bar.'
+  deviations:
+  - 'The post-cue window over which bins are tested is not given. Assumed: 0.5 s, because the Methods'' test looks
+    for the first significant bin after a cue and the responses are described as rapid; the 1 s window (Bonferroni
+    over 49 bins) is shown and gives the same outcome for the Go cue and Side-In, and under half of the cells for
+    Light-On.'
+  - What the shuffle exchanges is not given; here it swaps, trial by trial, the post-cue bin rate and the baseline
+    rate (a paired permutation). The correction is read as Bonferroni over the bins tested (claims file header).
+  assumed: true
+- claim: fig4bc-dlight-cue-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: fig4a-no-dopamine-firing-ramp-before-approach
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig4a-no-dopamine-firing-ramp-before-approach
+  notes: Ramp angle from the 50 ms smoothed mean rate in the 0.5 s before the event. Before Center-In on trials
+    with latency over 2 s the angle is positive in 7 of 27 cells (one-sided Wilcoxon p = 0.991, sign test p = 0.997);
+    before Food-Port-In on rewarded trials in 12 of 27 (p = 0.411 and 0.779). With 29 cells the same (p 0.56 to
+    0.999). The angles are near +-90 degrees because time and rate keep their own units; the sign decides.
+  deviations:
+  - The 50 ms Gaussian kernel is read as its SD. The test of Fig. 4f is in the unread legend; both readings the
+    criterion names agree.
+- claim: fig4ef-dlight-ramps-before-approach
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: fig4e-light-on-alignment
+  outcome: not_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig4e-light-on-alignment
+  measured: 16
+  notes: 16 of 27 cells have a significant increase after Light-On by the shuffle test (0.5 s window; 13 with the
+    1 s window, 11 on trials with latency over 0.5 s), against 25 +- 2.5. Of the 16, 15 have a higher trial-averaged
+    peak (within 0.5 s of the event) aligned on Light-On than on Center-In (reading a; 14 with the SD 4.5 ms kernel),
+    and 5 a smaller trial-to-trial SD of the response peak time relative to Light-On (reading b); neither reading
+    gives all of them. The Light-On response (peak in 0.5 s) is larger on short-latency (< 1 s) than long-latency
+    (> 2 s) trials in 22 of 27 cells, median 6.70 Hz, Wilcoxon p = 8.4e-5. The preference for short-latency trials
+    holds; the count and the all-cells part of the criterion fail.
+  deviations:
+  - The shuffle test's window is assumed as in fig4ac-dopamine-cue-responses; the 1 s window gives 13 cells, so
+    the count fails either way.
+  - Reading (b) is implemented as the time of the per-trial spike density maximum between Light-On and 0.5 s after
+    Center-In, on trials with latency under 5 s.
+- claim: fig5a-early-trial-firing-not-reward-rate
+  outcome: not_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig5a-early-trial-firing-not-reward-rate
+  notes: 29 cells. Firing in the 0.5 s after Light-On correlates with reward rate at p < 0.01 in 8 cells (7 positive),
+    against 1% by chance (binomial p = 3.6e-10); in the 0.5 s before Center-In in 6 cells (4 positive; p = 3.9e-7).
+    The population Friedman test across reward-rate terciles finds no dependence (p = 0.080 and 0.19); tercile means
+    after Light-On are 8.53, 8.76 and 8.92 Hz. With the 27 cells, 8 and 6 cells (binomial p = 1.9e-10 and 2.5e-7)
+    and Friedman p = 0.20 and 0.32. The criterion requires neither test to show a dependence; the per-cell count
+    does, with firing mostly higher at higher reward rate. The second part of the statement (reward rate affects
+    motivation) is fig1b, reproduced. Against circular shifts of reward rate over trials (shifts of 20 or more trials),
+    which keep the serial dependence the Pearson p-values ignore, 1 and 2 of 29 cells are significant (binomial
+    p = 0.25 and 0.034), so most of the per-cell count may come from slow drift shared by firing and reward rate;
+    the outcome follows the criterion's Pearson test.
+  deviations:
+  - The windows and test of Fig. 5a are in the unread legend; the claims file names the readings, all run.
+  - The circular-shift null is a variant added at the verifier's request; the minimum shift of 20 trials is a standard
+    choice.
+- claim: fig5a-positive-rpe-reward-cue
+  outcome: reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig5a-positive-rpe-reward-cue
+  notes: 'Peak spike density in the 250 ms after rewarded Side-In against reward rate at Side-In (before the trial''s
+    reward). Tercile means 38.2, 31.4, 28.2 Hz from low to high reward rate; median Pearson r -0.310 (Wilcoxon p
+    = 3.7e-8); significant negative correlations 21 and positive 0 before correction, 17 and 0 after Bonferroni
+    over 29. Spearman: 20 and 0; 27 cells: 20 and 0; SD 4.5 ms kernel: 13 and 0 (tercile means 104.4, 95.9, 91.4
+    Hz). Median r by rat -0.17 (IM-1078) to -0.41 (IM-1002).'
+  deviations:
+  - The kernel SD is 20 ms, from the authors' getFiringRate.m as called by Fig5_replicate.m (twsize = 0.02 is the
+    normpdf sigma); the literal reading of the Methods (variance 20 ms^2, SD 4.5 ms) is shown and agrees.
+- claim: fig5ab-weak-negative-rpe
+  outcome: partially_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:fig5ab-weak-negative-rpe
+  measured: 8
+  notes: 'Unrewarded trials, pause in the 2 s after Side-In under three readings. Counting the window''s bounds
+    as boundaries, 8 of 29 cells lengthen their pause significantly with reward rate (5 after Bonferroni correction);
+    with whole inter-spike intervals overlapping the window, 9 and 5; with only intervals between spikes inside
+    the window, 2 and 2, which drops 50 of 3695 trials (38 in one cell). Only the last matches the paper''s 2/29.
+    Under every reading fewer cells code negative RPE by the pause than code positive RPE by the peak (21 before,
+    17 after correction). The valley part cannot be tested: the minimum of the 20 ms spike density is under 0.5
+    Hz on 3694 of 3695 unrewarded trials in the 1 to 3 s window (the largest 0.91 Hz) and on all 3695 in the 0 to
+    2 s window, and the same on every trial in 21 (1 to 3 s) and 27 (0 to 2 s) of the 29 cells, and in all 29 with
+    the SD 4.5 ms kernel. A valley correlation is defined only for 8 and 2 cells, none of them significant, and the
+    comparison with the peak holds by construction. The authors'' Fig5_replicate.m computes neither the valley nor the pause.
+    Population pause by tercile 0.49, 0.52, 0.55 s (Friedman p = 9.7e-5, bounds reading). Measured is the bounds
+    reading before correction.'
+  deviations:
+  - How the pause is measured at the window's edges is not given (Extended Data Fig. 8 legend, maximum inter-spike
+    interval within 2 s after unrewarded Side-In); three readings are run and they disagree, so the outcome is partial
+    and rests on no single one.
+  - The valley uses the 20 ms SD kernel of the authors' code, and the SD 4.5 ms kernel as a variant; with either
+    the minimum is 0 Hz on nearly every trial. The paper does not say how its valley avoided this, and the authors'
+    code in the data set does not compute it.
+  - Correction for the 2/29 count is read both ways (before and after Bonferroni over 29).
+- claim: ed8-other-reward-expectation-estimates
+  outcome: partially_reproduced
+  notebook: reproduce_mohebi_2019.ipynb
+  output: claim:ed8-other-reward-expectation-estimates
+  notes: 'Alpha per session by the most negative correlation with log latency (0.01 to 1; it reaches 1 in 2 sessions
+    for the actor-critic and 4 for Q-learning, and 0.01 in 1 for Q-learning; the fit is weak under both models
+    in IM-1003_170404 and IM-1037_180112, r -0.165 and -0.035 for the actor-critic, -0.167 and 0.016 for Q-learning,
+    and good in the other two Q-learning sessions at 1.00, r -0.346 and -0.402). Rewards
+    in the last 10 trials: tercile means 38.7, 31.7, 29.0 Hz, median r -0.321, 20 cells negative and 0 positive
+    (18 after correction); actor-critic V: 38.5, 31.2, 28.5 Hz, median r -0.312, 23 and 0 (17); Q-learning Q_left
+    + Q_right: 38.2, 29.8, 30.1 Hz, median r -0.215 (Wilcoxon p = 1.1e-8), 16 and 0 (12). The fig5a criteria hold
+    for the first two estimates; for Q-learning the middle tercile is 0.3 Hz below the highest. Negative coding
+    by the pause is weaker under all three: 2, 2, 2 pause cells (interval reading), 8, 6, 4 (bounds reading), 6,
+    6, 6 (whole-ISI reading) against 20, 23, 16 peak cells. No valley cell is significant, but the valley is degenerate
+    (fig5ab-weak-negative-rpe), so that part holds by construction.'
+  deviations:
+  - Initial values 0.5 and the alpha range 0.01 to 1 are the claims file's readings; the fit measure is the most
+    negative correlation with log latency, as for tau.
+  - Rewards in the last 10 trials are counted as in the authors' pelletpermin.m (fewer trials at the start of a
+    session).
+  - Pause and valley measured as in fig5ab-weak-negative-rpe, with its three pause readings.
+- claim: fig5cd-dlight-positive-not-negative-rpe
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: fig5cd-dlight-early-trial-value
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: ed7-dlight-470-not-405
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set has no photometry (dLight) recordings; it holds only spike times of the 29 tagged dopamine
+    cells and their behaviour (vta-2/live/data_and_code.zip). The paper names no other archive for them.
+- claim: ed7-non-dopamine-movement-activity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The data set holds only the 29 tagged dopamine cells (the Unit structure has 29 elements, all tagged);
+    the untagged VTA-l units recorded in the same sessions are not deposited anywhere the paper names. The claim
+    is on the 38 non-dopamine cells.
+findings:
+- kind: data_missing
+  statement: The data set holds only the spike times and behaviour of the 29 tagged dopamine cells. The paper's
+    microdialysis (26 sessions, 12 rats), dLight photometry (10 sessions), in vitro dLight imaging, CTb histology
+    and the untagged VTA-l units recorded with the tagged cells (including the 38 non-dopamine cells) are not in
+    it, though the paper says all data will be available through CRCNS. 20 of the 37 claims cannot be tested.
+- kind: metadata_error
+  statement: The data description says the 29 cells were recorded from 4 rats; they come from 5 (IM-657 1, IM-1002
+    3, IM-1003 15, IM-1037 8, IM-1078 2), the last being the rat with NAc core virus.
+- kind: format_error
+  statement: The CNIlatency field ("latency to center-nose-in", ms) is stored as 65535 for every latency above 65.535
+    s (120 trials in 19 of 21 sessions), the largest 16-bit integer; and in 4 sessions one value differs from Center-In
+    minus Light-On by more than 5 ms (in IM-657_160613 the last trial repeats the previous trial's value). ReactionTime
+    also differs from Center-Out minus Go cue by up to 273 ms in 3 sessions.
+- kind: format_error
+  statement: Spike times are not in ascending order in at least one segment of 11 of the 29 units (inversions of
+    at most 0.7 ms, for example 2399.4923 s after 2399.4926 s in the RL segment of IM657160613t11a).
+- kind: paper_inconsistency
+  statement: The Methods give the tagged cells per rat as IM657 1, IM1002 3, IM1003 15 and IM1037 9, which sums
+    to 28, while the text says 27 VTA-l cells. The data hold 8 IM1037 cells (27 in all). Extended Data Fig. 5b gives
+    9 cells with 75/25% Pavlovian tones and 18 with 100/50%; the data hold 8 and 19, the IM657 cell having 100/50%
+    tones.
+- kind: metadata_insufficient
+  statement: Several fields are not described. The FR field ("session-wide average firing rate") matches none of
+    the rates computable from the segments (it differs from the bandit-task rate by up to 1.95 Hz). The seven rows
+    of the bandit event table are named only in Fig5_replicate.m, and the two rows of the Pavlovian one not at all.
+    The Pavlovian portStatus window (Win, -2 to 10 s) does not say what it is aligned to, nor its 30 kHz sampling.
+    meanWave and meanLightEvoked have no units or sampling rate.
+- kind: other
+  about: data
+  statement: 'Against the Methods'' identification criteria: the deposited light-evoked and session-wide mean waveforms
+    correlate below 0.9 for 4 of the 27 VTA-l cells on the largest wire (9 with the four wires), where the Methods
+    say all light-evoked units exceeded 0.9; units IM657160613t11a and IM1002170114t05b received no 5 or 10 ms pulses,
+    where the Methods require p < 0.001 for 5 and 10 ms trains; and IM1003170321t01c is not significant by SALT
+    with its 5 and 10 ms trains (p = 0.087 and 0.05), though it is with 1 ms trains.'
+- kind: code_mismatch
+  statement: The authors' script in the data set (Fig5_replicate.m) splits trials by the number of rewards in the
+    previous 10 trials into four groups (0-2, 3-5, 6-7, 8-10), while Fig. 5a and Extended Data Fig. 8 use terciles
+    of the leaky-integrator reward rate. Its Gaussian kernel has SD 20 ms (getFiringRate.m, sigma = twsize = 0.02),
+    where the Methods say variance 20 ms.
+- kind: methods_unavailable
+  statement: 'Question for the authors on Fig. 2f,h: which per-cell test compared tonic firing between high- and
+    low-reward blocks, and on what samples (1 min bins, as the Methods count tonic spikes, or block means), and
+    how was the median block handled with an odd number of blocks? With rank-sum tests on 1 min bins 18 of 27 cells
+    differ (p < 0.05), 9 against circular shifts of the block labels, and firing is higher in high-reward blocks
+    by a median 0.50 Hz; with block means 2 (or 0) cells differ, but 6 of 27 cells have too few blocks for that
+    test to reach p < 0.05.'
+- kind: methods_unavailable
+  statement: 'Question for the authors on the time-to-cue-response test (Methods, Analysis, paragraph 1, and Fig.
+    4c,e): what was shuffled, how was the correction for multiple comparisons made, and over what post-cue window?
+    With paired shuffles and Bonferroni over the bins of a 0.5 s window, 16 of 27 cells respond to Light-On (13
+    with 1 s, 22 without correction), where the paper reports 25. This attempt adopted the 0.5 s window.'
+- kind: methods_unavailable
+  statement: 'Question for the authors on Extended Data Fig. 8: is the pause the longest interval between spikes
+    within the 2 s after unrewarded Side-In, does it include the intervals to the window''s bounds, or is it the
+    longest whole inter-spike interval overlapping the window, and what smoothing gave the valley? Intervals between
+    spikes only give the paper''s 2/29 pause cells; counting the bounds gives 8 (5 after correction) and whole intervals
+    9 (5). With the 20 ms kernel, or the 4.5 ms one, the valley is 0 Hz on nearly every unrewarded trial, so it
+    cannot correlate with reward rate. The data set''s Fig5_replicate.m computes neither.'
+verifications:
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper modules
+    and the claims file, with the paper. The verifier listed the archive itself (bucket listing, filelist.txt, checksums.md5)
+    and tested vta.salt, vta.bursts, cue_response and the valley on synthetic spike trains. It agreed with 33 of
+    37 outcomes and gave a different outcome for fig2efgh, retro, fig4e and fig5ab; all four were changed to the
+    verifier's. It reported no place where the claims file misreads the paper, so no question was added for a reader.
+    Report in transcripts/mohebi-2019/verifier-1-report.md.
+  results:
+  - claim: fig1b-latency-scales-with-reward-rate
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16: r < 0 in all 21 sessions, mean r -0.307, t-test p = 6.6e-11. The observed r falls below the
+      1st percentile of the shuffled-latency null (which also selects tau) in 19 of 21 sessions. Only electrophysiology
+      sessions exist.'
+    response: Outcome kept; no change needed.
+  - claim: ed1b-latency-depends-on-recent-outcomes
+    agrees: true
+    outcome: blocked
+    reason: There are no microdialysis sessions in the archive (section B, item 12). ed1b could be run on the 21
+      electrophysiology sessions only as a proxy, which would not test the microdialysis claim or its expected counts
+      of 26 sessions and 7113 trials.
+    response: Outcome kept; the proxy was not run, as the verifier says it would not test the claim.
+  - claim: fig1cd-nac-core-dopamine-reward-rate
+    agrees: true
+    outcome: blocked
+    reason: No microdialysis data.
+    response: Outcome kept; no change needed.
+  - claim: fig1ce-ventral-prelimbic-dopamine-reward-rate
+    agrees: true
+    outcome: blocked
+    reason: No microdialysis data.
+    response: Outcome kept; no change needed.
+  - claim: ed1-behavior-similar-across-subregions
+    agrees: true
+    outcome: blocked
+    reason: No microdialysis sessions.
+    response: Outcome kept; no change needed.
+  - claim: fig2-tagged-dopamine-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The SALT light test alone passes 26 of 27 VTA-l cells and 2 of 2 IM-1078 cells, both within tolerance.
+      With the criterion''s waveform r > 0.9 added, only 23 of 27 pass on the largest wire (18 of 27 on all four
+      wires), which is outside 27 +- 2.7. Two units had no 5 or 10 ms pulses, so the author tested 1 ms pulses instead,
+      which is the author''s own choice (item 6: the substitution is not in the criterion; neither total is within
+      tolerance). Item 7: vta.salt''s 400 ms baseline gives 780 null distances, so p < 0.001 means p = 0 exactly;
+      on synthetic data the test is calibrated.'
+    response: Outcome kept. The notebook now prints the counts without the 1 ms substitution (24 light-responsive;
+      22 and 17 passing both criteria), the record says the substitution is this attempt's choice, and the p resolution
+      of SALT is stated in the helper and the deviation.
+  - claim: fig2d-dopamine-firing-rates
+    agrees: true
+    outcome: reproduced
+    reason: 'Bandit-task reading: mean 7.77, min 3.77, max 12.93 Hz, all within tolerance for both the 27-cell and
+      29-cell sets. Under the whole-recording reading the max is 11.60 Hz, which misses the tolerance by 0.01 Hz.
+      Item 10: rate_all_segments divides by each segment''s last spike time, not the segment''s duration, so it
+      slightly overstates the rate.'
+    response: Outcome kept. Segment durations are not deposited (the Sleep segment has no events), so the last spike
+      time is kept as the duration and the notebook now says that it slightly overstates the rate.
+  - claim: fig2d-dopamine-lower-rate-than-other-vta
+    agrees: true
+    outcome: blocked
+    reason: Untagged units are not deposited.
+    response: Outcome kept; no change needed.
+  - claim: fig2d-dopamine-longer-waveforms
+    agrees: true
+    outcome: blocked
+    reason: There is no comparison group.
+    response: Outcome kept; no change needed.
+  - claim: fig2d-non-dopamine-cluster
+    agrees: true
+    outcome: blocked
+    reason: Untagged units are not deposited.
+    response: Outcome kept; no change needed.
+  - claim: ed5-pavlovian-dopamine-click-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The means are ordered as claimed (47.3 > 42.3 > 37.5 Hz), but the ANOVA has p < 0.05 in only 12 of
+      27 cells, short of more than half. The tone-set count is 8 against 9 +- 0.9, outside tolerance. Item 3: the
+      claims header makes SD 4.5 ms the primary reading; the Pavlovian peaks were run under SD 20 ms only, and the
+      counts could change. Item 8: the data have 8 IM-1037 cells, which explains 8 against 9, a miss the notebook
+      prints without flagging.'
+    response: 'Outcome kept. The SD 4.5 ms kernel is now run: means 112.6, 104.7, 101.3 Hz, still ordered, ANOVA
+      p < 0.05 in 7 of 27. The conclusion now says the 8 against 9 follows from the 8 IM-1037 cells in the data.'
+  - claim: ed5-pavlovian-dopamine-cue-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The means are ordered as claimed (36.3 > 31.8 > 29.6 Hz), but p < 0.05 in only 10 of 27 cells. Item
+      3: run under SD 20 ms only.'
+    response: Outcome kept. With the SD 4.5 ms kernel the means are 94.1, 95.8, 101.3 Hz, still ordered, and p <
+      0.05 in 4 of 27.
+  - claim: ed5a-pavlovian-behavior
+    agrees: true
+    outcome: reproduced
+    reason: In the 75/25/0 sessions, the 75% cue is highest and p < 0.05 in 5 of 7, and p < 1.2e-6 in 5. This holds
+      under both per-trial measures.
+    response: Outcome kept; no change needed.
+  - claim: fig2efgh-tonic-firing-indifferent-to-reward-rate
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Reading (a), the 1 min bins, finds 18 or 19 of 27 cells significant. Reading (b), the block means,
+      finds 2 of 27 or 0 of 27, but that test has almost no power: with 2 against 2 blocks a rank-sum test cannot
+      go below p = 0.12, and with 3 against 3 its minimum is 0.0495, so the 7 IM-1037 cells and 6 others had a guaranteed
+      no change, and the 0 of 27 cannot be read as absence of an effect. Reading (a) treats autocorrelated 1 min
+      bins as independent and is anticonservative; the variant that adds a time regressor still gives 16 of 27.
+      The across-cell signed-rank test (p = 6e-4, high blocks a median +0.5 Hz above low) is the sound test here,
+      and it shows a change.'
+    response: 'Outcome changed from not_reproduced to partially_reproduced, as the verifier gives. Reading (a) is
+      now also run against circular shifts of the bins'' high/low labels, which keeps the serial dependence: 9 of
+      27 cells (7 with the median block put low). The notebook prints the smallest p reading (b) can reach per cell
+      (6 of 27 cannot reach 0.05). The assumption of reading (a) is withdrawn; the outcome rests on the readings
+      together.'
+  - claim: fig2fh-non-dopamine-no-tonic-change
+    agrees: true
+    outcome: blocked
+    reason: No untagged units.
+    response: Outcome kept; no change needed.
+  - claim: fig2i-burst-rate-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Wilcoxon p = 0.645, paired t p = 0.491; the median difference is 1.28 bursts/min. Item 11: vta.bursts
+      follows the 80/160 template correctly; it flags about 77 bursts/min on a 7 Hz Poisson train, so burst rate
+      here mostly tracks firing rate.'
+    response: Outcome kept; no change needed.
+  - claim: fig2i-no-inactive-states
+    agrees: true
+    outcome: reproduced
+    reason: The median time in long ISIs is 4.7%, 0.13% and 0% for the 0.5, 1 and 2 s thresholds, and every test
+      has p > 0.16. The 0.5 s reading only just meets the 5% bound.
+    response: Outcome kept; no change needed.
+  - claim: ed3-ctb-retrograde-labelling
+    agrees: true
+    outcome: blocked
+    reason: No histology.
+    response: Outcome kept; no change needed.
+  - claim: retro-tagged-cells-resemble-others
+    agrees: false
+    outcome: reproduced
+    reason: 'Reading (b): neither cell changes (p = 0.076 and 0.75), and here 5 or 6 blocks per side give the test
+      real power; both rates are in range. Under reading (a), IM1078180827t14a is significant (p = 5.8e-5).'
+    response: Outcome changed from not_reproduced to reproduced, as the verifier gives. Reading (a) against circular
+      shifts of the labels also finds no change (p = 0.27 and 0.85), and the notebook prints that reading (b) could
+      reach p = 0.009 and 0.004 for these cells. The outcome is marked as resting on the assumption that the plain
+      rank-sum of 1 min bins is set aside.
+  - claim: fig3a-dlight-specific
+    agrees: true
+    outcome: blocked
+    reason: No in vitro data.
+    response: Outcome kept; no change needed.
+  - claim: ed5-dlight-pavlovian-responses
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: fig3cd-dlight-reward-rate-minutes
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: fig3fh-dlight-tracks-state-value
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: fig3g-dlight-lag
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: fig4ac-dopamine-cue-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Go cue 27 of 27 and rewarded Side-In 24 of 27 meet the 75% bar. Light-On reaches only 16 of 27 (59%)
+      with the 0.5 s window and 13 of 27 (48%) with the 1 s window. It could not check whether the 0.5 s Light-On
+      window overlaps Center-In, given median latencies around 0.5 s in IM-657 and IM-1078; a count using only trials
+      with latency > 0.5 s would settle it. cue_response gave 0 of 40 false positives on Poisson data and detects
+      a 30% added response.
+    response: 'Outcome kept. The count on trials with latency over 0.5 s is now printed: 11 of 27 respond to Light-On,
+      fewer than with all trials, so leaving Center-In out of the window does not bring the count nearer the 75%
+      bar.'
+  - claim: fig4bc-dlight-cue-responses
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: fig4a-no-dopamine-firing-ramp-before-approach
+    agrees: true
+    outcome: reproduced
+    reason: One-sided tests for an increase give Wilcoxon p = 0.99 (Center-In) and 0.41 (Food-Port-In), and sign-test
+      p = 0.997 and 0.78.
+    response: Outcome kept; no change needed.
+  - claim: fig4ef-dlight-ramps-before-approach
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: fig4e-light-on-alignment
+    agrees: false
+    outcome: not_reproduced
+    reason: '16 cells respond to Light-On against the expected 25 +- 2.5 (22 even without correction). Under reading
+      (a), 15 of 16 are better aligned to Light-On, not all. The short-versus-long latency part holds: 22 of 27
+      cells, p = 8e-5. Item 3: the Light-On peaks and alignment were run under SD 20 ms only.'
+    response: 'Outcome changed from partially_reproduced to not_reproduced, as the verifier gives: the count misses
+      the expected value under every window (16, 13, and 11 on trials with latency over 0.5 s) and the all-cells
+      part fails under both readings; only the short-latency part holds. Reading (a) with the SD 4.5 ms kernel is
+      now run and gives 14 of 16.'
+  - claim: fig5a-early-trial-firing-not-reward-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: '8 of 29 cells (after Light-On) and 6 of 29 (before Center-In) correlate with reward rate at p < 0.01,
+      against 1% expected (binomial p <= 4e-7), and most correlations are positive. The Friedman tests are not significant
+      (p = 0.08 and 0.19), but the criterion requires that neither test show a dependence. Item 5: the per-trial
+      Pearson p-values ignore serial correlation within a session; slow drift that co-varies with reward rate would
+      inflate the count. On the criterion as written the outcome is still not_reproduced.'
+    response: 'Outcome kept. A circular-shift null of reward rate over trials is now run: 1 and 2 of 29 cells are
+      significant (binomial p = 0.25 and 0.034), and the notes say most of the per-cell count may come from slow
+      drift.'
+  - claim: fig5a-positive-rpe-reward-cue
+    agrees: true
+    outcome: reproduced
+    reason: Tercile means 38.2 > 31.4 > 28.2 Hz, median r -0.31 (Wilcoxon p = 3.7e-8), 21 negative and 0 positive
+      significant (17 and 0 after correction). This holds for the 27-cell set, Spearman, and the SD 4.5 ms kernel.
+    response: Outcome kept; no change needed.
+  - claim: fig5ab-weak-negative-rpe
+    agrees: false
+    outcome: partially_reproduced
+    reason: The pause count is 2 of 29 only under the ISI-only reading; the window-edge reading gives 8 (5 after
+      correction). The ISI-only reading drops trials with fewer than 2 spikes, the longest pauses, which biases
+      it toward no correlation; the edge reading counts the silence from Side-In to the first spike, which is part
+      of a pause. The valley part is never really tested, because the valley is 0 Hz on 100% of 3695 trials, so
+      the criterion's fewer valley than peak cells holds by construction; Fig5_replicate.m was not consulted for
+      how the minimum is computed. Population pause duration rises with reward rate (Friedman p = 9.7e-5).
+    response: 'Outcome changed from reproduced to partially_reproduced, as the verifier gives. A third pause reading
+      (whole ISIs overlapping the window) gives 9 and 5; the ISI-only reading drops 50 of 3695 trials (38 in one
+      cell), now printed per cell. The notebook prints the lines of Fig5_replicate.m and getFiringRate.m read: neither
+      computes a valley or a pause. It prints that the valley is the same on every trial in 21 and 27 of 29 cells
+      (SD 20 ms) and all 29 (SD 4.5 ms), and the conclusion says the valley part cannot be tested. The assumption
+      of the ISI-only reading is withdrawn.'
+  - claim: ed8-other-reward-expectation-estimates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The rewards-in-last-10 and actor-critic estimates meet the fig5a criteria. Q-learning fails because
+      its terciles are not monotone (29.8 against 30.1 Hz), although 16 negative and 0 positive correlations are
+      significant. The negative-weaker test passes only because the valley is degenerate (item 1). Item 9: several
+      sessions hit the edge of the alpha grid (1.00 in up to 6 sessions; 0.01 once), so for those sessions the latency
+      fit is weak.'
+    response: Outcome kept. The notes now say the valley part holds by construction and the comparison rests on
+      the pause (weaker under all three readings), and the notebook prints the alpha edge counts (actor-critic 2
+      at 1.00; Q-learning 4 at 1.00, 1 at 0.01).
+  - claim: fig5cd-dlight-positive-not-negative-rpe
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: fig5cd-dlight-early-trial-value
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: ed7-dlight-470-not-405
+    agrees: true
+    outcome: blocked
+    reason: No photometry.
+    response: Outcome kept; no change needed.
+  - claim: ed7-non-dopamine-movement-activity
+    agrees: true
+    outcome: blocked
+    reason: No untagged units.
+    response: Outcome kept; no change needed.
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and summary, the helper modules, the README, the
+    attempt record and the claims file, with the paper. The verifier agreed with all 37 outcomes, found all round-1 points
+    resolved and no place where the claims file misreads the paper, so no question was added for a reader. It asked for
+    wording fixes in the fig2efgh, fig5ab, ed8 and fig4ac (README) conclusions, and found that the units with out-of-order
+    spike times are 11, not 13, and that the record's example inversion was not printed. The notebook now prints the
+    units with out-of-order spike times (11 of 29) with the first inversion of each segment, and the cell count, the
+    example (2399.4923 s after 2399.4926 s) and the largest inversion (0.7 ms) are corrected in the notebook, Summary
+    and finding. No outcome changed and none is proposed. Report in transcripts/mohebi-2019/verifier-2-report.md.
+  results:
+  - claim: fig1b-latency-scales-with-reward-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed1b-latency-depends-on-recent-outcomes
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig1cd-nac-core-dopamine-reward-rate
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig1ce-ventral-prelimbic-dopamine-reward-rate
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed1-behavior-similar-across-subregions
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2-tagged-dopamine-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2d-dopamine-firing-rates
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2d-dopamine-lower-rate-than-other-vta
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2d-dopamine-longer-waveforms
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2d-non-dopamine-cluster
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed5-pavlovian-dopamine-click-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed5-pavlovian-dopamine-cue-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed5a-pavlovian-behavior
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2efgh-tonic-firing-indifferent-to-reward-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Reading (a) finds 18 of 27 cells significant, and 9 of 27 when the high/low labels are shifted circularly.
+      Reading (b) finds 2 of 27, or 0 of 27 with the median block put low. Across cells, firing is 0.50 Hz higher in
+      high blocks (signed-rank p = 0.0006). The sentence 'individual cells do change under every test with the power
+      to detect it' holds for the tests on 1 min bins, not for reading (b), which can reach p <= 0.05 for 21 cells and
+      finds 2 of 27 (binomial p = 0.394). With the median block dropped, the 6 cells that cannot reach p < 0.05 are the
+      six with 2 blocks a side (minimum p 0.121); the cells with 3 a side can just reach it (minimum p 0.0495).
+    response: Outcome kept. The notebook now prints the smallest possible p by numbers of blocks and how many of the
+      21 cells that can reach p < 0.05 do (2, none with the median block put low). The conclusion and notes now say the
+      cells change under the tests on 1 min bins, that reading (b) finds no more cells than chance, and that the 6 cells
+      with 2 blocks a side cannot reach p < 0.05 while the 6 with 3 a side only just can.
+  - claim: fig2fh-non-dopamine-no-tonic-change
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2i-burst-rate-no-change
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2i-no-inactive-states
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed3-ctb-retrograde-labelling
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: retro-tagged-cells-resemble-others
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is stated and reasonable. With 5 or 6 blocks a side, reading (b) could reach p = 0.009 and
+      0.004, so it has power for these cells, and it finds no change (p = 0.076 and 0.75). Reading (a) against circular
+      shifts also finds no change (p = 0.27 and 0.85). Setting aside the plain rank-sum of 1 min bins is justified, because
+      it treats serially dependent bins as independent.
+    response: No change needed.
+  - claim: fig3a-dlight-specific
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed5-dlight-pavlovian-responses
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig3cd-dlight-reward-rate-minutes
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig3fh-dlight-tracks-state-value
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig3g-dlight-lag
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig4ac-dopamine-cue-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated and reasonable. The outcome does depend on it. With the 1 s window, 13 of 27 cells
+      (48%) respond to Light-On, which is not more than half, so that reading would give not_reproduced. The record's
+      deviation is accurate. The README row reads Partially reproduced without the (assumed window) marker that the Summary
+      table and the record carry. The Light-On window overlapping Center-In is settled; using only trials with latency
+      over 0.5 s gives 11 of 27 cells.
+    response: Outcome kept. The README row now reads Partially reproduced (assumed window).
+  - claim: fig4bc-dlight-cue-responses
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig4a-no-dopamine-firing-ramp-before-approach
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig4ef-dlight-ramps-before-approach
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig4e-light-on-alignment
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig5a-early-trial-firing-not-reward-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed, following the criterion's Pearson count (8 and 6 of 29 cells). Under the circular-shift variant,
+      the window before Center-In still exceeds chance, 2 of 29 cells, binomial p = 0.034, so the outcome would hold
+      under that variant too.
+    response: No change needed.
+  - claim: fig5a-positive-rpe-reward-cue
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig5ab-weak-negative-rpe
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agreed, for the reasons now written into the record. ''No valley correlation can be significant'' is not
+      what the output shows: the valley varies across trials in 8 of 29 cells (1 to 3 s window) and 2 of 29 (0 to 2 s),
+      so for those cells a correlation is defined; the output shows that none is significant, not that none can be. ''Under
+      0.5 Hz on all 3695 unrewarded trials'' rests on a printed 100.0%, which is rounded to one decimal.'
+    response: Outcome kept. The notebook now prints the count of trials with a valley under 0.5 Hz (3694 of 3695 in the
+      1 to 3 s window, largest 0.91 Hz; 3695 of 3695 in the 0 to 2 s window) and the number of cells with a defined valley
+      correlation (8 and 2) and of those significant (0). The conclusion and notes now state these numbers and that the
+      comparison with the peak holds by construction.
+  - claim: ed8-other-reward-expectation-estimates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agreed, for the reasons now written into the record. ''Where the latency fit is weak'' is not supported
+      for every session at the edge of the alpha grid: two of the four Q-learning sessions at alpha = 1.00 fit well,
+      IM-1002_170127 (r -0.346) and IM-1078_180827 (r -0.402). The phrase comes from my round-1 item 9, which was wrong
+      on this point; the alpha edge is 2 sessions for the actor-critic and 4 for Q-learning.'
+    response: Outcome kept. The conclusion and notes now name the two edge sessions where the fit is weak under both
+      models (IM-1003_170404 and IM-1037_180112) and the two Q-learning sessions at 1.00 that fit well.
+  - claim: fig5cd-dlight-positive-not-negative-rpe
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig5cd-dlight-early-trial-value
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed7-dlight-470-not-405
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed7-non-dopamine-movement-activity
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.

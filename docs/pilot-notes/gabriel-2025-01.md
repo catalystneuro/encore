@@ -1,0 +1,118 @@
+# gabriel-2025, Gabriel et al. 2025
+
+No claim reproduced, partially or not reproduced on the dandiset, and three
+blocked, the cell registration claims (`data-registered-cells` and the two
+Figure 1O claims), all `not_runnable`; the dandiset holds no calcium imaging,
+so the other 39 claims were tested on the paper's Zenodo record of analysed
+data (doi:10.5281/zenodo.13381210, `data: elsewhere`) and are counted apart:
+12 reproduced, 3 partially, 6 not reproduced and 18 blocked, with six of
+these outcomes on an assumption. One link claim the author added,
+`zenodo-dandiset-link`, is partially reproduced (25 of 30 sessions). The
+first verification round agreed with 22 of the 43 outcomes as they stood and
+the second with all 43. The author then proposed two changes, so a third
+round reviewed those two: it agreed that `figs2-innate-behaviors` is not
+reproduced and did not agree that `fig3a-decoding-shock-gt-ns` should be
+partially reproduced, which stays reproduced with the proposal left in the
+record. The record pins version 0.260902.1724. The paper, Gabriel, Gupta,
+Sanchez-Fuentes, Zeidler, Wilke and DeNardo, "Transformations in prefrontal
+ensemble activity underlying rapid threat avoidance learning" (Current
+Biology 35, 1128-1136), images prelimbic neurons with a miniscope in mice
+learning platform-mediated avoidance, with shocked and non-shocked groups,
+and relates single-cell encoding, mixed selectivity, decoding of trial
+outcome, a Rescorla-Wagner model and CILDS latent trajectories to the
+learning. The claims were written from the NIH author manuscript
+(PMC11916606) without the supplement or the figures, and from the paper's
+code on Zenodo (doi:10.5281/zenodo.13351302), which lacks the ROC routine
+(`run_caAnalyze`) and the Prism steps; the claims check added
+`disc-tone-cells-baseline` and `fig3a-decoding-peak-preshock`, for 42
+claims. Reproduced are the neuron counts (1394, 847, 1031 and 967, exact),
+the behaviour of Figure 1E and 1F, the day 2 results for platform-inhibited
+cells and freezing cells of Figure 1Q and 1P-Q, Figure S1H, the day 1 tone
+effect and the exit modulation scores of Figure 2, both decoding claims of
+Figure 3A on shocked against non-shocked mice (assumed: success as the
+positive class and min-max F1, as the Methods say, and the clock tone
+windows), the hybrid model of Figure 4B (assumed: the clock tone windows)
+and Figure S3G and H. Partial are `fig1p-platform-exit-excited-day2`
+(p = 0.044, but 77 and 84 cells against 104 and 100), `fig1r-mixed-exit-day1`
+and `fig2-day2-tone-further`. Not reproduced are `fig1k-mixed-day2` (24.5%
+against 32.1%, where the paper reports 51% against 25%), the day 1
+categories, `fig2e-modulation-entries` (p = 0.086), the pre-shock peak of
+decoding (at 32.6 s, in the shock epoch), the feature-cell decoder of
+Figure 3B and `figs2-innate-behaviors`. Blocked are the 13 CILDS claims,
+as CILDS exists only in MATLAB, and five claims as methods_underspecified,
+where the paper's readings disagree (fig1g, fig1h, fig1kl-overall,
+disc-tone and fig3c). The author's first run gave 16 reproduced, 1
+partially, 5 not reproduced and 20 blocked, plus the link claim. The author
+asked a reader nothing at first, so the answer and author-answers runs
+changed nothing. Round 1 found that all 9 shocked mice were decoded where
+the Figure 3 legend gives 7, that the tone-onset and platform event-call
+counts fall far below the paper's, that the paper's own tone windows were
+run for few claims, that the CILDS and figs2 blocks were not data limits,
+and that the claims file's Rescorla-Wagner update uses the next trial's
+outcome where the Methods use the current one; in reply three decoding
+cohorts and the paper's tone bouts were run, fig1g and fig1h moved to
+blocked as the two Sidak families disagree, fig1r and fig2-day2 moved to
+partially reproduced, the registration claims moved from data_missing to
+not_runnable, a clock check found calcium following the freezing labels by
+0.9 to 3.8 s in all 30 sessions, and the update question went to a reader
+in `questions/gabriel-2025.yaml`. Round 2 agreed with all 43 outcomes, found
+unreported fig1p seed runs and sentences the outputs did not support, and
+asked for a shuffled-label control for decoding; in reply the escape part
+of figs2 was run (p = 0.40 to 0.99 on day 1 in 24 runs) and the control was
+run, whose pre-shock difference above the shuffled values is not
+significant in any cohort or coding. The author's run took about 2 h 55 min
+(01:38 to 04:33 UTC); a first decoding run with a process pool hung until
+the 60-minute command timeout and lost an hour, and Zenodo throttled single
+streams to about 1 MB/s, so files were fetched in parallel byte ranges. The
+notebook ran in 30.1 min at first, 2621 s after the author-answers run,
+about 41 min after rounds 1 and 2, and 3525 s at the end, close to the
+60-minute limit.
+
+Dandiset 001887 holds no calcium imaging: none of its 30 NWB files holds
+traces, footprints or an imaging series, though its description says it
+holds the data collected for and analyzed in the paper, and the traces are
+only in the Zenodo record. Only 2 of the 30 NWB files (F1 and F2, day 1)
+hold the BehaviorDEPOT labels, so the behaviour results cannot be computed
+from the dandiset without re-tracking the videos. sub-F7_ses-TD2NoShock.nwb
+was converted from M7's day 2 timestamp file, with M7's trial table, 12
+shock trials for a non-shocked mouse and M7's session start time;
+sub-F3_ses-TD1NoShock.nwb, a non-shocked mouse, lists 9 shock trials, and
+sub-F3_ses-TD2NoShock.nwb lists 9 trials, the first at 0 s, where the
+Zenodo record has 10 tones; the F1 and F2 day 1 files give 2026-08-25, the
+conversion date, as the session start time and hold no trial table; and the
+F6 day 1 file holds only the video. The other 25 sessions give the Zenodo
+tone onsets up to one offset per session (-3.56 to 4.02 s). The Zenodo
+record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day
+2, where the Figure 1 behaviour legend gives 11 and 9, and 8 and 8; the
+behaviour-only mice are in neither archive, and which two shocked mice the
+Figure 3 decoding left out is not said. No cell registration, the CellReg
+output behind the 463 and 322 registered cells, is deposited, though the
+footprints are, and jumping, rearing and escape labels are in neither
+archive; escape can be computed from the platform labels. The paper's code
+assumes 25 frames/s, while in six sessions (F5, M5 and F6 on both days) the
+camera ran at 28.2 to 29.8 frames/s, so the code's tone and shock windows
+drift and its success rule disagrees with the hand-scored outcomes on 15 of
+60 trials, against 4 with windows placed by the timestamps; the attempt
+used the timestamp windows and ran the paper's as a variant. The event-call
+counts of the STAR Methods are not met for tone onsets and platform events:
+day 1 tone-onset 33 and 37 shocked cells against 61 and 52, day 2
+platform-exit 77 and 40 against 104 and 74, while the freezing counts match
+within 3%. In the paper, non-shocked mice number 7 in the Methods and 9 in
+the Figure 1 behaviour legend, and the deposited Rescorla-Wagner script
+reads a spreadsheet named for another experiment. Questions are put to the
+paper's authors: which frames make up the BL, D1 and D2 periods and what
+the unpublished ROC routine does; how a mixed cell is counted to give 51%
+against 25%; which class is positive in the decoding F1 and how F1 is
+normalised; and which Sidak family the Figure 1E to 1H comparisons use.
+
+The author's points on the protocol: it does not say whether the author may
+set `data`, here set to `elsewhere` on 39 claims; a link claim was added to
+report whether the dandiset is the paper's data though no tested claim
+needs the match; reader step 3 and author step 1.6 disagree on criterion
+readings that disagree, and the claims file was followed where it names
+methods_underspecified, otherwise the best-supported reading was adopted as
+an assumption; it does not say whether a tone-time correction the data
+force is an assumption, and it was marked as one only where the outcome
+depends on it; and the clock check could not be shown for the calcium
+because the shock response is too small, so the calcium clock was reported
+as consistent with the timestamps, not shown.

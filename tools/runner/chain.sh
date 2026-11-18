@@ -30,13 +30,15 @@
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
 # account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
 # not committed; the branch is put back and the role runs again on the verified account, as do the
-# rest of the dataset's roles: a paper that was flagged once will be again. With RUNNER_FALLBACK=none
+# rest of the dataset's roles: a paper that was flagged once will be again. With RUNNER_FALLBACK=queue:<file> (a
+# file in $RUNNER_STATE, the verified lanes' queue) the chain instead puts the paper first in that file, marks the
+# rest of its roles for the verified account, and ends with "<paper> QUEUED ON VERIFIED at <role>: <why>", which
+# closes its issue; a verified lane resumes it from that role. With RUNNER_FALLBACK=none
 # the chain stops there instead, leaving $RUNNER_STATE/flagged-<dataset>, and the lane goes on to the
 # next dataset: for when the verified account has no budget left.
 #
-# Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time has main
-# merged in, recorded (the recorder role adds the pilot notes) and merged once its
-# checks pass; each lands on a main that has the ones before it.
+# Finishing has main merged in, the attempt recorded (the recorder role adds the pilot notes) and its pull
+# request merged once its checks pass. Chains finish side by side, each in a worktree of its own (see Finish).
 #
 # The paper match goes straight to main (merge_match.sh). When it leaves the dataset no usable paper the chain
 # stops: for a person to confirm or correct the verdicts (held), or for good (no_match, confirmed). A claims
@@ -53,6 +55,12 @@
 # "<dataset> CLAIMS MERGED", "<dataset> SKIPPED ...", "<dataset> STOPPED ...", "<dataset> CHECKS
 # FAILED <pr>", which leaves the pull request open, or "<dataset> RESTART: ..." (exit 75), when gh can no
 # longer verify TLS from this process and the chain is to be resumed from a fresh one.
+#
+# With REPLICATE=r1 (r2, ...) and a paper with a current attempt and its claims file on main, the chain runs a
+# replicate (docs/replicates.md): the same attempt again, blind, from the same claims, on the branch
+# replicate/<paper>/<replicate>: the author, the answers when there are questions, and every verification round
+# and revision. It skips the reconcile step and the finish: the branch is never merged, main and the site do not
+# change, and the last line printed is "<paper> REPLICATE <replicate> DONE". tools/replicates.py compares them.
 set -uo pipefail
 VERSION=${2:-}
 STATE=${RUNNER_STATE:-/tmp}
@@ -60,7 +68,10 @@ here=$(cd "$(dirname "$0")" && pwd)
 export REGISTRY_ROOT=$PWD
 # A paper's key, or a dataset's folder name (000147 for DANDI, <archive>-<id> otherwise), names the chain's files
 # and branch; a dataset's name is replaced by its paper's once the paper match lists it for one.
-if [[ "$1" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*-[0-9]{4}(-[a-z0-9]+)?$ ]] && ! python "$here/describe.py" folder "$1" >/dev/null 2>&1; then
+# A paper is one main lists (papers/datasets/<key>.yaml); the dataset parser would take "holdgraf-2016" for archive
+# "holdgraf", so it cannot tell them apart.
+git fetch -q origin main 2>/dev/null || true
+if git cat-file -e "origin/main:papers/datasets/$1.yaml" 2>/dev/null; then
   d=$1; is_paper=1
 else
   d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: neither a paper nor a dataset"; exit 1; }
@@ -79,17 +90,44 @@ notify(){
   gh workflow run notify.yml -f dataset="$d" -f status="$last" -f detail="$last_why" -f run="$last_run" \
     >/dev/null 2>&1 || log "could not dispatch notify.yml"
 }
-trap notify EXIT
+# One chain at a time on a paper (or on a replicate of it): the chain holds $STATE/chain-<paper>.lock, a directory
+# with its process id, from the moment it knows its paper until it exits. Lanes keep apart the datasets they take,
+# but two datasets can be one paper's: on 2026-11-13 one lane took CRCNS hc-21 and another hc-12, both went on as
+# wirth-2017, and the second joined the first's attempt, so that verifier-2 and author-revise-3 ran twice (issue
+# 749). A lock left by a chain that died is taken over.
+held=""
+hold(){ local lock="$STATE/chain-${1//\//-}.lock" pid
+  for _ in 1 2; do
+    if mkdir "$lock" 2>/dev/null; then echo $$ > "$lock/pid"; held=$lock; return 0; fi
+    pid=$(cat "$lock/pid" 2>/dev/null)
+    if [ -n "$pid" ] && [ "$pid" != $$ ] && kill -0 "$pid" 2>/dev/null; then holder=$pid; return 1; fi
+    rm -f "$lock/pid"; rmdir "$lock" 2>/dev/null
+  done
+  holder=unknown; return 1; }
+release(){ [ -z "$held" ] || { rm -f "$held/pid"; rmdir "$held" 2>/dev/null; held=""; }; }
+trap 'release; notify' EXIT
 
-remote_branch(){ git ls-remote --heads origin "attempt/$d" | cut -f1; }
-fetch(){ git fetch -q origin main 2>/dev/null || true; git fetch -q origin "attempt/$d" 2>/dev/null || true; }
+remote_branch(){ git ls-remote --heads origin "$br" | cut -f1; }
+fetch(){ git fetch -q origin main 2>/dev/null || true; git fetch -q origin "$br" 2>/dev/null || true; }
 # Roles committed on the branch since it left main, most recent last.
 # The attempt in progress began at the time in $STATE/attempt-<folder>, written when it started and removed
 # when it is merged. Its roles are the runs committed since then, on its branch or already on main (a
 # branch merged early, or the claims checkpoint): an earlier attempt's runs are older and do not count.
 mark="$STATE/attempt-$d"
+# The branch the chain's runs commit to, and the name its runs go by: the paper's own, or a replicate's.
+REPLICATE=${REPLICATE:-}
+br="attempt/$d"; tag=$d
+if [ -n "$REPLICATE" ]; then
+  [[ "$REPLICATE" =~ ^r[0-9]+$ ]] && [ -n "$is_paper" ] || { echo "$1 STOPPED: a replicate takes a paper's key and a name r1, r2, ..."; exit 1; }
+  br="replicate/$d/$REPLICATE"; tag="$d/$REPLICATE"; mark="$STATE/attempt-$d-$REPLICATE"
+  export RUNNER_NOTIFY=none   # a replicate opens no issue: it is not the paper's attempt
+fi
+# A chain given a paper knows it now; one given a dataset, once the paper match names its paper (below).
+if [ -n "$is_paper" ] && ! hold "$tag"; then
+  end "$tag SKIPPED: another chain is running it (process $holder)"; last=""; exit 1   # no issue: nothing to do
+fi
 done_roles(){ { git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/main 2>/dev/null
-                git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/attempt/"$d" 2>/dev/null; } \
+                git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/"$br" 2>/dev/null; } \
   | sort -n -u | sed -nE "s/^[0-9]+ Agent run on ($(names)): ([a-z0-9-]+) \(success\)$/\2/p"; }
 # The names the chain's runs were committed under: its own, and for a paper, its datasets' folder names, under which
 # an attempt that began before the cutover to paper-first records committed its runs.
@@ -99,7 +137,7 @@ names(){ { echo "$d"; [ -z "$is_paper" ] || git show "origin/main:papers/dataset
 is_done(){ done_roles | grep -qx "$1"; }
 workflow_of(){ case "$1" in paper-match|claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
 run_of(){ gh run list --workflow "$(workflow_of "$1")" --limit 100 --json databaseId,displayTitle,status \
-  | python "$here/describe.py" run "$d" "$1"; }
+  | python "$here/describe.py" run "$tag" "$1"; }
 # After macOS updates its trust store (trustd restarts), every gh call from a process that started before then can
 # fail TLS ("x509: OSStatus -26276") while gh from a fresh shell works: on 2026-10-29 for 15 hours, on 2026-11-02
 # for 7. The chain cannot recover from inside, so after STALE_TRIES such failures in a row it hands the dataset
@@ -128,11 +166,12 @@ wait_run(){ local st fails=0 tls=0; while true; do
 
 # Put the branch back where a run started, and check that it took.
 reset_branch(){ local start=$1
-  if [ -n "$start" ]; then git push -q --force origin "$start:refs/heads/attempt/$d"
-  else git push -q origin --delete "attempt/$d" 2>/dev/null || true; fi
+  if [ -n "$start" ]; then git push -q --force origin "$start:refs/heads/$br"
+  else git push -q origin --delete "$br" 2>/dev/null || true; fi
   [ "$(remote_branch)" = "$start" ]; }
 
-GITHUB_DOWN='git@github\.com: Permission denied \(publickey\)|remote: fatal error in commit_refs|remote rejected.*\((Internal Server Error|failure)\)|github\.com.*(returned error: 50[0-4]|HTTP 50[0-4]|Internal Server Error|Service Unavailable|Bad Gateway)'
+# GitHub's artifact service answering a web page, not JSON (mcguire-2016, 2026-11-11, issue 702), is GitHub failing too.
+GITHUB_DOWN='git@github\.com: Permission denied \(publickey\)|remote: fatal error in commit_refs|remote rejected.*\((Internal Server Error|failure)\)|github\.com.*(returned error: 50[0-4]|HTTP 50[0-4]|Internal Server Error|Service Unavailable|Bad Gateway)|Failed to CreateArtifact|Failed to make request after [0-9]+ attempts'
 run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acct out
   while true; do
     fetch; start=$(remote_branch)
@@ -147,15 +186,18 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
       # The paper match is on a dataset; every other role on the paper.
       target="paper=$d"; [ "$role" = paper-match ] && target="dataset=$d"
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
-        out=$(gh workflow run attempt.yml -f "$target" -f role="$role" -f version="$VERSION" -f account="$acct" 2>&1) \
+        out=$(gh workflow run attempt.yml -f "$target" -f role="$role" -f version="$VERSION" -f account="$acct" ${REPLICATE:+-f replicate="$REPLICATE"} 2>&1) \
           || { gh_failed "$out"; sleep 60; continue; }
       else
-        out=$(gh workflow run "$(workflow_of "$role")" -f "$target" -f role="$role" -f account="$acct" 2>&1) \
+        out=$(gh workflow run "$(workflow_of "$role")" -f "$target" -f role="$role" -f account="$acct" ${REPLICATE:+-f replicate="$REPLICATE"} 2>&1) \
           || { gh_failed "$out"; sleep 60; continue; }
       fi
       tls_fails=0
       id=""
-      for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
+      # GitHub can take minutes to list a run it has started: on 2026-11-16 two runs that were going (kalogriopoulos-2024's
+      # recorder, prakash-2022's author-answers) were not listed in the 5 minutes the chain then looked for, and it
+      # stopped for a person. It looks for 20 minutes now.
+      for _ in $(seq 1 240); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
       [ -n "$id" ] || { last_why="the run of $role was not found"; log "STOPPED: $last_why"; return 1; }
       log "$role started: run $id"
     fi
@@ -164,8 +206,19 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
     runlog=$(gh run view "$id" --log-failed 2>/dev/null || gh run view "$id" --log 2>/dev/null)
     if echo "$runlog" | grep -qE "FLAGGED on the [a-z]+ account|[A-Z]+-UNAVAILABLE"; then
       # Put the branch back where the run started, and run the role, and the rest, on the verified account.
-      reset_branch "$start" || { last_why="could not reset attempt/$d after the flag"; log "STOPPED: $last_why"; return 1; }
+      reset_branch "$start" || { last_why="could not reset $br after the flag"; log "STOPPED: $last_why"; return 1; }
       why=$(echo "$runlog" | grep -oE "(FLAGGED on the [a-z]+ account|[A-Z]+-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
+      if [[ "${RUNNER_FALLBACK:-verified}" == queue:* ]] && [ -z "$REPLICATE" ]; then
+        # Hand the paper to the verified account's lanes: first in their queue file, with the rest of its roles
+        # marked for the verified account. A lane there resumes it from this role; its issue is closed (notify.py).
+        q="$STATE/${RUNNER_FALLBACK#queue:}"
+        until mkdir "$STATE/pick.lock" 2>/dev/null; do sleep 2; done
+        { echo "$d"; grep -vxF "$d" "$q" 2>/dev/null; } > "$q.tmp"; mv "$q.tmp" "$q"
+        rmdir "$STATE/pick.lock"
+        touch "$STATE/verified-$d"; rm -f "$STATE/flagged-$d"
+        last_why="$why"; log "$role: $why; queued on the verified account (${RUNNER_FALLBACK#queue:})"
+        queued_at=$role; return 3
+      fi
       if [ "${RUNNER_FALLBACK:-verified}" = none ]; then
         # The verified account is not to be used (out of budget, say): leave the dataset for later.
         last_why="$why; no fallback to the verified account"
@@ -177,7 +230,7 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
     fi
     if echo "$runlog" | grep -qE "session limit|weekly limit" && [ $tries -lt 100 ]; then
       tries=$((tries+1))
-      reset_branch "$start" || { last_why="could not reset attempt/$d after the usage limit"; log "STOPPED: $last_why"; return 1; }
+      reset_branch "$start" || { last_why="could not reset $br after the usage limit"; log "STOPPED: $last_why"; return 1; }
       log "$role hit a usage limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
     fi
@@ -200,16 +253,16 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
         done
         sleep 20; continue   # the same run, queued again: waited for at the top of the loop
       fi
-      reset_branch "$start" || { last_why="could not reset attempt/$d after GitHub failed"; log "STOPPED: $last_why"; return 1; }
+      reset_branch "$start" || { last_why="could not reset $br after GitHub failed"; log "STOPPED: $last_why"; return 1; }
       log "$role failed because GitHub is failing (run $id); branch reset, retry $outage in 15 minutes"
       sleep 900; continue
     fi
     # A failure of the network or of the machine, not of the agent: a connection dropped or timed out, the runner
     # was shut down, or the run left no log. Tried twice more; an agent that ran out of time is not.
-    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication"; } \
+    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication|Temporary failure resolving|Could not resolve host|Unable to fetch some archives"; } \
        && ! echo "$runlog" | grep -q "timed out after" && [ $flaky -lt 2 ]; then
       flaky=$((flaky+1))
-      reset_branch "$start" || { last_why="could not reset attempt/$d after a failed run"; log "STOPPED: $last_why"; return 1; }
+      reset_branch "$start" || { last_why="could not reset $br after a failed run"; log "STOPPED: $last_why"; return 1; }
       log "$role failed on the network or the machine (run $id); branch reset, retry $flaky in 5 minutes"
       sleep 300; continue
     fi
@@ -224,18 +277,21 @@ fi
 fetch
 if [ ! -e "$mark" ]; then
   # A new attempt. A branch already merged into main belongs to an earlier one; start from main.
-  if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d" origin/main; then
-    git push -q origin --delete "attempt/$d" && log "deleted attempt/$d, merged with an earlier attempt"
+  if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/"$br" origin/main; then
+    git push -q origin --delete "$br" && log "deleted $br, merged with an earlier attempt"
     fetch
   fi
   date -u +%Y-%m-%dT%H:%M:%SZ > "$mark"
 fi
-step(){ is_done "$1" || run_role "$1" || { end "$d STOPPED at $1"; exit 1; }; }
+# A role flagged on the unverified account, with RUNNER_FALLBACK=queue:<file>, ends the chain here: the paper is
+# queued on the verified account (run_role returns 3).
+queued(){ end "$d QUEUED ON VERIFIED at $queued_at: $last_why"; exit 0; }
+step(){ is_done "$1" && return 0; run_role "$1"; case $? in 0) ;; 3) queued;; *) end "$d STOPPED at $1"; exit 1;; esac; }
 # On the branch: python reads a file of the attempt's branch from stdin.
-on_branch(){ git show "origin/attempt/$d:$1" 2>/dev/null; }
-claims_file(){ git ls-tree --name-only origin/attempt/"$d" "claims/$d.yaml" | head -n 1; }
+on_branch(){ git show "origin/$br:$1" 2>/dev/null; }
+claims_file(){ git ls-tree --name-only origin/"$br" "claims/$d.yaml" | head -n 1; }
 # The paper's attempt records on its branch: attempts/<paper>-NN.yaml, not another paper's whose key begins with it.
-records_on_branch(){ git ls-tree -r --name-only origin/attempt/"$d" attempts | grep -E "^attempts/$d-[0-9]{2}\.yaml$" | sort; }
+records_on_branch(){ git ls-tree -r --name-only origin/"$br" attempts | grep -E "^attempts/$d-[0-9]{2}\.yaml$" | sort; }
 
 # The paper match: the claims are read only from a paper whose data the dataset holds. A chain given a paper
 # starts after it.
@@ -251,7 +307,7 @@ if [ "$match" = unchecked ]; then
 fi
 if [ "${MATCH_ONLY:-}" = 1 ]; then
   # Only the paper match was asked for; it and its transcript are on main.
-  git push -q origin --delete "attempt/$d" 2>/dev/null || true
+  git push -q origin --delete "$br" 2>/dev/null || true
   rm -f "$mark"; end "$d MATCH $match"; exit 0
 fi
 case "$match" in
@@ -266,20 +322,24 @@ case "$match" in
         p=$(python "$here/describe.py" paper "$d") || { end "$d STOPPED: the paper match is on main, but the dataset could not be listed for its paper (papers/datasets/)"; exit 1; }
       fi
       log "the paper match lists the dataset for paper $p; going on as $p"
-      git push -q origin --delete "attempt/$d" 2>/dev/null || true
+      # Before anything of the paper's is touched: another chain may be on it, from another of its datasets.
+      if ! hold "$p"; then
+        last_why=""; end "$d SKIPPED: its paper $p is being run by another chain (process $holder)"; last=""; exit 1
+      fi
+      git push -q origin --delete "$br" 2>/dev/null || true
       [ -e "$STATE/attempt-$p" ] || mv "$mark" "$STATE/attempt-$p" 2>/dev/null || true
       rm -f "$mark"
       [ -e "$STATE/verified-$d" ] && { mv "$STATE/verified-$d" "$STATE/verified-$p"; account=verified; }
-      d=$p; is_paper=1; mark="$STATE/attempt-$d"
+      d=$p; is_paper=1; mark="$STATE/attempt-$d"; br="attempt/$d"; tag=$d
       [ -e "$STATE/verified-$d" ] && account=verified
       if [ "$(python "$here/describe.py" published "$d")" != true ]; then
         end "$d SKIPPED: a dataset of the paper has no published version"; exit 1
       fi
       fetch
-      if [ ! -e "$mark" ] || { [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d" origin/main; }; then
+      if [ ! -e "$mark" ] || { [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/"$br" origin/main; }; then
         # A new attempt on the paper. A branch already merged into main belongs to an earlier one; start from main.
-        if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d" origin/main; then
-          git push -q origin --delete "attempt/$d" && log "deleted attempt/$d, merged with an earlier attempt"
+        if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/"$br" origin/main; then
+          git push -q origin --delete "$br" && log "deleted $br, merged with an earlier attempt"
           fetch
         fi
         [ -e "$mark" ] || date -u +%Y-%m-%dT%H:%M:%SZ > "$mark"
@@ -293,7 +353,14 @@ esac
 
 deprecated=$(python "$here/describe.py" deprecated "$d")
 on_main=$(python "$here/describe.py" claims-ready "$d")
-if [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
+if [ -n "$REPLICATE" ]; then
+  # A replicate tests the claims the current attempt tested: main's claims file, as it is, checked or from before
+  # claims were checked. It never reads them again.
+  if ! git cat-file -e "origin/main:claims/$d.yaml" 2>/dev/null || [ "$deprecated" = true ]; then
+    rm -f "$mark"; end "$d STOPPED: a replicate needs the paper's claims file on main and an attempt not deprecated"; exit 1
+  fi
+  log "replicate $REPLICATE: the claims on main"
+elif [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
   log "main has checked claims; skipping the claims and their check"
   [ "${CLAIMS_ONLY:-}" = 1 ] && { rm -f "$mark"; end "$d CLAIMS MERGED (already on main)"; exit 0; }
 elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
@@ -321,14 +388,18 @@ elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
     echo "$out" | while read -r line; do log "$line"; done
     [ $st = 0 ] || { end "$d STOPPED: the claims did not go into main"; exit 1; }
     # The claims and their runs' transcripts are on main; the next chain on this dataset starts from main.
-    git push -q origin --delete "attempt/$d" 2>/dev/null || true
+    git push -q origin --delete "$br" 2>/dev/null || true
     rm -f "$mark"; end "$d CLAIMS MERGED"; exit 0
   fi
   "$here/merge_claims.sh" "$d" 2>&1 | while read -r line; do log "$line"; done || true
 fi
 step author
 fetch
-open_questions=$(on_branch "questions/$d.yaml" | python -c "import yaml,sys; q=yaml.safe_load(sys.stdin) or []; q=q.get('questions', []) if isinstance(q, dict) else q; print(sum(1 for x in q if not x.get('answered')))" 2>/dev/null || echo 0)
+# One number. Until 2026-11-15 a paper with no questions file gave two ("0" from python, and another from "|| echo 0",
+# since on_branch fails and the pipeline with it): "0 0" is not 0, so every such chain ran the answer and
+# author-answers roles for nothing, and a replicate, whose answer run the workflow refused, retried for ever.
+open_questions=$({ on_branch "questions/$d.yaml" || true; } | python -c "import yaml,sys; q=yaml.safe_load(sys.stdin) or []; q=q.get('questions', []) if isinstance(q, dict) else q; print(sum(1 for x in q if not x.get('answered')))" 2>/dev/null | tail -n 1)
+open_questions=${open_questions:-0}
 if [ "${open_questions:-0}" != 0 ] || is_done answer; then
   log "$open_questions open questions"
   step answer
@@ -337,55 +408,98 @@ fi
 for role in verifier-1 author-revise-1 verifier-2 author-revise-2; do step "$role"; done
 fetch
 latest=$(records_on_branch | tail -n 1)
-if git show "origin/attempt/$d:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
+if git show "origin/$br:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
   log "has proposed changes: third round"
   for role in verifier-3 author-revise-3; do step "$role"; done
+fi
+# A replicate ends here: it is compared with the others by tools/replicates.py, not reconciled or merged.
+if [ -n "$REPLICATE" ]; then
+  rm -f "$mark"; end "$d REPLICATE $REPLICATE DONE"; exit 0
 fi
 # A repeat attempt, made blind, is compared with the one before it once it is verified.
 if [ "$(records_on_branch | grep -c .)" -gt 1 ]; then
   step reconcile
 fi
 
-# Finish, one paper at a time.
-until mkdir "$STATE/finalize.lock" 2>/dev/null; do sleep 60; done
-trap 'rmdir "$STATE/finalize.lock" 2>/dev/null; notify' EXIT
+# Finish. Each chain finishes in a worktree of its own, with no lock: until 2026-11-11 one chain at a time finished,
+# holding $RUNNER_STATE/finalize.lock from the merge of main to the merge of its pull request, through the
+# pull request's checks (which run the entry's notebooks again, up to 80 minutes). With ten lanes the chains
+# queued for hours behind one another (kim-2022 for more than two and a half), and a lock left by a chain that
+# died stopped them all (2026-11-10). The lock was there for the clone's one checkout and so that each attempt
+# landed on a main that had the ones before it. The worktree does the first. For the second: an attempt adds its
+# own files, GitHub refuses a merge that conflicts, and the chain then merges main in again and waits for the
+# checks again (twice at most).
+work=$(mktemp -d "${TMPDIR:-/tmp}/finish-$d.XXXXXX")
+drop_work(){ git worktree remove --force "$work" >/dev/null 2>&1 || true; rm -rf "$work"; }
+trap 'drop_work; release; notify' EXIT
+# The attempt's branch in the worktree, with main merged in, pushed. Merge, not rebase: main already has the
+# checked claims (the checkpoint), so a rebase replays the branch's claims, claims-check and answer commits onto
+# them and stops on an add/add conflict. The branch's claims file is the same or later (the reader's answers),
+# so it is kept; any other conflict stops the chain. Returns 1 when it does not merge, 2 or 3 when git fails.
+merge_main(){
+  fetch
+  drop_work
+  git worktree add -q --detach "$work" "origin/$br" >/dev/null 2>&1 || return 2
+  if ! git -C "$work" merge -q --no-edit -m "Merge main into $br" origin/main >/dev/null 2>&1; then
+    git -C "$work" checkout -q HEAD -- "claims/$d.yaml" 2>/dev/null
+    if [ -n "$(git -C "$work" diff --name-only --diff-filter=U)" ]; then
+      git -C "$work" merge --abort; return 1
+    fi
+    git -C "$work" commit -q --no-edit || return 2
+  fi
+  git -C "$work" push -q origin "HEAD:refs/heads/$br" || return 3
+}
 log "finishing"
-fetch
-# A branch checked out in another worktree cannot be checked out here; carrying on would act on the wrong branch.
-git checkout -q -B "attempt/$d" origin/attempt/"$d" || { end "$d STOPPED: could not check out attempt/$d (is it checked out in another worktree?)"; exit 1; }
-# Merge main in, not rebase: main already has the checked claims (the checkpoint), so a rebase replays
-# the branch's claims, claims-check and answer commits onto them and stops on an add/add conflict. The
-# branch's claims file is the same or later (the reader's answers), so it is kept; any other conflict
-# stops the chain.
-if ! git merge -q --no-edit -m "Merge main into attempt/$d" origin/main >/dev/null; then
-  git checkout -q HEAD -- "claims/$d.yaml" 2>/dev/null
-  if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
-    git merge --abort; end "$d STOPPED: the branch does not merge with main"; exit 1
-  fi
-  git commit -q --no-edit
-fi
-git push -q origin "attempt/$d" || { end "$d STOPPED: could not push attempt/$d after merging main"; exit 1; }
-is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
-fetch; git checkout -q -B "attempt/$d" origin/attempt/"$d" || { end "$d STOPPED: could not check out attempt/$d after the recorder"; exit 1; }
-title=$(python "$here/describe.py" title "$d")
-pr=$(gh pr list --head "attempt/$d" --state open --json url --jq '.[0].url // empty')
-if [ -z "$pr" ]; then
-  pr=$(gh pr create --base main --head "attempt/$d" --title "$title" \
-    --body "$(python "$here/describe.py" body "$d")") || { end "$d STOPPED: could not open a pull request"; exit 1; }
-fi
-log "pull request $pr"
+round=0
 while true; do
-  # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end.
-  if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
-    last_why="$pr conflicts with main; merge main into attempt/$d, resolve the conflict, and start the chain again"
-    end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
+  round=$((round+1))
+  merge_main; case $? in
+    0) ;;
+    1) end "$d STOPPED: the branch does not merge with main"; exit 1;;
+    2) end "$d STOPPED: could not check out $br in a worktree"; exit 1;;
+    *) end "$d STOPPED: could not push $br after merging main"; exit 1;;
+  esac
+  if ! is_done recorder; then
+    run_role recorder; case $? in 0) ;; 3) queued;; *) end "$d STOPPED at recorder"; exit 1;; esac
   fi
-  s=$(gh pr checks "$pr" --json bucket 2>/dev/null) || { sleep 60; continue; }
-  echo "$s" | jq -e 'length>0 and all(.bucket!="pending")' >/dev/null && break
-  sleep 60
+  # The branch as the recorder left it, for the pull request's title and body (describe.py reads the tree).
+  fetch; git -C "$work" checkout -q --detach "origin/$br" \
+    || { end "$d STOPPED: could not check out $br after the recorder"; exit 1; }
+  title=$(REGISTRY_ROOT="$work" python "$here/describe.py" title "$d")
+  pr=$(gh pr list --head "$br" --state open --json url --jq '.[0].url // empty')
+  if [ -z "$pr" ]; then
+    pr=$(gh pr create --base main --head "$br" --title "$title" \
+      --body "$(REGISTRY_ROOT="$work" python "$here/describe.py" body "$d")") || { end "$d STOPPED: could not open a pull request"; exit 1; }
+  fi
+  log "pull request $pr"
+  # The checks waited for are those of the commit just pushed, asked for by that commit. GitHub can take minutes to
+  # start them when its runners are busy; until then the pull request still shows the checks of the commit before,
+  # finished. On 2026-11-10 wakhloo-2026 was stopped that way, at once, on the failure its push had been made to
+  # fix. The entry check (check.yml, job "check") must be among them: the dashboard's preview alone, which can
+  # start first, is not the checks.
+  head=$(git -C "$work" rev-parse HEAD)
+  again=""
+  while true; do
+    # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end. Another
+    # attempt merged since this one merged main in can conflict with it: main is merged in again.
+    if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
+      [ $round -lt 3 ] && { log "the pull request conflicts with main as it is now; merging main in again"; again=1; break; }
+      last_why="$pr conflicts with main; merge main into $br, resolve the conflict, and start the chain again"
+      end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
+    fi
+    s=$(gh api "repos/{owner}/{repo}/commits/$head/check-runs?per_page=100" \
+          --jq '[.check_runs[] | {name, status, conclusion}]' 2>/dev/null) || { sleep 60; continue; }
+    echo "$s" | jq -e 'any(.name=="check") and all(.status=="completed")' >/dev/null && break
+    sleep 60
+  done
+  [ -z "$again" ] || continue
+  if echo "$s" | jq -e 'all(.conclusion=="success" or .conclusion=="skipped" or .conclusion=="neutral")' >/dev/null; then
+    gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; end "$d MERGED $pr"; exit 0; }
+    # Main moved under it between the checks and the merge.
+    if [ $round -lt 3 ] && [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
+      log "merging $pr failed on a conflict with main as it is now; merging main in again"; continue
+    fi
+    end "$d STOPPED: merging $pr failed"; exit 1
+  fi
+  end "$d CHECKS FAILED $pr"; exit 1
 done
-if echo "$s" | jq -e 'all(.bucket=="pass" or .bucket=="skipping")' >/dev/null; then
-  gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; end "$d MERGED $pr"; exit 0; }
-  end "$d STOPPED: merging $pr failed"; exit 1
-fi
-end "$d CHECKS FAILED $pr"; exit 1
