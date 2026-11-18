@@ -23,10 +23,10 @@ are in none of the datasets.
 | 6A: more packets, more uptake, central peak for all | Partially reproduced |
 | 6B: centre about 200% for 1Px4, about 100% for 5Px4 and 10Px4 | Partially reproduced |
 | 6: trough about half the centre | Partially reproduced |
-| 6: peak narrower with more packets | Reproduced (assumption); change to blocked (methods underspecified) proposed |
+| 6: peak narrower with more packets | Blocked: methods underspecified (readings disagree) |
 | 7A: 15.5 to 16.8-fold rise from 2.4 to 5.6 kV | Partially reproduced |
 | 7B: normalized profiles independent of amplitude, small array | Blocked: methods underspecified (readings disagree) |
-| 7C, D: the same in the large array | Reproduced (assumption); change to blocked (methods underspecified) proposed |
+| 7C, D: the same in the large array | Blocked: methods underspecified (readings disagree) |
 | Discussion: targeting independent of amplitude and array size | Blocked: depends on 7B |
 | 8A: equal centre uptake for Packets 1 to 3 | Not reproduced |
 | 8A: more uptake near electrodes for Packets 1 and 3 | Not reproduced |
