@@ -5,7 +5,7 @@
   "label": "DANDI:000727"
  },
  "page": "datasets/dandi/000727/",
- "generated": "2026-11-19T19:26:48+00:00",
+ "generated": "2026-11-19T20:00:20+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 0,
@@ -66,6 +66,16 @@
    "deprecated": "Its claims were read from the bioRxiv preprint (doi:10.1101/2022.03.20.485047). The paper has since been published in Current Biology (doi:10.1016/j.cub.2023.12.063), which is now the paper behind the data, so the claims are to be read again from the publication and the attempt done again.",
    "deprecated_on": "2026-10-21",
    "entry": "brezovec-2022",
+   "inputs": [
+    {
+     "what": "Procedures and parameters, no data. The behaviour variables (FicTrac dRotLabY and dRotLabZ, Savitzky-Golay 25 frames order 3, clipping into forward, left and right, the 4.5 mm ball radius), the walking state, the pooled Pearson correlation and its Bonferroni threshold, the ridge alpha grid and its selection, the time shifts of the cross-correlation filters, and the GCaMP6f kernel and deconvolution. From the paper's analysis code (correlation_analysis.py, linear_filters.py, pca.py, pca_fit_behavior_models.py, deconvolution.py, neural_histograms.py).",
+     "source": "https://github.com/ClandininLab/brezovec_volition_2023 at commit 8e2b275f1a95947212eacd3e511915039ffc5df4"
+    },
+    {
+     "what": "How the files were made (FicTrac given uniform timestamps from 0 because synchronisation data were missing; the processed file brain_zscored_green_high_pass_masked_warped_to_FDA.nii). Read, not used in the analysis. The draft of the dandiset links this repository.",
+     "source": "https://github.com/catalystneuro/clandinin-lab-to-nwb at commit f083b0900f9acb154ca6c3e9f5de65f305a97df0"
+    }
+   ],
    "entry_title": "Brain-wide neural correlates of walking in Drosophila (Brezovec et al. 2022)",
    "summary": "Most of the paper's brain-wide findings held up in this data, but the region-level ones could not be tested. Correlations with forward and turning velocity, the mirror symmetry of the forward map, model weights stereotyped across flies, and ipsilateral voxels leading contralateral ones all held. The share of correlated voxels (31% against 39%) and the prediction of behaviour from principal components came out lower, and exact peak times depend on per-plane acquisition times the files lack. The contralateral decrease during turning did not reproduce, since the opposite side rose too. All neuropil-level results were untestable because the dandiset holds no neuropil labels for its atlas space.",
    "description": "Tests the findings of Brezovec, Berger, Druckmann and Clandinin (2022) on dandiset 000727, which holds whole-brain two-photon imaging and ball tracking of nine walking flies. It streams 12 planes of the authors' processed volumes in the Functional Drosophila Atlas for all flies, and tests the voxel correlations with forward and turning velocity, their symmetry, the principal components and the models that predict velocity from them, the demixing of velocity components, and the timing of neural activity relative to behaviour. Region-level results cannot be tested, as the dandiset has no neuropil labels.",
@@ -653,6 +663,20 @@
    "deprecated": "",
    "deprecated_on": null,
    "entry": "okuno-2025",
+   "inputs": [
+    {
+     "what": "The paper's code; the resized FDA template and brain mask, the hemibrain ROI masks (atlas/hemiroi) and names (data/hemiroi.mat), the JFRC2010 atlas and its labels, the FlyEM cf0.8 SC of the 114 hemibrain ROIs (results/sc/hemiroi_connectlist.mat) and the per-volume speed and walking regressors it computed (data/behavior.mat), used to check the subject order.",
+     "source": "https://github.com/takuto-okuno-riken/flywalk at commit 4b92add4a44f641ab6add809ff6b0e0d6110b50c"
+    },
+    {
+     "what": "The paper's demo data, version of 2025-05-28; FlyWire sc140 SC of the hemibrain ROIs, the selected-synapse SC matrices (sp10db3000mi1_only1, sp90db3000mi1, rc20_only1), the 99 null SC matrices of each permutation test, per-ROI transmitter counts and post-synapse counts, and the paper's own FC-SC output for the hemibrain FlyWire setting (used as a reference only).",
+     "source": "doi:10.5281/zenodo.15532272"
+    },
+    {
+     "what": "FlyWire cell-type annotations (Schlegel et al. 2024), used only to name the neurons in the FlyWire rankings and the WAGN partners.",
+     "source": "https://github.com/flyconnectome/flywire_annotations at commit a83b277"
+    }
+   ],
    "entry_title": "Functional and structural connectivity in Drosophila (Okuno et al. 2025)",
    "summary": "The main findings tested on this data held up only in part. Structural connectivity from unsegregated or reciprocal synapses matched functional connectivity better than random synapses, and walking activated LAL, FB, IPS and GNG, but walking suppression of WED and AVLP and the link to cholinergic output did not appear. FlyEM matched better than FlyWire, though both correlations fell below the paper's, most likely because this attempt did not apply the motion correction the paper uses, whose settings it does not give. The findings on preprocessing and ROI number could not be tested, as the paper's ROI atlases are not published. Several connectome-only findings held in the paper's deposited tables.",
    "description": "Tests the findings of Okuno, Woodward, Okano and Hata (2025) on dandiset 000727, which holds the whole-brain two-photon imaging of nine walking flies that the paper reuses. The raw GCaMP series are streamed, registered to the paper's resized FDA template and reduced to the 114 hemibrain ROIs, and the resulting FC is compared with the paper's published FlyEM and FlyWire SC matrices, including its permutation tests of unsegregated, segregated and reciprocal synapses. A group GLM of walking is run on the same data. The k-means ROI atlases of the paper's smoothing and ROI-count analyses are not published, so those claims are blocked.",
