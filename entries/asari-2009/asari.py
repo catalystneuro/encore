@@ -1,965 +1,980 @@
 """Loading and context-dependence measures for CRCNS ac-1 (Asari & Zador 2009).
 
-Asari H, Zador AM (2009) Long-lasting context dependence constrains neural encoding models in
-rodent auditory cortex. J Neurophysiol 102:2638-2656, doi:10.1152/jn.00577.2009.
+The data set is read in place from the public S3 bucket ``crcnsarchive``
+(docs/archives.md, "CRCNS"): each zip is opened over range requests with
+fsspec and ``zipfile``, and each MATLAB file is read into memory, reduced to
+what the analysis needs, and dropped.
 
-The data set (doi:10.6080/K0KW5CXR) is read in place from the public S3 bucket `crcnsarchive`
-(three zip files, opened over range requests with fsspec and zipfile; nothing is written to
-disk). CRCNS data sets are not versioned; the MD5 sums of the zip files read are in `MD5`.
+Where a parameter comes from:
 
-Asari's MATLAB files hold one recording each: `response` (int16 trace, `scale` to mV, 10 kHz),
-`triggers` (one per stimulus sequence: onset in samples, duration in ms and a description
-"Sequence k: a b c d e" naming the fragments in order) and `param` (stimulus fragments with
-their durations in ms, recording type, and `notes` with the sequence table and "Effective
-repeats"). `asari/Summary.mat` groups the recordings into experiments (A1 natural sounds, MGB
-natural sounds, A1 synthetic sounds, unpublished).
-
-Where the parameters come from:
-
-- The data set ships the authors' analysis code, `asari/Tools/CxtDep.m` ("Basic analysis
-  script for Asari and Zador (2008)") with `ViewResp.m`, `GetEvoked.m` and `GetSpikes.m`.
-  The paper links no code; this code is the authors' and settles details the Methods leave
-  open. It is followed here, and each such detail cites it:
-  * context-probe alignment: the probe window is the fragment's stated duration; a fragment at
-    the start of a sequence has "silence" as context (CxtDep.m, `blank(2) = 4` s of the
-    preceding intersequence interval, "include blank as context"); trials of one context that
-    occur at several places are pooled, and every context is cut to the smallest number of
-    trials (`GetResp`); a probe needs at least two different contexts;
-  * the intersequence silence as a probe (`blank(1) = 2.5` s, "include blank as probe"), which
-    the paper leaves out of Figure 3 (Methods, Stimulus design) and which is used only for
-    claim figs1-silence-probe;
-  * Kruskal-Wallis on ordinal ranks without a tie correction, significant runs of P < 0.01
-    lasting at least 5 ms (`k(end) - k(start) >= 50` samples), and the noise floor from 1000
-    permutations of the trials (`KWtest`);
-  * the power measures (`FracPow`): each trial is centred on its mean over the probe window,
-    total, predictable (Eq. 17) and context-invariant (Eq. 18) power per time point;
-  * PSTHs in 0.1-s bins from `t = 0:0.1:Tend` with MATLAB `histc` edges, SD over contexts with
-    n - 1 (`psth`);
-  * spike detection for cell-attached data (`GetSpikes.m`, automatic mode: equiripple FIR
-    high-pass applied forward and backward, threshold at 2/3 of the largest absolute filtered
-    value, one spike per suprathreshold segment at its peak, downward-noise spikes removed).
-- The 10-ms median filter that clips spikes (Methods, Analysis, paragraph 1; CxtDep.m default
-  `param.smooth = 10`) is applied to the whole trace, as `GetEvoked.m` does.
-- The inclusion rule (at least 4 trials per context in current clamp, at least 10 in MGB) is the
-  Methods' (Context dependence at subthreshold voltage level; at suprathreshold level) and the
-  claim methods-recording-counts.
-- A1 spikes (claim a1-mgb-firing-rates) are not detected by the authors' code (manual
-  extraction in whole-cell mode); a standard choice is used here: upward crossings of a
-  threshold on the raw membrane potential (-20 mV, with -10 and -30 mV shown), with a 2-ms dead
-  time. It is an assumption stated in the claim.
+- Paper, Methods, Analysis: the 10-ms median filter that clips spikes; the
+  Kruskal-Wallis test at each 0.1-ms point, P < 0.01 held for 5 ms (50
+  points); the shuffle noise floor (1000 shuffles of trials across contexts
+  per probe); the power estimates of Eqs. 17 to 19 and the running mean over
+  [0, 2t] of the denominator of Eqs. 20 and 43; Eq. 44 for the exponential
+  fits and its rule that each exponential carry at least a tenth of the total;
+  the 100-ms PSTH bins and Eq. 42 for the thalamus; Eq. 45 for the noise
+  autocorrelation. MGB spikes by a high-pass filter and a threshold, with the
+  spike at the peak (Methods, Analysis, paragraph 3).
+- The authors' own analysis code, shipped with the data set
+  (``asari/Tools/CxtDep.m``, ``GetEvoked.m``, ``ViewResp.m``, ``GetSpikes.m``
+  in ``crcns-ac1.zip``; the paper does not link it). It settles details the
+  Methods leave open, and is cited where used: how a recording is cut into
+  context-probe pairs (the ``Seq.`` table and "Effective repeats" in the
+  file's notes, the first ``rep`` presentations of each sequence, fragment
+  lengths rounded to samples); that "silence" (the intersequence interval) is
+  a context of the first fragment of each sequence; that each context keeps
+  as many trials as the context with the fewest; ordinal ranks without a tie
+  correction in the Kruskal-Wallis statistic; a significant run needs its last
+  and first points 50 samples apart; the fractional power traces are each
+  centred over the probe (``FracPow``) while the test uses the filtered
+  traces; the MGB spike detector (``ExtractSpikes``: its high-pass FIR filter
+  applied forwards and backwards, a threshold at two thirds of the largest
+  filtered value, downward artefacts removed); PSTH bins starting at the
+  probe onset.
+- Standard choices that cannot change a result: the median filter's exact
+  alignment for an even window (scipy's ``median_filter``), fitting the
+  population curves at 1-ms resolution (means of ten 0.1-ms points), the
+  start grid of the least-squares fits.
+- Assumptions, each also stated in the notebook and the record: the A1 spike
+  detector (the code extracts whole-cell spikes by hand), see ``a1_spikes``.
 """
-
 from __future__ import annotations
 
+import functools
 import io
 import re
 import zipfile
-from functools import lru_cache
 
 import fsspec
 import numpy as np
 import scipy.io as sio
-from scipy import ndimage, signal, stats
+from scipy import optimize, signal, stats
+from scipy.ndimage import median_filter
 
+DATASET = "ac-1"
+VERSION = "unversioned"  # CRCNS data sets are not versioned; the MD5 sums below pin the files
 BUCKET = "https://crcnsarchive.s3-us-west-2.amazonaws.com/ac-1/"
-ZIPS = ["crcns-ac1.zip", "crcns-ac1-asari-results-1.zip", "crcns-ac1-asari-results-2.zip"]
-MD5 = {"crcns-ac1-asari-results-1.zip": "18537da81d98e311c0274f62aea04daa",
-       "crcns-ac1-asari-results-2.zip": "2f7ab955cc778fc6839ce59ed51bce89",
-       "crcns-ac1.zip": "2300ee76d93383ab8c808ddf16761a23"}
-DATASET_DOI = "10.6080/K0KW5CXR"
-DATASET_ID = "ac-1"             # CRCNS data set
-DATASET_VERSION = "unversioned"  # CRCNS data sets are not versioned (docs/archives.md); see MD5
-
-SF = 10000                  # Hz, response.sf in every file read (checked in the notebook)
-MEDIAN_MS = 10              # Methods, Analysis; CxtDep.m param.smooth
-ALPHA = 0.01                # Methods, significance measure; CxtDep.m KWtest
-ALPHA_DT = 50               # samples (5 ms at 10 kHz); KWtest dt
-N_SHUFFLE = 1000            # Methods; KWtest bootstrap
-BLANK_CONTEXT_S = 4.0       # CxtDep.m blank(2)
-BLANK_PROBE_S = 2.5         # CxtDep.m blank(1)
-MIN_TRIALS_CC = 4           # Methods, at least four repeats
-MIN_TRIALS_MGB = 10         # Methods, at least 10 repeats
-PSTH_DT = 0.1               # s, Methods, suprathreshold level; CxtDep.m psth
-BOOT_SEED_OFFSET = 7_000_000  # separate generator for the trial resamples of fig8c-relative-effects
-A1_THRESHOLDS = (-20.0, -10.0, -30.0)   # mV, A1 spike detection (assumption; first is the main one)
-
-# GetSpikes.m ExtractSpikes: high-pass FIR coefficients, applied with filtfilt
-_HP = np.array([-2.9419, -7.7633, -16.2976, -28.7498, -44.7001, -62.8034, -80.9099, -96.4457,
-                -106.9520, 889.3317, -106.9520, -96.4457, -80.9099, -62.8034, -44.7001,
-                -28.7498, -16.2976, -7.7633, -2.9419]) / 1000
+ZIPS = {
+    "main": "crcns-ac1.zip",
+    "r1": "crcns-ac1-asari-results-1.zip",
+    "r2": "crcns-ac1-asari-results-2.zip",
+}
+# From the data set's checksums.md5 (read in the notebook's header).
+MD5 = {
+    "crcns-ac1.zip": "2300ee76d93383ab8c808ddf16761a23",
+    "crcns-ac1-asari-results-1.zip": "18537da81d98e311c0274f62aea04daa",
+    "crcns-ac1-asari-results-2.zip": "2f7ab955cc778fc6839ce59ed51bce89",
+}
+SF = 10000  # Hz, every file (checked in the notebook)
 
 
-# ----------------------------------------------------------------------------------- reading
-class Archive:
-    """The three zip files of ac-1, each opened once over HTTP range requests."""
-
-    def __init__(self):
-        self._files, self._zips = {}, {}
-        for name in ZIPS:
-            fh = fsspec.open(BUCKET + name, block_size=2 ** 22).open()
-            self._files[name] = fh
-            self._zips[name] = zipfile.ZipFile(fh)
-        self.members = {}
-        for name, z in self._zips.items():
-            for info in z.infolist():
-                self.members[info.filename] = (name, info)
-
-    def read(self, member: str) -> bytes:
-        name, _ = self.members[member]
-        return self._zips[name].read(member)
-
-    def loadmat(self, member: str):
-        return sio.loadmat(io.BytesIO(self.read(member)), squeeze_me=True, struct_as_record=False)
-
-    def result_member(self, path: str) -> str:
-        """Summary.mat path 'Results/<dir>/<file>.mat' to the member in a results zip."""
-        rel = path.split("Results/", 1)[1]
-        for prefix in ("asari-results-1/", "asari-results-2/"):
-            if prefix + rel in self.members:
-                return prefix + rel
-        raise KeyError(path)
+# --------------------------------------------------------------------------
+# reading
+# --------------------------------------------------------------------------
+@functools.lru_cache(maxsize=None)
+def open_zip(name: str) -> zipfile.ZipFile:
+    return zipfile.ZipFile(fsspec.open(BUCKET + name, block_size=2**22).open())
 
 
-def recording_type(archive: Archive, member: str) -> str:
-    """param.recording.type of one recording and the unit of its trace (mV in current clamp)."""
-    m = sio.loadmat(io.BytesIO(archive.read(member)), squeeze_me=True, struct_as_record=False,
-                    variable_names=["param", "response"])
-    return f'{m["param"].recording.type}, {m["response"].unit}'
+@functools.lru_cache(maxsize=None)
+def member_index() -> dict:
+    """Map 'Results/<cell>/<file>.mat' to (zip name, member name)."""
+    out = {}
+    for key in ("r1", "r2"):
+        z = open_zip(ZIPS[key])
+        for i in z.infolist():
+            if i.filename.endswith(".mat"):
+                rel = "Results/" + i.filename.split("/", 1)[1]
+                out[rel] = (ZIPS[key], i.filename)
+    return out
 
 
-def summary(archive: Archive) -> list[dict]:
-    """One row per (experiment, cell, file) of asari/Summary.mat."""
-    m = archive.loadmat("asari/Summary.mat")
+def read_text(member: str) -> str:
+    return open_zip(ZIPS["main"]).read(member).decode("latin-1")
+
+
+def _lst(x):
+    return list(np.atleast_1d(x))
+
+
+def _s(x) -> str:
+    if isinstance(x, np.ndarray):
+        return " ".join(str(v).strip() for v in x.ravel())
+    return str(x).strip()
+
+
+def summary() -> list[dict]:
+    """asari/Summary.mat: one row per (experiment, cell, file)."""
+    m = sio.loadmat(io.BytesIO(open_zip(ZIPS["main"]).read("asari/Summary.mat")),
+                    squeeze_me=True, struct_as_record=False)
     rows = []
-    for ei, e in enumerate(np.atleast_1d(m["experiment"])):
-        for ci, c in enumerate(np.atleast_1d(e.cell)):
-            files = np.atleast_1d(c.file)
-            descs = np.atleast_1d(c.description)
-            for k, (f, d) in enumerate(zip(files, descs)):
-                rows.append(dict(experiment=ei, experiment_description=str(e.description).strip(),
-                                 reference=str(e.reference).strip(), cell_index=ci,
-                                 cell=str(f).split("/")[1], file=str(f), description=str(d).strip()))
+    for ei, e in enumerate(_lst(m["experiment"])):
+        for ci, c in enumerate(_lst(e.cell)):
+            files = [str(f) for f in _lst(c.file)]
+            descs = [_s(d) for d in (c.description if isinstance(c.description, np.ndarray)
+                                     and c.description.dtype == object else [c.description])]
+            if len(descs) != len(files):
+                descs = [_s(d) for d in _lst(c.description)]
+            for f, d in zip(files, descs):
+                rows.append(dict(experiment=ei, experiment_description=_s(e.description),
+                                 cell=f.split("/")[1], file=f, description=d))
     return rows
 
 
-def _notes(param) -> list[str]:
-    notes = np.atleast_1d(param.notes)
-    return [str(x) for x in notes]
+def parse_notes(notes) -> tuple[list[list[int]], int | None]:
+    seqs, rep = [], None
+    for line in notes:
+        line = str(line)
+        if "Effective repeats:" in line:
+            rep = int(line.split(":")[1])
+        if line.startswith("Seq."):
+            seqs.append([int(x) for x in line.split(":", 1)[1].split()])
+    return seqs, rep
 
 
-MAX_MISMATCH_MS = 5.0       # tolerance between summed fragment durations and a trigger's duration
+def load(path: str, trace: bool = True) -> dict:
+    """Read one recording file. ``path`` is 'Results/<cell>/<file>.mat'.
 
-
-def _stimuli(param) -> list[dict]:
-    return [dict(name=str(getattr(s, "name", "")), description=str(getattr(s, "description", "")),
-                 file=str(getattr(s, "file", "")), duration_ms=float(s.param.duration), param=s.param)
-            for s in np.atleast_1d(param.stimulus)]
-
-
-def _duration_mismatch(trig: list[dict], stims: list[dict]) -> float:
-    """Largest |sum of fragment durations - trigger duration| over the sequence triggers (ms)."""
-    out = 0.0
-    for t in trig:
-        if t["seq"] is None:
-            continue
-        if max(t["seq"]) > len(stims):
-            return np.inf
-        out = max(out, abs(sum(stims[f - 1]["duration_ms"] for f in t["seq"]) - t["duration_ms"]))
-    return out
-
-
-def effective_repeats(param) -> int | None:
-    for line in _notes(param):
-        j = line.find("Effective repeats:")
-        if j >= 0:
-            return int(line[j + 18:].split()[0])
-    return None
-
-
-def load_recording(archive: Archive, member: str, smooth: bool = True, keep_raw: bool = False,
-                   fix_swaps: bool = True) -> dict:
-    """Trace in mV (median-filtered when `smooth`), the sequence triggers and the fragments.
-    `fix_swaps=False` keeps the stored fragment list even when it does not fit the triggers."""
-    m = archive.loadmat(member)
-    resp, param = m["response"], m["param"]
-    raw = resp.trace.astype(np.float64) * float(resp.scale)
-    trace = raw
-    if smooth:
-        r = raw.mean()
-        trace = ndimage.median_filter(raw - r, size=int(round(MEDIAN_MS / 1000 * resp.sf)),
-                                      mode="constant", cval=0.0) + r
-    trig = []
-    for t in np.atleast_1d(m["triggers"]):
-        desc = str(getattr(t.param, "description", ""))
-        seq = None
-        mm = re.search(r":(.*)$", desc)
-        if mm and str(t.type) != "pulse":
-            try:
-                seq = [int(x) for x in mm.group(1).split()]
-            except ValueError:
-                seq = None
-        trig.append(dict(type=str(t.type), time=int(t.time), duration_ms=float(t.param.duration),
-                         description=desc, seq=seq))
-    stims = _stimuli(param)
-    mismatch = _duration_mismatch(trig, stims)
-    source = member
-    if mismatch > MAX_MISMATCH_MS and fix_swaps:
-        # The fragment list does not fit the trigger durations. In two cells the fragment lists
-        # of two files are swapped (data check); take the list of a sibling file that fits. When
-        # none fits, the stored list is kept, as CxtDep.m would use it, and the file is flagged.
-        source = member + " (stored list kept; it does not fit the triggers)"
-        folder = member.rsplit("/", 1)[0]
-        for other in sorted(m for m in archive.members if m.startswith(folder + "/") and m.endswith(".mat")):
-            if other == member:
-                continue
-            p2 = archive.loadmat(other)["param"]
-            if not hasattr(p2, "stimulus"):
-                continue
-            st2 = _stimuli(p2)
-            if _duration_mismatch(trig, st2) <= MAX_MISMATCH_MS:
-                stims, source = st2, other
-                break
-    return dict(member=member, raw=raw if (keep_raw or not smooth) else None, trace=trace, sf=int(resp.sf),
-                unit=str(resp.unit), scale=float(resp.scale), triggers=trig, stimuli=stims,
-                param=param, rep=effective_repeats(param), duration_mismatch_ms=mismatch,
-                stimulus_source=source,
-                recording_type=str(param.recording.type), notes=_notes(param))
-
-
-# ---------------------------------------------------------------------------- probe structure
-def sequences(rec: dict) -> list[dict]:
-    """Sequence triggers in recording order, each with its fragments and the gaps around it."""
-    trig = [t for t in rec["triggers"] if "pulse" not in t["type"] and t["seq"] is not None]
-    n = len(rec["trace"])
-    out = []
-    for k, t in enumerate(trig):
-        start = t["time"]
-        end = start + int(round(t["duration_ms"] / 1000 * rec["sf"]))
-        prev_end = 0 if k == 0 else trig[k - 1]["time"] + int(round(trig[k - 1]["duration_ms"] / 1000 * rec["sf"]))
-        next_start = n if k == len(trig) - 1 else trig[k + 1]["time"]
-        out.append(dict(seq=tuple(t["seq"]), start=start, end=end, gap_before=(prev_end, start),
-                        gap_after=(end, next_start)))
-    return out
-
-
-def probe_table(rec: dict, min_trials: int, contexts_allowed=None, include_silence=True):
-    """Probes of a recording, as CxtDep.m forms them.
-
-    Returns a list of dicts: probe fragment index (1-based), duration in samples, and for each
-    context (fragment index, 0 for silence) the list of (sequence onset, probe onset) sample
-    positions of its trials. Only the first `rep` presentations of each sequence are used
-    (`Effective repeats` in the notes). `contexts_allowed`, when given, restricts the
-    conditioning stimuli (fragment indices; 0 for silence).
+    The trace is returned in mV (int16 times ``response.scale``), as float32.
     """
-    sf = rec["sf"]
-    dur = [int(round(s["duration_ms"] / 1000 * sf)) for s in rec["stimuli"]]
-    seqs = sequences(rec)
-    rep = rec["rep"]
-    by_seq = {}
-    for s in seqs:
-        by_seq.setdefault(s["seq"], []).append(s)
-    if rep is not None:
-        by_seq = {k: v[:rep] for k, v in by_seq.items()}
-    probes = []
-    nfrag = len(dur)
-    for p in range(1, nfrag + 1):
-        ctx = {}
-        for sq, pres in by_seq.items():
-            offs = np.cumsum([0] + [dur[f - 1] for f in sq])
-            for pos, f in enumerate(sq):
-                if f != p:
-                    continue
-                c = 0 if pos == 0 else sq[pos - 1]
-                if c == 0 and not include_silence:
-                    continue
-                if contexts_allowed is not None and c not in contexts_allowed:
-                    continue
-                for pr in pres:
-                    onset = pr["start"] + offs[pos]
-                    ctx.setdefault(c, []).append(dict(onset=onset, seq_start=pr["start"],
-                                                      gap_before=pr["gap_before"]))
-        if len(ctx) < 2:
+    zname, member = member_index()[path]
+    b = open_zip(zname).read(member)
+    names = ["triggers", "param"] + (["response"] if trace else [])
+    m = sio.loadmat(io.BytesIO(b), squeeze_me=True, struct_as_record=False,
+                    variable_names=names)
+    del b
+    p = m["param"]
+    notes = [str(s) for s in _lst(p.notes)] if "notes" in p._fieldnames else []
+    seqs, rep = parse_notes(notes)
+    stim = []
+    if "stimulus" in p._fieldnames:
+        for s in _lst(p.stimulus):
+            stim.append(dict(name=_s(s.name), description=_s(s.description),
+                             file=_s(getattr(s, "file", "")),
+                             param={k: getattr(s.param, k) for k in s.param._fieldnames}))
+    trig = []
+    for t in _lst(m.get("triggers", [])):
+        trig.append(dict(type=str(t.type), time=int(t.time),
+                         param={k: getattr(t.param, k) for k in t.param._fieldnames}))
+    d = dict(path=path, cell=path.split("/")[1], rtype=str(p.recording.type),
+             description=_s(p.ID.description), animal=f"{p.ID.date}-{p.ID.animal}",
+             age=_s(getattr(p.animal, "age", "")), notes=notes, seqs=seqs, rep=rep,
+             stim=stim, triggers=trig, offset=_s(getattr(p.recording, "offset", "")),
+             Rs=_s(getattr(p.recording, "Rs", "")))
+    if trace:
+        r = m["response"]
+        d["sf"] = int(r.sf)
+        d["unit"] = str(r.unit)
+        d["trace"] = (r.trace.astype(np.float32) * np.float32(r.scale))
+    return d
+
+
+def median_clip(trace: np.ndarray, ms: float = 10.0, sf: int = SF) -> np.ndarray:
+    """10-ms median filter that clips spikes (Methods, Analysis, paragraph 1)."""
+    return median_filter(trace, size=int(round(ms * sf / 1000)), mode="nearest")
+
+
+# --------------------------------------------------------------------------
+# cutting a recording into context-probe pairs (CxtDep.m)
+# --------------------------------------------------------------------------
+def fragment_samples(d: dict) -> np.ndarray:
+    """Length of each stimulus fragment in samples, as CxtDep.m rounds it."""
+    return np.array([int(round(float(s["param"]["duration"]) / 1000 * d["sf"]))
+                     for s in d["stim"]])
+
+
+def presentations(d: dict) -> list[dict]:
+    """Sequence presentations in time order, with the sequence index (0-based)
+    taken from the trigger's description "Sequence k: ..."."""
+    out = []
+    for t in d["triggers"]:
+        if "pulse" in t["type"]:
             continue
-        ntr = min(len(v) for v in ctx.values())
-        probes.append(dict(probe=p, duration=dur[p - 1], contexts=sorted(ctx), trials=ctx,
-                           n_trials=ntr, eligible=ntr >= min_trials))
-    return probes
+        desc = _s(t["param"].get("description", ""))
+        mm = re.match(r"Sequence\s+(\d+)\s*:(.*)", desc)
+        if not mm:
+            continue
+        content = [int(v) for v in mm.group(2).split()]
+        # the sequence whose content the trigger names; in two files the
+        # trigger numbers (2, 4, 6, 8) are not the notes' (1 to 4)
+        k = int(mm.group(1)) - 1
+        if not (k < len(d["seqs"]) and d["seqs"][k] == content):
+            k = next((i for i, q in enumerate(d["seqs"]) if q == content), None)
+            if k is None:
+                continue
+        out.append(dict(seq=k, onset=t["time"] - 1,
+                        duration=float(t["param"]["duration"])))
+    return out
 
 
-def probe_matrix(rec: dict, probe: dict) -> tuple[np.ndarray, np.ndarray]:
-    """Responses to a probe, (contexts * rep, duration) in mV, each context cut to `rep` trials
-    as GetResp does, and the context label of each row."""
-    rep = probe["n_trials"]
-    T = probe["duration"]
-    rows, labels = [], []
-    for c in probe["contexts"]:
-        for tr in probe["trials"][c][:rep]:
-            seg = rec["trace"][tr["onset"]:tr["onset"] + T]
-            if len(seg) < T:
-                seg = np.concatenate([seg, np.full(T - len(seg), np.nan)])
-            rows.append(seg)
-            labels.append(c)
-    return np.vstack(rows), np.array(labels)
+def pairs(d: dict, contexts=None, silence: bool = True) -> dict:
+    """For each probe fragment (1-based index), the list of (context, onset of
+    the probe in samples) over the first ``rep`` presentations of each
+    sequence (CxtDep.m). Context 0 is "silence" (the intersequence interval
+    before a sequence). ``contexts``: optional set of fragment indices allowed
+    as contexts (Methods, Stimulus design, paragraph 2, for Figs. 7 and 8)."""
+    lens = fragment_samples(d)
+    seen = {}
+    out: dict[int, list] = {}
+    for pr in presentations(d):
+        k = pr["seq"]
+        seen[k] = seen.get(k, 0) + 1
+        if d["rep"] is not None and seen[k] > d["rep"]:
+            continue
+        seq = d["seqs"][k]
+        start = pr["onset"]
+        for pos, frag in enumerate(seq):
+            ctx = seq[pos - 1] if pos > 0 else 0
+            use = silence if ctx == 0 else (contexts is None or ctx in contexts)
+            if use:
+                out.setdefault(frag, []).append((ctx, start, seen[k]))
+            start += lens[frag - 1]
+    return out
 
 
-def silence_probe_matrix(rec: dict, min_trials: int):
-    """The intersequence silence as a probe (CxtDep.m blank(1) = 2.5 s, cut to the shortest
-    gap), with the last fragment of each sequence as its context."""
-    sf = rec["sf"]
-    seqs = sequences(rec)
-    rep = rec["rep"]
-    by_seq = {}
-    for s in seqs:
-        by_seq.setdefault(s["seq"], []).append(s)
-    if rep is not None:
-        by_seq = {k: v[:rep] for k, v in by_seq.items()}
-    T = int(round(BLANK_PROBE_S * sf))
-    for v in by_seq.values():
-        for s in v:
-            T = min(T, s["gap_after"][1] - s["gap_after"][0])
-    ctx = {}
-    for sq, pres in by_seq.items():
-        for s in pres:
-            ctx.setdefault(sq[-1], []).append(s["end"])
-    if len(ctx) < 2:
+def probe_trials(d: dict, trace: np.ndarray, probe: int, plist: list,
+                 min_ctx: int = 2, pre: int = 0, post: int = 0):
+    """Stack the responses to one probe as (n contexts, m trials, T samples),
+    with m the smallest trial count over contexts (GetResp in CxtDep.m) and T
+    the probe length. ``pre``/``post`` extend the window before/after the probe.
+    Returns None when fewer than ``min_ctx`` contexts."""
+    T = fragment_samples(d)[probe - 1]
+    by = {}
+    for ctx, on, _ in plist:
+        by.setdefault(ctx, []).append(on)
+    ctxs = sorted(by)
+    if len(ctxs) < min_ctx:
         return None
-    rep_n = min(len(v) for v in ctx.values())
-    if rep_n < min_trials:
-        return None
-    rows, labels = [], []
-    for c in sorted(ctx):
-        for onset in ctx[c][:rep_n]:
-            rows.append(rec["trace"][onset:onset + T])
-            labels.append(c)
-    return np.vstack(rows), np.array(labels)
+    m = min(len(v) for v in by.values())
+    X = np.empty((len(ctxs), m, pre + T + post), np.float32)
+    for i, c in enumerate(ctxs):
+        for j, on in enumerate(by[c][:m]):
+            seg = trace[on - pre: on + T + post]
+            if len(seg) < pre + T + post:  # recording ends early
+                return None
+            X[i, j] = seg
+    return dict(probe=probe, contexts=ctxs, m=m, X=X)
 
 
-# --------------------------------------------------------------------------------- measures
-def _runs_mask(b: np.ndarray, min_len_diff: int = ALPHA_DT) -> np.ndarray:
-    """Keep runs of True whose last index minus first index is at least `min_len_diff`
-    (KWtest: k(a(2,:)) - k(a(1,:)) >= dt). Works along the last axis."""
-    b = np.atleast_2d(b)
-    n, T = b.shape
-    pad = np.zeros((n, 1), dtype=np.int8)
-    d = np.diff(np.concatenate([pad, b.astype(np.int8), pad], axis=1), axis=1)
-    rs, cs = np.nonzero(d == 1)
-    re_, ce = np.nonzero(d == -1)
-    keep = (ce - 1 - cs) >= min_len_diff
-    out = np.zeros((n, T + 1), dtype=np.int32)
-    np.add.at(out, (rs[keep], cs[keep]), 1)
-    np.add.at(out, (re_[keep], ce[keep]), -1)
-    return np.cumsum(out[:, :T], axis=1) > 0
+# --------------------------------------------------------------------------
+# significance measure (Eq. 10; KWtest in CxtDep.m)
+# --------------------------------------------------------------------------
+def runs(mask: np.ndarray, min_gap: int = 50) -> np.ndarray:
+    """Keep runs of True whose last and first index differ by >= min_gap
+    (CxtDep.m: 5 ms at 10 kHz). Works on 1-D or on rows of a 2-D array."""
+    mask = np.atleast_2d(mask)
+    R, T = mask.shape
+    pad = np.zeros((R, 1), bool)
+    dm = np.diff(np.concatenate([pad, mask, pad], axis=1).astype(np.int8), axis=1)
+    st = np.flatnonzero(dm.ravel() == 1)  # flat index into (R, T + 1)
+    en = np.flatnonzero(dm.ravel() == -1)  # one past the run's end
+    keep = (en - st - 1) >= min_gap
+    mark = np.zeros(R * (T + 1) + 1, np.int32)
+    np.add.at(mark, st[keep], 1)
+    np.add.at(mark, en[keep], -1)
+    out = np.cumsum(mark[:-1]).reshape(R, T + 1)[:, :T] > 0
+    return out
 
 
-def kw_significance(X: np.ndarray, labels: np.ndarray, n_shuffle: int = N_SHUFFLE,
-                    rng: np.random.Generator | None = None, chunk: int = 4000):
-    """KWtest of CxtDep.m: p-values, significant mask, and the noise floor (fraction of
-    permutations significant at each time point)."""
-    groups = np.unique(labels)
-    M = len(groups)
-    N, T = X.shape
-    rep = N // M
-    r = np.argsort(np.argsort(X, axis=0, kind="stable"), axis=0, kind="stable").astype(np.float32) + 1
-    G = (labels[None, :] == groups[:, None]).astype(np.float32) / rep  # M x N
-    c = 12.0 / (M * (N + 1))
-    rbar = G @ r
-    kw = c * ((rbar - (N + 1) / 2) ** 2).sum(0)
-    p = stats.chi2.sf(kw, M - 1)
-    signif = _runs_mask(p < ALPHA)[0]
+def kw_significance(X: np.ndarray, alpha: float = 0.01, min_gap: int = 50,
+                    nshuffle: int = 0, rng=None, batch: int = 50):
+    """Pointwise Kruskal-Wallis across contexts. X: (n, m, T).
+
+    Returns (KW statistic, significant mask, noise floor). Ranks are ordinal
+    (ties broken by order, as CxtDep.m's double sort); no tie correction. The
+    noise floor is the fraction of ``nshuffle`` shuffles of whole trials
+    across contexts that are significant at each point."""
+    n, m, T = X.shape
+    N = n * m
+    flat = X.reshape(N, T)
+    r = np.empty((N, T), np.float32)
+    order = np.argsort(flat, axis=0, kind="stable")
+    np.put_along_axis(r, order, np.arange(1, N + 1, dtype=np.float32)[:, None], axis=0)
+    crit = stats.chi2.ppf(1 - alpha, n - 1)
+    c = (N + 1) / 2
+
+    def kw_of(R):  # R: (..., N, T) -> (..., T)
+        Rb = R.reshape(R.shape[:-2] + (n, m, T)).mean(axis=-2)
+        return 12 * ((Rb - c) ** 2).sum(axis=-2) / (n * (N + 1))
+
+    kw = kw_of(r)
+    sig = runs(kw > crit, min_gap)[0]
     noise = None
-    if n_shuffle:
-        rng = rng or np.random.default_rng(0)
-        thr = stats.chi2.isf(ALPHA, M - 1)
-        perms = np.stack([rng.permutation(N) for _ in range(n_shuffle)])
-        # permuting the trials is the same as permuting the group labels
-        P = np.zeros((n_shuffle * M, N), dtype=np.float32)
-        for i in range(n_shuffle):
-            P[i * M:(i + 1) * M] = G[:, perms[i]]
-        b = np.zeros((n_shuffle, T), dtype=bool)
-        for t0 in range(0, T, chunk):
-            rb = (P @ r[:, t0:t0 + chunk]).reshape(n_shuffle, M, -1)
-            b[:, t0:t0 + chunk] = c * ((rb - (N + 1) / 2) ** 2).sum(1) > thr
-        noise = _runs_mask(b).mean(0)
-    return dict(p=p, signif=signif, noise=noise, n_contexts=M, rep=rep)
+    if nshuffle:
+        noise = np.zeros(T, np.float64)
+        done = 0
+        G = np.zeros((n, N), np.float32)
+        for i in range(n):
+            G[i, i * m:(i + 1) * m] = 1.0 / m
+        while done < nshuffle:
+            b = min(batch, nshuffle - done)
+            perms = np.stack([rng.permutation(N) for _ in range(b)])
+            # group means of shuffled trials: G[:, perm^-1] @ r
+            Gp = np.stack([G[:, np.argsort(p)] for p in perms])  # (b, n, N)
+            Rb = Gp.reshape(b * n, N) @ r  # (b*n, T)
+            K = 12 * ((Rb.reshape(b, n, T) - c) ** 2).sum(axis=1) / (n * (N + 1))
+            noise += runs(K > crit, min_gap).sum(axis=0)
+            done += b
+        noise /= nshuffle
+    return kw, sig, noise
 
 
-def frac_power(X: np.ndarray, labels: np.ndarray):
-    """FracPow of CxtDep.m: total, predictable (Eq. 17) and context-invariant (Eq. 18) power at
-    each time point, each trial centred on its mean over the probe window."""
-    groups = np.unique(labels)
-    n = len(groups)
-    N, T = X.shape
-    rep = N // n
-    Y = X - X.mean(1, keepdims=True)
-    tot = Y ** 2
-    mt = np.stack([Y[labels == g].mean(0) for g in groups])
-    pred = np.stack([(rep * mt[k] ** 2 - tot[labels == g].mean(0)) / (rep - 1) for k, g in enumerate(groups)])
-    total = tot.mean(0)
-    predictable = pred.mean(0)
-    invariant = (n * mt.mean(0) ** 2 - (mt ** 2).mean(0)) / (n - 1)
-    return dict(total=total, predictable=predictable, invariant=invariant)
+# --------------------------------------------------------------------------
+# fractional power measure (Eqs. 12 to 19; FracPow in CxtDep.m)
+# --------------------------------------------------------------------------
+def frac_power(X: np.ndarray):
+    """X: (n, m, T). Each trace is centred over the probe (FracPow).
+    Returns (stimulus-related power, Eq. 17 before the population average;
+    context-independent power, Eq. 18; total power)."""
+    n, m, T = X.shape
+    Y = X.astype(np.float64)
+    Y = Y - Y.mean(axis=2, keepdims=True)
+    mu = Y.mean(axis=1)  # (n, T)
+    pred = ((m * mu ** 2 - (Y ** 2).mean(axis=1)) / (m - 1)).mean(axis=0)
+    inv = (n * mu.mean(axis=0) ** 2 - (mu ** 2).mean(axis=0)) / (n - 1)
+    total = (Y ** 2).mean(axis=(0, 1))
+    return pred, inv, total
 
 
-def trial_correlations(X: np.ndarray, labels: np.ndarray) -> dict:
-    """Trial-to-trial reliability within each context: mean Pearson r over pairs of trials, and
-    mean r of each trial with the mean of the others; averaged over contexts. `pairs_sd` is the SD
-    of the pairwise r pooled over contexts, compared with the spread the Figure 2A legend gives for
-    the example probe ("0.74 +- 0.08")."""
-    pairs, loo, all_pairs = [], [], []
-    for g in np.unique(labels):
-        Y = X[labels == g]
-        C = np.corrcoef(Y)
-        iu = np.triu_indices(len(Y), 1)
-        pairs.append(np.nanmean(C[iu]))
-        all_pairs.extend(C[iu])
-        s = Y.sum(0)
-        k = len(Y)
-        loo.append(np.nanmean([np.corrcoef(Y[i], (s - Y[i]) / (k - 1))[0, 1] for i in range(k)]))
-    return dict(pairs=float(np.mean(pairs)), loo=float(np.mean(loo)), pairs_sd=float(np.nanstd(all_pairs, ddof=1)))
+def bin_mean(y: np.ndarray, k: int = 10) -> np.ndarray:
+    """Mean over consecutive blocks of k samples (0.1 ms -> 1 ms)."""
+    L = len(y) // k
+    return y[: L * k].reshape(L, k).mean(axis=1)
 
 
-def running_mean_0_2t(x: np.ndarray) -> np.ndarray:
-    """Running mean over [0, 2t] at each t (Methods, Eq. 20: "the running average over [0, 2t]
-    at time t (>= 0), where the window is selected to be symmetric around the time of interest
-    t, but always nonnegative"). Where 2t passes the end of the data the window is cut at the
-    end (Figure 3B shows the smoothed curve to 6 s, so it is defined there); NaNs are skipped."""
-    ok = np.isfinite(x)
-    cs = np.concatenate([[0.0], np.cumsum(np.where(ok, x, 0.0))])
-    cn = np.concatenate([[0], np.cumsum(ok)])
-    T = len(x)
-    hi = np.minimum(2 * np.arange(T) + 1, T)
+def pop_average(curves: list[np.ndarray], length: int | None = None):
+    """Average curves of different lengths. Returns (mean over the curves still
+    running at each point, mean over all curves with zero past their end,
+    number running)."""
+    L = length or max(len(c) for c in curves)
+    s = np.zeros(L)
+    cnt = np.zeros(L)
+    for c in curves:
+        k = min(len(c), L)
+        s[:k] += c[:k]
+        cnt[:k] += 1
     with np.errstate(invalid="ignore", divide="ignore"):
-        return cs[hi] / cn[hi]
+        running = s / cnt
+    return running, s / len(curves), cnt
 
 
-def noise_autocorr(X: np.ndarray, labels: np.ndarray, max_lag: int) -> np.ndarray:
-    """Eq. 45: autocorrelation of the residuals from the context mean (Eq. 14), normalised by the
-    noise variance, averaged over trials; lags 0..max_lag samples."""
-    acs = []
-    for g in np.unique(labels):
-        Y = X[labels == g]
-        E = Y - Y.mean(0)
-        for e in E:
-            acs.append(autocorr(e, max_lag))
-    return np.mean(acs, axis=0)
+def smooth_0_2t(y: np.ndarray) -> np.ndarray:
+    """Running mean over [0, 2t] at each t (Methods, Eq. 20); where 2t passes
+    the end of the curve, the mean over [0, end]."""
+    cs = np.cumsum(y)
+    idx = np.minimum(2 * np.arange(len(y)), len(y) - 1)
+    return cs[idx] / (idx + 1)
 
 
-def autocorr(x: np.ndarray, max_lag: int) -> np.ndarray:
-    x = x - x.mean()
-    n = len(x)
-    f = np.fft.rfft(x, 2 * n)
-    ac = np.fft.irfft(f * np.conj(f))[:max_lag + 1]
-    return ac / ac[0]
+# --------------------------------------------------------------------------
+# exponential fits (Eq. 44)
+# --------------------------------------------------------------------------
+def _model(p, t, k, kappa):
+    y = np.zeros_like(t)
+    for i in range(k):
+        y = y + p[2 * i] * np.exp(-t / p[2 * i + 1])
+    return y + (p[2 * k] if kappa is None else kappa)
 
 
-# ------------------------------------------------------------------------------------ spikes
-def detect_spikes_getspikes(raw: np.ndarray) -> np.ndarray:
-    """GetSpikes.m automatic mode (ExtractSpikes with threshold [] and downward removal)."""
-    filt = signal.filtfilt(_HP, [1.0], raw)
-    amax_i = int(np.argmax(np.abs(filt)))
-    thr = 2 / 3 * abs(filt[amax_i])
-    if thr > 100:
-        mask = np.ones(len(filt), bool)
-        mask[max(0, amax_i - 30):amax_i + 30] = False
-        thr = np.abs(filt[mask]).max() * 2 / 3
-    return _peaks_above(filt, thr, remove_downward=True), thr
-
-
-def detect_spikes_mad(raw: np.ndarray, k: float = 5.0):
-    """Variant: same filter, threshold at k robust SDs (median absolute deviation / 0.6745)."""
-    filt = signal.filtfilt(_HP, [1.0], raw)
-    thr = k * np.median(np.abs(filt)) / 0.6745
-    return _peaks_above(filt, thr, remove_downward=True), thr
-
-
-def _peaks_above(filt: np.ndarray, thr: float, remove_downward: bool, half: int = 10) -> np.ndarray:
-    above = filt > thr
-    if not above.any():
-        return np.zeros(0, dtype=np.int64)
-    d = np.diff(np.concatenate([[0], above.astype(np.int8), [0]]))
-    s, e = np.nonzero(d == 1)[0], np.nonzero(d == -1)[0]
-    peaks = np.array([a + int(np.argmax(filt[a:b])) for a, b in zip(s, e)])
-    if remove_downward:
-        keep = []
-        for pk in peaks:
-            lo, hi = max(pk - half, 0), min(pk + half + 1, len(filt))
-            keep.append(filt[lo:hi].min() >= -filt[pk])
-        peaks = peaks[np.array(keep, bool)]
-    return peaks
-
-
-def detect_spikes_vm(raw: np.ndarray, thr_mv: float = -20.0, dead_ms: float = 2.0, sf: int = SF):
-    """A1 whole-cell spikes: upward crossings of `thr_mv` on the raw membrane potential."""
-    up = np.nonzero((raw[1:] >= thr_mv) & (raw[:-1] < thr_mv))[0] + 1
-    if len(up) == 0:
-        return up
-    keep = [up[0]]
-    for u in up[1:]:
-        if u - keep[-1] > dead_ms / 1000 * sf:
-            keep.append(u)
-    return np.array(keep)
-
-
-def psth_sd(spike_times_by_context: dict, Tend: float, dt: float = PSTH_DT):
-    """CxtDep.m psth: per context PSTH (spikes/s) on edges 0:dt:Tend with histc, spikes in
-    (0, Tend]; SD over contexts with n - 1. Every context is cut to the smallest trial count."""
-    rep = min(len(v) for v in spike_times_by_context.values())
-    edges = np.arange(0, Tend + 1e-12, dt)
-    ps = []
-    for c in sorted(spike_times_by_context):
-        trials = spike_times_by_context[c][:rep]
-        s = np.concatenate([np.asarray(t) for t in trials]) if trials else np.zeros(0)
-        s = s[(s > 0) & (s <= Tend)]
-        # histc: bin k counts edges[k] <= s < edges[k+1]; the last bin counts s == edges[-1]
-        h = np.zeros(len(edges))
-        idx = np.searchsorted(edges, s, side="right") - 1
-        exact_last = s == edges[-1]
-        np.add.at(h, idx[~exact_last & (idx < len(edges) - 1)], 1)
-        h[-1] += exact_last.sum()
-        ps.append(h / rep / dt)
-    ps = np.array(ps)
-    return edges, ps, ps.std(0, ddof=1)
-
-
-# ----------------------------------------------------------------------------------- fitting
-def exp_model(t, *p):
-    """Eq. 44: sum_k alpha_k exp(-t / tau_k) + kappa; p = (a1, tau1, a2, tau2, ...)."""
-    y = np.zeros_like(t, dtype=float)
-    for k in range(0, len(p), 2):
-        y = y + p[k] * np.exp(-t / p[k + 1])
-    return y
-
-
-def fit_exponentials(t, y, n_exp: int, kappa: float | None = None, sign: float = 1.0,
-                     tau_grid=(0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 4.0), nonneg: bool = False):
-    """Least squares fit of Eq. 44 (scipy least_squares, the analogue of lsqcurvefit) with a grid
-    of start values (a standard choice; the paper gives none). `kappa` fixed when given, else
-    free. Returns the best parameters sorted by tau, and the residual sum of squares."""
-    from itertools import combinations
-    from scipy.optimize import least_squares
+def fit_exp(t, y, k: int, kappa=None):
+    """Least-squares fit of sum_k alpha_k exp(-t/tau_k) + kappa (free when
+    ``kappa`` is None). A grid of start values; the best fit is kept (a
+    standard choice: the paper gives none). tau bounded to (1 ms, 100 s)."""
     t = np.asarray(t, float)
     y = np.asarray(y, float)
     ok = np.isfinite(y)
     t, y = t[ok], y[ok]
+    amp = y[0] - (kappa if kappa is not None else y[-1])
+    taus = [0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0]
+    starts = []
+    if k == 1:
+        for ta in taus:
+            starts.append([amp, ta])
+    else:
+        for i, ta in enumerate(taus):
+            for tb in taus[i + 1:]:
+                for f in (0.3, 0.6, 0.8):
+                    starts.append([amp * f, ta, amp * (1 - f), tb])
     best = None
-    a0 = (np.nanmax(np.abs(y)) if len(y) else 1.0) * sign
-    for taus in combinations(tau_grid, n_exp):
-        p0 = []
-        for tau in taus:
-            p0 += [abs(a0) / n_exp * (1 if sign > 0 else -1), tau]
-        free_k = kappa is None
-        if free_k:
-            p0 = p0 + [float(np.median(y[-max(1, len(y) // 10):]))]
-
-        def res(p):
-            k = p[-1] if free_k else kappa
-            pp = p[:-1] if free_k else p
-            return exp_model(t, *pp) + k - y
-        lb = []
-        ub = []
-        for _ in taus:
-            lb += [0.0 if nonneg and sign > 0 else -np.inf, 1e-4]
-            ub += [0.0 if nonneg and sign < 0 else np.inf, 100.0]
-        if free_k:
-            lb += [-np.inf]
-            ub += [np.inf]
+    lo, hi = [], []
+    for _ in range(k):
+        lo += [-np.inf, 1e-3]
+        hi += [np.inf, 100.0]
+    if kappa is None:
+        lo.append(-np.inf)
+        hi.append(np.inf)
+    for s in starts:
+        s = list(s) + ([y[-1]] if kappa is None else [])
         try:
-            r = least_squares(res, p0, bounds=(lb, ub), max_nfev=5000)
+            res = optimize.least_squares(lambda p: _model(p, t, k, kappa) - y, s,
+                                         bounds=(lo, hi), method="trf", max_nfev=4000)
         except Exception:
             continue
-        sse = float((r.fun ** 2).sum())
-        if best is None or sse < best[1]:
-            best = (r.x, sse)
-    p, sse = best
-    pp = p[:-1] if kappa is None else p
-    k = p[-1] if kappa is None else kappa
-    pairs = sorted([(pp[i], pp[i + 1]) for i in range(0, len(pp), 2)], key=lambda x: x[1])
-    return dict(params=pairs, kappa=float(k), sse=sse, n=len(t))
+        if best is None or res.cost < best.cost:
+            best = res
+    p = best.x
+    comps = sorted([(p[2 * i], p[2 * i + 1]) for i in range(k)], key=lambda a: a[1])
+    out = dict(k=k, alpha=[a for a, _ in comps], tau=[b for _, b in comps],
+               kappa=(p[2 * k] if kappa is None else kappa), sse=2 * best.cost)
+    return out
 
 
-def choose_n_exp(t, y, kappa=None, sign=1.0, max_exp=2, nonneg=False):
-    """The paper's rule (Methods, Exponential curve fit): the largest number of exponentials for
-    which each |alpha_k| is at least a tenth of sum |alpha_k|."""
-    chosen = None
+def fit_select(t, y, kappa=None, kmax: int = 2):
+    """Eq. 44 with the paper's rule for the number of exponentials: each
+    |alpha_k| at least a tenth of the total. Tries kmax, then fewer."""
     fits = {}
-    for n in range(1, max_exp + 1):
-        f = fit_exponentials(t, y, n, kappa=kappa, sign=sign, nonneg=nonneg)
-        fits[n] = f
-        a = np.abs([x[0] for x in f["params"]])
+    for k in range(kmax, 0, -1):
+        f = fit_exp(t, y, k, kappa)
+        fits[k] = f
+        a = np.abs(f["alpha"])
         if np.all(a >= a.sum() / 10):
-            chosen = n
-    return chosen, fits
+            return f, fits
+    return fits[1], fits
 
 
-# ------------------------------------------------------------------------ per-cell analyses
-BIN = 10                    # samples; stored population traces are 1-ms means (a standard
-                            # choice for storage and plotting; the measures are computed at 0.1 ms)
+# --------------------------------------------------------------------------
+# spikes
+# --------------------------------------------------------------------------
+# High-pass FIR of ExtractSpikes in asari/Tools/GetSpikes.m.
+HP_NUM = np.array([-2.9419, -7.7633, -16.2976, -28.7498, -44.7001, -62.8034, -80.9099,
+                   -96.4457, -106.9520, 889.3317, -106.9520, -96.4457, -80.9099,
+                   -62.8034, -44.7001, -28.7498, -16.2976, -7.7633, -2.9419]) / 1000
 
 
-def _bin(x: np.ndarray, b: int = BIN) -> np.ndarray:
-    n = len(x) // b
-    return x[:n * b].reshape(n, b).mean(1)
+def extract_spikes(trace: np.ndarray, threshold: float | None = None,
+                   remove_downward: bool = True, chunk: int = 5_000_000) -> np.ndarray:
+    """Automatic spike detection of GetSpikes.m (``ExtractSpikes``), used by
+    the authors' code for cell-attached recordings: the FIR high-pass applied
+    with filtfilt, a threshold at 2/3 of the largest |filtered| value (with the
+    code's guard against one spurious value above 100), the spike at the peak
+    of each suprathreshold run, and runs whose 21-point neighbourhood dips below
+    minus the peak removed. Returns spike sample indices."""
+    x = trace.astype(np.float64)
+    f = np.empty_like(x)
+    for a in range(0, len(x), chunk):  # code filters 5e6-sample blocks
+        b = min(len(x), a + chunk)
+        if len(x) - b < chunk // 2:  # last short block joins the previous one
+            b = len(x)
+        f[a:b] = signal.filtfilt(HP_NUM, [1.0], x[a:b])
+        if b == len(x):
+            break
+    if threshold is None:
+        i = int(np.argmax(np.abs(f)))
+        threshold = 2 / 3 * abs(f[i])
+        if threshold > 100:
+            g = np.abs(f).copy()
+            g[max(0, i - 30): i + 30] = 0
+            threshold = 2 / 3 * g.max()
+    above = f > threshold
+    pad = np.concatenate([[False], above, [False]]).astype(np.int8)
+    st = np.flatnonzero(np.diff(pad) == 1)
+    en = np.flatnonzero(np.diff(pad) == -1)
+    peaks = np.array([a + int(np.argmax(f[a:b])) for a, b in zip(st, en)], int)
+    if remove_downward and len(peaks):
+        keep = []
+        for pk in peaks:
+            lo = f[max(0, pk - 10): pk + 11].min()
+            keep.append(lo >= -f[pk])
+        peaks = peaks[np.array(keep, bool)]
+    return peaks
 
 
-def runs(mask: np.ndarray, sf: int = SF) -> list[tuple[float, float]]:
-    """(start, end) in seconds of each True run."""
-    d = np.diff(np.concatenate([[0], mask.astype(np.int8), [0]]))
-    s, e = np.nonzero(d == 1)[0], np.nonzero(d == -1)[0]
-    return [(a / sf, b / sf) for a, b in zip(s, e)]
+def a1_spikes(trace: np.ndarray, height: float = 15.0, sf: int = SF) -> np.ndarray:
+    """A1 whole-cell spikes (an assumption: the authors' code extracts these
+    by hand, GetSpikes.m with auto = 0, and the paper gives no detector).
+    A spike is a peak of the raw trace minus its 10-ms median (the clipped
+    trace of Methods, Analysis) that rises more than ``height`` mV, with peaks at
+    least 2 ms apart. Readings of 10 and 20 mV are run in the notebook."""
+    resid = trace - median_clip(trace)
+    pk, _ = signal.find_peaks(resid, height=height, distance=int(0.002 * sf))
+    return pk
 
 
-def boot_power(X, labels, rng, n_boot: int, t_max: float = 4.0, bin10: int = 10 * BIN):
-    """Trial reading of the Figure 8C resampling (claim fig8c-relative-effects): in each of
-    `n_boot` resamples, the trials of every context are drawn with replacement, as many as the
-    context holds, and Eqs. 17 and 18 are computed. To keep the cost low the trials are first
-    averaged in 1-ms bins (the traces are median-filtered at 10 ms), and the results are stored
-    as 10-ms means up to `t_max`. Returns the unresampled estimate on the same binned trials
-    (`pred10`, `inv10`) and the resamples (`boot_pred`, `boot_inv`, n_boot x bins)."""
-    nb = int(min(X.shape[1], int(t_max * SF)) // bin10)
-    Xb = X[:, :X.shape[1] // BIN * BIN].reshape(X.shape[0], -1, BIN).mean(2)
-    groups = np.unique(labels)
-    idx = [np.nonzero(labels == g)[0] for g in groups]
-
-    def tenms(v):
-        return v[:nb * 10].reshape(nb, 10).mean(1).astype(np.float32)
-
-    fp = frac_power(Xb, labels)
-    bp, bi = np.empty((n_boot, nb), np.float32), np.empty((n_boot, nb), np.float32)
-    for b in range(n_boot):
-        sel = np.concatenate([rng.choice(ix, len(ix), replace=True) for ix in idx])
-        f = frac_power(Xb[sel], labels[sel])
-        bp[b], bi[b] = tenms(f["predictable"]), tenms(f["invariant"])
-    return dict(pred10=tenms(fp["predictable"]), inv10=tenms(fp["invariant"]), boot_pred=bp, boot_inv=bi)
+def silences(d: dict, n: int) -> list[tuple[int, int]]:
+    """Intersequence silences: sample ranges between the end of one sequence
+    presentation (or the recording start) and the next (GetEvoked.m),
+    excluding pulse triggers. ``n`` is the trace length."""
+    pres = presentations(d)
+    out = []
+    t1 = 0
+    for p in pres:
+        out.append((t1, p["onset"]))
+        t1 = p["onset"] + int(round(p["duration"] / 1000 * SF))
+    out.append((t1, n))
+    return [(a, b) for a, b in out if b > a]
 
 
-def analyze_probe(X, labels, rng, n_shuffle=N_SHUFFLE, extras=True, n_boot=0, boot_rng=None):
-    """Significance and power measures of one probe, the traces stored as 1-ms means; with
-    `n_boot`, also the trial resamples of the power measures (boot_power)."""
-    ok = np.isfinite(X).all(0)
-    T = int(ok.sum()) if not ok.all() else X.shape[1]
-    X = X[:, :T]
-    k = kw_significance(X, labels, n_shuffle=n_shuffle, rng=rng)
-    fp = frac_power(X, labels)
-    out = dict(T=T, n_contexts=k["n_contexts"], rep=k["rep"], contexts=list(np.unique(labels)),
-               significant=bool(k["signif"].any()), runs=runs(k["signif"]),
-               signif=_bin(k["signif"].astype(np.float32)).astype(np.float32),
-               noise=_bin(k["noise"]).astype(np.float32) if k["noise"] is not None else None,
-               p_min=float(k["p"].min()),
-               **{name: _bin(v).astype(np.float32) for name, v in fp.items()})
-    if extras:
-        out["corr"] = trial_correlations(X, labels)
-        out["noise_ac"] = noise_autocorr(X, labels, max_lag=5000)[::BIN].astype(np.float32)
-    if n_boot:
-        out["boot"] = boot_power(X, labels, boot_rng, n_boot)
+def sounds(d: dict) -> list[tuple[int, int]]:
+    return [(p["onset"], p["onset"] + int(round(p["duration"] / 1000 * SF)))
+            for p in presentations(d)]
+
+
+def psth_sd(spk_by_ctx: dict, T: float, dt: float = 0.1, m: int | None = None):
+    """PSTH in bins [k dt, (k+1) dt) from probe onset for each context (rate in
+    spike/s over ``m`` trials, the fewest of any context, as CxtDep.m's psth)
+    and the SD over contexts with n - 1 (Eq. 42). Only whole bins inside the
+    probe are kept. spk_by_ctx: context -> list of arrays of spike times (s)."""
+    nb = int(np.floor(T / dt + 1e-9))
+    m = m or min(len(v) for v in spk_by_ctx.values())
+    P = []
+    for c in sorted(spk_by_ctx):
+        tr = spk_by_ctx[c][:m]
+        allsp = np.concatenate(tr) if len(tr) else np.array([])
+        h, _ = np.histogram(allsp, bins=np.arange(nb + 1) * dt)
+        P.append(h / m / dt)
+    P = np.array(P)
+    return P, P.std(axis=0, ddof=1)
+
+
+# --------------------------------------------------------------------------
+# synthetic ensembles: which conditioning stimuli vary one property (Fig. 8)
+# --------------------------------------------------------------------------
+PROPERTIES = ("amplitude", "frequency", "AM", "FM", "higher-order")
+_NUISANCE = {"iniphase", "envphase", "sinphase", "sf", "ramp", "duration", "iter",
+             "torc_order", "tempmod", "specmod", "torc_parameters"}
+# Parameters of SoundTrans.m / MHTones.m whose change defines each property
+# (Methods, Synthetic sounds; Table 1 legend: amplitude, frequency, AM and FM
+# rate and depth). For MHTs, a change of AMmean alone is a level change
+# (amplitude); AMmean with AMstd, or AMrange, is AM depth or rate.
+_KEYS = {"amplitude": {"attenuation"}, "frequency": {"f0", "df", "ff"},
+         "AM": {"AMrange", "AMstd"}, "FM": {"FMrange", "FMstd"}}
+
+
+def _norm(v):
+    if hasattr(v, "_fieldnames"):
+        return tuple((k, _norm(getattr(v, k))) for k in v._fieldnames)
+    if isinstance(v, np.ndarray):
+        if v.dtype == object:
+            return tuple(_norm(x) for x in v.ravel())
+        if v.dtype.kind in "US":
+            return tuple(str(x) for x in v.ravel())
+        return tuple(np.round(v.astype(float).ravel(), 6))
+    if isinstance(v, float):
+        return round(v, 6)
+    return v
+
+
+def is_natural(s: dict) -> bool:
+    """A natural sound fragment or a transform of one (level, frequency shift,
+    reversal): anything that is not a TORC, DMR, MHT or modulated coloured
+    noise, nor silence."""
+    desc = s["description"]
+    return bool(desc) and desc != "[]" and not any(
+        k in desc for k in ("TORC", "DMR", "Modulated Harmonic", "pink noise"))
+
+
+def property_classes(d: dict) -> dict:
+    """Sets of fragments (1-based) that differ from each other in one property
+    only. TORC and DMR ensembles are labelled in their descriptions ("amplitude
+    variants", "bandwidth variants", "frequency variants"); MHT and
+    natural-sound variants are told apart by their parameters; a natural sound
+    and the modulated coloured noise made from it (same stimulus file) form a
+    higher-order class (Table 1 legend)."""
+    st = d["stim"]
+    out = {p: [] for p in PROPERTIES}
+    typ = d["triggers"][0]["type"] if d["triggers"] else ""
+    syl = lambda s: _norm(s["param"].get("syllables"))
+    if typ in ("torc", "dmr"):
+        groups = {}
+        for i, s in enumerate(st, 1):
+            desc = s["description"].lower()
+            if is_natural(s):
+                continue
+            if "amplitude" in desc:
+                p = "amplitude"
+            elif "bandwidth" in desc or "frequency" in desc:
+                p = "frequency"
+            else:
+                continue
+            groups.setdefault((p, syl(s)), set()).add(i)
+        for (p, _), g in groups.items():
+            if len(g) >= 2:
+                out[p].append(g)
+        return out
+    if typ == "pinknoise":
+        groups = {}
+        for i, s in enumerate(st, 1):
+            groups.setdefault(s["file"], set()).add(i)
+        for g in groups.values():
+            kinds = {is_natural(st[i - 1]) for i in g}
+            if len(g) >= 2 and kinds == {True, False}:
+                out["higher-order"].append(g)
+        return out
+    if typ not in ("synthetic", "naturalistic"):
+        return out
+    params = []
+    for s in st:
+        p = {k: _norm(v) for k, v in s["param"].items() if k not in _NUISANCE}
+        p["_src"] = s["file"] if typ == "naturalistic" else s["description"][:9]
+        params.append(p)
+    for prop in ("amplitude", "frequency", "AM", "FM"):
+        keys = set(_KEYS[prop])
+        if typ == "synthetic" and prop == "amplitude":
+            keys = {"AMmean"}
+        groups = {}
+        for i, p in enumerate(params, 1):
+            if st[i - 1]["description"] in ("", "[]"):
+                continue
+            if typ == "synthetic" and "Modulated Harmonic" not in st[i - 1]["description"]:
+                continue
+            sig = tuple(sorted((k, v) for k, v in p.items() if k not in keys
+                               and not (prop == "AM" and k == "AMmean")))
+            groups.setdefault(sig, []).append(i)
+        for sig, g in groups.items():
+            if len(g) < 2:
+                continue
+            vals = [tuple(params[i - 1].get(k) for k in sorted(keys)) for i in g]
+            if len(set(vals)) < 2:
+                continue
+            out[prop].append(set(g))
     return out
 
 
-def spont_segments(rec: dict) -> list[tuple[int, int]]:
-    """Intersequence intervals (between the end of one sequence and the start of the next)."""
-    seqs = sequences(rec)
-    return [s["gap_before"] for s in seqs[1:]]
-
-
-def analyze_cc_cell(archive: Archive, member: str, seed: int, include_silence=True,
-                    n_shuffle=N_SHUFFLE, extras=True, silence_probe=False, fix_swaps=True, n_boot=0):
-    """All eligible probes of one current-clamp recording. The trial resamples (`n_boot`) use
-    their own generator, so the other measures do not depend on them."""
-    rec = load_recording(archive, member, smooth=True, keep_raw=True, fix_swaps=fix_swaps)
-    a1_rates = {thr: firing_rates(rec, detect_spikes_vm(rec["raw"], thr)) for thr in A1_THRESHOLDS}
-    rec["raw"] = None
-    rng = np.random.default_rng(seed)
-    boot_rng = np.random.default_rng(seed + BOOT_SEED_OFFSET)
-    probes = probe_table(rec, MIN_TRIALS_CC, include_silence=include_silence) if rec["stimulus_source"] else []
-    res = []
-    for p in probes:
-        X, lab = probe_matrix(rec, p)
-        r = dict(member=member, probe=p["probe"], duration=p["duration"] / SF,
-                 n_trials=p["n_trials"], eligible=p["eligible"], contexts_all=p["contexts"])
-        if p["eligible"]:
-            r.update(analyze_probe(X, lab, rng, n_shuffle=n_shuffle, extras=extras,
-                                   n_boot=n_boot, boot_rng=boot_rng))
-        res.append(r)
-    cell = dict(member=member, rep=rec["rep"], n_fragments=len(rec["stimuli"]),
-                n_sequences=len(sequences(rec)), recording_type=rec["recording_type"],
-                stimuli=[(s["name"], s["description"], s["duration_ms"]) for s in rec["stimuli"]],
-                trace_min=float(rec["trace"].min()), trace_max=float(rec["trace"].max()),
-                n_samples=len(rec["trace"]), unit=rec["unit"], rates=a1_rates, scale=rec["scale"],
-                checks=recording_checks(rec))
-    if extras:
-        segs = spont_segments(rec)
-        acs = [autocorr(rec["trace"][a:b], 5000) for a, b in segs if b - a > 10000]
-        cell["spont_ac"] = np.mean(acs, 0)[::BIN].astype(np.float32) if acs else None
-        acs1 = [autocorr(rec["trace"][a + SF:b], 5000) for a, b in segs if b - a > 10000 + SF]
-        cell["spont_ac_late"] = np.mean(acs1, 0)[::BIN].astype(np.float32) if acs1 else None
-    if silence_probe and rec["stimulus_source"]:
-        sp = silence_probe_matrix(rec, MIN_TRIALS_CC)
-        if sp is not None:
-            cell["silence_probe"] = analyze_probe(sp[0], sp[1], rng, n_shuffle=0, extras=False)
-    return cell, res
-
-
-# ----------------------------------------------------------------------- population curves
-def stack(probes: list[dict], key: str) -> np.ndarray:
-    """Probes x time (1-ms bins) of a stored trace, NaN after the end of each probe."""
-    L = max(len(p[key]) for p in probes)
-    out = np.full((len(probes), L), np.nan)
-    for i, p in enumerate(probes):
-        out[i, :len(p[key])] = p[key]
+def synthetic_tests(d: dict) -> list[dict]:
+    """Each (property, probe, class) whose class gives the probe at least two
+    conditioning stimuli; silence is left out (Methods, Stimulus design,
+    paragraph 2: only the variants of the property are conditioning stimuli)."""
+    P = pairs(d, silence=False)
+    out = []
+    for prop, classes in property_classes(d).items():
+        for ci, cls in enumerate(classes):
+            for probe in sorted(P):
+                pl = [x for x in P[probe] if x[0] in cls]
+                if len({x[0] for x in pl}) >= 2:
+                    out.append(dict(prop=prop, probe=probe, cls=sorted(cls), ci=ci,
+                                    natural=is_natural(d["stim"][probe - 1]), plist=pl))
     return out
 
 
-def population_mean(M: np.ndarray, reading: str) -> np.ndarray:
-    """Average over probes at each time: 'running' over the probes still running at t, 'all'
-    over every probe with ended probes counted as 0 (claim fig3a-proportion-significant)."""
-    if reading == "running":
-        with np.errstate(invalid="ignore"):
-            return np.nanmean(M, 0)
-    return np.nan_to_num(M).sum(0) / M.shape[0]
+# --------------------------------------------------------------------------
+# per-file reductions (what the notebook keeps of each file)
+# --------------------------------------------------------------------------
+def _intervals(mask: np.ndarray) -> list[tuple[int, int]]:
+    pad = np.concatenate([[0], mask.astype(np.int8), [0]])
+    st = np.flatnonzero(np.diff(pad) == 1)
+    en = np.flatnonzero(np.diff(pad) == -1)
+    return list(zip(st.tolist(), en.tolist()))
 
 
-def late_fraction(prop: np.ndarray, noise: np.ndarray, t_split: float = 1.0, dt: float = 1e-3):
-    """Figure 3A legend: cumulative probability corrected for the noise floor (running integral
-    of proportion minus noise floor), normalised at its peak; returns 1 - cum(t_split), the time
-    of the peak, and the curve."""
-    c = np.nancumsum(prop - noise) * dt
-    ipk = int(np.nanargmax(c))
-    cum = c / c[ipk]
-    return float(1 - cum[int(round(t_split / dt))]), ipk * dt, cum
+def _acf(Y: np.ndarray, maxlag: int) -> np.ndarray:
+    """Mean autocorrelation of the rows of Y (each centred), each normalised by
+    its value at lag 0 (Eq. 45), for lags 0..maxlag-1."""
+    Y = Y - Y.mean(axis=-1, keepdims=True)
+    L = Y.shape[-1]
+    nfft = 1 << int(np.ceil(np.log2(2 * L)))
+    F = np.fft.rfft(Y, nfft, axis=-1)
+    ac = np.fft.irfft(F * np.conj(F), nfft, axis=-1)[..., :maxlag]
+    ac = ac / ac[..., :1]
+    return ac.reshape(-1, maxlag).mean(axis=0)
 
 
-def q_curves(probes: list[dict], reading: str, dt: float = 1e-3):
-    """Eqs. 17-20 and 43 over a population: predictable power (Eq. 17), its running mean over
-    [0, 2t], context-dependent power (Eq. 19), Q(t) (Eq. 20) and the predictability ratio
-    (Eq. 43, smoothed and unsmoothed denominator)."""
-    pred = population_mean(stack(probes, "predictable"), reading)
-    inv = population_mean(stack(probes, "invariant"), reading)
-    if reading == "all":
-        # counting ended probes as zero power would bias the ratio only through the denominator
-        # and numerator equally; it is shown as a reading of the criterion
-        pass
-    smooth = running_mean_0_2t(pred)
-    dep = pred - inv
-    return dict(t=np.arange(len(pred)) * dt, predictable=pred, smooth=smooth, dependent=dep,
-                invariant=inv, Q=dep / smooth, ratio=inv / smooth, ratio_raw=inv / pred)
+def _corrs(X: np.ndarray):
+    """Trial-to-trial correlation within each context. Returns, over contexts,
+    (mean over pairs of trials, correlation of each trial with the mean of
+    the others, all pairwise values)."""
+    pair_all, loo = [], []
+    for Xi in X:
+        m = Xi.shape[0]
+        C = np.corrcoef(Xi.astype(np.float64))
+        iu = np.triu_indices(m, 1)
+        pair_all.extend(C[iu].tolist())
+        for j in range(m):
+            others = np.delete(Xi, j, axis=0).mean(axis=0)
+            loo.append(np.corrcoef(Xi[j], others)[0, 1])
+    return float(np.mean(pair_all)), float(np.mean(loo)), pair_all
 
 
-def firing_rates(rec: dict, spikes: np.ndarray) -> dict:
-    """Spontaneous and evoked rates (Hz): spikes in the intersequence intervals and in the
-    sequences; 'pre1s' is the last 1 s before each sequence (claim a1-mgb-firing-rates)."""
-    sf = rec["sf"]
-    seqs = sequences(rec)
-    sp_n = sp_t = ev_n = ev_t = pre_n = pre_t = 0
-    for k, s in enumerate(seqs):
-        ev_n += np.count_nonzero((spikes >= s["start"]) & (spikes < s["end"]))
-        ev_t += (s["end"] - s["start"]) / sf
-        if k > 0:
-            a, b = s["gap_before"]
-            sp_n += np.count_nonzero((spikes >= a) & (spikes < b))
-            sp_t += (b - a) / sf
-            a1 = max(a, b - sf)
-            pre_n += np.count_nonzero((spikes >= a1) & (spikes < b))
-            pre_t += (b - a1) / sf
-    return dict(spont=sp_n / sp_t if sp_t else np.nan, evoked=ev_n / ev_t if ev_t else np.nan,
-                pre1s=pre_n / pre_t if pre_t else np.nan, spont_s=sp_t, evoked_s=ev_t)
+def _seed(seed: int, *keys) -> np.random.Generator:
+    """Generator for one probe, derived from the claim's seed and the probe's
+    fixed position (file, probe, class), so that runs in parallel draw the
+    same numbers."""
+    return np.random.default_rng(np.random.SeedSequence([seed, *keys]))
 
 
-def analyze_mgb_file(archive: Archive, member: str, detector: str = "getspikes"):
-    """MGB probes (at least 10 trials per context, at least two contexts): spike times of each
-    trial relative to probe onset, PSTH SD over contexts (Eq. 42), and the firing rates."""
-    rec = load_recording(archive, member, smooth=False)
-    if detector == "getspikes":
-        spikes, thr = detect_spikes_getspikes(rec["trace"])
+def reduce_wholecell(path: str, kind: str, seeds: list[int], fidx: int,
+                     nshuffle: int = 1000, blank_s: float = 2.5) -> dict:
+    """Everything the notebook needs from one current-clamp file.
+
+    kind 'natural': probes over all fragments with silence as a context
+    (CxtDep.m), and the variant without silence; the silence probes
+    (Supplemental Fig. S1 in Methods, Stimulus design); trial correlations;
+    noise and spontaneous autocorrelations. kind 'synthetic': the tests of
+    ``synthetic_tests``. Both: spike counts in silences and sounds for the
+    A1 rates. ``seeds``: the claim seed and its four offsets for the shuffles
+    of the main reading (the first is also used for the variants)."""
+    d = load(path)
+    raw = d.pop("trace")
+    x = median_clip(raw)
+    n = len(x)
+    out = dict(path=path, cell=d["cell"], animal=d["animal"], rep=d["rep"],
+               description=d["description"], nsamples=n, sf=d["sf"], unit=d["unit"],
+               age=d["age"], vrange=(float(np.percentile(x, 1)), float(np.percentile(x, 99))))
+    # spikes for the firing-rate claim
+    sil = silences(d, n)
+    snd = sounds(d)
+    out["silence_s"] = sum(b - a for a, b in sil) / SF
+    out["sound_s"] = sum(b - a for a, b in snd) / SF
+    sil_late = [(a + SF, b) for a, b in sil if b - a > SF]
+    out["silence_late_s"] = sum(b - a for a, b in sil_late) / SF
+    resid = raw - x
+    for h in (10.0, 15.0, 20.0):
+        pk, _ = signal.find_peaks(resid, height=h, distance=int(0.002 * SF))
+        def cnt(iv):
+            return int(sum(((pk >= a) & (pk < b)).sum() for a, b in iv))
+        out[f"spk{int(h)}"] = dict(silence=cnt(sil), sound=cnt(snd), silence_late=cnt(sil_late))
+    del resid, raw
+    lens = fragment_samples(d)
+    out["frag_s"] = (lens / SF).tolist()
+    out["stim"] = [s["description"] for s in d["stim"]]
+    out["seqs"] = d["seqs"]
+    tests = []
+    if kind == "natural":
+        P = pairs(d, silence=True)
+        for probe in sorted(P):
+            pt = probe_trials(d, x, probe, P[probe])
+            if pt is None:
+                continue
+            X = pt["X"]
+            rec = dict(probe=probe, contexts=pt["contexts"], m=pt["m"], T=X.shape[2])
+            noises = []
+            for si, s in enumerate(seeds):
+                kw, sig, noise = kw_significance(X, nshuffle=nshuffle,
+                                                 rng=_seed(s, fidx, probe))
+                noises.append(bin_mean(noise).astype(np.float32))
+            rec["sig"] = _intervals(sig)
+            rec["noise"] = noises
+            pred, inv, tot = frac_power(X)
+            rec["pred"], rec["inv"], rec["tot"] = bin_mean(pred), bin_mean(inv), bin_mean(tot)
+            # power per probe for Fig. 2E style checks (context-dependent)
+            rec["corr_pair"], rec["corr_loo"], pa = _corrs(X)
+            rec["corr_pair_sd"] = float(np.std(pa))
+            # noise autocorrelation (Eqs. 14, 45), lags to 1 s
+            eps = X - X.mean(axis=1, keepdims=True)
+            rec["acf_noise"] = bin_mean(_acf(eps.reshape(-1, X.shape[2]).astype(np.float64),
+                                             SF), 1)[: SF : 10].astype(np.float32)
+            # variant: silence not a context
+            ctx_ns = [c for c in pt["contexts"] if c != 0]
+            if len(ctx_ns) >= 2:
+                keep = [i for i, c in enumerate(pt["contexts"]) if c != 0]
+                Xn = X[keep]
+                kw, sig, noise = kw_significance(Xn, nshuffle=nshuffle,
+                                                 rng=_seed(seeds[0], fidx, probe, 1))
+                pn, iv, _ = frac_power(Xn)
+                rec["ns"] = dict(sig=_intervals(sig), noise=bin_mean(noise).astype(np.float32),
+                                 pred=bin_mean(pn), inv=bin_mean(iv), n=len(keep))
+            tests.append(rec)
+        # silence probes: the first blank_s of the interval after each sequence,
+        # its context the sequence's last fragment (CxtDep.m, blank probe)
+        pres = presentations(d)
+        seen, segs = {}, []
+        for i, pr in enumerate(pres):
+            k = pr["seq"]
+            seen[k] = seen.get(k, 0) + 1
+            if d["rep"] is not None and seen[k] > d["rep"]:
+                continue
+            end = pr["onset"] + int(sum(lens[f - 1] for f in d["seqs"][k]))
+            nxt = pres[i + 1]["onset"] if i + 1 < len(pres) else n
+            segs.append((d["seqs"][k][-1], end, nxt - end))
+        L = int(min(blank_s * SF, min(g for _, _, g in segs))) if segs else 0
+        by = {}
+        for c, e, _ in segs:
+            by.setdefault(c, []).append(e)
+        out["blank"] = None
+        if len(by) >= 2 and L > 0:
+            m = min(len(v) for v in by.values())
+            X = np.stack([np.stack([x[e:e + L] for e in by[c][:m]]) for c in sorted(by)])
+            kw, sig, _ = kw_significance(X)
+            pred, inv, tot = frac_power(X)
+            out["blank"] = dict(contexts=sorted(by), m=m, T=L, sig=_intervals(sig),
+                                pred=bin_mean(pred), inv=bin_mean(inv))
+        # spontaneous autocorrelation over the intersequence intervals
+        acs, acs_late = [], []
+        for a, b in sil:
+            if b - a >= 2 * SF:
+                acs.append(_acf(x[a:b][None].astype(np.float64), SF)[::10])
+            if b - a >= 3 * SF:
+                acs_late.append(_acf(x[a + SF:b][None].astype(np.float64), SF)[::10])
+        out["acf_spont"] = np.mean(acs, axis=0).astype(np.float32) if acs else None
+        out["acf_spont_late"] = np.mean(acs_late, axis=0).astype(np.float32) if acs_late else None
     else:
-        spikes, thr = detect_spikes_mad(rec["trace"], k=float(detector.split(":")[1]))
-    sf = rec["sf"]
-    out = []
-    for p in (probe_table(rec, MIN_TRIALS_MGB) if rec["stimulus_source"] else []):
-        if not p["eligible"]:
-            out.append(dict(member=member, probe=p["probe"], eligible=False, n_trials=p["n_trials"]))
-            continue
-        Tend = p["duration"] / sf
-        by_ctx = {}
-        for c in p["contexts"]:
-            trials = []
-            for tr in p["trials"][c][:p["n_trials"]]:
-                s = spikes[(spikes > tr["onset"]) & (spikes <= tr["onset"] + p["duration"])]
-                trials.append((s - tr["onset"]) / sf)
-            by_ctx[c] = trials
-        edges, ps, sd = psth_sd(by_ctx, Tend)
-        out.append(dict(member=member, probe=p["probe"], eligible=True, n_trials=p["n_trials"],
-                        n_contexts=len(p["contexts"]), contexts=p["contexts"], Tend=Tend,
-                        edges=edges, psth=ps, sd=sd))
-    info = dict(member=member, rep=rec["rep"], recording_type=rec["recording_type"],
-                checks=recording_checks(rec, spikes), n_spikes=len(spikes), threshold=float(thr), rates=firing_rates(rec, spikes),
-                duration_s=len(rec["trace"]) / sf, trace_min=float(rec["trace"].min()),
-                trace_max=float(rec["trace"].max()), unit=rec["unit"], scale=rec["scale"])
-    return info, out
-
-
-# ------------------------------------------------------------- synthetic stimulus properties
-# Which parameter of a conditioning stimulus carries which sound property (Methods, Stimuli,
-# SYNTHETIC SOUNDS; Table 1 legend): amplitude (attenuation, or the mean envelope level AMmean
-# of a modulated harmonic tone), frequency (f0, frequency shift df, band ff, or the TORC/DMR
-# "bandwidth/frequency variants"), AM (AM rate AMrange or depth AMstd), FM (FMrange, FMstd), and
-# higher-order (a natural sound against its modulated colored noise, marked by `iter`). The
-# grouping of conditioning stimuli into ensembles is this attempt's reading of the parameters
-# stored with each fragment (Methods, Stimulus design, paragraph 2: "the analysis should be
-# conducted by using only those frequency variants ... as conditioning stimuli").
-PROPERTY_KEYS = {"amplitude": {"attenuation", "AMmean"}, "frequency": {"f0", "df", "ff"},
-                 "AM": {"AMrange", "AMstd", "AMmean"}, "FM": {"FMrange", "FMstd"},
-                 "higher-order": {"iter"}}
-PROPERTIES = list(PROPERTY_KEYS)
-_IGNORED = {"envphase", "sinphase", "iniphase", "torc_parameters", "torc_order", "specmod",
-            "tempmod", "duration", "ramp", "sf"}
-_DEFAULTS = {"attenuation": 1.0, "df": 0.0}
-
-
-def _val(v):
-    a = np.asarray(v)
-    if a.dtype.kind in "fiu":
-        return tuple(np.round(a.astype(float).ravel(), 6))
-    return str(v)
-
-
-def fragment_kind(stim: dict, trigger_type: str) -> str:
-    """'natural' (a CD fragment or a variant of one), 'MCN', or the synthetic family."""
-    p = stim["param"]
-    if hasattr(p, "iter") or "pink noise" in stim["description"]:
-        return "MCN"
-    if stim["file"] and stim["file"] != "[]" and "class" in stim["file"]:
-        return "natural"
-    return {"torc": "TORC", "dmr": "DMR", "synthetic": "MHT"}.get(trigger_type, trigger_type)
-
-
-def fragment_params(stim: dict) -> dict:
-    p = stim["param"]
-    d = dict(_DEFAULTS)
-    for k in p._fieldnames:
-        if k not in _IGNORED:
-            d[k] = _val(getattr(p, k))
-    return d
-
-
-def _family_property(descs: list[str]) -> str | None:
-    s = " ".join(descs)
-    if "bandwidth" in s or "frequency variants" in s:
-        return "frequency"
-    if "amplitude variants" in s:
-        return "amplitude"
-    return None
-
-
-def property_classes(rec: dict, contexts: list[int], prop: str) -> list[list[int]]:
-    """Classes of a probe's conditioning stimuli (fragment indices, silence excluded) that
-    differ only in `prop`: the same kind and source, equal in every parameter outside the
-    property. For AM, of variants that share AM rate and depth only the one at the most common
-    mean level is kept (the others are amplitude variants)."""
-    trig_type = next(t["type"] for t in rec["triggers"] if t["seq"] is not None)
-    stims = rec["stimuli"]
-    keys = PROPERTY_KEYS[prop]
-    groups = {}
-    for c in contexts:
-        if c == 0:
-            continue
-        s = stims[c - 1]
-        kind = fragment_kind(s, trig_type)
-        par = fragment_params(s)
-        src = s["file"] if kind in ("natural", "MCN") else kind
-        if prop == "higher-order":
-            kind = "NS/MCN"
-        other = tuple(sorted((k, v) for k, v in par.items() if k not in keys))
-        groups.setdefault((kind, src, other), []).append((c, par, s["description"]))
-    out = []
-    for (kind, src, other), mem in groups.items():
-        if len(mem) < 2:
-            continue
-        vals = {tuple(sorted((k, m[1].get(k)) for k in keys)) for m in mem}
-        if prop == "higher-order":
-            kinds = {fragment_kind(stims[m[0] - 1], trig_type) for m in mem}
-            if kinds != {"natural", "MCN"}:
+        for ti, t in enumerate(synthetic_tests(d)):
+            pt = probe_trials(d, x, t["probe"], t["plist"])
+            if pt is None:
                 continue
-        elif len(vals) < 2:
-            if _family_property([m[2] for m in mem]) != prop:
-                continue
-        if prop == "AM":
+            X = pt["X"]
+            rec = dict(prop=t["prop"], probe=t["probe"], cls=t["cls"], natural=t["natural"],
+                       contexts=pt["contexts"], m=pt["m"], T=X.shape[2])
+            noises = []
+            for s in seeds:
+                kw, sig, noise = kw_significance(X, nshuffle=nshuffle,
+                                                 rng=_seed(s, fidx, t["probe"], ti))
+                noises.append(bin_mean(noise).astype(np.float32))
+            rec["sig"] = _intervals(sig)
+            rec["noise"] = noises
+            pred, inv, tot = frac_power(X)
+            rec["pred"], rec["inv"] = bin_mean(pred), bin_mean(inv)
+            tests.append(rec)
+    out["tests"] = tests
+    return out
+
+
+def reduce_mgb(path: str) -> dict:
+    """Spikes and PSTHs of one cell-attached (MGB) file. Spikes by the
+    authors' automatic detector (``extract_spikes``) and, as a variant, by the
+    same detector with half its threshold (a third of the largest filtered
+    value), to show how much the threshold matters."""
+    d = load(path)
+    raw = d.pop("trace")
+    n = len(raw)
+    out = dict(path=path, cell=d["cell"], animal=d["animal"], rep=d["rep"],
+               description=d["description"], nsamples=n, seqs=d["seqs"],
+               frag_s=(fragment_samples(d) / SF).tolist())
+    xf = signal.filtfilt(HP_NUM, [1.0], raw.astype(np.float64))
+    i = int(np.argmax(np.abs(xf)))
+    thr = 2 / 3 * abs(xf[i])
+    del xf
+    spk = {"code": extract_spikes(raw),
+           "half": extract_spikes(raw, threshold=thr / 2)}
+    out["thr_code"] = float(thr)
+    sil, snd = silences(d, n), sounds(d)
+    out["silence_s"] = sum(b - a for a, b in sil) / SF
+    out["sound_s"] = sum(b - a for a, b in snd) / SF
+    sil_late = [(a + SF, b) for a, b in sil if b - a > SF]
+    out["silence_late_s"] = sum(b - a for a, b in sil_late) / SF
+    lens = fragment_samples(d)
+    P = pairs(d, silence=True)
+    for key, pk in spk.items():
+        def cnt(iv):
+            return int(sum(((pk >= a) & (pk < b)).sum() for a, b in iv))
+        out[f"spk_{key}"] = dict(silence=cnt(sil), sound=cnt(snd), silence_late=cnt(sil_late),
+                                 n=len(pk))
+        probes = []
+        for probe in sorted(P):
             by = {}
-            for m in mem:
-                by.setdefault((m[1].get("AMrange"), m[1].get("AMstd")), []).append(m)
+            for ctx, on, _ in P[probe]:
+                by.setdefault(ctx, []).append(on)
             if len(by) < 2:
                 continue
-            means = [m[1].get("AMmean") for m in mem]
-            mode = max(set(means), key=means.count)
-            mem = [sorted(v, key=lambda m: m[1].get("AMmean") != mode)[0] for v in by.values()]
-        out.append(sorted(m[0] for m in mem))
+            T = lens[probe - 1]
+            m = min(len(v) for v in by.values())
+            sp = {c: [(pk[(pk > on) & (pk <= on + T)] - on) / SF for on in by[c][:m]]
+                  for c in by}
+            Pm, sd = psth_sd(sp, T / SF, 0.1, m)
+            probes.append(dict(probe=probe, contexts=sorted(by), m=m, T=T / SF,
+                               psth=Pm, sd=sd))
+        out[f"probes_{key}"] = probes
     return out
 
 
-def analyze_synthetic_file(archive: Archive, member: str, seed: int, n_shuffle=N_SHUFFLE, n_boot=0):
-    """Every probe x property ensemble of one synthetic recording: significance and power."""
-    rec = load_recording(archive, member, smooth=True, keep_raw=True)
-    a1_rates = {thr: firing_rates(rec, detect_spikes_vm(rec["raw"], thr)) for thr in A1_THRESHOLDS}
-    rec["raw"] = None
+def file_lists() -> dict:
+    """Files of each experiment in asari/Summary.mat, left out the tuning
+    curves: 'natural' (A1, natural sound ensembles), 'mgb', 'synthetic'
+    (A1, synthetic ensembles); experiment 4 (a variety of stimuli, not in the
+    context design) is not used. Files listed but absent from the zips are
+    returned under 'absent'."""
+    idx = member_index()
+    out = {"natural": [], "mgb": [], "synthetic": [], "absent": [], "other": []}
+    names = {0: "natural", 1: "mgb", 2: "synthetic"}
+    for r in summary():
+        if r["file"] not in idx:
+            out["absent"].append(r["file"])
+            continue
+        if r["description"].startswith("tuning"):
+            continue
+        out[names.get(r["experiment"], "other")].append(r["file"])
+    return out
+
+
+def run_many(fn, args: list[tuple], workers: int = 4) -> list:
+    """Run ``fn(*a)`` for each a in a pool of processes, results in order."""
+    import multiprocessing as mp
+    from concurrent.futures import ProcessPoolExecutor
+    # spawn, not fork: fsspec's event-loop thread does not survive a fork
+    with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
+        futs = [ex.submit(fn, *a) for a in args]
+        return [f.result() for f in futs]
+
+
+# --------------------------------------------------------------------------
+# population curves from the per-file reductions
+# --------------------------------------------------------------------------
+def sig_curve(tests: list[dict], noise_index: int = 0, sub: str | None = None):
+    """Proportion of probes significant at each 1-ms bin after probe onset and
+    the noise floor, both under two readings of the denominator: the probes
+    still running at t ('running') and all probes ('all'). ``sub``: take the
+    record under this key (the no-silence variant 'ns')."""
+    L = max(t["T"] for t in tests) // 10
+    S, C, Nf = np.zeros(L), np.zeros(L), np.zeros(L)
+    for t in tests:
+        r = t[sub] if sub else t
+        T = t["T"] // 10
+        m = np.zeros(T)
+        for a, b in r["sig"]:
+            m[a // 10:(b + 9) // 10] = 1
+        S[:T] += m
+        C[:T] += 1
+        nz = r["noise"] if sub else r["noise"][noise_index]
+        Nf[:min(T, len(nz))] += nz[:T]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return dict(running=S / C, all=S / len(tests), noise_running=Nf / C,
+                    noise_all=Nf / len(tests), n=C)
+
+
+def late_fraction(p: np.ndarray, noise: np.ndarray, t1: float = 1.0, tmax: float = 6.0):
+    """Figure 3A legend: cumulative probability of the proportion curve less
+    the noise floor, normalised at its peak; returns (1 - value at t1, peak
+    time). Curves on a 1-ms grid."""
+    k = int(tmax * 1000)
+    cum = np.nancumsum((p - noise)[:k]) / 1000
+    pk = int(np.nanargmax(cum))
+    return float(1 - cum[int(t1 * 1000)] / cum[pk]), pk / 1000
+
+
+def power_curves(tests: list[dict], sub: str | None = None):
+    """Population Q(t) (Eq. 20) and the predictability ratio (Eq. 43) with
+    the denominator smoothed over [0, 2t], and Eq. 43 unsmoothed, under the
+    'running' reading (probes still running at t) and the 'all' reading."""
+    get = (lambda t: t[sub]) if sub else (lambda t: t)
+    pr, pa, n = pop_average([get(t)["pred"] for t in tests])
+    ir, ia, _ = pop_average([get(t)["inv"] for t in tests])
+    out = {}
+    for name, p, i in (("running", pr, ir), ("all", pa, ia)):
+        den = smooth_0_2t(p)
+        out[name] = dict(pred=p, inv=i, den=den, Q=(p - i) / den, U=i / den, U_raw=i / p)
+    out["n"] = n
+    return out
+
+
+def alignment_check(path: str, kind: str, seed: int, jitter=(0.5, 1.5)) -> dict:
+    """Clock check: the trial tables' onsets against the trace. For each
+    probe and context, the mean trial-to-trial correlation over the first
+    second of the probe (current clamp), or the spike count in the first
+    100 ms against the next 900 ms (cell-attached), at the true onsets and
+    with each trial's onset moved by an independent random 0.5 to 1.5 s."""
     rng = np.random.default_rng(seed)
-    boot_rng = np.random.default_rng(seed + BOOT_SEED_OFFSET)
-    trig_type = next(t["type"] for t in rec["triggers"] if t["seq"] is not None)
-    base = probe_table(rec, 1) if rec["stimulus_source"] else []
-    n_eligible_any = sum(p["eligible"] for p in probe_table(rec, MIN_TRIALS_CC)) if base else 0
-    out = []
-    for p in base:
-        ptype = fragment_kind(rec["stimuli"][p["probe"] - 1], trig_type)
-        for prop in PROPERTIES:
-            for cls in property_classes(rec, p["contexts"], prop):
-                q = probe_table(rec, MIN_TRIALS_CC, contexts_allowed=set(cls))
-                q = [x for x in q if x["probe"] == p["probe"]]
-                r = dict(member=member, probe=p["probe"], probe_type=ptype, property=prop,
-                         contexts=cls, eligible=bool(q and q[0]["eligible"]),
-                         n_trials=q[0]["n_trials"] if q else 0, duration=p["duration"] / SF)
-                if r["eligible"]:
-                    X, lab = probe_matrix(rec, q[0])
-                    r.update(analyze_probe(X, lab, rng, n_shuffle=n_shuffle, extras=False,
-                                           n_boot=n_boot, boot_rng=boot_rng))
-                out.append(r)
-    info = dict(member=member, rep=rec["rep"], trigger_type=trig_type, n_fragments=len(rec["stimuli"]),
-                recording_type=rec["recording_type"], n_sequences=len(sequences(rec)),
-                kinds=[fragment_kind(s, trig_type) for s in rec["stimuli"]], rates=a1_rates,
-                n_eligible_any=n_eligible_any, scale=rec["scale"],
-                bands=[fragment_params(s).get("ff") for s in rec["stimuli"]],
-                descriptions=[s["description"] for s in rec["stimuli"]],
-                checks=recording_checks(rec))
-    return info, out
-
-
-def recording_checks(rec: dict, spikes: np.ndarray | None = None) -> dict:
-    """Metadata against data: sampling rate, sum of fragment durations against each sequence
-    trigger's duration, gaps between sequences, presentations per sequence against the stated
-    effective repeats, and a clock check: the mean response in the 0.3 s after each sequence
-    onset against the 0.3 s before it, and the same with onsets shifted by 3 s into the silence
-    (membrane potential in mV; for spikes, the rate in Hz)."""
-    sf = rec["sf"]
-    seqs = sequences(rec)
-    dur = [s["duration_ms"] for s in rec["stimuli"]]
-    trig_ms = {t["seq"] and tuple(t["seq"]): t["duration_ms"] for t in rec["triggers"] if t["seq"]}
-    mismatch = max(abs(sum(dur[f - 1] for f in sq) - d) for sq, d in trig_ms.items())
-    gaps = [(s["gap_before"][1] - s["gap_before"][0]) / sf for s in seqs[1:]]
-    counts = {}
-    for s in seqs:
-        counts[s["seq"]] = counts.get(s["seq"], 0) + 1
-    w = int(0.3 * sf)
-
-    def contrast(shift):
-        pre, post = [], []
-        for s in seqs[1:]:
-            o = s["start"] - shift
-            if spikes is None:
-                pre.append(rec["trace"][o - w:o].mean())
-                post.append(rec["trace"][o:o + w].mean())
-            else:
-                pre.append(np.count_nonzero((spikes >= o - w) & (spikes < o)) / 0.3)
-                post.append(np.count_nonzero((spikes >= o) & (spikes < o + w)) / 0.3)
-        pre, post = np.array(pre), np.array(post)
-        return float(np.mean(post - pre)), float(stats.wilcoxon(post, pre).pvalue) if np.any(post != pre) else 1.0
-    return dict(sf=sf, duration_mismatch_ms=float(mismatch), stored_mismatch_ms=float(rec["duration_mismatch_ms"]),
-                stimulus_source=rec["stimulus_source"], gap_min=float(np.min(gaps)) if gaps else np.nan,
-                gap_median=float(np.median(gaps)) if gaps else np.nan, gap_max=float(np.max(gaps)) if gaps else np.nan,
-                presentations_min=min(counts.values()), presentations_max=max(counts.values()),
-                n_distinct_sequences=len(counts), onset_effect=contrast(0), shifted_effect=contrast(3 * sf))
+    d = load(path)
+    raw = d.pop("trace")
+    x = median_clip(raw) if kind == "cc" else raw
+    pk = extract_spikes(raw) if kind == "ca" else None
+    P = pairs(d, silence=True)
+    res = {"true": [], "jitter": []}
+    for probe, pl in sorted(P.items()):
+        by = {}
+        for c, on, _ in pl:
+            by.setdefault(c, []).append(on)
+        for c, ons in by.items():
+            ons = np.array(ons)
+            for key, o in (("true", ons),
+                           ("jitter", ons + (rng.uniform(*jitter, len(ons)) * SF).astype(int))):
+                if kind == "cc":
+                    if len(o) < 2:
+                        continue
+                    Y = np.stack([x[a:a + SF] for a in o]).astype(np.float64)
+                    C = np.corrcoef(Y)
+                    res[key].append(C[np.triu_indices(len(o), 1)].mean())
+                else:
+                    first = sum(((pk > a) & (pk <= a + SF // 10)).sum() for a in o)
+                    rest = sum(((pk > a + SF // 10) & (pk <= a + SF)).sum() for a in o)
+                    res[key].append((first / 0.1 - rest / 0.9) / len(o))
+    return {k: float(np.mean(v)) for k, v in res.items()} | {"n": len(res["true"])}

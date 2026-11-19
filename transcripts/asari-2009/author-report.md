@@ -1,69 +1,66 @@
-I ran steps 1 to 5 of the Author section and step 6 (`python tools/entry.py handover entries/asari-2009`). The entry passes `check` and ran from a clean environment in 22 min. I did not verify my own work and committed nothing.
+The entry is written at `entries/asari-2009`, the record at `attempts/asari-2009-03.yaml`, and the handover is built. `tools/entry.py check` reports 0 errors, and `all` ran the notebook from a clean environment and it passed. I did not see any earlier attempt's results during this run. The protocol text itself says that "on three claims of asari-2009 one attempt of four was the one that was right"; I read that sentence, but it gives no outcomes.
 
-The entry is `entries/asari-2009/` (notebook, `asari.py`, README, lock file) and the record is `attempts/asari-2009-02.yaml`. I did not see any earlier attempt's results.
+### 1. Outcomes
 
-## 1. Outcomes
-
-| claim | outcome |
+| Claim | Outcome |
 |---|---|
-| methods-recording-counts | partially reproduced: 305 natural-sound probes in 39 cells and 93 MGB probes in 14 cells match exactly; 132 A1 cells against 123; no voltage-clamp data |
-| a1-mgb-firing-rates | not reproduced, assumed (spike detectors); MGB evoked rate 4.99 Hz against 11.4 |
-| fig2-example-reliability | reproduced (0.310 over cells; candidate example cell 0.611 and 0.737) |
-| fig2-example-long-context | reproduced (one significant period starts at 3.97 s, 30 ms inside the "none in 2 to 4 s" window; stated in the notes) |
-| fig3a-proportion-significant | partially reproduced (183 against 204, just outside tolerance; late fraction 0.225 to 0.237; peak 4.718 s against 4.72 s) |
-| fig3a-significance-decay | partially reproduced, assumed (decay sizes kept non-negative) |
-| fig3b-fractional-power-decay | reproduced, assumed (silence counted as a context): 0.49 and 1.01 to 1.05 s |
-| timescale-longer-than-membrane | reproduced (1/e lags of 71 and 77 ms) |
-| fig4-predictability-upper-bound | partially reproduced (about half near onset; time constant 1.2 to 2.3 s against 1.04 s) |
-| fig4-strf-performance-low | blocked (`other`): not finished in time |
-| fig5-example-conductances, fig6-conductance-decay | blocked: data missing (no voltage-clamp recordings) |
-| fig8a-proportion-by-property | partially reproduced, assumed (how the conditioning stimuli are grouped) |
-| fig8b-decay-by-property | partially reproduced, assumed (grouping) |
-| fig8a-significance-fits | not reproduced |
-| fig8c-relative-effects | partially reproduced, assumed (grouping) |
-| fig8-natural-synthetic-probes-alike | reproduced, assumed (the test is the claims file's, not the paper's) |
-| fig9-mgb-fast-decay | reproduced (time constant 0.06 to 0.08 s) |
-| fig9-example-first-bin | reproduced (4 of 12 probes) |
-| fig7-example-frequency-context | blocked: data missing |
+| methods-recording-counts | partially reproduced |
+| a1-mgb-firing-rates | partially reproduced (assumed) |
+| fig2-example-reliability | reproduced |
+| fig2-example-long-context | reproduced |
+| fig3a-proportion-significant | reproduced |
+| fig3a-significance-decay | partially reproduced |
+| fig3b-fractional-power-decay | partially reproduced |
+| timescale-longer-than-membrane | reproduced |
+| fig4-predictability-upper-bound | partially reproduced |
+| fig4-strf-performance-low | blocked (other: not run in the time available) |
+| fig5-example-conductances | blocked (data_missing) |
+| fig6-conductance-decay | blocked (data_missing) |
+| fig8a-proportion-by-property | partially reproduced (assumed) |
+| fig8b-decay-by-property | partially reproduced (assumed) |
+| fig8a-significance-fits | not reproduced (assumed) |
+| fig8c-relative-effects | partially reproduced (assumed) |
+| fig8-natural-synthetic-probes-alike | reproduced (assumed test) |
+| fig9-mgb-fast-decay | partially reproduced |
+| fig9-example-first-bin | reproduced |
+| fig7-example-frequency-context | blocked (other: no recording matches) |
 | figs1-silence-probe | reproduced |
 
-## 2. Dataset, assumptions, questions
+### 2. Dataset, assumptions and questions
 
-- **Dataset:**
-  - Version: CRCNS ac-1 is unversioned, so it is pinned as `unversioned` with the MD5 sums from the bucket's `checksums.md5`.
-  - Contents: the A1 natural-sound and MGB data match the paper exactly, along with the A1 synthetic-sound data. There are no voltage-clamp recordings.
-  - The authors' MATLAB scripts (`CxtDep.m`, `GetSpikes.m`, `STRFanalysis.m`) are in the data set, and I used them to settle method details. The paper does not link them.
-- **Data problems found:**
-  - **Swapped fragment lists:** in two cells (20051108-ha1-001 in A1, 20071010-ha2-005 in MGB), the two files' fragment lists are swapped; each file's durations fit the other's triggers exactly. Correcting this moved the Figure 3B fit from 1.7 s to 1.0 s.
-  - **20061201-ha2-001:** its triggers are 308 ms longer than its stored fragments add up to. I kept the stored durations, as `CxtDep.m` would.
-  - **Missing bands:** five TORC bandwidth-variant recordings store no frequency bands.
-  - **Repeat count:** one file has a sequence presented 3 times against 4 stated repeats.
-  - **Unnamed cells:** the data set does not say which cells the paper used.
-  - **Paper:** "73/110 (64.6%)" is a paper inconsistency; 73/110 is 66.4%.
-- **Assumptions:**
-  - A1 spikes are upward crossings of -20 mV.
-  - MGB spikes use the authors' `GetSpikes.m` automatic detector.
-  - Exponential decay sizes are kept non-negative.
-  - Silence counts as a context.
-  - Conditioning stimuli are grouped by property from the stored stimulus parameters. This grouping reproduces Table 1's denominators exactly for amplitude (95) and frequency (110) when probes are counted, and for AM (96) and FM (82) when probe-by-ensemble entries are counted.
-- **Questions for the paper's authors** (recorded as `methods_unavailable` findings):
-  - How were A1 spikes detected, and which periods count as spontaneous and evoked?
-  - What bounds, start values and fit range were used for the exponential fits?
-  - How were the property ensembles formed and counted in Table 1?
-  - Was silence a context in Figures 3 and 4?
-- **Questions to a reader:** none.
+**What the dataset holds.**
+- **Pinned version:** CRCNS ac-1, `unversioned`, pinned by the MD5 sums of the three zips. It is the only published version.
+- **Counts that match:** the natural-sound and thalamic samples match the paper exactly: 305 probes in 39 cells, and 93 probes in 14 cells.
+- **Missing voltage clamp:** there are no voltage-clamp recordings, so Figures 5 and 6 cannot be tested.
+- **Fewer cells:** there are 145 current-clamp A1 cells (the paper recorded 194) and 14 MGB cells (the paper recorded 16).
+- **Metadata error:** in two files, `20051107-ha1-001-003` and `-004`, the triggers number the sequences 2, 4, 6, 8 while the notes number them 1 to 4. I matched sequences by their content.
+- **Clock:** the trial tables share the traces' clock, shown by a test that jitters each trial's onset.
+- **Authors' code:** the dataset includes the authors' analysis code (`asari/Tools/CxtDep.m` and helpers). I used it, with citations, for details the Methods leave open: silence counts as a context, how many trials each context keeps, the run rule for significance, how traces are centred, and the MGB spike detector.
 
-## 3. Where the protocol was unclear
+**Assumptions** (each marked `assumed: true` in the record):
+- **A1 spike detector:** the authors extracted whole-cell spikes by hand. I used peaks more than 15 mV above the trace's 10-ms median, and also ran 10 and 20 mV.
+- **Figure 8 stimulus sets:** I formed the groups of conditioning stimuli that differ in one property from the stimulus parameters. This reproduces the paper's AM (96) and FM (82) totals exactly. It gives 104, 120 and 354 tests for amplitude, frequency and higher-order, against the paper's 95, 110 and 137.
+- **Fisher test:** fig8-natural-synthetic uses the Fisher test that the claims file fixes.
 
-1. The paper links no code, but the authors' scripts are in the data set. I treated them as the paper's code in the reader-step-2 order and cited them.
-2. The claims file's partial rules don't cover the patterns I got for fig3a-proportion, fig4-predictability and fig8c. I used the protocol's general definition of partially reproduced and explained each in the notes.
-3. `measured` must be numbers. For the voltage-clamp counts, which can't be measured, I recorded 0 and explained it in the notes.
-4. "Trust the data" does not say whether repairing a mislabelled file is allowed. I took each swapped file's fragment list from its sibling because it fits the triggers exactly, and recorded this as a finding.
-5. There is no block reason for "not finished in time" other than `too_large`, so I used `other` for fig4-strf.
-6. Open details beyond the criterion's readings (counting probes or entries in Figure 8, bounds on the fits) were handled under author step 1.6: every reading is run, and outcomes that depend on them are marked `assumed`.
+**Questions for the paper's authors** (filed as `methods_unavailable` findings):
+- At time t, is the proportion of significant probes taken over all probes or only those still running? The late fraction matches (0.255) only under "all probes".
+- How were the probe sets behind Table 1 and Figure 8 formed?
+- How were A1 spikes detected, and which windows define spontaneous and evoked rates?
+- What fit ranges and size bounds were used for the exponential fits?
 
-## 4. Runtime and failures
+**Questions to a reader:** none.
 
-- The notebook takes about 22 min (peak memory 2.2 GB). Analysis stopped at 15:18 UTC, well before 17:08.
-- **Failure:** the STRF analysis (fig4-strf-performance-low) was started but not finished. A first implementation ran on three cells. One gave validation performance above 1 (up to 7.1) and another a negative LN performance (about -2.9). I couldn't resolve these in time, so I removed the code and blocked the claim, saying how far it got.
-- Nothing else failed.
+### 3. Protocol points
+
+1. **Repeat-attempt section names this paper.** It says "on three claims of asari-2009 one attempt of four was the one that was right", which hints at earlier outcomes in a blind run. I ignored it and did not look further.
+2. **No outcome rule for some misses.** Several criteria say only when a claim is reproduced, with no partial rule (fig3b, fig4, fig9-mgb). Where the effect was present but a value fell outside tolerance, I used the protocol's general meaning of "partially reproduced" and gave the reason in the notes.
+3. **Blocking for lack of time.** "Blocked for time" only names `too_large` when the computation is what stopped it. I blocked the STRF claim as `other`: it was never started for lack of time, and its data are in the dataset.
+4. **Analysis code inside the dataset.** The protocol does not say how to rank code that ships with the data but that the paper does not link. I treated it after the Methods, like the paper's own code, and cited it.
+5. **Recordings deposited twice.** The protocol asks for a check but this dataset has no identifiers for it. I compared each file's first-probe power trace and found no duplicates.
+
+### 4. Runtime and failures
+
+- **Runtime:** the notebook takes about 33 minutes (1988 s in the clean run) with peak memory about 1.2 GB. I ran it in full twice; the second run was after a text-only fix, and the numbers were identical.
+- **Lost time:** about 30 minutes, when my first pass using forked worker processes hung, because the HTTP reader used to stream from the bucket does not survive a fork. I switched to spawned processes.
+- **Not run:** the trial-resampling reading of the Figure 8C intervals; only probe resampling was run.
+- **Leftover folder:** the harness left a `.claude/` folder inside `entries/asari-2009`. Deleting it needed approval that this session cannot give, so it is still there and should be removed before commit.
