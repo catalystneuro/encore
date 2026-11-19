@@ -158,6 +158,9 @@ def load_recording(z, rec, stim_offset=1.0):
     out["rate_raw"] = 1000.0 * _dense(st["image"])
     out["std_sum_ratio"] = float(out["rate"].sum() / out["rate_raw"].sum())
     out["base_stored"] = 1000.0 * float(st["BaseActivity"][0, 0]) if "BaseActivity" in st.dtype.names else np.nan
+    # the files' own normalised map (unitless), kept only to check what the descriptor says of it
+    if "smoothed_image_norm" in st.dtype.names:
+        out["norm_stored"] = np.asarray(st["smoothed_image_norm"], float)
     out["verts"] = _verts(vs, VERT_KEYS[cond])
     _, s = read_mat(z, rec["stim_path"])
     sverts = _verts(s, VERT_KEYS[cond])
