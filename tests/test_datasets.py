@@ -159,7 +159,7 @@ def test_a_sparc_dataset_is_named_by_its_id_and_pinned_by_its_version():
 def test_sparc_targets_are_experiments_with_a_paper_in_pmc_and_checksums():
     from archives import ALL
     found = [t for t in datasets.targets() if t["archive"] == "sparc"]
-    assert len(found) == 5 and ALL["sparc"].stage is None and not ALL["sparc"].secrets
+    assert len(found) == 11 and ALL["sparc"].stage is None and not ALL["sparc"].secrets
     assert ALL["sparc"].builder == "tools/build_sparc_targets.py" and (REPO / ALL["sparc"].builder).is_file()
     for t in found:
         assert t["data_standards"][0] == "SDS" and "dataset_description" in t["sds"]["sheets"], t["id"]
@@ -171,6 +171,14 @@ def test_sparc_targets_are_experiments_with_a_paper_in_pmc_and_checksums():
     # SPARC:108 and SPARC:75 are the two datasets of one paper.
     pnas = [t["id"] for t in found if any(p["doi"] == "10.1073/pnas.2023807118" for p in t["papers"])]
     assert sorted(pnas) == ["108", "75"]
+    # One paper can have many: seven SPARC datasets name Pelot et al. 2020 as the paper that describes them, and
+    # the paper is listed on all seven (papers/datasets/pelot-2020.yaml), not on one with the others as outside data.
+    import paper_records
+    pelot = sorted(t["id"] for t in found if any(p["doi"] == "10.3389/fnins.2020.601479" for p in t["papers"]))
+    assert pelot == ["16", "60", "61", "64", "65", "82", "89"]
+    listed = paper_records.datasets_of("pelot-2020")
+    assert sorted(d["key"] for d in listed) == sorted(f"sparc:{i}" for i in pelot)
+    assert all(d.get("relation") == "primary" for d in listed)
 
 
 @pytest.mark.parametrize("text, expected", [
