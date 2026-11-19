@@ -462,6 +462,46 @@
           "reviewed": {
             "description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.",
             "type": "string"
+          },
+          "findings": {
+            "description": "From protocol pilot-18, in round 2: what the verifier said of each finding the record rates `critical` (docs/protocol.md, the attempt record).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "finding",
+                "agrees"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "The finding's number in this record's `findings`, from 1.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "agrees": {
+                  "description": "Whether the verifier agreed that the outputs show the finding and that it is critical.",
+                  "type": "boolean"
+                },
+                "severity": {
+                  "description": "The severity the verifier would give, where it differs.",
+                  "enum": [
+                    "critical",
+                    "major",
+                    "minor",
+                    "none"
+                  ]
+                },
+                "reason": {
+                  "description": "The verifier's reason, in its own words.",
+                  "type": "string"
+                },
+                "response": {
+                  "description": "What the author changed or replied.",
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -506,6 +546,15 @@
             "enum": [
               "data",
               "paper"
+            ]
+          },
+          "severity": {
+            "description": "For a finding about the data: how much it harms someone who uses the dataset (docs/protocol.md, the attempt record). `critical`: the data are wrong and nothing shows it, so an analysis gives a wrong result. `major`: a main analysis is blocked or changed, and the user would notice. `minor`: evident from the values or easy to work around, a wrong unit label included. `none`: no problem, a check that passed. Required from protocol pilot-18.",
+            "enum": [
+              "critical",
+              "major",
+              "minor",
+              "none"
             ]
           },
           "datasets": {

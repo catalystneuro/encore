@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-17`. Record this version in the attempt's provenance.
+Version: `pilot-18`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -555,6 +555,31 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   either, so give `about` for these two. In an attempt on several datasets,
   give each finding about the data its `datasets` (their folders, as in the
   claims file).
+
+  Give each finding about the data its `severity`: how much it harms someone
+  who uses the dataset. Rate what the finding shows, not how much work it
+  took to find.
+
+  | `severity` | Meaning | Examples |
+  |---|---|---|
+  | `critical` | The data are wrong, and nothing in the files shows it. An analysis that takes them as given comes out wrong. | One recording, session or unit deposited as two. Data filed under the wrong subject, session, area or label. Spikes, signals or events on different clocks. A spike train that holds another unit's spikes. Labels that say the opposite of the data. |
+  | `major` | A main analysis is blocked or changed, and the user would notice. | Trials, behaviour or a whole condition missing. A column an analysis needs with no definition. Counts far from the paper's. A scale that cannot be read off the values: one that differs between files or within a series, or is off by a small factor. |
+  | `minor` | The problem is evident from the values, or easy to work around. | A wrong unit label or conversion factor (volts that hold millivolts, meters that hold centimetres, degrees that hold radians). A small difference in counts. A missing description that the data make clear. Spike times that only need sorting. |
+  | `none` | No problem. | A check that passed. A note that the data agree with the paper. |
+
+  A wrong unit is `minor` however large the factor, because the values show
+  it. When a finding lists several problems, rate the worst. When the data
+  could not settle whether something is wrong (a clock that could not be
+  established, say), rate what was shown, at most `major`.
+
+  A `critical` rating is a public statement about someone's data, so the
+  verifier reviews each one in round 2. The revision records what it said
+  under that round's `findings`: the finding's number in the record (from 1),
+  `agrees`, the `severity` the verifier would give where it differs, and its
+  `reason`. Where the verifier did not agree, the revision changes the rating
+  to the verifier's, or keeps it and says why under `response`. Findings keep
+  their order from then on, and a new one goes at the end. The site presents
+  a critical finding as one only when a verifier agreed.
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 
@@ -626,7 +651,8 @@ check of the one before it.
   problem (still present or partly fixed, pointing at the new finding). For an
   earlier finding the new attempt did not report, it checks the finding
   directly, in its own notebook `earlier_findings.ipynb` in the entry: fixed,
-  still present (added to the record's findings with `found: on_prompt`, so it
+  still present (added to the record's findings with its `severity` and
+  `found: on_prompt`, so it
   is never counted as found blind), or not checked. A finding no earlier one
   points at is new. It changes no outcome or statement of the blind attempt.
 - **Why outcomes differ.** For each claim whose outcome differs from the
@@ -726,6 +752,10 @@ Be skeptical. Do not assume the analysis is right.
    outputs. Quote any that the numbers do not support.
 3. Say which of your earlier points are resolved, and list what remains that
    bears on a conclusion.
+4. For each finding the record rates `critical`, say whether the notebook's
+   outputs show what it states, and whether `critical` is the rating the
+   attempt record's rules give it. Where you would rate it otherwise, give
+   your rating.
 
 Take counts of claims and outcomes from the attempt record, not from a
 report or a summary table.

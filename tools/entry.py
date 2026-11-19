@@ -357,9 +357,20 @@ def check(entry_dir: Path) -> Report:
             if told and about == "data" and len(used) > 1 and not f.get("datasets"):
                 report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
                                     f"(`datasets:`, from {', '.join(used)})")
+            # From pilot-18 a finding about the data says how much it harms a user of the dataset (docs/protocol.md,
+            # the attempt record). Earlier attempts were not asked.
+            if version and int(version[1]) >= 18 and about == "data" and not f.get("severity"):
+                report.error(where, f"finding {n}: it is about the data; give its `severity` (critical, major, minor "
+                                    f"or none, as docs/protocol.md defines them)")
             for d in f.get("datasets") or []:
                 if str(d) not in used:
                     report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
+        # A verification round's review of a finding points at the finding by its number in the record.
+        for r, rnd in enumerate(attempt.get("verifications") or [], 1):
+            for item in rnd.get("findings") or []:
+                if item["finding"] > len(attempt.get("findings") or []):
+                    report.error(where, f"verification round {r} reviews finding {item['finding']}, and the record "
+                                        f"has {len(attempt.get('findings') or [])} findings")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
         # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}
