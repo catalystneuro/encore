@@ -365,6 +365,12 @@ def check(entry_dir: Path) -> Report:
             for d in f.get("datasets") or []:
                 if str(d) not in used:
                     report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
+        # A verification round's review of a finding points at the finding by its number in the record.
+        for r, rnd in enumerate(attempt.get("verifications") or [], 1):
+            for item in rnd.get("findings") or []:
+                if item["finding"] > len(attempt.get("findings") or []):
+                    report.error(where, f"verification round {r} reviews finding {item['finding']}, and the record "
+                                        f"has {len(attempt.get('findings') or [])} findings")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
         # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}

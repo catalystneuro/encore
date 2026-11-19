@@ -498,3 +498,10 @@ def test_a_finding_that_can_be_about_either_says_which_from_pilot_15(repo):
     assert check("pilot-18", [{"kind": "methods_unavailable", "statement": "No bin width."}]) == []
     assert any("give its `severity`" in e for e in check("pilot-18", [{**other[0], "about": "data"}]))
     assert check("pilot-18", [{**other[0], "about": "paper"}]) == []
+    # In round 2 the verifier reviews each critical finding; its review names the finding by its number.
+    critical = [{**wrong_age, "severity": "critical"}]
+    for number, wrong in ((1, False), (2, True)):
+        rnd = {"date": "2026-01-02", "kind": "agent", "by": "verifier", "results": [],
+               "findings": [{"finding": number, "agrees": True}]}
+        (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "findings": critical, "verifications": [rnd]}))
+        assert any("reviews finding 2" in e for e in errors(repo)) == wrong

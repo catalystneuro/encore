@@ -571,6 +571,15 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   it. When a finding lists several problems, rate the worst. When the data
   could not settle whether something is wrong (a clock that could not be
   established, say), rate what was shown, at most `major`.
+
+  A `critical` rating is a public statement about someone's data, so the
+  verifier reviews each one in round 2. The revision records what it said
+  under that round's `findings`: the finding's number in the record (from 1),
+  `agrees`, the `severity` the verifier would give where it differs, and its
+  `reason`. Where the verifier did not agree, the revision changes the rating
+  to the verifier's, or keeps it and says why under `response`. Findings keep
+  their order from then on, and a new one goes at the end. The site presents
+  a critical finding as one only when a verifier agreed.
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 
@@ -743,6 +752,10 @@ Be skeptical. Do not assume the analysis is right.
    outputs. Quote any that the numbers do not support.
 3. Say which of your earlier points are resolved, and list what remains that
    bears on a conclusion.
+4. For each finding the record rates `critical`, say whether the notebook's
+   outputs show what it states, and whether `critical` is the rating the
+   attempt record's rules give it. Where you would rate it otherwise, give
+   your rating.
 
 Take counts of claims and outcomes from the attempt record, not from a
 report or a summary table.
