@@ -5,7 +5,7 @@
   "label": "DANDI:000036"
  },
  "page": "datasets/dandi/000036/",
- "generated": "2026-11-19T19:28:22+00:00",
+ "generated": "2026-11-19T19:41:45+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 14,
@@ -66,6 +66,20 @@
    "deprecated": "",
    "deprecated_on": null,
    "entry": "mayner-2022",
+   "inputs": [
+    {
+     "what": "The paper's analysis outputs. results/main.parquet identifies the 44 analysed sessions (session-link) and gives the paper's per-trial ND, used to check the trial timing; results/sensitivity_analysis.parquet gives the paper's per-trial ND for the 108 parameter sets, used to check the spectra of ext3-2-sensitivity; the other files of results/ (table-s1.csv, permutation_tests_summary.csv, the decoding scores, mean_centroid_distance.parquet, stimulus_properties.parquet, stats.parquet, effect_size.parquet, behavior_by_session.parquet) are printed as reference values beside the results and decide no outcome.",
+     "source": "https://github.com/wmayner/openscope-differentiation at commit 2d959bd71b47055d2a3fd306091fe9254ceb86fb"
+    },
+    {
+     "what": "The paper's processed data, streamed in memory from its single tar file in the arousal notebook (parallel byte-range requests, decompressed in order). Used are the running artifact parameters (run/preprocessing_params.yaml) for reading (b) of fig4-locomotion-effect-size, the sync files (vsync to 2p frame alignment), the pupil area and its parameters for the variant of fig4-pupil-effect-size, and run_speed to check the dandiset's running velocity.",
+     "source": "Zenodo doi:10.5281/zenodo.5781567 (record 5781567, the version of concept doi:10.5281/zenodo.4734580 that the code's README names)"
+    },
+    {
+     "what": "The sources of the L0 event detector the event criteria name, read (not built or run) to show why it cannot be installed. l0_analysis.py, and setup.py, make.sh, fast.py and FitSegmentModel.cpp of FastLZeroSpikeInference at its latest commit and at the latest commit that defines arfpop.",
+     "source": "https://github.com/AllenInstitute/visual_coding_2p_analysis at commit 3ceca10; https://github.com/jewellsean/FastLZeroSpikeInference at commits cdfaade68ceb6aa15ec5003c460de4e0575f1d5f and 7b80ccd8ea5e05354c4c73775b3faf645b87f37f"
+    }
+   ],
    "entry_title": "Neurophysiological differentiation in mouse visual cortex (Mayner, Marshall, Billeh et al. 2022)",
    "summary": "The central finding held: unscrambled movies evoked higher neural differentiation than scrambled ones in layer 2/3 and in areas AL and AM, as did the multivariate, decoding and clip-difference results. The claim that this survives nearly all analysis settings did not reproduce (36 of 108 settings agree), though the paper's own outputs also fail the rule used. The pupil, calcium-event and mediation analyses could not be tested, since the dataset has no eye tracking or events. The locomotion correlation held, and one minor effect-size range held only in part.",
    "description": "Tests the findings of Mayner, Marshall, Billeh et al. (2022) on dandiset 000036, which holds two-photon dF/F, running and the movie stimuli of the OpenScope differentiation experiment. It links the dandiset's 57 sessions to the 44 the paper analysed, then tests the spectral differentiation contrasts by layer and area, their sensitivity to the measure's parameters, the per-session permutation tests, decoding, the differences among natural clips, the relation to stimulus differentiation, multivariate differentiation in UMAP space, and the correlation of effect size with running. Claims that need L0 calcium events or the Methods' pupil diameter are blocked.",

@@ -5,7 +5,7 @@
   "label": "DANDI:000458"
  },
  "page": "datasets/dandi/000458/",
- "generated": "2026-11-19T19:28:22+00:00",
+ "generated": "2026-11-19T19:41:45+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 14,
@@ -66,6 +66,12 @@
    "deprecated": "",
    "deprecated_on": null,
    "entry": "claar-2023",
+   "inputs": [
+    {
+     "what": "The PCIst code the paper cites (calc_PCIst and its preprocessing, SVD and SNR selection, used unchanged; its threshold search is reproduced by an exact count in claar.py and checked against the original in the notebook).",
+     "source": "https://github.com/renzocom/PCIst at commit e495a0ae299e9d5056473659722e2258738e24ba"
+    }
+   ],
    "entry_title": "Electrically evoked EEG and cortico-thalamic spiking in head-fixed mice (Claar, Rembado et al. 2023)",
    "summary": "Most depth and state effects held in this data: superficial stimulation gave smaller ERPs and lower PCIst than deep, and PCIst was higher awake than under isoflurane at 30 of 30 sites. The late ERP peak was not absent with superficial stimulation (0 to 2 of 12 sites lacked it), and spiking outside the stimulated area was not limited to deep stimulation. Thalamus led cortex in the rebound by far less than reported, and burst correlations with cortical rate were weaker. Laminar CSD and stimulation depth could not be tested because the files hold no layers or electrode depth. Figure 4 unit counts are one third of the legend's, probably because it counts each unit once per current.",
    "description": "Tests the findings of Claar, Rembado et al. (2023) on dandiset 000458, which holds skull EEG from 23 mice, with Neuropixels LFP and sorted units from 17 of them, during single-pulse electrical stimulation of superficial or deep layers of MOs or SSp, awake, under isoflurane and in recovery. One notebook tests the ERP duration and magnitude, the peaks of the ERP and PCIst across depths and states; a second tests the spiking responses of stimulated and other cortex and of somatomotor thalamus, bursts, latencies and their trial-by-trial relation to the late ERP; a third computes the LFP and CSD magnitudes of the example session of Figure 3 and times those of Figure 3D. The CSD claims by cortical layer (Figure 6A) are not tested.",
@@ -1227,6 +1233,16 @@
    "deprecated": "",
    "deprecated_on": null,
    "entry": "burman-2023",
+   "inputs": [
+    {
+     "what": "The paper's Neuropixels analysis code, burman_et_al_2023_neuropixel_data_analysis.py: the list of 17 sessions and the method details the claims file takes from it (stop_time, the area and waveform selection, the evoked rate of reading F2, entropy and synchrony). No data. It is also fetched at this revision and run unmodified on the loaded data (npx.run_gist), as a check of npx.",
+     "source": "https://gist.github.com/paulbrodersen/a77bcf5e06ae27fa96923cb313a02ccf at revision 43a13d89441b7f56e835e84fa5811d9567917daf"
+    },
+    {
+     "what": "The paper's network simulation, burman_et_al_2023_neuronal_network_simulation.py, transcribed in network.py and run 20 times to generate the data of the four model claims (data elsewhere). It is also fetched at this revision and run unmodified on a small run (network.run_gist), as a check of the transcription.",
+     "source": "https://gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f at revision f6a05661c10051560aa381e334099efd8521617b"
+    }
+   ],
    "entry_title": "Shunting inhibition, synchrony and entropy in Neuropixels recordings and a network model (Burman et al. 2023)",
    "summary": "The paper's central patch-clamp findings, that synaptic GABAA receptor reversal is more depolarized and inhibition shunting in awake cortex and that blocking local network activity undoes this, could not be tested, as those recordings are not deposited. Its Neuropixels finding that neurons are less synchronous and more variable in spike timing awake than under isoflurane held up in direction and test, with means slightly off. Exact numbers come out only with the firing rate the paper's code computes, not the Methods' rate (144 units excluded against 203). The network model's shunting inhibition gave lower synchrony, higher entropy and better decoding in every run, two means just outside tight tolerances. Higher awake firing and the rate-regressed control also held.",
    "description": "Tests the findings of Burman, Brodersen, Raimondo, Sen and Akerman (2023) that can be tested on dandiset 000458, the Allen Institute Neuropixels recordings with cortical electrical stimulation awake and under isoflurane that the paper reuses (Figure 4A to 4D, Figure S6), and runs the paper's network model (Figure 4E to 4H, Figure S7). The paper's gramicidin patch-clamp recordings (Figures 1 to 3) are not in the dandiset nor deposited elsewhere.",
