@@ -642,13 +642,16 @@ def pick_theta_channel(f, m, win_s=52.4288):
     - the sharp wave of a channel is its mean LFP (uV) 0 to 50 ms after the ripple peaks minus
       its mean 100 to 50 ms before them (a pre-ripple baseline, so that slow drift common to all
       channels does not set the sign);
-    - the theta channel is a good channel other than the centre on the centre's shank with a
-      positive sharp wave, the one with the largest ripple power, that is, the qualifying channel
-      nearest the centre. The positive sharp wave is what the Methods use to define 'above', so
-      the side of the centre is not imposed from rel_y (whose direction relative to the layer is
-      checked from the profile, not assumed). When that shank has none, the same is done on the
-      other shanks, each against its own centre. When no shank has one, the good channel next
-      to the centre with larger rel_y is used and the session is flagged.
+    - the theta channel is a good channel on the centre's shank with a positive sharp wave and
+      larger rel_y than the centre (above it: 320 of the 327 positive channels of the centres'
+      shanks lie there, printed in the notebook), the one with the largest ripple power, that
+      is, the qualifying channel nearest the centre. Both halves of the Methods' phrase are
+      required (verifier, round 2: a positive channel below the centre does not follow it).
+      When that shank has none, the same is done on the other shanks, each against its own
+      centre. When no shank has one, the good channel next to the centre with larger rel_y is
+      used and the session is flagged.
+    The ripples are those in homecage non-REM sleep; in a session with 20 or fewer of them (the
+    two sessions without non-REM sleep, e13_1f1_200305 and e13_1f1_200307) all ripples are used.
     Returns (theta channel row, pyramidal channel row, details)."""
     from scipy.signal import sosfiltfilt
     lfp = f["processing/ecephys/LFP/LFP/data"]
@@ -659,7 +662,8 @@ def pick_theta_channel(f, m, win_s=52.4288):
     nrem = state_intervals(m, "Non-REM")
     hc = homecage_intervals(m)
     ok = in_intervals(peaks, nrem) & in_intervals(peaks, hc)
-    p = peaks[ok] if ok.sum() > 20 else peaks
+    all_ripples = ok.sum() <= 20
+    p = peaks if all_ripples else peaks[ok]
     blk = np.floor(p * fs / n).astype(int)
     b = np.bincount(blk).argmax()
     x = lfp[b * n:(b + 1) * n, :].astype(float) * conv
@@ -684,7 +688,7 @@ def pick_theta_channel(f, m, win_s=52.4288):
         if not len(k):
             return None, None
         centre = k[np.argmax(rpow[k])]
-        c = k[(k != centre) & (swa[k] > 0)]
+        c = k[(y[k] > y[centre]) & (swa[k] > 0)]
         return (int(c[np.argmax(rpow[c])]) if len(c) else None), int(centre)
 
     th, centre = above_positive(shank[pyr_ch])
@@ -723,7 +727,8 @@ def pick_theta_channel(f, m, win_s=52.4288):
         rev[int(s)] = float(rv)
     k = np.where((shank == shank[pyr_ch]) & ~bad)[0]
     up, down = k[y[k] > y[pyr_ch]], k[y[k] < y[pyr_ch]]
-    return th, pyr_ch, {"rev": rev, "cen": cen, "n_ripples": int(len(pk)), "sw_theta": float(swa[th]),
+    return th, pyr_ch, {"rev": rev, "cen": cen, "n_ripples": int(len(pk)), "all_ripples": bool(all_ripples),
+                        "sw_theta": float(swa[th]),
                         "sw_pyr": float(swa[pyr_ch]), "where": where,
                         "dy_theta": float(y[th] - y[centre]),
                         "n_pos_above": int(np.sum(swa[up] > 0)), "n_pos_below": int(np.sum(swa[down] > 0)),
@@ -1120,7 +1125,50 @@ def open_field_maps(f, name, t0, t1, trains, cm_per_unit=1.0, smin=SPEED_MIN, fw
     return maps, occ, dt
 
 
-OPEN_SCALES = (1.0, 2.0, 0.5)  # cm per lab unit: the assumption (1) and two variants
+# cm per lab unit: the assumption (1) and variants; 0.85 is the scale that the simultaneous
+# speeds give for the lab-unit series of two linear tracks (position_scale_check)
+OPEN_SCALES = (1.0, 2.0, 0.5, 0.85)
+
+
+def position_scale_check(asset, m, w=30):
+    """Evidence on the scale of the 2D positions (SubjectPosition series) of one session's
+    behavioural subsessions. Per series: its unit, extent and the 90th percentile of speed over
+    1 s (w samples at 30 Hz) in its own units. Where a linearized series (cm) covers the same
+    samples, the ratio of the two speeds at the same times estimates cm per 2D unit (the
+    linearized path follows the 2D path, so on the familiar figure-eight, whose 2D series is in
+    cm, the ratio shows what to expect)."""
+    rows = []
+    with open_nwb(asset) as f:
+        for n, (t0, t1, env, name) in enumerate(behaviour_epochs(m)):
+            sers = {k: v for k, v in m["series"].items() if v["t0"] >= t0 - 1 and v["t1"] <= t1 + 1}
+            two = [k for k in sers if k.startswith("SubjectPosition/") and k.endswith("_" + env)]
+            lin = [k for k in sers if k.startswith("LinearizedPosition/") and k.endswith("_" + env)]
+            for k in two:
+                g = f["processing/behavior/" + k]
+                xy, ts = g["data"][:].astype(float), g["timestamps"][:]
+                ok = np.all(np.isfinite(xy), 1)
+                xy2, ts2 = xy[ok], ts[ok]
+                sp = np.linalg.norm(xy2[w:] - xy2[:-w], axis=1) / (ts2[w:] - ts2[:-w])
+                row = {"session": m["session_id"], "epoch": n, "env": env, "series": k.split("/")[1],
+                       "unit": sers[k]["unit"], "x_min": xy2[:, 0].min(), "x_max": xy2[:, 0].max(),
+                       "y_min": xy2[:, 1].min(), "y_max": xy2[:, 1].max(),
+                       "speed_p90": float(np.percentile(sp, 90)), "lin_cm": np.nan,
+                       "cm_per_unit_from_speed": np.nan}
+                if lin:
+                    gl = f["processing/behavior/" + lin[0]]
+                    xl, tl = gl["data"][:].astype(float), gl["timestamps"][:]
+                    if xl.ndim > 1:
+                        xl = xl[:, 0]
+                    if len(tl) == len(ts) and np.allclose(tl, ts):
+                        okb = ok & np.isfinite(xl)
+                        a, b, tt = xy[okb], xl[okb], ts[okb]
+                        s2 = np.linalg.norm(a[w:] - a[:-w], axis=1) / (tt[w:] - tt[:-w])
+                        sl = np.abs(b[w:] - b[:-w]) / (tt[w:] - tt[:-w])
+                        mv = sl > np.percentile(sl, 50)   # moving samples, where both paths are runs
+                        row["lin_cm"] = float(np.nanmax(xl))
+                        row["cm_per_unit_from_speed"] = float(np.median(sl[mv]) / np.median(s2[mv]))
+                rows.append(row)
+    return rows
 
 
 def novel_session(asset, m):
@@ -1128,9 +1176,10 @@ def novel_session(asset, m):
     each later subsession. Linear tracks and the novel figure-eight use their linearized
     position, which the files give in centimeters, in 1 cm bins (as many as the series' largest
     value). Open fields use the 2D head position, whose x and y are in the lab's units with no
-    scale; they are binned assuming one unit is 1 cm (assumption: in the linear tracks, where
-    the files give both, the lab-unit track axis spans 116 units for a 110 cm linearized track),
-    and at 2 and 0.5 cm per unit as variants (open_field_maps)."""
+    scale; they are binned assuming one unit is 1 cm (assumption: where the files give a
+    lab-unit 2D series beside a linearized one in cm, the lab units that are not normalized to
+    0-1 are close to cm, position_scale_check), and at the other OPEN_SCALES as variants
+    (open_field_maps)."""
     ep = behaviour_epochs(m)
     ct = np.array(m["u_putative_cell_type"], dtype=object)
     pyr = np.where(ct == "Pyramidal Cell")[0]

@@ -7,8 +7,8 @@ with units, light-responsive labels, sleep states, SPW-Rs, LFP and maze position
 
 | Claim | Outcome |
 |---|---|
-| Cohort, sessions, units and light-responsive counts (5 claims) | Reproduced |
-| Session count and durations | Not reproduced (two sessions without sleep states) |
+| Cohort, sessions, units and light-responsive counts (4 claims) | Reproduced |
+| Session count and durations | Not reproduced (two sessions hold wake only, no sleep) |
 | SPW-R duration | Reproduced |
 | Labelled fraction, firing rate, SPW-R firing and cofiring by birthdate (Figs 1e, 1g, 2b, 2f, 2g) | Reproduced |
 | Burst index by birthdate (Fig. 1h) | Partially reproduced |
@@ -23,7 +23,7 @@ with units, light-responsive labels, sleep states, SPW-Rs, LFP and maze position
 | Pyramidal-to-interneuron convergence (Fig. 7) | Two partially reproduced, two not reproduced, on an assumed detector |
 | Depth control (Extended Data Fig. 3) | Not reproduced (fractions above the paper's), on an assumed depth reference |
 | Histology, light-evoked waveforms, L-ratio controls (5 claims) | Blocked: data missing |
-| Assemblies and network model (5 claims) | Blocked: too large |
+| Assemblies and network model (5 claims) | Blocked: too large (not run; see the attempt record) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -31,7 +31,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/huszar-2022-02.yaml`](../../attempts/huszar-2022-02.yaml).
 
-- `reproduce_huszar_2022.ipynb`: the analysis. It takes about 50 minutes, most of it reading two LFP channels
+- `reproduce_huszar_2022.ipynb`: the analysis. It takes about 47 minutes, most of it reading two LFP channels
   per session for the theta analyses.
 - `huszar.py`: streaming the files, the homecage, theta, maze and connectivity measures, and the bootstrap
   tests. Other notebooks on this dandiset can import it.
