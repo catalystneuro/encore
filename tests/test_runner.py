@@ -265,6 +265,30 @@ def test_the_reconcile_run_is_given_the_earlier_attempts_entry():
     assert "`earlier-entry/`" in (REPO / "docs" / "agents" / "reconcile.md").read_text()
 
 
+def test_a_papers_other_datasets_have_their_paper_match_before_its_claims_are_read():
+    # pelot-2020 was listed on one of its seven datasets, and its attempt read the others as outside data. A chain
+    # now runs the paper match of every target that names the paper and has no verdict, before the claims.
+    targets = [
+        {"key": "sparc:60", "folder": "sparc-60", "archive": "sparc", "papers": [{"doi": "10.1/P", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:64", "folder": "sparc-64", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:65", "folder": "sparc-65", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:70", "folder": "sparc-70", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "References"}]},
+        {"key": "sparc:71", "folder": "sparc-71", "archive": "sparc", "papers": [{"doi": "10.1/other", "relation": "IsDescribedBy"}]},
+        {"key": "dandi:000001", "folder": "000001", "archive": "dandi", "published_version": None,
+         "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+    ]
+    status = lambda t: "no_match" if t["folder"] == "sparc-65" else "unchecked"
+    found = describe.siblings("p-2020", targets=targets, listed={"p-2020": ["sparc:60"]}, doi="doi:10.1/P", status=status)
+    # Not the one it is listed on, one already judged, one that only cites the paper, another paper's, or a draft.
+    assert found == ["sparc-64"]
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    body = chain[chain.index("set -uo pipefail"):]
+    step = body.index('python "$here/describe.py" siblings "$d"')
+    assert body.index("esac", body.index('case "$match" in')) < step < body.index('deprecated=$(python "$here/describe.py" deprecated "$d")')
+    assert 'SIBLINGS=0 MATCH_ONLY=1 RUNNER_NOTIFY=none "$here/chain.sh" "$sib"' in body
+    assert '[ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]' in body
+
+
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
     # docs/replicates.md: every reference to the chain's branch goes through $br, which a replicate sets to
     # replicate/<paper>/<rN>; its runs are found by the name <paper>/<rN>; it ends before the reconcile step and the

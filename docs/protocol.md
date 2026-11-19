@@ -264,6 +264,14 @@ Do this before any analysis.
      label: criteria compare identity, not spelling.
    - Outside data supplies only what the dataset lacks, such as a label for
      each cell. The analysis runs on the dataset's data.
+   - A dataset the paper's authors deposited for this paper is one of the
+     paper's datasets, not outside data, wherever it is. When you find one
+     that the paper is not listed on (`papers/datasets/<paper>.yaml`), in an
+     archive the registry reads (`docs/archives.md`), use it and list it
+     under `inputs` as for any other source, and say in your report, by its
+     archive and identifier, that the paper should be listed on it. The
+     registry then lists it, and the next attempt tests the paper on all of
+     its datasets.
    - `elsewhere` is for a claim whose data the dataset does not hold at
      all, because the paper deposited them in another public archive (for
      example imaging in the BioImage Archive, proteomics in PRIDE, blots on
