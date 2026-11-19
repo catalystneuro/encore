@@ -5,7 +5,7 @@
   "label": "DANDI:000213"
  },
  "page": "datasets/dandi/000213/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 8,
@@ -74,11 +74,46 @@
     {
      "path": "reproduce_tingley_2018.ipynb",
      "title": "Reproducing Tingley and Buzsaki (2018) from dandiset 000213",
+     "cells": {
+      "sanity": "6e1f5450",
+      "claim:ls-neuron-count": "58faeb6b",
+      "claim:hpc-unit-count": "bb88e53d",
+      "claim:ls-active-neurons": "1a506842",
+      "claim:fig2-ls-phase-vs-shuffle": "c9ca05fd",
+      "claim:fig2-ls-phase-beats-rate": "4711d113",
+      "claim:fig2e-ls-phase-lower-mse": "7ee8ad58",
+      "claim:fig2fg-mse-difference": "39b07216",
+      "claim:fig1i-hpc-rate-phase-equivalent": "11e3e1b3",
+      "claim:ls-few-place-fields": "e8e93792",
+      "claim:hpc-place-field-properties": "ca55e625",
+      "claim:ls-place-fields-unstable": "2e050eec",
+      "claim:fig1e-phase-info-smaller-scale": "174fbaf2",
+      "claim:fig1g-phase-more-info-fine-scale": "044275bd",
+      "claim:ls-lower-peak-info": "5b921a12",
+      "claim:fig3-ls-phase-reliable": "5c540757",
+      "claim:fig4d-depth-gradient": "1e177b35",
+      "claim:fig4e-onset-depth": "4723a48e",
+      "claim:fig4e-onset-mediolateral": "586c923c",
+      "claim:speed-independent": "dc935aa3",
+      "claim:fig5-assemblies": "309e2792",
+      "claim:fig5g-assembly-neurons-stronger-phase": "d335687a",
+      "claim:figs5-assembly-independent-of-locking": "d103dcc9",
+      "claim:fig6-session-counts": "cf6f5d3a",
+      "claim:fig6c-ca3-coherence-increases": "94af7d78",
+      "claim:fig6d-cfc-stronger-ca3": "10c3dae6",
+      "claim:fig6e-assembly-position": "07ed6c98",
+      "claim:figs7-ensemble-ls-phase-best": "bba44e9f",
+      "claim:figs2-rate-phase-independent": "a00cf2ce",
+      "claim:figs1f-trial-counts": "b8690485"
+     },
      "executed": "notebooks/tingley-2018/reproduce_tingley_2018.html"
     },
     {
      "path": "earlier_findings.ipynb",
      "title": "The findings of tingley-2018-01, checked on version 0.261109.2219",
+     "cells": {
+      "sanity": "c7c2ff79"
+     },
      "executed": "notebooks/tingley-2018/earlier_findings.html"
     }
    ],
@@ -94,6 +129,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:ls-neuron-count",
      "notes": "1,696 units labelled ls in 62 sessions from all five animals (DT2 375, DT5 480, DT7 60, DT8 296, DT9 485). The count is 3% above 1,647.",
      "deviations": [],
      "assumed": false,
@@ -113,6 +149,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:hpc-unit-count",
      "notes": "3,260 hippocampal units (2,636 labelled hpc, 624 ca3) against 2,951. Session reading (CA3 where the session flags a CA3 channel) gives 2,261 CA1 (within tolerance) and 999 CA3 (outside). Unit labels give 2,636 CA1 (outside) and 624 CA3 (within). No reading has both within tolerance. Place fields (conditions with a field) number 1,444 CA1 and 196 CA3 under the session reading with Gaussian maps, 1,642 and 282 with box maps; not judged.",
      "deviations": [
       "The 'hpc' label is the probe aimed at CA1, not a resolved subfield (electrodes table description), so the split into CA1 and CA3 is one of the claims file's two readings."
@@ -134,6 +171,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:ls-active-neurons",
      "notes": "Reading (a), at least one included condition, gives 829 of 1,696 LS units (840 +/- 84). Reading (b), spikes over all the session's trials at least 1.5 times their number, gives 708.",
      "deviations": [],
      "assumed": false,
@@ -153,6 +191,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig2-ls-phase-vs-shuffle",
      "notes": "With undefined phase set to 0, 336 of 829 active LS neurons (0.405, aa1) have phase MSE below the permuted chance at p < 0.01 in at least one condition; ba1 0.499, ab1 0.394, bb1 0.485, all outside 0.89 +/- 0.089. Phases shifted within trials pass in 0.352 to 0.472 of neurons (aa1 0.380, ba1 0.472, ab1 0.352, bb1 0.454), so the test mostly detects where the cell fires: the chance permutes positions as well as phases. The left-out variant ba0 gives 0.882, within tolerance, but its shifted-phase null gives 0.847. Per animal under aa1 0.341 to 0.875 (DT7, 16 neurons). The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -177,6 +216,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig2-ls-phase-beats-rate",
      "notes": "With undefined phase set to 0, phase beats rate in 0.172 (aa1) to 0.304 (bb1) of 829 neurons, in 0.044 to 0.082 of 4,362 conditions by the t test or 0.394 to 0.433 by lower mean, and in 0.083 to 0.217 of 60 sessions; none is over half, so the partial rule does not apply. Shifted phases give 0.166 to 0.233 of neurons and 0.117 to 0.200 of sessions under the same four readings (aa1 0.171 and 0.183). The left-out variant ba0 gives 0.795, 0.677 and 60 of 60, and its shifted-phase null 0.777, 0.655 and 0.967. Measured values are aa1's (neurons, conditions by test, sessions). 60 sessions have included LS conditions, where the paper has 62. The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -215,6 +255,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig2e-ls-phase-lower-mse",
      "notes": "With undefined phase set to 0 the mean phase MSE is above the rate MSE under every reading: aa1 7,067 against 6,827 over 4,362 LS conditions (p = 7.2e-15) and 7,094 against 6,899 over 60 sessions (p = 0.0067); ba1, ab1 and bb1 agree in sign. The left-out variant puts phase lower (aa0 p = 2.1e-44 and 1.1e-10), but phases shifted within trials are also lower than rate under it (aa0 6,595 against 6,819, p = 2.8e-13). Shifted phases under ab1 and bb1 are also above rate (p = 1.7e-05 and 2.3e-06). The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -238,6 +279,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig2fg-mse-difference",
      "notes": "aa1 gives +240 (LS conditions, n = 4,362), +271 (hippocampal place fields of rate map a, n = 1,640), +195 (60 LS sessions) and +256 (44 hippocampal sessions). All values are positive under every reading with undefined phase set to 0 (+133 to +302). Under the left-out variant the LS values are negative; at the condition level the hippocampal ones (-1,524 to -2,305) are larger in magnitude than the LS ones (-434 and -1,598), so the partial rule does not apply either. At the session level this holds for aa0 (LS -549 against -859 and -923) but not for ba0 (LS -1,804 against -1,448 and -1,603). The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -275,6 +317,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig1i-hpc-rate-phase-equivalent",
      "notes": "A claim of absence judged on the KS test at 0.05, under the adopted reading aa1. Rate and phase MSE differ over place fields (rate map a, 1,640 fields, p = 4.8e-05, D = 0.080; rate map b, 1,924 fields, p = 0.0065, D = 0.055) and over sessions (p = 0.042 over 44 and 0.0064 over 45); phase MSE is higher by 271 and 197. The 1.5 cm reading ab1 with rate map b gives p = 0.066 and 0.82, and ties sent to the lowest bin give p = 0.18 and 0.82 for rate map b; with rate map a both still give p < 0.01. Under the left-out variant p < 1e-100. Of the eight readings with undefined phase 0 and ties at random, only ab1 with rate map b has neither test at p < 0.05 (notebook, line under the table). Reproduced was proposed on that reading; the third verification round did not agree, as the criterion has no \"under one reading\" clause, so the outcome stays on the adopted reading aa1 and the proposal stands with the disagreement. 7 of the 8 readings find a difference. The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -307,6 +350,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:ls-lower-peak-info",
      "notes": "LS peak information is lower than that of hippocampal place fields under all 16 readings (p 8.7e-150 or smaller). No reading has both averages within tolerance. Peak over smoothings, equal-width levels, 1.5 cm per bin: LS 0.965, hippocampal 1.659 bits/cm (hippocampal within). 20-bin smoothing, equal-count levels, 1.5 cm: LS 0.416 (within), hippocampal 1.045. Dividing by the trial count as makeFig1.m does (variant) gives 0.023 to 0.055 (LS) and 0.053 to 0.099 bits/cm (hippocampal), further from both values.",
      "deviations": [
       "Information uses normalized probabilities (bits per bin) divided by the bin width. makeFig1.m's division by the trial count is shown as a variant; the probabilities are already per trial.",
@@ -329,6 +373,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:ls-few-place-fields",
      "notes": "Gaussian maps: 277/4,362 LS maps (0.064) and 1,640/5,723 hippocampal maps (0.287) have a field. Box maps: 435/4,362 (0.100) and 1,924/5,723 (0.336). Map counts and the hippocampal fraction are within tolerance; the LS fraction is lower than the hippocampal one but above 0.0583 under both readings.",
      "deviations": [
       "Place fields follow the claims file's reading of bz_getPlaceFields1D. The Gaussian width (sigma 5 bins) and widths converted at 1.5 cm per bin are choices, as is taking the highest peak as the first field."
@@ -350,6 +395,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:hpc-place-field-properties",
      "notes": "Gaussian maps, denominator (a) 1,420 hippocampal units with an included condition (the paper's 1,425): 677 with a field (0.477, within), 1.27 fields per neuron (within), median peak 7.30 Hz (outside 8.5 +/- 0.85), median width 43 bins (outside 38 +/- 3.8), over 1,810 fields. Box maps: 0.532, 2.70, 6.00 Hz, 49 bins. Denominator (b), all 3,260 units, 0.208 and 0.56.",
      "deviations": [
       "Place-field rule as in ls-few-place-fields."
@@ -377,6 +423,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:ls-place-fields-unstable",
      "notes": "Reading (b), SD over trials divided by the mean at the peak: LS medians 81.7% (Gaussian, n = 277) and 85.1% (box, n = 435) against hippocampal 71.7% and 71.7%; LS higher, t test p = 9.6e-13 and 4.0e-24. Medians far from 41.5 and 10. Reading (a), the SD in Hz, puts LS below hippocampus (3.16 against 5.15 Hz, p = 3.1e-04).",
      "deviations": [],
      "assumed": false,
@@ -403,6 +450,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig1e-phase-info-smaller-scale",
      "notes": "With undefined phase set to 0, phase peaks at smaller smoothing than rate under all four readings (p = 1.4e-25 to 3.9e-58); 1,426 to 1,783 fields are kept, the others peak at 49 bins or more. Box-map fields with equal-width levels give medians 15 (phase, within 15 +/- 1.5) and 21 (rate, outside 29 +/- 2.9); equal-count levels give 22 and 26 or 27 (rate within only for box maps). No reading has both within. Phases shifted within trials give phase medians of 12.5 to 21, close to the real ones, so the smaller phase scale does not depend on the phases. Under the left-out variant the phase median is 2 (equal widths) or 19. With undefined phase 0, the fill and not the phases sets this smaller phase scale: shifted phases give the same medians.",
      "deviations": [
       "Phase information sets an undefined smoothed phase to 0, as the decoder does (assumption); leaving such bins out is a variant. Left out, P(k|x) at fine smoothing comes from the few trials with a spike near the bin, and shifted phases score as high as real ones.",
@@ -439,6 +487,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig1g-phase-more-info-fine-scale",
      "notes": "With undefined phase set to 0, Gaussian-map fields, equal-count levels and the KS test (reading b), phase exceeds rate at 2 and 3 bins (0.684 and 0.708 bits, p below 1e-250) and rate exceeds phase significantly at 37 of 44 smoothings from 7 to 50 bins (0.841, at least 0.8). The t test reading gives 35 of 44 (0.795), box maps 33 and 35 of 44, and equal-width levels put rate above phase at every smoothing including 2 and 3 bins. Phases shifted within trials give the same fine-scale excess (0.695 bits at 2 bins against 0.684 real), so the match does not show that phase carries more information at fine scale. The phase-0 fill causes the match: at 2 and 3 bins most bins of a trial have no spike within the window, so their phase is 0 and their cosine 1, and the information measures whether a spike is near, not its phase. On the fields with the null, real phases carry 0.032 to 0.058 bits more than shifted phases at 2 and 3 bins under every field and level reading (paired t p = 0.013 to 7.7e-05), a small part of the 0.684 to 0.720 bit excess over rate. The match holds under 1 of the 4 field and level readings (with the KS test). Under the left-out variant phase exceeds rate at every smoothing.",
      "deviations": [
       "Phase information sets an undefined smoothed phase to 0, as the decoder does (assumption); leaving such bins out is a variant. Left out, P(k|x) at fine smoothing comes from the few trials with a spike near the bin, and shifted phases score as high as real ones.",
@@ -461,6 +510,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig3-ls-phase-reliable",
      "notes": "Across 4,362 LS conditions, the LS phase correlation is 0.036 on the anti-diagonal away from the centre and 0.070 off the diagonal (more than 20 bins). Hippocampal rate gives 0.868 and 0.891 and hippocampal phase 0.227 and 0.231, over 5,723 conditions. LS phase is lowest under both readings.",
      "deviations": [
       "Eight conditions with 151-point templates are interpolated onto 201 bins (standard choice)."
@@ -482,6 +532,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig4d-depth-gradient",
      "notes": "Reproduced under bb1 alone (samples split, 1.5 cm bins, undefined phase 0), with sites deepening with their index. Per animal r of depth against the session's mean phase minus rate MSE: DT2 -0.41, DT5 -0.20, DT8 -0.25, DT9 -0.14 (all negative; pooled r = -0.209, p = 0.11); within sessions with units on at least five sites, r < 0 in 26 of 47. Under aa1, ba1, ab1, aa0 and ba0 the across-animal part fails (aa1: DT9 +0.62, pooled -0.092, p = 0.49) and within sessions r < 0 in 21 to 25 of 47. With sites taken to run the other way, bb1 holds across animals (pooled r = -0.292, p = 0.024) but within sessions only 21 of 47 are negative with depth. With the second session-name depth no reading holds across animals. Dropping the last DT9 session changes no conclusion. The match is a bare majority under one reading, and that reading splits samples. Shifted phases under bb1 do not give the across-animal pattern (DT8 +0.14, DT9 +0.21; pooled r = -0.094, p = 0.48), but they reach the within-session majority as well (28 of 47 negative with sites deepening), so the within-session part is no stronger than chance. The outcome is the one verified in round 2, on bb1 alone. In round 3, which reviewed only proposed changes, the verifier noted that this criterion also has no \"under one reading\" clause for the decoder readings and that judged on the adopted aa1 the claim would likely be not reproduced; no change was proposed for it, so the outcome stands and a later attempt should take this up. The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -515,6 +566,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig4e-onset-depth",
      "notes": "No animal reaches p < 0.001 under any of 48 readings (six decoder readings for the phase-coding neurons, two condition, two onset and two depth readings). Closest is DT9 under bb1, r = 0.263 (p = 0.0011). Under aa1, each condition, spike phases, session depth: DT5 r = 0.174 (p = 0.052, n = 194), DT9 0.172 (p = 0.083, n = 167), DT2 0.241 (p = 0.11, n = 76). The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -539,6 +591,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig4e-onset-mediolateral",
      "notes": "With undefined phase set to 0, Kruskal-Wallis finds the animals' onsets different only under bb1 with the onset from the phase map (p = 0.040); elsewhere p = 0.13 to 0.68. Watson-Williams gives p < 1e-5 under every reading, but its assumption of concentrated samples fails (pooled resultant length 0.14 to 0.22, below 0.45), so it is not relied on. circ_corrcl of the animal means with the medial-lateral coordinate is 0.074 to 0.740, below 0.8 everywhere (aa1 0.38 and 0.44). Under the left-out variant ba0 the full rule holds (Kruskal-Wallis p = 0.040 and 0.0032, r up to 0.827), but that variant fails the decoder calibration. The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Assumption. The paper does not say how a position bin enters phase decoding when no spike falls in its 20-bin smoothing window, so that its phase is undefined (STAR Methods, position prediction analysis, says only that firing phases are estimated for each bin and box-smoothed). Such bins are set to phase 0, as a zero-initialised phase map would give. Leaving them out (round 1's choice) is run as the variant aa0 and ba0; it fails the decoder calibration (synthetic place cells with random phases beat rate in 200 of 200 cases, and real cells with phases shifted within trials beat rate in 0.207 to 0.535 of conditions). About 67% of LS and 74% of hippocampal trial-by-bin samples are undefined.",
@@ -564,6 +617,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:speed-independent",
      "notes": "Precession against speed is significant in 12/2,879 LS conditions (0.004, slope) or 26/2,877 (0.009, circular-linear r); 1,483 conditions were not tested (fewer than 5 trials with at least 5 spikes on the track, as printed). With speed first permuted over trials the same test passes 0.0024 and 0.0049 of conditions, below its nominal 1%. Rate is modulated by speed in 251/4,362 (0.058, per spike) or 329/4,362 (0.075, 100 ms bins). All are below 20% and below the paper's values.",
      "deviations": [
       "Running speed from x and y head position smoothed over 0.25 s, and the circular-linear slope by maximizing the mean resultant length over -2 to 2 cycles per track; both standard choices the paper does not state."
@@ -585,6 +639,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig5-assemblies",
      "notes": "Over the 7,098 sampled pairs, the Methods rule (a) gives 1,890 assemblies (0.266) with a median best window of 4 ms (9 ms as the full box 2w+1); the makeFig5.m rules (b) give 534 (0.075) with 20 ms (41 ms). Neither fraction is within 0.185 +/- 0.0185 and no timescale reading is within 25 +/- 2.5 ms. Pairs examined: 81,393 with both units included (35,823 estimated to pass the makeFig5.m rules), against 11,264. By animal (a) 0.20 to 0.29. 874 pairs have their best window at 1 ms and 269 at 150 ms. The fits took 1,274 s on 4 CPUs in the final run (about 0.72 CPU-s per pair). The zero-lag strength rule of makeFig5.m is not applied. These assemblies match neither the paper's fraction nor its timescale.",
      "deviations": [
       "Run on a random 7% (348 of 4,362) of LS unit-conditions, each with all its hippocampal units included in the same condition (7,098 pairs), to fit the time limit; the population holds 81,393 such pairs.",
@@ -620,6 +675,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig5g-assembly-neurons-stronger-phase",
      "notes": "On the sample of fig5-assemblies, with phase minus rate MSE from aa1 (phase the lower of cosine and raw). Methods rule: 272 sampled LS neuron-conditions are in an assembly and 13 are not; assembly values -275 per pair and -293 per neuron against -437 (t test p = 0.52 and 0.58, KS 0.48 and 0.41). makeFig5.m rules: -291 and -282 against -337 (p = 0.68 and 0.64). Assembly neurons are not more negative. With the cosine phase only under ba1, ab1 and bb1, assembly neurons are less negative still (makeFig5.m rules, per pair, t p = 0.017, 0.027 and 0.009 in the opposite direction). Under the Methods rule only 13 sampled neuron-conditions are outside an assembly, so that reading is a weak test. The assemblies do not reproduce fig5-assemblies. The decoder is weak on these files: the median hippocampal rate MSE is 6,329 bins squared under aa1 against 6,733 for uniform guessing, and rate decoding with recorded positions beats positions 1 s later in only 30 of 47 sessions (data check). This outcome shows what this decoder does on these files, not what the paper's data contain.",
      "deviations": [
       "Run on a random 7% (348 of 4,362) of LS unit-conditions, each with all its hippocampal units included in the same condition (7,098 pairs), to fit the time limit; the population holds 81,393 such pairs.",
@@ -642,6 +698,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:figs5-assembly-independent-of-locking",
      "notes": "A claim of absence judged on Pearson correlation at p < 0.05. Over 1,890 assembly pairs (Methods rule), kappa and resultant length of the hippocampal unit's spike phases against strength and timescale give r = 0.015 to 0.028 (p = 0.23 to 0.52); over 534 pairs with the makeFig5.m rules r = -0.026 to 0.083 (p = 0.056 to 0.62). None is significant. The Spearman variant is significant for the 534 pairs (strength p = 0.019, timescale p = 0.036). The absence is fragile: two Pearson p values are close to 0.05 (0.056 and 0.081, makeFig5.m rules) and Spearman is significant. It is tested on assemblies that do not reproduce fig5-assemblies (0.266 or 0.075 against 0.185; median window 4 or 20 ms against 25 ms; zero-lag rule not applied; 874 pairs at 1 ms).",
      "deviations": [
       "Run on a random 7% (348 of 4,362) of LS unit-conditions, each with all its hippocampal units included in the same condition (7,098 pairs), to fit the time limit; the population holds 81,393 such pairs.",
@@ -664,6 +721,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig6-session-counts",
      "notes": "By units, LS and CA3 units share 19 sessions (session reading, within 19 +/- 1.9), and 14 sessions flag CA1, CA3 and LS channels (within 14 +/- 1.4; 12 DT5, 2 DT7). LS and CA1 units share only 25 sessions (session reading) or 33 (unit labels), against 63. Counting a session's CA1 by its flagged CA1 channel gives 57, within tolerance. DT8 has hippocampal channels and a flagged CA1 channel in all 17 sessions but no hippocampal units, which accounts for part of the shortfall: with all 17 DT8 LS sessions counted, LS with CA1 would be 42 or 50, still short of 63. The criterion has no partial rule (\"Reproduced when all three counts are within tolerance\"), so the outcome is not_reproduced, as the third verification round agreed.",
      "deviations": [],
      "assumed": false,
@@ -683,6 +741,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig6c-ca3-coherence-increases",
      "notes": "Per trial, the z-scored CA3-LS coherence slope over the run is 0.366 (2,699 trials, p = 3.6e-111), against 0.044 for CA1-LS (9,054 trials); CA3 is above CA1 at p = 4.6e-88. Per session, CA3 0.259 (19 sessions, p = 0.0062), above CA1 (p = 0.0030). CA1 mean curve end minus start 0.030, CA3 0.321. DT7's CA3 sessions run the other way (mean slope -0.171).",
      "deviations": [
       "Multitaper coherence with NW 3 and 5 tapers, padded to 256 points (standard chronux choice), averaged over 4.9 and 9.8 Hz."
@@ -704,6 +763,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig6d-cfc-stronger-ca3",
      "notes": "Per trial, coupling slopes are 0.084 for CA1 (p = 1.5e-19) and 0.284 for CA3 (p = 1.1e-49), and raw coupling is 0.376 (CA3) against 0.345 (CA1), p = 5.3e-187. Per session p = 4.8e-05, 2.5e-06 and 7.0e-08. The 50 to 500 Hz variant gives the same signs (raw p = 3.0e-13 per session).",
      "deviations": [],
      "assumed": false,
@@ -742,6 +802,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:fig6e-assembly-position",
      "notes": "On the sample of fig5-assemblies. Gaussian-map fields, assembly pairs, CA1 and CA3 by session: CA1 r = -0.106 (p = 0.024, 452 pairs; within tolerance but significant), CA3 r = +0.178 (p = 0.14, 71 pairs; outside 0.34 +/- 0.034), curves r = -0.106 unsmoothed (42 bins with both) or -0.310 with a 20-bin box. The signs hold; CA3's increase is not significant, CA1's decrease is, and the curves are far from -0.88. Other readings give CA3 r from -0.005 to 0.178, none significant. The partial rule needs only the signs; under fields (b) with the session reading the curve correlation turns positive. The assemblies are those of fig5-assemblies, which do not reproduce the paper's fraction or timescale.",
      "deviations": [
       "Run on a random 7% (348 of 4,362) of LS unit-conditions, each with all its hippocampal units included in the same condition (7,098 pairs), to fit the time limit; the population holds 81,393 such pairs."
@@ -770,6 +831,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:figs7-ensemble-ls-phase-best",
      "notes": "129 LS and 141 hippocampal conditions have at least 15 included units. At every size from 15 to 25 LS phase ensembles have higher MSE than hippocampal phase ensembles (6,041 against 5,766 at 15, p = 1.9e-26, reading a with 10 draws). Hippocampal rate ensembles are far better (2,005). Reading (b) agrees at every size.",
      "deviations": [
       "Undefined phase drops the unit's term for that sample, and Poisson means have a floor of 0.01 (standard choice)."
@@ -791,6 +853,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:figs2-rate-phase-independent",
      "notes": "Over 5,453 hippocampal conditions the mean actual circular-linear correlation of phase and instantaneous rate per trial is 0.435, against 0.444 after circular shifts. But 0.143 of conditions are significantly higher by the t test (a) and 0.207 exceed the 95th percentile of the shuffled means (b), against below 0.022. LS: 0.032 and 0.112.",
      "deviations": [
       "Trials with fewer than five spikes are skipped (standard choice)."
@@ -812,6 +875,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": null,
+     "output": null,
      "notes": "Not analysed in this run, for lack of time; the Allen Mouse Brain Connectivity Atlas API was reachable. The paper does not list its 55 injection experiments, so a test would first need its selection rule (CA1 or CA3 injections without leakage into cortex or subiculum) applied to the atlas, then the projection measures of the nine targets.",
      "deviations": [],
      "assumed": false,
@@ -838,6 +902,7 @@
      "outcome": "blocked",
      "blocked_by": "metadata_insufficient",
      "notebook": null,
+     "output": null,
      "notes": "No session is marked as holding maze rotations. No session description mentions a rotation, and the trial conditions name only the maze type (wheel 211, central 254, linear 20, unnamed 4), so the rotation conditions cannot be found. The 23 reference-frame variables (maze orientation, distance to the current reward) are not stored either.",
      "deviations": [],
      "assumed": false,
@@ -857,6 +922,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_tingley_2018.ipynb",
+     "output": "claim:figs1f-trial-counts",
      "notes": "Sessions with LS units: 3,039 wheel (circle) alternation trials (within 2,889 +/- 288.9), 625 linear (within), 5,219 central alternation (outside 6,608 +/- 660.8). All 67 sessions: 3,987, 5,219 and 701, all outside. The criterion has no partial rule, so two of three counts is not a reproduction. The ballistic fraction cannot be tested: all 67 trials tables say that only ballistic runs were kept.",
      "deviations": [],
      "assumed": false,
@@ -876,6 +942,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": null,
+     "output": null,
      "notes": "Not run in this attempt, for lack of time. It needs the pyNN and NEURON notebooks of DavidTingley/papers at 9f4cd48 installed in a locked environment, and no attempt was made, so not_runnable is not claimed.",
      "deviations": [],
      "assumed": false,
@@ -1247,11 +1314,46 @@
     {
      "path": "reproduce_tingley_2018.ipynb",
      "title": "Reproducing Tingley and Buzsaki (2018) from dandiset 000213",
+     "cells": {
+      "sanity": "6e1f5450",
+      "claim:ls-neuron-count": "58faeb6b",
+      "claim:hpc-unit-count": "bb88e53d",
+      "claim:ls-active-neurons": "1a506842",
+      "claim:fig2-ls-phase-vs-shuffle": "c9ca05fd",
+      "claim:fig2-ls-phase-beats-rate": "4711d113",
+      "claim:fig2e-ls-phase-lower-mse": "7ee8ad58",
+      "claim:fig2fg-mse-difference": "39b07216",
+      "claim:fig1i-hpc-rate-phase-equivalent": "11e3e1b3",
+      "claim:ls-few-place-fields": "e8e93792",
+      "claim:hpc-place-field-properties": "ca55e625",
+      "claim:ls-place-fields-unstable": "2e050eec",
+      "claim:fig1e-phase-info-smaller-scale": "174fbaf2",
+      "claim:fig1g-phase-more-info-fine-scale": "044275bd",
+      "claim:ls-lower-peak-info": "5b921a12",
+      "claim:fig3-ls-phase-reliable": "5c540757",
+      "claim:fig4d-depth-gradient": "1e177b35",
+      "claim:fig4e-onset-depth": "4723a48e",
+      "claim:fig4e-onset-mediolateral": "586c923c",
+      "claim:speed-independent": "dc935aa3",
+      "claim:fig5-assemblies": "309e2792",
+      "claim:fig5g-assembly-neurons-stronger-phase": "d335687a",
+      "claim:figs5-assembly-independent-of-locking": "d103dcc9",
+      "claim:fig6-session-counts": "cf6f5d3a",
+      "claim:fig6c-ca3-coherence-increases": "94af7d78",
+      "claim:fig6d-cfc-stronger-ca3": "10c3dae6",
+      "claim:fig6e-assembly-position": "07ed6c98",
+      "claim:figs7-ensemble-ls-phase-best": "bba44e9f",
+      "claim:figs2-rate-phase-independent": "a00cf2ce",
+      "claim:figs1f-trial-counts": "b8690485"
+     },
      "executed": "notebooks/tingley-2018/reproduce_tingley_2018.html"
     },
     {
      "path": "earlier_findings.ipynb",
      "title": "The findings of tingley-2018-01, checked on version 0.261109.2219",
+     "cells": {
+      "sanity": "c7c2ff79"
+     },
      "executed": "notebooks/tingley-2018/earlier_findings.html"
     }
    ],

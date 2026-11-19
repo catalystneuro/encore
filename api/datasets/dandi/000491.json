@@ -5,7 +5,7 @@
   "label": "DANDI:000491"
  },
  "page": "datasets/dandi/000491/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 7,
@@ -74,6 +74,30 @@
     {
      "path": "reproduce_raicevic_2023.ipynb",
      "title": "Reproducing Raicevic et al. (2023) from dandiset 000491",
+     "cells": {
+      "sanity": "8e84109f",
+      "claim:cross-section-counts": "4782a0cd",
+      "claim:fig5a-pvs-area-scales-with-vessel-area": "e5ceb4e2",
+      "claim:fig5e-area-ratio-distribution": "c1bc851a",
+      "claim:fig5bc-area-intersegment-variation": "828e534e",
+      "claim:area-ratio-per-location": "e1cba4dc",
+      "claim:fig5d-polynomial-closest-area-ratio": "3717a918",
+      "claim:table2-fit-area-ratio-peaks": "902669d2",
+      "claim:fig6a-resistance-power-law": "0ddf7154",
+      "claim:fig6b-resistance-segmentation-peak": "5e7969af",
+      "claim:resistance-per-location": "4a5c38b2",
+      "claim:fig5b-polynomial-closest-resistance": "2b9449ed",
+      "claim:ellipse-annulus-underestimate": "15e55676",
+      "claim:spline-resistance-five-times": "717d6053",
+      "claim:fig7-velocity-profiles": "9f03fef9",
+      "claim:vessel-radius-peak": "bc8b68af",
+      "claim:fig8-ellipse-parameters": "f786e6e0",
+      "claim:fig9c-pvs-two-lobes": "018f1aad",
+      "claim:fig9e-pvs-width-asymmetry": "b4b2f826",
+      "claim:left-right-no-difference": "9cbc9cec",
+      "claim:fig9a-heights-taper": "14044b1f",
+      "claim:fig9f-pvs-concave": "d1196350"
+     },
      "executed": "notebooks/raicevic-2023/reproduce_raicevic_2023.html"
     }
    ],
@@ -89,6 +113,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:cross-section-counts",
      "notes": "No combination of P1, P2 and P4 holds. With the cleaned path (P2 a) and P4 b the segments give 202 to 604 cross sections at 0.648 um (mean spacing 0.876 um, within tolerance, but the most above 496.1) and 124 to 394 at 1 um (within the widened range, but spacing 1.345 um). With P4 a, 4 segments keep none. P2 b gives up to 78712 points per segment. The spacing is the mean step between neighbouring kept points (0.83 to 0.93 um per segment at 0.648 um). Before the revision after round 1, with the uncleaned path, the counts were 390 to 669 and 248 to 415. The cleaned path still meanders, 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um at every location but E. Counted along the fitted centerline (a diagnostic in the notebook, with the share kept under P4 b), the segments would give 223 to 427 cross sections at each segment's own mean step (mean 0.876 um), 241 to 492 at the paper's 0.8 um, 219 to 447 at 0.88 um and 267 to 546 at 0.72 um; the first three are inside 48.6 to 496.1. The third verification did not accept these estimated counts as a test of the claim (no slices were taken along that path and its step was not measured), so the outcome stays not reproduced. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -121,6 +146,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The single-plane time-averaged 2D images and their segmentations are not in the dandiset, every file holds one 3D stack and its 3D masks, and the description names no 2D data. The paper says its data are available from the corresponding author on request; no other public copy was found.",
      "deviations": [],
      "assumed": false,
@@ -151,6 +177,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig5a-pvs-area-scales-with-vessel-area",
      "notes": "Slope 0.912 to 1.543 and R2 0.072 to 0.527 over the eight combinations of P1, P4 and intercept. Nearest, P1 a, P4 b with intercept, slope 0.912 (95% CI 0.865 to 0.959) and R2 0.176, and P1 b, P4 b, slope 0.951 (0.894 to 1.007) and R2 0.199; the slope tolerance is 0.973 to 1.127 and the R2 tolerance 0.142 to 0.174. Within segments the slope runs from -6.911 (G) to 2.462 (D). Before the revision after round 1, with all PVS pixels of the plane, the slope was 1.504 to 2.718. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -179,6 +206,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig5e-area-ratio-distribution",
      "notes": "No combination puts the median and IQR within tolerance, which the partial rule needs. The median is 1.226 to 1.565 (expected 1.88 within 0.188), the IQR 0.874 to 1.287 (1.79 within 0.179), the 25th percentile 0.875 to 1.016 and the 75th 1.749 to 2.282. The peak is within tolerance in eight combinations, all with P5 b, at 1.133 to 1.230. Before the revision after round 1, with all PVS pixels of the plane, the median (1.718) and IQR (1.831) were within tolerance and the outcome was partially reproduced; keeping the lobes beside the vessel lowers the large ratios. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -207,6 +235,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig5bc-area-intersegment-variation",
      "notes": "Reading (a) holds in all four combinations of P1 and P4 (P1 a, P4 b, IQR of the 14 segment medians 3260.3 um^2 against a median within-segment IQR of 1621.5). Reading (b) holds only with P1 a, P4 a, which keeps 10 segments (range of medians 8887.3 against 7661.6 at H); with all 14 (P4 b) the range of the medians, 8461.9 and 8603.5, is below the largest within-segment IQR, 9476.5 (H) and 10464.5. The criterion sends a split to methods_underspecified. What is open is the measure of \"much larger\" (Figures 5B and 5C are compared by eye); a question for the authors is under findings. Before the revision after round 1 both readings held under P4 b (range 30496.8 against 13614.7), because the PVS of E and F included most of the plane; the outcome was reproduced, resting on P4 b.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -236,6 +265,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:area-ratio-per-location",
      "notes": "None of 128 combinations matches. The smallest per-location peak is 0.052 to 0.74 and the largest 1.7 to 9.04; with the reference combination 0.053 (C) and 9.045 (G). At most 9 locations meet a reading of \"within 30% of the peak\" (reading c), against 11.7 to 14.3, and none meets reading (d). Count for reading (a). Before the revision after round 1 the largest peak reached 257.17 and at most 10 locations met a reading. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -264,6 +294,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig5d-polynomial-closest-area-ratio",
      "notes": "Four of 96 combinations put the three shares within tolerance, all with P4 b and P5 a for the segmentation and the fitted circle for the fits: P1 a with erosion 5 (70.7, 20.6 and 8.8% with P9 a, the measured values; 70.4, 20.8 and 8.8% with P9 b) and P1 b with erosion 3 (71.4, 20.8, 7.9% and 71.0, 20.8, 8.3%). The polynomial share is the largest and above 50% in 92 of 96 (47.4 to 79.1% over all); under the other P5 readings the ellipse share is 0.1 to 4.7%. The outcome rests on those four combinations. Before the revision after round 1 none matched (closest 73.8, 24.8 and 1.4%) and the outcome was partially reproduced. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -294,6 +325,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:table2-fit-area-ratio-peaks",
      "notes": "No combination puts all seven values within tolerance; at most 3 of 7. The partial rule (ellipse peak above spline above polynomial, spline IQR the smallest) holds in 24 of 96 combinations, 19 with P4 a. Over all combinations the polynomial peak is 0.842 to 12.237, the ellipse peak 0.682 to 14.544, the spline peak 1.47 to 1.897, the medians 1.467 to 1.85, 1.848 to 2.455 and 1.504 to 1.71, and the spline IQR 0.019 to 0.26. Before the revision after round 1 at most 6 of 7 were within and the partial rule held in 12 of 96. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -335,6 +367,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig6a-resistance-power-law",
      "notes": "The log-log fit (reading a) gives -1.926 to -2.039 with R2 0.911 to 0.944. The partial rule holds with P1 a, P4 a (-1.977, 95% CI -1.993 to -1.961, R2 0.944) and with P1 a, P4 b (-1.926, -1.939 to -1.912, R2 0.922). The nonlinear fit (reading b) gives -2.99 to -4.69; a few cross sections with resistance up to 1.88e21 dominate it, so it says little. Before the revision after round 1 only P1 a, P4 a met the partial rule (-1.965, R2 0.941); now a combination with all 14 segments does too. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -364,6 +397,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig6b-resistance-segmentation-peak",
      "notes": "The peak is within tolerance in three combinations, 1.86e15 (P1 a, P4 a, all values, log bins), 1.68e15 (P1 a, P4 b, outliers out, linear bins) and 1.83e15 (P1 b, P4 b, outliers out, linear bins). The median is 5.28e15 to 6.87e15 in every combination, against 3.84e15 within 3.84e14. The partial rule needs the median within tolerance and the peak not; here it is the other way round, so the outcome is not reproduced. Before the revision after round 1 the median (4.16e15) was within and the peak (1.25e15) was not, and the outcome was partially reproduced; dropping PVS far from the vessel lowers the PVS area and raises the resistance. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -393,6 +427,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:resistance-per-location",
      "notes": "No combination matches. The smallest per-location peak is 8.93e14 to 2.35e15 (against 3.23e14), the largest 3.78e16 to 4.69e19 (1.98e16), and the share within 37% of the peak 0 to 35.7% (65%). Share for reading (a). Per-location medians run from 1.72e15 (G) to 1.11e17 (C). Before the revision after round 1 the smallest peak was about 5e13 at E. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -422,6 +457,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig5b-polynomial-closest-resistance",
      "notes": "The polynomial fit is the best match for the largest share in all 96 combinations, now with every erosion of P6: 81.4 to 85.7% against the fits and 52.8 to 76.5% with the annulus. On linear bins at most 2 of the 4 peaks are within tolerance (reference: spline and annulus). On logarithmic bins, a variant the claims file names for fig6b but not for this claim, two combinations (P1 a, P4 b, erosion 5, P5 b, all values) put all four within (1.37e15, 7.36e14, 1.08e16, 1.33e15); whether this claim should take fig6b's bins is asked in questions/000491.yaml. By the KS statistic the ellipse is the farthest of the four from the segmentation, not second. Before the revision after round 1 the fits were solved at erosion 3 only, and the outcome was the same. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -454,6 +490,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:ellipse-annulus-underestimate",
      "notes": "Both underestimate in all 48 combinations on linear bins (both readings). The annulus-over-ellipse ratios are within 10% of 1.87 and 1.61 in one: P1 b, P4 a, erosion 1, P5 b, outliers out, 1.82 and 1.702. The outcome rests on that one combination, under the P4 reading that leaves 4 segments without a cross section; over all 48 the median ratio is 1.409 to 2.264 and the peak ratio 0.038 to 2.259. Before the revision after round 1 the one matching combination was P1 b, P4 a, P5 b with erosion 3 (1.831 and 1.675); with the revised PVS and erosion 3 alone no combination matched, and solving the fits at erosions 1 and 5, as the verifier noted was missing, gives the one above. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -486,6 +523,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:spline-resistance-five-times",
      "notes": "On linear bins 4 of 24 combinations are within tolerance (4.85 and 5.25 within 0.5 of 5; 6.59, the measured value with P1 a, P4 b, erosion 3, and 6.57 within 0.62 of 6.2), and 11 more on logarithmic bins, which fig6b's criterion allows for both peaks. The median spline resistance exceeds the segmentation's in every combination (1.07e16 against 5.28e15). The spline area ratio exceeds the segmentation's in only 43.3% of cross sections, so the statement's \"larger area ratio\" does not hold. Before the revision after round 1 the result rested on P4 a (5.45); it now holds under P4 b on linear bins too. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -517,6 +555,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig7-velocity-profiles",
      "notes": "In all 24 combinations of P1, P4 and P6 and both readings the ellipse is faster than the segmentation in 99.9 to 100% of cross sections, the spline slower in 85.8 to 97.6% and the polynomial closest in 71.5 to 81.0%. Median maximum velocity (P1 a, P4 b, erosion 3) 79.88 um/s for the segmentation, 171.77 ellipse, 44.12 spline, 91.49 polynomial. Before the revision after round 1 the result was the same at erosion 3. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -549,6 +588,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:vessel-radius-peak",
      "notes": "The R1 peak is within 2.8 um of 28 in 13 of 24 combinations; the first the criterion lists, P1 a, P4 a, erosion 1, all values, gives 29.50 um (the measured value), and the reference combination 32.20. Peaks 28.75 to 33.03, medians 28.31 to 31.26 um. Per-location medians 17.8 (C, M) to 40.9 um (E). Before the revision after round 1 it held in 11 of 24. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -577,6 +617,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig8-ellipse-parameters",
      "notes": "No combination matches and none has the three ratios within tolerance. R3 peaks at 27.35 to 30.10 um and R3/R1 at 0.965 to 1.107, within tolerance in none; R2/R1 is within in 69 of 72 and R3/R2 in 54 of 72; Ov in 5. Oh's IQR is at least twice Ov's in all 72 and its median within one Ov peak of zero in 11. Before the revision after round 1 R3/R1 was within in 3 combinations. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -606,6 +647,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig9c-pvs-two-lobes",
      "notes": "The HC/R1 peak is within 0.1 of zero in 14 of 24 combinations (reference -0.061, median -0.005); among cross sections with HC above zero, 63.4 to 68.4% have HC below 0.5 R1. HC is above zero in 47.1 to 54.6%. Before the revision after round 1 the peak was within in 15 of 24. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -634,6 +676,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig9e-pvs-width-asymmetry",
      "notes": "No combination has the three peaks within tolerance. WS/R1 peaks at 1.000 to 1.630, WL/R1 at 1.146 to 3.905 and WS/WL at 0.629 to 0.729; with P1 b, P4 a, erosion 1 and all values the first two are within (1.186, 1.887) but WS/WL is 0.729. Medians WS/R1 1.197 to 1.484, WL/R1 2.230 to 3.136, WS/WL 0.564 to 0.595. Before the revision after round 1 the WS/WL peak was 0.38 to 0.63. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -662,6 +705,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:left-right-no-difference",
      "notes": "Readings (a) and (b) find a difference in every combination (p 2e-30 to 8e-190 and 1e-31 to 2e-142; median left minus right -9.6 to -18.0 um); reading (c), on the per-segment medians, does not (p 0.055 to 0.715). Readings (a) and (b) treat thousands of neighbouring, autocorrelated cross sections as independent, so their p-values overstate the evidence; only (c) has independent units, but the criterion sends the split to methods_underspecified. The question for the authors is under findings.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -690,6 +734,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig9a-heights-taper",
      "notes": "One of 48 combinations puts the three peaks within tolerance: P1 b, P4 b, erosion 3, both sides pooled, outliers out (1.228, 0.820, 0.305, the measured values). The outcome rests on that one combination; elsewhere the H1/R1 peak runs from 0.343 to 1.445. The order H1 > H2 > H3 holds for peaks and medians in 12 of 48. Medians H1/R1 1.037 to 1.199, H2/R1 1.108 to 1.205, H3/R1 0.458 to 0.536, so H1 is about 2.3 times H3 by median, not 4. Before the revision after round 1 no combination had all three and the outcome was partially reproduced. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -718,6 +763,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_raicevic_2023.ipynb",
+     "output": "claim:fig9f-pvs-concave",
      "notes": "63.9 to 73.6% of values are below 1 in every combination (medians -0.627 to 0.465). The peak is within tolerance in none; with outliers out it is 0.164 to 1.162. Before the revision after round 1 the nearest peaks were 0.092 and 0.075. Reference combination for measured values, P1 a (0.648 um), P2 a (cleaned longest path), P4 b (polynomial width), P5 a, P6 erosion 3, P7 b (outliers left out), unless stated.",
      "deviations": [
       "Starts from the deposited final segmentations, as the claims file says; the vessel centerline is skimage's 3D thinning in place of MATLAB bwskel. Assumed, for the manual removal of erroneous points (Methods, Creating normal cross sections, \"then manually removed erroneous points\"), which the paper does not describe: the longest path through the skeleton (P2 a), less the points farther from the second-order polynomial fit of the centerline than the vessel radius (95th percentile of the vessel's inscribed radius along the path) and the points that revisit a stretch of the fitted centerline already passed (pvs.clean_path). Added after the first verification, which found the uncleaned path 1.28 to 2.24 times the distance between its ends; 7534 of 9564 path points are kept at 0.648 um and 4974 of 6010 at 1 um. The cleaned path is still 1.13 to 1.78 times the distance between its kept ends and 1.08 to 1.44 times the arc of the fitted centerline at 0.648 um (E excepted), more than the zigzag of a 26-connected voxel path (at most about 8% on a straight line) explains, so it still meanders inside the vessel; the slices are oriented by the fitted centerline, so the meander changes how many there are more than where they lie.",
@@ -912,6 +958,30 @@
     {
      "path": "reproduce_raicevic_2023.ipynb",
      "title": "Reproducing Raicevic et al. (2023) from dandiset 000491",
+     "cells": {
+      "sanity": "8e84109f",
+      "claim:cross-section-counts": "4782a0cd",
+      "claim:fig5a-pvs-area-scales-with-vessel-area": "e5ceb4e2",
+      "claim:fig5e-area-ratio-distribution": "c1bc851a",
+      "claim:fig5bc-area-intersegment-variation": "828e534e",
+      "claim:area-ratio-per-location": "e1cba4dc",
+      "claim:fig5d-polynomial-closest-area-ratio": "3717a918",
+      "claim:table2-fit-area-ratio-peaks": "902669d2",
+      "claim:fig6a-resistance-power-law": "0ddf7154",
+      "claim:fig6b-resistance-segmentation-peak": "5e7969af",
+      "claim:resistance-per-location": "4a5c38b2",
+      "claim:fig5b-polynomial-closest-resistance": "2b9449ed",
+      "claim:ellipse-annulus-underestimate": "15e55676",
+      "claim:spline-resistance-five-times": "717d6053",
+      "claim:fig7-velocity-profiles": "9f03fef9",
+      "claim:vessel-radius-peak": "bc8b68af",
+      "claim:fig8-ellipse-parameters": "f786e6e0",
+      "claim:fig9c-pvs-two-lobes": "018f1aad",
+      "claim:fig9e-pvs-width-asymmetry": "b4b2f826",
+      "claim:left-right-no-difference": "9cbc9cec",
+      "claim:fig9a-heights-taper": "14044b1f",
+      "claim:fig9f-pvs-concave": "d1196350"
+     },
      "executed": "notebooks/raicevic-2023/reproduce_raicevic_2023.html"
     }
    ],

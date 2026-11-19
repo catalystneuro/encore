@@ -5,7 +5,7 @@
   "label": "CRCNS:nac-1"
  },
  "page": "datasets/crcns/nac-1/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 16,
@@ -74,6 +74,43 @@
     {
      "path": "reproduce_ray_2022.ipynb",
      "title": "Reproducing Ray et al. (2022) from CRCNS nac-1",
+     "cells": {
+      "sanity": "85cf4742",
+      "claim:units-recorded": "f2168c9e",
+      "claim:cue-responsive-193": "d4a43a5c",
+      "claim:fig1c-acquisition": "f799be25",
+      "claim:fig1g-discrimination": "3e4c13fc",
+      "claim:fig1h-poke-rate-unrelated": "3284a46a",
+      "claim:fig1h-discrimination-safety": "3284a46a",
+      "claim:fig2-five-clusters": "ccc63c07",
+      "claim:populations-by-rat": "05837635",
+      "claim:most-units-threat": "a7968a78",
+      "claim:fig3ab-rate-cv-unimodal": "b5a5f086",
+      "claim:fig3c-waveform-bimodal": "bee36534",
+      "claim:fig4ab-thi-threat-firing": "87aad6f4",
+      "claim:fig4b-thi-danger-equals-uncertainty": "d146b674",
+      "claim:fig4cd-de-danger-firing": "36ad2928",
+      "claim:fig4ef-bv-danger-decrease": "aa2c76e2",
+      "claim:fig4f-bv-safety-variability": "937f3d45",
+      "claim:fig5ab-the-onset": "0a69c51f",
+      "claim:fig5cd-ns-nonselective": "9300c829",
+      "claim:fig6-similarity-anova": "84ae9a91",
+      "claim:fig6d-thi-similarity": "ed70d6ba",
+      "claim:fig6e-de-similarity": "ed70d6ba",
+      "claim:fig6f-bv-no-similarity-difference": "ed70d6ba",
+      "claim:fig6-thi-greatest-similarity": "7944f255",
+      "claim:fig7-tuning-curves": "044f5eec",
+      "claim:fig8ab-thi-exaggerated-threat": "badf19cc",
+      "claim:fig8cd-de-exaggerated-threat": "711a6bcc",
+      "claim:fig8ef-bv-exaggerated-threat": "f7e9eb91",
+      "claim:fig9a-reward-firing": "62a3997f",
+      "claim:fig9bcd-reward-pre-post": "943835a8",
+      "claim:fig9efg-reward-cue-correlations": "a5c34a4c",
+      "claim:fig9hij-danger-safety-correlations": "440ae0da",
+      "claim:fig10a-poke-cessation-anova": "78ad1d00",
+      "claim:fig10bcd-poke-cessation-pre-post": "b99bd1ca",
+      "claim:fig10efg-poke-cessation-cue-unrelated": "e8444433"
+     },
      "executed": "notebooks/ray-2022/reproduce_ray_2022.html"
     }
    ],
@@ -89,6 +126,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:units-recorded",
      "notes": "The data set holds 368 unit files from 7 rats (ac01, ac03 to ac08), as the paper says, but from 90 distinct sessions (rat and date; one behavior program per rat and date), not 95. Counting distinct rows of 16 suppression ratios, as mainAnalysis.m does, gives 84. No unit is deposited twice (no identical spike trains, no session and unit name used twice) and no two sessions share event times. Sessions per rat are ac01 17, ac03 17, ac04 10, ac05 17, ac06 16, ac07 7 and ac08 6; the paper's per-rat counts (Extended Data Figure 1-1) were not available to compare. The criterion's tolerance is zero for each count and it names no partial outcome, so the session count makes it not reproduced.",
      "deviations": [],
      "assumed": false,
@@ -108,6 +146,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:cue-responsive-193",
      "notes": "Reading (b) (shock and omission trials as two cues) finds 211 units from 81 sessions, at least 7 per rat, all within tolerance. Reading (a) finds 219 units (above 193 +- 19.3) from 82 sessions, with 6 in rat ac07. The authors' own procedure (rates floored to integers, as cubeScriptPR25.m stores them, pooled uncertainty) finds exactly 193 units from 82 sessions, at least 7 per rat. With onsets moved 10 s earlier (inside the recorded segment and before any cue), 25.8% of the 368 units pass reading (a), 29.1% reading (b) and 21.5% the script's screen, against 59.5%, 57.3% and 52.4% at the true onsets; six uncorrected tests at 0.05 would pass about 26% by chance. The paper states no chance level. The later claims use the script's 193 units, an assumption stated with fig2-five-clusters.",
      "deviations": [
       "A test whose differences have no variance gives no p-value and does not count, as MATLAB ttest returns NaN and mainAnalysis.m sets it to 0."
@@ -144,6 +183,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig1c-acquisition",
      "notes": "The data set holds one file per recorded unit, from the 18 recording dates only, a precomputed cube built from them and the authors' scripts. The authors' preRecordingBehavior.m reads the pre-surgery sessions from a folder (AC Group Data) that is not deposited.",
      "deviations": [],
      "assumed": false,
@@ -201,6 +241,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig1g-discrimination",
      "notes": "Under every reading the cue effect holds (F(2,12) 52.6 to 57.4, p < 1e-5), the three means are within tolerance (danger minus uncertainty 0.20 to 0.22, uncertainty minus safety 0.47 to 0.48, danger minus safety 0.67 to 0.70) and the danger minus uncertainty and danger minus safety CIs exclude zero. The uncertainty minus safety CI excludes zero only with all 90 sessions and 0/0 ratios read as 0 (median bounds over 50 seeds [0.012, 0.599], excluding zero in 68% of seeds); under the other readings its lower bound is -0.05 to -0.17, as rat ac01 has a difference of 0.15. With 0/0 set to 1 (the scripts' handling) and the 82 sessions, F(2,12) = 57.41 and the means 0.21, 0.47 and 0.69 equal the paper's exactly. The paper's printed CIs match the bootstrap-t quantiles added to the mean without reflection ([0.36, 1.03] against [0.35, 1.03]). With seed 1001 that CI is [0.04, 0.59]. Judged again over five seeds, it reproduces in 3 of 5 with the analytic SE and 2 of 5 with the inner bootstrap SE. With the non-reflected form every CI excludes zero under every reading and seed, and the claim is reproduced under all six readings.",
      "deviations": [
       "Each rat's value is the mean over its sessions, as mainAnalysis.m averages the session rows of each rat (cueR.cerInd).",
@@ -232,6 +273,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig1h-poke-rate-unrelated",
      "notes": "With 0/0 suppression ratios set to 1 (the scripts' handling, which gives the paper's F(2,12) = 57.41 exactly) or left out, no correlation of baseline poke rate with danger, uncertainty or safety suppression or with danger minus safety has p < 0.05, in the 82 or the 90 sessions (largest |R| 0.49, smallest p 0.26). With 0/0 read as 0, baseline poke rate correlates with danger suppression in the 82 sessions (R = 0.76, p = 0.048) and not in the 90 (R = 0.73, p = 0.063).",
      "deviations": [
       "A 0/0 suppression ratio (no pokes in baseline or cue) is set to 1, as cubeScriptPR25.m and mainAnalysis.m do (cer.cue(isnan(cer.cue)) = 1); the claims file names leaving it out or 0, and the Methods are silent. Assumed because the scripts' handling reproduces the paper's ANOVA exactly; the outcome is the same when 0/0 trials are left out, and differs when they are read as 0."
@@ -260,6 +302,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig1h-discrimination-safety",
      "notes": "Danger minus safety suppression correlates with safety suppression across the seven rats under every reading (R = -0.978 to -0.986, p from 4.5e-5 to 1.4e-4; the paper R = -0.98, p = 1.41e-4).",
      "deviations": [],
      "assumed": false,
@@ -279,6 +322,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig2-five-clusters",
      "notes": "No reading gives the five counts within tolerance. With N4 and the most frequent of 100 starts the centroids show the five patterns (smallest cosine to the templates 0.79) with 6, 28, 45, 89 and 25 units (Threat Excited, Threat Inhibited, Danger Excited, Bidirectional Valence, Non-Selective); N2 gives 7, 27, 44, 91 and 24 (smallest cosine 0.77) and N4 with the best of 100 starts 46, 28, 27, 86 and 6 (0.73). The script normalization's best partition (9, 25, 34, 89 and 36; 0.66) and N1 most frequent (0.65) come close; the other readings give partitions whose centroids do not show the patterns (smallest cosine 0.30 or below), and firing in Hz groups units by rate. The normalized partitions are unstable (each found in 1 to 3 of 100 starts; the most frequent partition in Hz in 19), and the mean distance falls steadily from k = 1 to 7. On the 219 units of screen reading (a) the counts are 47, 36, 80, 45 and 11.",
      "deviations": [
       "The 193 cue-responsive units are those of the authors' screen in mainAnalysis.m on the floored rates of cubeScriptPR25.m (paired ttest, uncertainty rows 5 to 12), the only procedure that gives the paper's 193 units and 82 sessions; the Methods do not mention flooring.",
@@ -302,6 +346,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:populations-by-rat",
      "notes": "Under the assumed partition Threat Excited units come from 3 rats (4 of 6 from ac04), Threat Inhibited from 5, Danger Excited from 6 and Bidirectional Valence from 7; the three main populations (162 units) come from 77 sessions, within tolerance. No partition gives all four rat counts; Threat Excited comes from 3 to 7 rats.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -324,6 +369,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:most-units-threat",
      "notes": "The four populations with differential cue firing hold 87% of the cue-responsive units under the assumed partition and 77% to 97% under every partition. Unit by unit, 73% of units have their largest onset change to danger or uncertainty (chance two thirds).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -361,6 +407,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig3ab-rate-cv-unimodal",
      "notes": "Under the assumed partition (162 units) baseline rate (dip 0.015, p = 1.0) and the coefficient of variance (baseline intervals, dip 0.023, p = 0.82; recorded session, dip 0.024, p = 0.80; the script's 20-s windows, p = 1.0) show no departure from unimodality. No partition gives p < 0.05 for any of them.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -413,6 +460,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig3c-waveform-bimodal",
      "notes": "Under the assumed partition, all main-population units are bimodal (dip 0.114, p < 0.001). Threat Inhibited units are bimodal (dip 0.125, p = 0.001) and 36% narrow at the 0.3875 boundary; Danger Excited units are unimodal (dip 0.067, p = 0.12) and 82% narrow; Bidirectional Valence units are bimodal (dip 0.119, p < 0.001) with 52% narrow. The dips are within tolerance for Bidirectional Valence and outside it for Threat Inhibited and Danger Excited. With the trough boundary (b, 0.425) Bidirectional Valence is 56% narrow, outside 45 to 55%.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -472,6 +520,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig4ab-thi-threat-firing",
      "notes": "Under the assumed partition (28 units, N4) the cue effect (F(2,54) = 41.8) and the interaction (F(94,2538) = 3.83) have p < 1e-10, and threat minus safety is below zero at onset (-0.72 [-1.04, -0.42]) and in the late cue (-0.70 [-0.98, -0.48]), with the CIs excluding zero under every normalization reading and both readings of danger and uncertainty; the means are beyond the tolerance (-0.47 +- 0.15, -0.44 +- 0.16) under all of them (-0.64 to -0.74). With the script normalization (variant) they are -0.37 and -0.38.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -517,6 +566,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig4b-thi-danger-equals-uncertainty",
      "notes": "Under the assumed partition danger minus uncertainty CIs contain zero at onset (-0.03 [-0.26, 0.22]) and late cue (-0.13 [-0.35, 0.07]), under every normalization reading and the script variant. Under the partitions from N1 to N3 with the best of 100 starts, danger decreases exceed uncertainty decreases.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -586,6 +636,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig4cd-de-danger-firing",
      "notes": "Under the assumed partition (45 units, N4) the cue effect (F(2,88) = 12.7, p = 1.4e-5) and interaction (p = 2.3e-8) hold and all three CIs exclude zero (onset danger minus uncertainty 0.40 [0.12, 0.64], uncertainty minus safety 0.66 [0.41, 0.93], late danger minus the others 0.30 [0.12, 0.50]); every mean is above its tolerance under the four normalization readings. With the script normalization all three are within tolerance (0.24, 0.25, 0.16).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -645,6 +696,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig4ef-bv-danger-decrease",
      "notes": "Bidirectional Valence units are 46.1% of cue-responsive units. The cue effect (F(2,176) = 18.4) and the interaction (p = 0.001) hold, and danger minus uncertainty and safety is below zero at onset (-0.33 [-0.48, -0.16]) and late cue (-0.20 [-0.32, -0.06]) under every normalization reading, beyond the tolerance of the means. With the script normalization the onset mean is -0.15 and the late CI reaches zero.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -682,6 +734,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig4f-bv-safety-variability",
      "notes": "Under the assumed partition and the four normalization readings, safety onset firing varies more than danger (variance ratio 1.68 to 1.73, Pitman-Morgan p 0.010 to 0.015) and uncertainty onset firing (1.69 to 1.84, p 0.005 to 0.015). With the script normalization the safety against danger test fails (ratio 1.25, p = 0.29).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -740,6 +793,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig5ab-the-onset",
      "notes": "The assumed partition has 6 Threat Excited units. Threat minus safety is above zero at onset (1.38 [0.33, 2.36]) and its late CI contains zero, but the cue by interval interaction is not significant under any normalization reading (p 0.08 to 0.11; 0.079 with the script normalization). The outcome depends on the partition: on the alternative partition (N2, most frequent, smallest cosine 0.77, 7 Threat Excited units) the interaction has p = 0.013, the onset CI is above zero (1.42 [0.44, 2.13]) and the late CI contains zero, which reproduces the claim. CI form, SE and seed do not change the outcome on the primary partition.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -799,6 +853,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig5cd-ns-nonselective",
      "notes": "The 25 Non-Selective units of the assumed partition show a main effect of cue (F(2,48) = 4.9 to 5.2, p 0.009 to 0.012) and a late threat minus safety CI that excludes zero (0.27 to 0.29, lower bounds 0.01 to 0.03); the onset CI contains zero, and the interaction is at p 0.04 to 0.07.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -845,6 +900,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig6-similarity-anova",
      "notes": "Under the assumed partition (162 units, none dropped) population (F(2,159) = 5.66, p = 0.004), comparison (F(2,318) = 12.0, p < 1e-4) and their interaction (F(4,318) = 2.45, p = 0.046) are significant; readings (a) and (b) give identical R, since they differ by a scale and offset per unit. With the script normalization the interaction is p = 0.022.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -885,6 +941,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig6d-thi-similarity",
      "notes": "Threat Inhibited danger/uncertainty R exceeds uncertainty/safety (t(27) = 3.08, p = 0.0047) and danger/safety (t(27) = 3.49, p = 0.0017), both below 0.0056.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -925,6 +982,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig6e-de-similarity",
      "notes": "Danger Excited danger/uncertainty R is higher than uncertainty/safety (t(44) = 2.36, p = 0.023) and danger/safety (t(44) = 2.64, p = 0.011), but neither passes 0.0056. With the script normalization (variant) both pass (p = 0.004, 0.0014).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -956,6 +1014,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig6f-bv-no-similarity-difference",
      "notes": "No Bidirectional Valence comparison reaches 0.0056 (t 1.10, 1.81 and 0.93; smallest p 0.074).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -985,6 +1044,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig6-thi-greatest-similarity",
      "notes": "Threat Inhibited danger/uncertainty R (mean 0.52) is the highest of the nine means and exceeds Danger Excited (t = 3.59, p = 0.0006) and Bidirectional Valence (t = 4.20, p = 0.0001), at either level.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1008,6 +1068,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig7-tuning-curves",
      "notes": "Under per-trial reading (a), and reading (b), which gives identical betas, the extremes are 0.75 (Threat Inhibited), 0.50 (Danger Excited) and 0.50 (Bidirectional Valence). The Threat Inhibited extreme is narrow (mean betas -1.013 at 0.50, -1.020 at 0.75 under reading (a)). Reading (c) gives 0.50 for Threat Inhibited. The two regression readings give the same betas (difference below 1e-14), since a beta is linear in the response. The script's procedure gives 0.75, 0.50, 0.50. Per-trial readings (a) and (b) differ by a per-trial offset with zero mean within each trial type, which is orthogonal to the regressors, so they are one reading. On the alternative partition (N2, most frequent) the Threat Inhibited extreme is 0.50 under all three readings (-1.050 against -1.049 under reading (a)), which gives partially reproduced.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1075,6 +1136,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig8ab-thi-exaggerated-threat",
      "notes": "With per-trial reading (a), one model and 0/0 trials left out (27 units, 1 dropped for a constant suppression ratio) the interaction is F(11,286) = 1.88, p = 0.041; exaggerated threat betas are -1.15 [-1.63, -0.77] early and -0.57 [-1.04, -0.17] late, fear output CIs contain zero, the early difference is -0.98 [-1.70, -0.29] and the late one contains zero, all within tolerance. The same holds with 0/0 set to 1. With 0/0 read as 0, or under per-trial readings (b) and (c), a fear output CI excludes zero; with separate models fear output betas are below zero. Over five seeds, both interval forms and both SEs, the readings that reproduce (per-trial (a), 0/0 left out or set to 1) reproduce in every case; per-trial reading (b), not reproduced with the claim's seed, reproduces in 2 to 5 of 5 seeds with 0/0 left out or set to 1.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1143,6 +1205,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig8cd-de-exaggerated-threat",
      "notes": "With one model (45 units) exaggerated threat betas are above zero early (0.47 [0.16, 0.73]) and late (0.28 [0.03, 0.55]) and fear output CIs contain zero, but the early difference CI contains zero (0.33 [-0.12, 0.64]) under every one-model reading, and the main effect of regressor (p = 0.13 here) is significant in only two of them. With separate models the fear output betas exceed zero. Over five seeds, with per-trial reading (a) and 0/0 left out, the non-reflected form or the inner bootstrap SE gives not reproduced in 2 or 3 of 5 seeds; with 0/0 read as 0 or set to 1 the outcome stays partially reproduced in every seed, form and SE.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1217,6 +1280,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig8ef-bv-exaggerated-threat",
      "notes": "With reading (a), one model and 0/0 trials left out (80 units, 9 dropped) the regressor effect (p = 0.025) and interaction (p = 0.049) hold, early exaggerated threat betas are below zero (-0.47 [-0.64, -0.29]) and fear output betas are not, the early difference is -0.46 [-0.74, -0.17] and the late one contains zero; the early exaggerated threat mean is outside its tolerance (-0.31 +- 0.14). The script's procedure meets every part (-0.30 [-0.47, -0.14]).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1269,6 +1333,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig9a-reward-firing",
      "notes": "ITI reading (a) holds no reward inside a recorded segment (33 of 33 dropped) and cannot be tested. Under ITI reading (b) with either normalization, Bidirectional Valence units change firing around reward (F(15,1320) = 9.51 with (i), 4.93 with (ii), p < 1e-4) and the population by bin interaction holds (p = 0.0001 and 0.0035), but Threat Inhibited units change too (F = 3.05, p = 0.0001; F = 3.33, p = 3e-5); Danger Excited units do not (p 0.54 and 0.53). The script's windows give the same with each of three normalizations (Threat Inhibited p 0.0014 or less).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1320,6 +1385,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig9bcd-reward-pre-post",
      "notes": "Under ITI reading (b), the only one with events, the Bidirectional Valence part fails: with normalization (i) its pre-reward firing is above zero (0.18 [0.02, 0.34]) and its post-reward mean (1.43) is outside 0.47 +- 0.15; with (ii) the post mean (0.78) and the rise (0.66) are outside their tolerances. Threat Inhibited post-reward firing and its rise exclude zero under both. The script's windows with the claims-file normalizations give the same (BV post 1.43 and 0.78). Only the script's full procedure, whose 2 to 1 s baseline and per-event z-score the Methods do not describe, meets the Bidirectional Valence part (pre 0.07 [-0.01, 0.17], post 0.46 [0.31, 0.68], difference 0.39 [0.20, 0.61]), with Threat Inhibited post firing excluding zero (0.24 [0.03, 0.49]); it would be partially reproduced. CI form, SE and seed do not change the outcomes.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1399,6 +1465,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig9efg-reward-cue-correlations",
      "notes": "Under ITI reading (b) with either normalization, Bidirectional Valence reward onset firing correlates positively with safety onset (R2 = 0.055, p = 0.028 with (i); 0.053, p = 0.030 with (ii)) and negatively with danger firing (R2 = 0.123, p = 0.0007; 0.062, p = 0.019), the correlations differ (Fisher and Steiger p of 0.0023 or less), and Threat Inhibited shows no difference (p 0.46 to 0.60) and no safety correlation. The Danger Excited danger correlation is significant (p 0.012 and 0.020), against the statement. Under reading (b) with (i) the safety R2 (0.055) is outside 0.08 +- 0.008 and the danger R2 (0.123) within 0.12 +- 0.012; with the script's full procedure they are 0.088 and 0.109. The script's windows give the same outcome. ITI reading (a) holds no event.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1445,6 +1512,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig9hij-danger-safety-correlations",
      "notes": "With the claims file's normalization, Danger Excited danger firing correlates negatively with safety onset (R2 0.11 to 0.14, p 0.01 to 0.03) but Bidirectional Valence does not (R2 0.008 to 0.011, p 0.33 to 0.40); Threat Inhibited shows none (p 0.33 to 0.64). With the script normalization (variant) the pattern holds (DE R2 0.21, p = 0.001; BV R2 0.062, p = 0.019; TI p = 0.44).",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1483,6 +1551,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig10a-poke-cessation-anova",
      "notes": "ITI reading (a) holds no cessation inside a recorded segment (306 of 306 dropped) and cannot be tested. Under ITI reading (b) there is no effect of interval (F(15,2385) = 1.21, p = 0.26 with (i); 1.43, p = 0.12 with (ii)) and a population by interval interaction (F(30,2385) = 3.07 and 2.47, p < 1e-4). The script's windows give the same with each normalization (interval p 0.26 to 0.49, interaction p 0.004 to 0.010). Under reading (b), 2737 of 15363 candidate cessations were dropped because their 2 s without a poke ran into a pause in the recording.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1506,6 +1575,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig10bcd-poke-cessation-pre-post",
      "notes": "Under ITI reading (b) Threat Inhibited and Danger Excited pre, post and difference CIs contain zero with either normalization, and the Bidirectional Valence post CI is above zero (0.18 [0.04, 0.33] with (i); 0.44 [0.10, 0.76] with (ii)), but the Bidirectional Valence pre CI contains zero (0.085 [-0.009, 0.207]; 0.218 [-0.038, 0.485]). With the script's windows the Bidirectional Valence pre CI contains zero under every normalization. CI form, SE and seed do not change the outcome. ITI reading (a) holds no event.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1537,6 +1607,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_ray_2022.ipynb",
+     "output": "claim:fig10efg-poke-cessation-cue-unrelated",
      "notes": "Under ITI reading (b) Danger Excited cessation firing correlates with danger cue firing (R2 = 0.10, p = 0.034 with (i); 0.22, p = 0.0012 with (ii)); the other correlations have p of 0.16 or more. The script's windows give the same with every normalization (Danger Excited danger p 0.001 to 0.034). ITI reading (a) holds no event inside a recorded segment and cannot be tested.",
      "deviations": [
       "The populations are the reproduced partition chosen among the claims file's readings (N4 normalization, three trial types with uncertainty the mean of the two type traces, most frequent of 100 k-means++ starts), the one whose centroids best match the five patterns the Results describe (smallest cosine 0.79), with 6 Threat Excited, 28 Threat Inhibited, 45 Danger Excited, 89 Bidirectional Valence and 25 Non-Selective units. This is an assumption; the paper's labels are not in the data set and its clustering (one MATLAB start after rng(1), mainAnalysis.m) cannot be repeated. The notebook shows the result under all 12 partitions.",
@@ -1710,6 +1781,43 @@
     {
      "path": "reproduce_ray_2022.ipynb",
      "title": "Reproducing Ray et al. (2022) from CRCNS nac-1",
+     "cells": {
+      "sanity": "85cf4742",
+      "claim:units-recorded": "f2168c9e",
+      "claim:cue-responsive-193": "d4a43a5c",
+      "claim:fig1c-acquisition": "f799be25",
+      "claim:fig1g-discrimination": "3e4c13fc",
+      "claim:fig1h-poke-rate-unrelated": "3284a46a",
+      "claim:fig1h-discrimination-safety": "3284a46a",
+      "claim:fig2-five-clusters": "ccc63c07",
+      "claim:populations-by-rat": "05837635",
+      "claim:most-units-threat": "a7968a78",
+      "claim:fig3ab-rate-cv-unimodal": "b5a5f086",
+      "claim:fig3c-waveform-bimodal": "bee36534",
+      "claim:fig4ab-thi-threat-firing": "87aad6f4",
+      "claim:fig4b-thi-danger-equals-uncertainty": "d146b674",
+      "claim:fig4cd-de-danger-firing": "36ad2928",
+      "claim:fig4ef-bv-danger-decrease": "aa2c76e2",
+      "claim:fig4f-bv-safety-variability": "937f3d45",
+      "claim:fig5ab-the-onset": "0a69c51f",
+      "claim:fig5cd-ns-nonselective": "9300c829",
+      "claim:fig6-similarity-anova": "84ae9a91",
+      "claim:fig6d-thi-similarity": "ed70d6ba",
+      "claim:fig6e-de-similarity": "ed70d6ba",
+      "claim:fig6f-bv-no-similarity-difference": "ed70d6ba",
+      "claim:fig6-thi-greatest-similarity": "7944f255",
+      "claim:fig7-tuning-curves": "044f5eec",
+      "claim:fig8ab-thi-exaggerated-threat": "badf19cc",
+      "claim:fig8cd-de-exaggerated-threat": "711a6bcc",
+      "claim:fig8ef-bv-exaggerated-threat": "f7e9eb91",
+      "claim:fig9a-reward-firing": "62a3997f",
+      "claim:fig9bcd-reward-pre-post": "943835a8",
+      "claim:fig9efg-reward-cue-correlations": "a5c34a4c",
+      "claim:fig9hij-danger-safety-correlations": "440ae0da",
+      "claim:fig10a-poke-cessation-anova": "78ad1d00",
+      "claim:fig10bcd-poke-cessation-pre-post": "b99bd1ca",
+      "claim:fig10efg-poke-cessation-cue-unrelated": "e8444433"
+     },
      "executed": "notebooks/ray-2022/reproduce_ray_2022.html"
     }
    ],

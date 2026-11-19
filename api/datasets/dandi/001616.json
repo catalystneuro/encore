@@ -5,7 +5,7 @@
   "label": "DANDI:001616"
  },
  "page": "datasets/dandi/001616/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 6,
@@ -79,21 +79,55 @@
     {
      "path": "reproduce_gerken_2025.ipynb",
      "title": "Reproducing Gerken, Darcher et al. (2025) from dandiset 001616",
+     "cells": {
+      "sanity": "97805f1b",
+      "claim:fig2b-phc-camera-cuts": "348e6e9b",
+      "claim:tables1-camera-cuts-regions": "8654e00e",
+      "claim:fig2b-phc-scene-cuts": "531e6008",
+      "claim:tables1-few-semantic-responses": "fe2bc761",
+      "claim:tables1-no-indoor-response": "6d824d79",
+      "claim:results-cluster-regions": "2e463195",
+      "claim:fig3b-single-neuron-threshold": "18ce39b8",
+      "claim:fig3c-logreg-characters-location": "b4ec4b90",
+      "claim:fig3c-logreg-cuts-lower": "b4ec4b90",
+      "claim:fig3e-temporal-gap": "0610ca4b",
+      "claim:fig4-patients-below-pooled": "1d665be9",
+      "claim:fig4-named-patients": "c6127391",
+      "claim:fig5-region-decoding": "1fcc5eae",
+      "claim:fig5-faces-presence": "12a50c75",
+      "claim:fig6-responsive-subsets": "4d61d3fb"
+     },
      "executed": "notebooks/gerken-2025/reproduce_gerken_2025.html"
     },
     {
      "path": "top_ranked_units.ipynb",
      "title": "Top-ranked units for decoding Summer (Figure 7)",
+     "cells": {
+      "sanity": "f8985209",
+      "claim:fig7b-top500-overlap": "329ce14c",
+      "claim:fig7a-500-neurons": "81c3b57e"
+     },
      "executed": "notebooks/gerken-2025/top_ranked_units.html"
     },
     {
      "path": "responsive_zeta_cuts.ipynb",
      "title": "Responsive units by the dataset code's ZETA test, camera and scene cuts (variant)",
+     "cells": {
+      "sanity": "b0f51a27",
+      "claim:fig2b-phc-camera-cuts": "e0244d9a",
+      "claim:tables1-camera-cuts-regions": "e0244d9a",
+      "claim:fig2b-phc-scene-cuts": "e0244d9a"
+     },
      "executed": "notebooks/gerken-2025/responsive_zeta_cuts.html"
     },
     {
      "path": "responsive_zeta_labels.ipynb",
      "title": "Responsive units by the dataset code's ZETA test, character, person and location labels (variant)",
+     "cells": {
+      "sanity": "3c93ab8e",
+      "claim:tables1-few-semantic-responses": "3820e9ba",
+      "claim:tables1-no-indoor-response": "3820e9ba"
+     },
      "executed": "notebooks/gerken-2025/responsive_zeta_labels.html"
     }
    ],
@@ -109,6 +143,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "sanity",
      "notes": "29 patients, 2286 units and 17 female patients, as stated, with 30 to 137 units per patient. With AH, MH and PH grouped as hippocampus (the dataset's code), the regions hold A 559 (paper 580), H 846 (794), EC 493 (440), PHC 293 (373) and PIC 68 (99), and 27 units lie in FF, LG and PRC. A and H are within 10%; EC, PHC and PIC are not. Every unit's region matches that of its electrode.",
      "deviations": [
       "Regions are read from the dandiset's `brain_region` and grouped as in the dataset's code; the paper gives no mapping."
@@ -130,6 +165,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig2b-phc-camera-cuts",
      "notes": "The Methods' test counts 222 of 293 PHC units (75.77%) responsive at alpha 0.001 and 228 (77.82%) at 0.01 (paper 193 of 373, 51.74%). The same test counts 72.35% of PHC units and 68.4% of all units responsive at random event times (69.2% in the per-label check with 884 random times), and all synthetic Poisson units at 2 Hz with 884 random events, so its false-positive rate is far from its alpha and the procedure differs from the paper's. The test compares integer counts in 100 ms bins with the baseline mean per 100 ms across hundreds of trials, which a signed-rank test finds different even without a response. The dataset code's ZETA test (responsive_zeta_cuts.ipynb, all units) is not anticonservative (none of 400 units at random times at alpha 0.001, 1.0% at 0.01) and finds 35 of 293 PHC units (11.95%) at 0.001 and 67 (22.87%) at 0.01, below the paper's fraction; neither test as run here gives the paper's count.",
      "deviations": [
       "The responsive-unit test follows the Methods as fixed in the claims file (baseline count over -1000 to 0 ms divided by 10, 19 overlapping 100 ms bins, two-sided Wilcoxon signed-rank, Simes); the Methods do not say more.",
@@ -153,6 +189,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:tables1-camera-cuts-regions",
      "notes": "Depends on fig2b-phc-camera-cuts. The miscalibrated test counts A 73.70%, EC 73.63%, H 64.54% and PHC 75.77% at alpha 0.001 (paper 46.90, 45.68, 38.92, 51.74%), and 62 to 73% of each region at random times. The ZETA test of the dataset's code counts A 3.22%, EC 0.61%, H 1.30% and PHC 11.95% (responsive_zeta_cuts.ipynb).",
      "deviations": [
       "The responsive-unit test follows the Methods as fixed in the claims file (baseline count over -1000 to 0 ms divided by 10, 19 overlapping 100 ms bins, two-sided Wilcoxon signed-rank, Simes); the Methods do not say more."
@@ -179,6 +216,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig2b-phc-scene-cuts",
      "notes": "The Methods' test counts 138 of 293 PHC units (47.10%) at alpha 0.001 and 180 (61.43%) at 0.01 (paper 6.70%); with as many random times as there are scene cut onsets it counts 48.25% of all units, so it is miscalibrated. With this split the largest cluster has p = 0.055 with the Methods' z-scoring and p = 0.020 with the code's per-trial z-scoring at alpha 0.001, and there is no cluster at 0.01. The ZETA test finds 12 of 293 (4.10%) at 0.001 and 29 (9.90%) at 0.01, either side of the tolerance of 4.16 to 9.24%; with 1000 resamplings 11 and 31 (responsive_zeta_cuts.ipynb).",
      "deviations": [
       "The responsive-unit test follows the Methods as fixed in the claims file (baseline count over -1000 to 0 ms divided by 10, 19 overlapping 100 ms bins, two-sided Wilcoxon signed-rank, Simes); the Methods do not say more.",
@@ -201,6 +239,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:tables1-few-semantic-responses",
      "notes": "The test counts 1013 units responsive to Summer and 1174 to Tom at alpha 0.001 (paper 46 and 216), and 9.93 to 51.36% of units for each semantic label. At random times, as many as each label's onsets, it counts about as many (Summer 44.05% against 44.31% at the real onsets, Tom 50.26% against 51.36%), so the counts are dominated by false positives. The code's onset rule (no minimum duration) changes them little (1019 and 1191). The ZETA test of the dataset's code, conservative at random times, counts 11 for Summer and 13 for Tom (responsive_zeta_labels.ipynb), and 79 for camera cuts (paper 1025).",
      "deviations": [
       "The responsive-unit test follows the Methods as fixed in the claims file (baseline count over -1000 to 0 ms divided by 10, 19 overlapping 100 ms bins, two-sided Wilcoxon signed-rank, Simes); the Methods do not say more.",
@@ -223,6 +262,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:tables1-no-indoor-response",
      "notes": "The test counts 299 units responsive to Indoor onsets at alpha 0.001 and 810 at 0.01, and 439 for McKenzie and 227 for Summer Presence at 0.001, where Table S1 has 0; with 44 random times in place of the Indoor onsets it counts 11.46% of units. An absence cannot be judged with this test. The paper's test as written is the one run here; the alpha of 0.001 is that of the Results paragraph making the claim. The ZETA test of the dataset's code, which is not the paper's test, counts 2 Indoor units at 0.001 (responsive_zeta_labels.ipynb).",
      "deviations": [
       "The responsive-unit test follows the Methods as fixed in the claims file (baseline count over -1000 to 0 ms divided by 10, 19 overlapping 100 ms bins, two-sided Wilcoxon signed-rank, Simes); the Methods do not say more."
@@ -244,6 +284,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:results-cluster-regions",
      "notes": "The responsive and non-responsive split comes from the miscalibrated test. With it, 11 of 32 cells agree with the paper at alpha 0.001 and 12 at 0.01; camera cuts give no cluster in any region (p = 1.000), and at 0.001 PHC has 6 significant labels against 7 in H.",
      "deviations": [
       "The responsive-unit test follows the Methods as fixed in the claims file (baseline count over -1000 to 0 ms divided by 10, 19 overlapping 100 ms bins, two-sided Wilcoxon signed-rank, Simes); the Methods do not say more."
@@ -265,6 +306,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig3b-single-neuron-threshold",
      "notes": "Median unit kappa for Summer 0.0076 over 2286 units; 89.8% below 0.05; best unit 0.276 (patient 7, amygdala); no unit reaches 0.31 or the pooled logistic regression (0.301).",
      "deviations": [
       "The threshold and its direction are searched over 50 quantiles of each unit's window counts on the validation set; the Methods say only that the best threshold was chosen on the validation set."
@@ -286,6 +328,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig3c-logreg-characters-location",
      "notes": "Pooled logistic regression, mean over 5 folds, Summer 0.301 (SEM 0.056), Indoor/Outdoor 0.359 (SEM 0.049), both within tolerance of 0.28 and 0.31; Tom 0.218, McKenzie 0.324 and Persons 0.410 reach the LSTM values less their SEM. Test-label shuffles give p = 0.001 in every fold for Summer, McKenzie, Persons and Indoor/Outdoor; one Tom fold has kappa 0.002 (p = 0.45). Over the C grid the test kappa ranges from 0.266 to 0.311 (Summer) and from 0.349 to 0.393 (Indoor/Outdoor). With Summer labels shifted by 300 s the kappa is 0.015.",
      "deviations": [
       "Class weights balanced in place of oversampling the minority class.",
@@ -310,6 +353,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig3c-logreg-cuts-lower",
      "notes": "Scene Cuts 0.0771 (SEM 0.027) and Camera Cuts 0.0961 (SEM 0.020), within tolerance of 0.10 and 0.11 (Camera Cuts by 0.001 above the lower bound of 0.095) and below the LSTM's 0.20 and 0.18. Camera Cuts are above chance in every fold (p = 0.001); one Scene Cuts fold is not (kappa -0.008, p = 0.89).",
      "deviations": [
       "Scene cut labels are extended to 520 ms after the cut, as the Methods state for camera cuts.",
@@ -332,6 +376,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig3e-temporal-gap",
      "notes": "Summer with a random split 0.948 (5 draws, 0.942 to 0.953); with gaps of 4, 8, 16 and 32 s 0.555, 0.524, 0.451 and 0.301. The LSTM values held in the dataset's code are 0.987, 0.584, 0.539, 0.429 and 0.309.",
      "deviations": [
       "Logistic regression in place of the LSTM.",
@@ -354,6 +399,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig4-patients-below-pooled",
      "notes": "No patient reaches the pooled kappa. Summer best patient 7 at 0.268 against 0.301 (median 0.060); Scene Cuts patient 20 at 0.043 against 0.077 (median 0.010); Indoor/Outdoor patient 2 at 0.256 against 0.359 (median 0.099). By the test-label shuffle 5, 5 and 12 patients are above chance (p = 0.001) in all five folds for the three labels.",
      "deviations": [],
      "assumed": false,
@@ -373,6 +419,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig4-named-patients",
      "notes": "7 of 8 named pairs exceed 0.2; Summer patients 7 (0.268), 10 (0.227), 22 (0.241), and 15 at 0.197, each above chance in all five folds; Indoor/Outdoor patients 2 (0.256), 13 (0.210), 20 (0.217), 25 (0.201). For Scene Cuts three of the paper's patients (20, 19, 2) are among the four best here, and patient 10 is fifth.",
      "deviations": [
       "Assumes the dandiset's subject ids are the paper's patient numbers; neither gives a mapping, and the Figure 4 legend gives no unit counts per patient to compare. The agreement of the named patients supports this."
@@ -394,6 +441,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig5-region-decoding",
      "notes": "Summer A 0.291, EC 0.149, PHC 0.096, H 0.068, so A highest and H lowest hold. Indoor/Outdoor PHC 0.357, H 0.302, A 0.122, EC 0.117, so PHC highest holds; A is not lowest, though A and EC differ by less than their SEMs (0.041, 0.052). 3 of 4 orderings hold. Six region folds have test-shuffle p above 0.05 (A Indoor/Outdoor, EC Summer, EC Indoor/Outdoor and PHC Summer once each, H Summer twice).",
      "deviations": [
       "Logistic regression in place of the LSTM.",
@@ -416,6 +464,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig5-faces-presence",
      "notes": "One of three conditions holds. Summer Presence is decoded best from the amygdala (0.292; PHC 0.132, EC 0.110, H 0.103; pooled 0.234). Face labels decode worse than the character labels, Summer Faces 0.217 against Summer 0.301 and Tom Faces 0.167 against Tom 0.218 (paper LSTM 0.33 against 0.31 and 0.27 against 0.23). Every fold of the three labels is above chance (p = 0.001). The face labels keep as negatives the frames the Methods exclude, which may lower their kappa; the dandiset does not mark those frames, so this cannot be checked.",
      "deviations": [
       "Logistic regression in place of the LSTM; the criterion was written after the first verification round, before these labels were decoded.",
@@ -438,6 +487,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_gerken_2025.ipynb",
+     "output": "claim:fig6-responsive-subsets",
      "notes": "Depends on the responsive sets of the miscalibrated test (1013 units for Summer, 1616 for Camera Cuts at alpha 0.001). With them three of four conditions hold; Summer 0.294 without responsive units, 0.256 with them only (condition b needs below 0.251), 0.301 complete; Camera Cuts 0.115 with responsive units only, 0.013 without, 0.096 complete. Size-matched non-responsive sets give 0.262 to 0.300 for Summer; none can be drawn for Camera Cuts (670 non-responsive units). 548 of those 670 spike in fewer than a third of the pseudo-trials and get p = 1 untested; the 122 that spike give 0.034, a drop of 0.062, against 0.060 for the 730 active non-responsive units of Summer.",
      "deviations": [
       "Logistic regression in place of the LSTM, over all regions together."
@@ -459,6 +509,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "top_ranked_units.ipynb",
+     "output": "claim:fig7b-top500-overlap",
      "notes": "95 units are common to the top 500 of the five rankings, against 78 (tolerance 70.2 to 85.8) and a chance level of 1.14 by the paper's formula (1.12 simulated), 83 times chance. No unit in a top 500 was tied at zero; ties by unit index give the same 95. Chance values for 100, 350, 750 and 1000 (0.00, 0.19, 8.69, 36.6) match the paper's (0, 0, 9, 37), so the chance computation agrees; observed overlaps are 20, 65, 156 and 252.",
      "deviations": [
       "The four sub-splits of a test fold take each of the other four folds once as validation; the Methods say only that they alternate training and validation data.",
@@ -481,6 +532,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "top_ranked_units.ipynb",
+     "output": "claim:fig7a-500-neurons",
      "notes": "With the logistic regression and nested averaging over the 20 sub-splits, the top 500 units give kappa 0.375 against 0.357 for all 2286 units, a difference of 0.018, less than the SEMs (0.026, 0.029). The peak is at 229 units (0.394), with 150 units at 0.389 and the top 23 at 0.341. Every fit is above chance (p = 0.001). The paper's LSTM peaks at 0.38 with 500 units.",
      "deviations": [
       "Logistic regression in place of the LSTM; the criterion was written after the first verification round, before any fit on top-ranked units.",
@@ -509,6 +561,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": null,
+     "output": null,
      "notes": "The LSTM's code is not in the paper's materials, the dataset's GitHub repository (commit 59fc242) or its Zenodo archive, which hold a two-layer linear baseline; the Methods choose layers, hidden sizes, batch size, learning rate, weight decay and dropout per label without stating them. Training 700 epochs per label and fold on a CPU would also exceed the time limit; this was not tried. The logistic regression results are under fig3c-logreg-characters-location and fig3c-logreg-cuts-lower.",
      "deviations": [],
      "assumed": false,
@@ -528,6 +581,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": null,
+     "output": null,
      "notes": "Needs the trained LSTM; see fig3c-lstm-decoding. The logistic regression on window sums does not see the order of the 20 bins, so it cannot stand in.",
      "deviations": [],
      "assumed": false,
@@ -700,21 +754,55 @@
     {
      "path": "reproduce_gerken_2025.ipynb",
      "title": "Reproducing Gerken, Darcher et al. (2025) from dandiset 001616",
+     "cells": {
+      "sanity": "97805f1b",
+      "claim:fig2b-phc-camera-cuts": "348e6e9b",
+      "claim:tables1-camera-cuts-regions": "8654e00e",
+      "claim:fig2b-phc-scene-cuts": "531e6008",
+      "claim:tables1-few-semantic-responses": "fe2bc761",
+      "claim:tables1-no-indoor-response": "6d824d79",
+      "claim:results-cluster-regions": "2e463195",
+      "claim:fig3b-single-neuron-threshold": "18ce39b8",
+      "claim:fig3c-logreg-characters-location": "b4ec4b90",
+      "claim:fig3c-logreg-cuts-lower": "b4ec4b90",
+      "claim:fig3e-temporal-gap": "0610ca4b",
+      "claim:fig4-patients-below-pooled": "1d665be9",
+      "claim:fig4-named-patients": "c6127391",
+      "claim:fig5-region-decoding": "1fcc5eae",
+      "claim:fig5-faces-presence": "12a50c75",
+      "claim:fig6-responsive-subsets": "4d61d3fb"
+     },
      "executed": "notebooks/gerken-2025/reproduce_gerken_2025.html"
     },
     {
      "path": "top_ranked_units.ipynb",
      "title": "Top-ranked units for decoding Summer (Figure 7)",
+     "cells": {
+      "sanity": "f8985209",
+      "claim:fig7b-top500-overlap": "329ce14c",
+      "claim:fig7a-500-neurons": "81c3b57e"
+     },
      "executed": "notebooks/gerken-2025/top_ranked_units.html"
     },
     {
      "path": "responsive_zeta_cuts.ipynb",
      "title": "Responsive units by the dataset code's ZETA test, camera and scene cuts (variant)",
+     "cells": {
+      "sanity": "b0f51a27",
+      "claim:fig2b-phc-camera-cuts": "e0244d9a",
+      "claim:tables1-camera-cuts-regions": "e0244d9a",
+      "claim:fig2b-phc-scene-cuts": "e0244d9a"
+     },
      "executed": "notebooks/gerken-2025/responsive_zeta_cuts.html"
     },
     {
      "path": "responsive_zeta_labels.ipynb",
      "title": "Responsive units by the dataset code's ZETA test, character, person and location labels (variant)",
+     "cells": {
+      "sanity": "3c93ab8e",
+      "claim:tables1-few-semantic-responses": "3820e9ba",
+      "claim:tables1-no-indoor-response": "3820e9ba"
+     },
      "executed": "notebooks/gerken-2025/responsive_zeta_labels.html"
     }
    ],

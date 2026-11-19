@@ -5,7 +5,7 @@
   "label": "DANDI:001273"
  },
  "page": "datasets/dandi/001273/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 2,
@@ -107,21 +107,41 @@
     {
      "path": "reproduce_semenov_2025.ipynb",
      "title": "Reproducing Semenov et al. (2025), Figure 4, from dandiset 001273",
+     "cells": {
+      "sanity": "9a4e7767",
+      "claim:fig4-polarized-poles-face-electrodes": "c05b4c38",
+      "claim:fig4-pooled-time-constants": "c153e83d",
+      "claim:fig4-no-pole-difference": "8d1c943d",
+      "claim:fig4-discharging-slower": "36635dc0",
+      "claim:fig4-full-charge-within-3us": "ef81a553",
+      "claim:fig4-orientation-time-constants": "2f808dfc"
+     },
      "executed": "notebooks/semenov-2025-001273/reproduce_semenov_2025.html"
     },
     {
      "path": "elsewhere_001030.ipynb",
      "title": "Semenov et al. (2025), Figure 3C, from dandiset 001030 (data elsewhere)",
+     "cells": {
+      "sanity": "7665c515",
+      "claim:fig3c-sustained-firing-2s": "3cc8884d"
+     },
      "executed": "notebooks/semenov-2025-001273/elsewhere_001030.html"
     },
     {
      "path": "elsewhere_001272.ipynb",
      "title": "Semenov et al. (2025), Figure S1, from dandiset 001272 (data elsewhere)",
+     "cells": {
+      "sanity": "d04d98f4",
+      "claim:figs1-di8-anepps-control": "cc1aa011"
+     },
      "executed": "notebooks/semenov-2025-001273/elsewhere_001272.html"
     },
     {
      "path": "survey_other_dandisets.ipynb",
      "title": "Semenov et al. (2025): a metadata survey of the paper's other dandisets",
+     "cells": {
+      "sanity": "151cc5a9"
+     },
      "executed": "notebooks/semenov-2025-001273/survey_other_dandisets.html"
     }
    ],
@@ -137,6 +157,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_semenov_2025.ipynb",
+     "output": "claim:fig4-polarized-poles-face-electrodes",
      "notes": "Tested on the 14 experiments whose session description names the electrode axis (January 19 and March 11). In 13 of 14 the extreme depolarized and hyperpolarized pixels of the soma lie on opposite sides of its centroid with their separation within 45 degrees of the field axis (median angle 13.8 degrees); the exception (cell 1 of March 11) is at 48.7 degrees. With the axes swapped, 1 of 14 passes. In the 40 V experiments, 10 of 11 pass. The shape groups are not in the dataset, so the majority is taken over all experiments with an axis (O4), not per group. The polarity of the electrodes is not given, so which pole faced the cathode is not tested. With the soma mask opened by a disc of radius 8 pixels, to trim neurite stumps the threshold mask can take in, 12 of 14 pass (median angle 17.1 degrees). The neurite part is reported, not judged; the 99th percentile of the absolute RATIO change outside the soma is below that within it in 21 of 22 experiments.",
      "deviations": [
       "The ROIs are not in the dataset. The extreme pixels are taken from the RATIO image rebuilt as the Methods describe (Pulsed laser fluorescence microscopy, CONTROL, POLARIZED and RATIO images, 12 x 12 pixel low-pass filter), within the soma, defined as the connected region of the filtered CONTROL image brighter than halfway between the image median and the brightest central pixel (a standard choice; the neuron was centred in the field, Methods, Sine wave and square pulse stimulation). The centroid is that of the soma region.",
@@ -181,6 +202,7 @@
      "outcome": "blocked",
      "blocked_by": "metadata_insufficient",
      "notebook": "reproduce_semenov_2025.ipynb",
+     "output": "claim:fig4-orientation-time-constants",
      "notes": "The groups of Figure 4D and 4E (elongated parallel n = 3, elongated perpendicular n = 6, random n = 10) are not in the dataset, and the paper judged shape and orientation by eye (O4). The four January 19 cells were imaged on both electrode axes, but which axis was parallel to each cell's long axis is not recorded. Their charging tau per axis is printed for reference only.",
      "deviations": [],
      "assumed": false,
@@ -200,6 +222,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_semenov_2025.ipynb",
+     "output": "claim:fig4-no-pole-difference",
      "notes": "Two-sided paired t tests, cathodic against anodic, of |dFmax|, charging tau and discharging tau. None of the 16 unscaled readings (ROI a and b, weighting none or 1/SEM^2, discharge amplitude free or fixed, in both experiment sets) finds a difference at p < 0.05, and none of the frame-scaled variants does. Main reading (all 22 experiments, ROI a, unweighted, free amplitude) |dFmax| difference -2.36% (95% CI -6.92 to 2.21, p = 0.29, n = 15 pairs), charging tau 0.35 us (-0.48 to 1.18, p = 0.38), discharging tau -0.03 us (n = 14). The intervals are wide and, in set A, 7 to 10 of 22 experiments per reading lose a pair to a failed fit, so the test has little power. The time constants do not differ under any variant (each experiment's estimated onset, fits with tau beyond its window dropped, ROI a clipped to the soma). The amplitude does in two variants. With fits whose tau exceeds its window dropped, |dFmax| differs at p = 0.046 in 2 of 8 set A readings (n = 12). The |dF| over the last 0.5 us of the pulse, which needs no fit and keeps all 22 experiments, is larger at the anodic pole in set A (cathodic minus anodic -2.86%, p = 0.014, ROI a; -2.54%, p = 0.011, ROI b) but not in the 40 V set (p = 0.28 and 0.24); the difference grows with amplitude (-0.95% at 40 V, -14.82% and -12.23% at 100 and 130 V, ROI a), and without the 100 and 130 V runs it is -1.79% (p = 0.048). The criterion's quantity, the fitted |dFmax|, shows no difference under any of the header readings (O1 to O3); only the window variant, which drops fits, gives p = 0.046 in 2 of its 8 set A readings. The outcome follows the criterion's quantity and readings. The absence of a pole difference in amplitude is weak in set A, and depends on whether the 100 and 130 V runs belong to the paper's 19 experiments, which the dataset does not say.",
      "deviations": [
       "The test is run over the 22 experiments in the dataset (set A) and over the 15 at 40 V (set B); the paper's 19 cannot be identified.",
@@ -237,6 +260,7 @@
      "outcome": "blocked",
      "blocked_by": "metadata_insufficient",
      "notebook": "reproduce_semenov_2025.ipynb",
+     "output": "claim:fig4-discharging-slower",
      "notes": "The criterion needs the elongated parallel group for the exception (O4), which the dataset does not label. Reading (a), all experiments and both poles, is shown for each reading of the header. Its result depends on the reading. In set A, discharging minus charging tau averages -0.09 to 1.25 us, with p from 0.0016 to 0.90; none reaches the paper's p < 0.001.",
      "deviations": [],
      "assumed": false,
@@ -256,6 +280,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_semenov_2025.ipynb",
+     "output": "claim:fig4-pooled-time-constants",
      "notes": "Means over experiment fits, all 22 experiments, unscaled. Under no reading of O1 to O3, in either experiment set, are all four within the paper's SEMs. In set A the cathodic charging means are 0.65 to 1.01 us (0.7 plus or minus 0.08), the cathodic discharging means are 1.37 to 4.20 us (0.91 plus or minus 0.08), the anodic charging means are 0.62 to 2.28 us (0.65 plus or minus 0.05), and the anodic discharging means are 1.32 to 2.22 us (0.8 plus or minus 0.07). The measured values are from reading ROI a, unweighted, free amplitude. The medians over experiments are lower (cathodic discharging 1.02 to 1.46 us). The frame-scaled variant has no row within tolerance either. The per-experiment fits are noisy (charging tau from 0.02 to 4.3 us at the cathodic pole), and 2 to 6 of 22 fits per pole and reading are dropped. Three variants give the same outcome, with no reading in either set within the SEMs. With each experiment's estimated onset the set A cathodic discharging means are 1.43 to 3.77 us; with fits dropped whose tau exceeds the time it is fitted over (2 us charging, 5 us discharging) they are 1.55 to 1.92 us, and the cathodic charging means fall to 0.41 to 0.50 us; with ROI a clipped to the soma they are 1.36 to 1.58 us.",
      "deviations": [
       "The ROIs and the debris ROI are not in the dataset. The polarized ROIs are rebuilt from the RATIO image (O1 a and b), and the traces are unscaled (F2). The paper scaled to the debris ROI to remove flash-to-flash laser fluctuations, which this attempt could not do; the whole-frame scaling shown as a variant is not the paper's.",
@@ -281,6 +306,7 @@
      "outcome": "blocked",
      "blocked_by": "metadata_insufficient",
      "notebook": "reproduce_semenov_2025.ipynb",
+     "output": "claim:fig4-full-charge-within-3us",
      "notes": "Reading (a) needs the elongated parallel group, which the dataset does not label (O4). Reading (b) fails under every reading of the header (3 to 5 experiments per pole and reading have 3 tau above 3 us; the largest cathodic charging tau is 4.29 us under ROI a, unweighted), so it cannot stand in for (a). It fails too with charging fits whose tau exceeds the 2-us pulse dropped (largest tau 1.64 to 1.97 us, 4 to 6 pole fits with 3 tau above 3 us). The claim also depends on fig4-pooled-time-constants, which was not reproduced.",
      "deviations": [],
      "assumed": false,
@@ -300,6 +326,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": "survey_other_dandisets.ipynb",
+     "output": null,
      "notes": "Data elsewhere (DANDI:001032 to 001035). Not tested; the author run ran out of time after the Figure 4 analysis. A metadata survey of those dandisets (survey_other_dandisets.ipynb) finds 16 x 16 pixel image stacks at 3,086.4 frames/s with the stimulus given only in free text, and 001034 holding the same 178 image arrays as 001032, byte for byte, with the same session descriptions under other subject ids.",
      "deviations": [],
      "assumed": false,
@@ -341,6 +368,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": null,
+     "output": null,
      "notes": "Data elsewhere (DANDI:001032 to 001035). Not tested for lack of time, as for fig1-pure-sine-excites-all, on which it depends.",
      "deviations": [],
      "assumed": false,
@@ -360,6 +388,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": null,
+     "output": null,
      "notes": "Data elsewhere (DANDI:001032 to 001034, the \"spindle\" sessions). Not tested for lack of time, as for fig1-pure-sine-excites-all, on which it depends.",
      "deviations": [],
      "assumed": false,
@@ -379,6 +408,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": null,
+     "output": null,
      "notes": "Data elsewhere (DANDI:001032 to 001034). Not tested for lack of time, as for fig1-pure-sine-excites-all, on which it depends.",
      "deviations": [],
      "assumed": false,
@@ -398,6 +428,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": "survey_other_dandisets.ipynb",
+     "output": null,
      "notes": "Data elsewhere, but not found there. The metadata survey (survey_other_dandisets.ipynb) finds every session description of DANDI:001032 to 001035 (803 files) naming the 140 mM NaCl solution; the only sodium gluconate sessions are the 17 of 001030, all with a 2-s ramped 2-kHz stimulus. The NaGlu thresholds of Figure 3B do not appear to be deposited. Not tested further for lack of time; the claim also depends on fig1-pure-sine-excites-all.",
      "deviations": [],
      "assumed": false,
@@ -417,6 +448,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "elsewhere_001030.ipynb",
+     "output": "claim:fig3c-sustained-firing-2s",
      "notes": "DANDI:001030 version 0.240520.1924, 17 sessions of four cells (c5 to c8) at 1.0 to 2.3 V. Judged per cell, bleach-corrected. In all four cells, under both AP readings, an intermediate field fires in the last 250 ms of the stimulus and the AP count after the ramp rises with field. Cell c7 meets the whole criterion under both readings; at 2.3 V it has no AP after the ramp and a corrected mean dF of 6.66%. Cells c5 and c8 stop firing at their highest field (1 and 0 APs after the ramp under reading (a), 0 under (b)) but their mean dF there is 3.48% and 3.63%, below the 5% level. Cell c6 keeps firing at its highest field, 1.45 V (32 APs after the ramp). So the criterion holds in 1 of 4 cells, and the firing part in all 4. With the first run's detector it holds in none (reading (a) counts 197 noise peaks on the c7 plateau, reading (b) one, at 1,707 ms), which also gives a partial result; without the bleaching correction it holds in no cell (c7 at 2.3 V has a mean dF of 3.30%).",
      "deviations": [
       "Data elsewhere, in DANDI:001030, as the claims file assigns from the dandiset's title.",
@@ -443,6 +475,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "elsewhere_001272.ipynb",
+     "output": "claim:figs1-di8-anepps-control",
      "notes": "DANDI:001272 version 0.250805.1358, 65 sessions of three neurons (the paper reports eight). The criterion holds under none of the three AP readings. In no neuron does the highest field end in depolarization at the criterion's 5% level; the largest mean inverted dF over the last 100 ms of any session is 3.2%. Under reading (c), 5 SD of the pre-stimulus trace, every neuron fires and first-AP latency falls with field in all 3; under reading (a) the 5% level finds APs only in neuron 3_20240806 (4 sessions), and under reading (b) in no neuron. In 19 of 52 sessions with APs under reading (c) the first AP comes within 5 ms of the onset, which may be an onset artefact; without those, latency falls in 2 of 3. No variant changes the outcome. With the first run's detector, without the first 5 ms, or with the depolarization level at 5 SD of each neuron's pre-stimulus trace (2.2 to 2.5%), the highest field ends in depolarization in at most one neuron under any reading. The Di-8-ANEPPS signals are smaller than the FluoVolt signals the 5% level comes from, so the failure may lie in that level and not in the data; whether the level suits this dye is asked of a reader (questions/001273.yaml).",
      "deviations": [
       "Data elsewhere, in DANDI:001272, as the claims file assigns from the dandiset's title. Three neurons where the paper reports eight.",
@@ -468,6 +501,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": "survey_other_dandisets.ipynb",
+     "output": null,
      "notes": "Data elsewhere (DANDI:001271, 287 sessions of 20 subject ids, 71 described as recorded in the presence of tetrodotoxin and 216 without it; survey_other_dandisets.ipynb). Not tested for lack of time.",
      "deviations": [],
      "assumed": false,
@@ -487,6 +521,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": "survey_other_dandisets.ipynb",
+     "output": null,
      "notes": "Data elsewhere (DANDI:001274, 232 files, 25.0 GB of strobe images; survey_other_dandisets.ipynb). Not started for lack of time in the author run, as for fig1-pure-sine-excites-all; its criterion also takes its readings from the claims file for 001274. The nine cells' 2-us, 257 V/cm pulse recordings are not in this dandiset. Its files were recorded on 2024-01-17, 01-19 and 03-11, all name the three-electrode array of Figure 4, and 001274's files date from May and August 2024 (reproduce_semenov_2025.ipynb, data check).",
      "deviations": [],
      "assumed": false,
@@ -506,6 +541,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": null,
+     "output": null,
      "notes": "Data elsewhere (DANDI:001274), as for fig6-sine-less-than-pulse. Not started for lack of time.",
      "deviations": [],
      "assumed": false,
@@ -525,6 +561,7 @@
      "outcome": "blocked",
      "blocked_by": "other",
      "notebook": null,
+     "output": null,
      "notes": "Depends on fig6-sine-less-than-pulse and fig2d-modulated-thresholds-higher, neither tested for lack of time.",
      "deviations": [],
      "assumed": false,
@@ -701,6 +738,24 @@
     {
      "path": "reproduce_semenov_2025.ipynb",
      "title": "Reproducing Semenov et al. (2025) from the DANDI datasets it names",
+     "cells": {
+      "sanity": "1193b490",
+      "claim:ap-selection": "efd7fc6b",
+      "claim:fig1-pure-sine-excites-all": "6eee088c",
+      "claim:fig1-excitation-block": "7ff17748",
+      "claim:fig1-20khz-needs-twice-the-field": "e6eed185",
+      "claim:fig2d-5ap-above-1ap": "c0c68cfe",
+      "claim:fig2d-modulated-thresholds-higher": "457f6ce2",
+      "claim:fig2-modulated-locks-to-beats": "5e15c8f9",
+      "claim:fig2c-pure-more-aps": "94590f06",
+      "claim:fig3c-sustained-firing-2s": "7e175346",
+      "claim:figs1-di8-same-as-fluovolt": "847180c0",
+      "claim:figs2-ttx-blocks-depolarization": "05c7a08e",
+      "claim:fig3-not-heating": "1254c1ab",
+      "claim:fig4-pooled-time-constants": "a5964f3b",
+      "claim:fig6-sine-less-than-pulse": "d980b840",
+      "claim:threshold-depolarization-estimate": "f467473d"
+     },
      "executed": "notebooks/semenov-2025-001048/reproduce_semenov_2025.html"
     }
    ],
@@ -731,16 +786,41 @@
     {
      "path": "di8_controls.ipynb",
      "title": "Di-8-ANEPPS controls on DANDI:001272, with a FluoVolt reference group",
+     "cells": {
+      "sanity": "0aa619fa",
+      "claim:figs1-eight-neurons": "2fda2bb8",
+      "claim:figs1-aps-as-emission-decrease": "b93b95ae",
+      "claim:figs1-near-threshold-delayed-aps": "9e949a58",
+      "claim:figs1-stronger-field-shorter-delay-sustained-firing": "04f211ad",
+      "claim:figs1-culminates-in-sustained-depolarization": "39f42a99",
+      "claim:figs1-noisier-than-fluovolt": "98370a52",
+      "claim:figs1-effects-same-as-fluovolt": "f555bc8a"
+     },
      "executed": "notebooks/semenov-2025-001272/di8_controls.html"
     },
     {
      "path": "fluovolt_elsewhere.ipynb",
      "title": "FluoVolt findings on the paper's other deposits",
+     "cells": {
+      "sanity": "ec8fd971",
+      "claim:fig1-pure-sine-excites-all": "4b5e069a",
+      "claim:fig1-20khz-needs-twice-the-field": "7d07b023",
+      "claim:fig2d-modulated-thresholds-higher": "fe99fd1e",
+      "claim:fig2-modulated-locks-to-beats": "c78c30f2",
+      "claim:fig2c-pure-more-aps": "f0788e11",
+      "claim:fig3c-sustained-firing-2s": "ede2486d",
+      "claim:figs2-ttx-blocks-depolarization": "0a12eb4b"
+     },
      "executed": "notebooks/semenov-2025-001272/fluovolt_elsewhere.html"
     },
     {
      "path": "strobe_check.ipynb",
      "title": "Strobe imaging of membrane charging on DANDI:001273",
+     "cells": {
+      "sanity": "66d16dac",
+      "claim:fig4-pooled-time-constants": "c7828b17",
+      "claim:fig4-orientation-and-poles": "5b7e2e95"
+     },
      "executed": "notebooks/semenov-2025-001272/strobe_check.html"
     }
    ],
@@ -766,21 +846,41 @@
     {
      "path": "reproduce_semenov_2025.ipynb",
      "title": "Reproducing Semenov et al. (2025), Figure 4, from dandiset 001273",
+     "cells": {
+      "sanity": "9a4e7767",
+      "claim:fig4-polarized-poles-face-electrodes": "c05b4c38",
+      "claim:fig4-pooled-time-constants": "c153e83d",
+      "claim:fig4-no-pole-difference": "8d1c943d",
+      "claim:fig4-discharging-slower": "36635dc0",
+      "claim:fig4-full-charge-within-3us": "ef81a553",
+      "claim:fig4-orientation-time-constants": "2f808dfc"
+     },
      "executed": "notebooks/semenov-2025-001273/reproduce_semenov_2025.html"
     },
     {
      "path": "elsewhere_001030.ipynb",
      "title": "Semenov et al. (2025), Figure 3C, from dandiset 001030 (data elsewhere)",
+     "cells": {
+      "sanity": "7665c515",
+      "claim:fig3c-sustained-firing-2s": "3cc8884d"
+     },
      "executed": "notebooks/semenov-2025-001273/elsewhere_001030.html"
     },
     {
      "path": "elsewhere_001272.ipynb",
      "title": "Semenov et al. (2025), Figure S1, from dandiset 001272 (data elsewhere)",
+     "cells": {
+      "sanity": "d04d98f4",
+      "claim:figs1-di8-anepps-control": "cc1aa011"
+     },
      "executed": "notebooks/semenov-2025-001273/elsewhere_001272.html"
     },
     {
      "path": "survey_other_dandisets.ipynb",
      "title": "Semenov et al. (2025): a metadata survey of the paper's other dandisets",
+     "cells": {
+      "sanity": "151cc5a9"
+     },
      "executed": "notebooks/semenov-2025-001273/survey_other_dandisets.html"
     }
    ],
@@ -812,6 +912,23 @@
     {
      "path": "reproduce_semenov_2025.ipynb",
      "title": "Reproducing Semenov et al. (2025) from dandiset 001274 and the paper's other dandisets",
+     "cells": {
+      "sanity": "1c79a488",
+      "claim:fig1-pure-sine-excites-all": "1c170b9a",
+      "claim:fig1-onset-delay": "131cc8c2",
+      "claim:fig1-max-rate-ceiling": "4813896a",
+      "claim:fig1-excitation-block": "a83a2563",
+      "claim:fig2d-20khz-twofold-threshold": "087b0119",
+      "claim:fig2d-modulated-thresholds-higher": "1d7ccaa2",
+      "claim:threshold-2khz-unmodulated": "5a2b9fd4",
+      "claim:fig2-modulated-locks-to-beats": "53803a47",
+      "claim:fig2c-pure-more-aps": "25b8fce3",
+      "claim:fig3c-sustained-firing-2s": "0205f75d",
+      "claim:figs1-di8-anepps-control": "09bbe907",
+      "claim:figs2-ttx-blocks-depolarization": "73829b0f",
+      "variant:fig6b-pulse-sensitivity": "38921536",
+      "variant:fig6c-sine-sensitivity": "06237583"
+     },
      "executed": "notebooks/semenov-2025-001274/reproduce_semenov_2025.html"
     }
    ],

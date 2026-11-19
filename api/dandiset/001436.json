@@ -5,7 +5,7 @@
   "label": "DANDI:001436"
  },
  "page": "datasets/dandi/001436/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 0,
@@ -95,6 +95,18 @@
     {
      "path": "reproduce_zaimi_2018.ipynb",
      "title": "Reproducing Zaimi et al. (2018) from dandiset 001436",
+     "cells": {
+      "sanity": "ac9b3041",
+      "claim:osf-group-labels-link": "2ccb9aa7",
+      "claim:table3-tem-mice-accuracy": "ad38ed28",
+      "claim:table3-tem-mice-dice-detection": "ab5d5031",
+      "claim:myelin-dice-below-axon-dice": "42ad2d14",
+      "claim:sensitivity-above-93": "d21885f9",
+      "claim:table3-sem-rat-accuracy": "8e90169d",
+      "claim:table3-tem-macaque-accuracy": "d1b56121",
+      "claim:macaque-myelin-underestimated": "e25d7e81",
+      "claim:table3-other-samples-dice-detection": "ba208314"
+     },
      "executed": "notebooks/zaimi-2018/reproduce_zaimi_2018.html"
     }
    ],
@@ -110,6 +122,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:osf-group-labels-link",
      "notes": "All 20 dandiset mice are matched by number to exactly one group folder of the OSF deposit, and no group folder holds more than 3 dandiset mice (ctl_6wks holds 2, mice 7 and 9; mouse 17 of that group is not in the dandiset). Of 39 OSF micrographs compared (11 mice), 16 have a counterpart in the dandiset (thumbnail r 0.593 to 0.903), all images of the same mouse, from 8 mice (10, 13, 14, 15, 25, 26, 27, 28); the other 23 correlate at most 0.487 with any dandiset image. Mice 7, 9 and 11 were checked without a counterpart among their first four OSF micrographs. Nine mice (12, 29 to 36) have no full-size micrograph on OSF and are linked by number only. The link gives 8 control mice (7, 9, 25, 26, 27, 34, 35, 36) and 12 cuprizone mice.",
      "deviations": [
       "The correlation threshold of 0.5 for a counterpart was set on development runs on mice 25 and 26, before the full run, and written into the criterion then (see the claims file)."
@@ -131,6 +144,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:table3-tem-mice-accuracy",
      "notes": "Mean pixel-wise accuracy 0.9416 over all 158 images of the 20 mice (reading a) and 0.9349 over the 62 images of the 8 control mice (reading b), both inside 0.8506 to 1.0396; the 96 images of the 12 cuprizone mice give 0.9459. Per-mouse means range from 0.9202 to 0.9740 and single images from 0.8954 to 0.9884. Every one of the 1140 sets of 3 mice gives 0.9226 to 0.9683 (the 56 sets of 3 control mice 0.9252 to 0.9441), so the outcome holds for whichever 3 mice the paper tested. Both readings include the mice the model was trained on, so the match is weaker evidence than a test on held-out mice. If the dandiset's 20 mice are the paper's 20, the paper's training set held cuprizone tissue (12 of the 20 mice), which bears on reading (b) but not on the outcome. Without the contrast inversion the accuracy is 0.5027 (a) and 0.3934 (b). The dandiset's masks are the 2025 revision; with the delineation lines filled (0 to 0.58% of the pixels of an image changed, median 0.12%), a variant for the masks the paper scored against, the accuracy is 0.9427 (a) and 0.9366 (b).",
      "deviations": [
       "The paper's network runs in TensorFlow 1 (tf.contrib), which cannot be installed with Python 3.13. The network of network_construction.py is rebuilt with TensorFlow 2 operations from the released checkpoint; on the four patches of the first image its output differs from the model's own saved graph (model.ckpt.meta, run with training_phase False) by less than 1e-04 (the value printed in the notebook changes slightly between runs, at the level of floating-point round-off), and the classes agree on every pixel.",
@@ -157,6 +171,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:table3-tem-mice-dice-detection",
      "notes": "Reading (a), all 158 images; axon Dice 0.9500, myelin Dice 0.8489, sensitivity 0.9863, precision 0.9707. Reading (b), the 62 control images; 0.9543, 0.8571, 0.9878, 0.9819. All four are within tolerance under both readings, and over every set of 3 mice (axon Dice 0.9300 to 0.9651, myelin Dice 0.8175 to 0.8739, sensitivity 0.9722 to 0.9969, precision 0.9304 to 0.9949). Over all images, 7757 of 7868 ground-truth axons are detected, with 239 false positives. Without the inversion axon Dice is 0.0029. With the 2025 delineation lines filled in the ground truth the myelin Dice is 0.8521 (a) and 0.8611 (b); the other measures do not change.",
      "deviations": [
       "Segmentation, ground truth and test-set readings as in table3-tem-mice-accuracy.",
@@ -179,6 +194,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:myelin-dice-below-axon-dice",
      "notes": "On the mouse images, myelin Dice is below axon Dice in the means of both readings (0.8489 against 0.9500; 0.8571 against 0.9543) and in every one of the 158 single images (difference 0.0655 to 0.1556), so the claim holds under readings (i) and (ii). On the 7 macaque images tested for table3-tem-macaque-accuracy it holds too, and on the two SEM rat test images (myelin Dice 0.8720 and 0.8309 against axon Dice 0.9282 and 0.9186, table3-sem-rat-accuracy), which the criterion does not count. The human SEM row cannot be tested. The statement's explanation (two boundaries) is not tested.",
      "deviations": [
       "Tested on the mouse images only, as the criterion says."
@@ -200,6 +216,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:sensitivity-above-93",
      "notes": "Mean sensitivity 0.9863 (reading a) and 0.9878 (reading b), above 0.93; the lowest per-mouse mean is 0.9682 and the lowest over every set of 3 mice 0.9722. Two of 158 single images are at or below 0.93 (lowest 0.898). The other test sets of the statement are not counted by the criterion; on the two SEM rat test images sensitivity is 0.964 and 0.979 (table3-sem-rat-accuracy), above 0.93, and on the macaque images (table3-tem-macaque-accuracy) 0.289 to 0.606, below it.",
      "deviations": [
       "Tested on the mouse images only, as the criterion says."
@@ -221,6 +238,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:table3-sem-rat-accuracy",
      "notes": "Tested on the SEM dataset of AxonDeepSeg (data elsewhere, tag r20211130, doi:10.5281/zenodo.5498378). Its sub-rat6 sample-data15 (0.13 um, 1154 x 744 pixels, 150 x 97 um, 3% PFA and 3% GA) and sub-rat8 sample-V915 (0.07 um, 1541 x 1096 pixels, 108 x 77 um, 3% and 3%) have the pixel size, field of view and fixation of Table 1's Rat 1 and Rat 2 test images, and six of its other eight images match Table 1's training rows in all three. The pixel-wise accuracy is 0.8955 (Rat 1) and 0.8757 (Rat 2), within 0.7659 to 0.9361 and 0.7940 to 0.9704. Rat 1's 0.8955 is above the statement's \"between 85% and 88%\", though inside the criterion's tolerance. The rebuilt SEM network agrees with its saved graph (largest difference below 1e-04, the same class on every pixel of the 8 patches of Rat 1). Variants, nearest-neighbour resize back 0.8923 and 0.8937; the 2025 masks of Rat 1 (0.31% of pixels differ) 0.8940; the contrast inverted 0.3047 and 0.3220. The other measures match Table 3 closely too (table3-other-samples-dice-detection). The images are tied to the paper by Table 1 only; the paper's Data availability statement does not name this dataset, which was created in 2020. The outcome rests on the assumption that these two images are the paper's Rat 1 and Rat 2 test images; a question to the paper's authors (methods_unavailable finding) asks whether they are.",
      "deviations": [
       "Data from the AxonDeepSeg SEM dataset on GitHub, not the dandiset (data elsewhere), identified as the paper's test images by the pixel size, field of view and fixation of Table 1.",
@@ -245,6 +263,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "Not in the dandiset. The human spinal cord images of the White Matter Microscopy Database (PolytechniqueMontreal/Human, Duval et al. 2018, one zip file) have a pixel size of 230 nm by their description file (printed in the notebook), not the 0.13 um of the 715 x 735 um2 test image of Table 1, and the AxonDeepSeg SEM dataset, which holds the rat test images, holds rat images only.",
      "deviations": [],
      "assumed": false,
@@ -264,6 +283,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:table3-tem-macaque-accuracy",
      "notes": "Tested on the macaque images of ref. 7 in the White Matter Microscopy Database (data elsewhere), 8 samples of three 2300 x 3040 images, with one myelin and one axon mask per sample. The masks of 7 samples fit one of their images (grey-level contrast of myelin 57.9 to 108.0 against at most 15.2 shifted, and at most 5.7 for the other images); those of sample 4 fit none. The paper tested one image and does not say which. On the 7 matched images the pixel-wise accuracy is 0.5729 to 0.7634 (mean 0.6723); one reading (sample 3, 0.7634) is inside 0.7594 to 0.9282 and six are below it, so the readings disagree and no image has a better basis than another. The other measures are below Table 3 on every image (axon Dice 0.6268 to 0.8070 against 0.9069, myelin Dice 0.5032 to 0.6481 against 0.7519, sensitivity 0.289 to 0.606 against 0.9429, precision 0.349 to 0.691 against 0.8129). Without the inversion the accuracy is 0.1810 to 0.3540. The ground-truth myelin covers 0.316 to 0.489 of these images and the predicted myelin 0.142 to 0.223. Pooled over the 7 images, 0.146 of all pixels are ground-truth myelin predicted as background and 0.090 ground-truth myelin predicted as axon, 0.719 of all misclassified pixels, so the masks mark much more myelin than the model finds on both of its borders; 0.067 are ground-truth axon predicted as background. With a nearest-neighbour resize back the accuracy is 0.5797 to 0.7678, so the resize step does not explain the gap. The same TEM code, with the same contrast inversion and resize, reproduces the mouse rows of Table 3 (table3-tem-mice-accuracy, table3-tem-mice-dice-detection), so these masks or images may not be the ones the paper scored, but this is not shown; the deposit's description, wiki and folders hold no description of the macaque images. The verifier of round 1 would mark the claim not reproduced; the disagreement is recorded under verifications. Question for the paper's authors (recorded as a methods_unavailable finding) asks which macaque image and which masks formed the test sample, and at what pixel size it was segmented.",
      "deviations": [
       "Data from the White Matter Microscopy Database, not the dandiset (data elsewhere).",
@@ -288,6 +308,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The human SEM test image is not public (see table3-sem-human-accuracy), so 4 of the 16 values cannot be tested. The 8 rat values, measured on the SEM test images of the AxonDeepSeg SEM dataset (data elsewhere, see table3-sem-rat-accuracy), are all within tolerance (Rat 1 axon Dice 0.9282, myelin Dice 0.8720, sensitivity 0.964, precision 0.887; Rat 2 0.9186, 0.8309, 0.979, 0.801). The 4 macaque values were measured on the 7 matched macaque images of the White Matter Microscopy Database (see table3-tem-macaque-accuracy), and every one is below its tolerance on every image (axon Dice at most 0.8070 against a lower bound of 0.8162, myelin Dice at most 0.6481 against 0.6767, sensitivity at most 0.606 against 0.8486, precision at most 0.691 against 0.7316); those images and masks may not be the paper's.",
      "deviations": [],
      "assumed": false,
@@ -307,6 +328,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaimi_2018.ipynb",
+     "output": "claim:macaque-myelin-underestimated",
      "notes": "On all 7 matched macaque images (data elsewhere) the predicted myelin area is below the ground truth's, so the criterion holds under every reading of which image was tested. The underestimate is not slight; the predicted myelin fraction is 0.352 to 0.512 of the ground truth's, against 0.788 to 1.266 (median 0.974) on the mouse images. With the other macaque measures far below Table 3 (table3-tem-macaque-accuracy), these may not be the masks the paper scored against, so the direction carries little weight. The criterion tests the direction only, while the statement says \"slightly\"; whether the criterion should bound the size is asked of a reader (questions/zaimi-2018.yaml). The outcome rests on the assumption that the masks of ref. 7 in the White Matter Microscopy Database are the paper's macaque ground truth; the direction holds on all 7 images, so it does not depend on which image was tested.",
      "deviations": [
       "Data, pixel size and the pairing of masks with images as in table3-tem-macaque-accuracy.",
@@ -329,6 +351,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The full rat spinal cord SEM slice is not in the dandiset. The White Matter Microscopy Database holds two SEM panoramas of an adult rat cervical spinal cord, PolytechniqueMontreal/RatSpinalCordNov2016 (0.095 um, dated 2016-11-17) and PolytechniqueMontreal/RatSpinalCord2017 (0.13 um, dated 2017-04-27, next to a map of axon equivalent diameter), but the paper gives no pixel size, date or deposit for its slice, so neither can be shown to be the slice of Figures 6 and 7. The time also depends on the machine, a 2.9 GHz Mac laptop that cannot be matched here.",
      "deviations": [],
      "assumed": false,
@@ -348,6 +371,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The full slice is not in the dandiset, and neither candidate panorama on OSF can be tied to the paper (see full-slice-processing-time); they were not run. The criterion also leaves open which 50 x 50 um2 cells form the tract, as the paper gives the tracts only as a schematic diagram, and the paper's morphometrics come from AxonSeg, a separate MATLAB package.",
      "deviations": [],
      "assumed": false,
@@ -367,6 +391,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "As fig7-corticospinal-tract; the paper also gives no measure of distance to the periphery.",
      "deviations": [],
      "assumed": false,
@@ -386,6 +411,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "As fig7-corticospinal-tract; the tract boundaries are open.",
      "deviations": [],
      "assumed": false,
@@ -405,6 +431,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "As fig7-corticospinal-tract. The paper's white matter mask is not given either.",
      "deviations": [],
      "assumed": false,
@@ -563,6 +590,18 @@
     {
      "path": "reproduce_zaimi_2018.ipynb",
      "title": "Reproducing Zaimi et al. (2018) from dandiset 001436",
+     "cells": {
+      "sanity": "ac9b3041",
+      "claim:osf-group-labels-link": "2ccb9aa7",
+      "claim:table3-tem-mice-accuracy": "ad38ed28",
+      "claim:table3-tem-mice-dice-detection": "ab5d5031",
+      "claim:myelin-dice-below-axon-dice": "42ad2d14",
+      "claim:sensitivity-above-93": "d21885f9",
+      "claim:table3-sem-rat-accuracy": "8e90169d",
+      "claim:table3-tem-macaque-accuracy": "d1b56121",
+      "claim:macaque-myelin-underestimated": "e25d7e81",
+      "claim:table3-other-samples-dice-detection": "ba208314"
+     },
      "executed": "notebooks/zaimi-2018/reproduce_zaimi_2018.html"
     }
    ],

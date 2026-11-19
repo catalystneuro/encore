@@ -5,7 +5,7 @@
   "label": "DANDI:000718"
  },
  "page": "datasets/dandi/000718/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 2,
@@ -83,6 +83,15 @@
     {
      "path": "reproduce_zaki_2024.ipynb",
      "title": "Reproducing Zaki et al. (2024) from dandiset 000718",
+     "cells": {
+      "sanity": "28fd7222",
+      "claim:source-data-link": "b22d39ce",
+      "claim:ed9b-aversive-freezing-high-vs-low": "eab88586",
+      "claim:offline-bursts-above-shuffle": "c7ab7637",
+      "claim:offline-skew-above-shuffle": "650bfbd7",
+      "claim:burst-locomotion-pause": "20ba3544",
+      "claim:fig5c-wake-overlap-neutral-coburst": "6e061458"
+     },
      "executed": "notebooks/zaki-2024/reproduce_zaki_2024.html"
     }
    ],
@@ -98,6 +107,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:source-data-link",
      "notes": "Both mice are matched by name (subject_id Ca_EEG2-1 and Ca_EEG3-4, the Mouse column of the source data), with the same shock amplitude in the files as the source data's group (1.5 and 0.25 mA). All four freezing values are within 10% under both readings; reading (a), given as measured, gives 64.09, 8.82, 17.40 and 15.06% against 63.87, 8.46, 16.90 and 14.60%, and reading (b) gives 63.45, 8.46, 16.91 and 14.61%. The recall session descriptions name the contexts (Recall1 shock, Recall2 novel, Recall3 neutral), as the source data assign them for Ca_EEG3-4. On which side a difference comes from, the dandiset's freezing intervals give the paper's per-mouse values to within 5% (reading a) and 1% (reading b), so the dandiset agrees with what the paper reports for these mice.",
      "deviations": [
       "Only four per-mouse values can be compared, as the dandiset lacks the neutral and novel recall sessions of Ca_EEG2-1 and the other seven mice."
@@ -125,6 +135,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:ed9b-aversive-freezing-high-vs-low",
      "notes": "Recall1 freezing is 64.09% for the high-shock mouse and 8.82% for the low-shock mouse (difference 55.27 percentage points). The 30 s bins differ by Mann-Whitney (U = 100, p = 0.00018); 15 s and 60 s bins give p = 8.9e-07 and 0.0079. The paper's t-test (t7 = 8.99, p = 0.020) over 5 and 4 mice cannot be run with one mouse per group, so its statistic is not tested. The bins are consecutive parts of one session per mouse and not independent, so the p-values overstate the evidence.",
      "deviations": [
       "One mouse per group (the paper has 5 high-shock and 4 low-shock mice); the test is within sessions, over 30 s bins, chosen here."
@@ -152,6 +163,7 @@
      "outcome": "blocked",
      "blocked_by": "methods_underspecified",
      "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:offline-bursts-above-shuffle",
      "notes": "The analysis ran. Under the criterion's procedure (surrogates z-scored and thresholded at z = 2 as the data) the true burst rate is below the surrogate mean in all three offline recordings (5.30, 6.40 and 8.71 per min against 8.48 to 10.94; true over surrogate mean 0.63 to 0.80), which would be not reproduced. The paper's chance level for this test (source data for Extended Data Figure 3m, another cohort) is 3.38 to 4.39 surrogate bursts per min against 4.51 to 4.92 true, surrogate over true 0.72 to 0.96; this procedure gives 1.26 to 1.60, far from it, so the procedures differ and the claim is blocked as the protocol requires. The Methods do not say how bursts are counted in a surrogate. Variants disagree; merging events closer than 1 s leaves the true rate below the surrogates (4.40 to 7.31 against 6.56 to 8.52 per min), and thresholding surrogates at the true trace's own mean + 2 SD puts the true rate far above them (5.30 to 8.71 against at most 0.50 per min). At z = 2.5 the true rate is above the surrogate mean in 2 of 3 recordings and above the 95th percentile in none. On synthetic data with 6 coordinated events per minute, the criterion's test gives 5.6 true bursts per min against a surrogate mean of 34.98, and with independent cells 34.8 against 37.36, so it cannot detect coordination; the fixed-threshold variant separates the two (5.6 against 0.00, 34.8 against 38.37), but its chance level in the data (surrogate means at most 0.10 per min) is far below the paper's.",
      "deviations": [
       "Run on the three 10 min offline recordings of the EEG/EMG experiment at 15 Hz; the paper shows the test for the one-hour recordings at 30 Hz of the single-experience cohort (Extended Data Figure 3), which is not deposited.",
@@ -180,6 +192,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:offline-skew-above-shuffle",
      "notes": "The population trace's skewness is 1.65, 1.34 and 1.72 in the three offline recordings, above all 1000 circular-shift surrogates in each (surrogate means 0.60, 0.40 and 0.37, 95th percentiles 0.72, 0.51 and 0.48). Both arms are lower than in the paper's source data for Extended Data Figure 3o (another cohort, 1 h at 30 Hz); the true skews are below the paper's lowest (1.76 to 3.65) and two of three surrogate means are below its lowest shuffled value (0.47 to 1.91), so the chance level is not shown to match the paper's. The outcome rests on the true skew exceeding every surrogate. On synthetic data the test separates coordinated activity (skew 8.54 against a surrogate 95th percentile of 0.94) from independent cells (0.98 against 1.09).",
      "deviations": [
       "Run on the EEG/EMG experiment's three 10 min offline recordings; the paper shows the test for another cohort (Extended Data Figure 3o), which is not deposited."
@@ -201,6 +214,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:burst-locomotion-pause",
      "notes": "Telemetry movement in the second before a burst is not lower than 3 to 5 s before it in any of the three recordings under either reading of time zero (peak, one-sided Wilcoxon p = 0.76, 0.89, 0.39; onset, p = 0.88, 0.94, 0.41); 30 to 60% of bursts have lower movement before them. Movement 1 to 2 s after the peak is lower than in the second before it in two of three recordings (0.155 against 0.225, and 0.129 against 0.257). The telemetry activity signal is a coarse proxy whose relation to calcium activity is weak (movement decoded at r = 0.06 to 0.24 at zero shift; Spearman r with the population trace 0.07 to 0.32 in 1 s bins). The files describe it as motion of the probe relative to the receiver and a proxy for locomotion; its mean magnitude is 4 to 15 times higher in wake than in quiet wake epochs. The test is not calibrated, giving p = 0.016 at 300 random times in Ca_EEG2-1 (0.9999 and 0.92 in the others). The outcome says this proxy does not show the pause, and is weak evidence that the pause is absent.",
      "deviations": [
       "Movement is the magnitude of the HD-X02 telemetry activity signal; the paper tracked locomotion with a webcam, whose video is not deposited.",
@@ -229,6 +243,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:fig5c-wake-overlap-neutral-coburst",
      "notes": "In Ca_EEG2-1's first offline recording after aversive encoding, under reading (a), wake and quiet wake together (all 87 bursts), OxN is below OxA (26.4 against 35.6% inclusive, 8.0 against 17.2% exclusive; 7 against 15 discordant bursts, McNemar p = 0.13). Reading (a) is the one the Methods imply. Their scoring (6 s epochs, two-state Gaussian mixture on EMG) applied to this mouse's log EMG RMS over the 12 h offline period puts 94.1% of quiet-wake frames and 98.5% of wake frames in wake (97.9% of quiet wake when fitted on the first 6 h), and all 87 bursts in wake. Under reading (b), wake alone, OxN exceeds OxA (32.0 against 28.0% of 25 bursts; 8.0 against 4.0%) on 2 against 1 discordant bursts (McNemar p = 1.0). Under the Methods' wake the order holds at thresholds 1.5 (34.9 against 41.1%) and 2.5 (21.7 against 30.0%), and no difference reaches p < 0.05. Outside bursts both are at most 1.02% of 0.5 s windows. The neutral, aversive and overlap ensembles each have more of their cells in bursts than the remaining cells (median differences 0.005 to 0.010, Wilcoxon p = 0.041 to 0.0003). The paper's statistic (t4 = 4.94, P = 0.016, across five mice) cannot be tested. The evidence against the paper is weak; one 10 min recording of 24 for one mouse of five, with ensemble traces z-scored within it, so levels are not comparable with the paper's source data for this mouse over all 24 recordings (10.37% OxN against 8.39% OxA in wake). Counted inclusively, co-participation here (26 to 36%) is 2.5 to 4 times those values; with the third ensemble excluded (8.0 and 17.2%) it is on their scale, with OxN the lower.",
      "deviations": [
       "One high-shock mouse of five, and its first offline recording of 24 (10 min of 4 h).",
@@ -279,6 +294,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "Behaviour-only experiment; its mice are not in the dandiset. The paper's source-data repository holds the per-mouse freezing plotted in Figure 1, but not the recordings they come from; these claims were not tested on figure values.",
      "deviations": [],
      "assumed": false,
@@ -326,6 +342,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The one-hour imaging cohort of Figure 1d to 1f is not in the dandiset. Its EEG-cohort counterpart is tested in ed9b-aversive-freezing-high-vs-low.",
      "deviations": [],
      "assumed": false,
@@ -358,6 +375,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "Needs the one-hour imaging cohort's freezing in three contexts; not in the dandiset.",
      "deviations": [],
      "assumed": false,
@@ -402,6 +420,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The chemogenetic inhibition experiment is behaviour only and not in the dandiset.",
      "deviations": [],
      "assumed": false,
@@ -434,6 +453,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The cocaine experiment is behaviour only and not in the dandiset.",
      "deviations": [],
      "assumed": false,
@@ -472,6 +492,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The single-experience imaging cohort is not in the dandiset.",
      "deviations": [],
      "assumed": false,
@@ -508,6 +529,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The one-hour offline cohort is not in the dandiset. The deposited high-shock offline recording gives one mouse of the EEG cohort, for which the paper does not report this analysis.",
      "deviations": [],
      "assumed": false,
@@ -539,6 +561,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "One-hour offline cohort not deposited. In the EEG cohort, the offline-day-1 recording of Ca_EEG3-4 is deposited without registration, and Ca_EEG2-1 has none.",
      "deviations": [],
      "assumed": false,
@@ -575,6 +598,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "One-hour offline cohort not deposited. The notebook shows, as context only, that in Ca_EEG2-1's offline recording the neutral ensemble has more of its cells in bursts than the remaining cells (median difference 0.005, p = 0.041).",
      "deviations": [],
      "assumed": false,
@@ -611,6 +635,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "One-hour offline cohort not deposited.",
      "deviations": [],
      "assumed": false,
@@ -657,6 +682,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "One-hour offline cohort not deposited. The same analysis on the EEG cohort is tested in fig5c-wake-overlap-neutral-coburst.",
      "deviations": [],
      "assumed": false,
@@ -689,6 +715,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The inhibitory tagging (Gad2-cre, CNO) experiment is not in the dandiset.",
      "deviations": [],
      "assumed": false,
@@ -721,6 +748,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The no-shock cohort is not in the dandiset.",
      "deviations": [],
      "assumed": false,
@@ -752,6 +780,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The one-hour offline cohort of Extended Data Figure 7 is not in the dandiset. Ca_EEG2-1's neutral and aversive encoding are registered, but the paper does not report this analysis for the EEG cohort.",
      "deviations": [],
      "assumed": false,
@@ -784,6 +813,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The neutral and novel recall sessions of the only deposited high-shock mouse (Ca_EEG2-1) are not in the dandiset, and the paper's paired test needs several mice per group. The low-shock mouse's values (neutral 17.40%, novel 15.06%) are shown under source-data-link.",
      "deviations": [],
      "assumed": false,
@@ -828,6 +858,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The three deposited offline recordings are each the first of 24 and hold only wake and quiet wake (no sws or rem interval); the later recordings, where sleep occurs, are not deposited.",
      "deviations": [],
      "assumed": false,
@@ -853,6 +884,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The only deposited low-shock mouse (Ca_EEG3-4) has no cell registration in the dandiset, so its ensembles cannot be formed. With one mouse the paper's paired t-test could not be run either.",
      "deviations": [],
      "assumed": false,
@@ -879,6 +911,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "Needs continuous EEG/EMG and sleep scores for nine mice and a control group. Only Ca_EEG2-1 has week telemetry, without sleep scores; the other mice and the scores are not deposited.",
      "deviations": [],
      "assumed": false,
@@ -916,6 +949,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "One-hour offline cohort not deposited; in the EEG cohort Ca_EEG2-1 lacks neutral and novel recall and Ca_EEG3-4 lacks registration.",
      "deviations": [],
      "assumed": false,
@@ -948,6 +982,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "As fig6a-overlap-reactivated-neutral-recall; the neutral recall session needed is missing for the registered mouse.",
      "deviations": [],
      "assumed": false,
@@ -1097,6 +1132,15 @@
     {
      "path": "reproduce_zaki_2024.ipynb",
      "title": "Reproducing Zaki et al. (2024) from dandiset 000718",
+     "cells": {
+      "sanity": "28fd7222",
+      "claim:source-data-link": "b22d39ce",
+      "claim:ed9b-aversive-freezing-high-vs-low": "eab88586",
+      "claim:offline-bursts-above-shuffle": "c7ab7637",
+      "claim:offline-skew-above-shuffle": "650bfbd7",
+      "claim:burst-locomotion-pause": "20ba3544",
+      "claim:fig5c-wake-overlap-neutral-coburst": "6e061458"
+     },
      "executed": "notebooks/zaki-2024/reproduce_zaki_2024.html"
     }
    ],

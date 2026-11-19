@@ -5,7 +5,7 @@
   "label": "DANDI:002014"
  },
  "page": "datasets/dandi/002014/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 4,
@@ -79,6 +79,14 @@
     {
      "path": "reproduce_choi_2025.ipynb",
      "title": "Reproducing Choi et al. (2025) from dandiset 002014",
+     "cells": {
+      "sanity": "8507ced8",
+      "claim:fig8a-single-trial-dopamine": "c735fe62",
+      "claim:fig8b-dopamine-large-vs-small": "cd5a8b91",
+      "claim:fig9a-spikes-task-aligned": "93447658",
+      "claim:fig9bc-unit-waveform-isi": "46bf116c",
+      "claim:fig9d-beta-suppression-large": "7b1e61d5"
+     },
      "executed": "notebooks/choi-2025/reproduce_choi_2025.html"
     }
    ],
@@ -94,6 +102,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_choi_2025.ipynb",
+     "output": "claim:fig8a-single-trial-dopamine",
      "notes": "In trial 133 (1-based, a successful large reward trial) the SD of dopamine referenced at V over the 5 s after V is 2.02 times that over the 5 s before. Under the other reading (index 133, trial 134) the ratio is 2.04, with 36% and 46% of samples NaN. The test is weak. Of the 889 successful trials with a reference at V, the median ratio is 1.27, 64% exceed 1, and trial 133's ratio is above 76.9% of them. The criterion was written after trial 133's values had been printed.",
      "deviations": [
       "The paper shows the trial as a figure with no measure; the SD ratio and its windows were chosen here.",
@@ -116,6 +125,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_choi_2025.ipynb",
+     "output": "claim:fig8b-dopamine-large-vs-small",
      "notes": "From V to reward, dopamine referenced at V averages 1.88 in large and 1.10 in small reward trials (difference 0.78 in the file's unstated unit, Cohen's d 0.19, Mann-Whitney p = 0.0035, 429 and 460 trials, 23 and 39 dropped for lack of a reference at V). Shuffling the labels within blocks of 50 consecutive trials, which keeps the drift across the session in the null, gives p = 0.0045. The difference is small in the first 2 s after V (p = 0.44) and largest from reward to 3 s after (difference 1.59, p = 0.0001, within blocks p = 0.0010); before V there is none (p = 0.50). It holds in the second half of the session (p = 0.0125) and not significantly in the first (p = 0.075). Without trial 1411, p = 0.0031.",
      "deviations": [
       "The PCA dopamine estimate at V is subtracted, in place of subtracting the background voltammogram at V before the PCA; the two agree if the PCA model is linear, which the dandiset does not let us check.",
@@ -140,6 +150,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_choi_2025.ipynb",
+     "output": "claim:fig9a-spikes-task-aligned",
      "notes": "With the spike times moved to the trial clock by the offset measured in the data check (11812.11 s), all successful trials have a spike within V - 1 s to V + 3 s, and the variance across 100 ms bins of the PSTH is 0.49 against a 95th percentile of 0.06 over random alignments (p = 0.005 with 200); 0.48 with the 7 ms lag also corrected. The rate falls from 5.63 spikes/s before V to 4.58 in the first 0.2 s and rises to 7.70 at 0.3 to 0.5 s. Large and small trials do not differ over 0 to 1 s (5.69 against 5.66 spikes/s, p = 0.90); the paper states no difference. The Plexon unit gives 0.17 against 0.06. With the spike times as stored, 42% of trials have a spike in the window and the variance is 0.01 against 0.03, so the claim fails on the file as published.",
      "deviations": [
       "The spike times are moved by an offset measured from the data (the raw ephys located in the stored LFP); the file places them 11812.11 s early.",
@@ -163,6 +174,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_choi_2025.ipynb",
+     "output": "claim:fig9bc-unit-waveform-isi",
      "notes": "The criterion holds, but the evidence for a single unit is weak. No ISI is under 1 ms (9 of 101732 under 2 ms), and the mean waveform's trough of -56.4 \u00b5V is 4.79 times the SD across spikes at that sample. Neither part could easily fail. The shortest ISI, 1.562 ms, just exceeds the 48-sample (1.50 ms) waveform, so the detector's dead time excludes ISIs under 1 ms, and every one of the 101733 spikes exceeds the 40 \u00b5V threshold (smallest peak 40.3 \u00b5V), which nearly forces the trough above twice the SD. Above the dead time, ISIs per ms at 1.56 to 3 ms are 0.106 times those at 10 to 30 ms (Plexon unit 0.204), which fits a refractory period in most spikes but does not rule out other units. Only 54411 of the Plexon unit's 90912 spikes lie within 0.2 ms of a spike of thresholded unit 1 (101733 spikes). The Plexon unit has 1 ISI under 1 ms, 14 (0.015%) under 1.56 ms and 39 (0.04%) under 2 ms.",
      "deviations": [
       "The paper states no measure for these panels; the 1% ISI rule and the trough-to-SD ratio are common choices made here.",
@@ -185,6 +197,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_choi_2025.ipynb",
+     "output": "claim:fig9d-beta-suppression-large",
      "notes": "Beta power (13 to 30 Hz) falls after V in both conditions (median log10 ratio of 0 to 0.5 s after V to 0.5 s before, -0.158 for large and -0.125 for small, each p < 0.001 against 0). The fall is larger for large cues, but not significantly (difference of medians -0.033, Mann-Whitney p = 0.108; 452 and 499 trials, none dropped; shuffling within blocks of 50 trials, p = 0.19). Averaged over trials, as in the paper's figure, power over 0 to 0.5 s is 0.839 of the baseline for large (95% CI 0.782 to 0.903) and 0.885 for small (0.831 to 0.940), a difference of -0.046 (-0.125 to 0.036). No variant reaches p < 0.05 (15 to 30 Hz, p = 0.063; 1 s baseline, p = 0.108; 12 to 25 Hz, p = 0.19; windows of 0 to 0.3 s and 0 to 1 s, p = 0.59 and 0.84; without baseline, p = 0.17). The paper states no test for this panel.",
      "deviations": [
       "The band, the filter, the power measure, the baseline, the window and the test were chosen here; the paper gives none.",
@@ -207,6 +220,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The dandiset holds one session of monkey T only (one NWB file). No recording of monkey J is in it or in the paper's Zenodo record, which also holds monkey T only. The monkey T part is tested by the Figure 8 and 9 claims.",
      "deviations": [],
      "assumed": false,
@@ -226,6 +240,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The per-electrode background current and noise measured at implantation and during recovery, for 40 and 51 sCFEs, are not in the dandiset, which holds one FSCV electrode (c8ds) on one day. Not found in the Zenodo record either.",
      "deviations": [],
      "assumed": false,
@@ -245,6 +260,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "As for scfe-functional-yield; the electrode-level background and noise measurements are not deposited.",
      "deviations": [],
      "assumed": false,
@@ -264,6 +280,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "No mCFE measurements are in the dandiset or the Zenodo record.",
      "deviations": [],
      "assumed": false,
@@ -283,6 +300,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The dandiset holds the FSCV of one electrode; the 24 and 15 functional CFEs and which of them showed dopamine signals are not deposited.",
      "deviations": [],
      "assumed": false,
@@ -302,6 +320,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The culture results (IDEXX BioAnalytics) are not in the dandiset, the Zenodo record or the protocols.io protocols the paper cites.",
      "deviations": [],
      "assumed": false,
@@ -321,6 +340,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The aspirated volumes per session are not in the dandiset or the Zenodo record.",
      "deviations": [],
      "assumed": false,
@@ -340,6 +360,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The observations are photographs and surgical notes, which are not deposited.",
      "deviations": [],
      "assumed": false,
@@ -500,6 +521,14 @@
     {
      "path": "reproduce_choi_2025.ipynb",
      "title": "Reproducing Choi et al. (2025) from dandiset 002014",
+     "cells": {
+      "sanity": "8507ced8",
+      "claim:fig8a-single-trial-dopamine": "c735fe62",
+      "claim:fig8b-dopamine-large-vs-small": "cd5a8b91",
+      "claim:fig9a-spikes-task-aligned": "93447658",
+      "claim:fig9bc-unit-waveform-isi": "46bf116c",
+      "claim:fig9d-beta-suppression-large": "7b1e61d5"
+     },
      "executed": "notebooks/choi-2025/reproduce_choi_2025.html"
     }
    ],

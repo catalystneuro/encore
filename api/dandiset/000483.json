@@ -5,7 +5,7 @@
   "label": "DANDI:000483"
  },
  "page": "datasets/dandi/000483/",
- "generated": "2026-11-19T20:10:28+00:00",
+ "generated": "2026-11-19T20:46:51+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 5,
@@ -79,31 +79,71 @@
     {
      "path": "single_cue.ipynb",
      "title": "Single-cue rotation and the data check (Figure 1)",
+     "cells": {
+      "sanity": "44daa2aa",
+      "claim:fig1g-rotation-heading-fraction": "390f75de",
+      "claim:selection-shuffled-control": "d77f2907",
+      "claim:fig1h-preferred-headings-tile": "55861a2d"
+     },
      "executed": "notebooks/sit-2023/single_cue.html"
     },
     {
      "path": "rotation_remapping.ipynb",
      "title": "Head against chamber rotation and coherent remapping (Figures 2 and 3)",
+     "cells": {
+      "sanity": "5fd8a514",
+      "claim:fig2f-head-chamber-same-preference": "441c07c0",
+      "claim:fig3c-coherent-remapping": "7589551f"
+     },
      "executed": "notebooks/sit-2023/rotation_remapping.html"
     },
     {
      "path": "axons.ipynb",
      "title": "ADN and visual cortical axons in light and dark (Figure 4)",
+     "cells": {
+      "sanity": "e6e0434c",
+      "claim:fig4-axons-light-on-shape": "559a10d8",
+      "claim:fig4-axons-light-off": "a89a5bf8"
+     },
      "executed": "notebooks/sit-2023/axons.html"
     },
     {
      "path": "somata.ipynb",
      "title": "Functional classes of RSC somata with dual cues (Figure 5)",
+     "cells": {
+      "sanity": "772ada9a",
+      "claim:fig5-three-classes": "36c1fc14",
+      "claim:fig5-class-proportions": "d6b306c3",
+      "claim:fig5e-alignment-peaks-coregistered": "27e1f44a",
+      "claim:fig5f-heading-flip-unchanged": "6696c654",
+      "claim:fig5gh-landmark-alignment-flip-drop": "6696c654",
+      "claim:fig5i-axons-in-clusters": "cd13487e"
+     },
      "executed": "notebooks/sit-2023/somata.html"
     },
     {
      "path": "directions.ipynb",
      "title": "Rotation direction and arena control (Figures S5 and S6) and the visual-cue-only files (Figure 5K)",
+     "cells": {
+      "sanity": "8f61849e",
+      "claim:figs5-rotation-direction": "88bbe4a0",
+      "claim:figs6-arena-control": "645a7b4d"
+     },
      "executed": "notebooks/sit-2023/directions.html"
     },
     {
      "path": "decoding.ipynb",
      "title": "Decoding heading from RSC somata in light and dark (Figure 6)",
+     "cells": {
+      "sanity": "69c5e519",
+      "claim:fig6a-population-light-on": "00202159",
+      "claim:fig6a-population-light-off": "0b87df82",
+      "claim:fig6b-heading-cells": "b2125e1f",
+      "claim:fig6b-landmark-cells": "f09352a3",
+      "claim:fig6b-alignment-cells": "a66ee4a6",
+      "claim:fig6b-180-errors": "c3872d18",
+      "claim:fig6-heading-below-population": "bacc6e47"
+     },
      "executed": "notebooks/sit-2023/decoding.html"
     }
    ],
@@ -119,6 +159,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
+     "output": null,
      "notes": "The dataset holds no free-chamber recording. All 16 single-cue files rotate at a steady 3.1 to 8.0 rpm (median heading step per frame) and hold 3179 ROIs over 5 mice, exactly the controlled-rotation experiment of Figure 1G. The only animal-controlled files are 5 dual-cue recordings of 2022 (Figure S6). The paper names a Dryad deposit (doi 10.25349/D91G8Q) of processed objects; it needs an account to download and was not checked.",
      "deviations": [],
      "assumed": false,
@@ -138,6 +179,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "single_cue.ipynb",
+     "output": "claim:fig1g-rotation-heading-fraction",
      "notes": "With the centred fit, 485 of 3179 ROIs (15.26%) pass, within 14.2 +- 1.42% and 452 +- 45; by mouse 8.9 to 25.2%, by recording 2.2 to 33.0%. With the fit as the code calls it, without centring, 345 (10.85%), outside the tolerance. With stricter reliability thresholds (KS p < 0.01, d > 1.2) the centred count is 393 (12.36%). The test is liberal. Its reliability step runs a KS test on 1000 split-half correlations of the same trials, as the paper's code does (ControlledRotation.calculateHeadDirection), and synthetic untuned cells pass the whole test at 4.7% (centred) and 1.7% (uncentred); real cells with each trial shifted once pass at 5.19% (selection-shuffled-control). The count matches the paper's, but about a third of the selected cells could pass by chance.",
      "deviations": [
       "Inferred spikes are computed here from the raw ROI fluorescence (OASIS AR(1), Python port) without the neuropil correction of the Methods (eq. 1), as the files hold no neuropil trace, dF/F or spikes.",
@@ -161,6 +203,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "single_cue.ipynb",
+     "output": "claim:selection-shuffled-control",
      "notes": "With each trial shifted once by its own random amount before the whole test, as the Methods' \"pre-shuffled data\" and the criterion's \"before the test\" say, 165 of 3179 ROIs (5.19%) pass, above the criterion's 1% limit; 478 pass the reliability step. Run as the commented calculateHeadDirection_shuff of Cue.m does it (the trials re-shifted in every iteration), 0 of 3179 pass under both fits, but under that reading the \"real\" and null split-half correlations come from the same distribution, so no cell can pass whatever the data. Synthetic untuned cells pass at 4.7% (fig1g). Which reading the claims file intends is asked in questions/000483.yaml.",
      "deviations": [
       "Assumption. The trials are shifted once before the test (the variant of the first run). The criterion names both \"before the test\" and the commented code, which shifts them afresh in every iteration; only the first can show whether the count is due to chance. Both are shown.",
@@ -183,6 +226,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "single_cue.ipynb",
+     "output": "claim:fig1h-preferred-headings-tile",
      "notes": "Tiling holds. The 485 cross-validated preferred headings (centred fit) fill all 60 bins of 6 degrees, and the four quadrants hold 18.1 to 40.0%. The overrepresentation cannot be judged. The files give heading relative to \"cage door dead north\" and do not say where the cue is. Within 45 degrees of the dataset's 0 lie 24.7% (not above 25%). The densest 90-degree window, centred at -102 degrees, holds 40.4% (Rayleigh p = 2e-05), and the densest heading differs between mice (in 30-degree bins SKKS090 peaks at +60 to +120 and SKKS091 at +60 to +90). Were the cue at dataset heading -90, the share near it would be 40.0%; nothing in the files says so. The code's uncentred fit puts 93.6% of its cells near -90 because its bounds hold the Gaussian's peak at dataset headings -120 to -60, which says nothing about the cue.",
      "deviations": [
       "Rests on the centred fit of fig1g-rotation-heading-fraction.",
@@ -212,6 +256,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "rotation_remapping.ipynb",
+     "output": "claim:fig2f-head-chamber-same-preference",
      "notes": "The criterion's test passes only under assumptions. Cells selective in both conditions, peak preference, chamber-rotation (CR) heading mirrored, the 5 pairs whose stored headings run in opposite directions, give V = 34.6, n = 228, p = 5.9e-04 ('fit' preference V = 36.0, p = 3.8e-04; cells selective in CR V = 47.7, p = 7.3e-05). 4 of 24 readings give p < 0.05 with V > 0. With all 7 pairs none does, and with the headings as stored every V is negative. Neither the mirroring nor the choice of 5 pairs can be checked against the data. The V is not the paper's 14.1 (n = 32), and no reading has n near 32. Matched ROIs do not keep their preference better than random pairs: pairing ROIs at random over the 5 pairs gives a larger V (mean 46.2, 95th percentile 57.6), and within every pair the real V lies inside its own random-pairing null (share of 1000 random pairings at or above it 0.222 to 0.998; SKKS116, the one pair with a large V, 58.9 against a null mean of 56.8). Head-rotation files have more selective cells (52 to 83% against 8 to 65%) and more activity (0.095 to 3.19 spikes/s against 0.063 to 0.114) than their CR partners, so heading-locked artefacts of derotation are not excluded. A 6-frame clock offset would move preferences by 4 to 8 degrees (head rotation) or 12 degrees (six of the CR files); the clock check of single_cue.ipynb peaks at -6 frames in one of four files, so the timing is not established. The seventh CR file, 210526 SKKS112-PlatformRotation-002, barely rotates (median step 0.12 degree per frame against about 2 in the others; 10 trials against 26).",
      "deviations": [
       "Assumption. The stored headings of 5 of the 7 pairs run in opposite directions in the two conditions, while the paper says the cue moves across the visual field in the same direction in both (Figure 2B legend), so the CR heading is mirrored to put both in the frame of the wall pattern. The files do not say how either heading is defined.",
@@ -242,6 +287,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "rotation_remapping.ipynb",
+     "output": "claim:fig3c-coherent-remapping",
      "notes": "All 8 readings give V > 0 with p < 0.05. Cells selective in both contexts, peak preference, expected offset (i), give V = 47.0, n = 85 over 9 recording pairs, p = 2.8e-13, against V = 25.6 with n = 66 in the paper; no reading gives a V within the tolerance (38.4 to 233.5). Pairing neurons at random gives a V of 36.2 on average (95th percentile 45.7, 1000 draws); 2.6% of random pairings reach the real V, so it lies only just above the null. 8 of the 9 pairs with 3 or more cells have V > 0. The SKKS091 2021-05-04 pair, whose files are both named context 1, has fewer than 3 cells selective in both and enters only the readings with cells selective in either.",
      "deviations": [
       "Cells selected with the centred fit of fig1g-rotation-heading-fraction; spikes without neuropil correction.",
@@ -265,6 +311,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "axons.ipynb",
+     "output": "claim:fig4-axons-light-on-shape",
      "notes": "Under reading (b), all 1084 ADN and 247 visual axons, the mean aligned light-on curve has a flip score of -0.207 (ADN) and 1.875 (visual), and single visual axons score higher (means 0.506 and -0.109, KS p = 1.6e-24). Under reading (a), selective axons, the visual mean curve is bimodal (1.814) and single axons differ (KS p = 1.7e-21), but the ADN mean curve has a flip score of 0.277 with the centred fit and 1.132 with the code fit, above 0. One ADN mouse (SKKS092) has a mean flip score above 0 under reading (a) (0.48, 0.423) and about 0 under (b) (-0.001).",
      "deviations": [
       "Axon traces are inferred spikes from the raw fluorescence, with no neuropil correction; the paper used Suite2P traces and excluded duplicate axons (r > 0.5), and the files give ROIs as they are.",
@@ -287,6 +334,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "axons.ipynb",
+     "output": "claim:fig4-axons-light-off",
      "notes": "Visual axons lose their tuning in light-off (mean light-off curve 5 to 11% of the light-on range, under half). The ADN part fails. Over all axons (reading b) the per-recording fraction selective in light-off is not significantly higher for ADN than for visual axons (medians 0.050 and 0.015, Mann-Whitney p = 0.35); pooled, 93 of 1084 against 11 of 247 (Fisher p = 0.035, the variant). Among selective axons (reading a) the share also selective in light-off has medians 0.134 and 0.000 (Mann-Whitney p = 0.15, 14 and 7 recordings); pooled 39 of 135 against 5 of 106 (Fisher p = 5.4e-07). The ADN mean light-off curve keeps 72 to 86% of the light-on range, but its peak lies 24 degrees (reading a, centred fit) or 30 degrees (reading b) from the light-on peak, beyond 18 degrees; with the code fit it lies at 18 degrees.",
      "deviations": [
       "Light-off curves take the circular shift of the mean light-on curve; the code's aligner (leaveOneOutAligner) is not public.",
@@ -315,6 +363,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "directions.ipynb",
+     "output": "claim:figs5-rotation-direction",
      "notes": "Reading (b) passes. For the 407 cells selective in the four files that rotate both ways, each cell's clockwise and counterclockwise tuning curves correlate more (median 0.210) than randomly paired cells (0.118), bootstrapped KS p = 0.002. Reading (a), differences in preferred heading, gives p = 0.16 (median 24 against 30 degrees). The pass is fragile. The pooled random pairs cross files, and by mouse, with random pairs from the same mouse, (b) passes for SKKS125 only (p = 0.044; SKKS126 0.119, SKKS127 0.699); over all active cells neither reading passes (p = 0.512 and 0.543). The statement's light and dark responses are not separated, as the files do not mark the light condition, so the \"diversity\" part is not tested beyond tuning stability.",
      "deviations": [
       "Figure S5 was not read; what is compared follows the claims file's readings.",
@@ -345,6 +394,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "directions.ipynb",
+     "output": "claim:figs6-arena-control",
      "notes": "Without the pair whose animal-controlled file visits 6 of 60 heading bins (SKKS125, 2022-07-21), neither reading passes: n = 269, (a) p = 0.973, (b) p = 0.9 (median correlation 0.093 against 0.086 at random), and no pair passes on its own (p 0.781 to 1). With it, reading (b) passes over all 5 pairs (n = 381, median 0.027 against -0.011, p = 0.026; (a) p = 0.889), but its 112 cells (29% of n) have animal-controlled tuning curves that are 0 in 54 of 60 bins, and the pooled random pairs cross pairs of files.",
      "deviations": [
       "Figure S6 was not read; what is compared follows the claims file's readings.",
@@ -369,6 +419,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "somata.ipynb",
+     "output": "claim:fig5-three-classes",
      "notes": "The silhouette value is highest at k = 2 under both readings of the criterion. Selective cells (1419) give 0.272, 0.019 and 0.032 for k = 2, 3 and 4, and all cells (11329) give 0.190, 0.120 and -0.052, so neither has a local maximum at 3. The reviewer-code variant, each curve centred on its own peak, has one for selective cells (0.114, 0.393, 0.004) but not for all cells (0.260, -0.015, 0.016); the criterion reports the variant and decides on readings (a) and (b).",
      "deviations": [
       "Spikes without neuropil correction; cells selected with the centred fit; light-off curves aligned with the shift of the mean light-on curve (leaveOneOutAligner not public).",
@@ -392,6 +443,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "somata.ipynb",
+     "output": "claim:fig5-class-proportions",
      "notes": "12.10% of somata are tuned (mean over recordings, s.e.m. 1.44; pooled 12.53%, over mice 11.51%), within 12.1 +- 1.1. The class shares do not match. Over recordings with no outlier step, landmark-like cells are 7.6%, alignment-like 78.9% and heading-like 13.5%; with the chi-square outlier step (58 cells to the null cluster) 7.4, 75.3 and 13.3%. Every reading orders them alignment > heading > landmark. The counts are 67 landmark, 1150 alignment and 202 heading, against 522, 409 and 332 from the paper's degrees of freedom. All three light-on archetypes are bimodal (a2/a1 0.70 to 0.80), so no class is a unimodal heading class. measured gives reading (b) with average (i).",
      "deviations": [
       "Classes are named by a rule on the archetypes (heading, the least bimodal light-on archetype; landmark, the weaker light-off archetype of the other two), as the paper names them by their curves without a rule.",
@@ -414,6 +466,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "somata.ipynb",
+     "output": "claim:fig5e-alignment-peaks-coregistered",
      "notes": "The criterion's V-test passes for the 1150 alignment-like cells (V = 743.5, p < 1e-300), but taking the nearer of two peaks 180 degrees apart folds offsets into +-90 and gives a large V by itself: uniform light-off peaks give V = 669.5 on average (V/n 0.582 against 0.646), and light-off peaks paired at random with other alignment-like cells give 707.2 (95th percentile 728.4, 1000 draws). The real V exceeds the random pairing (share at or above it 0.002), a small coregistration. Only 29.2% of offsets lie within 18 degrees, against 26.2% under random pairing, with a median offset of 36 degrees, so \"always\" is not supported. In the heading-like and landmark-like classes the V does not exceed random pairing (shares at or above it 0.677 and 0.230). The class is not the paper's alignment class (fig5-class-proportions).",
      "deviations": [
       "Tested on the classes found here, which differ from the paper's.",
@@ -443,6 +496,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "somata.ipynb",
+     "output": "claim:fig5f-heading-flip-unchanged",
      "notes": "The criterion is met on a class that is not the paper's. The 202 heading-like cells have flip scores 0.378 in light-on and 0.279 in light-off, F(1,402) = 2.2, p = 0.141 (mixed model with mouse as random intercept); with the outlier step p = 0.138, with a random intercept per cell p = 0.116. The class has 202 cells where the paper's degrees of freedom imply 332, and its light-on archetype is bimodal (a2/a1 0.70), so it is only the least bimodal of three bimodal classes. In the first round's development, with a different selection seed, the class held 380 cells and the light effect was significant (not run here).",
      "deviations": [
       "statsmodels MixedLM (REML), F as the squared z of the light effect, in place of MATLAB fitlme.",
@@ -480,6 +534,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "somata.ipynb",
+     "output": "claim:fig5gh-landmark-alignment-flip-drop",
      "notes": "The criterion is met on classes that are not the paper's. Flip scores fall in light-off for landmark-like cells (0.478 to -0.239, F(1,132) = 44.3, p = 2.8e-11, n = 67) and alignment-like cells (0.365 to 0.014, F(1,2298) = 135.4, p = 2.7e-31, n = 1150), against F(1,1042) = 1062.5 and F(1,816) = 209.5 in the paper.",
      "deviations": [
       "As for fig5f-heading-flip-unchanged."
@@ -501,6 +556,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "somata.ipynb",
+     "output": "claim:fig5i-axons-in-clusters",
      "notes": "The criterion is met, but the ellipses do not separate the axon groups. Under reading (a), 88.1% of ADN axons lie inside the heading-class 95% ellipse and 83.0% of visual axons inside the landmark-class ellipse; under (b), 72.4% and 55.5%. The alignment-class ellipse holds 84.3 to 96.2% of both axon groups, the heading ellipse holds 81.0 to 92.5% of visual axons (more than the landmark ellipse), and the LDA assigns 85.2 to 98.0% of axons to the alignment class. The classes come from fig5-class-proportions, which is not reproduced.",
      "deviations": [
       "Tested on the classes found here, which differ from the paper's.",
@@ -523,6 +579,7 @@
      "outcome": "blocked",
      "blocked_by": "metadata_insufficient",
      "notebook": "directions.ipynb",
+     "output": null,
      "notes": "The two visual-cue-only recordings (Suspended, SKKS125 2022-08-10 with 446 ROIs and SKKS127 2022-08-11 with 691 ROIs, 15050 frames each) share their number of ROIs with no other file of their mouse (the others have 213 to 670), and no matching of ROIs is given, so the matched neurons of Figure 5K cannot be found in another file. Inside each file the 1250-frame blocks alternate between the two directions of rotation at about 2 degrees per frame and the last block is still; nothing in the heading or the mean fluorescence marks some blocks as standard rotation, and light-on and light-off are not marked (directions.ipynb).",
      "deviations": [],
      "assumed": false,
@@ -552,6 +609,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "decoding.ipynb",
+     "output": "claim:fig6a-population-light-on",
      "notes": "No decoder reading gives a light-on mean within 0.82 +- 0.04. The naive Bayes decoder gives 0.708 [0.665, 0.747] (dF/F) and 0.712 [0.678, 0.746] (spikes); the Bayes variants without shared frames 0.239 to 0.532; the HeadingDecoder 0.202 and 0.215. Chance is 0.10 (0.101 to 0.102 with each decoder). measured gives dF/F with the Bayes decoder, the first reading.",
      "deviations": [
       "The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the same files, seeds and code; they differ from the paper's.",
@@ -591,6 +649,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "decoding.ipynb",
+     "output": "claim:fig6a-population-light-off",
      "notes": "Under the Bayes decoder light-off accuracy drops and stays above chance: 0.569 [0.525, 0.612] (dF/F) and 0.572 [0.535, 0.608] (spikes), both intervals above 0.18 and 0.10, light-off lower with p = 0.016 and p < 0.001 (paired; unpaired 0.061 and 0.002). The mean is outside 0.44 +- 0.10 under reading (a), so the criterion is not met in full. Without shared frames (a''), dF/F gives 0.406 [0.361, 0.452], within the tolerance and above both chance levels, but the drop is not significant (paired p = 0.105); spikes give 0.206 [0.177, 0.233]. The trial split (a') gives 0.167 and 0.140. The HeadingDecoder gives 0.137 [0.101, 0.178] and 0.144 [0.112, 0.176], above 0.10 and below 0.18, with no significant drop (p 0.231 to 0.361).",
      "deviations": [
       "Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a') even trials to train and odd trials to test, (a'') the paper's split of even and odd time points on 100 heading bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on, 0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames with training bins, as the paper's own procedure does.",
@@ -640,6 +699,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "decoding.ipynb",
+     "output": "claim:fig6b-heading-cells",
      "notes": "Under the Bayes decoder, heading-like cells (179 used) decode above chance in both conditions (dF/F 0.429 and 0.377; spikes 0.415 and 0.341; every interval above 0.18) with no significant difference (p 0.170 to 0.964), as the claim says, but both means are outside 0.61 +- 0.05 and 0.44 +- 0.08 under every reading. Without shared frames the pattern holds at lower accuracy ((a'') dF/F 0.328 and 0.280, both intervals above 0.18, p = 0.806); the trial split and the HeadingDecoder give 0.130 to 0.161 in light-on. The class is not the paper's heading class.",
      "deviations": [
       "Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a') even trials to train and odd trials to test, (a'') the paper's split of even and odd time points on 100 heading bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on, 0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames with training bins, as the paper's own procedure does.",
@@ -689,6 +749,7 @@
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "decoding.ipynb",
+     "output": "claim:fig6b-landmark-cells",
      "notes": "Under the Bayes decoder, landmark-like cells (50 used, sampled 332 with replacement) fall towards chance in light-off (dF/F 0.207 [0.192, 0.220]; spikes 0.187 [0.175, 0.199]), within 0.20 +- 0.07, with p < 0.001 for the drop, but their light-on accuracy (0.396 and 0.383) is half the paper's 0.80, so the criterion is not met. The spikes light-off interval includes 0.18 and the dF/F interval excludes it; neither includes 0.10. Every other reading also gives a significant drop (p 0.014 or less) with light-on accuracy 0.201 to 0.352. The class is not the paper's.",
      "deviations": [
       "Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a') even trials to train and odd trials to test, (a'') the paper's split of even and odd time points on 100 heading bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on, 0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames with training bins, as the paper's own procedure does.",
@@ -738,6 +799,7 @@
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "decoding.ipynb",
+     "output": "claim:fig6b-alignment-cells",
      "notes": "Under the Bayes decoder both means of alignment-like cells are within tolerance (dF/F 0.720 and 0.580; spikes 0.711 and 0.581), with light-off intervals above chance, but their light-on accuracy is the highest of the three classes, not between heading-like (0.429, 0.415) and landmark-like (0.396, 0.383) cells, and light-off is lower, by the paired test significantly (p = 0.011 and 0.001; unpaired 0.053 and 0.001), which the criterion counts against the claim under the reading that matches the values. No other reading puts both means within tolerance (light-on 0.203 to 0.548). The class is not the paper's.",
      "deviations": [
       "The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the same files, seeds and code; they differ from the paper's.",
@@ -763,6 +825,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "decoding.ipynb",
+     "output": "claim:fig6b-180-errors",
      "notes": "Under the Bayes decoder, 12.0% (dF/F) and 13.6% (spikes) of the landmark-like decoder's light-on errors lie within 18 degrees of 180, above 0.10, and 7.0% and 9.1% of the heading-like decoder's, no more than 0.10. The result is fragile: without shared frames it holds for dF/F ((a'') landmark 0.135, heading 0.078) but not for spikes (heading 0.137), and under the trial split and the HeadingDecoder it fails (heading-like 0.104 to 0.157); those readings decode at 0.13 to 0.26, and all their groups have 0.104 to 0.202. The classes are not the paper's.",
      "deviations": [
       "Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a') even trials to train and odd trials to test, (a'') the paper's split of even and odd time points on 100 heading bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on, 0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames with training bins, as the paper's own procedure does.",
@@ -788,6 +851,7 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "decoding.ipynb",
+     "output": "claim:fig6-heading-below-population",
      "notes": "Under every decoder and input reading, the 95% interval of light-on accuracy for heading-like cells lies below that of all tuned cells (Bayes dF/F 0.429 [0.399, 0.457] against 0.708 [0.665, 0.747]; spikes 0.415 [0.390, 0.441] against 0.712 [0.678, 0.746]; Bayes without shared frames 0.158 to 0.328 against 0.239 to 0.532; HeadingDecoder 0.130 and 0.146 against 0.202 and 0.215), reading (a); heading-like cells decode worse in 99.8 to 100% of iterations. Reading (b), a mixed model with recording or mouse as random intercept, cannot be formed, as each pseudopopulation trial pools cells of many recordings and mice. The heading-like class is not the paper's.",
      "deviations": [
       "The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the same files, seeds and code; they differ from the paper's.",
@@ -1076,31 +1140,71 @@
     {
      "path": "single_cue.ipynb",
      "title": "Single-cue rotation and the data check (Figure 1)",
+     "cells": {
+      "sanity": "44daa2aa",
+      "claim:fig1g-rotation-heading-fraction": "390f75de",
+      "claim:selection-shuffled-control": "d77f2907",
+      "claim:fig1h-preferred-headings-tile": "55861a2d"
+     },
      "executed": "notebooks/sit-2023/single_cue.html"
     },
     {
      "path": "rotation_remapping.ipynb",
      "title": "Head against chamber rotation and coherent remapping (Figures 2 and 3)",
+     "cells": {
+      "sanity": "5fd8a514",
+      "claim:fig2f-head-chamber-same-preference": "441c07c0",
+      "claim:fig3c-coherent-remapping": "7589551f"
+     },
      "executed": "notebooks/sit-2023/rotation_remapping.html"
     },
     {
      "path": "axons.ipynb",
      "title": "ADN and visual cortical axons in light and dark (Figure 4)",
+     "cells": {
+      "sanity": "e6e0434c",
+      "claim:fig4-axons-light-on-shape": "559a10d8",
+      "claim:fig4-axons-light-off": "a89a5bf8"
+     },
      "executed": "notebooks/sit-2023/axons.html"
     },
     {
      "path": "somata.ipynb",
      "title": "Functional classes of RSC somata with dual cues (Figure 5)",
+     "cells": {
+      "sanity": "772ada9a",
+      "claim:fig5-three-classes": "36c1fc14",
+      "claim:fig5-class-proportions": "d6b306c3",
+      "claim:fig5e-alignment-peaks-coregistered": "27e1f44a",
+      "claim:fig5f-heading-flip-unchanged": "6696c654",
+      "claim:fig5gh-landmark-alignment-flip-drop": "6696c654",
+      "claim:fig5i-axons-in-clusters": "cd13487e"
+     },
      "executed": "notebooks/sit-2023/somata.html"
     },
     {
      "path": "directions.ipynb",
      "title": "Rotation direction and arena control (Figures S5 and S6) and the visual-cue-only files (Figure 5K)",
+     "cells": {
+      "sanity": "8f61849e",
+      "claim:figs5-rotation-direction": "88bbe4a0",
+      "claim:figs6-arena-control": "645a7b4d"
+     },
      "executed": "notebooks/sit-2023/directions.html"
     },
     {
      "path": "decoding.ipynb",
      "title": "Decoding heading from RSC somata in light and dark (Figure 6)",
+     "cells": {
+      "sanity": "69c5e519",
+      "claim:fig6a-population-light-on": "00202159",
+      "claim:fig6a-population-light-off": "0b87df82",
+      "claim:fig6b-heading-cells": "b2125e1f",
+      "claim:fig6b-landmark-cells": "f09352a3",
+      "claim:fig6b-alignment-cells": "a66ee4a6",
+      "claim:fig6b-180-errors": "c3872d18",
+      "claim:fig6-heading-below-population": "bacc6e47"
+     },
      "executed": "notebooks/sit-2023/decoding.html"
     }
    ],
