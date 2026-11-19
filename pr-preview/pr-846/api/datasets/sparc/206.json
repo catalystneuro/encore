@@ -1,0 +1,980 @@
+{
+ "dataset": {
+  "archive": "sparc",
+  "id": "206",
+  "label": "SPARC:206"
+ },
+ "page": "datasets/sparc/206/",
+ "generated": "2026-11-19T02:07:28+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 8,
+  "partially_reproduced": 1,
+  "not_reproduced": 6,
+  "blocked": 15
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "payne-2020-01",
+   "dataset": {
+    "archive": "sparc",
+    "id": "206",
+    "version": "1",
+    "doi": "10.26275/kkmb-vun5",
+    "relation": "primary"
+   },
+   "datasets": [
+    "sparc:206"
+   ],
+   "missing_datasets": [],
+   "key": "sparc:206",
+   "label": "SPARC:206",
+   "dataset_version": "1",
+   "paper": "10.3389/fnins.2020.619275",
+   "paper_title": null,
+   "date": "2026-11-18",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-16"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/44204457264"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "payne-2020",
+   "entry_title": "Pelvic nerve array ECAPs, impedances, colonic pressure and cystometry in rats (Payne et al. 2020)",
+   "summary": "Evoked compound action potentials were recorded in all five anaesthetised rats, and the awake voiding parameters of Table 1 held, but the latencies, conduction velocities and threshold order of the three fibre populations did not. Those results rest on peak-picking rules the paper does not describe, and its 0.05 uV threshold level lies within the noise of most files. Impedance rose as reported to 2 weeks, while the awake latencies did not reproduce and the week-1 threshold rise could not be tested, as no recording is linked to a rat. Stimulation-evoked voiding could not be tested, since no file records urine release and trains exist for four of eight rats. No histology or c-Fos data are deposited.",
+   "description": "Tests the findings of Payne, Wiedmann, Eiber, Wong, Senn, Osborne, Keast and Fallon (2020) on SPARC dataset 206, version 1, which holds the acute and awake ECAP recordings from a pelvic nerve array, colonic pressure during stimulation, unstimulated and stimulated cystometry with a derivative table of void parameters, and electrode impedances. It tests the ECAP peaks, latencies, conduction velocities and thresholds, the impedance rise, the colonic response and the Table 1 void parameters. The histology, c-Fos counts, observation notes and urine-release annotations of the stimulation trials are not in the dataset.",
+   "notebooks": [
+    {
+     "path": "reproduce_payne_2020.ipynb",
+     "title": "Reproducing Payne et al. (2020) from SPARC dataset 206",
+     "executed": "notebooks/payne-2020/reproduce_payne_2020.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "anes-ecap-recorded",
+     "statement": "In all five urethane-anaesthetised rats, ECAPs with complex waveforms were recorded on the non-stimulating electrode pair during graded stimulation and could be separated from the stimulation artefact.",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 1; Figure 2A and 2B",
+     "quote": "In all cases, ECAPs with complex waveforms could be recorded from the non-stimulating electrode pair during graded electrical stimulation; these ECAPS could be separated from the stimulation artifact",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Under the main peak rule, in all five acute rats (12-005, 12-006, 12-007, 12-008, 12-010) at least one detected positive peak after the artefact end reaches 0.05 uV in both recordings at some current and is below 0.05 uV at the lowest current, under both artefact-end readings (5 of 5 each). The largest-peaks and inverted rules also give 5 of 5; the window rule gives 2 of 5, as it finds a triple inside the paper's ranges in two rats only. The top-current amplitudes of these peaks range from 0.07 to 15.7 uV. The RMS of the 1.2 to 6 ms window rises with current in every acute file (Spearman rho 0.84 to 0.998).",
+     "deviations": [
+      "Assumption. The acute files have no 0 mA traces; the lowest current (0.0175 mA in four rats, 0.107 mA in 12-007) stands for 0 mA, as the nearest the data allow.",
+      "The peaks come from identification rules the paper does not give (assumption; see anes-ecap-latencies)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "anes-ecap-latencies",
+     "statement": "In anaesthetised rats, ECAPs at supra-threshold stimulation show three positive peaks centred at 1.80 ms (P1, range 1.65 to 2.90 ms), 3.48 ms (P2, 2.51 to 4.16 ms) and 3.77 ms (P3, 3.25 to 5.67 ms), n = 5.",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 1",
+     "quote": "At supra-threshold stimulation levels these waveforms showed positive peaks centered at: P1, 1.80 ms (range 1.65\u20132.90 ms, n = 5); P2, 3.48 ms (2.51\u20134.16 ms); and P3, 3.77 ms (3.25\u20135.67 ms)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "None of the 288 combinations of readings (central value, time origin, stimulus level, artefact end, detection margin 2, 3 or 5 noise SD, and four peak rules) puts all three central latencies within 10%. Main reading (first-three rule, artefact end 1 ms, margin 3 SD, highest current, onset origin, median over 4 rats) gives 1.60, 2.50 and 4.19 ms against 1.80, 3.48 and 3.77; the closest combination over all rules (three largest peaks, margin 5 SD, mean over 3 rats) gives 1.79, 3.24 and 4.22 ms, 11.9% off at worst, and the closest under the main rule 1.61, 2.98 and 4.18 ms (14.5%). 12-008 has two peaks under the main reading. Per rat, P2 (2.42 to 3.25 ms) and P3 (3.84 to 4.63 ms) lie within the paper's ranges widened by 10% in 4 of 4 rats, P1 (1.12 to 2.33 ms) in 2 of 4. The outcome is the same under every peak rule. The question for the paper's authors is under the methods_unavailable finding on peak identification.",
+     "deviations": [
+      "Assumption. The paper does not say how P1 to P3 were identified. P1 to P3 are assigned among the positive peaks above k noise SD (k = 2, 3, 5) after the artefact end at the highest current by four rules, all run: the first three in time (main rule), the three largest, the triple inside the paper's P1 to P3 ranges widened by 10% with the largest summed amplitude, and the first three of the inverted traces. The main rule follows the Results' description of three positive peaks distinguished by latency (Results, Electrically Evoked Compound Action Potentials, paragraph 1); the margin is a standard detection choice. The window rule uses the paper's own ranges.",
+      "The traces start 0.6 ms after pulse onset, so the baseline is the median from 7 to 8.6 ms, not a pre-stimulus segment (assumption). Neither the files nor the deposited schema define time zero or a gain.",
+      "Stimulus-level reading (b) is the lowest current at which all three peaks pass in both recordings, and reading (c) the mean over currents at or above the P3 threshold.",
+      "The acute files reach 1.6 mA in logarithmic steps, where the Methods give 0 to 2 mA in 0.1 mA steps; the highest-current reading uses 1.6 mA.",
+      "Recordings at 200 kHz with a 500 to 3000 Hz filter, where the Methods give 100 kHz and 300 to 5000 Hz; the data are used as they are."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "anes-conduction-velocity",
+     "statement": "Approximate conduction velocities of the three populations in anaesthetised rats are 1.60 m/s (P1, 0.98 to 1.72), 0.82 m/s (P2, 0.35 to 1.13) and 0.78 m/s (P3, 0.50 to 0.88), in the range of myelinated A-fibres and unmyelinated C-fibres.",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 1; Discussion, paragraph 4",
+     "quote": "Approximate conduction velocities for these populations are 1.60 m/s (P1, 0.98\u20131.72 m/s), 0.82 m/s (P2, 0.35\u20131.13 m/s) and 0.78 m/s (P3, 0.50\u20130.88 m/s)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "None of 864 combinations (latency readings under four peak rules by distance 2.85, 2.10 or 3.60 mm by median or mean) puts all three velocities within 10% of 1.60, 0.82 and 0.78 m/s. With 2.85 mm and the main latency reading the medians are 1.82, 1.14 and 0.68 m/s; the closest combination (three largest peaks, margin 5 SD, mean over 3 rats) gives 1.57, 0.93 and 0.68 m/s, 13.1% off. The part of the statement on fibre classes holds under the main reading; P1 lies in the A-fibre range (1.6 to 21 m/s) and P2 and P3 in the C-fibre range (0.5 to 1.6 m/s) given in the Discussion.",
+     "deviations": [
+      "Rests on the peak identification assumed for anes-ecap-latencies."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "anes-threshold-order",
+     "statement": "In anaesthetised rats the stimulation threshold rises in the order of the first (P1, 377 uA, 267 to 783), second (P2, 648 uA, 595 to 648) and third (P3, 930 uA, 550 to 1225) responding populations, a main effect in a Friedman test (P = 0.039, n = 5).",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 1; Figure 2C",
+     "quote": "The mean stimulation threshold of these peaks increased in the order of the first (P1: 377 \u03bcA, 267\u2013783 \u03bcA), second (P2: 648 \u03bcA, 595\u2013648 \u03bcA) and third (P3: 930 \u03bcA, 550\u20131225 \u03bcA) responding populations (main effect: non-parametric Friedman\u2019s within-subject ANOVA: P = 0.039, n = 5)",
+     "statistics": [
+      {
+       "test": "Friedman test (non-parametric within-subject ANOVA), main effect of population",
+       "p": 0.039,
+       "n": "5 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Under the criterion's threshold (lowest passing current), no combination of readings under any of the four peak rules (0 of 192; amplitude above baseline or above the preceding trough, lowest passing current or interpolated, median or mean, artefact end, margin) gives rising thresholds with Friedman P below 0.05, and none puts the three values within 10% of 377, 648 and 930 uA. Main reading, medians over four rats 62, 221 and 280 uA, rising, Friedman chi2 = 4.5, P = 0.105. Per rat (uA) 12-005 648, 541, 1335; 12-006 18, 128, 183; 12-007 107, 315, 377; 12-010 18, 107, 74; 12-008 has no third peak. Twelve of 384 combinations meet the criterion, all under a further sustained reading (lowest current from which every higher current passes) that is not the criterion's definition (largest-peaks rule with artefact end b and margin 3, Friedman P = 0.022 and 0.039; window rule with margin 2, P = 0.039); none is within tolerance. Band-passed noise alone passes the two-recording test in 24 to 28% of current steps at 0.05 uV SD and 63 to 77% at 0.2 to 0.7 uV SD (five seeds), and the noise SD of the files is 0.02 to 0.7 uV, so several thresholds equal the lowest current. Variants outside the criterion: with the pass level at three noise SDs the main rule gives medians 107, 498 and 691 uA, rising, Friedman chi2 = 6.5, P = 0.039 (n = 4), outside tolerance; with 5 uV (the stored values read as carrying the 10^2 gain) at most one rat has three thresholds.",
+     "deviations": [
+      "Rests on the peak identification assumed for anes-ecap-latencies.",
+      "The files' currents are logarithmic steps (0.074 to 1.6 mA, and 0.0175 mA), so reading (a) of the step is the lowest passing file current, not a 0.1 mA step.",
+      "A peak's amplitude at a lower current is that of the local maximum nearest its latency within 0.3 ms (a choice; the paper gives no window).",
+      "A further reading of threshold, the lowest current from which every higher current passes, is shown; it is not the criterion's definition, and the only combinations that meet the criterion use it."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-p3-above-p1",
+     "statement": "The third responding population has a significantly higher threshold than the first (P = 0.034).",
+     "source": "Figure 2C legend",
+     "quote": "Quantification of neural thresholds shows the third responding neural population had significantly higher thresholds ( P = 0.034) than the first responding",
+     "statistics": [
+      {
+       "test": "Dunn's post hoc test after Friedman test",
+       "p": 0.034,
+       "n": "5 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Main threshold reading, Dunn's test on the Friedman mean ranks, P3 above P1, z = 2.12, unadjusted P = 0.034 (n = 4 rats); Bonferroni-adjusted over three pairs P = 0.10. Of 48 readings per peak rule, P3 is higher with unadjusted P below 0.05 in 4 (first-three rule), 4 (largest), 8 (window) and 9 (inverted), and with the Bonferroni P in 0, 2, 4 and 0, these last all under the sustained reading. With all five rats in the test (margin 2 SD) the smallest unadjusted P is 0.082. The Friedman main effect in the main reading is P = 0.105, so the post hoc difference comes without a significant main effect; with the pass level at three noise SDs (variant) Friedman P = 0.039 and Dunn P = 0.013. The pass is narrow; it rests on the unadjusted reading, n = 4, and the assumed peak identification. The question of the adjustment is put to the paper's authors (finding below).",
+     "deviations": [
+      "Rests on the peak identification assumed for anes-ecap-latencies; n = 4 rats where the paper has 5.",
+      "Assumption. The unadjusted reading of Dunn's P is the one that matches; the Statistics section names Dunn's test without saying whether its P is adjusted."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2ab-one-rat-p2-below-p1",
+     "statement": "In four of five anaesthetised rats the first responding population had a lower threshold than later responding populations; in one rat the threshold of P1 was higher than that of P2.",
+     "source": "Figure 2A and 2B legends; Results, Electrically Evoked Compound Action Potentials, paragraph 1",
+     "quote": "Typically ( n = 4 of 5), the first responding neural populations had lower thresholds than later responding populations. (B) In one animal, the first responding neural fiber population had a higher threshold than the second",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Under the criterion's threshold no reading under any peak rule (0 of 96) gives four of five rats with P1 lowest and one with P1 above P2. Main reading, three of four rats have P1 below P2 and P3, and one (12-005) has P1 above P2 (648 against 541 uA); 12-008 has no third peak. Two of 192 rows meet the counts, both under the largest-peaks rule, artefact end b, margin 2 SD and the sustained reading, which is not the criterion's definition of threshold; the raised pass levels give 0 of 8. Measured is the count of rats with P1 lowest under the main reading.",
+     "deviations": [
+      "Rests on the peak identification assumed for anes-ecap-latencies."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "awake-ecap-latencies",
+     "statement": "In chronically implanted awake rats (n = 4), three populations were recruited in all animals at week 0 and week 1, with mean latencies of 2.27 ms (P1, 1.93 to 2.65), 3.92 ms (P2, 3.19 to 4.44) and 5.62 ms (P3, 4.57 to 6.72) and conduction velocities of 1.26, 0.73 and 0.51 m/s.",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 2",
+     "quote": "Three neural populations, distinguished by their distinct latencies, were consistently recruited in all animals at 0 and 1 week following implantation. The first responding fiber population (P1) had a mean latency of 2.27 ms (range: 1.93\u20132.65 ms), second responding fibers (P2) had a mean latency of 3.92 ms (range: 3.19\u20134.44 ms), and the third (P3) had a mean latency of 5.62 ms (range: 4.57\u20136.72 ms). Approximate conduction velocities for these populations are 1.26 m/s (P1, 1.08\u20131.48 m/s), 0.73 m/s (P2, 0.64\u20130.89 m/s) and 0.51 m/s (P3, 0.42\u20130.62 m/s)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "The seven awake files are 12-050, 12-051, 12-052 and 12-056 at day 0 and 12-053, 12-055 and 12-057 at day 7. Three peaks are found in at most 5 of 7 recordings under any peak rule and margin, and in 2 of 7 under the main reading; 12-057 shows none under any rule. No combination of readings puts all six values within tolerance (0 of 792). Measured values are reading (a), first-three rule, all recordings with three peaks, margin 2 SD, highest current, onset origin, 2.85 mm (mean latencies 1.94, 3.30 and 4.65 ms; velocities 1.67, 0.95 and 0.64 m/s). Under the largest-peaks rule with margin 2 SD the mean latencies of the five recordings with three peaks (2.14, 3.70 and 5.28 ms) are within tolerance and the velocities (1.59, 0.88 and 0.57 m/s, the mean of each recording's velocity) are not; 9 rows have the latencies within tolerance and 23 the velocities, none both. That result depends on how velocity is averaged. Taken as 2.85 mm over the mean latency, as the paper's printed velocities are, the same latencies give 1.33, 0.77 and 0.54 m/s, within tolerance, and 3 of 792 rows (rule largest, margin 2 SD, reading (a), each stimulus level, onset origin, 5 of 7 recordings) have all six values within tolerance. The outcome does not change, as those rows rest on 5 of 7 recordings and the criterion needs three peaks in every rat. Noise SD is 0.21 to 0.71 uV in six of seven files.",
+     "deviations": [
+      "Rests on the peak detection assumed for anes-ecap-latencies.",
+      "Reading (b) of the criterion (each rat's two-week mean) cannot be run, as no day-7 file is linked to a day-0 file.",
+      "Stimulation is on E3-E4 with recording on E1-E2 in 12-050, 12-053 and 12-056; the same distances are used."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "awake-threshold-increase",
+     "statement": "In awake implanted rats, thresholds of all three populations increased from week 0 to week 1 (P1 391 to 643 uA, P2 677 to 1051 uA, P3 713 to 1263 uA), significantly by a Friedman test (P = 0.039, n = 4).",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 2; Figure 2C",
+     "quote": "Neural thresholds of first (P1, week 0: 391 \u00b1 138 \u03bcA, week 1: 643 \u00b1 300 \u03bcA), second (P2, week 0: 677 \u00b1 149 \u03bcA, week 1: 1051 \u00b1 275 \u03bcA) and third (P3, week 0: 713 \u00b1 119 \u03bcA, week 1: 1263 \u00b1 333 \u03bcA) responding fiber populations significantly increased at 1 week (Friedman test, P = 0.039, n = 4",
+     "statistics": [
+      {
+       "test": "Friedman test",
+       "p": 0.039,
+       "n": "4 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Every reading of the criterion's Friedman test uses rat as a block, and the dataset gives the awake recordings as seven subjects, four at day 0 and three at day 7, with nothing that links a day-7 recording to a rat recorded at day 0: pool_id is empty for every subject and no experimental log file is named for these rats. Per-file thresholds are printed for reference; most equal the lowest current under the 0.05 uV level, as the noise SD of these files is 0.21 to 0.71 uV. The claim also depends on awake-ecap-latencies.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "impedance-increase",
+     "statement": "Mean electrode impedance rose from 4.19 kOhm before implantation to 7.25 kOhm on day 1, 12.04 kOhm at 2 weeks and 13.1 kOhm at 8 weeks.",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 3",
+     "quote": "The mean electrode impedance prior to implantation) was 4.19 \u00b1 0.17 k\u03a9 (range 3.16\u20135.03, n = 38 electrodes, 10 arrays). On post-surgical day 1, this increased to 7.25 \u00b1 0.79 k\u03a9 (range: 4.54\u201315.18 k\u03a9), and further increased after 2 weeks implantation to 12.04 \u00b1 1.15 k\u03a9 (range: 6.24\u201318.3 k\u03a9, 38 electrodes in 10 arrays) and 8 weeks implantation to 13.1 \u00b1 2.06 k\u03a9 (8.0\u201320.2 k\u03a9, n = 8 electrodes, 2 arrays)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "From the derivative chronic-impedances.pzfx, one value per array, the means are 4.192 kOhm (SEM 0.166, 12 arrays), 7.245 (SEM 0.793, 12) and 12.044 (SEM 1.149, 10), the paper's values and spreads, with ranges 3.16 to 5.03, 4.54 to 15.18 and 6.24 to 18.32 kOhm equal to the printed ones. The 8-week value (13.1 kOhm) cannot be tested; no impedance file belongs to the 8-week rats (15-759, 15-760). The per-electrode CSVs of eight rats give 3.89 (32 electrodes), 7.02 (28) and 20.2 kOhm (32, the last row per array, including one electrode at 252 kOhm). The paper's spreads are SEMs over arrays, and its n of 38 electrodes in 10 arrays does not match the 12 arrays averaged.",
+     "deviations": [
+      "The 8-week time point is not in the dataset."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "electrode-failures",
+     "statement": "No short circuits occurred during implantation, and only 2 of 40 electrodes became open circuit, both within 2 weeks of implantation.",
+     "source": "Results, Electrically Evoked Compound Action Potentials, paragraph 3",
+     "quote": "No short circuits occurred during the implantation period, and only 2 out of 40 electrodes became open circuit (both within 2 weeks of implantation)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Per-electrode impedances are in the dataset for 8 arrays (32 electrodes), not the 40 electrodes the claim counts, and the per-array derivative cannot show single electrodes. In the 32, one electrode (18-273 E3) reads 252270 Ohm on three days from day 14 (an open circuit, within about 2 weeks), and three others have a single high value (49 to 95 kOhm); in 18-262 E1 and 18-294 E3 it returns to the array's level at the next measurement, and in 18-208 E1 it is the last measurement. The lowest value is 1230 Ohm (18-294 before implantation), so no short circuit is seen. As a partial result on the 32 electrodes deposited, one open circuit within about 2 weeks and no short is seen, against 2 opens of 40.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "colonic-pressure",
+     "statement": "Pelvic nerve stimulation increased colonic pressure in only 1 of 3 anaesthetised rats, by 2.6 mmHg (mean and SEM 2.6 and 0.1, 13 replicate responses), time-locked to stimulation.",
+     "source": "Results, Colonic Pressure Changes and Non-urological Effects of Pelvic Nerve Array Stimulation, paragraph 1",
+     "quote": "Only 1 of 3 animals responded, showing a small increase in colonic pressure of 2.6 \u00b1 0.1 mm Hg (mean \u00b1 SEM, 13 within-subject replicate responses) time locked to pelvic nerve stimulation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Reading (a), peak during the train minus the mean before, three of three rats respond (5.68, 4.26 and 0.25 mmHg; one-sided P 0.019, 0.006, 0.0002), but the same measure between trains is 5.48, 2.51 and 0.56 mmHg. Reading (b), mean during minus mean before, one rat responds, 12-020, with 1.44 mmHg (SEM 0.70, 14 trains), against 2.6 (SEM 0.1, 13 responses). In 15-758 the response comes in the 10 s before each recorded time; with the train placed there (variant), reading (b) gives one responder, 15-758, with 0.64 mmHg (SEM 0.09, 33 trains). Against the same measure taken halfway between trains (Welch one-sided, a variant), no rat responds under either reading. No reading gives a responder near 2.6 mmHg, and no rat has 13 trains. Measured is reading (b).",
+     "deviations": [
+      "The colonic stimulation in the files (1.114 mA, 200 us, 10 Hz, 4 or 5 s trains in 12-019 and 12-020; 0.541 mA, 25 us, 15 Hz, 10 s in 15-758) differs from the Methods (1 mA, 100 us, 10 Hz).",
+      "Each entry of the stimulus table is taken as a train of the file's StimDuration; in 12-019 and 12-020 the entries come in pairs about 4 s apart.",
+      "The responder test is the claims file's choice; it is run one-sided, for an increase."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "no-fecal-expulsion-or-erection",
+     "statement": "In awake rats, pelvic nerve stimulation did not cause expulsion of faecal pellets (n = 10) or penile erection (n = 6), and no erection was seen in anaesthetised rats.",
+     "source": "Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in Awake Rats, paragraph 1; Results, Colonic Pressure Changes, paragraph 1",
+     "quote": "stimulation did not cause expulsion of fecal pellets ( n = 10 animals) or penile erection ( n = 6)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dataset holds no observation notes, video or annotation of faecal pellets or erection; the manifest lists none.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-minimum-pressure",
+     "statement": "In 9 awake implanted rats, the minimum bladder pressure of unstimulated voiding cycles was 10.3 mmHg (95% CI 7.4 to 13.2).",
+     "source": "Table 1, row Minimum pressure",
+     "quote": "",
+     "statistics": [
+      {
+       "test": "mean and 95% CI",
+       "ci": {
+        "low": 7.4,
+        "high": 13.2,
+        "level": 0.95,
+        "unit": "mmHg"
+       },
+       "n": "9 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "The number is only in Table 1; the Results sentence before it says the parameters were comparable to published values.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "From the derivative cystometry-dataset.xlsx, the mean of 9 rat means is 11.74 mmHg (95% CI 8.47 to 15.01), inside the printed CI (7.4 to 13.2); pooled over 27 cycles also 11.74. It differs from the printed 10.3 by 1.44 mmHg. The dataset's own R notebook output gives the same 11.741. Recomputed from the pressure traces (the authors' /Voids onsets, rat means), the lowest 1 s mean pressure before the next void gives 6.26 mmHg (outside the CI) and the lowest within 60 s of the peak 8.00 mmHg (inside).",
+     "deviations": [
+      "Tested on the authors' derivative table, not recomputed from the pressure traces; its values differ from the primary /Voids tables of the same rats.",
+      "The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10% return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-threshold-pressure",
+     "statement": "The relative threshold pressure of unstimulated voiding was 6.6 mmHg (95% CI 4.7 to 8.4), n = 9 rats.",
+     "source": "Table 1, row Relative threshold pressure",
+     "quote": "",
+     "statistics": [
+      {
+       "test": "mean and 95% CI",
+       "ci": {
+        "low": 4.7,
+        "high": 8.4,
+        "level": 0.95,
+        "unit": "mmHg"
+       },
+       "n": "9 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "The number is only in Table 1.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Mean of 9 rat means 6.96 mmHg (95% CI 5.15 to 8.77), inside the printed CI 4.7 to 8.4 under every reading. Relative pressures in the table equal absolute minus minimum to 1e-14. Recomputed from the traces, threshold at onset gives 8.64 mmHg against the lowest pressure before the next void (outside the CI) and 6.90 against the lowest within 60 s of the peak (inside); threshold at the start of the HFPOs, the proxy here for urine release, gives 16.07 and 13.98 mmHg (outside).",
+     "deviations": [
+      "Threshold pressure as the derivative defines it (mmhg_init); the criterion's two readings of its definition cannot be told apart from the table.",
+      "The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10% return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-peak-pressure",
+     "statement": "The relative peak (closing) pressure of unstimulated voiding was 51.2 mmHg (95% CI 39.5 to 63.0), n = 9 rats.",
+     "source": "Table 1, row Relative peak (closing) pressure",
+     "quote": "",
+     "statistics": [
+      {
+       "test": "mean and 95% CI",
+       "ci": {
+        "low": 39.5,
+        "high": 63.0,
+        "level": 0.95,
+        "unit": "mmHg"
+       },
+       "n": "9 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "The number is only in Table 1.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Mean of 9 rat means 46.59 mmHg (95% CI 33.79 to 59.39), inside the printed CI 39.5 to 63.0 under every reading; 4.6 mmHg below the printed 51.2. Recomputed from the traces it is 46.33 or 44.59 mmHg, inside the CI under every reading.",
+     "deviations": [
+      "Tested on the authors' derivative table.",
+      "The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10% return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-contraction-duration",
+     "statement": "The contraction duration of unstimulated voiding was 28.9 s (95% CI 17.1 to 37.5), n = 9 rats.",
+     "source": "Table 1, row Contraction duration",
+     "quote": "",
+     "statistics": [
+      {
+       "test": "mean and 95% CI",
+       "ci": {
+        "low": 17.1,
+        "high": 37.5,
+        "level": 0.95,
+        "unit": "s"
+       },
+       "n": "9 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "The number is only in Table 1. The printed CI is not symmetric about the mean.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Mean of 9 rat means 32.19 s (95% CI 16.04 to 48.33), with 18-273's mean over its two complete cycles; 26.06 s (16.96 to 35.17, 8 rats) with that rat left out, as the dataset's R code does; 30.30 s over 26 pooled cycles. All inside the printed CI 17.1 to 37.5. One cycle of 18-273 lasts 134.2 s and one of 18-243 96.2 s. Recomputed from the traces, the time above threshold (reading b) gives 32.08 s (inside the CI) and onset to the return within 10% of the minimum (reading a) 48.05 s (outside).",
+     "deviations": [
+      "Contraction duration as the derivative defines it; one cycle of 18-273 has none.",
+      "The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10% return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-intervoid-interval",
+     "statement": "The inter-void interval of unstimulated voiding was 7.6 min (95% CI 5.9 to 9.4), n = 9 rats.",
+     "source": "Table 1, row Inter-void interval",
+     "quote": "",
+     "statistics": [
+      {
+       "test": "mean and 95% CI",
+       "ci": {
+        "low": 5.9,
+        "high": 9.4,
+        "level": 0.95,
+        "unit": "min"
+       },
+       "n": "9 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "The number is only in Table 1.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Mean of 9 rat means 6.66 min (95% CI 5.74 to 7.59), inside the printed CI 5.9 to 9.4 under every reading; 0.94 min below the printed 7.6. Recomputed from the traces (onset to onset within one wave) it is 6.66 min (7 rats, before stimulation) or 6.23 min (first three marked voids, 9 rats), inside the CI.",
+     "deviations": [
+      "Tested on the authors' derivative table.",
+      "The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10% return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-hfpo-frequency",
+     "statement": "High-frequency pressure oscillations during voiding contractions had a centre frequency of 10.7 Hz (95% CI 8.3 to 13.0), n = 9 rats.",
+     "source": "Table 1, row HFPO frequency; Methods, Bladder Pressure Responses, paragraph 3",
+     "quote": "",
+     "statistics": [
+      {
+       "test": "mean and 95% CI",
+       "ci": {
+        "low": 8.3,
+        "high": 13.0,
+        "level": 0.95,
+        "unit": "Hz"
+       },
+       "n": "9 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "The number is only in Table 1; the Methods say only that HFPOs were analysed to estimate the centre frequency of oscillation.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "Mean of 7 rat means 9.82 Hz (95% CI 7.21 to 12.43), inside the printed CI 8.3 to 13.0. The derivative has no HFPO frequency for 12-081 and 12-083, so n is 7, not the 9 Table 1 states. 18-273 has 16.0 Hz, the others 7.8 to 9.7 Hz. Recomputed from the traces, the spectrum peak gives 8.05 Hz (9 rats) and the count of oscillation peaks 7.11 Hz (7 rats), both below the CI; these use a band-pass and an HFPO period chosen here, so the derivative decides the outcome. The pass rests only on the derivative's value, from 7 rats, whose method is unstated; the dataset's R notebook output gives the same 9.817 Hz (n = 7) and computes no HFPO frequency itself.",
+     "deviations": [
+      "Assumption. The derivative's HFPO frequency (eus_freq) is taken to match one of the criterion's readings of the centre frequency. Neither the paper (Methods, Bladder Pressure Responses, paragraph 3, says only that HFPOs were analysed to estimate the centre frequency) nor the dataset says how it was computed, and neither reading recomputed from the traces here lies inside the CI.",
+      "HFPO frequency as the derivative gives it; the criterion's two readings of how it is estimated cannot be run from the table, and the pressure traces of 12-081 and 12-083 are sampled at 100 Hz.",
+      "7 rats, not 9.",
+      "The recomputation from the traces is a check; its definitions (1 s mean pressure, the onsets of /Voids, a 10% return margin, HFPOs as a 3 to 30 Hz band reaching three times its pre-onset level) are choices made here."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-comparable-to-published",
+     "statement": "Voiding parameters after array implantation were comparable to published values in naive rats, including Wiedmann et al. (2020) for threshold pressure, peak pressure, contraction duration and inter-void interval.",
+     "source": "Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in Awake Rats, paragraph 2; Table 1; Figure 3C legend",
+     "quote": "These urodynamic parameters were comparable to published values ( Zhao et al., 2010 ; Andersson et al., 2011 ; Fraser et al., 2020 ; Wiedmann et al., 2020 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "The 95% CIs computed here overlap the Wiedmann et al. (2020) CIs printed in Table 1 for all four parameters under both readings (relative threshold 5.15 to 8.77 against 1.8 to 7.3 mmHg; relative peak 33.79 to 59.39 against 15.3 to 74.0 mmHg; contraction duration 16.04 to 48.33, or 16.96 to 35.17, against 25.1 to 49.3 s; inter-void interval 5.74 to 7.59 against 5.3 to 10.6 min). The Wiedmann values are those printed in the paper; no data of Wiedmann et al. were read, so the outside side of the comparison is the paper's own table.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "stim-evoked-voiding",
+     "statement": "Stimulation delivered at a partial fill was immediately followed by voiding in seven of eight rats, repeated in 3 to 6 cycles in six of these.",
+     "source": "Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in Awake Rats, paragraph 2; Figure 3A, 3B and 3D",
+     "quote": "When delivered during this partly filled state, electrical stimulation of the pelvic nerve was immediately followed by post-stimulation voiding (urine release) in seven of eight rats and was repeated in 3\u20136 cycles in six of these rats",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_payne_2020.ipynb",
+     "notes": "The classification needs whether urine was released after each train, which no file records. Stimulation trains are in four cystometry files only (18-196, 18-243, 18-262, 18-294; 1, 1, 2 and 5 trains), against eight stimulated rats in the paper. The voids the authors marked in /Voids begin 0.8 to 157.5 s after these trains; they do not say whether a void was evoked. Partial result, reading each /Voids entry as a marked void: all four rats with trains have a marked void starting within 30 s of a train's onset and of its end (4 of 9 trains); none has such voids after 3 to 6 trains. The deposited schema lists the /Voids columns with units only and does not say whether a void means urine release.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "stim-void-trials",
+     "statement": "In 27 trials across eight rats a void was observed within 30 s of stimulation.",
+     "source": "Discussion, paragraph 5",
+     "quote": "we consider it unlikely that in the 27 trials in eight rats where we observed a void within 30 s of our stimulation this was always the case",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Same data as stim-evoked-voiding, on which it depends. The dataset holds 9 stimulation trains in four rats, against 27 trials with voids in eight rats. Partial result: 4 of the 9 deposited trains are followed by a marked void within 30 s of their onset or end.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "stim-early-void",
+     "statement": "In two rats the stimulus-evoked void occurred very early in the normal void cycle.",
+     "source": "Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in Awake Rats, paragraph 2; Figure 3A and 3B1",
+     "quote": "in two rats stimulus evoked voiding was even more clearly demonstrated by the pelvic nerve induced void occurring very early in the normal void cycle",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on stim-evoked-voiding, blocked for missing data. Partial result on the four rats: no train is followed by a marked void earlier than half the rat's mean interval between voids (0 rats under either reading).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "stim-nonvoiding",
+     "statement": "Stimulation also produced non-voiding bladder pressure responses, without urine release, in six of eight rats.",
+     "source": "Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in Awake Rats, paragraph 3; Figure 3D",
+     "quote": "Electrical stimulation of the pelvic nerve also produced non-voiding bladder pressure responses (not accompanied by release of urine) in six of eight rats",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the urine-release classification of each train in eight rats; the dataset has trains in four rats and no classification. Reading (a) of the criterion, from pressure, would give a count over four rats, not of eight. Partial result under reading (a) on the four rats: no train gives a pressure rise above the rat's relative threshold pressure without a marked void within 30 s (0 of 4 rats; rises without a void 1.2 to 7.8 mmHg).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "stim-voiding-to-nonvoiding",
+     "statement": "Within sessions with both responses, evoked voids were common early and became less frequent as the session went on, while non-voiding pressure changes became more common.",
+     "source": "Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in Awake Rats, paragraph 3",
+     "quote": "it was common to observe stimulus evoked voiding contractions early in the experimental session, but as the session progressed, voiding responses became less frequent and non-voiding pressure changes become more common",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on stim-evoked-voiding and stim-nonvoiding, both blocked for missing data. Only 18-294 has more than two trains.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-eight-week-responses",
+     "statement": "In both rats implanted for 8 weeks, stimulation produced both voiding and non-voiding responses, and the parameters of filling-evoked and stimulation-evoked voids were similar to those of rats implanted for a shorter time.",
+     "source": "Results, Urodynamic Effects of Pelvic Nerve Array Implantation and Stimulation in Awake Rats, paragraph 4; Figure 3E",
+     "quote": "In both cases, stimulation produced both voiding (indicated in as \u201ceV\u201d in Figure 3E ) and non-voiding responses (indicated in as \u201ceNVC\u201d in Figure 3E ) during cystometry ... The urodynamic parameters of filling evoked voids and stimulation evoked voids where similar to those in rats implanted for the shorter duration",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The two long-term rats (15-759, recorded at day 64, and 15-760, day 48) have cystometry and marked voids but no stimulation trains and no classification of responses. Partial result on the half about parameters: recomputed from the traces of their first three marked voids, the mean parameters of 15-759 and 15-760 lie inside the widened range of the short-term rats' means for 5 and 6 of six parameters under the (a) definitions, and 3 and 4 under the (b) ones.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-atf3-rare",
+     "statement": "ATF3-positive neuronal nuclei were absent or rare in L6 and S1 DRG and in the MPG ipsi- and contralateral to the array 50 days after implantation, while numerous in archived axotomised positive controls.",
+     "source": "Results, Immunohistochemical Analysis of Neural Injury Markers in Ganglia, paragraphs 1 and 2; Figure 4A to 4D",
+     "quote": "ATF3-positive neuronal nuclei were absent or rare in sections taken from ganglia either ipsi- or contralateral to the implant ... very few or no ATF3-positive neuronal nuclei ( Figure 4C ) were seen in sections from MPG ipsi- or contralateral to the array",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No histology images or counts are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ef-axons-intact",
+     "statement": "CGRP-positive sensory axons traversed ipsi- and contralateral MPG, and synaptophysin-positive boutons surrounded the entire population of MPG neurons on both sides after 50 days of implantation.",
+     "source": "Results, Immunohistochemical Analysis of Neural Injury Markers in Ganglia, paragraph 3; Figure 4E and 4F",
+     "quote": "many axons were observed to traverse both ipsi- and contralateral MPG ( Figure 4E ) ... We found that following 50 days implantation of the device, synaptic boutons innervated the entire population of MPG neurons, ipsilateral and contralateral to the surgery",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No histology images are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-cfos-distribution",
+     "statement": "After cystometry and stimulation, c-Fos-positive neurons in L5 to S1 were most dense in the dorsal horn, the sacral dorsal commissural nucleus and the sacral preganglionic nucleus of L6 and S1.",
+     "source": "Results, Immunohistochemical Analysis of Noxious Neuronal Activity in Spinal Cord, paragraph 1; Figure 5A to 5C",
+     "quote": "In spinal segments L5-S1, neurons with c-Fos + nuclei were most densely distributed in dorsal horn, the sacral dorsal commissural nucleus (SDCom) and the SPN of segments L6 and S1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No c-Fos counts are in the dataset, although files/README.txt lists summary derived data from c-Fos activation mapping; the derivative folder holds only the impedance and cystometry files.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-cfos-no-side-difference",
+     "statement": "c-Fos-positive neuron counts did not differ between the implanted and stimulated side and the contralateral side of the lumbosacral cord.",
+     "source": "Results, Immunohistochemical Analysis of Noxious Neuronal Activity in Spinal Cord, paragraph 1; Figure 5C and 5D legends",
+     "quote": "No difference was detected in the pattern of c-Fos between the two sides of the spinal cord ( Figure 5D )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No c-Fos counts are in the dataset (see fig5-cfos-distribution).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-no-lamina1",
+     "statement": "No activation of lamina I neurons was detected on either the stimulated side or the contralateral side.",
+     "source": "Results, Immunohistochemical Analysis of Noxious Neuronal Activity in Spinal Cord, paragraph 1; Figure 5C; Discussion, paragraph 4",
+     "quote": "No activation of lamina I neurons was detected in either the stimulated side (array implanted on the pelvic nerve) or the contralateral side",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No c-Fos counts are in the dataset (see fig5-cfos-distribution).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "macroscopic-no-pathology",
+     "statement": "At euthanasia no infection, irritation or inflammation was seen around the connector, cable or array in any implanted rat; in the two rats implanted for 8 weeks, examined in more detail, a thin fibrous capsule formed around the array without spreading, and the prostate, pelvic nerve and vessels were undamaged.",
+     "source": "Results, Post-mortem Analysis of Pathology After Chronic Implantation of Pelvic Nerve Array, paragraph 1; Results, Urodynamic Effects, paragraph 1",
+     "quote": "A thin fibrous tissue encapsulation had formed around the array further stabilizing the device ... Suturing of the electrode array to the soft tissue overlying the prostate had not caused any macroscopic damage to the prostate, pelvic nerve or blood vessels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No post-mortem notes or images are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dataset holds none of the histology (ATF3, CGRP, synaptophysin), c-Fos counts, post-mortem notes or behavioural observations behind Figures 4 and 5 and the safety claims. files/README.txt lists summary derived data from c-Fos activation mapping, which no file holds. Stimulation trains are deposited for four rats (9 trains), where the paper stimulated eight, and no file records whether urine was released after a train; the 8-week rats have no stimulation. Thirteen claims cannot be tested for these reasons; with electrode-failures, which lacks per-electrode impedances for 2 of the 10 arrays, 14 are blocked as data_missing.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The ECAP files are sampled at 200 kHz and carry a 500 to 3000 Hz filter, where the Methods give 100 kHz and 300 to 5000 Hz. The acute files step the current on a logarithmic scale up to 1.6 mA (CL 80 to 250, and CL0 at 0.0175 mA), not 0 to 2 mA in 0.1 mA steps, and have no 0 mA trace. Several files stimulate E3-E4 and record E1-E2 (12-008, 12-050, 12-053, 12-056) or stimulate E2 to E1 (12-006, 12-007), where the Methods give stimulation on E1-E2.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The seven awake ECAP recordings are seven subject identifiers (four at day 0, three at day 7) with nothing linking a day-7 recording to the rat recorded at day 0, so the week 0 to week 1 comparison of the paper (n = 4) cannot be made. The pool_id column of subjects.xlsx is empty. The Methods give three awake rats and the Results four.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In the colonic recording of 15-758 the pressure rises by about 0.65 mmHg during the 10 s before each recorded stimulus time and returns to baseline at that time, over 33 trains, so the recorded times are 10 s (one train) after the response. The files do not say whether the times mark the end of each train. The colonic stimulation in all three files (1.114 mA, 200 us, 4 or 5 s; 0.541 mA, 25 us, 15 Hz, 10 s) differs from the Methods (1 mA, 100 us, 10 Hz).",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The derivative cystometry-dataset.xlsx and the /Voids tables of the same rats give different values for most cycles (peak pressure agrees within 0.5 mmHg in 4 of 27 cycles), and neither the files nor the manifests say how either was computed. The derivative, and the dataset's own R notebook output from it, do not give Table 1's means (minimum pressure 11.74 against 10.3 mmHg; inter-void interval 6.66 against 7.6 min), though each lies within Table 1's CI, and it has HFPO frequencies for 7 of the 9 rats.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The manifests of the derivative, code, docs and protocol folders have no descriptions, and the columns of the /Voids group (for example ContractionDuration, RelaxationTimeConstant, PostBaselinePressure) and the CL scale of the ECAP stimuli are not defined. Some cystometry waves carry an AppliedOffset attribute with no description. Neither the ECAP files nor the ECAP schema give the amplifier gain (the Methods give 10^2) or define time zero, and the schema gives TimeUnits s where the files have ms.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The dataset lists 29 subjects, where the paper reports 24 rats in all.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The per-array impedance file reproduces the paper's impedance means, spreads and ranges exactly, from 12, 12 and 10 arrays; the paper describes them as 38 electrodes in 10 arrays, and its spreads are SEMs over arrays. Per-electrode impedances are deposited for 8 arrays only.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text. The verifier checked the archive's file list and subject metadata through the SPARC API and tested the threshold rule on synthetic noise. It saw no place where the claims file misreads the paper. Its points on the time origin, gain and polarity of the ECAP files are answered by printing the ECAP schema and every trace attribute (neither gives a gain or time zero), a 5 uV pass level as a gain variant, and the inverted-trace peak rule.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision, with its conclusion cells and summary, the helper module, the claims file, the attempt record and the README, with the paper's full text. The verifier agreed with all 31 outcomes and saw no place where the claims file misreads the paper. It corrected its round-1 count to 16 tested and 15 blocked. It found five places where the text did not match the outputs (README on the peak rules, the count of untestable claims, statements resting on the dataset's R notebook that was never printed, the Summary on threshold pressure, and the awake velocities) and asked that table1-hfpo-frequency be marked assumed. In reply the notebook prints the R code's summary chunk and the summary table of its output, adds the awake velocities taken as distance over the mean latency, and the text is corrected; no outcome changed.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper does not say how the three ECAP peaks were identified in each recording (which local maxima count, from what time after the artefact, at which current), nor where latency is measured from or at which current. Question for the authors, how were P1, P2 and P3 picked, and at which stimulus level and time origin were their latencies read? This attempt ran four rules (first three peaks, three largest, the triple inside the paper's ranges, first three of the inverted traces); under the first, the anaesthetised medians are 1.60, 2.50 and 4.19 ms, and no rule gives the printed latencies.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The ECAP threshold is defined as a response of at least 0.05 uV in both recordings, which lies below three noise SDs in most deposited files (noise SD 0.02 to 0.7 uV), and the paper does not say how the response amplitude was measured. Question for the authors, was the amplitude measured from baseline or peak to trough, was the 0.05 uV level applied to the deposited traces in their units, and is Dunn's P (0.034) adjusted for multiple comparisons?",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper does not define the colonic pressure increase or a response, and the deposited trains differ from the Methods. Question for the authors, which rat and which 13 responses give 2.6 mmHg, and how was the increase measured?",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "payne-2020",
+   "type": "reproduction",
+   "title": "Pelvic nerve array ECAPs, impedances, colonic pressure and cystometry in rats (Payne et al. 2020)",
+   "description": "Tests the findings of Payne, Wiedmann, Eiber, Wong, Senn, Osborne, Keast and Fallon (2020) on SPARC dataset 206, version 1, which holds the acute and awake ECAP recordings from a pelvic nerve array, colonic pressure during stimulation, unstimulated and stimulated cystometry with a derivative table of void parameters, and electrode impedances. It tests the ECAP peaks, latencies, conduction velocities and thresholds, the impedance rise, the colonic response and the Table 1 void parameters. The histology, c-Fos counts, observation notes and urine-release annotations of the stimulation trials are not in the dataset.",
+   "datasets": [
+    "sparc:206"
+   ],
+   "papers": [
+    "10.26275/kkmb-vun5",
+    "10.3389/fnins.2020.619275"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_payne_2020.ipynb",
+     "title": "Reproducing Payne et al. (2020) from SPARC dataset 206",
+     "executed": "notebooks/payne-2020/reproduce_payne_2020.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 26,
+   "hashed": true
+  }
+ ],
+ "badge": {
+  "text": "8 findings reproduced",
+  "reproduced": 8,
+  "papers": [
+   {
+    "doi": "10.3389/fnins.2020.619275",
+    "key": "payne-2020",
+    "byline": "Payne et al. 2020",
+    "title": "Recording of Electrically Evoked Neural Activity and Bladder Pressure Responses in Awake Rats Chronically Implanted With a Pelvic Nerve Array",
+    "relation": "primary",
+    "reproduced": 8,
+    "url": "https://encorescience.org/papers/payne-2020/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/sparc/206/",
+  "svg": "https://encorescience.org/badge/sparc/206.svg",
+  "alt": "Encore: 8 findings reproduced, from SPARC:206"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/sparc/206.svg",
+  "outcomes": "https://encorescience.org/badge/sparc/206-outcomes.svg",
+  "card": "https://encorescience.org/badge/sparc/206-card.svg"
+ }
+}
