@@ -28,8 +28,10 @@ inputs:
   source: doi:10.1038/s42003-021-02981-7 (Supplementary Data 1 to 6, served at
     https://static-content.springer.com/esm/art%3A10.1038%2Fs42003-021-02981-7/MediaObjects/)
 - what: Supplementary Data 7 of the article (42003_2021_2981_MOESM10_ESM.xlsx), the Fig. 7b
-    bioluminescence series of the five imaged mice, used only in the data check to see which
-    recordings of the dandiset match the paper's and how far the onsets differ. No outcome uses it.
+    bioluminescence series of the five imaged mice, and the Fig. 7d to 7f sheets, the paper's own
+    per-mouse means and per-contact group series. Used in the data check, to see which recordings of
+    the dandiset match the paper's and how far the onsets differ, and to set one of the alternative
+    onsets of the onset sensitivity check. No outcome uses it.
   source: doi:10.1038/s42003-021-02981-7 (Supplementary Data 7)
 outcomes:
 - claim: fig2d-chr2-ctz-excites
@@ -148,16 +150,23 @@ outcomes:
   deviations:
   - Tested on Supplementary Data 6, not on recordings.
 - claim: fig6f-nonfunctional-opsin-no-response
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: other
   notebook: reproduce_prakash_2022.ipynb
   output: claim:fig6f-nonfunctional-opsin-no-response
-  notes: On the published columns the Mann-Whitney test gives p = 3.6e-10 (the paper 0.7870), SB
-    alone median 3 (18 electrodes) against SB + CTZ median 0 (49 electrodes). The SB-alone column has
-    18 values where the legend gives n = 21, and it is identical to the SB column of Fig. 4e(i) in
-    Supplementary Data 4, so the published source data for this comparison appear to be misplaced
-    (a finding). With the non-functional opsin the SB + CTZ counts are 0 or 1 on every electrode, so
-    on their own they show no increase. The outcome reflects the published source data, not
-    necessarily the experiment.
+  notes: The counts after SB alone in the cultures with the non-functional opsin, one side of the
+    paper's test, are not published. The Fig. 6f column "Synaptic blockers (After)" of Supplementary
+    Data 6 has 18 values where the legend gives n = 21, and it is identical to the first column of
+    that name of Fig. 4e in Supplementary Data 4; on it the Mann-Whitney test gives p = 3.6e-10 (the
+    paper 0.7870), SB alone median 3 (18 electrodes) against SB + CTZ median 0 (49 electrodes). The
+    21-value "Synaptic blockers (After)" column of Fig. 5c (BoNT-treated cultures with the functional
+    opsin) gives p = 0.534, not the paper's 0.7870 either, so neither column is the paper's comparison
+    group. With the non-functional opsin the SB + CTZ counts are 0 on 48 of 49 electrodes and 1 on the
+    other, so on their own they show no increase. The raw data are offered only on request. The
+    block is `other` as the claims file places the data in the article's Supplementary Data
+    (data elsewhere), where the needed column is not published. The claim
+    was not_reproduced on the published column before the first verification; it is blocked because a
+    test on another panel's data says nothing about this one.
   deviations:
   - Tested on Supplementary Data 6, not on recordings.
 - claim: figs3-ctz-acts-postsynaptically
@@ -175,7 +184,8 @@ outcomes:
   output: claim:fig7b-bioluminescence-both-groups
   notes: All five imaged mice (2 Opsin (+), 3 Opsin (-)) have a mean over 0 to 1200 s after onset
     above the bootstrap upper bound of the baseline mean, with ratios of 1.07 to 1.71. interlum_4 is
-    imaged for 808 s after onset once its 58 blank frames are removed.
+    imaged for 808 s after onset once its 58 blank frames are removed. All five also rise under the
+    two alternative onsets of the sensitivity check.
   deviations:
   - Only ROI reading (o2b), the whole frame, could be run; the dandiset records no ROI position, so
     (o2a) could not.
@@ -188,7 +198,14 @@ outcomes:
   notes: The Opsin (+) mean gamma power (30 to 100 Hz, 0 to 1200 s after onset) is 0.08 to 0.11 dB
     against -0.09 dB for Opsin (-), under both alignments of interlum_6 and both kept sets. The effect
     is small and rests mostly on interlum_8 (0.31 to 0.35 dB); interlum_6 is at 0.00 to 0.04,
-    interlum_4 at -0.05 to -0.07 and interlum_ctrl_5 at 0.06 to 0.08 dB.
+    interlum_4 at -0.05 to -0.07 and interlum_ctrl_5 at 0.06 to 0.08 dB, above two of the three
+    Opsin (+) mice. P against the mean baseline power, as the Methods define it, is biased below 0 dB
+    (-0.43 dB on white noise, and a baseline mean of -0.43 dB in every mouse). Measured against each
+    mouse's own baseline mean, all six mice rise, Opsin (+) by 0.39 to 0.80 dB (mean 0.54) and Opsin
+    (-) by 0.20 to 0.51 dB (mean 0.34), so the statement's "not observed in Opsin (-)" holds only as the
+    group comparison the criterion tests. The paper's own per-mouse means (Supplementary Data 7, Fig.
+    7e) also include negative values (cntrl 2, -0.230 dB). The rule holds under the alternative onsets
+    too (Opsin (+) 0.09 to 0.13 dB, Opsin (-) -0.11 to -0.10).
   deviations:
   - Onsets from the whole-frame bioluminescence (o2b); the dandiset records no ROI.
   - The paper's errant-contact rule flags 4 contacts over all mice here (1 to 3 per mouse), where the
@@ -208,16 +225,25 @@ outcomes:
     the Opsin (-) mean is never within 2.5 of 2.7, and the Opsin (+) mean is higher under 2 of 16.
     The baseline mean of P is about -0.43 dB in every mouse while the post means are -0.23 to 0.35
     dB, and the bootstrap interval of a mean of 180 overlapping windows is narrow, so the rule counts
-    small rises in both groups. Measured values are for the union set, (o1a), 30 to 100 Hz and the
-    two-sided bound.
+    small rises in both groups. As a variant, a moving-block bootstrap with 10 s blocks widens the
+    interval; the counts fall (Opsin (+) 19.3 to 28.7, Opsin (-) 20.3 to 29.3 contacts per mouse) and
+    the claim holds under none of its 8 readings. Under the alternative onsets the Opsin (-) mean is
+    27.3 to 29.3. Measured values are for the union set, (o1a), 30 to 100 Hz and the two-sided bound.
   deviations:
   - Onsets from the whole-frame bioluminescence; kept sets as for fig7c-gamma-emerges-opsin-plus.
+  - The bootstrap resamples the 180 baseline steps as independent values, as the claims file says,
+    although consecutive 10 s windows in 1 s steps overlap; a 10 s block bootstrap is shown as a
+    variant and gives the same outcome.
 - claim: fig7d-superficial-layers
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: The depth order of the contacts cannot be established. The files' Position column runs z
     from 775 (channel 0) to 0 (channel 31) in 25 um steps, with an autogenerated description that does
-    not say whether z is depth or height above the deepest contact. Read with z = 775 as the most
+    not say whether z is depth or height above the deepest contact. Nothing else in the files settles
+    it, as printed in the notebook; every column of the electrode table has an autogenerated
+    description, the electrode group says "electrode group for shank1" in barrel cortex, and the probe
+    device says "A1x32-Poly2-5mm-50s-177". The paper's Fig. 7d source data number its 25 contacts 1 to
+    25 with no depth or channel, so they cannot settle it either. Read with z = 775 as the most
     superficial contact, the upper part has the higher Opsin (+) gamma power under all 16 readings
     (for example 0.34 against -0.12 dB, halves, 30 to 100 Hz); read the other way, under none. With
     the union set and (o1a), Opsin (+) gamma power is 0.26 to 0.95 dB on the eight contacts from
@@ -233,7 +259,8 @@ outcomes:
   - 0.002
   - -0.151
   notes: Both tests hold under all four readings, KS p printed as 0 and one-tailed Mann-Whitney
-    p = 0.0009 to 0.0043 (U = 4504 to 5027 with 84 to 92 contacts per group). Both means are within
+    p = 0.0009 to 0.0043 (U = 4504 to 5027 with 84 to 92 contacts per group), with the Opsin (+)
+    median and mean above the Opsin (-) ones; under the alternative onsets p is at most 0.0011. Both means are within
     the stated SDs (Opsin (+) 0.08 to 0.11 dB, Opsin (-) -0.09 dB). The Opsin (+) median is -0.04 to
     0.01 dB against 0.34, and the Opsin (-) median is within 10% of -0.17 only with each animal's own
     kept set (-0.165; -0.151 with the union). In the 80 to 100 Hz band the Mann-Whitney test is not
@@ -287,7 +314,8 @@ outcomes:
     when they differ. U = 9 holds in 29 of 32 readings with the union of errant contacts and in 7 of
     32 with each animal's own set; by percentile rule, in 15 of 32 with numpy's linear rule and 21 of
     32 with MATLAB's prctile. No reading puts the values near the paper's, Opsin (+) mouse means of
-    39.2 to 52.4 events against 327.25 and Opsin (-) 14.0 to 18.4 against 199.33. The open details
+    39.2 to 52.4 events against 327.25 and Opsin (-) 14.0 to 18.4 against 199.33. Under the
+    alternative onsets the readings still disagree (U = 9 in 39 and 36 of 64). The open details
     are asked of the authors (findings). Measured values are for the union set, (o1a), 10 kHz,
     leave-one-sample-out, after onset and MATLAB's prctile.
 - claim: fig7f-mua-electrodes
@@ -305,8 +333,13 @@ outcomes:
     above the Opsin (+) ones (13.2 to 19.5%). interlum_ctrl_4 has the largest mean change of the six
     mice (111.2%). At baseline the -3 SD crossing rate is 11.1 to 13.7 per s on every contact, no
     higher than band-limited Gaussian noise would give (about 20 per s), so the MUA counts may be
-    dominated by noise. Measured values are for the union set, (o1a), SD from the whole recording and
-    every sample below threshold.
+    dominated by noise. The outcome rests on the onset of interlum_ctrl_4. With its second largest
+    bioluminescence rise as onset (228 s, against 206 s), part of its MUA rise falls in the baseline
+    (19.3 against 12.1 samples per s below threshold), its mean change falls from 111.2% to 18.0%, and
+    the Mann-Whitney p falls to 0.012 to 0.15. The paper's own series that best matches this mouse
+    (Supplementary Data 7, cntrl 2, r = 0.990) puts its onset at 210 s, which gives p = 0.69 to 0.92,
+    so the onset used is the one the paper's data support. Measured values are for the union set,
+    (o1a), SD from the whole recording and every sample below threshold.
   deviations:
   - The whole-recording median of the MUA band is taken from a histogram with 0.01% resolution (a
     standard choice that cannot change an outcome).
@@ -326,8 +359,10 @@ outcomes:
     interlum_4 (51 to 67%) is below the highest Opsin (-) mouse, interlum_ctrl_4 (105 to 128%), so
     the statement that Opsin (+) mice are at or above the highest Opsin (-) value does not hold. No
     reading puts the four values within tolerance; the Opsin (-) mouse means are 61.5 to 77.1%
-    against 27.15. Measured values are for the union set, (o1a), whole-recording SD, every sample
-    below threshold and MATLAB's prctile.
+    against 27.15. Under the second-rise onsets U is 9 in 28 of 32 readings, as interlum_ctrl_4's
+    change falls (see fig7f-mua-electrodes); under the onsets matched to Supplementary Data 7 U is 6 to
+    8. Measured values are for the union set, (o1a), whole-recording SD, every sample below threshold
+    and MATLAB's prctile.
 findings:
 - kind: data_missing
   about: data
@@ -365,7 +400,10 @@ findings:
     Supplementary Data 7 series cntrl 1 to 3 (r = 0.975 to 0.990, as interlum_ctrl_2, ctrl_4 and
     ctrl_5). Those of the two imaged Opsin (+) mice match exp 3 at most at r = 0.906, and no file
     matches exp 1 (r at most 0.68), so the dandiset's imaged Opsin (+) recordings may not be the
-    ones shown in Fig. 7b. Which dandiset mouse is which animal of the paper is not documented.
+    ones shown in Fig. 7b. On mean gamma power over contacts, interlum_8 (0.349 dB) matches the
+    paper's exp 2 (0.351 dB, Supplementary Data 7, Fig. 7e), a mouse absent from the paper's imaged
+    series, while interlum_8 has images; interlum_ctrl_4 (-0.234) matches cntrl 2 (-0.230), as its
+    bioluminescence does. Which dandiset mouse is which animal of the paper is not documented.
 - kind: other
   about: data
   statement: The recordings are small for unfiltered cortical signals stored in volts, a median contact
@@ -375,8 +413,8 @@ findings:
     by scale.
 - kind: methods_unavailable
   statement: The Methods' rule for errant contacts (RMS beyond 3 IQR of the quartiles) flags 1 to 3
-    contacts per mouse and 4 over all mice in these files, where the paper excludes 7 and keeps 25 in
-    every animal. Which 7 contacts were excluded, and over which span the RMS was taken? The number
+    contacts per mouse and 4 over all mice in these files (11 if each animal's flags are summed),
+    where the paper excludes 7 and keeps 25 in every animal. Which 7 contacts were excluded, and over which span the RMS was taken? The number
     kept changes the mouse-level U of the gamma-event and MUA claims (8 or 9, and 6 to 8).
 - kind: methods_unavailable
   statement: How were the 85th percentiles of each mouse computed (MATLAB prctile or another rule)?
@@ -395,4 +433,221 @@ findings:
   statement: In Supplementary Data 6, the Fig. 6f column "Synaptic blockers (After)" has 18 values,
     identical to the first "Synaptic blockers (After)" column of Fig. 4e in Supplementary Data 4,
     where the Fig. 6f legend gives n = 21. On these columns the Mann-Whitney test gives p = 3.6e-10,
-    against the legend's p = 0.7870.
+    against the legend's p = 0.7870. The 21-value column of the same name in Fig. 5c gives p = 0.534,
+    so the data behind the legend's test are not among the published columns.
+verifications:
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1, run 44562342487; same harness, separate
+    context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text. The verifier checked the blocked claims
+    against the archive's file list and ran mt_spectrogram and db_rel_baseline on white noise. It had
+    no attempt record and took the claims from the claims file.
+  results:
+  - claim: fig2d-chr2-ctz-excites
+    agrees: true
+    outcome: reproduced
+    reason: Blue light and CTZ give p of about 7.6e-12 with the median higher after (62 of 62
+      electrodes up). Vehicle gives p = 0.637 (paper 0.6498). n = 62, 62, 24 as in the paper.
+    response: No change.
+  - claim: fig2d-gtacr2-ctz-inhibits
+    agrees: true
+    outcome: reproduced
+    reason: Blue light and CTZ give p of about 1.1e-9 with all 49 electrodes down. Vehicle gives
+      p = 0.5525 (paper 0.5594).
+    response: No change.
+  - claim: fig3c-uncut-responses
+    agrees: true
+    outcome: reproduced
+    reason: All three conditions give p < 1e-9 with the median higher after. n = 63, 54, 51.
+    response: No change.
+  - claim: fig3c-cut-abolishes-ctz
+    agrees: true
+    outcome: reproduced
+    reason: Blue light p = 3.5e-11, higher after. Electrical stimulation p = 0.095 (paper 0.0965) and
+      CTZ p = 0.733 (paper 0.7388).
+    response: No change.
+  - claim: figs4c-blockers-silence
+    agrees: true
+    outcome: reproduced
+    reason: Both Mann-Whitney tests give p of about 1.5e-10 to 1.8e-10, in the stated directions,
+      n = 27.
+    response: No change.
+  - claim: fig4c-sb-ctz-activates
+    agrees: true
+    outcome: reproduced
+    reason: SB + CTZ is above both other groups (p = 8e-12 and 4e-14). SB alone against SB + vehicle
+      gives p = 0.7311 (paper 0.7305).
+    response: No change.
+  - claim: fig4e-late-ctz-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.4024 (paper 0.4022), n = 18.
+    response: No change.
+  - claim: fig4e-stim-then-ctz-activates
+    agrees: true
+    outcome: reproduced
+    reason: All three pairwise tests give p < 0.05 (5e-8, 2.4e-4, 2.8e-8) with stimulation + CTZ
+      higher.
+    response: No change.
+  - claim: fig4e-stim-alone-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: p = 1.0 and 0.8079 (paper 0.9999 and 0.8553), both p >= 0.05. The small differences from
+      the paper are consistent with Prism's handling of ties and zeros differing from scipy's.
+    response: No change.
+  - claim: fig5c-bont-blocks
+    agrees: true
+    outcome: reproduced
+    reason: Stimulation against stimulation + CTZ gives p = 0.659 (paper 0.7173). Blue light gives
+      p = 9.5e-7 with the median higher during light. The p difference is consistent with Prism's
+      handling of ties and zeros differing from scipy's.
+    response: No change.
+  - claim: figs5-bont-reduces-release
+    agrees: true
+    outcome: blocked
+    reason: The IVIS images are not deposited. The archive holds only the 6 in vivo NWB files.
+    response: No change.
+  - claim: figs6-luciferase-in-dcvs
+    agrees: true
+    outcome: blocked
+    reason: The confocal images are not deposited, neither in the dandiset nor in the Supplementary
+      Data.
+    response: No change.
+  - claim: fig6c-green-light-abolishes
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (a), SB + CTZ p = 0.0375 (paper 0.0369), higher, and green light p = 5e-10,
+      lower. Reading (a) matches the paper's p values; reading (b) gives 0.0011, which does not match
+      the paper's "< 0.0001".
+    response: No change.
+  - claim: fig6f-nonfunctional-opsin-no-response
+    agrees: false
+    outcome: blocked
+    reason: The source-data column "SB alone (after)" has 18 values, while the legend gives n = 21, and
+      it is identical to the Fig. 4e(i) column. On it the test gives p = 3.6e-10 against the paper's
+      0.7870, so the paper's comparison group is not in the sheet; taken literally, the criterion would
+      give not_reproduced. The notebook prints this but still runs the test on it. The Fig. 5c sheet
+      has a 21-electrode "Synaptic blockers (After)" column that may be the right one; it was not
+      tried. It would block the claim as data_missing.
+    response: Changed to blocked, for the verifier's reason, as `other` and not data_missing, since the
+      claims file places the data in the article's Supplementary Data (data elsewhere) and the registry
+      does not allow data_missing there. The notebook now prints the
+      Fig. 6f sheet in full and runs the test with the Fig. 5c column, which gives p = 0.534, not the
+      paper's 0.7870, so neither published column is the paper's comparison group. The
+      paper_inconsistency finding says so.
+  - claim: figs3-ctz-acts-postsynaptically
+    agrees: true
+    outcome: blocked
+    reason: The MEA recordings are not deposited. The archive has no in vitro files, and the
+      Supplementary Data hold no Supp. Fig. 3 sheet.
+    response: No change.
+  - claim: figs2-cut-disrupts-synchrony
+    agrees: true
+    outcome: blocked
+    reason: Same as figs3, no in vitro recordings anywhere.
+    response: No change.
+  - claim: fig7b-bioluminescence-both-groups
+    agrees: true
+    outcome: reproduced
+    reason: All 5 imaged mice have a post mean above the bootstrap upper bound (ratios 1.07 to 1.71).
+      Only the whole-frame reading (o2b) could be run, because the archive records no ROI. interlum_4
+      is imaged for only 866 s after onset, so its post mean covers 808 frames, not 1200, with 58 blank
+      frames dropped.
+    response: No change to the outcome. The onset sensitivity check (alternative onsets) also finds a
+      rise in all five mice.
+  - claim: fig7c-gamma-emerges-opsin-plus
+    agrees: true
+    outcome: reproduced
+    reason: The rule holds in 4 of 4 readings (Opsin (+) 0.08 to 0.11 dB, Opsin (-) -0.09 dB), but the
+      support is weak. A 5-taper estimate of P is biased, about -0.45 dB in theory and -0.40 dB on white
+      noise through mt_spectrogram and db_rel_baseline, and the baseline mean is -0.43 dB in every
+      mouse, so 0 dB is not "no change". Against their own baselines all three Opsin (-) mice rose by
+      0.20 to 0.51 dB, and per mouse the groups overlap (ctrl_5 at 0.078 is above interlum_4 at -0.049
+      and interlum_6 at 0.024). The "not seen in Opsin (-)" half rests only on the group-mean
+      comparison. This does not affect a conclusion under the criterion as written.
+    response: The notebook now prints the white-noise bias (-0.43 dB), each mouse's rise against its
+      own baseline mean (Opsin (+) 0.39 to 0.80 dB, Opsin (-) 0.20 to 0.51 dB), and the paper's own
+      per-mouse means, which include negative values like these, so P is the Methods' measure. The
+      conclusion and notes say that the "not observed in Opsin (-)" part holds only as the group
+      comparison. Outcome unchanged.
+  - claim: fig7d-contacts-exceeding-baseline
+    agrees: true
+    outcome: not_reproduced
+    reason: The rule holds in 0 of 16 readings. Opsin (-) has 25 to 29 contacts per mouse above
+      baseline (paper 2.7 +- 2.5), and the Opsin (+) mean is not higher than Opsin (-) in 14 of 16
+      readings. The bootstrap resamples 180 overlapping 10 s windows in 1 s steps as if they were
+      independent. This follows the claims file, but the interval comes out far too narrow, so almost
+      every contact "exceeds" in both groups; a block bootstrap might change the Opsin (-) count, and
+      the outcome rests on this choice.
+    response: Added a moving-block bootstrap with 10 s blocks as a variant. The counts fall (Opsin (+)
+      19.3 to 28.7, Opsin (-) 20.3 to 29.3 per mouse) and the claim holds under none of its 8 readings,
+      so the outcome does not rest on the bootstrap. Outcome unchanged.
+  - claim: fig7d-superficial-layers
+    agrees: true
+    outcome: blocked
+    reason: The two possible z orientations give opposite answers (16 of 16 readings against 0 of 16).
+      The archive does not say which end of the probe is superficial. If z = 775 is the top, the claim
+      holds under every reading. The orientation is a metadata gap, not one of the claims file's
+      readings, and the claims file's "probe map" is not in the archive. Printing the electrode table's
+      column descriptions, the ElectrodeGroup and Device descriptions and the label-to-site map would
+      have settled it or confirmed it cannot be settled.
+    response: The notebook now prints all of these. Every electrode column has an autogenerated
+      description, the group says "electrode group for shank1" in barrel cortex, the probe device says
+      only "A1x32-Poly2-5mm-50s-177", and the labels run from shank1-electrode1 at z = 775 to
+      shank1-electrode32 at z = 0. The paper's Fig. 7d source data number 25 contacts with no depth.
+      It cannot be settled from the files; outcome unchanged.
+  - claim: fig7e-gamma-power-electrodes
+    agrees: true
+    outcome: partially_reproduced
+    reason: KS and one-tailed Mann-Whitney give p < 0.05 in 4 of 4 readings. Both means are within
+      tolerance, but the Opsin (+) median is -0.04 to 0.009 against 0.34 +- 0.034, and the Opsin (-)
+      median is outside tolerance in the union rows. The direction check uses means here and medians
+      for MUA, an inconsistency that does not affect a conclusion.
+    response: The direction check now uses medians for every electrode-level claim, as the rank tests
+      compare, and prints whether the means agree; here both do in 4 of 4. Outcome unchanged.
+  - claim: fig7e-gamma-events-electrodes
+    agrees: true
+    outcome: partially_reproduced
+    reason: The tests hold in 32 of 32 readings. The values are within tolerance in 0 of 32, Opsin (+)
+      means 28.7 to 33.6 against 213.6 +- 139.5. Counts are about 7 times below the paper's in all
+      readings, which suggests a pipeline difference (envelope smoothing, threshold); it is consistent
+      across readings, so the outcome is partial either way.
+    response: The notebook now compares each mouse with the paper's per-mouse means of Supplementary
+      Data 7. The mean counts here (8.9 to 66.1 per contact) are all below the paper's lowest mouse
+      (129.2), while the mean gamma power of two mice matches the paper's to 0.004 dB, so the
+      difference lies at least in part in the event pipeline. Outcome unchanged.
+  - claim: fig7e-gamma-power-mice
+    agrees: true
+    outcome: partially_reproduced
+    reason: U = 9 in 8 of 8 readings and both means are within tolerance. Neither median is (0.70 to
+      0.78 against 0.88 +- 0.088; 0.04 to 0.06 against 0.09 +- 0.009).
+    response: No change; U = 9 also holds in 8 of 8 readings under both alternative onsets.
+  - claim: fig7e-gamma-events-mice
+    agrees: true
+    outcome: blocked
+    reason: U = 9 in 36 of 64 readings and U = 8 or 8.5 in 28, so the readings disagree and the
+      criterion makes it blocked. No reading is near the values, Opsin (+) means 39 to 52 against
+      327 +- 46. The onset is fragile and no reading varies it; it could move the borderline
+      mouse-level U values.
+    response: Added the onset sensitivity check. The readings still disagree under both alternative
+      onsets (U = 9 in 39 and 36 of 64). Outcome unchanged.
+  - claim: fig7f-mua-electrodes
+    agrees: true
+    outcome: not_reproduced
+    reason: The two-tailed Mann-Whitney test gives p = 0.67 to 0.97 in 16 of 16 readings, and the
+      Opsin (+) median is below the Opsin (-) median in every row.
+    response: Outcome unchanged. The onset sensitivity check shows the outcome rests on the onset of
+      interlum_ctrl_4. With its second largest rise as onset (228 s against 206 s) p falls to 0.012 to
+      0.15, as part of its MUA rise then falls in the baseline; the onset matched to the paper's own
+      series for this mouse (210 s) gives p = 0.69 to 0.92. The notes say so.
+  - claim: fig7f-mua-mice-not-significant
+    agrees: true
+    outcome: blocked
+    reason: U is 6, 7 or 8 depending on the reading (16, 14 and 2 of 32), which puts readings on both
+      sides of the not-reproduced/partial line, so the criterion makes it blocked. U = 9 never occurs,
+      and the Opsin (-) mean is never within tolerance (61 to 77 against 27 +- 18).
+    response: Outcome unchanged. Under the second-rise onsets U is 9 in 28 of 32 readings, through
+      interlum_ctrl_4 as for fig7f-mua-electrodes, and under the onsets matched to Supplementary Data 7
+      it is 6 to 8; the notes say so.

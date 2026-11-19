@@ -9,8 +9,8 @@ Supplementary Data 1 to 6.
 
 | Claim | Outcome |
 |---|---|
-| In vitro ladder plots, Figs. 2d, 3c, 4c, 4e, 5c, 6c and Supplementary Fig. 4c (12 claims) | Reproduced |
-| Fig. 6f, no response with a non-functional opsin | Not reproduced (the published source column appears misplaced) |
+| In vitro ladder plots, Figs. 2d, 3c, 4c, 4e, 5c, 6c and Supplementary Fig. 4c (11 claims) | Reproduced |
+| Fig. 6f, no response with a non-functional opsin | Blocked: the published comparison column is a copy of another panel's |
 | Supplementary Figs. 2, 3, 5 and 6, recordings and images not deposited (4 claims) | Blocked: data missing |
 | Fig. 7b, CTZ raises bioluminescence in both groups | Reproduced |
 | Fig. 7c, gamma emerges in Opsin (+) mice | Reproduced |
@@ -28,7 +28,7 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/prakash-2022-01.yaml`](../../attempts/prakash-2022-01.yaml).
 
 - `reproduce_prakash_2022.ipynb`: the analysis. It streams the 40 GB of recordings from the archive three times,
-  and takes about 45 minutes.
+  and takes about 40 minutes.
 - `interlum.py`: streaming the files by byte range, the bioluminescence onset, the errant-contact
   rule, the multitaper gamma power, gamma events and MUA of the paper's Methods, and reading the
   article's Supplementary Data. Other notebooks on this dandiset can import it.

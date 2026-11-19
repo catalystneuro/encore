@@ -44,7 +44,11 @@ and "Statistical analysis".
   derivative (Methods). Frames that are entirely zero (58 in sub-interlum-4) are treated as
   missing, so that the jump from a blank frame is not taken as the onset (a necessary choice
   the paper does not address). With MATLAB's `[~, i] = max(diff(b))` the onset is frame i, the last
-  frame before the largest rise (standard choice, 1 s either way).
+  frame before the largest rise (standard choice, 1 s either way). As a sensitivity check
+  (not a reading of the claims file), two other onsets per imaged mouse are run: the second
+  largest rise where it lies within 60 s of the largest (a near tie), and the onset moved by
+  the lag at which the whole-frame series best matches the paper's own series of the same
+  group in Supplementary Data 7.
 - 10 kHz band filters on streamed blocks use 2 s of overlap on each side, which removes edge
   transients of these filters (standard choice).
 """
@@ -148,6 +152,18 @@ class Session:
             self.image_rate = float(im["starting_time"].attrs["rate"])
             self.image_t0 = float(im["starting_time"][()])
             self._image_off = di.id.get_offset()
+
+    def probe_metadata(self) -> dict:
+        """What the file says about the probe: the electrode table's columns with their
+        descriptions, and the descriptions of the electrode groups and devices."""
+        f = self._f
+        el = f["general/extracellular_ephys/electrodes"]
+        cols = {_s(c): _s(el[_s(c)].attrs.get("description", "")) for c in el.attrs["colnames"]}
+        ee = f["general/extracellular_ephys"]
+        groups = {k: {a: _s(v) for a, v in ee[k].attrs.items() if a in ("description", "location")}
+                  for k in ee if k != "electrodes"}
+        devices = {k: _s(v.attrs.get("description", "")) for k, v in f["general/devices"].items()}
+        return dict(table=_s(el.attrs["description"]), columns=cols, groups=groups, devices=devices)
 
     @property
     def duration(self) -> float:
@@ -441,6 +457,19 @@ def bootstrap_upper(base: np.ndarray, rng: np.random.Generator, n_boot: int = 10
     return float(np.percentile(base[idx].mean(1), q))
 
 
+def block_bootstrap_means(base: np.ndarray, rng: np.random.Generator, block: int,
+                          n_boot: int = 10_000) -> np.ndarray:
+    """Moving-block bootstrap of the mean of base (time x contacts): each resample joins
+    len(base) // block blocks of `block` consecutive values, drawn with replacement from all
+    start positions. Returns resample means (n_boot x contacts). A variant to the claims file's
+    bootstrap over single 1 s steps, as consecutive 10 s windows in 1 s steps overlap."""
+    n = base.shape[0]
+    nb = n // block
+    starts = rng.integers(0, n - block + 1, size=(n_boot, nb))
+    idx = (starts[:, :, None] + np.arange(block)).reshape(n_boot, nb * block)
+    return base[idx].mean(1)
+
+
 def prctile(x: np.ndarray, p: float, method: str) -> float:
     """Percentile by numpy's linear rule or MATLAB's prctile (midpoint) rule (claims, o6)."""
     if method == "matlab":
@@ -456,8 +485,9 @@ def prctile(x: np.ndarray, p: float, method: str) -> float:
 def analyse_session(s: Session, lfp_raw: np.ndarray, keep: np.ndarray,
                     onsets: dict[str, float]) -> dict:
     """Every in vivo measure of one session, under every reading, for each onset given
-    ({reading name: onset in file seconds}; one onset for imaged mice, two for sub-interlum-6,
-    claims o1). Returns per onset:
+    ({reading name: onset in file seconds}; for imaged mice the onset and the alternative
+    onsets of the sensitivity check, for sub-interlum-6 the two readings of claims o1).
+    Returns per onset:
 
     - `centres`, `gamma` (windows x contacts, P over 30-100 Hz), `gamma_hi` (80-100 Hz),
       `spec_mean` (windows x frequencies, P averaged over contacts) and `freqs`, for windows
@@ -472,8 +502,11 @@ def analyse_session(s: Session, lfp_raw: np.ndarray, keep: np.ndarray,
     t_lo = min(min(onsets.values()), s.infusion[0]) - BASELINE_S - 1
     t_hi = max(max(onsets.values()), s.infusion[0]) + POST_S + 1
     mua, env10k, e0, med_whole = stream_pass2(s, keep, (t_lo, t_hi))
-    out = {}
+    out, done = {}, {}
     for name, on in onsets.items():
+        if on in done:          # the same onset under another name: the same results
+            out[name] = done[on]
+            continue
         r = {}
         c, f, S = mt_spectrogram(lfp, on - BASELINE_S, on + POST_S)
         P = db_rel_baseline(S, c, on)
@@ -510,7 +543,7 @@ def analyse_session(s: Session, lfp_raw: np.ndarray, keep: np.ndarray,
                     r["mua"][(span, counting)] = 100 * (post - m) / m
                     r["mua_base"][(span, counting)] = 100 * (base - m) / m
                 r["mua_rate"][(span, counting)] = m.ravel()
-        out[name] = r
+        out[name] = done[on] = r
     return out
 
 
