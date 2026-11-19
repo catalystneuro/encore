@@ -606,8 +606,10 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
     The groups are the paper's findings that rest on the dataset ("dataset"), those that also use
     data from elsewhere ("with_inputs"), those on data the paper deposited in another archive
     ("elsewhere"), and the registry's checks that the dataset is the paper's data ("link"), which are
-    not findings of the paper. They are never added together, so that an outcome that may reflect
-    outside data, or a link, does not count as a judgement of the paper's findings on the dandiset.
+    not findings of the paper. A dataset's own pages and badges count the first group alone, so that an
+    outcome that may reflect outside data does not count as a judgement of the dataset. A paper's (its page,
+    its row in the list, its badges, its authors' pages) count all of the paper's findings, wherever their
+    data are: the group "paper", which is the first three together. A link is in neither.
     """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
     # A deprecated attempt stays on its page but counts for nothing.
@@ -618,7 +620,8 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
     def group_of(o):
         return "link" if o.get("kind") == "link" else groups.get(o.get("data"), o.get("data"))
     return {k: sum(1 for a in attempts for o in a["outcomes"]
-                   if o["outcome"] == k and group_of(o) == group) for k in OUTCOMES}
+                   if o["outcome"] == k and (group_of(o) != "link" if group == "paper" else group_of(o) == group))
+            for k in OUTCOMES}
 
 
 def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
@@ -1334,7 +1337,7 @@ def author_badge(data: dict, author: dict) -> dict | None:
     verifier has checked), over all their papers in the registry. None when that is nothing."""
     papers = []
     for q in author["papers"]:
-        n = sum(outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+        n = sum(outcome_counts(a, "paper")["reproduced"] for a in q["live"] if a["tier"] != "runs")
         if n:
             papers.append({"doi": q["doi"], "key": q["key"], "byline": q["byline"], "title": q["title"],
                            "reproduced": n, "url": SITE_URL + f'papers/{q["key"]}/'})
@@ -1453,7 +1456,7 @@ def paper_badge(data: dict, q: dict) -> dict | None:
     """A paper's badge (docs/badges.md): how many of its findings were reproduced, counted as a dataset's badge
     counts them (claims on its datasets, reproduced in full, in current attempts an independent verifier has
     checked). None when that is nothing."""
-    total = sum(outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+    total = sum(outcome_counts(a, "paper")["reproduced"] for a in q["live"] if a["tier"] != "runs")
     if not total:
         return None
     text = f'{total} finding{"" if total == 1 else "s"} reproduced'
@@ -1614,7 +1617,7 @@ def paper_rows(data: dict) -> list[dict]:
     for p in papers:
         live, atts = p["live"], p["attempts"]
         outcomes = [o for a in live for o in a["outcomes"]]
-        counts = outcome_counts(live) if live else None
+        counts = outcome_counts(live, "paper") if live else None
         rows_.append({
             "id": p["key"], "title": p["title"], "byline": p["byline"], "doi": p["doi"],
             "journal": journal.get(p["doi"], "Not recorded"),
@@ -2012,7 +2015,7 @@ def attempt_row(a: dict, root: str, share: bool = False, paper: dict | None = No
     """One attempt in a list; with `share`, the share of its claims reproduced in place of its date. Given its
     paper (papers_of), the row is the paper's, laid out as in the papers list (list.js, papers): the byline and
     journal above the title, which opens the paper's page, then its datasets and the outcomes."""
-    counts = outcome_counts(a)
+    counts = outcome_counts(a, "paper" if paper else "dataset")
     side = (f'<span class="small"><b>{reproduced_share(counts):.0%}</b> reproduced</span>' if share
             else f'<span class="small muted">{e(a["date"])}</span>')
     mark = deprecated_badge() if a.get("deprecated") else quiet_tier(a["tier"]) if paper else tier_badge(a["tier"])
@@ -3310,7 +3313,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     # The datasets the page is about: the paper's that its attempts used, or the one.
     about = list(dict.fromkeys(k for a in atts for k in a.get("datasets") or [a["key"]])) if paper else [dandiset]
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
-    counts = outcome_counts(atts)
+    # A paper's page counts all of the paper's claims; a dataset's, those that rest on the dataset alone.
+    counts = outcome_counts(atts, "paper" if paper else "dataset")
     n = sum(counts.values())
     order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
 
@@ -3686,6 +3690,16 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      archive_link(k, f"on {archive_of(k)}"),
                      f'<a href="{root}api/{page_of(k).rstrip("/")}.json">JSON</a>' if mine_ and k in current else ""]
             lines += "<tr>" + f"<th scope=\"row\">{cells[0]}</th>" + "".join(f"<td>{c}</td>" for c in cells[1:]) + "</tr>"
+            # Under the dataset's line, the claims that rest on it alone, when they are only some of the paper's:
+            # the others also use outside data, or are on data in another archive. What the dataset's own page counts.
+            own = outcome_counts([x for x in mine_ if not x.get("deprecated")]) if mine_ else {}
+            n_own = sum(own.values())
+            if mine_ and n_own < n:
+                said = " · ".join(f"{c} {OUTCOMES[o][0].lower()}" for o, c in own.items() if c) or "none"
+                lines += (f'<tr class="sets-own"><td colspan="{len(cells)}"><strong>{n_own}</strong> of the {n} claims rest on '
+                          f'this dataset alone'
+                          + (f': {said}' if n_own else "") + '. <span class="muted">The others also use data from '
+                          'outside it, or are on data the paper deposited elsewhere.</span></td></tr>')
         heading = ("Data the paper reuses" if paper["relation"] == ["reuses"] else
                    "Dataset" if len(listed) == 1 else "Datasets")
         sets = (f'<div class="sets"><table aria-label="{heading}"><caption>{heading}</caption><tbody>{lines}</tbody>'
@@ -3721,7 +3735,6 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   <div class="phead">
   <div class="phead-main">
   <div class="result"><p class="result-head">Outcomes of {n} claims</p>{bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}</div>
-  {outside_note(atts)}
   {summary_block(atts, name=lambda a: ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
   {responses_block(data, paper, one, root)}
   {superseded}
