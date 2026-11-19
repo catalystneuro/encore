@@ -490,3 +490,11 @@ def test_a_finding_that_can_be_about_either_says_which_from_pilot_15(repo):
     assert check("pilot-15", [{**other[0], "about": "paper"}]) == []
     # A kind that says what it is about needs nothing more.
     assert check("pilot-15", [{"kind": "metadata_error", "statement": "Wrong age."}]) == []
+    # From pilot-18 a finding about the data gives its severity; one about the paper does not need one.
+    wrong_age = {"kind": "metadata_error", "statement": "Wrong age."}
+    assert check("pilot-17", [wrong_age]) == []
+    assert any("give its `severity`" in e for e in check("pilot-18", [wrong_age]))
+    assert check("pilot-18", [{**wrong_age, "severity": "minor"}]) == []
+    assert check("pilot-18", [{"kind": "methods_unavailable", "statement": "No bin width."}]) == []
+    assert any("give its `severity`" in e for e in check("pilot-18", [{**other[0], "about": "data"}]))
+    assert check("pilot-18", [{**other[0], "about": "paper"}]) == []
