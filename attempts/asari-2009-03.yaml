@@ -36,7 +36,15 @@ outcomes:
     cells against the paper's 194, and 14 MGB cells against 16. The voltage-clamp counts (29
     probes, 14 cells) cannot be tested, as no voltage-clamp file is in the data set. Table 1 rows
     are printed; per property the totals are amplitude 95, frequency 110, AM 39, FM 25 and
-    higher-order 137 (paper 95, 110, 96, 82, 137).
+    higher-order 137 (paper 95, 110, 96, 82, 137). Counted by their synthetic probes, as the rows
+    of Table 1 count them, the ensembles hold 14 TORC cells (paper 14), 6 DMR (6), 26 colored-noise
+    (27) and 2 MHT cells (39), and the DMR probes match Table 1 (8 amplitude probes in 2 cells, 20
+    frequency probes in 5). The per-file table of experiment 2 gives the probes that make the
+    difference in AM and FM. The 27 MHT files hold 14 MHT probes with at least two MHT contexts,
+    against 178 MHT probe tests in Table 1, and in the files with an AM by FM grid only the natural
+    sound follows more than one MHT. The notes of the 6 files that list variant groups are all
+    parsed (no line names a property the parser does not know), so the shortfall is in the files,
+    not in the parser.
   deviations:
   - Probes, contexts and the trial count are formed as asari/Tools/CxtDep.m in the data set does
     (the paper's Methods give the inclusion rule, not how trials of a context are pooled).
@@ -104,7 +112,10 @@ outcomes:
     is 2.2 x 10^-3 (all probes) or 2.8 x 10^-3 (running probes), the paper 2.8 x 10^-3. Under the
     claim's seed and the four others the mean noise floor at 1 ms ranges 2.85 to 2.95 x 10^-3
     (3.4%), and the late fraction 0.2756 to 0.2773, so the outcome is the same under all five.
-    4 of 39 cells have no significant probe.
+    4 of 39 cells have no significant probe. Midranks with the tie correction, a variant of the
+    ordinal ranks of CxtDep.m (lines 300 to 304, printed in the notebook), give the same 187 of
+    305; on average 3.3% of values at a time point are tied with another trial (0.7% to 13.4% by
+    probe), and the significant points differ at 0.02% of all points.
   deviations:
   - The seed spread of the noise floor is measured at 1-ms resolution with 100 shuffles per
     probe, since repeating the 1000 shuffles at 0.1 ms under four more seeds would double the
@@ -142,15 +153,19 @@ outcomes:
   measured:
   - 0.458
   - 1.975
-  notes: No reading of 16 gives both values within tolerance. With each trial's mean removed (as
-    CxtDep.m does), alpha1 is 0.46 (within 0.49 +/- 0.049) and tau1 1.94 to 2.01 s with silence
-    and 1.50 to 1.58 s without, against 1.04 s. With one mean per probe removed, 0.63 at 0.58 to
-    0.59 s with silence and 0.71 at 0.30 s without. Q(t) is 0.67 over the first 100 ms, 0.20
-    near 1 s and 0.08 near 2 s. The decay is of the order of a second, but its time constant
-    depends on the centering and is not the paper's in any reading.
+  notes: With each trial's mean removed, as CxtDep.m does (FracPow, line 346) and as the
+    Methods' r(t) - <r(t)>_t reads, no reading of 8 gives both values within tolerance. alpha1 is
+    0.46 with silence counted (within 0.49 +/- 0.049 in those 4 readings) and 0.42 to 0.43
+    without, and tau1 is 1.94 to 2.01 s with silence and 1.50 to 1.58 s without, against 1.04 s.
+    One mean per probe removed, the line CxtDep.m leaves commented out (347), is shown as a
+    variant only and matches in none (0.63 at 0.58 to 0.59 s with silence, 0.71 at 0.30 s
+    without). Q(t) is 0.67 over the first 100 ms, 0.20 near 1 s and 0.08 near 2 s. The decay is of
+    the order of a second, but its time constant is about twice the paper's.
   deviations:
-  - The paper's centering (zero-mean traces) is read two ways; CxtDep.m removes each trial's mean
-    over the probe, and the other reading removes one mean per probe, from 1-ms binned trials.
+  - The paper's centering ("centered the subthreshold responses to have zero mean", r(t) -
+    <r(t)>_t, Methods, Analysis) is taken as CxtDep.m does it, each trial's mean over the probe
+    removed (line 346, printed in the notebook). One mean per probe, commented out there (line
+    347), is shown as a variant that does not decide.
 - claim: timescale-longer-than-membrane
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -162,47 +177,54 @@ outcomes:
   deviations:
   - Autocorrelations computed on 1-ms bins of the 0.1-ms traces.
 - claim: fig4-predictability-upper-bound
-  outcome: reproduced
-  assumed: true
+  outcome: partially_reproduced
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig4-predictability-upper-bound
   measured:
-  - 0.468
-  - 0.987
-  notes: The criterion accepts a match under any reading it names. 2 of 32 readings match, both
-    with silence not counted, one mean per probe removed, running probes and the smoothed
-    denominator (1 + alpha1 = 0.468, tau1 = 0.99 s from 0 to 4 s; 0.459 and 0.95 s from 0 to 6 s).
-    The main reading (silence counted, each trial's mean removed, smoothed) gives 0.43 and 2.4 s,
-    the unsmoothed ratio 0.50 and 2.1 s. The ratio over the first 100 ms is 0.38 to 0.61 in all
-    readings, so the bound near half holds broadly, while the time constant depends on the
-    reading.
+  - 0.426
+  - 2.416
+  notes: Measured is the main reading (silence counted, each trial's mean removed, running
+    probes, smoothed denominator, 0 to 4 s). Under the 16 readings the claims file names, with
+    each trial's mean removed as CxtDep.m does, none puts both values within tolerance. The bound
+    near onset is about half (1 + alpha1 0.424 to 0.547, within 0.51 +/- 0.051 in 10 of the 14
+    fits inside the bounds; the ratio over the first 100 ms 0.38 to 0.56), but tau1 is 1.60 to
+    2.83 s in all 14, against 1.04 s. Two fits (all probes, smoothed, 0 to 6 s) reach the 100-s
+    bound and are flagged and not used. So "no more than about half" holds and the approach to
+    one is about twice as slow as the paper's. One mean per probe removed, not a reading of the
+    paper (CxtDep.m leaves that line commented out), matches in 2 of 16 fits as a variant
+    (silence not counted, running probes, smoothed, 0.468 and 0.99 s), which do not decide.
   deviations:
-  - Assumption. The matching readings use the second centering (one mean per probe) and leave
-    silence out; the paper's main reading counts silence, so the outcome rests on readings the
-    paper does not single out.
+  - The centering is taken as CxtDep.m does it (each trial's mean removed, line 346); one mean
+    per probe is shown as a variant only (see fig3b-fractional-power-decay).
 - claim: fig4-strf-performance-low
   outcome: not_reproduced
   assumed: true
   notebook: strf_wehr.ipynb
   output: claim:fig4-strf-performance-low
-  measured: 0.143
-  notes: On 16 Wehr cells with repeats, mean validation performance stays at or below 0.143 for
-    the STRF and 0.099 for the LN model at all nine windows (training estimates up to 0.303 and
-    0.329). But the STRF improves from 180 to 4052 ms in 13 of 16 cells, median change 0.038,
-    one-sided Wilcoxon p = 0.0031 (Friedman p = 0.0044); the LN model p = 0.058. The improvement
-    of the STRF is significant also with a 20-ms Hann window (p = 0.0038) and with folds by
-    whole sound (p = 0.0145), so under the claims file's test the claim of absence fails. The
-    LN model is worse than the STRF on validation data (mean difference -0.068), not slightly
-    better; its lowess fit overfits on several cells. The shifted-stimulus control drops the
-    180-ms validation performance from 0.106 to 0.015. The ridge parameter is interior in 142 of
-    144 fits. Measured is the largest mean STRF validation performance.
+  measured: 0.139
+  notes: On 16 Wehr cells with repeats, mean validation performance stays at or below 0.139 for
+    the STRF and 0.096 for the LN model at all nine windows (training estimates up to 0.302 and
+    0.326). But the STRF improves from 180 to 4052 ms in 13 of 16 cells, median change 0.039,
+    one-sided Wilcoxon p = 0.0046 (Friedman p = 0.0052); the LN model p = 0.065. The improvement
+    of the STRF is significant also with a 20-ms Hann window (p = 0.0046) and with folds by
+    whole sound (p = 0.017), so under the claims file's test the claim of absence fails. The gain
+    comes from the 6 cells of 2003, which have two trials per sound (all 6 improve, STRF 0.122 to
+    0.174, p = 0.016); in the 10 cells of 2002, 7 improve and p = 0.12 (0.093 to 0.118), so with
+    those cells alone the claim of absence would hold, and the outcome depends on the cell set the
+    paper does not name. The LN model is worse than the STRF on validation data (mean difference
+    -0.073), not slightly better; per cell, it falls more than 0.1 below the STRF at some window
+    in 6 of 16 cells (down to -1.81 in 20020604-mw-002, where the lowess fit on the training data
+    does not carry over) and never in the other 10. The shifted-stimulus control drops the 180-ms
+    validation performance from 0.104 to 0.014. The ridge parameter is interior in 140 of 144
+    fits. Measured is the largest mean STRF validation performance.
   deviations:
   - Assumption. 16 cells (all Wehr cells with at least two trials of a sound, which Eq. 52
     needs) against the paper's 20 unnamed cells of Machens et al. (2004); 6 of the 16 have only
     two trials per sound.
   - The response is binned at 4 ms; the spectrogram is 17 one-third-octave bands from 0.4 kHz
-    from a Hann-window STFT every 4 ms; folds are contiguous blocks; the lowess uses a delta of 1%
-    of the range for speed. Readings at 180 and 4052 ms with a 20-ms window and with folds by
+    (centres 0.4 to 16 kHz; 17 bins at 3 per octave cannot reach the 22 kHz the Methods also give)
+    from a Hann-window STFT every 4 ms, each frame shifted so that it is centred on its 4-ms bin;
+    folds are contiguous blocks; the lowess uses a delta of 1% of the range for speed. Readings at 180 and 4052 ms with a 20-ms window and with folds by
     sound are shown.
   - The test (paired one-sided Wilcoxon at 0.05) is the claims file's, not the paper's.
 - claim: fig5-example-conductances
@@ -217,7 +239,8 @@ outcomes:
   notes: Needs the 29 voltage-clamp probes of 14 cells, which are not in the data set (see
     fig5-example-conductances).
 - claim: fig8a-proportion-by-property
-  outcome: not_reproduced
+  outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig8a-proportion-by-property
   measured:
@@ -225,20 +248,32 @@ outcomes:
   - 62
   - 27
   - 16
-  - 88
+  - 64
   notes: The property groups give 95 amplitude, 110 frequency and 137 higher-order probes, as
-    Table 1, but 39 AM and 25 FM probes against 96 and 82. Significant probes are 56 of 95
-    (paper 77), 62 of 110 (73), 27 of 39 (62 of 96), 16 of 25 (47 of 82) and 88 of 137 (59); none
-    within tolerance, higher-order well above the paper. Amplitude (0.589) exceeds frequency
-    (0.564), but FM (0.640) does not exceed higher-order (0.642), so the partial rule fails.
-    Without the natural-sound level and frequency variants, amplitude is 35 of 61 and
-    frequency 44 of 75.
+    Table 1, but 39 AM and 25 FM probes against 96 and 82 (the MHT probes of Table 1 are not in
+    the data set, see methods-recording-counts). Significant probes are 56 of 95 (paper 77), 62
+    of 110 (73), 27 of 39 (62 of 96) and 16 of 25 (47 of 82), none within tolerance. Amplitude
+    (0.589) exceeds frequency (0.564) and AM (0.692) exceeds FM (0.640). Higher-order depends on
+    how the colored noises are grouped. With each natural sound tested against its own colored
+    noise (the reading adopted), 64 of 131 probes are significant in at least one pair (0.489,
+    within 59 +/- 5.9), and 109 of 336 single tests (0.324); with every fragment its own context
+    75 of 131 (0.573); with all natural sounds of a file pooled into one context and all noises
+    into another, 88 of 137 (0.642). AM > FM > higher-order holds under the first three and fails
+    under pooling, so the partial rule holds under the adopted reading. Without the natural-sound
+    level and frequency variants, amplitude is 35 of 61 and frequency 44 of 75.
   deviations:
-  - The groups are read from the files (asari.property_tests). Where a file varies two properties
-    on a grid (AM rate by FM rate in 19 MHT files, level by playing direction in natural-sound
-    files) or holds several natural sounds with their colored noise, fragments that share the
-    tested property's value are pooled into one context so that each probe is tested once per
-    property; this reproduces the paper's totals for amplitude, frequency and higher-order.
+  - Assumption. For higher-order, each natural sound is tested against its own colored noise(s),
+    as Table 1's legend describes ("comparing natural sounds and corresponding modulated colored
+    noise"), and a probe counts once, as significant when it is in at least one pair; Table 1
+    counts probes. The pooled grouping used in round 1 and every fragment as its own context are
+    shown. 6 probes (each fragment) and 18 tests (pairs) have fewer than 4 trials and are dropped.
+  - The groups are read from the files (asari.property_tests; per-file table in the notebook).
+    Where a file varies two properties on a grid (AM rate by FM rate in the MHT grid files, level
+    by playing direction in natural-sound files), fragments that share the tested property's
+    value are pooled into one context so that each probe is tested once per property; this
+    reproduces the paper's totals for amplitude and frequency. The same pooling of the colored-noise
+    files (all natural sounds against all noises) reproduces the total of 137 higher-order probes
+    and is shown as a reading.
   - Natural-sound level and frequency variants (files of type naturalistic) are counted under
     amplitude and frequency; Table 1 has no row for them, and the variant without them is shown.
 - claim: fig8b-decay-by-property
@@ -261,7 +296,9 @@ outcomes:
     0.20; only AM is within tolerance. Amplitude and frequency both exceed 0.4 s and the other
     three are below 0.3 s in every reading (both centerings, both fit ranges), which is the
     partial rule. Sizes 0.40, 0.51, 0.97, 0.97 and 0.75 against 0.57, 0.54, 0.86, 0.64 and 0.52.
-    The AM and FM groups hold 39 and 25 probes, against 96 and 82 in the paper.
+    The AM and FM groups hold 39 and 25 probes, against 96 and 82 in the paper. The
+    higher-order group pools the colored noises of a file (the pooled reading of
+    fig8a-proportion-by-property); the pair reading adopted there was run for significance only.
 - claim: fig8a-significance-fits
   outcome: not_reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -281,10 +318,13 @@ outcomes:
     (0.31, 0.17 s), FM (0.05, 0.14 s), higher-order (0.02, 0.77 s), against (0.23, 0.25),
     (0.19, 0.27), (0.13, 0.17), (0.07, 0.15), (0.04, 0.13). The AM and FM time constants are
     within tolerance, no size is, and the sizes are not in the printed order (AM largest). The
-    same under both denominators and both bounds. Mean noise floors 3.4, 2.4, 4.8, 6.3 and 7.1 x
-    10^-3 against the legend's 2.8, 2.3, 2.3, 2.1 and 3.6 x 10^-3.
+    same under both denominators and both bounds. Mean noise floors over 0 to 4 s 3.4, 2.4, 4.8,
+    6.3 and 7.1 x 10^-3, and over 0 to 6.07 s (the window of fig3a-proportion-significant) 2.7 to
+    3.5, 1.9 to 2.6, 4.2 to 5.0, 5.6 to 6.3 and 5.1 to 7.1 x 10^-3 depending on the denominator,
+    against the legend's 2.8, 2.3, 2.3, 2.1 and 3.6 x 10^-3; the AM and FM floors are about two
+    and three times the legend's under both windows. The higher-order group is the pooled one.
 - claim: fig8c-relative-effects
-  outcome: partially_reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig8c-relative-effects
@@ -295,19 +335,27 @@ outcomes:
   - 0.044
   - 0.146
   notes: Areas relative to natural sounds are 0.67 amplitude, 0.58 frequency, 0.02 AM, 0.04 FM
-    and 0.15 higher-order; the point estimates follow the pattern (AM, FM and higher-order below
-    1 and below amplitude and frequency). With probes resampled (200 x 1000) the amplitude
+    and 0.15 higher-order. AM, FM and higher-order lie below 1 and below amplitude and frequency,
+    but amplitude and frequency are well below 1, so the point estimates do not fall in the
+    pattern and the partial rule fails too. With probes resampled (200 x 1000) the amplitude
     interval is 0.59 to 0.78 and frequency 0.51 to 0.66, both below 1, under all five seeds
-    (bounds within 0.02 across seeds), so amplitude and frequency effects are smaller than the
-    natural-sound effect here. With trials resampled within probes the intervals (amplitude 1.07
-    to 1.23, frequency 1.02 to 1.15, AM 0.60 to 0.78, FM 0.41 to 0.57, higher-order 0.49 to 0.59)
-    meet the reproduced pattern but contain none of the five point estimates.
+    (bounds within 0.02 across seeds). With trials resampled within probes and Eq. 17 taken over
+    pairs of different trials only, the intervals are amplitude 0.38 to 0.95 and frequency 0.42
+    to 0.75 under the claim's seed, below 1 under all five seeds (upper bounds 0.91 to 0.95 and
+    0.72 to 0.81), and all five contain their point estimates. With Eq. 17 applied to the
+    duplicated draws as they are, the intervals (amplitude 1.07 to 1.23, frequency 1.02 to 1.15,
+    AM 0.60 to 0.78, FM 0.41 to 0.57, higher-order 0.49 to 0.59) meet the pattern but contain none
+    of the five point estimates. So amplitude and frequency effects are smaller than the
+    natural-sound effect here under every reading that is not biased.
   deviations:
-  - Assumption. The trial-resampling reading is set aside; drawing trials with replacement
-    duplicates trials, which biases Eq. 17 and shifts every ratio away from the point estimate,
-    so it does not give intervals for these estimates. The outcome rests on the probe reading.
-  - The trial-resampling reading uses the claim's second generator (seed plus 1) and the 1-ms
-    binned trials; it was run under one seed only.
+  - Assumption. With trials drawn with replacement, Eq. 17 is computed over pairs of draws of
+    different original trials (asari.power_resampled), since its unbiasedness assumes independent
+    trials and duplicated draws add their noise power; the uncorrected intervals, which contain
+    none of the point estimates, show the bias. The uncorrected reading is shown and set aside.
+  - The trial-resampling reading uses the claim's second generator (seed plus 1, plus 1000 to
+    4000 for the other four seeds) and the 1-ms binned trials; the uncorrected reading was run
+    under the claim's seed only. A draw in which a context repeats one trial throughout is drawn
+    again, as Eq. 17 needs two different trials.
 - claim: fig8-natural-synthetic-probes-alike
   outcome: reproduced
   assumed: true
@@ -316,7 +364,9 @@ outcomes:
   notes: Natural against synthetic probes, significant fractions amplitude 11/20 against 45/75
     (odds ratio 0.81, p = 0.80), frequency 12/21 against 50/89 (1.04, p = 1.0), AM 19/25 against
     8/14 (2.38, p = 0.29), higher-order 39/61 against 49/76 (0.98, p = 1.0); FM has no synthetic
-    probe in the data set. No difference after Bonferroni over 4 properties.
+    probe in the data set. No difference after Bonferroni over 4 properties. Under the pair
+    reading of higher-order adopted for fig8a-proportion-by-property, natural 29/58 against
+    synthetic 35/73 (odds ratio 1.09, p = 0.86), no difference either.
   deviations:
   - The test (Fisher's exact, Bonferroni) is the claims file's; the paper names none.
 - claim: fig9-mgb-fast-decay
@@ -348,7 +398,11 @@ outcomes:
     The DMR frequency files hold either 2-octave bands from 0.25 to 32 kHz with a natural probe
     (5 files) or bands 625-10000, 1250-20000, 2500-40000 and 625-2500 plus 10000-40000 Hz without a
     natural fragment (5 files). As the weaker check, 2 of the 5 natural probes after 2-octave DMR
-    variants have a significant period ending at or after 3.6 s (4.58 and 3.82 s).
+    variants have a significant period ending at or after 3.6 s (4.58 and 3.82 s). Experiment 3
+    (27 files, 12 cells, the only other A1 experiment, including files with DMR and natural-sound
+    triggers) holds no sequences. None of its files lists one, no sound follows another within
+    50 ms, and the smallest gap between two sounds is 0.54 s (1.18 s in the files with natural
+    sounds), so it has no context-probe pairs and cannot hold the example.
 - claim: figs1-silence-probe
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -356,9 +410,11 @@ outcomes:
   notes: Of 44 silence probes (2.5 s after each sequence, the sequence's last fragment as context)
     in 38 cells, 28 have a significant period, and in 20 cells one starts within 0.5 s of the
     onset. Eq. 17 over the silence probes falls from 4.59 mV^2 over the first 10 ms below 10% of
-    it at 0.69 s (Eq. 19 at 0.68 s), which meets the criterion; the curve fluctuates afterwards,
-    with means of 1.51 mV^2 over 0.5 to 1.0 s and 1.41 over 2.0 to 2.5 s, so the fade is less
-    clean than the first crossing suggests.
+    it at 0.69 s (Eq. 19 at 0.68 s), which meets the criterion as worded (a first crossing). The
+    fade is not clean. The curve peaks at 12.75 mV^2 at 0.16 s, and of the 18 100-ms bins from
+    0.7 to 2.5 s only 4 are below 10% of the first-10-ms value (16 below 10% of the peak); their
+    mean is 0.85 mV^2, 19% of the first-10-ms value and 7% of the peak, with a late rise to about
+    3 mV^2 at 2.2 to 2.4 s. The outcome rests on the first-crossing wording of the criterion.
   deviations:
   - The silence probe is 2.5 s long, as CxtDep.m takes it (blank(1) = 2.5 s); the paper does not
     give its length.
@@ -378,9 +434,11 @@ findings:
   about: data
   statement: The synthetic-ensemble files give 39 AM and 25 FM probes where Table 1 lists 96 and
     82, and no file has a natural-sound probe after DMR contexts in 0.625-2.5, 2.5-10 and 10-40 kHz
-    as in Figure 7. The modulated-harmonic-tone probes that Table 1 counts under AM and FM (71 and
-    57) could not be found; in the 19 files with an AM by FM grid only the natural sound is
-    preceded by more than one MHT.
+    as in Figure 7. The modulated-harmonic-tone (MHT) probes of Table 1 (25 amplitude, 25
+    frequency, 71 AM and 57 FM, in 20 to 27 cells) are not in the files. The 27 MHT files hold 14
+    MHT probes with at least two MHT contexts, in 2 cells; in the files with an AM by FM grid only
+    the natural sound is preceded by more than one MHT. Experiment 3 holds single sounds separated
+    by at least 0.54 s of silence and no sequences, so it adds no context-probe pairs.
 - kind: metadata_insufficient
   about: data
   statement: Which conditioning fragments form a single-property group has to be inferred from
@@ -404,27 +462,245 @@ findings:
     sizes exactly. Its header cites the paper as submitted (2008).
 - kind: methods_unavailable
   about: paper
-  statement: The paper does not say whether the traces are centered per trial or per recording
-    before the power measures (Methods, Analysis, "centered ... to have zero mean"), whether
-    silence counts as a context in Figures 3 and 4, or over what range the exponentials are
-    fitted. The fitted time constants of Figures 3B and 4 change with these choices (1.5 to 2.0
-    s with each trial's mean removed, 0.3 to 1.4 s with one mean per probe), so the authors are
-    asked which centering, which contexts and which fit range Figures 3B and 4 used.
+  statement: The paper does not say whether silence counts as a context in Figures 3 and 4, or
+    over what range the exponentials are fitted, and its centering ("centered ... to have zero
+    mean", r(t) - <r(t)>_t) does not say over which stretch of the trace the mean is taken. The
+    data set's CxtDep.m removes each trial's mean over the probe and leaves one mean per probe
+    commented out; under its centering the time constants of Figures 3B and 4 are 1.5 to 2.8 s
+    against the paper's 1.04 s, and one mean per probe gives 0.3 to 1.4 s. The authors are asked
+    which centering, which contexts and which fit range Figures 3B and 4 used.
 - kind: methods_unavailable
   about: paper
   statement: The paper names 20 cells of Machens et al. (2004) for the encoding models without
-    saying which; the data set holds 25 Wehr cells, 16 with repeated sounds. The authors are
-    asked which cells were used, and how the folds and the response sampling were formed.
+    saying which; the data set holds 25 Wehr cells, 16 with repeated sounds. Whether the STRF
+    improves significantly with the window depends on the cells (p = 0.0046 over the 16, 0.12
+    over the 10 cells of 2002, 0.016 over the 6 of 2003). The authors are asked which cells were
+    used, and how the folds and the response sampling were formed.
 - kind: methods_unavailable
   about: paper
   statement: For the synthetic ensembles the paper does not say how a probe is tested when the
     conditioning stimuli vary two properties on a grid, or when several natural sounds each come
-    with their colored noise; pooling the fragments that share the tested property's value
-    reproduces Table 1's totals for amplitude, frequency and higher-order. The authors are asked
-    whether that is how probes were counted, and where the AM and FM probes of the MHT row come
-    from.
+    with their colored noise. Pooling the fragments that share the tested property's value
+    reproduces Table 1's totals for amplitude, frequency and higher-order, but for higher-order
+    the share of significant probes depends on the grouping (0.64 pooled, 0.49 with each natural
+    sound against its own noise, the reading adopted, 0.57 with each fragment its own context;
+    paper 0.43), and the order of Figure 8A with it. The authors are asked how the colored-noise
+    probes were grouped and counted, and where the AM and FM probes of the MHT row come from.
 - kind: methods_unavailable
   about: paper
   statement: The paper gives no spike detector for A1, and the MGB evoked rate (11.4 Hz) is twice
     what the data set's own detector gives (5.1 Hz); the authors are asked which windows define
     the spontaneous and evoked rates.
+verifications:
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The first executed notebooks (reproduce_asari_2009.ipynb and strf_wehr.ipynb) with the
+    conclusion cells and the summary removed, the helpers asari.py and wehr.py and the claims file,
+    with the paper's full text. The verifier checked the archive's file list for the blocked
+    claims and tested helpers on synthetic inputs. Its report is
+    transcripts/asari-2009/verifier-1-report.md.
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 7 matches 39 natural-sound cells, 305 natural probes (silence counted), and MGB 93
+      probes in 14 cells. It does not match on 133 vs 123 qualifying cells, DMR 15 vs 6 cells, MHT
+      26 vs 39 cells, or 303 probes with silence not counted. The voltage-clamp counts cannot be
+      tested. AM has 39 probes against 96 and FM 25 against 82, DMR has 15 cells against 6; the
+      criterion asks that the probes making the difference be reported, and no per-file
+      classification is printed. One possible cause is that the parser for note groups drops a
+      group whose name lacks the property words.
+    response: Added the per-file table of experiment 2 (stimulus kinds, notes groups, tests chosen,
+      probes) and the cells counted by synthetic probes. The parser drops nothing (all 6 notes
+      files are parsed). Counted by synthetic probes the cells are TORC 14, DMR 6, MCN 26 and MHT
+      2 (paper 14, 6, 27, 39), and the DMR probes match Table 1. The 27 MHT files hold only 14 MHT
+      probes with two or more MHT contexts against 178 MHT probe tests in Table 1, so the AM and
+      FM shortfall is in the files; the data_missing finding says so. Outcome kept.
+  - claim: a1-mgb-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading puts all four means within 10% (0 of 16). The partial rule (A1 under 1 Hz,
+      MGB evoked over 5 Hz) holds in 12 of 16. Best case is A1 0.33 / 0.46 Hz and MGB 0.82 / 7.1 Hz.
+    response: No change.
+  - claim: fig2-example-reliability
+    agrees: true
+    outcome: reproduced
+    reason: The population mean is 0.310 +/- 0.092 over cells (pairs reading), against 0.31 +/-
+      0.09. The matched example cell gives 0.611 and probe 4 gives 0.737, against 0.61 and 0.74.
+    response: No change.
+  - claim: fig2-example-long-context
+    agrees: true
+    outcome: reproduced
+    reason: Matched probe 4 has significant periods before 2 s, none between 1.6 and 3.97 s, and
+      periods again from 3.97 to 4.60 s. All three parts of the criterion hold.
+    response: No change.
+  - claim: fig3a-proportion-significant
+    agrees: true
+    outcome: partially_reproduced
+    reason: With silence counted, 187 of 305 probes (0.613) is within tolerance of 204 / 0.669. The
+      late fraction is 0.276 or 0.295, outside 0.237 +/- 0.024. With silence not counted the count
+      is 165, which fails. It could not check whether ordinal ranking matters (the share of tied
+      values per time point), nor whether asari.py follows CxtDep.m without the lines quoted.
+      asari._runs needs 51 consecutive points (5.1 ms), not 50 (does not affect a conclusion).
+    response: The notebook now prints the lines of CxtDep.m that asari.py follows (ranks, the run
+      rule, shuffles, FracPow, GetResp). The run rule there keeps a run when its last index minus
+      its first is at least 50 samples, which is 51 points, so _runs is as the code has it and is
+      kept. Added the tie share (mean 3.3% of values per time point) and significance under
+      midranks with the tie correction, which gives the same 187 of 305. Outcome kept.
+  - claim: fig3a-significance-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading has every value within tolerance. With sizes held at zero or above and
+      silence counted, two exponentials are chosen with a slow constant of 1.11-1.47 s, which meets
+      the partial rule. The outcome rests on the stated assumption that sizes are zero or above;
+      fits with free sizes pick a negative fast term that fits the response-latency rise. The
+      assumption is reasonable.
+    response: No change.
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 16 readings within tolerance. Under the code's per-trial centering alpha is about
+      0.46, within tolerance, but tau is 1.5-2.0 s against 1.04. The per-probe centering is the
+      author's stand-in, not a reading the claims file or the paper gives; the Methods centre each
+      trace as r(t) - <r(t)>_t, which is the per-trial centering of CxtDep.m. Under the paper's
+      centering 0 of 8 fig3b readings pass.
+    response: The per-probe centering is now a variant that decides nothing, and the readings are
+      the 8 with each trial's mean removed (0 of 8 within tolerance). The notebook prints
+      CxtDep.m line 346 (each trial's mean removed) and line 347 (one mean per probe, commented
+      out). Outcome kept.
+  - claim: timescale-longer-than-membrane
+    agrees: true
+    outcome: reproduced
+    reason: The 1/e lags are 71 ms (noise) and 77 ms (spontaneous); the 0.1 lags are 115 and 121
+      ms. All are under 150 ms, and 71 ms is under a third of 1.04 s.
+    response: No change.
+  - claim: fig4-predictability-upper-bound
+    agrees: false
+    outcome: partially_reproduced
+    reason: 1 + alpha of about 0.50 is within tolerance in the trial-centred unsmoothed readings,
+      so "about half" holds. tau is never within tolerance under the paper's centering (1.6-2.8 s).
+      The only 2 of 32 readings that pass use the author's own per-probe centering, which is not a
+      reading the claims file or the paper gives. Four fits hit the tau = 100 s bound and are
+      reported without a flag.
+    response: Changed to partially_reproduced and dropped the assumption. Under the 16 readings
+      with each trial's mean removed none matches; 1 + alpha1 is within tolerance in 10 of 14 fits
+      and tau1 is 1.60 to 2.83 s in all. Fits at the 100-s bound are now flagged and not used. The
+      per-probe centering is shown as a variant only.
+  - claim: fig4-strf-performance-low
+    agrees: true
+    outcome: not_reproduced
+    reason: Validation performance stays at or below 0.143, but the one-sided Wilcoxon test finds a
+      significant STRF improvement from 180 to 4052 ms (p = 0.003), also under both variant
+      readings. 16 cells are used, not 20, and 6 have only 2 trials per sound; the window gain is
+      larger in the 2003 two-trial cells, and no per-set test is shown. LN falls below STRF on
+      average (-0.068), with SD up to 0.49, which suggests an unstable lowess step that is not
+      investigated. The spectrogram band centres run 0.4-16 kHz, not up to 22 kHz, and the
+      promised shift aligning frames to their bins is not applied, so each frame reaches about 6
+      ms into the future.
+    response: Applied the frame shift (each frame centred on its 4-ms bin) and stated that 17 bands
+      at 3 per octave end at 16 kHz. Added the Wilcoxon test per cell set and a per-cell table.
+      The STRF gain is still significant over 16 cells (p = 0.0046) but comes from the 6 cells of
+      2003 (p = 0.016); over the 10 cells of 2002 p = 0.12, so the outcome depends on the unnamed
+      cell set, which the notes and the methods_unavailable finding now say. The LN loss comes from
+      6 of 16 cells where the lowess fit does not carry over. Outcome kept.
+  - claim: fig5-example-conductances
+    agrees: true
+    outcome: blocked
+    reason: The archive's zips hold 346 result .mat files, all read by the notebook, all in mV.
+      Summary.mat lists no voltage-clamp experiment. Nothing can be tested.
+    response: No change.
+  - claim: fig6-conductance-decay
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5.
+    response: No change.
+  - claim: fig8a-proportion-by-property
+    agrees: true
+    outcome: not_reproduced
+    reason: All five counts are outside tolerance (56, 62, 27, 16, 88 against 77, 73, 62, 47, 59).
+      The order AM > FM > higher-order fails (0.640 < 0.642). The AM and FM probe sets are far
+      smaller than the paper's. The colored-noise branch pools every natural fragment of a file
+      into one context and every colored noise into another; that is the author's choice, the
+      paper pairs each natural sound with its own colored noise, and no alternative was run. This
+      decides the AM > FM > higher-order order.
+    response: Ran the alternatives. With each natural sound tested against its own noise,
+      higher-order is 64 of 131 probes (0.489, within tolerance of 59), and with each fragment its
+      own context 75 of 131 (0.573); AM (0.692) > FM (0.640) > higher-order holds under both and
+      under single pair tests, and fails only under pooling (88 of 137). The pairing, which Table
+      1's legend describes, is adopted as an assumption, and the outcome changes to
+      partially_reproduced, since amplitude > frequency also holds. The AM and FM shortfall is in
+      the files (see methods-recording-counts).
+  - claim: fig8b-decay-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: No tau is within tolerance. The partial rule holds in every reading (amplitude and
+      frequency 0.58-1.36 s; AM, FM and higher-order 0.03-0.10 s). This rests on the reduced AM/FM
+      probe sets.
+    response: The notes now say that the higher-order group is the pooled one and that the AM and
+      FM sets are what the files hold. Outcome kept.
+  - claim: fig8a-significance-fits
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 5 properties within tolerance in every reading, and the sizes are out of the
+      printed order. The noise floor is averaged over 0-4 s here but over 0-6.07 s in
+      fig3a-proportion-significant; the AM, FM and higher-order floors are 2-3 times the legend's
+      chance levels, which fits the pooled two-context tests.
+    response: Both windows of the noise floor are now printed; the AM and FM floors are about two
+      and three times the legend's under both. Outcome kept.
+  - claim: fig8c-relative-effects
+    agrees: false
+    outcome: not_reproduced
+    reason: With probe resampling the amplitude and frequency intervals (0.59-0.78 and 0.51-0.66)
+      exclude 1, and the point estimates (0.67, 0.58) are below 1, so neither the full nor the
+      partial pattern holds. boot_trials resamples trials with replacement and then applies Eq.
+      17, whose unbiasedness assumes independent trials; duplicated trials leak noise power into
+      it (on synthetic data Eq. 19 went from 0.98 to 2.77). The "pattern holds" of that reading is
+      an artefact and cannot support fig8c.
+    response: Changed to not_reproduced. The trial-resampling reading now takes Eq. 17 over pairs
+      of different trials only (asari.power_resampled, unbiased on synthetic data before the run);
+      its intervals contain all five point estimates and put amplitude (0.38 to 0.95) and
+      frequency (0.42 to 0.75) below 1 under all five seeds. The uncorrected reading is shown and
+      set aside as biased.
+  - claim: fig8-natural-synthetic-probes-alike
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, resting on the claims file's Fisher test. No difference after Bonferroni in
+      the 4 properties testable (all p >= 0.29). FM could not be tested because there are 0
+      synthetic FM probes.
+    response: Added the higher-order test under the pair reading adopted for fig8a (29/58 against
+      35/73, p = 0.86); no difference either. Outcome kept.
+  - claim: fig9-mgb-fast-decay
+    agrees: true
+    outcome: reproduced
+    reason: tau = 0.055-0.067 s (under 0.1 s), and the plateau after 0.5 s (1.27) equals kappa
+      (1.27). Sizes are 5.2-15.8 against 15, and kappa is 1.27 against 2.0 (reported only).
+    response: No change.
+  - claim: fig9-example-first-bin
+    agrees: true
+    outcome: reproduced
+    reason: 4 of 12 probes with the Figure 9A design meet the factor-of-two rule, all from cell
+      20071010-ha2-003; 35 of 93 overall.
+    response: No change.
+  - claim: fig7-example-frequency-context
+    agrees: true
+    outcome: blocked
+    reason: No DMR-frequency file found has 0.625-2.5 / 2.5-10 / 10-40 kHz contexts with a natural
+      probe. The search only covers experiment-2 records with kind dmr and property frequency.
+      Experiment 3 (27 files, 12 cells, including files that combine DMR and natural-sound
+      triggers) is never analysed for context-probe structure, so "not in the data set" is not
+      fully established.
+    response: Added a table of experiment 3. None of its 27 files lists a sequence, no sound
+      follows another within 50 ms, and the smallest gap is 0.54 s, so it holds no context-probe
+      pairs. The block stands.
+  - claim: figs1-silence-probe
+    agrees: true
+    outcome: reproduced
+    reason: The stimulus-related power first drops below 10% at 0.688 s, but it averages 1.41 mV^2
+      over 2.0-2.5 s, 31% of the onset value (4.59), and the onset reference, the mean of the
+      first 10 ms, is far below the curve's maximum (12.75). "Faded within about 1 s" holds only
+      under a first-crossing reading; there is no check that the power stays down. Kept as
+      reproduced because it meets the criterion's wording, but it is fragile.
+    response: Added the curve in 100-ms bins, its peak (12.75 mV^2 at 0.16 s) and how many late
+      bins stay below 10% (4 of 18 of the onset value, 16 of 18 of the peak). The notes now say
+      that the outcome rests on the first-crossing wording. Outcome kept.

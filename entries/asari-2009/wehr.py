@@ -3,7 +3,9 @@
 
 Where each parameter comes from:
 
-- Spectrogram (Eq. 47) in dB, 3 bins per octave from 0.40 kHz (17 bins), time bins of 2^k ms for
+- Spectrogram (Eq. 47) in dB, 3 bins per octave from 0.40 kHz (17 bins, so the band centres run
+  from 0.40 to 16 kHz: 17 bins at 3 per octave cannot reach the 22 kHz the Methods also give,
+  and the bin count is kept), time bins of 2^k ms for
   k = 2..10 with 45 bins split [45, 0, ...], [9, 36, 0, ...], ..., [9, 8, ..., 1] (windows 180 to
   4052 ms, 765 parameters), ridge regression (Eq. 50) with 10-fold cross-validation choosing the
   ridge parameter on the validation folds, the static nonlinearity by robust lowess (5% span, 5
@@ -102,8 +104,13 @@ def spectrogram(x, sf, win_ms=10.0):
             m = [np.argmin(np.abs(f - c))]
         S[i] = P[m].sum(axis=0)
     # STFT frame j is centred at (j * hop + nper / 2) / sf; shift so that column j covers
-    # [j * DT, (j + 1) * DT) as closely as the hop allows
+    # [j * DT, (j + 1) * DT) as closely as the hop allows: frames move later by
+    # round((nper / 2 - hop / 2) / hop) columns (1 for the 10-ms window, 2 for 20 ms), and the
+    # first columns, before the sound, are silence (the -120 dB floor)
     S = 10 * np.log10(S + 1e-12)
+    sh = int(round((nper / 2 - hop / 2) / hop))
+    if sh > 0:
+        S = np.concatenate([np.full((NF, sh), -120.0), S], axis=1)
     return S
 
 

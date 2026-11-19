@@ -20,7 +20,11 @@ Where each parameter comes from:
   of suprathreshold segments, downward spikes removed): the analysis code shipped in the data
   set (asari/Tools/CxtDep.m, ViewResp.m, GetEvoked.m, GetSpikes.m), which its header calls the
   "basic analysis script for Asari and Zador". The paper does not link it; it is used where the
-  paper is silent, and each use is recorded as a deviation.
+  paper is silent, and each use is recorded as a deviation. The lines of CxtDep.m used: 300
+  (ordinal ranks by a double sort), 308 to 316 (a run is kept when k(end) - k(start) >= dt with
+  dt = 5 ms x 10 kHz = 50 samples, so 51 points), 320 (shuffles of trials across contexts), 346
+  (each trial's mean removed; line 347, one mean per probe, is commented out), 395 to 399
+  (occurrences of a context pooled, trials cut to the smallest count). The notebook prints them.
 - The median filter length is 101 samples (an odd window for the 10-ms filter of the paper; the
   code's MATLAB medfilt1 uses 100), a standard choice that cannot change a result.
 - The noise floor is computed by shuffling trials across contexts, as the Methods say; the
@@ -373,6 +377,30 @@ def kw_significance(X, alpha=0.01, run_ms=5.0, sf=SF, n_shuffle=1000, rng=None,
     return signif, noise
 
 
+def kw_midrank(X, alpha=0.01, run_ms=5.0, sf=SF):
+    """Kruskal-Wallis with midranks for tied values and the usual tie correction (H divided by
+    1 - sum(t^3 - t) / (N^3 - N)), the textbook form, as a variant of the ordinal ranks of
+    CxtDep.m. Returns (signif bool (T,), mean fraction of values tied with another trial)."""
+    n, rep, T = X.shape
+    N = n * rep
+    Y = X.reshape(N, T)
+    R = stats.rankdata(Y, axis=0)
+    g = np.repeat(np.arange(n), rep)
+    Gs = np.zeros((n, T), np.float64)
+    np.add.at(Gs, g, R)
+    h = 12.0 * ((Gs / rep - (N + 1) / 2.0) ** 2).sum(axis=0) / (n * (N + 1))
+    c = ((R - (N + 1) / 2.0) ** 2).sum(axis=0) / ((N ** 3 - N) / 12.0)  # 1 - tie term
+    with np.errstate(invalid="ignore", divide="ignore"):
+        h = np.where(c > 0, h / c, 0.0)
+    signif = _runs(h > stats.chi2.isf(alpha, n - 1), int(round(run_ms / 1000 * sf)))
+    S = np.sort(Y, axis=0)
+    eq = S[1:] == S[:-1]
+    tied = np.zeros_like(S, dtype=bool)
+    tied[1:] |= eq
+    tied[:-1] |= eq
+    return signif, float(tied.mean())
+
+
 # ----------------------------------------------------------------------------------------------
 # Fractional power measure (Eqs. 17 to 19), per probe
 # ----------------------------------------------------------------------------------------------
@@ -579,12 +607,15 @@ def first_below(t, y, level):
 # ----------------------------------------------------------------------------------------------
 # Per-probe analysis and per-file drivers
 # ----------------------------------------------------------------------------------------------
-def analyse_probe(X, rng=None, n_shuffle=1000, acf=False, maxlag_ms=1000):
+def analyse_probe(X, rng=None, n_shuffle=1000, acf=False, maxlag_ms=1000, midrank=False):
     """Everything the claims use from one probe: significance and noise floor at 0.1 ms; the
     power terms (Eqs. 17 to 19) at 1 ms, with each trial's mean removed (CxtDep.m) and without;
-    reliability; and, with acf=True, the mean noise autocorrelation (Eq. 45) at 1 ms."""
+    reliability; with acf=True, the mean noise autocorrelation (Eq. 45) at 1 ms; with
+    midrank=True, significance under midranks (kw_midrank) and the fraction of tied values."""
     sig, noise = kw_significance(X, rng=rng, n_shuffle=n_shuffle)
     out = dict(sig=sig, noise=None if noise is None else bin_mean(noise).astype(np.float32))
+    if midrank:
+        out["sig_midrank"], out["tie_frac"] = kw_midrank(X)
     for c in ("trial", "none"):
         pred, inv, cd = power_terms(X, center=c)
         out[f"pred_{c}"] = bin_mean(pred).astype(np.float32)
@@ -754,6 +785,54 @@ def property_tests(rec):
     return tests
 
 
+def property_tests_alt(rec):
+    """Other readings of the colored-noise test (the paper pairs each natural sound with its own
+    colored noise, Methods, Synthetic sounds, Eqs. 6 to 9, and Results, Relation to stimulus
+    properties): a list of (reading, context_map). 'pair': one test per natural sound, with that
+    sound and its colored noise(s) as separate contexts; 'each': one test with every natural
+    sound and every colored noise of the file as its own context. The main reading
+    (property_tests) pools all natural sounds into one context and all noises into another."""
+    types = {t[0] for t in rec.triggers}
+    if "pinknoise" not in types:
+        return []
+    groups = [G for p, G in property_groups(rec) if p == "higher-order"]
+    if not groups:
+        return []
+    out = [("pair", lambda c, G=G: c if c in G else None) for G in groups]
+    allf = set().union(*groups)
+    out.append(("each", lambda c, allf=allf: c if c in allf else None))
+    return out
+
+
+def probe_table(rec, include_silence=True):
+    """The context-probe structure of a recording without reading the traces: a list of
+    (probe, contexts, trials per context after the cut to the smallest count, natural probe)."""
+    fs = frag_samples(rec)
+    pres = presentations(rec)
+    occ = {}
+    for si, seq in enumerate(rec.seqs, start=1):
+        for (a, b) in pres.get(si, []):
+            prev = SILENCE
+            for f in seq:
+                occ[(f, prev)] = occ.get((f, prev), 0) + 1
+                prev = f
+    out = []
+    for p in sorted({p for p, c in occ}):
+        ctxs = sorted(c for (pp, c) in occ if pp == p and (include_silence or c != SILENCE))
+        if len(ctxs) >= 2:
+            out.append((p, ctxs, min(occ[(p, c)] for c in ctxs), is_natural(rec.stim[p - 1])))
+    return out
+
+
+def trigger_layout(rec):
+    """Number of sound triggers and how many follow the previous sound within 50 ms (a context
+    and a probe played back to back), from the trigger times and durations."""
+    ev, sp = periods(rec)
+    gaps = [ev[i + 1][0] - ev[i][1] for i in range(len(ev) - 1)]
+    return dict(n_sounds=len(ev), back_to_back=int(sum(g < 0.05 * rec.sf for g in gaps)),
+                min_gap_s=float(min(gaps) / rec.sf) if gaps else np.nan)
+
+
 # ----------------------------------------------------------------------------------------------
 # One pass over the data set
 # ----------------------------------------------------------------------------------------------
@@ -842,7 +921,7 @@ def psth_sd(rec, spikes, include_silence=True, dt=0.1, kmax=60):
 def run_pass(rows, rng_nat, rng_syn, rng_blank, n_shuffle=1000, log=print, limit=None):
     """Read every file once and compute what the claims use. Returns a dict of lists."""
     import time
-    R = dict(nat=[], blank=[], syn=[], mgb=[], rates=[], spont_acf=[], files=[])
+    R = dict(nat=[], blank=[], syn=[], syn_alt=[], mgb=[], rates=[], spont_acf=[], files=[])
     t0 = time.time()
     todo = rows if limit is None else rows[:limit]
     for k, r in enumerate(todo):
@@ -852,7 +931,15 @@ def run_pass(rows, rng_nat, rng_syn, rng_blank, n_shuffle=1000, log=print, limit
                     nseq=len(rec.seqs), nstim=len(rec.stim),
                     trig_types=sorted({t[0] for t in rec.triggers}),
                     vmin=float(rec.trace.min()), vmax=float(rec.trace.max()),
-                    age=rec.animal.get("age", ""), Rs=rec.recording.get("Rs", ""))
+                    age=rec.animal.get("age", ""), Rs=rec.recording.get("Rs", ""),
+                    **trigger_layout(rec))
+        if r["exp"] == 2 and rec.seqs:
+            info["notes_groups"] = [l for l in rec.notes if re.match(r"^[\d,\-\s]+:", l)]
+            info["stim_kinds"] = sorted({re.sub(r"\s*\d+$", "", s["description"])[:40]
+                                         for s in rec.stim})
+            info["probes"] = probe_table(rec)
+            info["probes_nosil"] = probe_table(rec, include_silence=False)
+            info["tests"] = [p for p, _ in property_tests(rec)]
         R["files"].append(info)
         if r["exp"] == 1:
             sp = mgb_spikes(rec)
@@ -889,7 +976,8 @@ def run_pass(rows, rng_nat, rng_syn, rng_blank, n_shuffle=1000, log=print, limit
                     res = analyse_probe(p["X"], rng=rng_blank, n_shuffle=n_shuffle)
                     R["blank"].append(dict(**base, **res))
                     continue
-                res = analyse_probe(p["X"], rng=rng_nat, n_shuffle=n_shuffle, acf=True)
+                res = analyse_probe(p["X"], rng=rng_nat, n_shuffle=n_shuffle, acf=True,
+                                    midrank=True)
                 res2 = {}
                 if 0 in p["contexts"] and n - 1 >= 2:
                     X2 = p["X"][[i for i, c in enumerate(p["contexts"]) if c != 0]]
@@ -917,6 +1005,17 @@ def run_pass(rows, rng_nat, rng_syn, rng_blank, n_shuffle=1000, log=print, limit
                                              rec.stim[p["probe"] - 1]),
                                          kind=rec.triggers[0][0], contexts=p["contexts"], n=n,
                                          rep=rep, dur=p["dur"], **res))
+            for reading, cm in property_tests_alt(rec):
+                # significance only (no noise floor), for the count of fig8a-proportion-by-property
+                for p in context_probe_sets(rec, tr, include_silence=False, blank_probe=0,
+                                            context_map=cm):
+                    n, rep, T = p["X"].shape
+                    sig, _ = kw_significance(p["X"], n_shuffle=0)
+                    R["syn_alt"].append(dict(cell=r["cell_dir"], file=r["file"],
+                                             prop="higher-order", reading=reading,
+                                             probe=p["probe"], natural=is_natural(
+                                                 rec.stim[p["probe"] - 1]),
+                                             contexts=p["contexts"], n=n, rep=rep, sig=sig))
         del rec
         if log and (k % 20 == 0 or k == len(todo) - 1):
             log(f"{k + 1}/{len(todo)} files, {time.time() - t0:.0f} s")
@@ -925,8 +1024,9 @@ def run_pass(rows, rng_nat, rng_syn, rng_blank, n_shuffle=1000, log=print, limit
 
 def power_from_x1(X1, center="trial"):
     """Eqs. 17 and 18 from the 1-ms binned trials of a probe. center='trial' removes each
-    trial's mean over the probe (CxtDep.m); 'probe' removes one mean over all trials, contexts and
-    times of the probe (a stand-in for the Methods' zero-mean traces)."""
+    trial's mean over the probe (CxtDep.m, FracPow, line 346); 'probe' removes one mean over all
+    trials, contexts and times of the probe, the alternative left commented out in CxtDep.m
+    (line 347), shown as a variant only."""
     X = X1.astype(np.float64)
     if center == "trial":
         X = X - X.mean(axis=2, keepdims=True)
@@ -936,6 +1036,29 @@ def power_from_x1(X1, center="trial"):
     m = X.mean(axis=1)
     p2 = (X ** 2).mean(axis=1)
     pred = ((rep * m ** 2 - p2) / (rep - 1)).mean(axis=0)
+    inv = (n * m.mean(axis=0) ** 2 - (m ** 2).mean(axis=0)) / (n - 1)
+    return pred, inv
+
+
+def power_resampled(X1, idx):
+    """Eqs. 17 and 18 for trials drawn with replacement within each context (idx (n, rep),
+    indices of the drawn trials), each trial's mean removed. Eq. 17 is the mean over pairs of
+    different trials of x_a x_b; with duplicated draws, the pairs that repeat one trial add its
+    noise power. Here only pairs of draws of different original trials enter: with c_i draws of
+    trial i, ((sum c_i x_i)^2 - sum c_i^2 x_i^2) / (rep^2 - sum c_i^2). Eq. 18 uses products of
+    means of different contexts, which duplication does not bias."""
+    X = X1.astype(np.float64)
+    X = X - X.mean(axis=2, keepdims=True)
+    n, rep, T = X.shape
+    pred = np.zeros(T)
+    m = np.empty((n, T))
+    for k in range(n):
+        c = np.bincount(idx[k], minlength=rep).astype(float)
+        s = c @ X[k]
+        m[k] = s / rep
+        den = rep ** 2 - (c ** 2).sum()
+        pred += (s ** 2 - (c ** 2) @ (X[k] ** 2)) / den if den > 0 else np.nan
+    pred /= n
     inv = (n * m.mean(axis=0) ** 2 - (m ** 2).mean(axis=0)) / (n - 1)
     return pred, inv
 
