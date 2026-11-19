@@ -20,7 +20,9 @@ Where the parameters come from:
 - Which footprint holds the background ROIs is not given (O1, "any one, a standard choice").
   Here each footprint gets 3 ROIs (its centre and 0.5 mm to either side across the diagonal)
   and the footprint with the lowest mean is used, a standard choice that keeps debris lying in a
-  footprint out of the background; `profiles` also returns every footprint's value.
+  footprint out of the background; `profiles` also returns every footprint's value. Where the
+  near-electrode signal is close to background the footprint changes the result, and the
+  notebook shows each footprint as a reading (fig7-offtarget-40-50-fold).
 - ROI positions (O1): reading (a) ROIs centred at whole mm, 0 to 7 mm (`DIST_A`); reading (b)
   contiguous ROIs, one ROI length (0.406 mm) per step, from the centre outward (`DIST_B`).
 - Electrode geometry: four 2.8-mm needles in a square with 15.3-mm side-to-side diagonals
@@ -109,7 +111,7 @@ def read_metadata(asset: dict) -> dict:
              elevation_mm=first(r"(\d) mm electrode elevation"),
              sham="SHAM" in spec,
              spacing_mm=first(r"(?:distance|spacing)[^.]*?([\d.]+) mm", gen),
-             first_pulse_kv=first(r"\(([\d.]+) kV\)", gen),
+             first_pulse_kv=first(r"([\d.]+) ?kV", gen),
              two_hours=("2 hours after" in spec) or ("Cy3" in (channel or "")),
              shape=tuple(int(x) for x in shape),
              pixel_um=float(first(r'PhysicalSizeX="([\d.]+)"', desc) or "nan"),
@@ -181,7 +183,9 @@ def footprint_score(im: np.ndarray) -> np.ndarray:
 
 def find_array(im: np.ndarray) -> dict:
     """Centre, rotation and half-side of the square of footprints that maximises the summed
-    dark-disk score at its four corners. Returns footprint centres in pixels (x, y)."""
+    dark-disk score at its four corners. Returns footprint centres in pixels (x, y). On a
+    synthetic image it recovers the centre and rotation exactly and gives a side about 0.4 mm
+    short (verifier, round 1); the side is used only to accept a square (MAX_SIDE_ERR_MM)."""
     c = footprint_score(im)
     H, W = im.shape
     sm = ndi.uniform_filter(np.where(im > 0, im, 0), int(3 / MM_PER_PX))
