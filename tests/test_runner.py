@@ -235,6 +235,26 @@ def test_the_claims_checkpoint_waits_when_it_would_drop_a_claim_the_attempt_on_m
     assert 'if [ -n "$dropped" ]; then' in script_file and "left for the attempt's merge" in script_file
 
 
+def test_a_repeat_authors_commit_moves_a_finished_earlier_attempts_transcripts_aside(tmp_path):
+    # A repeat attempt that does not read the claims again found the earlier attempt's transcripts still in the
+    # folder, and its blind author's revision runs could read the earlier verifiers' reports (three replicates did).
+    # The author's commit now archives them whenever a finished attempt's are there (its recorder's transcript).
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    line = next(x.strip() for x in workflow.splitlines() if 'if [ "$ROLE" = author ] && {' in x)
+    def archives(role, files):
+        d = tmp_path / f"{role}-{len(files)}-{'-'.join(sorted(files))[:40]}"; (d / "transcripts" / "x").mkdir(parents=True)
+        for f in files: (d / "transcripts" / "x" / f).write_text("t")
+        script = f'ROLE={role}; FOLDER=x\n{line} echo yes; else echo no; fi'
+        return subprocess.run(["bash", "-c", script], cwd=d, capture_output=True, text=True).stdout.strip()
+    assert archives("author", ["claims.md", "author.md", "verifier-2-report.md", "recorder.md"]) == "yes"   # the hole
+    assert archives("author", ["author.md", "recorder.md"]) == "yes"
+    assert archives("author", ["claims.md", "claims-check.md"]) == "no"       # this attempt's own claims runs stay
+    assert archives("author", ["claims.md", "author.md"]) == "no"             # its own failed first author run stays
+    assert archives("author-revise-1", ["claims.md", "recorder.md"]) == "no"
+    # The reconcile run follows the instructions as they are now, not as the branch had them when its attempt began.
+    assert '[ "$ROLE" != reconcile ] || git restore --worktree --source "$GITHUB_SHA" -- docs/agents/reconcile.md' in workflow
+
+
 def test_the_reconcile_run_is_given_the_earlier_attempts_entry():
     # It reads both attempts' code to say why an outcome differs; the earlier entry is copied from main, outside the
     # folders whose changes are collected.
