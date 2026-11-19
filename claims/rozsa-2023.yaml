@@ -69,7 +69,9 @@
 #   analysis. Each claim uses the counts its own passage gives.
 # - Phase method. Butterworth order and whether the filter is zero phase are not given; MATLAB
 #   filtfilt with order 2 is the standard choice, order 4 the variant. Whether the 4 s segment is
-#   centred on the AP is not given; centred (2 s each side) is the standard choice.
+#   centred on the AP is not given; centred (2 s each side) is the standard choice. The Methods say
+#   the power was "corrected ... with the frequency values" without the formula; power times
+#   frequency is the standard choice, the reading used above.
 schema_version: 2
 paper: doi:10.1126/sciadv.ade4511
 claims:
@@ -121,7 +123,9 @@ claims:
     cut into epochs, nor what duration an epoch of one RA-AP has. Readings are (i) one epoch per
     cell, all RA-APs after induction; (ii) one epoch per induction run, when a cell was induced
     more than once (Figure 1E has cells with both patterns). Epochs of a single RA-AP are left
-    out, as their frequency is undefined. Reproduced when, under one reading, at least six of the
+    out, as their frequency is undefined. The sentence places the duration values (minimum,
+    maximum, mean, median) under persistent RAF; whether they cover all RAF epochs is not certain,
+    so they are also shown over all epochs. Reproduced when, under one reading, at least six of the
     eight values are within tolerance and the two groups both occur; partially reproduced for four
     or five. The SDs are reported beside the medians.
 - id: fig1c-ra-lower-threshold-slope
@@ -171,8 +175,10 @@ claims:
   - fig1d-human-raf-proportion
   criterion: Needs the post hoc morphological class of each cell (NGFC, non-NGFC, rosehip) as the
     Methods define it from biocytin fills; the class is taken as the dandiset records it. RAF as in
-    fig1d-human-raf-proportion. Whether the 15 rosehip cells are among the 90 non-NGFCs is not
-    said; both readings are shown (non-NGFC with and without rosehip cells). Reproduced when the
+    fig1d-human-raf-proportion. The Results give 30 RAF-positive and 104 RAF-negative classified
+    cells, 134 in all, which is 44 NGFCs plus 90 non-NGFCs; so the 15 rosehip cells are counted
+    among the 90 non-NGFCs, and this is the main reading. Non-NGFCs without rosehip cells are shown
+    as a variant. Reproduced when the
     three values hold under one reading; partially reproduced when NGFCs have the higher fraction
     but a value is outside tolerance.
 - id: figs1b-rat-raf-proportion
@@ -238,9 +244,12 @@ claims:
   criterion: Human NGFC dual recordings (n = 2). For each somatic AP, the soma-to-bleb latency is
     the bleb AP time minus the somatic AP time; the time point is not given, and readings are the
     threshold crossing (5 mV/ms) and the peak. AIS-APs and RA-APs by readings (a) or (b) of the
-    header, the classes taken on the somatic trace. Reproduced when in each cell the AIS-APs have a
-    positive median latency and the RA-APs a negative one, and RA-APs have the lower median
-    threshold and slope; partially reproduced when this holds in one of the two cells.
+    header, the classes taken on the somatic trace. Reading (c) does not apply, as the RA-APs here
+    occur during somatic current pulses (Figure 1H and 1I legends). Under reading (b) the lower
+    threshold and slope of RA-APs follow from the classification, so they are reported and only the
+    latency is judged. Reproduced when in each cell the AIS-APs have a positive median latency and
+    the RA-APs a negative one, and (under reading (a)) RA-APs have the lower median threshold and
+    slope; partially reproduced when this holds in one of the two cells.
 - id: fig2c-zd7288-reduces-raf
   statement: Blocking HCN channels with ZD7288 (30 uM) reduces the duration of RAF (47.2 to 10.1 s)
     and the number of RA-APs (624 to 48) in human and rat layer 1 interneurons.
@@ -411,7 +420,9 @@ claims:
     tolerance: 10.6
     unit: um
   criterion: Sag fraction readings as in fig2e-sag-species, each compartment from the
-    hyperpolarizing step injected into it, as the Methods describe. A two-sample t test as the
+    hyperpolarizing step injected into it (the Methods say steps were injected alternately into
+    soma and bleb, but not which trace and step give the bleb value; the bleb trace during a
+    somatic step is the variant). A two-sample t test as the
     paper names it, with a paired t test as a variant. Reproduced when the bleb is higher with P <
     0.001 and both sag values are within tolerance under one reading; partially reproduced when
     the bleb is higher with P < 0.05. The distance is reported if the dandiset records it.
@@ -447,8 +458,10 @@ claims:
     (b) of the header. How up, transition and down states are separated is not given (ref. 38,
     dashed lines in Figure 3B). Readings are (i) a two-Gaussian fit to each cell's subthreshold
     membrane potential histogram, down and up states within one SD of each mean and transition
-    between; (ii) the range between the two modes cut in thirds. The state of an AP is that of the
-    membrane potential at its threshold. Counts are exact, as the paper reports whole cells.
+    between; (ii) the range between the two modes cut in thirds. Which potential places an AP in a
+    state is not given either; readings are the mean membrane potential 0 to 50 ms before threshold
+    (the window of Figure 3F) and the threshold potential itself, the latter partly circular since
+    AIS-APs have the higher threshold. Counts are exact, as the paper reports whole cells.
     Reproduced when, under one reading, every cell with AIS-APs has all of them in up states and
     the RA-APs fall in down or transition states in at least half of the cells with RA-APs;
     partially reproduced when this holds with at most one exception.
@@ -493,7 +506,8 @@ claims:
   criterion: How the deflection frequency is measured is not given. Readings are (i) the peak of the
     LFP power spectrum in 0.5 to 4 Hz per recording; (ii) the rate of LFP troughs found on the 0.5
     to 4 Hz Butterworth-filtered trace (the Methods' filter). The median over recordings is
-    compared. Reproduced when one reading is within tolerance.
+    compared. Reproduced when one reading is within tolerance. The synchronization to up states is
+    shown only in an example trace (Figure 3I) with no measure; it is not judged.
 - id: fig3l-rat-spontaneous-ra-proportion
   statement: In active rat slices, 13 of 40 layer 1 interneurons fire spontaneous RA-APs, and all
     recovered ones (n = 5) are NGFCs.
@@ -519,7 +533,9 @@ claims:
   depends_on:
   - fig3l-rat-spontaneous-ra-proportion
   criterion: As in fig3f-human-pre-ap-fluctuation, on the rat active-slice recordings. Reproduced
-    when the AIS-AP SD is higher with Mann-Whitney P < 0.001 under one reading.
+    when the AIS-AP SD is higher with Mann-Whitney P < 0.001 under one reading. The paper gives no
+    measure for the up and down state part in rat; the state of each AP, by the readings of
+    fig3-human-ap-states, is reported and not judged.
 - id: fig3m-rat-ais-phase-coupling
   statement: In active rat slices, AIS-APs are coupled near the trough of the slow LFP oscillation
     (mean vector length 0.093, angle 314 degrees).
@@ -752,3 +768,19 @@ claims:
     P < 0.05 for genotype or for condition; not reproduced when both do; otherwise the outcome
     rests on the reading. Group medians and the fraction of cells with RA-APs per group are
     reported. Needs genotype and condition per cell from the dandiset's metadata.
+checks:
+- date: 2026-11-19
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1f-human-raf-ngfc. The criterion called it open whether the 15 rosehip cells are among the 90 non-NGFCs. The Results give 30 RAF-positive and 104 RAF-negative classified cells (134), which equals 44 NGFCs plus 90 non-NGFCs, so they are included; that is now the main reading and the other a variant.
+  - fig1hk-bleb-initiation-order. Said that reading (c) does not apply, since the RA-APs in these recordings occur during somatic pulses (Figure 1H and 1I legends), and that under reading (b) the threshold and slope difference follows from the classification and is reported, not judged.
+  - fig3-human-ap-states. The criterion fixed the AP's state at its threshold potential without saying the paper does not; this is partly circular, as AIS-APs have the higher threshold. Now open, with the mean potential 0 to 50 ms before threshold (the Figure 3F window) and the threshold as readings.
+  - fig2h-bleb-sag-higher. Said the Methods do not fix which trace and step give the bleb sag value; the bleb trace during a somatic step is named as the variant.
+  - fig3i-rat-lfp-rhythm, fig3k-rat-pre-ap-fluctuation. Each statement has a part the criterion did not test (synchronization to up states; AIS-APs in up and RA-APs in down states in rat). The paper gives no measure for these; the criteria now say they are reported and not judged.
+  - fig1ab-raf-patterns. The duration values sit in the persistent RAF clause but may cover all epochs; both are now shown.
+  - Header, phase method. The Methods say only that power was "corrected ... with the frequency values"; power times frequency is now named as the standard choice for an open detail.
+  - Checked, unchanged. Every quote, p-value, count and expected value against the text and supplement (checker, 0 problems); tolerances are 10% except the exact cell counts in fig3-human-ap-states and the circular angle rule, both with reasons. Each main finding (RAF patterns and prevalence by species and cell class, bleb initiation order, ZD7288, sag, KCl, active slices in human and rat, in vivo prevalence, frequencies, fluctuations and phase coupling, Figures S1 to S5) has a claim.
+  - Open. The AIS-AP and RA-AP boundary, the sag fraction formula (ref. 28 not in the text read), the state definition (ref. 38), the LFP rhythm frequency measure, the correlation type in Figure S4I and the test for Figure S5 are not given by the paper; the claims name the readings. No code is linked.
+  - Open. fig4-invivo-up-down-balance and figs5-not-genotype-or-anesthesia have no measure or test in the paper; their criteria rest on readings chosen here and their outcomes will rest on assumptions.
