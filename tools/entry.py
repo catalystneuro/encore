@@ -333,6 +333,22 @@ def check(entry_dir: Path) -> Report:
         # hazon-2022 did on 2026-11-12), and the site takes such a finding by its kind.
         version = re.fullmatch(r"pilot-(\d+)", str(((attempt.get("provenance") or {}).get("agent") or {}).get("protocol") or ""))
         told = not version or int(version[1]) >= 15
+        # From pilot-17, an attempt on a paper whose authors had sent notes says which it used, or that it used none
+        # by listing none: the latest attempt names each note that was there when it was made (docs/protocol.md,
+        # "Notes from the paper's authors"), so that the authors' input is never used unseen.
+        if path == mine[-1] and version and int(version[1]) >= 17:
+            import author_notes
+            import paper_records
+            key = paper_records.key_of_doi(attempt["paper"])
+            there = [n["issue"] for n in (author_notes.load(key) if key else []) if str(n["date"]) <= str(attempt.get("date"))]
+            named = (attempt.get("provenance") or {}).get("author_notes") or []
+            for issue in named:
+                if issue not in there:
+                    report.error(where, f"`provenance: author_notes` names {issue}, which is not a note in "
+                                        f"papers/author-notes/{key}.yaml")
+            if there and not named:
+                report.error(where, f"the paper's authors had sent notes (papers/author-notes/{key}.yaml) when this "
+                                    "attempt was made; list those it used under `provenance: author_notes`")
         for n, f in enumerate(attempt.get("findings") or [], 1):
             if told and f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
                 report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
