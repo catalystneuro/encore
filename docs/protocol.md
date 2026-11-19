@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-16`. Record this version in the attempt's provenance.
+Version: `pilot-17`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -342,6 +342,23 @@ Do this before any analysis.
      claims file (reader, step 6), and a later run, `author-answers`,
      re-runs the claims it changed.
 
+**Notes from the paper's authors.** The authors of a paper can answer an
+attempt (`docs/author-responses.md`). What a confirmed author says about the
+method, the code or the data is kept in `papers/author-notes/<paper>.yaml`,
+and the next attempt's author reads it with the paper.
+
+- A method detail a note gives is used like one taken from the paper. The
+  deviation, or the notebook, cites the note's issue in place of a passage.
+- Code a note links may be read like the paper's own code.
+- Data a note points to outside the paper's datasets are inputs, listed under
+  `inputs`.
+- A note does not change a claim's statement, expected values or criterion.
+- A note that says what an outcome should be is not evidence. The claim is
+  tested all the same.
+- The record lists every note the attempt used under
+  `provenance: author_notes`, so that a reader can see that the authors'
+  input went into it.
+
 ### 2. Check the data against its description
 
 Descriptive metadata is often wrong. For every quantity the analysis uses,
@@ -503,6 +520,9 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   lists.
 - **`seed_sensitive`**: `true` on an outcome that is not the same under all
   five seeds (step 3). The notes give the measured value under each.
+- **`provenance: author_notes`**: the notes from the paper's authors that
+  the attempt used, each by its issue's address (step 1, "Notes from the
+  paper's authors").
 - **`proposed`**: on an outcome, a change of outcome found after the last
   verification round, with its `reason` (see "Hand over for verification").
 - **`inputs`**: everything used that is not in the dataset, each with where

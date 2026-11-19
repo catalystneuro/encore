@@ -39,6 +39,34 @@ def test_proposals_are_found_from_the_record():
     assert tool.proposals("001453") == []
 
 
+def test_an_author_is_given_the_notes_the_papers_authors_sent(monkeypatch, tmp_path):
+    # docs/protocol.md, "Notes from the paper's authors": an author's runs are pointed to the notes and told how
+    # to use them; a paper without notes, and a verifier, get nothing about them.
+    import author_notes
+    assert "author-notes" not in tool.fill("author", "senzai-2017", "m")
+    monkeypatch.setattr(author_notes, "NOTES", tmp_path)
+    issue = {"url": "https://github.com/catalystneuro/encore/issues/900", "createdAt": "2026-11-20T10:00:00Z",
+             "labels": [{"name": "author-response"}, {"name": "author-confirmed"}],
+             "body": "### Paper\n\nsenzai-2017\n\n### Your name\n\nA. Author\n\n### Your role in the paper\n\nfirst author\n\n"
+                     "### ORCID iD\n\n0000-0002-1825-0097\n\n### Claims you are responding to\n\nunit-counts, all\n\n"
+                     "### Your response\n\nUnits were classified by waveform.\n\n### Supporting links\n\nhttps://example.org/code and notes\n"}
+    written = author_notes.add(issue)
+    assert written == tmp_path / "senzai-2017.yaml"
+    note = author_notes.load("senzai-2017")[0]
+    assert note == {"issue": issue["url"], "date": "2026-11-20", "from": "A. Author", "role": "first author", "author": True,
+                    "orcid": "0000-0002-1825-0097", "claims": ["unit-counts", "all"],
+                    "text": "Units were classified by waveform.", "links": ["https://example.org/code"]}
+    author_notes.add(issue)                                   # taken again: replaced, not doubled
+    assert len(author_notes.load("senzai-2017")) == 1
+    text = tool.fill("author", "senzai-2017", "m")
+    assert "papers/author-notes/senzai-2017.yaml" in text and issue["url"] in text and "is not evidence" in text
+    assert "author-notes" not in tool.fill("verifier-1", "senzai-2017", "m")
+    # Only a confirmed response is taken.
+    import pytest
+    with pytest.raises(ValueError, match="not confirmed"):
+        author_notes.note_of({**issue, "labels": [{"name": "author-response"}]})
+
+
 def test_the_reconcile_run_is_asked_why_each_outcome_differs():
     # docs/protocol.md, "Repeat attempts": the reconcile run names the cause of each differing outcome from both
     # attempts' code, and does not vote. The record's schema takes the same causes.
