@@ -740,6 +740,13 @@ findings:
   statement: The Figure 1f legend gives n = 123, 106, 143 and 76 modulated neurons for the REM-shift fractions, cells locked
     in both wake and REM, but these exceed the REM-locked counts the paper gives for Figure 2d, and Figure 1f (top) gives
     n = 95 for E13.5. This attempt finds 90, 75, 75 and 60 cells locked in both states.
+- kind: paper_inconsistency
+  about: paper
+  found: on_prompt
+  statement: The Results describe the three mice of the novel environments as a separate cohort ("we exposed a separate
+    cohort of animals (n = 3; Supplementary Table 1)"), but one of them, e13_26m1, is also among the nine mice of the
+    familiar figure-eight analyses (the Figure 5 column of Supplementary Table 1). In the files all four of its sessions
+    begin with the familiar figure-eight before the novel environment, as do those of the other two novel mice.
 verifications:
 - date: '2026-11-19'
   kind: agent
@@ -1409,3 +1416,272 @@ verifications:
       own parts give (the ratemap comparison at p = 0.078, which would make it not reproduced), and the notes say so. No proposed
       change is written, as the outcome follows the claims file as it stands. The ratemap fraction is 0.132 in this run and
       0.106 in the previous one; the notes give this run''s number and why it moves.'
+reconciliation:
+  earlier: huszar-2022-01
+  date: 2026-11-19
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: >-
+      Every processed file now has a light_responsive column, with opto_p_salt and opto_h_reliable beside
+      it, and an OptogeneticPulses table (477,092 pulses in 104 files); 664 units are light-responsive in
+      the 15 homecage mice (earlier_findings.ipynb).
+  - finding: 2
+    status: fixed
+    note: >-
+      Every units table now holds putative_cell_type and waveform_mean; the 15 homecage mice give 7,411
+      pyramidal cells, 1,556 narrow and 504 wide interneurons and 1 Unknown (earlier_findings.ipynb).
+  - finding: 3
+    status: fixed
+    note: >-
+      All 104 files have units, the six mice included (202 to 1,432 units each), 11,656 in all and 9,472 in
+      the 15 homecage mice. The six still have no position, which no claim of the paper asks of them
+      (earlier_findings.ipynb).
+  - finding: 4
+    status: fixed
+    note: >-
+      The 12 novel-cohort sessions now hold 16 position series outside the familiar maze, 7 of them in the
+      three open fields, so every novel exploration has position (earlier_findings.ipynb).
+  - finding: 5
+    status: fixed
+    note: >-
+      Every mouse has one sex in all of its files (e13_1f1 F in 5, e13_1m1 M in 12), giving 12 males and 5
+      females (earlier_findings.ipynb).
+  - finding: 6
+    status: fixed
+    note: >-
+      is_familiar_maze is True for all 1,294 trials of single-recording sessions and for every trial of a
+      session's first recording, False for the 362 others (earlier_findings.ipynb).
+  - finding: 7
+    status: partly_fixed
+    now: 3
+    note: >-
+      The novel position series are no longer labelled cm; all 16 have unit n.a. and descriptions saying
+      they are in the lab's units with no scale (earlier_findings.ipynb). The scale is still missing, which
+      huszar-2022-02 reports as its finding 3.
+  - finding: 8
+    status: fixed
+    note: >-
+      The version holds 11 raw files, and each gives the date of its file name as its session start
+      (earlier_findings.ipynb).
+  - finding: 9
+    status: fixed
+    note: >-
+      The LFP of e16_3m1_210201 is labelled 1250 Hz with a conversion of 1.95e-07 V, as in all 104 processed
+      files (earlier_findings.ipynb).
+  - finding: 10
+    status: fixed
+    note: >-
+      In all 104 files the units table has an electrodes column with indices inside the electrodes table, and
+      its electrode_group references resolve to the file's electrode groups (earlier_findings.ipynb).
+  - finding: 11
+    status: fixed
+    note: >-
+      The day is still held only in the subject id and the age is still P3M/P6M, but the subject description
+      now states that the e-number of the id is the electroporation day and that no source gives another
+      record of it or each mouse's age (earlier_findings.ipynb).
+  - finding: 12
+    status: still_present
+    now: 1
+    note: >-
+      huszar-2022-02 reports the same two files, e13_1f1_200305 and e13_1f1_200307, with only wake in their
+      SleepStates table.
+  - finding: 13
+    status: still_present
+    now: 6
+    note: >-
+      huszar-2022-02 finds 27 familiar figure-eight sessions with fewer than ten trials on a visited arm and 6
+      with fewer than 20 trials, the earlier counts (over 57 sessions of the nine maze mice, where
+      huszar-2022-01 counted 65); the 19 trials without a start or stop time are also still there
+      (earlier_findings.ipynb).
+  - finding: 14
+    status: still_present
+    now: 7
+    note: >-
+      huszar-2022-02 reports the same 92 against 96 sessions, with the files' 96 homecage sessions running
+      from exactly 113.7 to 475.6 min.
+  - finding: 15
+    status: still_present
+    now: 13
+    note: >-
+      e13_26m1 is among the nine familiar-maze mice and the three novel mice, and all four of its sessions run
+      the familiar figure-eight before the novel environment (earlier_findings.ipynb). huszar-2022-02 did not
+      report it; it is added as its finding 13.
+  outcomes:
+  - claim: sessions-durations
+    earlier: partially_reproduced
+    cause: claims_changed
+    note: >-
+      Both attempts measure the same sessions, 104 files (median 319.6 min, 113.7 to 494.2 min) and 96 for
+      the 15 homecage mice (median 309.9 min, 113.7 to 475.6 min), and the same two e13_1f1 sessions with only
+      wake. The criterion huszar-2022-01 tested, written by its own author, named the sleep condition without
+      an outcome, and that attempt took its failure as partial; the reader's criterion makes it part of
+      reproduced with not reproduced otherwise, so huszar-2022-02 records not reproduced and asks a reader
+      about the case.
+    confidence: high
+  - claim: unit-count
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      On version 0.230630.2304 six mice had no units (8,201 units in 65 files) and there were no cell types,
+      so huszar-2022-01 used a 5 Hz rule (87.8% pyramidal). On 0.261113.1035 every file has units and the
+      lab's cell types, and the 96 homecage sessions give 9,472 units, 7,411 pyramidal cells and 2,060
+      interneurons. The criterion also changed, from the units of all files to readings over the 96 or 104
+      sessions with the type counts.
+    supports: reproduced
+    confidence: high
+  - claim: ed2-light-responsive-count
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      huszar-2022-01 found no light-responsive label and no pulse times (its finding 1). The new version has
+      the light_responsive column and the lab's SALT and reliability statistics, from which huszar-2022-02
+      counts 664 of 7,411 pyramidal cells.
+    confidence: high
+  - claim: fig1e-labelled-fraction
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing light-responsive labels on the earlier version; with the labels huszar-2022-02
+      measures per-session means of 5.39, 11.16, 14.74 and 9.16%.
+    confidence: high
+  - claim: fig1f-rem-shift
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels, and for the LFP, then held only in the raw files of 12 sessions. The new
+      processed files have both, and huszar-2022-02 finds REM-shifting fractions of 27.78, 21.33, 21.05 and
+      23.33% with a slope of -1.36% per day that is not significant.
+    confidence: high
+  - claim: fig1g-rate-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds medians of 1.5165, 1.6199, 1.5438 and
+      1.1523 Hz over the paper's numbers of cells.
+    confidence: high
+  - claim: fig1h-burst-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds burst index medians of 0.0873, 0.0912,
+      0.1031 and 0.0798, an inverted U about 25% below the paper's values.
+    confidence: high
+  - claim: fig2b-synchrony-per-animal
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and the six mice without units; with both now in the files
+      huszar-2022-02 finds SBD pairs cofiring more in 10 of the 13 animals.
+    confidence: high
+  - claim: fig2c-theta-cofiring
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and the LFP of the processed files; with both, huszar-2022-02 finds SBD
+      and DBD medians of 0.017 and 0.007 over the paper's 3,751 and 50,461 pairs, just below tolerance.
+    confidence: high
+  - claim: fig2d-theta-depth
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and LFP; with both, huszar-2022-02 finds wake medians of 0.1206, 0.0903,
+      0.0925 and 0.104.
+    confidence: high
+  - claim: fig2f-ripple-firing-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels (the ripples were already there); with them huszar-2022-02 finds SPW-R
+      rate medians of 7.484, 8.8232, 7.9118 and 6.1295 Hz and participation of 0.237, 0.2686, 0.2355 and
+      0.1942.
+    confidence: high
+  - claim: fig2g-ripple-cofiring
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked because SBD and DBD pairs could not be formed without labels; with them huszar-2022-02 finds
+      medians of 0.0385 and 0.0226.
+    confidence: high
+  - claim: fig5b-spatial-info-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds spatial information medians of 0.5639,
+      0.6321, 0.9183 and 0.6201 bits/s, the paper's profile but below its values.
+    confidence: high
+  - claim: fig5c-sbd-ratemap-overlap
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 forms the paper's 2,609 SBD and 39,965 DBD
+      pairs, with medians of 0.0189 and -0.0239.
+    confidence: high
+  - claim: fig5d-overlap-by-distance
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and the units' missing link to the electrodes (huszar-2022-01 finding
+      10); with both now in the files huszar-2022-02 finds 2,561 SBD pairs within 500 um and the paper's
+      tests, with one of the six means within tolerance.
+    confidence: high
+  - claim: fig5f-remap-together
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds the birthdate main effect (F = 24.0, p =
+      9.5e-7) with SBD higher.
+    confidence: high
+  - claim: fig6e-sbd-novel-overlap
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them, and with the open fields now holding position,
+      huszar-2022-02 finds SBD and DBD medians of 0.0206 and -0.0326, both outside tolerance.
+    confidence: high
+  - claim: fig6f-remap-together-novel
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds SBD pairs higher (F = 7.75, p = 0.0054
+      under reading (a)).
+    confidence: high
+  - claim: fig7b-sbd-convergence
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and cell types; with both, huszar-2022-02 finds SBD and DBD medians of
+      0.4545 and 0.3636, above the paper's, from 50,618 detected connections.
+    confidence: high
+  - claim: fig7ce-convergence-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and cell types; with both, huszar-2022-02 finds corrected convergence
+      medians of 0.1169, 0.1429, 0.1 and 0.0536, an inverted U with one value within tolerance.
+    confidence: high
+  - claim: fig7fg-convergence-cofiring
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      huszar-2022-01 could run its connection test only on two sessions with a 5 Hz rule for interneurons
+      (1,001 against 2,060), as 39 of the 96 sessions had no units and the processed files had no LFP; it
+      found 0.407 to 0.448 of pairs connected (paper 0.173) and blocked the claim as methods_underspecified.
+      On the new version huszar-2022-02 runs it on all 96 sessions with the lab's cell types, gets the
+      paper's 184,230 pairs exactly but 50,618 connections and 86.24% sharing a target, and records not
+      reproduced with an assumed detector and a methods_unavailable finding (its finding 9). Both detectors
+      find far more connections than the paper, so the outcome turns on how the detector's details are read.
+    confidence: medium
+  protocol: >-
+    huszar-2022-01 ran under pilot-7 and huszar-2022-02 under pilot-16. Since pilot-8 a claim carries the
+    paper's own words and statistics; since pilot-9 every method comes from the paper and a claim is blocked
+    as methods_underspecified only when the readings the paper allows disagree; since pilot-10 a reader
+    writes the claims file from the paper without seeing the data, and the author may not change it. The
+    claims huszar-2022-01 tested were written by its own author after the data check, with 35 claims; the
+    reader's file has 44, adds st1-animal-sessions and eight Extended Data claims, and rewrites criteria
+    (sessions-durations now makes the sleep condition part of reproduced, unit-count judges the cell-type
+    counts, novel-explorations counts subsessions with zero tolerance), which is the cause of one changed
+    outcome here. pilot-12 made huszar-2022-02 blind and added this comparison; pilot-13 raised the notebook
+    limit to 60 minutes, which the 36-minute main notebook of huszar-2022-02 needed; pilot-14 files records
+    by paper, so both are huszar-2022. docs/pilot-notes.md has no section for pilot-11, pilot-15 or pilot-16.
