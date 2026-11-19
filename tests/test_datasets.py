@@ -186,6 +186,20 @@ def test_the_sparc_builder_takes_an_id_a_doi_or_a_page(text, expected):
     assert build_sparc_targets.parse(text) == expected
 
 
+def test_the_sparc_builder_adds_the_other_datasets_that_name_a_paper_of_the_list():
+    import build_sparc_targets as b
+    pub = lambda doi, rel="IsDescribedBy": {"doi": doi, "relationshipType": rel}
+    listing = [
+        {"id": 60, "organizationName": "SPARC", "externalPublications": [pub("10.3389/FNINS.2020.601479")]},
+        {"id": 64, "organizationName": "SPARC", "externalPublications": [pub("10.3389/fnins.2020.601479")]},
+        {"id": 16, "organizationName": "SPARC Consortium", "externalPublications": [pub("10.3389/fnins.2020.601479")]},
+        {"id": 70, "organizationName": "SPARC", "externalPublications": [pub("10.3389/fnins.2020.601479", "References")]},
+        {"id": 71, "organizationName": "SPARC", "externalPublications": [pub("10.1/another")]},
+        {"id": 72, "organizationName": "Penn CNT", "externalPublications": [pub("10.3389/fnins.2020.601479")]},
+    ]
+    assert b.also_named(listing, {"10.3389/fnins.2020.601479"}, {"60"}) == ["16", "64"]
+
+
 def test_the_sparc_builder_gives_checksums_in_hex_and_knows_the_sds_parts():
     import build_sparc_targets as b
     # SPARC:226 version 2's readme.md: the manifest's base64, and `shasum -a 256` of the file.
