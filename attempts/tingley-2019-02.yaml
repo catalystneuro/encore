@@ -597,6 +597,34 @@ findings:
     32 samples, with max_waveform_channel, in the DT1, DT2 and DT8 files listed; no waveform in the DT5, DT7 and DT9 files).
     On the septal shank of the DT7 recordings the sites' region labels (ls, ms, acg, cc) alternate along the LFP's channel
     order, so the labels cannot be checked against the sites' geometry.
+- kind: metadata_insufficient
+  found: on_prompt
+  statement: >-
+    Four DT7 files label all 128 electrodes "unknown" (20170327-864um-360um, 20170406-864um-1152um-merge,
+    20170407-936um-1152um-merge, 20170408-936um-1152um-merge), so their channels cannot be assigned to LS,
+    hippocampus or the other recorded regions.
+- kind: methods_unavailable
+  found: on_prompt
+  statement: >-
+    The Key Resources point to github.com/DavidTingley/papers for the scripts that recreate the figures, but the
+    repository (head commit 9f4cd48) holds the scripts of Tingley and Buzsaki (2018) and the network model of
+    Figure 8; the analyses of Figures 1 to 7 are not published.
+- kind: paper_inconsistency
+  found: on_prompt
+  statement: >-
+    The HFO band is 120-180 Hz in the Summary and the legends of Figures 1, 2 and 5 and 120-200 Hz in the Results
+    and STAR Methods. The STAR Methods call the 62 recordings with CA1 or CA3 and LS the dataset of Figure 6, which
+    shows the optogenetic experiments, and cite Figure 3B for the state of the phase-locking epochs and Figure 3A
+    for the jitter control of the excess correlation, where Figure 3 shows travelling waves.
+- kind: other
+  about: data
+  found: on_prompt
+  statement: >-
+    The lab's LS and CA1 detection channels share a 120-200 Hz signal outside any event: at 2000 random times in
+    45 recordings the phase-locking value of their phase difference has a median of 0.177 (0.060 to 0.311),
+    against 0.024 with the CA1 phase taken 1 s later and about 0.020 for random phases, and their band-passed
+    signals correlate with a median r of 0.245. The files do not say how the channels are referenced; ref_channel
+    marks the detector's noise channel, not a re-reference.
 verifications:
 - date: '2026-11-18'
   kind: agent
@@ -1112,3 +1140,192 @@ verifications:
     outcome: blocked
     reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
     response: No change.
+reconciliation:
+  earlier: tingley-2019-01
+  date: 2026-11-19
+  blind: true
+  findings:
+  - finding: 1
+    status: partly_fixed
+    now: 8
+    note: >-
+      This version holds the lab's detections, LSRipples in 77 files (27014 events) and CA1Ripples in 47 (101217),
+      each described with its detection channel and stored parameters, and 89 files mark detection channels
+      (earlier_findings.ipynb). Finding 8 reports what remains, recordings with LS units or CA3 sites and no table;
+      8 files hold no event table at all.
+  - finding: 2
+    status: partly_fixed
+    now: 6
+    note: >-
+      Eight of the nine files now give each unit a region (for example DT7 20170410, 61 ls units); the 36 units of
+      DT7 20170407-936um-1152um-merge still have an empty region, which finding 6 reports.
+  - finding: 3
+    status: still_present
+    now: 5
+    note: >-
+      Finding 5 reports the hpc labels (2907 hpc, 566 ca3 units on this version). The four DT7 files with every
+      electrode "unknown" are still so (128 of 128 in 20170327, 20170406, 20170407 and 20170408), which
+      tingley-2019-02 did not report; that part is added as finding 17.
+  - finding: 4
+    status: partly_fixed
+    now: 8
+    note: >-
+      Of the 10 files with ca3 electrodes (64 ca3 and 32 ls), the six DT5 files now flag a CA1 channel (a ca3-labelled
+      site) and hold CA1Ripples; the four DT9 files still flag none and hold no CA1 ripples, which finding 8 reports.
+      Finding 5 gives 10 recordings with ca3 units against the paper's 25.
+  - finding: 5
+    status: still_present
+    now: 2
+    note: >-
+      No file's electrode table has x, y or z columns on this version (98 of 98). Finding 2 reports the missing
+      positions and probe models, and finding 3 the missing relative depth in LS.
+  - finding: 6
+    status: partly_fixed
+    now: 16
+    note: >-
+      5968 of 6236 units now have a 32-sample raw_waveform with its max_waveform_channel (81 of 90 files with units,
+      including 19 DT5, 7 DT7 and 14 DT9 files) and 4519 an isolation distance; positions are still absent, so CA1
+      depth cannot be estimated, as finding 16 reports. Finding 16 says the DT5, DT7 and DT9 files have no waveform,
+      which the check in earlier_findings.ipynb does not bear out.
+  - finding: 7
+    status: still_present
+    now: 1
+    note: >-
+      The files hold the same six rats (DT1, DT2, DT5, DT7, DT8, DT9), and finding 1 reports the two optogenetic rats
+      as missing.
+  - finding: 8
+    status: fixed
+    note: >-
+      In the stored spike times of all 6236 units none is out of order (earlier_findings.ipynb), and the units
+      description of 10 files says their source spike times were unsorted and are sorted here.
+  - finding: 9
+    status: still_present
+    now: 18
+    note: >-
+      The repository's head is still commit 9f4cd48 (2020-03-16), whose 39 files are the 2018 paper's
+      LS_phasecoding scripts and the Figure 8 model notebooks, with nothing for Figures 1 to 7. This concerns the
+      paper's code and does not depend on the dataset version.
+  - finding: 10
+    status: still_present
+    now: 19
+    note: >-
+      The paper is unchanged; its text still gives 120-180 Hz in the Summary and legends and 120-200 Hz in the Results
+      and Methods, names Figure 6 for the 62 recordings, and cites Figure 3B and 3A in the Methods as the earlier
+      finding says. The rewritten claims file names the band as an open reading.
+  - finding: 11
+    status: still_present
+    now: 20
+    note: >-
+      The same-sample share belonged to the earlier attempt's own detection; for the lab's LSRipples and CA1Ripples
+      only 0.026 of 6572 coupled pairs fall within 0.5 ms. The shared signal remains in the LFP, which is the earlier
+      version's data: on the lab's detection channels the phase-locking value at random times has a median of 0.177
+      against 0.024 with a 1 s offset (45 recordings), added as finding 20.
+  outcomes:
+  - claim: fig1c-hfo-each-animal
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      Version 0.250624.0439 held no events, so tingley-2019-01 detected its own on one LS channel per recording, and
+      LS firing at them exceeded random times by more than 3 SEM only in DT1 (6.0 SEM; DT7, DT8 and DT9 below random).
+      This attempt used the lab's LSRipples, new in 0.261110.1911, and finds 4 of 6 animals at the event bin and 5 of
+      6 over +-5 ms. The criterion's window also changed (+-10 ms summed before, the event bin and +-5 ms now).
+    supports: partially_reproduced
+    confidence: medium
+  - claim: fig1g-slower-than-ripples
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      tingley-2019-01 measured its own events with a 120-200 Hz filter for both regions, LS 153.6 against CA1 150.8 Hz;
+      this attempt took the deposited peak_frequency of the lab's detections, LS 147.6 against CA1 158.3 Hz, matching
+      the paper's 147 and 159. The lab's LS events were detected at 120-180 Hz and its CA1 ripples at 130-200 Hz, which
+      by itself moves the two means apart in the paper's direction.
+    supports: reproduced
+    confidence: medium
+  - claim: fig1h-no-amplitude-frequency-correlation
+    earlier: not_reproduced
+    cause: reading
+    choice: >-
+      Whether the amplitude of Figure 1H is the lab's stored peak normalized power of each event or the maximum NSS
+      recomputed with the Methods' 120-200 Hz filter; tingley-2019-01 recomputed it on its own events, this attempt
+      took the stored value.
+    note: >-
+      tingley-2019-01 found Pearson r = 0.056 (p = 2.4e-47) over 67,186 events. This attempt finds r = -0.000
+      (p = 0.96) with the deposited peak_normed_power, but r = 0.081 (p = 1.3e-38) with the maximum NSS it recomputed on
+      the same lab events, which would give not reproduced, so the outcome follows the amplitude measure.
+    confidence: high
+  - claim: fig4b-pre-post-unchanged
+    earlier: reproduced
+    cause: claims_changed
+    note: >-
+      Both find no PRE-POST difference with the normalized CCG (tingley-2019-01 p = 0.81 on 106 pairs; this attempt p
+      0.50 to 0.89 on 361 to 503 pairs). The rewritten claims file adds the paper's 7172 pairs +- 717.2 as an expected
+      value, which 462 pairs miss, so the outcome is partial; the old criterion had no pair count.
+    confidence: high
+  - claim: fig4-sessions-few-change
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      The old criterion tested only recordings with at least 5 pairs; tingley-2019-01 had 7, none with p < 0.01, and
+      blocked the claim as untestable. The rewritten criterion drops the minimum and adds 53 +- 5.3 sessions as an
+      expected value, so this attempt's 21 to 23 sessions with 0 or 1 significant give not reproduced. Neither attempt
+      finds both directions.
+    supports: not_reproduced
+    confidence: medium
+  - claim: fig4c-temporal-bias
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      The old criterion needed at least 10 pairs per recording; tingley-2019-01 had 4 such recordings and blocked the
+      claim (t-test p = 0.81, for the record). The rewritten criterion sets no minimum, and this attempt, with at least 3
+      pairs, tests 16 to 19 recordings and finds no difference (paired p 0.060 to 0.90). More pairs from the lab's
+      events (462 against 106) also helped.
+    supports: reproduced
+    confidence: medium
+  - claim: fig4d-compression
+    earlier: not_reproduced
+    cause: claims_changed
+    note: >-
+      The old criterion was partial only if PRE and POST exceeded chance up to at least factor 5; tingley-2019-01's PRE
+      did so at factors 1 and 2 only, so not reproduced. The rewritten criterion is partial when both exceed chance at
+      factor 1, which tingley-2019-01's numbers also meet; this attempt's largest factor is 6, partial under either.
+    supports: partially_reproduced
+    confidence: medium
+  - claim: fig5b-nrem-and-rates
+    earlier: partially_reproduced
+    cause: dataset_changed
+    note: >-
+      tingley-2019-01's own events were not more frequent in NREM than in WAKE (NREM higher in 18 of 49 recordings,
+      p = 0.44), though below CA1 ripple rates. With the lab's LSRipples, new in this version, 72.9% of 27014 HFOs fall
+      in NREM and the NREM rate exceeds WAKE in 66 of 73 recordings (p = 2.9e-12).
+    supports: reproduced
+    confidence: high
+  - claim: fig5d-lag
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      tingley-2019-01's detection put 35% of coupled LS events on the same sample as the CA1 ripple, so its median lag
+      was 0.00 ms. The lab's LSRipples and CA1Ripples give 6.20 ms (median of recording medians) and 6.40 ms pooled,
+      with 0.026 of pairs on the same sample (earlier_findings.ipynb).
+    supports: reproduced
+    confidence: high
+  - claim: fig5e-state-coupling
+    earlier: not_reproduced
+    cause: claims_changed
+    note: >-
+      The old criterion fixed a t-test over recordings, and tingley-2019-01's 0.199 against 0.116 (25 recordings,
+      p = 0.089) failed it. The rewritten criterion also allows the fraction and test over all HFOs pooled, which this
+      attempt adopted (0.302 against 0.091, p = 3.1e-171); over recordings it gets 0.213 against 0.118 (p = 0.0025),
+      which also fails p < 0.001.
+    confidence: high
+  protocol: >-
+    pilot-8 added the paper's quote and its statistics to each claim. pilot-9 required the full text and that every
+    method come from the paper, with every open reading run. pilot-10 had a reader who never sees the data write the
+    claims and barred the author from changing them. pilot-12 made repeat attempts blind and added this comparison,
+    pilot-13 let a notebook run for 60 minutes, and pilot-14 filed records by paper. Here a reader wrote the claims file
+    again under these rules (39 claims against 31): the old file's header listed data outputs its author had seen, and
+    the new one names open details as readings and adds the paper's sample sizes (7172 pairs, 53 sessions, 42
+    recordings) as expected values. That rewrite, not the data, accounts for the changed outcomes of
+    fig4b-pre-post-unchanged, fig4-sessions-few-change, fig4c-temporal-bias, fig4d-compression and
+    fig5e-state-coupling; the run-every-reading rule is why fig1h-no-amplitude-frequency-correlation and
+    fig4b-pre-post-unchanged carry assumptions. The 52-minute LFP notebook needed pilot-13's limit. docs/pilot-notes.md
+    has no section for pilot-11, pilot-15 or pilot-16.
