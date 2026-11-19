@@ -1006,16 +1006,22 @@ def run_pass(rows, rng_nat, rng_syn, rng_blank, n_shuffle=1000, log=print, limit
                                          kind=rec.triggers[0][0], contexts=p["contexts"], n=n,
                                          rep=rep, dur=p["dur"], **res))
             for reading, cm in property_tests_alt(rec):
-                # significance only (no noise floor), for the count of fig8a-proportion-by-property
+                # significance without a noise floor (the count of fig8a-proportion-by-property),
+                # and the power terms of Eqs. 17 and 18 (fig8b-decay-by-property, fig8c)
                 for p in context_probe_sets(rec, tr, include_silence=False, blank_probe=0,
                                             context_map=cm):
                     n, rep, T = p["X"].shape
                     sig, _ = kw_significance(p["X"], n_shuffle=0)
+                    pr, iv, _ = power_terms(p["X"])
+                    X1 = np.stack([[bin_mean(x) for x in xc] for xc in p["X"]]).astype(
+                        np.float32)
                     R["syn_alt"].append(dict(cell=r["cell_dir"], file=r["file"],
                                              prop="higher-order", reading=reading,
                                              probe=p["probe"], natural=is_natural(
                                                  rec.stim[p["probe"] - 1]),
-                                             contexts=p["contexts"], n=n, rep=rep, sig=sig))
+                                             contexts=p["contexts"], n=n, rep=rep, dur=p["dur"],
+                                             sig=sig, pred_trial=bin_mean(pr).astype(np.float32),
+                                             inv_trial=bin_mean(iv).astype(np.float32), X1=X1))
         del rec
         if log and (k % 20 == 0 or k == len(todo) - 1):
             log(f"{k + 1}/{len(todo)} files, {time.time() - t0:.0f} s")

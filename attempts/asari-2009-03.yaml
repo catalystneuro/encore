@@ -36,7 +36,8 @@ outcomes:
     cells against the paper's 194, and 14 MGB cells against 16. The voltage-clamp counts (29
     probes, 14 cells) cannot be tested, as no voltage-clamp file is in the data set. Table 1 rows
     are printed; per property the totals are amplitude 95, frequency 110, AM 39, FM 25 and
-    higher-order 137 (paper 95, 110, 96, 82, 137). Counted by their synthetic probes, as the rows
+    higher-order 137 with the colored noises pooled, 131 with each natural sound against its own
+    noise (paper 95, 110, 96, 82, 137). Counted by their synthetic probes, as the rows
     of Table 1 count them, the ensembles hold 14 TORC cells (paper 14), 6 DMR (6), 26 colored-noise
     (27) and 2 MHT cells (39), and the DMR probes match Table 1 (8 amplitude probes in 2 cells, 20
     frequency probes in 5). The per-file table of experiment 2 gives the probes that make the
@@ -166,6 +167,17 @@ outcomes:
     <r(t)>_t, Methods, Analysis) is taken as CxtDep.m does it, each trial's mean over the probe
     removed (line 346, printed in the notebook). One mean per probe, commented out there (line
     347), is shown as a variant that does not decide.
+  proposed:
+    outcome: partially_reproduced
+    reason: Graded as fig4-predictability-upper-bound, which shows the same pattern from the same
+      power terms and was graded partially reproduced with the verifier's agreement. Neither
+      criterion defines a partial outcome. Here alpha1 is within 0.49 +/- 0.049 in all 4 readings
+      with silence counted (0.457 to 0.464), the reading that gives the paper's 305 probes, and tau1
+      is 1.94 to 2.01 s there (1.50 to 2.01 s over the 8 readings), 1.9 times 1.04 s and outside
+      tolerance in all. In fig4, 1 + alpha1 is within tolerance in 10 of 14 fits and tau1 is 1.60
+      to 2.83 s. The decay from about 0.49 holds and its time constant is about twice the paper's,
+      so the claim holds in part. The notebook sets the two claims side by side in the cell after
+      fig4-predictability-upper-bound.
 - claim: timescale-longer-than-membrane
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -207,11 +219,11 @@ outcomes:
     0.326). But the STRF improves from 180 to 4052 ms in 13 of 16 cells, median change 0.039,
     one-sided Wilcoxon p = 0.0046 (Friedman p = 0.0052); the LN model p = 0.065. The improvement
     of the STRF is significant also with a 20-ms Hann window (p = 0.0046) and with folds by
-    whole sound (p = 0.017), so under the claims file's test the claim of absence fails. The gain
-    comes from the 6 cells of 2003, which have two trials per sound (all 6 improve, STRF 0.122 to
-    0.174, p = 0.016); in the 10 cells of 2002, 7 improve and p = 0.12 (0.093 to 0.118), so with
-    those cells alone the claim of absence would hold, and the outcome depends on the cell set the
-    paper does not name. The LN model is worse than the STRF on validation data (mean difference
+    whole sound (p = 0.017), so under the claims file's test the claim of absence fails. Both cell
+    sets gain, and the gain is larger and only significant in the 6 cells of 2003, which have two
+    trials per sound (all 6 improve, STRF 0.122 to 0.174, p = 0.016); in the 10 cells of 2002, 7
+    improve (0.093 to 0.118, p = 0.12), so with those cells alone the test would not reject the
+    claim of absence, and the outcome depends on the cell set the paper does not name. The LN model is worse than the STRF on validation data (mean difference
     -0.073), not slightly better; per cell, it falls more than 0.1 below the STRF at some window
     in 6 of 16 cells (down to -1.81 in 20020604-mw-002, where the lowess fit on the training data
     does not carry over) and never in the other 10. The shifted-stimulus control drops the 180-ms
@@ -249,8 +261,9 @@ outcomes:
   - 27
   - 16
   - 64
-  notes: The property groups give 95 amplitude, 110 frequency and 137 higher-order probes, as
-    Table 1, but 39 AM and 25 FM probes against 96 and 82 (the MHT probes of Table 1 are not in
+  notes: The property groups give 95 amplitude and 110 frequency probes, the totals of Table 1,
+    137 higher-order probes with the colored noises pooled and 131 with the pairing adopted, and 39
+    AM and 25 FM probes against 96 and 82 (the MHT probes of Table 1 are not in
     the data set, see methods-recording-counts). Significant probes are 56 of 95 (paper 77), 62
     of 110 (73), 27 of 39 (62 of 96) and 16 of 25 (47 of 82), none within tolerance. Amplitude
     (0.589) exceeds frequency (0.564) and AM (0.692) exceeds FM (0.640). Higher-order depends on
@@ -259,21 +272,28 @@ outcomes:
     within 59 +/- 5.9), and 109 of 336 single tests (0.324); with every fragment its own context
     75 of 131 (0.573); with all natural sounds of a file pooled into one context and all noises
     into another, 88 of 137 (0.642). AM > FM > higher-order holds under the first three and fails
-    under pooling, so the partial rule holds under the adopted reading. Without the natural-sound
-    level and frequency variants, amplitude is 35 of 61 and frequency 44 of 75.
+    under pooling, by 0.640 against 0.642 (FM 16/25, higher-order 88/137), so the partial rule holds
+    under the adopted reading. Two things weigh against the adopted reading. Only pooling gives
+    Table 1's exact 137 higher-order probes (the pairing gives 131), and under pooling the order
+    fails by 0.002. Without the natural-sound level and frequency variants, amplitude is 35 of 61
+    and frequency 44 of 75.
   deviations:
   - Assumption. For higher-order, each natural sound is tested against its own colored noise(s),
     as Table 1's legend describes ("comparing natural sounds and corresponding modulated colored
     noise"), and a probe counts once, as significant when it is in at least one pair; Table 1
     counts probes. The pooled grouping used in round 1 and every fragment as its own context are
-    shown. 6 probes (each fragment) and 18 tests (pairs) have fewer than 4 trials and are dropped.
+    shown. Against the assumption, only the pooled grouping gives Table 1's 137 probes (the
+    pairing 131), and under pooling the order AM > FM > higher-order fails by 0.640 against 0.642;
+    the partial outcome holds under the three readings that do not pool. 6 probes (each fragment) and 18 tests (pairs) have fewer than 4 trials and are dropped.
   - The groups are read from the files (asari.property_tests; per-file table in the notebook).
     Where a file varies two properties on a grid (AM rate by FM rate in the MHT grid files, level
     by playing direction in natural-sound files), fragments that share the tested property's
-    value are pooled into one context so that each probe is tested once per property; this
-    reproduces the paper's totals for amplitude and frequency. The same pooling of the colored-noise
-    files (all natural sounds against all noises) reproduces the total of 137 higher-order probes
-    and is shown as a reading.
+    value are pooled into one context so that each probe is tested once per property. The totals
+    are not evidence that the groups are right. Amplitude and frequency match Table 1 (95, 110) only
+    by counting 25 + 25 probes of the natural-sound variant files, which Table 1 has no row for,
+    while its 25 + 25 MHT probes are absent, TORC gives 42 and 44 probes against 39 and 40, and
+    natural probes 20 and 21 against 23 and 25. The pooling of the colored-noise files (all natural
+    sounds against all noises) gives the 137 higher-order probes and is shown as a reading.
   - Natural-sound level and frequency variants (files of type naturalistic) are counted under
     amplitude and frequency; Table 1 has no row for them, and the variant without them is shown.
 - claim: fig8b-decay-by-property
@@ -285,20 +305,24 @@ outcomes:
   - 0.765
   - 0.097
   - 0.028
-  - 0.091
+  - 0.252
   - 0.398
   - 0.509
   - 0.965
   - 0.969
-  - 0.754
+  - 0.782
   notes: Time constants (each trial's mean removed, 0 to 4 s) 1.36 s amplitude, 0.77 s
-    frequency, 0.10 s AM, 0.03 s FM and 0.09 s higher-order against 0.66, 0.97, 0.11, 0.15 and
-    0.20; only AM is within tolerance. Amplitude and frequency both exceed 0.4 s and the other
-    three are below 0.3 s in every reading (both centerings, both fit ranges), which is the
-    partial rule. Sizes 0.40, 0.51, 0.97, 0.97 and 0.75 against 0.57, 0.54, 0.86, 0.64 and 0.52.
-    The AM and FM groups hold 39 and 25 probes, against 96 and 82 in the paper. The
-    higher-order group pools the colored noises of a file (the pooled reading of
-    fig8a-proportion-by-property); the pair reading adopted there was run for significance only.
+    frequency, 0.10 s AM and 0.03 s FM, and for higher-order, under the pair reading adopted for
+    fig8a-proportion-by-property, 0.25 s with each of the 131 probes counted once (the terms of
+    its pair tests averaged) and 0.22 s with each of the 336 pair tests counted once, against 0.66,
+    0.97, 0.11, 0.15 and 0.20. No time constant is within tolerance; AM's 0.097 s (0.090 s with one
+    mean per probe) is just below 0.099 to 0.121. Amplitude and frequency both exceed 0.4 s and
+    AM, FM and higher-order are below 0.3 s in every reading (both centerings, both fit ranges),
+    with higher-order paired (0.16 to 0.25 s) or pooled as in round 1 (0.08 to 0.09 s), which is
+    the partial rule. Sizes 0.40, 0.51, 0.97, 0.97 and 0.78 (higher-order paired, each probe
+    once; 0.75 pooled) against 0.57, 0.54, 0.86, 0.64 and 0.52. The AM and FM groups hold 39 and
+    25 probes, against 96 and 82 in the paper. Measured takes higher-order paired, each probe
+    once.
 - claim: fig8a-significance-fits
   outcome: not_reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -333,11 +357,16 @@ outcomes:
   - 0.584
   - 0.02
   - 0.044
-  - 0.146
+  - 0.35
   notes: Areas relative to natural sounds are 0.67 amplitude, 0.58 frequency, 0.02 AM, 0.04 FM
-    and 0.15 higher-order. AM, FM and higher-order lie below 1 and below amplitude and frequency,
+    and, for higher-order under the pair reading adopted for fig8a-proportion-by-property, 0.35
+    (each probe once, or each pair test once); with the colored noises pooled as in round 1, 0.15.
+    AM, FM and higher-order lie below 1 and below amplitude and frequency under both groupings,
     but amplitude and frequency are well below 1, so the point estimates do not fall in the
-    pattern and the partial rule fails too. With probes resampled (200 x 1000) the amplitude
+    pattern and the partial rule fails too. The paired higher-order interval is 0.30 to 0.41 with
+    probes resampled (five seeds), below 1 and below the lower bounds of amplitude and frequency,
+    and 0.19 to 0.50 with trials resampled (corrected, five seeds), below 1 but above the lower
+    bound of amplitude or frequency (0.37 to 0.42) under every seed. With probes resampled (200 x 1000) the amplitude
     interval is 0.59 to 0.78 and frequency 0.51 to 0.66, both below 1, under all five seeds
     (bounds within 0.02 across seeds). With trials resampled within probes and Eq. 17 taken over
     pairs of different trials only, the intervals are amplitude 0.38 to 0.95 and frequency 0.42
@@ -458,8 +487,8 @@ findings:
   statement: The data set ships the authors' MATLAB analysis code (asari/Tools/CxtDep.m, GetSpikes.m,
     GetEvoked.m and others, and wehr/Tools/STRFanalysis.m), which fixes details the paper leaves
     open (how trials of a context are pooled, a 2.5-s silence probe, each trial's mean removed
-    before the power measures, the spike detector). Following it reproduces the paper's sample
-    sizes exactly. Its header cites the paper as submitted (2008).
+    before the power measures, the spike detector). Following it reproduces the paper's analysed natural-sound and MGB samples exactly (305 probes in
+    39 cells, 93 probes in 14 cells). Its header cites the paper as submitted (2008).
 - kind: methods_unavailable
   about: paper
   statement: The paper does not say whether silence counts as a context in Figures 3 and 4, or
@@ -480,11 +509,13 @@ findings:
   about: paper
   statement: For the synthetic ensembles the paper does not say how a probe is tested when the
     conditioning stimuli vary two properties on a grid, or when several natural sounds each come
-    with their colored noise. Pooling the fragments that share the tested property's value
-    reproduces Table 1's totals for amplitude, frequency and higher-order, but for higher-order
-    the share of significant probes depends on the grouping (0.64 pooled, 0.49 with each natural
-    sound against its own noise, the reading adopted, 0.57 with each fragment its own context;
-    paper 0.43), and the order of Figure 8A with it. The authors are asked how the colored-noise
+    with their colored noise. For higher-order the share of significant probes depends on the
+    grouping (0.64 of 137 probes pooled, 0.49 of 131 with each natural sound against its own
+    noise, the reading adopted, 0.57 of 131 with each fragment its own context; paper 0.43 of
+    137), and the order of Figure 8A with it. Only pooling gives the paper's 137 probes. The
+    amplitude and frequency totals of Table 1 (95, 110) are met only by counting the natural-sound
+    variant files, which Table 1 has no row for, while its MHT amplitude and frequency probes are
+    absent, so the totals do not show which grouping the paper used. The authors are asked how the colored-noise
     probes were grouped and counted, and where the AM and FM probes of the MHT row come from.
 - kind: methods_unavailable
   about: paper
@@ -704,3 +735,166 @@ verifications:
     response: Added the curve in 100-ms bins, its peak (12.75 mV^2 at 0.16 s) and how many late
       bins stay below 10% (4 of 18 of the onset value, 16 of 18 of the peak). The notes now say
       that the outcome rests on the first-crossing wording. Outcome kept.
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of round 2 (reproduce_asari_2009.ipynb and strf_wehr.ipynb)
+    with their conclusions and summaries, the helpers asari.py and wehr.py, the claims file, the
+    attempt record and the paper's full text. Its report is
+    transcripts/asari-2009/verifier-2-report.md.
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The per-file table locates the AM/FM shortfall in the files; 27 MHT files hold
+      14 MHT probes against 178 tests in Table 1, and the parser drops no notes line. The summary's
+      "it holds Asari's current-clamp and MGB recordings with the sample sizes of the paper" is not
+      supported; the data set holds 145 and 14 cells against 194 and 16, and 133 cells meet the
+      criterion against 123. Only the analysed natural-sound and MGB samples (305/39 and 93/14)
+      match.
+    response: The summary sentence now gives 145 and 14 cells against 194 and 16 and 133 against
+      123, and says only the analysed samples match; the finding about the shipped code says the
+      same. The notes give the higher-order total as 137 pooled and 131 paired. Outcome kept.
+  - claim: a1-mgb-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2-example-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2-example-long-context
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig3a-proportion-significant
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The tie share and midranks (187 of 305 either way) and both noise-floor windows
+      were added as asked.
+    response: No change.
+  - claim: fig3a-significance-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The assumption (sizes at least 0) is stated and reasonable.
+    response: No change.
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, but neither fig3b nor fig4 defines a partial outcome and the two are graded
+      differently. In fig4, 1 + alpha1 is within tolerance in 10 of 14 fits, tau is not, and the
+      outcome is partial; in fig3b, alpha1 is within tolerance in all 4 silence-counted readings,
+      tau is not, and the outcome is not reproduced. Either the two should be aligned, or the
+      record should say why "about half" counts for fig4 while alpha1 of about 0.46 does not count
+      for fig3b.
+    response: No reason separates the two, so they should be aligned. The verified outcome is kept
+      and partially_reproduced is proposed under proposed. A new cell sets the two claims side by
+      side (sizes within tolerance in 4 of 8 and 10 of 14 fits, time constants 1.50 to 2.01 s and
+      1.60 to 2.83 s, none within) and a markdown cell gives the reasoning, for the third round.
+  - claim: timescale-longer-than-membrane
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig4-predictability-upper-bound
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, but see the inconsistency with fig3b-fractional-power-decay.
+    response: Kept; the alignment is proposed on fig3b-fractional-power-decay.
+  - claim: fig4-strf-performance-low
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The 16-cell choice is forced by Eq. 52, is stated and is reasonable. "The gain
+      comes from the 6 cells of 2003" is not supported. STRF cell 6 shows the 2002 cells gaining
+      as well, from 0.093 to 0.118, with 7 of 10 improving (p = 0.12); the gain is larger and only
+      significant in the 2003 set, and does not come from it alone.
+    response: STRF cell 7, the notes and the finding now say both sets gain, the gain being larger
+      and only significant in the 2003 cells. Outcome kept.
+  - claim: fig5-example-conductances
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6-conductance-decay
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig8a-proportion-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, but the outcome is fragile. The assumption (each natural sound tested against
+      its own noise) is stated and Table 1's legend supports it, but only the pooled grouping gives
+      Table 1's exact 137 higher-order probes (the pairing gives 131), and under pooling the order
+      AM > FM > higher-order fails by 0.640 against 0.642. The record should set these beside the
+      assumption. The partial outcome holds under all three readings that do not pool. The claim
+      that the groups reproduce the paper's totals (95, 110, 137) should not be offered as
+      evidence that the grouping is right; amplitude and frequency match only by counting 25 + 25
+      probes of the natural-sound variant files, which Table 1 has no row for, the 25 + 25 MHT
+      probes are absent, TORC has 42/44 against 39/40 and natural sounds 20/21 against 23/25, and
+      137 holds only under pooling.
+    response: The notes, the assumption, the notebook result and the methods_unavailable finding
+      now give the 137 against 131 and the 0.002 margin, and no longer offer the totals as
+      evidence for the grouping; they give the counts per ensemble that make up the totals.
+      Outcome kept.
+  - claim: fig8b-decay-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, with a gap. Its criterion uses the probes of fig8a-proportion-by-property, but
+      its higher-order group is the pooled one, and the partial rule (higher-order tau below 0.3 s)
+      was never run under the adopted pairing. "Only AM is within tolerance" is not supported;
+      AM's tau is 0.097 (0.090 with per-probe centering), outside 0.099 to 0.121, so no time
+      constant is within tolerance.
+    response: The power terms of the pair tests are now kept, and Q(t) for higher-order is fitted
+      under the pairing. Tau is 0.25 s with each of 131 probes counted once and 0.22 s with each of
+      336 pair tests once (0.16 s with one mean per probe), all below 0.3 s, so the partial rule
+      holds under the adopted grouping too. Measured now takes the paired value (0.252 s, size
+      0.78). The text says no time constant is within tolerance. Outcome kept.
+  - claim: fig8a-significance-fits
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change. Its higher-order group stays the pooled one, as the pair tests were not
+      shuffled for a noise floor; the notes say so.
+  - claim: fig8c-relative-effects
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The bias correction is reasonable; power_resampled takes the weighted mean of
+      x_a x_b over draws of different original trials, which is unbiased. The outcome does not
+      hinge on it, as the point estimates (0.67 and 0.58) and the probe-resampling intervals fail
+      on their own. The higher-order interval was not run under the grouping adopted for fig8a.
+    response: Added the higher-order area and intervals under the pairing. The point estimate is
+      0.35 (0.15 pooled); its interval is 0.30 to 0.41 with probes resampled and 0.19 to 0.50 with
+      trials resampled (corrected), under five seeds, below 1 in both. Amplitude and frequency
+      stay below 1, so the outcome is unchanged. Measured now takes the paired value.
+  - claim: fig8-natural-synthetic-probes-alike
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption is the claims file's own test; it is stated in the deviations,
+      though not labelled "Assumption."
+    response: No change.
+  - claim: fig9-mgb-fast-decay
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig9-example-first-bin
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig7-example-frequency-context
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The experiment-3 table has no sequences, no sounds back to back, and a
+      smallest gap of 0.54 s.
+    response: No change.
+  - claim: figs1-silence-probe
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. It rests on the criterion's own wording (a first crossing), and the record says
+      so.
+    response: No change.
