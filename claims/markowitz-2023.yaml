@@ -1,57 +1,193 @@
 # Claims for Markowitz, Gillis, Jay et al. (2023), "Spontaneous behaviour is structured by
-# reinforcement without explicit reward", Nature 614, 108-117, on dandiset 000559.
-# Source: the full text, open access under CC BY 4.0 on nature.com, read from its Results, figure
-# legends, Methods and Extended Data legends.
+# reinforcement without explicit reward", Nature 614, 108-117, doi:10.1038/s41586-022-05611-2,
+# on dandiset 000559.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-19,
+# protocol pilot-16 as stated in docs/protocol.md.
 #
-# When these criteria were written, the author had seen the data check only: the file list and
-# dandiset metadata, the contents of photometry, closed-loop and velocity files, per-session
-# subject, description, start time, stimulation site, target syllables and pulse counts and
-# durations of every NWB file, the session quality metrics and how many sessions pass them, how
-# the photometry, speed, syllable and stimulation streams fall on one clock, and the latency from
-# online target onsets to stimulation (median 0.17 s). No claim's analysis had been run. The
-# author had also read the paper's analysis code (github.com/dattalab/dopamine-reinforces-
-# spontaneous-behavior at commit 14ed714) and the outputs printed in its notebooks, which include
-# the experiments per mouse used for Fig. 2b and the nine "learner" mice of Fig. 3.
+# Text read. The version of record, open access under CC BY 4.0, as served by Europe PMC
+# (PMC9892006): main text, figure legends, Methods and Extended Data figure and table legends. The
+# supplementary information is a Reporting Summary and a Peer Review File; no result rests on them
+# and they were not read. Numbers drawn only inside figures (the r values printed in Fig. 2b, 2i
+# and 5b, for example) could not be read, as no PDF was supplied; claims rest only on numbers in
+# the text. The dataset's data were not looked at.
 #
-# Method choices fixed here, from the Methods and, where they are silent, the paper's code:
-# dLight is the 470-nm dF/F minus the RANSAC fit (no intercept) of the low-passed 405-nm
-# reference stored in the files, z-scored in a centred 600-sample (20 s) window. A session is
-# used when the 90th percentile of its smoothed dF/F exceeds 1.5 %, its dLight to reference
-# correlation is below 0.6, and no dF/F value exceeds 1.0. Photometry analyses use sessions
-# without stimulation; in dLight+ChrimsonR mice the sessions on the day after a stimulation day
-# ("post" sessions) are left out of Fig. 1e and Fig. 2e analyses as the code does, and their
-# target syllable instances are left out elsewhere. Syllables are the offline labels for
-# photometry analyses and the online labels for closed-loop analyses; the 37 named syllables
-# (labels 0 to 36) are used. The syllable-associated dLight of an instance is the maximum
-# z-scored dLight from its onset to 0.3 s after. Closed-loop mice are Opto-DA (stimulation site
-# "snc (axon)", subjects other than dlight-chrimson) and no-opsin controls (site "ctrl"),
-# sessions with 250-ms pulses.
-# Quotes and statistics added 2026-10-19 from the full text (Europe PMC PMC9892006).
+# Code. github.com/dattalab/dopamine-reinforces-spontaneous-behavior at commit 14ed714 (25 January
+# 2023). It holds the library rl_analysis (photometry helpers in photometry/signal.py,
+# photometry/util.py and io/df.py, lagged analyses in photometry/lagged.py, the decoding model in
+# photometry/decoding, the RL models in models_rl), preprocessing notebooks (dlight_00 to dlight_14,
+# behavior_00 to behavior_03) and one notebook per figure panel (notebooks_panels). It starts from
+# processed tables on Zenodo (10.5281/zenodo.7274803): the raw-to-dF/F photometry pipeline, the
+# movement-initiation labels, the peak detection of Fig. 2a and 3c, the Fig. 1l classifier, the Fig.
+# 2g cross-correlation and the catch-trial dLight of Fig. 4f are computed outside the repository.
+# Where the Methods are silent and the code settles a detail, the criteria follow the code and say
+# so; where the two disagree, the Methods give the main reading and the code a variant.
+#
+# Data the paper describes.
+# - Photometry in DLS. dLight1.1 in DLS, fibre 200 um above (Methods). 14 mice in all (Fig. 1b, 216
+#   experiments): C57BL/6J dLight-only mice and DAT-IRES-cre mice with dLight in DLS and ChrimsonR in
+#   SNc ("dLight+ChrimsonR", 10 mice, 2 for calibration and 8 also run through closed-loop
+#   experiments). Two dLight-only mice failed photometry quality control and appear only in Extended
+#   Data Fig. 2a,b,d. Baseline photometry is the day before a stimulation day, or the day after with
+#   the targeted syllable left out (378 experiments); where the target could not be left out the day
+#   after was dropped. Open field, circular, dark, 30-min experiments, two per day.
+# - Photometry in DMS. 8 C57BL/6J mice, 64 experiments, same methods.
+# - Food reward. 6 dLight mice, food and water restricted, chocolate chip pieces placed at random
+#   (about one per 4 min) for 30 min; consumption onsets marked by a human observer.
+# - Keypoints. 5 mice in a six-camera arena (Azure Kinect, 30 Hz), 15 keypoints, GIMBAL.
+# - Opto-DA. 20 DAT-IRES-cre::Ai32 mice (ChR2 in dopamine neurons, bilateral fibres over DLS) and 12
+#   no-opsin DAT-IRES-cre controls (6 of them implanted over nucleus accumbens). For each of six
+#   target syllables a three-day schedule: day 1 two 30-min baseline experiments, day 2 two 30-min
+#   stimulation experiments (470 nm, 10 mW, one 250-ms pulse on 75% of online target detections, the
+#   other 25% being catch trials), day 3 two baseline experiments; the post day of one target can be
+#   the baseline day of the next. Repeated with 3-s pulsed stimulation (25 Hz, 5 ms) in 3 Ai32 mice
+#   and 2 controls. Velocity-modulation experiments in 5 Ai32 mice, 90 min (30 min to estimate the
+#   target's velocity distribution, then stimulation on detections above its 75th or below its 25th
+#   percentile). The 8 dLight+ChrimsonR mice ran the closed loop with 250-ms continuous, 2-s continuous
+#   and 3-s pulsed (25 Hz, 5 ms) red-light stimulation. Calibration in 2 dLight+ChrimsonR mice,
+#   open-loop 250-ms pulses at random 6 to 17 s intervals.
+# - Measured variables. Depth video at 30 Hz; MoSeq syllables from the offline variant (Viterbi) for
+#   all data except the Opto-DA experiments of Fig. 3 and 4, which use the online variant (Methods,
+#   Offline variant); 2D velocity, angular velocity, height velocity, acceleration and jerk;
+#   470-nm dLight and 405-nm reference photometry, demodulated and downsampled to 30 Hz; stimulation
+#   times; HEK cell imaging (Extended Data Fig. 1a-d).
+#
+# Definitions used by several criteria.
+# - dLight (Methods, Photometry pre-processing and Photometry active referencing). dF/F0 with F0 the
+#   10th percentile in a 5-s sliding window, for dLight and reference; the reference low-passed with
+#   a second-order Butterworth at 3 Hz and fitted to dLight by RANSAC with slope and bias, then
+#   subtracted; the result z-scored in a 20-s sliding window with a one-sample step. The code's only
+#   worked example (fig_s03 notebook, cell 15) uses the same steps with a centred window and a RANSAC
+#   fit without intercept (photometry/signal.py, rereference); the no-intercept fit is a variant.
+# - Quality control. Methods keep experiments whose maximum percentage dF/F0 exceeds 1.5 and whose
+#   dLight-to-reference correlation is below 0.6. The code (signal.py,
+#   compute_photometry_quality_metrics; io/df.py, dlight_exclude) uses the 90th percentile of an
+#   exponentially smoothed dF/F (window 50, tau 10) in percent above 1.5, the correlation of the
+#   smoothed dF/F traces below 0.6, and drops any session with a raw dF/F value above 1.0. Readings
+#   are (a) the Methods' maximum, (b) the code's rule; an outcome that differs between them is
+#   reported under both.
+# - Syllable-associated dLight. The maximum z-scored dLight from syllable onset to 300 ms after
+#   (Methods, Analysing the relationship between dLight and syllable statistics within an experiment
+#   across syllables; code feature signal_reref_dff_z_max_(0.0, 0.3), window inclusive).
+# - Syllables. The 37 syllables used more than 1% of the time (Extended Data Fig. 2f); the code
+#   keeps syllables whose mean usage over mice exceeds 1% (all_behavior_00, cells 12 to 14).
+# - Photometry experiments are those without stimulation. In dLight+ChrimsonR mice the day after a
+#   stimulation day is used with the target syllable's instances removed (Methods), or dropped where
+#   the code drops it (code session numbers 3 and 4, commented "remove post-stim sessions").
+# - Shuffle test (Methods, Statistics). An observed correlation against 1,000 shuffled ones; when it
+#   exceeds all of them P is given as < 0.001. Holm-Bonferroni correction "where appropriate".
+# - Opto-DA sessions. Code session numbers -1 and 0 are baseline, 1 and 2 stimulation, 3 and 4 post
+#   (behavior_01, cell 23). Catch trials are online target detections without light.
+#
+# Revision of 2026-11-19. The earlier file was written after the data check had been seen and took
+# some choices from the data (group and site names in the files, a 0.17-s stimulation latency,
+# label ranges); these are removed and every method below is from the paper or its code. Criteria
+# that misread the code (100 shuffles in Fig. 1e, the measure behind Fig. 1h, a 1,800-s count window
+# in Fig. 3e) are corrected, criteria are added to the claims that had none, and claims are added
+# for further panels with numbers in the text.
 schema_version: 2
-dataset:
-  archive: dandi
-  id: "000559"
 paper: doi:10.1038/s41586-022-05611-2
 claims:
+- id: ed2a-syllable-repertoire
+  statement: MoSeq identifies 37 commonly used syllables, with median duration 400 ms (mean 566 ms,
+    s.d. 636 ms).
+  source: Results, Relating DLS dopamine to spontaneous behavior, paragraph 1; Extended Data Figure 2a
+  quote: MoSeq identified 37 commonly used behavioural syllables, whose median duration was 400 ± 636
+    ms ... The mean/median syllable duration was 566/400 ms +/− 636 ms SD
+  expected:
+  - quantity: number of syllables used more than 1% of the time
+    value: 37
+    tolerance: 3.7
+  - quantity: median syllable duration
+    value: 400
+    tolerance: 40
+    unit: ms
+  - quantity: mean syllable duration
+    value: 566
+    tolerance: 56.6
+    unit: ms
+  criterion: Offline labels of the photometry experiments. A syllable's duration is the time from its
+    onset to the next onset. The paper does not say over which experiments the durations are pooled;
+    readings are (a) all DLS photometry experiments, (b) all open-field experiments of the dandiset
+    with offline labels. Usage above 1% is read as in all_behavior_00 (mean over mice of each
+    mouse's usage fraction).
 - id: fig1e-velocity-timescales
-  statement: DLS dopamine fluctuations are significantly negatively correlated with
-    translational velocity at short timescales (under 10 s), and the correlation reverses and
-    becomes positive at longer timescales, for both dLight transient rates and binned amplitudes.
+  statement: DLS dopamine fluctuations are significantly negatively correlated with translational
+    velocity at short timescales (under 10 s), and the correlation reverses and becomes positive at
+    longer timescales, for both dLight transient rates and binned amplitudes.
   source: Results, Relating DLS dopamine to spontaneous behavior, paragraph 2; Figure 1e
   quote: These dopamine fluctuations (measured as both dLight transient rates and average binned
     amplitudes) were only weakly correlated with many aspects of movement kinematics ... but were
     significantly negatively correlated with translational velocity at short timescales (<10 s);
     this correlation reversed and became positive at longer timescales
-  criterion: Per session, the z-scored dLight and the 2D speed are averaged (amplitude) or the
-    rate of upward crossings of 1.96 is taken (transient rate) in non-overlapping bins of 0.25 to
-    59.75 s in 0.5-s steps, bins with fewer than the modal number of frames dropped, and Pearson
-    r taken per session, then averaged over sessions. The null is 100 shuffles of the binned
-    dLight within each session; a mean r outside the 2.5 to 97.5 percentiles of the shuffled
-    means is significant. "At short timescales" can be read as (a) at every timescale below 10 s,
-    or (b) at the shortest timescale (0.25 s). For one measure the claim holds when, under a
-    reading, the mean r is significantly negative and at some timescale of 10 s or more it is
-    significantly positive. Reproduced when it holds for both measures; partially reproduced for
-    one.
+  criterion: As in dlight_00_compute_binned_scalar_correlation and the fig_1e panel. DLS photometry
+    experiments (216); dLight re-z-scored per experiment; 2D velocity. Non-overlapping bins of 0.25
+    to 59.75 s in 0.5-s steps, keeping only bins with the modal number of samples; per bin the mean
+    dLight (amplitude) and the transient rate. The transient threshold is open; readings are (a) the
+    code's upward crossings of 1.96, (b) crossings of 1 s.d., the transient definition of Extended
+    Data Fig. 1h and 7a. Pearson r per experiment and bin size, averaged per mouse, then over mice.
+    Null of 1,000 permutations of the binned dLight within experiment (Methods, Statistics; code
+    cells 28 and 29). Significance is open between (a) the legend's shuffle test at P < 0.05 per bin
+    size against the 2.5 and 97.5 percentiles of the shuffled means, and (b) the code's two-sided
+    test with Holm correction over bin sizes, marked only for 5 or more consecutive significant bin
+    sizes. The code casts bin size to an integer before correlating, pooling pairs of bin sizes; that
+    is shown as a variant. For one measure the claim holds when, under a reading, the mean r is
+    significantly negative at bin sizes below 10 s and significantly positive at some bin size of
+    10 s or more. Reproduced when it holds for both measures; partially reproduced for one.
+- id: ed3c-keypoint-velocity
+  statement: In keypoint-tracked mice, 2D velocity is negatively correlated with dLight in 400-ms
+    bins (r = -0.16), and forelimb velocity, with other kinematics partialled out, correlates only
+    negligibly (r = -0.02).
+  source: Extended Data Figure 3c; Results, Relating DLS dopamine to spontaneous behavior, paragraph 2
+  quote: correlation between 2D velocity and dLight fluorescence after binning the data into 400ms
+    time points (Pearson r = −0.16, p < .001 one-sided shuffle test) ... (see Methods , Pearson r =
+    −0.02, p < .001 one-sided shuffle test)
+  statistics:
+  - about: 2D velocity against dLight
+    test: one-sided shuffle test
+    statistic: Pearson r = -0.16
+    p: 0.001
+    p_relation: "<"
+    n: 5 mice
+  - about: 3D forelimb velocity against partialled dLight
+    test: one-sided shuffle test
+    statistic: Pearson r = -0.02
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: Pearson r, 2D velocity and dLight in 400-ms bins
+    value: -0.16
+    tolerance: 0.016
+  - quantity: Pearson r, 3D forelimb velocity and partialled dLight
+    value: -0.02
+    tolerance: 0.002
+  criterion: The 5 keypoint mice. 2D velocity from the x-y centroid of the spine keypoints, the
+    difference over 2 frames divided by 2 (Methods, Computing 2D and 3D velocity); forelimb velocity
+    the mean 3D velocity of the forepaw keypoints. dLight processed as in the fig_s03 notebook (cell
+    15). Forelimb r after regressing 2D velocity, 3D velocity and height out of dLight (Methods,
+    Partialing kinematic parameters). Bins of 400 ms, non-overlapping; whether r is pooled over all
+    bins of all mice (the legend's single scatter) or averaged per mouse is open, both readings
+    shown. Shuffle test with 1,000 shuffles. The 10% tolerance on -0.02 is below the precision the
+    paper prints; a value that rounds to -0.02 also counts.
+- id: fig1f-syllable-vs-movement-onset
+  statement: The average syllable-associated dLight transient exceeds that associated with movement
+    initiation (P = 0.0006, n = 14 mice).
+  source: Figure 1f legend
+  quote: The average syllable-associated dLight transient exceeds that associated with movement
+    initiation
+  statistics:
+  - test: two-sided Wilcoxon signed-rank test
+    statistic: z = 3, effect size r = 0.8
+    p: 0.0006
+    n: 14 averages
+  criterion: Movement initiations as in Methods, Movement initiation analyses (centroid velocity
+    z-scored per experiment, 50-point boxcar, derivative cubed, scipy find_peaks with height,
+    width and prominence 1); syllable onsets from offline labels. Onset-aligned dLight z-scored over
+    -10 to +10 s around each onset, averaged per mouse and z-scored to circularly shuffled averages
+    (Methods give 1,000 shuffles, the legend 100; both shown). The compared quantity is open; readings
+    are (a) the per-mouse mean absolute z over -1 to +1 s, as the fig_1f, s5f notebook (cells 60
+    and 64), which also high-passes each snippet at 1 Hz, (b) the per-mouse peak from 0 to 0.3 s.
+    Reproduced when, under a reading, the syllable value exceeds the movement value with a two-sided
+    Wilcoxon signed-rank P < 0.05 over the 14 mice.
 - id: fig1h-syllable-dlight-differs
   statement: Average syllable-associated dLight amplitudes differ across syllables (Kruskal-Wallis
     H = 209.29, P < 1e-25, n = 518 mouse-syllable pairs).
@@ -70,193 +206,50 @@ claims:
     tolerance: 20.93
   - quantity: number of mouse-syllable pairs
     value: 518
-    tolerance: 51.8
-  criterion: Per mouse and named syllable, the mean syllable-associated dLight over all instances
-    in the mouse's sessions; a Kruskal-Wallis test across the 37 syllables. Reproduced when P <
-    1e-25 and both values are within tolerance; partially reproduced when P < 0.05 but the P or a
-    value misses; not reproduced when P >= 0.05.
+    tolerance: 0
+  criterion: The 37 syllables in the 14 DLS mice (518 = 14 x 37), baseline experiments. The amplitude
+    per mouse and syllable is open; readings are (a) the mean over instances of the
+    syllable-associated dLight, (b) as the fig_1h-right notebook (cell 18), each instance's dLight
+    z-scored over -10 to +10 s around onset, averaged per mouse and syllable, and the average's
+    mean over 0 to 0.3 s, (c) the same average's maximum over 0 to 0.3 s (cell 19). A
+    Kruskal-Wallis test across syllables. Reproduced when, under a reading, P < 1e-25 and H is within
+    tolerance; partially reproduced when P < 0.05 but not both; not reproduced when P >= 0.05. The
+    count of pairs has no tolerance, being 14 times 37.
+- id: fig1j-weak-kinematic-correlation
+  statement: Syllable-associated dopamine transient amplitudes correlate only weakly with the
+    velocity and angular velocity of the syllable instance.
+  source: Results, DLS dopamine does not predict syllable identity, paragraph 1; Figure 1j
+  quote: Furthermore, syllable-associated dopamine transient amplitudes only weakly correlated with
+    the movements actually expressed during a given syllable
+  criterion: As in the fig_1j notebook. Per syllable instance in DLS experiments, the mean
+    experiment-z-scored dLight over the instance and the mean 2D velocity or angular velocity; 2,000
+    instances drawn at random per mouse (28,000 points, as the legend's n). Huber regression
+    (epsilon 1.05) with fivefold cross-validation repeated 100 times; r is the Pearson correlation of
+    the pooled held-out predictions with the data. The paper gives no bound for weak, so one is
+    fixed here as an assumption, a held-out |r| below 0.3; the correlation is reported with its
+    one-sided shuffle P (1,000 shuffles). Reproduced when |r| < 0.3 for both velocity and angular
+    velocity.
 - id: fig1l-identity-not-decodable
   statement: Random forest classifiers cannot predict which syllable is being expressed from the
     coincident dLight peak amplitude or waveform.
   source: Results, DLS dopamine does not predict syllable identity, paragraph 2; Figure 1l
   quote: Indeed, random forest classifiers were unable to predict which syllable was being expressed
     by the mouse at any moment based on the coincident dLight waveform amplitudes or shapes
-  criterion: Instances of the 37 named syllables are subsampled to 1,000 per syllable (seeded), and
-    a random forest (100 trees) is trained with stratified fivefold cross-validation on (i) the
-    peak amplitude alone and (ii) the 0 to 0.3 s waveform and its derivative. Chance is 1/37. The
-    paper gives no accuracy; "unable to predict" is taken as held-out accuracy below twice
-    chance (0.054). Reproduced when both feature sets are below it; partially reproduced when one
-    is. Accuracy with shuffled labels is reported as the null.
-- id: fig2b-dlight-usage-across-syllables
-  statement: Syllables associated on average with more DLS dopamine in an experiment tend to be
-    used more.
-  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2b
-  quote: those syllables that were on average associated with more DLS dopamine during a given
-    experiment tended to be used more during that experiment
-  criterion: Per experiment, the mean syllable-associated dLight of instances longer than 0.3 s is
-    z-scored across syllables; per mouse and syllable this value and the syllable count are
-    averaged over experiments, keeping syllables with at least 100 instances in the mouse. A
-    Huber regressor (epsilon 1.05) predicts count from dLight with fivefold cross-validation
-    repeated 20 times; r is the Pearson correlation of held-out predictions with the data, and
-    its null is 200 fits with dLight shuffled. Reproduced when r > 0 with one-sided shuffle P <
-    0.05.
-- id: fig2i-dlight-entropy-across-syllables
-  statement: Mice string together less predictable sequences after syllables associated with more
-    dopamine; average syllable-associated dLight correlates positively with the entropy of the
-    syllable's outgoing transitions.
-  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 3; Figure 2i
-  quote: Examining the transition patterns between syllables revealed that mice tended to string
-    together more deterministic behavioural sequences when average syllable-associated dopamine was
-    relatively low rather than high
-  criterion: As for fig2b-dlight-usage-across-syllables, with the Shannon entropy (nats) of each
-    syllable's outgoing transition probabilities per experiment, averaged per mouse and syllable,
-    in place of the count. Reproduced when r > 0 with one-sided shuffle P < 0.05.
-- id: fig2e-dlight-predicts-future-usage
-  statement: When an instance of a syllable coincides with a higher-amplitude dopamine transient,
-    that syllable is used more over the following minutes.
-  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2c-g
-  quote: if a given instance of a syllable coincided with a relatively high amplitude dopamine
-    transient, that syllable was then used more over the next several minutes
-  criterion: Per experiment and named syllable, for each instance its syllable-associated dLight
-    and the count of the same syllable among the next n syllables, for n = 10 to 390 in steps of
-    20 (instances without n following syllables dropped). Pearson r is taken within each of five
-    equal time segments of the session and averaged, then averaged over experiments per mouse and
-    syllable, then over mouse-syllable pairs. The null is 100 shuffles of dLight within
-    experiment, syllable and segment; one-sided P is the fraction of shuffled means at or above
-    the observed one. Reproduced when the mean r is positive with P < 0.05 at every n from 10 to
-    190 (about two minutes); partially reproduced when it is so at n = 10 but not throughout; not
-    reproduced otherwise.
-- id: ed7-dms-fewer-transients
-  statement: dLight recordings in dorsomedial striatum (DMS) show less frequent dopamine
-    transients than in DLS.
-  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 4; Extended Data
-    Figure 7a,b
-  quote: dLight recordings in dorsomedial striatum (DMS) revealed less frequent dopamine transients
-  statistics:
-  - test: two-sided Mann-Whitney U test
-    statistic: U = 97, f = .87
-    p: 0.017
-    n: 8 DMS and 14 DLS mice
-  criterion: A transient is an upward crossing of 1 by the session-standardised z-scored dLight
-    that stays above 0.25 for the next 3 frames, as in the code (get_ncrossings). Rate per minute
-    per session, averaged per mouse; a two-sided Mann-Whitney U test of DMS (8 mice) against DLS
-    (14 mice). Reproduced when DMS is lower with P < 0.05.
-- id: ed7-dms-no-usage-prediction
-  statement: DMS dopamine transients do not predict future syllable usage.
-  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 4; Extended Data
-    Figure 7
-  quote: dLight recordings in dorsomedial striatum (DMS) revealed less frequent dopamine transients
-    that do not predict future syllable usage
-  criterion: A claim of absence, judged by the test of fig2e-dlight-predicts-future-usage applied
-    to DMS sessions. Reproduced when no n from 10 to 190 gives a mean r significantly above the
-    shuffles (one-sided P < 0.05); not reproduced when any does. The size of the correlation is
-    reported either way.
-- id: fig3e-optoda-learning
-  statement: Pairing a target syllable with optogenetic dopamine release (Opto-DA) increases its
-    use relative to baseline more than in no-opsin controls (log2 fold change in target counts,
-    one-sided Mann-Whitney U = 197, P = 0.002, f = 0.82).
-  source: Figure 3e legend
-  quote: log2 fold change in target counts compared with baseline, per mouse, averaged across
-    targets
-  statistics:
-  - test: one-sided Mann–Whitney U test
-    statistic: U = 197, f = 0.82
-    p: 0.002
-  expected:
-  - quantity: Mann-Whitney U, Opto-DA against controls
-    value: 197
-    tolerance: 19.7
-  criterion: Per target, the cumulative target count over the two stimulation sessions (onsets of
-    the online label in the first 1800 s) against the mean count of the baseline day's sessions
-    (the latest Monday baseline day up to five days before, as the code does), as log2((stim +
-    2) / (n_stim x baseline + 2)); averaged over targets per mouse. Targets need two stimulation
-    sessions and mice two targets, as in the code. Reproduced when Opto-DA mice are higher with
-    one-sided P < 0.05 and U within tolerance; partially reproduced when P < 0.05 but U misses;
-    not reproduced when P >= 0.05.
-- id: fig3f-cumulative-counts
-  statement: The cumulative increase in target counts relative to baseline is larger in Opto-DA
-    mice than in controls (one-sided Mann-Whitney U = 184, P = 0.007, f = 0.77).
-  source: Figure 3f legend
-  quote: Cumulative increase in target counts relative to baseline in Opto-DA and control mice
-  statistics:
-  - test: one-sided Mann–Whitney U test
-    statistic: U = 184, f = 0.77
-    p: 0.007
-  expected:
-  - quantity: Mann-Whitney U, Opto-DA against controls
-    value: 184
-    tolerance: 18.4
-  criterion: As for fig3e-optoda-learning, with the change in counts (stim - n_stim x baseline) in
-    place of the log2 fold change. Same rule.
-- id: fig3e-learner-count
-  statement: Only a fraction of Opto-DA mice learn; nine mice exceed the largest change in target
-    counts of any control ("learners").
-  source: Methods, "Quantifying changes in target syllable counts", paragraph 2; Figure 3e; Extended
-    Data Figure 10
-  quote: ‘Learner’ mice were defined as mice whose average change in target counts above baseline
-    across all syllables exceed the maximum average change in target counts exhibited by no-opsin
-    control animals. These n = 9 animals
-  expected:
-  - quantity: number of learner mice among Opto-DA mice
-    value: 9
-    tolerance: 0.9
-  criterion: Learners are Opto-DA mice whose mean change in counts (fig3f measure) exceeds the
-    maximum of the controls. Reproduced when there are 9. The overlap with the nine mice the
-    paper's code printed is reported, not judged.
-- id: fig3h-stim-post-correlation
-  statement: In learners, the change in target usage during stimulation predicts the change in the
-    post-stimulation sessions (Pearson r = 0.89, P = 0.005).
-  source: Figure 3h legend
-  quote: The relationship between target syllable usage changes from baseline during stimulation
-    experiments versus post-stimulation experiments per mouse
-  statistics:
-  - test: one-sided shuffle test
-    statistic: Pearson r = 0.89
-    p: 0.005
-  depends_on:
-  - fig3e-learner-count
-  expected:
-  - quantity: Pearson r between stimulation and post-stimulation change in counts, learners
-    value: 0.89
-    tolerance: 0.089
-  criterion: Post sessions are the sessions without stimulation on the day after the stimulation
-    day; their change is the summed target count minus n_post x baseline. Per mouse, means over
-    targets. Pearson r over learners with a one-sided shuffle P (1,000 shuffles, as the code).
-    Reproduced when r is within tolerance and P < 0.05; partially reproduced when P < 0.05 but r
-    misses; not reproduced when P >= 0.05.
-- id: fig3l-no-kinematic-effect
-  statement: Brief (250 ms) Opto-DA does not change movement at the moment of stimulation; no
-    comparison between stimulation and catch trials in any mouse is significant.
-  source: Figure 3l legend; Results, Syllable-associated Opto-DA influences behaviour, paragraph 5
-  quote: No comparisons between stimulation and catch trials in any of the mice were significant
-  statistics:
-  - test: one-sided Mann–Whitney U test
-    p: 0.05
-    p_relation: ">"
-  criterion: A claim of absence. Stimulation trials are pulse onsets; catch trials are online
-    target onsets in the same sessions with no pulse within the next 0.5 s, aligned 0.17 s after
-    onset (the median latency to stimulation). Per trial, the mean 2D speed from 0 to 1 s after
-    alignment minus the mean over the preceding 1 s. Per Opto-DA mouse, a one-sided Mann-Whitney
-    U test of stimulation above catch, P < 0.05 uncorrected as the legend gives. Reproduced when
-    no Opto-DA mouse is significant; not reproduced when any is. Holm-corrected results and
-    controls are shown as variants.
-- id: fig3m-long-stim-velocity
-  statement: Extending stimulation to 3 s (pulsed, 25 Hz) makes mice increase their velocity.
-  source: Figure 3m; Extended Data Figure 10l; Results, Syllable-associated Opto-DA influences
-    behaviour, paragraph 5
-  quote: extending the duration of optogenetic stimulation to several seconds (which caused dLight
-    signals that are of substantially higher amplitude than typically observed during spontaneous
-    behaviour) caused mice to increase their velocity
-  criterion: Pulse trains (pulses under 50 ms) are grouped into stimulations by gaps over 1 s.
-    Trials as in fig3l-no-kinematic-effect, with speed from 0 to 3 s after alignment. Per mouse, a
-    one-sided Mann-Whitney U test of stimulation above catch. Reproduced when each of the three
-    Opto-DA mice with 3-s sessions is significant (P < 0.05); partially reproduced when one or
-    two are; not reproduced when none is. Controls are reported.
+  criterion: A claim of absence, judged on the paper's test (Methods, Decoding syllable identity from
+    dLight waveforms). A random forest (1,000 trees, maximum depth 1,000, 128 bins, as cuRF) with
+    fivefold cross-validation, on (1) the syllable-associated dLight of each instance, and (2) the
+    dLight waveform and its derivative from onset to 300 ms; labels are the 37 syllables. Held-out
+    accuracy is compared with 100 shuffles of syllable identity; P is the fraction of shuffled
+    accuracies at or above the observed one, as the fig_1l notebook does. Reproduced when neither
+    input gives P < 0.05; not reproduced when either does, with the accuracies and chance shown.
+    The classifier code is not in the repository; any random-forest implementation with these
+    settings is used. Syllable groups from the MoSeq-distance dendrogram (cut-offs in steps of 0.2)
+    are shown as a variant, with Bonferroni correction across cut-offs as the notebook applies.
 - id: fig2a-food-reward-transients
   statement: Spontaneous syllable-associated dopamine transients roughly match those during
     consumption of an unexpected chocolate chip (mean spontaneous peak 2.12 +- 0.80 z, n = 5,247;
     reward 2.36 +- 0.92 z, n = 10).
-  source: Figure 2a; Methods, "Food reward experiments"
+  source: Figure 2a; Methods, Food reward experiments
   quote: Mean spontaneous transient peak had observed magnitudes of 2.12 ± 0.80 ΔF/F0 (z) (n = 5,247
     transients). By comparison, mean reward consumption-associated transients had an approximate
     magnitude of 2.36 ± 0.92 ΔF/F0 (z) (n = 10 transients)
@@ -269,17 +262,136 @@ claims:
     value: 2.36
     tolerance: 0.92
     unit: z
-- id: fig1f-syllable-vs-movement-onset
-  statement: The average syllable-associated dLight transient exceeds that associated with
-    movement initiation (P = 0.0006, n = 14 mice).
-  source: Figure 1f
-  quote: The average syllable-associated dLight transient exceeds that associated with movement
-    initiation
+  - quantity: number of spontaneous transients
+    value: 5247
+    tolerance: 524.7
+  - quantity: number of reward transients
+    value: 10
+    tolerance: 1
+  criterion: The tolerances on the means are the spreads the paper reports. Reward peaks are the
+    z-scored dLight at the marked consumption onsets (Methods). Spontaneous peaks are open (the
+    detection is done outside the code); readings are peaks of the z-scored dLight above the dotted
+    detection threshold of Fig. 2a, drawn at 1.5 z in the fig_2a notebook, (a) in the food-reward
+    experiments outside consumption, (b) in all DLS baseline experiments. Reproduced when both means
+    are within tolerance under a reading.
+- id: fig2b-dlight-usage-across-syllables
+  statement: Syllables associated on average with more DLS dopamine in an experiment tend to be
+    used more.
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2b
+  quote: those syllables that were on average associated with more DLS dopamine during a given
+    experiment tended to be used more during that experiment
   statistics:
-  - test: two-sided Wilcoxon signed-rank test
-    statistic: z = 3, effect size r = 0.8
-    p: 0.0006
-    n: 14 averages
+  - test: one-sided shuffle test
+    p: 0.05
+    p_relation: "<"
+  criterion: Methods, Analysing the relationship between dLight and syllable statistics within an
+    experiment across syllables. Syllable-associated dLight averaged per syllable and experiment,
+    z-scored across syllables within the experiment, then dLight and syllable counts averaged over
+    experiments per mouse and syllable; pairs kept when the syllable occurs at least 100 times in
+    the mouse. Huber regression (epsilon 1.05, from the fig_2b, 2i notebook) predicting counts from
+    dLight, fivefold cross-validation repeated 100 times; r is the Pearson correlation of the pooled
+    held-out predictions with the data. Null of 1,000 fits with dLight permuted across pairs (fivefold
+    repeated 5 times, as the code); one-sided P. Reproduced when r > 0 with P < 0.05. The code's
+    variants (dLight z-scored within mouse across experiment-syllable rows, instances shorter than
+    0.3 s left out of the dLight average) are shown.
+- id: fig2i-dlight-entropy-across-syllables
+  statement: Mice string together more deterministic sequences after syllables associated with less
+    dopamine; average syllable-associated dLight correlates positively with the entropy of the
+    syllable's outgoing transitions.
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 3; Figure 2i
+  quote: Examining the transition patterns between syllables revealed that mice tended to string
+    together more deterministic behavioural sequences when average syllable-associated dopamine was
+    relatively low rather than high
+  statistics:
+  - test: one-sided shuffle test
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig2b-dlight-usage-across-syllables
+  criterion: As for fig2b-dlight-usage-across-syllables, with the Shannon entropy of each syllable's
+    outgoing transition probabilities per experiment (Methods) in place of the count. The code adds
+    1/36 to each of the first 37 destinations before normalising and uses log base 2
+    (dm_entropy, fig_2b, 2i notebook); this is followed, the base not changing r. Reproduced when r >
+    0 with one-sided shuffle P < 0.05.
+- id: fig2e-dlight-predicts-future-usage
+  statement: When an instance of a syllable coincides with a higher-amplitude dopamine transient,
+    that syllable is used more over the following minutes.
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2c-g
+  quote: if a given instance of a syllable coincided with a relatively high amplitude dopamine
+    transient, that syllable was then used more over the next several minutes
+  statistics:
+  - test: one-sided shuffle test
+    p: 0.05
+    p_relation: "<"
+  criterion: Methods, Analysing the moment-to-moment relationship between dLight and syllable
+    statistics within an experiment, with the details the code fixes (dlight_03, dlight_04, fig_2e,
+    2f). DLS baseline experiments, offline labels. Each experiment is cut into the five segments of
+    Extended Data Fig. 2e, at 0, 360, 660, 900, 1680 and 1800 s as dlight_03 computes them. For each
+    instance, its syllable-associated dLight and the count of the same syllable among the following
+    n - 1 syllables, n = 10 to 390 in steps of 20 (the Methods give 5 to 400). Pearson r per mouse,
+    syllable, segment and n over the instances pooled across the mouse's experiments; averaged over
+    mouse-syllable pairs, z-scored against 1,000 shuffles of dLight within experiment and segment,
+    then averaged over segments. Significance as the legend states, one-sided P < 0.05 per n; the
+    code's two-sided test with Holm correction is a variant. "The next several minutes" is read as
+    (a) every n up to 390 syllables, about 3.7 min at the mean syllable duration of 566 ms, or (b)
+    every n up to 210 syllables, about 2 min. Reproduced when the correlation is significantly
+    positive under a reading; partially reproduced when it is so only at shorter n; not reproduced
+    when it is not significant at n = 10.
+- id: fig2e-not-autocorrelation
+  statement: The dLight autocorrelation and the dLight-velocity correlation decline sharply within a
+    few hundred milliseconds, so they do not explain the dLight-usage relationship.
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2e
+  quote: The relationship between dopamine transient amplitudes and syllable usage was not due to
+    autocorrelation in the dLight signal or to correlations between dopamine and velocity, both of
+    which declined sharply after a few hundred milliseconds
+  depends_on:
+  - fig2e-dlight-predicts-future-usage
+  criterion: As in dlight_04 and the fig_2e panel, with the same instances, segments, n and
+    shuffles as fig2e-dlight-predicts-future-usage. Autocorrelation is the correlation of an
+    instance's dLight with the mean dLight of the following n - 1 instances; the velocity curve uses
+    the mean 2D velocity over instances 0 to n - 1. Reproduced when both z-scored curves fall inside
+    the shuffle band (95th percentile of shuffled |z|) at some n at which the usage correlation is
+    still significant; not reproduced when either stays as high as the usage correlation over the
+    range where that one is significant.
+- id: fig2g-usage-crosscorrelation
+  statement: Binned syllable counts and syllable-associated dLight are cross-correlated across lags,
+    above shuffles (P < 0.001).
+  source: Figure 2g legend; Methods, Analysing the cross-correlation between syllable-associated dLight
+    and syllable usage
+  quote: Average cross-correlation between binned syllable counts and syllable-associated dLight
+    fluorescence (from all mice and experiments) across lags
+  statistics:
+  - test: one-sided shuffle test
+    p: 0.001
+    p_relation: "<"
+  criterion: Per syllable and experiment, syllable-associated dLight averaged and syllable counts
+    summed in 3-min windows, correlated with the windows shifted by lags up to 7.5 min (the panel's
+    axis), averaged over syllables and experiments, and z-scored against shuffles (Methods). Window
+    step and shuffle scheme are open, the code being outside the repository; readings are (a)
+    non-overlapping 3-min windows, (b) windows sliding by 30 s, each with 1,000 permutations of dLight
+    across windows within experiment and syllable. Reproduced when, under a reading, the peak
+    correlation exceeds all shuffles (P < 0.001); partially reproduced when P < 0.05.
+- id: fig2h-specific-to-syllable
+  statement: A dopamine transient's size does not substantially correlate with the later use of
+    syllables neighbouring the index syllable in time; the relationship is specific to the
+    associated syllable.
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2h
+  quote: the possible consequences of dopamine transients were largely restricted to the specific
+    syllable with which they were associated, as the size of a given dopamine transient did not
+    substantially correlate with the use of syllables neighbouring in time
+  statistics:
+  - test: one-sided shuffle test
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig2e-dlight-predicts-future-usage
+  criterion: As in dlight_08 and the fig_2h panel. For each instance, the syllable at offsets -5 to
+    +5 from it, and that syllable's count in the 10 syllables from that offset on, correlated with the
+    index instance's dLight per mouse, syllable, segment and offset; z-scored against 1,000 shuffles
+    of dLight within experiment, offset and segment, and averaged over segments. One-sided P < 0.05
+    with Holm correction over offsets. Reproduced when offset 0 is significant and no other offset is.
+    Partially reproduced when offset 0 is significant and the z of every other offset is below half of
+    offset 0's.
 - id: fig2k-dlight-predicts-sequence-variability
   statement: A higher-amplitude dopamine transient at a syllable instance is followed by less
     predictable syllable choices over the next several seconds.
@@ -287,12 +399,398 @@ claims:
   quote: if a given instance of a syllable was associated with a relatively high amplitude dopamine
     transient, the mouse tended to make less predictable syllable choices over the next several
     seconds
+  statistics:
+  - test: one-sided shuffle test
+    p: 0.05
+    p_relation: "<"
+  criterion: Methods, Analysing the moment-to-moment relationship, sequence randomness. For each
+    instance, the transitions among the next n syllables, n = 5 to 50 in steps of 5 (dlight_06).
+    The instances are binned by their dLight into 20 bins, and the transition counts are summed per
+    bin, mouse, segment and n (cells with at least 100 transitions, as the code). Entropy of the
+    row-normalised summed matrix with a Perks prior (dm_entropy). The binning is open; readings are
+    (a) the Methods' 20 equally spaced bins per syllable, (b) the code's 20 equal-count bins per
+    mouse pooled over syllables. Correlation of dLight bin with entropy per segment and n (Pearson as
+    the Methods say, Spearman as dlight_06; both shown), z-scored against 1,000 shuffles that permute
+    destinations within each row of the transition counts, averaged over segments. Reproduced when,
+    under a reading, the correlation is significantly positive (one-sided P < 0.05) at n = 5 and at
+    every n up to at least 10 syllables (about 6 s at the mean syllable duration).
+- id: ed6b-encoding-model-average
+  statement: An encoding model predicts average syllable-associated dLight from future behaviour on
+    held-out mouse-syllable pairs (r = 0.46); kinematics alone give r = 0.39, counts and entropy alone
+    r = 0.22, so usage and sequence variability contribute independently.
+  source: Extended Data Figure 6b; Results, Dopamine predicts future syllable use and sequencing,
+    paragraph 4
+  quote: average Pearson correlation of held-out mouse/syllable pairs r = 0.46, p < .001 ...
+    Performance using kinematic parameters only, r = 0.39, counts and entropy only r = 0.22, both
+    models p < .001 one-sided shuffle test
+  statistics:
+  - about: all features
+    test: one-sided shuffle test
+    statistic: Pearson r = 0.46
+    p: 0.001
+    p_relation: "<"
+    n: 760 syllable/mouse pairs
+  - about: kinematics only, and counts and entropy only
+    test: one-sided shuffle test
+    statistic: r = 0.39 and r = 0.22
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: held-out r, all features
+    value: 0.46
+    tolerance: 0.046
+  - quantity: held-out r, kinematic features
+    value: 0.39
+    tolerance: 0.039
+  - quantity: held-out r, counts and entropy
+    value: 0.22
+    tolerance: 0.022
+  criterion: Methods, Encoding model predicting average dLight from behaviour, with the code's
+    choices (dlight_09, fig_s06b, s06c). Per DLS mouse and syllable (usage above 100, instances longer
+    than 0.3 s), features count at 100 syllables, entropy at 10 and 2D velocity at 5 (the code's
+    velocity_2d_mm_global_bin_5; the Methods say 10 for kinematics, shown as a variant), z-scored per
+    mouse, ZCA-whitened; Bayesian linear regression (normal prior on weights, exponential on s.d.,
+    NUTS 1,000 warm-up and 3,000 samples) with fivefold cross-validation repeated 50 times. r is the
+    held-out correlation, averaged over mice as the code does or pooled (both shown). Shuffle test
+    with 1,000 permutations. Reproduced when all three r are within tolerance and the full model has
+    P < 0.05.
+- id: ed6e-encoding-model-instantaneous
+  statement: A convolutional encoding model predicts instantaneous dLight in held-out experiments
+    (median r = 0.28 with all features; 0.23 with kinematics; 0.16 with syllable measures; n = 211).
+  source: Extended Data Figure 6e
+  quote: median correlation over all held-out experiments using all features r = 0.28 ... median r
+    over held-out experiments for kinematic parameters 0.23; syllable-related measures 0.16; all
+    correlations p < .001, one-sided shuffle test
+  statistics:
+  - test: one-sided shuffle test
+    p: 0.001
+    p_relation: "<"
+    n: 211 experiments
+  expected:
+  - quantity: median held-out r, all features
+    value: 0.28
+    tolerance: 0.028
+  - quantity: median held-out r, kinematic features
+    value: 0.23
+    tolerance: 0.023
+  - quantity: median held-out r, syllable features
+    value: 0.16
+    tolerance: 0.016
+  criterion: Methods, Encoding model predicting instantaneous dLight from behaviour, with the code's
+    choices (fig_s06e, s06f, s06g notebook). Features syllable counts, transition entropy, a
+    transition indicator, 2D, angular and height velocity and acceleration; kernels from -2 to 2 s
+    (the code builds them from 25 cubic B-splines over 1,200 samples); Huber loss; dLight smoothed by
+    a 60-sample boxcar; experiments of at least 23 min; twofold cross-validation over experiments
+    within mouse; r per held-out experiment, median over experiments. The null is dLight traces
+    permuted across experiments. Reproduced when the three medians are within tolerance and the full
+    model exceeds the permuted null with P < 0.05.
+- id: ed7-dms-fewer-transients
+  statement: dLight recordings in dorsomedial striatum (DMS) show less frequent dopamine
+    transients than in DLS.
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 4; Extended Data
+    Figure 7a,b
+  quote: dLight recordings in dorsomedial striatum (DMS) revealed less frequent dopamine transients
+  statistics:
+  - test: two-sided Mann-Whitney U test
+    statistic: U = 97, f = .87
+    p: 0.017
+    n: 8 DMS and 14 DLS mice
+  expected:
+  - quantity: Mann-Whitney U, DLS against DMS transient rate
+    value: 97
+    tolerance: 9.7
+  criterion: A transient is an upward crossing of 1 s.d. by the experiment's z-scored dLight (Extended
+    Data Fig. 7a), with the code's persistence rule (get_ncrossings, threshold 1, the next 3 samples
+    not below 0.25; fig_s07 notebook, cells 10 to 12). Rate per second in 300-s bins per experiment;
+    per mouse the mean (legend) or the median (code; shown as a variant). Two-sided Mann-Whitney U
+    test of 14 DLS against 8 DMS mice, Holm-corrected over the four statistics of Extended Data Fig.
+    7b as the code does. Reproduced when DMS is lower with P < 0.05 and U is within tolerance;
+    partially reproduced when P < 0.05 but U misses.
+- id: ed7b-dms-transient-shape
+  statement: DMS and DLS dopamine transients differ in time to peak and in full width at half maximum,
+    but not significantly in area under the curve.
+  source: Extended Data Figure 7b legend
+  quote: Area under the curve, p = .052, U = 27, f=.24.; time to peak, p = .0001, U = 4, f = .036;
+    Full-width at half-maximum p = .017, U = 16, f = .14
+  statistics:
+  - about: area under the curve
+    test: two-sided Mann-Whitney U test
+    statistic: U = 27, f = .24
+    p: 0.052
+  - about: time to peak
+    test: two-sided Mann-Whitney U test
+    statistic: U = 4, f = .036
+    p: 0.0001
+  - about: full width at half maximum
+    test: two-sided Mann-Whitney U test
+    statistic: U = 16, f = .14
+    p: 0.017
+  expected:
+  - quantity: U, time to peak
+    value: 4
+    tolerance: 1
+  - quantity: U, full width at half maximum
+    value: 16
+    tolerance: 1.6
+  - quantity: U, area under the curve
+    value: 27
+    tolerance: 2.7
+  depends_on:
+  - ed7-dms-fewer-transients
+  criterion: As in the fig_s07 notebook. Transients as in ed7-dms-fewer-transients; transient-aligned
+    averages of +-90 samples per experiment, averaged per mouse, re-aligned where the slope first
+    exceeds 0.035; over 0 to 2 s, area by trapezoid, time to peak at the maximum, and full width at
+    half maximum after cubic interpolation to 500 Hz. Two-sided Mann-Whitney U tests, 14 DLS against
+    8 DMS mice, Holm-corrected over the four statistics. Reproduced when time to peak and width have
+    P < 0.05, area has P >= 0.05, and the three U values are within tolerance; partially reproduced
+    when the pattern of significance holds but a U misses. The tolerance on the time-to-peak U is one
+    rank, as 10% of 4 is finer than U can move.
+- id: ed7d-dms-smaller-peaks
+  statement: Peak dLight at syllable transitions and at movement initiations is lower in DMS than in
+    DLS.
+  source: Extended Data Figure 7c,d
+  quote: Peak dLight values from per-mouse average waveforms aligned to either syllable transitions or
+    movement initiations (n = 14 DLS mice, n = 8 DMS mice) ... (movement initiations, p = 2.5e-5, U =
+    110, f = .98; syllables, p = 4.4e-5, U = 109, f = .97)
+  statistics:
+  - about: movement initiations
+    test: two-sided Mann-Whitney U test
+    statistic: U = 110, f = .98
+    p: 2.5e-5
+    n: 14 DLS and 8 DMS mice
+  - about: syllable transitions
+    test: two-sided Mann-Whitney U test
+    statistic: U = 109, f = .97
+    p: 4.4e-5
+  expected:
+  - quantity: U, movement initiations
+    value: 110
+    tolerance: 11
+  - quantity: U, syllable transitions
+    value: 109
+    tolerance: 10.9
+  depends_on:
+  - fig1f-syllable-vs-movement-onset
+  criterion: Per-mouse onset-aligned averages z-scored to shuffle as in fig1f-syllable-vs-movement-onset;
+    the peak is the maximum from -5 to +15 samples around onset, as the fig_s07 notebook (cells 67
+    to 77). Two-sided Mann-Whitney U tests; U cannot exceed 112 (14 x 8). Reproduced when DLS is higher with P < 0.05 for both and both U are within tolerance;
+    partially reproduced when P < 0.05 for both but a U misses.
+- id: ed7-dms-no-usage-prediction
+  statement: DMS dopamine transients do not predict future syllable usage; syllable features predict
+    dLight less well in DMS than in DLS (counts and entropy, U = 102, P = 0.002).
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 4; Extended Data
+    Figure 7e
+  quote: dLight recordings in dorsomedial striatum (DMS) revealed less frequent dopamine transients
+    that do not predict future syllable usage
+  statistics:
+  - about: counts and entropy features, DLS against DMS
+    test: two-sided Mann-Whitney U test
+    statistic: U = 102, f = 0.91
+    p: 0.002
+    n: 14 DLS and 8 DMS mice
+  expected:
+  - quantity: U, counts and entropy features, DLS against DMS
+    value: 102
+    tolerance: 10.2
+  depends_on:
+  - ed6b-encoding-model-average
+  criterion: The paper's test is Extended Data Fig. 7e. The encoding model of ed6b-encoding-model-average
+    with counts and entropy only, fitted per area; held-out r averaged per mouse; a two-sided
+    Mann-Whitney U test of 14 DLS against 8 DMS mice (Holm over the three feature sets, as the fig_s07
+    notebook). Reproduced when DLS is higher with P < 0.05 and U within tolerance; partially
+    reproduced when P < 0.05 but U misses. The Fig. 2e analysis applied to DMS (the code runs it on
+    DLS only) is shown as a variant.
+- id: ed7e-velocity-both-areas
+  statement: dLight is predicted by velocity equally well in DMS and DLS (U = 59, P = 0.87).
+  source: Results, Dopamine predicts future syllable use and sequencing, paragraph 4; Extended Data
+    Figure 7e
+  quote: However, dLight signals were effectively predicted by velocity in both DMS and DLS
+  statistics:
+  - test: two-sided Mann-Whitney U test
+    statistic: U = 59, f = 0.53
+    p: 0.87
+    n: 14 DLS and 8 DMS mice
+  depends_on:
+  - ed7-dms-no-usage-prediction
+  criterion: A claim of absence, judged on the paper's test. As ed7-dms-no-usage-prediction with the
+    velocity feature only. Reproduced when the two-sided Mann-Whitney U test gives P >= 0.05 and the
+    held-out r is above 0 in both areas; not reproduced when P < 0.05. U and the effect size are
+    reported either way.
+- id: fig3c-calibration
+  statement: Calibrated 250-ms optogenetic stimulation evokes dLight transients of similar size to
+    spontaneous ones (mean evoked peak 2.18 +- 0.85 z, n = 842; spontaneous 2.23 +- 0.62 z; 99th
+    percentile spontaneous peak 3.40 z).
+  source: Methods, dLight calibration experiments; Figure 3c
+  quote: The mean Opto-DA peak was measured at 2.18 ± 0.85 Δ F / F 0 ( z ), mean spontaneous peak =
+    2.23 ± 0.62 Δ F / F 0 ( z ) and 99th percentile spontaneous peak = 3.40 Δ F / F 0 ( z )
+  expected:
+  - quantity: mean evoked dLight peak
+    value: 2.18
+    tolerance: 0.85
+    unit: z
+  - quantity: mean spontaneous dLight peak
+    value: 2.23
+    tolerance: 0.62
+    unit: z
+  - quantity: 99th percentile spontaneous peak
+    value: 3.4
+    tolerance: 0.34
+    unit: z
+  - quantity: number of evoked peaks
+    value: 842
+    tolerance: 84.2
+  criterion: The two calibration mice, open-loop 250-ms pulses. The evoked peak is the maximum
+    z-scored dLight after pulse onset; the window is open, readings 0 to 0.3 s (the syllable window)
+    and 0 to 0.6 s (the window the fig_4h, 4i notebook uses for evoked peaks). Spontaneous peaks are
+    open as in fig2a-food-reward-transients, here in the same mice's experiments. Tolerances on
+    the means are the reported spreads. Reproduced when, under a reading, the means and the 99th
+    percentile are within tolerance.
+- id: fig3e-optoda-learning
+  statement: Pairing a target syllable with optogenetic dopamine release (Opto-DA) increases its
+    use relative to baseline more than in no-opsin controls (log2 fold change in target counts,
+    one-sided Mann-Whitney U = 197, P = 0.002, f = 0.82).
+  source: Figure 3e legend
+  quote: log 2 fold change in target counts compared with baseline, per mouse, averaged across
+    targets ( P = 0.002, U = 197, f = 0.82, one-sided Mann–Whitney U test)
+  statistics:
+  - test: one-sided Mann–Whitney U test
+    statistic: U = 197, f = 0.82
+    p: 0.002
+    n: 20 Opto-DA and 12 control mice (U / f = 240)
+  expected:
+  - quantity: Mann-Whitney U, Opto-DA against controls
+    value: 197
+    tolerance: 19.7
+  criterion: Methods, Quantifying changes in target syllable counts, with the code's choices
+    (behavior_01, behavior_03, the optoda-learning panel notebook). Online labels, run-length
+    counts of the target in 30-s bins over the whole 30-min experiment, cumulated through the two
+    stimulation experiments; the baseline is the mean of the morning and evening experiments of the
+    most recent previous baseline day, cumulated the same way (so counted twice). The code prefers a
+    Monday baseline day within 5 days before; that is a variant. Log2((stim + 2) / (baseline + 2)) at
+    the end of the second stimulation experiment, averaged over targets per mouse. 250-ms stimulation
+    only; targets need both stimulation experiments and mice two targets. Opto-DA mice are the 20
+    Ai32 mice and controls the 12 no-opsin mice, nucleus accumbens controls included (Methods).
+    Reproduced when Opto-DA mice are higher with one-sided P < 0.05 and U within tolerance;
+    partially reproduced when P < 0.05 but U misses; not reproduced when P >= 0.05.
+- id: fig3f-cumulative-counts
+  statement: The cumulative increase in target counts relative to baseline is larger in Opto-DA
+    mice than in controls (one-sided Mann-Whitney U = 184, P = 0.007, f = 0.77).
+  source: Figure 3f legend
+  quote: Cumulative increase in target counts relative to baseline in Opto-DA and control mice ( P =
+    0.007, U = 184, f = 0.77, one-sided Mann – Whitney U test)
+  statistics:
+  - test: one-sided Mann–Whitney U test
+    statistic: U = 184, f = 0.77
+    p: 0.007
+    n: 20 Opto-DA and 12 control mice
+  expected:
+  - quantity: Mann-Whitney U, Opto-DA against controls
+    value: 184
+    tolerance: 18.4
+  depends_on:
+  - fig3e-optoda-learning
+  criterion: As for fig3e-optoda-learning, with the change in counts (cumulative stim minus
+    cumulative baseline) in place of the log2 fold change. Same rule.
+- id: fig3e-learner-count
+  statement: Only a fraction of Opto-DA mice learn; nine of 20 exceed the largest change in target
+    counts of any control ("learners").
+  source: Methods, Quantifying changes in target syllable counts, paragraph 1; Extended Data Figure
+    9g; Results, Dopamine-behaviour relationships predict learning, paragraph 1
+  quote: ‘Learner’ mice were defined as mice whose average change in target counts above baseline
+    across all syllables exceed the maximum average change in target counts exhibited by no-opsin
+    control animals. These n = 9 animals
+  expected:
+  - quantity: number of learner mice among Opto-DA mice
+    value: 9
+    tolerance: 0.9
+  depends_on:
+  - fig3f-cumulative-counts
+  criterion: Learners are Ai32 Opto-DA mice whose mean over targets of the fig3f change in counts,
+    at the end of the second stimulation experiment, exceeds the maximum over controls (the
+    optoda-learning notebook, cells 17 to 19). Reproduced when there are 9. The overlap with the nine
+    mice the notebook prints (cell 78) is reported, not judged.
+- id: fig3h-stim-post-correlation
+  statement: In learners, the change in target usage during stimulation predicts the change in the
+    post-stimulation experiments (Pearson r = 0.89, P = 0.005); in controls it does not (P = 0.082).
+  source: Figure 3h legend
+  quote: The relationship between target syllable usage changes from baseline during stimulation
+    experiments versus post-stimulation experiments per mouse (Pearson r = 0.89, P = 0.005 for
+    learners and P = 0.082 for controls, one-sided shuffle test)
+  statistics:
+  - about: learners
+    test: one-sided shuffle test
+    statistic: Pearson r = 0.89
+    p: 0.005
+    n: 9 learners
+  - about: controls
+    test: one-sided shuffle test
+    p: 0.082
+  depends_on:
+  - fig3e-learner-count
+  expected:
+  - quantity: Pearson r between stimulation and post-stimulation change in counts, learners
+    value: 0.89
+    tolerance: 0.089
+  criterion: As in the optoda-learning notebook (cells 75 to 80). Post is the two experiments of the
+    day after the stimulation day, cumulated like the stimulation pair and compared with the same
+    baseline. Per mouse, means over targets. Pearson r with 1,000 shuffles, one-sided P. Reproduced
+    when the learners' r is within tolerance with P < 0.05 and the controls' P >= 0.05; partially
+    reproduced when the learners' P < 0.05 but r misses or the controls are significant; not
+    reproduced when the learners' P >= 0.05.
 - id: fig3i-optoda-entropy
   statement: Behavioural sequences right after Opto-DA stimulation are less predictable than after
-    catch trials.
-  source: Results, Syllable-associated Opto-DA influences behaviour, paragraph 3; Figure 3i
+    catch trials; in controls they are not.
+  source: Results, Syllable-associated Opto-DA influences behaviour, paragraph 3; Figure 3i legend
   quote: behavioural sequences observed immediately after Opto-DA stimulation were more
     unpredictable than the those observed on catch trials
+  statistics:
+  - test: two-sided Mann–Whitney U test
+    p: 0.05
+    p_relation: "<"
+  criterion: Methods, Quantifying Opto-DA effects on movement parameters and sequence randomness,
+    with the code's choices (fig_3l, 3m notebook). 250-ms stimulation experiments, Ai32 and control
+    mice. Stimulation trials are target instances with light, catch trials target instances without.
+    Transition entropy of the syllables after onset in non-overlapping five-syllable bins (the code
+    builds transition matrices over the next 5 to 50 syllables and uses a Perks prior), minus the
+    same before onset, per experiment; z-scored to catch trials. Per bin a two-sided Mann-Whitney U
+    test of stimulation against catch over experiments, Holm-corrected over bins. Reproduced when
+    Opto-DA mice have entropy higher after stimulation with P < 0.05 in the first bin and controls in
+    no bin; partially reproduced when Opto-DA is significant but a control bin is too.
+- id: fig3jk-post-predictable
+  statement: In the experiments after stimulation, sequences around the target become more
+    predictable; the most likely transitions into and out of the target become more likely.
+  source: Results, Syllable-associated Opto-DA influences behaviour, paragraph 3; Figure 3j,k
+  quote: behavioural sequences surrounding the target syllable became more predictable, as the most
+    likely transitions into and out of the target became even more likely
+  depends_on:
+  - fig3e-learner-count
+  criterion: As in the fig_3j, 3k notebook. Online labels, run-length transitions. Per mouse and
+    target, inbound and outbound transitions ranked by their baseline counts; post-day counts per
+    rank, plus 1, smoothed by a five-rank centred mean, as log2 of the learners' mean over the
+    controls' mean, with 1,000 bootstraps over mouse and rank rows. The paper reports no test; the
+    claim is judged as reproduced when for both inbound and outbound the log2 ratio of the top-ranked
+    transitions is above 0 with its 95% bootstrap interval excluding 0, a rule fixed here.
+- id: ed10-target-specific
+  statement: Opto-DA reinforcement is specific to the target; syllables adjacent in time or of
+    similar velocity are not reinforced.
+  source: Results, Syllable-associated Opto-DA influences behaviour, paragraph 2; Extended Data Figure
+    10a,b
+  quote: The reinforcing effects of Opto-DA were specific to the targeted syllable, as non-target
+    syllables were not affected
+  statistics:
+  - about: temporally adjacent and similar-velocity syllables
+    test: two-sided Mann-Whitney U test
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - fig3e-learner-count
+  criterion: A claim of absence, judged on the paper's tests, as the fig_s10a and fig_s10b notebooks.
+    (a) Non-target syllables binned by their mean position relative to the target from 10 syllables
+    before to 10 after, the weighted mean change in counts above baseline per bin (weights by
+    relative frequency), learners against controls. (b) Non-target syllables binned by the difference
+    of their mean z-scored velocity from the target's in 10 quantile bins. Two-sided Mann-Whitney U
+    tests per bin and stimulation experiment, Holm-corrected. Reproduced when no bin is significant;
+    not reproduced when any is.
 - id: ed10d-optoda-vigour
   statement: Opto-DA delivered on the fastest (slowest) quartile of target instances makes later
     instances faster (slower).
@@ -306,48 +804,223 @@ claims:
     statistic: u = 167, f = 0.77
     p: 0.013
     n: 18 up experiments and 12 down experiments
+  expected:
+  - quantity: Mann-Whitney U, up against down
+    value: 167
+    tolerance: 16.7
+  criterion: Velocity-modulation experiments (Methods), used when the mouse received at least 50
+    stimulations and its target usage during stimulation exceeded its mean baseline. As in the
+    fig_s10d notebook, each instance's mean velocity z-scored within experiment and syllable, the
+    stimulated instances re-referenced to the first 15 stimulations ((x - mean) / (s.d. + 0.1)),
+    binned by stimulation number at 0, 15, 30 and 45, and bins after the first averaged per
+    experiment and bin. Two-sided Mann-Whitney U test, up against down. Reproduced when up exceeds
+    down with P < 0.05 and U within tolerance; partially reproduced when P < 0.05 but U misses.
+- id: ed10e-no-duration-change
+  statement: Opto-DA does not change the duration of the stimulated target instances relative to catch
+    trials (learners against controls, P = 0.98).
+  source: Extended Data Figure 10e legend
+  quote: no statistically significant differences in duration distributions were identified (p = .98
+    for both sessions; session one U = 1995 and f = .52; session two U = 1804 and f = .46; two-sided
+    Mann-Whitney U test, n = 144 mouse/target control pairs, n = 107 mouse/target learner pairs)
+  statistics:
+  - test: two-sided Mann-Whitney U test
+    statistic: U = 1995 and U = 1804
+    p: 0.98
+    n: 144 control and 107 learner mouse/target pairs
+  depends_on:
+  - fig3e-learner-count
+  criterion: A claim of absence, judged on the paper's test. Duration is the time to the next onset.
+    Per mouse, target and stimulation experiment, mean duration on stimulation trials minus catch
+    trials; two-sided Mann-Whitney U test of learners against controls per experiment, Holm-corrected
+    (fig_s10j, s10k notebook). Reproduced when P >= 0.05 for both; not reproduced when either is
+    below. U is reported.
+- id: ed10i-no-place-preference
+  statement: Opto-DA does not induce a preference for a location in the arena (target-performance
+    JSD P = 0.44; experiment-wide JSD P = 0.41).
+  source: Extended Data Figure 10i legend; Results, Syllable-associated Opto-DA influences behaviour,
+    paragraph 5
+  quote: Jensen-Shannon Divergence (JSD) of centroid location probability distributions across mice
+    based on locations during stimulation trials (target performance) on stimulation day and
+    simulated stimulation trials on baseline days (n = 192 mouse/target syllable pairs, p = 0.44, U =
+    4262, f = 0.49, two-sided Mann-Whitney U test across opto-DA mice and no-opsin controls)
+  statistics:
+  - about: target performance locations
+    test: two-sided Mann-Whitney U test
+    statistic: U = 4262, f = 0.49
+    p: 0.44
+    n: 192 mouse/target syllable pairs
+  - about: experiment-wide locations
+    test: two-sided Mann-Whitney U test
+    statistic: U = 114, f = 0.48
+    p: 0.41
+    n: 32 mice
+  criterion: A claim of absence, judged on the paper's test. Jensen-Shannon divergence between 10 x 10
+    occupancy histograms of target-onset centroids on stimulation days and on other days, per mouse
+    and target (fig_s10h, s10i notebook), on a shared spatial grid (the code computes bin edges
+    separately for each histogram; shown as a variant). Two-sided Mann-Whitney U test of Opto-DA
+    against controls, by pairs and by mice. Reproduced when both P >= 0.05; not reproduced when
+    either is below.
+- id: fig3l-no-kinematic-effect
+  statement: Brief (250 ms) Opto-DA does not change movement at the moment of stimulation; no
+    comparison between stimulation and catch trials is significant.
+  source: Figure 3l legend; Results, Syllable-associated Opto-DA influences behaviour, paragraph 5
+  quote: No comparisons between stimulation and catch trials in any of the mice were significant
+  statistics:
+  - test: one-sided Mann–Whitney U test
+    p: 0.05
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's test as the fig_3l, 3m notebook runs it.
+    250-ms stimulation experiments of Ai32 and control mice. 2D velocity, angular velocity, height
+    velocity and acceleration averaged over five-syllable non-overlapping bins after target onset,
+    stimulation against catch trials; per bin a one-sided Mann-Whitney U test (stimulation greater)
+    over experiments, Holm-corrected per variable and group. Reproduced when no bin of any variable
+    is significant in Opto-DA mice; not reproduced when any is. Variants shown are the Methods'
+    pre-onset subtraction and z-scoring to catch, and per-mouse tests (the legend's "in any of the
+    mice").
+- id: fig3m-long-stim-velocity
+  statement: Extending stimulation to 3 s (pulsed, 25 Hz) makes mice increase their velocity.
+  source: Figure 3m legend; Results, Syllable-associated Opto-DA influences behaviour, paragraph 5
+  quote: extending the duration of optogenetic stimulation to several seconds (which caused dLight
+    signals that are of substantially higher amplitude than typically observed during spontaneous
+    behaviour) caused mice to increase their velocity
+  statistics:
+  - test: one-sided Mann–Whitney U test
+    p: 0.05
+    p_relation: "<"
+    n: 3 Ai32 and 2 control mice
+  depends_on:
+  - fig3l-no-kinematic-effect
+  criterion: As for fig3l-no-kinematic-effect, on the 3-s pulsed experiments. Reproduced when 2D
+    velocity after stimulation exceeds catch trials in Opto-DA mice with P < 0.05 in at least one
+    bin and controls show no such bin; partially reproduced when Opto-DA is significant and a
+    control bin is too; not reproduced otherwise.
 - id: fig4b-endo-da-influence-consistent
   statement: Per mouse, the influence of endogenous dopamine on syllable counts and on sequence
     entropy are correlated (r = 0.69, P = 0.001).
-  source: Figure 4b
+  source: Figure 4b legend; Results, Dopamine-behaviour relationships predict learning, paragraph 1
   quote: scatter plot (including linear regression model fit) of per mouse average Endo-DA count
-    influence and Endo-DA entropy influence
+    influence and Endo-DA entropy influence (Pearson r = 0.69 computed from model predictions on
+    leave-two-out held-out data; P = 0.001
   statistics:
   - test: one-sided shuffle test
     statistic: Pearson r = 0.69
     p: 0.001
+    n: 8 dLight+ChrimsonR mice
+  expected:
+  - quantity: held-out Pearson r, Endo-DA count against entropy influence
+    value: 0.69
+    tolerance: 0.069
+  depends_on:
+  - fig2e-dlight-predicts-future-usage
+  - fig2k-dlight-predicts-sequence-variability
+  criterion: Methods, Using the influence of endogenous dopamine to predict Opto-DA reinforcement, with
+    the code's choices (dlight_10, dlight_11, fig_4b-4e notebook). The 8 dLight+ChrimsonR mice.
+    Count influence per mouse and syllable is the s.d. across bin sizes (10 to 390 syllables) of the
+    Fig. 2e correlation z-scored against 1,000 shuffles, averaged over segments and smoothed by a
+    3-bin rolling mean; entropy influence the same for the Fig. 2k correlation per mouse and syllable
+    (bins of 5 to 60 syllables, 100 shuffles). Per mouse the mean over syllables (Methods) or the
+    median as the code (variant). Bayesian linear regression (normal prior on the weight,
+    exponential on the variance, NUTS) with leave-two-out cross-validation; r is the Pearson
+    correlation of the pooled held-out predictions with the data; one-sided P from 1,000 shuffles.
+    Reproduced when r is within tolerance and P < 0.05; partially reproduced when P < 0.05 but r
+    misses.
 - id: fig4c-endo-da-predicts-learning
   statement: Mice whose syllable use is more influenced by endogenous dopamine learn more from
     Opto-DA (r = 0.51, P = 0.001).
-  source: Figure 4c
+  source: Figure 4c legend; Results, Dopamine-behaviour relationships predict learning, paragraph 1
   quote: Scatter plot (including regression line) of per mouse average Opto-DA learning versus
-    Endo-DA count influence
+    Endo-DA count influence (Pearson r = 0.51 (computed from model predictions on leave-two-out
+    held-out data); P = 0.001
   statistics:
   - test: one-sided shuffle test
     statistic: Pearson r = 0.51
     p: 0.001
+    n: 8 dLight+ChrimsonR mice
+  expected:
+  - quantity: held-out Pearson r, Opto-DA learning against Endo-DA count influence
+    value: 0.51
+    tolerance: 0.051
+  depends_on:
+  - fig4b-endo-da-influence-consistent
+  criterion: Count influence as in fig4b-endo-da-influence-consistent. Opto-DA learning is the log2
+    fold change of target counts on the 250-ms ChrimsonR stimulation day against baseline, z-scored
+    against the log2 fold changes between all pairs of non-stimulation days of the mouse (Methods),
+    averaged per mouse. Same regression, cross-validation and shuffle test. Reproduced when r is
+    within tolerance and P < 0.05; partially reproduced when P < 0.05 but r misses.
 - id: fig4f-catch-dlight-predicts-learning
   statement: Syllables with higher endogenous dLight on catch trials are more reinforced by Opto-DA
     (r = 0.32, P < 0.001).
-  source: Figure 4f
+  source: Figure 4f legend; Results, Dopamine-behaviour relationships predict learning, paragraph 2
   quote: scatter plot (including regression line) of catch trial syllable-associated dLight and
-    Opto-DA learning for each mouse–syllable pair
+    Opto-DA learning for each mouse–syllable pair ( r = 0.32 over held-out data; P < 0.001
   statistics:
   - test: one-sided shuffle test
     statistic: r = 0.32
     p: 0.001
     p_relation: "<"
+  expected:
+  - quantity: held-out Pearson r, catch-trial dLight against Opto-DA learning
+    value: 0.32
+    tolerance: 0.032
+  depends_on:
+  - fig4c-endo-da-predicts-learning
+  criterion: Mouse-target pairs of the 8 dLight+ChrimsonR mice, 250-ms stimulation. Catch-trial dLight
+    is the mean syllable-associated dLight of the target on catch trials of the stimulation
+    experiments; the code takes it from a precomputed table and the window is open between 0 to 0.3 s
+    (the paper's syllable-associated dLight) and 0 to 0.6 s (the table's other column). Opto-DA
+    learning as in fig4c-endo-da-predicts-learning, per pair. Standardised, Huber regression without
+    intercept, fivefold cross-validation repeated five times (Methods); r of pooled held-out
+    predictions; one-sided P from 1,000 shuffles. Reproduced when, under a reading, r is within
+    tolerance and P < 0.05; partially reproduced when P < 0.05 but r misses.
 - id: fig4h-decoding-model
-  statement: A model in which endogenous and exogenous dopamine add predicts held-out syllable
-    choices better than shuffled and noise controls (median r 0.20 against 0.04).
-  source: Figure 4h; Methods, "Decoding model predicting behaviour from dLight"
-  quote: Model-based likelihood of predicting held-out syllable choices on Opto-DA stim experiments
-    (blue) relative to control models
+  statement: A decoding model in which syllable-associated dopamine scales future usage and choice
+    randomness predicts held-out syllable counts better than phase-shift and noise controls (median r
+    0.20 against 0.04).
+  source: Methods, Decoding model predicting behaviour from dLight; Figure 4h
+  quote: "Median Pearson correlation between held-out predictions and observed data: actual model r =
+    0.20, phase shift control r = 0.04, noise model r = 0.04. Comparison between actual model and
+    controls, P = 7 × 10 −18 , U = 2,500, f = 1, Mann–Whitney U test, n = 50 model restarts"
   statistics:
   - test: two-sided Mann–Whitney U test
     statistic: U = 2,500, f = 1
     p: 7.0e-18
     n: 50 model restarts
+  expected:
+  - quantity: median held-out r, dLight model
+    value: 0.2
+    tolerance: 0.02
+  - quantity: median held-out r, phase-shift control
+    value: 0.04
+    tolerance: 0.004
+  - quantity: median held-out r, noise control
+    value: 0.04
+    tolerance: 0.004
+  criterion: Methods, Decoding model, with the code's choices (fig_4h, 4i notebook,
+    photometry/decoding). DLS baseline experiments with at least 2,500 syllables, their first 2,500;
+    tau_a 100 and tau_b 10 syllables, alpha_b fixed, alpha_a fitted on training folds; the top 10
+    syllables; Pearson r between simulated and actual counts after a 50-point rolling mean; fivefold
+    cross-validation repeated 50 times (the legend's n; the Methods say 100). Phase-shift control
+    rolls dLight by 1 to 1,000; noise control draws unit-variance normal values. Two-sided Mann-Whitney
+    U test over repeats. Reproduced when the model's r and the controls' r are within tolerance (for
+    the controls, values that round to 0.04 also count) and the model is higher with P < 0.05;
+    partially reproduced when the model is higher with P < 0.05 but a value misses.
+- id: fig4i-extra-da-matches-calibration
+  statement: The extra dopamine the additive decoding model needs to predict syllable use in Opto-DA
+    experiments matches the dLight evoked by Opto-DA in the calibration experiments.
+  source: Results, Dopamine-behaviour relationships predict learning, paragraph 2; Figure 4i
+  quote: the amount of extra dopamine required for the model to accurately predict actual syllable
+    usage patterns closely matched the amount of dopamine elicited by Opto-DA in our calibration
+    experiments
+  depends_on:
+  - fig4h-decoding-model
+  - fig3c-calibration
+  criterion: As in the fig_4h, 4i notebook. 250-ms ChrimsonR stimulation experiments with at least 5
+    catch trials; stimulated instances get the mean catch-trial dLight of the target plus an offset
+    of 0 to 10 z in steps of 0.5; the offset maximising held-out r is taken. The comparison
+    distribution is the evoked dLight peaks of stimulated trials (0 to 0.6 s, as the notebook). The
+    paper gives no bound for "closely matched"; readings are (a) the best offset lies within the
+    interquartile range of evoked peaks, (b) within their central 95%. Reproduced under (a);
+    partially reproduced under (b) only.
 - id: fig5-rl-model
   statement: A Q-learning agent rewarded by syllable-associated dLight learns a transition matrix
     similar to the observed one, best when dopamine also transiently raises choice variability.
@@ -356,3 +1029,19 @@ claims:
     by actual mice exploring an open field; comparing alternative formulations of this model
     revealed that maximal model performance depended on dopamine both reinforcing specific syllable
     transitions and briefly increasing the variability of syllable choices
+  statistics:
+  - test: shuffle test, model fits exceeding 95% of shuffle correlation values
+    p: 0.05
+    p_relation: "<"
+    n: 100 shuffles
+  criterion: Methods, Applying RL models, with the code's choices (dlight_13, dlight_14, models_rl, the
+    fig_5b-5d notebook). DLS baseline experiments with at least 2,500 syllables, their first 2,500;
+    top 10 syllables; reward the syllable-associated dLight; Q-table initialised uniform with zero
+    diagonal; softmax policy; the full model raises temperature when reward crosses a threshold, the
+    reinforcement-only model sets that rise to 0. Parameters by grid search on training folds of
+    twofold cross-validation over experiments. Performance is the Pearson correlation of the
+    row-z-scored mean Q-table with the held-out row-z-scored empirical transition matrix, diagonal
+    excluded. Null of 100 circular shifts of each experiment's dLight. Reproduced when both models
+    exceed the 95th percentile of the shuffles and the full model's correlation exceeds the
+    reinforcement-only model's; partially reproduced when both are significant but the full model is
+    not higher.
