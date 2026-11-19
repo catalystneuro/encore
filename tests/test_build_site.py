@@ -593,6 +593,36 @@ def test_a_papers_page_counts_all_its_claims_and_its_dataset_says_which_rest_on_
     assert site.outcome_counts([], "paper") == dict.fromkeys(site.OUTCOMES, 0)
 
 
+def test_a_papers_other_sources_are_named_in_its_sidebar_and_described_under_provenance(built):
+    # What an attempt used that is not in its datasets (the record's `inputs`): by name under the datasets, and in
+    # the record's words under Provenance.
+    data, out = built
+    ref = lambda src: site.source_ref(data, src, "../../")
+    assert ref("https://github.com/lab/code at commit 1d95162") == {"host": "GitHub", "label": "lab/code", "href": "https://github.com/lab/code"}
+    assert ref("doi:10.5281/zenodo.13749343") == {"host": "Zenodo", "label": "10.5281/zenodo.13749343",
+                                                  "href": "https://doi.org/10.5281/zenodo.13749343"}
+    assert ref("NCBI GEO GSE241559 (SuperSeries GSE241561)")["href"].endswith("acc=GSE241559")
+    assert ref("PRIDE PXD065006") == {"host": "", "label": "PRIDE PXD065006", "href": None}
+    known = ref("doi:10.48324/dandi.000003/0.260218.2052")       # a dataset the registry has a page for
+    assert known["label"] == "DANDI:000003" and known["href"] == "../../datasets/dandi/000003/"
+    seen = 0
+    for q in site.papers_of(data):
+        if not q["attempts"]:
+            continue
+        others = site.other_sources(data, q["attempts"], "../../")
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        head = page[page.index('<header class="page">'):page.index("</header>")]
+        assert ('class="srcs"' in head) == bool(others) == ('id="other-sources"' in page)
+        if others:
+            seen += 1
+            assert len(others) == len({(o["label"], o["href"]) for o in others})            # each source once
+            assert all(site.e(o["what"]) in page for o in others)
+            assert head.count("<li>") + head.count('<li class="muted">') >= min(len(others), 6)
+        if seen > 12:
+            break
+    assert seen
+
+
 def test_each_notebook_on_the_claims_panel_has_an_open_in_colab_badge(built):
     # Beside the notebook's name over its claims: a link to the copy of it on the `colab` branch.
     data, out = built

@@ -306,6 +306,9 @@ def collect(executed: Path | None = None) -> dict:
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
+            # Everything the attempt used that is not in its datasets: other data, the paper's code (docs/protocol.md).
+            "inputs": [{"what": squash(str(i.get("what") or "")), "source": squash(str(i.get("source") or ""))}
+                       for i in a.get("inputs") or []],
             "entry_title": entry["title"] if entry else None,
             # The recorder's summary for the site (docs/agents/recorder.md, step 2), when the attempt has one.
             "summary": squash((ROOT / "summaries" / f"{a['id']}.md").read_text())
@@ -622,6 +625,67 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
     return {k: sum(1 for a in attempts for o in a["outcomes"]
                    if o["outcome"] == k and (group_of(o) != "link" if group == "paper" else group_of(o) == group))
             for k in OUTCOMES}
+
+
+# Whose DOIs these are, by prefix: for naming an attempt's other sources (source_ref).
+DOI_HOSTS = [("10.48324/dandi", "DANDI"), ("10.26275/", "SPARC"), ("10.6080/", "CRCNS"), ("10.5281/zenodo", "Zenodo"),
+             ("10.6084/m9.figshare", "Figshare"), ("10.5061/dryad", "Dryad"), ("10.17605/osf", "OSF"),
+             ("10.25493/", "EBRAINS"), ("10.18112/openneuro", "OpenNeuro"), ("10.12751/g-node", "G-Node"),
+             ("10.17632/", "Mendeley Data"), ("10.7910/dvn", "Harvard Dataverse"), ("10.35092/", "CaltechDATA")]
+_DOI_KEYS: dict = {}
+
+
+def source_ref(data: dict, source: str, root: str) -> dict:
+    """How one of an attempt's other sources is named and linked, from the `source` its record gives (a DOI, or a
+    repository's address with the commit read): its host, a short label, and an address. A DOI of a dataset the
+    registry lists is named as that dataset and opens its page here, when it has one."""
+    if id(data) not in _DOI_KEYS:
+        keys = {}
+        for t in data["targets"]:
+            for d in [t.get("doi"), *(t.get("version_dois") or [])]:
+                if d:
+                    keys[str(d).lower()] = t["key"]
+        _DOI_KEYS.clear()
+        _DOI_KEYS[id(data)] = keys
+    doi = re.search(r"\b10\.\d{4,9}/[^\s,;)\]]+", source)
+    url = re.search(r"https?://[^\s,;)\]]+", source)
+    geo = re.search(r"\bGS[EM]\d+\b", source)
+    if doi and not (url and "github.com" in url.group(0)):
+        d = doi.group(0).rstrip(".").lower()
+        dandi = re.match(r"10\.48324/dandi\.(\d{6})", d)
+        key = _DOI_KEYS[id(data)].get(d) or (f"dandi:{dandi.group(1)}" if dandi else None)
+        if key:
+            has_page = key in current_attempts(data)
+            return {"host": "A dataset in the registry" if has_page else ARCHIVES.get(split_key(key)[0], {}).get("label", ""),
+                    "label": dataset_label(key), "href": root + page_of(key) if has_page else f"https://doi.org/{d}"}
+        host = next((name for prefix, name in DOI_HOSTS if d.startswith(prefix)), "DOI")
+        return {"host": host, "label": d, "href": f"https://doi.org/{d}"}
+    if url:
+        u = url.group(0).rstrip(".")
+        repo = re.match(r"https?://(github|gitlab)\.com/([^/\s]+/[^/\s#?]+)", u)
+        if repo:
+            return {"host": "GitHub" if repo.group(1) == "github" else "GitLab",
+                    "label": repo.group(2).removesuffix(".git"), "href": u}
+        return {"host": "", "label": re.sub(r"^https?://(www\.)?", "", u).split("/")[0], "href": u}
+    if geo:
+        return {"host": "GEO", "label": geo.group(0),
+                "href": f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={geo.group(0)}"}
+    return {"host": "", "label": source if len(source) <= 60 else source[:57].rstrip() + "…", "href": None}
+
+
+def other_sources(data: dict, attempts: list[dict], root: str) -> list[dict]:
+    """The other sources a paper's attempts used, each once (by its source), with what was taken from it."""
+    out, seen = [], set()
+    for a in attempts:
+        for i in a.get("inputs") or []:
+            ref = source_ref(data, i["source"], root)
+            if ref["label"] == a["paper"].lower():
+                # The paper's own DOI: what it published beside its text, its supplementary files and tables.
+                ref = {**ref, "host": "", "label": "The paper’s supplementary files"}
+            if (ref["label"], ref["href"]) not in seen:
+                seen.add((ref["label"], ref["href"]))
+                out.append({**ref, "what": i["what"], "source": i["source"]})
+    return out
 
 
 def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
@@ -3458,6 +3522,18 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     else:
         deviations_html = '<p class="muted" style="margin-top:14px">None recorded.</p>'
 
+    # Everything the attempts used that is not in the datasets, in the records' own words.
+    def _src_full(o):
+        link = f'<a href="{e(o["href"])}">{e(o["label"])}</a>' if o["href"] else e(o["label"])
+        return (f'<li><p class="src-name">{link}' + (f' <span class="muted">{e(o["host"])}</span>' if o["host"] else "")
+                + f'</p><p class="src-what">{e(o["what"])}</p><p class="src-from small muted">Source as recorded: '
+                  f'{e(o["source"])}</p></li>')
+    others_all = other_sources(data, atts, root)
+    others_full = (f'<h3 id="other-sources" style="margin-top:22px">Other data and code used <span class="count">'
+                   f'{len(others_all)}</span></h3><p class="sub small" style="margin-top:6px">What the attempt'
+                   f'{"s" if len(atts) != 1 else ""} used that is not in the dataset{"s" if len(about) != 1 else ""}: '
+                   f'other data, and the paper&rsquo;s code. Each is as the attempt&rsquo;s record describes it.</p>'
+                   f'<ul class="srcs-full">{"".join(_src_full(o) for o in others_all)}</ul>') if others_all else ""
     provenance_html = ""
     for a in atts:
         agent = a.get("agent") or {}
@@ -3704,6 +3780,17 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                    "Dataset" if len(listed) == 1 else "Datasets")
         sets = (f'<div class="sets"><table aria-label="{heading}"><caption>{heading}</caption><tbody>{lines}</tbody>'
                 f'</table></div>')
+        # Under the datasets: what else the attempts used, by name. What was taken from each is under Provenance.
+        others = other_sources(data, atts, root)
+        SHOWN = 6
+        def _src(o):
+            link = f'<a href="{e(o["href"])}">{e(o["label"])}</a>' if o["href"] else e(o["label"])
+            return f'<li>{link}' + (f' <span class="muted">{e(o["host"])}</span>' if o["host"] else "") + "</li>"
+        others_side = (f'<div class="srcs"><p class="srcs-head">Other data and code used</p><ul>'
+                       + "".join(_src(o) for o in others[:SHOWN])
+                       + (f'<li class="muted">and {len(others) - SHOWN} more</li>' if len(others) > SHOWN else "")
+                       + f'</ul><p class="small"><a href="#provenance">What was taken from each</a></p></div>'
+                       ) if others else ""
         missing = [m for a in atts for m in a.get("missing_datasets") or []]
         # Why an attempt left a dataset out, in its own words: long, so on request.
         could_not = (f'<details class="sets-why"><summary>{len(missing)} dataset{"" if len(missing) == 1 else "s"} '
@@ -3723,7 +3810,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                 f'<p class="phead-tier">{tier_badge(tier, tier_link)}</p>'
                 f'<p class="sub small"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · <span class="key">paper key '
                 f'<code>{e(paper["key"])}</code></span></p>'
-                f'{sets}{could_not}'
+                f'{sets}{could_not}{others_side}'
                 + (f'<div class="phead-tags">{tags}</div>' if tags else "") + '</aside>')
     else:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
@@ -3775,7 +3862,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     <p class="sub small" style="margin-top:12px">How the tests differed from the paper’s method or data, and the claims
     each applies to.</p>
     {deviations_html}</section>
-  <section class="tabpanel" id="provenance"><h2>Provenance</h2>{provenance_html}</section>
+  <section class="tabpanel" id="provenance"><h2>Provenance</h2>{provenance_html}{others_full}</section>
   {related}
   {paper_badges_panel(data, paper, root) if paper and not one else ""}
   <div class="prevnext">{prev_link}{next_link}</div>
