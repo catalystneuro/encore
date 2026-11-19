@@ -37,11 +37,11 @@ The record, with the reasons and the differences from the paper's method, is
 [`attempts/asari-2009-03.yaml`](../../attempts/asari-2009-03.yaml).
 
 - `reproduce_asari_2009.ipynb`: the analysis. It reads about 3 GB from the CRCNS bucket in four
-  processes and runs 1000 shuffles per probe under five seeds; it takes about 35 minutes.
+  processes and runs 1000 shuffles per probe under five seeds; it takes about half an hour.
 - `asari.py`: reading the zips in place, cutting recordings into context-probe pairs as the
   authors' `CxtDep.m` does, the significance and fractional power measures, the exponential fits,
   the spike detectors, and the property sets of the synthetic ensembles. Other notebooks on this
   data set can import it.
 - `strf_wehr.ipynb` and `wehr.py`: the STRF and LN encoding models of Figure 4 on Wehr's
   recordings (spectrograms, ridge regression over nine window lengths with 10-fold
-  cross-validation, robust lowess nonlinearity); about 12 minutes.
+  cross-validation, robust lowess nonlinearity); about 9 minutes.

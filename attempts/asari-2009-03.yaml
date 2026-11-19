@@ -42,7 +42,9 @@ outcomes:
     120, 96, 82 and 354 and under ''probe'' 95, 110, 39, 25 and 137. The Table 1 rows do not match under
     any reading: the MHT row has 14 AM tests and no amplitude, frequency or FM test (paper 25, 25, 71,
     57), because in the 25 MHT-ensemble files with a natural sound every MHT fragment follows at most
-    one other fragment (235 none, 171 one), so only the natural sound is a probe there.'
+    one other fragment (235 none, 171 one), so only the natural sound is a probe there. With silence
+    counted as a conditioning stimulus, each of the 406 MHT fragments has exactly one conditioning stimulus,
+    so the row cannot be formed under that reading either.'
   deviations:
   - The voltage-clamp counts are not tested; the data set holds no voltage-clamp recordings.
   - The inclusion rule follows the authors' CxtDep.m, in the data set, for what the Methods leave open
@@ -152,8 +154,8 @@ outcomes:
     is between 0.5 and 2 s under every reading that selects two decaying exponentials, and under all five
     seeds for the 0-6 s readings. Fitted from 0 to 4.72 s with sizes free in sign, the fast component
     is a rise at the onset (size -0.172, 15 ms) with a slow constant of 0.44 s; with sizes held non-negative
-    over running probes, the claim's seed selects one exponential (0.205, 0.50 s) and the other four seeds
-    two. The noise floor is the one from fig3a-proportion-significant's shuffles.
+    from 0 to 4.72 s, two exponentials are selected under all five seeds (running probes, claim's seed,
+    0.162 and 0.068 with 0.27 and 1.10 s). The noise floor is the one from fig3a-proportion-significant's shuffles.
   deviations:
   - Fitted at 1-ms resolution (means of ten 0.1-ms points), a standard choice.
   - Sizes free in sign and held non-negative are both run, as the paper gives no bounds.
@@ -214,8 +216,17 @@ outcomes:
     folds and 0.11 and 0.25 with folds by stimulus. Scoring only bins at least 4052 ms after onset removes
     the significant change (STRF p 0.065 and 0.052) but the mean then exceeds 0.22 (1.26 and 1.14), as
     one cell has negative predictable power in 6 of 10 folds. So no reading meets both conditions. The
-    LN model is better than STRF on training data (+0.013 to +0.049) and worse on validation data (-0.025
-    to -0.34). The Friedman variant gives STRF p 0.016 to 0.31. No result uses random draws.
+    outcome depends on the cells used. With only the ten 2002 cells (5 to 25 trials per stimulus), three
+    of the four all-bins readings meet the full criterion (STRF p 0.053 and LN p 0.22 with 10-ms Hann
+    and contiguous folds, 0.31 and 0.50 with 10-ms Hann and folds by stimulus, 0.28 and 0.86 with 20-ms
+    Hann and folds by stimulus, all means at most 0.14); with 20-ms Hann and contiguous folds STRF p is
+    0.042. The six 2003 cells with two trials per stimulus are kept because the paper's 20 cells cannot
+    be the ten 2002 cells alone; Summary.mat lists 10 cells of 2002 and 15 of 2003, so at least 10 of
+    the 20 are 2003 cells, and only these six have repeats that Eq. 52 can use. The statement's "the LN
+    model did only slightly better" does not hold on validation data. The LN model is better than STRF
+    on training data (+0.013 to +0.049) and worse on validation data (gain -0.025 to -0.34; one cell, 20020602-mw-001, has LN validation performance -0.85),
+    which suggests that the robust lowess fitted to training predictions does not carry over to held-out
+    folds. The Friedman variant gives STRF p 0.016 to 0.31. No result uses random draws.
   notebook: strf_wehr.ipynb
   output: claim:fig4-strf-performance-low
   measured: 0.148
@@ -331,23 +342,26 @@ outcomes:
   output: claim:fig8c-relative-effects
   notes: 'Area under Q(t) from 0 to 4 s relative to natural sounds. Under the claim''s seed no reading
     meets the full criterion, and under every reading the point estimates fall in the claimed pattern.
+    Resampling probes, no reading meets the full criterion under any of the five seeds.
     Resampling probes (''table1'' tests, silence counted, natural area 0.762): amplitude 0.73 (0.62 to
     0.84), frequency 0.63 (0.55 to 0.72), AM 0.15 (0.11 to 0.19), FM 0.13 (0.10 to 0.17), higher-order
     0.36 (0.31 to 0.42); with silence not counted in the natural denominator (area 0.621), amplitude 0.89
     (0.76 to 1.04) reaches 1 and frequency 0.77 (0.67 to 0.90) does not. Resampling trials within each
     probe and context, the amplitude and frequency intervals lie above 1 (1.11 to 1.27, 1.05 to 1.16)
     and AM and FM below 1; the higher-order upper bound is 1.00 under the claim''s seed, so it fails,
-    and 0.99 to 1.00 under the other four seeds, which meet the full criterion: the outcome is seed sensitive.
-    These trial intervals do not contain their own point estimates (amplitude 0.73 against 1.11 to 1.27),
-    as drawing trials with replacement duplicates trials and biases the power estimates; the ''class''
-    and ''probe'' readings give the same pattern.'
+    and 0.99 to 1.00 under the other four seeds, which would meet the full criterion. These trial intervals
+    do not contain their own point estimates (amplitude 0.73 against 1.11 to 1.27, AM 0.15 against 0.81
+    to 0.93), as drawing trials with replacement duplicates trials and biases the power estimates; the
+    ''class'' and ''probe'' readings give the same pattern. As this reading is not a sound interval,
+    it does not decide the outcome, and the outcome is not marked seed sensitive.'
   assumed: true
   deviations:
   - 'Both readings of a sample are run: probes (1000 drawn with replacement, 200 times) and trials (the
     trials of every probe and context drawn with replacement, 200 times, power at 1-kHz points in 50-ms
     bins), with the natural sound denominator with and without silence as a context.'
   - Rests on the reading of the tests assumed in fig8a-proportion-by-property.
-  seed_sensitive: true
+  - The trial-resampling intervals are shown but do not decide the outcome, as they exclude their own
+    point estimates.
 - claim: fig8-natural-synthetic-probes-alike
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -390,22 +404,27 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig9-example-first-bin
-  notes: The Figure 9A design (the seven-fragment sequence, three contexts) is in one MGB file, 20071010-ha2-003-003,
-    with 12 such probes. Four have a first-bin SD at least twice every later bin's (for example probe
+  notes: The Figure 9A design (the seven-fragment sequence, three contexts) gives 12 probes, probes 4 to
+    7 of three MGB files (20071009-ha1-003-004, 20071010-ha2-003-003 and 20071012-ha1-002-003). Four, all
+    in 20071010-ha2-003-003, have a first-bin SD at least twice every later bin's (for example probe
     4, 31.4 spike/s against at most 7.2 in bins 2 to 6), under all three detectors. Over all 93 probes,
     35 (authors' detector), 45 (half threshold) or 40 (4-SD threshold) do.
 - claim: fig7-example-frequency-context
   outcome: blocked
   blocked_by: other
   notes: No recording matches the criterion's description (a DMR frequency-variant cell with contexts
-    in 0.625-2.5, 2.5-10 and 10-40 kHz and a natural sound probe); the notebook lists every DMR frequency-variant
-    file. The five with a natural sound probe use six 2-octave bands from 250-1000 to 8000-32000 Hz, in
-    two sets of six fragments; in two of their ten frequency tests the last significant period ends after
-    3.6 s (4.58 s in 20060916-ha4-001-002, 4.83 s in 20060916-ha5-002-002), with those bands. The example's
-    bands occur only in other DMR files, as one band (2500-10000 Hz) or within others (625-2500 with 10000-40000,
-    2500-40000), never as the three conditioning stimuli of a natural sound probe. The criterion says
-    the claim is not testable when no cell matches. The kHz values may be axis ticks of Figure 7A, not
-    bands.
+    in 0.625-2.5, 2.5-10 and 10-40 kHz and a natural sound probe). The notebook lists all 17 files with
+    DMR fragments, whatever their descriptions say ("bandwidth", "frequency" or "amplitude" variants),
+    with the band of every fragment and the DMR bands that precede each natural sound; none of the 46
+    natural sound ensemble files has a DMR fragment. 10 of the 17 have a natural sound. In five, it follows DMR frequency
+    variants in six 2-octave bands from 250-1000 to 8000-32000 Hz, in two sets of six fragments; in three
+    of their ten frequency tests the last significant period ends after 3.6 s (3.67 s in 20060916-ha3-002-002,
+    4.58 s in 20060916-ha4-001-002, 4.83 s in 20060916-ha5-002-002), with those bands. In the other five,
+    it follows amplitude variants in one band. The example's band edges occur in six files, the five
+    "bandwidth" files of 20060320 and 20060321 (625-10000, 1250-20000, 2500-40000, and 625-2500 with 10000-40000
+    Hz), which hold no natural sound, and 20060916-ha5-002-003, whose natural sound follows amplitude
+    variants in 2500-10000 Hz only. The criterion says the claim is not testable when no cell matches.
+    The kHz values may be axis ticks of Figure 7A, not bands.
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig7-example-frequency-context
 - claim: figs1-silence-probe
@@ -437,9 +456,11 @@ findings:
   statement: The MHT row of Table 1 (25 amplitude, 25 frequency, 71 AM and 57 FM probes) cannot be formed
     from the data set. In the 25 MHT-ensemble files with a natural sound, every MHT fragment follows at
     most one other fragment, so only the natural sound has two conditioning stimuli; the data set gives
-    14 AM tests on MHT probes (2 cells) and none for the other properties. The paper's 71 and 57 equal
-    the per-set natural-probe tests of the 19 sixteen-MHT files less one per file (76 - 19 = 57), plus
-    the 14 for AM, which suggests the row split counts tests differently.
+    14 AM tests on MHT probes (2 cells) and none for the other properties. With silence counted as a conditioning
+    stimulus, each of the 406 MHT fragments in those files has exactly one conditioning stimulus, so the
+    row cannot be formed under that reading either. The paper's 57 FM probes equal the 76 per-set natural-probe
+    FM tests of the 19 files with 16 MHT fragments less one per file (76 - 19 = 57), and its 71 AM probes
+    equal 57 plus the 14 AM tests on MHT probes, which suggests the row split counts tests differently.
 - kind: metadata_error
   about: data
   statement: In 20051107-ha1-001-003.mat and 20051107-ha1-001-004.mat the trigger descriptions number
@@ -674,4 +695,172 @@ verifications:
     reason: 24 silence probes in 21 cells have a significant period starting within 0.5 s. Stimulus-related
       power first falls below 10% of its onset value at 0.72 s. The 10% threshold is crossed on a noisy
       curve, and the mean over 1.1-2.5 s is 13% of the onset value; the criterion is met literally (B13).
+    response: No change.
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full re-executed notebooks reproduce_asari_2009.ipynb (65 cells) and strf_wehr.ipynb,
+    the helper modules asari.py and wehr.py, the claims file and the attempt record, with the paper''s
+    full text. It checked each stated outcome and assumption, every sentence of the conclusions, the Summary,
+    the README and the record''s notes against the outputs, and its round-1 points.'
+  results:
+  - claim: methods-recording-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Residual on B1 (bears on the finding, not on the outcome) - Table 1's legend says rows
+      are the probe type and probes need only two conditioning stimuli; the synthetic rows were formed with
+      silence left out only, so an MHT fragment with one conditioning fragment plus silence was not counted
+      and "cannot be formed from the data set" is shown under one reading only. The record's statement that
+      the paper's 57 equals 76 - 19 over 19 sixteen-MHT files is not printed (cell 10 prints 25 files and
+      82 tests).
+    response: 'Cell 10 now counts conditioning stimuli with silence counted: each of the 406 MHT fragments
+      in the 25 MHT-ensemble files with a natural sound has exactly one (silence or one fragment), so the
+      MHT row cannot be formed under that reading either; the notes, the finding and the Summary say so.
+      Cell 10 also prints the 19 files with 16 MHT fragments and their 76 natural-probe FM tests per set
+      (76 - 19 = 57). The Summary''s sentence on the MHT ensembles is limited to the 25 files with a natural
+      sound. Outcome unchanged.'
+  - claim: a1-mgb-firing-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Assumption stated. The partial rule holds only under the variant MGB detectors (half threshold,
+      4 SD), not under the authors' own detector (4.99 Hz, cell 13). The record says so.
+    response: No change.
+  - claim: fig2-example-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2-example-long-context
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig3a-proportion-significant
+    agrees: true
+    outcome: reproduced
+    reason: It holds only under the all-probes reading. The record says so and asks the authors.
+    response: No change.
+  - claim: fig3a-significance-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The record's "with sizes held non-negative over running probes, the claim's seed selects
+      one exponential (0.205, 0.50 s) and the other four seeds two" is not supported - cell 25 prints `seed
+      0 running 0-4.72 s nonneg - 2 exp, alpha [0.162 0.068], tau [0.266 1.095]` and lists that reading
+      among those with two exponentials. The outcome is unaffected.
+    response: The sentence is corrected - held non-negative from 0 to 4.72 s, two exponentials are selected
+      under all five seeds (claim's seed, 0.162 and 0.068 with 0.27 and 1.10 s).
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: timescale-longer-than-membrane
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig4-predictability-upper-bound
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig4-strf-performance-low
+    agrees: true
+    outcome: not_reproduced
+    reason: Yes, under the stated cell set. The record leaves out that the outcome depends on which cells
+      are used - with only the ten 2002 cells (cell 11), three of the four all-bins readings meet the full
+      criterion (hann10/contig STRF p = 0.053 and LN p = 0.22; hann10/stim 0.31 and 0.50; hann20/stim 0.28
+      and 0.86; all means at most 0.14), so the outcome depends on adding six 2003 cells with only two trials
+      per sound. The record should disclose this, or explain why cells with two trials belong in the sample.
+      Not decisive - the LN model does much worse than STRF on validation data (one cell at -0.85, gains
+      of -0.025 to -0.34), where the paper says LN does slightly better, which suggests the lowess step fails
+      to generalise.
+    response: 'Outcome kept. The notes and the conclusion of strf_wehr.ipynb now give the ten-cell result
+      and why the two-trial cells are kept - Summary.mat lists 10 cells of 2002 and 15 of 2003 (now printed),
+      so at least 10 of the paper''s 20 cells are 2003 cells, and the six kept are the only 2003 cells with
+      repeats that Eq. 52 can use; the ten 2002 cells alone cannot be the paper''s sample. The notes now
+      say that the statement''s "LN did only slightly better" does not hold on validation data and that the
+      lowess fit does not carry over to held-out folds. The cell count of the 2003 experiment in the notebook''s
+      Data section is corrected from sixteen to fifteen.'
+  - claim: fig5-example-conductances
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig6-conductance-decay
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig8a-proportion-by-property
+    agrees: true
+    outcome: not_reproduced
+    reason: '''table1'' is the only reading whose totals equal all five columns (cell 10), so it is the
+      reading the criterion points to. The two pure readings would give partially reproduced, and the record
+      says so.'
+    response: No change.
+  - claim: fig8b-decay-by-property
+    agrees: true
+    outcome: partially_reproduced
+    reason: Assumption stated and reasonable.
+    response: No change.
+  - claim: fig8a-significance-fits
+    agrees: true
+    outcome: not_reproduced
+    reason: Assumption stated and reasonable.
+    response: No change.
+  - claim: fig8c-relative-effects
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes on the outcome; no on the seed-sensitive flag. The flag rests entirely on the trial-resampling
+      reading, which the attempt itself calls "not a sound interval" (cell 47) - its intervals exclude their
+      own point estimates, for example AM 0.15 against an interval of 0.81-0.93. The sound reading (resampling
+      probes) fails the full criterion under all five seeds (cell 46). The flag should be dropped or qualified.
+    response: The seed-sensitive flag is dropped. The trial-resampling intervals are still shown, with the
+      four seeds under which they would meet the criterion, but they no longer decide anything, as they
+      exclude their own point estimates; resampling probes, every reading fails the full criterion under all
+      five seeds. The conclusion cell, the Summary and the notes say so. Outcome unchanged.
+  - claim: fig8-natural-synthetic-probes-alike
+    agrees: true
+    outcome: reproduced
+    reason: Changed from round 1. The labelling objection is answered (B1). The test has almost no power
+      - AM has 14 synthetic tests in 2 cells, and FM has none. The record says so.
+    response: No change.
+  - claim: fig9-mgb-fast-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: The plateau result depends on the detector (1.27, 1.38 and 3.24 spike/s bracket 2.0). Reasonable.
+    response: No change.
+  - claim: fig9-example-first-bin
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 56 and the record say all 12 probes with the Figure 9A design are in 20071010-ha2-003,
+      while cell 55 prints only the count (12) and the files of the 4 matching probes.
+    response: Cell 55 now prints the file and probe of each of the 12. They are probes 4 to 7 of three files
+      (20071009-ha1-003-004, 20071010-ha2-003-003 and 20071012-ha1-002-003), not one, so the statement was
+      wrong; the 4 matching probes are all in 20071010-ha2-003-003. Cell 56 and the notes are corrected.
+      Outcome unchanged.
+  - claim: fig7-example-frequency-context
+    agrees: true
+    outcome: blocked
+    reason: Provisionally; the search is incomplete. Cell 58 searches only DMR files whose descriptions contain
+      "frequency", yet the Figure 7 legend says "different bandwidths". It also lists a fragment band (625,
+      2500, 10000, 40000), whose edges are those of the example's three bands, but neither its file nor whether
+      that file has a natural probe is printed, nor the bands of the other 5 DMR files that have a natural
+      probe. The finding that no recording matches is shown only for the 5 frequency-variant files. Cell
+      59 and the record say two of the ten frequency tests end after 3.6 s; cell 58 shows three (3.6733 s
+      in 20060916-ha3-002-002, 4.58 s and 4.83 s).
+    response: 'Cell 58 now searches all 17 files with DMR fragments, whatever their descriptions say, and
+      prints the band of every fragment, the natural fragments, the DMR bands before each natural sound,
+      and the files whose bands share an edge with the example''s; it also prints that none of the 46 natural
+      sound ensemble files has a DMR fragment. The band (625, 2500, 10000, 40000) is fragment 4 of the five
+      "bandwidth" files of 20060320 and 20060321 (with 625-10000, 1250-20000 and 2500-40000 Hz), which hold
+      no natural sound. Of the 10 files with a natural sound, five follow frequency variants in six 2-octave
+      bands and five follow amplitude variants in one band (one of them, 20060916-ha5-002-003, in 2500-10000
+      Hz). No natural sound follows the example''s three bands. The count is corrected to three of ten. Outcome
+      unchanged.'
+  - claim: figs1-silence-probe
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
     response: No change.

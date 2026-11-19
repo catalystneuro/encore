@@ -1,0 +1,17 @@
+I've answered every point in the round-2 report. No outcome changed and nothing is proposed: the counts stay at 7 reproduced, 6 partially reproduced, 5 not reproduced and 3 blocked. The final run of `python tools/entry.py all entries/asari-2009` passed (main notebook 26.9 min, `strf_wehr.ipynb` 530 s), and `check` reports 0 errors. All the seeded numbers came out the same as before.
+
+**Points that bear on a conclusion**
+- **fig4-strf-performance-low:** I kept not reproduced and added to the notes the verifier's point that the outcome depends on which cells are used. With only the ten 2002 cells, three of the four all-bins readings would meet the criterion. I kept the six 2003 cells that have two trials because the paper's 20 cells cannot be the ten 2002 cells alone. Summary.mat lists 10 cells from 2002 and 15 from 2003, so at least 10 of the paper's 20 come from 2003, and these six are the only 2003 cells with repeats that Eq. 52 can use. The notebook now prints the cell count per experiment, and I corrected its Data section, which said "sixteen" 2003 cells instead of fifteen. The notes also now say that the LN model does worse than STRF on held-out data, which contradicts the paper's "slightly better".
+- **fig8c-relative-effects:** I dropped `seed_sensitive`. The flag came only from the trial-resampling intervals, which exclude their own point estimates. Those intervals are still shown, but they no longer decide anything. Resampling probes, every reading fails the full criterion under all five seeds.
+- **fig7-example-frequency-context:** cell 58 now searches all 17 files with DMR fragments, including the "bandwidth" files, and confirms that none of the 46 natural-sound files has a DMR fragment. The fragment with edges at 625, 2500, 10000 and 40000 Hz belongs to five bandwidth files from 20060320 and 20060321, and none of them contains a natural sound. No natural probe follows the example's three bands, so the claim stays blocked.
+- **MHT row of Table 1:** the notebook now also counts silence as a conditioning stimulus. Each of the 406 MHT fragments then has exactly one conditioning stimulus, so the row cannot be formed under either reading. I updated the notes, the finding and the Summary to say so.
+
+**Text corrections, each now backed by printed output**
+- **fig3a-significance-decay:** with sizes held non-negative, two exponentials are selected under all five seeds. The record had said the claim's seed selects one.
+- **fig7:** three of the ten frequency tests end after 3.6 s, not two.
+- **MHT finding:** the 19 files with 16 MHT fragments and their 76 FM tests (76 − 19 = 57) are now printed.
+- **Summary, MHT sentence:** it is now limited to the 25 MHT files that contain a natural sound.
+- **fig9-example-first-bin:** the new output showed my statement was wrong. The 12 probes with the Figure 9A design come from three files, not one. The 4 probes that pass are all in 20071010-ha2-003-003; the outcome is unchanged.
+- **Run times:** the README now says "about half an hour", and the `runtime_minutes` in entry.yaml are 27 and 9.
+
+The round-2 review is recorded under `verifications`, with one entry per claim. Each gives the verifier's reasons closely paraphrased from its report and what I changed in reply. The verifier found nothing in the claims file that misreads the paper, so I added no question to `questions/asari-2009.yaml`. Nothing is committed or pushed.
