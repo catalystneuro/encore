@@ -1407,7 +1407,7 @@ def test_a_critical_finding_is_presented_as_one_only_when_someone_else_checked_i
     assert site.finding_severity({}, old, 1) == {"severity": None, "changes_results": False, "checked": None}
 
 
-def test_problems_that_change_results_come_first_on_a_datasets_page_and_are_counted_on_the_overview(built):
+def test_problems_that_change_results_come_first_under_their_version_on_a_datasets_page(built):
     data, out = built
     rows = {r["id"]: r for r in json.loads((out / "data" / "datasets.json").read_text())}
     overview = (out / "index.html").read_text()
@@ -1419,18 +1419,22 @@ def test_problems_that_change_results_come_first_on_a_datasets_page_and_are_coun
         worst = [f for a in live for f in a["findings"] if f["changes_results"]]
         page = (out / site.page_of(key) / "index.html").read_text()
         # The heading is there only with such a finding; each is listed once, under it, with what the check found.
+        rest = [f for a in live for f in a["findings"] if not f["changes_results"]]
+        for f in worst[:1]:
+            for g in rest[:1]:
+                assert page.index(site.e(f["statement"])) < page.index("Other findings") < page.index(site.e(g["statement"])) \
+                    or len({site.version_text(a) for a in live}) > 1
         assert ("Problems that change results" in page) == bool(worst)
         assert (site.CHANGES_RESULTS in rows[key]["found"]) == bool(worst)
         for f in worst:
             assert f["severity"] == "critical" and f["checked"]
             assert page.count(site.e(f["statement"])) == 1 and f"Checked: {site.e(f['checked'])}" in page
-            assert page.index("Problems that change results") < page.index(site.e(f["statement"])) < page.index('<h3 class="vhead">Dataset')
+            # Under the version of the dataset it was found on, before that version's other findings.
+            assert page.index('<h3 class="vhead">Dataset') < page.index("Problems that change results") < page.index(site.e(f["statement"]))
         if worst:
             hit.add(key)
-    # No severity is shown for any other finding, and the Overview has the one number.
-    assert ("have a problem that changes results" in overview) == bool(hit)
-    if hit:
-        assert f"<strong>{len(hit)} of " in overview and f"datasets/?found={site.CHANGES_RESULTS}" in overview
+    # The Overview does not count them.
+    assert hit and "changes results" not in overview and site.CHANGES_RESULTS not in overview
 
 
 def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_their_papers(built):

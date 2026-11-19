@@ -2122,8 +2122,8 @@ go();addEventListener('load',go);addEventListener('hashchange',go);})();</script
 
 # --- pages ---------------------------------------------------------------------
 
-def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = None, note: str = "") -> str:
-    """A panel of horizontal bars: (label, count, link) per row, with a line (`note`, HTML) above them."""
+def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = None) -> str:
+    """A panel of horizontal bars: (label, count, link) per row."""
     if not items:
         return ""
     top = max(n for _, n, _ in items)
@@ -2133,7 +2133,7 @@ def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = 
         f'aria-label="{e(label)}: {n}"></a></div><span class="num">{n:,}</span>'
         for label, n, href in items)
     link = f'<a class="more" href="{e(more)}">See all</a>' if more else ""
-    return f'<div class="panel"><h2>{link}{e(title)}</h2>{note}<div class="rows">{body}</div></div>'
+    return f'<div class="panel"><h2>{link}{e(title)}</h2><div class="rows">{body}</div></div>'
 
 
 def quiet_tier(tier: str) -> str:
@@ -2350,12 +2350,6 @@ def page_overview(data: dict) -> str:
     kinds: dict = {}
     for f in r["findings"]:
         kinds[f["kind"]] = kinds.get(f["kind"], 0) + 1
-    # How many tested datasets have a problem that changes results: the one number the ratings give the Overview.
-    hit = {f["key"] for f in r["findings"] if f["changes_results"]}
-    tested = {f["key"] for f in r["claims"]} | {f["key"] for f in r["findings"]}
-    changes_note = (f'<p class="sub small changes-line"><a href="datasets/?found={CHANGES_RESULTS}"><strong>{len(hit)} of '
-                    f'{len(tested)}</strong> tested datasets</a> have a problem that changes results: data that are '
-                    f'wrong in a way the files do not show.</p>') if hit else ""
     tiers: dict = {}
     for atts in current.values():
         tier = weakest_tier(atts)
@@ -2370,7 +2364,7 @@ def page_overview(data: dict) -> str:
                   ordered(blocked, BLOCKED_BY, lambda k: f"papers/?blocked_by={k}"),
                   "papers/?has=blocked"),
         breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"datasets/?found={k}"),
-                  "datasets/", note=changes_note),
+                  "datasets/"),
         breakdown("Verification of attempted datasets",
                   ordered(tiers, TIERS, lambda k: f"papers/?status=attempted&tier={k}"),
                   "papers/?status=attempted"),
@@ -3276,24 +3270,27 @@ def page_dataset(data: dict, key: str) -> str:
     for a in sorted(atts, key=version_order, reverse=True):
         by_version.setdefault(version_text(a), []).append(a)
     findings_html = ""
-    worst = [(f, a) for f, a in findings if f["changes_results"]]
-    if worst:
-        findings_html += (f'<h3 class="vhead changes-head">Problems that change results <span class="count">'
-                          f'{len(worst)}</span></h3><p class="sub small" style="margin:4px 0 0">{CHANGES_NOTE}</p>'
-                          f'<ul class="findings">' + "".join(
-                              findings_list([f], root, note=lambda f, a=a: f"{found_by(a, f)}, on dataset {version_text(a)}")
-                              for f, a in worst) + "</ul>")
     for i, (version, group) in enumerate(by_version.items()):
-        n = sum(1 for a in group for f in a["findings"] if not f["changes_results"])
+        n = sum(len(a["findings"]) for a in group)
         dates = sorted({a["date"] for a in group})
         when = dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
         older = ("" if i == 0 else ' <span class="tag" title="A newer version was tested too; these findings were '
                  'not checked on it">an older version</span>')
+        # Under its version, the problems that change results come first, under their own heading: a finding is
+        # about the version it was found on, these as much as the others.
+        worst = [(f, a) for a in group for f in a["findings"] if f["changes_results"]]
+        rest = [(f, a) for a in group for f in a["findings"] if not f["changes_results"]]
+        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f)) for f, a in pairs)
         findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
-                          f'{n} {"other " if worst else ""}open finding{"" if n == 1 else "s"}</span></h3><ul class="findings">'
-                          + ("".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f))
-                                     for a in group for f in a["findings"] if not f["changes_results"])
-                             or findings_list([], root)) + "</ul>")
+                          f'{n} open finding{"" if n == 1 else "s"}</span></h3>')
+        if worst:
+            findings_html += (f'<h4 class="changes-head">Problems that change results <span class="count">{len(worst)}'
+                              f'</span></h4><p class="sub small" style="margin:4px 0 0">{CHANGES_NOTE}</p>'
+                              f'<ul class="findings">{listed(worst)}</ul>'
+                              + (f'<h4 class="changes-head">Other findings <span class="count">{len(rest)}</span></h4>'
+                                 if rest else ""))
+        if rest or not worst:
+            findings_html += f'<ul class="findings">{listed(rest) or findings_list([], root)}</ul>'
     if not atts:
         findings_html = f'<ul class="findings">{findings_list([], root)}</ul>'
     # Findings of an earlier attempt that a repeat attempt found fixed, on the version it ran on.

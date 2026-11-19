@@ -164,8 +164,6 @@ The public site is static and is built from the files above by
   the caution on reading them), then headline numbers and progress charts,
   outcomes by technique, why claims were blocked, findings by kind, and
   verification. Every number and bar links to the matching filtered list.
-  Above the findings by kind is one sentence: how many tested datasets have a
-  problem that changes results.
 - **Datasets:** a list of every target, with filters (status, outcomes of
   its claims, why claims were blocked, verification, kinds of finding,
   technique, species), search, sorting and pagination. The view is kept in the
@@ -174,7 +172,8 @@ The public site is static and is built from the files above by
   `DANDI:000003`.
 - **A page per attempted dataset** at `datasets/<archive>/<id>/`, with tabs
   for claims, findings, verification, method differences and provenance. It is
-  complete HTML and is the page an archive would link to. Its findings begin
+  complete HTML and is the page an archive would link to. Its findings are under
+  the version of the dataset they were found on, and each version's begin
   with the "Problems that change results": the findings rated `critical`
   (docs/protocol.md, the attempt record) that someone other than the attempt's
   author checked against the notebook's outputs, each with what the check
