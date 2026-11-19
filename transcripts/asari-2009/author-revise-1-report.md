@@ -1,0 +1,19 @@
+I've revised the attempt for every point in the round-1 report. `tools/entry.py all` passed: the main notebook ran in 30 min and the new STRF notebook in 11 min. `check` reports 0 errors, the record validates against the schema, and the handover is rebuilt. Round 1 is recorded under `verifications`, with the verifier's reasons in its own words and a `response` for each claim.
+
+**Outcome changes**
+- **fig3b-fractional-power-decay** and **fig4-predictability-upper-bound**: partially reproduced → **not reproduced**. I followed the verifier: neither criterion has a partial rule, and τ is out of tolerance under every reading.
+- **fig4-strf-performance-low**: blocked → **not reproduced**, in a new notebook (`strf_wehr.ipynb`, helper `wehr.py`). Validation performance stays at or below 0.148 at every window, but the Wilcoxon test finds a significant STRF improvement from 180 ms to 4052 ms in every reading that meets the level bound. This rests on assumptions: 16 cells are used, because the paper's 20 are not marked in the files. A subagent built this notebook; I checked its outputs against the criterion but did not read its code line by line.
+- **fig8a-proportion-by-property**: partially reproduced → **not reproduced**, marked as assumed. Following the verifier's point B2, the main reading now counts each set of conditioning stimuli for AM and FM and each probe once for the other three properties. It is the only reading whose totals equal all five Table 1 columns (95, 110, 96, 82, 137). Under it, AM (0.427) falls below higher-order (0.467), so the paper's order fails. The other two readings keep the order and are shown as variants.
+- **fig8c-relative-effects** stays partially reproduced but is now `seed_sensitive`. I added the silence-not-counted denominator and the trial-resampling reading. No reading meets the full criterion under the claim's seed; the trial reading does under the other four seeds. The trial intervals do not contain their own point estimates, because resampling trials with replacement biases the power estimates; the notes say so.
+
+**Corrections and added outputs**
+- **Labelling (B1):** I kept the labels and recorded the disagreement. In the 25 MHT-ensemble files with a natural sound, no MHT fragment ever follows more than one other fragment, so the natural sound is the only probe there. The paper's MHT row of Table 1 cannot be formed from the files, and that is now a finding. fig8-natural-synthetic-probes-alike stays reproduced, against the verifier's "blocked", and its notes say the test has little power for AM and none for FM.
+- **Property sets:** where a file's notes list the variants, those lists are now used. This fixes an AM set that wrongly included the amplitude variants.
+- **MGB detector (B6):** I added a noise-based 4-SD detector. MGB evoked is then 18.0 Hz, still outside tolerance. The fig9 plateau test is printed for all three detectors and fails under each.
+- **Recording counts (B7):** the 10 DMR files from 2006-09-15 to 17 (9 cells) test only natural probes and account for most of the 133 against 123 cells.
+- **Data check:** it now shows the trace scale, the fraction of tied values, the 15 files of Summary.mat's fourth experiment, and that every cell folder of the zips holding a recording file is listed in Summary.mat.
+- **fig7:** a search section now lists every DMR frequency-variant file. No natural probe follows the example's bands, so the claim stays blocked.
+- **Other:** dead code removed; the fig4 fits stopping at the 100-s bound are noted; README, entry.yaml, summary and findings updated, including two new findings on Wehr's data and one updated question for the authors.
+
+**Not done**
+- No question was added to `questions/asari-2009.yaml`, because the verifier reported no place where the claims file misreads the paper.

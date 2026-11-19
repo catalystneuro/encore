@@ -37,7 +37,12 @@ Where a parameter comes from:
   population curves at 1-ms resolution (means of ten 0.1-ms points), the
   start grid of the least-squares fits.
 - Assumptions, each also stated in the notebook and the record: the A1 spike
-  detector (the code extracts whole-cell spikes by hand), see ``a1_spikes``.
+  detector (the code extracts whole-cell spikes by hand), see ``a1_spikes``;
+  the sets of conditioning stimuli of Figure 8 where the file's notes do not
+  list them, see ``property_classes``. A variant MGB detector with a
+  noise-based threshold (4 SD, the SD from the median absolute value;
+  Quiroga et al. 2004, the field's usual choice) is run beside the authors'
+  detector, see ``reduce_mgb``.
 """
 from __future__ import annotations
 
@@ -166,6 +171,7 @@ def load(path: str, trace: bool = True) -> dict:
         r = m["response"]
         d["sf"] = int(r.sf)
         d["unit"] = str(r.unit)
+        d["scale"] = float(r.scale)
         d["trace"] = (r.trace.astype(np.float32) * np.float32(r.scale))
     return d
 
@@ -335,6 +341,49 @@ def frac_power(X: np.ndarray):
     inv = (n * mu.mean(axis=0) ** 2 - (mu ** 2).mean(axis=0)) / (n - 1)
     total = (Y ** 2).mean(axis=(0, 1))
     return pred, inv, total
+
+
+def trial_boot(X: np.ndarray, rngs: list, B: int = 200, tmax: float = 4.0,
+               step: int = 10, bin_ms: int = 50):
+    """Fig. 8C, the reading where a sample is a trial: ``B`` resamplings of
+    the trials of each context with replacement (Methods, Eq. 21 and the
+    paragraph after it, "200 resamplings"), each giving the stimulus-related
+    and context-independent power of ``frac_power``. Traces are centred over
+    the whole probe first (FracPow), then taken every ``step`` samples (1 kHz)
+    up to ``tmax`` s and averaged in ``bin_ms`` bins (standard choices for an
+    area over 4 s). Returns two arrays (len(rngs), B, bins)."""
+    n, m, T = X.shape
+    Y = X.astype(np.float64)
+    Y = Y - Y.mean(axis=2, keepdims=True)
+    Y = Y[:, :, :min(T, int(tmax * SF)):step]
+    k = bin_ms * SF // 1000 // step
+    nb = Y.shape[2] // k
+    P = np.empty((len(rngs), B, nb), np.float32)
+    I = np.empty((len(rngs), B, nb), np.float32)
+    rows = np.arange(n)[:, None]
+    for si, rng in enumerate(rngs):
+        idx = rng.integers(0, m, size=(B, n, m))
+        for b in range(B):
+            Z = Y[rows, idx[b]]
+            mu = Z.mean(axis=1)
+            pred = ((m * mu ** 2 - (Z ** 2).mean(axis=1)) / (m - 1)).mean(axis=0)
+            inv = (n * mu.mean(axis=0) ** 2 - (mu ** 2).mean(axis=0)) / (n - 1)
+            P[si, b] = pred[:nb * k].reshape(nb, k).mean(axis=1)
+            I[si, b] = inv[:nb * k].reshape(nb, k).mean(axis=1)
+    return P, I
+
+
+def tie_fraction(X: np.ndarray) -> float:
+    """Mean over time points of the fraction of the n*m values at that point
+    that equal another value (the Kruskal-Wallis ranks break such ties by
+    trial order, as CxtDep.m does)."""
+    n, m, T = X.shape
+    S = np.sort(X.reshape(n * m, T), axis=0)
+    eq = S[1:] == S[:-1]
+    tied = np.zeros_like(S, dtype=bool)
+    tied[1:] |= eq
+    tied[:-1] |= eq
+    return float(tied.mean())
 
 
 def bin_mean(y: np.ndarray, k: int = 10) -> np.ndarray:
@@ -566,7 +615,9 @@ def is_natural(s: dict) -> bool:
 
 def property_classes(d: dict) -> dict:
     """Sets of fragments (1-based) that differ from each other in one property
-    only. TORC and DMR ensembles are labelled in their descriptions ("amplitude
+    only. Where the file's notes list the variants of each property (the six
+    files of natural probes after MHT variants), those lists are used. TORC
+    and DMR ensembles are labelled in their descriptions ("amplitude
     variants", "bandwidth variants", "frequency variants"); MHT and
     natural-sound variants are told apart by their parameters; a natural sound
     and the modulated coloured noise made from it (same stimulus file) form a
@@ -574,6 +625,20 @@ def property_classes(d: dict) -> dict:
     st = d["stim"]
     out = {p: [] for p in PROPERTIES}
     typ = d["triggers"][0]["type"] if d["triggers"] else ""
+    # The file's own notes list the variants of each property where they
+    # give them ("2-5,8: amplitude variants"); they are used as given.
+    named = {"amplitude": "amplitude", "frequency": "frequency",
+             "amplitude-modulation": "AM", "frequency-modulation": "FM"}
+    for line in d.get("notes", []):
+        mm = re.match(r"\s*([\d,\-\s]+):\s*([a-z\-]+) variants", line)
+        if mm and mm.group(2) in named:
+            idx = set()
+            for part in mm.group(1).split(","):
+                a, _, b = part.strip().partition("-")
+                idx |= set(range(int(a), int(b or a) + 1))
+            out[named[mm.group(2)]].append(idx)
+    if any(out.values()):
+        return out
     syl = lambda s: _norm(s["param"].get("syllables"))
     if typ in ("torc", "dmr"):
         groups = {}
@@ -693,7 +758,8 @@ def _seed(seed: int, *keys) -> np.random.Generator:
 
 
 def reduce_wholecell(path: str, kind: str, seeds: list[int], fidx: int,
-                     nshuffle: int = 1000, blank_s: float = 2.5) -> dict:
+                     nshuffle: int = 1000, blank_s: float = 2.5,
+                     boot_seeds: list[int] | None = None) -> dict:
     """Everything the notebook needs from one current-clamp file.
 
     kind 'natural': probes over all fragments with silence as a context
@@ -702,14 +768,17 @@ def reduce_wholecell(path: str, kind: str, seeds: list[int], fidx: int,
     noise and spontaneous autocorrelations. kind 'synthetic': the tests of
     ``synthetic_tests``. Both: spike counts in silences and sounds for the
     A1 rates. ``seeds``: the claim seed and its four offsets for the shuffles
-    of the main reading (the first is also used for the variants)."""
+    of the main reading (the first is also used for the variants).
+    ``boot_seeds``: the seeds of fig8c-relative-effects, for the trial
+    resampling of ``trial_boot``."""
     d = load(path)
     raw = d.pop("trace")
     x = median_clip(raw)
     n = len(x)
     out = dict(path=path, cell=d["cell"], animal=d["animal"], rep=d["rep"],
                description=d["description"], nsamples=n, sf=d["sf"], unit=d["unit"],
-               age=d["age"], vrange=(float(np.percentile(x, 1)), float(np.percentile(x, 99))))
+               age=d["age"], vrange=(float(np.percentile(x, 1)), float(np.percentile(x, 99))),
+               scale=d["scale"])
     # spikes for the firing-rate claim
     sil = silences(d, n)
     snd = sounds(d)
@@ -727,6 +796,13 @@ def reduce_wholecell(path: str, kind: str, seeds: list[int], fidx: int,
     lens = fragment_samples(d)
     out["frag_s"] = (lens / SF).tolist()
     out["stim"] = [s["description"] for s in d["stim"]]
+    out["stim_ff"] = [np.atleast_1d(s["param"]["ff"]).astype(float).tolist()
+                      if "ff" in s["param"] else None for s in d["stim"]]
+    out["notes"] = d["notes"]
+    out["rtype"] = d["rtype"]
+    out["ttype"] = d["triggers"][0]["type"] if d["triggers"] else ""
+    boot = (lambda X, *keys: trial_boot(X, [_seed(s, fidx, *keys) for s in boot_seeds])) \
+        if boot_seeds else None
     out["seqs"] = d["seqs"]
     tests = []
     if kind == "natural":
@@ -749,6 +825,9 @@ def reduce_wholecell(path: str, kind: str, seeds: list[int], fidx: int,
             # power per probe for Fig. 2E style checks (context-dependent)
             rec["corr_pair"], rec["corr_loo"], pa = _corrs(X)
             rec["corr_pair_sd"] = float(np.std(pa))
+            rec["ties"] = tie_fraction(X)
+            if boot:
+                rec["boot"] = boot(X, probe, 2)
             # noise autocorrelation (Eqs. 14, 45), lags to 1 s
             eps = X - X.mean(axis=1, keepdims=True)
             rec["acf_noise"] = bin_mean(_acf(eps.reshape(-1, X.shape[2]).astype(np.float64),
@@ -763,6 +842,8 @@ def reduce_wholecell(path: str, kind: str, seeds: list[int], fidx: int,
                 pn, iv, _ = frac_power(Xn)
                 rec["ns"] = dict(sig=_intervals(sig), noise=bin_mean(noise).astype(np.float32),
                                  pred=bin_mean(pn), inv=bin_mean(iv), n=len(keep))
+                if boot:
+                    rec["ns"]["boot"] = boot(Xn, probe, 3)
             tests.append(rec)
         # silence probes: the first blank_s of the interval after each sequence,
         # its context the sequence's last fragment (CxtDep.m, blank probe)
@@ -814,6 +895,8 @@ def reduce_wholecell(path: str, kind: str, seeds: list[int], fidx: int,
             rec["noise"] = noises
             pred, inv, tot = frac_power(X)
             rec["pred"], rec["inv"] = bin_mean(pred), bin_mean(inv)
+            if boot:
+                rec["boot"] = boot(X, t["probe"], ti, 2)
             tests.append(rec)
     out["tests"] = tests
     return out
@@ -823,7 +906,8 @@ def reduce_mgb(path: str) -> dict:
     """Spikes and PSTHs of one cell-attached (MGB) file. Spikes by the
     authors' automatic detector (``extract_spikes``) and, as a variant, by the
     same detector with half its threshold (a third of the largest filtered
-    value), to show how much the threshold matters."""
+    value), to show how much the threshold matters, and with a threshold of
+    4 noise SDs of the filtered trace (SD = median(|x|) / 0.6745)."""
     d = load(path)
     raw = d.pop("trace")
     n = len(raw)
@@ -833,10 +917,15 @@ def reduce_mgb(path: str) -> dict:
     xf = signal.filtfilt(HP_NUM, [1.0], raw.astype(np.float64))
     i = int(np.argmax(np.abs(xf)))
     thr = 2 / 3 * abs(xf[i])
+    # noise-based threshold (Quiroga et al. 2004): 4 SD of the noise, the SD
+    # estimated as median(|x|) / 0.6745 of the filtered trace
+    thr_mad = 4 * float(np.median(np.abs(xf))) / 0.6745
     del xf
     spk = {"code": extract_spikes(raw),
-           "half": extract_spikes(raw, threshold=thr / 2)}
+           "half": extract_spikes(raw, threshold=thr / 2),
+           "mad": extract_spikes(raw, threshold=thr_mad)}
     out["thr_code"] = float(thr)
+    out["thr_mad"] = thr_mad
     sil, snd = silences(d, n), sounds(d)
     out["silence_s"] = sum(b - a for a, b in sil) / SF
     out["sound_s"] = sum(b - a for a, b in snd) / SF

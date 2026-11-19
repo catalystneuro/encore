@@ -4,7 +4,7 @@ Tests the findings of [Asari and Zador (2009)](https://doi.org/10.1152/jn.00577.
 tested on [CRCNS ac-1](https://doi.org/10.6080/K0KW5CXR): Hiroki Asari's whole-cell recordings
 from rat primary auditory cortex with natural and synthetic sound ensembles, and his cell-attached
 recordings from the auditory thalamus. The data set holds no voltage-clamp recordings (Figures 5
-and 6). The STRF models on Michael Wehr's recordings (Figure 4) were not run in this attempt.
+and 6). The STRF models on Michael Wehr's recordings (Figure 4) are tested in a second notebook.
 
 | Claim | Outcome |
 |---|---|
@@ -14,13 +14,13 @@ and 6). The STRF models on Michael Wehr's recordings (Figure 4) were not run in 
 | Example neuron, context effect for about 4 s with a gap | Reproduced |
 | 204 of 305 probes significant, a quarter of events after 1 s | Reproduced |
 | Proportion significant decays as two exponentials | Partially reproduced |
-| Normalized context-dependent power decays with tau about 1 s | Partially reproduced |
+| Normalized context-dependent power decays with tau about 1 s | Not reproduced |
 | Noise and spontaneous autocorrelations decay within about 100 ms | Reproduced |
-| Upper bound on prediction without context (0.51, tau 1.04 s) | Partially reproduced |
-| STRF models predict under 20% at any window | Blocked: not run in the time of this attempt |
+| Upper bound on prediction without context (0.51, tau 1.04 s) | Not reproduced |
+| STRF models predict under 20% at any window | Not reproduced |
 | Example conductances (Figure 5) | Blocked: data missing |
 | Conductance decay constants (Figure 6) | Blocked: data missing |
-| Proportion significant by sound property | Partially reproduced |
+| Proportion significant by sound property | Not reproduced |
 | Power decay constants by property | Partially reproduced |
 | Significance fits by property | Not reproduced |
 | Relative effects by property | Partially reproduced |
@@ -42,3 +42,6 @@ The record, with the reasons and the differences from the paper's method, is
   authors' `CxtDep.m` does, the significance and fractional power measures, the exponential fits,
   the spike detectors, and the property sets of the synthetic ensembles. Other notebooks on this
   data set can import it.
+- `strf_wehr.ipynb` and `wehr.py`: the STRF and LN encoding models of Figure 4 on Wehr's
+  recordings (spectrograms, ridge regression over nine window lengths with 10-fold
+  cross-validation, robust lowess nonlinearity); about 12 minutes.
