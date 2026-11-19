@@ -565,6 +565,64 @@ def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
     assert order == sorted(order)
 
 
+def test_a_papers_page_counts_all_its_claims_and_its_dataset_says_which_rest_on_it_alone(built):
+    # A paper's page is about the paper: its bar counts every claim, wherever the data are, with no groups counted
+    # apart. The dataset's line in the sidebar says how many rest on the dataset alone, when that is only some.
+    data, out = built
+    some = whole = 0
+    for q in site.papers_of(data):
+        live = [a for a in q["live"] if not a.get("deprecated")]
+        if len(live) != 1 or len(q["attempts"]) != 1:
+            continue
+        every, own = site.outcome_counts(live, "paper"), site.outcome_counts(live)
+        assert sum(every.values()) == sum(sum(site.outcome_counts(live, g).values()) for g in ("dataset", "with_inputs", "elsewhere"))
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        head = page[page.index('<header class="page">'):page.index("</header>")]
+        n = sum(every.values())
+        assert f"Outcomes of {n} claims</p>" in head and "Counted separately" not in head
+        if sum(own.values()) < n:
+            some += 1
+            assert f'<strong>{sum(own.values())}</strong> of the {n} claims rest on this dataset alone' in head
+        else:
+            whole += 1
+            assert "rest on this dataset alone" not in head
+        if some and whole > 3:
+            break
+    assert some and whole
+    # A dataset's own page still counts the claims that rest on it alone, with the others apart.
+    assert site.outcome_counts([], "paper") == dict.fromkeys(site.OUTCOMES, 0)
+
+
+def test_a_papers_other_sources_are_named_in_its_sidebar_and_described_under_provenance(built):
+    # What an attempt used that is not in its datasets (the record's `inputs`): by name under the datasets, and in
+    # the record's words under Provenance.
+    data, out = built
+    ref = lambda src: site.source_ref(data, src, "../../")
+    assert ref("https://github.com/lab/code at commit 1d95162") == {"host": "GitHub", "label": "lab/code", "href": "https://github.com/lab/code"}
+    assert ref("doi:10.5281/zenodo.13749343") == {"host": "Zenodo", "label": "10.5281/zenodo.13749343",
+                                                  "href": "https://doi.org/10.5281/zenodo.13749343"}
+    assert ref("NCBI GEO GSE241559 (SuperSeries GSE241561)")["href"].endswith("acc=GSE241559")
+    assert ref("PRIDE PXD065006") == {"host": "", "label": "PRIDE PXD065006", "href": None}
+    known = ref("doi:10.48324/dandi.000003/0.260218.2052")       # a dataset the registry has a page for
+    assert known["label"] == "DANDI:000003" and known["href"] == "../../datasets/dandi/000003/"
+    seen = 0
+    for q in site.papers_of(data):
+        if not q["attempts"]:
+            continue
+        others = site.other_sources(data, q["attempts"], "../../")
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        head = page[page.index('<header class="page">'):page.index("</header>")]
+        assert ('class="srcs"' in head) == bool(others) == ('id="other-sources"' in page)
+        if others:
+            seen += 1
+            assert len(others) == len({(o["label"], o["href"]) for o in others})            # each source once
+            assert all(site.e(o["what"]) in page for o in others)
+            assert head.count("<li>") + head.count('<li class="muted">') >= min(len(others), 6)
+        if seen > 12:
+            break
+    assert seen
+
+
 def test_each_notebook_on_the_claims_panel_has_an_open_in_colab_badge(built):
     # Beside the notebook's name over its claims: a link to the copy of it on the `colab` branch.
     data, out = built
@@ -1497,7 +1555,7 @@ def test_a_paper_has_badges_and_a_json_file_of_its_results(built):
             continue
         api = json.loads(file.read_text())
         badge, every = site.paper_badge(data, q), site.paper_outcomes(data, q)
-        total = sum(site.outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+        total = sum(site.outcome_counts(a, "paper")["reproduced"] for a in q["live"] if a["tier"] != "runs")
         counts = {k: (rows[key].get("counts") or {}).get(k, 0) for k in site.OUTCOMES}
         assert (badge is None) == (total == 0) and first.is_file() == bool(total)
         assert (every is None) == (sum(counts.values()) == 0) and line.is_file() == card.is_file() == bool(every)
@@ -1561,7 +1619,7 @@ def test_a_person_has_a_badge_for_the_findings_of_their_papers_reproduced_in_ver
     with_badge = without = 0
     for orcid, author in site.author_index(data).items():
         badge = site.author_badge(data, author)
-        total = sum(site.outcome_counts(a)["reproduced"] for q in author["papers"] for a in q["live"] if a["tier"] != "runs")
+        total = sum(site.outcome_counts(a, "paper")["reproduced"] for q in author["papers"] for a in q["live"] if a["tier"] != "runs")
         svg = out / "badge" / "authors" / f"{orcid}.svg"
         assert (badge is None) == (total == 0) and svg.is_file() == bool(total) and rows[orcid]["badge"] == (badge or {}).get("text")
         if with_badge + without > 60 and badge and with_badge > 5 and without > 5:

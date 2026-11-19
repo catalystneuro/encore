@@ -138,7 +138,8 @@ registry.
 
 The count follows the same rule as a dataset badge, for one paper:
 
-- Claims that rest on the paper's datasets.
+- Every claim of the paper, wherever its data are: in its dataset, in its dataset together with outside data, or in
+  another archive. A dataset's badge counts only the claims that rest on that dataset alone.
 - Outcome "reproduced". Partial reproductions do not count.
 - Current attempts that an independent verifier has checked.
 
@@ -202,7 +203,8 @@ dataset.
 
 The count follows the same rule as a dataset badge, over all of the person's papers in the registry:
 
-- Claims that rest on the paper's datasets.
+- Every claim of the paper, wherever its data are: in its dataset, in its dataset together with outside data, or in
+  another archive. A dataset's badge counts only the claims that rest on that dataset alone.
 - Outcome "reproduced". Partial reproductions do not count.
 - Current attempts that an independent verifier has checked.
 
