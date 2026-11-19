@@ -1,99 +1,13 @@
-I ran `python tools/readme_row.py 000552 --write`, which added the row for 000552 to README.md (5 reproduced, 4 partially, 3 not reproduced, 23 blocked). I added this subsection at the end of `docs/pilot-notes.md`. Nothing is committed.
+I wrote the notes in `docs/pilot-notes/huszar-2022-02.md` and the summary in `summaries/huszar-2022-02.md` (117 words), and changed no other file. Nothing is committed. In `targets/dandisets.json` the `catalystneuro` field names two contributors and no repository, so the CatalystNeuro sentence names those contributors instead of a repository.
 
-### 000552, Huszar et al. 2022
+# huszar-2022, Huszar et al. 2022, second attempt
 
-Five claims reproduced, four partially, three not reproduced and twenty-three
-blocked, all on the dandiset. Round 1 gave its own outcome for each claim
-from the notebook with its conclusions removed and agreed with 34 of the 35;
-it gave reproduced for `cohort-birthdates`, as the sex field differs between
-files of the same mouse and each mouse's majority value gives the paper's 12
-males and 5 females, and the author changed that claim from not reproduced
-to reproduced. Round 1 also disputed the reason for blocking
-`fig7fg-convergence-cofiring`, which the author changed to
-`methods_underspecified`, and found a bug in the running rate, where a
-running stretch could span the gap between trials; with the fix
-`fig6d-rate-lower-novel` moved from partially reproduced to reproduced.
-Round 2 agreed with all 35 and nothing was proposed, so there was no third
-round. The paper reports that CA1 neurons of mice electroporated at E13.5 to
-E16.5 differ in firing, burst index, theta and SPW-R participation, assembly
-expression, spatial information and convergence onto interneurons according
-to their embryonic birthdate, that same-birthdate pairs cofire and share
-ratemaps more than different-birthdate pairs, and that a model with a
-bell-shaped rate of neurogenesis reproduces the assembly expression rates.
-The cohort, session counts and durations, ripple duration, unit count, maze
-cohort and task, novel explorations, population-vector decorrelation on the
-figure-eight maze and the firing rates, ratemap correlations and spatial
-information of all putative pyramidal cells on familiar and novel mazes were
-tested. The claims that compare same- and different-birthdate neurons or
-light-responsive neurons across birthdates, the histology and the model, 22
-in all, are blocked as `data_missing`, and the convergence claim as
-`methods_underspecified`, since the Methods' connection test as implemented
-here detects connections in 0.448 and 0.407 of possible pairs (0.405 and
-0.394 peak-centred) against the paper's 0.173. Some outcomes rest on weak
-ground: in `fig5e-pv-decorrelation` the medians depend strongly on the 5 Hz
-rate rule for putative pyramidal cells, which classes 87.8% of units against
-the paper's 78.3%, and a 2.59 Hz rule chosen after the results puts all four
-medians within tolerance; `fig6d-rate-lower-novel` passes with rank-sum p =
-0.041, while the paired test gives p = 0.19 and one of three mice goes the
-other way; `fig6c-novel-ratemap-corr-higher` fails on the pooled test the
-criterion names (p = 0.67), though the novel median is higher in all 9
-sessions (sign test p = 0.0039); and the theta-related rates are a running
-rate, as the LFP was not used. The author used the author manuscript in
-PubMed Central (PMC10807234), fetched through PMC's OAI service after the
-Europe PMC full-text API returned a server error, did not read the
-Supplementary Tables, and read the paper's code at commit 51320d4 for method
-parameters only.
+Seventeen claims reproduced, ten partially, seven not reproduced and ten blocked, five for missing data and five as `too_large`; twelve outcomes rest on an assumption. The first verification round agreed with 39 of the 44 outcomes; it disagreed on `sessions-durations`, which it read as partially reproduced, and on the blocks of ed3, ed5, ed7 and ed10, which it found partly testable. The second round agreed with 38 and disagreed on `sessions-durations`, on ed10, whose dependency on the blocked `ed2-waveform-validation` its criterion does not use, and on fig3c, fig3e, ed6 and fig4d, which it called not attempted, not too large; nothing was proposed after the second round, so there was no third. The attempt pins version 0.261113.1035, the latest published version; the paper cites none. The paper, Huszar, Zhang, Blockus and Buzsaki, "Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis" (Nature Neuroscience 25, 1201-1212), records CA1 units with silicon probes in 17 mice whose pyramidal cells were labelled by in utero electroporation at E13.5 to E16.5, and reports that a cell's birthdate shapes its firing, bursting, ripple participation, theta modulation and spatial coding, that pairs born on the same day (SBD) cofire more in ripples and theta cycles, share place fields, remap together and converge on the same interneurons more than pairs born on different days (DBD), and that assemblies and a network model follow from it. The claims were written by a reader without the data, from the author manuscript (PMC10807234) with its two supplements and the code at commit 51320d4, which lacks the theta detectors, the monosynaptic connection detector and the rate map builder; the claims check made 9 corrections and added `ed10-waveform-matched-controls`, for 44 claims. Reproduced are the cohort and every row of Supplementary Table 1, the maze and novel cohorts, the SPW-R duration, the unit and cell type counts (9,472 units, 7,411 pyramidal cells, 664 light-responsive), the labelled fraction, firing rate, SPW-R rate and participation and wake theta depth by birthdate, SBD synchrony in 10 of 13 animals, SPW-R cofiring, the familiar and novel remapping together, and the theta rate and lower novel rate of Figure 6. Not reproduced are `sessions-durations` (two sessions hold no sleep), the REM shift of Figure 1f (slope -1.36% per day, not significant), the depth control of Extended Data Fig. 3, `maze-task`, the higher novel ratemap correlation of Figure 6c, the gamma peak of spike transmission (29 to 42 ms) and the connection counts of Figure 7f-g. The histology claims, the light-evoked waveform check and the L-ratio controls are blocked for missing data, and the assembly claims and the network model were not run: the first run reached its time limit before the assembly analysis was built. The author's first run gave 18 reproduced, 9 partially, 6 not reproduced and 11 blocked. Round 1 found that the theta channel broke the Methods' rule in 62 of 104 sessions and that its sharp wave was taken without the conversion to microvolts, that the open fields and one linear track were left out of the novel analyses, that only alpha of the connection detector was varied, and that ed3, ed5, ed7 and ed10 were partly testable; in reply the sharp wave was measured against a pre-ripple baseline, the open fields were binned at an assumed 1 cm per lab unit with other scales as variants, every assumed detail of the detector was varied (38,402 to 50,756 connections against 31,932), ed3 was tested and moved to not reproduced, the computable parts of the others were run for the record, and `fig2c-theta-cofiring` moved to partially reproduced. Round 2 found 6 sessions counted as following the theta rule whose channel lay below the layer centre, which left 72 that follow it, and sentences the outputs did not support, all corrected, and asked for printed evidence of the open-field scale, which was added. While choosing the version the author read the release notes, which say the conversion fixes problems found by a reproduction attempt; it looked no further, and the reconciliation judged the attempt blind. Against `huszar-2022-01`, 22 outcomes changed, 21 of them because the new version holds what the earlier one lacked and `sessions-durations` because the criterion changed; of the earlier attempt's 15 findings, 10 are fixed, one partly fixed and four still present. The author's run took about 4 h 10 min (04:31 to 08:39 UTC) and nothing failed; the notebook ran in about 36 min at first, with peak memory 1.05 GB, 49.7 min after round 1 and 47.6 min at the end.
 
-The dandiset was converted by CatalystNeuro (Garrett Flynn and Cody Baker of
-CatalystNeuro are contributors). No unit is labelled light-responsive and no
-optogenetic pulse times are stored in the processed or the 13 raw files, so
-22 of the 35 claims cannot be tested; the labels exist in the lab's
-CellExplorer files, which the paper's data link reaches only through the lab
-databank and Globus, at no pinned identifier. In the raw file of
-e16_3m2_211213 the wideband signal ends 2 s after the processed session and
-holds no flat or zeroed stretch over its last 30 min, so if clipped samples
-are flat or zero the stimulation period is not in the deposited recording;
-the other 10 wideband files (54 to 184 GB each) were not scanned. Units carry
-no putative cell type and no waveforms, though the paper classifies 7,411
-pyramidal cells and 2,060 interneurons. Six of the 17 mice (39 files) have
-sleep states and ripples but no units and no position, so the dandiset holds
-8,201 units where the paper reports 9,471, and of the 16 novel environment
-explorations only 9 have position and trials, with no open field; 7 further
-epochs of 10 to 50 min without position or video may be the missing
-explorations. Units have no link to the electrodes table and their group_id
-values ("Group3") do not match the electrode group names ("Group 3") in 64 of
-65 files, so a unit's shank cannot be recovered. Other findings: the subject
-sex differs between files of e13_1f1 (Female in 3, Male in 2) and e13_1m1
-(Male in 9, Female in 3); is_familiar_maze is True only for the first two
-trials of sessions with a single maze recording (112 True, 1,182 False); in
-several novel recordings x and y lie between 0 and 1 though stated in cm;
-twelve of the 13 raw files give a session start of 2011-08-18 for sessions
-recorded in 2021 and 2022; the processed file of e16_3m1_210201 holds a copy
-of the 1250 Hz LFP labelled 30,000 Hz with a conversion factor of 3.05e-13 V;
-the embryonic day of electroporation is stored only as the prefix of each
-subject id, with age P3M/P6M for every mouse; two files of e13_1f1 hold a
-single Awake interval for the whole session; only 38 of 65 familiar-maze
-sessions have ten or more trials on each visited arm and 19 of 1,942 trials
-have no start or stop time; the Methods give 92 sessions while Figure 1e and
-Figure 7f give 96, and the files of the 15 homecage mice are 96 sessions that
-match Figure 1e by birthdate and the Methods' duration bounds exactly; and the
-paper calls the novel cohort separate, but e13_26m1 is also among the nine
-figure-eight mice. No duplicate recordings were found.
+The dataset was converted by CatalystNeuro (contributors Garrett Flynn and Cody Baker). It gives the paper's counts exactly: the mice with sex and birthdate, every row of Supplementary Table 1, the cell types, the 664 light-responsive cells, the pair counts and the 184,230 possible pyramidal-interneuron pairs. The wide-band signal around the light pulses is in 11 raw files, 5 of them homecage-mouse sessions, so the light-evoked waveforms cannot be formed; the units table has no L-ratio or other isolation metric, so the paper's L-ratio controls cannot be repeated; and no histology is deposited. Positions outside the familiar figure-eight are in the lab's units with no scale, and the open fields, 7 of the 16 novel explorations, have only 2D position, so their 1 cm bins rest on an assumed scale and the Figure 6c outcome depends on it (at 2 or 0.5 cm per unit it would be partially reproduced). Sessions e13_1f1_200305 and e13_1f1_200307 hold only wake in their sleep states, one Awake row each over the whole recording, while the paper says every recording included sleep. In e16_3m2_211211 the position series named for the linear_manu subsession lies inside the openField_thomas epoch, and both were left out. In 25 files the electrodes carry probe_side Front or Back with shanks 1 to 4 on each, without saying whether these are two probes or two faces of one; only the reading as faces gives the paper's pair counts. The two E13.5 mice the paper leaves out for having a single light-responsive neuron per session have 1 and 2 same-birthdate pairs in the files, and 27 of the 57 familiar figure-eight sessions hold fewer than ten trials of one arm, where the Methods say every session had at least ten. In the paper, the Methods' 92 sessions appear to be a miscount of the 96 the files hold, with the paper's exact duration range; the Figure 1f legend's n exceed the REM-locked counts of Figure 2d; and one of the three mice of the "separate" novel cohort, e13_26m1, is also among the nine familiar-maze mice. The paper does not say how the theta channel was chosen, what the monosynaptic detector's lags, hollow fraction and correction were, or how the burst index ACG was built, and the outcomes of Figures 1h, 2c and 7 turn on these. Questions put to a reader ask about the `sessions-durations` criterion's missing case, the Figure 1f legend's n and whether ed10 should depend on ed2.
 
-The notebook ran in 356 s in the first clean run and in about 8 minutes after
-the revisions. Round 2 found sentences the outputs did not support, among them
-31 sessions without units where the count is 39 and a statement on
-stimulation channels resting on 1 of 13 raw files, and these were corrected,
-the round-1 response that also gave 31 being left as recorded. An empty
-`.claude/` directory in the entry could not be removed, and untracked files in
-the repository root that the author did not create were left alone. The
-author's points on the protocol: outside data must be public and pinned while
-the paper's own data link reaches only an unpinned lab server; no rule on
-whether a label held in the lab's derived files but not the dandiset is
-`data_missing` or `metadata_insufficient`; no guidance on when to stop trying
-to recover missing data from large raw files; using the paper's code to choose
-subsets lies between following the code and an outside input; a criterion
-condition with no stated outcome when it fails; a default 10% tolerance that
-does not work for values near zero; no rule for a criterion whose literal
-reading gives a result that is probably a metadata typo; and data-description
-claims that the protocol does not address.
+The author's points on the protocol: the per-mouse counts of `st1-animal-sessions` are listed in the table's row order while its mice are named in birthdate order, and the row order was read from the table image; the `sessions-durations` criterion has no partial outcome for all but the sleep condition holding, and it was applied literally; no `blocked_by` fits a claim skipped for time, and `other` was used for ed3; the dependency rule blocked ed10 although part of it could be computed; there is no rule for a monosynaptic count far from the paper's, and the claims were tested under a stated assumption; and each edit to the entry, even of text, forces a full run of the notebook.
+
+---
+
+The paper's main finding held up in this data: CA1 pyramidal cells' firing, ripple participation, theta modulation and spatial information vary with embryonic birthdate, and cells born on the same day cofire more in ripples and theta, share place fields and remap together, though several values differ. Same-birthdate pairs also share more interneuron targets, but the connection detector, which the paper does not fully describe, finds far more connections than reported, and transmission did not peak at gamma intervals. The birthdate trend in REM theta phase shifts and higher map correlations in novel environments did not reproduce, the latter resting on unscaled open-field positions. The assembly analyses and network model were not run in the attempt's time.
