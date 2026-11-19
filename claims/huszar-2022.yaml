@@ -181,8 +181,11 @@ claims:
     unit: ms
   criterion: SPW-Rs as in the opening comment, durations from start to stop. "Across all
     recordings" can be read as (a) the median over all ripples pooled over sessions, (b) the
-    median of per-session medians; and the ripple set as (i) all detected ripples of each
-    session, (ii) homecage ripples as the code uses them. Reproduced when the median is within
+    median of per-session medians, (c) the mean of per-session medians, which is what the code
+    draws as the white lines of Figure 2b (ccg_sessionVisualize.m, mean of rip_med, the median of
+    ripples.data.duration per session, sessions with CCGs outside e15_13f1 and e16_3m2); and the
+    ripple set as (i) all detected ripples of each session (the code's), (ii) homecage ripples
+    as getHomecageMetrics.m keeps them. Reproduced when the median is within
     tolerance under one combination and every ripple lies within 20 to 200 ms. Partially
     reproduced when only one of the two holds. Not reproduced when neither does.
 - id: unit-count
@@ -478,16 +481,36 @@ claims:
   - quantity: fraction of depth-matched resamplings with SPW-R firing rate P < 0.05
     value: 0.988
     tolerance: 0.0988
+  - quantity: fraction of depth-matched resamplings with SPW-R participation P < 0.05
+    value: 0.938
+    tolerance: 0.0938
+  - quantity: fraction of depth-matched resamplings with wake theta depth modulation P < 0.05
+    value: 1.0
+    tolerance: 0.1
+  - quantity: fraction of depth-matched resamplings with spatial information P < 0.05
+    value: 0.726
+    tolerance: 0.0726
+  - quantity: fraction of depth-matched resamplings with spatial coverage P < 0.05
+    value: 0.738
+    tolerance: 0.0738
   criterion: Depth of a neuron is the depth of its maximum-waveform channel relative to the SPW
     reversal (Extended Data Figure 3a; code deepSuperficialfromRipple.channelDistance_estimated).
-    Neurons resampled per birthdate to the pooled depth distribution with n preserved, 500 times
-    (subsample1D, not in the code; the matching is open, a standard resampling by depth bins with
-    replacement is used). Reproduced when the depth-matched Kruskal-Wallis on depth is not
-    significant and the fractions of resamplings with P < 0.05 for burst index and SPW-R firing
-    rate are within tolerance. Partially reproduced when the matching holds and one fraction does.
+    Neurons resampled per birthdate to the depth distribution of all light-responsive cells
+    (Extended Data Figure 3b) with n preserved, 500 times. The code (revision2022_code/hpc/
+    resample_depth.m, analyze_sngUnitMetrics.m) draws with subsample1D against that reference
+    (refdist_depth.mat), keeps a draw only when the bootstrap test on depth across birthdates
+    gives 0.4 < p < 0.6, and then runs the bootstrap test (boot_anova1, 'classical' false) on the
+    measure; subsample1D itself is not in the repository, so its binning is open, and a
+    resampling by depth bins with replacement is used as a standard choice. The 369/500 of
+    coverage is printed "P = 0.05" in the legend and read as P < 0.05. Reproduced when the
+    depth-matched test on depth is not significant and the six fractions are within tolerance.
+    Partially reproduced when the matching holds and the burst index and SPW-R firing rate
+    fractions are within tolerance while another is not.
   depends_on:
   - fig1h-burst-by-birthdate
   - fig2f-ripple-firing-by-birthdate
+  - fig2d-theta-depth
+  - fig5b-spatial-info-by-birthdate
 - id: fig2b-synchrony-per-animal
   statement: Same-birthdate (SBD) pairs fire more synchronously than different-birthdate (DBD)
     pairs in 11 of 13 animals.
@@ -656,8 +679,8 @@ claims:
   depends_on:
   - ed2-light-responsive-count
 - id: ed5-matched-controls
-  statement: The SBD advantage in SPW-R, theta and ratemap correlations survives matching DBD pairs
-    to SBD pairs in firing rate and in cluster isolation (L-ratio).
+  statement: The SBD advantage in SPW-R, theta, familiar ratemap and novel ratemap correlations
+    survives matching DBD pairs to SBD pairs in firing rate and in cluster isolation (L-ratio).
   source: Extended Data Figure 5; Results, Cofiring of SBD pyramidal neurons in all brain states,
     paragraph 2
   quote: These results depended on neither firing rate nor cluster isolation quality differences (
@@ -671,17 +694,33 @@ claims:
     test: two-sided Wilcoxon
     p: 4.0001e-44
     n: 3,751 and 3,751 pairs
+  - about: novel ratemap correlations, SBD against theta-rate-matched DBD, one resampling
+    test: two-sided Wilcoxon
+    p: 3.3e-6
+    n: 1,510 and 1,510 pairs
+  expected:
+  - quantity: fraction of rate-matched resamplings with P < 0.05, novel ratemap correlations
+    value: 0.958
+    tolerance: 0.0958
+  - quantity: fraction of L-ratio-matched resamplings with P < 0.05, novel ratemap correlations
+    value: 0.974
+    tolerance: 0.0974
   criterion: Extended Data Figure 5 legend. DBD pairs resampled to the empirical probability mass
     function of the SBD pairs' (a) SPW-R firing rate, (b) theta-related firing rate, (c) L-ratio,
-    to the SBD group size, 500 resamplings, two-sided Wilcoxon each. The binning of the mass
-    function is not given (subsample code not in the repository); 20 equal-count bins of the SBD
-    values is a standard choice. Reproduced when every resampling gives p < 0.05 for SPW-R and
-    theta cofiring, and at least 95% for the familiar ratemap correlations (499/500 and all in the
-    paper). Partially reproduced when SPW-R and theta hold and ratemaps do not.
+    to the SBD group size, 500 resamplings, two-sided Wilcoxon each. The code's resampling
+    (revision2022_code/subsample2D_local.m, written for the novel environment pairs of panels
+    k-p, whose later sections apply the drawn indices to SPW-R cofiring too) takes each pair's two values
+    as a 2D point, log10 transformed with zero rates set to -2, bins the DBD points in a 100 x
+    100 histogram, draws bins with the SBD pairs' probabilities in those bins and one DBD pair
+    per drawn bin, cut to the SBD group size; it is used for every panel. Reproduced when every
+    resampling gives p < 0.05 for SPW-R and theta cofiring, at least 95% for the familiar ratemap
+    correlations (499/500 and all in the paper), and the novel fractions are within tolerance.
+    Partially reproduced when SPW-R and theta hold and a ratemap part does not.
   depends_on:
   - fig2c-theta-cofiring
   - fig2g-ripple-cofiring
   - fig5c-sbd-ratemap-overlap
+  - fig6e-sbd-novel-overlap
 - id: fig3c-assembly-cofiring
   statement: Assembly members cofire more in SPW-Rs than member-nonmember pairs (median 0.0568
     against 0.0145), and member-nonmember cofiring depends nonlinearly on the members' birthdate,
@@ -708,16 +747,16 @@ claims:
     value: 0.0145
     tolerance: 0.0015
   - quantity: mean member-nonmember correlation, E13.5
-    value: 0.019
+    value: 0.0191
     tolerance: 0.000137
   - quantity: mean member-nonmember correlation, E14.5
-    value: 0.033
+    value: 0.0328
     tolerance: 0.00041
   - quantity: mean member-nonmember correlation, E15.5
-    value: 0.027
+    value: 0.0267
     tolerance: 0.000223
   - quantity: mean member-nonmember correlation, E16.5
-    value: 0.016
+    value: 0.0165
     tolerance: 0.00021
   criterion: Assemblies as the Methods and runAssembly_Vrev.m give them. Homecage pyramidal spikes
     outside pulses binned at 1 ms, smoothed with a 25 ms FWHM Gaussian, z-scored; the number of
@@ -725,7 +764,9 @@ claims:
     unit-normed and sign-flipped to the largest; members have weights above mean + 2 SD; only
     assemblies with at least one light-responsive member. Sessions without behaviour use the
     first 2 h (runAssembly_Vrev.m, LIM). Cofiring as in fig2g-ripple-cofiring; member-nonmember
-    pairs grouped by the birthdate of the assembly. Tolerances on the means are the paper's
+    pairs grouped by the birthdate of the assembly. The means are those of Supplementary Table 4
+    (0.0191, 0.0328, 0.0267, 0.0165), as the legend's rounded values lie outside their own s.e.m.
+    of the table's for E15.5 and E16.5. Tolerances on the means are the paper's
     s.e.m., which is very tight; a mean outside them but in the order of the paper counts toward
     the partial outcome. Reproduced when members exceed member-nonmember pairs with p < 0.05, the
     bootstrap ANOVA gives p < 0.05, E13.5 and E16.5 have the two lowest means, and the values are
@@ -1312,8 +1353,13 @@ claims:
     test: two-way ANOVA
     statistic: F(2,41,175) = 5.78
     p: 0.0031
-  criterion: Legend and get_corrBeh_famnov.m. Familiar correlation terciles from the pooled SBD and
-    DBD familiar correlations (0, 33, 66, 100th percentiles, outer edges open); per tercile the
+  criterion: Legend and get_corrBeh_famnov.m. Tercile edges at the 0, 33, 66 and 99th
+    percentiles (prctile 0:33:100), outer edges then set open. The legend divides "the familiar
+    environment" distribution; the code takes the percentiles of the pooled SBD and DBD
+    correlations of all three columns (familiar and both novel, vals = pfcorr_tag_all(:) and
+    pfcorr_ntag_all(:)) and places pairs by their familiar correlation. Readings are (a) edges
+    from the pooled SBD and DBD familiar correlations (legend), (b) the code's edges; the
+    outcome is judged under each. Per tercile the
     mean novel correlation, both novel environments pooled; two-way ANOVA (anovan) on birthdate
     group and tercile. Reproduced when the birthdate main effect has p < 0.05 with SBD higher.
     Partially reproduced when SBD is higher in at least two terciles without the main effect.
@@ -1458,8 +1504,118 @@ claims:
     nonresponsive pyramidal cells with nonzero convergence, (b) all pyramidal pairs with nonzero
     convergence. Cofiring and ratemap correlations as in fig2g, fig2c and fig5c. Pairs split into
     convergence quintiles; slope of a line through the five quintile means; p as in the code, the
-    fraction of 1,000 label-shuffled refits whose |t| exceeds the observed t. Reproduced when the
+    fraction of 1,000 refits whose |t| exceeds the observed t, each refit on groups of the
+    quintile sizes drawn with replacement from all the pairs' values (analyze_pairwise.m). Reproduced when the
     three counts are within tolerance and all three slopes are positive with p < 0.05 under one
     reading. Partially reproduced when the counts hold and one or two slopes do.
   depends_on:
   - fig7b-sbd-convergence
+- id: ed10-waveform-matched-controls
+  statement: Same-shank SBD pairs have more similar waveforms than DBD pairs, but among same-shank
+    pairs more than 60 micrometres apart, whose waveform distances do not differ, SBD pairs still
+    cofire more in SPW-Rs (median 0.037 against 0.021) and theta cycles (0.019 against 0.0092) and
+    have higher familiar ratemap correlations (0.0079 against -0.0308).
+  source: Extended Data Figure 10a-f; Extended Data Figure 2f, right
+  quote: Same-shank SBD and DBD pairs recorded >60 μm apart were less differentially affected by
+    spike sorting errors, as evidenced by similar waveform profile distances.
+  statistics:
+  - about: waveform profile distance, same-shank pairs, SBD (median 13.0128) against DBD (15.68)
+    test: two-sided Wilcoxon
+    p: 4.6e-27
+    n: 1,743 SBD and 15,996 DBD pairs
+  - about: waveform profile distance, same-shank pairs > 60 um apart, SBD (17.41) against DBD
+      (16.59)
+    test: two-sided Wilcoxon
+    p: 0.55
+    n: 347 SBD and 3,581 DBD pairs
+  - about: SPW-R cofiring, same-shank pairs > 60 um apart
+    test: two-sided Wilcoxon
+    p: 1.4e-4
+    n: 347 SBD and 3,588 DBD pairs
+  - about: theta-cycle cofiring, same-shank pairs > 60 um apart
+    test: two-sided Wilcoxon
+    p: 4.3e-12
+    n: 347 SBD and 3,588 DBD pairs
+  - about: familiar ratemap correlation, same-shank pairs > 60 um apart
+    test: two-sided Wilcoxon
+    p: 0.033
+    n: 252 SBD and 2,998 DBD pairs
+  expected:
+  - quantity: median SPW-R correlation, SBD > 60 um
+    value: 0.037
+    tolerance: 0.0037
+  - quantity: median SPW-R correlation, DBD > 60 um
+    value: 0.021
+    tolerance: 0.0021
+  - quantity: median theta-cycle correlation, SBD > 60 um
+    value: 0.019
+    tolerance: 0.0019
+  - quantity: median theta-cycle correlation, DBD > 60 um
+    value: 0.0092
+    tolerance: 0.0009
+  - quantity: median ratemap correlation, SBD > 60 um
+    value: 0.0079
+    tolerance: 0.0008
+  - quantity: median ratemap correlation, DBD > 60 um
+    value: -0.0308
+    tolerance: 0.0031
+  - quantity: fraction of waveform-matched resamplings with P < 0.05, familiar ratemap correlations
+    value: 0.894
+    tolerance: 0.0894
+  criterion: Extended Data Figure 10 legend. Pairs of fig2g-ripple-cofiring and fig2c-theta-cofiring
+    (homecage) and of fig5c-sbd-ratemap-overlap (maze) recorded on the same shank; distance is
+    that between the two maximum-waveform channels on the probe layout, and the subset is the
+    pairs > 60 um apart. Waveform profile distance as in ed2-waveform-validation, on spontaneous
+    spikes; the legend gives the L2 norm of the concatenated waveforms, the code
+    (get_corrBeh_v3.m, wf_overlap) divides it by the number of good channels; the legend's form is
+    used and the code's shown as a variant (the test of absence does not depend on a common
+    scale). The absence of a waveform difference at > 60 um is judged on the paper's two-sided
+    Wilcoxon at 0.05. Waveform-matched resampling (panels c and f), 500 times, DBD pairs drawn to
+    the SBD waveform-distance mass function at the size of the full same-shank SBD group, as
+    ed5-matched-controls describes the resampling. Reproduced when the > 60 um waveform test gives
+    p >= 0.05, SBD exceeds DBD with p < 0.05 for SPW-R, theta and ratemap correlations, the
+    medians are within tolerance, every homecage resampling gives p < 0.05 and the ratemap
+    fraction is within tolerance. Partially reproduced when the waveform test and the three
+    directions with p < 0.05 hold and another part does not. Not reproduced when an SBD-DBD
+    comparison fails at p < 0.05.
+  depends_on:
+  - ed2-waveform-validation
+  - fig2c-theta-cofiring
+  - fig2g-ripple-cofiring
+  - fig5c-sbd-ratemap-overlap
+checks:
+- date: 2026-11-19
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - spwr-duration, added reading (c), the mean of per-session medians of all detected ripples,
+    which is how ccg_sessionVisualize.m computes the 36.4 ms lines of Figure 2b; reading (i) is
+    the code's ripple set, not (ii) as the file said.
+  - ed3-depth-control, the resampling is in the code (hpc/resample_depth.m, analyze_sngUnitMetrics.m)
+    and keeps a draw only when the depth test gives 0.4 < p < 0.6, against the depth distribution
+    of all light-responsive cells; the file called it absent and open. Only subsample1D's binning
+    stays open.
+  - ed3-depth-control, added the reported fractions for SPW-R participation (93.8%), theta depth
+    modulation (all), spatial information (72.6%) and coverage (73.8%), which the statement's
+    "profiles remain" rests on (Extended Data Figure 3g-j), with dependencies on fig2d and fig5b.
+  - ed5-matched-controls, the resampling code is in the repository (subsample2D_local.m, 2D log10
+    histogram of the pair's two values, 100 x 100 bins); replaced the made-up 20 equal-count bins.
+  - ed5-matched-controls, added the novel environment panels k-p (P = 3.3e-6, 95.8% and 97.4% of
+    resamplings) to statement, statistics, expected and criterion; they are part of the figure.
+  - fig3c-assembly-cofiring, expected means set to Supplementary Table 4 (0.0191, 0.0328, 0.0267,
+    0.0165); the legend's rounded 0.027 and 0.016 lie outside their own s.e.m. tolerance of the
+    paper's values.
+  - fig6f-remap-together-novel, tercile edges corrected; get_corrBeh_famnov.m takes percentiles of
+    the SBD and DBD correlations of all three columns (familiar and both novel), not of the
+    familiar ones; the legend's familiar distribution and the code's are now two readings.
+  - fig7fg-convergence-cofiring, the p of the code is from refits on values drawn with replacement
+    from all pairs into quintile-sized groups, not label shuffles.
+  - ed10-waveform-matched-controls, new claim; Extended Data Figure 10, cited by the Results for
+    Figure 5d, had no claim.
+  - Open, the checker cannot read "P=1.4e-04" (Extended Data Figure 10b) and flags it; confirmed by
+    reading the legend.
+  - Open, ed10 waveform-matched resampling (Extended Data Figure 10c, f) is described only by the
+    legend; its binning follows the ed5 code by assumption.
+  - Open, fig2b-synchrony-per-animal, the per-animal significance threshold behind "11 of 13" is
+    not stated; the readings in the criterion stand.
