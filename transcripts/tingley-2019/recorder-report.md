@@ -1,87 +1,114 @@
-I ran `python tools/readme_row.py 000218 --write`, which added the README row (4 / 7 / 10 / 10). I then added the subsection below at the end of `docs/pilot-notes.md`. Nothing is committed. The untracked dotfiles and `scripts` in the repository root were already there, and I left them alone.
+I wrote the two new files and changed nothing else; nothing is committed. The summary is 115 words.
 
-Two things you might want to check. The `catalystneuro` field names a contributor (Cody Baker), not a repository, so the opening sentence names the contributor, as the 000213 subsection does. The README counts don't match two of the reports: the author's first report gives 5/9/9/8 and the round 3 verifier gives 8 partially reproduced. I used the README row, which matches the outcomes in the attempt record.
+One thing needed a call. The `catalystneuro` field for 000218 names a contributor ("contributor Baker, Cody of CatalystNeuro"), not a repository. So I opened the dataset paragraph the way `tingley-2019-01` and other notes do when only a contributor is listed.
 
-### 000218, Tingley et al. 2019
+The record also contradicts itself on waveforms. One finding says units in the DT5, DT7 and DT9 files have no waveform. The reconciliation's own check found waveforms for 5968 of 6236 units, including files from those animals, and left the finding as it was. The notes report both statements.
 
-Four claims reproduced, seven partially, ten not reproduced and ten blocked,
-all on the dandiset. Round 1 gave its own outcome for each claim from the
-notebook with its conclusions removed and agreed with 30 of the 31; it gave
-not reproduced for `fig5d-lag`, which the author kept at partially
-reproduced because the coupling part of the claim holds and the lag part
-does not. Round 2 disagreed on the same claim, since the criterion defines no
-partial outcome, the author proposed not reproduced, and a third round agreed.
-The paper reports high-frequency oscillations (HFOs) in the lateral septum
-(LS) of rats, their relation to LS firing and to CA1 ripples across sleep and
-waking, LS correlations before, during and after behaviour, which features of
-ripples predict LS firing, optogenetic experiments and a network model. The
-dataset counts, the HFOs in each animal and their count, participation and
-phase locking, HFO duration and frequency against ripples, the link between
-amplitude and frequency, confinement to LS, the excess correlations and their
-compression, the rise in LS rates after behaviour, HFO rates by state, the
-lag and coupling with CA1 ripples, ripple-triggered firing, phase coherence,
-and the prediction of LS firing from CA1 spikes, state and duration were
-tested on events detected anew, as the files hold none, with `hpc` taken as
-CA1. Depth within LS and travelling waves are blocked as
-`metadata_insufficient`, the optogenetic HFOs and the CA1 depth of neurons as
-`data_missing`, replay, seqNMF and the content-independent comparison as
-`methods_underspecified`, and the model and two per-session claims, which have
-7 and 4 recordings against 53 because this attempt's events hold few LS
-spikes, as `other`. Some outcomes rest on weak ground: the event count of
-`fig1c-event-count` matches at 31,984 against 29,955 but is probably a
-coincidence, as DT7 contributes most events and the count depends on the
-channel; the two `fig4b` claims rest on 106 pairs in 10 recordings against
-7,172 in 53 sessions; the `fig7e` outcomes come largely from counting spikes
-from ripple start to stop, and with a fixed +-25 ms window the CA1-spike and
-duration values are 24.7% and 17.8%; and the tolerances of
-`fig1f-shorter-than-ripples` are the paper's SDs, which makes them wide.
-After round 1 the HFO analyses were repeated on the LS channel re-referenced
-within its shank, and apart from the share of events on the same sample as a
-ripple no result moved towards the paper. The author used the
-author manuscript in PubMed Central (PMC6952543), whose supplementary figures
-were not available.
+`docs/pilot-notes/tingley-2019-02.md`:
 
-The dandiset was converted by CatalystNeuro (Cody Baker of CatalystNeuro is
-a contributor). The files hold no detected LS HFOs or hippocampal ripples,
-nor the detection channels and parameters, which the Methods say are stored
-with each event structure, so every analysis of events has to detect them
-anew and the channels cannot be matched to the paper's. In this attempt's
-detection 35% of LS HFOs within 50 ms of a CA1 ripple fall on the same 0.8 ms
-sample as the ripple (71% in DT8, 62% in DT2, 7% in DT9), and the CA1-LS
-phase difference is consistent even at random times (median phase-locking
-value 0.134 against about 0.021 for random phases); re-referencing the LS
-channel lowers the same-sample share to 4.1%, which points to a signal
-common to the LS and hippocampal channels, such as the reference, which the
-files do not document. The units carry no waveforms, no channel and no
-quality metric, so the CA1 depth of each neuron cannot be estimated and
-single units cannot be told from multi-unit clusters; 11 units fire above 50
-Hz on average, and wide-band data are in 27 of the 98 files, with 1579 of
-2778 hippocampal units having none. Electrode x, y and z are NaN in every
-file, and neither the probe geometry and its orientation nor the relative
-depth of each recording within LS is given. The 10 files with `ca3`
-electrodes hold no CA1 channel, which the paper's CA3 recordings used to
-detect ripples, and the paper reports 25 CA3 and LS recordings against 10
-here. Other findings: nine files store units without a location column, so
-their 268 units cannot be assigned to a region; `hpc` does not say whether a
-site is in CA1, and four DT7 files label all electrodes `unknown`; the two
-rats of the optogenetic experiments are not in the dandiset; 25 units in 10
-files have spike times out of order (1 to 2782 inversions each); the paper's
-Key Resources point to a repository that holds only the Figure 8 model and
-the code of the 2018 paper; and the paper gives the HFO band as both 120-180
-and 120-200 Hz and cites wrong figure numbers in its Methods. Spikes, LFP,
-sleep states and trials are consistent with one clock, and no recording is
-deposited twice.
+# tingley-2019, Tingley et al. 2019, second attempt
 
-The run took about 18 minutes against the 10-minute aim, as loading each
-file's chunk index takes about 33 s, and the date rolled over during the run,
-so the given date was kept. Untracked files in the repository root, which the
-author took to be sandbox placeholders, were left alone. The author's points
-on the protocol: no guidance for a dandiset that lacks the intermediate
-products the results depend on; a paper's stated SD used as tolerance, which
-gives wide bounds; no threshold for too few units under a claim's own rule;
-clock-check examples that do not fit continuous sleep recordings; an `inputs`
-field framed around data, used here for code read only for parameters; no
-block reason for a model claim; no rule on whether `measured` should use one
-reading for all quantities; a step that assumes linked code exists; a
-two-part criterion with no partial outcome; a runtime aim that a 1.5 TB
-dandiset cannot meet; and a date that rolled over during the run.
+Nine claims reproduced, eleven partially, nine not reproduced and nine
+blocked on the dandiset; `fig8-model`, the network model in the paper's
+code (`data: elsewhere`), was not attempted for time and is counted apart.
+Seven outcomes rest on an assumption. The first verification round agreed
+with 37 of the 39 outcomes; it gave reproduced for
+`fig1c-post-burst-suppression` and partially reproduced for
+`ls-spikes-not-locked-to-ca1-ripples`, the author kept both with the
+disagreement recorded, and the second round agreed with all 39, so there
+was no third round. The paper, Tingley and Buzsaki, "Routing of
+hippocampal ripples to subcortical structures via the lateral septum"
+(Neuron 105, 138-149), reports high-frequency oscillations (HFOs) in the
+lateral septum (LS) of rats, their relation to LS firing and to CA1
+ripples across sleep and waking, LS correlations around behaviour, which
+ripple features predict LS firing, optogenetic HFOs and a network model.
+The HFO counts, durations, frequencies and lag behind CA1 ripples, their
+NREM preference, the excess correlations and their temporal bias reproduce
+on the lab's deposited detections, phase locking, compression, state
+coupling and the Figure 7E predictions of LS firing reproduce in part, and
+confinement to LS, participation, ripple-triggered firing and the absence
+of CA1-LS phase coherence do not; depth within
+LS, travelling waves and CA1 neuron depth are blocked as
+`metadata_insufficient`, the optogenetic HFOs as `data_missing`, and
+replay, seqNMF, the content-independent comparisons that depend on them
+and the model as `other`, not attempted in the run's five hours. This
+attempt pins 0.261110.1911, a re-conversion whose release notes say it
+fixes problems found by a reproduction attempt (issue #82); the author read
+those notes to choose the version, did not open the issue and saw none of
+`tingley-2019-01`'s outcomes, and the reconciliation records the attempt as
+blind. A reader rewrote the claims file under the current rules (39 claims
+against 31), adding the paper's sample sizes as expected values. Of the
+outcomes that changed, `fig1c-hfo-each-animal`, `fig1g-slower-than-ripples`,
+`fig5b-nrem-and-rates` and `fig5d-lag` moved because the new version holds
+the lab's events (the earlier median lag of 0.00 ms came from its own
+same-sample detections, against 6.20 ms now), five Figure 4 and 5 claims
+moved with the rewritten claims file, and `fig1h` turns on whether the
+amplitude is the stored peak normalized power (r = -0.000, p = 0.96) or the
+maximum NSS recomputed from the LFP (r = 0.081, p = 1.3e-38). After round 1
+`fig5e-state-coupling` moved from not reproduced to partially reproduced on
+the pooled reading (NREM 0.302 against WAKE 0.091), and the block reason of
+the two content-independent claims became `other`; round 2 asked that
+`dataset-composition` be marked assumed, since without the attempt's two
+choices only 3 of 6 counts are within tolerance. The author's final run
+took about 76 minutes, 45 of them for the LFP notebook, with peak memory
+about 7.4 GB, and no job failed; in the round-1 revision the LFP notebook
+took 51 minutes, which needed pilot-13's 60-minute limit.
+
+The dataset was converted by CatalystNeuro (Cody Baker of CatalystNeuro is
+a contributor). Electrode positions are not stored, nor the probe model of
+each recording, nor the estimated relative depth of each recording within
+LS, so travelling-wave speeds, CA1 neuron depths and Figure 2E, F cannot be
+computed; session names carry drive depths only. The two rats of the
+optogenetic experiments, with their light stimulation times and waveforms,
+are not in the dandiset, whose 98 files hold six rats (DT1, DT2, DT5, DT7,
+DT8, DT9). This version holds the lab's detections, LSRipples in 77 files
+(27014 events) and CA1Ripples in 47 (101217), made with parameters that
+differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak
+thresholds of 4 to 6 SD in some files, against 120-200 Hz, 15-250 ms and
+5 SD; CA1 130-200 Hz), as the files' descriptions say; their counts,
+durations and frequencies match the paper's (27014 LS HFOs, 27.8 ms,
+147.6 Hz). The DT9 CA3 recordings have no CA1 ripple table, DT7 20170410
+has 61 LS units but no LS HFO table, and DT2 20160215-122710 has 37 LS units
+and no event table at all. The lab's LS and CA1 detection channels share a
+120-200 Hz signal outside any event (median phase-locking value 0.177 at
+random times in 45 recordings, against 0.024 with the CA1 phase taken 1 s
+later), and the files do not say how the channels are referenced. Most
+hippocampal units are labelled `hpc`, so CA1 and CA3 cannot be told apart
+reliably: 10 recordings have units labelled ca3 and 19 a ca3_channel flag,
+against the paper's 25 CA3 recordings. The PRE, BEHAV and POST periods are
+not marked and were taken from the first and last trials, and under the
+claims file's inclusion rule only 361 to 503 pairs pass, against 7172 in
+the paper, as the pairs are lost in the HFO epochs. On the septal shank of
+the DT7 recordings the region labels ls, ms, acg and cc alternate along the
+channel order, four DT7 files label all 128 electrodes "unknown", and the
+36 units of DT7 20170407-936um-1152um-merge have an empty region label. In
+three files less than half of the trial time is scored WAKE (12.5%, 20.3%
+and 31.6%). The record says the units hold at most one waveform, none in
+the DT5, DT7 and DT9 files listed; the reconciliation's check finds a
+32-sample waveform for 5968 of 6236 units, including DT5, DT7 and DT9
+files, and left the statement unchanged. Of the eleven earlier findings,
+one is fixed (spike times out of order), four partly fixed (event tables,
+units without a region, CA3 files without a CA1 channel, waveforms and
+quality metrics) and six still present. The paper's repository holds the
+scripts of the 2018 paper and the Figure 8 model, not the analyses of
+Figures 1 to 7, and the paper gives the HFO band as both 120-180 and
+120-200 Hz and cites wrong figure numbers in its Methods. Questions are put
+to the paper's authors on the normalization and pair inclusion of the
+Figure 4 correlograms, the window of the post-burst suppression, the test
+of LS locking to CA1 ripple waves, the epoch boundaries, the Figure 1H
+amplitude and whether the Figure 5E fraction is pooled.
+
+The author's points on the protocol: the time rule names only `too_large`,
+so claims not attempted within the five-hour limit were given `other`; the
+60-minute limit per notebook forced analyses of the whole dataset into
+several notebooks, each reloading the data; five seeds did not fit for the
+Figure 7E Poisson fits or the fig5f jitter; result cells must rest on
+printed numbers that exist only after the run, so they were added after the
+first full run and the entry re-run; an expected pair count beside an
+absence criterion that does not use it was judged partially reproduced;
+and absence claims whose paper names no test had nothing for the rule to
+apply to.
+
+`summaries/tingley-2019-02.md`:
+
+Most findings on lateral septum (LS) high-frequency oscillations held up on the lab's deposited detections: they are shorter and slower than CA1 ripples, occur mostly in NREM sleep and follow CA1 ripples with the reported lag. LS neurons lock to the oscillation trough, but fewer than reported (60.6% against 92.5%), and ripple features predict LS firing above chance, not at the paper's rates. Confinement to LS and stronger ripple-triggered LS firing in NREM sleep did not reproduce; the first rests on site labels that alternate along the septal shank. Travelling waves, depth within LS and optogenetic induction could not be tested, as electrode positions, depth estimates and the optogenetic rats are not in the dataset.
