@@ -148,6 +148,9 @@ jobs:
             # The registry's tools as the workflow has them, not as the branch had them when its attempt began: a
             # branch made before a fix would otherwise run without it. Working files only, so they are never committed.
             git restore --worktree --source "$GITHUB_SHA" -- tools
+            # The reconcile run's instructions too: it compares attempts and is not part of the blind one, so it
+            # follows the instructions as they are now (asari-2009's ran those of four days before, 2026-11-17).
+            [ "$ROLE" != reconcile ] || git restore --worktree --source "$GITHUB_SHA" -- docs/agents/reconcile.md docs/protocol.md schemas
           elif [ "$ROLE" != author ]; then
             echo "::error::No branch $BRANCH; run the author first"; exit 1
           fi
@@ -522,7 +525,11 @@ jobs:
           [ -z "$others" ] || { echo "::error::Transcripts for other datasets: $others"; exit 1; }
           # An attempt's first run moves the earlier attempt's transcripts aside before this one's land.
           # That is the claims run (papers.yml) when there was one: then its transcripts stay.
-          if [ "$ROLE" = author ] && [ ! -e "transcripts/$FOLDER/claims.md" ]; then
+          # Also when the claims were not read again for this attempt (main had them, checked): the folder then still
+          # holds the whole earlier attempt, told by its recorder's transcript, which only a finished attempt has.
+          # Until 2026-11-18 those were left in place, and a blind author's revision runs could read the earlier
+          # verifiers' reports: three of twelve replicates did (asari-2009 r1 and r3, martinez-conde-2019 r1).
+          if [ "$ROLE" = author ] && { [ ! -e "transcripts/$FOLDER/claims.md" ] || [ -e "transcripts/$FOLDER/recorder.md" ]; }; then
             "$RUNNER_TEMP/archive_transcripts.sh" "$FOLDER"
           fi
           if [ -s out/changes.patch ]; then
