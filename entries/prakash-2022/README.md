@@ -14,7 +14,7 @@ Supplementary Data 1 to 6.
 | Supplementary Figs. 2, 3, 5 and 6, recordings and images not deposited (4 claims) | Blocked: data missing |
 | Fig. 7b, CTZ raises bioluminescence in both groups | Reproduced |
 | Fig. 7c, gamma emerges in Opsin (+) mice | Reproduced |
-| Fig. 7d, contacts exceeding baseline | Not reproduced |
+| Fig. 7d, contacts exceeding baseline | Not reproduced (a change to blocked, methods underspecified, is proposed) |
 | Fig. 7d, gamma increase in superficial layers | Blocked: metadata insufficient |
 | Fig. 7e, gamma power and events across electrodes, gamma power across mice | Partially reproduced |
 | Fig. 7e, gamma events across mice | Blocked: methods underspecified |
@@ -27,8 +27,8 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/prakash-2022-01.yaml`](../../attempts/prakash-2022-01.yaml).
 
-- `reproduce_prakash_2022.ipynb`: the analysis. It streams the 40 GB of recordings from the archive three times,
-  and takes about 40 minutes.
+- `reproduce_prakash_2022.ipynb`: the analysis. It streams the recordings from the archive three times (the six files hold 49 GB with the images),
+  and took about 46 minutes in its last run (the in vivo pipeline step alone 38 to 50 minutes in three runs).
 - `interlum.py`: streaming the files by byte range, the bioluminescence onset, the errant-contact
   rule, the multitaper gamma power, gamma events and MUA of the paper's Methods, and reading the
   article's Supplementary Data. Other notebooks on this dandiset can import it.
