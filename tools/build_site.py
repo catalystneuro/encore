@@ -271,11 +271,25 @@ def collect(executed: Path | None = None) -> dict:
         entries[data["name"]] = data
     titles = {p["doi"]: p["title"] for t in queue["targets"] for p in t["papers"]}
 
+    def cells_of(entry: dict, notebook: str) -> dict:
+        """The id of the cell each tag of a notebook is on (the first, for a tag on several): the executed copy's
+        page has an anchor for each cell, `cell-id=<id>`, so a claim can link to the cell that tests it."""
+        try:
+            nb = json.loads((ROOT / "entries" / entry["name"] / notebook).read_text())
+        except (OSError, ValueError):
+            return {}
+        out = {}
+        for cell in nb.get("cells") or []:
+            for tag in (cell.get("metadata") or {}).get("tags") or []:
+                if cell.get("id"):
+                    out.setdefault(tag, cell["id"])
+        return out
+
     def notebooks_of(entry: dict) -> list[dict]:
         out = []
         for n in entry["notebooks"]:
             page = f'notebooks/{entry["name"]}/{Path(n["path"]).stem}.html'
-            out.append({"path": n["path"], "title": n.get("title") or n["path"],
+            out.append({"path": n["path"], "title": n.get("title") or n["path"], "cells": cells_of(entry, n["path"]),
                         "executed": page if executed and (executed / entry["name"] / Path(page).name).is_file()
                         else None})
         return out
@@ -326,6 +340,7 @@ def collect(executed: Path | None = None) -> dict:
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
                 "notebook": o.get("notebook"),
+                "output": o.get("output"),
                 "notes": squash(o.get("notes")),
                 "deviations": [squash(d) for d in o.get("deviations") or []],
                 "assumed": bool(o.get("assumed")),
@@ -1528,6 +1543,18 @@ def paper_badge(data: dict, q: dict) -> dict | None:
             "svg": SITE_URL + f'badge/papers/{q["key"]}.svg', "alt": f'Encore: {text}, {q["byline"]}'}
 
 
+def paper_reproduced(data: dict, q: dict) -> dict | None:
+    """A badge with only the number of the paper's findings reproduced, over every current attempt, verified or not
+    (as the bar at the top of its page counts them). None when no finding was reproduced, or when paper_badge already
+    says the same number."""
+    total = sum(outcome_counts(a, "paper")["reproduced"] for a in q["live"])
+    if not total or total == (paper_badge(data, q) or {}).get("reproduced"):
+        return None
+    text = f'{total} finding{"" if total == 1 else "s"} reproduced'
+    return {"text": text, "reproduced": total, "url": SITE_URL + f'papers/{q["key"]}/',
+            "svg": SITE_URL + f'badge/papers/{q["key"]}-reproduced.svg', "alt": f'Encore: {text}, {q["byline"]}'}
+
+
 def paper_outcomes(data: dict, q: dict) -> dict | None:
     """Every outcome of a paper's claims, as the bar at the top of its page has them (the claims that rest on its
     datasets, in every current attempt, verified or not), for the two badges that show all the outcomes. None when
@@ -1555,6 +1582,11 @@ def paper_badges_panel(data: dict, q: dict, root: str) -> str:
     styles = ([{"name": "Findings reproduced", "src": f"{local}.svg", "svg": badge["svg"], "alt": badge["alt"],
                 "url": badge["url"], "counts": "It counts the paper&rsquo;s findings reproduced in full by attempts "
                                                "an independent verifier has checked."}] if badge else [])
+    count = paper_reproduced(data, q)
+    if count:
+        styles += [{"name": "Reproduced", "src": f"{local}-reproduced.svg", "svg": count["svg"], "alt": count["alt"],
+                    "url": count["url"], "counts": "It counts the paper&rsquo;s findings reproduced in full in a "
+                                                   "current attempt, verified or not."}]
     if every:
         styles += [{"name": "All outcomes", "src": f"{local}-outcomes.svg", "svg": every["svg_outcomes"],
                     "alt": every["alt"], "url": every["url"], "counts": all_note},
@@ -1843,6 +1875,16 @@ def gist(notes: str, limit: int = 110, shortest: int = 40) -> str:
     return text[:limit + 1].rsplit(" ", 1)[0].rstrip(",;:(–—-") + "…"
 
 
+def cell_href(data: dict, attempt: dict, o: dict, root: str) -> str | None:
+    """Where the cell that tests a claim is, in the executed copy of its notebook: the notebook's page at the
+    cell's anchor, or at its top when the cell is not known. None when the notebook has no executed copy."""
+    nb = next((n for n in attempt.get("notebooks") or [] if n["path"] == o.get("notebook")), None)
+    if not nb or not nb.get("executed"):
+        return None
+    cell = (nb.get("cells") or {}).get(o.get("output") or "")
+    return f'{data.get("notebooks_root") or root}{nb["executed"]}' + (f"#cell-id={cell}" if cell else "")
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
@@ -1890,10 +1932,15 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
         cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
         body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
     # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at
-    # the end of the claim's first line, and with a link to the claim once it is open.
-    ident = f'<code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
-    body += (f'<p class="claim-link small muted">Claim id <code>{e(o["claim"])}</code> &middot; '
-             f'<a href="#claim-{e(o["claim"])}">link to this claim</a></p>')
+    # the end of the claim's first line, once, with the link to the claim under it.
+    ident = (f'<span class="claim-ref"><code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
+             f'<a class="claim-anchor" href="#claim-{e(o["claim"])}">link to this claim</a></span>')
+    # Open, the claim leads to the cell of the executed notebook that tests it (cell_href, set by the page).
+    if o.get("cell"):
+        at_cell = "#cell-id=" in o["cell"]
+        body += (f'<p class="claim-link"><a href="{e(o["cell"])}">See the notebook {"cell" if at_cell else ""} that tests '
+                 f'this claim</a> <span class="muted small">in the executed notebook, with its output</span></p>'
+                 ).replace("notebook  that", "notebook that")
     # What was found, in a line under the statement while the claim is closed; open, the full notes show.
     lead = f'<p class="gist">{e(gist(o["notes"]))}</p>' if o["notes"] else ""
     # The chip is not a link here: inside the summary a click should open the claim.
@@ -3415,6 +3462,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         # result of the paper: it is under Provenance, not among the claims.
         rank = {**order, "blocked": 3}
         results = [o for o in a["outcomes"] if o.get("kind") != "link"]
+        for o in a["outcomes"]:
+            o["cell"] = cell_href(data, a, o, root)
         for nb in a["notebooks"]:
             mine = sorted((o for o in results if o.get("notebook") == nb["path"]),
                           key=lambda o: rank[o["outcome"]])
@@ -3430,8 +3479,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      f'alt="Open in Colab" width="117" height="20"></a>') if not data["demo"] and a.get("entry") else ""
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span>{colab}</h3>'
-                            f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
-                            f'</p>{by_outcome(mine, root, a, asked)}</div>')
+                            f'{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
         blocked = [o for o in results if o.get("notebook") not in listed]
         if blocked:
@@ -3692,13 +3740,12 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             + (f'<div class="answer"><strong>The reader’s answer.</strong> {e(answer)}</div>' if answer
                else '<div class="answer open">No reader has answered it yet.</div>')
             + "</li>")
-    questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>'
-                       f'<p class="sub small" style="margin-top:12px">Where the author or a verifier believed the '
+    questions_body = (f'<p class="sub small" style="margin-top:12px">Where the author or a verifier believed the '
                        f'claims file misread the paper, they asked, citing the paper, and a reader who had not seen '
                        f'the data answered from the paper alone, amending the claims file where it was wrong. The '
                        f'author then ran the claim as answered. Attempts before protocol pilot-11 also asked here '
-                       f'for method details the claims file did not give.</p>'
-                       f'<ul class="questions">{question_items}</ul></section>') if questions else ""
+                      f'for method details the claims file did not give.</p>'
+                      f'<ul class="questions">{question_items}</ul>') if questions else ""
 
     # What the attempts found about the paper itself (its methods, its code, its own consistency): on its page.
     notes = [f for a in atts for f in a.get("paper_notes") or []] if paper else []
@@ -3709,11 +3756,17 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                    f'<ul class="findings">' + "".join(
                        f'<li><span><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span></span>'
                        f'<span>{finding_tags(f)}{e(f["statement"])}</span></li>' for f in notes)
-                   + '</ul></section>') if notes else ""
+                   + '</ul>'
+                   # The questions asked about the paper's text are notes on the paper too: one tab holds both.
+                   + (f'<h3 id="questions" style="margin-top:28px">Questions about the claims '
+                      f'<span class="count">{len(questions)}</span></h3>{questions_body}' if questions else "")
+                   + '</section>') if notes else ""
+    questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>{questions_body}</section>'
+                       if questions and not notes else "")
     tab_defs = [("claims", "Claims", n),
-                *([("notes", "Notes on the paper", len(notes))] if notes else []),
+                *([("notes", "Notes on the paper", len(notes) + len(questions))] if notes else []),
                 *([] if paper else [("findings", "Findings about the data", len(all_findings))]),
-                *([("questions", "Questions", len(questions))] if questions else []),
+                *([("questions", "Questions", len(questions))] if questions and not notes else []),
                 ("notebooks", "Notebooks", n_notebooks), ("verification", "Verification", n_rounds),
                 ("differences", "Method differences", len(deviations)), ("provenance", "Provenance", None)]
     # Findings about the data belong to the dataset: on a paper's page, a pointer to its datasets' pages.
@@ -3765,7 +3818,10 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      if n_k else '<span class="muted">no findings about the data</span>',
                      archive_link(k, f"on {archive_of(k)}"),
                      f'<a href="{root}api/{page_of(k).rstrip("/")}.json">JSON</a>' if mine_ and k in current else ""]
-            lines += "<tr>" + f"<th scope=\"row\">{cells[0]}</th>" + "".join(f"<td>{c}</td>" for c in cells[1:]) + "</tr>"
+            # In the sidebar the row wraps: the dataset, its version and its size on one line, then, on the next, the
+            # findings about it and its links (a cell that only breaks the line, before the findings).
+            lines += ("<tr>" + f"<th scope=\"row\">{cells[0]}</th>" + "".join(f"<td>{c}</td>" for c in cells[1:3])
+                      + '<td class="sets-break" aria-hidden="true"></td>' + "".join(f"<td>{c}</td>" for c in cells[3:]) + "</tr>")
             # Under the dataset's line, the claims that rest on it alone, when they are only some of the paper's:
             # the others also use outside data, or are on data in another archive. What the dataset's own page counts.
             own = outcome_counts([x for x in mine_ if not x.get("deprecated")]) if mine_ else {}
@@ -4024,6 +4080,8 @@ def build(data: dict, output: Path) -> None:
         (output / "badge" / "papers").mkdir(parents=True, exist_ok=True)
         if badge:
             (output / "badge" / "papers" / f'{p["key"]}.svg').write_text(badge_svg(badge))
+        if paper_reproduced(data, p):
+            (output / "badge" / "papers" / f'{p["key"]}-reproduced.svg').write_text(badge_svg(paper_reproduced(data, p)))
         if every:
             (output / "badge" / "papers" / f'{p["key"]}-outcomes.svg').write_text(outcomes_badge_svg(every))
             (output / "badge" / "papers" / f'{p["key"]}-card.svg').write_text(card_badge_svg(every))

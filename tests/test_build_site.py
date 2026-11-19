@@ -458,7 +458,7 @@ def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
                 assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"><details><summary>' in page
             for nb in attempt["notebooks"]:
                 if any(o.get("notebook") == nb["path"] for o in attempt["outcomes"]):
-                    assert f'Notebook <code>{nb["path"]}</code>' in page
+                    assert f'Notebook <code>{nb["path"]}</code>' not in page   # the name and the Colab badge say it
 
 
 def test_each_outcome_has_its_own_mark_and_not_reproduced_is_not_a_question_or_a_cross():
@@ -800,11 +800,23 @@ def test_a_claim_shows_its_id_which_the_response_form_asks_for():
     claim = {"claim": "fig2-rates", "statement": "Rates rise.", "source": "Figure 2B", "outcome": "reproduced",
              "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    # In view without opening the claim, and not a link there (a click on the summary opens the claim).
+    # In view without opening the claim, once, with the link to the claim under it.
     head = html.split("</summary>")[0]
-    assert '<code class="claim-id" title="The id of this claim">fig2-rates</code>' in head and "<a " not in head
-    # Open, the claim gives its id again with a link to itself.
-    assert 'Claim id <code>fig2-rates</code>' in html and '<a href="#claim-fig2-rates">link to this claim</a>' in html
+    assert ('<span class="claim-ref"><code class="claim-id" title="The id of this claim">fig2-rates</code>'
+            '<a class="claim-anchor" href="#claim-fig2-rates">link to this claim</a></span>') in head
+    assert html.count("fig2-rates</code>") == 1 and "Claim id" not in html
+    # Open, a claim tested in a notebook that has an executed copy leads to its cell there.
+    assert "that tests this claim" not in html
+    at_cell = site.claim_item({**claim, "cell": "../notebooks/demo/analysis.html#cell-id=ab12"}, "../")
+    assert '<a href="../notebooks/demo/analysis.html#cell-id=ab12">See the notebook cell that tests this claim</a>' in at_cell
+    at_top = site.claim_item({**claim, "cell": "../notebooks/demo/analysis.html"}, "../")
+    assert '<a href="../notebooks/demo/analysis.html">See the notebook that tests this claim</a>' in at_top
+    attempt = {"notebooks": [{"path": "analysis.ipynb", "executed": "notebooks/demo/analysis.html", "cells": {"claim:fig2-rates": "ab12"}},
+                             {"path": "other.ipynb", "executed": None, "cells": {}}]}
+    o = {"notebook": "analysis.ipynb", "output": "claim:fig2-rates"}
+    assert site.cell_href({}, attempt, o, "../../") == "../../notebooks/demo/analysis.html#cell-id=ab12"
+    assert site.cell_href({"notebooks_root": "https://x.org/"}, attempt, {**o, "output": "claim:gone"}, "../") == "https://x.org/notebooks/demo/analysis.html"
+    assert site.cell_href({}, attempt, {"notebook": "other.ipynb", "output": "claim:a"}, "../") is None
     # The form's hint names ids as the page shows them, not numbers the page does not have.
     form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
     assert "C3, C7" not in form and "end of the claim's first line" in form
@@ -1565,6 +1577,16 @@ def test_a_paper_has_badges_and_a_json_file_of_its_results(built):
         assert api["doi"] == q["doi"] and api["url"] == site.SITE_URL + f"papers/{key}/"
         assert rows[key]["badge"] == (badge or {}).get("text")
         page = (out / "papers" / key / "index.html").read_text()
+        # A badge with only the number reproduced, over every current attempt, where the first does not say it.
+        count, anyone = site.paper_reproduced(data, q), sum(site.outcome_counts(a, "paper")["reproduced"] for a in q["live"])
+        assert (count is None) == (anyone in (0, total))
+        assert (out / "badge" / "papers" / f"{key}-reproduced.svg").is_file() == bool(count)
+        if count:
+            assert count["text"].startswith(f"{anyone} finding") and count["svg"] in page and ">Reproduced<" in page
+        # The questions asked about the paper's text are in the tab of notes on the paper, not a tab of their own.
+        if 'id="notes"' in page:
+            assert '<section class="tabpanel" id="questions">' not in page
+            assert ('<h3 id="questions"' in page) == ('class="questions"' in page)
         assert ("for this paper</h2>" in page) == bool(badge or every)
         if not every:
             claims_only += 1

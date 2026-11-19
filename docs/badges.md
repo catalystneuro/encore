@@ -150,6 +150,7 @@ A paper has this badge only when at least one finding counts.
 | Style | Address | What it shows |
 |---|---|---|
 | Findings reproduced | `badge/papers/<key>.svg` | One number: the findings reproduced in full, in verified attempts. |
+| Reproduced | `badge/papers/<key>-reproduced.svg` | One number: the findings reproduced in full, in every current attempt, verified or not. A paper has it only when this number differs from the first style's. |
 | All outcomes | `badge/papers/<key>-outcomes.svg` | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. An outcome with no claim is shown as 0. |
 | Card | `badge/papers/<key>-card.svg` | The paper's short name, the number of claims and datasets, the outcomes as one bar, and the four counts. |
 
